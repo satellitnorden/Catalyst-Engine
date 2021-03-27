@@ -1264,6 +1264,14 @@ public:
 	}
 
 	/*
+	*	Inequality operator overload.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool operator!=(const Vector4 &other) const NOEXCEPT
+	{
+		return !operator==(other);
+	}
+
+	/*
 	*	Subscript operator overload, const.
 	*/
 	FORCE_INLINE TYPE operator[](const uint64 index) const NOEXCEPT

@@ -47,7 +47,7 @@
 #include FT_FREETYPE_H
 #include <ThirdParty/stb_image.h>
 #include <ThirdParty/stb_image_resize.h>
-#include <ThirdParty/shaderc/shaderc.h>
+#include <ThirdParty/glslang/Public/ShaderLang.h>
 
 /*
 *	Builds the resource collection recursively.

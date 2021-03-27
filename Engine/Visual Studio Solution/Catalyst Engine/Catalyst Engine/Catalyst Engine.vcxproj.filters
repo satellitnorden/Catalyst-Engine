@@ -406,6 +406,12 @@
     <Filter Include="Sound\Source">
       <UniqueIdentifier>{e2d5e013-b324-4642-acdd-937c1ffd188e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\Include\Utilities">
+      <UniqueIdentifier>{e3647d17-12fb-4666-8977-0826654e7188}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Source\Utilities">
+      <UniqueIdentifier>{5c2b26ba-2292-433b-a454-6ccf10ad5928}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1755,6 +1761,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystValueNoise.h">
       <Filter>Rendering\Include\Native\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\Utilities\ResourceBuildingUtilities.h">
+      <Filter>Resources\Include\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\File\Writers\PNGWriter.h">
+      <Filter>File\Include\Writers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2344,6 +2356,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\ComputePipelines\TerrainMaterialsGenerationComputePipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Compute Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\Utilities\ResourceBuildingUtilities.cpp">
+      <Filter>Resources\Source\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

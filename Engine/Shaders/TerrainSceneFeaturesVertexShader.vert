@@ -149,6 +149,8 @@ void CatalystShaderMain()
 	fragment_world_position.y += mix(-0.5f, 0.5f, final_displacement);
 
 	//Write the position.
-	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position + WORLD_GRID_DELTA, 1.0f);
+	vec4 clip_position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position + WORLD_GRID_DELTA, 1.0f);
+	clip_position.z = max(clip_position.z, 0.0f);
+	gl_Position = clip_position;
 	
 }

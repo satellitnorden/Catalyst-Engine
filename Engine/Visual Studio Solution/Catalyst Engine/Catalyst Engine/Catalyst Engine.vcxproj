@@ -145,6 +145,7 @@
     <ClInclude Include="..\..\..\Include\File\Readers\PNGReader.h" />
     <ClInclude Include="..\..\..\Include\File\Readers\WAVReader.h" />
     <ClInclude Include="..\..\..\Include\File\Types\ModelFile.h" />
+    <ClInclude Include="..\..\..\Include\File\Writers\PNGWriter.h" />
     <ClInclude Include="..\..\..\Include\File\Writers\TGAWriter.h" />
     <ClInclude Include="..\..\..\Include\File\Writers\WAVWriter.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
@@ -429,6 +430,7 @@
     <ClInclude Include="..\..\..\Include\Resources\Loading\Texture3DData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\TextureCubeData.h" />
     <ClInclude Include="..\..\..\Include\Resources\Loading\VideoData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\Utilities\ResourceBuildingUtilities.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveCore.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveEntry.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveHeader.h" />
@@ -662,6 +664,7 @@
     <ClCompile Include="..\..\..\Source\Resources\Core\ResourcePointer.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Creation\ResourceCreationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\Loading\ResourceLoadingSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\Utilities\ResourceBuildingUtilities.cpp" />
     <ClCompile Include="..\..\..\Source\Sound\SoundMixComponent.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\AnimationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\CatalystEditorSystem.cpp" />

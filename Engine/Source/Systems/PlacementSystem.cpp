@@ -9,6 +9,7 @@
 #include <Math/Geometry/GridPoint2.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/TaskSystem.h>
 
@@ -80,6 +81,12 @@ void PlacementSystem::AsynchronousUpdate() NOEXCEPT
 	//Iterate over all placement data and check if they need updating.
 	for (PlacementData &placement_data : _PlacementData)
 	{
+		//Terminate early if the game is terminating.
+		if (CatalystEngineSystem::Instance->ShouldTerminate())
+		{
+			return;
+		}
+
 		//Calculate the current grid point based on the perceiver's position.
 		const Vector3<float32> perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
 		const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(perceiver_position, placement_data._GridSize) };
@@ -129,7 +136,20 @@ void PlacementSystem::AsynchronousUpdate() NOEXCEPT
 
 			if (!grid_point_exists)
 			{
+				if (placement_data._DeplacementFunction)
+				{
+					placement_data._DeplacementFunction(placement_data._CustomPlacementData, &placement_data._Entities[i], &placement_data._CustomCellData[i]);
+				}
+
+				for (Entity* const RESTRICT entity : placement_data._Entities[i])
+				{
+					EntitySystem::Instance->RequestTermination(entity);
+					EntitySystem::Instance->RequestDestruction(entity);
+				}
+
 				placement_data._GridPoints.EraseAt<false>(i);
+				placement_data._Entities.EraseAt<false>(i);
+				placement_data._CustomCellData.EraseAt<false>(i);
 			}
 
 			else
@@ -151,6 +171,7 @@ void PlacementSystem::AsynchronousUpdate() NOEXCEPT
 			if (!grid_point_exists)
 			{
 				placement_data._GridPoints.Emplace(wanted_grid_point);
+				placement_data._Entities.Emplace();
 				placement_data._CustomCellData.Emplace();
 
 				//Calculate the axis aligned bounding box.
@@ -169,7 +190,7 @@ void PlacementSystem::AsynchronousUpdate() NOEXCEPT
 				WorldSpaceAxisAlignedBoundingBox3D world_space_axis_aligned_box{ WorldPosition(box._Minimum), WorldPosition(box._Maximum) };
 
 				//Execute the placement function!
-				placement_data._PlacementFunction(placement_data._CustomPlacementData, world_space_axis_aligned_box, &placement_data._CustomCellData.Back());
+				placement_data._PlacementFunction(placement_data._CustomPlacementData, world_space_axis_aligned_box, &placement_data._Entities.Back(), &placement_data._CustomCellData.Back());
 			}
 		}
 	}

@@ -14,5 +14,7 @@ layout (location = 3) in vec2 vertex_texture_coordinate;
 void CatalystShaderMain()
 {
 	//Write the position.
-	gl_Position = WORLD_TO_LIGHT_MATRIX * MODEL_TO_WORLD_MATRIX * vec4(vertex_position, 1.0f);
+	vec4 clip_position = WORLD_TO_LIGHT_MATRIX * MODEL_TO_WORLD_MATRIX * vec4(vertex_position, 1.0f);
+	clip_position.z = max(clip_position.z, 0.0f);
+	gl_Position = clip_position;
 }

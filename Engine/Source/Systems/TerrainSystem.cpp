@@ -892,9 +892,7 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 512 };
-
-	CATALYST_BENCHMARK_AVERAGE_SECTION_START();
+	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 256 };
 
 	//Initialize the command buffer, if needed.
 	if (!_TerrainGenerationRunning
@@ -1016,8 +1014,6 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 	}
 
 	FinishTerrainGeneration();
-
-	CATALYST_BENCHMARK_AVERAGE_SECTION_END("TerrainSystem::GenerateMaps()");
 }
 
 /*

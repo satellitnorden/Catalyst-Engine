@@ -20,8 +20,8 @@ DEFINE_SINGLETON(ShadowsRenderPass);
 //Shadow render pass constants.
 namespace ShadowRenderPassConstants
 {
-	constexpr float32 SHADOW_MAP_VIEW_DISTANCE_FACTOR{ 0.850f };
-	constexpr float32 SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 9.00f };
+	constexpr float32 SHADOW_MAP_VIEW_DISTANCE_FACTOR{ 1.0f };
+	constexpr float32 SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 10.0f };
 	constexpr StaticArray<float32, 4> SHADOW_MAP_CASCADE_DISTANCE_FACTORS
 	{
 		1.0f * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR,
@@ -116,8 +116,8 @@ FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_ind
 	const float32 view_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
 
 	//Calculate the projection matrix.
-	Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, view_distance * -0.5f, view_distance * 0.5f) };
-	//Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, minZ * BOUNDING_BOX_EXPANSION, maxZ * BOUNDING_BOX_EXPANSION) };
+	//Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, view_distance * -0.5f, view_distance * 0.5f) };
+	Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, minZ * BOUNDING_BOX_EXPANSION * 8.0f, maxZ * BOUNDING_BOX_EXPANSION * 8.0f) };
 	//Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, minZ * BOUNDING_BOX_EXPANSION, view_distance * 0.5f) };
 
 	return projection_matrix * light_matrix;
