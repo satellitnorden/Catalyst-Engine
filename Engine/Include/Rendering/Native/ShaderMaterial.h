@@ -71,21 +71,21 @@ public:
 		{
 			case MaterialResource::Type::MASKED:
 			{
-				_Properties = 0;
+				_Properties = CatalystShaderConstants::MATERIAL_PROPERTY_TYPE_MASKED;
 
 				break;
 			}
 
 			case MaterialResource::Type::OPAQUE:
 			{
-				_Properties = 1;
+				_Properties = CatalystShaderConstants::MATERIAL_PROPERTY_TYPE_OPAQUE;
 
 				break;
 			}
 
 			case MaterialResource::Type::TRANSLUCENT:
 			{
-				_Properties = 2;
+				_Properties = CatalystShaderConstants::MATERIAL_PROPERTY_TYPE_TRANSLUCENT;
 
 				break;
 			}

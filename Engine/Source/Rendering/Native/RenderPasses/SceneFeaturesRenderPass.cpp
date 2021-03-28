@@ -51,6 +51,12 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	}
 
 	AddPipeline(&_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline);
+
+	for (InstancedStaticModelDepthSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelDepthSceneFeaturesGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
 	AddPipeline(&_InstancedImpostorDepthSceneFeaturesGraphicsPipeline);
 
 	for (MaskedModelColorSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelColorSceneFeaturesGraphicsPipelines)
@@ -68,7 +74,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
-	for (InstancedOpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _InstancedOpaqueModelSceneFeaturesGraphicsPipelines)
+	for (InstancedStaticModelColorSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelColorSceneFeaturesGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -84,6 +90,8 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	_ParticleSystemComputePipeline.Initialize();
 	_MaskedModelDepthSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
 	_MaskedModelDepthSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
+	_InstancedStaticModelDepthSceneFeaturesGraphicsPipelines[0].Initialize(false, _SceneDepthBuffer);
+	_InstancedStaticModelDepthSceneFeaturesGraphicsPipelines[1].Initialize(true, _SceneDepthBuffer);
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_MaskedModelColorSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
@@ -93,8 +101,8 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	_TerrainSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_OpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
 	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
-	_InstancedOpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(false, _SceneDepthBuffer);
-	_InstancedOpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(true, _SceneDepthBuffer);
+	_InstancedStaticModelColorSceneFeaturesGraphicsPipelines[0].Initialize(false, _SceneDepthBuffer);
+	_InstancedStaticModelColorSceneFeaturesGraphicsPipelines[1].Initialize(true, _SceneDepthBuffer);
 
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 #if defined(CATALYST_EDITOR)
@@ -136,6 +144,13 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 		pipeline.Execute();
 	}
 
+	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
+
+	for (InstancedStaticModelDepthSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelDepthSceneFeaturesGraphicsPipelines)
+	{
+		pipeline.Execute();
+	}
+
 	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Execute();
 
 	for (MaskedModelColorSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelColorSceneFeaturesGraphicsPipelines)
@@ -150,12 +165,11 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 		pipeline.Execute();
 	}
 
-	for (InstancedOpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _InstancedOpaqueModelSceneFeaturesGraphicsPipelines)
+	for (InstancedStaticModelColorSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelColorSceneFeaturesGraphicsPipelines)
 	{
 		pipeline.Execute();
 	}
 
-	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
 	_TerrainSceneFeaturesGraphicsPipeline.Execute();
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Execute();
 	

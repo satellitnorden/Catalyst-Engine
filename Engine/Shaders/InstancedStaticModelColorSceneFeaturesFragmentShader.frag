@@ -16,7 +16,6 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in mat3 fragment_tangent_space_matrix;
 layout (location = 3) in vec3 fragment_world_position;
 layout (location = 4) in vec2 fragment_texture_coordinate;
-layout (location = 5) in float fragment_fade_out_opacity;
 
 //Out parameters.
 layout (location = 0) out vec4 scene_features_1;
@@ -67,10 +66,4 @@ void CatalystShaderMain()
   scene_features_3 = material_properties;
   scene_features_4 = vec4(velocity, 0.0f, 0.0f);
   scene = vec4(albedo_thickness.rgb * material_properties[3] * material._EmissiveMultiplier, 1.0f);
-
-  //Discard based on fade out opacity.
-  if (fragment_fade_out_opacity < 1.0f && ShouldClip(uint(gl_FragCoord.x), uint(gl_FragCoord.y), fragment_fade_out_opacity))
-  {
-    discard;
-  }
 }

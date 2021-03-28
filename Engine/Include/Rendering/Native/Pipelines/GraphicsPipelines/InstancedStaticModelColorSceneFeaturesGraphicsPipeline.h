@@ -6,7 +6,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class InstancedOpaqueModelSceneFeaturesGraphicsPipeline final : public GraphicsPipeline
+class InstancedStaticModelColorSceneFeaturesGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:

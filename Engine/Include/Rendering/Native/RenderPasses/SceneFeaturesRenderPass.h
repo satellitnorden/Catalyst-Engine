@@ -12,7 +12,8 @@
 #endif
 #include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedImpostorColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedImpostorDepthSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedOpaqueModelSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedStaticModelColorSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedStaticModelDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/MaskedModelColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/MaskedModelDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/OpaqueModelSceneFeaturesGraphicsPipeline.h>
@@ -61,6 +62,9 @@ private:
 	//The particle system masked depth graphics pipeline.
 	ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline _ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline;
 
+	//The instanced static model depth scene features graphics pipelines.
+	StaticArray<InstancedStaticModelDepthSceneFeaturesGraphicsPipeline, 2> _InstancedStaticModelDepthSceneFeaturesGraphicsPipelines;
+
 	//The instanced impostor depth scene features graphics pipeline.
 	InstancedImpostorDepthSceneFeaturesGraphicsPipeline _InstancedImpostorDepthSceneFeaturesGraphicsPipeline;
 
@@ -79,8 +83,8 @@ private:
 	//The opaque model scene features graphics pipelines.
 	StaticArray<OpaqueModelSceneFeaturesGraphicsPipeline, 2> _OpaqueModelSceneFeaturesGraphicsPipelines;
 
-	//The instanced opaque model scene features graphics pipelines.
-	StaticArray<InstancedOpaqueModelSceneFeaturesGraphicsPipeline, 2> _InstancedOpaqueModelSceneFeaturesGraphicsPipelines;
+	//The instanced static model color scene features graphics pipelines.
+	StaticArray<InstancedStaticModelColorSceneFeaturesGraphicsPipeline, 2> _InstancedStaticModelColorSceneFeaturesGraphicsPipelines;
 
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;

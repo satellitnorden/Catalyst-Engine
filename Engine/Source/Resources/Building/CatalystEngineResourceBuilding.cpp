@@ -1123,28 +1123,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelSceneFeaturesFragmentShader";
-		parameters._ID = "InstancedOpaqueModelSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelSceneFeaturesFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelSceneFeaturesVertexShader";
-		parameters._ID = "InstancedOpaqueModelSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelSceneFeaturesVertexShader.vert";
-		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelShadowsFragmentShader";
 		parameters._ID = "InstancedOpaqueModelShadowsFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsFragmentShader.frag";
@@ -1159,6 +1137,50 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelShadowsVertexShader";
 		parameters._ID = "InstancedOpaqueModelShadowsVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedStaticModelColorSceneFeaturesFragmentShader";
+		parameters._ID = "InstancedStaticModelColorSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedStaticModelColorSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedStaticModelColorSceneFeaturesVertexShader";
+		parameters._ID = "InstancedStaticModelColorSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedStaticModelColorSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedStaticModelDepthSceneFeaturesFragmentShader";
+		parameters._ID = "InstancedStaticModelDepthSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedStaticModelDepthSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedStaticModelDepthSceneFeaturesVertexShader";
+		parameters._ID = "InstancedStaticModelDepthSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedStaticModelDepthSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);

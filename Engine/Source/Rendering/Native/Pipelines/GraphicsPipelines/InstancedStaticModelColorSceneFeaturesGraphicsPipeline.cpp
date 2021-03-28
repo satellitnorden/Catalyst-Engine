@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedOpaqueModelSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedStaticModelColorSceneFeaturesGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -45,17 +45,17 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const bool double_sided, const DepthBufferHandle depth_buffer) NOEXCEPT
+void InstancedStaticModelColorSceneFeaturesGraphicsPipeline::Initialize(const bool double_sided, const DepthBufferHandle depth_buffer) NOEXCEPT
 {
 	//Set double sided.
 	_DoubleSided = double_sided;
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedOpaqueModelSceneFeaturesVertexShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedStaticModelColorSceneFeaturesVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
 	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
 	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedOpaqueModelSceneFeaturesFragmentShader")));
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedStaticModelColorSceneFeaturesFragmentShader")));
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);
@@ -137,7 +137,7 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const bool do
 		SetCullMode(CullMode::Back);
 	}
 
-	SetDepthCompareOperator(CompareOperator::Greater);
+	SetDepthCompareOperator(CompareOperator::Equal);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
 	SetStencilTestEnabled(true);
@@ -154,7 +154,7 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const bool do
 /*
 *	Executes this graphics pipeline.
 */
-void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
+void InstancedStaticModelColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
@@ -186,12 +186,6 @@ void InstancedOpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			//Draw all meshes.
 			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
-				//Skip this mesh depending on the material type.
-				if (component->_MaterialResources[i]->_Type != MaterialResource::Type::OPAQUE)
-				{
-					continue;
-				}
-
 				//Skip this mesh depending on the double-sidedness.
 				if (_DoubleSided != component->_MaterialResources[i]->_DoubleSided)
 				{
