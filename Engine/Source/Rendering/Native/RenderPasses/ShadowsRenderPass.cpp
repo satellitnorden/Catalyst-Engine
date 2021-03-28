@@ -21,7 +21,7 @@ DEFINE_SINGLETON(ShadowsRenderPass);
 namespace ShadowRenderPassConstants
 {
 	constexpr float32 SHADOW_MAP_VIEW_DISTANCE_FACTOR{ 1.0f };
-	constexpr float32 SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 10.0f };
+	constexpr float32 SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 6.00f };
 	constexpr StaticArray<float32, 4> SHADOW_MAP_CASCADE_DISTANCE_FACTORS
 	{
 		1.0f * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR,
@@ -35,61 +35,29 @@ namespace ShadowRenderPassConstants
 */
 FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_index, const Vector3<float32> &light_direction, const float32 cascade_start, const float32 cascade_end) NOEXCEPT
 {
-	//Define constants.
-	constexpr float32 BOUNDING_BOX_EXPANSION{ 14.50f };
-
-	//Calculate the perceiver matrix.
+	//Cache the perceiver local_position.
 	const Vector3<float32> perceiver_local_position{ Perceiver::Instance->GetWorldTransform().GetLocalPosition() };
-	const Vector3<float32> perceiver_forward_vector{ Perceiver::Instance->GetForwardVector() };
-	const Vector3<float32> perceiver_up_vector{ Perceiver::Instance->GetUpVector() };
 
-	const Matrix4x4 perceiver_matrix{ Matrix4x4::LookAt(perceiver_local_position, perceiver_local_position + perceiver_forward_vector, perceiver_up_vector) };
-
-	//Calculate the inverse perceiver matrix.
-	Matrix4x4 inverse_perceiver_matrix{ perceiver_matrix };
-	inverse_perceiver_matrix.Inverse();
-
-	//Calculate the field of view variables.
-#if 0
-	const float32 aspect_ratio{ static_cast<float32>(RenderingSystem::Instance->GetFullResolution()._Width) / static_cast<float32>(RenderingSystem::Instance->GetFullResolution()._Height) };
-#else
-	const float32 aspect_ratio{ static_cast<float32>(RenderingSystem::Instance->GetFullResolution()._Height) / static_cast<float32>(RenderingSystem::Instance->GetFullResolution()._Width) };
-#endif
-	const float32 tangent_half_horizontal_field_of_view{ CatalystBaseMath::Tangent(CatalystBaseMath::DegreesToRadians(Perceiver::Instance->GetFieldOfView() / 2.0f)) };
-	const float32 tangent_half_vertical_field_of_view{ CatalystBaseMath::Tangent(CatalystBaseMath::DegreesToRadians((Perceiver::Instance->GetFieldOfView() * aspect_ratio) / 2.0f)) };
-	
 	//Set up the furstom corners.
-	const float32 xn{ ((cascade_start) * tangent_half_horizontal_field_of_view) };
-	const float32 xf{ ((cascade_end) * tangent_half_horizontal_field_of_view) };
-	const float32 yn{ ((cascade_start) * tangent_half_vertical_field_of_view) };
-	const float32 yf{ ((cascade_end) * tangent_half_vertical_field_of_view) };
+	const Vector3<float32> lower_left_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(0.0f, 0.0f)) };
+	const Vector3<float32> upper_left_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(0.0f, 1.0f)) };
+	const Vector3<float32> lower_right_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(1.0f, 0.0f)) };
+	const Vector3<float32> upper_right_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(1.0f, 1.0f)) };
 
 	StaticArray<Vector4<float32>, 8> frustum_corners;
 
-	frustum_corners[0] = Vector4<float32>(xn, yn, -(cascade_start), 1.0f);
-	frustum_corners[1] = Vector4<float32>(-xn, yn, -(cascade_start), 1.0f);
-	frustum_corners[2] = Vector4<float32>(xn, -yn, -(cascade_start), 1.0f);
-	frustum_corners[3] = Vector4<float32>(-xn, -yn, -(cascade_start), 1.0f);
+	frustum_corners[0] = Vector4<float32>(perceiver_local_position + lower_left_direction * cascade_start, 1.0f);
+	frustum_corners[1] = Vector4<float32>(perceiver_local_position + upper_left_direction * cascade_start, 1.0f);
+	frustum_corners[2] = Vector4<float32>(perceiver_local_position + lower_right_direction * cascade_start, 1.0f);
+	frustum_corners[3] = Vector4<float32>(perceiver_local_position + upper_right_direction * cascade_start, 1.0f);
 
-	frustum_corners[4] = Vector4<float32>(xf, yf, -(cascade_end), 1.0f);
-	frustum_corners[5] = Vector4<float32>(-xf, yf, -(cascade_end), 1.0f);
-	frustum_corners[6] = Vector4<float32>(xf, -yf, -(cascade_end), 1.0f);
-	frustum_corners[7] = Vector4<float32>(-xf, -yf, -(cascade_end), 1.0f);
-
-	//Calculate the center point.
-	Vector3<float32> center_point{ 0.0f, 0.0f, 0.0f };
-
-	for (uint8 i{ 0 }; i < 8; ++i)
-	{
-		Vector4<float32> world_space_corner{ inverse_perceiver_matrix * frustum_corners[i] };
-
-		center_point += Vector3<float32>(world_space_corner._X, world_space_corner._Y, world_space_corner._Z);
-	}
-
-	center_point /= static_cast<float32>(8);
+	frustum_corners[4] = Vector4<float32>(perceiver_local_position + lower_left_direction * cascade_end, 1.0f);
+	frustum_corners[5] = Vector4<float32>(perceiver_local_position + upper_left_direction * cascade_end, 1.0f);
+	frustum_corners[6] = Vector4<float32>(perceiver_local_position + lower_right_direction * cascade_end, 1.0f);
+	frustum_corners[7] = Vector4<float32>(perceiver_local_position + upper_right_direction * cascade_end, 1.0f);
 
 	//Construct the light matrix.
-	const Matrix4x4 light_matrix{ Matrix4x4::LookAt(center_point, center_point + light_direction, CatalystWorldCoordinateSpace::UP) };
+	const Matrix4x4 light_matrix{ Matrix4x4::LookAt(VectorConstants::ZERO, light_direction, CatalystWorldCoordinateSpace::UP) };
 
 	//Calculate the light bounding box.
 	float32 minX{ FLOAT32_MAXIMUM };
@@ -101,24 +69,21 @@ FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_ind
 
 	for (uint8 i{ 0 }; i < 8; ++i)
 	{
-		const Vector4<float32> world_space_corner{ inverse_perceiver_matrix * frustum_corners[i] };
-		const Vector4<float32> light_space_corner{ light_matrix * world_space_corner };
+		const Vector4<float32> light_space_corner{ light_matrix * frustum_corners[i] };
 
 		minX = CatalystBaseMath::Minimum<float32>(minX, light_space_corner._X);
 		maxX = CatalystBaseMath::Maximum<float32>(maxX, light_space_corner._X);
 		minY = CatalystBaseMath::Minimum<float32>(minY, light_space_corner._Y);
 		maxY = CatalystBaseMath::Maximum<float32>(maxY, light_space_corner._Y);
-		minZ = CatalystBaseMath::Minimum<float32>(minY, light_space_corner._Z);
-		maxZ = CatalystBaseMath::Maximum<float32>(maxY, light_space_corner._Z);
+		minZ = CatalystBaseMath::Minimum<float32>(minZ, light_space_corner._Z);
+		maxZ = CatalystBaseMath::Maximum<float32>(maxZ, light_space_corner._Z);
 	}
 
 	//Cache the view distance.
 	const float32 view_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
 
 	//Calculate the projection matrix.
-	//Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, view_distance * -0.5f, view_distance * 0.5f) };
-	Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, minZ * BOUNDING_BOX_EXPANSION * 8.0f, maxZ * BOUNDING_BOX_EXPANSION * 8.0f) };
-	//Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX * BOUNDING_BOX_EXPANSION, maxX * BOUNDING_BOX_EXPANSION, minY * BOUNDING_BOX_EXPANSION, maxY * BOUNDING_BOX_EXPANSION, minZ * BOUNDING_BOX_EXPANSION, view_distance * 0.5f) };
+	const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX, maxX, minY, maxY, -view_distance, view_distance) };
 
 	return projection_matrix * light_matrix;
 }
