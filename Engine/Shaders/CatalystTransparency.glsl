@@ -12,7 +12,7 @@ float CalculateDistanceBasedOpacity(float current_distance_squared, float maximu
 /*
 *	Based on the X and Y coordinate and an opacity value, return if the fragment should clip.
 */
-bool ShouldClip(uint X, uint Y, float opacity)
+bool ShouldClip(uint X, uint Y, float opacity, bool reverse)
 {
 	mat4 CLIP_THRESHOLDS = mat4
 	(
@@ -22,7 +22,10 @@ bool ShouldClip(uint X, uint Y, float opacity)
 		0.94117647058823529411764705882353f, 0.47058823529411764705882352941176f, 0.82352941176470588235294117647059f, 0.3529411764705882352941176470588f
 	);
 
-	return (opacity - CLIP_THRESHOLDS[X & 3][Y & 3]) < 0.0f;
+	float clip_threshold = CLIP_THRESHOLDS[X & 3][Y & 3];
+	clip_threshold = reverse ? 1.0f - clip_threshold : clip_threshold;
+
+	return (opacity - clip_threshold) < 0.0f;
 }
 
 #endif

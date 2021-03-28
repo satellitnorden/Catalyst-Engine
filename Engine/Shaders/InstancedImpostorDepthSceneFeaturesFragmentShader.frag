@@ -1,5 +1,6 @@
 //Includes.
 #include "CatalystMaterialCore.glsl"
+#include "CatalystTransparency.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -37,15 +38,10 @@ void CatalystShaderMain()
     opacity = UnpackColor(material._Opacity).x;
   }
 
-  //Cache the blue noise. 
-  
-  vec4 blue_noise = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
-  float noise_sample = clamp(blue_noise[0], 0.01f, 0.99f);
 
   //Conditionally discard.
   if (opacity < 0.5f
-      || fragment_fade_opacity == 0.0f
-      || fragment_fade_opacity < noise_sample)
+      || ShouldClip(uint(gl_FragCoord.x), uint(gl_FragCoord.y), fragment_fade_opacity, true))
   {
     discard;
   }

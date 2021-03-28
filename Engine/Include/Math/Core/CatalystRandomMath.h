@@ -115,7 +115,7 @@ public:
 	*	Returns a random element in the given array based on the given weights.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE static NO_DISCARD TYPE& WeightedRandomElement(const ArrayProxy<TYPE> &elements, const ArrayProxy<float32> &weights) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD TYPE& WeightedRandomElement(ArrayProxy<TYPE> &elements, ArrayProxy<float32> &weights) NOEXCEPT
 	{
 		ASSERT(elements.Size() == weights.Size(), "Both elements and weights needs to be of the same size!");
 

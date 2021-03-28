@@ -38,7 +38,7 @@ void CatalystShaderMain()
   }
 
   //Discard based on fade out opacity.
-  if ((fragment_fade_out_opacity < 1.0f && ShouldClip(uint(gl_FragCoord.x), uint(gl_FragCoord.y), fragment_fade_out_opacity))
+  if ((fragment_fade_out_opacity < 1.0f && ShouldClip(uint(gl_FragCoord.x), uint(gl_FragCoord.y), fragment_fade_out_opacity, false))
       || opacity < 0.5f)
   {
     discard;

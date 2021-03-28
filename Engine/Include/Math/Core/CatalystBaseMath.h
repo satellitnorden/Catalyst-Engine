@@ -393,6 +393,16 @@ public:
 	}
 
 	/*
+	*   Returns a smoothed number in the given range.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float32 SmoothStep(const float32 number, const float32 minimum, const float32 maximum) NOEXCEPT
+	{
+		const float32 clamped_number{ Clamp((number - minimum) / (maximum - minimum), 0.0f, 1.0f) };
+
+		return clamped_number * clamped_number * (3.0f - 2.0f * clamped_number);
+	}
+
+	/*
 	*	Given a number, returns the square of that number.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float32 Square(const float32 number) NOEXCEPT

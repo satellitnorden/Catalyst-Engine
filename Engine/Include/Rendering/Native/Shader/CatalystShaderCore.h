@@ -57,6 +57,15 @@
 	}
 
 	/*
+	*	Length helper function.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE NO_DISCARD float32 LengthHelper(const TYPE &value) NOEXCEPT
+	{
+		return TYPE::Length(value);
+	}
+
+	/*
 	*	Normalize helper function.
 	*/
 	template <typename TYPE>
@@ -100,6 +109,12 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_FRACTIONAL(ARGUMENT) \
 	CatalystBaseMath::Fractional(ARGUMENT)
+
+	/*
+	*	Calls the length function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_LENGTH(ARGUMENT_1) \
+	LengthHelper(ARGUMENT_1)
 
 	/*
 	*	Calls the linear interpolation function.
@@ -271,6 +286,12 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_FRACTIONAL(ARGUMENT) \
 	fract(ARGUMENT)
+
+	/*
+	*	Calls the length function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_LENGTH(ARGUMENT_1) \
+	length(ARGUMENT_1)
 
 	/*
 	*	Calls the linear interpolation function.
