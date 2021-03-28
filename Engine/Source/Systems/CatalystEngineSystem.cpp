@@ -144,7 +144,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 	CullingSystem::Instance->Initialize();
 	DistributionSystem::Instance->Initialize();
-	PlacementSystem::Instance->Initialize();
 	EntitySystem::Instance->Initialize();
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
 	LevelOfDetailSystem::Instance->Initialize();

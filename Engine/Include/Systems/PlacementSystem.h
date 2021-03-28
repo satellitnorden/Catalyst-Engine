@@ -47,11 +47,6 @@ public:
 	}
 
 	/*
-	*	Initializes the placement system.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
 	*	Updates the placement system during the sequential update phase.
 	*/
 	void SequentialUpdate() NOEXCEPT;
@@ -74,6 +69,9 @@ private:
 	{
 
 	public:
+
+		//The asynchronous update task.
+		Task _AsynchronousUpdateTask;
 
 		//The custom placement data.
 		Any<CUSTOM_PLACEMENT_DATA_SIZE> _CustomPlacementData;
@@ -101,15 +99,12 @@ private:
 
 	};
 
-	//The asynchronous update task.
-	Task _AsynchronousUpdateTask;
-
 	//Container for all placement data.
-	DynamicArray<PlacementData> _PlacementData;
+	DynamicArray<PlacementData *const RESTRICT> _PlacementData;
 
 	/*
 	*	Updates the placement system asynchronously.
 	*/
-	void AsynchronousUpdate() NOEXCEPT;
+	void AsynchronousUpdate(PlacementData *const RESTRICT placement_data) NOEXCEPT;
 
 };
