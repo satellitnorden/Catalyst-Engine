@@ -96,6 +96,27 @@ public:
 	};
 
 	/*
+	*	Subsript operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD VALUE_TYPE& operator[](const KEY_TYPE key)
+	{
+		//First, see if the object exists in the map.
+		if (VALUE_TYPE *RESTRICT object{ Find(key) })
+		{
+			//If the object existed, just return it.
+			return *object;
+		}
+
+		//Else, create a new object and return it.
+		else
+		{
+			Add(key, VALUE_TYPE());
+
+			return *Find(key);
+		}
+	}
+
+	/*
 	*	Returns a key iterator, const.
 	*/
 	FORCE_INLINE NO_DISCARD ConstIterator<KEY_TYPE> KeyIterator() const NOEXCEPT
