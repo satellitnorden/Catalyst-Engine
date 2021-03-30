@@ -1,7 +1,7 @@
 //Constants.
 #define SHADOW_MAP_SAMPLES (4)
 #define SHADOW_MAP_OFFSET (0.001000f) //0.000025f step.
-#define SHADOW_MAP_BIASES (vec4(0.0001275f, 0.0001575f, 0.0001975f, 0.0001350f)) //0.0000025f step.
+#define SHADOW_MAP_BIASES (vec4(0.0001400f, 0.0001725f, 0.0002075f, 0.0001350f)) //0.0000025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
