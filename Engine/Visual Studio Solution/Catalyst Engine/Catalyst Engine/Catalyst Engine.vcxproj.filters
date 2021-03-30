@@ -412,6 +412,9 @@
     <Filter Include="Resources\Source\Utilities">
       <UniqueIdentifier>{5c2b26ba-2292-433b-a454-6ccf10ad5928}</UniqueIdentifier>
     </Filter>
+    <Filter Include="World\Include\Vegetation">
+      <UniqueIdentifier>{9b138b04-5d59-4fc8-9862-c1e597b353c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1773,6 +1776,15 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\InstancedStaticModelDepthSceneFeaturesGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\Core\VegetationSystem.h">
+      <Filter>World\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\World\Vegetation\ProceduralGrassProperties.h">
+      <Filter>World\Include\Vegetation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ProceduralGrassSceneFeaturesGraphicsPipeline.h">
+      <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2367,6 +2379,12 @@
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\InstancedStaticModelDepthSceneFeaturesGraphicsPipeline.cpp">
+      <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\World\Core\VegetationSystem.cpp">
+      <Filter>World\Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ProceduralGrassSceneFeaturesGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
   </ItemGroup>

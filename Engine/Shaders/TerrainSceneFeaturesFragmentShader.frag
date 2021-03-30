@@ -80,7 +80,7 @@ void CatalystShaderMain()
     vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position + WORLD_GRID_DELTA) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position + WORLD_GRID_DELTA);
 
     //Write the fragments.
-    scene_features_1 = vec4(final_material.albedo, 1.0f);
+    scene_features_1 = vec4(final_material.albedo, float(final_material.material_index) / float(UINT8_MAXIMUM));
     scene_features_2 = vec4(shading_normal, gl_FragCoord.z);
     scene_features_3 = final_material.material_properties;
     scene_features_4 = vec4(velocity, 0.0f, 0.0f);

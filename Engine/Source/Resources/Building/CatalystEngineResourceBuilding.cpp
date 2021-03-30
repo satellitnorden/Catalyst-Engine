@@ -1431,6 +1431,39 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ProceduralGrassSceneFeaturesFragmentShader";
+		parameters._ID = "ProceduralGrassSceneFeaturesFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ProceduralGrassSceneFeaturesFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ProceduralGrassSceneFeaturesGeometryShader";
+		parameters._ID = "ProceduralGrassSceneFeaturesGeometryShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ProceduralGrassSceneFeaturesGeometryShader.geom";
+		parameters._Stage = ShaderStage::GEOMETRY;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ProceduralGrassSceneFeaturesVertexShader";
+		parameters._ID = "ProceduralGrassSceneFeaturesVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ProceduralGrassSceneFeaturesVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RasterizedShadowsFragmentShader";
 		parameters._ID = "RasterizedShadowsFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RasterizedShadowsFragmentShader.frag";

@@ -80,6 +80,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	}
 
 	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_ProceduralGrassSceneFeaturesGraphicsPipeline);
 #if defined(CATALYST_EDITOR)
 	AddPipeline(&_EditorSelectedModelGraphicsPipeline);
 #endif
@@ -103,8 +104,8 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
 	_InstancedStaticModelColorSceneFeaturesGraphicsPipelines[0].Initialize(false, _SceneDepthBuffer);
 	_InstancedStaticModelColorSceneFeaturesGraphicsPipelines[1].Initialize(true, _SceneDepthBuffer);
-
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_ProceduralGrassSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
 #if defined(CATALYST_EDITOR)
 	_EditorSelectedModelGraphicsPipeline.Initialize(_SceneDepthBuffer);
 #endif
@@ -174,6 +175,7 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Execute();
 	
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();
+	_ProceduralGrassSceneFeaturesGraphicsPipeline.Execute();
 #if defined(CATALYST_EDITOR)
 	_EditorSelectedModelGraphicsPipeline.Execute();
 #endif

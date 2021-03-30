@@ -299,6 +299,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\PassthroughGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\PathTracingDenoisingGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\PostProcessingGraphicsPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ProceduralGrassSceneFeaturesGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\RasterizedShadowsGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\RenderingReferenceGraphicsPipeline.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ResampleGraphicsPipeline.h" />
@@ -492,6 +493,7 @@
     <ClInclude Include="..\..\..\Include\World\Core\EnvironmentSystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\SkySystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\TimeOfDaySystem.h" />
+    <ClInclude Include="..\..\..\Include\World\Core\VegetationSystem.h" />
     <ClInclude Include="..\..\..\Include\World\Core\WorldPosition.h" />
     <ClInclude Include="..\..\..\Include\World\Core\WorldSpaceAxisAlignedBoundingBox3D.h" />
     <ClInclude Include="..\..\..\Include\World\Core\WorldTransform.h" />
@@ -499,6 +501,7 @@
     <ClInclude Include="..\..\..\Include\World\Level\LevelEntry.h" />
     <ClInclude Include="..\..\..\Include\World\Sky\SkyGradient.h" />
     <ClInclude Include="..\..\..\Include\World\TimeOfDay\TimeOfDayParameters.h" />
+    <ClInclude Include="..\..\..\Include\World\Vegetation\ProceduralGrassProperties.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
@@ -609,6 +612,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\PassthroughGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\PathTracingDenoisingGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\PostProcessingGraphicsPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ProceduralGrassSceneFeaturesGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\RasterizedShadowsGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\RenderingReferenceGraphicsPipeline.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ResampleGraphicsPipeline.cpp" />
@@ -697,6 +701,7 @@
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceText.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\SkySystem.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\TimeOfDaySystem.cpp" />
+    <ClCompile Include="..\..\..\Source\World\Core\VegetationSystem.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\WorldPosition.cpp" />
     <ClCompile Include="..\..\..\Source\World\Core\WorldTransform.cpp" />
   </ItemGroup>

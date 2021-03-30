@@ -8,6 +8,7 @@
 #include <World/Core/EnvironmentSystem.h>
 #include <World/Core/SkySystem.h>
 #include <World/Core/TimeOfDaySystem.h>
+#include <World/Core/VegetationSystem.h>
 
 //Forward declarations.
 class LevelResource;
@@ -81,6 +82,14 @@ public:
 	}
 
 	/*
+	*	Returns the vegetation system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD VegetationSystem *const RESTRICT GetVegetationSystem() NOEXCEPT
+	{
+		return &_VegetationSystem;
+	}
+
+	/*
 	*	Returns the wetness.
 	*/
 	FORCE_INLINE NO_DISCARD float GetWetness() const NOEXCEPT
@@ -109,6 +118,9 @@ private:
 
 	//The time of day system.
 	TimeOfDaySystem _TimeOfDaySystem;
+
+	//The vegetation system.
+	VegetationSystem _VegetationSystem;
 
 	//The wetness.
 	float _Wetness{ 0.0f };

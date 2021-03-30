@@ -17,6 +17,7 @@ struct TerrainMaterial
     vec3 albedo;
     vec3 normal_map;
     vec4 material_properties;
+    uint material_index;
 };
 
 /*
@@ -27,10 +28,10 @@ TerrainMaterial CalculateTerrainMaterial(vec2 height_map_texture_coordinate, vec
     //Retrieve the 4 materials to blend between.
     vec4 index_map = texture(sampler2D(GLOBAL_TEXTURES[index_map_texture_index], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), height_map_texture_coordinate);
 
-    Material material_1 = GLOBAL_MATERIALS[uint(index_map[0] * 255.0f)];
-    Material material_2 = GLOBAL_MATERIALS[uint(index_map[1] * 255.0f)];
-    Material material_3 = GLOBAL_MATERIALS[uint(index_map[2] * 255.0f)];
-    Material material_4 = GLOBAL_MATERIALS[uint(index_map[3] * 255.0f)];
+    Material material_1 = GLOBAL_MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
+    Material material_2 = GLOBAL_MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
+    Material material_3 = GLOBAL_MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
+    Material material_4 = GLOBAL_MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
 
     //Evalute the materials.
     vec4 material_1_albedo_thickness;
@@ -121,6 +122,20 @@ TerrainMaterial CalculateTerrainMaterial(vec2 height_map_texture_coordinate, vec
                                     + material_3_material_properties * blend_map[2]
                                     + material_4_material_properties * blend_map[3];
 
+    uint dominant_material_index = 0;
+    float dominant_material_weight = blend_map[0];
+
+    dominant_material_index = blend_map[1] > dominant_material_weight ? 1 : dominant_material_index;
+    dominant_material_weight = blend_map[1] > dominant_material_weight ? blend_map[1] : dominant_material_weight;
+
+    dominant_material_index = blend_map[2] > dominant_material_weight ? 2 : dominant_material_index;
+    dominant_material_weight = blend_map[2] > dominant_material_weight ? blend_map[2] : dominant_material_weight;
+
+    dominant_material_index = blend_map[3] > dominant_material_weight ? 3 : dominant_material_index;
+    dominant_material_weight = blend_map[3] > dominant_material_weight ? blend_map[3] : dominant_material_weight;
+
+    material.material_index = uint(index_map[dominant_material_index] * float(UINT8_MAXIMUM));
+
     return material;
 }
 
@@ -134,6 +149,7 @@ TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial seco
     output_material.albedo = mix(first.albedo, second.albedo, alpha);
     output_material.normal_map = mix(first.normal_map, second.normal_map, alpha);
     output_material.material_properties = mix(first.material_properties, second.material_properties, alpha);
+    output_material.material_index = alpha >= 0.5f ? second.material_index : first.material_index;
 
     return output_material;
 }
