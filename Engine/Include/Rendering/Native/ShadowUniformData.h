@@ -19,7 +19,7 @@ public:
 	//The shadow map render target indices.
 	StaticArray<Vector4<uint32>, 4> _ShadowMapRenderTargetIndices;
 
-	//The shadow map cascade distances squared.
-	StaticArray<Vector4<float32>, 4> _ShadowMapCascadeDistancesSquared;
+	//The shadow map cascade distances.
+	StaticArray<Vector4<float32>, 4> _ShadowMapCascadeDistances;
 
 };

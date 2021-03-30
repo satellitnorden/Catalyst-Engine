@@ -15,6 +15,6 @@ void CatalystShaderMain()
 {
 	//Write the position.
 	vec4 clip_position = WORLD_TO_LIGHT_MATRIX * MODEL_TO_WORLD_MATRIX * vec4(vertex_position, 1.0f);
-	clip_position.z = max(clip_position.z, 0.0f);
+	clip_position.z = max(clip_position.z, FLOAT32_EPSILON);
 	gl_Position = clip_position;
 }

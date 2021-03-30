@@ -143,6 +143,8 @@ void CatalystShaderMain()
 	world_position.y += mix(-0.5f, 0.5f, final_displacement);
 
 	//Write the position.
-	gl_Position = WORLD_TO_LIGHT_MATRIX * vec4(world_position + WORLD_GRID_DELTA, 1.0f);
+	vec4 clip_position = WORLD_TO_LIGHT_MATRIX * vec4(world_position + WORLD_GRID_DELTA, 1.0f);
+	clip_position.z = max(clip_position.z, FLOAT32_EPSILON);
+	gl_Position = clip_position;
 	
 }

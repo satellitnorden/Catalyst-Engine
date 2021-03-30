@@ -11,7 +11,7 @@ layout (std140, set = 1, binding = 0) uniform ShadowUniformData
 {
     layout (offset = 0) mat4 WORLD_TO_LIGHT_MATRICES[4];
     layout (offset = 256) uint SHADOW_MAP_RENDER_TARGET_INDICES[4];
-    layout (offset = 320) float SHADOW_MAP_CASCADE_DISTANCES_SQUARED[4];
+    layout (offset = 320) float SHADOW_MAP_CASCADE_DISTANCES[4];
 };
 
 //In parameters.
@@ -30,27 +30,24 @@ void CatalystShaderMain()
 
 	//Calculate the shadow map index.
 	uint shadow_map_index = 0;
-
-	{
-		float distance_squared = LengthSquared3(world_position - PERCEIVER_WORLD_POSITION);
-
-		for (uint i = 1; i < 4; ++i)
-		{
-			if (distance_squared > SHADOW_MAP_CASCADE_DISTANCES_SQUARED[i - 1])
-			{
-				shadow_map_index = i;
-			}
-		}
-	}
-
-	//Calculate the shadow map coordinate and depth.
 	vec2 shadow_map_coordinate;
 	float shadow_map_depth;
 
+	for (; shadow_map_index < 4; ++shadow_map_index)
 	{
 		vec4 light_space_position = WORLD_TO_LIGHT_MATRICES[shadow_map_index] * vec4(world_position, 1.0f);
 		shadow_map_coordinate = light_space_position.xy * 0.5f + 0.5f;
 		shadow_map_depth = light_space_position.z;
+
+		if (shadow_map_coordinate.x >= 0.0f
+            && shadow_map_coordinate.x <= 1.0f
+            && shadow_map_coordinate.y >= 0.0f
+            && shadow_map_coordinate.y <= 1.0f
+            && shadow_map_depth >= 0.0f
+            && shadow_map_depth <= 1.0f)
+		{
+			break;
+		}
 	}
 
 	vec2 shadow_map_offsets[SHADOW_MAP_SAMPLES];
@@ -91,7 +88,7 @@ void CatalystShaderMain()
 
 		float actual_shadow_map_depth = texture(sampler2D(GLOBAL_TEXTURES[SHADOW_MAP_RENDER_TARGET_INDICES[shadow_map_index]], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), offset_shadow_map_coordinate).x;
 
-		shadow_factor += ValidCoordinate(offset_shadow_map_coordinate) ? float(shadow_map_depth < actual_shadow_map_depth + SHADOW_MAP_BIASES[shadow_map_index]) : 1.0f;
+		shadow_factor += float(shadow_map_depth < actual_shadow_map_depth + SHADOW_MAP_BIASES[shadow_map_index]);
 	}
 
 	shadow_factor /= float(SHADOW_MAP_SAMPLES);

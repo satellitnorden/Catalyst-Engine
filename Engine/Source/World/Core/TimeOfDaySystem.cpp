@@ -205,6 +205,9 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 		}
 	}
 
+	//Set the sky intensity.
+	WorldSystem::Instance->GetSkySystem()->SetSkyIntensity(1.0'50f);
+
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{
@@ -251,8 +254,8 @@ void TimeOfDaySystem::PreUpdate() NOEXCEPT
 void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 NIGHT_SKY_INTENSITY{ 2.25f };
-	constexpr float32 DAY_SKY_INTENSITY{ 8.75f };
+	constexpr float32 NIGHT_SKY_INTENSITY{ 2.00f };
+	constexpr float32 DAY_SKY_INTENSITY{ 8.50f };
 
 	//Need that sky light.
 	if (!_SkyLight->_Initialized)

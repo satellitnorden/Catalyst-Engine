@@ -21,7 +21,7 @@ DEFINE_SINGLETON(ShadowsRenderPass);
 namespace ShadowRenderPassConstants
 {
 	constexpr float32 SHADOW_MAP_VIEW_DISTANCE_FACTOR{ 1.0f };
-	constexpr float32 SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 6.00f };
+	constexpr float32 SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 5.75f };
 	constexpr StaticArray<float32, 4> SHADOW_MAP_CASCADE_DISTANCE_FACTORS
 	{
 		1.0f * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR,
@@ -30,6 +30,7 @@ namespace ShadowRenderPassConstants
 		1.0f
 	};
 }
+
 /*
 *	Calculates a cascade matrix.
 */
@@ -83,7 +84,7 @@ FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_ind
 	const float32 view_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
 
 	//Calculate the projection matrix.
-	const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX, maxX, minY, maxY, -view_distance, view_distance) };
+	const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX, maxX, minY, maxY, minZ, maxZ) };
 
 	return projection_matrix * light_matrix;
 }
@@ -278,7 +279,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			current_shadow_uniform_data._ShadowMapCascadeDistancesSquared[i] = shadow_map_distances[i] * shadow_map_distances[i];
+			current_shadow_uniform_data._ShadowMapCascadeDistances[i] = shadow_map_distances[i];
 		}
 
 		//Upload the shadow uniform data.

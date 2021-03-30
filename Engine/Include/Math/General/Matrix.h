@@ -206,12 +206,12 @@ public:
 
 							0.0f,
 							0.0f,
-							1.0f / (near_plane - far_plane),
+							1.0f / (-far_plane - -near_plane),
 							0.0f,
 
 							-(-(right_plane + left_plane) / (right_plane - left_plane)),
 							-(bottom_plane + top_plane) / (bottom_plane - top_plane),
-							near_plane / (near_plane - far_plane),
+			-far_plane / (-far_plane - -near_plane),
 							1.0f);
 	}
 
