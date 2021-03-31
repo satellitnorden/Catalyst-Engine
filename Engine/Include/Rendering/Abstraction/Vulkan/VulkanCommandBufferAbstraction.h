@@ -114,6 +114,11 @@ public:
 	void CommandResetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT;
 
 	/*
+	*	Records a reset query pool command.
+	*/
+	void CommandResetQueryPool(const VkQueryPool query_pool) NOEXCEPT;
+
+	/*
 	*	Records a set event command.
 	*/
 	void CommandSetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT;
@@ -133,6 +138,11 @@ public:
 	*	Records a wait events command.
 	*/
 	void CommandWaitEvents(const uint32 eventCount, const VkEvent *const RESTRICT events, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask) NOEXCEPT;
+
+	/*
+	*	Records a write timestamp command.
+	*/
+	void CommandWriteTimestamp(const VkPipelineStageFlagBits pipeline_stage, const VkQueryPool query_pool, const uint32  query_index) NOEXCEPT;
 
 	/*
 	*	Ends this Vulkan command buffer.

@@ -1,5 +1,12 @@
 #pragma once
 
+//Constants.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	#define TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION (1)
+#else
+	#define TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION (0)
+#endif
+
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
@@ -128,6 +135,10 @@ private:
 
 	//The commandbuffer.
 	CommandBuffer *RESTRICT _CommandBuffer{ nullptr };
+
+#if TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION
+	QueryPoolHandle _QueryPool;
+#endif
 
 	//The terrain generation event.
 	EventHandle _TerrainGenerationEvent;

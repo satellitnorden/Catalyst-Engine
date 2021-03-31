@@ -1,3 +1,6 @@
+//Includes.
+#include "CatalystVegetationCore.glsl"
+
 //Layout specification.
 layout (points) in;
 layout (triangle_strip, max_vertices = 3) out;
@@ -14,9 +17,10 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in uint geometry_indices[];
 
 //Out parameters.
-layout (location = 0) out vec3 fragment_albedo;
-layout (location = 1) out vec3 fragment_normal;
-layout (location = 2) out vec4 fragment_material_properties;
+layout (location = 0) out vec3 fragment_world_position;
+layout (location = 1) out vec3 fragment_albedo;
+layout (location = 2) out vec3 fragment_normal;
+layout (location = 3) out vec4 fragment_material_properties;
 
 /*
 *	Returns the random world position offset.
@@ -82,7 +86,7 @@ void CatalystShaderMain()
 	{
 		//Retrieve the normal/depth at the screen coordinate.
 		vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), screen_coordinate);
-		vec3 normal = scene_features_2.xyz;
+		//vec3 normal = scene_features_2.xyz;
 		float depth = scene_features_2.w;
 
 		//Retrieve the material properties.
@@ -93,6 +97,7 @@ void CatalystShaderMain()
 
 		//Constrain the world position to the grid.
 		world_position.x = round(world_position.x / DISTANCE_BETWEEN_BLADES) * DISTANCE_BETWEEN_BLADES;
+		world_position.y = round(world_position.y / DISTANCE_BETWEEN_BLADES) * DISTANCE_BETWEEN_BLADES;
 		world_position.z = round(world_position.z / DISTANCE_BETWEEN_BLADES) * DISTANCE_BETWEEN_BLADES;
 
 		//Calculate the world position hash.
@@ -104,25 +109,31 @@ void CatalystShaderMain()
 		//Construct the right vector.
 		vec3 right_vector = GetRandomRightVector(world_position_hash);
 
+		//Calculate the normal.
+		vec3 normal = cross(right_vector, vec3(0.0f, 1.0f, 0.0f));
+
 		//Construct all the vertices.
+		fragment_world_position = world_position  + right_vector * -0.025f;
 		fragment_albedo = albedo;
 		fragment_normal = normal;
 		fragment_material_properties = material_properties;
-		gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position + right_vector * -0.025f, 1.0f);
+		gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position, 1.0f);
 
 		EmitVertex();
 
+		fragment_world_position = world_position + right_vector * 0.025f;
 		fragment_albedo = albedo;
 		fragment_normal = normal;
 		fragment_material_properties = material_properties;
-		gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position + right_vector * 0.025f, 1.0f);
+		gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position, 1.0f);
 
 		EmitVertex();
 
+		fragment_world_position = world_position + vec3(0.0f, 0.5f, 0.0f) + CalculateWindDisplacement(vec3(0.0f, 0.0f, 0.0f), world_position, normal, 0.25f, 0.25f, 0.25f);
 		fragment_albedo = albedo;
 		fragment_normal = normal;
 		fragment_material_properties = material_properties;
-		gl_Position = WORLD_TO_CLIP_MATRIX * vec4(world_position + vec3(0.0f, 0.5f, 0.0f), 1.0f);
+		gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position, 1.0f);
 
 		EmitVertex();
 

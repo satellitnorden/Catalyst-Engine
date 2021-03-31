@@ -44,6 +44,7 @@ using BufferHandle = void *RESTRICT;
 using CommandPoolHandle = void *RESTRICT;
 using DepthBufferHandle = void *RESTRICT;
 using EventHandle = void *RESTRICT;
+using QueryPoolHandle = void *RESTRICT;
 using RenderDataTableHandle = void *RESTRICT;
 using RenderDataTableLayoutHandle = void *RESTRICT;
 using RenderTargetHandle = void *RESTRICT;

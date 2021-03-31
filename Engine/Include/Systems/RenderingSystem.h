@@ -292,6 +292,17 @@ public:
 	void WaitForEvent(EventHandle handle) NOEXCEPT;
 
 	/*
+	*	Creates a query pool.
+	*/
+	void CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT;
+
+	/*
+	*	Returns the execution time, in nanoseconds, from the given query pool.
+	*	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
+	*/
+	NO_DISCARD uint32 GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT;
+
+	/*
 	*	Creates a Shader.
 	*/
 	void CreateShader(const ArrayProxy<byte> &data, const ShaderStage stage, ShaderHandle *const RESTRICT handle) const NOEXCEPT;

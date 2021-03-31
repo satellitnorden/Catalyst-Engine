@@ -144,8 +144,6 @@ public:
 			}
 		}
 
-		ASSERT(false, "Oh no!");
-
 		//Should never get here, but might due to floating point rounding error. If so, the last element is most likely the correct one.
 		return elements.Back();
 	}

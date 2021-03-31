@@ -265,6 +265,21 @@ void CommandBuffer::TraceRays(const Pipeline *const RESTRICT pipeline, const uin
 }
 
 /*
+*	Writes a timestamp.
+*/
+void CommandBuffer::WriteTimestamp(const Pipeline *const RESTRICT pipeline, const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT
+{
+	if (query_index == 0)
+	{
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandResetQueryPool(static_cast<const VulkanQueryPool *const RESTRICT>(query_pool)->Get());
+	}
+
+	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandWriteTimestamp(	VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+																										static_cast<const VulkanQueryPool *const RESTRICT>(query_pool)->Get(),
+																										query_index);
+}
+
+/*
 *	Ends the command buffer.
 */
 void CommandBuffer::End(const Pipeline *const RESTRICT pipeline) NOEXCEPT

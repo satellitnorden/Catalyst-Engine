@@ -120,6 +120,13 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 			break;
 		}
 
+		case VK_ERROR_VALIDATION_FAILED_EXT:
+		{
+			ASSERT(false, "Result was VK_ERROR_VALIDATION_FAILED_EXT.");
+
+			break;
+		}
+
 		case VK_SUCCESS:
 		{
 			ASSERT(false, "Result was VK_SUCCESS.");

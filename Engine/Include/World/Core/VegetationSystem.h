@@ -30,7 +30,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD const ProceduralGrassProperties &GetProceduralGrassProperties() const NOEXCEPT
 	{
-		return _ProceduralGrassProperties;
+		return _ProceduralGrassProperties.Get();
 	}
 
 private:

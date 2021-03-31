@@ -249,6 +249,11 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 			_QueueFamilyIndices[UNDERLYING(QueueType::PRESENT)] = queue_family_counter;
 			_QueueFamilyIndices[UNDERLYING(QueueType::TRANSFER)] = queue_family_counter;
 
+			_QueueFamilyProperties[UNDERLYING(QueueType::COMPUTE)] = queue_family_property;
+			_QueueFamilyProperties[UNDERLYING(QueueType::GRAPHICS)] = queue_family_property;
+			_QueueFamilyProperties[UNDERLYING(QueueType::PRESENT)] = queue_family_property;
+			_QueueFamilyProperties[UNDERLYING(QueueType::TRANSFER)] = queue_family_property;
+
 			break;
 		}
 

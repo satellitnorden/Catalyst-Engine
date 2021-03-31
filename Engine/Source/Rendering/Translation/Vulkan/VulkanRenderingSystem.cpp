@@ -1021,6 +1021,31 @@ void RenderingSystem::WaitForEvent(EventHandle handle) NOEXCEPT
 }
 
 /*
+*	Creates a query pool.
+*/
+void RenderingSystem::CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT
+{
+	*handle = static_cast<QueryPoolHandle>(VulkanInterface::Instance->CreateQueryPool(VkQueryType::VK_QUERY_TYPE_TIMESTAMP, 2));
+}
+
+/*
+*	Returns the execution time, in nanoseconds, from the given query pool.
+*	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
+*/
+NO_DISCARD uint32 RenderingSystem::GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT
+{
+	//Get the query results.
+	StaticArray<uint32, 2> query_pool_results;
+	VULKAN_ERROR_CHECK(vkGetQueryPoolResults(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<const VulkanQueryPool* const RESTRICT>(query_pool)->Get(), 0, 2, sizeof(uint32) * 2, query_pool_results.Data(), 0, VkQueryResultFlagBits::VK_QUERY_RESULT_WAIT_BIT));
+
+	//Cache the timestamp valids bits/timestamp period.
+	const uint32 timestamp_valid_bits{ VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyProperties(VulkanLogicalDevice::QueueType::COMPUTE).timestampValidBits };
+	const float32 timestamp_period{ VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceProperties().limits.timestampPeriod };
+
+	return CatalystBaseMath::Round<uint32>(static_cast<float32>((query_pool_results[1] & timestamp_valid_bits) - (query_pool_results[0] & timestamp_valid_bits)) * timestamp_period);
+}
+
+/*
 *	Creates a Shader.
 */
 void RenderingSystem::CreateShader(const ArrayProxy<byte> &data, const ShaderStage stage, ShaderHandle *const RESTRICT handle) const NOEXCEPT

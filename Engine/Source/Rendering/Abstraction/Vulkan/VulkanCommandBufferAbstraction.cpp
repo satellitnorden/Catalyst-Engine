@@ -226,6 +226,14 @@ void VulkanCommandBuffer::CommandResetEvent(const VkEvent event, const VkPipelin
 }
 
 /*
+*	Records a reset query pool command.
+*/
+void VulkanCommandBuffer::CommandResetQueryPool(const VkQueryPool query_pool) NOEXCEPT
+{
+	vkCmdResetQueryPool(_VulkanCommandBuffer, query_pool, 0, 2);
+}
+
+/*
 *	Records a set event command.
 */
 void VulkanCommandBuffer::CommandSetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT
@@ -267,6 +275,14 @@ void VulkanCommandBuffer::CommandTraceRays(	const VkBuffer shader_binding_table_
 void VulkanCommandBuffer::CommandWaitEvents(const uint32 eventCount, const VkEvent *const RESTRICT events, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask) NOEXCEPT
 {
 	vkCmdWaitEvents(_VulkanCommandBuffer, eventCount, events, sourceStageMask, destinationStageMask, 0, nullptr, 0, nullptr, 0, nullptr);
+}
+
+/*
+*	Records a write timestamp command.
+*/
+void VulkanCommandBuffer::CommandWriteTimestamp(const VkPipelineStageFlagBits pipeline_stage, const VkQueryPool query_pool, const uint32  query_index) NOEXCEPT
+{
+	vkCmdWriteTimestamp(_VulkanCommandBuffer, pipeline_stage, query_pool, query_index);
 }
 
 /*

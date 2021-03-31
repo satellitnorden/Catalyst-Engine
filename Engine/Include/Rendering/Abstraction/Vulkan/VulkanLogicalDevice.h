@@ -47,6 +47,11 @@ public:
 	uint32 GetQueueFamilyIndex(const QueueType queueType) const NOEXCEPT { return _QueueFamilyIndices[UNDERLYING(queueType)]; }
 
 	/*
+	*	Returns the queue family properties of a queue type.
+	*/
+	VkQueueFamilyProperties GetQueueFamilyProperties(const QueueType queueType) const NOEXCEPT { return _QueueFamilyProperties[UNDERLYING(queueType)]; }
+
+	/*
 	*	Returns the queue of a queue type.
 	*/
 	RESTRICTED VulkanQueue *const RESTRICT GetQueue(const QueueType queueType) NOEXCEPT { return _Queues[UNDERLYING(queueType)]; }
@@ -58,6 +63,9 @@ private:
 
 	//The queue family indices.
 	StaticArray<uint32, UNDERLYING(QueueType::NUMBER_OF_QUEUE_TYPES)> _QueueFamilyIndices;
+
+	//The queue family properties.
+	StaticArray<VkQueueFamilyProperties, UNDERLYING(QueueType::NUMBER_OF_QUEUE_TYPES)> _QueueFamilyProperties;
 
 	//The queues.
 	StaticArray<VulkanQueue *RESTRICT, UNDERLYING(QueueType::NUMBER_OF_QUEUE_TYPES)> _Queues;

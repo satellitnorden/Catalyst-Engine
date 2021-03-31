@@ -103,6 +103,11 @@ void TerrainSystem::PostInitialize(const CatalystProjectTerrainConfiguration &co
 
 		_CommandBuffer = RenderingSystem::Instance->AllocateCommandBuffer(command_pool, CommandBufferLevel::PRIMARY);
 
+#if TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION
+		//Create the query pool.
+		RenderingSystem::Instance->CreateQueryPool(&_QueryPool);
+#endif
+
 		//Create the event.
 		RenderingSystem::Instance->CreateEvent(&_TerrainGenerationEvent);
 	}
@@ -901,6 +906,11 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 		//Begin the command buffer.
 		_CommandBuffer->Begin(&_TerrainHeightGenerationComputePipeline);
 
+#if TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION
+		//Write the timestamp.
+		_CommandBuffer->WriteTimestamp(nullptr, _QueryPool, 0);
+#endif
+
 		_TerrainGenerationRunning = true;
 	}
 
@@ -1060,6 +1070,11 @@ void TerrainSystem::FinishTerrainGeneration() NOEXCEPT
 		//Set the event.
 		_CommandBuffer->SetEvent(nullptr, _TerrainGenerationEvent);
 
+#if TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION
+		//Write the timestamp.
+		_CommandBuffer->WriteTimestamp(nullptr, _QueryPool, 1);
+#endif
+
 		//End the command buffer.
 		_CommandBuffer->End(nullptr);
 
@@ -1068,6 +1083,21 @@ void TerrainSystem::FinishTerrainGeneration() NOEXCEPT
 
 		//Wait for the event.
 		RenderingSystem::Instance->WaitForEvent(_TerrainGenerationEvent);
+
+#if TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION
+		//Retrieve the execution time.
+		{
+			static uint64 total_execution_time{ 0 };
+			static uint64 total_executions{ 0 };
+
+			total_execution_time += static_cast<uint64>(RenderingSystem::Instance->GetExecutionTime(_QueryPool));
+			++total_executions;
+
+			const uint64 average_execution_time{ total_execution_time / total_executions };
+
+			PRINT_TO_OUTPUT("Average terrain GPU generation time: " << static_cast<float64>(average_execution_time) / 1'000'000.0 << " milliseconds.");
+		}
+#endif
 
 		//Reset the event.
 		RenderingSystem::Instance->ResetEvent(_TerrainGenerationEvent);
