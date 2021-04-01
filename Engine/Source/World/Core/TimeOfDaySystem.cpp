@@ -121,11 +121,11 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 	//Set up the lookups.
 	{
 		{
-			Color upper_sky_color{ 0, 0, 25 };
+			Color upper_sky_color{ 0, 0, 20 };
 			upper_sky_color.ApplyGammaCorrection();
 			const Vector4<float32> upper_sky_color_unpacked{ upper_sky_color.Get() };
 
-			Color lower_sky_color{ 0, 0, 0 };
+			Color lower_sky_color{ 0, 0, 5 };
 			lower_sky_color.ApplyGammaCorrection();
 			const Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
 
@@ -138,7 +138,7 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 			upper_sky_color.ApplyGammaCorrection();
 			const Vector4<float32> upper_sky_color_unpacked{ upper_sky_color.Get() };
 
-			Color lower_sky_color{ 225, 225, 0 };
+			Color lower_sky_color{ 230, 225, 0 };
 			lower_sky_color.ApplyGammaCorrection();
 			const Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
 
@@ -160,11 +160,11 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 		}
 
 		{
-			Color upper_sky_color{ 125, 150, 250 };
+			Color upper_sky_color{ 125, 155, 250 };
 			upper_sky_color.ApplyGammaCorrection();
 			const Vector4<float32> upper_sky_color_unpacked{ upper_sky_color.Get() };
 
-			Color lower_sky_color{ 250, 75, 25 };
+			Color lower_sky_color{ 250, 70, 25 };
 			lower_sky_color.ApplyGammaCorrection();
 			const Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
 
@@ -206,7 +206,7 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 	}
 
 	//Set the sky intensity.
-	WorldSystem::Instance->GetSkySystem()->SetSkyIntensity(1.0'50f);
+	WorldSystem::Instance->GetSkySystem()->SetSkyIntensity(1.0'75f);
 
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
@@ -255,7 +255,7 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 {
 	//Define constants.
 	constexpr float32 NIGHT_SKY_INTENSITY{ 2.00f };
-	constexpr float32 DAY_SKY_INTENSITY{ 8.50f };
+	constexpr float32 DAY_SKY_INTENSITY{ 8.25f };
 
 	//Need that sky light.
 	if (!_SkyLight->_Initialized)
