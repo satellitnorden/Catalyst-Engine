@@ -57,8 +57,9 @@ void SkyGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCE
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+	SetNumberOfRenderDataTableLayouts(2);
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::CLOUDS));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -106,6 +107,7 @@ void SkyGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetCommonRenderDataTable(CommonRenderDataTable::CLOUDS));
 
 	//Push constants.
 	SkyPushConstantData data;
@@ -122,7 +124,7 @@ void SkyGraphicsPipeline::Execute() NOEXCEPT
 			if (component->_LightType == LightType::DIRECTIONAL)
 			{
 				data._SkyLightDirection = -component->_Direction;
-				data._SkyLightRadiance = component->_Color * component->_Intensity * 4.0f;
+				data._SkyLightRadiance = component->_Color * component->_Intensity;
 
 				break;
 			}

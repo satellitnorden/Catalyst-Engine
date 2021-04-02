@@ -33,7 +33,7 @@ void ClearGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOE
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));

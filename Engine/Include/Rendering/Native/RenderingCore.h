@@ -149,11 +149,20 @@ enum class CommandBufferLevel : uint8
 //Enumeration covering all common render data table layouts.
 enum class CommonRenderDataTableLayout : uint8
 {
-	Global,
-	ParticleSystem,
+	CLOUDS,
+	GLOBAL,
+	PARTICLE_SYSTEM,
 	SHADOW,
 
-	NumberOfCommonRenderDataTableLayouts
+	NUMBER_OF_COMMON_RENDER_DATA_TABLE_LAYOUTS
+};
+
+//Enumeration covering all common render data tables.
+enum class CommonRenderDataTable : uint8
+{
+	CLOUDS,
+
+	NUMBER_OF_COMMON_RENDER_DATA_TABLES
 };
 
 //Enumeration covering all compare operators.

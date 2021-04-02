@@ -133,14 +133,11 @@ layout (std140, set = 0, binding = 4) uniform GlobalMaterials
 //The blue noise textures.
 layout (set = 0, binding = 5) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
 
-//The cloud texture.
-layout (set = 0, binding = 6) uniform sampler3D CLOUD_TEXTURE;
-
 //The sky texture.
-layout (set = 0, binding = 7) uniform samplerCube SKY_TEXTURE;
+layout (set = 0, binding = 6) uniform samplerCube SKY_TEXTURE;
 
 //Hammersley hemisphere uniform buffer
-layout (std140, set = 0, binding = 8) uniform HammersleyHemisphereSamples
+layout (std140, set = 0, binding = 7) uniform HammersleyHemisphereSamples
 {
     layout (offset = 0) vec4 HAMMERSLEY_HEMISPHERE_SAMPLES[64];
 };

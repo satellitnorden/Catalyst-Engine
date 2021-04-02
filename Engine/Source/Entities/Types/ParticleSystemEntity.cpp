@@ -82,7 +82,7 @@ void ParticleSystemEntity::Initialize(EntityInitializationData *const RESTRICT d
 
 	render_component._NumberOfInstances = component._NumberOfInstances;
 
-	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem), &component._RenderDataTable);
+	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::PARTICLE_SYSTEM), &component._RenderDataTable);
 	RenderingSystem::Instance->BindStorageBufferToRenderDataTable(0, 0, &component._RenderDataTable, render_component._TransformationsBuffer);
 
 	//Destroy the initialization data.

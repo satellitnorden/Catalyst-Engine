@@ -68,7 +68,7 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 	AddRenderDataTableLayout(AnimationSystem::Instance->GetAnimationDataRenderDataTableLayout());
 
 	//Add the push constant ranges.

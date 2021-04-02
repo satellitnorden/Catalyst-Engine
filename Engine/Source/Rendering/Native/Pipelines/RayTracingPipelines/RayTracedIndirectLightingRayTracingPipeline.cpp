@@ -43,7 +43,7 @@ void RayTracedIndirectLightingRayTracingPipeline::Initialize(const RenderingConf
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(4);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTableLayout());
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataRenderDataTableLayout());
 	AddRenderDataTableLayout(_RenderDataTableLayout);

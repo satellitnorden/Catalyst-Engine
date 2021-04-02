@@ -53,7 +53,7 @@ void TemporalAntiAliasingGraphicsPipeline::Initialize(	const RenderTargetHandle 
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Add the push constant ranges.

@@ -412,7 +412,12 @@ public:
 	/*
 	*	Returns the given common render data table layout.
 	*/
-	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
+	RenderDataTableLayoutHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
+
+	/*
+	*	Returns the given common render data table.
+	*/
+	RenderDataTableHandle GetCommonRenderDataTable(const CommonRenderDataTable common_render_data_table) const NOEXCEPT;
 
 	/*
 	*	Takes an immedate screenshot and writes it to the given file path.
@@ -464,7 +469,10 @@ private:
 	StaticArray<SamplerHandle, UNDERLYING(Sampler::NumberOfSamplers)> _Samplers;
 
 	//Container for all common render data table layouts.
-	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
+	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NUMBER_OF_COMMON_RENDER_DATA_TABLE_LAYOUTS)> _CommonRenderDataTableLayouts;
+
+	//Container for all common render data tables.
+	StaticArray<RenderDataTableHandle, UNDERLYING(CommonRenderDataTable::NUMBER_OF_COMMON_RENDER_DATA_TABLES)> _CommonRenderDataTables;
 
 	//The default texture 2D.
 	Texture2DHandle _DefaultTexture2D;
@@ -554,6 +562,11 @@ private:
 	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;
 
 	/*
+	*	Initializes all common render data tables.
+	*/
+	void InitializeCommonRenderDataTables() NOEXCEPT;
+
+	/*
 	*	Initializes the default texture.
 	*/
 	void InitializeDefaultTexture() NOEXCEPT;
@@ -567,6 +580,11 @@ private:
 	*	Post-initializes the global render data.
 	*/
 	void PostInitializeGlobalRenderData() NOEXCEPT;
+
+	/*
+	*	Post-initializes the common render data tables.
+	*/
+	void PostInitializeCommonRenderDataTables() NOEXCEPT;
 
 	/*
 	*	Updates the global render data.

@@ -123,6 +123,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	//Initialize all common render data table layouts.
 	InitializeCommonRenderDataTableLayouts();
 
+	//Initialize all common render data tables.
+	InitializeCommonRenderDataTables();
+
 	//Initialize the default texture.
 	InitializeDefaultTexture();
 
@@ -140,6 +143,9 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 {
 	//Post-initialize the global render data.
 	PostInitializeGlobalRenderData();
+
+	//Post-initialize the common render data tables.
+	PostInitializeCommonRenderDataTables();
 
 	//Post-initialize the lighting system.
 	_LightingSystem.PostInitialize();
@@ -416,10 +422,19 @@ void RenderingSystem::ReturnTextureToGlobalRenderData(const uint32 index) NOEXCE
 /*
 *	Returns the given common render data table layout.
 */
-RenderDataTableHandle RenderingSystem::GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT
+RenderDataTableLayoutHandle RenderingSystem::GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT
 {
 	//Return the given common render data table layout.
 	return _CommonRenderDataTableLayouts[UNDERLYING(commonRenderDataTableLayout)];
+}
+
+/*
+*	Returns the given common render data table.
+*/
+RenderDataTableHandle RenderingSystem::GetCommonRenderDataTable(const CommonRenderDataTable common_render_data_table) const NOEXCEPT
+{
+	//Return the given common render data table layout.
+	return _CommonRenderDataTables[UNDERLYING(common_render_data_table)];
 }
 
 /*
@@ -477,7 +492,7 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 	for (uint8 i{ 0 }; i < number_of_framebuffers; ++i)
 	{
 		//Create the render data table.
-		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global), &_GlobalRenderData._RenderDataTables[i]);
+		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL), &_GlobalRenderData._RenderDataTables[i]);
 
 		//Create the dynamic uniform data buffer.
 		CreateBuffer(sizeof(DynamicUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &_GlobalRenderData._DynamicUniformDataBuffers[i]);
@@ -552,9 +567,19 @@ void RenderingSystem::InitializeSamplers() NOEXCEPT
 */
 void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
+	//Initialize the CLOUDS render data table layout.
+	{
+		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::CLOUDS)]);
+	}
+
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 9> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 8> bindings
 		{
 			//Global uniform data.
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::GEOMETRY | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS | ShaderStage::VERTEX),
@@ -574,17 +599,14 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			//Blue noise textures.
 			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_BLUE_NOISE_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_MISS | ShaderStage::RAY_GENERATION),
 
-			//Cloud texture.
-			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
-			
 			//Sky texture.
-			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS),
+			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS),
 
 			//Hammersley hemisphere samples uniform buffer.
-			RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
+			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
 		};
 
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GLOBAL)]);
 	}
 
 	{
@@ -594,7 +616,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::COMPUTE)
 		};
 
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::ParticleSystem)]);
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::PARTICLE_SYSTEM)]);
 	}
 
 	{
@@ -605,6 +627,17 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::SHADOW)]);
+	}
+}
+
+/*
+*	Initializes all common render data tables.
+*/
+void RenderingSystem::InitializeCommonRenderDataTables() NOEXCEPT
+{
+	//Initialize the CLOUDS common render data table.
+	{
+		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::CLOUDS), &_CommonRenderDataTables[UNDERLYING(CommonRenderDataTable::CLOUDS)]);
 	}
 }
 
@@ -670,11 +703,8 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 			BindSamplerToRenderDataTable(3, j, &_GlobalRenderData._RenderDataTables[i], _Samplers[j]);
 		}
 
-		//Bind the cloud texture.
-		BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[i], ResourceSystem::Instance->GetTexture3DResource(HashString("Cloud_Texture3D"))->_Texture3DHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
-
 		//Bind the Hammersley hemisphere samples uniform buffer.
-		BindUniformBufferToRenderDataTable(8, 0, &_GlobalRenderData._RenderDataTables[i], _HammersleyHemisphereSamplesUniformBuffer);
+		BindUniformBufferToRenderDataTable(7, 0, &_GlobalRenderData._RenderDataTables[i], _HammersleyHemisphereSamplesUniformBuffer);
 	}
 
 	//Bind all the blue noise textures to the global render data tables.
@@ -711,6 +741,15 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 }
 
 /*
+*	Post-initializes the common render data tables.
+*/
+void RenderingSystem::PostInitializeCommonRenderDataTables() NOEXCEPT
+{
+	//Bind the clouds texture to the CLOUDS common render data table.
+	BindCombinedImageSamplerToRenderDataTable(0, 0, &_CommonRenderDataTables[UNDERLYING(CommonRenderDataTable::CLOUDS)], ResourceSystem::Instance->GetTexture3DResource(HashString("Cloud_Texture3D"))->_Texture3DHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+}
+
+/*
 *	Updates the global render data.
 */
 void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
@@ -731,7 +770,7 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 	UpdateGlobalCommandPoolData(current_framebuffer_index);
 
 	//Bind the sky texture.
-	BindCombinedImageSamplerToRenderDataTable(7, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+	BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 }
 
 /*
