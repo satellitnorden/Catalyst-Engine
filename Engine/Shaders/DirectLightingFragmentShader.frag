@@ -1,5 +1,7 @@
 //Includes.
 #include "CatalystLightingData.glsl"
+#define CLOUD_TEXTURE_SET_INDEX (3)
+#include "CatalystCloudsCore.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
 //Constants.
@@ -75,6 +77,9 @@ void CatalystShaderMain()
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
+				//Calculate the cloud density.
+				float cloud_density = GetCloudDensityInDirection(world_position, -light.position_or_direction, uvec2(gl_FragCoord.z));
+
 				direct_lighting += CalculateLighting(-view_direction,
 													albedo,
 													shading_normal,
@@ -83,7 +88,7 @@ void CatalystShaderMain()
 													1.0f,
 													thickness,
 													light.position_or_direction,
-													light.color * light.intensity) * shadow_factor;
+													light.color * light.intensity) * shadow_factor * (1.0f - cloud_density);
 
 				break;
 			}

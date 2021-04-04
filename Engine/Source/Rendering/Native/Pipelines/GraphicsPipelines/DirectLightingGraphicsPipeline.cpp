@@ -38,10 +38,11 @@ void DirectLightingGraphicsPipeline::Initialize() NOEXCEPT
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(3);
+	SetNumberOfRenderDataTableLayouts(4);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetModelSystem()->GetModelDataRenderDataTableLayout());
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataRenderDataTableLayout());
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::CLOUDS));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -91,6 +92,7 @@ void DirectLightingGraphicsPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetModelSystem()->GetCurrentModelDataRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 3, RenderingSystem::Instance->GetCommonRenderDataTable(CommonRenderDataTable::CLOUDS));
 
 	//Push constants.
 	DirectLightingFragmentPushConstantData data;

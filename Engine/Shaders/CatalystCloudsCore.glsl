@@ -10,9 +10,10 @@
 #define CATALYST_CLOUDS_CLOUD_MAXIMUM_HEIGHT (8192.0f)
 #define CATALYST_CLOUDS_MAXIMUM_RAY_DISTANCE (4096.0f)
 #define CATALYST_CLOUDS_BASE_COLOR (vec3(0.8f, 0.9f, 1.0f))
-#define CLOUD_DENSITY (0.250f) //0.025f step.
-#define CATALYST_CLOUDS_LACUNARITY (5.25f) //0.25f step.
-#define CATALYST_CLOUDS_GAIN (0.375f) //0.0025f step.
+#define CATALYST_CLOUDS_AMBIENT_LIGHTING_FACTOR (0.0625f)
+#define CATALYST_CLOUDS_LACUNARITY (7.50f) //0.25f step.
+#define CATALYST_CLOUDS_GAIN (0.200f) //0.0025f step.
+#define CLOUD_DENSITY (0.1850f) //0.0025f step.
 
 //The cloud texture.
 layout (set = CLOUD_TEXTURE_SET_INDEX, binding = 0) uniform sampler3D CLOUD_TEXTURE;
@@ -22,6 +23,9 @@ layout (set = CLOUD_TEXTURE_SET_INDEX, binding = 0) uniform sampler3D CLOUD_TEXT
 */
 float GetCloudDensityAtWorldPosition(vec3 world_position)
 {
+	//Calculate the time offset.
+	vec3 time_offset = vec3(totalTime, totalTime * 0.125f, totalTime) * 0.000030517578125f;
+
 	//Calculate the total density.
 	float total_density = 0.0f;
 
@@ -34,28 +38,28 @@ float GetCloudDensityAtWorldPosition(vec3 world_position)
 	float current_frequency = 1.0f;
 	float current_amplitude = 1.0f;
 
-	total_density += texture(CLOUD_TEXTURE, coordinate * SQUARE_ROOT_OF_TWO)[0];
+	total_density += texture(CLOUD_TEXTURE, (coordinate + time_offset * SQUARE_ROOT_OF_TWO) * SQUARE_ROOT_OF_TWO)[0];
 
 	total_amplitude += current_amplitude;
 
 	current_frequency *= CATALYST_CLOUDS_LACUNARITY;
 	current_amplitude *= CATALYST_CLOUDS_GAIN;
 
-	total_density += texture(CLOUD_TEXTURE, coordinate * current_frequency * HALF_PI)[1] * current_amplitude;
+	total_density += texture(CLOUD_TEXTURE, (coordinate + time_offset * HALF_PI) * current_frequency * HALF_PI)[1] * current_amplitude;
 
 	total_amplitude += current_amplitude;
 
 	current_frequency *= CATALYST_CLOUDS_LACUNARITY;
 	current_amplitude *= CATALYST_CLOUDS_GAIN;
 
-	total_density += texture(CLOUD_TEXTURE, coordinate * current_frequency * PHI)[2] * current_amplitude;
+	total_density += texture(CLOUD_TEXTURE, (coordinate + time_offset * PHI) * current_frequency * PHI)[2] * current_amplitude;
 
 	total_amplitude += current_amplitude;
 
 	current_frequency *= CATALYST_CLOUDS_LACUNARITY;
 	current_amplitude *= CATALYST_CLOUDS_GAIN;
 	
-	total_density += texture(CLOUD_TEXTURE, coordinate * current_frequency * EULERS_NUMBER)[3] * current_amplitude;
+	total_density += texture(CLOUD_TEXTURE, (coordinate + time_offset * EULERS_NUMBER) * current_frequency * EULERS_NUMBER)[3] * current_amplitude;
 
 	total_amplitude += current_amplitude;
 
@@ -64,10 +68,10 @@ float GetCloudDensityAtWorldPosition(vec3 world_position)
 	
 
 	//Normalize.
-	total_density /= total_amplitude; //Equal to (1.0f / 1.875f)
+	total_density /= total_amplitude;
 
 	//Apply the cloud density.
-	total_density = max((total_density - (1.0f - CLOUD_DENSITY)) * 4.75f, 0.0f);
+	total_density = max((total_density - (1.0f - CLOUD_DENSITY)) * 10.25f, 0.0f);
 
 	//Return the total density.
 	return total_density;
@@ -288,7 +292,7 @@ float GetCloudDensityInDirection(vec3 world_position, vec3 direction, uvec2 blue
 		}
 
 		//Return the total density.
-		return min(total_density, 1.0f);
+		return SmoothStep(min(total_density, 1.0f));
 	}
 }
 
@@ -341,7 +345,7 @@ vec4 GetCloudColorInDirection(vec3 world_position, vec3 direction, uvec2 blue_no
 			float ambient_factor = clamp(position.y - CATALYST_CLOUDS_CLOUD_MINIMUM_HEIGHT, 0.0f, CATALYST_CLOUDS_CLOUD_MAXIMUM_HEIGHT - CATALYST_CLOUDS_CLOUD_MINIMUM_HEIGHT) / (CATALYST_CLOUDS_CLOUD_MAXIMUM_HEIGHT - CATALYST_CLOUDS_CLOUD_MINIMUM_HEIGHT);
 
 			//Add the ambient lighting to the final color.
-			//final_color += CATALYST_CLOUDS_BASE_COLOR * mix(lower_sky_color, upper_sky_color, ambient_factor) * new_density;
+			final_color += CATALYST_CLOUDS_BASE_COLOR * mix(lower_sky_color, upper_sky_color, ambient_factor) * CATALYST_CLOUDS_AMBIENT_LIGHTING_FACTOR * new_density;
 
 			//Add the sun lighting.
 			float density_in_sun_direction = GetCloudDensityInDirection(position, sun_direction, blue_noise_coordinate);
@@ -350,7 +354,7 @@ vec4 GetCloudColorInDirection(vec3 world_position, vec3 direction, uvec2 blue_no
 		}
 
 		//Return the total density.
-		return vec4(final_color, total_density);
+		return vec4(final_color, SmoothStep(total_density));
 	}
 }
 

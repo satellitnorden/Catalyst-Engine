@@ -2,7 +2,7 @@
 #include "CatalystLightingData.glsl"
 
 //Constants.
-#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
+#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.1225f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
