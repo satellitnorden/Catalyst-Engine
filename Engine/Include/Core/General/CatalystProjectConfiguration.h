@@ -31,6 +31,18 @@ public:
 	void(*_InitializationFunction)();
 
 	/*
+	*	The start game function.
+	*	Recommended: A non-nullptr function pointer to a game system function.
+	*/
+	void(*_StartGameFunction)();
+
+	/*
+	*	The end game function.
+	*	Recommended: A non-nullptr function pointer to a game system function.
+	*/
+	void(*_EndGameFunction)();
+
+	/*
 	*	The post update function.
 	*	Recommended: A non-nullptr function pointer to a game system function.
 	*/

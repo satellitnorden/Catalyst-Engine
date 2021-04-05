@@ -101,6 +101,27 @@ void CatalystEditorSystem::UserInterfaceUpdate() NOEXCEPT
 }
 
 /*
+*	Sets whether or not the engine is in game right now.
+*/
+void CatalystEditorSystem::SetIsInGame(const bool value) NOEXCEPT
+{
+	if (_IsInGame != value)
+	{
+		if (_IsInGame)
+		{
+			CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._EndGameFunction();
+		}
+
+		else
+		{
+			CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._StartGameFunction();
+		}
+
+		_IsInGame = value;
+	}
+}
+
+/*
 *	Updates IO.
 */
 void CatalystEditorSystem::UpdateIO() NOEXCEPT
@@ -275,11 +296,11 @@ void CatalystEditorSystem::UpdateInGame() NOEXCEPT
 	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
 	ImGui::SetWindowSize(ImVec2(256.0f, 64.0f));
 
-	ImGui::Text("Press ESCAPE to exit game");
+	ImGui::Text("Press F11 to exit game");
 
-	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::Escape) == ButtonState::PRESSED)
+	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F11) == ButtonState::PRESSED)
 	{
-		_IsInGame = false;
+		SetIsInGame(false);
 	}
 
 	ImGui::End();
@@ -328,7 +349,7 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 	//Add the enter game button.
 	if (ImGui::Button("Enter Game"))
 	{
-		_IsInGame = true;
+		SetIsInGame(true);
 	}
 
 	//Opens the entities window.
@@ -431,6 +452,12 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 		{
 			_CurrentContextualWindow = ContextualWindow::RESOURCES;
 		}
+	}
+
+	//Add the "Exit" button.
+	if (ImGui::Button("Exit"))
+	{
+		CatalystEngineSystem::Instance->SetShouldTerminate();
 	}
 
 	ImGui::End();

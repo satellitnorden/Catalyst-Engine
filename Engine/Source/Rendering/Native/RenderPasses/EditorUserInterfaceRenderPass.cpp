@@ -14,7 +14,7 @@ DEFINE_SINGLETON(EditorUserInterfaceRenderPass);
 EditorUserInterfaceRenderPass::EditorUserInterfaceRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::EDITOR_USER_INTERFACE);
+	SetStage(NativeRenderPassStage::EDITOR_USER_INTERFACE);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

@@ -134,6 +134,11 @@ private:
 	void UserInterfaceUpdate() NOEXCEPT;
 
 	/*
+	*	Sets whether or not the engine is in game right now.
+	*/
+	void SetIsInGame(const bool value) NOEXCEPT;
+
+	/*
 	*	Updates IO.
 	*/
 	void UpdateIO() NOEXCEPT;

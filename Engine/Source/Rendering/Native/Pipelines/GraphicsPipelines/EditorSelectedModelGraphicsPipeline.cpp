@@ -4,6 +4,7 @@
 
 //Entities.
 #include <Entities/Types/DynamicModelEntity.h>
+#include <Entities/Types/StaticModelEntity.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -13,6 +14,7 @@
 #include <Systems/CatalystEditorSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/WorldSystem.h>
 
 /*
 *	Editor selected model vertex push constant data definition.
@@ -48,7 +50,7 @@ void EditorSelectedModelGraphicsPipeline::Initialize(const DepthBufferHandle dep
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -154,6 +156,35 @@ void EditorSelectedModelGraphicsPipeline::Execute() NOEXCEPT
 
 					//Draw!
 					command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[dynamic_model_entity->GetLevelOfDetailindex(i)]._IndexCount, 1);
+				}
+
+				break;
+			}
+
+			case EntityType::StaticModel:
+			{
+				//Cache the dynamic model entity.
+				const StaticModelEntity *const RESTRICT static_model_entity{ static_cast<const StaticModelEntity *const RESTRICT>(currently_selected_entity) };
+
+				//Draw all meshes.
+				for (uint64 i{ 0 }, size{ static_model_entity->GetModelResource()->_Meshes.Size() }; i < size; ++i)
+				{
+					//Cache the mesh.
+					const Mesh& mesh{ static_model_entity->GetModelResource()->_Meshes[i] };
+
+					//Push constants.
+					EditorSelectedModelVertexPushConstantData data;
+
+					data._CurrentWorldTransform = static_model_entity->GetWorldTransform()->ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+
+					command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(EditorSelectedModelVertexPushConstantData), &data);
+
+					//Bind the vertex/inder buffer.
+					command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[static_model_entity->GetLevelOfDetailindex(i)]._VertexBuffer, &OFFSET);
+					command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[static_model_entity->GetLevelOfDetailindex(i)]._IndexBuffer, OFFSET);
+
+					//Draw!
+					command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[static_model_entity->GetLevelOfDetailindex(i)]._IndexCount, 1);
 				}
 
 				break;

@@ -579,7 +579,7 @@ void EditorResourcesSystem::AddCreateModelResourceWindow() NOEXCEPT
 			ModelBuildParameters parameters;
 
 			parameters._Output = _CreateModelResourceData._OutputFilePath.Data();
-			parameters._ID = identifier.Data();
+			parameters._ResourceIdentifier = identifier.Data();
 
 			for (const DynamicString &level_of_detail_file_path : _CreateModelResourceData._LevelOfDetailFilepaths)
 			{
@@ -1211,7 +1211,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			char identifier_buffer[128];
 			sprintf_s(identifier_buffer, "%s_Model", temporary_data._Identifier.Data());
 
-			parameters._ID = identifier_buffer;
+			parameters._ResourceIdentifier = identifier_buffer;
 
 			for (const DynamicString &level_of_detail_file_path : temporary_data._LevelOfDetailFilePaths)
 			{

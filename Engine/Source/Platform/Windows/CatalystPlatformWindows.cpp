@@ -170,6 +170,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	RegisterClassEx(&windowInfo);
 #endif
 
+#if !defined(CATALYST_EDITOR)
 	if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._InitialFullScreen)
 	{
 		_Window = CreateWindow(	windowInfo.lpszClassName,
@@ -186,6 +187,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	}
 
 	else
+#endif
 	{
 		_Window = CreateWindow(	windowInfo.lpszClassName,
 								_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),

@@ -61,9 +61,19 @@ public:
 	NO_DISCARD ResourcePointer<ModelResource> GetModelResource() const NOEXCEPT;
 
 	/*
+	*	Sets the model resource.
+	*/
+	void SetModelResource(const ResourcePointer<ModelResource> resource) NOEXCEPT;
+
+	/*
 	*	Returns the material resources.
 	*/
 	NO_DISCARD const StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> &GetMaterialResources() const NOEXCEPT;
+
+	/*
+	*	Sets the material resource at the given index.
+	*/
+	void SetMaterialResource(const uint8 index, const ResourcePointer<MaterialResource> resource) NOEXCEPT;
 
 	/*
 	*	Shows the mesh(es) with the specified mask.
@@ -99,5 +109,10 @@ public:
 	*	Returns the world space axis aligned bounding box.
 	*/
 	RESTRICTED NO_DISCARD const WorldSpaceAxisAlignedBoundingBox3D *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT;
+
+	/*
+	*	Returns the level of detail index at the given mesh index.
+	*/
+	NO_DISCARD uint64 GetLevelOfDetailindex(const uint64 mesh_index) const NOEXCEPT;
 
 };

@@ -350,6 +350,89 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 				break;
 			}
+
+			case EntityType::StaticModel:
+			{
+				//Cache the static model entity.
+				StaticModelEntity *const RESTRICT static_model_entity{ static_cast<StaticModelEntity *const RESTRICT>(_CurrentlySelectedEntity) };
+
+				char buffer[128];
+
+				sprintf_s(buffer, "Model Resource: %s", static_model_entity->GetModelResource()->_Header._ResourceName.Data());
+
+				if (ImGui::Button(buffer))
+				{
+					_StaticModelSelectionData._IsSelectingModelResource = true;
+					_StaticModelSelectionData._IsSelectingMaterialResource = false;
+				}
+
+				for (uint8 i{ 0 }, size{ static_cast<uint8>(static_model_entity->GetModelResource()->_Meshes.Size()) }; i < size; ++i)
+				{
+					if (static_model_entity->GetMaterialResources()[i])
+					{
+						char buffer[128];
+
+						sprintf_s(buffer, "Material Resource #%u: %s", i, static_model_entity->GetMaterialResources()[i]->_Header._ResourceName.Data());
+
+						if (ImGui::Button(buffer))
+						{
+							_StaticModelSelectionData._IsSelectingModelResource = false;
+							_StaticModelSelectionData._IsSelectingMaterialResource = true;
+							_StaticModelSelectionData._SelectedMaterialIndex = i;
+
+							break;
+						}
+					}
+				}
+
+				if (_StaticModelSelectionData._IsSelectingModelResource)
+				{
+					ImGui::Begin("Choose New Model Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+					ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f - 256.0f, 512.0f));
+					ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
+
+					const HashTable<HashString, ModelResource* RESTRICT> &all_model_resources{ ResourceSystem::Instance->GetAllModelResources() };
+
+					for (const ModelResource *const RESTRICT model_resource : all_model_resources.ValueIterator())
+					{
+						if (ImGui::Button(model_resource->_Header._ResourceName.Data()))
+						{
+							static_model_entity->SetModelResource(ResourceSystem::Instance->GetModelResource(model_resource->_Header._ResourceIdentifier));
+
+							_StaticModelSelectionData._IsSelectingModelResource = false;
+
+							break;
+						}
+					}
+
+					ImGui::End();
+				}
+
+				if (_StaticModelSelectionData._IsSelectingMaterialResource)
+				{
+					ImGui::Begin("Choose New Material Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+					ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f - 256.0f, 512.0f));
+					ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
+
+					const HashTable<HashString, MaterialResource* RESTRICT> &all_material_resources{ ResourceSystem::Instance->GetAllMaterialResources() };
+
+					for (const MaterialResource *const RESTRICT material_resource : all_material_resources.ValueIterator())
+					{
+						if (ImGui::Button(material_resource->_Header._ResourceName.Data()))
+						{
+							static_model_entity->SetMaterialResource(_StaticModelSelectionData._SelectedMaterialIndex, ResourceSystem::Instance->GetMaterialResource(material_resource->_Header._ResourceIdentifier));
+
+							_StaticModelSelectionData._IsSelectingMaterialResource = false;
+
+							break;
+						}
+					}
+
+					ImGui::End();
+				}
+
+				break;
+			}
 		}
 
 		ImGui::End();
@@ -409,6 +492,23 @@ void EditorSelectionSystem::AddSceneWindow() NOEXCEPT
 		}
 	}
 
+	//List all static model entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i)
+		{
+			char buffer[64];
+
+			sprintf_s(buffer, "Static Model Entity #%llu", i + 1);
+
+			if (ImGui::Button(buffer))
+			{
+				SetCurrentlySelectedEntity(ComponentManager::GetStaticModelEntities()->At(i));
+			}
+		}
+	}
+
 	ImGui::End();
 }
 
@@ -432,6 +532,16 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 	if (!_CurrentlySelectedEntity || !_CurrentlySelectedEntity->_Initialized)
 	{
 		return;
+	}
+
+	//Can this entity be transformed?
+	switch (_CurrentlySelectedEntity->_Type)
+	{
+		//These entities can't be transformed.
+		case EntityType::StaticModel:
+		{
+			return;
+		}
 	}
 
 	//Cache the world transform of the selected entity.
@@ -461,7 +571,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 
 				case LightType::POINT:
 				{
-					world_transform = WorldTransform(light_entity->GetPosition(), VectorConstants::ZERO, 1.0f);
+					world_transform = WorldTransform(light_entity->GetWorldPosition().GetCell(), light_entity->GetWorldPosition().GetLocalPosition(), VectorConstants::ZERO, 1.0f);
 
 					break;
 				}
@@ -473,6 +583,13 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 					break;
 				}
 			}
+
+			break;
+		}
+
+		case EntityType::StaticModel:
+		{
+			world_transform = *static_cast<StaticModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->GetWorldTransform();
 
 			break;
 		}
@@ -564,7 +681,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 
 				case LightType::POINT:
 				{
-					light_entity->SetPosition(world_transform.GetAbsolutePosition());
+					light_entity->SetWorldPosition(world_transform.GetWorldPosition());
 
 					break;
 				}

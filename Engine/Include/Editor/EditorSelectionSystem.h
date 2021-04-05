@@ -70,6 +70,25 @@ private:
 
 	};
 
+	/*
+	*	Static model selection data class definition.
+	*/
+	class StaticModelSelectionData final
+	{
+
+	public:
+
+		//Denotes if the user is currently selecting a model resource.
+		bool _IsSelectingModelResource{ false };
+
+		//Denotes if the user is currently selecting a material resource.
+		bool _IsSelectingMaterialResource{ false };
+
+		//The material index currently being selected.
+		uint8 _SelectedMaterialIndex{ 0 };
+
+	};
+
 	//The currently selected entity.
 	Entity *RESTRICT _CurrentlySelectedEntity{ nullptr };
 
@@ -83,6 +102,9 @@ private:
 	{
 		//The dynamic model selection data.
 		DynamicModelSelectionData _DynamicModelSelectionData;
+
+		//The static model selection data.
+		StaticModelSelectionData _StaticModelSelectionData;
 	};
 
 	/*
