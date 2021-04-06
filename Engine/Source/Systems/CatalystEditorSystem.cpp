@@ -23,11 +23,11 @@ DEFINE_SINGLETON(CatalystEditorSystem);
 void CatalystEditorSystem::Initialize() NOEXCEPT
 {
 	//Define constants.
-	const ImVec4 PALETTE_MAIN_COLOR_HIGH{ 1.0f, 0.25f, 0.0f, 1.0f };
-	const ImVec4 PALETTE_MAIN_COLOR_MEDIUM{ 0.5f, 0.125f, 0.0f, 1.0f };
-	const ImVec4 PALETTE_MAIN_COLOR_LOW{ 0.25f, 0.125f * 0.5f, 0.0f, 1.0f };
-	const ImVec4 PALETTE_BACKGROUND_COLOR{ 0.01f, 0.01f, 0.01f, 1.0f };
-	const ImVec4 PALETTE_BORDER_COLOR{ 0.25f, 0.25f, 0.25f, 1.0f };
+	const ImVec4 PALETTE_MAIN_COLOR_HIGH{ 0.80f, 0.80f, 0.80f, 0.8f };
+	const ImVec4 PALETTE_MAIN_COLOR_MEDIUM{ 0.40f, 0.40f, 0.40f, 1.0f };
+	const ImVec4 PALETTE_MAIN_COLOR_LOW{ 0.20f, 0.20f, 0.20f, 1.0f };
+	const ImVec4 PALETTE_BACKGROUND_COLOR{ 0.10f, 0.10f, 0.10f, 1.0f };
+	const ImVec4 PALETTE_BORDER_COLOR{ PALETTE_MAIN_COLOR_MEDIUM };
 
 	//Set up ImGui.
 	IMGUI_CHECKVERSION();
@@ -311,6 +311,9 @@ void CatalystEditorSystem::UpdateInGame() NOEXCEPT
 */
 void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 {
+	//Always show the cursor.
+	CatalystPlatform::ShowCursor();
+
 	//Add the main window.
 	AddMainWindow();
 
@@ -331,6 +334,9 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 
 	//Update the editor resources system.
 	_EditorResourcesSystem.Update();
+
+	//Update the editor world system.
+	_EditorWorldSystem.Update();
 
 	//Update the editor selection system.
 	_EditorSelectionSystem.Update();
@@ -451,6 +457,23 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 		if (ImGui::Button("Resources"))
 		{
 			_CurrentContextualWindow = ContextualWindow::RESOURCES;
+		}
+	}
+
+	//Opens the worlds window.
+	if (_CurrentContextualWindow == ContextualWindow::WORLD)
+	{
+		if (ImGui::Button("World"))
+		{
+			_CurrentContextualWindow = ContextualWindow::NONE;
+		}
+	}
+
+	else
+	{
+		if (ImGui::Button("World"))
+		{
+			_CurrentContextualWindow = ContextualWindow::WORLD;
 		}
 	}
 

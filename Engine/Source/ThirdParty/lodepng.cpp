@@ -28,6 +28,11 @@ The manual and changelog are in the header file "lodepng.h"
 Rename this file to lodepng.cpp to use it for C++, or to lodepng.c to use it for C.
 */
 
+#include <Core/Essential/CatalystEssential.h>
+
+DISABLE_WARNING(4334); //Disable warning C4530: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+DISABLE_WARNING(4267); //Disable warning C4530:  '=': conversion from 'size_t' to 'unsigned short', possible loss of data
+
 #include <ThirdParty/lodepng.h>
 
 #ifdef LODEPNG_COMPILE_DISK

@@ -189,8 +189,16 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	else
 #endif
 	{
+		char window_name_buffer[256];
+
+#if defined(CATALYST_EDITOR)
+		sprintf_s(window_name_buffer, "Catalyst Editor - %s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+#else
+		sprintf_s(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+#endif
+
 		_Window = CreateWindow(	windowInfo.lpszClassName,
-								_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
+								_T(window_name_buffer),
 								WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
 								CW_USEDEFAULT,
 								CW_USEDEFAULT,

@@ -897,7 +897,7 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 256 };
+	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 1'024 };
 
 	//Initialize the command buffer, if needed.
 	if (!_TerrainGenerationRunning

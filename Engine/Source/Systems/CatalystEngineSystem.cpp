@@ -177,7 +177,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 #if !defined(CATALYST_EDITOR)
 	//If this is a pure game build, start the game immediately.
-	_ProjectConfiguration._GeneralConfiguration()._StartGameFunction();
+	_ProjectConfiguration._GeneralConfiguration._StartGameFunction();
 #endif
 
 	//Reset the delta timer right before entering the game loop, so that the first update doesn't get messed up delta times.

@@ -33,6 +33,14 @@ public:
 		return _CurrentTimeOfDay;
 	}
 
+	/*
+	*	Sets the current time of day.
+	*/
+	FORCE_INLINE void SetCurrentTimeOfDay(const float32 value) NOEXCEPT
+	{
+		_CurrentTimeOfDay = value;
+	}
+
 private:
 
 	//Denotes if the time of day system is enabled.

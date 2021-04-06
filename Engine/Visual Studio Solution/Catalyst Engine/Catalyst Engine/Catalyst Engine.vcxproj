@@ -115,6 +115,7 @@
     <ClInclude Include="..\..\..\Include\Editor\EditorRenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Editor\EditorResourcesSystem.h" />
     <ClInclude Include="..\..\..\Include\Editor\EditorSelectionSystem.h" />
+    <ClInclude Include="..\..\..\Include\Editor\EditorWorldSystem.h" />
     <ClInclude Include="..\..\..\Include\Entities\Core\EntityCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\AnimatedModelInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\DistanceTriggerInitializationData.h" />
@@ -515,6 +516,7 @@
     <ClCompile Include="..\..\..\Source\Editor\EditorRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorResourcesSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Editor\EditorSelectionSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Editor\EditorWorldSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\AnimatedModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\DistanceTriggerEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\DynamicModelEntity.cpp" />

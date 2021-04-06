@@ -12,6 +12,7 @@
 #include <Editor/EditorRenderingSystem.h>
 #include <Editor/EditorResourcesSystem.h>
 #include <Editor/EditorSelectionSystem.h>
+#include <Editor/EditorWorldSystem.h>
 
 class CatalystEditorSystem final
 {
@@ -30,7 +31,8 @@ public:
 		PERCEIVER,
 		PLACEMENT,
 		RENDERING,
-		RESOURCES
+		RESOURCES,
+		WORLD
 	};
 
 	/*
@@ -124,6 +126,9 @@ private:
 
 	//The editor resources system.
 	EditorResourcesSystem _EditorResourcesSystem;
+
+	//The editor world system.
+	EditorWorldSystem _EditorWorldSystem;
 
 	//The editor selection system.
 	EditorSelectionSystem _EditorSelectionSystem;

@@ -15,6 +15,9 @@
 #include <Rendering/Native/Color.h>
 
 //Systems.
+#if defined(CATALYST_EDITOR)
+	#include <Systems/CatalystEditorSystem.h>
+#endif
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/WorldSystem.h>
@@ -229,13 +232,23 @@ void TimeOfDaySystem::PreUpdate() NOEXCEPT
 {
 	ASSERT(_Enabled, "The time of day system should not be updated if it's not enabled");
 
-	//Cache the delta time.
-	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
+#if defined(CATALYST_EDITOR)
+	if (CatalystEditorSystem::Instance->IsInGame())
+#endif
+	{
+		//Cache the delta time.
+		const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
 
-	//Update the current time of day.
-	_CurrentTimeOfDay += delta_time / 60.0f / 60.0f * _TimeOfDayParameters._TimeMultiplier;
+		//Update the current time of day.
+		_CurrentTimeOfDay += delta_time / 60.0f / 60.0f * _TimeOfDayParameters._TimeMultiplier;
+	}
 
 	//Wrap around.
+	while (_CurrentTimeOfDay < 0.0f)
+	{
+		_CurrentTimeOfDay += 24.0f;
+	}
+
 	while (_CurrentTimeOfDay >= 24.0f)
 	{
 		_CurrentTimeOfDay -= 24.0f;

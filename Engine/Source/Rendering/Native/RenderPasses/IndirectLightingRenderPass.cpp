@@ -287,8 +287,8 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	//Execute the current buffer, don't include the rest.
-	if (!RenderingSystem::Instance->IsTakingScreenshot()
-		&& RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE)
+	if (/*!RenderingSystem::Instance->IsTakingScreenshot()
+		&& */RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE)
 	{
 		switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality())
 		{

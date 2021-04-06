@@ -26,7 +26,7 @@ private:
 	Vector3<float32> _Rotation;
 
 	//The speed.
-	float32 _MovementSpeed{ 2.0f };
+	float32 _MovementSpeed{ 8.0f };
 
 };
 
