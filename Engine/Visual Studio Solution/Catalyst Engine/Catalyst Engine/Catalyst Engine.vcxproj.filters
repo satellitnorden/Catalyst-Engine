@@ -415,6 +415,15 @@
     <Filter Include="World\Include\Vegetation">
       <UniqueIdentifier>{9b138b04-5d59-4fc8-9862-c1e597b353c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics\Include\Native">
+      <UniqueIdentifier>{107f019b-67c4-4491-9bb7-4ff6bcee61f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Source\Native">
+      <UniqueIdentifier>{5e989c04-6045-4121-bfb6-b54039e9be6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Source\Abstraction">
+      <UniqueIdentifier>{aafd3663-24fd-46b8-ac74-5c97e1aa820a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -876,12 +885,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.h">
       <Filter>Rendering\Include\Native\Render Passes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h">
-      <Filter>Physics\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\CharacterMovement.h">
-      <Filter>Physics\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceAmbientOcclusionGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
     </ClInclude>
@@ -935,9 +938,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementData.h">
       <Filter>Entities\Include\Placement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\RaycastResult.h">
-      <Filter>Physics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\Building\CatalystEngineResourceBuilding.h">
       <Filter>Resources\Include\Building</Filter>
@@ -1212,9 +1212,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h">
       <Filter>Rendering\Include\Native\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\RaycastConfiguration.h">
-      <Filter>Physics\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Shader\CatalystTerrain.h">
       <Filter>Rendering\Include\Native\Shader</Filter>
     </ClInclude>
@@ -1241,12 +1238,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanPipelineData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSystem.h">
-      <Filter>Physics\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSimulationData.h">
-      <Filter>Physics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceIndirectLightingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
@@ -1277,9 +1268,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingSpatialDenoisingGraphicsPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\CharacterPhysicsSystem.h">
-      <Filter>Physics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Native\Pipelines\RayTracingPipelines\AmbientOcclusionRayTracingPipeline.h">
       <Filter>Rendering\Include\Native\Pipelines\Ray Tracing Pipelines</Filter>
@@ -1542,9 +1530,6 @@
     <ClInclude Include="..\..\..\Include\Resources\Core\LevelResource.h">
       <Filter>Resources\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\ModelCollisionConfiguration.h">
-      <Filter>Physics\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Editor\EditorEntitySystem.h">
       <Filter>Editor\Include</Filter>
     </ClInclude>
@@ -1787,6 +1772,33 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Editor\EditorWorldSystem.h">
       <Filter>Editor\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\CharacterMovement.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\CharacterPhysicsSystem.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\ModelCollisionConfiguration.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\ModelPhysicsSimulationData.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\ModelPhysicsSystem.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCollisionResolution.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\RaycastConfiguration.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h">
+      <Filter>Physics\Include\Native</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2153,9 +2165,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Abstraction\Vulkan\VulkanQueryPool.cpp">
       <Filter>Rendering\Source\Abstraction\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp">
-      <Filter>Physics\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\ScreenSpaceIndirectLightingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
     </ClCompile>
@@ -2170,9 +2179,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\IndirectLightingSpatialDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Physics\CharacterPhysicsSystem.cpp">
-      <Filter>Physics\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Native\Pipelines\GraphicsPipelines\VolumetricLightingSpatialDenoisingGraphicsPipeline.cpp">
       <Filter>Rendering\Source\Native\Pipelines\Graphics Pipelines</Filter>
@@ -2392,6 +2398,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Editor\EditorWorldSystem.cpp">
       <Filter>Editor\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Physics\Native\CharacterPhysicsSystem.cpp">
+      <Filter>Physics\Source\Native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Physics\Native\ModelPhysicsSystem.cpp">
+      <Filter>Physics\Source\Native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp">
+      <Filter>Physics\Source\Abstraction</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

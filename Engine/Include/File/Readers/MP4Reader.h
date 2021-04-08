@@ -1,5 +1,8 @@
 #pragma once
 
+//Constants.
+#define INCLUDE_CODE (0)
+
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
@@ -10,6 +13,7 @@
 //Resources.
 #include <Resources/Core/VideoResource.h>
 
+#if INCLUDE_CODE
 //Third party.
 extern "C"
 {
@@ -17,6 +21,7 @@ extern "C"
 #include <ThirdParty/libavformat/avformat.h>
 #include <ThirdParty/libswscale/swscale.h>
 }
+#endif
 
 namespace MP4Reader
 {
@@ -26,6 +31,7 @@ namespace MP4Reader
 	*/
 	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, VideoResource *const RESTRICT video_resource) NOEXCEPT
 	{
+#if INCLUDE_CODE
 		//Allocate the format context.
 		AVFormatContext *RESTRICT format_context{ avformat_alloc_context() };
 
@@ -225,6 +231,9 @@ namespace MP4Reader
 		avformat_free_context(format_context);
 
 		return true;
+#else
+		return false;
+#endif
 	}
 
 }

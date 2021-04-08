@@ -351,6 +351,11 @@ public:
 					return &_String[i - matching_characters];
 				}
 			}
+
+			else
+			{
+				matching_characters = 0;
+			}
 		}
 
 		return nullptr;

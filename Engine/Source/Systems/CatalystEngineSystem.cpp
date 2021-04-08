@@ -148,6 +148,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
 	LevelOfDetailSystem::Instance->Initialize();
 	MemorySystem::Instance->Initialize();
+	PhysicsSystem::Instance->Initialize();
 	SaveSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->Initialize();
@@ -267,7 +268,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 #if defined(CATALYST_CONFIGURATION_PROFILE)
 	ProfilingSystem::PhysicsUpdate(&context);
 #endif
-	PhysicsSystem::Instance->PhysicsUpdate(&context);
 
 	/*
 	*	Render update phase.
@@ -318,6 +318,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	CatalystEditorSystem::Instance->Terminate();
 #endif
 	DistributionSystem::Instance->Terminate();
+	PhysicsSystem::Instance->Terminate();
 	ResourceSystem::Instance->Terminate();
 	SoundSystem::Instance->Terminate();
 	WorldSystem::Instance->Terminate();
@@ -335,7 +336,8 @@ uint64 CatalystEngineSystem::RegisterUpdate(const UpdateFunction update_function
 											void *const RESTRICT update_arguments,
 											const UpdatePhase start,
 											const UpdatePhase end,
-											const bool run_on_main_thread) NOEXCEPT
+											const bool run_on_main_thread,
+											const bool only_update_in_game) NOEXCEPT
 {
 	//Allocate the update data.
 	UpdateData* const RESTRICT new_update_data{ new (MemorySystem::Instance->TypeAllocate<UpdateData>()) UpdateData() };
@@ -347,6 +349,7 @@ uint64 CatalystEngineSystem::RegisterUpdate(const UpdateFunction update_function
 	new_update_data->_Start = start;
 	new_update_data->_End = end;
 	new_update_data->_RunOnMainThread = run_on_main_thread;
+	new_update_data->_OnlyUpdateInGame = only_update_in_game;
 
 	//Set up the update data task.
 	new_update_data->_Task._Function = update_function;
@@ -409,6 +412,12 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 	//Execute the tasks for the update data that starts in this update phase.
 	for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
 	{
+#if defined(CATALYST_EDITOR)
+		if (update_data->_OnlyUpdateInGame && !CatalystEditorSystem::Instance->IsInGame())
+		{
+			continue;
+		}
+#endif
 		if (!update_data->_RunOnMainThread)
 		{
 			TaskSystem::Instance->ExecuteTask(&update_data->_Task);
@@ -418,6 +427,12 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 	//Next, execute the tasks for the update data that starts in this update phase that needs to be run on the main thread.
 	for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
 	{
+#if defined(CATALYST_EDITOR)
+		if (update_data->_OnlyUpdateInGame && !CatalystEditorSystem::Instance->IsInGame())
+		{
+			continue;
+		}
+#endif
 		if (update_data->_RunOnMainThread)
 		{
 			update_data->_Task.Execute();

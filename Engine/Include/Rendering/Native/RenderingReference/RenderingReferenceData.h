@@ -16,7 +16,7 @@
 #include <Systems/ResourceSystem.h>
 
 //User interface.
-#include <UserInterface/TextUserInterfaceElement.h>
+#include <UserInterface/TextUserInterfacePrimitive.h>
 
 class RenderingReferenceData final
 {
@@ -61,7 +61,7 @@ public:
 	Atomic<uint64> _TexelsCalculated{ 0 };
 
 	//The progress information.
-	TextUserInterfaceElement *RESTRICT _ProgressInformation;
+	TextUserInterfacePrimitive *RESTRICT _ProgressInformation;
 
 	//The textures.
 	StaticArray<const Texture2DResource *RESTRICT, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _Textures;

@@ -8,14 +8,15 @@
 */
 bool ShouldProcessFile(const std::string &file)
 {
-	constexpr std::array<const char*, 6> FILES_TO_PROCESS
+	constexpr std::array<const char*, 7> FILES_TO_PROCESS
 	{
 		".cpp",
 		".gitignore",
 		".h",
 		".sln",
 		".vcxproj",
-		".vcxproj.filters"
+		".vcxproj.filters",
+		".bat"
 	};
 
 	for (const char* file_to_process : FILES_TO_PROCESS)

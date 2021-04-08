@@ -41,6 +41,7 @@ void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configurat
 	this,
 	UpdatePhase::INPUT,
 	UpdatePhase::RENDER,
+	false,
 	false);
 
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
@@ -50,6 +51,7 @@ void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configurat
 	this,
 	UpdatePhase::LOGIC,
 	UpdatePhase::PHYSICS,
+	false,
 	false);
 }
 

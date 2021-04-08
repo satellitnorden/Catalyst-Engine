@@ -21,6 +21,7 @@ void DebugRenderingSystem::Initialize() NOEXCEPT
 	this,
 	UpdatePhase::POST,
 	UpdatePhase::PRE,
+	false,
 	false);
 }
 

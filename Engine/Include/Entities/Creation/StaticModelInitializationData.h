@@ -7,7 +7,7 @@
 #include <Entities/Creation/EntityInitializationData.h>
 
 //Physics.
-#include <Physics/ModelCollisionConfiguration.h>
+#include <Physics/Native/ModelCollisionConfiguration.h>
 
 //Resources.
 #include <Resources/Core/MaterialResource.h>

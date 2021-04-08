@@ -7,7 +7,11 @@
 
 //Entities.
 #include <Entities/Creation/DynamicModelInitializationData.h>
+#include <Entities/Creation/LightInitializationData.h>
+#include <Entities/Creation/StaticModelInitializationData.h>
 #include <Entities/Types/DynamicModelEntity.h>
+#include <Entities/Types/LightEntity.h>
+#include <Entities/Types/StaticModelEntity.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
@@ -53,6 +57,36 @@ void EditorEntitySystem::Update() NOEXCEPT
 		{
 			_IsCurrentlyCreatingEntity = true;
 			_EntityTypeBeingCreated = EntityType::DynamicModel;
+		}
+	}
+
+	//Add the button for creating a light entity.
+	if (ImGui::Button("Create Light Entity"))
+	{
+		if (_IsCurrentlyCreatingEntity)
+		{
+			_IsCurrentlyCreatingEntity = false;
+		}
+
+		else
+		{
+			_IsCurrentlyCreatingEntity = true;
+			_EntityTypeBeingCreated = EntityType::Light;
+		}
+	}
+
+	//Add the button for creating a static model entity.
+	if (ImGui::Button("Create Static Model Entity"))
+	{
+		if (_IsCurrentlyCreatingEntity)
+		{
+			_IsCurrentlyCreatingEntity = false;
+		}
+
+		else
+		{
+			_IsCurrentlyCreatingEntity = true;
+			_EntityTypeBeingCreated = EntityType::StaticModel;
 		}
 	}
 
@@ -126,6 +160,49 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 
 			data->_ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
 			data->_SimulatePhysics = false;
+
+			EntitySystem::Instance->RequestInitialization(entity, data, false);
+
+			CatalystEditorSystem::Instance->GetEditorSelectionSystem()->SetCurrentlySelectedEntityOverride(entity);
+
+			break;
+		}
+
+		case EntityType::Light:
+		{
+			LightEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<LightEntity>() };
+			LightInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<LightInitializationData>() };
+
+			data->_Properties = EntityInitializationData::Property::NONE;
+			data->_Color = Vector3<float32>(1.0f, 1.0f, 1.0f);
+			data->_LightType = LightType::POINT;
+			data->_LightProperties = 0;
+			data->_Intensity = 1.0f;
+			data->_Radius = 8.0f;
+			data->_Size = 1.0f;
+
+			EntitySystem::Instance->RequestInitialization(entity, data, false);
+
+			CatalystEditorSystem::Instance->GetEditorSelectionSystem()->SetCurrentlySelectedEntityOverride(entity);
+
+			break;
+		}
+
+		case EntityType::StaticModel:
+		{
+			StaticModelEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<StaticModelEntity>() };
+			StaticModelInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<StaticModelInitializationData>() };
+
+			data->_Properties = EntityInitializationData::Property::NONE;
+			data->_WorldTransform = WorldTransform(position, VectorConstants::ZERO, 1.0f);
+			data->_ModelResource = ResourceSystem::Instance->GetModelResource(HashString("Catalyst_Engine_Default_Model"));
+
+			for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+			{
+				data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(HashString("Catalyst_Engine_Default_Material"));
+			}
+
+			data->_ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
 
 			EntitySystem::Instance->RequestInitialization(entity, data, false);
 

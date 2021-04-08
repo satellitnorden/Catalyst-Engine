@@ -3,7 +3,9 @@
 
 //Entities.
 #include <Entities/Creation/DynamicModelInitializationData.h>
+#include <Entities/Creation/StaticModelInitializationData.h>
 #include <Entities/Types/DynamicModelEntity.h>
+#include <Entities/Types/StaticModelEntity.h>
 
 //Systems.
 #include <Systems/EntitySystem.h>
@@ -35,7 +37,7 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 				DynamicModelInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicModelInitializationData>() };
 
 				data->_Properties = EntityInitializationData::Property::NONE;
-				data->_InitialWorldTransform = level_entry._DynamicModelData._InitialWorldTransform;
+				data->_InitialWorldTransform = level_entry._DynamicModelData._WorldTransform;
 				data->_ModelResource = ResourceSystem::Instance->GetModelResource(level_entry._DynamicModelData._ModelResourceIdentifier);
 
 				for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
@@ -46,6 +48,29 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 				data->_ModelCollisionConfiguration._Type = level_entry._DynamicModelData._ModelCollisionConfiguration._Type;
 				data->_SimulatePhysics = level_entry._DynamicModelData._SimulatePhysics;
 				data->_ModelPhysicsSimulationData = level_entry._DynamicModelData._ModelPhysicsSimulationData;
+
+				EntitySystem::Instance->RequestInitialization(entity, data, false);
+
+				spawned_level._Entities.Emplace(entity);
+
+				break;
+			}
+
+			case LevelEntry::Type::STATIC_MODEL:
+			{
+				StaticModelEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<StaticModelEntity>() };
+				StaticModelInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<StaticModelInitializationData>() };
+
+				data->_Properties = EntityInitializationData::Property::NONE;
+				data->_WorldTransform = level_entry._StaticModelData._WorldTransform;
+				data->_ModelResource = ResourceSystem::Instance->GetModelResource(level_entry._StaticModelData._ModelResourceIdentifier);
+
+				for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				{
+					data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(level_entry._StaticModelData._MaterialResourceIdentifiers[i]);
+				}
+
+				data->_ModelCollisionConfiguration._Type = level_entry._StaticModelData._ModelCollisionConfiguration._Type;
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
 

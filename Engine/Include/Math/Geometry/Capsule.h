@@ -12,13 +12,13 @@ class Capsule final
 public:
 
 	//The lower position.
-	Vector3<float> _Lower;
+	Vector3<float32> _Lower;
 
 	//The upper position.
-	Vector3<float> _Upper;
+	Vector3<float32> _Upper;
 
 	//The radius.
-	float _Radius;
+	float32 _Radius;
 
 	/*
 	*	Default constructor.
@@ -35,7 +35,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr Capsule(const Vector3<float> &initial_lower, const Vector3<float> &initial_upper, const float initial_radius) NOEXCEPT
+	FORCE_INLINE constexpr Capsule(const Vector3<float32> &initial_lower, const Vector3<float32> &initial_upper, const float32 initial_radius) NOEXCEPT
 		:
 		_Lower(initial_lower),
 		_Upper(initial_upper),

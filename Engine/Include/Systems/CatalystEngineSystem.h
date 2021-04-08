@@ -52,7 +52,8 @@ public:
 							void *const RESTRICT update_arguments,
 							const UpdatePhase start,
 							const UpdatePhase end,
-							const bool run_on_main_thread) NOEXCEPT;
+							const bool run_on_main_thread,
+							const bool only_update_in_game) NOEXCEPT;
 
 	/*
 	*	Deregisters an update.
@@ -142,6 +143,9 @@ private:
 
 		//Denotes whether or not to run this update on the main thread.
 		bool _RunOnMainThread{ false };
+
+		//Denotes whether or not to run this update only when the engine is in game.
+		bool _OnlyUpdateInGame{ false };
 
 		//The task.
 		Task _Task;

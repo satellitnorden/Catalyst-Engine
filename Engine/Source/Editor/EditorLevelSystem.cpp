@@ -175,12 +175,12 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 			const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
 			const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
 
-			for (uint64 i = 0; i < number_of_components; ++i, ++component)
+			for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 			{
 				LevelEntry level_entry;
 
 				level_entry._Type = LevelEntry::Type::DYNAMIC_MODEL;
-				level_entry._DynamicModelData._InitialWorldTransform = component->_CurrentWorldTransform;
+				level_entry._DynamicModelData._WorldTransform = component->_CurrentWorldTransform;
 				level_entry._DynamicModelData._ModelResourceIdentifier = component->_ModelResource->_Header._ResourceIdentifier;
 
 				for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
@@ -190,6 +190,30 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 
 				level_entry._DynamicModelData._ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
 				level_entry._DynamicModelData._SimulatePhysics = false;
+
+				parameters._LevelEntries.Emplace(level_entry);
+			}
+		}
+
+		//Add all static model entities.
+		{
+			const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+			const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+			for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+			{
+				LevelEntry level_entry;
+
+				level_entry._Type = LevelEntry::Type::STATIC_MODEL;
+				level_entry._StaticModelData._WorldTransform = component->_WorldTransform;
+				level_entry._StaticModelData._ModelResourceIdentifier = component->_ModelResource->_Header._ResourceIdentifier;
+
+				for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				{
+					level_entry._StaticModelData._MaterialResourceIdentifiers[i] = component->_MaterialResources[i] ? component->_MaterialResources[i]->_Header._ResourceIdentifier : HashString("");
+				}
+
+				level_entry._StaticModelData._ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
 
 				parameters._LevelEntries.Emplace(level_entry);
 			}

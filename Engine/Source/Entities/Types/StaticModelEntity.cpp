@@ -46,6 +46,9 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);
+
+	//Initialize the entity physics.
+	PhysicsSystem::Instance->InitializeEntityPhysics(this);
 }
 
 /*
@@ -53,6 +56,9 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 */
 void StaticModelEntity::Terminate() NOEXCEPT
 {
+	//Terminate the entity physics.
+	PhysicsSystem::Instance->TerminateEntityPhysics(this);
+
 	//Return this entitiy's components index.
 	ComponentManager::ReturnStaticModelComponentsIndex(_ComponentsIndex);
 }
@@ -128,6 +134,16 @@ RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT StaticModelEntity::Ge
 {
 	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldTransform;
 }
+
+#if defined(CATALYST_EDITOR)
+/*
+*	Returns the world transform.
+*/
+RESTRICTED NO_DISCARD WorldTransform *const RESTRICT StaticModelEntity::ModifyWorldTransform() NOEXCEPT
+{
+	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldTransform;
+}
+#endif
 
 /*
 *	Returns the model space axis aligned bounding box.

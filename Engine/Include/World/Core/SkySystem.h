@@ -90,6 +90,22 @@ public:
 		_SkyIntensity = value;
 	}
 
+	/*
+	*	Returns the cloud thickness.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetCloudThickness() const NOEXCEPT
+	{
+		return _CloudThickness;
+	}
+
+	/*
+	*	Sets the cloud thickness.
+	*/
+	FORCE_INLINE void SetCloudThickness(const float32 value) NOEXCEPT
+	{
+		_CloudThickness = value;
+	}
+
 private:
 
 	//The sky mode.
@@ -103,5 +119,8 @@ private:
 
 	//The sky intensity.
 	float32 _SkyIntensity{ 1.0f };
+
+	//The cloud thickness.
+	float32 _CloudThickness{ 0.0f };
 
 };

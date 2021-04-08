@@ -5,6 +5,7 @@
 #include <Math/Core/CatalystGeometryMath.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/TerrainSystem.h>
 
 //Terrain.
@@ -14,12 +15,50 @@
 DEFINE_SINGLETON(PhysicsSystem);
 
 /*
-*	Updates the physics system during the physics update phase.
+*	Initializes the physics system.
 */
-void PhysicsSystem::PhysicsUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+void PhysicsSystem::Initialize() NOEXCEPT
 {
-	//Update the character physics system.
-	_CharacterPhysicsSystem.PhysicsUpdate(context);
+	//Initialize the sub system.
+	SubInitialize();
+
+	//Register the update.
+	CatalystEngineSystem::Instance->RegisterUpdate([](void *const RESTRICT arguments)
+	{
+		static_cast<PhysicsSystem *const RESTRICT>(arguments)->PhysicsUpdate();
+	},
+	this,
+	UpdatePhase::PHYSICS,
+	UpdatePhase::RENDER,
+	false,
+	true);
+}
+
+/*
+*	Initializes the physics for the given entity.
+*/
+void PhysicsSystem::InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Initialize the sub-system physics for this entity.
+	SubInitializeEntityPhysics(entity);
+}
+
+/*
+*	Terminates the physics for the given entity.
+*/
+void PhysicsSystem::TerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Terminate the sub-system physics for this entity.
+	SubTerminateEntityPhysics(entity);
+}
+
+/*
+*	Terminates the physics system.
+*/
+void PhysicsSystem::Terminate() NOEXCEPT
+{
+	//Terminate the sub system.
+	SubTerminate();
 }
 
 /*
@@ -49,6 +88,18 @@ void PhysicsSystem::CastRay(const Ray &ray, const RaycastConfiguration &configur
 	{
 		CastRayTerrain(ray, configuration, result);
 	}
+}
+
+/*
+*	Updates the physics system during the physics update phase.
+*/
+void PhysicsSystem::PhysicsUpdate() NOEXCEPT
+{
+	//Update the physics sub-system during the physics update phase.
+	SubPhysicsUpdate();
+
+	//Update the character physics system.
+	_CharacterPhysicsSystem.PhysicsUpdate();
 }
 
 /*

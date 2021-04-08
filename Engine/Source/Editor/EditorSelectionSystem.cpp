@@ -270,7 +270,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				//Add the position editor.
 				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
 
-				if (ImGui::DragFloat3("Position", reinterpret_cast<float32 *const RESTRICT>(&position), 0.01f))
+				if (ImGui::DragFloat3("Position", &position[0], 0.01f))
 				{
 					world_transform->SetAbsolutePosition(position);
 				}
@@ -282,7 +282,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				rotation._Y = CatalystBaseMath::RadiansToDegrees(rotation._Y);
 				rotation._Z = CatalystBaseMath::RadiansToDegrees(rotation._Z);
 
-				if (ImGui::DragFloat3("Rotation", reinterpret_cast<float32 *const RESTRICT>(&rotation), 0.1f))
+				if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1f))
 				{
 					rotation._X = CatalystBaseMath::DegreesToRadians(rotation._X);
 					rotation._Y = CatalystBaseMath::DegreesToRadians(rotation._Y);
@@ -335,7 +335,43 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 					case LightType::POINT:
 					{
-						//TODO: Fill in.
+						//Add the position editor.
+						Vector3<float32> position{ light_entity->GetWorldPosition().GetAbsolutePosition() };
+
+						if (ImGui::DragFloat3("Position", &position[0], 0.01f))
+						{
+							light_entity->SetWorldPosition(WorldPosition(position));
+						}
+
+						//Add a widget for modifying the color of this light.
+						{
+							Vector3<float32> color{ light_entity->GetColor() };
+
+							if (ImGui::ColorEdit3("Color", &color[0]))
+							{
+								light_entity->SetColor(color);
+							}
+						}
+
+						//Add a widget for modifying the intensity of this light.
+						{
+							float32 intensity{ light_entity->GetIntensity() };
+
+							if (ImGui::DragFloat("Intensity", &intensity))
+							{
+								light_entity->SetIntensity(intensity);
+							}
+						}
+
+						//Add a widget for modifying the radius of this light.
+						{
+							float32 radius{ light_entity->GetRadius() };
+
+							if (ImGui::DragFloat("Radius", &radius))
+							{
+								light_entity->SetRadius(radius);
+							}
+						}
 
 						break;
 					}
@@ -429,6 +465,41 @@ void EditorSelectionSystem::Update() NOEXCEPT
 					}
 
 					ImGui::End();
+				}
+
+				//Cache the world transform.
+				WorldTransform *const RESTRICT world_transform{ static_model_entity->ModifyWorldTransform() };
+
+				//Add the position editor.
+				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
+
+				if (ImGui::DragFloat3("Position", &position[0], 0.01f))
+				{
+					world_transform->SetAbsolutePosition(position);
+				}
+
+				//Add the rotation editor.
+				Vector3<float32> rotation{ world_transform->GetRotation() };
+
+				rotation._X = CatalystBaseMath::RadiansToDegrees(rotation._X);
+				rotation._Y = CatalystBaseMath::RadiansToDegrees(rotation._Y);
+				rotation._Z = CatalystBaseMath::RadiansToDegrees(rotation._Z);
+
+				if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1f))
+				{
+					rotation._X = CatalystBaseMath::DegreesToRadians(rotation._X);
+					rotation._Y = CatalystBaseMath::DegreesToRadians(rotation._Y);
+					rotation._Z = CatalystBaseMath::DegreesToRadians(rotation._Z);
+
+					world_transform->SetRotation(rotation);
+				}
+
+				//Add the scale editor.
+				float32 scale{ world_transform->GetScale() };
+
+				if (ImGui::DragFloat("Scale", &scale, 0.01f))
+				{
+					world_transform->SetScale(scale);
 				}
 
 				break;

@@ -20,6 +20,7 @@ void MemorySystem::Initialize() NOEXCEPT
 	this,
 	UpdatePhase::PRE,
 	UpdatePhase::ENTITY,
+	false,
 	false);
 }
 

@@ -915,19 +915,6 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
 	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
 
-	//If the user has already selected an output directory path, display it.
-	if (_CreateQuixelModelResourceData._OutputDirectoryPath.Data())
-	{
-		ImGui::Text("Output Directory Path:");
-		ImGui::Text(_CreateQuixelModelResourceData._OutputDirectoryPath.Data());
-	}
-
-	//Add the button to set the output directory path/identifier.
-	if (ImGui::Button("Select Output Directory Path"))
-	{
-		File::BrowseForFolder(&_CreateQuixelModelResourceData._OutputDirectoryPath);
-	}
-
 	//If the user has already selected a directory path, display it.
 	if (_CreateQuixelModelResourceData._DirectoryPath.Data())
 	{
@@ -936,7 +923,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 	}
 
 	//Add the button to set the directory path.
-	if (ImGui::Button("Select Directroy Path"))
+	if (ImGui::Button("Select Directory Path"))
 	{
 		File::BrowseForFolder(&_CreateQuixelModelResourceData._DirectoryPath);
 	}
@@ -969,51 +956,58 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			//Cache the file path.
 			const DynamicString entry_file_path{ entry.path().generic_u8string().c_str() };
 
-			//Is this the albedo texture?
-			if (entry_file_path.Find("_Albedo."))
-			{
-				temporary_data._AlbedoTextureFilePath = entry_file_path;
+			//Cache the file extension.
+			const File::Extension file_extension{ File::GetExtension(entry_file_path.Data()) };
 
-				//Determine the base/number of mipmap level(s).
-				if (entry_file_path.Find("_8K_"))
+			//Is this a texture?
+			if (file_extension == File::Extension::JPG)
+			{
+				//Is this the albedo texture?
+				if (entry_file_path.Find("_Albedo."))
 				{
-					temporary_data._BaseMipmapLevel = 3;
-					temporary_data._NumberOfMipmapLevels = 10;
+					temporary_data._AlbedoTextureFilePath = entry_file_path;
+
+					//Determine the base/number of mipmap level(s).
+					if (entry_file_path.Find("_8K_"))
+					{
+						temporary_data._BaseMipmapLevel = 3;
+						temporary_data._NumberOfMipmapLevels = 10;
+					}
+
+					else
+					{
+						temporary_data._BaseMipmapLevel = 2;
+						temporary_data._NumberOfMipmapLevels = 9;
+					}
 				}
 
-				else
+				//Is this the normnal map texture?
+				if (entry_file_path.Find("_Normal_"))
 				{
-					temporary_data._BaseMipmapLevel = 2;
-					temporary_data._NumberOfMipmapLevels = 9;
+					temporary_data._NormalMapTextureFilePath = entry_file_path;
+				}
+
+				//Is this the displacement texture?
+				if (entry_file_path.Find("_Displacement."))
+				{
+					temporary_data._DisplacementTextureFilePath = entry_file_path;
+				}
+
+				//Is this the roughness texture?
+				if (entry_file_path.Find("_Roughness."))
+				{
+					temporary_data._RoughnessTextureFilePath = entry_file_path;
+				}
+
+				//Is this the ambient occlusion texture?
+				if (entry_file_path.Find("_AO."))
+				{
+					temporary_data._AmbientOcclusionTextureFilePath = entry_file_path;
 				}
 			}
 
-			//Is this the normnal map texture?
-			if (entry_file_path.Find("_Normal_"))
-			{
-				temporary_data._NormalMapTextureFilePath = entry_file_path;
-			}
-
-			//Is this the displacement texture?
-			if (entry_file_path.Find("_Displacement."))
-			{
-				temporary_data._DisplacementTextureFilePath = entry_file_path;
-			}
-
-			//Is this the roughness texture?
-			if (entry_file_path.Find("_Roughness."))
-			{
-				temporary_data._RoughnessTextureFilePath = entry_file_path;
-			}
-
-			//Is this the ambient occlusion texture?
-			if (entry_file_path.Find("_AO."))
-			{
-				temporary_data._RoughnessTextureFilePath = entry_file_path;
-			}
-
-			//Is this a level of detail file path?
-			if (File::GetExtension(entry_file_path.Data()) == File::Extension::FBX)
+			//Is this a model?
+			if (file_extension == File::Extension::FBX)
 			{
 				temporary_data._LevelOfDetailFilePaths.Emplace(entry_file_path);
 			}
@@ -1039,16 +1033,16 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 		{
 			char buffer[128];
 
-			sprintf_s(buffer, "%s\\Textures", _CreateQuixelModelResourceData._OutputDirectoryPath.Data());
+			sprintf_s(buffer, "..\\..\\..\\Resources\\Intermediate\\Textures");
 			File::CreateDirectory(buffer);
 
-			sprintf_s(buffer, "%s\\Textures\\%s", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
+			sprintf_s(buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s", temporary_data._Identifier.Data());
 			File::CreateDirectory(buffer);
 
-			sprintf_s(buffer, "%s\\Materials", _CreateQuixelModelResourceData._OutputDirectoryPath.Data());
+			sprintf_s(buffer, "..\\..\\..\\Resources\\Intermediate\\Materials");
 			File::CreateDirectory(buffer);
 
-			sprintf_s(buffer, "%s\\Models", _CreateQuixelModelResourceData._OutputDirectoryPath.Data());
+			sprintf_s(buffer, "..\\..\\..\\Resources\\Intermediate\\Models");
 			File::CreateDirectory(buffer);
 		}
 
@@ -1057,7 +1051,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			Texture2DBuildParameters parameters;
 
 			char output_file_path_buffer[128];
-			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_AlbedoThickness_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_AlbedoThickness_Texture2D", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
 			parameters._Output = output_file_path_buffer;
 
 			char identifier_buffer[128];
@@ -1083,7 +1077,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 
 			//Now load the texture 2D.
-			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_AlbedoThickness_Texture2D.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_AlbedoThickness_Texture2D.cr", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
 			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
 		}
 
@@ -1092,7 +1086,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			Texture2DBuildParameters parameters;
 
 			char output_file_path_buffer[128];
-			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_NormalMapDisplacement_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_NormalMapDisplacement_Texture2D", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
 			parameters._Output = output_file_path_buffer;
 
 			char identifier_buffer[128];
@@ -1118,7 +1112,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 
 			//Now load the texture 2D.
-			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_NormalMapDisplacement_Texture2D.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_NormalMapDisplacement_Texture2D.cr", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
 			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
 		}
 
@@ -1127,7 +1121,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			Texture2DBuildParameters parameters;
 
 			char output_file_path_buffer[128];
-			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_MaterialProperties_Texture2D", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_MaterialProperties_Texture2D", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
 			parameters._Output = output_file_path_buffer;
 
 			char identifier_buffer[128];
@@ -1153,7 +1147,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 
 			//Now load the texture 2D.
-			sprintf_s(output_file_path_buffer, "%s\\Textures\\%s\\%s_MaterialProperties_Texture2D.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_MaterialProperties_Texture2D.cr", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
 			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
 		}
 
@@ -1162,7 +1156,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			MaterialBuildParameters parameters;
 
 			char output_file_path_buffer[128];
-			sprintf_s(output_file_path_buffer, "%s\\Materials\\%s_Material", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Materials\\%s_Material", temporary_data._Identifier.Data());
 			parameters._Output = output_file_path_buffer;
 
 			char identifier_buffer[128];
@@ -1196,7 +1190,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
 
 			//Now load the material.
-			sprintf_s(output_file_path_buffer, "%s\\Materials\\%s_Material.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Materials\\%s_Material.cr", temporary_data._Identifier.Data());
 			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
 		}
 
@@ -1205,7 +1199,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			ModelBuildParameters parameters;
 
 			char output_file_path_buffer[128];
-			sprintf_s(output_file_path_buffer, "%s\\Models\\%s_Model", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Models\\%s_Model", temporary_data._Identifier.Data());
 			parameters._Output = output_file_path_buffer;
 
 			char identifier_buffer[128];
@@ -1225,7 +1219,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
 
 			//Now load the model.
-			sprintf_s(output_file_path_buffer, "%s\\Models\\%s_Model.cr", _CreateQuixelModelResourceData._OutputDirectoryPath.Data(), temporary_data._Identifier.Data());
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Models\\%s_Model.cr", temporary_data._Identifier.Data());
 			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
 		}
 

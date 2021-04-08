@@ -100,6 +100,13 @@ public:
 	*/
 	RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT GetWorldTransform() const NOEXCEPT;
 
+#if defined(CATALYST_EDITOR)
+	/*
+	*	Returns the world transform.
+	*/
+	RESTRICTED NO_DISCARD WorldTransform *const RESTRICT ModifyWorldTransform() NOEXCEPT;
+#endif
+
 	/*
 	*	Returns the model space axis aligned bounding box.
 	*/

@@ -39,7 +39,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_PROFILE;CATALYST_DISTRIBUTION_STEAM;CATALYST_EDITOR;CATALYST_ENABLE_RENDERING_REFERENCE;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_RENDERING_VULKAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_CONFIGURATION_DEBUG;CATALYST_CONFIGURATION_PROFILE;CATALYST_DISTRIBUTION_STEAM;CATALYST_EDITOR;CATALYST_ENABLE_RENDERING_REFERENCE;CATALYST_PLATFORM_ANDROID;CATALYST_PLATFORM_WINDOWS;CATALYST_PHYSICS_PHYSX;CATALYST_RENDERING_VULKAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -189,14 +189,15 @@
     <ClInclude Include="..\..\..\Include\Memory\Memory.h" />
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h" />
     <ClInclude Include="..\..\..\Include\Memory\UniquePointer.h" />
-    <ClInclude Include="..\..\..\Include\Physics\CharacterMovement.h" />
-    <ClInclude Include="..\..\..\Include\Physics\CharacterPhysicsSystem.h" />
-    <ClInclude Include="..\..\..\Include\Physics\ModelCollisionConfiguration.h" />
-    <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSimulationData.h" />
-    <ClInclude Include="..\..\..\Include\Physics\ModelPhysicsSystem.h" />
-    <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />
-    <ClInclude Include="..\..\..\Include\Physics\RaycastConfiguration.h" />
-    <ClInclude Include="..\..\..\Include\Physics\RaycastResult.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\CharacterMovement.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\CharacterPhysicsSystem.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\ModelCollisionConfiguration.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\ModelPhysicsSimulationData.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\ModelPhysicsSystem.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCollisionResolution.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\RaycastConfiguration.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystPlatformAndroid.h" />
     <ClInclude Include="..\..\..\Include\Platform\General\CatalystPlatform.h" />
     <ClInclude Include="..\..\..\Include\Platform\Null\CatalystPlatformNull.h" />
@@ -529,8 +530,9 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
     <ClCompile Include="..\..\..\Source\Memory\OperatorNewDeleteOverload.cpp" />
-    <ClCompile Include="..\..\..\Source\Physics\CharacterPhysicsSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Physics\ModelPhysicsSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Physics\Native\CharacterPhysicsSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Physics\Native\ModelPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystPlatformWindows.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsInputSystem.cpp" />

@@ -1,0 +1,297 @@
+#if defined(CATALYST_PHYSICS_PHYSX)
+//Header file.
+#include <Systems/PhysicsSystem.h>
+
+//Components.
+#include <Components/Core/ComponentManager.h>
+
+//Systems.
+#include <Systems/CatalystEngineSystem.h>
+
+//Third party.
+#include <ThirdParty/PhysX/PxPhysicsAPI.h>
+#include <ThirdParty/PhysX/extensions/PxRigidBodyExt.h>
+
+//Macros.
+#define PX_RELEASE(POINTER)	if(POINTER)	{ POINTER->release(); POINTER = nullptr; }
+
+/*
+*	Dynamic model entity data class definition.
+*/
+class DynamicModelEntityData final
+{
+
+public:
+
+	//The entity.
+	DynamicModelEntity *RESTRICT _Entity;
+
+	//The actor.
+	physx::PxRigidDynamic *RESTRICT _Actor;
+
+};
+
+/*
+*	Static model entity data class definition.
+*/
+class StaticModelEntityData final
+{
+
+public:
+
+	//The actor.
+	physx::PxRigidStatic *RESTRICT _Actor;
+
+};
+
+//PhysX physics system data.
+namespace PhysXPhysicsSystemData
+{
+
+	//The default allocator.
+	physx::PxDefaultAllocator _DefaultAllocator;
+
+	//The default error callback.
+	physx::PxDefaultErrorCallback _DefaultErrorCallback;
+	
+	//The foundation.
+	physx::PxFoundation *RESTRICT _Foundation;
+
+	//The physics.
+	physx::PxPhysics *RESTRICT _Physics;
+
+	//The dispatcher.
+	physx::PxDefaultCpuDispatcher *RESTRICT _Dispatcher;
+
+	//The scene.
+	physx::PxScene *RESTRICT _Scene;
+
+	//The default material.
+	physx::PxMaterial *RESTRICT _DefaultMaterial;
+
+	//The dynamic model entity data.
+	DynamicArray<DynamicModelEntityData> _DynamicModelEntityData;
+
+	//The static model entity data.
+	DynamicArray<StaticModelEntityData> _StaticModelEntityData;
+
+}
+
+/*
+*	Initializes the physics sub-system.
+*/
+void PhysicsSystem::SubInitialize() NOEXCEPT
+{
+	//Create the foundation.
+	PhysXPhysicsSystemData::_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, PhysXPhysicsSystemData::_DefaultAllocator, PhysXPhysicsSystemData::_DefaultErrorCallback);
+
+	//Create the physics.
+	PhysXPhysicsSystemData::_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *PhysXPhysicsSystemData::_Foundation, physx::PxTolerancesScale());
+
+	//Create the dispatcher.
+	PhysXPhysicsSystemData::_Dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+
+	//Create the scene.
+	physx::PxSceneDesc scene_description{ PhysXPhysicsSystemData::_Physics->getTolerancesScale() };
+	scene_description.gravity = physx::PxVec3(0.0f, -PhysicsConstants::GRAVITY, 0.0f);
+	scene_description.cpuDispatcher	= PhysXPhysicsSystemData::_Dispatcher;
+	scene_description.filterShader = physx::PxDefaultSimulationFilterShader;
+
+	PhysXPhysicsSystemData::_Scene = PhysXPhysicsSystemData::_Physics->createScene(scene_description);
+
+	//Create the default material.
+	PhysXPhysicsSystemData::_DefaultMaterial = PhysXPhysicsSystemData::_Physics->createMaterial(0.5f, 0.5f, 0.6f);
+
+	//Create the ground plane.
+	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*PhysXPhysicsSystemData::_Physics, physx::PxPlane(0,1,0,0), *PhysXPhysicsSystemData::_DefaultMaterial);
+	PhysXPhysicsSystemData::_Scene->addActor(*groundPlane);
+}
+
+/*
+*	Updates the physics sub-system during the physics update phase.
+*/
+void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
+{
+	//Cache the delta time.
+	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
+
+	//Simulate the scene.
+	PhysXPhysicsSystemData::_Scene->simulate(1.0f / 60.0f);
+
+	//Fetch the results.
+	PhysXPhysicsSystemData::_Scene->fetchResults(true);
+
+	//Update all dynamic models.
+	for (const DynamicModelEntityData &data : PhysXPhysicsSystemData::_DynamicModelEntityData)
+	{
+		//Retrieve the transform.
+		physx::PxShape *RESTRICT shape;
+		data._Actor->getShapes(&shape, 1);
+		const physx::PxMat44 shape_transform{ data._Actor->getGlobalPose() * shape->getLocalPose() };
+
+		//Set up the new world transform.
+		WorldTransform new_world_transform;
+		const physx::PxVec3 shape_position{ shape_transform.getPosition() };
+		new_world_transform.SetAbsolutePosition(Vector3<float32>(shape_position.x, shape_position.y, shape_position.z) - data._Entity->GetWorldSpaceAxisAlignedBoundingBox()->Dimensions() * 0.5f);
+
+		physx::PxVec3 rotation{ 0.0f, 0.0f, 0.0f };
+		rotation = shape_transform.rotate(rotation);
+		new_world_transform.SetRotation(Vector3<float32>(rotation.x, rotation.y, rotation.z));
+
+		//Set the world transform of the entity.
+		*data._Entity->ModifyWorldTransform() = new_world_transform;
+	}
+}
+
+/*
+*	Initializes the sub-system physics for the given entity.
+*/
+void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Which type is this entity?
+	switch (entity->_Type)
+	{
+		case EntityType::DynamicModel:
+		{
+			//Cache the component.
+			const DynamicModelComponent &component{ ComponentManager::GetDynamicModelDynamicModelComponents()[entity->_ComponentsIndex] };
+
+			//Set up the dynamic model entity data.
+			DynamicModelEntityData data;
+
+			//Set the entity.
+			data._Entity = static_cast<DynamicModelEntity *RESTRICT>(entity);
+
+			//Create the actor.
+			{
+				//Create the shape.
+				const AxisAlignedBoundingBox3D local_axis_aligned_bounding_box{ component._WorldSpaceAxisAlignedBoundingBox };
+				const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
+				const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
+				physx::PxShape* const RESTRICT shape{ PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial) };
+
+				//Set up the transform.
+				const Vector3<float32> absolute_world_position{ component._CurrentWorldTransform.GetAbsolutePosition() };
+				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
+				const physx::PxTransform transform{ position };
+
+				//Create the actor!
+				data._Actor = PhysXPhysicsSystemData::_Physics->createRigidDynamic(transform);
+			
+				//Attach the shape.
+				data._Actor->attachShape(*shape);
+
+				//Set up the actor.
+				physx::PxRigidBodyExt::updateMassAndInertia(*data._Actor, 10.0f);
+
+				//Release the shape.
+				shape->release();
+			}
+
+			//Add the actor to the scene.
+			PhysXPhysicsSystemData::_Scene->addActor(*data._Actor);
+
+			//Add the dynamic model entity data.
+			PhysXPhysicsSystemData::_DynamicModelEntityData.Emplace(data);
+
+			break;
+		}
+
+		case EntityType::StaticModel:
+		{
+			//Cache the component.
+			const StaticModelComponent &component{ ComponentManager::GetStaticModelStaticModelComponents()[entity->_ComponentsIndex] };
+
+			//Set up the static model entity data.
+			StaticModelEntityData data;
+
+			//Create the actor.
+			{
+				//Set up the transform.
+				const Vector3<float32> absolute_world_position{ component._WorldTransform.GetAbsolutePosition() };
+				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
+				const physx::PxTransform transform{ position };
+
+				//Set up the geometry.
+				const AxisAlignedBoundingBox3D local_axis_aligned_bounding_box{ component._WorldSpaceAxisAlignedBoundingBox.GetLocalAxisAlignedBoundingBox() };
+				const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
+				const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
+
+				//Calculate the shape offset.
+				const Vector3<float32> center{ AxisAlignedBoundingBox3D::CalculateCenter(local_axis_aligned_bounding_box) };
+				const physx::PxTransform shape_offset{ physx::PxVec3(-center._X, -center._Y, -center._Z) };
+
+				//Create the actor!
+				data._Actor = physx::PxCreateStatic(*PhysXPhysicsSystemData::_Physics, transform, geometry, *PhysXPhysicsSystemData::_DefaultMaterial, shape_offset);
+			}
+
+			//Add the actor to the scene.
+			PhysXPhysicsSystemData::_Scene->addActor(*data._Actor);
+
+			//Add the static model entity data.
+			PhysXPhysicsSystemData::_StaticModelEntityData.Emplace(data);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+}
+
+/*
+*	Terminates the sub-system physics for the given entity.
+*/
+void PhysicsSystem::SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Which type is this entity?
+	switch (entity->_Type)
+	{
+		case EntityType::DynamicModel:
+		{
+
+
+			break;
+		}
+
+		case EntityType::StaticModel:
+		{
+
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+}
+
+/*
+*	Terminates the physics sub-system.
+*/
+void PhysicsSystem::SubTerminate() NOEXCEPT
+{
+	//Release the default material.
+	PX_RELEASE(PhysXPhysicsSystemData::_DefaultMaterial);
+
+	//Release the scene.
+	PX_RELEASE(PhysXPhysicsSystemData::_Scene);
+
+	//Release the dispatcher.
+	PX_RELEASE(PhysXPhysicsSystemData::_Dispatcher);
+
+	//Release the physics.
+	PX_RELEASE(PhysXPhysicsSystemData::_Physics);
+
+	//Release the foundation.
+	PX_RELEASE(PhysXPhysicsSystemData::_Foundation);
+}
+#endif

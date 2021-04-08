@@ -219,7 +219,8 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 	this,
 	UpdatePhase::PRE,
 	UpdatePhase::RENDER,
-	false);
+	false,
+	true);
 
 	//The time of day system is now enabled!
 	_Enabled = true;
@@ -232,16 +233,11 @@ void TimeOfDaySystem::PreUpdate() NOEXCEPT
 {
 	ASSERT(_Enabled, "The time of day system should not be updated if it's not enabled");
 
-#if defined(CATALYST_EDITOR)
-	if (CatalystEditorSystem::Instance->IsInGame())
-#endif
-	{
-		//Cache the delta time.
-		const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
+	//Cache the delta time.
+	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
 
-		//Update the current time of day.
-		_CurrentTimeOfDay += delta_time / 60.0f / 60.0f * _TimeOfDayParameters._TimeMultiplier;
-	}
+	//Update the current time of day.
+	_CurrentTimeOfDay += delta_time / 60.0f / 60.0f * _TimeOfDayParameters._TimeMultiplier;
 
 	//Wrap around.
 	while (_CurrentTimeOfDay < 0.0f)

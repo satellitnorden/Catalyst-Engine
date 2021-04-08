@@ -91,7 +91,7 @@ void CatalystShaderMain()
     vec3 scene = texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
 
     //Apply fast approximate anti aliasing.
-    scene = ApplyFastApproximateAntiAliasing(scene);
+    //scene = ApplyFastApproximateAntiAliasing(scene);
 
     //Apply sharpen.
     //scene = ApplySharpen(scene);

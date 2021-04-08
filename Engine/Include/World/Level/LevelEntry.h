@@ -6,8 +6,8 @@
 #include <Core/General/HashString.h>
 
 //Physics.
-#include <Physics/ModelCollisionConfiguration.h>
-#include <Physics/ModelPhysicsSimulationData.h>
+#include <Physics/Native/ModelCollisionConfiguration.h>
+#include <Physics/Native/ModelPhysicsSimulationData.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -23,7 +23,8 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
-		DYNAMIC_MODEL
+		DYNAMIC_MODEL,
+		STATIC_MODEL
 	};
 
 	/*
@@ -34,8 +35,8 @@ public:
 
 	public:
 
-		//The initial world transform.
-		WorldTransform _InitialWorldTransform;
+		//The world transform.
+		WorldTransform _WorldTransform;
 
 		//The model resource identifier.
 		HashString _ModelResourceIdentifier;
@@ -54,6 +55,28 @@ public:
 
 	};
 
+	/*
+	*	Static model data class definition.
+	*/
+	class StaticModelData final
+	{
+
+	public:
+
+		//The world transform.
+		WorldTransform _WorldTransform;
+
+		//The model resource identifier.
+		HashString _ModelResourceIdentifier;
+
+		//The material resourceidentifiers.
+		StaticArray<HashString, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResourceIdentifiers;
+
+		//The model collision configuration.
+		ModelCollisionConfiguration _ModelCollisionConfiguration;
+
+	};
+
 	//The type.
 	Type _Type;
 
@@ -61,6 +84,9 @@ public:
 	{
 		//The dynamic model data.
 		DynamicModelData _DynamicModelData;
+
+		//The static model data.
+		StaticModelData _StaticModelData;
 	};
 
 	/*

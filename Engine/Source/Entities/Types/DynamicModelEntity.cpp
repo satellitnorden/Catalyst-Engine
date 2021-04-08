@@ -43,6 +43,9 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<DynamicModelInitializationData>(data);
+
+	//Initialize the entity physics.
+	PhysicsSystem::Instance->InitializeEntityPhysics(this);
 }
 
 /*
@@ -150,7 +153,7 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT DynamicMode
 	if (TEST_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX))
 	{
 		//Update the world space axis aligned bounding box.
-		RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToLocalMatrix4x4(), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
+		RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToAbsoluteMatrix4x4(), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
 	
 		//Clear the update flag.
 		CLEAR_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX);

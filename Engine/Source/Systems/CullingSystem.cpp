@@ -79,7 +79,7 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 		if (TEST_BIT(component->_UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX))
 		{
 			//Update the world space axis aligned bounding box.
-			RenderingUtilities::TransformAxisAlignedBoundingBox(component->_WorldSpaceAxisAlignedBoundingBox, component->_CurrentWorldTransform.ToLocalMatrix4x4(), &component->_WorldSpaceAxisAlignedBoundingBox);
+			RenderingUtilities::TransformAxisAlignedBoundingBox(component->_WorldSpaceAxisAlignedBoundingBox, component->_CurrentWorldTransform.ToAbsoluteMatrix4x4(), &component->_WorldSpaceAxisAlignedBoundingBox);
 
 			//Clear the update flag.
 			CLEAR_BIT(component->_UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX);
@@ -99,7 +99,8 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 			}
 		}
 
-		component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, world_space_axis_aligned_bounding_box);
+		//component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, world_space_axis_aligned_bounding_box);
+		component->_Visibility = true;
 	}
 }
 

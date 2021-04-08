@@ -165,9 +165,6 @@ private:
 
 	public:
 
-		//The output directory path.
-		DynamicString _OutputDirectoryPath;
-
 		//The directory path.
 		DynamicString _DirectoryPath;
 

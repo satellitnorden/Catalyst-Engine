@@ -1811,12 +1811,12 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			parameters._ID = "Catalyst_Engine_Default_Material";
 			parameters._Type = MaterialResource::Type::OPAQUE;
 			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._AlbedoThicknessComponent._Color = Color(Vector4<float32>(0.25f, 0.25f, 0.25f, 1.0f));
+			parameters._AlbedoThicknessComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
 			parameters._AlbedoThicknessComponent._Color.ApplyGammaCorrection();
 			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
 			parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
 			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.25f, 0.75f, 1.0f, 0.0f));
+			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.0f));
 			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
 			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 			parameters._EmissiveMultiplier = 0.0f;
@@ -2216,37 +2216,12 @@ void CatalystEngineResourceBuilding::BuildOceanTexture()
 */
 void CatalystEngineResourceBuilding::BuildDefaultSkyTexture()
 {
-	//What should the file be called?
-	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Default_Sky_TextureCube" };
-	file_name += ".cr";
+	TextureCubeBuildParameters parameters;
 
-	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ file_name.Data() };
+	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Default_Sky_TextureCube";
+	parameters._ID = "Default_Sky_TextureCube";
+	parameters._File = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\HDR\\Sky_1.hdr";
 
-	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString("Default_Sky_TextureCube"), "Default_Sky_TextureCube" };
-	file.Write(&header, sizeof(ResourceHeader));
-
-	//Write the resolution to the file.
-	constexpr uint32 RESOLUTION{ 2 };
-	file.Write(&RESOLUTION, sizeof(uint32));
-
-	//Write the number of mipmap levels to the file.
-	constexpr uint8 MIPMAP_LEVELS{ 1 };
-	file.Write(&MIPMAP_LEVELS, sizeof(uint8));
-
-	//Write the texture data to the file.
-	DynamicArray<float32> data;
-	data.Upsize<false>(RESOLUTION * RESOLUTION * 4 * 6);
-
-	for (float32 &value : data)
-	{
-		value = 0.01f;
-	}
-
-	file.Write(data.Data(), RESOLUTION * RESOLUTION * 4 * 6 * sizeof(float32));
-
-	//Cloe the file.
-	file.Close();
+	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTextureCube(parameters);
 }
 #endif

@@ -28,6 +28,7 @@ void UserInterfaceSystem::Initialize() NOEXCEPT
 	this,
 	UpdatePhase::USER_INTERFACE,
 	UpdatePhase::LOGIC,
+	false,
 	false);
 }
 

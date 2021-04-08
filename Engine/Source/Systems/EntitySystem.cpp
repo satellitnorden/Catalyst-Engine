@@ -34,6 +34,7 @@ void EntitySystem::Initialize() NOEXCEPT
 	this,
 	UpdatePhase::ENTITY,
 	UpdatePhase::INPUT,
+	false,
 	false);
 }
 

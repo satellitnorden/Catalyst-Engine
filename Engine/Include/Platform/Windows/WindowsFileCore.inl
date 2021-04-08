@@ -64,6 +64,11 @@ namespace File
 						for (uint16 i{ 0 }; i < MAX_PATH; ++i)
 						{
 							converted_file_path[i] = static_cast<char>(file_path[i]);
+
+							if (!file_path[i])
+							{
+								break;
+							}
 						}
 
 						*chosen_file = converted_file_path;

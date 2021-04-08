@@ -233,7 +233,8 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	nullptr,
 	UpdatePhase::POST,
 	UpdatePhase::PRE,
-	true);
+	true,
+	false);
 }
 
 /*

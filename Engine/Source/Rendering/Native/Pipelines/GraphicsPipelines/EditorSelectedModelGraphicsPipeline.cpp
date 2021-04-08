@@ -112,6 +112,14 @@ void EditorSelectedModelGraphicsPipeline::Execute() NOEXCEPT
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
 
+	//Don't draw if the engine is in game.
+	if (CatalystEditorSystem::Instance->IsInGame())
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
 	SetCommandBuffer(command_buffer);
