@@ -60,7 +60,7 @@ public:
 	*	Constructor taking a Matrix4x4 transformation.
 	*/
 	FORCE_INLINE explicit WorldTransform(const Matrix4x4 &transformation) NOEXCEPT
-			:
+		:
 		_WorldPosition(),
 		_Rotation(transformation.GetRotation()),
 		_Scale((transformation.GetScale()._X + transformation.GetScale()._Y + transformation.GetScale()._Z) / 3.0f) //Only supports uniform scale, so average the scales.

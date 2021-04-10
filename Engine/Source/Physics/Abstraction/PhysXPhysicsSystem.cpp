@@ -5,6 +5,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Rendering.
+#include <Rendering/Native/RenderingUtilities.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 
@@ -29,6 +32,9 @@ public:
 	//The actor.
 	physx::PxRigidDynamic *RESTRICT _Actor;
 
+	//The translation offset.
+	Vector3<float32> _TranslationOffset;
+
 };
 
 /*
@@ -43,6 +49,15 @@ public:
 	physx::PxRigidStatic *RESTRICT _Actor;
 
 };
+
+//PhysX physics system constants.
+namespace PhysXPhysicsSystemConstants
+{
+
+	//The update frequency.
+	constexpr float32 UPDATE_FREQUENCY{ 1.0f / 60.0f };
+
+}
 
 //PhysX physics system data.
 namespace PhysXPhysicsSystemData
@@ -74,6 +89,9 @@ namespace PhysXPhysicsSystemData
 
 	//The static model entity data.
 	DynamicArray<StaticModelEntityData> _StaticModelEntityData;
+
+	//The time since last update.
+	float32 _TimeSinceLastUpdate{ 0.0f };
 
 }
 
@@ -115,31 +133,54 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 	//Cache the delta time.
 	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
 
-	//Simulate the scene.
-	PhysXPhysicsSystemData::_Scene->simulate(1.0f / 60.0f);
+	//Update the time since last update.
+	PhysXPhysicsSystemData::_TimeSinceLastUpdate += delta_time;
 
-	//Fetch the results.
-	PhysXPhysicsSystemData::_Scene->fetchResults(true);
+	//Should the physics be updated?
+	bool physics_was_updated{ false };
 
-	//Update all dynamic models.
-	for (const DynamicModelEntityData &data : PhysXPhysicsSystemData::_DynamicModelEntityData)
+	if (PhysXPhysicsSystemData::_TimeSinceLastUpdate >= PhysXPhysicsSystemConstants::UPDATE_FREQUENCY)
 	{
-		//Retrieve the transform.
-		physx::PxShape *RESTRICT shape;
-		data._Actor->getShapes(&shape, 1);
-		const physx::PxMat44 shape_transform{ data._Actor->getGlobalPose() * shape->getLocalPose() };
+		//Update the time since last update.
+		PhysXPhysicsSystemData::_TimeSinceLastUpdate -= PhysXPhysicsSystemConstants::UPDATE_FREQUENCY;
 
-		//Set up the new world transform.
-		WorldTransform new_world_transform;
-		const physx::PxVec3 shape_position{ shape_transform.getPosition() };
-		new_world_transform.SetAbsolutePosition(Vector3<float32>(shape_position.x, shape_position.y, shape_position.z) - data._Entity->GetWorldSpaceAxisAlignedBoundingBox()->Dimensions() * 0.5f);
+		//Simulate the scene.
+		PhysXPhysicsSystemData::_Scene->simulate(PhysXPhysicsSystemConstants::UPDATE_FREQUENCY);
 
-		physx::PxVec3 rotation{ 0.0f, 0.0f, 0.0f };
-		rotation = shape_transform.rotate(rotation);
-		new_world_transform.SetRotation(Vector3<float32>(rotation.x, rotation.y, rotation.z));
+		//Fetch the results.
+		PhysXPhysicsSystemData::_Scene->fetchResults(true);
 
-		//Set the world transform of the entity.
-		*data._Entity->ModifyWorldTransform() = new_world_transform;
+		//Physics was updated!
+		physics_was_updated = true;
+	}
+
+	if (physics_was_updated)
+	{
+		//Update all dynamic models.
+		for (const DynamicModelEntityData &data : PhysXPhysicsSystemData::_DynamicModelEntityData)
+		{
+			//Retrieve the transform.
+			Matrix4x4 transform;
+
+			{
+				physx::PxShape *RESTRICT shape;
+				data._Actor->getShapes(&shape, 1);
+				const physx::PxTransform translation_offset{ physx::PxVec3(data._TranslationOffset._X, data._TranslationOffset._Y, data._TranslationOffset._Z) };
+				const physx::PxMat44 final_transform{ data._Actor->getGlobalPose() * shape->getLocalPose() * translation_offset };
+				Memory::Copy(&transform, &final_transform, sizeof(Matrix4x4));
+			}
+
+			//Set up the new world transform.
+			WorldTransform new_world_transform;
+			const Vector3<float32> shape_position{ transform.GetTranslation() };
+			new_world_transform.SetAbsolutePosition(shape_position);
+
+			const Vector3<float32> rotation{ transform.GetRotation() };
+			new_world_transform.SetRotation(Vector3<float32>(rotation._X, rotation._Y, rotation._Z));
+
+			//Set the world transform of the entity.
+			*data._Entity->ModifyWorldTransform() = new_world_transform;
+		}
 	}
 }
 
@@ -162,6 +203,12 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 			//Set the entity.
 			data._Entity = static_cast<DynamicModelEntity *RESTRICT>(entity);
 
+			//Calculate the translation offset.
+			const AxisAlignedBoundingBox3D model_space_axis_aligned_bounding_box{ component._ModelResource->_ModelSpaceAxisAlignedBoundingBox };
+			AxisAlignedBoundingBox3D scaled_model_space_axis_aligned_bounding_box;
+			RenderingUtilities::TransformAxisAlignedBoundingBox(model_space_axis_aligned_bounding_box, Matrix4x4(VectorConstants::ZERO, VectorConstants::ZERO, Vector3<float32>(component._CurrentWorldTransform.GetScale())), &scaled_model_space_axis_aligned_bounding_box);
+			const Vector3<float32> translation_offset{ -AxisAlignedBoundingBox3D::CalculateCenter(scaled_model_space_axis_aligned_bounding_box) };
+
 			//Create the actor.
 			{
 				//Create the shape.
@@ -169,6 +216,7 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 				const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
 				const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
 				physx::PxShape* const RESTRICT shape{ PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial) };
+				//shape->setLocalPose(physx::PxTransform(physx::PxVec3(translation_offset._X, translation_offset._Y, translation_offset._Z)));
 
 				//Set up the transform.
 				const Vector3<float32> absolute_world_position{ component._CurrentWorldTransform.GetAbsolutePosition() };
@@ -190,6 +238,9 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 
 			//Add the actor to the scene.
 			PhysXPhysicsSystemData::_Scene->addActor(*data._Actor);
+
+			//Set the translation offset.
+			data._TranslationOffset = translation_offset;
 
 			//Add the dynamic model entity data.
 			PhysXPhysicsSystemData::_DynamicModelEntityData.Emplace(data);

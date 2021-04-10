@@ -53,7 +53,7 @@ public:
 	/*
 	*	Given a number, returns the arctangent of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float32 Arctangent(const float32 number) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 ArcTangent(const float32 number) NOEXCEPT
 	{
 		return atanf(number);
 	}
@@ -61,9 +61,9 @@ public:
 	/*
 	*	Given two numbers, returns the arctangent of the number.
 	*/
-	FORCE_INLINE static NO_DISCARD float32 Arctangent(const float32 number1, const float32 number2) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 ArcTangent(const float32 Y, const float32 X) NOEXCEPT
 	{
-		return atan2f(number1, number2);
+		return atan2f(Y, X);
 	}
 
 	/*

@@ -1296,7 +1296,7 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 				direction.Normalize();
 
 				//Sample the HDR texture.
-				Vector2<float> texture_coordinate{ CatalystBaseMath::Arctangent(direction._Z, direction._X), CatalystBaseMath::ArcSine(direction._Y) };
+				Vector2<float> texture_coordinate{ CatalystBaseMath::ArcTangent(direction._Z, direction._X), CatalystBaseMath::ArcSine(direction._Y) };
 				texture_coordinate *= INVERSE_ATAN;
 				texture_coordinate += 0.5f;
 

@@ -110,8 +110,34 @@ class Matrix4x4 final
 
 public:
 
-	//The matrix.
-	Vector4<float> _Matrix[4];
+	union
+	{
+		//The matrix.
+		Vector4<float32> _Matrix[4];
+
+		struct
+		{
+			float32 _11;
+			float32 _12;
+			float32 _13;
+			float32 _14;
+
+			float32 _21;
+			float32 _22;
+			float32 _23;
+			float32 _24;
+
+			float32 _31;
+			float32 _32;
+			float32 _33;
+			float32 _34;
+
+			float32 _41;
+			float32 _42;
+			float32 _43;
+			float32 _44;
+		};
+	};
 
 	/*
 	*	Calculates a look at matrix.
@@ -211,7 +237,7 @@ public:
 
 							-(-(right_plane + left_plane) / (right_plane - left_plane)),
 							-(bottom_plane + top_plane) / (bottom_plane - top_plane),
-			-far_plane / (-far_plane - -near_plane),
+							-far_plane / (-far_plane - -near_plane),
 							1.0f);
 	}
 
@@ -452,6 +478,22 @@ public:
 	}
 
 	/*
+	*	Returns the value at the given row/column index.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD float32 AtRowColumn(const uint8 row_index, const uint8 column_index) const NOEXCEPT
+	{
+		return _Matrix[row_index][column_index];
+	}
+
+	/*
+	*	Returns the value at the given column/row index.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD float32 AtColumnRow(const uint8 column_index, const uint8 row_index) const NOEXCEPT
+	{
+		return _Matrix[row_index][column_index];
+	}
+
+	/*
 	*	Returns whether or not this matrix is valid.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD bool IsValid() const NOEXCEPT
@@ -514,46 +556,36 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD Vector3<float32> GetRotation() const NOEXCEPT
 	{
-		//Check for gimbal lock.
-		if (CatalystBaseMath::Absolute(_Matrix[0][2] - -1.0f) < FLOAT32_EPSILON)
+		Vector3<float32> out_rotation;
+
+		out_rotation._Y = CatalystBaseMath::ArcSine(-AtColumnRow(0, 2));
+
+		const float32 C{ CatalystBaseMath::Cosine(out_rotation._Y) };
+
+		if(CatalystBaseMath::Absolute(C) > FLOAT32_EPSILON)
 		{
-			const float32 X{ 0.0f };
-			const float32 Y{ CatalystBaseMathConstants::HALF_PI };
-			const float32 Z{ X + CatalystBaseMath::Arctangent(_Matrix[1][0], _Matrix[2][0]) };
+			float32 tan_x{ AtColumnRow(2, 2) / C };
+			float32 tan_y{ AtColumnRow(1, 2) / C };
 
-			return Vector3<float32>(X, Y, Z);
+			out_rotation._X = CatalystBaseMath::ArcTangent(tan_y, tan_x);
+
+			tan_x = AtColumnRow(0, 0) / C;
+			tan_y = AtColumnRow(0, 1) / C;
+
+			out_rotation._Z = CatalystBaseMath::ArcTangent(tan_y, tan_x);
 		}
-		
-		if (CatalystBaseMath::Absolute(_Matrix[0][2] - 1.0f) < FLOAT32_EPSILON)
-		{
-			const float32 X{ 0.0f };
-			const float32 Y{ -CatalystBaseMathConstants::HALF_PI };
-			const float32 Z{ -X + CatalystBaseMath::Arctangent(-_Matrix[1][0], -_Matrix[2][0]) };
 
-			return Vector3<float32>(X, Y, Z);
-		}
-		
-		//Two solutions exist.
-		const float32 X1{ -CatalystBaseMath::ArcSine(_Matrix[0][2]) };
-		const float32 X2{ CatalystBaseMathConstants::PI - X1 };
-
-		const float32 Y1{ CatalystBaseMath::Arctangent(_Matrix[1][2] / CatalystBaseMath::Cosine(X1), _Matrix[2][2] / CatalystBaseMath::Cosine(X1)) };
-		const float32 Y2{ CatalystBaseMath::Arctangent(_Matrix[1][2] / CatalystBaseMath::Cosine(X2), _Matrix[2][2] / CatalystBaseMath::Cosine(X2)) };
-
-		const float32 Z1{ CatalystBaseMath::Arctangent(_Matrix[0][1] / CatalystBaseMath::Cosine(X1), _Matrix[0][0] / CatalystBaseMath::Cosine(X1)) };
-		const float32 Z2{ CatalystBaseMath::Arctangent(_Matrix[0][1] / CatalystBaseMath::Cosine(X2), _Matrix[0][0] / CatalystBaseMath::Cosine(X2)) };
-
-		//Choose the "shortest" rotation to return.
-		if ((CatalystBaseMath::Absolute(X1) + CatalystBaseMath::Absolute(Y1) + CatalystBaseMath::Absolute(Z1))
-			<= (CatalystBaseMath::Absolute(X2) + CatalystBaseMath::Absolute(Y2) + CatalystBaseMath::Absolute(Z2)))
-		{
-			return Vector3<float32>(X1, Y1, Z1);
-		}
-		
 		else
 		{
-			return Vector3<float32>(X2, Y2, Z2);
+			out_rotation._X = 0.0f;
+
+			const float32 tan_x{ AtColumnRow(1, 1) };
+			const float32 tan_y{ -AtColumnRow(1, 0) };
+
+			out_rotation._Z = CatalystBaseMath::ArcTangent(tan_y, tan_x);
 		}
+
+		return out_rotation;
 	}
 
 	/*
