@@ -558,7 +558,7 @@ public:
 	{
 		Vector3<float32> out_rotation;
 
-		out_rotation._Y = CatalystBaseMath::ArcSine(-AtColumnRow(0, 2));
+		out_rotation._Y = CatalystBaseMath::ArcSine(CatalystBaseMath::Clamp(-AtColumnRow(0, 2), 0.0f, 1.0f));
 
 		const float32 C{ CatalystBaseMath::Cosine(out_rotation._Y) };
 
@@ -572,7 +572,7 @@ public:
 			tan_x = AtColumnRow(0, 0) / C;
 			tan_y = AtColumnRow(0, 1) / C;
 
-			out_rotation._Z = CatalystBaseMath::ArcTangent(tan_y, tan_x);
+			out_rotation._Z = -CatalystBaseMath::ArcTangent(tan_y, tan_x);
 		}
 
 		else
@@ -582,7 +582,7 @@ public:
 			const float32 tan_x{ AtColumnRow(1, 1) };
 			const float32 tan_y{ -AtColumnRow(1, 0) };
 
-			out_rotation._Z = CatalystBaseMath::ArcTangent(tan_y, tan_x);
+			out_rotation._Z = -CatalystBaseMath::ArcTangent(tan_y, tan_x);
 		}
 
 		return out_rotation;

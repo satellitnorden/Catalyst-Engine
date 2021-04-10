@@ -72,6 +72,11 @@ namespace PhysXPhysicsSystemData
 	//The foundation.
 	physx::PxFoundation *RESTRICT _Foundation;
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//The PVD.
+	physx::PxPvd *RESTRICT _PVD;
+#endif
+
 	//The physics.
 	physx::PxPhysics *RESTRICT _Physics;
 
@@ -102,9 +107,20 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 {
 	//Create the foundation.
 	PhysXPhysicsSystemData::_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, PhysXPhysicsSystemData::_DefaultAllocator, PhysXPhysicsSystemData::_DefaultErrorCallback);
+	
+	//Create the PVD.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	PhysXPhysicsSystemData::_PVD = physx::PxCreatePvd(*PhysXPhysicsSystemData::_Foundation);
+	physx::PxPvdTransport *const RESTRICT transport{ physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10) };
+	PhysXPhysicsSystemData::_PVD->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
+#endif
 
 	//Create the physics.
-	PhysXPhysicsSystemData::_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *PhysXPhysicsSystemData::_Foundation, physx::PxTolerancesScale());
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	PhysXPhysicsSystemData::_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *PhysXPhysicsSystemData::_Foundation, physx::PxTolerancesScale(), false, PhysXPhysicsSystemData::_PVD);
+#else
+	PhysXPhysicsSystemData::_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *PhysXPhysicsSystemData::_Foundation, physx::PxTolerancesScale(), false, nullptr);
+#endif
 
 	//Create the dispatcher.
 	PhysXPhysicsSystemData::_Dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
@@ -173,10 +189,10 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 			//Set up the new world transform.
 			WorldTransform new_world_transform;
 			const Vector3<float32> shape_position{ transform.GetTranslation() };
-			new_world_transform.SetAbsolutePosition(shape_position);
+			new_world_transform.SetAbsolutePosition(Vector3<float32>(shape_position._X, shape_position._Y, shape_position._Z));
 
 			const Vector3<float32> rotation{ transform.GetRotation() };
-			new_world_transform.SetRotation(Vector3<float32>(rotation._X, rotation._Y, rotation._Z));
+			new_world_transform.SetRotation(rotation);
 
 			//Set the world transform of the entity.
 			*data._Entity->ModifyWorldTransform() = new_world_transform;
@@ -341,6 +357,17 @@ void PhysicsSystem::SubTerminate() NOEXCEPT
 
 	//Release the physics.
 	PX_RELEASE(PhysXPhysicsSystemData::_Physics);
+
+	//Release the PVD.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	if(PhysXPhysicsSystemData::_PVD)
+	{
+		physx::PxPvdTransport *RESTRICT transport{ PhysXPhysicsSystemData::_PVD->getTransport() };
+		PhysXPhysicsSystemData::_PVD->release();
+		PhysXPhysicsSystemData::_PVD = nullptr;
+		PX_RELEASE(transport);
+	}
+#endif
 
 	//Release the foundation.
 	PX_RELEASE(PhysXPhysicsSystemData::_Foundation);
