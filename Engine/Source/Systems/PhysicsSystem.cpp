@@ -62,6 +62,15 @@ void PhysicsSystem::Terminate() NOEXCEPT
 }
 
 /*
+*	Creates a character controller.
+*/
+RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::CreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT
+{
+	//Create the sub-system character controller.
+	return SubCreateCharacterController(configuration);
+}
+
+/*
 *	Casts a ray.
 */
 void PhysicsSystem::CastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT

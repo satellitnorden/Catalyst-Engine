@@ -112,4 +112,55 @@ public:
 		_W *= inverse_magnitude;
 	}
 
+	/*
+	*	Converts this quaternion to euler angles.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float32> ToEulerAngles() const NOEXCEPT
+	{
+		Vector3<float32> angles;
+
+		//Roll.
+		const float32 sinr_cosp{ 2.0f * (_W * _X + _Y * _Z) };
+		const float32 cosr_cosp{ 1.0f - 2.0f * (_X * _X + _Y * _Y) };
+		angles._X = CatalystBaseMath::ArcTangent(sinr_cosp, cosr_cosp);
+
+		//Pitch.
+		const float32 sinp{ 2.0f * (_W * _Y - _Z * _X) };
+
+		if (CatalystBaseMath::Absolute(sinp) >= 1.0f)
+		{
+			angles._Y = std::copysign(CatalystBaseMathConstants::HALF_PI, sinp);
+		}
+
+		else
+		{
+			angles._Y = std::asin(sinp);
+		}
+
+		//Yaw.
+		const float32 siny_cosp{ 2.0f * (_W * _Z + _X * _Y) };
+		const float32 cosy_cosp{ 1.0f - 2.0f * (_Y * _Y + _Z * _Z) };
+		angles._Z = CatalystBaseMath::ArcTangent(siny_cosp, cosy_cosp);
+
+		return angles;
+	}
+
+	/*
+	*	Converts euler angles to this quaternion.
+	*/
+	FORCE_INLINE void FromEulerAngles(const Vector3<float32> angles) NOEXCEPT
+	{
+		const float32 cr{ cos(angles._X * 0.5f) };
+		const float32 sr{ sin(angles._X * 0.5f) };
+		const float32 cp{ cos(angles._Y * 0.5f) };
+		const float32 sp{ sin(angles._Y * 0.5f) };
+		const float32 cy{ cos(angles._Z * 0.5f) };
+		const float32 sy{ sin(angles._Z * 0.5f) };
+
+		_X = sr * cp * cy - cr * sp * sy;
+		_Y = cr * sp * cy + sr * cp * sy;
+		_Z = cr * cp * sy - sr * sp * cy;
+		_W = cr * cp * cy + sr * sp * sy;
+	}
+
 };

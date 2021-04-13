@@ -7,6 +7,8 @@
 #include <Math/Geometry/Ray.h>
 
 //Physics.
+#include <Physics/Native/CharacterController.h>
+#include <Physics/Native/CharacterControllerConfiguration.h>
 #include <Physics/Native/CharacterPhysicsSystem.h>
 #include <Physics/Native/ModelPhysicsSystem.h>
 #include <Physics/Native/PhysicsCore.h>
@@ -48,6 +50,11 @@ public:
 	*	Terminates the physics system.
 	*/
 	void Terminate() NOEXCEPT;
+
+	/*
+	*	Creates a character controller.
+	*/
+	RESTRICTED NO_DISCARD CharacterController *const RESTRICT CreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Returns the character physics system.
@@ -107,6 +114,11 @@ private:
 	*	Terminates the physics sub-system.
 	*/
 	void SubTerminate() NOEXCEPT;
+
+	/*
+	*	Creates a sub-system character controller.
+	*/
+	RESTRICTED NO_DISCARD CharacterController *const RESTRICT SubCreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Casts a ray against the terrain.

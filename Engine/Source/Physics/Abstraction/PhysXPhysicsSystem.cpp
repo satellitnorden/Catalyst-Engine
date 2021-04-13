@@ -5,11 +5,15 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Physics.
+#include <Physics/Abstraction/PhysXCharacterControllerAbstractionData.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/MemorySystem.h>
 
 //Third party.
 #include <ThirdParty/PhysX/PxPhysicsAPI.h>
@@ -70,24 +74,27 @@ namespace PhysXPhysicsSystemData
 	physx::PxDefaultErrorCallback _DefaultErrorCallback;
 	
 	//The foundation.
-	physx::PxFoundation *RESTRICT _Foundation;
+	physx::PxFoundation *RESTRICT _Foundation{ nullptr };
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//The PVD.
-	physx::PxPvd *RESTRICT _PVD;
+	physx::PxPvd *RESTRICT _PVD{ nullptr };
 #endif
 
 	//The physics.
-	physx::PxPhysics *RESTRICT _Physics;
+	physx::PxPhysics *RESTRICT _Physics{ nullptr };
 
 	//The dispatcher.
-	physx::PxDefaultCpuDispatcher *RESTRICT _Dispatcher;
+	physx::PxDefaultCpuDispatcher *RESTRICT _Dispatcher{ nullptr };
 
 	//The scene.
-	physx::PxScene *RESTRICT _Scene;
+	physx::PxScene *RESTRICT _Scene{ nullptr };
 
 	//The default material.
-	physx::PxMaterial *RESTRICT _DefaultMaterial;
+	physx::PxMaterial *RESTRICT _DefaultMaterial{ nullptr };
+
+	//The controller manager.
+	physx::PxControllerManager *RESTRICT _ControllerManager{ nullptr };
 
 	//The dynamic model entity data.
 	DynamicArray<DynamicModelEntityData> _DynamicModelEntityData;
@@ -136,6 +143,9 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 	//Create the default material.
 	PhysXPhysicsSystemData::_DefaultMaterial = PhysXPhysicsSystemData::_Physics->createMaterial(0.5f, 0.5f, 0.6f);
 
+	//Create the controller manager.
+	PhysXPhysicsSystemData::_ControllerManager = PxCreateControllerManager(*PhysXPhysicsSystemData::_Scene);
+
 	//Create the ground plane.
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*PhysXPhysicsSystemData::_Physics, physx::PxPlane(0,1,0,0), *PhysXPhysicsSystemData::_DefaultMaterial);
 	PhysXPhysicsSystemData::_Scene->addActor(*groundPlane);
@@ -175,24 +185,31 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 		//Update all dynamic models.
 		for (const DynamicModelEntityData &data : PhysXPhysicsSystemData::_DynamicModelEntityData)
 		{
-			//Retrieve the transform.
-			Matrix4x4 transform;
+			//Retrieve the position/rotation.
+			Vector3<float32> position;
+			Quaternion rotation;
 
 			{
 				physx::PxShape *RESTRICT shape;
 				data._Actor->getShapes(&shape, 1);
 				const physx::PxTransform translation_offset{ physx::PxVec3(data._TranslationOffset._X, data._TranslationOffset._Y, data._TranslationOffset._Z) };
-				const physx::PxMat44 final_transform{ data._Actor->getGlobalPose() * shape->getLocalPose() * translation_offset };
-				Memory::Copy(&transform, &final_transform, sizeof(Matrix4x4));
+				const physx::PxTransform final_transform{ data._Actor->getGlobalPose() * shape->getLocalPose() * translation_offset };
+
+				Memory::Copy(&position, &final_transform.p, sizeof(Vector3<float32>));
+				Memory::Copy(&rotation, &final_transform.q, sizeof(Quaternion));
+
+				//PhysX uses a right handed coordinate system, while the Catalyst engine uses a left handed coordinate system, so transform between those.
+				position._Z = -position._Z;
+				rotation._Z = -rotation._Z;
 			}
 
 			//Set up the new world transform.
 			WorldTransform new_world_transform;
-			const Vector3<float32> shape_position{ transform.GetTranslation() };
-			new_world_transform.SetAbsolutePosition(Vector3<float32>(shape_position._X, shape_position._Y, shape_position._Z));
 
-			const Vector3<float32> rotation{ transform.GetRotation() };
-			new_world_transform.SetRotation(rotation);
+			new_world_transform.SetAbsolutePosition(position);
+
+			const Vector3<float32> euler_angles{ rotation.ToEulerAngles() };
+			new_world_transform.SetRotation(-euler_angles);
 
 			//Set the world transform of the entity.
 			*data._Entity->ModifyWorldTransform() = new_world_transform;
@@ -346,6 +363,9 @@ void PhysicsSystem::SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOE
 */
 void PhysicsSystem::SubTerminate() NOEXCEPT
 {
+	//Release the controller manager.
+	PX_RELEASE(PhysXPhysicsSystemData::_ControllerManager);
+
 	//Release the default material.
 	PX_RELEASE(PhysXPhysicsSystemData::_DefaultMaterial);
 
@@ -371,5 +391,32 @@ void PhysicsSystem::SubTerminate() NOEXCEPT
 
 	//Release the foundation.
 	PX_RELEASE(PhysXPhysicsSystemData::_Foundation);
+}
+
+/*
+*	Creates a sub-system character controller.
+*/
+RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT
+{
+	//Set up the abstraction data.
+	Any<CharacterController::ABSTRACTION_DATA_SIZE> abstraction_data;
+
+	//Create the controller.
+	{
+		physx::PxCapsuleControllerDesc description;
+
+		description.setToDefault();
+
+		description.material = PhysXPhysicsSystemData::_DefaultMaterial;
+		description.radius = configuration._CapsuleRadius;
+		description.height = configuration._CapsuleHeight;
+		description.climbingMode = physx::PxCapsuleClimbingMode::Enum::eEASY;
+
+		ASSERT(description.isValid(), "Description is invalid!");
+
+		abstraction_data.Get<PhysXCharacterControllerAbstractionData>()->_Controller = PhysXPhysicsSystemData::_ControllerManager->createController(description);
+	}
+
+	return new (MemorySystem::Instance->TypeAllocate<CharacterController>()) CharacterController(abstraction_data);
 }
 #endif

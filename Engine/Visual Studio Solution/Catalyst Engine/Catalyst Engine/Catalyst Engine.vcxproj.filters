@@ -424,6 +424,9 @@
     <Filter Include="Physics\Source\Abstraction">
       <UniqueIdentifier>{aafd3663-24fd-46b8-ac74-5c97e1aa820a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics\Include\Abstraction">
+      <UniqueIdentifier>{09c94e25-2aef-447b-9e0b-7bda28dfb504}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1800,6 +1803,18 @@
     <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h">
       <Filter>Physics\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\CharacterController.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\CharacterControllerConfiguration.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysXCharacterControllerAbstractionData.h">
+      <Filter>Physics\Include\Abstraction</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\General\EulerAngles.h">
+      <Filter>Math\Include\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2406,6 +2421,9 @@
       <Filter>Physics\Source\Native</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp">
+      <Filter>Physics\Source\Abstraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXCharacterController.cpp">
       <Filter>Physics\Source\Abstraction</Filter>
     </ClCompile>
   </ItemGroup>

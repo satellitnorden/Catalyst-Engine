@@ -161,6 +161,7 @@
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystGeometryMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystPhysicsMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystRandomMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\General\EulerAngles.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Interpolator.h" />
     <ClInclude Include="..\..\..\Include\Math\General\Matrix.h" />
     <ClInclude Include="..\..\..\Include\Math\General\PIDecimalGenerator.h" />
@@ -189,6 +190,9 @@
     <ClInclude Include="..\..\..\Include\Memory\Memory.h" />
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h" />
     <ClInclude Include="..\..\..\Include\Memory\UniquePointer.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysXCharacterControllerAbstractionData.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\CharacterController.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\CharacterControllerConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\CharacterMovement.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\CharacterPhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\ModelCollisionConfiguration.h" />
@@ -530,6 +534,7 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
     <ClCompile Include="..\..\..\Source\Memory\OperatorNewDeleteOverload.cpp" />
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXCharacterController.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Native\CharacterPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Native\ModelPhysicsSystem.cpp" />

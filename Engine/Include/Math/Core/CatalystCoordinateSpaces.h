@@ -24,7 +24,10 @@ namespace CatalystScreenCoordinateSpace
 
 }
 
-//Definitions for the Catalyst world coordinate space.
+/*
+*	Definitions for the Catalyst world coordinate space.
+*	The Catalyst world coordinate space is left handed with positive X being right, positive Y being up and positive Z being forward.
+*/
 namespace CatalystWorldCoordinateSpace
 {
 
