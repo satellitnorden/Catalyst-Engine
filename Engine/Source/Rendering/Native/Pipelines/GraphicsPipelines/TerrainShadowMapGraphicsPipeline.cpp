@@ -143,16 +143,6 @@ void TerrainShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_m
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
 
-	//Is everything that is needed to render terrain available?
-	//Is everything that is needed to render terrain available?
-	if (!TerrainSystem::Instance->GetTerrainProperties()->_TerrainHeightFunction
-		|| !TerrainSystem::Instance->GetTerrainProperties()->_TerrainMaterialFunction)
-	{
-		SetIncludeInRender(false);
-
-		return;
-	}
-
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
 	SetCommandBuffer(command_buffer);

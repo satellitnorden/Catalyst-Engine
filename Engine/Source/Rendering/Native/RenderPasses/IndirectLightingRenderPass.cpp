@@ -4,6 +4,10 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
+//Preprocessor.
+#define USE_SPATIAL_DENOISING (0)
+#define USE_TEMPORAL_DENOISING (0)
+
 //Singleton definition.
 DEFINE_SINGLETON(IndirectLightingRenderPass);
 
@@ -230,6 +234,7 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 		}
 	}
 
+#if USE_SPATIAL_DENOISING
 	if (!RenderingSystem::Instance->IsTakingScreenshot()
 		&& RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE)
 	{
@@ -279,6 +284,7 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	else
+#endif
 	{
 		for (IndirectLightingSpatialDenoisingGraphicsPipeline& pipeline : _IndirectLightingSpatialDenoisingGraphicsPipelines)
 		{
@@ -286,9 +292,8 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 		}
 	}
 
-	//Execute the current buffer, don't include the rest.
-	if (/*!RenderingSystem::Instance->IsTakingScreenshot()
-		&& */RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE)
+#if USE_TEMPORAL_DENOISING
+	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE)
 	{
 		switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality())
 		{
@@ -345,6 +350,7 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	}
 
 	else
+#endif
 	{
 		for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
 		{

@@ -1816,7 +1816,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
 			parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
 			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.0f));
+			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.25f, 0.75f, 1.0f, 0.0f));
 			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
 			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 			parameters._EmissiveMultiplier = 0.0f;

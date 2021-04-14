@@ -108,6 +108,24 @@ void EditorRenderingSystem::Update() NOEXCEPT
 		{
 			if (ImGui::Button("Indirect Lighting Mode: Screen Space"))
 			{
+				if (RenderingSystem::Instance->IsRayTracingSupported())
+				{
+					RenderingSystem::Instance->GetRenderingConfiguration()->SetIndirectLightingMode(RenderingConfiguration::IndirectLightingMode::RAY_TRACED);
+				}
+
+				else
+				{
+					RenderingSystem::Instance->GetRenderingConfiguration()->SetIndirectLightingMode(RenderingConfiguration::IndirectLightingMode::NONE);
+				}
+			}
+
+			break;
+		}
+
+		case RenderingConfiguration::IndirectLightingMode::RAY_TRACED:
+		{
+			if (ImGui::Button("Indirect Lighting Mode: Ray Traced"))
+			{
 				RenderingSystem::Instance->GetRenderingConfiguration()->SetIndirectLightingMode(RenderingConfiguration::IndirectLightingMode::NONE);
 			}
 

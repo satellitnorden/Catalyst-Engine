@@ -149,6 +149,10 @@
     <ClInclude Include="..\..\..\Include\File\Writers\PNGWriter.h" />
     <ClInclude Include="..\..\..\Include\File\Writers\TGAWriter.h" />
     <ClInclude Include="..\..\..\Include\File\Writers\WAVWriter.h" />
+    <ClInclude Include="..\..\..\Include\Gameplay\Character.h" />
+    <ClInclude Include="..\..\..\Include\Gameplay\CharacterConfiguration.h" />
+    <ClInclude Include="..\..\..\Include\Gameplay\Player.h" />
+    <ClInclude Include="..\..\..\Include\Gameplay\PlayerConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\Include\Input\InputCore.h" />
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />
@@ -532,6 +536,8 @@
     <ClCompile Include="..\..\..\Source\Entities\Types\ParticleSystemEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\SoundEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Types\StaticModelEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Gameplay\Character.cpp" />
+    <ClCompile Include="..\..\..\Source\Gameplay\Player.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
     <ClCompile Include="..\..\..\Source\Memory\OperatorNewDeleteOverload.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXCharacterController.cpp" />

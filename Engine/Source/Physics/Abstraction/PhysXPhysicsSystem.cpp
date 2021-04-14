@@ -218,6 +218,41 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 }
 
 /*
+*	Terminates the physics sub-system.
+*/
+void PhysicsSystem::SubTerminate() NOEXCEPT
+{
+	//Release the controller manager.
+	PX_RELEASE(PhysXPhysicsSystemData::_ControllerManager);
+
+	//Release the default material.
+	PX_RELEASE(PhysXPhysicsSystemData::_DefaultMaterial);
+
+	//Release the scene.
+	PX_RELEASE(PhysXPhysicsSystemData::_Scene);
+
+	//Release the dispatcher.
+	PX_RELEASE(PhysXPhysicsSystemData::_Dispatcher);
+
+	//Release the physics.
+	PX_RELEASE(PhysXPhysicsSystemData::_Physics);
+
+	//Release the PVD.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	if(PhysXPhysicsSystemData::_PVD)
+	{
+		physx::PxPvdTransport *RESTRICT transport{ PhysXPhysicsSystemData::_PVD->getTransport() };
+		PhysXPhysicsSystemData::_PVD->release();
+		PhysXPhysicsSystemData::_PVD = nullptr;
+		PX_RELEASE(transport);
+	}
+#endif
+
+	//Release the foundation.
+	PX_RELEASE(PhysXPhysicsSystemData::_Foundation);
+}
+
+/*
 *	Initializes the sub-system physics for the given entity.
 */
 void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
@@ -359,38 +394,23 @@ void PhysicsSystem::SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOE
 }
 
 /*
-*	Terminates the physics sub-system.
+*	Adds an sub-system impulse at the given world position with the given force.
 */
-void PhysicsSystem::SubTerminate() NOEXCEPT
+void PhysicsSystem::SubAddImpulse(const WorldPosition &world_position, const float32 force) NOEXCEPT
 {
-	//Release the controller manager.
-	PX_RELEASE(PhysXPhysicsSystemData::_ControllerManager);
+	//Calculate the PhysX position.
+	const Vector3<float32> absolute_world_position{ world_position.GetAbsolutePosition() };
+	const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
 
-	//Release the default material.
-	PX_RELEASE(PhysXPhysicsSystemData::_DefaultMaterial);
-
-	//Release the scene.
-	PX_RELEASE(PhysXPhysicsSystemData::_Scene);
-
-	//Release the dispatcher.
-	PX_RELEASE(PhysXPhysicsSystemData::_Dispatcher);
-
-	//Release the physics.
-	PX_RELEASE(PhysXPhysicsSystemData::_Physics);
-
-	//Release the PVD.
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	if(PhysXPhysicsSystemData::_PVD)
+	//Apply impulses to all dynamic models.
+	for (const DynamicModelEntityData &data : PhysXPhysicsSystemData::_DynamicModelEntityData)
 	{
-		physx::PxPvdTransport *RESTRICT transport{ PhysXPhysicsSystemData::_PVD->getTransport() };
-		PhysXPhysicsSystemData::_PVD->release();
-		PhysXPhysicsSystemData::_PVD = nullptr;
-		PX_RELEASE(transport);
-	}
-#endif
+		//Calculate the force magnitude.
+		const Vector3<float32> force_magnitude{ Vector3<float32>::Normalize(data._Entity->GetWorldTransform()->GetAbsolutePosition() - absolute_world_position) * force };
+		const physx::PxVec3 physx_force_magnitude{ force_magnitude._X, force_magnitude._Y, -force_magnitude._Z };
 
-	//Release the foundation.
-	PX_RELEASE(PhysXPhysicsSystemData::_Foundation);
+		physx::PxRigidBodyExt::addForceAtPos(*data._Actor, physx_force_magnitude, physx_position, physx::PxForceMode::Enum::eIMPULSE);
+	}
 }
 
 /*
@@ -407,10 +427,11 @@ RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCrea
 
 		description.setToDefault();
 
+		description.stepOffset = 0.25f;
 		description.material = PhysXPhysicsSystemData::_DefaultMaterial;
 		description.radius = configuration._CapsuleRadius;
 		description.height = configuration._CapsuleHeight;
-		description.climbingMode = physx::PxCapsuleClimbingMode::Enum::eEASY;
+		description.climbingMode = physx::PxCapsuleClimbingMode::Enum::eCONSTRAINED;
 
 		ASSERT(description.isValid(), "Description is invalid!");
 

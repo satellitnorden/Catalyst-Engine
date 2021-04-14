@@ -102,6 +102,7 @@ vec4 SampleIndirectLighting(vec2 coordinate)
 void CatalystShaderMain()
 {
 	//Sample the indirect lighting while sharpening it a bit.
+#if 0 //Apply sharpening.
 	vec4 indirect_lighting = 	SampleIndirectLighting(fragment_texture_coordinate) * 9.0f
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
@@ -111,6 +112,9 @@ void CatalystShaderMain()
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
 								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
+#else
+	vec4 indirect_lighting = SampleIndirectLighting(fragment_texture_coordinate);
+#endif
 
 	//No negative values. \o/
 	indirect_lighting = vec4(max(indirect_lighting.rgb, vec3(0.0f, 0.0f, 0.0f)), clamp(indirect_lighting.a, 0.0f, 1.0f));
@@ -124,19 +128,21 @@ void CatalystShaderMain()
 	vec3 specular_direction = reflect(view_direction, scene_features_2.xyz);
 	vec3 diffuse_direction = scene_features_2.xyz;
 
-	float diffuse_weight = scene_features_3[0];
+	float diffuse_weight = scene_features_3[0] * (1.0f - scene_features_3[1]);
 
 	vec3 indirect_lighting_direction = normalize(mix(specular_direction, diffuse_direction, diffuse_weight));
 
-	vec3 sky_lighting = CalculateIndirectLighting(	-view_direction,
-													scene_features_1.rgb,
-													scene_features_2.xyz,
-													scene_features_3[0],
-													scene_features_3[1],
-													scene_features_3[2],
-													SampleSky(indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight));
+	vec3 sky_lighting = CalculateLighting(	-view_direction,
+											scene_features_1.rgb,
+											scene_features_2.xyz,
+											scene_features_3[0],
+											scene_features_3[1],
+											scene_features_3[2],
+											1.0f,
+											-indirect_lighting_direction,
+											SampleSky(indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight));
 
-	indirect_lighting.rgb = mix(sky_lighting, indirect_lighting.rgb, indirect_lighting.a);
+	indirect_lighting.rgb = mix(sky_lighting, indirect_lighting.rgb, indirect_lighting.a * (1.0f - diffuse_weight));
 
 	//Write the fragment.
 	scene = vec4(indirect_lighting.rgb, 1.0f);

@@ -31,6 +31,12 @@ public:
 	void(*_InitializationFunction)();
 
 	/*
+	*	The post-initialization function.
+	*	Recommended: A non-nullptr function pointer to a game system function.
+	*/
+	void(*_PostInitializationFunction)();
+
+	/*
 	*	The start game function.
 	*	Recommended: A non-nullptr function pointer to a game system function.
 	*/

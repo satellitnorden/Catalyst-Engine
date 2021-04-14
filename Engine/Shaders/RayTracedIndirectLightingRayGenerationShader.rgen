@@ -5,9 +5,6 @@
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
-//Constants.
-#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
-
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
@@ -51,31 +48,38 @@ void CatalystShaderMain()
 
 	//Accumulate the output data.
 	vec3 radiance = vec3(0.0f, 0.0f, 0.0f);
+	float hit = 0.0f;
 
 	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
 	{
 		//Sample the noise texture.
 		path_tracing_ray_payload.random_noise = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i);
 
+		//Calculate the random rotation matrix.
+		mat3 random_rotation = CalculateGramSchmidtRotationMatrix(shading_normal, path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f);
+
+		//Calculate the random hemisphere sample start index.
+		uint random_hemisphere_sample_start_index = uint(path_tracing_ray_payload.random_noise.w * 64.0f);
+
 		//Sample the random hemisphere sample.
 		vec3 random_hemisphere_direction;
 		float random_length;
 
-		SampleHammersleyHemisphereSample(uint(path_tracing_ray_payload.random_noise.w * 64.0f) + uint(gl_LaunchIDNV.x) + uint(gl_LaunchIDNV.y) + i, random_hemisphere_direction, random_length);
+		SampleHammersleyHemisphereSample(i + random_hemisphere_sample_start_index + uint(gl_LaunchIDNV.x) + uint(gl_LaunchIDNV.y) + i, random_hemisphere_direction, random_length);
 
 		path_tracing_ray_payload.random_hemisphere_sample = vec4(random_hemisphere_direction, random_length);
 
-		//Calculate the indirect lighting direction.
-		vec3 indirect_lighting_direction = CalculateGramSchmidtRotationMatrix(shading_normal, path_tracing_ray_payload.random_noise.xyz * 2.0f - 1.0f) * path_tracing_ray_payload.random_hemisphere_sample.xyz;
+		//Rotate the random direction.
+		random_hemisphere_direction = random_rotation * random_hemisphere_direction;
 
 		//Flip the direction, if needed.
-		indirect_lighting_direction = dot(indirect_lighting_direction, shading_normal) >= 0.0f ? indirect_lighting_direction : -indirect_lighting_direction;
+		random_hemisphere_direction = dot(random_hemisphere_direction, shading_normal) >= 0.0f ? random_hemisphere_direction : -random_hemisphere_direction;
 
 		//Calculate the reflection direction.
 		vec3 reflection_direction = reflect(view_direction, shading_normal);
 
 		//Blend the random hemisphere direction and the reflection direction based on the material properties.
-		indirect_lighting_direction = normalize(mix(reflection_direction, indirect_lighting_direction, diffuse_weight));
+		vec3 indirect_lighting_direction = normalize(mix(reflection_direction, random_hemisphere_direction, diffuse_weight));
 
 		//Reset the payload.
 		path_tracing_ray_payload.current_recursion_depth = UINT32_MAXIMUM; //Force the closest hit shaders to never fire any more rays.
@@ -104,11 +108,12 @@ void CatalystShaderMain()
 										1.0f,
 										-indirect_lighting_direction,
 										path_tracing_ray_payload.radiance);
+		hit += float(path_tracing_ray_payload.hit_distance < VIEW_DISTANCE);
 	}
 
 	//Normalize the output data.
 	radiance /= float(NUMBER_OF_SAMPLES);
 
 	//Write to the image.
-	imageStore(indirect_lighting_image, ivec2(gl_LaunchIDNV.xy), vec4(radiance, 1.0f));
+	imageStore(indirect_lighting_image, ivec2(gl_LaunchIDNV.xy), vec4(radiance, min(hit, 1.0f)));
 }

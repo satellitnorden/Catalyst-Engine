@@ -427,6 +427,15 @@
     <Filter Include="Physics\Include\Abstraction">
       <UniqueIdentifier>{09c94e25-2aef-447b-9e0b-7bda28dfb504}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gameplay">
+      <UniqueIdentifier>{48cf0f25-0c62-4b81-8a18-f1238a081d49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Include">
+      <UniqueIdentifier>{3da21074-67ee-41b7-9898-93d995c01b47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Source">
+      <UniqueIdentifier>{1bc20d65-b9bb-4fd6-8437-7b55e5fa75c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1815,6 +1824,18 @@
     <ClInclude Include="..\..\..\Include\Math\General\EulerAngles.h">
       <Filter>Math\Include\General</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Gameplay\Character.h">
+      <Filter>Gameplay\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Gameplay\CharacterConfiguration.h">
+      <Filter>Gameplay\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Gameplay\Player.h">
+      <Filter>Gameplay\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Gameplay\PlayerConfiguration.h">
+      <Filter>Gameplay\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2425,6 +2446,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXCharacterController.cpp">
       <Filter>Physics\Source\Abstraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Gameplay\Character.cpp">
+      <Filter>Gameplay\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Gameplay\Player.cpp">
+      <Filter>Gameplay\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

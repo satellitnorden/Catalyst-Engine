@@ -176,6 +176,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	RenderingSystem::Instance->EditorPostInitialize();
 #endif
 
+	//Post-nitialize the game system.
+	_ProjectConfiguration._GeneralConfiguration._PostInitializationFunction();
+
 #if !defined(CATALYST_EDITOR)
 	//If this is a pure game build, start the game immediately.
 	_ProjectConfiguration._GeneralConfiguration._StartGameFunction();

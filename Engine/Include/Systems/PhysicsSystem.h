@@ -37,6 +37,11 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
+	*	Terminates the physics system.
+	*/
+	void Terminate() NOEXCEPT;
+
+	/*
 	*	Initializes the physics for the given entity.
 	*/
 	void InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
@@ -45,11 +50,6 @@ public:
 	*	Terminates the physics for the given entity.
 	*/
 	void TerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
-
-	/*
-	*	Terminates the physics system.
-	*/
-	void Terminate() NOEXCEPT;
 
 	/*
 	*	Creates a character controller.
@@ -77,6 +77,11 @@ public:
 	*/
 	void CastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT;
 
+	/*
+	*	Adds an impulse at the given world position with the given force.
+	*/
+	void AddImpulse(const WorldPosition &world_position, const float32 force) NOEXCEPT;
+
 private:
 
 	//The character physics system.
@@ -101,6 +106,11 @@ private:
 	void SubPhysicsUpdate() NOEXCEPT;
 
 	/*
+	*	Terminates the physics sub-system.
+	*/
+	void SubTerminate() NOEXCEPT;
+
+	/*
 	*	Initializes the sub-system physics for the given entity.
 	*/
 	void SubInitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
@@ -111,9 +121,9 @@ private:
 	void SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
 
 	/*
-	*	Terminates the physics sub-system.
+	*	Adds an sub-system impulse at the given world position with the given force.
 	*/
-	void SubTerminate() NOEXCEPT;
+	void SubAddImpulse(const WorldPosition &world_position, const float32 force) NOEXCEPT;
 
 	/*
 	*	Creates a sub-system character controller.

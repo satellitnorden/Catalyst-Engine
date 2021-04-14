@@ -143,13 +143,15 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 
 						vec3 sample_ray_direction = normalize(mix(sample_specular_direction, sample_diffuse_direction, diffuse_weight));
 
-						scene_radiance += CalculateIndirectLighting(-ray_direction,
-																	sample_scene_features_1.rgb,
-																	sample_scene_features_2.xyz,
-																	sample_scene_features_3[0],
-																	sample_scene_features_3[1],
-																	sample_scene_features_3[2],
-																	SampleSky(sample_ray_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight));
+						scene_radiance += CalculateLighting(-ray_direction,
+															sample_scene_features_1.rgb,
+															sample_scene_features_2.xyz,
+															sample_scene_features_3[0],
+															sample_scene_features_3[1],
+															sample_scene_features_3[2],
+															1.0f,
+															-sample_ray_direction,
+															SampleSky(sample_ray_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight));
 					}
 
 					//Calculate the hit radiance.
@@ -208,14 +210,22 @@ void CatalystShaderMain()
 	//Normalize the indirect lighting.
 	indirect_lighting = total_weight != 0.0f ? indirect_lighting / total_weight : vec3(0.0f);
 	
+	//Calculate the reflection direction.
+	vec3 reflection_direction = reflect(view_direction, scene_features_2.xyz);
+
+	//Calculate the indirect lighting direction.
+	vec3 indirect_lighting_direction = normalize(mix(reflection_direction, scene_features_2.xyz, scene_features_3[0] * (1.0f - scene_features_3[1])));
+
 	//Calculate the lighting.
-	indirect_lighting = CalculateIndirectLighting(	-view_direction,
-													scene_features_1.rgb,
-													scene_features_2.xyz,
-													scene_features_3[0],
-													scene_features_3[1],
-													scene_features_3[2],
-													indirect_lighting);
+	indirect_lighting = CalculateLighting(	-view_direction,
+											scene_features_1.rgb,
+											scene_features_2.xyz,
+											scene_features_3[0],
+											scene_features_3[1],
+											scene_features_3[2],
+											1.0f,
+											-indirect_lighting_direction,
+											indirect_lighting);
 
     //Write the fragment
     fragment = vec4(indirect_lighting, min(total_weight, 1.0f));

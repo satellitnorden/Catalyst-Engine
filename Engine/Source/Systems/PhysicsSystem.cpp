@@ -35,6 +35,15 @@ void PhysicsSystem::Initialize() NOEXCEPT
 }
 
 /*
+*	Terminates the physics system.
+*/
+void PhysicsSystem::Terminate() NOEXCEPT
+{
+	//Terminate the sub system.
+	SubTerminate();
+}
+
+/*
 *	Initializes the physics for the given entity.
 */
 void PhysicsSystem::InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
@@ -50,15 +59,6 @@ void PhysicsSystem::TerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCE
 {
 	//Terminate the sub-system physics for this entity.
 	SubTerminateEntityPhysics(entity);
-}
-
-/*
-*	Terminates the physics system.
-*/
-void PhysicsSystem::Terminate() NOEXCEPT
-{
-	//Terminate the sub system.
-	SubTerminate();
 }
 
 /*
@@ -97,6 +97,15 @@ void PhysicsSystem::CastRay(const Ray &ray, const RaycastConfiguration &configur
 	{
 		CastRayTerrain(ray, configuration, result);
 	}
+}
+
+/*
+*	Adds an impulse at the given world position with the given force.
+*/
+void PhysicsSystem::AddImpulse(const WorldPosition &world_position, const float32 force) NOEXCEPT
+{
+	//Add a sub-system impulse.
+	SubAddImpulse(world_position, force);
 }
 
 /*
