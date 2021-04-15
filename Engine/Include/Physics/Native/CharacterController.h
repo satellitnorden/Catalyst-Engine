@@ -45,6 +45,11 @@ public:
 	*/
 	void Move(const Vector3<float32> &displacement) NOEXCEPT;
 
+	/*
+	*	Resizes the capsule height of this character controller.
+	*/
+	void ResizeCapsuleHeight(const float32 new_height) NOEXCEPT;
+
 private:
 
 	//The abstraction data.

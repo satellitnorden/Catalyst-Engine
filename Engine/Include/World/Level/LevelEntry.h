@@ -7,7 +7,7 @@
 
 //Physics.
 #include <Physics/Native/ModelCollisionConfiguration.h>
-#include <Physics/Native/ModelPhysicsSimulationData.h>
+#include <Physics/Native/ModelSimulationConfiguration.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -47,11 +47,8 @@ public:
 		//The model collision configuration.
 		ModelCollisionConfiguration _ModelCollisionConfiguration;
 
-		//Denotes whether or not to simulate physics.
-		bool _SimulatePhysics;
-
-		//The model physics simulation data.
-		ModelPhysicsSimulationData _ModelPhysicsSimulationData;
+		//The model simulation configuration.
+		ModelSimulationConfiguration _ModelSimulationConfiguration;
 
 	};
 

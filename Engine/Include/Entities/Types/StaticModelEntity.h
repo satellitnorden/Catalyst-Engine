@@ -48,12 +48,7 @@ public:
 	/*
 	*	Returns the initialization data required to duplicate this entity.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT GetDuplicationInitializationData() const NOEXCEPT
-	{
-		ASSERT(false, "This entity type does not have this function implemented!");
-
-		return nullptr;
-	}
+	RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT GetDuplicationInitializationData() const NOEXCEPT;
 
 	/*
 	*	Returns the model resource.
@@ -102,9 +97,9 @@ public:
 
 #if defined(CATALYST_EDITOR)
 	/*
-	*	Returns the world transform.
+	*	Sets the world transform.
 	*/
-	RESTRICTED NO_DISCARD WorldTransform *const RESTRICT ModifyWorldTransform() NOEXCEPT;
+	void SetWorldTransform(const WorldTransform &new_world_transform) NOEXCEPT;
 #endif
 
 	/*
@@ -121,5 +116,12 @@ public:
 	*	Returns the level of detail index at the given mesh index.
 	*/
 	NO_DISCARD uint64 GetLevelOfDetailindex(const uint64 mesh_index) const NOEXCEPT;
+
+private:
+
+	/*
+	*	Updates the world space axis aligned bounding box.
+	*/
+	void UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
 
 };

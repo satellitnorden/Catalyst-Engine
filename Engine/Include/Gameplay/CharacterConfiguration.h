@@ -12,11 +12,17 @@ class CharacterConfiguration final
 
 public:
 
+	//The standing height.
+	float32 _StandingHeight{ 2.0f };
+
 	//The standing walking speed.
 	float32 _StandingWalkingSpeed{ 5.0f };
 
 	//The standing running speed.
 	float32 _StandingRunningSpeed{ 10.0f };
+
+	//The crouching height.
+	float32 _CrouchingHeight{ 1.0f };
 
 	//The crouching walking speed.
 	float32 _CrouchingWalkingSpeed{ 2.5f };

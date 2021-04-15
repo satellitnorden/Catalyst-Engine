@@ -45,9 +45,8 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 					data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(level_entry._DynamicModelData._MaterialResourceIdentifiers[i]);
 				}
 
-				data->_ModelCollisionConfiguration._Type = level_entry._DynamicModelData._ModelCollisionConfiguration._Type;
-				data->_SimulatePhysics = level_entry._DynamicModelData._SimulatePhysics;
-				data->_ModelPhysicsSimulationData = level_entry._DynamicModelData._ModelPhysicsSimulationData;
+				data->_ModelCollisionConfiguration = level_entry._DynamicModelData._ModelCollisionConfiguration;
+				data->_ModelSimulationConfiguration = level_entry._DynamicModelData._ModelSimulationConfiguration;
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
 

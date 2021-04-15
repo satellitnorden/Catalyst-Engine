@@ -6,6 +6,10 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
+//Physics.
+#include <Physics/Native/ModelCollisionConfiguration.h>
+#include <Physics/Native/ModelSimulationConfiguration.h>
+
 //Resources.
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
@@ -80,9 +84,9 @@ public:
 	RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT GetWorldTransform() const NOEXCEPT;
 
 	/*
-	*	Returns the world transform. Assumes the world transform will be modified, and will notify relevant systems.
+	*	Sets the world transform.
 	*/
-	RESTRICTED NO_DISCARD WorldTransform *const RESTRICT ModifyWorldTransform() NOEXCEPT;
+	void SetWorldTransform(const WorldTransform &new_world_transform) NOEXCEPT;
 
 	/*
 	*	Returns the model space axis aligned bounding box.
@@ -93,5 +97,15 @@ public:
 	*	Returns the world space axis aligned bounding box.
 	*/
 	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT;
+
+	/*
+	*	Returns the model collision configuration.
+	*/
+	RESTRICTED NO_DISCARD const ModelCollisionConfiguration *const RESTRICT GetModelCollisionConfiguration() const NOEXCEPT;
+
+	/*
+	*	Returns the model simulation configuration.
+	*/
+	RESTRICTED NO_DISCARD const ModelSimulationConfiguration *const RESTRICT GetModelSimulationConfiguration() const NOEXCEPT;
 
 };

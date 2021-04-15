@@ -53,6 +53,15 @@ void PhysicsSystem::InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXC
 }
 
 /*
+*	Updates the world transform for the given entity.
+*/
+void PhysicsSystem::UpdateEntityWorldTransform(Entity *const RESTRICT entity, const WorldTransform &world_transform) NOEXCEPT
+{
+	//Update the world transform for this entity.
+	SubUpdateEntityWorldTransform(entity, world_transform);
+}
+
+/*
 *	Terminates the physics for the given entity.
 */
 void PhysicsSystem::TerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
@@ -75,28 +84,8 @@ RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::CreateC
 */
 void PhysicsSystem::CastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
-	//Set the default properties of the result.
-	result->_HasHit = false;
-	result->_HitDistance = configuration._MaximumHitDistance;
-	result->_Type = RaycastResult::Type::NONE;
-
-	//Raycast against dynamic models.
-	if (TEST_BIT(configuration._PhysicsChannels, PhysicsChannel::DYNAMIC_MODELS))
-	{
-		_ModelPhysicsSystem.CastRayDynamicModels(ray, configuration, result);
-	}
-
-	//Raycast against static models.
-	if (TEST_BIT(configuration._PhysicsChannels, PhysicsChannel::STATIC_MODELS))
-	{
-		_ModelPhysicsSystem.CastRayStaticModels(ray, configuration, result);
-	}
-
-	//Raycast against the terrain.
-	if (TEST_BIT(configuration._PhysicsChannels, PhysicsChannel::TERRAIN))
-	{
-		CastRayTerrain(ray, configuration, result);
-	}
+	//Cast a sub-system ray.
+	SubCastRay(ray, configuration, result);
 }
 
 /*
@@ -115,9 +104,6 @@ void PhysicsSystem::PhysicsUpdate() NOEXCEPT
 {
 	//Update the physics sub-system during the physics update phase.
 	SubPhysicsUpdate();
-
-	//Update the character physics system.
-	_CharacterPhysicsSystem.PhysicsUpdate();
 }
 
 /*

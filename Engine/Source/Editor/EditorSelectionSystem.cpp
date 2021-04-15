@@ -10,6 +10,7 @@
 
 //Entities.
 #include <Entities/Types/DynamicModelEntity.h>
+#include <Entities/Types/StaticModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 
 //Math.
@@ -109,13 +110,6 @@ void EditorSelectionSystem::Update() NOEXCEPT
 					case RaycastResult::Type::TERRAIN:
 					{
 						SetCurrentlySelectedEntity(nullptr);
-
-						break;
-					}
-
-					default:
-					{
-						ASSERT(false, "Invalid case!");
 
 						break;
 					}
@@ -264,19 +258,19 @@ void EditorSelectionSystem::Update() NOEXCEPT
 					ImGui::End();
 				}
 
-				//Cache the world transform.
-				WorldTransform *const RESTRICT world_transform{ dynamic_model_entity->ModifyWorldTransform() };
+				//Get the world transform.
+				WorldTransform world_transform{ *dynamic_model_entity->GetWorldTransform() };
 
 				//Add the position editor.
-				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
+				Vector3<float32> position{ world_transform.GetAbsolutePosition() };
 
 				if (ImGui::DragFloat3("Position", &position[0], 0.01f))
 				{
-					world_transform->SetAbsolutePosition(position);
+					world_transform.SetAbsolutePosition(position);
 				}
 
 				//Add the rotation editor.
-				Vector3<float32> rotation{ world_transform->GetRotation() };
+				Vector3<float32> rotation{ world_transform.GetRotation() };
 
 				rotation._X = CatalystBaseMath::RadiansToDegrees(rotation._X);
 				rotation._Y = CatalystBaseMath::RadiansToDegrees(rotation._Y);
@@ -288,16 +282,19 @@ void EditorSelectionSystem::Update() NOEXCEPT
 					rotation._Y = CatalystBaseMath::DegreesToRadians(rotation._Y);
 					rotation._Z = CatalystBaseMath::DegreesToRadians(rotation._Z);
 
-					world_transform->SetRotation(rotation);
+					world_transform.SetRotation(rotation);
 				}
 
 				//Add the scale editor.
-				float32 scale{ world_transform->GetScale() };
+				float32 scale{ world_transform.GetScale() };
 
 				if (ImGui::DragFloat("Scale", &scale, 0.01f))
 				{
-					world_transform->SetScale(scale);
+					world_transform.SetScale(scale);
 				}
+
+				//Set the world transform.
+				dynamic_model_entity->SetWorldTransform(world_transform);
 
 				break;
 			}
@@ -468,18 +465,18 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				}
 
 				//Cache the world transform.
-				WorldTransform *const RESTRICT world_transform{ static_model_entity->ModifyWorldTransform() };
+				WorldTransform world_transform{ *static_model_entity->GetWorldTransform() };
 
 				//Add the position editor.
-				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
+				Vector3<float32> position{ world_transform.GetAbsolutePosition() };
 
 				if (ImGui::DragFloat3("Position", &position[0], 0.01f))
 				{
-					world_transform->SetAbsolutePosition(position);
+					world_transform.SetAbsolutePosition(position);
 				}
 
 				//Add the rotation editor.
-				Vector3<float32> rotation{ world_transform->GetRotation() };
+				Vector3<float32> rotation{ world_transform.GetRotation() };
 
 				rotation._X = CatalystBaseMath::RadiansToDegrees(rotation._X);
 				rotation._Y = CatalystBaseMath::RadiansToDegrees(rotation._Y);
@@ -491,16 +488,19 @@ void EditorSelectionSystem::Update() NOEXCEPT
 					rotation._Y = CatalystBaseMath::DegreesToRadians(rotation._Y);
 					rotation._Z = CatalystBaseMath::DegreesToRadians(rotation._Z);
 
-					world_transform->SetRotation(rotation);
+					world_transform.SetRotation(rotation);
 				}
 
 				//Add the scale editor.
-				float32 scale{ world_transform->GetScale() };
+				float32 scale{ world_transform.GetScale() };
 
 				if (ImGui::DragFloat("Scale", &scale, 0.01f))
 				{
-					world_transform->SetScale(scale);
+					world_transform.SetScale(scale);
 				}
+
+				//Set the world transform.
+				static_model_entity->SetWorldTransform(world_transform);
 
 				break;
 			}
@@ -603,16 +603,6 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 	if (!_CurrentlySelectedEntity || !_CurrentlySelectedEntity->_Initialized)
 	{
 		return;
-	}
-
-	//Can this entity be transformed?
-	switch (_CurrentlySelectedEntity->_Type)
-	{
-		//These entities can't be transformed.
-		case EntityType::StaticModel:
-		{
-			return;
-		}
 	}
 
 	//Cache the world transform of the selected entity.
@@ -732,7 +722,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 	{
 		case EntityType::DynamicModel:
 		{
-			*static_cast<DynamicModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->ModifyWorldTransform() = world_transform;
+			static_cast<DynamicModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->SetWorldTransform(world_transform);
 
 			break;
 		}
@@ -764,6 +754,13 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 					break;
 				}
 			}
+
+			break;
+		}
+
+		case EntityType::StaticModel:
+		{
+			static_cast<StaticModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->SetWorldTransform(world_transform);
 
 			break;
 		}

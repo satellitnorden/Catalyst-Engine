@@ -5,6 +5,10 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Entities.
+#include <Entities/Types/DynamicModelEntity.h>
+#include <Entities/Types/StaticModelEntity.h>
+
 //Physics.
 #include <Physics/Abstraction/PhysXCharacterControllerAbstractionData.h>
 
@@ -48,6 +52,9 @@ class StaticModelEntityData final
 {
 
 public:
+
+	//The entity.
+	StaticModelEntity *RESTRICT _Entity;
 
 	//The actor.
 	physx::PxRigidStatic *RESTRICT _Actor;
@@ -105,6 +112,9 @@ namespace PhysXPhysicsSystemData
 	//The time since last update.
 	float32 _TimeSinceLastUpdate{ 0.0f };
 
+	//Denotes if physics is being updated.
+	bool _PhysicsIsUpdating{ false };
+
 }
 
 /*
@@ -145,10 +155,6 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 
 	//Create the controller manager.
 	PhysXPhysicsSystemData::_ControllerManager = PxCreateControllerManager(*PhysXPhysicsSystemData::_Scene);
-
-	//Create the ground plane.
-	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*PhysXPhysicsSystemData::_Physics, physx::PxPlane(0,1,0,0), *PhysXPhysicsSystemData::_DefaultMaterial);
-	PhysXPhysicsSystemData::_Scene->addActor(*groundPlane);
 }
 
 /*
@@ -156,6 +162,9 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 */
 void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 {
+	//Physics is updating.
+	PhysXPhysicsSystemData::_PhysicsIsUpdating = true;
+
 	//Cache the delta time.
 	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
 
@@ -212,9 +221,12 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 			new_world_transform.SetRotation(-euler_angles);
 
 			//Set the world transform of the entity.
-			*data._Entity->ModifyWorldTransform() = new_world_transform;
+			data._Entity->SetWorldTransform(new_world_transform);
 		}
 	}
+
+	//Physics is no longer updating.
+	PhysXPhysicsSystemData::_PhysicsIsUpdating = false;
 }
 
 /*
@@ -284,12 +296,18 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 				const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
 				const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
 				physx::PxShape* const RESTRICT shape{ PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial) };
-				//shape->setLocalPose(physx::PxTransform(physx::PxVec3(translation_offset._X, translation_offset._Y, translation_offset._Z)));
 
 				//Set up the transform.
 				const Vector3<float32> absolute_world_position{ component._CurrentWorldTransform.GetAbsolutePosition() };
-				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
-				const physx::PxTransform transform{ position };
+				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
+				Quaternion rotation;
+				rotation.FromEulerAngles(component._CurrentWorldTransform.GetRotation());
+				physx::PxQuat physx_rotation;
+				physx_rotation.x = rotation._X;
+				physx_rotation.y = rotation._Y;
+				physx_rotation.z = -rotation._Z;
+				physx_rotation.w = rotation._W;
+				const physx::PxTransform transform{ position, physx_rotation };
 
 				//Create the actor!
 				data._Actor = PhysXPhysicsSystemData::_Physics->createRigidDynamic(transform);
@@ -300,9 +318,18 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 				//Set up the actor.
 				physx::PxRigidBodyExt::updateMassAndInertia(*data._Actor, 10.0f);
 
+				if (!component._ModelSimulationConfiguration._InitialVelocity.IsZero())
+				{
+					const physx::PxVec3 phsyx_initial_velocity{ component._ModelSimulationConfiguration._InitialVelocity._X, component._ModelSimulationConfiguration._InitialVelocity._Y, -component._ModelSimulationConfiguration._InitialVelocity._Z };
+					data._Actor->setLinearVelocity(phsyx_initial_velocity);
+				}
+
 				//Release the shape.
 				shape->release();
 			}
+
+			//Set the user data.
+			data._Actor->userData = entity;
 
 			//Add the actor to the scene.
 			PhysXPhysicsSystemData::_Scene->addActor(*data._Actor);
@@ -324,31 +351,132 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 			//Set up the static model entity data.
 			StaticModelEntityData data;
 
+			//Set the entity.
+			data._Entity = static_cast<StaticModelEntity *RESTRICT>(entity);
+
 			//Create the actor.
 			{
-				//Set up the transform.
-				const Vector3<float32> absolute_world_position{ component._WorldTransform.GetAbsolutePosition() };
-				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
-				const physx::PxTransform transform{ position };
-
-				//Set up the geometry.
-				const AxisAlignedBoundingBox3D local_axis_aligned_bounding_box{ component._WorldSpaceAxisAlignedBoundingBox.GetLocalAxisAlignedBoundingBox() };
+				//Create the shape.
+				const AxisAlignedBoundingBox3D local_axis_aligned_bounding_box{ component._WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox() };
 				const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
 				const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
+				physx::PxShape* const RESTRICT shape{ PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial) };
 
-				//Calculate the shape offset.
-				const Vector3<float32> center{ AxisAlignedBoundingBox3D::CalculateCenter(local_axis_aligned_bounding_box) };
-				const physx::PxTransform shape_offset{ physx::PxVec3(-center._X, -center._Y, -center._Z) };
+				//Set up the transform.
+				const Vector3<float32> absolute_world_position{ component._WorldTransform.GetAbsolutePosition() };
+				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
+				Quaternion rotation;
+				rotation.FromEulerAngles(component._WorldTransform.GetRotation());
+				physx::PxQuat physx_rotation;
+				physx_rotation.x = rotation._X;
+				physx_rotation.y = rotation._Y;
+				physx_rotation.z = -rotation._Z;
+				physx_rotation.w = rotation._W;
+				const physx::PxTransform transform{ position, physx_rotation };
 
 				//Create the actor!
-				data._Actor = physx::PxCreateStatic(*PhysXPhysicsSystemData::_Physics, transform, geometry, *PhysXPhysicsSystemData::_DefaultMaterial, shape_offset);
+				data._Actor = PhysXPhysicsSystemData::_Physics->createRigidStatic(transform);
+
+				//Attach the shape.
+				data._Actor->attachShape(*shape);
+
+				//Release the shape.
+				shape->release();
 			}
+
+			//Set the user data.
+			data._Actor->userData = entity;
 
 			//Add the actor to the scene.
 			PhysXPhysicsSystemData::_Scene->addActor(*data._Actor);
 
-			//Add the static model entity data.
+			//Add the dynamic model entity data.
 			PhysXPhysicsSystemData::_StaticModelEntityData.Emplace(data);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+}
+
+/*
+*	Updates the sub-system world transform for the given entity.
+*/
+void PhysicsSystem::SubUpdateEntityWorldTransform(Entity *const RESTRICT entity, const WorldTransform &world_transform) NOEXCEPT
+{
+	//Don't update world transforms while physics is being updated.
+	if (PhysXPhysicsSystemData::_PhysicsIsUpdating)
+	{
+		return;
+	}
+
+	//Which type is this entity?
+	switch (entity->_Type)
+	{
+		case EntityType::DynamicModel:
+		{
+			//Find the actor.
+			physx::PxActor* RESTRICT actor{ nullptr };
+
+			for (const DynamicModelEntityData &data : PhysXPhysicsSystemData::_DynamicModelEntityData)
+			{
+				if (data._Entity == entity)
+				{
+					actor = data._Actor;
+
+					break;
+				}
+			}
+
+			ASSERT(actor, "Couldn't find the actor for this entity!");
+
+			//Set up the PhysX transform.
+			const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
+			const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
+			Quaternion rotation;
+			rotation.FromEulerAngles(world_transform.GetRotation());
+			const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, -rotation._Z, rotation._W };
+			const physx::PxTransform physx_transform{ physx_position, physx_rotation };
+
+			//Set the global pose.
+			static_cast<physx::PxRigidBody *const RESTRICT>(actor)->setGlobalPose(physx_transform);
+
+			break;
+		}
+
+		case EntityType::StaticModel:
+		{
+			//Find the actor.
+			physx::PxActor* RESTRICT actor{ nullptr };
+
+			for (const StaticModelEntityData &data : PhysXPhysicsSystemData::_StaticModelEntityData)
+			{
+				if (data._Entity == entity)
+				{
+					actor = data._Actor;
+
+					break;
+				}
+			}
+
+			ASSERT(actor, "Couldn't find the actor for this entity!");
+
+			//Set up the PhysX transform.
+			const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
+			const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
+			Quaternion rotation;
+			rotation.FromEulerAngles(world_transform.GetRotation());
+			const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, -rotation._Z, rotation._W };
+			const physx::PxTransform physx_transform{ physx_position, physx_rotation };
+
+			//Set the global pose.
+			static_cast<physx::PxRigidBody *const RESTRICT>(actor)->setGlobalPose(physx_transform);
 
 			break;
 		}
@@ -390,6 +518,70 @@ void PhysicsSystem::SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOE
 
 			break;
 		}
+	}
+}
+
+/*
+*	Casts a sub-system ray.
+*/
+void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
+{
+	//Construct the PhysX properties.
+	const physx::PxVec3 physx_origin{ ray._Origin._X, ray._Origin._Y, -ray._Origin._Z };
+	const physx::PxVec3 physx_direction{ ray._Direction._X, ray._Direction._Y, -ray._Direction._Z };
+	physx::PxRaycastBuffer raycast_buffer;
+
+	//Cast the ray!
+	result->_HasHit = PhysXPhysicsSystemData::_Scene->raycast(	physx_origin,
+																physx_direction,
+																configuration._MaximumHitDistance,
+																raycast_buffer);
+
+	//Fill out the result.
+	if (result->_HasHit)
+	{
+		result->_HitDistance = raycast_buffer.block.distance;
+
+		if (raycast_buffer.block.actor->userData)
+		{
+			Entity *const RESTRICT entity{ static_cast<Entity *const RESTRICT>(raycast_buffer.block.actor->userData) };
+
+			switch (entity->_Type)
+			{
+				case EntityType::DynamicModel:
+				{
+					result->_Type = RaycastResult::Type::DYNAMIC_MODEL;
+					result->_DynamicModelRaycastResult._Entity = entity;
+
+					break;
+				}
+
+				case EntityType::StaticModel:
+				{
+					result->_Type = RaycastResult::Type::STATIC_MODEL;
+					result->_StaticModelRaycastResult._Entity = entity;
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+		}
+
+		else
+		{
+			result->_Type = RaycastResult::Type::NONE;
+		}
+	}
+
+	else
+	{
+		result->_Type = RaycastResult::Type::NONE;
 	}
 }
 

@@ -109,6 +109,9 @@ private:
 		//The level of detail file paths.
 		DynamicArray<DynamicString> _LevelOfDetailFilepaths;
 
+		//Denotes whether or not to apply Blender transform.
+		bool _ApplyBlenderTransform{ false };
+
 	};
 
 	/*

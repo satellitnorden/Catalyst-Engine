@@ -197,12 +197,9 @@
     <ClInclude Include="..\..\..\Include\Physics\Abstraction\PhysXCharacterControllerAbstractionData.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\CharacterController.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\CharacterControllerConfiguration.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Native\CharacterMovement.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\CharacterPhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\ModelCollisionConfiguration.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Native\ModelPhysicsSimulationData.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Native\ModelPhysicsSystem.h" />
-    <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCollisionResolution.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\ModelSimulationConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\RaycastConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\RayCastResult.h" />
@@ -542,8 +539,6 @@
     <ClCompile Include="..\..\..\Source\Memory\OperatorNewDeleteOverload.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXCharacterController.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Physics\Native\CharacterPhysicsSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Physics\Native\ModelPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystPlatformWindows.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsInputSystem.cpp" />

@@ -40,6 +40,8 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	component._CurrentWorldTransform = model_initialization_data->_InitialWorldTransform;
 	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_InitialWorldTransform.ToLocalMatrix4x4(), &component._WorldSpaceAxisAlignedBoundingBox);
 	component._MaterialResources = model_initialization_data->_MaterialResources;
+	component._ModelCollisionConfiguration = model_initialization_data->_ModelCollisionConfiguration;
+	component._ModelSimulationConfiguration = model_initialization_data->_ModelSimulationConfiguration;
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<DynamicModelInitializationData>(data);
@@ -70,8 +72,8 @@ RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT DynamicModelEntit
 	data->_InitialWorldTransform = *GetWorldTransform();
 	data->_ModelResource = GetModelResource();
 	data->_MaterialResources = GetMaterialResources();
-	data->_ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
-	data->_SimulatePhysics = false;
+	data->_ModelCollisionConfiguration = *GetModelCollisionConfiguration();
+	data->_ModelSimulationConfiguration = *GetModelSimulationConfiguration();
 
 	//Return the initialization data.
 	return data;
@@ -126,14 +128,18 @@ RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT DynamicModelEntity::G
 }
 
 /*
-*	Returns the world transform. Assumes the world transform will be modified, and will notify relevant systems.
+*	Sets the world transform.
 */
-RESTRICTED NO_DISCARD WorldTransform *const RESTRICT DynamicModelEntity::ModifyWorldTransform() NOEXCEPT
+void DynamicModelEntity::SetWorldTransform(const WorldTransform &new_world_transform) NOEXCEPT
 {
-	//Remember that the world space axis aligned bounding box needs to be updated.
-	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags |= DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX;
+	//Set the new world transform.
+	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._CurrentWorldTransform = new_world_transform;
 
-	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._CurrentWorldTransform;
+	//Update the world space axis aligned bounding box.
+	RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToAbsoluteMatrix4x4(), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
+
+	//Update the physics entity world transform.
+	PhysicsSystem::Instance->UpdateEntityWorldTransform(this, new_world_transform);
 }
 
 /*
@@ -149,15 +155,21 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT DynamicMode
 */
 RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT DynamicModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
-	//Does the world space axis aligned bounding box need to be updated?
-	if (TEST_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX))
-	{
-		//Update the world space axis aligned bounding box.
-		RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToAbsoluteMatrix4x4(), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
-	
-		//Clear the update flag.
-		CLEAR_BIT(ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX);
-	}
-
 	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
+}
+
+/*
+*	Returns the model collision configuration.
+*/
+RESTRICTED NO_DISCARD const ModelCollisionConfiguration *const RESTRICT DynamicModelEntity::GetModelCollisionConfiguration() const NOEXCEPT
+{
+	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration;
+}
+
+/*
+*	Returns the model simulation configuration.
+*/
+RESTRICTED NO_DISCARD const ModelSimulationConfiguration *const RESTRICT DynamicModelEntity::GetModelSimulationConfiguration() const NOEXCEPT
+{
+	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelSimulationConfiguration;
 }

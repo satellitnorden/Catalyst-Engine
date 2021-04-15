@@ -13,7 +13,7 @@ void Character::InitializeCharacter() NOEXCEPT
 	{
 		CharacterControllerConfiguration configuration;
 
-		configuration._CapsuleRadius = 0.25f;
+		configuration._CapsuleRadius = 0.2'75f;
 		configuration._CapsuleHeight = 2.0f;
 
 		_CharacterController = PhysicsSystem::Instance->CreateCharacterController(configuration);

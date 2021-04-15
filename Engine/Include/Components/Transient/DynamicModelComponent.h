@@ -4,6 +4,10 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
 
+//Physics.
+#include <Physics/Native/ModelCollisionConfiguration.h>
+#include <Physics/Native/ModelSimulationConfiguration.h>
+
 //Resources.
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
@@ -16,12 +20,6 @@ class DynamicModelComponent final
 {
 
 public:
-
-	//Enumeration covering all update flags.
-	enum class UpdateFlag : uint8
-	{
-		WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX = BIT(0)
-	};
 
 	/*
 	*	Default constructor.
@@ -46,16 +44,16 @@ public:
 	//The material resources.
 	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
 
+	//The model collision configuration.
+	ModelCollisionConfiguration _ModelCollisionConfiguration;
+
+	//The model simulation configuration.
+	ModelSimulationConfiguration _ModelSimulationConfiguration;
+
 	//The level of detail indices.
 	StaticArray<uint32, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _LevelOfDetailIndices;
-
-	//Denotes the update flags.
-	UpdateFlag _UpdateFlags{ static_cast<UpdateFlag>(0) };
 
 	//Denotes whether or not this dynamic model is visible.
 	bool _Visibility;
 
 };
-
-//Define enumeration bit operations.
-ENUMERATION_BIT_OPERATIONS(DynamicModelComponent::UpdateFlag);

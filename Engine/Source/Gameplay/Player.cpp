@@ -86,8 +86,8 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 	const float32 speed{ _SpeedSpringDampingSystem.Update(delta_time) };
 
 	//Determine the forward and right movement speeds.
-	const float32 forward_movement_speed{ _CurrentInputState._Movement._X * speed * delta_time };
-	const float32 right_movement_speed{ _CurrentInputState._Movement._Y * speed * delta_time };
+	const float32 forward_movement_speed{ _CurrentInputState._Movement._X * speed };
+	const float32 right_movement_speed{ _CurrentInputState._Movement._Y * speed };
 
 	//Update the vertical velocity.
 	if (_CharacterController->IsOnGround())
@@ -112,17 +112,23 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 	Vector3<float32> total_displacement{ 0.0f, 0.0f, 0.0f };
 
 	total_displacement += Vector3<float32>(0.0f, _VerticalVelocity, 0.0f) * delta_time;
-	total_displacement += forward * forward_movement_speed;
-	total_displacement += right * right_movement_speed;
+	total_displacement += forward * forward_movement_speed * delta_time;
+	total_displacement += right * right_movement_speed * delta_time;
 
 	//Move the character controller.
 	_CharacterController->Move(total_displacement);
 
 	//Set the crouch desired position.
-	_CrouchSpringDampingSystem.SetDesired(_CurrentInputState._IsCrouching ? 1.0f : 2.0f);
+	_CrouchSpringDampingSystem.SetDesired(_CurrentInputState._IsCrouching ? _CharacterConfiguration._CrouchingHeight : _CharacterConfiguration._StandingHeight);
+
+	//Calculate the current height.
+	const float32 current_height{ _CrouchSpringDampingSystem.Update(delta_time) };
+
+	//Resize the capsule height of the character controller.
+	_CharacterController->ResizeCapsuleHeight(current_height);
 
 	//Set the perceiver position/rotation.
-	const WorldTransform world_transform{ _CharacterController->GetWorldPosition().GetAbsolutePosition() + Vector3<float32>(0.0f, _CrouchSpringDampingSystem.Update(delta_time), 0.0f), _Rotation, 1.0f };
+	const WorldTransform world_transform{ _CharacterController->GetWorldPosition().GetAbsolutePosition() + Vector3<float32>(0.0f, current_height, 0.0f), _Rotation, 1.0f };
 
 	Perceiver::Instance->SetWorldTransform(world_transform);
 }

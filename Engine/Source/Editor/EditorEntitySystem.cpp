@@ -159,7 +159,7 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 			}
 
 			data->_ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
-			data->_SimulatePhysics = false;
+			data->_ModelSimulationConfiguration._SimulatePhysics = false;
 
 			EntitySystem::Instance->RequestInitialization(entity, data, false);
 

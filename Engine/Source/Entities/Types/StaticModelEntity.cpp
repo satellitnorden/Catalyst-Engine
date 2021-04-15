@@ -64,6 +64,25 @@ void StaticModelEntity::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns the initialization data required to duplicate this entity.
+*/
+RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT StaticModelEntity::GetDuplicationInitializationData() const NOEXCEPT
+{
+	//Create the initialization data.
+	StaticModelInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<StaticModelInitializationData>() };
+
+	//Set up the initialization data.
+	data->_Properties = EntityInitializationData::Property::NONE;
+	data->_WorldTransform = *GetWorldTransform();
+	data->_ModelResource = GetModelResource();
+	data->_MaterialResources = GetMaterialResources();
+	data->_ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
+
+	//Return the initialization data.
+	return data;
+}
+
+/*
 *	Returns the model resources.
 */
 NO_DISCARD ResourcePointer<ModelResource> StaticModelEntity::GetModelResource() const NOEXCEPT
@@ -76,7 +95,11 @@ NO_DISCARD ResourcePointer<ModelResource> StaticModelEntity::GetModelResource() 
 */
 void StaticModelEntity::SetModelResource(const ResourcePointer<ModelResource> resource) NOEXCEPT
 {
+	//Set the model resource.
 	ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelResource = resource;
+
+	//Update the world space axis aligned bounding box.
+	UpdateWorldSpaceAxisAlignedBoundingBox();
 }
 
 /*
@@ -137,11 +160,18 @@ RESTRICTED NO_DISCARD const WorldTransform *const RESTRICT StaticModelEntity::Ge
 
 #if defined(CATALYST_EDITOR)
 /*
-*	Returns the world transform.
+*	Sets the world transform.
 */
-RESTRICTED NO_DISCARD WorldTransform *const RESTRICT StaticModelEntity::ModifyWorldTransform() NOEXCEPT
+void StaticModelEntity::SetWorldTransform(const WorldTransform &new_world_transform) NOEXCEPT
 {
-	return &ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldTransform;
+	//Set the new world transform.
+	ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldTransform = new_world_transform;
+
+	//Update the world space axis aligned bounding box.
+	UpdateWorldSpaceAxisAlignedBoundingBox();
+
+	//Update the physics entity world transform.
+	PhysicsSystem::Instance->UpdateEntityWorldTransform(this, new_world_transform);
 }
 #endif
 
@@ -167,4 +197,15 @@ RESTRICTED NO_DISCARD const WorldSpaceAxisAlignedBoundingBox3D *const RESTRICT S
 NO_DISCARD uint64 StaticModelEntity::GetLevelOfDetailindex(const uint64 mesh_index) const NOEXCEPT
 {
 	return ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._LevelOfDetailIndices[mesh_index];
+}
+
+/*
+*	Updates the world space axis aligned bounding box.
+*/
+void StaticModelEntity::UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+{
+	AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
+	RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+	ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(GetWorldTransform()->GetCell(), local_axis_aligned_bounding_box._Minimum);
+	ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(GetWorldTransform()->GetCell(), local_axis_aligned_bounding_box._Maximum);
 }

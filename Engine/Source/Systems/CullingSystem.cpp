@@ -75,16 +75,6 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 
 	for (uint64 i = 0; i < number_of_components; ++i, ++component)
 	{
-		//Update the world space axis aligned bounding box, if necessary.
-		if (TEST_BIT(component->_UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX))
-		{
-			//Update the world space axis aligned bounding box.
-			RenderingUtilities::TransformAxisAlignedBoundingBox(component->_WorldSpaceAxisAlignedBoundingBox, component->_CurrentWorldTransform.ToAbsoluteMatrix4x4(), &component->_WorldSpaceAxisAlignedBoundingBox);
-
-			//Clear the update flag.
-			CLEAR_BIT(component->_UpdateFlags, DynamicModelComponent::UpdateFlag::WORLD_SPACE_AXIS_ALIGNED_BOUNDING_BOX);
-		}
-
 		//Cache the world space axis aligned bounding box.
 		AxisAlignedBoundingBox3D world_space_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox };
 

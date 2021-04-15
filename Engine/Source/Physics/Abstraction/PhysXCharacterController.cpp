@@ -61,7 +61,7 @@ NO_DISCARD bool CharacterController::IsOnGround() NOEXCEPT
 void CharacterController::Move(const Vector3<float32> &displacement) NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 MINIMUM_DISTANCE{ 0.01f };
+	constexpr float32 MINIMUM_DISTANCE{ 0.00f };
 	constexpr float32 MINIMUM_DISTANCE_SQUARED{ MINIMUM_DISTANCE * MINIMUM_DISTANCE };
 
 	//Cast the abstraction data.
@@ -77,10 +77,10 @@ void CharacterController::Move(const Vector3<float32> &displacement) NOEXCEPT
 	const physx::PxControllerFilters filters;
 
 	//Move the controller.
-	const physx::PxControllerCollisionFlags collision_flags{ abstraction_data->_Controller->move(physx_displacement, MINIMUM_DISTANCE, delta_time, filters) };
+	const physx::PxControllerCollisionFlags collision_flags{ abstraction_data->_Controller->move(physx_displacement, MINIMUM_DISTANCE, 1.0f, filters) };
 
 	//Remember if the character is on ground.
-	if (Vector3<float32>::LengthSquared(displacement) >= MINIMUM_DISTANCE_SQUARED)
+	//if (Vector3<float32>::LengthSquared(displacement) >= MINIMUM_DISTANCE_SQUARED)
 	{
 		if (TEST_BIT(collision_flags, physx::PxControllerCollisionFlag::eCOLLISION_DOWN))
 		{
@@ -92,5 +92,17 @@ void CharacterController::Move(const Vector3<float32> &displacement) NOEXCEPT
 			abstraction_data->_IsOnGround = false;
 		}
 	}
+}
+
+/*
+*	Resizes the capsule height of this character controller.
+*/
+void CharacterController::ResizeCapsuleHeight(const float32 new_height) NOEXCEPT
+{
+	//Cast the abstraction data.
+	PhysXCharacterControllerAbstractionData *const RESTRICT abstraction_data{ _AbstractionData.Get<PhysXCharacterControllerAbstractionData>() };
+
+	//Resize!
+	abstraction_data->_Controller->resize(new_height);
 }
 #endif

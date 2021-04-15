@@ -1785,22 +1785,10 @@
     <ClInclude Include="..\..\..\Include\Editor\EditorWorldSystem.h">
       <Filter>Editor\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Native\CharacterMovement.h">
-      <Filter>Physics\Include\Native</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\Native\CharacterPhysicsSystem.h">
       <Filter>Physics\Include\Native</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\Native\ModelCollisionConfiguration.h">
-      <Filter>Physics\Include\Native</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Native\ModelPhysicsSimulationData.h">
-      <Filter>Physics\Include\Native</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Native\ModelPhysicsSystem.h">
-      <Filter>Physics\Include\Native</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCollisionResolution.h">
       <Filter>Physics\Include\Native</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h">
@@ -1835,6 +1823,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Gameplay\PlayerConfiguration.h">
       <Filter>Gameplay\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\ModelSimulationConfiguration.h">
+      <Filter>Physics\Include\Native</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2434,12 +2425,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Editor\EditorWorldSystem.cpp">
       <Filter>Editor\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Physics\Native\CharacterPhysicsSystem.cpp">
-      <Filter>Physics\Source\Native</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Physics\Native\ModelPhysicsSystem.cpp">
-      <Filter>Physics\Source\Native</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp">
       <Filter>Physics\Source\Abstraction</Filter>

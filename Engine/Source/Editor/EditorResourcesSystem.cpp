@@ -555,6 +555,9 @@ void EditorResourcesSystem::AddCreateModelResourceWindow() NOEXCEPT
 		}
 	}
 
+	//Create the "Blender Transform" checkbox.
+	ImGui::Checkbox("Apply Blender Transform", &_CreateModelResourceData._ApplyBlenderTransform);
+
 	//Add some padding before the "Create Model Resource" button.
 	ImGui::Text("");
 
@@ -586,7 +589,16 @@ void EditorResourcesSystem::AddCreateModelResourceWindow() NOEXCEPT
 				parameters._LevelOfDetails.Emplace(level_of_detail_file_path.Data());
 			}
 
-			parameters._Transformation = MatrixConstants::IDENTITY;
+			if (_CreateModelResourceData._ApplyBlenderTransform)
+			{
+				parameters._Transformation = Matrix4x4(VectorConstants::ZERO, Vector3<float32>(-CatalystBaseMathConstants::HALF_PI, 0.0f, 0.0f), VectorConstants::ONE);
+			}
+
+			else
+			{
+				parameters._Transformation = MatrixConstants::IDENTITY;
+			}
+
 			parameters._TextureCoordinateMultiplier = 1.0f;
 			parameters._TexturCoordinateRotation = 0.0f;
 
