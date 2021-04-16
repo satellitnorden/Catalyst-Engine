@@ -50,13 +50,13 @@ void EditorPerceiverSystem::Update() NOEXCEPT
 #if 1 //Use keyboard/mouse controls.
 	if (update_keyboard_mouse_rotation)
 	{
-		_Rotation._X -= mouse_state->_DeltaY * MOUSE_ROTATION_SPEED;
-		_Rotation._Y += mouse_state->_DeltaX * MOUSE_ROTATION_SPEED;
+		_Rotation._Roll -= mouse_state->_DeltaY * MOUSE_ROTATION_SPEED;
+		_Rotation._Yaw += mouse_state->_DeltaX * MOUSE_ROTATION_SPEED;
 	}
 #endif
 #if 1 //Use gamepad controls.
-	_Rotation._X -= gamepad_state->_RightThumbstickY * GAMEPAD_ROTATION_SPEED * delta_time;
-	_Rotation._Y += gamepad_state->_RightThumbstickX * GAMEPAD_ROTATION_SPEED * delta_time;
+	_Rotation._Roll -= gamepad_state->_RightThumbstickY * GAMEPAD_ROTATION_SPEED * delta_time;
+	_Rotation._Yaw += gamepad_state->_RightThumbstickX * GAMEPAD_ROTATION_SPEED * delta_time;
 #endif
 
 	//Cache the forward and right vector.

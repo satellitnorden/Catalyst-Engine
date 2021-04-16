@@ -5,6 +5,7 @@
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/EulerAngles.h>
 
 /*
 *	Vector2 definition.
@@ -1046,19 +1047,19 @@ public:
 	/*
 	*	Given a rotation vector, rotate this vector.
 	*/
-	FORCE_INLINE constexpr void Rotate(const Vector3& rotationVector) NOEXCEPT
+	FORCE_INLINE constexpr void Rotate(const EulerAngles &rotation) NOEXCEPT
 	{
-		const float xCosine{ CatalystBaseMath::Cosine(rotationVector._X) };
-		const float xSine{ CatalystBaseMath::Sine(rotationVector._X) };
+		const float xCosine{ CatalystBaseMath::Cosine(rotation._Roll) };
+		const float xSine{ CatalystBaseMath::Sine(rotation._Roll) };
 
-		const float yCosine{ CatalystBaseMath::Cosine(rotationVector._Y) };
-		const float ySine{ CatalystBaseMath::Sine(rotationVector._Y) };
+		const float yCosine{ CatalystBaseMath::Cosine(rotation._Yaw) };
+		const float ySine{ CatalystBaseMath::Sine(rotation._Yaw) };
 
-		const float zCosine{ CatalystBaseMath::Cosine(rotationVector._Z) };
-		const float zSine{ CatalystBaseMath::Sine(rotationVector._Z) };
+		const float zCosine{ CatalystBaseMath::Cosine(rotation._Pitch) };
+		const float zSine{ CatalystBaseMath::Sine(rotation._Pitch) };
 
 		//Rotate the roll.
-		if (rotationVector._X != 0.0f)
+		if (rotation._Roll != 0.0f)
 		{
 			float tempY = _Y * xCosine - _Z * xSine;
 			_Z = _Y * xSine + _Z * xCosine;
@@ -1066,7 +1067,7 @@ public:
 		}
 
 		//Rotate the pitch
-		if (rotationVector._Y != 0.0f)
+		if (rotation._Yaw != 0.0f)
 		{
 			float tempX1 = _X * yCosine + _Z * ySine;
 			_Z = -_X * ySine + _Z * yCosine;
@@ -1074,7 +1075,7 @@ public:
 		}
 
 		//Rotate the yaw.
-		if (rotationVector._Z != 0.0f)
+		if (rotation._Pitch != 0.0f)
 		{
 			float tempX2 = _X * zCosine - _Y * zSine;
 			_Y = _X * zSine + _Y * zCosine;
@@ -1099,10 +1100,10 @@ public:
 	/*
 	*	Returns a rotate copy of this vector.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD Vector3 Rotated(const Vector3& rotationVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 Rotated(const EulerAngles &rotation) const NOEXCEPT
 	{
 		Vector3 copy{ *this };
-		copy.Rotate(rotationVector);
+		copy.Rotate(rotation);
 
 		return copy;
 	}

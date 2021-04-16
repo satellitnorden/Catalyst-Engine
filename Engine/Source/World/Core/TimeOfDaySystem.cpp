@@ -295,22 +295,22 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 
 	if (_CurrentTimeOfDay >= 18.0f || _CurrentTimeOfDay < 6.0f)
 	{
-		Vector3<float32> rotation;
+		EulerAngles rotation;
 
-		rotation._X = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
-		rotation._Y = 0.0f;
-		rotation._Z = CatalystBaseMath::DegreesToRadians(22.5f);
+		rotation._Roll = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
+		rotation._Yaw = 0.0f;
+		rotation._Pitch = CatalystBaseMath::DegreesToRadians(22.5f);
 
 		sky_light_direction = Vector3<float32>::Normalize(CatalystWorldCoordinateSpace::DOWN.Rotated(rotation));
 	}
 	
 	else
 	{
-		Vector3<float32> rotation;
+		EulerAngles rotation;
 
-		rotation._X = CatalystBaseMath::DegreesToRadians(22.5f);
-		rotation._Y = 0.0f;
-		rotation._Z = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
+		rotation._Roll = CatalystBaseMath::DegreesToRadians(22.5f);
+		rotation._Yaw = 0.0f;
+		rotation._Pitch = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
 
 		sky_light_direction = Vector3<float32>::Normalize(CatalystWorldCoordinateSpace::DOWN.Rotated(rotation));
 	}

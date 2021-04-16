@@ -39,4 +39,7 @@ public:
 	//The procedural function. Will be called instead of loading the provided file(s) if set.
 	ProceduralFunction _ProceduralFunction{ nullptr };
 
+	//The collision model file path.
+	const char *RESTRICT _CollisionModelFilePath{ nullptr };
+
 };

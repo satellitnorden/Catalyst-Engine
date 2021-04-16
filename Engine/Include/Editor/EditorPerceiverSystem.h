@@ -23,7 +23,7 @@ private:
 	Vector3<float32> _Position;
 
 	//The rotation.
-	Vector3<float32> _Rotation;
+	EulerAngles _Rotation;
 
 	//The speed.
 	float32 _MovementSpeed{ 8.0f };

@@ -19,6 +19,12 @@ DEFINE_SINGLETON(PhysicsSystem);
 */
 void PhysicsSystem::Initialize() NOEXCEPT
 {
+	//Only initialize once.
+	if (_Initialized)
+	{
+		return;
+	}
+
 	//Initialize the sub system.
 	SubInitialize();
 
@@ -32,6 +38,9 @@ void PhysicsSystem::Initialize() NOEXCEPT
 	UpdatePhase::RENDER,
 	false,
 	true);
+
+	//The physics system is now initialized!
+	_Initialized = true;
 }
 
 /*
@@ -41,6 +50,15 @@ void PhysicsSystem::Terminate() NOEXCEPT
 {
 	//Terminate the sub system.
 	SubTerminate();
+}
+
+/*
+*	Creates a collision model.
+*/
+void PhysicsSystem::CreateCollisionModel(const CollisionModelData &collision_model_data, CollisionModelHandle *const RESTRICT collision_model) NOEXCEPT
+{
+	//Create the sollision model on the sub-system.
+	SubCreateCollisionModel(collision_model_data, collision_model);
 }
 
 /*
@@ -95,6 +113,15 @@ void PhysicsSystem::AddImpulse(const WorldPosition &world_position, const float3
 {
 	//Add a sub-system impulse.
 	SubAddImpulse(world_position, force);
+}
+
+/*
+*	Builds a collision model.
+*/
+void PhysicsSystem::BuildCollisionModel(const ModelFile &model_file, CollisionModelData *const RESTRICT collision_model_data) NOEXCEPT
+{
+	//Build the collision model on the sub-system.
+	SubBuildCollisionModel(model_file, collision_model_data);
 }
 
 /*

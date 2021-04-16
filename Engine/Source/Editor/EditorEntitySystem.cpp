@@ -150,7 +150,7 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 			DynamicModelInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicModelInitializationData>() };
 
 			data->_Properties = EntityInitializationData::Property::NONE;
-			data->_InitialWorldTransform = WorldTransform(position, VectorConstants::ZERO, 1.0f);
+			data->_InitialWorldTransform = WorldTransform(position, EulerAngles(), 1.0f);
 			data->_ModelResource = ResourceSystem::Instance->GetModelResource(HashString("Catalyst_Engine_Default_Model"));
 
 			for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
@@ -158,7 +158,7 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 				data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(HashString("Catalyst_Engine_Default_Material"));
 			}
 
-			data->_ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
+			data->_ModelCollisionConfiguration._Type = ModelCollisionType::BOX;
 			data->_ModelSimulationConfiguration._SimulatePhysics = false;
 
 			EntitySystem::Instance->RequestInitialization(entity, data, false);
@@ -194,7 +194,7 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 			StaticModelInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<StaticModelInitializationData>() };
 
 			data->_Properties = EntityInitializationData::Property::NONE;
-			data->_WorldTransform = WorldTransform(position, VectorConstants::ZERO, 1.0f);
+			data->_WorldTransform = WorldTransform(position, EulerAngles(), 1.0f);
 			data->_ModelResource = ResourceSystem::Instance->GetModelResource(HashString("Catalyst_Engine_Default_Model"));
 
 			for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
@@ -202,7 +202,7 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 				data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(HashString("Catalyst_Engine_Default_Material"));
 			}
 
-			data->_ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
+			data->_ModelCollisionConfiguration._Type = ModelCollisionType::BOX;
 
 			EntitySystem::Instance->RequestInitialization(entity, data, false);
 

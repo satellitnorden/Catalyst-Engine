@@ -56,8 +56,9 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 	UpdateCurrentInputState(delta_time);
 
 	//Apply rotation.
-	_Rotation += Vector3<float32>(_CurrentInputState._Rotation._X * delta_time, _CurrentInputState._Rotation._Y * delta_time, 0.0f);
-	_Rotation._X = CatalystBaseMath::Clamp<float32>(_Rotation._X, CatalystBaseMath::DegreesToRadians(-89.0f), CatalystBaseMath::DegreesToRadians(89.0f));
+	_Rotation._Roll += _CurrentInputState._Rotation._X * delta_time;
+	_Rotation._Yaw += _CurrentInputState._Rotation._Y * delta_time;
+	_Rotation._Roll = CatalystBaseMath::Clamp<float32>(_Rotation._Roll, CatalystBaseMath::DegreesToRadians(-89.0f), CatalystBaseMath::DegreesToRadians(89.0f));
 
 	//Calculate the forward and right vector.
 	Vector3<float32> forward{ CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_Rotation) };

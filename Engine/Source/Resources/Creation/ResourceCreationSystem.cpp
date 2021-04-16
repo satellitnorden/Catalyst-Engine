@@ -2,6 +2,7 @@
 #include <Resources/Creation/ResourceCreationSystem.h>
 
 //Systems.
+#include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 
@@ -246,6 +247,17 @@ void ResourceCreationSystem::CreateModel(ModelData *const RESTRICT data, ModelRe
 																			resource->_Meshes[i]._MeshLevelOfDetails[0]._IndexBuffer,
 																			static_cast<uint32>(resource->_Meshes[i]._MeshLevelOfDetails[0]._Indices.Size()),
 																			&resource->_Meshes[i]._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure);
+	}
+
+	//Create the collision model, if there is one.
+	if (data->_CollisionModelData._Type != CollisionModelData::Type::NONE)
+	{
+		PhysicsSystem::Instance->CreateCollisionModel(data->_CollisionModelData, &resource->_CollisionModel);
+	}
+
+	else
+	{
+		resource->_CollisionModel = nullptr;
 	}
 }
 

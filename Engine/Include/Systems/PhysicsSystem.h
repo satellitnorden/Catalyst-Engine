@@ -3,12 +3,16 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//File.
+#include <File/Types/ModelFile.h>
+
 //Math.
 #include <Math/Geometry/Ray.h>
 
 //Physics.
 #include <Physics/Native/CharacterController.h>
 #include <Physics/Native/CharacterControllerConfiguration.h>
+#include <Physics/Native/CollisionModelData.h>
 #include <Physics/Native/PhysicsCore.h>
 #include <Physics/Native/RaycastConfiguration.h>
 #include <Physics/Native/RaycastResult.h>
@@ -43,6 +47,11 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Creates a collision model.
+	*/
+	void CreateCollisionModel(const CollisionModelData &collision_model_data, CollisionModelHandle *const RESTRICT collision_model) NOEXCEPT;
+
+	/*
 	*	Initializes the physics for the given entity.
 	*/
 	void InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
@@ -72,7 +81,15 @@ public:
 	*/
 	void AddImpulse(const WorldPosition &world_position, const float32 force) NOEXCEPT;
 
+	/*
+	*	Builds a collision model.
+	*/
+	void BuildCollisionModel(const ModelFile &model_file, CollisionModelData *const RESTRICT collision_model_data) NOEXCEPT;
+
 private:
+
+	//Denotes if the physics system is initialized.
+	bool _Initialized{ false };
 
 	/*
 	*	Updates the physics system during the physics update phase.
@@ -83,6 +100,11 @@ private:
 	*	Initializes the physics sub-system.
 	*/
 	void SubInitialize() NOEXCEPT;
+
+	/*
+	*	Creates a collision model on the sub-system.
+	*/
+	void SubCreateCollisionModel(const CollisionModelData &collision_model_data, CollisionModelHandle *const RESTRICT collision_data) NOEXCEPT;
 
 	/*
 	*	Updates the physics sub-system during the physics update phase.
@@ -123,6 +145,11 @@ private:
 	*	Creates a sub-system character controller.
 	*/
 	RESTRICTED NO_DISCARD CharacterController *const RESTRICT SubCreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT;
+
+	/*
+	*	Builds a collision model on the sub-system.
+	*/
+	void SubBuildCollisionModel(const ModelFile &model_file, CollisionModelData *const RESTRICT collision_model_data) NOEXCEPT;
 
 	/*
 	*	Casts a ray against the terrain.

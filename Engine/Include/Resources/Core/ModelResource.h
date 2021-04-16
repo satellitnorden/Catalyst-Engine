@@ -7,6 +7,9 @@
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 
+//Physics
+#include <Physics/Native/PhysicsCore.h>
+
 //Rendering.
 #include <Rendering/Native/Mesh.h>
 
@@ -23,5 +26,8 @@ public:
 
 	//Container for all the meshes.
 	DynamicArray<Mesh> _Meshes;
+
+	//The collision model.
+	CollisionModelHandle _CollisionModel;
 
 };

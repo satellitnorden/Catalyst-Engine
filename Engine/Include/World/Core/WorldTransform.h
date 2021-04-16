@@ -32,7 +32,7 @@ public:
 	*/
 	FORCE_INLINE explicit WorldTransform(	const Vector3<int32> &initial_cell,
 											const Vector3<float32> &initial_local_position,
-											const Vector3<float32> &initial_rotation,
+											const EulerAngles &initial_rotation,
 											const float32 initial_scale) NOEXCEPT
 		:
 		_WorldPosition(initial_cell, initial_local_position),
@@ -46,7 +46,7 @@ public:
 	*	Constructor taking the local position, rotation and scale.
 	*/
 	FORCE_INLINE explicit WorldTransform(	const Vector3<float32> &initial_local_position,
-											const Vector3<float32> &initial_rotation,
+											const EulerAngles &initial_rotation,
 											const float32 initial_scale) NOEXCEPT
 		:
 		_WorldPosition(initial_local_position),
@@ -143,7 +143,7 @@ public:
 	/*
 	*	Returns the rotation.
 	*/
-	FORCE_INLINE NO_DISCARD const Vector3<float32> &GetRotation() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const EulerAngles &GetRotation() const NOEXCEPT
 	{
 		return _Rotation;
 	}
@@ -151,7 +151,7 @@ public:
 	/*
 	*	Sets the rotation.
 	*/
-	FORCE_INLINE void SetRotation(const Vector3<float32> &value) NOEXCEPT
+	FORCE_INLINE void SetRotation(const EulerAngles &value) NOEXCEPT
 	{
 		_Rotation = value;
 	}
@@ -177,7 +177,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD Matrix4x4 ToLocalMatrix4x4() const NOEXCEPT
 	{
-		return Matrix4x4(_WorldPosition.GetLocalPosition() , _Rotation, Vector3<float32>(_Scale));
+		return Matrix4x4(_WorldPosition.GetLocalPosition(), _Rotation, Vector3<float32>(_Scale));
 	}
 
 	/*
@@ -196,7 +196,7 @@ private:
 	WorldPosition _WorldPosition;
 
 	//The rotation.
-	Vector3<float32> _Rotation;
+	EulerAngles _Rotation;
 
 	//The scale.
 	float32 _Scale;

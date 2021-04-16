@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Physics.
+#include <Physics/Native/ModelCollisionConfiguration.h>
+
 //Resources.
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
@@ -27,6 +30,9 @@ public:
 
 	//The material resources.
 	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
+
+	//The model collision configuration.
+	ModelCollisionConfiguration _ModelCollisionConfiguration;
 
 	//The level of detail indices.
 	StaticArray<uint8, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _LevelOfDetailIndices;

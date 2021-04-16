@@ -14,6 +14,9 @@ public:
 	//Denotes whether or not to simulate physics.
 	bool _SimulatePhysics{ false };
 
+	//The initial mass.
+	float32 _InitialMass{ 100.0f };
+
 	//The initial velocity.
 	Vector3<float32> _InitialVelocity{ 0.0f, 0.0f, 0.0f };
 

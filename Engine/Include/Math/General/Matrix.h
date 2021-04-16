@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
+#include <Math/General/EulerAngles.h>
 #include <Math/General/Vector.h>
 #include <Math/General/Quaternion.h>
 
@@ -142,11 +143,11 @@ public:
 	/*
 	*	Calculates a look at matrix.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 LookAt(const Vector3<float> &position, const Vector3<float> &target, const Vector3<float> &up) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 LookAt(const Vector3<float32> &position, const Vector3<float32> &target, const Vector3<float32> &up) NOEXCEPT
 	{
-		Vector3<float> F{ Vector3<float>::Normalize(target - position) };
-		Vector3<float> S{ Vector3<float>::CrossProduct(F, up) };
-		Vector3<float> U{ Vector3<float>::CrossProduct(S, F) };
+		Vector3<float32> F{ Vector3<float32>::Normalize(target - position) };
+		Vector3<float32> S{ Vector3<float32>::CrossProduct(F, up) };
+		Vector3<float32> U{ Vector3<float32>::CrossProduct(S, F) };
 
 		Matrix4x4 result;
 
@@ -172,22 +173,22 @@ public:
 	/*
 	*	Given a normal and an up vector, constructs a rotation matrix.
 	*/
-	FORCE_INLINE static NO_DISCARD Matrix4x4 Orientation(const Vector3<float> &normal, const Vector3<float> & up) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Matrix4x4 Orientation(const Vector3<float32> &normal, const Vector3<float32> &up) NOEXCEPT
 	{
 		if (normal == up)
 		{
 			return Matrix4x4();
 		}
 
-		const Vector3<float> rotationAxis{ Vector3<float>::CrossProduct(up, normal) };
-		const float rotationAngle{ CatalystBaseMath::ArcCosine(Vector3<float>::DotProduct(normal, up)) };
+		const Vector3<float32> rotationAxis{ Vector3<float32>::CrossProduct(up, normal) };
+		const float32 rotationAngle{ CatalystBaseMath::ArcCosine(Vector3<float>::DotProduct(normal, up)) };
 
-		const float a = rotationAngle;
-		const float c = CatalystBaseMath::Cosine(a);
-		const float s = CatalystBaseMath::Sine(a);
+		const float32 a = rotationAngle;
+		const float32 c = CatalystBaseMath::Cosine(a);
+		const float32 s = CatalystBaseMath::Sine(a);
 
-		Vector3<float> axis{ Vector3<float>::Normalize(rotationAxis) };
-		Vector3<float> temp{ (1.0f - c) * axis };
+		Vector3<float32> axis{ Vector3<float32>::Normalize(rotationAxis) };
+		Vector3<float32> temp{ (1.0f - c) * axis };
 
 		Matrix4x4 rotate;
 
@@ -320,7 +321,7 @@ public:
 	/*
 	*	Constructor taking a scalar.
 	*/
-	FORCE_INLINE constexpr Matrix4x4(const float scalar) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const float32 scalar) NOEXCEPT
 		:
 		_Matrix{ { scalar, 0.0f, 0.0f, 0.0f }, { 0.0f, scalar, 0.0f, 0.0f }, { 0.0f, 0.0f, scalar, 0.0f }, { 0.0f, 0.0f, 0.0f, scalar } }
 	{
@@ -355,7 +356,7 @@ public:
 	/*
 	*	Constructor taking the four vectors as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix4x4(const Vector4<float> &vector1, const Vector4<float> &vector2, const Vector4<float> &vector3, const Vector4<float> &vector4) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const Vector4<float32> &vector1, const Vector4<float32> &vector2, const Vector4<float32> &vector3, const Vector4<float32> &vector4) NOEXCEPT
 		:
 		_Matrix{ vector1, vector2, vector3, vector4 }
 	{
@@ -365,7 +366,7 @@ public:
 	/*
 	*	Constructor taking position, rotation and scale as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix4x4(const Vector3<float> &position, const Vector3<float> &rotation, const Vector3<float> &scale) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const Vector3<float32> &position, const EulerAngles &rotation, const Vector3<float32> &scale) NOEXCEPT
 		:
 		_Matrix{ { scale._X, 0.0f, 0.0f, 0.0f },
 				 { 0.0f, scale._Y, 0.0f, 0.0f },
@@ -379,7 +380,7 @@ public:
 	/*
 	*	Constructor taking position and a rotation quaternion as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix4x4(const Vector3<float> &position, const Quaternion &rotation) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const Vector3<float32> &position, const Quaternion &rotation) NOEXCEPT
 		:
 		_Matrix{ { 1.0f - 2.0f * (rotation._Y * rotation._Y) - 2.0f * (rotation._Z * rotation._Z), 2.0f * rotation._X * rotation._Y + 2.0f * rotation._W * rotation._Z, 2.0f * rotation._X * rotation._Z - 2.0f * rotation._W * rotation._Y, 0.0f },
 				 { 2.0f * rotation._X * rotation._Y - 2.0f * rotation._W * rotation._Z, 1.0f - 2.0f * (rotation._X * rotation._X) - 2.0f * (rotation._Z * rotation._Z), 2.0f * rotation._Y * rotation._Z - 2.0f * rotation._W * rotation._X, 0.0f },
@@ -441,7 +442,7 @@ public:
 	/*
 	*	Matrix4 by scalar multiplication assignment overload.
 	*/
-	FORCE_INLINE constexpr void operator*=(const float scalar) NOEXCEPT
+	FORCE_INLINE constexpr void operator*=(const float32 scalar) NOEXCEPT
 	{
 		_Matrix[0]._X *= scalar;
 		_Matrix[0]._Y *= scalar;
@@ -469,7 +470,7 @@ public:
 	/*
 	*	Matrix4 by Vector4 multiplication overload.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD Vector4<float> operator*(const Vector4<float> &vector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector4<float32> operator*(const Vector4<float32> &vector) const NOEXCEPT
 	{
 		return Vector4<float>(	(_Matrix[0]._X * vector._X) + (_Matrix[1]._X * vector._Y) + (_Matrix[2]._X * vector._Z) + (_Matrix[3]._X * vector._W),
 								(_Matrix[0]._Y * vector._X) + (_Matrix[1]._Y * vector._Y) + (_Matrix[2]._Y * vector._Z) + (_Matrix[3]._Y * vector._W),
@@ -517,72 +518,72 @@ public:
 	/*
 	*	Returns a data to the pointer of this matrix.
 	*/
-	RESTRICTED constexpr float* Data() NOEXCEPT { return &(_Matrix[0]._X); }
+	RESTRICTED constexpr float32 *const RESTRICT Data() NOEXCEPT { return &(_Matrix[0]._X); }
 
 	/*
 	*	Returns the translation.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetTranslation() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float32> GetTranslation() const NOEXCEPT
 	{
-		return Vector3<float>(_Matrix[3]._X, _Matrix[3]._Y, _Matrix[3]._Z);
+		return Vector3<float32>(_Matrix[3]._X, _Matrix[3]._Y, _Matrix[3]._Z);
 	}
 
 	/*
 	*	Returns the right.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetRight() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float32> GetRight() const NOEXCEPT
 	{
-		return Vector3<float>(_Matrix[0]._X, _Matrix[0]._Y, _Matrix[0]._Z);
+		return Vector3<float32>(_Matrix[0]._X, _Matrix[0]._Y, _Matrix[0]._Z);
 	}
 
 	/*
 	*	Returns the up.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetUp() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float32> GetUp() const NOEXCEPT
 	{
-		return Vector3<float>(_Matrix[1]._X, _Matrix[1]._Y, _Matrix[1]._Z);
+		return Vector3<float32>(_Matrix[1]._X, _Matrix[1]._Y, _Matrix[1]._Z);
 	}
 
 	/*
 	*	Returns the forward.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetForward() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float32> GetForward() const NOEXCEPT
 	{
-		return Vector3<float>(_Matrix[2]._X, _Matrix[2]._Y, _Matrix[2]._Z);
+		return Vector3<float32>(_Matrix[2]._X, _Matrix[2]._Y, _Matrix[2]._Z);
 	}
 
 	/*
 	*	Returns the rotation.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float32> GetRotation() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD EulerAngles GetRotation() const NOEXCEPT
 	{
-		Vector3<float32> out_rotation;
+		EulerAngles out_rotation;
 
-		out_rotation._Y = CatalystBaseMath::ArcSine(CatalystBaseMath::Clamp(-AtColumnRow(0, 2), 0.0f, 1.0f));
+		out_rotation._Yaw = CatalystBaseMath::ArcSine(CatalystBaseMath::Clamp(-AtColumnRow(0, 2), 0.0f, 1.0f));
 
-		const float32 C{ CatalystBaseMath::Cosine(out_rotation._Y) };
+		const float32 C{ CatalystBaseMath::Cosine(out_rotation._Yaw) };
 
 		if(CatalystBaseMath::Absolute(C) > FLOAT32_EPSILON)
 		{
 			float32 tan_x{ AtColumnRow(2, 2) / C };
 			float32 tan_y{ AtColumnRow(1, 2) / C };
 
-			out_rotation._X = CatalystBaseMath::ArcTangent(tan_y, tan_x);
+			out_rotation._Roll = CatalystBaseMath::ArcTangent(tan_y, tan_x);
 
 			tan_x = AtColumnRow(0, 0) / C;
 			tan_y = AtColumnRow(0, 1) / C;
 
-			out_rotation._Z = -CatalystBaseMath::ArcTangent(tan_y, tan_x);
+			out_rotation._Pitch = -CatalystBaseMath::ArcTangent(tan_y, tan_x);
 		}
 
 		else
 		{
-			out_rotation._X = 0.0f;
+			out_rotation._Roll = 0.0f;
 
 			const float32 tan_x{ AtColumnRow(1, 1) };
 			const float32 tan_y{ -AtColumnRow(1, 0) };
 
-			out_rotation._Z = -CatalystBaseMath::ArcTangent(tan_y, tan_x);
+			out_rotation._Pitch = -CatalystBaseMath::ArcTangent(tan_y, tan_x);
 		}
 
 		return out_rotation;
@@ -591,15 +592,15 @@ public:
 	/*
 	*	Returns the scale.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD Vector3<float> GetScale() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3<float32> GetScale() const NOEXCEPT
 	{
-		return Vector3<float>(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
+		return Vector3<float32>(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
 	}
 
 	/*
 	*	Sets the translation.
 	*/
-	FORCE_INLINE constexpr void SetTranslation(const Vector3<float> &newTranslation) NOEXCEPT
+	FORCE_INLINE constexpr void SetTranslation(const Vector3<float32> &newTranslation) NOEXCEPT
 	{
 		_Matrix[3]._X = newTranslation._X;
 		_Matrix[3]._Y = newTranslation._Y;
@@ -611,7 +612,7 @@ public:
 	/*
 	*	Sets the scale.
 	*/
-	FORCE_INLINE constexpr void SetScale(const Vector3<float> &newScale) NOEXCEPT
+	FORCE_INLINE constexpr void SetScale(const Vector3<float32> &newScale) NOEXCEPT
 	{
 		_Matrix[0]._X = newScale._X;
 		_Matrix[1]._Y = newScale._Y;
@@ -625,57 +626,57 @@ public:
 	*/
 	FORCE_INLINE constexpr void Inverse() NOEXCEPT
 	{
-		float Coef00 = _Matrix[2]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[2]._W;
-		float Coef02 = _Matrix[1]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[1]._W;
-		float Coef03 = _Matrix[1]._Z * _Matrix[2]._W - _Matrix[2]._Z * _Matrix[1]._W;
+		float32 Coef00 = _Matrix[2]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[2]._W;
+		float32 Coef02 = _Matrix[1]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[1]._W;
+		float32 Coef03 = _Matrix[1]._Z * _Matrix[2]._W - _Matrix[2]._Z * _Matrix[1]._W;
 
-		float Coef04 = _Matrix[2]._Y * _Matrix[3]._W - _Matrix[3]._Y * _Matrix[2]._W;
-		float Coef06 = _Matrix[1]._Y * _Matrix[3]._W - _Matrix[3]._Y * _Matrix[1]._W;
-		float Coef07 = _Matrix[1]._Y * _Matrix[2]._W - _Matrix[2]._Y * _Matrix[1]._W;
+		float32 Coef04 = _Matrix[2]._Y * _Matrix[3]._W - _Matrix[3]._Y * _Matrix[2]._W;
+		float32 Coef06 = _Matrix[1]._Y * _Matrix[3]._W - _Matrix[3]._Y * _Matrix[1]._W;
+		float32 Coef07 = _Matrix[1]._Y * _Matrix[2]._W - _Matrix[2]._Y * _Matrix[1]._W;
 
-		float Coef08 = _Matrix[2]._Y * _Matrix[3]._Z - _Matrix[3]._Y * _Matrix[2]._Z;
-		float Coef10 = _Matrix[1]._Y * _Matrix[3]._Z - _Matrix[3]._Y * _Matrix[1]._Z;
-		float Coef11 = _Matrix[1]._Y * _Matrix[2]._Z - _Matrix[2]._Y * _Matrix[1]._Z;
+		float32 Coef08 = _Matrix[2]._Y * _Matrix[3]._Z - _Matrix[3]._Y * _Matrix[2]._Z;
+		float32 Coef10 = _Matrix[1]._Y * _Matrix[3]._Z - _Matrix[3]._Y * _Matrix[1]._Z;
+		float32 Coef11 = _Matrix[1]._Y * _Matrix[2]._Z - _Matrix[2]._Y * _Matrix[1]._Z;
 
-		float Coef12 = _Matrix[2]._X * _Matrix[3]._W - _Matrix[3]._X * _Matrix[2]._W;
-		float Coef14 = _Matrix[1]._X * _Matrix[3]._W - _Matrix[3]._X * _Matrix[1]._W;
-		float Coef15 = _Matrix[1]._X * _Matrix[2]._W - _Matrix[2]._X * _Matrix[1]._W;
+		float32 Coef12 = _Matrix[2]._X * _Matrix[3]._W - _Matrix[3]._X * _Matrix[2]._W;
+		float32 Coef14 = _Matrix[1]._X * _Matrix[3]._W - _Matrix[3]._X * _Matrix[1]._W;
+		float32 Coef15 = _Matrix[1]._X * _Matrix[2]._W - _Matrix[2]._X * _Matrix[1]._W;
 
-		float Coef16 = _Matrix[2]._X * _Matrix[3]._Z - _Matrix[3]._X * _Matrix[2]._Z;
-		float Coef18 = _Matrix[1]._X * _Matrix[3]._Z - _Matrix[3]._X * _Matrix[1]._Z;
-		float Coef19 = _Matrix[1]._X * _Matrix[2]._Z - _Matrix[2]._X * _Matrix[1]._Z;
+		float32 Coef16 = _Matrix[2]._X * _Matrix[3]._Z - _Matrix[3]._X * _Matrix[2]._Z;
+		float32 Coef18 = _Matrix[1]._X * _Matrix[3]._Z - _Matrix[3]._X * _Matrix[1]._Z;
+		float32 Coef19 = _Matrix[1]._X * _Matrix[2]._Z - _Matrix[2]._X * _Matrix[1]._Z;
 
-		float Coef20 = _Matrix[2]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[2]._Y;
-		float Coef22 = _Matrix[1]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[1]._Y;
-		float Coef23 = _Matrix[1]._X * _Matrix[2]._Y - _Matrix[2]._X * _Matrix[1]._Y;
+		float32 Coef20 = _Matrix[2]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[2]._Y;
+		float32 Coef22 = _Matrix[1]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[1]._Y;
+		float32 Coef23 = _Matrix[1]._X * _Matrix[2]._Y - _Matrix[2]._X * _Matrix[1]._Y;
 
-		Vector4<float> Fac0(Coef00, Coef00, Coef02, Coef03);
-		Vector4<float> Fac1(Coef04, Coef04, Coef06, Coef07);
-		Vector4<float> Fac2(Coef08, Coef08, Coef10, Coef11);
-		Vector4<float> Fac3(Coef12, Coef12, Coef14, Coef15);
-		Vector4<float> Fac4(Coef16, Coef16, Coef18, Coef19);
-		Vector4<float> Fac5(Coef20, Coef20, Coef22, Coef23);
+		Vector4<float32> Fac0(Coef00, Coef00, Coef02, Coef03);
+		Vector4<float32> Fac1(Coef04, Coef04, Coef06, Coef07);
+		Vector4<float32> Fac2(Coef08, Coef08, Coef10, Coef11);
+		Vector4<float32> Fac3(Coef12, Coef12, Coef14, Coef15);
+		Vector4<float32> Fac4(Coef16, Coef16, Coef18, Coef19);
+		Vector4<float32> Fac5(Coef20, Coef20, Coef22, Coef23);
 
-		Vector4<float> Vec0(_Matrix[1]._X, _Matrix[0]._X, _Matrix[0]._X, _Matrix[0]._X);
-		Vector4<float> Vec1(_Matrix[1]._Y, _Matrix[0]._Y, _Matrix[0]._Y, _Matrix[0]._Y);
-		Vector4<float> Vec2(_Matrix[1]._Z, _Matrix[0]._Z, _Matrix[0]._Z, _Matrix[0]._Z);
-		Vector4<float> Vec3(_Matrix[1]._W, _Matrix[0]._W, _Matrix[0]._W, _Matrix[0]._W);
+		Vector4<float32> Vec0(_Matrix[1]._X, _Matrix[0]._X, _Matrix[0]._X, _Matrix[0]._X);
+		Vector4<float32> Vec1(_Matrix[1]._Y, _Matrix[0]._Y, _Matrix[0]._Y, _Matrix[0]._Y);
+		Vector4<float32> Vec2(_Matrix[1]._Z, _Matrix[0]._Z, _Matrix[0]._Z, _Matrix[0]._Z);
+		Vector4<float32> Vec3(_Matrix[1]._W, _Matrix[0]._W, _Matrix[0]._W, _Matrix[0]._W);
 
-		Vector4<float> Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
-		Vector4<float> Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
-		Vector4<float> Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
-		Vector4<float> Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+		Vector4<float32> Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+		Vector4<float32> Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+		Vector4<float32> Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+		Vector4<float32> Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
 
-		Vector4<float> SignA(+1, -1, +1, -1);
-		Vector4<float> SignB(-1, +1, -1, +1);
+		Vector4<float32> SignA(+1, -1, +1, -1);
+		Vector4<float32> SignB(-1, +1, -1, +1);
 		Matrix4x4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
 
-		Vector4<float> Row0(Inverse._Matrix[0]._X, Inverse._Matrix[1]._X, Inverse._Matrix[2]._X, Inverse._Matrix[3]._X);
+		Vector4<float32> Row0(Inverse._Matrix[0]._X, Inverse._Matrix[1]._X, Inverse._Matrix[2]._X, Inverse._Matrix[3]._X);
 
-		Vector4<float> Dot0(_Matrix[0] * Row0);
-		float Dot1 = (Dot0._X + Dot0._Y) + (Dot0._Z + Dot0._W);
+		Vector4<float32> Dot0(_Matrix[0] * Row0);
+		float32 Dot1 = (Dot0._X + Dot0._Y) + (Dot0._Z + Dot0._W);
 
-		float OneOverDeterminant = 1.0f / Dot1;
+		float32 OneOverDeterminant = 1.0f / Dot1;
 
 		Inverse *= OneOverDeterminant;
 
@@ -690,13 +691,13 @@ public:
 	/*
 	*	Rotates this matrix.
 	*/
-	FORCE_INLINE constexpr void Rotate(const Vector3<float> &rotation) NOEXCEPT
+	FORCE_INLINE constexpr void Rotate(const EulerAngles &rotation) NOEXCEPT
 	{
 		//Create a rotation matrix for the X axis.
-		if (rotation._X != 0.0f)
+		if (rotation._Roll != 0.0f)
 		{
-			const float xSine = CatalystBaseMath::Sine(rotation._X);
-			const float xCosine = CatalystBaseMath::Cosine(rotation._X);
+			const float xSine = CatalystBaseMath::Sine(rotation._Roll);
+			const float xCosine = CatalystBaseMath::Cosine(rotation._Roll);
 
 			const Matrix4x4 xRotationMatrix{ Vector4<float>(1.0f, 0.0f, 0.0f, 0.0f), Vector4<float>(0.0f, xCosine, xSine, 0.0f), Vector4<float>(0.0f, -xSine, xCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
@@ -704,10 +705,10 @@ public:
 		}
 
 		//Create a rotation matrix for the Y axis.
-		if (rotation._Y != 0.0f)
+		if (rotation._Yaw != 0.0f)
 		{
-			const float ySine = CatalystBaseMath::Sine(rotation._Y);
-			const float yCosine = CatalystBaseMath::Cosine(rotation._Y);
+			const float ySine = CatalystBaseMath::Sine(rotation._Yaw);
+			const float yCosine = CatalystBaseMath::Cosine(rotation._Yaw);
 
 			const Matrix4x4 yRotationMatrix{ Vector4<float>(yCosine, 0.0f, -ySine, 0.0f), Vector4<float>(0.0f, 1.0f, 0.0f, 0.0f), Vector4<float>(ySine, 0.0f, yCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
@@ -715,10 +716,10 @@ public:
 		}
 
 		//Create a rotation matrix for the Z axis.
-		if (rotation._Z != 0.0f)
+		if (rotation._Pitch != 0.0f)
 		{
-			const float zSine = CatalystBaseMath::Sine(rotation._Z);
-			const float zCosine = CatalystBaseMath::Cosine(rotation._Z);
+			const float zSine = CatalystBaseMath::Sine(rotation._Pitch);
+			const float zCosine = CatalystBaseMath::Cosine(rotation._Pitch);
 
 			const Matrix4x4 zRotationMatrix{ Vector4<float>(zCosine, zSine, 0.0f, 0.0f), Vector4<float>(-zSine, zCosine, 0.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 1.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 

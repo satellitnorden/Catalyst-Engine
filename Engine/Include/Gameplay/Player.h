@@ -81,7 +81,7 @@ private:
 	PlayerInputState _CurrentInputState;
 
 	//The rotation.
-	Vector3<float32> _Rotation{ VectorConstants::ZERO };
+	EulerAngles _Rotation;
 
 	//The crouch spring damping system.
 	SpringDampingSystem _CrouchSpringDampingSystem;

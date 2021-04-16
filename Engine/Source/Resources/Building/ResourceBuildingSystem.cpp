@@ -40,6 +40,7 @@
 #include <Resources/Core/ResourcesCore.h>
 
 //Systems.
+#include <Systems/PhysicsSystem.h>
 #include <Systems/TaskSystem.h>
 
 //Third party.
@@ -540,6 +541,48 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 			//Write the vertices to the file.
 			output_file.Write(model_files[level_of_detail_index]._Meshes[mesh_index]._Indices.Data(), sizeof(uint32) * number_of_indices);
 		}
+	}
+
+	//Check if there exists a collision model.
+	if (parameters._CollisionModelFilePath)
+	{
+		//Write that there exists a collision model.
+		bool collision_model_exists{ true };
+		output_file.Write(&collision_model_exists, sizeof(bool));
+
+		//Read the model file.
+		ModelFile collision_model_file;
+		FBXReader::Read(parameters._CollisionModelFilePath, &collision_model_file);
+
+		//Transform all vertices in all meshes.
+		for (ModelFile::Mesh &mesh : collision_model_file._Meshes)
+		{
+			for (Vertex &vertex : mesh._Vertices)
+			{
+				if (parameters._Transformation != MatrixConstants::IDENTITY || parameters._TexturCoordinateRotation != 0.0f)
+				{
+					vertex.Transform(parameters._Transformation, parameters._TexturCoordinateRotation);
+				}
+			}
+		}
+
+		//Build the collision model.
+		CollisionModelData collision_model_data;
+		PhysicsSystem::Instance->BuildCollisionModel(collision_model_file, &collision_model_data);
+
+		//Write the collision model data to the output file.
+		output_file.Write(&collision_model_data._Type, sizeof(CollisionModelData::Type));
+
+		const uint64 collision_model_data_size{ collision_model_data._Data.Size() };
+		output_file.Write(&collision_model_data_size, sizeof(uint64));
+		output_file.Write(collision_model_data._Data.Data(), collision_model_data_size);
+	}
+
+	else
+	{
+		//Write that there doesn't exist a collision model.
+		bool collision_model_exists{ false };
+		output_file.Write(&collision_model_exists, sizeof(bool));
 	}
 
 	//Close the output file.

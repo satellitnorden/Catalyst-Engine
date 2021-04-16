@@ -1827,6 +1827,9 @@
     <ClInclude Include="..\..\..\Include\Physics\Native\ModelSimulationConfiguration.h">
       <Filter>Physics\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\Native\CollisionModelData.h">
+      <Filter>Physics\Include\Native</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

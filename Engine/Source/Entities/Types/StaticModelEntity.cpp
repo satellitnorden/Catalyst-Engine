@@ -42,6 +42,7 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	component._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(component._WorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
 	component._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(component._WorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
 	component._MaterialResources = model_initialization_data->_MaterialResources;
+	component._ModelCollisionConfiguration = model_initialization_data->_ModelCollisionConfiguration;
 	component._MeshesVisibleMask = UINT8_MAXIMUM;
 
 	//Destroy the initialization data.
@@ -76,7 +77,7 @@ RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT StaticModelEntity
 	data->_WorldTransform = *GetWorldTransform();
 	data->_ModelResource = GetModelResource();
 	data->_MaterialResources = GetMaterialResources();
-	data->_ModelCollisionConfiguration._Type = ModelCollisionType::AXIS_ALIGNED_BOUNDING_BOX;
+	data->_ModelCollisionConfiguration._Type = ModelCollisionType::BOX;
 
 	//Return the initialization data.
 	return data;

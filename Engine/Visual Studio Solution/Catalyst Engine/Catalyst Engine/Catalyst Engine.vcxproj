@@ -198,6 +198,7 @@
     <ClInclude Include="..\..\..\Include\Physics\Native\CharacterController.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\CharacterControllerConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\CharacterPhysicsSystem.h" />
+    <ClInclude Include="..\..\..\Include\Physics\Native\CollisionModelData.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\ModelCollisionConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\ModelSimulationConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Physics\Native\PhysicsCore.h" />

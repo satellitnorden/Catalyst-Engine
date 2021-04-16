@@ -58,7 +58,7 @@ namespace CatalystCoordinateSpacesUtilities
 	/*
 	*	Returns a world space right vector with the given rotation.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float32> RotatedWorldRightVector(const Vector3<float32>& rotation) NOEXCEPT
+	FORCE_INLINE NO_DISCARD Vector3<float32> RotatedWorldRightVector(const EulerAngles &rotation) NOEXCEPT
 	{
 		return CatalystWorldCoordinateSpace::RIGHT.Rotated(rotation);
 	}
@@ -66,7 +66,7 @@ namespace CatalystCoordinateSpacesUtilities
 	/*
 	*	Returns a world space up vector with the given rotation.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float32> RotatedWorldUpVector(const Vector3<float32>& rotation) NOEXCEPT
+	FORCE_INLINE NO_DISCARD Vector3<float32> RotatedWorldUpVector(const EulerAngles &rotation) NOEXCEPT
 	{
 		return CatalystWorldCoordinateSpace::UP.Rotated(rotation);
 	}
@@ -74,7 +74,7 @@ namespace CatalystCoordinateSpacesUtilities
 	/*
 	*	Returns a world space forward vector with the given rotation.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float32> RotatedWorldForwardVector(const Vector3<float32>& rotation) NOEXCEPT
+	FORCE_INLINE NO_DISCARD Vector3<float32> RotatedWorldForwardVector(const EulerAngles &rotation) NOEXCEPT
 	{
 		return CatalystWorldCoordinateSpace::FORWARD.Rotated(rotation);
 	}

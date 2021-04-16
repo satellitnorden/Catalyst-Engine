@@ -7,6 +7,9 @@
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 
+//Physics.
+#include <Physics/Native/CollisionModelData.h>
+
 //Rendering.
 #include <Rendering/Native/Vertex.h>
 
@@ -29,5 +32,8 @@ public:
 
 	//The indices of this model.
 	DynamicArray<DynamicArray<DynamicArray<uint32>>> _Indices;
+
+	//The collision model data.
+	CollisionModelData _CollisionModelData;
 
 };

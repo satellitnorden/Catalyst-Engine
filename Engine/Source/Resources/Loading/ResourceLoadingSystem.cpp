@@ -183,6 +183,28 @@ void ResourceLoadingSystem::LoadModel(BinaryFile<IOMode::In> *const RESTRICT fil
 			file->Read(data->_Indices[i][j].Data(), sizeof(uint32) * number_of_indices);
 		}
 	}
+
+	//Read if there exists a collision model.
+	bool collision_model_exists;
+	file->Read(&collision_model_exists, sizeof(bool));
+
+	//Read the collision model data.
+	if (collision_model_exists)
+	{
+		file->Read(&data->_CollisionModelData._Type, sizeof(CollisionModelData::Type));
+
+		uint64 collision_model_data_size;
+		file->Read(&collision_model_data_size, sizeof(uint64));
+
+		data->_CollisionModelData._Data.Upsize<false>(collision_model_data_size);
+
+		file->Read(data->_CollisionModelData._Data.Data(), collision_model_data_size);
+	}
+
+	else
+	{
+		data->_CollisionModelData._Type = CollisionModelData::Type::NONE;
+	}
 }
 
 /*

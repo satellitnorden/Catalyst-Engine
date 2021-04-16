@@ -591,7 +591,7 @@ void EditorResourcesSystem::AddCreateModelResourceWindow() NOEXCEPT
 
 			if (_CreateModelResourceData._ApplyBlenderTransform)
 			{
-				parameters._Transformation = Matrix4x4(VectorConstants::ZERO, Vector3<float32>(-CatalystBaseMathConstants::HALF_PI, 0.0f, 0.0f), VectorConstants::ONE);
+				parameters._Transformation = Matrix4x4(VectorConstants::ZERO, EulerAngles(-CatalystBaseMathConstants::HALF_PI, 0.0f, 0.0f), VectorConstants::ONE);
 			}
 
 			else

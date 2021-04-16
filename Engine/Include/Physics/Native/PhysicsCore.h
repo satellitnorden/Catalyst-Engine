@@ -9,11 +9,17 @@ namespace PhysicsConstants
 	constexpr float32 GRAVITY{ 9.80'665f };
 }
 
+/*
+*	Type aliases.
+*/
+using CollisionModelHandle = void *RESTRICT;
+
 //Enumeration covering all model collision types.
 enum class ModelCollisionType : uint8
 {
 	NONE,
-	AXIS_ALIGNED_BOUNDING_BOX
+	BOX,
+	COLLISION_MODEL
 };
 
 //Enumeration covering all physics channels.

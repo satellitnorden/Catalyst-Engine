@@ -90,6 +90,9 @@ namespace PhysXPhysicsSystemData
 
 	//The physics.
 	physx::PxPhysics *RESTRICT _Physics{ nullptr };
+	
+	//The cooking.
+	physx::PxCooking *RESTRICT _Cooking{ nullptr };
 
 	//The dispatcher.
 	physx::PxDefaultCpuDispatcher *RESTRICT _Dispatcher{ nullptr };
@@ -139,6 +142,13 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 	PhysXPhysicsSystemData::_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *PhysXPhysicsSystemData::_Foundation, physx::PxTolerancesScale(), false, nullptr);
 #endif
 
+	//Create the cooking.
+	{
+		physx::PxCookingParams cooking_paramters{ physx::PxTolerancesScale() };
+
+		PhysXPhysicsSystemData::_Cooking = PxCreateCooking(PX_PHYSICS_VERSION, *PhysXPhysicsSystemData::_Foundation, cooking_paramters);
+	}
+
 	//Create the dispatcher.
 	PhysXPhysicsSystemData::_Dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 
@@ -155,6 +165,18 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 
 	//Create the controller manager.
 	PhysXPhysicsSystemData::_ControllerManager = PxCreateControllerManager(*PhysXPhysicsSystemData::_Scene);
+}
+
+/*
+*	Creates a collision model on the sub-system.
+*/
+void PhysicsSystem::SubCreateCollisionModel(const CollisionModelData &collision_model_data, CollisionModelHandle *const RESTRICT collision_model) NOEXCEPT
+{
+	//Set up the memory input data.
+	physx::PxDefaultMemoryInputData memory_input_data{ const_cast<byte *const RESTRICT>(collision_model_data._Data.Data()), static_cast<uint32>(collision_model_data._Data.Size()) };
+
+	//Create the convex mesh.
+	*collision_model = PhysXPhysicsSystemData::_Physics->createConvexMesh(memory_input_data);
 }
 
 /*
@@ -217,7 +239,7 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 
 			new_world_transform.SetAbsolutePosition(position);
 
-			const Vector3<float32> euler_angles{ rotation.ToEulerAngles() };
+			const EulerAngles euler_angles{ rotation.ToEulerAngles() };
 			new_world_transform.SetRotation(-euler_angles);
 
 			//Set the world transform of the entity.
@@ -245,6 +267,9 @@ void PhysicsSystem::SubTerminate() NOEXCEPT
 
 	//Release the dispatcher.
 	PX_RELEASE(PhysXPhysicsSystemData::_Dispatcher);
+
+	//Release the cooking.
+	PX_RELEASE(PhysXPhysicsSystemData::_Cooking);
 
 	//Release the physics.
 	PX_RELEASE(PhysXPhysicsSystemData::_Physics);
@@ -286,16 +311,42 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 			//Calculate the translation offset.
 			const AxisAlignedBoundingBox3D model_space_axis_aligned_bounding_box{ component._ModelResource->_ModelSpaceAxisAlignedBoundingBox };
 			AxisAlignedBoundingBox3D scaled_model_space_axis_aligned_bounding_box;
-			RenderingUtilities::TransformAxisAlignedBoundingBox(model_space_axis_aligned_bounding_box, Matrix4x4(VectorConstants::ZERO, VectorConstants::ZERO, Vector3<float32>(component._CurrentWorldTransform.GetScale())), &scaled_model_space_axis_aligned_bounding_box);
+			RenderingUtilities::TransformAxisAlignedBoundingBox(model_space_axis_aligned_bounding_box, Matrix4x4(VectorConstants::ZERO, EulerAngles(), Vector3<float32>(component._CurrentWorldTransform.GetScale())), &scaled_model_space_axis_aligned_bounding_box);
 			const Vector3<float32> translation_offset{ -AxisAlignedBoundingBox3D::CalculateCenter(scaled_model_space_axis_aligned_bounding_box) };
 
 			//Create the actor.
 			{
 				//Create the shape.
-				const AxisAlignedBoundingBox3D local_axis_aligned_bounding_box{ component._WorldSpaceAxisAlignedBoundingBox };
-				const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
-				const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
-				physx::PxShape* const RESTRICT shape{ PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial) };
+				physx::PxShape *RESTRICT shape{ nullptr };
+
+				switch (component._ModelCollisionConfiguration._Type)
+				{
+					case ModelCollisionType::BOX:
+					{
+						const AxisAlignedBoundingBox3D local_axis_aligned_bounding_box{ component._WorldSpaceAxisAlignedBoundingBox };
+						const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
+						const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
+						shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
+
+						break;
+					}
+
+					case ModelCollisionType::COLLISION_MODEL:
+					{
+						physx::PxConvexMesh *const RESTRICT convex_mesh{ static_cast<physx::PxConvexMesh *const RESTRICT>(component._ModelResource->_CollisionModel) };
+						const physx::PxConvexMeshGeometry geometry{ convex_mesh };
+						shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+					}
+				}
+
+				ASSERT(shape, "Couldn't create shape!");
 
 				//Set up the transform.
 				const Vector3<float32> absolute_world_position{ component._CurrentWorldTransform.GetAbsolutePosition() };
@@ -316,7 +367,7 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 				data._Actor->attachShape(*shape);
 
 				//Set up the actor.
-				physx::PxRigidBodyExt::updateMassAndInertia(*data._Actor, 10.0f);
+				physx::PxRigidBodyExt::updateMassAndInertia(*data._Actor, component._ModelSimulationConfiguration._InitialMass);
 
 				if (!component._ModelSimulationConfiguration._InitialVelocity.IsZero())
 				{
@@ -357,11 +408,34 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 			//Create the actor.
 			{
 				//Create the shape.
-				const AxisAlignedBoundingBox3D local_axis_aligned_bounding_box{ component._WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox() };
-				const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
-				const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
-				physx::PxShape* const RESTRICT shape{ PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial) };
+				physx::PxShape *RESTRICT shape{ nullptr };
 
+				switch (component._ModelCollisionConfiguration._Type)
+				{
+					case ModelCollisionType::BOX:
+					{
+						const AxisAlignedBoundingBox3D local_axis_aligned_bounding_box{ component._WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox() };
+						const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
+						const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
+						shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
+
+						break;
+					}
+
+					case ModelCollisionType::COLLISION_MODEL:
+					{
+						physx::PxConvexMesh *const RESTRICT convex_mesh{ static_cast<physx::PxConvexMesh *const RESTRICT>(component._ModelResource->_CollisionModel) };
+						const physx::PxConvexMeshGeometry geometry{ convex_mesh };
+						shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+					}
+				}
 				//Set up the transform.
 				const Vector3<float32> absolute_world_position{ component._WorldTransform.GetAbsolutePosition() };
 				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
@@ -631,5 +705,66 @@ RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCrea
 	}
 
 	return new (MemorySystem::Instance->TypeAllocate<CharacterController>()) CharacterController(abstraction_data);
+}
+
+/*
+*	Builds a collision model on the sub-system.
+*/
+void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, CollisionModelData *const RESTRICT collision_model_data) NOEXCEPT
+{
+	//Cooking needs to be initialized, so initialize now.
+	Initialize();
+
+	//First of all, try to build a convex mesh.
+	{
+		//Calculate the number of vertices.
+		uint64 number_of_vertices{ 0 };
+
+		for (const ModelFile::Mesh &mesh : model_file._Meshes)
+		{
+			number_of_vertices += mesh._Vertices.Size();
+		}
+
+		//Create the convex mesh description.
+		physx::PxConvexMeshDesc convex_mesh_description;
+
+		convex_mesh_description.points.count = static_cast<uint32>(number_of_vertices);
+		convex_mesh_description.points.stride = sizeof(physx::PxVec3);
+
+		DynamicArray<physx::PxVec3> points;
+		points.Reserve(number_of_vertices);
+
+		for (const ModelFile::Mesh &mesh : model_file._Meshes)
+		{
+			for (const Vertex &vertex : mesh._Vertices)
+			{
+				points.Emplace(physx::PxVec3(vertex._Position._X, vertex._Position._Y, -vertex._Position._Z));
+			}
+		}
+
+		convex_mesh_description.points.data = points.Data();
+		convex_mesh_description.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
+
+		//Build the convex mesh.
+		physx::PxDefaultMemoryOutputStream output_stream_buffer;
+		physx::PxConvexMeshCookingResult::Enum result;
+
+		PhysXPhysicsSystemData::_Cooking->cookConvexMesh(convex_mesh_description, output_stream_buffer, &result);
+
+		ASSERT(result == physx::PxConvexMeshCookingResult::eSUCCESS, "Convex mesh building failed!");
+
+		//Set the type.
+		collision_model_data->_Type = CollisionModelData::Type::CONVEX;
+
+		//Set the data.
+		collision_model_data->_Data.Upsize<false>(static_cast<uint64>(output_stream_buffer.getSize()));
+		Memory::Copy(collision_model_data->_Data.Data(), output_stream_buffer.getData(), sizeof(byte) * output_stream_buffer.getSize());
+
+		//Building of the convex mesh was successful, so return!
+		return;
+	}
+
+	//If this code executes, building a convex mesh failed, and a triangle mesh needs to be built instead.
+	ASSERT(false, "well");
 }
 #endif

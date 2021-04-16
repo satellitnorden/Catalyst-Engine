@@ -5,6 +5,7 @@
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
+#include <Math/General/EulerAngles.h>
 
 /*
 *	Quaternion definition.
@@ -20,20 +21,20 @@ public:
 		struct
 		{
 			//The X component.
-			float _X;
+			float32 _X;
 
 			//The Y component.
-			float _Y;
+			float32 _Y;
 
 			//The Z component.
-			float _Z;
+			float32 _Z;
 
 			//The W component.
-			float _W;
+			float32 _W;
 		};
 
 		//The data.
-		float _Data[4];
+		float32 _Data[4];
 	};
 
 	/*
@@ -52,7 +53,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE constexpr Quaternion(const float initial_x, const float initial_y, const float initial_z, const float initial_w) NOEXCEPT
+	FORCE_INLINE constexpr Quaternion(const float32 initial_x, const float32 initial_y, const float32 initial_z, const float32 initial_w) NOEXCEPT
 		:
 		_X(initial_x),
 		_Y(initial_y),
@@ -84,7 +85,7 @@ public:
 	/*
 	*	Returns the magnitude of this quaternion.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD float Magnitude() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD float32 Magnitude() const NOEXCEPT
 	{
 		return CatalystBaseMath::SquareRoot(MagnitudeSquared());
 	}
@@ -92,7 +93,7 @@ public:
 	/*
 	*	Returns the squared magnitude of this quaternion.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD float MagnitudeSquared() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD float32 MagnitudeSquared() const NOEXCEPT
 	{
 		return (_X * _X) + (_Y * _Y) + (_Z * _Z) + (_W * _W);
 	}
@@ -102,9 +103,9 @@ public:
 	*/
 	FORCE_INLINE constexpr void Normalize() NOEXCEPT
 	{
-		const float magnitude{ Magnitude() };
+		const float32 magnitude{ Magnitude() };
 
-		const float inverse_magnitude{ 1.0f / magnitude };
+		const float32 inverse_magnitude{ 1.0f / magnitude };
 
 		_X *= inverse_magnitude;
 		_Y *= inverse_magnitude;
@@ -115,32 +116,32 @@ public:
 	/*
 	*	Converts this quaternion to euler angles.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float32> ToEulerAngles() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD EulerAngles ToEulerAngles() const NOEXCEPT
 	{
-		Vector3<float32> angles;
+		EulerAngles angles;
 
 		//Roll.
 		const float32 sinr_cosp{ 2.0f * (_W * _X + _Y * _Z) };
 		const float32 cosr_cosp{ 1.0f - 2.0f * (_X * _X + _Y * _Y) };
-		angles._X = CatalystBaseMath::ArcTangent(sinr_cosp, cosr_cosp);
+		angles._Roll = CatalystBaseMath::ArcTangent(sinr_cosp, cosr_cosp);
 
 		//Pitch.
 		const float32 sinp{ 2.0f * (_W * _Y - _Z * _X) };
 
 		if (CatalystBaseMath::Absolute(sinp) >= 1.0f)
 		{
-			angles._Y = std::copysign(CatalystBaseMathConstants::HALF_PI, sinp);
+			angles._Yaw = std::copysign(CatalystBaseMathConstants::HALF_PI, sinp);
 		}
 
 		else
 		{
-			angles._Y = std::asin(sinp);
+			angles._Yaw = std::asin(sinp);
 		}
 
 		//Yaw.
 		const float32 siny_cosp{ 2.0f * (_W * _Z + _X * _Y) };
 		const float32 cosy_cosp{ 1.0f - 2.0f * (_Y * _Y + _Z * _Z) };
-		angles._Z = CatalystBaseMath::ArcTangent(siny_cosp, cosy_cosp);
+		angles._Pitch = CatalystBaseMath::ArcTangent(siny_cosp, cosy_cosp);
 
 		return angles;
 	}
@@ -148,14 +149,14 @@ public:
 	/*
 	*	Converts euler angles to this quaternion.
 	*/
-	FORCE_INLINE void FromEulerAngles(const Vector3<float32> angles) NOEXCEPT
+	FORCE_INLINE void FromEulerAngles(const EulerAngles &angles) NOEXCEPT
 	{
-		const float32 cr{ cos(angles._X * 0.5f) };
-		const float32 sr{ sin(angles._X * 0.5f) };
-		const float32 cp{ cos(angles._Y * 0.5f) };
-		const float32 sp{ sin(angles._Y * 0.5f) };
-		const float32 cy{ cos(angles._Z * 0.5f) };
-		const float32 sy{ sin(angles._Z * 0.5f) };
+		const float32 cr{ cos(angles._Roll * 0.5f) };
+		const float32 sr{ sin(angles._Roll * 0.5f) };
+		const float32 cp{ cos(angles._Yaw * 0.5f) };
+		const float32 sp{ sin(angles._Yaw * 0.5f) };
+		const float32 cy{ cos(angles._Pitch * 0.5f) };
+		const float32 sy{ sin(angles._Pitch * 0.5f) };
 
 		_X = sr * cp * cy - cr * sp * sy;
 		_Y = cr * sp * cy + sr * cp * sy;

@@ -270,17 +270,17 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				}
 
 				//Add the rotation editor.
-				Vector3<float32> rotation{ world_transform.GetRotation() };
+				EulerAngles rotation{ world_transform.GetRotation() };
 
-				rotation._X = CatalystBaseMath::RadiansToDegrees(rotation._X);
-				rotation._Y = CatalystBaseMath::RadiansToDegrees(rotation._Y);
-				rotation._Z = CatalystBaseMath::RadiansToDegrees(rotation._Z);
+				rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
+				rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
+				rotation._Pitch = CatalystBaseMath::RadiansToDegrees(rotation._Pitch);
 
-				if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1f))
+				if (ImGui::DragFloat3("Rotation", rotation.Data(), 0.1f))
 				{
-					rotation._X = CatalystBaseMath::DegreesToRadians(rotation._X);
-					rotation._Y = CatalystBaseMath::DegreesToRadians(rotation._Y);
-					rotation._Z = CatalystBaseMath::DegreesToRadians(rotation._Z);
+					rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation._Roll);
+					rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation._Yaw);
+					rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation._Pitch);
 
 					world_transform.SetRotation(rotation);
 				}
@@ -476,17 +476,17 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				}
 
 				//Add the rotation editor.
-				Vector3<float32> rotation{ world_transform.GetRotation() };
+				EulerAngles rotation{ world_transform.GetRotation() };
 
-				rotation._X = CatalystBaseMath::RadiansToDegrees(rotation._X);
-				rotation._Y = CatalystBaseMath::RadiansToDegrees(rotation._Y);
-				rotation._Z = CatalystBaseMath::RadiansToDegrees(rotation._Z);
+				rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
+				rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
+				rotation._Pitch = CatalystBaseMath::RadiansToDegrees(rotation._Pitch);
 
-				if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1f))
+				if (ImGui::DragFloat3("Rotation", rotation.Data(), 0.1f))
 				{
-					rotation._X = CatalystBaseMath::DegreesToRadians(rotation._X);
-					rotation._Y = CatalystBaseMath::DegreesToRadians(rotation._Y);
-					rotation._Z = CatalystBaseMath::DegreesToRadians(rotation._Z);
+					rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation._Roll);
+					rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation._Yaw);
+					rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation._Pitch);
 
 					world_transform.SetRotation(rotation);
 				}
@@ -632,7 +632,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 
 				case LightType::POINT:
 				{
-					world_transform = WorldTransform(light_entity->GetWorldPosition().GetCell(), light_entity->GetWorldPosition().GetLocalPosition(), VectorConstants::ZERO, 1.0f);
+					world_transform = WorldTransform(light_entity->GetWorldPosition().GetCell(), light_entity->GetWorldPosition().GetLocalPosition(), EulerAngles(), 1.0f);
 
 					break;
 				}
