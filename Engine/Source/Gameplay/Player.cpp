@@ -21,27 +21,6 @@ void Player::InitializePlayer() NOEXCEPT
 {
 	//Initialize this character.
 	InitializeCharacter();
-
-	//Set up the input state.
-	for (uint8 i{ 0 }; i < 2; ++i)
-	{
-		_CurrentInputState._MovementSpringDampingSystems[i].SetCurrent(0.0f);
-		_CurrentInputState._MovementSpringDampingSystems[i].SetDesired(0.0f);
-		_CurrentInputState._MovementSpringDampingSystems[i].SetDampingCoefficient(32.0f);
-		_CurrentInputState._MovementSpringDampingSystems[i].SetSpringConstant(512.0f);
-	}
-
-	//Set up the crouch spring damping system.
-	_CrouchSpringDampingSystem.SetCurrent(2.0f);
-	_CrouchSpringDampingSystem.SetDesired(2.0f);
-	_CrouchSpringDampingSystem.SetDampingCoefficient(32.0f);
-	_CrouchSpringDampingSystem.SetSpringConstant(256.0f);
-
-	//Set up the speed spring damping system.
-	_SpeedSpringDampingSystem.SetCurrent(_CharacterConfiguration._StandingWalkingSpeed);
-	_SpeedSpringDampingSystem.SetDesired(_CharacterConfiguration._StandingWalkingSpeed);
-	_SpeedSpringDampingSystem.SetDampingCoefficient(16.0f);
-	_SpeedSpringDampingSystem.SetSpringConstant(128.0f);
 }
 
 /*
@@ -68,68 +47,25 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 	forward.NormalizeXZ();
 	right.NormalizeXZ();
 
-	//Determine the desired speed.
-	float32 desired_speed;
+	//Add the movement.
+	AddMovement(forward * _CurrentInputState._Movement._X);
+	AddMovement(right * _CurrentInputState._Movement._Y);
 
-	if (_CurrentInputState._IsCrouching)
+	//Add jump.
+	if (_CurrentInputState._JumpButtonPressed)
 	{
-		desired_speed = _CurrentInputState._IsRunning ? _CharacterConfiguration._CrouchingRunningSpeed : _CharacterConfiguration._CrouchingWalkingSpeed;
+		Jump();
 	}
 
-	else
-	{
-		desired_speed = _CurrentInputState._IsRunning ? _CharacterConfiguration._StandingRunningSpeed : _CharacterConfiguration._StandingWalkingSpeed;
-	}
+	//Set whether the character is crouching/sprinting.
+	SetIsCrouching(_CurrentInputState._IsCrouching);
+	SetIsSprinting(_CurrentInputState._IsSprinting);
 
-	_SpeedSpringDampingSystem.SetDesired(desired_speed);
-
-	//Calculate the speed.
-	const float32 speed{ _SpeedSpringDampingSystem.Update(delta_time) };
-
-	//Determine the forward and right movement speeds.
-	const float32 forward_movement_speed{ _CurrentInputState._Movement._X * speed };
-	const float32 right_movement_speed{ _CurrentInputState._Movement._Y * speed };
-
-	//Update the vertical velocity.
-	if (_CharacterController->IsOnGround())
-	{
-		if (_CurrentInputState._JumpButtonPressed)
-		{
-			_VerticalVelocity = _CharacterConfiguration._JumpForce;
-		}
-
-		else
-		{
-			_VerticalVelocity = -PhysicsConstants::GRAVITY * delta_time;
-		}
-	}
-
-	else
-	{
-		_VerticalVelocity += -PhysicsConstants::GRAVITY * delta_time;
-	}
-
-	//Calculate the total displacement.
-	Vector3<float32> total_displacement{ 0.0f, 0.0f, 0.0f };
-
-	total_displacement += Vector3<float32>(0.0f, _VerticalVelocity, 0.0f) * delta_time;
-	total_displacement += forward * forward_movement_speed * delta_time;
-	total_displacement += right * right_movement_speed * delta_time;
-
-	//Move the character controller.
-	_CharacterController->Move(total_displacement);
-
-	//Set the crouch desired position.
-	_CrouchSpringDampingSystem.SetDesired(_CurrentInputState._IsCrouching ? _CharacterConfiguration._CrouchingHeight : _CharacterConfiguration._StandingHeight);
-
-	//Calculate the current height.
-	const float32 current_height{ _CrouchSpringDampingSystem.Update(delta_time) };
-
-	//Resize the capsule height of the character controller.
-	_CharacterController->ResizeCapsuleHeight(current_height);
+	//Post update the character.
+	PostUpdateCharacter(delta_time);
 
 	//Set the perceiver position/rotation.
-	const WorldTransform world_transform{ _CharacterController->GetWorldPosition().GetAbsolutePosition() + Vector3<float32>(0.0f, current_height, 0.0f), _Rotation, 1.0f };
+	const WorldTransform world_transform{ _CharacterController->GetWorldPosition().GetAbsolutePosition() + Vector3<float32>(0.0f, _CurrentHeight, 0.0f), _Rotation, 1.0f };
 
 	Perceiver::Instance->SetWorldTransform(world_transform);
 }
@@ -162,25 +98,17 @@ void Player::UpdateCurrentInputState(const float32 delta_time) NOEXCEPT
 	_CurrentInputState._Rotation._Y += mouse_state->_DeltaX * MOUSE_ROTATION_SPEED;
 
 	//Update the movement.
-	Vector2<float32> desired_movement;
+	_CurrentInputState._Movement._X = 0.0f;
+	_CurrentInputState._Movement._Y = 0.0f;
 
-	desired_movement._X = 0.0f;
-	desired_movement._Y = 0.0f;
+	_CurrentInputState._Movement._X += gamepad_state->_LeftThumbstickY;
+	_CurrentInputState._Movement._Y += gamepad_state->_LeftThumbstickX;
 
-	desired_movement._X += gamepad_state->_LeftThumbstickY;
-	desired_movement._Y += gamepad_state->_LeftThumbstickX;
+	_CurrentInputState._Movement._X += static_cast<float>(keyboard_state->GetButtonState(KeyboardButton::W) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::W) == ButtonState::PRESSED_HELD);
+	_CurrentInputState._Movement._X -= static_cast<float>(keyboard_state->GetButtonState(KeyboardButton::S) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::S) == ButtonState::PRESSED_HELD);
 
-	desired_movement._X += static_cast<float>(keyboard_state->GetButtonState(KeyboardButton::W) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::W) == ButtonState::PRESSED_HELD);
-	desired_movement._X -= static_cast<float>(keyboard_state->GetButtonState(KeyboardButton::S) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::S) == ButtonState::PRESSED_HELD);
-
-	desired_movement._Y += static_cast<float>(keyboard_state->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED_HELD);
-	desired_movement._Y -= static_cast<float>(keyboard_state->GetButtonState(KeyboardButton::A) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::A) == ButtonState::PRESSED_HELD);
-
-	for (uint8 i{ 0 }; i < 2; ++i)
-	{
-		_CurrentInputState._MovementSpringDampingSystems[i].SetDesired(desired_movement[i]);
-		_CurrentInputState._Movement[i] = _CurrentInputState._MovementSpringDampingSystems[i].Update(delta_time);
-	}
+	_CurrentInputState._Movement._Y += static_cast<float>(keyboard_state->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED_HELD);
+	_CurrentInputState._Movement._Y -= static_cast<float>(keyboard_state->GetButtonState(KeyboardButton::A) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::A) == ButtonState::PRESSED_HELD);
 
 	//Update if the player is crouching.
 	switch (InputSystem::Instance->GetLastUpdatedInputDeviceType())
@@ -212,15 +140,15 @@ void Player::UpdateCurrentInputState(const float32 delta_time) NOEXCEPT
 		}
 	}
 
-	//Update if the player is running.
+	//Update if the player is sprinting.
 	switch (InputSystem::Instance->GetLastUpdatedInputDeviceType())
 	{
 		case InputDeviceType::GAMEPAD:
 		{
 			if (gamepad_state->_LeftThumb == ButtonState::PRESSED)
 			{
-				_CurrentInputState._GamepadRunToggle = !_CurrentInputState._GamepadRunToggle;
-				_CurrentInputState._IsRunning = _CurrentInputState._GamepadRunToggle;
+				_CurrentInputState._GamepadSprintToggle = !_CurrentInputState._GamepadSprintToggle;
+				_CurrentInputState._IsSprinting = _CurrentInputState._GamepadSprintToggle;
 			}
 
 			break;
@@ -229,7 +157,7 @@ void Player::UpdateCurrentInputState(const float32 delta_time) NOEXCEPT
 		case InputDeviceType::KEYBOARD:
 		case InputDeviceType::MOUSE:
 		{
-			_CurrentInputState._IsRunning = keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED_HELD;
+			_CurrentInputState._IsSprinting = keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED_HELD;
 
 			break;
 		}

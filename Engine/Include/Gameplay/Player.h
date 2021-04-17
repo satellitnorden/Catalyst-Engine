@@ -3,9 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Math.
-#include <Math/General/SpringDampingSystem.h>
-
 //Gameplay.
 #include <Gameplay/Character.h>
 #include <Gameplay/PlayerConfiguration.h>
@@ -28,6 +25,9 @@ public:
 
 protected:
 
+	//The player configuration.
+	PlayerConfiguration _PlayerConfiguration;
+
 	/*
 	*	Initialize this player.
 	*/
@@ -37,9 +37,6 @@ protected:
 	*	Updates this player.
 	*/
 	void UpdatePlayer(const float32 delta_time) NOEXCEPT;
-
-	//The player configuration.
-	PlayerConfiguration _PlayerConfiguration;
 
 private:
 
@@ -54,17 +51,14 @@ private:
 		//The rotation.
 		Vector2<float32> _Rotation{ 0.0f, 0.0f };
 
-		//The movement spring damping systems.
-		StaticArray<SpringDampingSystem, 2> _MovementSpringDampingSystems;
-
 		//The movement.
 		Vector2<float32> _Movement{ 0.0f, 0.0f };
 
 		//Denotes if the player is crouching.
 		bool _IsCrouching{ false };
 
-		//Denotes if the player is running.
-		bool _IsRunning{ false };
+		//Denotes if the player is sprinting.
+		bool _IsSprinting{ false };
 
 		//Denotes if the jump button was pressed.
 		bool _JumpButtonPressed{ false };
@@ -72,8 +66,8 @@ private:
 		//Denotes if gamepad crouch is toggled.
 		bool _GamepadCrouchToggle{ false };
 
-		//Denotes if gamepad run is toggled.
-		bool _GamepadRunToggle{ false };
+		//Denotes if gamepad sprint is toggled.
+		bool _GamepadSprintToggle{ false };
 
 	};
 
@@ -82,12 +76,6 @@ private:
 
 	//The rotation.
 	EulerAngles _Rotation;
-
-	//The crouch spring damping system.
-	SpringDampingSystem _CrouchSpringDampingSystem;
-
-	//The speed spring damping system.
-	SpringDampingSystem _SpeedSpringDampingSystem;
 
 	/*
 	*	Updates the current input state.
