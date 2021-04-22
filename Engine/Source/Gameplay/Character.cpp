@@ -81,6 +81,12 @@ void Character::PostUpdateCharacter(const float32 delta_time) NOEXCEPT
 
 	else
 	{
+		if (_CachedJump)
+		{
+			_VerticalVelocity = _CharacterConfiguration._JumpForce;
+		}
+
+		else
 		_VerticalVelocity += -PhysicsConstants::GRAVITY * delta_time;
 	}
 

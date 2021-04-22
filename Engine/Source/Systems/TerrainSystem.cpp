@@ -130,6 +130,15 @@ void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context
 }
 
 /*
+*	Returns if terrain can be generated.
+*/
+NO_DISCARD bool TerrainSystem::CanTerrainBeGenerated() const NOEXCEPT
+{
+	//Need the functions.
+	return _Properties._TerrainHeightFunction && _Properties._TerrainMaterialFunction;
+}
+
+/*
 *	Sets the maximum quad tree depth.
 */
 void TerrainSystem::SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT

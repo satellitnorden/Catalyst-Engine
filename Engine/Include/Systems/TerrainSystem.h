@@ -71,6 +71,11 @@ public:
 	}
 
 	/*
+	*	Returns if terrain can be generated.
+	*/
+	NO_DISCARD bool CanTerrainBeGenerated() const NOEXCEPT;
+
+	/*
 	*	Sets the maximum quad tree depth.
 	*/
 	void SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT;
