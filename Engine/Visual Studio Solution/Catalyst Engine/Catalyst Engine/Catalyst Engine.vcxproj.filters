@@ -436,6 +436,12 @@
     <Filter Include="Gameplay\Source">
       <UniqueIdentifier>{1bc20d65-b9bb-4fd6-8437-7b55e5fa75c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{6250e65a-49e8-481c-a560-7f1a3163ffd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting\Include">
+      <UniqueIdentifier>{09c43829-a6da-462e-9a0d-2e9b388714ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1830,6 +1836,18 @@
     <ClInclude Include="..\..\..\Include\Physics\Native\CollisionModelData.h">
       <Filter>Physics\Include\Native</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\ScriptSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Scripting\Script.h">
+      <Filter>Scripting\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Scripting\ScriptingCore.h">
+      <Filter>Scripting\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Scripting\ScriptArgument.h">
+      <Filter>Scripting\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2440,6 +2458,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Gameplay\Player.cpp">
       <Filter>Gameplay\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\ScriptSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

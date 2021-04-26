@@ -445,6 +445,9 @@
     <ClInclude Include="..\..\..\Include\Save\SaveCore.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveEntry.h" />
     <ClInclude Include="..\..\..\Include\Save\SaveHeader.h" />
+    <ClInclude Include="..\..\..\Include\Scripting\Script.h" />
+    <ClInclude Include="..\..\..\Include\Scripting\ScriptArgument.h" />
+    <ClInclude Include="..\..\..\Include\Scripting\ScriptingCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\ADSREnvelope.h" />
     <ClInclude Include="..\..\..\Include\Sound\MIDIDevice.h" />
     <ClInclude Include="..\..\..\Include\Sound\PlaySoundRequest.h" />
@@ -468,6 +471,7 @@
     <ClInclude Include="..\..\..\Include\Systems\RenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\ResourceSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\SaveSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\ScriptSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TaskSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h" />
@@ -700,6 +704,7 @@
     <ClCompile Include="..\..\..\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\ResourceSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\SaveSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\ScriptSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TaskSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp" />

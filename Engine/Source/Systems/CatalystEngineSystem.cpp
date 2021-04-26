@@ -38,6 +38,7 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/SaveSystem.h>
+#include <Systems/ScriptSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
@@ -151,6 +152,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	PhysicsSystem::Instance->Initialize();
 	SaveSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
+	ScriptSystem::Instance->Initialize();
 	SoundSystem::Instance->Initialize();
 	TaskSystem::Instance->Initialize();
 	TerrainSystem::Instance->Initialize(_ProjectConfiguration._TerrainConfiguration);
