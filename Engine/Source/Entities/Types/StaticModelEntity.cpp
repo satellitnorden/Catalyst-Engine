@@ -49,7 +49,10 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 	EntitySystem::Instance->DestroyInitializationData<StaticModelInitializationData>(data);
 
 	//Initialize the entity physics.
-	PhysicsSystem::Instance->InitializeEntityPhysics(this);
+	if (ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
+	{
+		PhysicsSystem::Instance->InitializeEntityPhysics(this);
+	}
 }
 
 /*
@@ -172,7 +175,10 @@ void StaticModelEntity::SetWorldTransform(const WorldTransform &new_world_transf
 	UpdateWorldSpaceAxisAlignedBoundingBox();
 
 	//Update the physics entity world transform.
-	PhysicsSystem::Instance->UpdateEntityWorldTransform(this, new_world_transform);
+	if (ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
+	{
+		PhysicsSystem::Instance->UpdateEntityWorldTransform(this, new_world_transform);
+	}
 }
 #endif
 

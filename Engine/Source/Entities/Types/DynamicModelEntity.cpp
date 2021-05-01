@@ -47,7 +47,10 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	EntitySystem::Instance->DestroyInitializationData<DynamicModelInitializationData>(data);
 
 	//Initialize the entity physics.
-	PhysicsSystem::Instance->InitializeEntityPhysics(this);
+	if (ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
+	{
+		PhysicsSystem::Instance->InitializeEntityPhysics(this);
+	}
 }
 
 /*
@@ -139,7 +142,10 @@ void DynamicModelEntity::SetWorldTransform(const WorldTransform &new_world_trans
 	RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToAbsoluteMatrix4x4(), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
 
 	//Update the physics entity world transform.
-	PhysicsSystem::Instance->UpdateEntityWorldTransform(this, new_world_transform);
+	if (ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
+	{
+		PhysicsSystem::Instance->UpdateEntityWorldTransform(this, new_world_transform);
+	}
 }
 
 /*

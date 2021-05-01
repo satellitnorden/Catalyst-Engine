@@ -1,3 +1,6 @@
+//Constants.
+#define USE_TEMPORARY_TERRAIN_SOLUTION (1)
+
 //Header file.
 #include <Gameplay/Player.h>
 
@@ -13,6 +16,9 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
+#if USE_TEMPORARY_TERRAIN_SOLUTION
+#include <Systems/TerrainSystem.h>
+#endif
 
 /*
 *	Initialize this player.
@@ -65,7 +71,25 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 	PostUpdateCharacter(delta_time);
 
 	//Set the perceiver position/rotation.
-	const WorldTransform world_transform{ _CharacterController->GetWorldPosition().GetAbsolutePosition() + Vector3<float32>(0.0f, _CurrentHeight, 0.0f), _Rotation, 1.0f };
+	Vector3<float32> character_controller_position{ _CharacterController->GetWorldPosition().GetAbsolutePosition() };
+
+#if USE_TEMPORARY_TERRAIN_SOLUTION
+	{
+		float32 terrain_height;
+
+		if (TerrainSystem::Instance->GetTerrainHeightAtPosition(character_controller_position, &terrain_height))
+		{
+			if (character_controller_position._Y < terrain_height)
+			{
+				character_controller_position._Y = terrain_height;
+
+				_CharacterController->SetWorldPosition(WorldPosition(character_controller_position));
+			}
+		}
+	}
+#endif
+
+	const WorldTransform world_transform{ character_controller_position + Vector3<float32>(0.0f, _CurrentHeight, 0.0f), _Rotation, 1.0f };
 
 	Perceiver::Instance->SetWorldTransform(world_transform);
 }

@@ -158,6 +158,15 @@ public:
 	}
 
 	/*
+	*	Clears this hash table.
+	*/
+	FORCE_INLINE void Clear() NOEXCEPT
+	{
+		_Keys.Clear();
+		_Values.Clear();
+	}
+
+	/*
 	*	Finds the value with the given key and returns a pointer to it, or nullptr if none was found.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD VALUE_TYPE *const RESTRICT Find(const KEY_TYPE &key) NOEXCEPT

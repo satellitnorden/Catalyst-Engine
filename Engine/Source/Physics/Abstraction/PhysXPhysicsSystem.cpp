@@ -155,7 +155,7 @@ namespace PhysXPhysicsSystemLogic
 	FORCE_INLINE void MoveTerrainHeightField() NOEXCEPT
 	{
 		//If terrain can't be generated, just return. (:
-		if (!TerrainSystem::Instance->CanTerrainBeGenerated())
+		if (!TerrainSystem::Instance->CanTerrainBeGenerated() || true)
 		{
 			return;
 		}
@@ -496,6 +496,12 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 		{
 			//Cache the component.
 			const DynamicModelComponent &component{ ComponentManager::GetDynamicModelDynamicModelComponents()[entity->_ComponentsIndex] };
+
+			//Check if collision is requested.
+			if (component._ModelCollisionConfiguration._Type == ModelCollisionType::NONE)
+			{
+				return;
+			}
 
 			//Set up the dynamic model entity data.
 			DynamicModelEntityData data;
