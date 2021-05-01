@@ -450,6 +450,7 @@
     <ClInclude Include="..\..\..\Include\Scripting\ScriptingCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\ADSREnvelope.h" />
     <ClInclude Include="..\..\..\Include\Sound\MIDIDevice.h" />
+    <ClInclude Include="..\..\..\Include\Sound\MIDIMessage.h" />
     <ClInclude Include="..\..\..\Include\Sound\PlaySoundRequest.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundMixComponent.h" />

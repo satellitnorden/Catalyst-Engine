@@ -1848,6 +1848,9 @@
     <ClInclude Include="..\..\..\Include\Scripting\ScriptArgument.h">
       <Filter>Scripting\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Sound\MIDIMessage.h">
+      <Filter>Sound\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

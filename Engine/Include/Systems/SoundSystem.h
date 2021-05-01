@@ -11,6 +11,7 @@
 
 //Sound.
 #include <Sound/MIDIDevice.h>
+#include <Sound/MIDIMessage.h>
 #include <Sound/PlaySoundRequest.h>
 #include <Sound/SoundCore.h>
 #include <Sound/SoundMixComponent.h>
@@ -137,6 +138,11 @@ public:
 	*	Opens a MIDI device.
 	*/
 	void OpenMIDIDevice(MIDIDevice *const RESTRICT midi_device) NOEXCEPT;
+
+	/*
+	*	Retrieves a MIDI message from the queue of the specified MIDI device. Returns whether or not a message was retrieved from the queue.
+	*/
+	NO_DISCARD bool RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message);
 
 private:
 

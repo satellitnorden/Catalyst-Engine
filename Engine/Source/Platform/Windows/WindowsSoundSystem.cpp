@@ -11,6 +11,10 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/MemorySystem.h>
+
+//Third party.
+#include <ThirdParty/rtmidi/RtMidi.h>
 
 //Macros.
 #define SAFE_RELEASE(POINTER) if (POINTER) { POINTER->Release(); POINTER = nullptr; }
@@ -109,6 +113,9 @@ namespace WindowsSoundSystemData
 
 	//The number of bits per sample.
 	uint8 _NumberOfBitsPerSample;
+
+	//The MIDI in.
+	RtMidiIn *RESTRICT _MIDIIn{ nullptr };
 
 }
 
@@ -227,32 +234,30 @@ uint8 SoundSystem::GetNumberOfBitsPerSample() const NOEXCEPT
 */
 void SoundSystem::QueryMIDIDevices(DynamicArray<MIDIDevice> *const RESTRICT midi_devices) NOEXCEPT
 {
-	const uint32 number_of_midi_devices{ midiInGetNumDevs() };
-
-	for (uint32 i{ 0 }; i < number_of_midi_devices; ++i)
+	//Create the MIDI in, if necessary.
+	if (!WindowsSoundSystemData::_MIDIIn)
 	{
-		MIDIINCAPS capabilities;
+		WindowsSoundSystemData::_MIDIIn = new (MemorySystem::Instance->TypeAllocate<RtMidiIn>()) RtMidiIn();
 
-		if (midiInGetDevCaps(i, &capabilities, sizeof(MIDIINCAPS)) == MMSYSERR_NOERROR)
-		{
-			midi_devices->Emplace();
-
-			midi_devices->Back()._Handle = nullptr;
-			midi_devices->Back()._Index = i;
-			midi_devices->Back()._Name = capabilities.szPname;
-		}
+		ASSERT(WindowsSoundSystemData::_MIDIIn, "Couldn't create MIDI in!");
 	}
-}
 
-void CALLBACK MidiInProc(
-	HMIDIIN   hMidiIn,
-	UINT      wMsg,
-	DWORD_PTR dwInstance,
-	DWORD_PTR dwParam1,
-	DWORD_PTR dwParam2
-)
-{
-	BREAKPOINT();
+	//Query the port count.
+	const uint32 port_count{ WindowsSoundSystemData::_MIDIIn->getPortCount() };
+
+	//Reserve the appropriate amount.
+	midi_devices->Reserve(port_count);
+
+	//Fill in the midi devices.
+	for (uint32 i{ 0 }; i < port_count; ++i)
+	{
+		midi_devices->Emplace();
+		MIDIDevice &midi_device{ midi_devices->Back() };
+
+		midi_device._Handle = nullptr;
+		midi_device._Index = i;
+		midi_device._Name = WindowsSoundSystemData::_MIDIIn->getPortName(i).c_str();
+	}
 }
 
 /*
@@ -260,15 +265,59 @@ void CALLBACK MidiInProc(
 */
 void SoundSystem::OpenMIDIDevice(MIDIDevice *const RESTRICT midi_device) NOEXCEPT
 {
-	midi_device->_Handle = new HMIDIIN();
-
-	if (midiInOpen(	static_cast<HMIDIIN* const RESTRICT>(midi_device->_Handle),
-					midi_device->_Index,
-					(DWORD_PTR)MidiInProc,
-					static_cast<DWORD_PTR>(0),
-					CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
+	//Create the MIDI in, if necessary.
+	if (!WindowsSoundSystemData::_MIDIIn)
 	{
-		BREAKPOINT();
+		WindowsSoundSystemData::_MIDIIn = new (MemorySystem::Instance->TypeAllocate<RtMidiIn>()) RtMidiIn();
+
+		ASSERT(WindowsSoundSystemData::_MIDIIn, "Couldn't create MIDI in!");
+	}
+
+	//Open the port.
+	WindowsSoundSystemData::_MIDIIn->openPort(midi_device->_Index);
+}
+
+/*
+*	Retrieves a MIDI message from the queue of the specified MIDI device. Returns whether or not a message was retrieved from the queue.
+*/
+NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message)
+{
+	//Create the MIDI in, if necessary.
+	if (!WindowsSoundSystemData::_MIDIIn)
+	{
+		WindowsSoundSystemData::_MIDIIn = new (MemorySystem::Instance->TypeAllocate<RtMidiIn>()) RtMidiIn();
+
+		ASSERT(WindowsSoundSystemData::_MIDIIn, "Couldn't create MIDI in!");
+	}
+
+	//Get the message.
+	std::vector<uint8> message;
+	WindowsSoundSystemData::_MIDIIn->getMessage(&message);
+
+	//Was a message received?
+	if (message.empty())
+	{
+		return false;
+	}
+
+	else
+	{
+		//Is this a note on?
+		if (message.size() == 3 && ((message[0] & 0xf0) == 0x90) && message[2] != 0)
+		{
+			midi_message->_Type = MIDIMessage::Type::NOTE_ON;
+			midi_message->_NoteOnNote = message[1];
+			midi_message->_NoteOnVelocity = message[2];
+		}
+
+		//The MIDI message wasn't a valid type.
+		else
+		{
+			return false;
+		}
+
+		//Return that the retrieval succeeded.
+		return true;
 	}
 }
 
