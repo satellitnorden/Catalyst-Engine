@@ -41,7 +41,7 @@ public:
 	/*
 	*	Initializes the sound system.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Terminates the sound system.
@@ -191,7 +191,7 @@ private:
 	/*
 	*	Initializes the platform.
 	*/
-	void PlatformInitialize() NOEXCEPT;
+	void PlatformInitialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Returns if the platform is initialized.
@@ -209,9 +209,14 @@ private:
 	void Mix() NOEXCEPT;
 
 	/*
-	*	The asynchronous update function.
+	*	The default asynchronous update function.
 	*/
-	void AsynchronousUpdate() NOEXCEPT;
+	void DefaultAsynchronousUpdate() NOEXCEPT;
+
+	/*
+	*	The low latency asynchronous update function.
+	*/
+	void LowLatencyAsynchronousUpdate() NOEXCEPT;
 
 	/*
 	*	The sound callback.

@@ -58,6 +58,8 @@
   #endif
 #endif
 
+__pragma(warning(disable : 4530)) //Disable warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc.
+
 #define RTMIDI_VERSION "4.0.0"
 
 #include <exception>

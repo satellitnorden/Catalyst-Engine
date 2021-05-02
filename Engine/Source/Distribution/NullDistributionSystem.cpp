@@ -1,4 +1,4 @@
-#if !defined(CATALYST_DISTRIBUTION_STEAM)
+#if defined(CATALYST_DISTRIBUTION_NULL)
 //Header file.
 #include <Systems/DistributionSystem.h>
 

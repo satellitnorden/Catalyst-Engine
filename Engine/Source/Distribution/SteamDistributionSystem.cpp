@@ -106,6 +106,7 @@ void DistributionSystem::Initialize() NOEXCEPT
 	nullptr,
 	UpdatePhase::PRE,
 	UpdatePhase::POST,
+	false,
 	false);
 }
 

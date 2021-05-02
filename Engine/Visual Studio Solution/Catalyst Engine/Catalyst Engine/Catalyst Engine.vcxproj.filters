@@ -418,9 +418,6 @@
     <Filter Include="Physics\Include\Native">
       <UniqueIdentifier>{107f019b-67c4-4491-9bb7-4ff6bcee61f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Physics\Source\Native">
-      <UniqueIdentifier>{5e989c04-6045-4121-bfb6-b54039e9be6a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Physics\Source\Abstraction">
       <UniqueIdentifier>{aafd3663-24fd-46b8-ac74-5c97e1aa820a}</UniqueIdentifier>
     </Filter>
@@ -2464,6 +2461,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\ScriptSystem.cpp">
       <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\NullPhysicsSystem.cpp">
+      <Filter>Physics\Source\Abstraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\NullCharacterController.cpp">
+      <Filter>Physics\Source\Abstraction</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

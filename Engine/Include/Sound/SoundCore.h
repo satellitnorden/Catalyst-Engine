@@ -11,6 +11,20 @@ using SoundInstanceHandle = uint64;
 */
 constexpr SoundInstanceHandle EMPTY_SOUND_INSTANCE_HANDLE{ 0 };
 
+//Enumeration covering all sound system modes.
+enum class SoundSystemMode : uint8
+{
+	/*
+	*	Will use the default platform API for processing sound.
+	*/
+	DEFAULT,
+
+	/*
+	*	Will use a low latency platform API for processing sound, if one exists.
+	*/
+	LOW_LATENCY
+};
+
 //Enumeration covering all note durations.
 enum class NoteDuration : uint8
 {

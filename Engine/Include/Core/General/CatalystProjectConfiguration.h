@@ -9,6 +9,9 @@
 //Rendering.
 #include <Rendering/Native/Resolution.h>
 
+//Sound.
+#include <Sound/SoundCore.h>
+
 //World.
 #include <World/Core/WorldPosition.h>
 
@@ -142,6 +145,27 @@ public:
 
 };
 
+class CatalystProjectSoundConfiguration final
+{
+
+public:
+
+	/*
+	*	The sound system mode.
+	*	Recommended: SoundSystemMode::DEFAULT.
+	*/
+	SoundSystemMode _SoundSystemMode;
+
+	/*
+	*	Default constructor.
+	*/
+	CatalystProjectSoundConfiguration() NOEXCEPT
+	{
+
+	}
+
+};
+
 class CatalystProjectTerrainConfiguration final
 {
 
@@ -258,6 +282,9 @@ public:
 
 	//The project rendering configuration.
 	CatalystProjectRenderingConfiguration _RenderingConfiguration;
+
+	//The project sound configuration.
+	CatalystProjectSoundConfiguration _SoundConfiguration;
 
 	//The project terrain configuration.
 	CatalystProjectTerrainConfiguration _TerrainConfiguration;

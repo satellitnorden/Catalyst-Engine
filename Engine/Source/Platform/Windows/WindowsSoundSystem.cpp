@@ -93,7 +93,7 @@ namespace WindowsSoundSystemData
 	//The thread.
 	Thread _Thread;
 
-	//Denotes if the Windows Catalyst sound system is initialized.
+	//Denotes if the Windows sound system is initialized.
 	Atomic<bool> _Initialized{ false };
 
 	//The audio endpoint.
@@ -139,13 +139,39 @@ namespace WindowsSoundSystemLogic
 /*
 *	Initializes the platform.
 */
-void SoundSystem::PlatformInitialize() NOEXCEPT
+void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT
 {
 	//Set up the thread.
-	WindowsSoundSystemData::_Thread.SetFunction([]()
+	switch (configuration._SoundSystemMode)
 	{
-		SoundSystem::Instance->AsynchronousUpdate();
-	});
+		case SoundSystemMode::DEFAULT:
+		{
+			WindowsSoundSystemData::_Thread.SetFunction([]()
+			{
+				SoundSystem::Instance->DefaultAsynchronousUpdate();
+			});
+
+			break;
+		}
+
+		case SoundSystemMode::LOW_LATENCY:
+		{
+			WindowsSoundSystemData::_Thread.SetFunction([]()
+			{
+				SoundSystem::Instance->LowLatencyAsynchronousUpdate();
+			});
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+	
 	WindowsSoundSystemData::_Thread.SetPriority(Thread::Priority::HIGHEST);
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	WindowsSoundSystemData::_Thread.SetName("Sound System - Platform Thread");
@@ -309,9 +335,9 @@ NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi
 }
 
 /*
-*	The asynchronous update function.
+*	The default asynchronous update function.
 */
-void SoundSystem::AsynchronousUpdate() NOEXCEPT
+void SoundSystem::DefaultAsynchronousUpdate() NOEXCEPT
 {
 	//Define macros.
 #define HANDLE_ERROR(FUNCTION) if (FAILED(FUNCTION)) { ASSERT(false, "Windows Catalyst sound system couldn't be initialized!"); goto CLEANUP; }
@@ -456,5 +482,13 @@ CLEANUP:
 
 	//Undefine macors.
 #undef HANDLE_ERROR
+}
+
+/*
+*	The low latency asynchronous update function.
+*/
+void SoundSystem::LowLatencyAsynchronousUpdate() NOEXCEPT
+{
+	BREAKPOINT();
 }
 #endif

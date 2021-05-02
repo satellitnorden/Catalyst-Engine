@@ -543,6 +543,8 @@
     <ClCompile Include="..\..\..\Source\Gameplay\Player.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
     <ClCompile Include="..\..\..\Source\Memory\OperatorNewDeleteOverload.cpp" />
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\NullCharacterController.cpp" />
+    <ClCompile Include="..\..\..\Source\Physics\Abstraction\NullPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXCharacterController.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
