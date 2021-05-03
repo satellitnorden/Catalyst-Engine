@@ -161,6 +161,7 @@
     <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h" />
     <ClInclude Include="..\..\..\Include\Lighting\PhysicallyBasedLighting.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystBaseMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystColorMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystCoordinateSpaces.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystGeometryMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Core\CatalystPhysicsMath.h" />

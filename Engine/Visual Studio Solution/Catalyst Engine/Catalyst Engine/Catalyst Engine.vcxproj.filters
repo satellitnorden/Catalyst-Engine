@@ -1848,6 +1848,9 @@
     <ClInclude Include="..\..\..\Include\Sound\MIDIMessage.h">
       <Filter>Sound\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\Core\CatalystColorMath.h">
+      <Filter>Math\Include\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
