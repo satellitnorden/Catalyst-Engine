@@ -216,7 +216,7 @@ private:
 	/*
 	*	The low latency asynchronous update function.
 	*/
-	void LowLatencyAsynchronousUpdate() NOEXCEPT;
+	void LowLatencyAsynchronousUpdate();
 
 	/*
 	*	The sound callback.

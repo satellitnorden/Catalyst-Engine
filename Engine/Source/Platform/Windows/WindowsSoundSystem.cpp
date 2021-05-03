@@ -14,7 +14,8 @@
 #include <Systems/MemorySystem.h>
 
 //Third party.
-#include <ThirdParty/rtmidi/RtMidi.h>
+#include <ThirdParty/RtAudio/RtAudio.h>
+#include <ThirdParty/RtMidi/RtMidi.h>
 
 //Macros.
 #define SAFE_RELEASE(POINTER) if (POINTER) { POINTER->Release(); POINTER = nullptr; }
@@ -487,8 +488,92 @@ CLEANUP:
 /*
 *	The low latency asynchronous update function.
 */
-void SoundSystem::LowLatencyAsynchronousUpdate() NOEXCEPT
+void SoundSystem::LowLatencyAsynchronousUpdate()
 {
-	BREAKPOINT();
+	//Allocate the RtAudio object.
+	RtAudio *const RESTRICT rt_audio{ new RtAudio() };
+
+	ASSERT(rt_audio->getCurrentApi() == RtAudio::Api::WINDOWS_ASIO, "ASIO is not the current API, this is bad. ):");
+
+#if 0
+	//Query the available devices.
+	const uint32 devices_count{ rt_audio->getDeviceCount() };
+
+	for (uint32 i{ 0 }; i < devices_count; ++i)
+	{
+		const RtAudio::DeviceInfo device_info{ rt_audio->getDeviceInfo(i) };
+
+		PRINT_TO_OUTPUT("Available device " << i << ": " << device_info.name);
+	}
+#endif
+
+	//Open the stream.
+	RtAudio::StreamParameters output_parameters;
+
+	output_parameters.deviceId = 1;
+	output_parameters.nChannels = 2;
+	output_parameters.firstChannel = 0;
+
+	uint32 buffer_frames{ NUMBER_OF_SAMPLES_PER_MIXING_BUFFER };
+
+	auto audio_callback{ [](void *outputBuffer, void *inputBuffer,
+							unsigned int nFrames,
+							double streamTime,
+							RtAudioStreamStatus status,
+							void *userData)
+	{
+		static_cast<SoundSystem* const RESTRICT>(userData)->SoundCallback(48'000.0f, 16, 2, nFrames, outputBuffer);
+
+		return 0;
+	} };
+
+	try
+	{
+		rt_audio->openStream(&output_parameters,
+			nullptr,
+			RTAUDIO_SINT16,
+			48000,
+			&buffer_frames,
+			audio_callback,
+			this,
+			nullptr,
+			nullptr);
+	}
+	
+	catch (RtAudioError& error)
+	{
+		ASSERT(false, error.getMessage());
+	}
+
+	//Set the number of channels.
+	WindowsSoundSystemData::_NumberOfChannels = 2;
+
+	//Set the sample rate.
+	WindowsSoundSystemData::_SampleRate = 48'000.0f;
+
+	//Set the number of bits per sample.
+	WindowsSoundSystemData::_NumberOfBitsPerSample = 16;
+
+	//The Windows sound system is successfully initialized!
+	WindowsSoundSystemData::_Initialized = true;
+
+	try
+	{
+		rt_audio->startStream();
+	}
+
+	catch (RtAudioError& error)
+	{
+		ASSERT(false, error.getMessage());
+	}
+
+	for (;;)
+	{
+		//Sleep for some time.
+		Concurrency::CurrentThread::SleepFor(1'000);
+	}
+
+	//Free the RtAudio object.
+	delete rt_audio;
 }
 #endif
