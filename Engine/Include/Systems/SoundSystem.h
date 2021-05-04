@@ -22,11 +22,11 @@ class SoundSystem final
 
 public:
 
-	//The number of mixing buffers.
-	static constexpr uint8 NUMBER_OF_MIXING_BUFFERS{ 8 };
+	//The default number of mixing buffers.
+	static constexpr uint8 DEFAULT_NUMBER_OF_MIXING_BUFFERS{ 8 };
 
-	//The number of samples in each mixing buffer.
-	static constexpr uint32 NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 128 };
+	//The default number of samples in each mixing buffer.
+	static constexpr uint32 DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 256 };
 
 	//Declare the singleton.
 	DECLARE_SINGLETON(SoundSystem);
@@ -169,8 +169,14 @@ private:
 	//Denotes whether or not the mixing buffers are initialized.
 	bool _MixingBuffersInitialized{ false };
 
+	//The number of mixing buffers.
+	uint8 _NumberOfMixingBuffers{ 0 };
+
+	//The number of samples per mixing buffer.
+	uint32 _NumberOfSamplesPerMixingBuffer{ 0 };
+
 	//The mixing buffers.
-	StaticArray<void *RESTRICT, NUMBER_OF_MIXING_BUFFERS> _MixingBuffers;
+	DynamicArray<void *RESTRICT> _MixingBuffers;
 
 	//The current mixing buffer write index.
 	uint8 _CurrentMixingBufferWriteIndex{ 0 };
@@ -215,6 +221,11 @@ private:
 	void PlatformTerminate() NOEXCEPT;
 
 	/*
+	*	Initializes the mixing buffers.
+	*/
+	void InitializeMixingBuffers(const uint8 number_of_mixing_buffers, const uint32 number_of_samples_per_mixing_buffer) NOEXCEPT;
+
+	/*
 	*	Performs mixing.
 	*/
 	void Mix() NOEXCEPT;
@@ -223,11 +234,6 @@ private:
 	*	The default asynchronous update function.
 	*/
 	void DefaultAsynchronousUpdate() NOEXCEPT;
-
-	/*
-	*	The low latency asynchronous update function.
-	*/
-	void LowLatencyAsynchronousUpdate() NOEXCEPT;
 
 	/*
 	*	The sound callback.

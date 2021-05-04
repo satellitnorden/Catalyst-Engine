@@ -319,6 +319,35 @@ void SoundSystem::StopRecording() NOEXCEPT
 }
 
 /*
+*	Initializes the mixing buffers.
+*/
+void SoundSystem::InitializeMixingBuffers(const uint8 number_of_mixing_buffers, const uint32 number_of_samples_per_mixing_buffer) NOEXCEPT
+{
+	//Set the number of mixing buffers.
+	_NumberOfMixingBuffers = number_of_mixing_buffers;
+
+	//Set the number of samples per mixing buffer.
+	_NumberOfSamplesPerMixingBuffer = number_of_samples_per_mixing_buffer;
+
+	//Cache the number of channels.
+	const uint8 number_of_channels{ GetNumberOfChannels() };
+
+	//Cache the number of bits per sample.
+	const uint8 number_of_bits_per_sample{ GetNumberOfBitsPerSample() };
+
+	//Initialize all mixing buffers.
+	_MixingBuffers.Upsize<false>(number_of_mixing_buffers);
+
+	for (uint8 i{ 0 }; i < number_of_mixing_buffers; ++i)
+	{
+		_MixingBuffers[i] = Memory::Allocate(_NumberOfSamplesPerMixingBuffer * (number_of_bits_per_sample / 8) * number_of_channels);
+	}
+
+	//The mixing buffers are now initialized!
+	_MixingBuffersInitialized = true;
+}
+
+/*
 *	Performs mixing.
 */
 void SoundSystem::Mix() NOEXCEPT
@@ -327,7 +356,7 @@ void SoundSystem::Mix() NOEXCEPT
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
 		//Need the platform to have been initialized before the mixing buffers has been initialized. And no mixing is done when paused.
-		if (!PlatformInitialized() || IsCurrentlyPaused())
+		if (!PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused())
 		{
 			continue;
 		}
@@ -337,19 +366,6 @@ void SoundSystem::Mix() NOEXCEPT
 
 		//Cache the number of bits per sample.
 		const uint8 number_of_bits_per_sample{ GetNumberOfBitsPerSample() };
-
-		//Initialize the mixing buffers, if necessary.
-		if (!_MixingBuffersInitialized)
-		{
-			//Initialize all mixing buffers.
-			for (uint8 i{ 0 }; i < NUMBER_OF_MIXING_BUFFERS; ++i)
-			{
-				_MixingBuffers[i] = Memory::Allocate(NUMBER_OF_SAMPLES_PER_MIXING_BUFFER * (number_of_bits_per_sample / 8) * number_of_channels);
-			}
-
-			//The mixing buffers are now initialized!
-			_MixingBuffersInitialized = true;
-		}
 
 		//Remove all queued master channel sound mix components.
 		while (uint64 *const RESTRICT identifier{ SoundSystemData::_QueuedRemoveMasterChannelSoundMixComponents.Pop() })
@@ -410,7 +426,7 @@ void SoundSystem::Mix() NOEXCEPT
 		}
 
 		//Make mixing buffers ready. (:
-		if (_MixingBuffersReady < NUMBER_OF_MIXING_BUFFERS)
+		if (_MixingBuffersReady < _NumberOfMixingBuffers)
 		{
 			//Calculate the conversion multiplier.
 			float32 conversion_multiplier;
@@ -453,7 +469,7 @@ void SoundSystem::Mix() NOEXCEPT
 			{
 				uint32 current_sample_index{ 0 };
 
-				for (uint32 sample_index{ 0 }; sample_index < NUMBER_OF_SAMPLES_PER_MIXING_BUFFER; ++sample_index)
+				for (uint32 sample_index{ 0 }; sample_index < _NumberOfSamplesPerMixingBuffer; ++sample_index)
 				{
 					for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 					{
@@ -502,7 +518,7 @@ void SoundSystem::Mix() NOEXCEPT
 
 				uint32 current_sample_index{ 0 };
 
-				for (uint32 sample_index{ 0 }; sample_index < NUMBER_OF_SAMPLES_PER_MIXING_BUFFER; ++sample_index)
+				for (uint32 sample_index{ 0 }; sample_index < _NumberOfSamplesPerMixingBuffer; ++sample_index)
 				{
 					for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 					{
@@ -547,7 +563,7 @@ void SoundSystem::Mix() NOEXCEPT
 			}
 
 			//Update the current mixing buffer write index.
-			_CurrentMixingBufferWriteIndex = (_CurrentMixingBufferWriteIndex + 1) & (NUMBER_OF_MIXING_BUFFERS - 1);
+			_CurrentMixingBufferWriteIndex = (_CurrentMixingBufferWriteIndex + 1) % _NumberOfMixingBuffers;
 
 			//A new mixing buffer is ready.
 			++_MixingBuffersReady;
@@ -567,7 +583,7 @@ void SoundSystem::Mix() NOEXCEPT
 			}
 		}
 
-		if (_MixingBuffersReady == NUMBER_OF_MIXING_BUFFERS)
+		if (_MixingBuffersReady == _NumberOfMixingBuffers)
 		{
 			//Sleep for some time.
 			Concurrency::CurrentThread::SleepFor(1'000);
@@ -606,7 +622,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 			while (samples_left_to_read > 0)
 			{
 				//Calculate the number of samples to read.
-				const uint32 number_of_samples_to_read{ CatalystBaseMath::Minimum<uint32>(NUMBER_OF_SAMPLES_PER_MIXING_BUFFER - local_sample_read_index, samples_left_to_read) };
+				const uint32 number_of_samples_to_read{ CatalystBaseMath::Minimum<uint32>(_NumberOfSamplesPerMixingBuffer - local_sample_read_index, samples_left_to_read) };
 
 				if (local_mixing_buffers_ready > 0)
 				{
@@ -659,11 +675,11 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 
 				local_sample_read_index += number_of_samples_to_read;
 
-				while (local_sample_read_index >= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER)
+				while (local_sample_read_index >= _NumberOfSamplesPerMixingBuffer)
 				{
-					local_mixing_buffer_read_index = (local_mixing_buffer_read_index + 1) & (NUMBER_OF_MIXING_BUFFERS - 1);
+					local_mixing_buffer_read_index = (local_mixing_buffer_read_index + 1) & (_NumberOfMixingBuffers - 1);
 					--local_mixing_buffers_ready;
-					local_sample_read_index -= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER;
+					local_sample_read_index -= _NumberOfSamplesPerMixingBuffer;
 				}
 			}
 		}
@@ -671,11 +687,11 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 		//Update values.
 		_CurrentSampleReadIndex += number_of_samples;
 
-		while (_CurrentSampleReadIndex >= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER)
+		while (_CurrentSampleReadIndex >= _NumberOfSamplesPerMixingBuffer)
 		{
-			_CurrentMixingBufferReadIndex = (_CurrentMixingBufferReadIndex + 1) & (NUMBER_OF_MIXING_BUFFERS - 1);
+			_CurrentMixingBufferReadIndex = (_CurrentMixingBufferReadIndex + 1) & (_NumberOfMixingBuffers - 1);
 			--_MixingBuffersReady;
-			_CurrentSampleReadIndex -= NUMBER_OF_SAMPLES_PER_MIXING_BUFFER;
+			_CurrentSampleReadIndex -= _NumberOfSamplesPerMixingBuffer;
 		}
 	}
 }
