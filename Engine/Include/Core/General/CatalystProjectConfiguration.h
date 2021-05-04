@@ -157,6 +157,12 @@ public:
 	SoundSystemMode _SoundSystemMode;
 
 	/*
+	*	The audio device picking mode.
+	*	Recommended: AudioDevicePickingMode::PICK_DEFAULT.
+	*/
+	AudioDevicePickingMode _AudioDevicePickingMode;
+
+	/*
 	*	Default constructor.
 	*/
 	CatalystProjectSoundConfiguration() NOEXCEPT

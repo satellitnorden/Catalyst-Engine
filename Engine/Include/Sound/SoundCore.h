@@ -25,6 +25,22 @@ enum class SoundSystemMode : uint8
 	LOW_LATENCY
 };
 
+/*
+*	The audio device picking mode.
+*/
+enum class AudioDevicePickingMode : uint8
+{
+	/*
+	*	Just picks the default one and rolls with it.
+	*/
+	PICK_DEFAULT,
+
+	/*
+	*	Waits for the user to select one.
+	*/
+	WAIT_FOR_SELECTION
+};
+
 //Enumeration covering all note durations.
 enum class NoteDuration : uint8
 {

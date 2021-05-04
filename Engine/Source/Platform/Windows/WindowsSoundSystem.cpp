@@ -28,6 +28,21 @@ namespace WindowsSoundSystemConstants
 	constexpr IID IAudioRenderClient_IID{ __uuidof(IAudioRenderClient) };
 	constexpr IID IMMDeviceEnumerator_IID{ __uuidof(IMMDeviceEnumerator) };
 
+	//List of desired bit depths.
+	constexpr uint8 DESIRED_BIT_DEPTHS[]
+	{
+		16,
+		24,
+		32
+	};
+
+	//List of desired sample rates.
+	constexpr float32 DESIRED_SAMPLE_RATES[]
+	{
+		44'100.0f,
+		48'000.0f
+	};
+
 	//List of desired mix formats.
 	constexpr WAVEFORMATEX DESIRED_MIX_FORMATS[]
 	{
@@ -91,20 +106,18 @@ namespace WindowsSoundSystemConstants
 //Windows sound system data.
 namespace WindowsSoundSystemData
 {
-	//The thread.
-	Thread _Thread;
+
+	//The Rt Audio API.
+	RtAudio::Api _RtAudioAPI;
+
+	//The query Rt Audio.
+	RtAudio *RESTRICT _QueryRtAudio{ nullptr };
+
+	//The opened Rt Audio.
+	RtAudio *RESTRICT _OpenedRtAudio{ nullptr };
 
 	//Denotes if the Windows sound system is initialized.
 	Atomic<bool> _Initialized{ false };
-
-	//The audio endpoint.
-	IMMDevice *RESTRICT _AudioEndpoint{ nullptr };
-
-	//The audio client.
-	IAudioClient *RESTRICT _AudioClient{ nullptr };
-
-	//The audio render client.
-	IAudioRenderClient *RESTRICT _AudioRenderClient{ nullptr };
 
 	//The number of channels.
 	uint8 _NumberOfChannels;
@@ -117,6 +130,21 @@ namespace WindowsSoundSystemData
 
 	//The query MIDI in.
 	RtMidiIn *RESTRICT _QueryMIDIIn{ nullptr };
+
+	//The opened MIDI ins.
+	DynamicArray<RtMidiIn *RESTRICT> _OpenedMIDIIns;
+
+	//The thread.
+	Thread _Thread;
+
+	//The audio endpoint.
+	IMMDevice *RESTRICT _AudioEndpoint{ nullptr };
+
+	//The audio client.
+	IAudioClient *RESTRICT _AudioClient{ nullptr };
+
+	//The audio render client.
+	IAudioRenderClient *RESTRICT _AudioRenderClient{ nullptr };
 
 }
 
@@ -135,6 +163,245 @@ namespace WindowsSoundSystemLogic
 											/* REFERENCE_TIME (100 nanoseconds) */ / 100.0f);
 	}
 
+	/*
+	*	Returns the RtAudioFormat for the given bit depth.
+	*/
+	FORCE_INLINE NO_DISCARD RtAudioFormat GetRtAudioFormat(const uint8 bit_depth) NOEXCEPT
+	{
+		switch (bit_depth)
+		{
+			case 8:
+			{
+				return RTAUDIO_SINT8;
+			}
+
+			case 16:
+			{
+				return RTAUDIO_SINT16;
+			}
+
+			case 24:
+			{
+				return RTAUDIO_SINT24;
+			}
+
+			case 32:
+			{
+				return RTAUDIO_SINT32;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return 0;
+			}
+		}
+	}
+
+}
+
+/*
+*	Queries for audio devices.
+*/
+void SoundSystem::QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT
+{
+	//Create the Query Rt Audio, if possible.
+	if (!WindowsSoundSystemData::_QueryRtAudio)
+	{
+		try
+		{
+			WindowsSoundSystemData::_QueryRtAudio = new (MemorySystem::Instance->TypeAllocate<RtAudio>()) RtAudio(WindowsSoundSystemData::_RtAudioAPI);
+		}
+
+		catch (RtAudioError &error_message)
+		{
+			ASSERT(false, error_message.getMessage());
+		}
+
+		ASSERT(WindowsSoundSystemData::_QueryRtAudio, "Couldn't create query Rt Audio object!");
+	}
+
+	//Get the device count.
+	const uint32 device_count{ WindowsSoundSystemData::_QueryRtAudio->getDeviceCount() };
+
+	//Reserve the appropriate size.
+	audio_devices->Reserve(device_count);
+
+	//Fill in the audio devices.
+	for (uint32 i{ 0 }; i < device_count; ++i)
+	{
+		//Get the device info.
+		const RtAudio::DeviceInfo device_info{ WindowsSoundSystemData::_QueryRtAudio->getDeviceInfo(i) };
+
+		//Fill in the audio device.
+		audio_devices->Emplace();
+		AudioDevice &audio_device{ audio_devices->Back() };
+
+		audio_device._Handle = nullptr; //Will be filled in when opening this audio device.
+		audio_device._Index = i;
+		audio_device._Name = device_info.name.c_str();
+		audio_device._IsDefault = device_info.isDefaultOutput;
+
+		if (TEST_BIT(device_info.nativeFormats, RTAUDIO_SINT8))
+		{
+			audio_device._AvailableBitDepths.Emplace(8);
+		}
+
+		if (TEST_BIT(device_info.nativeFormats, RTAUDIO_SINT16))
+		{
+			audio_device._AvailableBitDepths.Emplace(16);
+		}
+
+		if (TEST_BIT(device_info.nativeFormats, RTAUDIO_SINT24))
+		{
+			audio_device._AvailableBitDepths.Emplace(24);
+		}
+
+		if (TEST_BIT(device_info.nativeFormats, RTAUDIO_SINT32))
+		{
+			audio_device._AvailableBitDepths.Emplace(32);
+		}
+
+		audio_device._AvailableSampleRates.Reserve(device_info.sampleRates.size());
+
+		for (const uint32 available_sample_rate : device_info.sampleRates)
+		{
+			audio_device._AvailableSampleRates.Emplace(static_cast<float32>(available_sample_rate));
+		}
+
+		audio_device._PreferredSampleRate = static_cast<float32>(device_info.preferredSampleRate);
+	}
+}
+
+/*
+*	Opens the given audio device.
+*/
+void SoundSystem::OpenAudioDevice(AudioDevice *const RESTRICT audio_device) NOEXCEPT
+{
+	ASSERT(!WindowsSoundSystemData::_OpenedRtAudio, "Trying to open an audio device when one is already opened, this needs to be handled!");
+
+	//Create the handle.
+	try
+	{
+		audio_device->_Handle = new (MemorySystem::Instance->TypeAllocate<RtAudio>()) RtAudio(WindowsSoundSystemData::_RtAudioAPI);
+	}
+
+	catch (RtAudioError &error_message)
+	{
+		ASSERT(false, error_message.getMessage());
+	}
+
+	ASSERT(audio_device->_Handle, "Couldn't create query Rt Audio object!");
+
+	//Set the number of channels.
+	WindowsSoundSystemData::_NumberOfChannels = 2;
+
+	//Determine the bit depth.
+	uint8 bit_depth{ 0 };
+
+	for (uint64 i{ 0 }; i < ARRAY_LENGTH(WindowsSoundSystemConstants::DESIRED_BIT_DEPTHS); ++i)
+	{
+		for (const uint8 available_bit_depth : audio_device->_AvailableBitDepths)
+		{
+			if (available_bit_depth == WindowsSoundSystemConstants::DESIRED_BIT_DEPTHS[i])
+			{
+				bit_depth = available_bit_depth;
+
+				break;
+			}
+		}
+	}
+
+	ASSERT(bit_depth != 0, "Couldn't find a proper bit depth!");
+
+	WindowsSoundSystemData::_NumberOfBitsPerSample = bit_depth;
+
+	//Determine the sample rate.
+	float32 sample_rate{ 0.0f };
+
+	for (uint64 i{ 0 }; i < ARRAY_LENGTH(WindowsSoundSystemConstants::DESIRED_SAMPLE_RATES); ++i)
+	{
+		for (const float32 available_sample_rate : audio_device->_AvailableSampleRates)
+		{
+			if (available_sample_rate == WindowsSoundSystemConstants::DESIRED_SAMPLE_RATES[i])
+			{
+				sample_rate = available_sample_rate;
+
+				break;
+			}
+		}
+	}
+
+	ASSERT(sample_rate != 0.0f, "Couldn't find a proper sample rate!");
+
+	WindowsSoundSystemData::_SampleRate = sample_rate;
+
+	//Open the stream.
+	RtAudio::StreamParameters output_parameters;
+
+	output_parameters.deviceId = audio_device->_Index;
+	output_parameters.nChannels = 2;
+	output_parameters.firstChannel = 0;
+
+	uint32 buffer_frames{ NUMBER_OF_SAMPLES_PER_MIXING_BUFFER };
+
+	auto audio_callback{ [](void *outputBuffer, void *inputBuffer,
+							unsigned int nFrames,
+							double streamTime,
+							RtAudioStreamStatus status,
+							void *userData)
+	{
+		static_cast<SoundSystem* const RESTRICT>(userData)->SoundCallback(	WindowsSoundSystemData::_SampleRate,
+																			WindowsSoundSystemData::_NumberOfBitsPerSample,
+																			WindowsSoundSystemData::_NumberOfChannels,
+																			nFrames,
+																			outputBuffer);
+
+		return 0;
+	} };
+
+	RtAudio::StreamOptions stream_options;
+
+	stream_options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_SCHEDULE_REALTIME;
+	stream_options.numberOfBuffers = 0;
+	stream_options.streamName = "";
+	stream_options.priority = 0;
+	
+	try
+	{
+		static_cast<RtAudio *const RESTRICT>(audio_device->_Handle)->openStream(&output_parameters,
+																				nullptr,
+																				WindowsSoundSystemLogic::GetRtAudioFormat(bit_depth),
+																				static_cast<uint32>(sample_rate),
+																				&buffer_frames,
+																				audio_callback,
+																				this,
+																				nullptr/*&stream_options*/,
+																				nullptr);
+	}
+
+	catch (RtAudioError &error_message)
+	{
+		ASSERT(false, error_message.getMessage());
+	}
+
+	//Start the stream.
+	try
+	{
+		static_cast<RtAudio* const RESTRICT>(audio_device->_Handle)->startStream();
+	}
+
+	catch (RtAudioError &error_message)
+	{
+		ASSERT(false, error_message.getMessage());
+	}
+
+	//The Windows sound system is successfully initialized!
+	WindowsSoundSystemData::_Initialized = true;
+
+	//Set the opened Rt Audio.
+	WindowsSoundSystemData::_OpenedRtAudio = static_cast<RtAudio* const RESTRICT>(audio_device->_Handle);
 }
 
 /*
@@ -142,25 +409,19 @@ namespace WindowsSoundSystemLogic
 */
 void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT
 {
-	//Set up the thread.
+	//Set the Rt Audio API.
 	switch (configuration._SoundSystemMode)
 	{
 		case SoundSystemMode::DEFAULT:
 		{
-			WindowsSoundSystemData::_Thread.SetFunction([]()
-			{
-				SoundSystem::Instance->DefaultAsynchronousUpdate();
-			});
+			WindowsSoundSystemData::_RtAudioAPI = RtAudio::Api::WINDOWS_DS;
 
 			break;
 		}
 
 		case SoundSystemMode::LOW_LATENCY:
 		{
-			WindowsSoundSystemData::_Thread.SetFunction([]()
-			{
-				SoundSystem::Instance->LowLatencyAsynchronousUpdate();
-			});
+			WindowsSoundSystemData::_RtAudioAPI = RtAudio::Api::WINDOWS_ASIO;
 
 			break;
 		}
@@ -172,14 +433,65 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 			break;
 		}
 	}
-	
-	WindowsSoundSystemData::_Thread.SetPriority(Thread::Priority::HIGHEST);
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	WindowsSoundSystemData::_Thread.SetName("Sound System - Platform Thread");
-#endif
 
-	//Launch the thread!
-	WindowsSoundSystemData::_Thread.Launch();
+	//Is this the default sound system mode?
+	if (configuration._SoundSystemMode == SoundSystemMode::DEFAULT)
+	{
+		//Set up the thread.
+		WindowsSoundSystemData::_Thread.SetFunction([]()
+		{
+			SoundSystem::Instance->DefaultAsynchronousUpdate();
+		});
+		WindowsSoundSystemData::_Thread.SetPriority(Thread::Priority::HIGHEST);
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+		WindowsSoundSystemData::_Thread.SetName("Sound System - Platform Thread");
+#endif
+		//Launch the thread!
+		WindowsSoundSystemData::_Thread.Launch();
+	}
+
+	//Is this the low latency sound system mode?
+	else if (configuration._SoundSystemMode == SoundSystemMode::LOW_LATENCY)
+	{
+		//Should the default sound device be picked?
+		if (configuration._AudioDevicePickingMode == AudioDevicePickingMode::PICK_DEFAULT)
+		{
+			//Query the audio devices.
+			DynamicArray<AudioDevice> audio_devices;
+
+			QueryAudioDevices(&audio_devices);
+
+#if 1
+			//Open the defaul audio device.
+			for (AudioDevice &audio_device : audio_devices)
+			{
+				if (audio_device._IsDefault)
+				{
+					OpenAudioDevice(&audio_device);
+				}
+			}
+#else
+			bool opened_audio_device{ false };
+
+			for (AudioDevice &audio_device : audio_devices)
+			{
+				if (audio_device._Name.Find("Focusrite") != nullptr)
+				{
+					OpenAudioDevice(&audio_device);
+
+					opened_audio_device = true;
+
+					break;
+				}
+			}
+
+			if (!opened_audio_device)
+			{
+				OpenAudioDevice(&audio_devices[1]);
+			}
+#endif
+		}
+	}
 }
 
 /*
@@ -195,6 +507,33 @@ NO_DISCARD bool SoundSystem::PlatformInitialized() const NOEXCEPT
 */
 void SoundSystem::PlatformTerminate() NOEXCEPT
 {
+	//Destroy the query Rt Midi In.
+	if (WindowsSoundSystemData::_QueryMIDIIn)
+	{
+		WindowsSoundSystemData::_QueryMIDIIn->~RtMidiIn(); //The MemorySystem will take care of actually freeing the memory. (:
+	}
+
+	//Destroy the opened MIDI ins.
+	for (RtMidiIn *const RESTRICT opened_midi_in : WindowsSoundSystemData::_OpenedMIDIIns)
+	{
+		opened_midi_in->closePort();
+		opened_midi_in->~RtMidiIn(); //The MemorySystem will take care of actually freeing the memory. (:
+	}
+
+	//Close the opened Rt Audio.
+	if (WindowsSoundSystemData::_OpenedRtAudio)
+	{
+		WindowsSoundSystemData::_OpenedRtAudio->stopStream();
+		WindowsSoundSystemData::_OpenedRtAudio->closeStream();
+		WindowsSoundSystemData::_OpenedRtAudio->~RtAudio(); //The MemorySystem will take care of actually freeing the memory. (:
+	}
+
+	//Destroy the query Rt Audio.
+	if (WindowsSoundSystemData::_QueryRtAudio)
+	{
+		WindowsSoundSystemData::_QueryRtAudio->~RtAudio(); //The MemorySystem will take care of actually freeing the memory. (:
+	}
+
 	//Wait for the thread to finish.
 	WindowsSoundSystemData::_Thread.Join();
 
@@ -297,12 +636,15 @@ void SoundSystem::OpenMIDIDevice(MIDIDevice *const RESTRICT midi_device) NOEXCEP
 
 	//Open the port.
 	static_cast<RtMidiIn *const RESTRICT>(midi_device->_Handle)->openPort(midi_device->_Index);
+
+	//Add to the opened MIDI ins.
+	WindowsSoundSystemData::_OpenedMIDIIns.Emplace(static_cast<RtMidiIn *const RESTRICT>(midi_device->_Handle));
 }
 
 /*
 *	Retrieves a MIDI message from the queue of the specified MIDI device. Returns whether or not a message was retrieved from the queue.
 */
-NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message)
+NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message) NOEXCEPT
 {
 	//Get the message.
 	std::vector<uint8> message;
@@ -488,7 +830,7 @@ CLEANUP:
 /*
 *	The low latency asynchronous update function.
 */
-void SoundSystem::LowLatencyAsynchronousUpdate()
+void SoundSystem::LowLatencyAsynchronousUpdate() NOEXCEPT
 {
 	//Allocate the RtAudio object.
 	RtAudio *const RESTRICT rt_audio{ new RtAudio() };
@@ -522,7 +864,11 @@ void SoundSystem::LowLatencyAsynchronousUpdate()
 							RtAudioStreamStatus status,
 							void *userData)
 	{
-		static_cast<SoundSystem* const RESTRICT>(userData)->SoundCallback(48'000.0f, 16, 2, nFrames, outputBuffer);
+		static_cast<SoundSystem* const RESTRICT>(userData)->SoundCallback(	WindowsSoundSystemData::_SampleRate,
+																			WindowsSoundSystemData::_NumberOfBitsPerSample,
+																			WindowsSoundSystemData::_NumberOfChannels,
+																			nFrames,
+																			outputBuffer);
 
 		return 0;
 	} };
@@ -540,9 +886,9 @@ void SoundSystem::LowLatencyAsynchronousUpdate()
 			nullptr);
 	}
 	
-	catch (RtAudioError& error)
+	catch (RtAudioError &error_message)
 	{
-		ASSERT(false, error.getMessage());
+		ASSERT(false, error_message.getMessage());
 	}
 
 	//Set the number of channels.
@@ -562,9 +908,9 @@ void SoundSystem::LowLatencyAsynchronousUpdate()
 		rt_audio->startStream();
 	}
 
-	catch (RtAudioError& error)
+	catch (RtAudioError &error_message)
 	{
-		ASSERT(false, error.getMessage());
+		ASSERT(false, error_message.getMessage());
 	}
 
 	for (;;)

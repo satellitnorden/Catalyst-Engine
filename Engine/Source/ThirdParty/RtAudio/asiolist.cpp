@@ -1,5 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
+__pragma(warning(disable : 4267)) //Disablewarning C4267: 'argument': conversion from 'size_t' to 'DWORD', possible loss of data
+
 #include <windows.h>
 #include <ThirdParty/RtAudio/iasiodrv.h>
 #include <ThirdParty/RtAudio/asiolist.h>

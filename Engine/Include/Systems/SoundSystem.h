@@ -10,6 +10,7 @@
 #include <Concurrency/Thread.h>
 
 //Sound.
+#include <Sound/AudioDevice.h>
 #include <Sound/MIDIDevice.h>
 #include <Sound/MIDIMessage.h>
 #include <Sound/PlaySoundRequest.h>
@@ -25,7 +26,7 @@ public:
 	static constexpr uint8 NUMBER_OF_MIXING_BUFFERS{ 8 };
 
 	//The number of samples in each mixing buffer.
-	static constexpr uint32 NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 256 };
+	static constexpr uint32 NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 128 };
 
 	//Declare the singleton.
 	DECLARE_SINGLETON(SoundSystem);
@@ -47,6 +48,16 @@ public:
 	*	Terminates the sound system.
 	*/
 	void Terminate() NOEXCEPT;
+
+	/*
+	*	Queries for audio devices.
+	*/
+	void QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT;
+
+	/*
+	*	Opens the given audio device.
+	*/
+	void OpenAudioDevice(AudioDevice *const RESTRICT audio_device) NOEXCEPT;
 
 	/*
 	*	Returns the number of channels for the chosen audio output device.
@@ -142,7 +153,7 @@ public:
 	/*
 	*	Retrieves a MIDI message from the queue of the specified MIDI device. Returns whether or not a message was retrieved from the queue.
 	*/
-	NO_DISCARD bool RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message);
+	NO_DISCARD bool RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message) NOEXCEPT;
 
 private:
 
@@ -216,7 +227,7 @@ private:
 	/*
 	*	The low latency asynchronous update function.
 	*/
-	void LowLatencyAsynchronousUpdate();
+	void LowLatencyAsynchronousUpdate() NOEXCEPT;
 
 	/*
 	*	The sound callback.

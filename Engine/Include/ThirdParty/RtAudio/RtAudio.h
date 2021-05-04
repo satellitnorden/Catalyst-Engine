@@ -43,6 +43,8 @@
   \file RtAudio.h
  */
 
+__pragma(warning(disable : 4530)) //Disable warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc.
+
 #ifndef __RTAUDIO_H
 #define __RTAUDIO_H
 
