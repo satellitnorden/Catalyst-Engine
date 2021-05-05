@@ -23,11 +23,6 @@
 //Windows sound system constants.
 namespace WindowsSoundSystemConstants
 {
-	constexpr CLSID MMDeviceEnumerator_CLSID{ __uuidof(MMDeviceEnumerator) };
-	constexpr IID IAudioClient_IID{ __uuidof(IAudioClient) };
-	constexpr IID IAudioRenderClient_IID{ __uuidof(IAudioRenderClient) };
-	constexpr IID IMMDeviceEnumerator_IID{ __uuidof(IMMDeviceEnumerator) };
-
 	//List of desired bit depths.
 	constexpr uint8 DESIRED_BIT_DEPTHS[]
 	{
@@ -42,6 +37,11 @@ namespace WindowsSoundSystemConstants
 		44'100.0f,
 		48'000.0f
 	};
+
+	constexpr CLSID MMDeviceEnumerator_CLSID{ __uuidof(MMDeviceEnumerator) };
+	constexpr IID IAudioClient_IID{ __uuidof(IAudioClient) };
+	constexpr IID IAudioRenderClient_IID{ __uuidof(IAudioRenderClient) };
+	constexpr IID IMMDeviceEnumerator_IID{ __uuidof(IMMDeviceEnumerator) };
 
 	//List of desired mix formats.
 	constexpr WAVEFORMATEX DESIRED_MIX_FORMATS[]
