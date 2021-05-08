@@ -523,31 +523,51 @@ void SoundSystem::PlatformTerminate() NOEXCEPT
 		opened_midi_in->~RtMidiIn(); //The MemorySystem will take care of actually freeing the memory. (:
 	}
 
-	//Close the opened Rt Audio.
-	if (WindowsSoundSystemData::_OpenedRtAudio)
+	switch (WindowsSoundSystemData::_RtAudioAPI)
 	{
-		WindowsSoundSystemData::_OpenedRtAudio->stopStream();
-		WindowsSoundSystemData::_OpenedRtAudio->closeStream();
-		WindowsSoundSystemData::_OpenedRtAudio->~RtAudio(); //The MemorySystem will take care of actually freeing the memory. (:
+		case RtAudio::Api::WINDOWS_ASIO:
+		{
+			//Close the opened Rt Audio.
+			if (WindowsSoundSystemData::_OpenedRtAudio)
+			{
+				WindowsSoundSystemData::_OpenedRtAudio->stopStream();
+				WindowsSoundSystemData::_OpenedRtAudio->closeStream();
+				WindowsSoundSystemData::_OpenedRtAudio->~RtAudio(); //The MemorySystem will take care of actually freeing the memory. (:
+			}
+
+			//Destroy the query Rt Audio.
+			if (WindowsSoundSystemData::_QueryRtAudio)
+			{
+				WindowsSoundSystemData::_QueryRtAudio->~RtAudio(); //The MemorySystem will take care of actually freeing the memory. (:
+			}
+
+			break;
+		}
+
+		case RtAudio::Api::WINDOWS_DS:
+		{
+			//Wait for the thread to finish.
+			WindowsSoundSystemData::_Thread.Join();
+
+			//Release the audio end point.
+			SAFE_RELEASE(WindowsSoundSystemData::_AudioEndpoint);
+
+			//Release the audio client.
+			SAFE_RELEASE(WindowsSoundSystemData::_AudioClient);
+
+			//Release the audio render client.
+			SAFE_RELEASE(WindowsSoundSystemData::_AudioRenderClient);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
 	}
-
-	//Destroy the query Rt Audio.
-	if (WindowsSoundSystemData::_QueryRtAudio)
-	{
-		WindowsSoundSystemData::_QueryRtAudio->~RtAudio(); //The MemorySystem will take care of actually freeing the memory. (:
-	}
-
-	//Wait for the thread to finish.
-	WindowsSoundSystemData::_Thread.Join();
-
-	//Release the audio end point.
-	SAFE_RELEASE(WindowsSoundSystemData::_AudioEndpoint);
-
-	//Release the audio client.
-	SAFE_RELEASE(WindowsSoundSystemData::_AudioClient);
-
-	//Release the audio render client.
-	SAFE_RELEASE(WindowsSoundSystemData::_AudioRenderClient);
 }
 
 /*
