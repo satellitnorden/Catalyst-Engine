@@ -67,4 +67,10 @@ public:
 	*/
 	SoundInstanceHandle* RESTRICT _SoundInstance;
 
+	/*
+	*	The sound stopped callback.
+	*	Will be nullptr in most cases.
+	*/
+	SoundStoppedCallback _SoundStoppedCallback;
+
 };

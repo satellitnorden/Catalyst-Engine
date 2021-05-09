@@ -54,6 +54,9 @@ public:
 	//The sound instance handle.
 	SoundInstanceHandle _SoundInstanceHandle;
 
+	//The sound stopped callback.
+	SoundStoppedCallback _SoundStoppedCallback;
+
 };
 
 /*
@@ -82,6 +85,9 @@ public:
 
 	//The sound instance handle.
 	SoundInstanceHandle _SoundInstanceHandle;
+
+	//The sound stopped callback.
+	SoundStoppedCallback _SoundStoppedCallback;
 
 };
 
@@ -200,6 +206,7 @@ void SoundSystem::PlaySound(const PlaySoundRequest &request) NOEXCEPT
 	queued_play_sound_request._SustainGain = request._SustainGain;
 	queued_play_sound_request._ReleaseTime = request._ReleaseTime;
 	queued_play_sound_request._SoundInstanceHandle = _SoundInstanceCounter++;
+	queued_play_sound_request._SoundStoppedCallback = request._SoundStoppedCallback;
 
 	if (request._SoundInstance)
 	{
@@ -405,6 +412,7 @@ void SoundSystem::Mix() NOEXCEPT
 			new_playing_sound._SoundResourcePlayer.GetADSREnvelope().EnterAttackStage();
 			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
 			new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
+			new_playing_sound._SoundStoppedCallback = queued_play_sound_request->_SoundStoppedCallback;
 
 			SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
 
@@ -527,7 +535,7 @@ void SoundSystem::Mix() NOEXCEPT
 						{
 							case 8:
 							{
-								ASSERT(false, "Inplement this plz!");
+								ASSERT(false, "Implement this plz!");
 
 								break;
 							}
@@ -541,7 +549,7 @@ void SoundSystem::Mix() NOEXCEPT
 
 							case 32:
 							{
-								ASSERT(false, "Inplement this plz!");
+								ASSERT(false, "Implement this plz!");
 
 								break;
 							}
@@ -574,6 +582,11 @@ void SoundSystem::Mix() NOEXCEPT
 		{
 			if (!SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.IsActive())
 			{
+				if (SoundSystemData::_PlayingSounds[i]._SoundStoppedCallback)
+				{
+					SoundSystemData::_PlayingSounds[i]._SoundStoppedCallback();
+				}
+
 				SoundSystemData::_PlayingSounds.EraseAt<false>(i);
 			}
 
