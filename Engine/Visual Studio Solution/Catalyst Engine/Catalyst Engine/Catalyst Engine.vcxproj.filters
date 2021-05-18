@@ -1854,6 +1854,9 @@
     <ClInclude Include="..\..\..\Include\Sound\AudioDevice.h">
       <Filter>Sound\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCheckbox.h">
+      <Filter>User Interface\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2473,6 +2476,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\NullCharacterController.cpp">
       <Filter>Physics\Source\Abstraction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceCheckbox.cpp">
+      <Filter>User Interface\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,14 @@ enum class UserInterfacePrimitiveType : uint8
 	NUMBER_OF_USER_INTERFACE_PRIMITIVE_TYPES
 };
 
+//Enumeration covering all user interface button states.
+enum class UserInterfaceButtonState : uint8
+{
+	IDLE,
+	HOVERED,
+	PRESSED
+};
+
 //Enumeration cover all text horizontal alignments.
 enum class TextHorizontalAlignment : uint8
 {

@@ -15,14 +15,6 @@ class UserInterfaceButton final
 
 public:
 
-	//Enumeration covering all states.
-	enum class State : uint8
-	{
-		IDLE,
-		HOVERED,
-		PRESSED
-	};
-
 	//Type aliases.
 	using Callback = void(*)(UserInterfaceButton *const RESTRICT button);
 
@@ -38,7 +30,8 @@ public:
 						const UserInterfaceMaterial &initial_idle_material,
 						const UserInterfaceMaterial &initial_hovered_material,
 						const UserInterfaceMaterial &initial_pressed_material,
-						const char *const RESTRICT text) NOEXCEPT;
+						const char *const RESTRICT text,
+						const ResourcePointer<FontResource> font_resource) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -64,7 +57,7 @@ public:
 	/*
 	*	Returns the current state.
 	*/
-	FORCE_INLINE NO_DISCARD State GetCurrentState() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD UserInterfaceButtonState GetCurrentState() const NOEXCEPT
 	{
 		return _CurrentState;
 	}
@@ -72,7 +65,7 @@ public:
 	/*
 	*	Sets the current state.
 	*/
-	void SetCurrentState(const State value) NOEXCEPT;
+	void SetCurrentState(const UserInterfaceButtonState value) NOEXCEPT;
 
 	/*
 	*	On start hovered callback.
@@ -148,7 +141,7 @@ private:
 	Vector2<float32> _Maximum;
 
 	//The current state.
-	State _CurrentState;
+	UserInterfaceButtonState _CurrentState;
 
 	//The start hovered callback.
 	Callback _StartHoveredCallback;
@@ -170,6 +163,9 @@ private:
 
 	//The pressed material.
 	UserInterfaceMaterial _PressedMaterial;
+
+	//The font resource.
+	ResourcePointer<FontResource> _FontResource;
 
 	//Denotes whether or not this button is gamepad selected.
 	bool _GamepadSelected{ false };

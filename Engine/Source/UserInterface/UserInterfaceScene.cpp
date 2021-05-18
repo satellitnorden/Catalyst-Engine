@@ -1,4 +1,4 @@
-//Header file.
+﻿//Header file.
 #include <UserInterface/UserInterfaceScene.h>
 
 //Systems.
@@ -13,31 +13,64 @@ namespace UserInterfaceSceneConstants
 }
 
 /*
-*	Default constructor.
+*	Callback for when this user interface scene is activated.
 */
-UserInterfaceScene::UserInterfaceScene() NOEXCEPT
+void UserInterfaceScene::OnActivated() NOEXCEPT
 {
+	//Define constants.
+	constexpr float32 BUTTON_BORDER_OFFSET{ 0.002'25f };
+	constexpr float32 CHECKBOX_BORDER_OFFSET{ 0.016'50f };
+
 	//Set up default values.
 	SetHorizontalSubdivision(33);
 	SetVerticalSubdivision(33);
 
+	_FontResource = ResourceSystem::Instance->GetFontResource(HashString("Catalyst_Engine_Default_Font"));
+
 	_ButtonIdleMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.01f));
 	_ButtonIdleMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_ButtonIdleMaterial.SetBorderOffset(0.0025f);
+	_ButtonIdleMaterial.SetBorderOffset(BUTTON_BORDER_OFFSET);
 
 	_ButtonHoveredMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.25f));
 	_ButtonHoveredMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_ButtonHoveredMaterial.SetBorderOffset(0.0025f);
+	_ButtonHoveredMaterial.SetBorderOffset(BUTTON_BORDER_OFFSET);
 
 	_ButtonPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_ButtonPressedMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_ButtonPressedMaterial.SetBorderOffset(0.0025f);
+	_ButtonPressedMaterial.SetBorderOffset(BUTTON_BORDER_OFFSET);
+
+	_CheckboxUncheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.01f));
+	_CheckboxUncheckedIdleMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxUncheckedIdleMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+
+	_CheckboxUncheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.25f));
+	_CheckboxUncheckedHoveredMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxUncheckedHoveredMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+
+	_CheckboxUncheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxUncheckedPressedMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxUncheckedPressedMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+
+	_CheckboxCheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.25f));
+	_CheckboxCheckedIdleMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxCheckedIdleMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+
+	_CheckboxCheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.5f));
+	_CheckboxCheckedHoveredMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxCheckedHoveredMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+
+	_CheckboxCheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxCheckedPressedMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxCheckedPressedMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
 
 	_ProgressBarBottomMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 1.0f));
 	_ProgressBarBottomMaterial.SetSecondaryColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
 
 	_ProgressBarTopMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
 	_ProgressBarTopMaterial.SetSecondaryColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
+
+	_TextScale = 0.015f;
+	_TextSmoothingFactor = 0.2f;
 }
 
 /*
@@ -45,7 +78,7 @@ UserInterfaceScene::UserInterfaceScene() NOEXCEPT
 */
 void UserInterfaceScene::Update() NOEXCEPT
 {
-	//Update the buttons.
+	//Update buttons.
 	UpdateButtons();
 }
 
@@ -61,6 +94,14 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 	}
 
 	_Buttons.Clear();
+
+	//Free all checkboxes.
+	for (UserInterfaceCheckbox *const RESTRICT checkbox : _Checkboxes)
+	{
+		delete checkbox;
+	}
+
+	_Checkboxes.Clear();
 
 	//Free all images.
 	for (UserInterfaceImage *const RESTRICT image : _Images)
@@ -114,13 +155,63 @@ RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButton(	co
 																			idle_material_override ? *idle_material_override : _ButtonIdleMaterial,
 																			hovered_material_override ? *hovered_material_override : _ButtonHoveredMaterial,
 																			pressed_material_override ? *pressed_material_override : _ButtonPressedMaterial,
-																			text) };
+																			text,
+																			_FontResource) };
 
 	//Add the button to the container.
 	_Buttons.Emplace(new_button);
 
+	//Add the button interface to the container.
+	_ButtonInterfaces.Emplace(new_button);
+
 	//Return the button.
 	return new_button;
+}
+
+/*
+*	Adds a checkbox.
+*/
+RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox(	const Vector2<uint32> &minimum_cell,
+																					const Vector2<uint32> &maximum_cell,
+																					const UserInterfaceCheckbox::Callback start_pressed_callback,
+																					UserInterfaceMaterial *const RESTRICT unchecked_idle_material_override,
+																					UserInterfaceMaterial *const RESTRICT unchecked_hovered_material_override,
+																					UserInterfaceMaterial *const RESTRICT unchecked_pressed_material_override,
+																					UserInterfaceMaterial *const RESTRICT checked_idle_material_override,
+																					UserInterfaceMaterial *const RESTRICT checked_hovered_material_override,
+																					UserInterfaceMaterial *const RESTRICT checked_pressed_material_override,
+																					const char *const RESTRICT text) NOEXCEPT
+{
+	//Calculate the bounding box.
+	Vector2<float32> minimum;
+	Vector2<float32> maximum;
+
+	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
+
+	//Allocate the checkbox.
+	UserInterfaceCheckbox *const RESTRICT new_checkbox{ new UserInterfaceCheckbox(	minimum,
+																					maximum,
+																					nullptr,
+																					nullptr,
+																					start_pressed_callback,
+																					nullptr,
+																					unchecked_idle_material_override ? *unchecked_idle_material_override : _CheckboxUncheckedIdleMaterial,
+																					unchecked_hovered_material_override ? *unchecked_hovered_material_override : _CheckboxUncheckedHoveredMaterial,
+																					unchecked_pressed_material_override ? *unchecked_pressed_material_override : _CheckboxUncheckedPressedMaterial,
+																					checked_idle_material_override ? *checked_idle_material_override : _CheckboxCheckedIdleMaterial,
+																					checked_hovered_material_override ? *checked_hovered_material_override : _CheckboxCheckedHoveredMaterial,
+																					checked_pressed_material_override ? *checked_pressed_material_override : _CheckboxCheckedPressedMaterial,
+																					text,
+																					_FontResource) };
+
+	//Add the checkbox to the container.
+	_Checkboxes.Emplace(new_checkbox);
+
+	//Add the button interface to the container.
+	_ButtonInterfaces.Emplace(new_checkbox);
+
+	//Return the checkbox.
+	return new_checkbox;
 }
 
 /*
@@ -180,10 +271,13 @@ RESTRICTED UserInterfaceProgressBar *const RESTRICT UserInterfaceScene::AddProgr
 /*
 *	Adds a text.
 */
-RESTRICTED UserInterfaceText *const RESTRICT UserInterfaceScene::AddText(	const Vector2<uint32>& minimum_cell,
+RESTRICTED UserInterfaceText *const RESTRICT UserInterfaceScene::AddText(	const Vector2<uint32> &minimum_cell,
 																			const Vector2<uint32> &maximum_cell,
 																			const char *const RESTRICT text,
-																			const TextHorizontalAlignment horizontal_alignment) NOEXCEPT
+																			const float32 *const RESTRICT scale_override,
+																			const TextHorizontalAlignment horizontal_alignment,
+																			const TextVerticalAlignment vertical_alignment,
+																			const float32 *const RESTRICT smoothing_factor_override) NOEXCEPT
 {
 	//Calculate the bounding box.
 	Vector2<float32> minimum;
@@ -195,7 +289,11 @@ RESTRICTED UserInterfaceText *const RESTRICT UserInterfaceScene::AddText(	const 
 	UserInterfaceText* const RESTRICT new_text{ new UserInterfaceText(	minimum,
 																		maximum,
 																		text,
-																		horizontal_alignment) };
+																		_FontResource,
+																		scale_override ? *scale_override : _TextScale,
+																		horizontal_alignment,
+																		vertical_alignment,
+																		smoothing_factor_override ? *smoothing_factor_override : _TextSmoothingFactor) };
 
 	//Add the text to the container.
 	_Texts.Emplace(new_text);
@@ -224,8 +322,8 @@ void UserInterfaceScene::CalculateBoundingBox(	const Vector2<uint32>& minimum_ce
 */
 void UserInterfaceScene::UpdateButtons() NOEXCEPT
 {
-	//If there's no buttons to update, just quit.
-	if (_Buttons.Empty())
+	//If there's no button interface to update, just quit.
+	if (_ButtonInterfaces.Empty())
 	{
 		return;
 	}
@@ -239,17 +337,17 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 	if (InputSystem::Instance->GetLastUpdatedInputDeviceType() == InputDeviceType::GAMEPAD)
 	{
 		//First of all, find the first and the currently gamepad selected button.
-		UserInterfaceButton *RESTRICT first_button{ nullptr };
-		UserInterfaceButton *RESTRICT currently_gamepad_selected_button{ nullptr };
+		ButtonInterface first_button;
+		ButtonInterface currently_gamepad_selected_button;
 
 		//Update the state of all buttons and call the callbacks if necessary.
-		for (UserInterfaceButton *RESTRICT button : _Buttons)
+		for (ButtonInterface &button : _ButtonInterfaces)
 		{
 			//Remember the first button.
 			first_button = first_button ? first_button : button;
 
 			//Remember the currently gamepad selected button.
-			if (button->GetGamepadSelected())
+			if (button.GetGamepadSelected())
 			{
 				currently_gamepad_selected_button = button;
 
@@ -260,7 +358,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 		//If there's no currently gamepad selected button, pick the first one found.
 		if (!currently_gamepad_selected_button && first_button)
 		{
-			first_button->SetGamepadSelected(true);
+			first_button.SetGamepadSelected(true);
 		}
 
 		//Choose a new gamepad selected button.
@@ -290,13 +388,13 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 			if (!direction.IsZero())
 			{
 				//First of all, find the currently gamepad selected button.
-				UserInterfaceButton *RESTRICT currently_gamepad_selected_button{ nullptr };
+				ButtonInterface currently_gamepad_selected_button;
 
 				//Update the state of all button user interface primitives and call the callbacks if necessary.
-				for (UserInterfaceButton *const RESTRICT button : _Buttons)
+				for (ButtonInterface &button : _ButtonInterfaces)
 				{
 					//Remember the currently gamepad selected button.
-					if (button->GetGamepadSelected())
+					if (button.GetGamepadSelected())
 					{
 						currently_gamepad_selected_button = button;
 
@@ -308,19 +406,19 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 				if (currently_gamepad_selected_button)
 				{
 					//Calculate the center of the currently gamepad selected button.
-					const Vector2<float32> currently_gamepad_selected_button_center{ currently_gamepad_selected_button->GetMinimum() + ((currently_gamepad_selected_button->GetMaximum() - currently_gamepad_selected_button->GetMinimum()) * 0.5f) };
+					const Vector2<float32> currently_gamepad_selected_button_center{ currently_gamepad_selected_button.GetMinimum() + ((currently_gamepad_selected_button.GetMaximum() - currently_gamepad_selected_button.GetMinimum()) * 0.5f) };
 
 					//Find another button that is close and in the general direction.
-					UserInterfaceButton *RESTRICT new_gamepad_selected_button{ nullptr };
+					ButtonInterface new_gamepad_selected_button;
 					float32 shortest_distance{ FLOAT_MAXIMUM };
 
-					for (UserInterfaceButton *const RESTRICT button : _Buttons)
+					for (ButtonInterface &button : _ButtonInterfaces)
 					{
 						//Is this element a button, and not the currently selected gamepad button?
 						if (button != currently_gamepad_selected_button)
 						{
 							//Calculate the center of this button.
-							const Vector2<float32> button_center{ button->GetMinimum() + ((button->GetMaximum() - button->GetMinimum()) * 0.5f) };
+							const Vector2<float32> button_center{ button.GetMinimum() + ((button.GetMaximum() - button.GetMinimum()) * 0.5f) };
 
 							//Calculate the distance to ths button.
 							const float32 distance_to_button{ Vector2<float32>::Length(button_center - currently_gamepad_selected_button_center) };
@@ -345,8 +443,8 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 					//Is there a new gamepad selected button?
 					if (new_gamepad_selected_button)
 					{
-						currently_gamepad_selected_button->SetGamepadSelected(false);
-						new_gamepad_selected_button->SetGamepadSelected(true);
+						currently_gamepad_selected_button.SetGamepadSelected(false);
+						new_gamepad_selected_button.SetGamepadSelected(true);
 					}
 				}
 			}
@@ -354,7 +452,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 	}
 
 	//Update the state of all button user interface elements and call the callbacks if necessary.
-	for (UserInterfaceButton *const RESTRICT button : _Buttons)
+	for (ButtonInterface &button : _ButtonInterfaces)
 	{
 		//Apply different logic based on which input device type was updated last.
 		switch (InputSystem::Instance->GetLastUpdatedInputDeviceType())
@@ -362,61 +460,61 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 			case InputDeviceType::GAMEPAD:
 			{
 				//Mutate the state and call callbacks.
-				switch (button->GetCurrentState())
+				switch (button.GetCurrentState())
 				{
-					case UserInterfaceButton::State::IDLE:
+					case UserInterfaceButtonState::IDLE:
 					{
-						if (button->GetGamepadSelected())
+						if (button.GetGamepadSelected())
 						{
 							if (gamepad_state->_A == ButtonState::PRESSED)
 							{
-								button->OnStartPressed();
-								button->SetCurrentState(UserInterfaceButton::State::PRESSED);
+								button.OnStartPressed();
+								button.SetCurrentState(UserInterfaceButtonState::PRESSED);
 							}
 
 							else
 							{
-								button->OnStartHovered();
-								button->SetCurrentState(UserInterfaceButton::State::HOVERED);
+								button.OnStartHovered();
+								button.SetCurrentState(UserInterfaceButtonState::HOVERED);
 							}
 						}
 
 						break;
 					}
 
-					case UserInterfaceButton::State::HOVERED:
+					case UserInterfaceButtonState::HOVERED:
 					{
-						if (button->GetGamepadSelected())
+						if (button.GetGamepadSelected())
 						{
 							if (gamepad_state->_A == ButtonState::PRESSED)
 							{
-								button->OnStartPressed();
-								button->SetCurrentState(UserInterfaceButton::State::PRESSED);
+								button.OnStartPressed();
+								button.SetCurrentState(UserInterfaceButtonState::PRESSED);
 							}
 						}
 
 						else
 						{
-							button->SetCurrentState(UserInterfaceButton::State::IDLE);
+							button.SetCurrentState(UserInterfaceButtonState::IDLE);
 						}
 
 						break;
 					}
 
-					case UserInterfaceButton::State::PRESSED:
+					case UserInterfaceButtonState::PRESSED:
 					{
-						if (button->GetGamepadSelected())
+						if (button.GetGamepadSelected())
 						{
 							if (gamepad_state->_A == ButtonState::RELEASED)
 							{
-								button->OnStopPressed();
-								button->SetCurrentState(UserInterfaceButton::State::HOVERED);
+								button.OnStopPressed();
+								button.SetCurrentState(UserInterfaceButtonState::HOVERED);
 							}
 						}
 
 						else
 						{
-							button->SetCurrentState(UserInterfaceButton::State::IDLE);
+							button.SetCurrentState(UserInterfaceButtonState::IDLE);
 						}
 
 						break;
@@ -430,69 +528,69 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 				case InputDeviceType::MOUSE:
 				{
 					//Determine if the mouse is inside the element's bounding box.
-					const bool is_inside{	mouse_position._X >= button->GetMinimum()._X
-											&& mouse_position._X <= button->GetMaximum()._X
-											&& mouse_position._Y >= button->GetMinimum()._Y
-											&& mouse_position._Y <= button->GetMaximum()._Y };
+					const bool is_inside{	mouse_position._X >= button.GetMinimum()._X
+											&& mouse_position._X <= button.GetMaximum()._X
+											&& mouse_position._Y >= button.GetMinimum()._Y
+											&& mouse_position._Y <= button.GetMaximum()._Y };
 
 					//Mutate the state and call callbacks.
-					switch (button->GetCurrentState())
+					switch (button.GetCurrentState())
 					{
-						case UserInterfaceButton::State::IDLE:
+						case UserInterfaceButtonState::IDLE:
 						{
 							if (is_inside)
 							{
 								if (mouse_pressed)
 								{
-									button->OnStartPressed();
-									button->SetCurrentState(UserInterfaceButton::State::PRESSED);
+									button.OnStartPressed();
+									button.SetCurrentState(UserInterfaceButtonState::PRESSED);
 								}
 
 								else
 								{
-									button->OnStartHovered();
-									button->SetCurrentState(UserInterfaceButton::State::HOVERED);
+									button.OnStartHovered();
+									button.SetCurrentState(UserInterfaceButtonState::HOVERED);
 								}
 							}
 
 							break;
 						}
 
-						case UserInterfaceButton::State::HOVERED:
+						case UserInterfaceButtonState::HOVERED:
 						{
 							if (is_inside)
 							{
 								if (mouse_pressed)
 								{
-									button->OnStartPressed();
-									button->SetCurrentState(UserInterfaceButton::State::PRESSED);
+									button.OnStartPressed();
+									button.SetCurrentState(UserInterfaceButtonState::PRESSED);
 								}
 							}
 
 							else
 							{
-								button->OnStopHovered();
-								button->SetCurrentState(UserInterfaceButton::State::IDLE);
+								button.OnStopHovered();
+								button.SetCurrentState(UserInterfaceButtonState::IDLE);
 							}
 
 							break;
 						}
 
-						case UserInterfaceButton::State::PRESSED:
+						case UserInterfaceButtonState::PRESSED:
 						{
 							if (is_inside)
 							{
 								if (!mouse_pressed)
 								{
-									button->OnStopPressed();
-									button->SetCurrentState(UserInterfaceButton::State::HOVERED);
+									button.OnStopPressed();
+									button.SetCurrentState(UserInterfaceButtonState::HOVERED);
 								}
 							}
 
 							else
 							{
-								button->OnStopPressed();
-								button->SetCurrentState(UserInterfaceButton::State::IDLE);
+								button.OnStopPressed();
+								button.SetCurrentState(UserInterfaceButtonState::IDLE);
 							}
 
 							break;

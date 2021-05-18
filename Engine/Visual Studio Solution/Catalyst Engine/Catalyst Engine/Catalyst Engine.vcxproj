@@ -497,6 +497,7 @@
     <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfacePrimitive.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\TextUserInterfacePrimitiveDescription.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceButton.h" />
+    <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCheckbox.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCore.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceImage.h" />
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfacePrimitive.h" />
@@ -716,6 +717,7 @@
     <ClCompile Include="..\..\..\Source\Systems\UserInterfaceSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\WorldSystem.cpp" />
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceButton.cpp" />
+    <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceCheckbox.cpp" />
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceImage.cpp" />
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceProgressBar.cpp" />
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceScene.cpp" />

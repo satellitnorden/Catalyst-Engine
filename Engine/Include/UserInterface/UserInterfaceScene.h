@@ -6,6 +6,7 @@
 
 //User interface.
 #include <UserInterface/UserInterfaceButton.h>
+#include <UserInterface/UserInterfaceCheckbox.h>
 #include <UserInterface/UserInterfaceImage.h>
 #include <UserInterface/UserInterfaceProgressBar.h>
 #include <UserInterface/UserInterfaceText.h>
@@ -18,7 +19,10 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	UserInterfaceScene() NOEXCEPT;
+	FORCE_INLINE UserInterfaceScene() NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Default destructor.
@@ -44,10 +48,7 @@ public:
 	/*
 	*	Callback for when this user interface scene is activated.
 	*/
-	FORCE_INLINE virtual void OnActivated() NOEXCEPT
-	{
-
-	}
+	virtual void OnActivated() NOEXCEPT;
 
 	/*
 	*	Callback for when this user interface scene is activated updated
@@ -80,6 +81,14 @@ protected:
 	}
 
 	/*
+	*	Sets the font resource.
+	*/
+	FORCE_INLINE void SetFontResource(const ResourcePointer<FontResource> value) NOEXCEPT
+	{
+		_FontResource = value;
+	}
+
+	/*
 	*	Sets the progress bar bottom material.
 	*/
 	FORCE_INLINE void SetProgressBarBottomMaterial(const UserInterfaceMaterial &value) NOEXCEPT
@@ -96,6 +105,22 @@ protected:
 	}
 
 	/*
+	*	Sets the text scale.
+	*/
+	FORCE_INLINE void SetTextScale(const float32 value) NOEXCEPT
+	{
+		_TextScale = value;
+	}
+
+	/*
+	*	Sets the text smoothing factor.
+	*/
+	FORCE_INLINE void SetTextSmoothingFactor(const float32 value) NOEXCEPT
+	{
+		_TextSmoothingFactor = value;
+	}
+
+	/*
 	*	Adds a button.
 	*/
 	RESTRICTED UserInterfaceButton *const RESTRICT AddButton(	const Vector2<uint32> &minimum_cell,
@@ -105,6 +130,20 @@ protected:
 																UserInterfaceMaterial *const RESTRICT hovered_material_override = nullptr,
 																UserInterfaceMaterial *const RESTRICT pressed_material_override = nullptr,
 																const char *const RESTRICT text = "") NOEXCEPT;
+
+	/*
+	*	Adds a checkbox.
+	*/
+	RESTRICTED UserInterfaceCheckbox *const RESTRICT AddCheckbox(	const Vector2<uint32> &minimum_cell,
+																	const Vector2<uint32> &maximum_cell,
+																	const UserInterfaceCheckbox::Callback start_pressed_callback,
+																	UserInterfaceMaterial *const RESTRICT unchecked_idle_material_override = nullptr,
+																	UserInterfaceMaterial *const RESTRICT unchecked_hovered_material_overrid = nullptr,
+																	UserInterfaceMaterial *const RESTRICT unchecked_pressed_material_overrid = nullptr,
+																	UserInterfaceMaterial *const RESTRICT checked_idle_material_overrid = nullptr,
+																	UserInterfaceMaterial *const RESTRICT checked_hovered_material_override = nullptr,
+																	UserInterfaceMaterial *const RESTRICT checked_pressed_material_override = nullptr,
+																	const char *const RESTRICT text = "") NOEXCEPT;
 
 	/*
 	*	Adds an image.
@@ -128,9 +167,425 @@ protected:
 	RESTRICTED UserInterfaceText *const RESTRICT AddText(	const Vector2<uint32> &minimum_cell,
 															const Vector2<uint32> &maximum_cell,
 															const char *const RESTRICT text = "",
-															const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::CENTER) NOEXCEPT;
+															const float32 *const RESTRICT scale_override = nullptr,
+															const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::CENTER,
+															const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER,
+															const float32 *const RESTRICT smoothing_factor_override = nullptr) NOEXCEPT;
 
 private:
+
+	/*
+	*	Button interface class definition.
+	*/
+	class ButtonInterface final
+	{
+
+	public:
+
+		/*
+		*	Default constructor.
+		*/
+		FORCE_INLINE ButtonInterface() NOEXCEPT
+			:
+			_State(State::NONE),
+			_Element(nullptr)
+		{
+
+		}
+
+		/*
+		*	Constructor taking a user interface button.
+		*/
+		FORCE_INLINE ButtonInterface(UserInterfaceButton *const RESTRICT button) NOEXCEPT
+			:
+			_State(State::BUTTON),
+			_Element(button)
+		{
+
+		}
+
+		/*
+		*	Constructor taking a user interface checkbox.
+		*/
+		FORCE_INLINE ButtonInterface(UserInterfaceCheckbox *const RESTRICT checkbox) NOEXCEPT
+			:
+			_State(State::CHECKBOX),
+			_Element(checkbox)
+		{
+
+		}
+
+		/*
+		*	Bool operator overload.
+		*/
+		FORCE_INLINE operator bool() const NOEXCEPT
+		{
+			return _State != State::NONE;
+		}
+
+		/*
+		*	Returns the minimum.
+		*/
+		FORCE_INLINE NO_DISCARD Vector2<float32> GetMinimum() const NOEXCEPT
+		{
+			switch (_State)
+			{
+				case State::NONE:
+				{
+					return Vector2<float32>(0.0f, 0.0f);
+				}
+
+				case State::BUTTON:
+				{
+					return static_cast<UserInterfaceButton *const RESTRICT>(_Element)->GetMinimum();
+				}
+
+				case State::CHECKBOX:
+				{
+					return static_cast<UserInterfaceCheckbox *const RESTRICT>(_Element)->GetButtonMinimum();
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					return Vector2<float32>(0.0f, 0.0f);
+				}
+			}
+		}
+
+		/*
+		*	Returns the maximum.
+		*/
+		FORCE_INLINE NO_DISCARD Vector2<float32> GetMaximum() const NOEXCEPT
+		{
+			switch (_State)
+			{
+				case State::NONE:
+				{
+					return Vector2<float32>(0.0f, 0.0f);
+				}
+
+				case State::BUTTON:
+				{
+					return static_cast<UserInterfaceButton *const RESTRICT>(_Element)->GetMaximum();
+				}
+
+				case State::CHECKBOX:
+				{
+					return static_cast<UserInterfaceCheckbox *const RESTRICT>(_Element)->GetButtonMaximum();
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					return Vector2<float32>(0.0f, 0.0f);
+				}
+			}
+		}
+
+		/*
+		*	Returns the current state.
+		*/
+		FORCE_INLINE NO_DISCARD UserInterfaceButtonState GetCurrentState() const NOEXCEPT
+		{
+			switch (_State)
+			{
+				case State::NONE:
+				{
+					return UserInterfaceButtonState::IDLE;
+				}
+
+				case State::BUTTON:
+				{
+					return static_cast<UserInterfaceButton *const RESTRICT>(_Element)->GetCurrentState();
+				}
+
+				case State::CHECKBOX:
+				{
+					return static_cast<UserInterfaceCheckbox *const RESTRICT>(_Element)->GetCurrentState();
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					return UserInterfaceButtonState::IDLE;
+				}
+			}
+		}
+
+		/*
+		*	Sets the current state.
+		*/
+		FORCE_INLINE void SetCurrentState(const UserInterfaceButtonState value) NOEXCEPT
+		{
+			switch (_State)
+			{
+				case State::NONE:
+				{
+					//Do nothing.
+
+					break;
+				}
+
+				case State::BUTTON:
+				{
+					static_cast<UserInterfaceButton *const RESTRICT>(_Element)->SetCurrentState(value);
+
+					break;
+				}
+
+				case State::CHECKBOX:
+				{
+					static_cast<UserInterfaceCheckbox *const RESTRICT>(_Element)->SetCurrentState(value);
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+		}
+
+		/*
+		*	On start hovered callback.
+		*/
+		FORCE_INLINE void OnStartHovered() NOEXCEPT
+		{
+			switch (_State)
+			{
+				case State::NONE:
+				{
+					//Do nothing.
+
+					break;
+				}
+
+				case State::BUTTON:
+				{
+					static_cast<UserInterfaceButton *const RESTRICT>(_Element)->OnStartHovered();
+
+					break;
+				}
+
+				case State::CHECKBOX:
+				{
+					static_cast<UserInterfaceCheckbox *const RESTRICT>(_Element)->OnStartHovered();
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+		}
+
+		/*
+		*	On stop hovered callback.
+		*/
+		FORCE_INLINE void OnStopHovered() NOEXCEPT
+		{
+			switch (_State)
+			{
+				case State::NONE:
+				{
+					//Do nothing.
+
+					break;
+				}
+
+				case State::BUTTON:
+				{
+					static_cast<UserInterfaceButton *const RESTRICT>(_Element)->OnStopHovered();
+
+					break;
+				}
+
+				case State::CHECKBOX:
+				{
+					static_cast<UserInterfaceCheckbox *const RESTRICT>(_Element)->OnStopHovered();
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+		}
+
+		/*
+		*	On start pressed callback.
+		*/
+		FORCE_INLINE void OnStartPressed() NOEXCEPT
+		{
+			switch (_State)
+			{
+				case State::NONE:
+				{
+					//Do nothing.
+
+					break;
+				}
+
+				case State::BUTTON:
+				{
+					static_cast<UserInterfaceButton *const RESTRICT>(_Element)->OnStartPressed();
+
+					break;
+				}
+
+				case State::CHECKBOX:
+				{
+					static_cast<UserInterfaceCheckbox *const RESTRICT>(_Element)->OnStartPressed();
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+		}
+
+		/*
+		*	On stop pressed callback.
+		*/
+		FORCE_INLINE void OnStopPressed() NOEXCEPT
+		{
+			switch (_State)
+			{
+				case State::NONE:
+				{
+					//Do nothing.
+
+					break;
+				}
+
+				case State::BUTTON:
+				{
+					static_cast<UserInterfaceButton *const RESTRICT>(_Element)->OnStopPressed();
+
+					break;
+				}
+
+				case State::CHECKBOX:
+				{
+					static_cast<UserInterfaceCheckbox *const RESTRICT>(_Element)->OnStopPressed();
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+		}
+
+		/*
+		*	Returns whether or not this button is gamepad selected.
+		*/
+		FORCE_INLINE NO_DISCARD bool GetGamepadSelected() const NOEXCEPT
+		{
+			switch (_State)
+			{
+				case State::NONE:
+				{
+					return false;
+				}
+
+				case State::BUTTON:
+				{
+					return static_cast<UserInterfaceButton *const RESTRICT>(_Element)->GetGamepadSelected();
+				}
+
+				case State::CHECKBOX:
+				{
+					return static_cast<UserInterfaceCheckbox *const RESTRICT>(_Element)->GetGamepadSelected();
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					return false;
+				}
+			}
+		}
+
+		/*
+		*	Sets whether or not this button is gamepad selected.
+		*/
+		FORCE_INLINE void SetGamepadSelected(const bool value) NOEXCEPT
+		{
+			switch (_State)
+			{
+				case State::NONE:
+				{
+					//Do nothing.
+
+					break;
+				}
+
+				case State::BUTTON:
+				{
+					static_cast<UserInterfaceButton *const RESTRICT>(_Element)->SetGamepadSelected(value);
+
+					break;
+				}
+
+				case State::CHECKBOX:
+				{
+					static_cast<UserInterfaceCheckbox *const RESTRICT>(_Element)->SetGamepadSelected(value);
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+		}
+
+	private:
+
+		//Enumeration covering all states.
+		enum class State : uint8
+		{
+			NONE,
+			BUTTON,
+			CHECKBOX
+		};
+
+		//The state.
+		State _State;
+
+		//The underlying element.
+		void *RESTRICT _Element;
+
+	};
 
 	//Denotes whether or not this scene is active.
 	bool _IsActive{ false };
@@ -147,6 +602,9 @@ private:
 	//The vertical subdivision reciprocal.
 	float32 _VerticalSubdivisionReciprocal;
 
+	//The font resource.
+	ResourcePointer<FontResource> _FontResource;
+
 	//The button idle material.
 	UserInterfaceMaterial _ButtonIdleMaterial;
 
@@ -156,14 +614,41 @@ private:
 	//The button pressed material.
 	UserInterfaceMaterial _ButtonPressedMaterial;
 
+	//The checkbox unchecked idle material.
+	UserInterfaceMaterial _CheckboxUncheckedIdleMaterial;
+
+	//The checkbox unchecked hovered material.
+	UserInterfaceMaterial _CheckboxUncheckedHoveredMaterial;
+
+	//The checkbox unchecked pressed material.
+	UserInterfaceMaterial _CheckboxUncheckedPressedMaterial;
+
+	//The checkbox checked idle material.
+	UserInterfaceMaterial _CheckboxCheckedIdleMaterial;
+
+	//The checkbox checked hovered material.
+	UserInterfaceMaterial _CheckboxCheckedHoveredMaterial;
+
+	//The checkbox checked pressed material.
+	UserInterfaceMaterial _CheckboxCheckedPressedMaterial;
+
 	//The progress bar bottom material.
 	UserInterfaceMaterial _ProgressBarBottomMaterial;
 
 	//The progress bar top material.
 	UserInterfaceMaterial _ProgressBarTopMaterial;
 
+	//The text scale.
+	float32 _TextScale;
+
+	//The text smoothing factor.
+	float32 _TextSmoothingFactor;
+
 	//The buttons.
 	DynamicArray<UserInterfaceButton *const RESTRICT> _Buttons;
+
+	//The checkboxes.
+	DynamicArray<UserInterfaceCheckbox *const RESTRICT> _Checkboxes;
 
 	//The images.
 	DynamicArray<UserInterfaceImage *const RESTRICT> _Images;
@@ -173,6 +658,9 @@ private:
 
 	//The texts.
 	DynamicArray<UserInterfaceText *const RESTRICT> _Texts;
+
+	//The button interfaces.
+	DynamicArray<ButtonInterface> _ButtonInterfaces;
 
 	/*
 	*	Calculates the bounding box for the given minimum/maximum cell.

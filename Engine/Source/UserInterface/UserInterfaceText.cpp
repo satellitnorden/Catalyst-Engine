@@ -14,14 +14,30 @@
 UserInterfaceText::UserInterfaceText(	const Vector2<float32> initial_minimum,
 										const Vector2<float32> initial_maximum,
 										const char *const RESTRICT text,
-										const TextHorizontalAlignment horizontal_alignment) NOEXCEPT
+										const ResourcePointer<FontResource> font_resource,
+										const float32 scale,
+										const TextHorizontalAlignment horizontal_alignment,
+										const TextVerticalAlignment vertical_alignment,
+										const float32 smoothing_factor) NOEXCEPT
 {
 	//Set the minimum/maximum.
 	_Minimum = initial_minimum;
 	_Maximum = initial_maximum;
 
+	//Set the font resource.
+	_FontResource = font_resource;
+
+	//Set the scale.
+	_Scale = scale;
+
 	//Set the horizontal alignment.
 	_HorizontalAlignment = horizontal_alignment;
+
+	//Set the vertical alignment.
+	_VerticalAlignment = vertical_alignment;
+
+	//Set the smoothing factor.
+	_SmoothingFactor = smoothing_factor;
 
 	//Set the text.
 	SetText(text);
@@ -54,11 +70,11 @@ void UserInterfaceText::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Minimum = _Minimum;
 			description._Maximum = _Maximum;
 			description._Opacity = 1.0f;
-			description._FontResource = ResourceSystem::Instance->GetFontResource(HashString("Catalyst_Engine_Default_Font"));
-			description._Scale = 0.015f;
+			description._FontResource = _FontResource;
+			description._Scale = _Scale;
 			description._HorizontalAlignment = _HorizontalAlignment;
-			description._VerticalAlignment = TextVerticalAlignment::CENTER;
-			description._TextSmoothingFactor = 0.2f;
+			description._VerticalAlignment = _VerticalAlignment;
+			description._TextSmoothingFactor = _SmoothingFactor;
 			description._Text = text;
 
 			_Primitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
@@ -78,5 +94,16 @@ void UserInterfaceText::SetText(const char *const RESTRICT text) NOEXCEPT
 		}
 
 		_Primitive = nullptr;
+	}
+}
+
+/*
+*	Sets the opacity.
+*/
+void UserInterfaceText::SetOpacity(const float32 opacity) NOEXCEPT
+{
+	if (_Primitive)
+	{
+		_Primitive->_Opacity = opacity;
 	}
 }

@@ -21,14 +21,15 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 											const UserInterfaceMaterial &initial_idle_material,
 											const UserInterfaceMaterial &initial_hovered_material,
 											const UserInterfaceMaterial &initial_pressed_material,
-											const char *const RESTRICT text) NOEXCEPT
+											const char *const RESTRICT text,
+											const ResourcePointer<FontResource> font_resource) NOEXCEPT
 {
 	//Set the minimum/maximum.
 	_Minimum = initial_minimum;
 	_Maximum = initial_maximum;
 
 	//Set the current state.
-	_CurrentState = State::IDLE;
+	_CurrentState = UserInterfaceButtonState::IDLE;
 	
 	//Set the callbacks.
 	_StartHoveredCallback = initial_start_hovered_callback;
@@ -40,6 +41,9 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 	_IdleMaterial = initial_idle_material;
 	_HoveredMaterial = initial_hovered_material;
 	_PressedMaterial = initial_pressed_material;
+
+	//Set the font resource.
+	_FontResource = font_resource;
 
 	//Add the image Primitive.
 	{
@@ -75,27 +79,27 @@ UserInterfaceButton::~UserInterfaceButton() NOEXCEPT
 /*
 *	Sets the current state.
 */
-void UserInterfaceButton::SetCurrentState(const State value) NOEXCEPT
+void UserInterfaceButton::SetCurrentState(const UserInterfaceButtonState value) NOEXCEPT
 {
 	_CurrentState = value;
 
 	switch (_CurrentState)
 	{
-		case State::IDLE:
+		case UserInterfaceButtonState::IDLE:
 		{
 			_ImagePrimitive->_Material = _IdleMaterial;
 
 			break;
 		}
 
-		case State::HOVERED:
+		case UserInterfaceButtonState::HOVERED:
 		{
 			_ImagePrimitive->_Material = _HoveredMaterial;
 
 			break;
 		}
 
-		case State::PRESSED:
+		case UserInterfaceButtonState::PRESSED:
 		{
 			_ImagePrimitive->_Material = _PressedMaterial;
 
@@ -126,7 +130,7 @@ void UserInterfaceButton::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Minimum = _Minimum;
 			description._Maximum = _Maximum;
 			description._Opacity = 1.0f;
-			description._FontResource = ResourceSystem::Instance->GetFontResource(HashString("Catalyst_Engine_Default_Font"));
+			description._FontResource = _FontResource;
 			description._Scale = 0.015f;
 			description._HorizontalAlignment = TextHorizontalAlignment::CENTER;
 			description._VerticalAlignment = TextVerticalAlignment::CENTER;
