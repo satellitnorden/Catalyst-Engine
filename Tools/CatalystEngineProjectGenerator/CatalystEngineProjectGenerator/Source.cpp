@@ -1,6 +1,7 @@
 //Standard library.
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
@@ -36,7 +37,20 @@ int main(int argc, char *argv[])
 	system("cmake -B Win64\\Win64");
 
 	//Remove the CMakeLists.txt file.
-	//std::filesystem::remove("CMakeLists.txt");
+	std::filesystem::remove("CMakeLists.txt");
+
+	//Copy the relevant .dll files to the correct folders.
+	std::filesystem::create_directory("Win64\\Win64\\Debug");
+	std::filesystem::create_directory("Win64\\Win64\\DebugEditor");
+	std::filesystem::create_directory("Win64\\Win64\\Profile");
+	std::filesystem::create_directory("Win64\\Win64\\ProfileEditor");
+	std::filesystem::create_directory("Win64\\Win64\\Final");
+
+
+	std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\assimp.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing);
+	std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\assimp.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing);
+	std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\assimp.dll", "Win64\\Win64\\Profile", std::filesystem::copy_options::overwrite_existing);
+	std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\assimp.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing);
 
 	return 0;
 }

@@ -65,6 +65,6 @@ private:
 	float32 _SmoothingFactor;
 
 	//The primitive.
-	TextUserInterfacePrimitive *RESTRICT _Primitive;
+	TextUserInterfacePrimitive *RESTRICT _Primitive{ nullptr };
 
 };
