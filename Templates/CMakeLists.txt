@@ -1,0 +1,115 @@
+#Set ths CMake minimum required version.
+cmake_minimum_required(VERSION 3.10)
+
+#Set the project name.
+set(BASE_PROJECT_NAME [PROJECT_NAME])
+
+if (ANDROID)
+	set(PROJECT_NAME "${BASE_PROJECT_NAME}_Android")
+endif()
+
+if (WIN32)
+	set(PROJECT_NAME "${BASE_PROJECT_NAME}_Win64")
+endif()
+
+#Set the project name.
+project(${PROJECT_NAME})
+
+#Set the C++ standard.
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+#Set the configuration types.
+set(CMAKE_CONFIGURATION_TYPES "Debug;DebugEditor;Profile;ProfileEditor;Final")
+set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING "Reset config to what we need" FORCE)
+
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG /LTCG:incremental")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUGEDITOR "/DEBUG /LTCG:incremental")
+set(CMAKE_EXE_LINKER_FLAGS_PROFILE "/DEBUG /LTCG:incremental")
+set(CMAKE_EXE_LINKER_FLAGS_PROFILEEDITOR "/DEBUG /LTCG:incremental")
+set(CMAKE_EXE_LINKER_FLAGS_FINAL "/LTCG:incremental")
+
+#Add defines.
+add_compile_definitions($<$<CONFIG:Debug>:_DEBUG>
+						$<$<CONFIG:DebugEditor>:_DEBUG>
+						$<$<CONFIG:Profile>:NDEBUG>
+						$<$<CONFIG:ProfileEditor>:NDEBUG>
+						$<$<CONFIG:Final>:NDEBUG>
+						)
+add_compile_definitions(__WINDOWS_ASIO__)
+add_compile_definitions(__WINDOWS_MM__)
+add_compile_definitions($<$<CONFIG:Debug>:CATALYST_CONFIGURATION_DEBUG>
+						$<$<CONFIG:DebugEditor>:CATALYST_CONFIGURATION_DEBUG>
+						$<$<CONFIG:Profile>:CATALYST_CONFIGURATION_PROFILE>
+						$<$<CONFIG:ProfileEditor>:CATALYST_CONFIGURATION_PROFILE>
+						$<$<CONFIG:Final>:CATALYST_CONFIGURATION_FINAL>
+						)
+add_compile_definitions(CATALYST_DISTRIBUTION_NULL)
+add_compile_definitions($<$<CONFIG:Debug>:CATALYST_ENABLE_RESOURCE_BUILDING>
+						$<$<CONFIG:DebugEditor>:CATALYST_ENABLE_RESOURCE_BUILDING>
+						$<$<CONFIG:Profile>:CATALYST_ENABLE_RESOURCE_BUILDING>
+						$<$<CONFIG:ProfileEditor>:CATALYST_ENABLE_RESOURCE_BUILDING>
+						)
+add_compile_definitions(CATALYST_PHYSICS_NULL)
+add_compile_definitions($<$<PLATFORM_ID:Windows>:CATALYST_PLATFORM_WINDOWS>
+						$<$<PLATFORM_ID:Android>:CATALYST_PLATFORM_ANDROID>
+						)
+add_compile_definitions(CATALYST_RENDERING_VULKAN)
+
+#Add the Catalyst Engine source files.
+file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../Catalyst-Engine/Engine/Source/*.cpp)
+file(GLOB_RECURSE GAME_INCLUDE_FILES ../Code/Include/*.h)
+file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.cpp)
+
+#Add the executable.
+if (WIN32)
+	add_executable(${PROJECT_NAME} WIN32 ${ENGINE_SOURCE_FILES} ${GAME_INCLUDE_FILES} ${GAME_SOURCE_FILES})
+endif()
+
+if (ANDROID)
+	add_library(${PROJECT_NAME}-lib SHARED ${ENGINE_SOURCE_FILES} ${GAME_INCLUDE_FILES} ${GAME_SOURCE_FILES})
+endif()
+
+#Set the include paths.
+target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include)
+target_include_directories(${PROJECT_NAME} PUBLIC ../Code/Include)
+
+#Set the library paths.
+target_link_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Libraries/Static)
+
+#Link the libraries.
+target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:assimp>
+										$<$<CONFIG:DebugEditor>:assimp>
+										$<$<CONFIG:Profile>:assimp>
+										$<$<CONFIG:ProfileEditor>:assimp>
+										)
+target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:freetype>
+										$<$<CONFIG:DebugEditor>:freetype>
+										$<$<CONFIG:Profile>:freetype>
+										$<$<CONFIG:ProfileEditor>:freetype>
+										)
+target_link_libraries(${PROJECT_NAME} vulkan-1)
+target_link_libraries(${PROJECT_NAME} Winmm)
+target_link_libraries(${PROJECT_NAME} xinput)
+
+#Set the startup project.
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+
+#Add the Visual Studio filters.
+source_group("Catalyst Engine Source" FILES ${ENGINE_SOURCE_FILES})
+
+set(GAME_INCLUDE_FILES_ROOT "${CMAKE_SOURCE_DIR}/../Code/Include")
+source_group(TREE ${GAME_INCLUDE_FILES_ROOT} PREFIX "Game Include" FILES ${GAME_INCLUDE_FILES})
+
+set(GAME_SOURCE_FILES_ROOT "${CMAKE_SOURCE_DIR}/../Code/Source")
+source_group(TREE ${GAME_SOURCE_FILES_ROOT} PREFIX "Game Source" FILES ${GAME_SOURCE_FILES})
+
+#Set optimization levels.
+set(CMAKE_CXX_FLAGS_DEBUG "/Od /Oi /MTd /sdl- /GL /Zi")
+set(CMAKE_CXX_FLAGS_DEBUGEDITOR "/Od /Oi /MTd /sdl- /GL /Zi")
+set(CMAKE_CXX_FLAGS_PROFILE "/O2 /Oi /MT /sdl- /GL /Zi")
+set(CMAKE_CXX_FLAGS_PROFILEEDITOR "/O2 /Oi /MT /sdl- /GL /Zi")
+set(CMAKE_CXX_FLAGS_FINAL "/O2 /Oi /MT /sdl- /GL")
+
+#Remove the ZERO_CHECK project.
+set(CMAKE_SUPPRESS_REGENERATION true)

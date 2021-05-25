@@ -30,6 +30,7 @@
 #include <Systems/InputSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/MemorySystem.h>
+#include <Systems/NetworkSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/PlacementSystem.h>
 #if defined(CATALYST_CONFIGURATION_PROFILE)
@@ -149,6 +150,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
 	LevelOfDetailSystem::Instance->Initialize();
 	MemorySystem::Instance->Initialize();
+	NetworkSystem::Instance->Initialize();
 	PhysicsSystem::Instance->Initialize();
 	SaveSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);

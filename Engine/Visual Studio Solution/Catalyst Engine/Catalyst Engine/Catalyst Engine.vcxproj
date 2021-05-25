@@ -468,6 +468,7 @@
     <ClInclude Include="..\..\..\Include\Systems\LevelOfDetailSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\LevelSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\MemorySystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\NetworkSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\PlacementSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\ProfilingSystem.h" />
@@ -546,6 +547,7 @@
     <ClCompile Include="..\..\..\Source\Gameplay\Player.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\PhysicallyBasedLighting.cpp" />
     <ClCompile Include="..\..\..\Source\Memory\OperatorNewDeleteOverload.cpp" />
+    <ClCompile Include="..\..\..\Source\Network\WindowsNetworkSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\NullCharacterController.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\NullPhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Physics\Abstraction\PhysXCharacterController.cpp" />
@@ -704,6 +706,7 @@
     <ClCompile Include="..\..\..\Source\Systems\LevelOfDetailSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\LevelSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\MemorySystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\NetworkSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\PlacementSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\ProfilingSystem.cpp" />

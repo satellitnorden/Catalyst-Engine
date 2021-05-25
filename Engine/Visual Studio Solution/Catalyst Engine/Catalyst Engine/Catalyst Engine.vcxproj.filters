@@ -439,6 +439,12 @@
     <Filter Include="Scripting\Include">
       <UniqueIdentifier>{09c43829-a6da-462e-9a0d-2e9b388714ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{24c69a78-b231-43d5-a797-aa9d623cd298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Source">
+      <UniqueIdentifier>{bfe4f668-729c-4474-aeae-505547b0abc7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -1857,6 +1863,9 @@
     <ClInclude Include="..\..\..\Include\UserInterface\UserInterfaceCheckbox.h">
       <Filter>User Interface\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\NetworkSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2479,6 +2488,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\UserInterface\UserInterfaceCheckbox.cpp">
       <Filter>User Interface\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\NetworkSystem.cpp">
+      <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Network\WindowsNetworkSystem.cpp">
+      <Filter>Network\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
