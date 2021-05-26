@@ -69,11 +69,7 @@ void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);
-#if defined(CATALYST_SIMPLIFIED_RENDERING)
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN));
-#else
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
-#endif
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

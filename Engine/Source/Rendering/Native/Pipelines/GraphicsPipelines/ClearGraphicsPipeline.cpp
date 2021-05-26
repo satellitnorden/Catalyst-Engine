@@ -32,7 +32,7 @@ void ClearGraphicsPipeline::Initialize(
 	//Add the output render targets.
 #if defined(CATALYST_SIMPLIFIED_RENDERING)
 	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 #else
 	SetNumberOfOutputRenderTargets(5);
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
