@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
@@ -181,3 +182,4 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 #endif
 	_VelocityGraphicsPipeline.Execute();
 }
+#endif

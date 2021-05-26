@@ -14,7 +14,11 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT;
+	void Initialize(
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
+		const DepthBufferHandle depth_buffer
+#endif
+	) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.

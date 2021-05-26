@@ -1,6 +1,12 @@
 #Set ths CMake minimum required version.
 cmake_minimum_required(VERSION 3.10.2)
 
+#First of all, build the native_app_glue library.
+add_library(native_app_glue STATIC ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+
+#Make sure to include the ANativeActivity_onCreate function.
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
+
 #Set the project name.
 set(PROJECT_NAME [PROJECT_NAME]_Android-lib)
 
@@ -14,6 +20,7 @@ add_definitions(-DCATALYST_DISTRIBUTION_NULL)
 add_definitions(-DCATALYST_PHYSICS_NULL)
 add_definitions(-DCATALYST_PLATFORM_ANDROID)
 add_definitions(-DCATALYST_RENDERING_VULKAN)
+add_definitions(-DCATALYST_SIMPLIFIED_RENDERING)
 
 #Add the include/source files.
 file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../../../../../../Catalyst-Engine/Engine/Source/*.cpp)
@@ -26,9 +33,7 @@ add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCE_FILES} ${GAME_INCLUDE_FILES} 
 #Set the include paths.
 target_include_directories(${PROJECT_NAME} PUBLIC ../../../../../../../Catalyst-Engine/Engine/Include)
 target_include_directories(${PROJECT_NAME} PUBLIC ../../../../../../Code/Include)
-
-#Set the library paths.
-link_directories(PUBLIC ../../../../../../../Catalyst-Engine/Engine/Libraries/Static)
+target_include_directories(${PROJECT_NAME} PRIVATE ${ANDROID_NDK}/sources/android/native_app_glue)
 
 #Link the libraries.
-target_link_libraries(${PROJECT_NAME} android log vulkan)
+target_link_libraries(${PROJECT_NAME} android log native_app_glue vulkan)

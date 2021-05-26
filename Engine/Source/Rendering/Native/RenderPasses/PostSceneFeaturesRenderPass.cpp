@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/PostSceneFeaturesRenderPass.h>
 
@@ -68,3 +69,4 @@ void PostSceneFeaturesRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_SceneFeaturesDownsampleGraphicsPipeline.Execute();
 }
+#endif

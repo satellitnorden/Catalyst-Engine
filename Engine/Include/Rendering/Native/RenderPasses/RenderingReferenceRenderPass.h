@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 #pragma once
 
@@ -43,4 +44,5 @@ private:
 	void Execute() NOEXCEPT;
 
 };
+#endif
 #endif

@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Header file.
 #include <Rendering/Native/RenderPasses/DebugRenderingRenderPass.h>
@@ -74,4 +75,5 @@ void DebugRenderingRenderPass::Execute() NOEXCEPT
 
 	_DebugRenderSphereGraphicsPipeline.Execute();
 }
+#endif
 #endif

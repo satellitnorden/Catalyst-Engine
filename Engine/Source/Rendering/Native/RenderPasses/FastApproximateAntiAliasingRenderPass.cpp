@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/FastApproximateAntiAliasingRenderPass.h>
 
@@ -55,3 +56,4 @@ void FastApproximateAntiAliasingRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_FastApproximateAntiAliasingGraphicsPipeline.Execute();
 }
+#endif

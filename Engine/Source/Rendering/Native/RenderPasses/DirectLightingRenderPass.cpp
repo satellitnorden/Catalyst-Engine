@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/DirectLightingRenderPass.h>
 
@@ -67,3 +68,4 @@ void DirectLightingRenderPass::Execute() NOEXCEPT
 
 	_DirectLightingGraphicsPipeline.Execute();
 }
+#endif

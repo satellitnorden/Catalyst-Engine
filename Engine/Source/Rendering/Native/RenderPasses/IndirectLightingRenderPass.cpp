@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/IndirectLightingRenderPass.h>
 
@@ -363,3 +364,4 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	//Update the current buffer index.
 	_CurrentTemporalBufferIndex ^= static_cast<uint8>(1);
 }
+#endif

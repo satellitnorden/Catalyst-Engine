@@ -1,44 +1,46 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
+#if defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
-#include <Rendering/Native/RenderPasses/UserInterfaceRenderPass.h>
+#include <Rendering/Native/RenderPasses/SimplifiedRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(UserInterfaceRenderPass);
+DEFINE_SINGLETON(SimplifiedRenderPass);
 
 /*
 *	Default constructor.
 */
-UserInterfaceRenderPass::UserInterfaceRenderPass() NOEXCEPT
+SimplifiedRenderPass::SimplifiedRenderPass() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(NativeRenderPassStage::USER_INTERFACE);
+	SetStage(NativeRenderPassStage::SIMPLIFIED);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		UserInterfaceRenderPass::Instance->Initialize();
+		SimplifiedRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		UserInterfaceRenderPass::Instance->Execute();
+		SimplifiedRenderPass::Instance->Execute();
 	});
 }
 
 /*
 *	Initializes this render pass.
 */
-void UserInterfaceRenderPass::Initialize() NOEXCEPT
+void SimplifiedRenderPass::Initialize() NOEXCEPT
 {
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
+	AddPipeline(&_ClearGraphicsPipeline);
 	AddPipeline(&_UserInterfaceGraphicsPipeline);
 
 	//Initialize all pipelines.
+	_ClearGraphicsPipeline.Initialize();
 	_UserInterfaceGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -51,9 +53,13 @@ void UserInterfaceRenderPass::Initialize() NOEXCEPT
 /*
 *	Executes this render pass.
 */
-void UserInterfaceRenderPass::Execute() NOEXCEPT
-{
+void SimplifiedRenderPass::Execute() NOEXCEPT
+{	
 	//Execute all pipelines.
+	_ClearGraphicsPipeline.Execute();
 	_UserInterfaceGraphicsPipeline.Execute();
+
+	//Enable this render pass.
+	SetEnabled(true);
 }
 #endif

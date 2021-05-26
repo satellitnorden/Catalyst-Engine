@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/AmbientOcclusionRenderPass.h>
 
@@ -154,3 +155,4 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	//Enable this render pass.
 	SetEnabled(true);
 }
+#endif

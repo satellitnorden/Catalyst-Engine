@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/VolumetricLightingRenderPass.h>
 
@@ -147,3 +148,4 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 
 	_VolumetricLightingApplicationGraphicsPipeline.Execute();
 }
+#endif

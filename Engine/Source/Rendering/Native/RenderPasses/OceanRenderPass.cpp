@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/OceanRenderPass.h>
 
@@ -77,3 +78,4 @@ void OceanRenderPass::Execute() NOEXCEPT
 	_SceneFeatures2CopyGraphicsPipeline.Execute();
 	_OceanSceneFeaturesGraphicsPipeline.Execute();
 }
+#endif

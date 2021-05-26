@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/SkyRenderPass.h>
 
@@ -66,3 +67,4 @@ void SkyRenderPass::Execute() NOEXCEPT
 		_SkyGraphicsPipeline.SetIncludeInRender(false);
 	}
 }
+#endif

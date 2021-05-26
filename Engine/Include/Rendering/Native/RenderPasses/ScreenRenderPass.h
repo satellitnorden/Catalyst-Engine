@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 #pragma once
 
 //Core.
@@ -36,3 +37,4 @@ private:
 	void Execute() NOEXCEPT;
 
 };
+#endif

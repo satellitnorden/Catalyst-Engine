@@ -1863,6 +1863,9 @@
     <ClInclude Include="..\..\..\Include\Systems\NetworkSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SimplifiedRenderPass.h">
+      <Filter>Rendering\Include\Native\Render Passes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -2503,6 +2506,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Android\AndroidInputSystem.cpp">
       <Filter>Platform\Source\Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SimplifiedRenderPass.cpp">
+      <Filter>Rendering\Source\Native\Render Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -65,6 +65,7 @@ constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 */
 enum class NativeRenderPassStage : uint8
 {
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 	SCENE_FEATURES,
 	OCEAN,
 	POST_SCENE_FEATURES,
@@ -93,6 +94,11 @@ enum class NativeRenderPassStage : uint8
 	EDITOR_USER_INTERFACE,
 #endif
 	SCREEN,
+#endif
+
+#if defined(CATALYST_SIMPLIFIED_RENDERING)
+	SIMPLIFIED,
+#endif
 	
 	NUMBER_OF_RENDER_PASS_STAGES,
 	NONE

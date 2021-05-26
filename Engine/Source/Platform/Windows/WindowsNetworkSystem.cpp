@@ -7,6 +7,7 @@
 */
 void NetworkSystem::SubInitialize() NOEXCEPT
 {
+#if 0
 	//Remember the error code.
 	asio::error_code error_code;
 
@@ -60,5 +61,6 @@ void NetworkSystem::SubInitialize() NOEXCEPT
 			}
 		}
 	}
+#endif
 }
 #endif

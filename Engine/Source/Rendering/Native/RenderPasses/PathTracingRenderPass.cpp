@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/PathTracingRenderPass.h>
 
@@ -68,3 +69,4 @@ void PathTracingRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_PathTracingRayTracingPipeline.Execute();
 }
+#endif

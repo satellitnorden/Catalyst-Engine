@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/BloomRenderPass.h>
 
@@ -185,3 +186,4 @@ void BloomRenderPass::Execute() NOEXCEPT
 
 	_BloomApplicationGraphicsPipeline.Execute();
 }
+#endif

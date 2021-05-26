@@ -362,6 +362,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ScreenRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ShadowsRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SimplifiedRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\SkyRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\TemporalAntiAliasingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Native\RenderPasses\ToneMappingRenderPass.h" />
@@ -685,6 +686,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SceneFeaturesRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ScreenRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ShadowsRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SimplifiedRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\SkyRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\TemporalAntiAliasingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Native\RenderPasses\ToneMappingRenderPass.cpp" />

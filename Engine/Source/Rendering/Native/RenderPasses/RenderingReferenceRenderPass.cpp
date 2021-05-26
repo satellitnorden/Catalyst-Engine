@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 #if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 //Header file.
 #include <Rendering/Native/RenderPasses/RenderingReferenceRenderPass.h>
@@ -74,4 +75,5 @@ void RenderingReferenceRenderPass::Execute() NOEXCEPT
 		SetEnabled(false);
 	}
 }
+#endif
 #endif

@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/PostProcessingRenderPass.h>
 
@@ -55,3 +56,4 @@ void PostProcessingRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_PostProcessingGraphicsPipeline.Execute();
 }
+#endif

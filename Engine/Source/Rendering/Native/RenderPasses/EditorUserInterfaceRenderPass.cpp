@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 #if defined(CATALYST_EDITOR)
 //Header file.
 #include <Rendering/Native/RenderPasses/EditorUserInterfaceRenderPass.h>
@@ -56,4 +57,5 @@ void EditorUserInterfaceRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_EditorUserInterfaceGraphicsPipeline.Execute();
 }
+#endif
 #endif

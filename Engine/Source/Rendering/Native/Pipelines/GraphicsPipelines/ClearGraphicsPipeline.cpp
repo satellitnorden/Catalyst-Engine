@@ -11,7 +11,11 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void ClearGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
+void ClearGraphicsPipeline::Initialize(
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
+	const DepthBufferHandle depth_buffer
+#endif
+) NOEXCEPT
 {
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -20,16 +24,23 @@ void ClearGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOE
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ClearFragmentShader")));
 
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);
+#endif
 
 	//Add the output render targets.
+#if defined(CATALYST_SIMPLIFIED_RENDERING)
+	SetNumberOfOutputRenderTargets(1);
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN));
+#else
 	SetNumberOfOutputRenderTargets(5);
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+#endif
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

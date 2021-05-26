@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/TemporalAntiAliasingRenderPass.h>
 
@@ -96,3 +97,4 @@ void TemporalAntiAliasingRenderPass::Execute() NOEXCEPT
 	//Update the current buffer index.
 	_CurrentBufferIndex = _CurrentBufferIndex == _TemporalAntiAliasingGraphicsPipelines.Size() - 1 ? 0 : _CurrentBufferIndex + 1;
 }
+#endif

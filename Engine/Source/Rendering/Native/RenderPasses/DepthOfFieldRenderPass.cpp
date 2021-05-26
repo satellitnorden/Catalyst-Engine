@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/DepthOfFieldRenderPass.h>
 
@@ -73,3 +74,4 @@ void DepthOfFieldRenderPass::Execute() NOEXCEPT
 	_DepthOfFieldBokehBlurGraphicsPipeline.Execute();
 	_DepthOfFieldApplicationGraphicsPipeline.Execute();
 }
+#endif

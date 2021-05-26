@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/ToneMappingRenderPass.h>
 
@@ -55,3 +56,4 @@ void ToneMappingRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_ToneMappingGraphicsPipeline.Execute();
 }
+#endif

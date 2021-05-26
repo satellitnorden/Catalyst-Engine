@@ -1,3 +1,4 @@
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/ScreenRenderPass.h>
 
@@ -55,3 +56,4 @@ void ScreenRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_ScreenGraphicsPipeline.Execute();
 }
+#endif

@@ -1,27 +1,31 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
+#if defined(CATALYST_SIMPLIFIED_RENDERING)
 #pragma once
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ClearGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class UserInterfaceRenderPass final : public RenderPass
+class SimplifiedRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(UserInterfaceRenderPass);
+	DECLARE_SINGLETON(SimplifiedRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	UserInterfaceRenderPass() NOEXCEPT;
+	SimplifiedRenderPass() NOEXCEPT;
 
 private:
+
+	//The clear graphics pipeline.
+	ClearGraphicsPipeline _ClearGraphicsPipeline;
 
 	//The user interface graphics pipeline.
 	UserInterfaceGraphicsPipeline _UserInterfaceGraphicsPipeline;
