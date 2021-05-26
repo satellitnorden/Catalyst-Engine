@@ -10,6 +10,18 @@
 */
 void VulkanSurface::Initialize() NOEXCEPT
 {
+#if defined(CATALYST_PLATFORM_ANDROID)
+	VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo;
+
+	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+	surfaceCreateInfo.pNext = nullptr;
+	surfaceCreateInfo.flags = 0;
+	surfaceCreateInfo.window = CatalystPlatform::_Window;
+
+	VULKAN_ERROR_CHECK(vkCreateAndroidSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
+#endif
+
+#if defined(CATALYST_PLATFORM_WINDOWS)
 	VkWin32SurfaceCreateInfoKHR surfaceCreateInfo;
 
 	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
@@ -19,6 +31,7 @@ void VulkanSurface::Initialize() NOEXCEPT
 	surfaceCreateInfo.hwnd = CatalystPlatform::_Window;
 
 	VULKAN_ERROR_CHECK(vkCreateWin32SurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
+#endif
 }
 
 /*

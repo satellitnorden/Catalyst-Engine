@@ -1,3 +1,4 @@
+#if defined(CATALYST_PLATFORM_WINDOWS)
 /**********************************************************************/
 /*! \class RtMidi
     \brief An abstract base class for realtime MIDI input/output.
@@ -3443,3 +3444,4 @@ void MidiOutJack :: sendMessage( const unsigned char *message, size_t size )
 }
 
 #endif  // __UNIX_JACK__
+#endif

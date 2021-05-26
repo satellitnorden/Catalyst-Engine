@@ -82,7 +82,7 @@ void Vulkan2DTexture::Release() NOEXCEPT
 	if (_VulkanImageView)
 	{
 		vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImageView, nullptr);
-		_VulkanImageView = nullptr;
+		_VulkanImageView = VK_NULL_HANDLE;
 	}
 
 	//Free the Vulkan device memory.
@@ -91,7 +91,7 @@ void Vulkan2DTexture::Release() NOEXCEPT
 	if (_VulkanDeviceMemory)
 	{
 		vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
-		_VulkanDeviceMemory = nullptr;
+		_VulkanDeviceMemory = VK_NULL_HANDLE;
 	}
 
 	//Destroy the Vulkan image.
@@ -100,7 +100,7 @@ void Vulkan2DTexture::Release() NOEXCEPT
 	if (_VulkanImage)
 	{
 		vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImage, nullptr);
-		_VulkanImage = nullptr;
+		_VulkanImage = VK_NULL_HANDLE;
 	}
 }
 #endif

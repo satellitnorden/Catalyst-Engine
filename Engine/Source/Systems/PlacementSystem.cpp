@@ -82,9 +82,9 @@ void PlacementSystem::AsynchronousUpdate(PlacementData *const RESTRICT placement
 
 	const int8 half_grid_size{ static_cast<int8>(placement_data->_GridDimensions >> 1) };
 
-	for (int8 x{ -half_grid_size }; x <= half_grid_size; ++x)
+	for (int8 x{ static_cast<int8>(-half_grid_size) }; x <= half_grid_size; ++x)
 	{
-		for (int8 y{ -half_grid_size }; y <= half_grid_size; ++y)
+		for (int8 y{ static_cast<int8>(-half_grid_size) }; y <= half_grid_size; ++y)
 		{
 			wanted_grid_points.Emplace(current_grid_point + GridPoint2(x, y));
 		}

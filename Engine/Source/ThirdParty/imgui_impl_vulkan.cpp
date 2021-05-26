@@ -1,3 +1,4 @@
+#if defined(CATALYST_PLATFORM_WINDOWS)
 // dear imgui: Renderer for Vulkan
 // This needs to be used along with a Platform Binding (e.g. GLFW, SDL, Win32, custom..)
 
@@ -1222,3 +1223,4 @@ void ImGui_ImplVulkanH_DestroyWindowRenderBuffers(VkDevice device, ImGui_ImplVul
     buffers->Index = 0;
     buffers->Count = 0;
 }
+#endif

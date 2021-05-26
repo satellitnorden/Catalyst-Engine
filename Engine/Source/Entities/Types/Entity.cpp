@@ -22,11 +22,11 @@ void Entity::Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT
 {
 	switch (_Type)
 	{
-#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :								\
-		{																				\
-			static_cast< ## VALUE ## Entity *const RESTRICT>(this)->Initialize(data);	\
-																						\
-			break;																		\
+#define ENTITY_TYPE(VALUE) case EntityType::VALUE:								\
+		{																		\
+			static_cast<VALUE##Entity *const RESTRICT>(this)->Initialize(data);	\
+																				\
+			break;																\
 		}
 		ENTITY_TYPES
 #undef ENTITY_TYPE
@@ -40,9 +40,9 @@ void Entity::Terminate() NOEXCEPT
 {
 	switch (_Type)
 	{
-#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :							\
+#define ENTITY_TYPE(VALUE) case EntityType::VALUE:									\
 		{																			\
-			static_cast< ## VALUE ## Entity *const RESTRICT>(this)->Terminate();	\
+			static_cast< VALUE##Entity *const RESTRICT>(this)->Terminate();	\
 																					\
 			break;																	\
 		}
@@ -58,7 +58,7 @@ bool Entity::ShouldAutomaticallyTerminate() const NOEXCEPT
 {
 	switch (_Type)
 	{
-#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :													\
+#define ENTITY_TYPE(VALUE) case EntityType::VALUE:															\
 		{																									\
 			return static_cast<const VALUE ## Entity *const RESTRICT>(this)->ShouldAutomaticallyTerminate();\
 																											\
@@ -80,7 +80,7 @@ RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT Entity::GetDuplic
 {
 	switch (_Type)
 	{
-#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :														\
+#define ENTITY_TYPE(VALUE) case EntityType::VALUE:																\
 		{																										\
 			return static_cast<const VALUE ## Entity *const RESTRICT>(this)->GetDuplicationInitializationData();\
 																												\

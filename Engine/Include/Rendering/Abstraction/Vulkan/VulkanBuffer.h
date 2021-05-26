@@ -34,7 +34,7 @@ public:
 	*	dataSizes - Pointer to an array of offsets for the data that should be copied into the buffer.
 	*	dataChunks - The number of data chunks that should be copied into the buffer.
 	*/
-	void UploadData(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *const RESTRICT dataSizes, const uint32 dataChunks) NOEXCEPT;
+	void UploadData(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint32 dataChunks) NOEXCEPT;
 
 private:
 

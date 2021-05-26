@@ -24,7 +24,7 @@ void ScreenGraphicsPipeline::Initialize() NOEXCEPT
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
 	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
 	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("PassthroughFragmentShader")));
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ScreenFragmentShader")));
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);

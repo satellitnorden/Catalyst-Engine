@@ -10,7 +10,7 @@ namespace CatalystEngineResourceBuilding
 	*	Builds resources for the Catalyst Engine.
 	*/
 	void BuildResources() NOEXCEPT
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 		;
 #else
 	{
@@ -18,7 +18,7 @@ namespace CatalystEngineResourceBuilding
 	}
 #endif
 
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	/*
 	*	Builds the cloud texture.
 	*/

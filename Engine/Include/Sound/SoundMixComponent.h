@@ -11,7 +11,7 @@
 *
 *	1. Add an entry into the SOUND_MIX_COMPONENTS list below.
 *	2. Add a class called the entry + "SoundMixComponent". Use the existing ones as blueprints. MUST contain the "State" class as well as the "Construct", "Process" and "Destruct" functions, everything else is optional.
-*	3. Add a "Create" function in the SoundMixComponent class. Use the existings ones as blueprints.
+*	3. Add a "Create" function in the SoundMixComponent class. Use the existing ones as blueprints.
 */
 
 //List of all available sound mix components.
@@ -448,11 +448,11 @@ public:
 	{
 		switch (_Type)
 		{
-#define SOUND_MIX_COMPONENT(VALUE)	case Type:: ## VALUE ## :													\
-									{																			\
-										VALUE ## SoundMixComponent::Construct();								\
-																												\
-										break;																	\
+#define SOUND_MIX_COMPONENT(VALUE)	case Type::VALUE:								\
+									{												\
+										VALUE ## SoundMixComponent::Construct();	\
+																					\
+										break;										\
 									}
 
 			SOUND_MIX_COMPONENTS
@@ -475,11 +475,11 @@ public:
 	{
 		switch (_Type)
 		{
-#define SOUND_MIX_COMPONENT(VALUE)	case Type:: ## VALUE ## :													\
-									{																			\
-										VALUE ## SoundMixComponent::Destruct(&_ ## VALUE ## State);				\
-																												\
-										break;																	\
+#define SOUND_MIX_COMPONENT(VALUE)	case Type::VALUE:													\
+									{																	\
+										VALUE ## SoundMixComponent::Destruct(&_ ## VALUE ## State);		\
+																										\
+										break;															\
 									}
 
 			SOUND_MIX_COMPONENTS
@@ -503,7 +503,7 @@ public:
 		//Different processing depending on type.
 		switch (_Type)
 		{
-#define SOUND_MIX_COMPONENT(VALUE)	case Type:: ## VALUE ## :												\
+#define SOUND_MIX_COMPONENT(VALUE)	case Type::VALUE:														\
 									{																		\
 										VALUE ## SoundMixComponent::Process(&_ ## VALUE ## State, sample);	\
 																											\

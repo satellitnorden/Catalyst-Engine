@@ -439,11 +439,8 @@
     <Filter Include="Scripting\Include">
       <UniqueIdentifier>{09c43829-a6da-462e-9a0d-2e9b388714ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Network">
-      <UniqueIdentifier>{24c69a78-b231-43d5-a797-aa9d623cd298}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Network\Source">
-      <UniqueIdentifier>{bfe4f668-729c-4474-aeae-505547b0abc7}</UniqueIdentifier>
+    <Filter Include="Platform\Inline\Android">
+      <UniqueIdentifier>{d436731e-518d-453a-8124-4070ab45072c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1889,9 +1886,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp">
       <Filter>Rendering\Source\Translation\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp">
-      <Filter>Platform\Source\Android</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
@@ -2492,8 +2486,23 @@
     <ClCompile Include="..\..\..\Source\Systems\NetworkSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Network\WindowsNetworkSystem.cpp">
-      <Filter>Network\Source</Filter>
+    <ClCompile Include="..\..\..\Source\Platform\Android\CatalystPlatformAndroid.cpp">
+      <Filter>Platform\Source\Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Android\AndroidThread.cpp">
+      <Filter>Platform\Source\Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Android\AndroidSoundSystem.cpp">
+      <Filter>Platform\Source\Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Android\AndroidNetworkSystem.cpp">
+      <Filter>Platform\Source\Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsNetworkSystem.cpp">
+      <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Android\AndroidInputSystem.cpp">
+      <Filter>Platform\Source\Android</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2502,9 +2511,6 @@
     </None>
     <None Include="..\..\..\Include\Systems\EntitySystem.inl">
       <Filter>Systems\Inline</Filter>
-    </None>
-    <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl">
-      <Filter>Platform\Inline\Windows</Filter>
     </None>
     <None Include="..\..\..\Include\Platform\Windows\WindowsFileCore.inl">
       <Filter>Platform\Inline\Windows</Filter>
@@ -2520,6 +2526,21 @@
     </None>
     <None Include="..\..\..\Include\Core\Algorithms\CatalystCompressionAlgorithm.inl">
       <Filter>Core\Inline\Algorithms</Filter>
+    </None>
+    <None Include="..\..\..\Include\Platform\Windows\WindowsConcurrencyCore.inl">
+      <Filter>Platform\Inline\Windows</Filter>
+    </None>
+    <None Include="..\..\..\Include\Platform\Android\AndroidConcurrencyCore.inl">
+      <Filter>Platform\Inline\Android</Filter>
+    </None>
+    <None Include="..\..\..\Include\Platform\Android\AndroidFileCore.inl">
+      <Filter>Platform\Inline\Android</Filter>
+    </None>
+    <None Include="..\..\..\Include\Platform\Android\AndroidBinaryFile.inl">
+      <Filter>Platform\Inline\Android</Filter>
+    </None>
+    <None Include="..\..\..\Include\Platform\Windows\WindowsBinaryFile.inl">
+      <Filter>Platform\Inline\Windows</Filter>
     </None>
   </ItemGroup>
 </Project>

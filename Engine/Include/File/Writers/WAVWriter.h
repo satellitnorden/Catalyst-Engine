@@ -27,7 +27,7 @@ public:
 		constexpr uint8 BIT_DEPTH{ 16 };
 
 		//Open the output file.
-		BinaryFile<IOMode::Out> output_file{ file_path };
+		BinaryFile<BinaryFileMode::OUT> output_file{ file_path };
 
 		//Add the header chunk.
 		{
@@ -79,7 +79,7 @@ public:
 			const int32 number_of_bytes_per_second{ (number_of_channels * sample_rate * BIT_DEPTH) / 8 };
 			output_file.Write(&number_of_bytes_per_second, sizeof(int32));
 
-			const int16 number_of_bytes_per_block{ number_of_channels * (BIT_DEPTH / 8) };
+			const int16 number_of_bytes_per_block{ static_cast<int16>(number_of_channels * (BIT_DEPTH / 8)) };
 			output_file.Write(&number_of_bytes_per_block, sizeof(int16));
 
 			const int16 bit_depth{ BIT_DEPTH };

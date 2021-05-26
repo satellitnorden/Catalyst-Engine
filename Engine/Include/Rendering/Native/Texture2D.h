@@ -61,7 +61,7 @@ public:
 		_Height(initialResolution)
 	{
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.Upsize<false>(_Width * _Height);
+		_Data.template Upsize<false>(_Width * _Height);
 	}
 
 	/*
@@ -73,7 +73,7 @@ public:
 		_Height(initialHeight)
 	{
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.Upsize<false>(_Width * _Height);
+		_Data.template Upsize<false>(_Width * _Height);
 	}
 
 	/*
@@ -126,7 +126,7 @@ public:
 		_Height = initial_resolution;
 
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.Upsize<false>(_Width * _Height);
+		_Data.template Upsize<false>(_Width * _Height);
 	}
 
 	/*
@@ -139,7 +139,7 @@ public:
 		_Height = initial_height;
 
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.Upsize<false>(_Width * _Height);
+		_Data.template Upsize<false>(_Width * _Height);
 	}
 
 	/*
@@ -152,7 +152,7 @@ public:
 		_Height = initialHeight;
 
 		//Resize the underlying texture data to be able to hold all the data.
-		_Data.Upsize<false>(_Width * _Height);
+		_Data.template Upsize<false>(_Width * _Height);
 
 		//Copy the data.
 		Memory::Copy(_Data.Data(), data, sizeof(TYPE) * _Width * _Height);

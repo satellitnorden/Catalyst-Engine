@@ -144,7 +144,7 @@ public:
 	FORCE_INLINE static void GenerateMipChain(const Texture2D<TYPE> &input_texture, const uint8 levels, DynamicArray<Texture2D<TYPE>> *const RESTRICT output_textures) NOEXCEPT
 	{
 		//Upsize the output textures accordingly.
-		output_textures->Upsize<true>(levels);
+		output_textures->template Upsize<true>(levels);
 
 		//Copy the original mip level.
 		output_textures->At(0) = input_texture;

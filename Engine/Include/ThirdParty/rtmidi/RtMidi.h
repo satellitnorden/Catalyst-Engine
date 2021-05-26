@@ -1,3 +1,4 @@
+#if defined(CATALYST_PLATFORM_WINDOWS)
 /**********************************************************************/
 /*! \class RtMidi
     \brief An abstract base class for realtime MIDI input/output.
@@ -628,4 +629,5 @@ inline void RtMidiOut :: sendMessage( const std::vector<unsigned char> *message 
 inline void RtMidiOut :: sendMessage( const unsigned char *message, size_t size ) { static_cast<MidiOutApi *>(rtapi_)->sendMessage( message, size ); }
 inline void RtMidiOut :: setErrorCallback( RtMidiErrorCallback errorCallback, void *userData ) { rtapi_->setErrorCallback(errorCallback, userData); }
 
+#endif
 #endif

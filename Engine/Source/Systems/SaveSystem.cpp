@@ -138,7 +138,7 @@ void SaveSystem::LoadSingleEntry(const SaveEntry &entry) NOEXCEPT
 		File::CreateFile(entry._FilePath.Data());
 
 		//Write it to file.
-		BinaryFile<IOMode::Out> file{ entry._FilePath.Data() };
+		BinaryFile<BinaryFileMode::OUT> file{ entry._FilePath.Data() };
 		file.Write(&save_header, sizeof(SaveHeader));
 		file.Write(save_data, size);
 		file.Close();
@@ -153,7 +153,7 @@ void SaveSystem::LoadSingleEntry(const SaveEntry &entry) NOEXCEPT
 	else
 	{
 		//Open the file.
-		BinaryFile<IOMode::In> file{ entry._FilePath.Data() };
+		BinaryFile<BinaryFileMode::IN> file{ entry._FilePath.Data() };
 
 		//Allocate the memory required for the save.
 		void* const RESTRICT save_data{ Memory::Allocate(file.Size()) };
@@ -190,7 +190,7 @@ void SaveSystem::SaveSingleEntry(const SaveEntry &entry) NOEXCEPT
 	entry._SaveCallback(save_data);
 
 	//Write it to file.
-	BinaryFile<IOMode::Out> file{ entry._FilePath.Data() };
+	BinaryFile<BinaryFileMode::OUT> file{ entry._FilePath.Data() };
 	file.Write(&save_header, sizeof(SaveHeader));
 	file.Write(save_data, size);
 	file.Close();

@@ -10,7 +10,7 @@
 *	Will allocate more pages if a request cannot be satisfied.
 *	This means that the allocator cannot satsify any requests that are larger than a page size.
 */
-template <uint64 PAGE_SIZE>
+template <uint64 FRAME_ALLOCATOR_PAGE_SIZE>
 class FrameAllocator final
 {
 
@@ -47,7 +47,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE RESTRICTED NO_DISCARD TYPE *const RESTRICT Allocate(const uint64 size) NOEXCEPT
 	{
-		ASSERT(size <= PAGE_SIZE, "Cannot satisfy requests larger than the page size!");
+		ASSERT(size <= FRAME_ALLOCATOR_PAGE_SIZE, "Cannot satisfy requests larger than the page size!");
 
 		//Traverse all the nodes and try to find a spot.
 		FrameAllocatorNode *RESTRICT current{ _Root };
@@ -55,7 +55,7 @@ public:
 		for (;;)
 		{
 			//Calculate the free space that this node has.
-			const uint64 free_space{ PAGE_SIZE - current->_CurrentOffset };
+			const uint64 free_space{ FRAME_ALLOCATOR_PAGE_SIZE - current->_CurrentOffset };
 
 			//If this node has enough free space, allocate from this node.
 			if (size <= free_space)
@@ -124,7 +124,7 @@ private:
 		uint64 _CurrentOffset{ 0 };
 
 		//The data.
-		uint8 _Data[PAGE_SIZE];
+		uint8 _Data[FRAME_ALLOCATOR_PAGE_SIZE];
 
 		//The next node.
 		FrameAllocatorNode *RESTRICT _Next{ nullptr };

@@ -6,8 +6,11 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/UpdateContext.h>
 
+//Rendering.
+#include <Rendering/Native/Resolution.h>
+
 //Android specific third party includes.
-#include <ThirdParty/android_native_app_glue.h>
+#include <android_native_app_glue.h>
 
 /*
 *	Main function.
@@ -43,39 +46,34 @@ public:
 	static void Initialize() NOEXCEPT;
 
 	/*
-	*	Post-nitializes the platform.
+	*	Returns whether or not the window is in focus.
 	*/
-	static void PostInitialize() NOEXCEPT;
+	static bool IsWindowInFocus() NOEXCEPT;
 
 	/*
-	*	Pre-updates the platform.
+	*	Returns the default resolution.
 	*/
-	static void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	static Resolution GetDefaultResolution() NOEXCEPT;
 
 	/*
-	*	Post-updates the platform.
+	*	Hides the cursor.
 	*/
-	static void PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	static void HideCursor() NOEXCEPT;
 
 	/*
-	*	Releases the platform.
+	*	Shows the cursor.
 	*/
-	static void Release() NOEXCEPT;
+	static void ShowCursor() NOEXCEPT;
 
 	/*
-	*	Retrieves the current gamepad state.
+	*	Returns whether or not the cursor is shown.
 	*/
-	static void GetCurrentGamepadState(const uint8 index, GamepadState *const RESTRICT state) NOEXCEPT;
+	static bool IsCursorShown() NOEXCEPT;
 
 	/*
-	*	Retrieves the current keyboard state.
+	*	Returns the scroll wheel step and resets it.
 	*/
-	static void GetCurrentKeyboardState(KeyboardState *const RESTRICT state) NOEXCEPT;
-
-	/*
-	*	Retrieves the current mouse state.
-	*/
-	static void GetCurrentMouseState(MouseState *const RESTRICT state) NOEXCEPT;
+	static int8 GetAndResetScrollWheelStep() NOEXCEPT;
 
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	/*

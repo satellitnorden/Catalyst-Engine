@@ -165,10 +165,10 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
 
 	//Register the Catalyst Engine resource collection. 
-#if defined(CATALYST_CONFIGURATION_FINAL)
-	ResourceSystem::Instance->LoadResources("EngineResources");
+#if defined(CATALYST_CONFIGURATION_FINAL) || defined(CATALYST_PLATFORM_ANDROID)
+	ResourceSystem::Instance->LoadResourceCollection("CatalystEngineResourceCollection_0.crc");
 #else
-	ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate");
+	ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection_0.crc");
 #endif
 
 	//Post-initialize all systems.
@@ -180,7 +180,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	RenderingSystem::Instance->EditorPostInitialize();
 #endif
 
-	//Post-nitialize the game system.
+	//Post-initialize the game system.
 	_ProjectConfiguration._GeneralConfiguration._PostInitializationFunction();
 
 #if !defined(CATALYST_EDITOR)

@@ -41,7 +41,7 @@ namespace TGAWriter
 	FORCE_INLINE void Write(const Texture2D<Vector4<float32>> &image, const char *const RESTRICT file) NOEXCEPT
 	{
 		//Create the output file.
-		BinaryFile<IOMode::Out> output_file{ file };
+		BinaryFile<BinaryFileMode::OUT> output_file{ file };
 
 		//Write the header.
 		output_file.Write(&TGAWriterConstants::TARGA_HEADER_DEFAULT_ID_LENGTH,			sizeof(TGAWriterConstants::TARGA_HEADER_DEFAULT_ID_LENGTH));

@@ -175,11 +175,11 @@ RESTRICTED NO_DISCARD Entity *const RESTRICT EntitySystem::DuplicateEntity(const
 
 	switch (entity->_Type)
 	{
-#define ENTITY_TYPE(VALUE) case EntityType::## VALUE ## :								\
-		{																				\
-			new_entity = CreateEntity<VALUE ## Entity>();								\
-																						\
-			break;																		\
+#define ENTITY_TYPE(VALUE) case EntityType::VALUE:			\
+		{													\
+			new_entity = CreateEntity<VALUE ## Entity>();	\
+															\
+			break;											\
 		}
 		ENTITY_TYPES
 #undef ENTITY_TYPE

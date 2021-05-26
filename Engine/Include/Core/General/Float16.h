@@ -110,7 +110,7 @@ public:
 			if ((14 - new_exponent) <= 24)
 			{
 				//Calculate and assign the new mantissa.
-				const uint32 new_mantissa{ float_components._IndividualComponents._Mantissa | 0x800000 };
+				const uint32 new_mantissa{ static_cast<uint32>(float_components._IndividualComponents._Mantissa | 0x800000) };
 				_IndividualComponents._Mantissa = new_mantissa >> (14 - new_exponent);
 
 				//Determine if rounding should be performed.

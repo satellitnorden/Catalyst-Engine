@@ -1,3 +1,4 @@
+#if defined(CATALYST_PLATFORM_WINDOWS)
 /*
 	Steinberg Audio Stream I/O API
 	(c) 1996, Steinberg Soft- und Hardware GmbH
@@ -253,5 +254,4 @@ ASIOError ASIOOutputReady(void)
 }	// extern "C"
 #pragma export off
 #endif
-
-
+#endif

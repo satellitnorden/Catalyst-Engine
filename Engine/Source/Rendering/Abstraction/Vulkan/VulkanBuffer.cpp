@@ -40,7 +40,7 @@ void VulkanBuffer::Release() NOEXCEPT
 *	dataSizes - Pointer to an array of offsets for the data that should be copied into the buffer.
 *	dataChunks - The number of data chunks that should be copied into the buffer.
 */
-void VulkanBuffer::UploadData(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *const RESTRICT dataSizes, const uint32 dataChunks) NOEXCEPT
+void VulkanBuffer::UploadData(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint32 dataChunks) NOEXCEPT
 {
 	//If this buffer was created with the VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, the memory can be mapped directly and copied over, otherwise a staging buffer needs to be created.
 	if (TEST_BIT(_MemoryProperties, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT))

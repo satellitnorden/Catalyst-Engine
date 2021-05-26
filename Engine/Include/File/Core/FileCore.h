@@ -29,38 +29,38 @@ namespace File
 	*	Browses for a file.
 	*	Returns if the action was successful.
 	*/
-	FORCE_INLINE NO_DISCARD bool BrowseForFile(const bool save, DynamicString* const RESTRICT chosen_file) NOEXCEPT;
+	FORCE_INLINE static NO_DISCARD bool BrowseForFile(const bool save, DynamicString* const RESTRICT chosen_file) NOEXCEPT;
 
 	/*
 	*	Browses for a folder.
 	*	Returns if the action was successful.
 	*/
-	FORCE_INLINE NO_DISCARD bool BrowseForFolder(DynamicString* const RESTRICT chosen_folder) NOEXCEPT;
+	FORCE_INLINE static NO_DISCARD bool BrowseForFolder(DynamicString* const RESTRICT chosen_folder) NOEXCEPT;
 
 	/*
 	*	Creates a directory.
 	*/
-	FORCE_INLINE void CreateDirectory(const char *const RESTRICT path) NOEXCEPT;
+	FORCE_INLINE static void CreateDirectory(const char *const RESTRICT path) NOEXCEPT;
 
 	/*
 	*	Creates a file.
 	*/
-	FORCE_INLINE void CreateFile(const char *const RESTRICT path) NOEXCEPT;
+	FORCE_INLINE static void CreateFile(const char *const RESTRICT path) NOEXCEPT;
 
 	/*
 	*	Returns if a file exists or not.
 	*/
-	FORCE_INLINE NO_DISCARD bool Exists(const char* const RESTRICT file) NOEXCEPT;
+	FORCE_INLINE static NO_DISCARD bool Exists(const char* const RESTRICT file) NOEXCEPT;
 
 	/*
 	*	Deletes a file.
 	*/
-	FORCE_INLINE void Delete(const char* const RESTRICT file) NOEXCEPT;
+	FORCE_INLINE static void Delete(const char* const RESTRICT file) NOEXCEPT;
 
 	/*
 	*	Returns the file extension for the given file path.
 	*/
-	FORCE_INLINE NO_DISCARD Extension GetExtension(const char* const RESTRICT file_path) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Extension GetExtension(const char* const RESTRICT file_path) NOEXCEPT
 	{
 		//Search for the position of the . character.
 		const uint64 string_length{ strlen(file_path) };
@@ -127,11 +127,15 @@ namespace File
 	/*
 	*	Returns the size of the file with the given file path.
 	*/
-	FORCE_INLINE NO_DISCARD uint64 GetSize(const char* const RESTRICT file_path) NOEXCEPT;
+	FORCE_INLINE NO_DISCARD static uint64 GetSize(const char* const RESTRICT file_path) NOEXCEPT;
 
 }
 
 //Implementation.
+#if defined(CATALYST_PLATFORM_ANDROID)
+	#include <Platform/Android/AndroidFileCore.inl>
+#endif
+
 #if defined(CATALYST_PLATFORM_WINDOWS)
 	#include <Platform/Windows/WindowsFileCore.inl>
 #endif

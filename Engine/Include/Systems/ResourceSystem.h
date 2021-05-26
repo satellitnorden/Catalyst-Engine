@@ -20,7 +20,7 @@
 #include <Resources/Core/Texture3DResource.h>
 #include <Resources/Core/TextureCubeResource.h>
 #include <Resources/Core/VideoResource.h>
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	#include <Resources/Building/ResourceBuildingSystem.h>
 #endif
 #include <Resources/Creation/ResourceCreationSystem.h>
@@ -47,7 +47,7 @@ public:
 	*/
 	void Terminate() NOEXCEPT;
 
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	/*
 	*	Returns the resource building system.
 	*/
@@ -74,12 +74,17 @@ public:
 	}
 
 	/*
-	*	Loads the resources contained in the given directory path.
+	*	Loads the resources contained in the given directory path. Can be a mix between resource collections and resources.
 	*/
 	void LoadResources(const char *const RESTRICT directory_path) NOEXCEPT;
 
 	/*
-	*	Loads a single resource conainted in the given file path.
+	*	Loads a resource collection contained in the given file path.
+	*/
+	void LoadResourceCollection(const char *const RESTRICT file_path) NOEXCEPT;
+
+	/*
+	*	Loads a single resource contained in the given file path.
 	*/
 	void LoadResource(const char *const RESTRICT file_path) NOEXCEPT;
 
@@ -415,7 +420,7 @@ public:
 
 private:
 
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	//The resource building system.
 	ResourceBuildingSystem _ResourceBuildingSystem;
 #endif
@@ -468,11 +473,11 @@ private:
 	/*
 	*	Loads a resource collection from the given binary file.
 	*/
-	void LoadResourceCollection(BinaryFile<IOMode::In> *const RESTRICT file) NOEXCEPT;
+	void LoadResourceCollection(BinaryFile<BinaryFileMode::IN> *const RESTRICT file) NOEXCEPT;
 
 	/*
 	*	Loads a resource from the given binary file.
 	*/
-	void LoadResource(BinaryFile<IOMode::In> *const RESTRICT file) NOEXCEPT;
+	void LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT file) NOEXCEPT;
 
 };

@@ -181,5 +181,5 @@ FORCE_INLINE constexpr static void operator&=(ENUMERATION &first, const ENUMERAT
 #if defined(CATALYST_MSVC)
 	#define UNLIKELY(expression) expression
 #elif defined(CATALYST_CLANG)
-	#define UNLIKELY(expression) __builtin_expect(expression, 0)
+	#define UNLIKELY(expression) expression
 #endif

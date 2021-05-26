@@ -770,7 +770,10 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 	UpdateGlobalCommandPoolData(current_framebuffer_index);
 
 	//Bind the sky texture.
-	BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+	if (WorldSystem::Instance->GetSkySystem()->GetSkyTexture())
+	{
+		BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+	}
 }
 
 /*
@@ -852,7 +855,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._CurrentBlueNoiseTextureOffsetX = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._CurrentBlueNoiseTextureOffsetY = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._ViewDistance = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance;
-	_DynamicUniformData._MaximumSkyTextureMipmapLevel = static_cast<float32>(WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_MipmapLevels);
+	_DynamicUniformData._MaximumSkyTextureMipmapLevel = WorldSystem::Instance->GetSkySystem()->GetSkyTexture() ? static_cast<float32>(WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_MipmapLevels) : 1.0f;
 	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
 	_DynamicUniformData._NearPlane = Perceiver::Instance->GetNearPlane();
 	_DynamicUniformData._FarPlane = Perceiver::Instance->GetFarPlane();

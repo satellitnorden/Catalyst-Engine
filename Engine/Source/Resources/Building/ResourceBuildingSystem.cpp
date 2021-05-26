@@ -1,4 +1,4 @@
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 //Header file.
 #include <Resources/Building/ResourceBuildingSystem.h>
 
@@ -55,7 +55,7 @@
 */
 void BuildResourceCollectionsRecursive(	const ResourceCollectionBuildParameters &parameters,
 										const char *const RESTRICT directory_path,
-										BinaryFile<IOMode::Out> *RESTRICT *RESTRICT current_file,
+										BinaryFile<BinaryFileMode::OUT> *RESTRICT *RESTRICT current_file,
 										uint64 *const RESTRICT file_counter,
 										uint64 *const RESTRICT current_file_size) NOEXCEPT
 {
@@ -71,7 +71,7 @@ void BuildResourceCollectionsRecursive(	const ResourceCollectionBuildParameters 
 		else
 		{
 			//Open the resource file.
-			BinaryFile<IOMode::In> resource_file{ entry.path().string().c_str() };
+			BinaryFile<BinaryFileMode::IN> resource_file{ entry.path().string().c_str() };
 
 			//Get the size of the resource file.
 			const uint64 resource_file_size{ resource_file.Size() };
@@ -84,10 +84,10 @@ void BuildResourceCollectionsRecursive(	const ResourceCollectionBuildParameters 
 				delete (*current_file);
 
 				//Create a new file.
-				char buffer[MAX_PATH];
+				char buffer[MAXIMUM_FILE_PATH_LENGTH];
 				sprintf_s(buffer, "%s_%llu.crc", parameters._Output, (*file_counter)++);
 
-				(*current_file) = new BinaryFile<IOMode::Out>(buffer);
+				(*current_file) = new BinaryFile<BinaryFileMode::OUT>(buffer);
 
 				//Reset the current file size.
 				(*current_file_size) = 0;
@@ -122,10 +122,10 @@ void ResourceBuildingSystem::BuildResourceCollections(const ResourceCollectionBu
 	uint64 current_file_size{ 0 };
 
 	//Create the first file.
-	char buffer[MAX_PATH];
+	char buffer[MAXIMUM_FILE_PATH_LENGTH];
 	sprintf_s(buffer, "%s_%llu.crc", parameters._Output, file_counter++);
 
-	BinaryFile<IOMode::Out> *RESTRICT current_file{ new BinaryFile<IOMode::Out>(buffer) };
+	BinaryFile<BinaryFileMode::OUT> *RESTRICT current_file{ new BinaryFile<BinaryFileMode::OUT>(buffer) };
 
 	//Build the resource collections recursively.
 	BuildResourceCollectionsRecursive(parameters, parameters._Folder, &current_file, &file_counter, &current_file_size);
@@ -168,7 +168,7 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	file_name += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ file_name.Data() };
+	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::FONT_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
@@ -196,7 +196,7 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	//Determine the width of the master texture.
 	uint32 master_texture_width{ 0 };
 
-	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
+	for (int8 i{ 0 }; i < FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
 	{
 		if (FT_Load_Char(free_type_face, i, FT_LOAD_RENDER))
 		{
@@ -228,9 +228,9 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	Memory::Set(master_texture.Data(), 0, master_texture.GetWidth() * master_texture.GetHeight());
 
 	//Load all characters.
-	for (int8 i{ 0 }; i < INT8_MAXIMUM; ++i)
+	for (int8 i{ 0 }; i < FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
 	{
-		PRINT_TO_OUTPUT("Calculating character " << static_cast<int32>(i + 1) << " of " << static_cast<int32>(INT8_MAXIMUM));
+		PRINT_TO_OUTPUT("Calculating character " << static_cast<int32>(i + 1) << " of " << static_cast<int32>(FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS));
 
 		if (FT_Load_Char(free_type_face, i, FT_LOAD_RENDER))
 		{
@@ -400,7 +400,7 @@ void ResourceBuildingSystem::BuildLevel(const LevelBuildParameters &parameters) 
 	output_file_path_name += ".cr";
 
 	//Open the output file to be written to.
-	BinaryFile<IOMode::Out> output_file{ output_file_path_name.Data() };
+	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path_name.Data() };
 
 	//Write the resource header to the output file.
 	const ResourceHeader header{ ResourceConstants::LEVEL_TYPE_IDENTIFIER, HashString(parameters._Identifier), parameters._Identifier };
@@ -427,7 +427,7 @@ void ResourceBuildingSystem::BuildMaterial(const MaterialBuildParameters &parame
 	fileName += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ fileName.Data() };
+	BinaryFile<BinaryFileMode::OUT> file{ fileName.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::MATERIAL_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
@@ -450,7 +450,7 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 	output_file_path_name += ".cr";
 
 	//Open the output file to be written to.
-	BinaryFile<IOMode::Out> output_file{ output_file_path_name.Data() };
+	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path_name.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::MODEL_TYPE_IDENTIFIER, HashString(parameters._ResourceIdentifier), parameters._ResourceIdentifier };
@@ -599,7 +599,7 @@ void ResourceBuildingSystem::BuildRawData(const RawDataBuildParameters &paramete
 	output_file_path_name += ".cr";
 
 	//Open the output file to be written to.
-	BinaryFile<IOMode::Out> output_file{ output_file_path_name.Data() };
+	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path_name.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::RAW_DATA_TYPE_IDENTIFIER, HashString(parameters._ResourceIdentifier), parameters._ResourceIdentifier };
@@ -1154,7 +1154,7 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 	file_name += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ file_name.Data() };
+	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::SHADER_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
@@ -1164,7 +1164,7 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 	file.Write(&parameters._Stage, sizeof(ShaderStage));
 
 	//Open the compiled file.
-	BinaryFile<IOMode::In> compiled_file{ compiled_file_path.Data() };
+	BinaryFile<BinaryFileMode::IN> compiled_file{ compiled_file_path.Data() };
 
 	//Write the size of the compiled file.
 	const uint64 compiled_file_size{ compiled_file.Size() };
@@ -1241,7 +1241,7 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 		file_name += ".cr";
 
 		//Open the file to be written to.
-		BinaryFile<IOMode::Out> file{ file_name.Data() };
+		BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
 
 		//Write the resource header to the file.
 		const ResourceHeader header{ ResourceConstants::SOUND_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
@@ -1287,7 +1287,7 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	file_name += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ file_name.Data() };
+	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
@@ -1638,7 +1638,7 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	file_name += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ file_name.Data() };
+	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
@@ -1673,7 +1673,7 @@ void ResourceBuildingSystem::BuildTexture3D(const Texture3DBuildParameters& para
 	file_name += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ file_name.Data() };
+	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::TEXTURE_3D_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
@@ -1713,7 +1713,7 @@ void ResourceBuildingSystem::BuildVideo(const VideoBuildParameters &parameters) 
 	output_file_path += ".cr";
 
 	//Open the output file to be written to.
-	BinaryFile<IOMode::Out> output_file{ output_file_path.Data() };
+	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::VIDEO_TYPE_IDENTIFIER, HashString(parameters._ResourceIdentifier), parameters._ResourceIdentifier };

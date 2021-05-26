@@ -43,7 +43,7 @@ void VulkanRenderTarget::Release() NOEXCEPT
 	if (_VulkanDeviceMemory)
 	{
 		vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
-		_VulkanDeviceMemory = nullptr;
+		_VulkanDeviceMemory = VK_NULL_HANDLE;
 	}
 	
 	//Destroy the Vulkan image.

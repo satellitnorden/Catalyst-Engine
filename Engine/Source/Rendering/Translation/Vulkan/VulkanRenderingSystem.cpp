@@ -880,7 +880,7 @@ void RenderingSystem::CreateBuffer(const uint64 size, const BufferUsage usage, c
 void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Upload data to the buffer.
-	static_cast<VulkanBuffer *const RESTRICT>(*handle)->UploadData(data, static_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks);
+	static_cast<VulkanBuffer *const RESTRICT>(*handle)->UploadData(data, dataSizes, dataChunks);
 }
 
 /*

@@ -3,7 +3,7 @@
 /*
 *	Defines that a function's return value cannot be discarded by the caller.
 */
-#if defined(CATALYST_CXX17)
+#if defined(CATALYST_CXX17) && !defined(CATALYST_CLANG)
 	#define NO_DISCARD [[nodiscard]]
 #else
 	#define NO_DISCARD
@@ -55,6 +55,11 @@
 #endif
 
 /*
+*	Defines the maximum file path length. Matches Window's MAX_PATH currently.
+*/
+#define MAXIMUM_FILE_PATH_LENGTH (260)
+
+/*
 *	Turns optimizations on.
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -73,7 +78,7 @@
 #if defined(CATALYST_MSVC)
 	#define RESTRICT __restrict
 #elif defined(CATALYST_CLANG)
-	#define RESTRICT __restrict__
+	#define RESTRICT
 #endif
 
 /*

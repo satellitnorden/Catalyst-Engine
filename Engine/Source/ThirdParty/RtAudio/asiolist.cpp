@@ -1,3 +1,4 @@
+#if defined(CATALYST_PLATFORM_WINDOWS)
 #define _CRT_SECURE_NO_WARNINGS
 
 __pragma(warning(disable : 4267)) //Disablewarning C4267: 'argument': conversion from 'size_t' to 'DWORD', possible loss of data
@@ -308,5 +309,4 @@ LONG AsioDriverList::asioGetDriverCLSID (int drvID,CLSID *clsid)
 	}
 	return DRVERR_DEVICE_NOT_FOUND;
 }
-
-
+#endif

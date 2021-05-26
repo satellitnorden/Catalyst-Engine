@@ -13,7 +13,7 @@ class FontData final
 public:
 
 	//The character descriptions.
-	StaticArray<FontResource::CharacterDescription, INT8_MAXIMUM> _CharacterDescriptions;
+	StaticArray<FontResource::CharacterDescription, FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS> _CharacterDescriptions;
 
 	//Master texture width.
 	uint32 _MasterTextureWidth;

@@ -20,10 +20,14 @@ DEFINE_SINGLETON(VulkanInterface);
 */
 void VulkanInterface::Initialize() NOEXCEPT
 {
+#if DEFINE_FUNCTION_PROTOTYPES
+	DefineFunctionPrototypes();
+#endif
+
 	//Initialize the Vulkan instance.
 	_VulkanInstance.Initialize();
 
-#if VULKAN_DEBUGGING
+#if VULKAN_DEBUGGING && !defined(CATALYST_PLATFORM_ANDROID)
 	//Initialize the Vulkan error reporting.
 	VulkanErrorReporting::Initialize();
 #endif

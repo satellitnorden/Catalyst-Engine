@@ -15,6 +15,9 @@ class FontResource final : public Resource
 
 public:
 
+	//Constants.
+	constexpr static uint8 NUMBER_OF_CHARACTER_DESCRIPTIONS{ 127 };
+
 	/*
 	*	Character description definition.
 	*/
@@ -41,7 +44,7 @@ public:
 	};
 
 	//Container for all character descriptions.
-	StaticArray<CharacterDescription, INT8_MAXIMUM> _CharacterDescriptions;
+	StaticArray<CharacterDescription, NUMBER_OF_CHARACTER_DESCRIPTIONS> _CharacterDescriptions;
 
 	//The master texture index.
 	uint32 _MasterTextureIndex;

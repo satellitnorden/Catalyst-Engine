@@ -24,7 +24,7 @@
 	*	Cross product helper function.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE NO_DISCARD TYPE CrossProductHelper(const TYPE value_1, const TYPE value_2) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD TYPE CrossProductHelper(const TYPE value_1, const TYPE value_2) NOEXCEPT
 	{
 		return TYPE::CrossProduct(value_1, value_2);
 	}
@@ -33,7 +33,7 @@
 	*	Dot product helper function.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE NO_DISCARD float32 DotProductHelper(const TYPE value_1, const TYPE value_2) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 DotProductHelper(const TYPE value_1, const TYPE value_2) NOEXCEPT
 	{
 		return TYPE::DotProduct(value_1, value_2);
 	}
@@ -42,7 +42,7 @@
 	*	Floor helper function.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE NO_DISCARD TYPE FloorHelper(const TYPE value) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD TYPE FloorHelper(const TYPE value) NOEXCEPT
 	{
 		return TYPE::Floor(value);
 	}
@@ -51,7 +51,7 @@
 	*	Floor helper function specialization for float32.
 	*/
 	template <>
-	FORCE_INLINE NO_DISCARD float32 FloorHelper<float32>(const float32 value) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 FloorHelper<float32>(const float32 value) NOEXCEPT
 	{
 		return CatalystBaseMath::Floor<float32>(value);
 	}
@@ -60,7 +60,7 @@
 	*	Length helper function.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE NO_DISCARD float32 LengthHelper(const TYPE &value) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 LengthHelper(const TYPE &value) NOEXCEPT
 	{
 		return TYPE::Length(value);
 	}
@@ -69,7 +69,7 @@
 	*	Normalize helper function.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE NO_DISCARD TYPE NormalizeHelper(const TYPE value) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD TYPE NormalizeHelper(const TYPE value) NOEXCEPT
 	{
 		return TYPE::Normalize(value);
 	}
@@ -245,7 +245,7 @@
 	/*
 	*	Defines the shader function prefix.
 	*/
-	#define CATALYST_SHADER_FUNCTION_PREFIX FORCE_INLINE
+	#define CATALYST_SHADER_FUNCTION_PREFIX FORCE_INLINE static
 
 #endif
 

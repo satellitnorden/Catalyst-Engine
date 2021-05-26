@@ -48,6 +48,8 @@ __pragma(warning(disable : 4530)) //Disable warning C4530: C++ exception handler
 #undef near
 #undef PlaySound
 #undef Yield
+#undef IN
+#undef OUT
 
 /*
 *	Main function.

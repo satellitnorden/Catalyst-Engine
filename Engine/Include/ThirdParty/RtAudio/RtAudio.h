@@ -1,3 +1,4 @@
+#if defined(CATALYST_PLATFORM_WINDOWS)
 /************************************************************************/
 /*! \class RtAudio
     \brief Realtime audio i/o C++ classes.
@@ -1203,3 +1204,4 @@ public:
 // End:
 //
 // vim: et sts=2 sw=2
+#endif

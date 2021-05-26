@@ -1,4 +1,4 @@
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 //Header file.
 #include <Resources/Building/CatalystEngineResourceBuilding.h>
 
@@ -70,6 +70,10 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_OCEAN_TEXTURE
 	BuildOceanTexture();
+#endif
+
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_DEFAULT_SKY_TEXTURE
+	BuildDefaultSkyTexture();
 #endif
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_BLUE_NOISE_TEXTURES
@@ -1552,6 +1556,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenFragmentShader";
+		parameters._ID = "ScreenFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceAmbientOcclusionFragmentShader";
 		parameters._ID = "ScreenSpaceAmbientOcclusionFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceAmbientOcclusionFragmentShader.frag";
@@ -1793,10 +1808,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	}
 #endif
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_DEFAULT_SKY_TEXTURE
-	BuildDefaultSkyTexture();
-#endif
-
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_MATERIALS
 	{
 		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
@@ -1958,11 +1969,11 @@ void CatalystEngineResourceBuilding::BuildCloudTexture()
 	}
 
 	//Copy the first N points to the sides of the cube.
-	for (int8 X{ -1 }; X <= 1; ++X)
+	for (int8 X{ static_cast<int8>(-1) }; X <= 1; ++X)
 	{
-		for (int8 Y{ -1 }; Y <= 1; ++Y)
+		for (int8 Y{ static_cast<int8>(-1) }; Y <= 1; ++Y)
 		{
-			for (int8 Z{ -1 }; Z <= 1; ++Z)
+			for (int8 Z{ static_cast<int8>(-1) }; Z <= 1; ++Z)
 			{
 				if (X == 0 && Y == 0 && Z == 0)
 				{
@@ -2086,9 +2097,9 @@ void CatalystEngineResourceBuilding::BuildOceanTexture()
 	}
 
 	//Copy the first N points to the sides of the cube.
-	for (int8 X{ -1 }; X <= 1; ++X)
+	for (int8 X{ static_cast<int8>(-1) }; X <= 1; ++X)
 	{
-		for (int8 Y{ -1 }; Y <= 1; ++Y)
+		for (int8 Y{ static_cast<int8>(-1) }; Y <= 1; ++Y)
 		{
 			if (X == 0 && Y == 0)
 			{
@@ -2168,7 +2179,7 @@ void CatalystEngineResourceBuilding::BuildOceanTexture()
 	file_name += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ file_name.Data() };
+	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER, HashString("Ocean_Texture2D"), "Ocean_Texture2D" };
@@ -2194,12 +2205,32 @@ void CatalystEngineResourceBuilding::BuildOceanTexture()
 */
 void CatalystEngineResourceBuilding::BuildDefaultSkyTexture()
 {
-	TextureCubeBuildParameters parameters;
+	//What should the resource be called?
+	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Default_Sky_TextureCube.cr" };
 
-	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Default_Sky_TextureCube";
-	parameters._ID = "Default_Sky_TextureCube";
-	parameters._File = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\HDR\\Sky_1.hdr";
+	//Open the file to be written to.
+	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
 
-	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTextureCube(parameters);
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString("Default_Sky_TextureCube"), "Default_Sky_TextureCube" };
+	file.Write(&header, sizeof(ResourceHeader));
+
+	//Write the resolution to the file.
+	const uint32 resolution{ 1 };
+	file.Write(&resolution, sizeof(uint32));
+
+	//Write the number of mipmap levels to the file.
+	const uint8 mipmap_levels{ 1 };
+	file.Write(&mipmap_levels, sizeof(uint8));
+
+	//Write the data to the file.
+	for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
+	{
+		Vector4<float32> color{ 0.1f, 0.1f, 0.1f, 1.0f };
+		file.Write(&color, sizeof(Vector4<float32>));
+	}
+
+	//Close the file.
+	file.Close();
 }
 #endif

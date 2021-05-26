@@ -30,7 +30,7 @@ namespace File
 	*	Browses for a file.
 	*	Returns if the action was successful.
 	*/
-	FORCE_INLINE NO_DISCARD bool BrowseForFile(const bool save, DynamicString* const RESTRICT chosen_file) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool BrowseForFile(const bool save, DynamicString* const RESTRICT chosen_file) NOEXCEPT
 	{
 		bool success{ false };
 
@@ -87,7 +87,7 @@ namespace File
 	/*
 	*	Browses for a folder.
 	*/
-	FORCE_INLINE NO_DISCARD bool BrowseForFolder(DynamicString *const RESTRICT chosen_folder) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool BrowseForFolder(DynamicString *const RESTRICT chosen_folder) NOEXCEPT
 	{
 		//Store the folder.
 		TCHAR path[MAX_PATH];
@@ -135,7 +135,7 @@ namespace File
 	/*
 	*	Creates a directory.
 	*/
-	FORCE_INLINE void CreateDirectory(const char* const RESTRICT path) NOEXCEPT
+	FORCE_INLINE static void CreateDirectory(const char* const RESTRICT path) NOEXCEPT
 	{
 		CreateDirectoryA(path, nullptr);
 	}
@@ -143,7 +143,7 @@ namespace File
 	/*
 	*	Creates a file.
 	*/
-	FORCE_INLINE void CreateFile(const char *const RESTRICT path) NOEXCEPT
+	FORCE_INLINE static void CreateFile(const char *const RESTRICT path) NOEXCEPT
 	{
 		const HANDLE file_handle{	CreateFileA(path,
 												0,
@@ -159,7 +159,7 @@ namespace File
 	/*
 	*	Returns if a file exists or not.
 	*/
-	FORCE_INLINE NO_DISCARD bool Exists(const char *const RESTRICT file) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Exists(const char *const RESTRICT file) NOEXCEPT
 	{
 		TCHAR windows_path[MAX_PATH];
 
@@ -178,7 +178,7 @@ namespace File
 	/*
 	*	Deletes a file.
 	*/
-	FORCE_INLINE void Delete(const char *const RESTRICT file) NOEXCEPT
+	FORCE_INLINE static void Delete(const char *const RESTRICT file) NOEXCEPT
 	{
 		DeleteFileA(file);
 	}
@@ -186,7 +186,7 @@ namespace File
 	/*
 	*	Returns the size of the file with the given file path.
 	*/
-	FORCE_INLINE NO_DISCARD uint64 GetSize(const char* const RESTRICT file_path) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD uint64 GetSize(const char* const RESTRICT file_path) NOEXCEPT
 	{
 		HANDLE file_handle{ CreateFileA(file_path,
 										GENERIC_READ,

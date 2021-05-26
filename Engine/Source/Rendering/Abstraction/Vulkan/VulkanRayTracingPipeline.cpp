@@ -47,7 +47,7 @@ void VulkanRayTracingPipeline::Release() NOEXCEPT
 	if (_VulkanPipeline)
 	{
 		vkDestroyPipeline(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanPipeline, nullptr);
-		_VulkanPipeline = nullptr;
+		_VulkanPipeline = VK_NULL_HANDLE;
 	}
 }
 

@@ -1,4 +1,4 @@
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 #pragma once
 
 //Core.

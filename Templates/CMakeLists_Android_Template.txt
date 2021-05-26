@@ -1,0 +1,34 @@
+#Set ths CMake minimum required version.
+cmake_minimum_required(VERSION 3.10.2)
+
+#Set the project name.
+set(PROJECT_NAME [PROJECT_NAME]_Android-lib)
+
+#Set the C++ standard.
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+#Add defines.
+add_definitions(-DCATALYST_CONFIGURATION_DEBUG)
+add_definitions(-DCATALYST_DISTRIBUTION_NULL)
+add_definitions(-DCATALYST_PHYSICS_NULL)
+add_definitions(-DCATALYST_PLATFORM_ANDROID)
+add_definitions(-DCATALYST_RENDERING_VULKAN)
+
+#Add the include/source files.
+file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../../../../../../Catalyst-Engine/Engine/Source/*.cpp)
+file(GLOB_RECURSE GAME_INCLUDE_FILES ../../../../../../Code/Include/*.h)
+file(GLOB_RECURSE GAME_SOURCE_FILES ../../../../../../Code/Source/*.cpp)
+
+#Add the library.
+add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCE_FILES} ${GAME_INCLUDE_FILES} ${GAME_SOURCE_FILES})
+
+#Set the include paths.
+target_include_directories(${PROJECT_NAME} PUBLIC ../../../../../../../Catalyst-Engine/Engine/Include)
+target_include_directories(${PROJECT_NAME} PUBLIC ../../../../../../Code/Include)
+
+#Set the library paths.
+link_directories(PUBLIC ../../../../../../../Catalyst-Engine/Engine/Libraries/Static)
+
+#Link the libraries.
+target_link_libraries(${PROJECT_NAME} android log vulkan)
