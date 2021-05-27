@@ -15,7 +15,8 @@ enum class InputDeviceType : uint8
 {
 	GAMEPAD,
 	KEYBOARD,
-	MOUSE
+	MOUSE,
+	TOUCH
 };
 
 //Enumeration for all possible button states.

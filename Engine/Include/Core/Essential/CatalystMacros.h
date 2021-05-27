@@ -4,6 +4,12 @@
 #include <Core/Essential/CatalystPreDefines.h>
 
 /*
+*	Aligns the preceeding object to N bytes.
+*/
+#define ALIGN(N) alignas(N)
+
+
+/*
 *	Calculates the length of a C-style array.
 */
 #define ARRAY_LENGTH(X) (sizeof(X) / sizeof(*X))

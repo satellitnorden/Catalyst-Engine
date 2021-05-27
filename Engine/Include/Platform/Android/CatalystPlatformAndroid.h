@@ -1,16 +1,33 @@
 #if defined(CATALYST_PLATFORM_ANDROID)
-
 #pragma once
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/UpdateContext.h>
 
 //Rendering.
 #include <Rendering/Native/Resolution.h>
 
 //Android specific third party includes.
 #include <android_native_app_glue.h>
+
+/*
+*	Android touch state class definition.
+*/
+class AndroidTouchState final
+{
+
+public:
+
+	//The current X.
+	float32 _CurrentX{ 0.0f };
+
+	//The current Y.
+	float32 _CurrentY{ 0.0f };
+
+	//Is the screen currently touched?
+	bool _IsCurrentlyTouched{ false };
+
+};
 
 /*
 *	Main function.
@@ -23,12 +40,6 @@ void android_main(android_app *app)																			\
 	implementation;																							\
 }																											\
 
-//Forward declarations.
-class GamepadState;
-class KeyboardState;
-class MouseState;
-class TouchState;
-
 class CatalystPlatform final
 {
 
@@ -39,6 +50,9 @@ public:
 
 	//Handle to the window.
 	static ANativeWindow *RESTRICT _Window;
+
+	//The current Android touch state.
+	static AndroidTouchState _CurrentAndroidTouchState;
 
 	/*
 	*	Initializes the platform.

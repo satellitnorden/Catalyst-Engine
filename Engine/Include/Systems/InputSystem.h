@@ -13,7 +13,7 @@
 //Math.
 #include <Math/General/Vector.h>
 
-class InputSystem final
+class ALIGN(8) InputSystem final
 {
 
 public:
@@ -56,6 +56,14 @@ public:
 	FORCE_INLINE RESTRICTED NO_DISCARD const MouseState *const RESTRICT GetMouseState() const NOEXCEPT
 	{
 		return &_InputState._MouseState;
+	}
+
+	/*
+	*	Returns the touch state.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const TouchState *const RESTRICT GetTouchState() const NOEXCEPT
+	{
+		return &_InputState._TouchState;
 	}
 
 	/*
@@ -104,6 +112,9 @@ private:
 		//The mouse state.
 		MouseState _MouseState;
 
+		//The touch state.
+		TouchState _TouchState;
+
 	};
 
 	//The number of supported gamepads.
@@ -134,5 +145,10 @@ private:
 	*	Updates the mouse state.
 	*/
 	void UpdateMouseState() NOEXCEPT;
+
+	/*
+	*	Updates the touch state.
+	*/
+	void UpdateTouchState() NOEXCEPT;
 
 };

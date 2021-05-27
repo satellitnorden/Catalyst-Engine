@@ -330,8 +330,22 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 
 	//Cache the input data.
 	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState() };
-	const Vector2<float32> mouse_position{ InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY };
-	const bool mouse_pressed{ InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED  };
+
+	Vector2<float32> mouse_position;
+	bool mouse_pressed;
+
+	//Cheat a little bit and treat touch platforms the same as if they were a mouse.
+	if (InputSystem::Instance->GetLastUpdatedInputDeviceType() == InputDeviceType::TOUCH)
+	{
+		mouse_position = Vector2<float32>(InputSystem::Instance->GetTouchState()->_CurrentX, InputSystem::Instance->GetTouchState()->_CurrentY);
+		mouse_pressed = InputSystem::Instance->GetTouchState()->_ButtonState == ButtonState::PRESSED;
+	}
+
+	else
+	{
+		mouse_position = Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY);
+		mouse_pressed = InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED;
+	}
 
 	//Update which button is gamepad selected.
 	if (InputSystem::Instance->GetLastUpdatedInputDeviceType() == InputDeviceType::GAMEPAD)
@@ -526,6 +540,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 
 				case InputDeviceType::KEYBOARD:
 				case InputDeviceType::MOUSE:
+				case InputDeviceType::TOUCH: //Touch input here is interpreted as mouse input, so cheat a little. (:
 				{
 					//Determine if the mouse is inside the element's bounding box.
 					const bool is_inside{	mouse_position._X >= button.GetMinimum()._X

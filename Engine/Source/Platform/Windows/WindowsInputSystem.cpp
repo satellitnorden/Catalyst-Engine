@@ -503,4 +503,12 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 	//Update the scroll wheel step.
 	state->_ScrollWheelStep = CatalystPlatform::GetAndResetScrollWheelStep();
 }
+
+/*
+*	Updates the touch state.
+*/
+void InputSystem::UpdateTouchState() NOEXCEPT
+{
+	//Windows doesn't have touch. I think. (:
+}
 #endif

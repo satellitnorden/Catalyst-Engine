@@ -63,6 +63,9 @@ void InputSystem::InputUpdate() NOEXCEPT
 	//Update the mouse state.
 	UpdateMouseState();
 
+	//Update the touch state.
+	UpdateTouchState();
+
 	//Determine the last updated input device type.
 	{
 		//Did the gamepad state change?
@@ -81,6 +84,12 @@ void InputSystem::InputUpdate() NOEXCEPT
 		else if (!Memory::Compare(&old_input_state._MouseState, &_InputState._MouseState, sizeof(_InputState._MouseState)))
 		{
 			_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
+		}
+
+		//Did the touch state change?
+		else if (!Memory::Compare(&old_input_state._TouchState, &_InputState._TouchState, sizeof(_InputState._TouchState)))
+		{
+			_LastUpdatedInputDeviceType = InputDeviceType::TOUCH;
 		}
 	}
 }
