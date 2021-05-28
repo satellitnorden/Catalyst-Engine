@@ -15,6 +15,7 @@
 
 //World.
 #include <World/Core/WorldTransform.h>
+#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
 class DynamicModelComponent final
 {
@@ -39,7 +40,7 @@ public:
 	WorldTransform _CurrentWorldTransform;
 
 	//The world space axis aligned bounding box.
-	AxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
+	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
 
 	//The material resources.
 	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;

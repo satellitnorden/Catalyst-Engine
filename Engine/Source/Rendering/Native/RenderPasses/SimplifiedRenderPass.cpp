@@ -34,13 +34,18 @@ SimplifiedRenderPass::SimplifiedRenderPass() NOEXCEPT
 */
 void SimplifiedRenderPass::Initialize() NOEXCEPT
 {
+	//Create the scene depth buffer.
+	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetFullResolution(), &_SceneDepthBuffer);
+
 	//Add the pipelines.
-	SetNumberOfPipelines(2);
+	SetNumberOfPipelines(3);
 	AddPipeline(&_ClearGraphicsPipeline);
+	AddPipeline(&_SimplifiedModelGraphicsPipeline);
 	AddPipeline(&_UserInterfaceGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_ClearGraphicsPipeline.Initialize();
+	_ClearGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_SimplifiedModelGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_UserInterfaceGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -57,6 +62,7 @@ void SimplifiedRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
 	_ClearGraphicsPipeline.Execute();
+	_SimplifiedModelGraphicsPipeline.Execute();
 	_UserInterfaceGraphicsPipeline.Execute();
 
 	//Enable this render pass.

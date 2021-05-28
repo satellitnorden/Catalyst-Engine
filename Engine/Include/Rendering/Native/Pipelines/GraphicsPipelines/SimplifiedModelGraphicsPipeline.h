@@ -6,7 +6,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class ClearGraphicsPipeline final : public GraphicsPipeline
+class SimplifiedModelGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const DepthBufferHandle depth_buffer ) NOEXCEPT;
+	void Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.

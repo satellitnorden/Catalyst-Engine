@@ -11,11 +11,7 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void ClearGraphicsPipeline::Initialize(
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
-	const DepthBufferHandle depth_buffer
-#endif
-) NOEXCEPT
+void ClearGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -24,10 +20,8 @@ void ClearGraphicsPipeline::Initialize(
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ClearFragmentShader")));
 
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);
-#endif
 
 	//Add the output render targets.
 #if defined(CATALYST_SIMPLIFIED_RENDERING)

@@ -16,6 +16,7 @@
 #include <Resources/Core/ResourcePointer.h>
 
 //World.
+#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 #include <World/Core/WorldTransform.h>
 
 class DynamicModelEntity : public Entity
@@ -96,7 +97,7 @@ public:
 	/*
 	*	Returns the world space axis aligned bounding box.
 	*/
-	RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT;
+	RESTRICTED NO_DISCARD const WorldSpaceAxisAlignedBoundingBox3D *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT;
 
 	/*
 	*	Returns the model collision configuration.
@@ -108,4 +109,10 @@ public:
 	*/
 	RESTRICTED NO_DISCARD const ModelSimulationConfiguration *const RESTRICT GetModelSimulationConfiguration() const NOEXCEPT;
 
+private:
+
+	/*
+	*	Updates the world space axis aligned bounding box.
+	*/
+	void UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
 };

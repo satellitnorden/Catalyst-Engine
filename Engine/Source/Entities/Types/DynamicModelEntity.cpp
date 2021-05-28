@@ -38,7 +38,10 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	component._ModelResource = model_initialization_data->_ModelResource;
 	component._PreviousWorldTransform = model_initialization_data->_InitialWorldTransform;
 	component._CurrentWorldTransform = model_initialization_data->_InitialWorldTransform;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_InitialWorldTransform.ToLocalMatrix4x4(), &component._WorldSpaceAxisAlignedBoundingBox);
+	AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
+	RenderingUtilities::TransformAxisAlignedBoundingBox(component._ModelResource->_ModelSpaceAxisAlignedBoundingBox, model_initialization_data->_InitialWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+	component._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(model_initialization_data->_InitialWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
+	component._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(model_initialization_data->_InitialWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
 	component._MaterialResources = model_initialization_data->_MaterialResources;
 	component._ModelCollisionConfiguration = model_initialization_data->_ModelCollisionConfiguration;
 	component._ModelSimulationConfiguration = model_initialization_data->_ModelSimulationConfiguration;
@@ -139,7 +142,7 @@ void DynamicModelEntity::SetWorldTransform(const WorldTransform &new_world_trans
 	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._CurrentWorldTransform = new_world_transform;
 
 	//Update the world space axis aligned bounding box.
-	RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToAbsoluteMatrix4x4(), &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox);
+	UpdateWorldSpaceAxisAlignedBoundingBox();
 
 	//Update the physics entity world transform.
 	if (ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
@@ -159,7 +162,7 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT DynamicMode
 /*
 *	Returns the world space axis aligned bounding box.
 */
-RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT DynamicModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
+RESTRICTED NO_DISCARD const WorldSpaceAxisAlignedBoundingBox3D *const RESTRICT DynamicModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
 {
 	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
 }
@@ -178,4 +181,15 @@ RESTRICTED NO_DISCARD const ModelCollisionConfiguration *const RESTRICT DynamicM
 RESTRICTED NO_DISCARD const ModelSimulationConfiguration *const RESTRICT DynamicModelEntity::GetModelSimulationConfiguration() const NOEXCEPT
 {
 	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelSimulationConfiguration;
+}
+
+/*
+*	Updates the world space axis aligned bounding box.
+*/
+void DynamicModelEntity::UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+{
+	AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
+	RenderingUtilities::TransformAxisAlignedBoundingBox(*GetModelSpaceAxisAlignedBoundingBox(), GetWorldTransform()->ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(GetWorldTransform()->GetCell(), local_axis_aligned_bounding_box._Minimum);
+	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(GetWorldTransform()->GetCell(), local_axis_aligned_bounding_box._Maximum);
 }

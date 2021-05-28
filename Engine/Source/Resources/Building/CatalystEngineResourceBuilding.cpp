@@ -1600,6 +1600,28 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SimplifiedModelFragmentShader";
+		parameters._ID = "SimplifiedModelFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SimplifiedModelFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SimplifiedModelVertexShader";
+		parameters._ID = "SimplifiedModelVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SimplifiedModelVertexShader.vert";
+		parameters._Stage = ShaderStage::VERTEX;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SkyFragmentShader";
 		parameters._ID = "SkyFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyFragmentShader.frag";

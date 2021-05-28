@@ -67,6 +67,17 @@ public:
 		_DeactivationQueue.Push(scene);
 	}
 
+	/*
+	*	Deactivates all active scenes.
+	*/
+	FORCE_INLINE void DeactivateAllActiveScenes() NOEXCEPT
+	{
+		for (UserInterfaceScene *const RESTRICT scene : _CurrentUserInterfaceScenes)
+		{
+			DeactivateScene(scene);
+		}
+	}
+
 private:
 
 	//The current Clairvoyant user interface scenes.

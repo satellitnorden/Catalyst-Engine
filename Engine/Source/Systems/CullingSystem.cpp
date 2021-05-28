@@ -75,22 +75,7 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 
 	for (uint64 i = 0; i < number_of_components; ++i, ++component)
 	{
-		//Cache the world space axis aligned bounding box.
-		AxisAlignedBoundingBox3D world_space_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox };
-
-		//Need to transform the world space axis aligned bounding box to the perceiver's cell.
-		{
-			const Vector3<int32> delta{ component->_CurrentWorldTransform.GetCell() - perceiver_cell };
-
-			for (uint8 i{ 0 }; i < 3; ++i)
-			{
-				world_space_axis_aligned_bounding_box._Minimum[i] += static_cast<float32>(delta[i]) * world_grid_size;
-				world_space_axis_aligned_bounding_box._Maximum[i] += static_cast<float32>(delta[i]) * world_grid_size;
-			}
-		}
-
-		//component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, world_space_axis_aligned_bounding_box);
-		component->_Visibility = true;
+		component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(perceiver_cell));
 	}
 }
 

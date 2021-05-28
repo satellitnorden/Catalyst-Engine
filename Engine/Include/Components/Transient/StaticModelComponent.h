@@ -12,6 +12,7 @@
 #include <Resources/Core/ResourcePointer.h>
 
 //World.
+#include <World/Core/WorldTransform.h>
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
 class StaticModelComponent final

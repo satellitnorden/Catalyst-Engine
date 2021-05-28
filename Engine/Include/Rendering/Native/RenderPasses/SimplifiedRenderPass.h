@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ClearGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/SimplifiedModelGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -24,8 +25,14 @@ public:
 
 private:
 
+	//The scene depth buffer.
+	DepthBufferHandle _SceneDepthBuffer;
+
 	//The clear graphics pipeline.
 	ClearGraphicsPipeline _ClearGraphicsPipeline;
+
+	//The simplified model graphics pipeline.
+	SimplifiedModelGraphicsPipeline _SimplifiedModelGraphicsPipeline;
 
 	//The user interface graphics pipeline.
 	UserInterfaceGraphicsPipeline _UserInterfaceGraphicsPipeline;
