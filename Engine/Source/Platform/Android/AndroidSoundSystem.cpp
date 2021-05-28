@@ -2,6 +2,9 @@
 //Header file.
 #include <Systems/SoundSystem.h>
 
+//Android.
+#include <AAudio.h>
+
 /*
 *	Queries for audio devices.
 */
