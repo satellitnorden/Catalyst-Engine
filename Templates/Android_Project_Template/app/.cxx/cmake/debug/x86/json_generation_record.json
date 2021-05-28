@@ -1,0 +1,79 @@
+[
+  {
+    "level": "INFO",
+    "message": "Start JSON generation. Platform version: 16 min SDK version: x86",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "rebuilding JSON C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\x86\\android_gradle_build.json due to:",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "- expected json C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\x86\\android_gradle_build.json file is not present, will remove stale json folder",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "- missing previous command file C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\x86\\build_command.txt, will remove stale json folder",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "- command changed from previous, will remove stale json folder",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "created folder \u0027C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\x86\u0027",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "executing cmake Executable : C:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\cmake\\3.18.1\\bin\\cmake.exe\narguments : \n-HC:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\n-DCMAKE_FIND_ROOT_PATH\u003dC:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\prefab\\x86\\prefab\n-DCMAKE_BUILD_TYPE\u003dDebug\n-DCMAKE_TOOLCHAIN_FILE\u003dC:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\ndk\\21.2.6472646\\build\\cmake\\android.toolchain.cmake\n-DANDROID_ABI\u003dx86\n-DANDROID_NDK\u003dC:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\ndk\\21.2.6472646\n-DANDROID_PLATFORM\u003dandroid-16\n-DCMAKE_ANDROID_ARCH_ABI\u003dx86\n-DCMAKE_ANDROID_NDK\u003dC:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\ndk\\21.2.6472646\n-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON\n-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003dC:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\build\\intermediates\\cmake\\debug\\obj\\x86\n-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003dC:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\build\\intermediates\\cmake\\debug\\obj\\x86\n-DCMAKE_MAKE_PROGRAM\u003dC:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\cmake\\3.18.1\\bin\\ninja.exe\n-DCMAKE_SYSTEM_NAME\u003dAndroid\n-DCMAKE_SYSTEM_VERSION\u003d16\n-DANDROID_STL\u003dc++_static\n-BC:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\x86\n-GNinja\njvmArgs : \n\n",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "Executable : C:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\cmake\\3.18.1\\bin\\cmake.exe\narguments : \n-HC:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\n-DCMAKE_FIND_ROOT_PATH\u003dC:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\prefab\\x86\\prefab\n-DCMAKE_BUILD_TYPE\u003dDebug\n-DCMAKE_TOOLCHAIN_FILE\u003dC:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\ndk\\21.2.6472646\\build\\cmake\\android.toolchain.cmake\n-DANDROID_ABI\u003dx86\n-DANDROID_NDK\u003dC:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\ndk\\21.2.6472646\n-DANDROID_PLATFORM\u003dandroid-16\n-DCMAKE_ANDROID_ARCH_ABI\u003dx86\n-DCMAKE_ANDROID_NDK\u003dC:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\ndk\\21.2.6472646\n-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON\n-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003dC:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\build\\intermediates\\cmake\\debug\\obj\\x86\n-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003dC:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\build\\intermediates\\cmake\\debug\\obj\\x86\n-DCMAKE_MAKE_PROGRAM\u003dC:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\cmake\\3.18.1\\bin\\ninja.exe\n-DCMAKE_SYSTEM_NAME\u003dAndroid\n-DCMAKE_SYSTEM_VERSION\u003d16\n-DANDROID_STL\u003dc++_static\n-BC:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\x86\n-GNinja\njvmArgs : \n\n",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "done executing cmake",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "write command file C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\x86\\build_command.txt",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "JSON generation completed without problems",
+    "file": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt",
+    "tag": "debug|x86",
+    "diagnosticCode": "UNKNOWN"
+  }
+]

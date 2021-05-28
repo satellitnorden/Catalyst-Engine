@@ -1,0 +1,1 @@
+C:\Users\Denni\Desktop\ndk-samples-main\ndk-samples-main\native-activity\app\src\main\cpp\CMakeLists.txt
