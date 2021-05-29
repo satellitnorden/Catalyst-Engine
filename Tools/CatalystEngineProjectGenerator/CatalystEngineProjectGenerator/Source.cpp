@@ -20,15 +20,61 @@ enum class Physics
 };
 
 /*
+*	General parameters class definition.
+*/
+class GeneralParameters final
+{
+
+public:
+
+	//The developer name.
+	const char *_DeveloperName{ nullptr };
+
+	//The projet name.
+	const char *_ProjectName{ nullptr };
+
+	//The distribution.
+	Distribution _Distribution{ Distribution::NULL };
+
+	//The physics.
+	Physics _Physics{ Physics::NULL };
+
+};
+
+/*
+*	Android parameters class definition.
+*/
+class AndroidParameters final
+{
+
+public:
+
+	//Denotes whether or not to force landscape mode.
+	bool _ForceLandscapeMode{ false };
+
+};
+
+/*
+*	Win64 parameters class definition.
+*/
+class Win64Parameters final
+{
+
+public:
+
+
+};
+
+/*
 *	Generates Android.
 */
-void GenerateAndroid(const char *const developer_name, const char *const project_name, const Distribution distribution, const Physics physics)
+void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidParameters &platform_parameters)
 {
 	//Cache the lower case versions of developer_name and project_name.
-	std::string lower_developer_name{ developer_name };
+	std::string lower_developer_name{ general_parameters._DeveloperName };
 	std::transform(lower_developer_name.begin(), lower_developer_name.end(), lower_developer_name.begin(), [](unsigned char character) { return std::tolower(character); });
 
-	std::string lower_project_name{ project_name };
+	std::string lower_project_name{ general_parameters._ProjectName };
 	std::transform(lower_project_name.begin(), lower_project_name.end(), lower_project_name.begin(), [](unsigned char character) { return std::tolower(character); });
 
 	//Remember the error code for filesystem functions.
@@ -47,7 +93,7 @@ void GenerateAndroid(const char *const developer_name, const char *const project
 
 			if (project_name_position != std::string::npos)
 			{
-				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), project_name);
+				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), general_parameters._ProjectName);
 			}
 		}
 
@@ -115,9 +161,26 @@ void GenerateAndroid(const char *const developer_name, const char *const project
 				if (library_name_position != std::string::npos)
 				{
 					char buffer[128];
-					sprintf_s(buffer, "%s_Android-lib", project_name);
+					sprintf_s(buffer, "%s_Android-lib", general_parameters._ProjectName);
 
 					input_line.replace(library_name_position, strlen("[LIBRARY_NAME]"), buffer);
+				}
+			}
+
+			{
+				const size_t position{ input_line.find("[ANDROID_FORCE_LANDSCAPE_MODE]") };
+
+				if (position != std::string::npos)
+				{
+					if (platform_parameters._ForceLandscapeMode)
+					{
+						input_line.replace(position, strlen("[ANDROID_FORCE_LANDSCAPE_MODE]"), "android:screenOrientation=\"landscape\"");
+					}
+
+					else
+					{
+						input_line.replace(position, strlen("[ANDROID_FORCE_LANDSCAPE_MODE]"), "");
+					}
 				}
 			}
 
@@ -158,7 +221,7 @@ void GenerateAndroid(const char *const developer_name, const char *const project
 
 				if (position != std::string::npos)
 				{
-					input_line.replace(position, strlen("[PROJECT_NAME]"), project_name);
+					input_line.replace(position, strlen("[PROJECT_NAME]"), general_parameters._ProjectName);
 				}
 			}
 
@@ -266,7 +329,7 @@ void GenerateAndroid(const char *const developer_name, const char *const project
 /*
 *	Generates Win64.
 */
-void GenerateWin64(const char *const developer_name, const char *const project_name, const Distribution distribution, const Physics physics)
+void GenerateWin64(const GeneralParameters &general_parameters, const Win64Parameters &platform_parameters)
 {
 	//Remember the error code for filesystem functions.
 	std::error_code error_code;
@@ -284,7 +347,7 @@ void GenerateWin64(const char *const developer_name, const char *const project_n
 
 			if (project_name_position != std::string::npos)
 			{
-				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), project_name);
+				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), general_parameters._ProjectName);
 			}
 		}
 
@@ -295,7 +358,7 @@ void GenerateWin64(const char *const developer_name, const char *const project_n
 			{
 				const char* distribution_string{ "CATALYST_DISTRIBUTION_NULL" };
 
-				switch (distribution)
+				switch (general_parameters._Distribution)
 				{
 					case Distribution::STEAM:
 					{
@@ -316,7 +379,7 @@ void GenerateWin64(const char *const developer_name, const char *const project_n
 			{
 				const char *physics_string{ "CATALYST_PHYSICS_NULL" };
 
-				switch (physics)
+				switch (general_parameters._Physics)
 				{
 					case Physics::PHYSX:
 					{
@@ -372,7 +435,7 @@ void GenerateWin64(const char *const developer_name, const char *const project_n
 		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\assimp.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing);
 
 		//Copy steam_api64.dll.
-		if (distribution == Distribution::STEAM)
+		if (general_parameters._Distribution == Distribution::STEAM)
 		{
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\steam_api64.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing);
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\steam_api64.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing);
@@ -382,7 +445,7 @@ void GenerateWin64(const char *const developer_name, const char *const project_n
 		}
 
 		//Copy PhysX dll's.
-		if (physics == Physics::PHYSX)
+		if (general_parameters._Physics == Physics::PHYSX)
 		{
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\PhysX_64.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing);
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\PhysXCommon_64.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing);
@@ -429,34 +492,41 @@ void GenerateWin64(const char *const developer_name, const char *const project_n
 
 int main(int argc, char *argv[])
 {
+	//Construct the parameters.
+	GeneralParameters general_parameters;
+	AndroidParameters android_parameters;
+	Win64Parameters win64_parameters;
+
 	//Retrieve the developer name.
-	const char *const developer_name{ argv[1] };
+	general_parameters._DeveloperName = argv[1];
 
 	//Retrieve the project name.
-	const char *const project_name{ argv[2] };
+	general_parameters._ProjectName = argv[2];
 
 	//Process remaining arguments.
-	Distribution distribution{ Distribution::NULL };
-	Physics physics{ Physics::NULL };
-
 	for (int i{ 3 }; i < argc; ++i)
 	{
 		if (strcmp(argv[i], "DISTRIBUTION_STEAM") == 0)
 		{
-			distribution = Distribution::STEAM;
+			general_parameters._Distribution = Distribution::STEAM;
 		}
 
 		if (strcmp(argv[i], "PHYSICS_PHYSX") == 0)
 		{
-			physics = Physics::PHYSX;
+			general_parameters._Physics = Physics::PHYSX;
+		}
+
+		if (strcmp(argv[i], "ANDROID_FORCE_LANDSCAPE_MODE") == 0)
+		{
+			android_parameters._ForceLandscapeMode = true;
 		}
 	}
 
 	//Generate Android.
-	GenerateAndroid(developer_name, project_name, distribution, physics);
+	GenerateAndroid(general_parameters, android_parameters);
 
 	//Generate Win64.
-	GenerateWin64(developer_name, project_name, distribution, physics);
+	GenerateWin64(general_parameters, win64_parameters);
 
 	return 0;
 }
