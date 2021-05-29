@@ -34,6 +34,22 @@ public:
 	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
+	*	Sets the minimum screen coverage.
+	*/
+	FORCE_INLINE void SetMinimumScreenCoverage(const float32 value) NOEXCEPT
+	{
+		_MinimumScreenCoverage = value;
+	}
+
+	/*
+	*	Sets the maximum screen coverage.
+	*/
+	FORCE_INLINE void SetMaximumScreenCoverage(const float32 value) NOEXCEPT
+	{
+		_MaximumScreenCoverage = value;
+	}
+
+	/*
 	*	Waits for static models level of detail to finish executing.
 	*/
 	FORCE_INLINE void WaitForStaticModelsLevelOfDetail() const NOEXCEPT
@@ -50,6 +66,12 @@ public:
 	}
 
 private:
+
+	//The minimum screen coverage.
+	float32 _MinimumScreenCoverage{ 0.0f };
+
+	//The maximum screen coverage.
+	float32 _MaximumScreenCoverage{ 1.0f };
 
 	//The static models level of detail task.
 	Task _StaticModelsLevelOfDetailTask;

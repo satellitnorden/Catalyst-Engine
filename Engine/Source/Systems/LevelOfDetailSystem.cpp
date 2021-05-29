@@ -98,42 +98,70 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 */
 void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 {
-	//Define constants.
-	constexpr float32 MAXIMUM_DISTANCE{ 512.0f };
-	constexpr float32 MAXIMUM_DISTANCE_SQUARED{ MAXIMUM_DISTANCE * MAXIMUM_DISTANCE };
+	//Cache the perceiver world transform.
+	const WorldTransform &perceiver_world_transform{ Perceiver::Instance->GetWorldTransform() };
 
-	//Cache the perceiver position.
-	const Vector3<float> perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
+	//Cache the perceiver world to clip matrix.
+	const Matrix4x4 *const RESTRICT perceiver_world_to_clip_matrix{ Perceiver::Instance->GetViewMatrix() };
 
 	//Iterate over all dynamic model components and calculate their level of detail.
 	const uint64 number_of_dynamic_model_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
 	DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
 
-	for (uint64 i{ 0 }; i < number_of_dynamic_model_components; ++i, ++component)
+	for (uint64 component_index{ 0 }; component_index < number_of_dynamic_model_components; ++component_index, ++component)
 	{
-		for (uint64 j{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; j < size; ++j)
+		for (uint64 mesh_index{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 		{
 			//If the mesh used only has one level of detail, skip it.
-			if (component->_ModelResource->_Meshes[j]._MeshLevelOfDetails.Size() == 1 || true)
+			if (component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails.Size() == 1)
 			{
-				component->_LevelOfDetailIndices[j] = 0;
+				component->_LevelOfDetailIndices[mesh_index] = 0;
 
 				continue;
 			}
 
-			//Calculate the squared distance.
-			const float32 squared_distance{ Vector3<float32>::LengthSquared(perceiver_position - AxisAlignedBoundingBox3D::GetClosestPointInside(component->_WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox(), perceiver_position)) };
+			//Retrieve the relative axis aligned bounding box.
+			const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(perceiver_world_transform.GetCell()) };
 
-			//Calculate the distance coefficient.
-			float32 distance_coefficient{ CatalystBaseMath::Minimum<float32>(squared_distance / MAXIMUM_DISTANCE_SQUARED, 1.0f) };
+			//Calculate the minimum/maximum screen coordinates from the corners of the relative axis aligned bounding box.
+			Vector2<float32> minimum_screen_coordinate{ FLOAT32_MAXIMUM, FLOAT32_MAXIMUM };
+			Vector2<float32> maximum_screen_coordinate{ -FLOAT32_MAXIMUM, -FLOAT32_MAXIMUM };
 
-			//Modify the distance coefficient a bit to "flatten the curve", since squared distances are being used..
-			distance_coefficient = 1.0f - distance_coefficient;
-			distance_coefficient *= distance_coefficient;
-			distance_coefficient = 1.0f - distance_coefficient;
+			const StaticArray<Vector3<float32>, 8> corners
+			{
+				Vector3<float32>(relative_axis_aligned_bounding_box._Minimum._X, relative_axis_aligned_bounding_box._Minimum._Y, relative_axis_aligned_bounding_box._Minimum._Z),
+				Vector3<float32>(relative_axis_aligned_bounding_box._Minimum._X, relative_axis_aligned_bounding_box._Minimum._Y, relative_axis_aligned_bounding_box._Maximum._Z),
+				Vector3<float32>(relative_axis_aligned_bounding_box._Minimum._X, relative_axis_aligned_bounding_box._Maximum._Y, relative_axis_aligned_bounding_box._Minimum._Z),
+				Vector3<float32>(relative_axis_aligned_bounding_box._Minimum._X, relative_axis_aligned_bounding_box._Maximum._Y, relative_axis_aligned_bounding_box._Maximum._Z),
+
+				Vector3<float32>(relative_axis_aligned_bounding_box._Maximum._X, relative_axis_aligned_bounding_box._Minimum._Y, relative_axis_aligned_bounding_box._Minimum._Z),
+				Vector3<float32>(relative_axis_aligned_bounding_box._Maximum._X, relative_axis_aligned_bounding_box._Minimum._Y, relative_axis_aligned_bounding_box._Maximum._Z),
+				Vector3<float32>(relative_axis_aligned_bounding_box._Maximum._X, relative_axis_aligned_bounding_box._Maximum._Y, relative_axis_aligned_bounding_box._Minimum._Z),
+				Vector3<float32>(relative_axis_aligned_bounding_box._Maximum._X, relative_axis_aligned_bounding_box._Maximum._Y, relative_axis_aligned_bounding_box._Maximum._Z)
+			};
+
+			for (uint8 corner_index{ 0 }; corner_index < 8; ++corner_index)
+			{
+				Vector4<float32> screen_space_position{ *perceiver_world_to_clip_matrix * Vector4<float32>(corners[corner_index], 1.0f) };
+				const float32 screen_space_position_reciprocal{ 1.0f / screen_space_position._W };
+
+				Vector2<float32> screen_coordinate{ screen_space_position._X * screen_space_position_reciprocal, screen_space_position._Y * screen_space_position_reciprocal };
+
+				screen_coordinate._X = screen_coordinate._X * 0.5f + 0.5f;
+				screen_coordinate._Y = screen_coordinate._Y * 0.5f + 0.5f;
+
+				minimum_screen_coordinate = Vector2<float32>::Minimum(minimum_screen_coordinate, screen_coordinate);
+				maximum_screen_coordinate = Vector2<float32>::Maximum(maximum_screen_coordinate, screen_coordinate);
+			}
+
+			//Calculate the screen coverage.
+			float32 screen_coverage{ CatalystBaseMath::Minimum<float32>((maximum_screen_coordinate._X - minimum_screen_coordinate._X) * (maximum_screen_coordinate._Y - minimum_screen_coordinate._Y), 1.0f) };
+
+			//Modify the screen coverage based on the minimum/maximum.
+			screen_coverage = CatalystBaseMath::LinearlyInterpolate(_MinimumScreenCoverage, _MaximumScreenCoverage, screen_coverage);
 
 			//Calculate the level of detail index.
-			component->_LevelOfDetailIndices[j] = static_cast<uint32>(distance_coefficient * static_cast<float32>(component->_ModelResource->_Meshes[j]._MeshLevelOfDetails.Size() - 1));
+			component->_LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - screen_coverage) * static_cast<float32>(component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
 		}
 	}
 }

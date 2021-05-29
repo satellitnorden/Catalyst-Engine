@@ -366,7 +366,7 @@ namespace VulkanRenderingSystemLogic
 			for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 			{
 				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format : static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
-																								pipeline->ShouldClear() ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																								pipeline->ShouldClear() ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD,
 																								VK_ATTACHMENT_STORE_OP_STORE,
 																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 																								VK_ATTACHMENT_STORE_OP_DONT_CARE,

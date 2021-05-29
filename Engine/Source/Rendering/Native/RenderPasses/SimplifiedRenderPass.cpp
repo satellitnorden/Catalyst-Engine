@@ -5,9 +5,6 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Constants.
-#define USE_SKY (0)
-
 //Singleton definition.
 DEFINE_SINGLETON(SimplifiedRenderPass);
 
@@ -44,17 +41,13 @@ void SimplifiedRenderPass::Initialize() NOEXCEPT
 	SetNumberOfPipelines(4);
 	AddPipeline(&_ClearGraphicsPipeline);
 	AddPipeline(&_SimplifiedModelGraphicsPipeline);
-#if USE_SKY
 	AddPipeline(&_SimplifiedSkyGraphicsPipeline);
-#endif
 	AddPipeline(&_UserInterfaceGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_ClearGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_SimplifiedModelGraphicsPipeline.Initialize(_SceneDepthBuffer);
-#if USE_SKY
 	_SimplifiedSkyGraphicsPipeline.Initialize(_SceneDepthBuffer);
-#endif
 	_UserInterfaceGraphicsPipeline.Initialize();
 
 	//Post-initialize all pipelines.
@@ -72,9 +65,7 @@ void SimplifiedRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_ClearGraphicsPipeline.Execute();
 	_SimplifiedModelGraphicsPipeline.Execute();
-#if USE_SKY
 	_SimplifiedSkyGraphicsPipeline.Execute();
-#endif
 	_UserInterfaceGraphicsPipeline.Execute();
 
 	//Enable this render pass.
