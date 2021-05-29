@@ -224,6 +224,14 @@ private:
 		}
 
 		/*
+		*	Inequality operator overload.
+		*/
+		FORCE_INLINE bool operator!=(const ButtonInterface &other) const NOEXCEPT
+		{
+			return _Element != other._Element;
+		}
+
+		/*
 		*	Returns the minimum.
 		*/
 		FORCE_INLINE NO_DISCARD Vector2<float32> GetMinimum() const NOEXCEPT
