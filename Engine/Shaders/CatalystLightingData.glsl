@@ -17,12 +17,12 @@ struct Light
 };
 
 //Light uniform data.
-layout (std140, set = 2, binding = 0) uniform LIGHT_UNIFORM_DATA_BUFFER
+layout (std140, set = CATALYST_LIGHTING_DATA_SET_INDEX, binding = 0) uniform LIGHT_UNIFORM_DATA_BUFFER
 {
 	layout (offset = 0) uint NUMBER_OF_LIGHTS;
 	layout (offset = 4) uint MAXIMUM_NUMBER_OF_SHADOW_CASTING_LIGHTS;
 };
-layout (set = 2, binding = 1) buffer LIGHT_DATA_BUFFER
+layout (set = CATALYST_LIGHTING_DATA_SET_INDEX, binding = 1) buffer LIGHT_DATA_BUFFER
 {
 	layout (offset = 0) vec4[] LIGHT_DATA;
 };

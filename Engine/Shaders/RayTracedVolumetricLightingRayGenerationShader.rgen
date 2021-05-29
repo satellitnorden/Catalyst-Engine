@@ -1,5 +1,6 @@
 //Includes.
 #include "CatalystGeometryMath.glsl"
+#define CATALYST_LIGHTING_DATA_SET_INDEX (2)
 #include "CatalystLightingData.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"

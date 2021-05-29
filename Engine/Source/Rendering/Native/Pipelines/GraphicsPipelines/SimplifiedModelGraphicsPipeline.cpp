@@ -23,7 +23,16 @@ class SimplifiedModelPushConstantData final
 
 public:
 
+	//The model matrix.
 	Matrix4x4 _ModelMatrix;
+
+	//The sky light luminance.
+	Vector3<float32> _SkyLightLuminance;
+
+	//Some padding.
+	Padding<4> _Padding;
+
+	//The material index.
 	uint32 _MaterialIndex;
 
 };
@@ -48,8 +57,9 @@ void SimplifiedModelGraphicsPipeline::Initialize(const DepthBufferHandle depth_b
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataRenderDataTableLayout());
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -123,6 +133,25 @@ void SimplifiedModelGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
+
+	//Cache the sky light luminance.
+	Vector3<float32> sky_light_luminance{ VectorConstants::ZERO };
+
+	{
+		const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
+		const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
+		{
+			if (component->_LightType == LightType::DIRECTIONAL)
+			{
+				sky_light_luminance = component->_Color * component->_Intensity;
+
+				break;
+			}
+		}
+	}
 
 	//Draw static models.
 	{
@@ -160,6 +189,7 @@ void SimplifiedModelGraphicsPipeline::Execute() NOEXCEPT
 				SimplifiedModelPushConstantData data;
 
 				data._ModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				data._SkyLightLuminance = sky_light_luminance;
 				data._MaterialIndex = component->_MaterialResources[mesh_index]->_Index;
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(SimplifiedModelPushConstantData), &data);
@@ -210,6 +240,7 @@ void SimplifiedModelGraphicsPipeline::Execute() NOEXCEPT
 				SimplifiedModelPushConstantData data;
 
 				data._ModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				data._SkyLightLuminance = sky_light_luminance;
 				data._MaterialIndex = component->_MaterialResources[mesh_index]->_Index;
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(SimplifiedModelPushConstantData), &data);

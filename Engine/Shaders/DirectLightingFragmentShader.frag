@@ -1,4 +1,5 @@
 //Includes.
+#define CATALYST_LIGHTING_DATA_SET_INDEX (2)
 #include "CatalystLightingData.glsl"
 #define CLOUD_TEXTURE_SET_INDEX (3)
 #include "CatalystCloudsCore.glsl"

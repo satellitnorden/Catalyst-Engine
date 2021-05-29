@@ -7,6 +7,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ClearGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SimplifiedModelGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/SimplifiedSkyGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -33,6 +34,9 @@ private:
 
 	//The simplified model graphics pipeline.
 	SimplifiedModelGraphicsPipeline _SimplifiedModelGraphicsPipeline;
+
+	//The simplified sky graphics pipeline.
+	SimplifiedSkyGraphicsPipeline _SimplifiedSkyGraphicsPipeline;
 
 	//The user interface graphics pipeline.
 	UserInterfaceGraphicsPipeline _UserInterfaceGraphicsPipeline;
