@@ -133,7 +133,8 @@ namespace VulkanRenderingSystemLogic
 					//Cache the Vulkan graphics pipeline data.
 					const VulkanGraphicsPipelineData *const RESTRICT pipelineData{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
 
-					if (static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->ShouldClear())
+					if (static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetDepthStencilAttachmentLoadOperator() == AttachmentLoadOperator::CLEAR
+						|| static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetColorAttachmentLoadOperator() == AttachmentLoadOperator::CLEAR)
 					{
 						Vector4<float32> clear_color;
 						float32 depth_value;
@@ -350,15 +351,17 @@ namespace VulkanRenderingSystemLogic
 
 			uint32 counter{ 0 };
 
+			const bool pipeline_should_clear{ pipeline->GetDepthStencilAttachmentLoadOperator() == AttachmentLoadOperator::CLEAR };
+
 			if (depthBuffer)
 			{
 				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(depthBuffer->GetFormat(),
-																								pipeline->ShouldClear() ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD,
-																								VK_ATTACHMENT_STORE_OP_STORE,
-																								pipeline->ShouldClear() ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD,
-																								VK_ATTACHMENT_STORE_OP_STORE,
-																								VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-																								VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
+																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetDepthStencilAttachmentLoadOperator()),
+																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetDepthStencilAttachmentStoreOperator()),
+																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetDepthStencilAttachmentLoadOperator()),
+																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetDepthStencilAttachmentStoreOperator()),
+																							VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+																							VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
 
 				depthStencilAttachmentReference = VkAttachmentReference{ counter++, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 			}
@@ -366,12 +369,12 @@ namespace VulkanRenderingSystemLogic
 			for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 			{
 				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format : static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
-																								pipeline->ShouldClear() ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD,
-																								VK_ATTACHMENT_STORE_OP_STORE,
-																								VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-																								VK_ATTACHMENT_STORE_OP_DONT_CARE,
-																								uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_GENERAL,
-																								uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_GENERAL));
+																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetColorAttachmentLoadOperator()),
+																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetColorAttachmentStoreOperator()),
+																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																							VK_ATTACHMENT_STORE_OP_DONT_CARE,
+																							uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_GENERAL,
+																							uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_GENERAL));
 
 				colorAttachmentReferences.Emplace(VkAttachmentReference{ counter++, uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL });
 			}

@@ -38,7 +38,6 @@ void PathTracingDenoisingGraphicsPipeline::Initialize(const Direction direction,
 	//Set the direction.
 	_Direction = direction;
 
-
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertex")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -63,7 +62,10 @@ void PathTracingDenoisingGraphicsPipeline::Initialize(const Direction direction,
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

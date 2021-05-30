@@ -41,10 +41,13 @@ void ClearGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOE
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
+	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
 
 	//Set the properties of the render pass.
-	SetShouldClear(true);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::CLEAR);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::STORE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::CLEAR);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::One);
 	SetBlendFactorDestinationColor(BlendFactor::One);

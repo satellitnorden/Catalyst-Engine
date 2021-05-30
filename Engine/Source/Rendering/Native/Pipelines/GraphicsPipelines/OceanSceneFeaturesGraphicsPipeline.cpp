@@ -98,7 +98,10 @@ void OceanSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::STORE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

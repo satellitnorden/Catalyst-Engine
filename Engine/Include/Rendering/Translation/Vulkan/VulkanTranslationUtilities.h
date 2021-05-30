@@ -44,6 +44,63 @@ public:
 	}
 
 	/*
+	*	Given an attachment load operator, returns the corresponding Vulkan attachment load operator.
+	*/
+	FORCE_INLINE static VkAttachmentLoadOp GetVulkanAttachmentLoadOperator(const AttachmentLoadOperator value) NOEXCEPT
+	{
+		switch (value)
+		{
+			case AttachmentLoadOperator::LOAD:
+			{
+				return VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_LOAD;
+			}
+
+			case AttachmentLoadOperator::CLEAR:
+			{
+				return VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR;
+			}
+
+			case AttachmentLoadOperator::DONT_CARE:
+			{
+				return VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			}
+		}
+	}
+
+	/*
+	*	Given an attachment store operator, returns the corresponding Vulkan attachment store operator.
+	*/
+	FORCE_INLINE static VkAttachmentStoreOp GetVulkanAttachmentStoreOperator(const AttachmentStoreOperator value) NOEXCEPT
+	{
+		switch (value)
+		{
+			case AttachmentStoreOperator::STORE:
+			{
+				return VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_STORE;
+			}
+
+			case AttachmentStoreOperator::DONT_CARE:
+			{
+				return VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			}
+		}
+	}
+
+	/*
 	*	Given a blend factor, return the corresponding Vulkan blend factor.
 	*/
 	static VkBlendFactor GetVulkanBlendFactor(const BlendFactor blendFactor) NOEXCEPT

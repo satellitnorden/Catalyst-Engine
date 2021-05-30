@@ -120,7 +120,10 @@ void InstancedStaticModelColorSceneFeaturesGraphicsPipeline::Initialize(const bo
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::STORE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
@@ -139,15 +142,15 @@ void InstancedStaticModelColorSceneFeaturesGraphicsPipeline::Initialize(const bo
 
 	SetDepthCompareOperator(CompareOperator::Equal);
 	SetDepthTestEnabled(true);
-	SetDepthWriteEnabled(true);
-	SetStencilTestEnabled(true);
+	SetDepthWriteEnabled(false);
+	SetStencilTestEnabled(false);
 	SetStencilFailOperator(StencilOperator::Keep);
 	SetStencilPassOperator(StencilOperator::Replace);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
-	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
+	SetStencilWriteMask(0);
+	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
 }
 

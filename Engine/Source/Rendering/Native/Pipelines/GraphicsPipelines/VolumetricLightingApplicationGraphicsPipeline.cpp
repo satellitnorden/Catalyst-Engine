@@ -33,7 +33,10 @@ void VolumetricLightingApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(true);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

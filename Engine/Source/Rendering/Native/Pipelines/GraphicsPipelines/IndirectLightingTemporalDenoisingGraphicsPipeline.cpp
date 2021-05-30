@@ -76,7 +76,10 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32
 	SetRenderResolution(render_resolution);
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

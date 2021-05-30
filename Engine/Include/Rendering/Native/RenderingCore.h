@@ -103,6 +103,21 @@ enum class NativeRenderPassStage : uint8
 	NONE
 };
 
+//Enumeration covering all attachment load operators.
+enum class AttachmentLoadOperator : uint8
+{
+	LOAD,
+	CLEAR,
+	DONT_CARE
+};
+
+//Enumeration covering all attachment store operators.
+enum class AttachmentStoreOperator : uint8
+{
+	STORE,
+	DONT_CARE
+};
+
 //Enumeration covering all custom render pass orderings.
 enum class CustomRenderPassOrdering : uint8
 {

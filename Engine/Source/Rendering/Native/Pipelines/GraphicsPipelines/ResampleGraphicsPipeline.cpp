@@ -59,7 +59,10 @@ void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const
 	SetRenderResolution(resolution);
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
+	SetColorAttachmentLoadOperator(blend_enabled ? AttachmentLoadOperator::LOAD : AttachmentLoadOperator::DONT_CARE);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(blend_enabled);
 	SetBlendFactorSourceColor(BlendFactor::One);
 	SetBlendFactorDestinationColor(BlendFactor::One);

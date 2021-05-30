@@ -74,11 +74,6 @@ public:
 	Resolution GetRenderResolution() const NOEXCEPT { return _RenderResolution; }
 
 	/*
-	*	Returns whether or not this graphics pipeline should clear.
-	*/
-	bool ShouldClear() const NOEXCEPT { return _ShouldClear; }
-
-	/*
 	*	Returns whether or not blend is enabled.
 	*/
 	bool IsBlendEnabled() const NOEXCEPT { return _BlendEnabled; }
@@ -164,6 +159,38 @@ public:
 	uint32 GetStencilReferenceMask() const NOEXCEPT { return _StencilCompareMask; }
 
 	/*
+	*	Returns the depth/stencil attachment load operator.
+	*/
+	FORCE_INLINE AttachmentLoadOperator GetDepthStencilAttachmentLoadOperator() const NOEXCEPT
+	{
+		return _DepthStencilAttachmentLoadOperator;
+	}
+
+	/*
+	*	Returns the depth/stencil attachment store operator.
+	*/
+	FORCE_INLINE AttachmentStoreOperator GetDepthStencilAttachmentStoreOperator() const NOEXCEPT
+	{
+		return _DepthStencilAttachmentStoreOperator;
+	}
+
+	/*
+	*	Returns the color attachment load operator.
+	*/
+	FORCE_INLINE AttachmentLoadOperator GetColorAttachmentLoadOperator() const NOEXCEPT
+	{
+		return _ColorAttachmentLoadOperator;
+	}
+
+	/*
+	*	Returns the color attachment store operator.
+	*/
+	FORCE_INLINE AttachmentStoreOperator GetColorAttachmentStoreOperator() const NOEXCEPT
+	{
+		return _ColorAttachmentStoreOperator;
+	}
+
+	/*
 	*	Returns the topology.
 	*/
 	Topology GetTopology() const NOEXCEPT { return _Topology; }
@@ -234,9 +261,36 @@ public:
 	void SetRenderResolution(const Resolution &newRenderResolution) NOEXCEPT { _RenderResolution = newRenderResolution; }
 
 	/*
-	*	Sets whether or not this graphics pipeline should clear.
+	*	Sets the depth/stencil attachment load operator.
 	*/
-	void SetShouldClear(const bool shouldClear) NOEXCEPT{ _ShouldClear = shouldClear; }
+	FORCE_INLINE void SetDepthStencilAttachmentLoadOperator(const AttachmentLoadOperator value) NOEXCEPT
+	{
+		_DepthStencilAttachmentLoadOperator = value;
+	}
+
+	/*
+	*	Sets the depth/stencil attachment store operator.
+	*/
+	FORCE_INLINE void SetDepthStencilAttachmentStoreOperator(const AttachmentStoreOperator value) NOEXCEPT
+	{
+		_DepthStencilAttachmentStoreOperator = value;
+	}
+
+	/*
+	*	Sets the color attachment load operator.
+	*/
+	FORCE_INLINE void SetColorAttachmentLoadOperator(const AttachmentLoadOperator value) NOEXCEPT
+	{
+		_ColorAttachmentLoadOperator = value;
+	}
+
+	/*
+	*	Sets the color attachment store operator.
+	*/
+	FORCE_INLINE void SetColorAttachmentStoreOperator(const AttachmentStoreOperator value) NOEXCEPT
+	{
+		_ColorAttachmentStoreOperator = value;
+	}
 
 	/*
 	*	Sets whether or not blend is enabled.
@@ -360,8 +414,17 @@ private:
 	//The render resolution.
 	Resolution _RenderResolution;
 
-	//Denotes whether or not this graphics pipeline should clear.
-	bool _ShouldClear;
+	//The depth/stencil attachment load operator.
+	AttachmentLoadOperator _DepthStencilAttachmentLoadOperator;
+
+	//The depth/stencil attachment store operator.
+	AttachmentStoreOperator _DepthStencilAttachmentStoreOperator;
+
+	//The color attachment load operator.
+	AttachmentLoadOperator _ColorAttachmentLoadOperator;
+
+	//The color attachment store operator.
+	AttachmentStoreOperator _ColorAttachmentStoreOperator;
 
 	//Denotes whether or not blend is enabled.
 	bool _BlendEnabled;

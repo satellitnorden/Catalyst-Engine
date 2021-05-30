@@ -99,7 +99,10 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const De
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::STORE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

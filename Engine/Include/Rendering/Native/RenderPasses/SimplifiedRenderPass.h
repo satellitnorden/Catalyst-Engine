@@ -5,7 +5,6 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ClearGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SimplifiedModelGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SimplifiedSkyGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceGraphicsPipeline.h>
@@ -28,9 +27,6 @@ private:
 
 	//The scene depth buffer.
 	DepthBufferHandle _SceneDepthBuffer;
-
-	//The clear graphics pipeline.
-	ClearGraphicsPipeline _ClearGraphicsPipeline;
 
 	//The simplified model graphics pipeline.
 	SimplifiedModelGraphicsPipeline _SimplifiedModelGraphicsPipeline;

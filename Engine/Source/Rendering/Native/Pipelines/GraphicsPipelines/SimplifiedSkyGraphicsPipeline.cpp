@@ -62,7 +62,10 @@ void SimplifiedSkyGraphicsPipeline::Initialize(const DepthBufferHandle depth_buf
 	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

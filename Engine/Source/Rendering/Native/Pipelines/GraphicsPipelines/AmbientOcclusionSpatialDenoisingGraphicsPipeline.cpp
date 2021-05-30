@@ -64,7 +64,10 @@ void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const uint32 s
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

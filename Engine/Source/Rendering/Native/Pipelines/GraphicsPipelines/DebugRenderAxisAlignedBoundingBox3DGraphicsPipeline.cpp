@@ -88,7 +88,20 @@ void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize(const Depth
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	if (_DepthTest)
+	{
+		SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+		SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::STORE);
+	}
+
+	else
+	{
+		SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+		SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
+	}
+	
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(true);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

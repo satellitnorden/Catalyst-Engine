@@ -92,7 +92,10 @@ void SimplifiedModelGraphicsPipeline::Initialize(const DepthBufferHandle depth_b
 	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
 
 	//Set the properties of the render pass.
-	SetShouldClear(false);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::CLEAR);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::STORE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::CLEAR);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
