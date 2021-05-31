@@ -157,8 +157,8 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 			//Calculate the screen coverage.
 			float32 screen_coverage{ CatalystBaseMath::Minimum<float32>((maximum_screen_coordinate._X - minimum_screen_coordinate._X) * (maximum_screen_coordinate._Y - minimum_screen_coordinate._Y), 1.0f) };
 
-			//Modify the screen coverage based on the minimum/maximum.
-			screen_coverage = CatalystBaseMath::LinearlyInterpolate(_MinimumScreenCoverage, _MaximumScreenCoverage, screen_coverage);
+			//Bias the screen coverage.
+			screen_coverage = CatalystBaseMath::Bias(screen_coverage, _ScreenCoverageBias);
 
 			//Calculate the level of detail index.
 			component->_LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - screen_coverage) * static_cast<float32>(component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));

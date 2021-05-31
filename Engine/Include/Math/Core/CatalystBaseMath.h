@@ -72,7 +72,19 @@ public:
 	*/
 	FORCE_INLINE static NO_DISCARD float32 Bias(const float32 value, const float32 bias) NOEXCEPT
 	{
-		return bias >= 0.5f ? LinearlyInterpolate(value, InverseSquare(value), (bias - 0.5f) * 2.0f) : LinearlyInterpolate(value, Square(value), bias * 2.0f);
+		if (bias >= 0.5f)
+		{
+			const float32 bias_alpha{ (bias - 0.5f) * 2.0f };
+
+			return (value * (1.0f - bias_alpha)) + (InverseSquare(value) * bias_alpha);
+		}
+
+		else
+		{
+			const float32 bias_alpha{ 1.0f - (bias * 2.0f) };
+
+			return (value * (1.0f - bias_alpha)) + (Square(value) * bias_alpha);
+		}
 	}
 
 	/*
