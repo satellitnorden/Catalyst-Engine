@@ -38,7 +38,7 @@ namespace RenderingSystemLogic
 	/*
 	*	Initializes all render passes.
 	*/
-	FORCE_INLINE void InitializeRenderPasses(const DynamicArray<RenderPass *RESTRICT> render_passes) NOEXCEPT
+	FORCE_INLINE void InitializeRenderPasses(const DynamicArray<RenderPass *RESTRICT> &render_passes) NOEXCEPT
 	{
 		//Initialize all render passes.
 		for (RenderPass *const RESTRICT render_pass : render_passes)
@@ -50,7 +50,7 @@ namespace RenderingSystemLogic
 	/*
 	*	Executes all render passes.
 	*/
-	FORCE_INLINE void ExecuteRenderPasses(const DynamicArray<RenderPass *RESTRICT> render_passes) NOEXCEPT
+	FORCE_INLINE void ExecuteRenderPasses(const DynamicArray<RenderPass *RESTRICT> &render_passes) NOEXCEPT
 	{
 		//Executes all render passes.
 		for (RenderPass *const RESTRICT render_pass : render_passes)
