@@ -258,6 +258,265 @@ Matrix4x4 RenderingSystem::GetCurrentSurfaceTransformRotationMatrix() const NOEX
 }
 
 /*
+*	Returns the given render target.
+*/
+RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_target) NOEXCEPT
+{
+	if (!_RenderTargets[UNDERLYING(render_target)])
+	{
+		switch (render_target)
+		{
+			case RenderTarget::SCENE_FEATURES_1:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_1)]);
+
+				break;
+			}
+
+			case RenderTarget::SCENE_FEATURES_2:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_2)]);
+
+				break;
+			}
+
+			case RenderTarget::SCENE_FEATURES_3:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3)]);
+
+				break;
+			}
+
+			case RenderTarget::SCENE_FEATURES_4:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RG_FLOAT16, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4)]);
+
+				break;
+			}
+
+			case RenderTarget::SCENE_FEATURES_1_HALF:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_1_HALF)]);
+
+				break;
+			}
+
+			case RenderTarget::SCENE_FEATURES_2_HALF:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_2_HALF)]);
+
+				break;
+			}
+
+			case RenderTarget::SCENE_FEATURES_3_HALF:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3_HALF)]);
+
+				break;
+			}
+
+			case RenderTarget::SCENE_FEATURES_4_HALF:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RG_FLOAT16, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4_HALF)]);
+
+				break;
+			}
+
+			case RenderTarget::AMBIENT_OCCLUSION:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::AMBIENT_OCCLUSION)]);
+
+				break;
+			}
+
+			case RenderTarget::SCENE:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE)]);
+
+				break;
+			}
+
+			case RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1)]);
+
+				break;
+			}
+
+			case RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2)]);
+
+				break;
+			}
+
+			case RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_1:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_1)]);
+
+				break;
+			}
+
+			case RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_2:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_2)]);
+
+				break;
+			}
+
+			case RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_1:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_1)]);
+
+				break;
+			}
+
+			case RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_2:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_2)]);
+
+				break;
+			}
+
+			case RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_1:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_1)]);
+
+				break;
+			}
+
+			case RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2)]);
+
+				break;
+			}
+
+			case RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_1:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_1)]);
+
+				break;
+			}
+
+			case RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_2:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_2)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_UINT8:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_UINT8)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2:
+			{
+				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_R_UINT8_HALF:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_R_UINT8_HALF)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2:
+			{
+				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER:
+			{
+				CreateRenderTarget(GetScaledResolution(2), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH:
+			{
+				CreateRenderTarget(GetScaledResolution(3), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH:
+			{
+				CreateRenderTarget(GetScaledResolution(4), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND:
+			{
+				CreateRenderTarget(GetScaledResolution(5), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH:
+			{
+				CreateRenderTarget(GetScaledResolution(6), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH:
+			{
+				CreateRenderTarget(GetScaledResolution(7), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH)]);
+
+				break;
+			}
+
+			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH:
+			{
+				CreateRenderTarget(GetScaledResolution(8), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH)]);
+
+				break;
+			}
+
+			case RenderTarget::SCREEN:
+			{
+				//Do nothing, this is initialized by the subsystem. (:
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
+
+	return _RenderTargets[UNDERLYING(render_target)];
+}
+
+/*
 *	Adds a custom render pass.
 */
 void RenderingSystem::AddCustomRenderPass(RenderPass *const RESTRICT render_pass, const NativeRenderPassStage anchor, const CustomRenderPassOrdering ordering, const CustomRenderPassMode mode) NOEXCEPT
@@ -546,6 +805,7 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all render targets.
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_1)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_2)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3)]);
@@ -555,7 +815,9 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RG_FLOAT16, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::AMBIENT_OCCLUSION)]);
+#endif
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE)]);
+#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_1)]);
@@ -579,6 +841,7 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(6), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH)]);
 	CreateRenderTarget(GetScaledResolution(7), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH)]);
 	CreateRenderTarget(GetScaledResolution(8), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH)]);
+#endif
 }
 
 /*
@@ -718,9 +981,9 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 	for (uint8 i{ 0 }; i < GetNumberOfFramebuffers(); ++i)
 	{
 		//Bind the render targets
-		for (uint32 j{ 0 }; j < CatalystShaderConstants::NUMBER_OF_RENDER_TARGETS; ++j)
+		for (uint32 render_target_index{ 0 }; render_target_index < CatalystShaderConstants::NUMBER_OF_RENDER_TARGETS; ++render_target_index)
 		{
-			BindSampledImageToRenderDataTable(1, j, &_GlobalRenderData._RenderDataTables[i], _RenderTargets[j]);
+			BindSampledImageToRenderDataTable(1, render_target_index, &_GlobalRenderData._RenderDataTables[i], _RenderTargets[render_target_index] ? _RenderTargets[render_target_index] : _DefaultTexture2D);
 		}
 
 		//Bind some default texture to the global textures, because... Validation layers tells me I need to do this. (:

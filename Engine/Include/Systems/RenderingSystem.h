@@ -144,10 +144,7 @@ public:
 	/*
 	*	Returns the given render target.
 	*/
-	RenderTargetHandle GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT
-	{
-		return _RenderTargets[UNDERLYING(renderTarget)];
-	}
+	RenderTargetHandle GetRenderTarget(const RenderTarget render_target) NOEXCEPT;
 
 	/*
 	*	Returns a sampler with the given sampler properties.

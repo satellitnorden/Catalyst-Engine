@@ -22,7 +22,7 @@ public:
 	*	Uses: Useful when an array is almost sorted as it almost only takes linear complexity.
 	*/
 	template <typename TYPE>
-	static void BubbleSort(TYPE *const RESTRICT begin, TYPE *const RESTRICT end, const void *const RESTRICT user_data, ComparisonFunction<TYPE> comparison_function = [](const void *const RESTRICT user_data, const TYPE *const RESTRICT first, const TYPE *const RESTRICT first) { return *first < *first; }) NOEXCEPT
+	static void BubbleSort(TYPE *const RESTRICT begin, TYPE *const RESTRICT end, const void *const RESTRICT user_data, ComparisonFunction<TYPE> comparison_function = [](const void *const RESTRICT user_data, const TYPE *const RESTRICT first, const TYPE *const RESTRICT second) { return *first < *second; }) NOEXCEPT
 	{
 		bool swapped;
 
