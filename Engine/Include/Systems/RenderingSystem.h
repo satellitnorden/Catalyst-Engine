@@ -132,6 +132,16 @@ public:
 	uint8 GetCurrentFramebufferIndex() const NOEXCEPT;
 
 	/*
+	*	Returns the current surface transform.
+	*/
+	SurfaceTransform GetCurrentSurfaceTransform() const NOEXCEPT;
+
+	/*
+	*	Returns the current surface transform rotation matrix.
+	*/
+	Matrix4x4 GetCurrentSurfaceTransformRotationMatrix() const NOEXCEPT;
+
+	/*
 	*	Returns the given render target.
 	*/
 	RenderTargetHandle GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT

@@ -106,18 +106,18 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapCh
 	swapChainCreateInfo.flags = 0;
 	swapChainCreateInfo.surface = VulkanInterface::Instance->GetSurface().Get();
 
-	const auto &surfaceCapabilities = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceCapabilities();
-	const auto &surfaceFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat();
-	const auto &presentMode = VulkanInterface::Instance->GetPhysicalDevice().GetPresentMode();
+	const VkSurfaceCapabilitiesKHR &surface_capabilities{ VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceCapabilities() };
+	const VkSurfaceFormatKHR &surface_format{ VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat() };
+	const VkPresentModeKHR &present_mode{ VulkanInterface::Instance->GetPhysicalDevice().GetPresentMode() };
 
-	uint32 minimumImageCount = CatalystBaseMath::Maximum<uint32>(2, surfaceCapabilities.minImageCount);
+	uint32 minimumImageCount = CatalystBaseMath::Maximum<uint32>(2, surface_capabilities.minImageCount);
 
-	if (surfaceCapabilities.maxImageCount > 0 && minimumImageCount > surfaceCapabilities.maxImageCount)
-		minimumImageCount = surfaceCapabilities.maxImageCount;
+	if (surface_capabilities.maxImageCount > 0 && minimumImageCount > surface_capabilities.maxImageCount)
+		minimumImageCount = surface_capabilities.maxImageCount;
 
 	swapChainCreateInfo.minImageCount = minimumImageCount;
-	swapChainCreateInfo.imageFormat = surfaceFormat.format;
-	swapChainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
+	swapChainCreateInfo.imageFormat = surface_format.format;
+	swapChainCreateInfo.imageColorSpace = surface_format.colorSpace;
 	swapChainCreateInfo.imageExtent = _SwapExtent;
 	swapChainCreateInfo.imageArrayLayers = 1;
 	swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -136,9 +136,9 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapCh
 		swapChainCreateInfo.pQueueFamilyIndices = queueFamilyIndices;
 	}
 
-	swapChainCreateInfo.preTransform = VkSurfaceTransformFlagBitsKHR::VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+	swapChainCreateInfo.preTransform = surface_capabilities.currentTransform;
 	swapChainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	swapChainCreateInfo.presentMode = presentMode;
+	swapChainCreateInfo.presentMode = present_mode;
 	swapChainCreateInfo.clipped = VK_TRUE;
 	swapChainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
 }

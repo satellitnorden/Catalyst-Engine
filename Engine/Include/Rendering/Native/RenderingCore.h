@@ -462,6 +462,15 @@ enum class StencilOperator : uint8
 	DecrementAndWrap
 };
 
+//Enumeration covering all surface transforms.
+enum class SurfaceTransform : uint8
+{
+	IDENTITY,
+	ROTATE_90,
+	ROTATE_180,
+	ROTATE_270,
+};
+
 //Enumeration covering all topologies.
 enum class Topology : uint8
 {

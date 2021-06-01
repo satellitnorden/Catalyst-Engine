@@ -226,6 +226,38 @@ NO_DISCARD bool RenderingSystem::IsRayTracingPossible() const NOEXCEPT
 }
 
 /*
+*	Returns the current surface transform rotation matrix.
+*/
+Matrix4x4 RenderingSystem::GetCurrentSurfaceTransformRotationMatrix() const NOEXCEPT
+{
+	switch (GetCurrentSurfaceTransform())
+	{
+		case SurfaceTransform::IDENTITY:
+		{
+			return Matrix4x4();
+		}
+
+		case SurfaceTransform::ROTATE_90:
+		{
+			return Matrix4x4
+			(
+				0.0f, 1.0f, 0.0f, 0.0f,
+				-1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
+			);
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			return Matrix4x4();
+		}
+	}
+}
+
+/*
 *	Adds a custom render pass.
 */
 void RenderingSystem::AddCustomRenderPass(RenderPass *const RESTRICT render_pass, const NativeRenderPassStage anchor, const CustomRenderPassOrdering ordering, const CustomRenderPassMode mode) NOEXCEPT
@@ -821,6 +853,15 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._InversePerceiverToClipMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
 	_DynamicUniformData._WorldToPerceiverMatrix = *Perceiver::Instance->GetPerceiverMatrix();
 	_DynamicUniformData._WorldToClipMatrix = *Perceiver::Instance->GetProjectionMatrix() * current_perceiver_matrix;
+	
+	//Rotate the relevant matrices to fit the surface transform.
+	{
+		const Matrix4x4 rotation_matrix{ GetCurrentSurfaceTransformRotationMatrix() };
+
+		_DynamicUniformData._PreviousWorldToClipMatrix = rotation_matrix * _DynamicUniformData._PreviousWorldToClipMatrix;
+		_DynamicUniformData._UserInterfaceMatrix = rotation_matrix;
+		_DynamicUniformData._WorldToClipMatrix = rotation_matrix * _DynamicUniformData._WorldToClipMatrix;
+	}
 
 	//Update vectors.
 	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();

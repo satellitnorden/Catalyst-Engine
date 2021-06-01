@@ -785,6 +785,32 @@ uint8 RenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
 }
 
 /*
+*	Returns the current surface transform.
+*/
+SurfaceTransform RenderingSystem::GetCurrentSurfaceTransform() const NOEXCEPT
+{
+	switch (VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceCapabilities().currentTransform)
+	{
+		case VkSurfaceTransformFlagBitsKHR::VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR:
+		{
+			return SurfaceTransform::IDENTITY;
+		}
+
+		case VkSurfaceTransformFlagBitsKHR::VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR:
+		{
+			return SurfaceTransform::ROTATE_90;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			return SurfaceTransform::IDENTITY;
+		}
+	}
+}
+
+/*
 *	Creates a bottom level acceleration structure.
 */
 void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle &vertexBuffer,

@@ -59,60 +59,61 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 0) mat4 INVERSE_PERCEIVER_TO_CLIP_MATRIX;
     layout (offset = 64) mat4 INVERSE_WORLD_TO_PERCEIVER_MATRIX;
     layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
-    layout (offset = 192) mat4 WORLD_TO_CLIP_MATRIX;
-    layout (offset = 256) mat4 WORLD_TO_PERCEIVER_MATRIX;
+    layout (offset = 192) mat4 USER_INTERFACE_MATRIX;
+    layout (offset = 256) mat4 WORLD_TO_CLIP_MATRIX;
+    layout (offset = 320) mat4 WORLD_TO_PERCEIVER_MATRIX;
 
-    layout (offset = 320) vec3 PERCEIVER_FORWARD_VECTOR;
-    layout (offset = 336) vec3 PERCEIVER_WORLD_POSITION;
+    layout (offset = 384) vec3 PERCEIVER_FORWARD_VECTOR;
+    layout (offset = 400) vec3 PERCEIVER_WORLD_POSITION;
 
-    layout (offset = 352) vec3 UPPER_SKY_COLOR;
-    layout (offset = 368) vec3 LOWER_SKY_COLOR;
+    layout (offset = 416) vec3 UPPER_SKY_COLOR;
+    layout (offset = 432) vec3 LOWER_SKY_COLOR;
 
-    layout (offset = 384) ivec3 CURRENT_WORLD_GRID_CELL;
+    layout (offset = 448) ivec3 CURRENT_WORLD_GRID_CELL;
 
-    layout (offset = 400) vec2 SCALED_RESOLUTION;
-    layout (offset = 408) vec2 INVERSE_SCALED_RESOLUTION;
-    layout (offset = 416) vec2 CURRENT_FRAME_JITTER;
-    layout (offset = 424) vec2 PREVIOUS_FRAME_JITTER;
+    layout (offset = 464) vec2 SCALED_RESOLUTION;
+    layout (offset = 472) vec2 INVERSE_SCALED_RESOLUTION;
+    layout (offset = 480) vec2 CURRENT_FRAME_JITTER;
+    layout (offset = 488) vec2 PREVIOUS_FRAME_JITTER;
 
-    layout (offset = 432) vec2 HEIGHT_MAP_COORDINATE_OFFSET;
+    layout (offset = 496) vec2 HEIGHT_MAP_COORDINATE_OFFSET;
 
-    layout (offset = 440) float DELTA_TIME;
-    layout (offset = 444) float globalRandomSeed1;
-    layout (offset = 448) float globalRandomSeed2;
-    layout (offset = 452) float globalRandomSeed3;
-    layout (offset = 456) float totalTime;
-    layout (offset = 460) float windSpeed;
+    layout (offset = 504) float DELTA_TIME;
+    layout (offset = 508) float globalRandomSeed1;
+    layout (offset = 512) float globalRandomSeed2;
+    layout (offset = 516) float globalRandomSeed3;
+    layout (offset = 520) float totalTime;
+    layout (offset = 524) float windSpeed;
 
-    layout (offset = 464) float BLOOM_INTENSITY;
+    layout (offset = 528) float BLOOM_INTENSITY;
 
-    layout (offset = 468) float ASPECT_RATIO;
+    layout (offset = 532) float ASPECT_RATIO;
 
-    layout (offset = 472) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
-    layout (offset = 476) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
-    layout (offset = 480) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
+    layout (offset = 536) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
+    layout (offset = 540) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
+    layout (offset = 544) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
 
-    layout (offset = 484) float VIEW_DISTANCE;
-    layout (offset = 488) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
-    layout (offset = 492) float WETNESS;
-    layout (offset = 496) float NEAR_PLANE;
-    layout (offset = 500) float FAR_PLANE;
+    layout (offset = 548) float VIEW_DISTANCE;
+    layout (offset = 552) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
+    layout (offset = 556) float WETNESS;
+    layout (offset = 560) float NEAR_PLANE;
+    layout (offset = 564) float FAR_PLANE;
 
-    layout (offset = 504) uint UNUSED_1;
-    layout (offset = 508) uint UNUSED_2;
-    layout (offset = 512) uint UNUSED_3;
-    layout (offset = 516) float UNUSED_4;
+    layout (offset = 568) uint UNUSED_1;
+    layout (offset = 572) uint UNUSED_2;
+    layout (offset = 576) uint UNUSED_3;
+    layout (offset = 580) float UNUSED_4;
 
-    layout (offset = 520) uint SKY_MODE;
-    layout (offset = 524) float SKY_INTENSITY;
+    layout (offset = 584) uint SKY_MODE;
+    layout (offset = 588) float SKY_INTENSITY;
 
-    layout (offset = 528) float VOLUMETRIC_LIGHTING_DISTANCE;
-    layout (offset = 532) float VOLUMETRIC_LIGHTING_HEIGHT;
-    layout (offset = 536) float VOLUMETRIC_LIGHTING_THICKNESS;
+    layout (offset = 592) float VOLUMETRIC_LIGHTING_DISTANCE;
+    layout (offset = 596) float VOLUMETRIC_LIGHTING_HEIGHT;
+    layout (offset = 600) float VOLUMETRIC_LIGHTING_THICKNESS;
 
-    layout (offset = 540) float WORLD_GRID_SIZE;
+    layout (offset = 604) float WORLD_GRID_SIZE;
 
-    //Total size; 544
+    //Total size; 608
 };
 
 //The render targets.

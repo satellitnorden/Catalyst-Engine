@@ -15,6 +15,7 @@ public:
 	Matrix4x4 _InversePerceiverToClipMatrix;
 	Matrix4x4 _InverseWorldToPerceiverMatrix;
 	Matrix4x4 _PreviousWorldToClipMatrix;
+	Matrix4x4 _UserInterfaceMatrix;
 	Matrix4x4 _WorldToClipMatrix;
 	Matrix4x4 _WorldToPerceiverMatrix;
 
@@ -70,4 +71,4 @@ public:
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 544, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 608, "Size of dynamic uniform data is wrong!");
