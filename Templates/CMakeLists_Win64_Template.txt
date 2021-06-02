@@ -42,7 +42,6 @@ add_compile_definitions($<$<CONFIG:Debug>:CATALYST_ENABLE_RESOURCE_BUILDING>
 						$<$<CONFIG:Profile>:CATALYST_ENABLE_RESOURCE_BUILDING>
 						$<$<CONFIG:ProfileEditor>:CATALYST_ENABLE_RESOURCE_BUILDING>
 						)
-
 add_compile_definitions([CATALYST_PHYSICS])
 add_compile_definitions(CATALYST_PLATFORM_WINDOWS)
 add_compile_definitions(CATALYST_RENDERING_VULKAN)
@@ -74,6 +73,7 @@ target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:freetype>
 										$<$<CONFIG:Profile>:freetype>
 										$<$<CONFIG:ProfileEditor>:freetype>
 										)
+[LINK_STEAM_LIBRARIES]
 target_link_libraries(${PROJECT_NAME} vulkan-1)
 target_link_libraries(${PROJECT_NAME} Winmm)
 target_link_libraries(${PROJECT_NAME} xinput)

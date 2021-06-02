@@ -226,7 +226,7 @@ private:
 	ImageUserInterfacePrimitive *RESTRICT _ImagePrimitive;
 
 	//The text primitive.
-	TextUserInterfacePrimitive *RESTRICT _TextPrimitive;
+	TextUserInterfacePrimitive *RESTRICT _TextPrimitive{ nullptr };
 
 	/*
 	*	Updates the material.

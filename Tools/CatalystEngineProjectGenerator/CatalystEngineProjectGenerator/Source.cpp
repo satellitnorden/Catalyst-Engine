@@ -393,6 +393,30 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 			}
 		}
 
+		{
+			const size_t position{ cmake_lists_line.find("[LINK_STEAM_LIBRARIES]") };
+
+			if (position != std::string::npos)
+			{
+				switch (general_parameters._Distribution)
+				{
+					case Distribution::NULL:
+					{
+						cmake_lists_line.replace(position, strlen("[LINK_STEAM_LIBRARIES]"), "");
+
+						break;
+					}
+
+					case Distribution::STEAM:
+					{
+						cmake_lists_line.replace(position, strlen("[LINK_STEAM_LIBRARIES]"), "target_link_libraries(${PROJECT_NAME} steam_api64)");
+
+						break;
+					}
+				}
+			}
+		}
+
 		cmake_lists_output_file << cmake_lists_line << std::endl;
 	}
 
