@@ -7,6 +7,7 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/InputSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
 //Singleton definition.
@@ -55,12 +56,32 @@ void ProfilingSystem::GetAndClearProfilingEntries(DynamicArray<ProfilingEntry> *
 */
 void ProfilingSystem::PreUpdate() NOEXCEPT
 {
-#if 1
-	//Should the profiling user interface scene be activated?
-	if (!_ProfilingUserInterfaceScene.GetIsActive())
+	//Toggle if the profiling user interface should be shown.
+	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::P) == ButtonState::PRESSED)
 	{
-		UserInterfaceSystem::Instance->ActivateScene(&_ProfilingUserInterfaceScene);
+		_ShowProfilingUserInterface = !_ShowProfilingUserInterface;
 	}
-#endif
+
+	if (_ShowProfilingUserInterface)
+	{
+		if (!_ProfilingUserInterfaceScene.GetIsActive())
+		{
+			UserInterfaceSystem::Instance->ActivateScene(&_ProfilingUserInterfaceScene);
+
+			SCOPED_LOCK(_ProfilingEntriesLock);
+			_ProfilingEntries.Clear();
+		}
+	}
+	
+	else
+	{
+		if (_ProfilingUserInterfaceScene.GetIsActive())
+		{
+			UserInterfaceSystem::Instance->DeactivateScene(&_ProfilingUserInterfaceScene);
+		}
+
+		SCOPED_LOCK(_ProfilingEntriesLock);
+		_ProfilingEntries.Clear();
+	}
 }
 #endif

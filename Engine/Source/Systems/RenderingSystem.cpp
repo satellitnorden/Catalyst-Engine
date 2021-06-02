@@ -14,6 +14,9 @@
 #include <Math/Noise/HaltonSequence.h>
 #include <Math/Noise/HammersleySequence.h>
 
+//Profiling.
+#include <Profiling/ProfilingCore.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/Resolution.h>
@@ -52,6 +55,8 @@ namespace RenderingSystemLogic
 	*/
 	FORCE_INLINE void ExecuteRenderPasses(const DynamicArray<RenderPass *RESTRICT> &render_passes) NOEXCEPT
 	{
+		PROFILING_SCOPE("Execute Render Passes");
+
 		//Executes all render passes.
 		for (RenderPass *const RESTRICT render_pass : render_passes)
 		{

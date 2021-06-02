@@ -5,6 +5,9 @@
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
 
+//Profiling.
+#include <Profiling/ProfilingCore.h>
+
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 
@@ -46,7 +49,11 @@ void VulkanQueue::Present(const VulkanSemaphore *const RESTRICT renderFinishedSe
 	SCOPED_LOCK(_Lock);
 
 	//Present!
-	VULKAN_ERROR_CHECK(vkQueuePresentKHR(_VulkanQueue, &presentInfo));
+	{
+		PROFILING_SCOPE("Vulkan Swapchain Present");
+
+		VULKAN_ERROR_CHECK(vkQueuePresentKHR(_VulkanQueue, &presentInfo));
+	}
 }
 
 /*

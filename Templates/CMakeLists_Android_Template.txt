@@ -33,8 +33,7 @@ add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCE_FILES} ${GAME_INCLUDE_FILES} 
 #Set the include paths.
 target_include_directories(${PROJECT_NAME} PUBLIC ../../../../../../../Catalyst-Engine/Engine/Include)
 target_include_directories(${PROJECT_NAME} PUBLIC ../../../../../../Code/Include)
-target_include_directories(${PROJECT_NAME} PRIVATE ${ANDROID_NDK}/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/aaudio)
 target_include_directories(${PROJECT_NAME} PRIVATE ${ANDROID_NDK}/sources/android/native_app_glue)
 
 #Link the libraries.
-target_link_libraries(${PROJECT_NAME} android log native_app_glue vulkan)
+target_link_libraries(${PROJECT_NAME} aaudio android log native_app_glue vulkan)

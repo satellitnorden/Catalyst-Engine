@@ -19,6 +19,9 @@ void CatalystShaderMain()
 	float volumetric_lighting_opacity = 0.0f;
 
 	{
+		//Add the ambient lighting.
+		volumetric_lighting += CalculateVolumetricAmbientLighting();
+		
 		//Calculate the volumetric hit distance.
 		float volumetric_hit_distance = min(VIEW_DISTANCE, VOLUMETRIC_LIGHTING_DISTANCE);
 
@@ -64,9 +67,6 @@ void CatalystShaderMain()
 				}
 			}
 		}
-
-		//Add the ambient lighting.
-		volumetric_lighting += CalculateVolumetricAmbientLighting();
 
 		//Calculate the volumetric lighting opacity.
 		volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(volumetric_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, gl_WorldRayOriginNV.y);

@@ -51,6 +51,9 @@ private:
 	//The profiling entries lock.
 	Spinlock _ProfilingEntriesLock;
 
+	//Denotes if the profiling user interface should be shown.
+	bool _ShowProfilingUserInterface{ false };
+
 	//The profiling user interface scene.
 	ProfilingUserInterfaceScene _ProfilingUserInterfaceScene;
 

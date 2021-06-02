@@ -277,10 +277,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Physics update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::PHYSICS);
-	
-#if defined(CATALYST_CONFIGURATION_PROFILE)
-	ProfilingSystem::PhysicsUpdate(&context);
-#endif
 
 	/*
 	*	Render update phase.
@@ -295,10 +291,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Post update phase.
 	*/
 	UpdateIndividualPhase(UpdatePhase::POST);
-
-#if defined(CATALYST_CONFIGURATION_PROFILE)
-	ProfilingSystem::PostUpdate(&context);
-#endif
 
 	/*
 	*	Sequential update phase.

@@ -127,9 +127,9 @@ public:
 			/*
 			*	Bool operator overload.
 			*/
-			FORCE_INLINE bool operator()(TYPE *const RESTRICT first, TYPE *const RESTRICT second) NOEXCEPT
+			FORCE_INLINE bool operator()(const TYPE &first, const TYPE &second) NOEXCEPT
 			{
-				return _ComparisonFunction(_UserData, first, second);
+				return _ComparisonFunction(_UserData, &first, &second);
 			}
 
 		private:
