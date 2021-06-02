@@ -152,6 +152,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	MemorySystem::Instance->Initialize();
 	NetworkSystem::Instance->Initialize();
 	PhysicsSystem::Instance->Initialize();
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	ProfilingSystem::Instance->Initialize();
+#endif
 	SaveSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	ScriptSystem::Instance->Initialize();
@@ -199,6 +202,9 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 {
 	//Define constants.
 	constexpr float32 MAXIMUM_DELTA_TIME{ 0.1f };
+
+	//Start the profiling scope.
+	PROFILING_SCOPE("Catalyst Engine Update");
 
 	//Update the total frames.
 	++_TotalFrames;

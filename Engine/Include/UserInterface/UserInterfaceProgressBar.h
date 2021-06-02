@@ -56,7 +56,7 @@ private:
 	ImageUserInterfacePrimitive *RESTRICT _TopPrimitive;
 
 	//The text primitive.
-	TextUserInterfacePrimitive *RESTRICT _TextPrimitive;
+	TextUserInterfacePrimitive *RESTRICT _TextPrimitive{ nullptr };
 
 	//The current progress.
 	float32 _CurrentProgress{ 0.0f };

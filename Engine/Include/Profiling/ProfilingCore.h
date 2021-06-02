@@ -4,15 +4,13 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Profiling.
-#if !defined(INCLUDED_FROM_PROFILING_SYSTEM)
-#include <Profiling/ProfilingTimer.h>
-#endif
+#include <Profiling/ProfilingScope.h>
 
 /*
 *	Defines a profiling scope.
 */
-#if defined(CATALYST_CONFIGURATION_PROFILE)
-	#define PROFILING_SCOPE(ENTRY_NAME) ProfilingTimer profiling_timer{ ENTRY_NAME };
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	#define PROFILING_SCOPE(ENTRY_NAME) ProfilingScope profiling_scope{ ENTRY_NAME };
 #else
 	#define PROFILING_SCOPE(ENTRY_NAME)
 #endif

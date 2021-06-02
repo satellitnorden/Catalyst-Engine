@@ -1,13 +1,13 @@
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 #pragma once
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/DynamicString.h>
 
 //Systems.
 #include <Systems/ProfilingSystem.h>
 
-class ProfilingTimer final
+class ProfilingScope final
 {
 
 public:
@@ -15,12 +15,12 @@ public:
 	/*
 	*	Default constructor, prohitibed - must be constructed with the proper arguments.
 	*/
-	FORCE_INLINE ProfilingTimer() NOEXCEPT = delete;
+	FORCE_INLINE ProfilingScope() NOEXCEPT = delete;
 
 	/*
 	*	Constructor taking the name of the profiling entry.
 	*/
-	FORCE_INLINE ProfilingTimer(const char *const RESTRICT profiling_entry_name) NOEXCEPT
+	FORCE_INLINE ProfilingScope(const char *const RESTRICT profiling_entry_name) NOEXCEPT
 		:
 		_ProfilingEntryName(profiling_entry_name)
 	{
@@ -31,21 +31,22 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	FORCE_INLINE ~ProfilingTimer() NOEXCEPT
+	FORCE_INLINE ~ProfilingScope() NOEXCEPT
 	{
 		//Calculate the duration.
-		const float duration{ static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - _StartTime).count()) / 1'000'000.0f };
+		const float32 duration{ static_cast<float32>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - _StartTime).count()) / 1'000'000.0f };
 
 		//Add the profiling entry.
-		ProfilingSystem::AddProfilingEntry(_ProfilingEntryName, duration);
+		ProfilingSystem::Instance->AddProfilingEntry(_ProfilingEntryName, duration);
 	}
 
 private:
 
 	//The profiling entry name.
-	DynamicString _ProfilingEntryName;
+	const char *RESTRICT _ProfilingEntryName;
 
 	//The start time.
 	std::chrono::time_point<std::chrono::steady_clock> _StartTime;
 
 };
+#endif

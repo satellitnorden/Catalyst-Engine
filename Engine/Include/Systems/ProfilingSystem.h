@@ -1,33 +1,63 @@
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 #pragma once
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/DynamicString.h>
-#include <Core/General/UpdateContext.h>
+#include <Core/Containers/DynamicArray.h>
+
+//Concurrency.
+#include <Concurrency/Spinlock.h>
 
 //Profiling.
-#define INCLUDED_FROM_PROFILING_SYSTEM
-#include <Profiling/ProfilingCore.h>
-#undef INCLUDED_FROM_PROFILING_SYSTEM
+#include <Profiling/ProfilingEntry.h>
+#include <Profiling/ProfilingUserInterfaceScene.h>
 
 class ProfilingSystem final
 {
 
 public:
 
-	/*
-	*	Updates the profiling system during the physics update phase.
-	*/
-	static void PhysicsUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	//Singleton declaration.
+	DECLARE_SINGLETON(ProfilingSystem);
 
 	/*
-	*	Updates the profiling system during the post update phase.
+	*	Default constructor.
 	*/
-	static void PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	FORCE_INLINE ProfilingSystem() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Initializes the profiling system.
+	*/
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Adds a profiling entry.
 	*/
-	static void AddProfilingEntry(const DynamicString &name, const float duration) NOEXCEPT;
+	void AddProfilingEntry(const char *const RESTRICT name, const float32 duration) NOEXCEPT;
+
+	/*
+	*	Returns and clears the profiling entries.
+	*/
+	void GetAndClearProfilingEntries(DynamicArray<ProfilingEntry> *const RESTRICT out_entries) NOEXCEPT;
+
+private:
+
+	//The profiling entries.
+	DynamicArray<ProfilingEntry> _ProfilingEntries;
+
+	//The profiling entries lock.
+	Spinlock _ProfilingEntriesLock;
+
+	//The profiling user interface scene.
+	ProfilingUserInterfaceScene _ProfilingUserInterfaceScene;
+
+	/*
+	*	Updates the profiling system during the PRE update phase.
+	*/
+	void PreUpdate() NOEXCEPT;
 
 };
+#endif
