@@ -66,6 +66,24 @@ public:
 };
 
 /*
+*	Prints the options.
+*/
+void PrintOptions()
+{
+	std::cout << "Catalyst Engine Project Generator" << std::endl;
+	std::cout << std::endl;
+	std::cout << "\tOptions:" << std::endl;
+	std::cout << "\tFirst argument to this program is always the developer name." << std::endl;
+	std::cout << "\tSecond argument to this program is always the project name." << std::endl;
+	std::cout << std::endl;
+	std::cout << "\tOptional options:" << std::endl;
+	std::cout << "\t\tDISTRIBUTION_STEAM: Defines that the project should use STEAM as it's distribution system." << std::endl;
+	std::cout << "\t\tPHYSICS_PHYSX: Defines that the project should use PHYSX as it's physics system." << std::endl;
+	std::cout << "\t\tANDROID_FORCE_LANDSCAPE_MODE: Defines that the Android build of this project should force landscape mode." << std::endl;
+	std::cout << std::endl;
+}
+
+/*
 *	Generates Android.
 */
 void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidParameters &platform_parameters)
@@ -516,6 +534,9 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 
 int main(int argc, char *argv[])
 {
+	//Print the options.
+	PrintOptions();
+
 	//Construct the parameters.
 	GeneralParameters general_parameters;
 	AndroidParameters android_parameters;
