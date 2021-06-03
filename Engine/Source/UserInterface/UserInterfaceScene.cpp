@@ -129,7 +129,7 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 }
 
 /*
-*	Adds a button.
+*	Adds a button, using cells.
 */
 RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButton(	const Vector2<uint32> &minimum_cell,
 																				const Vector2<uint32> &maximum_cell,
@@ -143,8 +143,27 @@ RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButton(	co
 	Vector2<float32> minimum;
 	Vector2<float32> maximum;
 
-	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
+	//Add the button.
+	return AddButton(	minimum,
+						maximum,
+						start_pressed_callback,
+						idle_material_override,
+						hovered_material_override,
+						pressed_material_override,
+						text);
+}
 
+/*
+*	Adds a button, raw coordinates.
+*/
+RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButton(	const Vector2<float32> &minimum,
+																				const Vector2<float32> &maximum,
+																				const UserInterfaceButton::Callback start_pressed_callback,
+																				UserInterfaceMaterial *const RESTRICT idle_material_override,
+																				UserInterfaceMaterial *const RESTRICT hovered_material_override,
+																				UserInterfaceMaterial *const RESTRICT pressed_material_override,
+																				const char *const RESTRICT text) NOEXCEPT
+{
 	//Allocate the button.
 	UserInterfaceButton *const RESTRICT new_button{ new UserInterfaceButton(minimum,
 																			maximum,
@@ -169,7 +188,7 @@ RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButton(	co
 }
 
 /*
-*	Adds a checkbox.
+*	Adds a checkbox, using cells.
 */
 RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox(	const Vector2<uint32> &minimum_cell,
 																					const Vector2<uint32> &maximum_cell,
@@ -188,6 +207,34 @@ RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox
 
 	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
 
+	//Add the checkbox.
+	return AddCheckbox(	minimum,
+						maximum,
+						start_pressed_callback,
+						unchecked_idle_material_override,
+						unchecked_hovered_material_override,
+						unchecked_pressed_material_override,
+						checked_idle_material_override,
+						checked_hovered_material_override,
+						checked_pressed_material_override,
+						text);
+}
+
+
+/*
+*	Adds a checkbox, using raw coordinates.
+*/
+RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox(	const Vector2<float32> &minimum,
+																					const Vector2<float32> &maximum,
+																					const UserInterfaceCheckbox::Callback start_pressed_callback,
+																					UserInterfaceMaterial *const RESTRICT unchecked_idle_material_override,
+																					UserInterfaceMaterial *const RESTRICT unchecked_hovered_material_override,
+																					UserInterfaceMaterial *const RESTRICT unchecked_pressed_material_override,
+																					UserInterfaceMaterial *const RESTRICT checked_idle_material_override,
+																					UserInterfaceMaterial *const RESTRICT checked_hovered_material_override,
+																					UserInterfaceMaterial *const RESTRICT checked_pressed_material_override,
+																					const char *const RESTRICT text) NOEXCEPT
+{
 	//Allocate the checkbox.
 	UserInterfaceCheckbox *const RESTRICT new_checkbox{ new UserInterfaceCheckbox(	minimum,
 																					maximum,
@@ -215,11 +262,12 @@ RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox
 }
 
 /*
-*	Adds an image.
+*	Adds an image, using cells.
 */
 RESTRICTED UserInterfaceImage *const RESTRICT UserInterfaceScene::AddImage(	const Vector2<uint32> &minimum_cell,
 																			const Vector2<uint32> &maximum_cell,
-																			const UserInterfaceMaterial &material) NOEXCEPT
+																			const UserInterfaceMaterial &material,
+																			const float32 opacity) NOEXCEPT
 {
 	//Calculate the bounding box.
 	Vector2<float32> minimum;
@@ -227,10 +275,25 @@ RESTRICTED UserInterfaceImage *const RESTRICT UserInterfaceScene::AddImage(	cons
 
 	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
 
+	//Add the image.
+	return AddImage(minimum,
+					maximum,
+					material,
+					opacity);
+}
+/*
+*	Adds an image, raw coordinates.
+*/
+RESTRICTED UserInterfaceImage* const RESTRICT UserInterfaceScene::AddImage(	const Vector2<float32> &minimum,
+																			const Vector2<float32> &maximum,
+																			const UserInterfaceMaterial &material,
+																			const float32 opacity) NOEXCEPT
+{
 	//Allocate the image.
 	UserInterfaceImage *const RESTRICT new_image{ new UserInterfaceImage(	minimum,
 																			maximum,
-																			material) };
+																			material,
+																			opacity) };
 
 	//Add the image to the container.
 	_Images.Emplace(new_image);
@@ -240,7 +303,7 @@ RESTRICTED UserInterfaceImage *const RESTRICT UserInterfaceScene::AddImage(	cons
 }
 
 /*
-*	Adds a progress bar.
+*	Adds a progress bar, using cells.
 */
 RESTRICTED UserInterfaceProgressBar *const RESTRICT UserInterfaceScene::AddProgressBar(	const Vector2<uint32> &minimum_cell,
 																						const Vector2<uint32> &maximum_cell,
@@ -254,6 +317,23 @@ RESTRICTED UserInterfaceProgressBar *const RESTRICT UserInterfaceScene::AddProgr
 
 	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
 
+	//Add the progress bar.
+	return AddProgressBar(	minimum,
+							maximum,
+							text,
+							bottom_material_override,
+							top_material_override);
+}
+
+/*
+*	Adds a progress bar, using raw coordinates.
+*/
+RESTRICTED UserInterfaceProgressBar* const RESTRICT UserInterfaceScene::AddProgressBar(	const Vector2<float32> &minimum,
+																						const Vector2<float32> &maximum,
+																						const char *const RESTRICT text,
+																						UserInterfaceMaterial *const RESTRICT bottom_material_override,
+																						UserInterfaceMaterial *const RESTRICT top_material_override) NOEXCEPT
+{
 	//Allocate the progress bar.
 	UserInterfaceProgressBar* const RESTRICT new_progress_bar{ new UserInterfaceProgressBar(minimum,
 																							maximum,
@@ -269,7 +349,7 @@ RESTRICTED UserInterfaceProgressBar *const RESTRICT UserInterfaceScene::AddProgr
 }
 
 /*
-*	Adds a text.
+*	Adds a text, using cells.
 */
 RESTRICTED UserInterfaceText *const RESTRICT UserInterfaceScene::AddText(	const Vector2<uint32> &minimum_cell,
 																			const Vector2<uint32> &maximum_cell,
@@ -285,6 +365,27 @@ RESTRICTED UserInterfaceText *const RESTRICT UserInterfaceScene::AddText(	const 
 
 	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
 
+	//Add the text.
+	return AddText(	minimum,
+					maximum,
+					text,
+					scale_override,
+					horizontal_alignment,
+					vertical_alignment,
+					smoothing_factor_override);
+}
+
+/*
+*	Adds a text, using raw coordinates.
+*/
+RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddText(	const Vector2<float32> &minimum,
+																			const Vector2<float32> &maximum,
+																			const char *const RESTRICT text,
+																			const float32 *const RESTRICT scale_override,
+																			const TextHorizontalAlignment horizontal_alignment,
+																			const TextVerticalAlignment vertical_alignment,
+																			const float32 *const RESTRICT smoothing_factor_override) NOEXCEPT
+{
 	//Allocate the text.
 	UserInterfaceText* const RESTRICT new_text{ new UserInterfaceText(	minimum,
 																		maximum,

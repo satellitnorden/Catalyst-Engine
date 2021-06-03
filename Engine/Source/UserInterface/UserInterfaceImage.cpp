@@ -12,8 +12,9 @@
 *	Default constructor.
 */
 UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
-													const Vector2<float32> initial_maximum,
-													const UserInterfaceMaterial &initial_material) NOEXCEPT
+										const Vector2<float32> initial_maximum,
+										const UserInterfaceMaterial &initial_material,
+										const float32 opacity) NOEXCEPT
 {
 	//Create the primitive.
 	{
@@ -22,7 +23,7 @@ UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
 		description._Type = UserInterfacePrimitiveType::IMAGE;
 		description._Minimum = initial_minimum;
 		description._Maximum = initial_maximum;
-		description._Opacity = 1.0f;
+		description._Opacity = opacity;
 		description._Material = initial_material;
 
 		_Primitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));

@@ -121,7 +121,7 @@ protected:
 	}
 
 	/*
-	*	Adds a button.
+	*	Adds a button, using cells.
 	*/
 	RESTRICTED UserInterfaceButton *const RESTRICT AddButton(	const Vector2<uint32> &minimum_cell,
 																const Vector2<uint32> &maximum_cell,
@@ -132,7 +132,18 @@ protected:
 																const char *const RESTRICT text = "") NOEXCEPT;
 
 	/*
-	*	Adds a checkbox.
+	*	Adds a button, raw coordinates.
+	*/
+	RESTRICTED UserInterfaceButton *const RESTRICT AddButton(	const Vector2<float32> &minimum,
+																const Vector2<float32> &maximum,
+																const UserInterfaceButton::Callback start_pressed_callback,
+																UserInterfaceMaterial *const RESTRICT idle_material_override = nullptr,
+																UserInterfaceMaterial *const RESTRICT hovered_material_override = nullptr,
+																UserInterfaceMaterial *const RESTRICT pressed_material_override = nullptr,
+																const char *const RESTRICT text = "") NOEXCEPT;
+
+	/*
+	*	Adds a checkbox, using cells.
 	*/
 	RESTRICTED UserInterfaceCheckbox *const RESTRICT AddCheckbox(	const Vector2<uint32> &minimum_cell,
 																	const Vector2<uint32> &maximum_cell,
@@ -145,15 +156,37 @@ protected:
 																	UserInterfaceMaterial *const RESTRICT checked_pressed_material_override = nullptr,
 																	const char *const RESTRICT text = "") NOEXCEPT;
 
+
 	/*
-	*	Adds an image.
+	*	Adds a checkbox, using raw coordinates.
+	*/
+	RESTRICTED UserInterfaceCheckbox *const RESTRICT AddCheckbox(	const Vector2<float32> &minimum,
+																	const Vector2<float32> &maximum,
+																	const UserInterfaceCheckbox::Callback start_pressed_callback,
+																	UserInterfaceMaterial *const RESTRICT unchecked_idle_material_override = nullptr,
+																	UserInterfaceMaterial *const RESTRICT unchecked_hovered_material_overrid = nullptr,
+																	UserInterfaceMaterial *const RESTRICT unchecked_pressed_material_overrid = nullptr,
+																	UserInterfaceMaterial *const RESTRICT checked_idle_material_overrid = nullptr,
+																	UserInterfaceMaterial *const RESTRICT checked_hovered_material_override = nullptr,
+																	UserInterfaceMaterial *const RESTRICT checked_pressed_material_override = nullptr,
+																	const char *const RESTRICT text = "") NOEXCEPT;
+	/*
+	*	Adds an image, using cells.
 	*/
 	RESTRICTED UserInterfaceImage *const RESTRICT AddImage(	const Vector2<uint32> &minimum_cell,
 															const Vector2<uint32> &maximum_cell,
-															const UserInterfaceMaterial &material) NOEXCEPT;
+															const UserInterfaceMaterial &material,
+															const float32 opacity = 1.0f) NOEXCEPT;
+	/*
+	*	Adds an image, raw coordinates.
+	*/
+	RESTRICTED UserInterfaceImage *const RESTRICT AddImage(	const Vector2<float32> &minimum,
+															const Vector2<float32> &maximum,
+															const UserInterfaceMaterial &material,
+															const float32 opacity = 1.0f) NOEXCEPT;
 
 	/*
-	*	Adds a progress bar.
+	*	Adds a progress bar, using cells.
 	*/
 	RESTRICTED UserInterfaceProgressBar *const RESTRICT AddProgressBar(	const Vector2<uint32> &minimum_cell,
 																		const Vector2<uint32> &maximum_cell,
@@ -162,10 +195,30 @@ protected:
 																		UserInterfaceMaterial *const RESTRICT top_material_override = nullptr) NOEXCEPT;
 
 	/*
-	*	Adds a text.
+	*	Adds a progress bar, using raw coordinates.
+	*/
+	RESTRICTED UserInterfaceProgressBar *const RESTRICT AddProgressBar(	const Vector2<float32> &minimum,
+																		const Vector2<float32> &maximum,
+																		const char *const RESTRICT text = "",
+																		UserInterfaceMaterial *const RESTRICT bottom_material_override = nullptr,
+																		UserInterfaceMaterial *const RESTRICT top_material_override = nullptr) NOEXCEPT;
+
+	/*
+	*	Adds a text, using cells.
 	*/
 	RESTRICTED UserInterfaceText *const RESTRICT AddText(	const Vector2<uint32> &minimum_cell,
 															const Vector2<uint32> &maximum_cell,
+															const char *const RESTRICT text = "",
+															const float32 *const RESTRICT scale_override = nullptr,
+															const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::CENTER,
+															const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER,
+															const float32 *const RESTRICT smoothing_factor_override = nullptr) NOEXCEPT;
+
+	/*
+	*	Adds a text, using raw coordinates.
+	*/
+	RESTRICTED UserInterfaceText *const RESTRICT AddText(	const Vector2<float32> &minimum,
+															const Vector2<float32> &maximum,
 															const char *const RESTRICT text = "",
 															const float32 *const RESTRICT scale_override = nullptr,
 															const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::CENTER,

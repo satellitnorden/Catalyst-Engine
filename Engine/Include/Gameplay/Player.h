@@ -23,6 +23,22 @@ public:
 
 	}
 
+	/*
+	*	Returns whether or not this player is enabled.
+	*/
+	FORCE_INLINE NO_DISCARD bool GetEnabled() const NOEXCEPT
+	{
+		return _Enabled;
+	}
+
+	/*
+	*	Sets whether or not this player is enabled.
+	*/
+	FORCE_INLINE void SetEnabled(const bool value) NOEXCEPT
+	{
+		_Enabled = value;
+	}
+
 protected:
 
 	//The player configuration.
@@ -76,6 +92,9 @@ private:
 
 	//The rotation.
 	EulerAngles _Rotation;
+
+	//Denotes whether or not this player is enabled.
+	bool _Enabled{ true };
 
 	/*
 	*	Updates the current input state.

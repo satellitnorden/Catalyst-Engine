@@ -37,61 +37,76 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 	//Update this character.
 	UpdateCharacter(delta_time);
 
-	//Update the current input state.
-	UpdateCurrentInputState(delta_time);
-
-	//Apply rotation.
-	_Rotation._Roll += _CurrentInputState._Rotation._X * delta_time;
-	_Rotation._Yaw += _CurrentInputState._Rotation._Y * delta_time;
-	_Rotation._Roll = CatalystBaseMath::Clamp<float32>(_Rotation._Roll, CatalystBaseMath::DegreesToRadians(-89.0f), CatalystBaseMath::DegreesToRadians(89.0f));
-
-	//Calculate the forward and right vector.
-	Vector3<float32> forward{ CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_Rotation) };
-	Vector3<float32> right{ CatalystCoordinateSpacesUtilities::RotatedWorldRightVector(_Rotation) };
-
-	//Ignore the Y axis on the forward and right vectors.
-	forward.NormalizeXZ();
-	right.NormalizeXZ();
-
-	//Add the movement.
-	AddMovement(forward * _CurrentInputState._Movement._X);
-	AddMovement(right * _CurrentInputState._Movement._Y);
-
-	//Add jump.
-	if (_CurrentInputState._JumpButtonPressed)
+	if (_Enabled)
 	{
-		Jump();
+		//Update the current input state.
+		UpdateCurrentInputState(delta_time);
+
+		//Apply rotation.
+		_Rotation._Roll += _CurrentInputState._Rotation._X * delta_time;
+		_Rotation._Yaw += _CurrentInputState._Rotation._Y * delta_time;
+		_Rotation._Roll = CatalystBaseMath::Clamp<float32>(_Rotation._Roll, CatalystBaseMath::DegreesToRadians(-89.0f), CatalystBaseMath::DegreesToRadians(89.0f));
+
+		//Calculate the forward and right vector.
+		Vector3<float32> forward{ CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_Rotation) };
+		Vector3<float32> right{ CatalystCoordinateSpacesUtilities::RotatedWorldRightVector(_Rotation) };
+
+		//Ignore the Y axis on the forward and right vectors.
+		forward.NormalizeXZ();
+		right.NormalizeXZ();
+
+		//Add the movement.
+		AddMovement(forward * _CurrentInputState._Movement._X);
+		AddMovement(right * _CurrentInputState._Movement._Y);
+
+		//Add jump.
+		if (_CurrentInputState._JumpButtonPressed)
+		{
+			Jump();
+		}
+
+		//Set whether the character is crouching/sprinting.
+		SetIsCrouching(_CurrentInputState._IsCrouching);
+		SetIsSprinting(_CurrentInputState._IsSprinting);
+
+		//Hide the cursor.
+		InputSystem::Instance->HideCursor();
 	}
 
-	//Set whether the character is crouching/sprinting.
-	SetIsCrouching(_CurrentInputState._IsCrouching);
-	SetIsSprinting(_CurrentInputState._IsSprinting);
+	else
+	{
+		//Show the cursor.
+		InputSystem::Instance->ShowCursor();
+	}
 
 	//Post update the character.
 	PostUpdateCharacter(delta_time);
 
-	//Set the perceiver position/rotation.
-	Vector3<float32> character_controller_position{ _CharacterController->GetWorldPosition().GetAbsolutePosition() };
+	if (_Enabled)
+	{
+		//Set the perceiver position/rotation.
+		Vector3<float32> character_controller_position{ _CharacterController->GetWorldPosition().GetAbsolutePosition() };
 
 #if USE_TEMPORARY_TERRAIN_SOLUTION
-	{
-		float32 terrain_height;
-
-		if (TerrainSystem::Instance->GetTerrainHeightAtPosition(character_controller_position, &terrain_height))
 		{
-			if (character_controller_position._Y < terrain_height)
-			{
-				character_controller_position._Y = terrain_height;
+			float32 terrain_height;
 
-				_CharacterController->SetWorldPosition(WorldPosition(character_controller_position));
+			if (TerrainSystem::Instance->GetTerrainHeightAtPosition(character_controller_position, &terrain_height))
+			{
+				if (character_controller_position._Y < terrain_height)
+				{
+					character_controller_position._Y = terrain_height;
+
+					_CharacterController->SetWorldPosition(WorldPosition(character_controller_position));
+				}
 			}
 		}
-	}
 #endif
 
-	const WorldTransform world_transform{ character_controller_position + Vector3<float32>(0.0f, _CurrentHeight, 0.0f), _Rotation, 1.0f };
+		const WorldTransform world_transform{ character_controller_position + Vector3<float32>(0.0f, _CurrentHeight, 0.0f), _Rotation, 1.0f };
 
-	Perceiver::Instance->SetWorldTransform(world_transform);
+		Perceiver::Instance->SetWorldTransform(world_transform);
+	}
 }
 
 /*
@@ -107,9 +122,6 @@ void Player::UpdateCurrentInputState(const float32 delta_time) NOEXCEPT
 	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState() };
 	const KeyboardState *const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState() };
 	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState() };
-
-	//Hide the cursor.
-	InputSystem::Instance->HideCursor();
 
 	//Update the rotation.
 	_CurrentInputState._Rotation._X = 0.0f;
