@@ -143,6 +143,8 @@ RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButton(	co
 	Vector2<float32> minimum;
 	Vector2<float32> maximum;
 
+	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
+
 	//Add the button.
 	return AddButton(	minimum,
 						maximum,
