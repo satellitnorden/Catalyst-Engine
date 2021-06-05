@@ -38,7 +38,7 @@ void CatalystShaderMain()
       volumetric_lighting += CalculateVolumetricAmbientLighting();
 
       //Add the sky lighting.
-      volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_LUMINANCE * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
+      volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_RADIANCE.rgb * SKY_LIGHT_RADIANCE.a * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
 
       //Calculate the volumetric lighting opacity.
       float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(VIEW_DISTANCE, VOLUMETRIC_LIGHTING_DISTANCE, world_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_WORLD_POSITION.y);

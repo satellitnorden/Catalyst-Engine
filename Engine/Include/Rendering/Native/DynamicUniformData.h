@@ -19,6 +19,10 @@ public:
 	Matrix4x4 _WorldToClipMatrix;
 	Matrix4x4 _WorldToPerceiverMatrix;
 
+	Vector4<float32> _SkyLightRadiance;
+
+	Vector4<float32> _SkyLightDirection;
+
 	Vector4<float32> _PerceiverForwardVector;
 	Vector4<float32> _PerceiverWorldPosition;
 
@@ -55,10 +59,10 @@ public:
 	float32 _NearPlane;
 	float32 _FarPlane;
 
-	uint32 _TerrainHeightMapTextureIndex;
-	uint32 _TerrainIndexMapTextureIndex;
-	uint32 _TerrainBlendMapTextureIndex;
-	float32 _TerrainMapResolution;
+	float32 _PerceiverAbsoluteHeight;
+	uint32 _Unused1;
+	uint32 _Unused2;
+	uint32 _Unused3;
 
 	uint32 _SkyMode;
 	float32 _SkyIntensity;
@@ -71,4 +75,4 @@ public:
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 608, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 640, "Size of dynamic uniform data is wrong!");

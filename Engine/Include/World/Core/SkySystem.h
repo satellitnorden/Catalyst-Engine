@@ -13,6 +13,7 @@
 #include <Resources/Core/TextureCubeResource.h>
 
 //World.
+#include <World/Sky/AtmosphericScatteringProperties.h>
 #include <World/Sky/SkyGradient.h>
 
 class SkySystem final
@@ -23,6 +24,7 @@ public:
 	//Enumeration covering all sky modes.
 	enum class SkyMode : uint8
 	{
+		ATMOSPHERIC_SCATTERING,
 		GRADIENT,
 		TEXTURE
 	};
@@ -38,6 +40,23 @@ public:
 	FORCE_INLINE NO_DISCARD SkyMode GetSkyMode() const NOEXCEPT
 	{
 		return _SkyMode;
+	}
+
+	/*
+	*	Returns the atmospheric scattering properties.
+	*/
+	FORCE_INLINE NO_DISCARD const AtmosphericScatteringProperties &GetAtmosphericScatteringProperties() const NOEXCEPT
+	{
+		return _AtmosphericScatteringProperties;
+	}
+
+	/*
+	*	Sets the atmospheric scattering properties.
+	*/
+	FORCE_INLINE void SetAtmosphericScatteringProperties(const AtmosphericScatteringProperties &value) NOEXCEPT
+	{
+		_SkyMode = SkyMode::ATMOSPHERIC_SCATTERING;
+		_AtmosphericScatteringProperties = value;
 	}
 
 	/*
@@ -110,6 +129,9 @@ private:
 
 	//The sky mode.
 	SkyMode _SkyMode{ SkyMode::TEXTURE };
+
+	//The atmospheric scattering properties.
+	AtmosphericScatteringProperties _AtmosphericScatteringProperties;
 
 	//The sky gradient.
 	SkyGradient _SkyGradient;

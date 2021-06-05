@@ -6,10 +6,6 @@
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_NV_ray_tracing : require
 
-//Includes.
-#define CATALYST_SHADER_LANGUAGE_GLSL
-#include "..\Include\Rendering\Native\Shader\CatalystShaderConstants.h"
-
 //Constants.
 #define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX    (0)
 #define GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_REPEAT_INDEX           (1)
@@ -38,6 +34,11 @@
 #define LIGHT_TYPE_DIRECTIONAL (0)
 #define LIGHT_TYPE_POINT (1)
 
+//Includes.
+#define CATALYST_SHADER_LANGUAGE_GLSL
+#include "..\Include\Rendering\Native\Shader\CatalystShaderConstants.h"
+#include "..\Include\Rendering\Native\Shader\CatalystAtmosphericScattering.h"
+
 /*
 *	Material struct definition.
 */
@@ -56,6 +57,7 @@ struct Material
 //Global uniform data.
 layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 {
+    //Matrices.
     layout (offset = 0) mat4 INVERSE_PERCEIVER_TO_CLIP_MATRIX;
     layout (offset = 64) mat4 INVERSE_WORLD_TO_PERCEIVER_MATRIX;
     layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
@@ -63,57 +65,65 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 256) mat4 WORLD_TO_CLIP_MATRIX;
     layout (offset = 320) mat4 WORLD_TO_PERCEIVER_MATRIX;
 
-    layout (offset = 384) vec3 PERCEIVER_FORWARD_VECTOR;
-    layout (offset = 400) vec3 PERCEIVER_WORLD_POSITION;
+    //vec4's.
+    layout (offset = 384) vec4 SKY_LIGHT_RADIANCE;
 
-    layout (offset = 416) vec3 UPPER_SKY_COLOR;
-    layout (offset = 432) vec3 LOWER_SKY_COLOR;
+    //vec3's.
+    layout (offset = 400) vec3 SKY_LIGHT_DIRECTION;
 
-    layout (offset = 448) ivec3 CURRENT_WORLD_GRID_CELL;
+    layout (offset = 416) vec3 PERCEIVER_FORWARD_VECTOR;
+    layout (offset = 432) vec3 PERCEIVER_WORLD_POSITION;
 
-    layout (offset = 464) vec2 SCALED_RESOLUTION;
-    layout (offset = 472) vec2 INVERSE_SCALED_RESOLUTION;
-    layout (offset = 480) vec2 CURRENT_FRAME_JITTER;
-    layout (offset = 488) vec2 PREVIOUS_FRAME_JITTER;
+    layout (offset = 448) vec3 UPPER_SKY_COLOR;
+    layout (offset = 464) vec3 LOWER_SKY_COLOR;
 
-    layout (offset = 496) vec2 HEIGHT_MAP_COORDINATE_OFFSET;
+    layout (offset = 480) ivec3 CURRENT_WORLD_GRID_CELL;
 
-    layout (offset = 504) float DELTA_TIME;
-    layout (offset = 508) float globalRandomSeed1;
-    layout (offset = 512) float globalRandomSeed2;
-    layout (offset = 516) float globalRandomSeed3;
-    layout (offset = 520) float totalTime;
-    layout (offset = 524) float windSpeed;
+    //vec2's.
+    layout (offset = 496) vec2 SCALED_RESOLUTION;
+    layout (offset = 504) vec2 INVERSE_SCALED_RESOLUTION;
+    layout (offset = 512) vec2 CURRENT_FRAME_JITTER;
+    layout (offset = 520) vec2 PREVIOUS_FRAME_JITTER;
 
-    layout (offset = 528) float BLOOM_INTENSITY;
+    layout (offset = 528) vec2 HEIGHT_MAP_COORDINATE_OFFSET;
 
-    layout (offset = 532) float ASPECT_RATIO;
+    //float's.
+    layout (offset = 536) float DELTA_TIME;
+    layout (offset = 540) float globalRandomSeed1;
+    layout (offset = 544) float globalRandomSeed2;
+    layout (offset = 548) float globalRandomSeed3;
+    layout (offset = 552) float totalTime;
+    layout (offset = 556) float windSpeed;
 
-    layout (offset = 536) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
-    layout (offset = 540) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
-    layout (offset = 544) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
+    layout (offset = 560) float BLOOM_INTENSITY;
 
-    layout (offset = 548) float VIEW_DISTANCE;
-    layout (offset = 552) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
-    layout (offset = 556) float WETNESS;
-    layout (offset = 560) float NEAR_PLANE;
-    layout (offset = 564) float FAR_PLANE;
+    layout (offset = 564) float ASPECT_RATIO;
 
-    layout (offset = 568) uint UNUSED_1;
-    layout (offset = 572) uint UNUSED_2;
-    layout (offset = 576) uint UNUSED_3;
-    layout (offset = 580) float UNUSED_4;
+    layout (offset = 568) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
+    layout (offset = 572) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
+    layout (offset = 576) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
 
-    layout (offset = 584) uint SKY_MODE;
-    layout (offset = 588) float SKY_INTENSITY;
+    layout (offset = 580) float VIEW_DISTANCE;
+    layout (offset = 584) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
+    layout (offset = 588) float WETNESS;
+    layout (offset = 592) float NEAR_PLANE;
+    layout (offset = 596) float FAR_PLANE;
 
-    layout (offset = 592) float VOLUMETRIC_LIGHTING_DISTANCE;
-    layout (offset = 596) float VOLUMETRIC_LIGHTING_HEIGHT;
-    layout (offset = 600) float VOLUMETRIC_LIGHTING_THICKNESS;
+    layout (offset = 600) float PERCEIVER_ABSOLUTE_HEIGHT;
+    layout (offset = 604) uint UNUSED_1;
+    layout (offset = 608) uint UNUSED_2;
+    layout (offset = 612) float UNUSED_3;
 
-    layout (offset = 604) float WORLD_GRID_SIZE;
+    layout (offset = 616) uint SKY_MODE;
+    layout (offset = 620) float SKY_INTENSITY;
 
-    //Total size; 608
+    layout (offset = 624) float VOLUMETRIC_LIGHTING_DISTANCE;
+    layout (offset = 628) float VOLUMETRIC_LIGHTING_HEIGHT;
+    layout (offset = 632) float VOLUMETRIC_LIGHTING_THICKNESS;
+
+    layout (offset = 636) float WORLD_GRID_SIZE;
+
+    //Total size; 640
 };
 
 //The render targets.
@@ -192,14 +202,20 @@ vec3 SampleSky(vec3 direction, float mip_level)
 {
 	switch (SKY_MODE)
 	{
+        //Atmospheric scattering.
+        case 0:
+        {
+            return CalculateAtmosphericScattering(vec3(0.0f, PERCEIVER_ABSOLUTE_HEIGHT, 0.0f), direction, SKY_LIGHT_RADIANCE, SKY_LIGHT_DIRECTION) * SKY_INTENSITY;
+        }
+
 		//Gradient.
-		case 0:
+		case 1:
 		{
 			return mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f) * SKY_INTENSITY;
 		}
 
 		//Texture.
-		case 1:
+		case 2:
 		{
 			return textureLod(SKY_TEXTURE, direction, mip_level).rgb * SKY_INTENSITY;
 		}

@@ -5,6 +5,9 @@
 #include <Core/General/Perceiver.h>
 #include <Core/General/CatalystProjectConfiguration.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Entities.
 #include <Entities/Types/Entity.h>
 
@@ -1132,6 +1135,25 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	}
 
 	//Update vectors.
+	_DynamicUniformData._SkyLightRadiance = VectorConstants::ZERO;
+	_DynamicUniformData._SkyLightDirection = CatalystWorldCoordinateSpace::DOWN;
+
+	{
+		const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
+		const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
+		{
+			if (component->_LightType == LightType::DIRECTIONAL)
+			{
+				_DynamicUniformData._SkyLightRadiance = Vector4<float32>(component->_Color, component->_Intensity);
+				_DynamicUniformData._SkyLightDirection = component->_Direction;
+
+				break;
+			}
+		}
+	}
+
 	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
 	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetWorldTransform().GetLocalPosition();
 
@@ -1168,10 +1190,10 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
 	_DynamicUniformData._NearPlane = Perceiver::Instance->GetNearPlane();
 	_DynamicUniformData._FarPlane = Perceiver::Instance->GetFarPlane();
-	_DynamicUniformData._TerrainHeightMapTextureIndex = 0;
-	_DynamicUniformData._TerrainIndexMapTextureIndex = 0;
-	_DynamicUniformData._TerrainBlendMapTextureIndex = 0;
-	_DynamicUniformData._TerrainMapResolution = 0;
+	_DynamicUniformData._PerceiverAbsoluteHeight = _CurrentPerceiverWorldTransform.GetAbsolutePosition()._Y;
+	_DynamicUniformData._Unused1 = 0;
+	_DynamicUniformData._Unused2 = 0;
+	_DynamicUniformData._Unused3 = 0;
 
 	_DynamicUniformData._SkyMode = static_cast<uint32>(WorldSystem::Instance->GetSkySystem()->GetSkyMode());
 	_DynamicUniformData._SkyIntensity = WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();

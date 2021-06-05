@@ -16,22 +16,6 @@
 #include <Systems/WorldSystem.h>
 
 /*
-*	Simplified sky push constant data class definition.
-*/
-class SimplifiedSkyPushConstantData final
-{
-
-public:
-
-	//The sky light luminance.
-	Vector3<float32> _SkyLightLuminance;
-	
-	//Some padding.
-	Padding<4> _Padding;
-
-};
-
-/*
 *	Initializes this graphics pipeline.
 */
 void SimplifiedSkyGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
@@ -53,10 +37,6 @@ void SimplifiedSkyGraphicsPipeline::Initialize(const DepthBufferHandle depth_buf
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
-
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(SimplifiedSkyPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
@@ -103,28 +83,6 @@ void SimplifiedSkyGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-
-	//Push constants.
-	SimplifiedSkyPushConstantData data;
-
-	data._SkyLightLuminance = VectorConstants::ZERO;
-
-	{
-		const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
-		const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
-
-		for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
-		{
-			if (component->_LightType == LightType::DIRECTIONAL)
-			{
-				data._SkyLightLuminance = component->_Color * component->_Intensity;
-
-				break;
-			}
-		}
-	}
-
-	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(SimplifiedSkyPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

@@ -18,7 +18,4 @@ public:
 	//The time multiplier.
 	float32 _TimeMultiplier{ 1.0f };
 
-	//Denotes whether or not to control the sky color.
-	bool _ControlSky{ false };
-
 };

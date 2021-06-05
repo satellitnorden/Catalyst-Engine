@@ -114,9 +114,9 @@ void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_
 	SetRenderResolution(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution));
 
 	//Set the properties of the render pass.
-	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::CLEAR);
 	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::STORE);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::CLEAR);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
