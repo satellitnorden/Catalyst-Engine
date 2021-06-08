@@ -43,6 +43,11 @@ public:
 	*/
 	NO_DISCARD Vector3<float32> RadianceRay(const Ray &ray) NOEXCEPT;
 
+	/*
+	*	Casts a ray into the world and returns if there was occlusion.
+	*/
+	NO_DISCARD bool OcclusionRay(const Ray &ray) NOEXCEPT;
+
 private:
 
 	/*
@@ -94,5 +99,10 @@ private:
 	*	Casts a surface ray against models.
 	*/
 	NO_DISCARD bool SurfaceRayModels(const Ray &ray, float32 *closest_intersection_distance, SurfaceDescription *const RESTRICT surface_description) NOEXCEPT;
+
+	/*
+	*	Casts an occlusion ray against models.
+	*/
+	NO_DISCARD bool OcclusionRayModels(const Ray &ray) NOEXCEPT;
 
 };

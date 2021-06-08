@@ -17,7 +17,8 @@ DEFINE_SINGLETON(WorldTracingSystem);
 //World tracing system constants.
 namespace WorldTracingSystemConstants
 {
-	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 8.0f };
+	constexpr float32 DIRECTIONAL_LIGHT_SOFTNESS{ 0.01f };
+	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 64.0f };
 	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 2 };
 }
 
@@ -36,6 +37,14 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRay(const Ray &ray) NOEXCEPT
 {
 	return RadianceRayInternal(ray, 0);
+}
+
+/*
+*	Casts a ray into the world and returns if there was occlusion.
+*/
+NO_DISCARD bool WorldTracingSystem::OcclusionRay(const Ray &ray) NOEXCEPT
+{
+	return OcclusionRayModels(ray);
 }
 
 /*
@@ -164,6 +173,64 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 			final_radiance += surface_description._Albedo * surface_description._Emissive;
 		}
 
+		//Add direct lighting.
+		{
+			const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
+			const LightComponent *RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+			for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+			{
+				switch (component->_LightType)
+				{
+					case LightType::DIRECTIONAL:
+					{
+						//Calculate the direction to the light.
+						const Vector3<float32> direction_to_light{ Vector3<float32>::Normalize(-component->_Direction + CatalystRandomMath::RandomVector3InRange(-WorldTracingSystemConstants::DIRECTIONAL_LIGHT_SOFTNESS, WorldTracingSystemConstants::DIRECTIONAL_LIGHT_SOFTNESS)) };
+
+						//Determine if there is occlusion.
+						{
+							Ray occlusion_ray;
+
+							occlusion_ray.SetOrigin(hit_position + direction_to_light * WorldTracingSystemConstants::SELF_INTERSECTION_OFFSET);
+							occlusion_ray.SetDirection(direction_to_light);
+
+							if (OcclusionRay(occlusion_ray))
+							{
+								continue;
+							}
+						}
+
+						//Calculate the lighting.
+						final_radiance += CatalystLighting::CalculateLighting(	-ray._Direction,
+																				surface_description._Albedo,
+																				surface_description._Normal,
+																				surface_description._Roughness,
+																				surface_description._Metallic,
+																				surface_description._AmbientOcclusion,
+																				1.0f,
+																				-direction_to_light,
+																				component->_Color * component->_Intensity);
+
+						break;
+					}
+
+					case LightType::POINT:
+					{
+
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
+				}
+			}
+		}
+
 		//Add indirect lighting.
 		{
 			//Calculate the random hemisphere direction.
@@ -225,9 +292,14 @@ NO_DISCARD bool WorldTracingSystem::SurfaceRayModels(const Ray &ray, float32 *cl
 	for (const CachedModelState &cached_model_state : _CachedModelState)
 	{
 		//First of all, intersect the bounding box, and reject the model completely if it doesn hit.
-		if (!CatalystGeometryMath::RayBoxIntersection(ray, cached_model_state._WorldSpaceAxisAlignedBoundingBox, nullptr))
 		{
-			continue;
+			float32 intersection_distance;
+
+			if (!CatalystGeometryMath::RayBoxIntersection(ray, cached_model_state._WorldSpaceAxisAlignedBoundingBox, &intersection_distance)
+				|| intersection_distance > *closest_intersection_distance)
+			{
+				continue;
+			}
 		}
 
 		//Intersect all triangles.
@@ -362,4 +434,41 @@ NO_DISCARD bool WorldTracingSystem::SurfaceRayModels(const Ray &ray, float32 *cl
 
 	//Return if the ray hit anything.
 	return hit_anything;
+}
+
+/*
+*	Casts an occlusion ray against models.
+*/
+NO_DISCARD bool WorldTracingSystem::OcclusionRayModels(const Ray &ray) NOEXCEPT
+{
+	//Iterate over all cached models and cast rays against them.
+	for (const CachedModelState &cached_model_state : _CachedModelState)
+	{
+		//First of all, intersect the bounding box, and reject the model completely if it doesn't hit.
+		if (!CatalystGeometryMath::RayBoxIntersection(ray, cached_model_state._WorldSpaceAxisAlignedBoundingBox, nullptr))
+		{
+			continue;
+		}
+
+		//Intersect all triangles.
+		for (const CachedModelState::Triangle &cached_model_triangle : cached_model_state._Triangles)
+		{
+			Triangle triangle;
+
+			for (uint8 i{ 0 }; i < 3; ++i)
+			{
+				triangle._Vertices[i] = cached_model_triangle._Vertices[i]._Position;
+			}
+
+			float32 intersection_distance;
+
+			if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &intersection_distance))
+			{
+				return true;
+			}
+		}
+	}
+
+	//Nothing was hit.
+	return false;
 }

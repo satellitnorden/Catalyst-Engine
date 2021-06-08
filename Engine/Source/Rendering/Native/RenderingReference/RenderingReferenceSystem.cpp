@@ -8,6 +8,9 @@
 #include <Concurrency/AtomicQueue.h>
 #include <Concurrency/Task.h>
 
+//File.
+#include <File/Writers/PNGWriter.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
@@ -25,13 +28,6 @@
 
 //User interface.
 #include <UserInterface/UserInterfaceScene.h>
-
-//Enumeration covering all rendering reference states.
-enum class RenderingReferenceState : uint8
-{
-	IDLE,
-	IN_PROGRESS
-};
 
 /*
 *	Rendering reference user interface scene class definition.
@@ -131,9 +127,6 @@ namespace RenderingReferenceSystemData
 	//The update identifier.
 	uint64 _UpdateIdentifier;
 
-	//The current state.
-	RenderingReferenceState _CurrentState{ RenderingReferenceState::IDLE };
-
 	//The intermediate texture.
 	Texture2D<Vector4<float64>> _IntermediateTexture;
 
@@ -166,40 +159,9 @@ class RenderingReferenceSystemLogic
 public:
 
 	/*
-	*	Updates the rendering reference system during the PRE update phase.
+	*	Starts the rendering reference process.
 	*/
-	FORCE_INLINE static void PreUpdate() NOEXCEPT
-	{
-		//Update depending on state.
-		switch (RenderingReferenceSystemData::_CurrentState)
-		{
-			case RenderingReferenceState::IDLE:
-			{
-				IdleUpdate();
-
-				break;
-			}
-
-			case RenderingReferenceState::IN_PROGRESS:
-			{
-				InProgressUpdate();
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
-		}
-	}
-
-	/*
-	*	Updates the IDLE state.
-	*/
-	FORCE_INLINE static void IdleUpdate() NOEXCEPT
+	FORCE_INLINE static void Start() NOEXCEPT
 	{
 		//Pause the Catalyst engine system.
 		CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
@@ -215,7 +177,7 @@ public:
 
 			RenderingReferenceSystemData::_IntermediateTexture.Initialize(default_resolution._Width, default_resolution._Height);
 		}
-		
+
 		Memory::Set(RenderingReferenceSystemData::_IntermediateTexture.Data(), 0, RenderingReferenceSystemData::_IntermediateTexture.GetWidth() * RenderingReferenceSystemData::_IntermediateTexture.GetHeight() * sizeof(Vector4<float64>));
 
 		//Reset the current number of samples.
@@ -259,14 +221,25 @@ public:
 		//Fire the tasks.
 		FireTasks();
 
-		//Transition to the IN_PROGRESS state.
-		RenderingReferenceSystemData::_CurrentState = RenderingReferenceState::IN_PROGRESS;
+		//Register the update.
+		RenderingReferenceSystemData::_UpdateIdentifier = CatalystEngineSystem::Instance->RegisterUpdate(	[](void* const RESTRICT)
+																											{
+																												RenderingReferenceSystemLogic::PreUpdate();
+																											},
+																											nullptr,
+																											UpdatePhase::PRE,
+																											UpdatePhase::USER_INTERFACE,
+																											false,
+																											false);
+
+		//Rendering reference is now in progress!
+		RenderingReferenceSystemData::_RenderingReferenceIsInProgress = true;
 	}
 
 	/*
-	*	Updates the IN_PROGRESS state.
+	*	Updates the rendering reference system during the PRE update phase.
 	*/
-	FORCE_INLINE static void InProgressUpdate() NOEXCEPT
+	FORCE_INLINE static void PreUpdate() NOEXCEPT
 	{
 		//Are all tasks done?
 		if (AllTasksDone())
@@ -285,7 +258,7 @@ public:
 			//Create a new final texture handle.
 			Texture2DHandle new_final_texture_handle;
 			RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(RenderingReferenceSystemData::_FinalTexture), TextureFormat::RGBA_FLOAT32, TextureUsage::NONE), &new_final_texture_handle);
-		
+
 			//Add the new final texture to the global render data.
 			const uint32 new_final_texture_index{ RenderingSystem::Instance->AddTextureToGlobalRenderData(new_final_texture_handle) };
 
@@ -401,6 +374,44 @@ public:
 		}
 	}
 
+	/*
+	*	Stops the rendering reference process.
+	*/
+	FORCE_INLINE static void Stop(const char *const RESTRICT file_path) NOEXCEPT
+	{
+		//De-register the update.
+		CatalystEngineSystem::Instance->DeregisterUpdate(RenderingReferenceSystemData::_UpdateIdentifier);
+
+		//Wait for all the tasks to finish.
+		while (!AllTasksDone());
+
+		//Write the rendered image to file, if a file path is specified.
+		if (file_path)
+		{
+			//Flip the final texture before writing it.
+			Texture2D<Vector4<float32>> flipped_finale_texture{ RenderingReferenceSystemData::_FinalTexture.GetWidth(), RenderingReferenceSystemData::_FinalTexture.GetHeight() };
+
+			for (uint32 Y{ 0 }; Y < RenderingReferenceSystemData::_FinalTexture.GetHeight(); ++Y)
+			{
+				for (uint32 X{ 0 }; X < RenderingReferenceSystemData::_FinalTexture.GetWidth(); ++X)
+				{
+					flipped_finale_texture.At(X, Y) = RenderingReferenceSystemData::_FinalTexture.At(X, RenderingReferenceSystemData::_FinalTexture.GetHeight() - 1 - Y);
+				}
+			}
+
+			PNGWriter::Write(flipped_finale_texture, file_path);
+		}
+
+		//Resume the Catalyst engine system.
+		CatalystEngineSystem::Instance->SetUpdateSpeed(1.0f);
+
+		//Deactivate the rendering reference user interface scene.
+		UserInterfaceSystem::Instance->DeactivateScene(&RenderingReferenceSystemData::_RenderingReferenceUserInterfaceScene);
+
+		//Rendering reference is no longer in progress!
+		RenderingReferenceSystemData::_RenderingReferenceIsInProgress = false;
+	}
+
 };
 
 /*
@@ -416,19 +427,7 @@ NO_DISCARD bool RenderingReferenceSystem::IsRenderingReferenceInProgress() const
 */
 void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 {
-	//Register the update.
-	RenderingReferenceSystemData::_UpdateIdentifier = CatalystEngineSystem::Instance->RegisterUpdate(	[](void* const RESTRICT)
-																										{
-																											RenderingReferenceSystemLogic::PreUpdate();
-																										},
-																										nullptr,
-																										UpdatePhase::PRE,
-																										UpdatePhase::USER_INTERFACE,
-																										false,
-																										false);
-
-	//Rendering reference is now in progress!
-	RenderingReferenceSystemData::_RenderingReferenceIsInProgress = true;
+	RenderingReferenceSystemLogic::Start();
 }
 
 /*
@@ -436,6 +435,5 @@ void RenderingReferenceSystem::StartRenderingReference() NOEXCEPT
 */
 void RenderingReferenceSystem::StopRenderingReference(const char *const RESTRICT file_path) NOEXCEPT
 {
-	//Rendering reference is no longer in progress!
-	RenderingReferenceSystemData::_RenderingReferenceIsInProgress = false;
+	RenderingReferenceSystemLogic::Stop(file_path);
 }
