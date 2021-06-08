@@ -647,7 +647,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		vec3 surface_color = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(vec3(0.04f, 0.04f, 0.04f), albedo, metallic);
 
 		//Calculate the fresnel.
-		return surface_color + CATALYST_SHADER_FUNCTION_MAXIMUM(vec3(1.0f, 1.0f, 1.0f) - surface_color, surface_color) * pow(1.0f - CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT), 5.0f);
+		return surface_color/* + CATALYST_SHADER_FUNCTION_MAXIMUM(vec3(1.0f, 1.0f, 1.0f) - surface_color, surface_color) * pow(1.0f - CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT), 5.0f)*/;
 	}
 
 	/*

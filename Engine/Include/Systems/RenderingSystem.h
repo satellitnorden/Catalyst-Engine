@@ -30,9 +30,7 @@
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
-#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 #include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
-#endif
 
 //Resources.
 #include <Resources/Core/Texture2DResource.h>
@@ -205,19 +203,17 @@ public:
 	}
 
 	/*
-	*	Adds a custom render pass.
-	*/
-	void AddCustomRenderPass(RenderPass *const RESTRICT render_pass, const NativeRenderPassStage anchor, const CustomRenderPassOrdering ordering, const CustomRenderPassMode mode) NOEXCEPT;
-
-#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
-	/*
 	*	Returns the rendering reference system.
 	*/
 	RESTRICTED NO_DISCARD RenderingReferenceSystem *const RESTRICT GetRenderingReferenceSystem() NOEXCEPT
 	{
 		return &_RenderingReferenceSystem;
 	}
-#endif
+
+	/*
+	*	Adds a custom render pass.
+	*/
+	void AddCustomRenderPass(RenderPass *const RESTRICT render_pass, const NativeRenderPassStage anchor, const CustomRenderPassOrdering ordering, const CustomRenderPassMode mode) NOEXCEPT;
 
 	/*
 	*	Creates a bottom level acceleration structure.
@@ -510,13 +506,11 @@ private:
 	//The ray tracing system.
 	RayTracingSystem _RayTracingSystem;
 
-	//Container for all the render passes.
-	DynamicArray<RenderPass *RESTRICT> _RenderPasses;
-
-#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
 	//The rendering reference system.
 	RenderingReferenceSystem _RenderingReferenceSystem;
-#endif
+
+	//Container for all the render passes.
+	DynamicArray<RenderPass *RESTRICT> _RenderPasses;
 
 	//The current blue noise texture index.
 	uint8 _CurrentBlueNoiseTextureIndex{ 0 };

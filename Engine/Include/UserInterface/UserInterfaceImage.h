@@ -27,6 +27,11 @@ public:
 	*/
 	~UserInterfaceImage() NOEXCEPT;
 
+	/*
+	*	Sets the material.
+	*/
+	void SetMaterial(const UserInterfaceMaterial &value) NOEXCEPT;
+
 private:
 
 	//The primitive.

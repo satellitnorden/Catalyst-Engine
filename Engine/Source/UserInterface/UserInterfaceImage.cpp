@@ -38,3 +38,11 @@ UserInterfaceImage::~UserInterfaceImage() NOEXCEPT
 	//Destroy the primitive.
 	UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_Primitive);
 }
+
+/*
+*	Sets the material.
+*/
+void UserInterfaceImage::SetMaterial(const UserInterfaceMaterial &value) NOEXCEPT
+{
+	_Primitive->_Material = value;
+}

@@ -168,10 +168,16 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
 
 	//Register the Catalyst Engine resource collection. 
-#if defined(CATALYST_CONFIGURATION_FINAL) || defined(CATALYST_PLATFORM_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID)
 	ResourceSystem::Instance->LoadResourceCollection("CatalystEngineResourceCollection_0.crc");
-#else
+#endif
+
+#if defined(CATALYST_PLATFORM_WINDOWS)
+	#if defined(CATALYST_CONFIGURATION_FINAL)
+	ResourceSystem::Instance->LoadResourceCollection("EngineResources\\CatalystEngineResourceCollection_0.crc");
+	#else
 	ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection_0.crc");
+	#endif
 #endif
 
 	//Post-initialize all systems.

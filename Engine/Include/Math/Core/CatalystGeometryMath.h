@@ -44,6 +44,34 @@ public:
 	}
 
 	/*
+	*	Calculates the cosinus hemisphere vector given a coordinate.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateHemisphereCosinus(const Vector2<float32> &coordinate) NOEXCEPT
+	{
+		//Map the 2D coordinate onto the hemisphere.
+		const float32 phi{ coordinate._Y * 2.0f * CatalystBaseMathConstants::PI };
+		const float32 cos_theta{ CatalystBaseMath::SquareRoot(1.0f - coordinate._X) };
+		const float32 sin_theta{ CatalystBaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
+
+		//Return the cosinus hemisphere coordinate.
+		return Vector3<float32>(CatalystBaseMath::Cosine(phi) * sin_theta, CatalystBaseMath::Sine(phi) * sin_theta, cos_theta);
+	}
+
+	/*
+	*	Calculates the uniform hemisphere vector given a coordinate.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateHemisphereUniform(const Vector2<float32> &coordinate) NOEXCEPT
+	{
+		//Map the 2D coordinate onto the hemisphere.
+		const float32 phi{ coordinate._Y * 2.0f * CatalystBaseMathConstants::PI };
+		const float32 cos_theta{ 1.0f - coordinate._X };
+		const float32 sin_theta{ CatalystBaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
+
+		//Return the cosinus hemisphere coordinate.
+		return Vector3<float32>(CatalystBaseMath::Cosine(phi) * sin_theta, CatalystBaseMath::Sine(phi) * sin_theta, cos_theta);
+	}
+
+	/*
 	*	Performs a box-box intersection and return whether or not there was an intersection.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool BoxBoxIntersection(const AxisAlignedBoundingBox3D &box1, const AxisAlignedBoundingBox3D &box2) NOEXCEPT

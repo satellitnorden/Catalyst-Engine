@@ -12,18 +12,21 @@ class SurfaceDescription final
 public:
 	
 	//The albedo.
-	Vector3<float> _Albedo;
+	Vector3<float32> _Albedo;
 
 	//The normal.
-	Vector3<float> _Normal;
+	Vector3<float32> _Normal;
 
 	//The roughness.
-	float _Roughness;
+	float32 _Roughness;
 
 	//The metallic.
-	float _Metallic;
+	float32 _Metallic;
 
 	//The ambient occlusion.
-	float _AmbientOcclusion;
+	float32 _AmbientOcclusion;
+
+	//The emissive.
+	float32 _Emissive;
 
 };
