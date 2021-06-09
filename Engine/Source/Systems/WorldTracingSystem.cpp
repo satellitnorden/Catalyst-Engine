@@ -9,7 +9,11 @@
 #include <Math/Core/CatalystRandomMath.h>
 
 //Rendering.
+#include <Rendering/Native/Shader/CatalystAtmosphericScattering.h>
 #include <Rendering/Native/Shader/CatalystLighting.h>
+
+//Systems.
+#include <Systems/WorldSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(WorldTracingSystem);
@@ -74,8 +78,8 @@ void WorldTracingSystem::CacheWorldModelState() NOEXCEPT
 
 			for (uint64 mesh_index{ 0 }; mesh_index < component->_ModelResource->_Meshes.Size(); ++mesh_index)
 			{
-				const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[0]._Vertices };
-				const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[0]._Indices };
+				const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Vertices };
+				const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Indices };
 
 				for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
 				{
@@ -114,8 +118,8 @@ void WorldTracingSystem::CacheWorldModelState() NOEXCEPT
 
 			for (uint64 mesh_index{ 0 }; mesh_index < component->_ModelResource->_Meshes.Size(); ++mesh_index)
 			{
-				const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[0]._Vertices };
-				const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[0]._Indices };
+				const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Vertices };
+				const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Indices };
 
 				for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
 				{
@@ -273,7 +277,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 
 	else
 	{
-		return Vector3<float32>(0.0f, 0.0f, 0.0f);
+		return SkyRay(ray);
 	}
 }
 
@@ -392,11 +396,65 @@ NO_DISCARD bool WorldTracingSystem::SurfaceRayModels(const Ray &ray, float32 *cl
 		}
 
 		//Fill in the normal.
-		surface_description->_Normal = Vector3<float32>(0.0f, 0.0f, 0.0f);
-
-		for (uint8 i{ 0 }; i < 3; ++i)
 		{
-			surface_description->_Normal += hit_triangle->_Vertices[i]._Normal * barycentric_coordinates[i];
+			//Calculate the tangent space matrix.
+			Matrix3x3 tangent_space_matrix;
+
+			{
+				Vector3<float32> normal{ 0.0f, 0.0f, 0.0f };
+
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					normal += hit_triangle->_Vertices[i]._Normal * barycentric_coordinates[i];
+				}
+
+				Vector3<float32> tangent{ 0.0f, 0.0f, 0.0f };
+
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					tangent += hit_triangle->_Vertices[i]._Tangent * barycentric_coordinates[i];
+				}
+
+				const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(surface_description->_Normal, tangent) };
+
+				tangent_space_matrix = Matrix3x3(tangent, bitangent, surface_description->_Normal);
+			}
+
+			//Retrieve the normal map.
+			Vector3<float32> normal_map;
+
+			{
+				Vector4<float32> normal_map_displacement;
+
+				switch (hit_triangle->_MaterialResource->_NormalMapDisplacementComponent._Type)
+				{
+					case MaterialResource::MaterialResourceComponent::Type::COLOR:
+					{
+						normal_map_displacement = hit_triangle->_MaterialResource->_NormalMapDisplacementComponent._Color.Get();
+
+						break;
+					}
+
+					case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+					{
+						normal_map_displacement = hit_triangle->_MaterialResource->_NormalMapDisplacementComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::CLAMP_TO_EDGE);
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
+				}
+
+				normal_map = Vector3<float32>(normal_map_displacement._X * 2.0f - 1.0f, normal_map_displacement._Y * 2.0f - 1.0f, normal_map_displacement._Z * 2.0f - 1.0f);
+			}
+
+			//Fill in the normal.
+			surface_description->_Normal = tangent_space_matrix * normal_map;
 		}
 
 		//Fill in the material properties.
@@ -471,4 +529,44 @@ NO_DISCARD bool WorldTracingSystem::OcclusionRayModels(const Ray &ray) NOEXCEPT
 
 	//Nothing was hit.
 	return false;
+}
+
+/*
+*	Casts a ray against the sky.
+*/
+NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray &ray) NOEXCEPT
+{
+	switch (WorldSystem::Instance->GetSkySystem()->GetSkyMode())
+	{
+		case SkySystem::SkyMode::ATMOSPHERIC_SCATTERING:
+		{
+			Vector3<float32> sky_light_radiance{ 0.0f, 0.0f, 0.0f };
+			Vector3<float32> sky_light_direction{ 0.0f, -1.0f, 0.0f };
+
+			{
+				const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
+				const LightComponent *RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+				for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+				{
+					if (component->_LightType == LightType::DIRECTIONAL)
+					{
+						sky_light_radiance = component->_Color * component->_Intensity;
+						sky_light_direction = component->_Direction;
+
+						break;
+					}
+				}
+			}
+
+			return CatalystAtmosphericScattering::CalculateAtmosphericScattering(ray._Origin, ray._Direction, sky_light_radiance, sky_light_direction);
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			return Vector3<float32>(0.0f, 0.0f, 0.0f);
+		}
+	}
 }

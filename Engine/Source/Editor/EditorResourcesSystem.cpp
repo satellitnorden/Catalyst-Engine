@@ -66,6 +66,17 @@ void EditorResourcesSystem::Update() NOEXCEPT
 		_CurrentCreateResourceMode = CreateResourceMode::TEXTURE_2D;
 	}
 
+	//Add the button for creating a Quixel material resource.
+	if (ImGui::Button("Create Quixel Material Resource"))
+	{
+		//Reset the create model resource data.
+		_CreateQuixelMaterialResourceData.~CreateQuixelMaterialResourceData();
+		new (&_CreateQuixelMaterialResourceData) CreateQuixelMaterialResourceData();
+
+		//Set the current create resource mode.
+		_CurrentCreateResourceMode = CreateResourceMode::QUIXEL_MATERIAL;
+	}
+
 	//Add the button for creating a Quixel model resource.
 	if (ImGui::Button("Create Quixel Model Resource"))
 	{
@@ -103,6 +114,13 @@ void EditorResourcesSystem::Update() NOEXCEPT
 		case CreateResourceMode::TEXTURE_2D:
 		{
 			AddCreateTexture2DResourceWindow();
+
+			break;
+		}
+
+		case CreateResourceMode::QUIXEL_MATERIAL:
+		{
+			AddCreateQuixelMaterialResourceWindow();
 
 			break;
 		}
@@ -558,12 +576,31 @@ void EditorResourcesSystem::AddCreateModelResourceWindow() NOEXCEPT
 	//Create the "Blender Transform" checkbox.
 	ImGui::Checkbox("Apply Blender Transform", &_CreateModelResourceData._ApplyBlenderTransform);
 
+	//If the user has already selected a collision model file path, display it.
+	if (_CreateModelResourceData._CollisionModelFilePath.Data())
+	{
+		ImGui::Text("Collision Model File Path:");
+		ImGui::Text(_CreateModelResourceData._CollisionModelFilePath.Data());
+	}
+
+	//Add the button to set the collision model file path.
+	if (ImGui::Button("Select Collision Model File Path"))
+	{
+		File::BrowseForFile(true, &_CreateModelResourceData._CollisionModelFilePath);
+	}
+
 	//Add some padding before the "Create Model Resource" button.
 	ImGui::Text("");
 
 	//Add the create button.
 	if (ImGui::Button("Create Model Resource"))
 	{
+		//If the user has already written the ".cr" extension, or if the user is aiming to replace an existing file, remove the extension as it's added automatically by the resource building system.
+		if (StringUtilities::IsEqual(&_CreateModelResourceData._OutputFilePath[_CreateModelResourceData._OutputFilePath.Length() - 3], ".cr"))
+		{
+			_CreateModelResourceData._OutputFilePath.SetLength(_CreateModelResourceData._OutputFilePath.Length() - 3);
+		}
+
 		//Retrieve the identifier.
 		DynamicString identifier;
 
@@ -601,6 +638,8 @@ void EditorResourcesSystem::AddCreateModelResourceWindow() NOEXCEPT
 
 			parameters._TextureCoordinateMultiplier = 1.0f;
 			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = _CreateModelResourceData._CollisionModelFilePath.Data();
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
 		}
@@ -881,6 +920,320 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 }
 
 /*
+*	Adds the create Quixel material resource window.
+*/
+void EditorResourcesSystem::AddCreateQuixelMaterialResourceWindow() NOEXCEPT
+{
+	/*
+	*	Create Quixel material resource temporary data class definition.
+	*/
+	class CreateQuixelMaterialResourceTemporaryData final
+	{
+
+	public:
+
+		//The identifier.
+		DynamicString _Identifier;
+
+		//The base mipmap level.
+		uint8 _BaseMipmapLevel;
+
+		//The number of mipmap levels.
+		uint8 _NumberOfMipmapLevels;
+
+		//The albedo texture file path.
+		DynamicString _AlbedoTextureFilePath;
+
+		//The normal map texture file path.
+		DynamicString _NormalMapTextureFilePath;
+
+		//The displacement texture file path.
+		DynamicString _DisplacementTextureFilePath;
+
+		//The roughness texture file path.
+		DynamicString _RoughnessTextureFilePath;
+
+		//The metallic texture file path.
+		DynamicString _MetallicTextureFilePath;
+
+		//The ambient occlusion texture file path.
+		DynamicString _AmbientOcclusionTextureFilePath;
+
+	};
+
+	//Add the "Create Quixel Model Resource" window.
+	ImGui::Begin("Create Quixel Material Resource", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
+	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
+
+	//If the user has already selected a directory path, display it.
+	if (_CreateQuixelMaterialResourceData._DirectoryPath.Data())
+	{
+		ImGui::Text("Directory Path:");
+		ImGui::Text(_CreateQuixelMaterialResourceData._DirectoryPath.Data());
+	}
+
+	//Add the button to set the directory path.
+	if (ImGui::Button("Select Directory Path"))
+	{
+		File::BrowseForFolder(&_CreateQuixelMaterialResourceData._DirectoryPath);
+	}
+
+	//Add some padding before the "Create Quixel Model Resource" button.
+	ImGui::Text("");
+
+	//Add the create button.
+	if (ImGui::Button("Create Quixel Material Resource"))
+	{
+		//Browse through all files in the directory path and fill in the temporary data.
+		CreateQuixelMaterialResourceTemporaryData temporary_data;
+
+		//Extract the identifier.
+		for (int64 i{ static_cast<int64>(_CreateQuixelMaterialResourceData._DirectoryPath.Length()) - 1 }; i >= 0; --i)
+		{
+			if (_CreateQuixelMaterialResourceData._DirectoryPath[i] == '\\')
+			{
+				temporary_data._Identifier = &_CreateQuixelMaterialResourceData._DirectoryPath[i + 1];
+
+				break;
+			}
+		}
+
+		//Iterate over all the files in the directory and load them.
+		for (const auto &entry : std::filesystem::directory_iterator(std::string(_CreateQuixelMaterialResourceData._DirectoryPath.Data()) + "\\Raw"))
+		{
+			ASSERT(!entry.is_directory(), "EditorResourcesSystem::AddCreateQuixelMaterialResourceWindow() failure!");
+
+			//Cache the file path.
+			const DynamicString entry_file_path{ entry.path().generic_u8string().c_str() };
+
+			//Cache the file extension.
+			const File::Extension file_extension{ File::GetExtension(entry_file_path.Data()) };
+
+			//Is this a texture?
+			if (file_extension == File::Extension::JPG)
+			{
+				//Is this the albedo texture?
+				if (entry_file_path.Find("_Albedo."))
+				{
+					temporary_data._AlbedoTextureFilePath = entry_file_path;
+
+					//Determine the base/number of mipmap level(s).
+					if (entry_file_path.Find("_8K_"))
+					{
+						temporary_data._BaseMipmapLevel = 3;
+						temporary_data._NumberOfMipmapLevels = 10;
+					}
+
+					else
+					{
+						temporary_data._BaseMipmapLevel = 2;
+						temporary_data._NumberOfMipmapLevels = 9;
+					}
+				}
+
+				//Is this the normnal map texture?
+				if (entry_file_path.Find("_Normal."))
+				{
+					temporary_data._NormalMapTextureFilePath = entry_file_path;
+				}
+
+				//Is this the displacement texture?
+				if (entry_file_path.Find("_Displacement."))
+				{
+					temporary_data._DisplacementTextureFilePath = entry_file_path;
+				}
+
+				//Is this the roughness texture?
+				if (entry_file_path.Find("_Roughness."))
+				{
+					temporary_data._RoughnessTextureFilePath = entry_file_path;
+				}
+
+				//Is this the metallic texture?
+				if (entry_file_path.Find("_Metalness."))
+				{
+					temporary_data._MetallicTextureFilePath = entry_file_path;
+				}
+
+				//Is this the ambient occlusion texture?
+				if (entry_file_path.Find("_AO."))
+				{
+					temporary_data._AmbientOcclusionTextureFilePath = entry_file_path;
+				}
+			}
+		}
+
+		//Create all the directories, if needed.
+		{
+			char buffer[128];
+
+			sprintf_s(buffer, "..\\..\\..\\Resources\\Intermediate\\Textures");
+			File::CreateDirectory(buffer);
+
+			sprintf_s(buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s", temporary_data._Identifier.Data());
+			File::CreateDirectory(buffer);
+
+			sprintf_s(buffer, "..\\..\\..\\Resources\\Intermediate\\Materials");
+			File::CreateDirectory(buffer);
+		}
+
+		//Create the albedo/thickness texture 2D.
+		{
+			Texture2DBuildParameters parameters;
+
+			char output_file_path_buffer[128];
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_AlbedoThickness_Texture2D", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			parameters._Output = output_file_path_buffer;
+
+			char identifier_buffer[128];
+			sprintf_s(identifier_buffer, "%s_AlbedoThickness_Texture2D", temporary_data._Identifier.Data());
+
+			parameters._ID = identifier_buffer;
+			parameters._DefaultWidth = 0;
+			parameters._DefaultHeight = 0;
+			parameters._File1 = temporary_data._AlbedoTextureFilePath.Data();
+			parameters._File2 = nullptr;
+			parameters._File3 = nullptr;
+			parameters._File4 = nullptr;
+			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+			parameters._ApplyGammaCorrection = true;
+			parameters._TransformFunction = nullptr;
+			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
+			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+
+			//Now load the texture 2D.
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_AlbedoThickness_Texture2D.cr", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
+		}
+
+		//Create the normal map/displacement texture 2D.
+		{
+			Texture2DBuildParameters parameters;
+
+			char output_file_path_buffer[128];
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_NormalMapDisplacement_Texture2D", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			parameters._Output = output_file_path_buffer;
+
+			char identifier_buffer[128];
+			sprintf_s(identifier_buffer, "%s_NormalMapDisplacement_Texture2D", temporary_data._Identifier.Data());
+
+			parameters._ID = identifier_buffer;
+			parameters._DefaultWidth = 0;
+			parameters._DefaultHeight = 0;
+			parameters._File1 = temporary_data._NormalMapTextureFilePath.Data();
+			parameters._File2 = nullptr;
+			parameters._File3 = nullptr;
+			parameters._File4 = temporary_data._DisplacementTextureFilePath.Data();
+			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.5f);
+			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+			parameters._ChannelMappings[3] = temporary_data._DisplacementTextureFilePath ? Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_4, Texture2DBuildParameters::Channel::RED) : Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+			parameters._ApplyGammaCorrection = false;
+			parameters._TransformFunction = nullptr;
+			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
+			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+
+			//Now load the texture 2D.
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_NormalMapDisplacement_Texture2D.cr", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
+		}
+
+		//Create the material properties texture 2D.
+		{
+			Texture2DBuildParameters parameters;
+
+			char output_file_path_buffer[128];
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_MaterialProperties_Texture2D", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			parameters._Output = output_file_path_buffer;
+
+			char identifier_buffer[128];
+			sprintf_s(identifier_buffer, "%s_MaterialProperties_Texture2D", temporary_data._Identifier.Data());
+
+			parameters._ID = identifier_buffer;
+			parameters._DefaultWidth = 0;
+			parameters._DefaultHeight = 0;
+			parameters._File1 = temporary_data._RoughnessTextureFilePath.Data();
+			parameters._File2 = temporary_data._MetallicTextureFilePath.Data();
+			parameters._File3 = temporary_data._AmbientOcclusionTextureFilePath.Data();
+			parameters._File4 = nullptr;
+			parameters._Default = Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f);
+			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+			parameters._ChannelMappings[1] = temporary_data._MetallicTextureFilePath.Data() ? Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_2, Texture2DBuildParameters::Channel::RED) : Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[2] =  temporary_data._AmbientOcclusionTextureFilePath ? Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_3, Texture2DBuildParameters::Channel::RED) : Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
+			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::RED);
+			parameters._ApplyGammaCorrection = false;
+			parameters._TransformFunction = nullptr;
+			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
+			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+
+			//Now load the texture 2D.
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s\\%s_MaterialProperties_Texture2D.cr", temporary_data._Identifier.Data(), temporary_data._Identifier.Data());
+			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
+		}
+
+		//Build the material.
+		{
+			MaterialBuildParameters parameters;
+
+			char output_file_path_buffer[128];
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Materials\\%s_Material", temporary_data._Identifier.Data());
+			parameters._Output = output_file_path_buffer;
+
+			char identifier_buffer[128];
+			sprintf_s(identifier_buffer, "%s_Material", temporary_data._Identifier.Data());
+
+			parameters._ID = identifier_buffer;
+			parameters._Type = MaterialResource::Type::OPAQUE;
+			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+
+			char albedo_thickness_buffer[128];
+			sprintf_s(albedo_thickness_buffer, "%s_AlbedoThickness_Texture2D", temporary_data._Identifier.Data());
+
+			parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString(albedo_thickness_buffer);
+			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+
+			char normal_map_displcamenet_buffer[128];
+			sprintf_s(normal_map_displcamenet_buffer, "%s_NormalMapDisplacement_Texture2D", temporary_data._Identifier.Data());
+
+			parameters._NormalMapDisplacementComponent._TextureResourceIdentifier = HashString(normal_map_displcamenet_buffer);
+			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+
+			char material_properties_buffer[128];
+			sprintf_s(material_properties_buffer, "%s_MaterialProperties_Texture2D", temporary_data._Identifier.Data());
+
+			parameters._MaterialPropertiesComponent._TextureResourceIdentifier = HashString(material_properties_buffer);
+			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+			parameters._EmissiveMultiplier = 0.0f;
+			parameters._DoubleSided = false;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
+
+			//Now load the material.
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Materials\\%s_Material.cr", temporary_data._Identifier.Data());
+			ResourceSystem::Instance->LoadResource(output_file_path_buffer);
+		}
+
+		//No longer creating a resource.
+		_CurrentCreateResourceMode = CreateResourceMode::NONE;
+	}
+
+	ImGui::End();
+}
+
+/*
 *	Adds the create Quixel model resource window.
 */
 void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
@@ -913,6 +1266,9 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 
 		//The roughness texture file path.
 		DynamicString _RoughnessTextureFilePath;
+
+		//The metallic texture file path.
+		DynamicString _MetallicTextureFilePath;
 
 		//The ambient occlusion texture file path.
 		DynamicString _AmbientOcclusionTextureFilePath;
@@ -1009,6 +1365,12 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 				if (entry_file_path.Find("_Roughness."))
 				{
 					temporary_data._RoughnessTextureFilePath = entry_file_path;
+				}
+
+				//Is this the metallic texture?
+				if (entry_file_path.Find("_Metalness."))
+				{
+					temporary_data._MetallicTextureFilePath = entry_file_path;
 				}
 
 				//Is this the ambient occlusion texture?
@@ -1116,7 +1478,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
 			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
 			parameters._ChannelMappings[3] = temporary_data._DisplacementTextureFilePath ? Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_4, Texture2DBuildParameters::Channel::RED) : Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
-			parameters._ApplyGammaCorrection = true;
+			parameters._ApplyGammaCorrection = false;
 			parameters._TransformFunction = nullptr;
 			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
 			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
@@ -1143,15 +1505,15 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			parameters._DefaultWidth = 0;
 			parameters._DefaultHeight = 0;
 			parameters._File1 = temporary_data._RoughnessTextureFilePath.Data();
-			parameters._File2 = nullptr;
+			parameters._File2 = temporary_data._MetallicTextureFilePath.Data();
 			parameters._File3 = temporary_data._AmbientOcclusionTextureFilePath.Data();
 			parameters._File4 = nullptr;
 			parameters._Default = Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f);
 			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
-			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[1] = temporary_data._MetallicTextureFilePath.Data() ? Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_2, Texture2DBuildParameters::Channel::RED) : Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
 			parameters._ChannelMappings[2] =  temporary_data._AmbientOcclusionTextureFilePath ? Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_3, Texture2DBuildParameters::Channel::RED) : Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
 			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::RED);
-			parameters._ApplyGammaCorrection = true;
+			parameters._ApplyGammaCorrection = false;
 			parameters._TransformFunction = nullptr;
 			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
 			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
@@ -1240,6 +1602,5 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 	}
 
 	ImGui::End();
-
 }
 #endif

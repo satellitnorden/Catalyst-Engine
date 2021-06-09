@@ -341,9 +341,17 @@ public:
 	}
 
 	/*
-	*	Tries to find the given substring. If it exists, a pointer to the beginning of the substring is returned, otherwise nullptr.
+	*	Tries to find the given substring. If it exists, a pointer to the beginning of the substring is returned, otherwise nullptr. Const version.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT Find(const char *const RESTRICT substring) const NOEXCEPT
+	{
+		return static_cast<const char *const RESTRICT>(const_cast<DynamicString *const RESTRICT>(this)->Find(substring));
+	}
+
+	/*
+	*	Tries to find the given substring. If it exists, a pointer to the beginning of the substring is returned, otherwise nullptr. Non-const version.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD char *const RESTRICT Find(const char *const RESTRICT substring) NOEXCEPT
 	{
 		const uint64 substring_length{ StringUtilities::StringLength(substring) };
 		uint64 matching_characters{ 0 };

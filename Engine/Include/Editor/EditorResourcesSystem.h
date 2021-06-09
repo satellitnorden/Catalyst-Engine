@@ -34,6 +34,7 @@ private:
 		MATERIAL,
 		MODEL,
 		TEXTURE_2D,
+		QUIXEL_MATERIAL,
 		QUIXEL_MODEL
 	};
 
@@ -112,6 +113,9 @@ private:
 		//Denotes whether or not to apply Blender transform.
 		bool _ApplyBlenderTransform{ false };
 
+		//The collision model file path.
+		DynamicString _CollisionModelFilePath;
+
 	};
 
 	/*
@@ -161,6 +165,19 @@ private:
 	};
 
 	/*
+	*	Create Quixel material resource data.
+	*/
+	class CreateQuixelMaterialResourceData final
+	{
+
+	public:
+
+		//The directory path.
+		DynamicString _DirectoryPath;
+
+	};
+
+	/*
 	*	Create Quixel model resource data.
 	*/
 	class CreateQuixelModelResourceData final
@@ -185,6 +202,9 @@ private:
 	//The create texture 2D resource data.
 	CreateTexture2DResourceData _CreateTexture2DResourceData;
 
+	//The create quixel material resource data.
+	CreateQuixelMaterialResourceData _CreateQuixelMaterialResourceData;
+
 	//The create quixel model resource data.
 	CreateQuixelModelResourceData _CreateQuixelModelResourceData;
 
@@ -202,6 +222,11 @@ private:
 	*	Adds the create texture 2D resource window.
 	*/
 	void AddCreateTexture2DResourceWindow() NOEXCEPT;
+
+	/*
+	*	Adds the create Quixel material resource window.
+	*/
+	void AddCreateQuixelMaterialResourceWindow() NOEXCEPT;
 
 	/*
 	*	Adds the create Quixel model resource window.

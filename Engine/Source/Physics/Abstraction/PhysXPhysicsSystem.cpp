@@ -643,6 +643,7 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 						ASSERT(false, "Invalid case!");
 					}
 				}
+
 				//Set up the transform.
 				const Vector3<float32> absolute_world_position{ component._WorldTransform.GetAbsolutePosition() };
 				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };

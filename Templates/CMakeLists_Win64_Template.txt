@@ -42,6 +42,9 @@ add_compile_definitions($<$<CONFIG:Debug>:CATALYST_ENABLE_RESOURCE_BUILDING>
 						$<$<CONFIG:Profile>:CATALYST_ENABLE_RESOURCE_BUILDING>
 						$<$<CONFIG:ProfileEditor>:CATALYST_ENABLE_RESOURCE_BUILDING>
 						)
+add_compile_definitions($<$<CONFIG:DebugEditor>:CATALYST_EDITOR>
+						$<$<CONFIG:ProfileEditor>:CATALYST_EDITOR>
+						)
 add_compile_definitions([CATALYST_PHYSICS])
 add_compile_definitions(CATALYST_PLATFORM_WINDOWS)
 add_compile_definitions(CATALYST_RENDERING_VULKAN)

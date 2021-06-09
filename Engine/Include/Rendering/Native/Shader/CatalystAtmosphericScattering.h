@@ -44,13 +44,13 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystAtmosphericScattering)
 			float sky_light_ray_optical_depth = CalculateOpticalDepthAtPosition(current_position, -sky_light_direction, sky_light_ray_distance);
 			float local_density = CalculateDensityAtPosition(current_position);
 			float view_ray_optical_depth = CalculateOpticalDepthAtPosition(current_position, ray_direction, step_size);
-			vec3 transmittance = exp(-(sky_light_ray_optical_depth + view_ray_optical_depth) * SCATTERING_COEFFICIENTS);
+			vec3 transmittance = vec3(exp(-(sky_light_ray_optical_depth + view_ray_optical_depth) * SCATTERING_COEFFICIENTS.r), exp(-(sky_light_ray_optical_depth + view_ray_optical_depth) * SCATTERING_COEFFICIENTS.g), exp(-(sky_light_ray_optical_depth + view_ray_optical_depth) * SCATTERING_COEFFICIENTS.b));
 
 			final_in_scattered_light += local_density * transmittance;
 			current_position = next_position;
 		}
 
-		final_in_scattered_light *= SCATTERING_COEFFICIENTS * step_size * CATALYST_ATMOSPHERIC_SCATTERING_MAXIMUM_ALTITUDE_RECIPROCAL * sky_light_radiance.rgb * (0.001f + (sky_light_radiance.a * 0.5f));
+		final_in_scattered_light *= SCATTERING_COEFFICIENTS * step_size * CATALYST_ATMOSPHERIC_SCATTERING_MAXIMUM_ALTITUDE_RECIPROCAL * vec3(sky_light_radiance.r, sky_light_radiance.g, sky_light_radiance.b) * (0.150f + (sky_light_radiance.a * 0.150f));
 
 		return final_in_scattered_light;
 	}
