@@ -33,6 +33,11 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
+	//Fill in ImGui's IO struct.
+	ImGuiIO& io{ ImGui::GetIO() };
+
+	io.FontDefault = io.Fonts->AddFontFromFileTTF("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Fonts\\OpenSans-Regular.ttf", 18.0f);
+
 	//Set up the style.
 	ImGuiStyle* style = &ImGui::GetStyle();
 
@@ -205,8 +210,8 @@ void CatalystEditorSystem::UpdateIO() NOEXCEPT
 	//Fill in ImGui's IO struct.
 	ImGuiIO& io{ ImGui::GetIO() };
 
-	io.DisplaySize.x = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width);
-	io.DisplaySize.y = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
+	io.DisplaySize.x = static_cast<float32>(RenderingSystem::Instance->GetFullResolution()._Width);
+	io.DisplaySize.y = static_cast<float32>(RenderingSystem::Instance->GetFullResolution()._Height);
 	io.DeltaTime = CatalystBaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetDeltaTime(), FLOAT32_EPSILON);
 	io.IniFilename = nullptr;
 	io.MousePos = ImVec2(InputSystem::Instance->GetMouseState()->_CurrentX * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), (1.0f - InputSystem::Instance->GetMouseState()->_CurrentY) * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
