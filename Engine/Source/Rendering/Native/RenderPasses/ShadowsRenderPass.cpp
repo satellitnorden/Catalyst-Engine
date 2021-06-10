@@ -271,7 +271,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 			{
 				for (uint8 i{ 0 }; i < 4; ++i)
 				{
-					current_shadow_uniform_data._WorldToLightMatrices[i] = CalculateCascadeMatrix(i, component->_Direction, i == 0 ? Perceiver::Instance->GetNearPlane() : shadow_map_distances[i - 1], shadow_map_distances[i]);
+					current_shadow_uniform_data._WorldToLightMatrices[i] = CalculateCascadeMatrix(i, CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? Perceiver::Instance->GetNearPlane() : shadow_map_distances[i - 1], shadow_map_distances[i]);
 				}
 
 				break;

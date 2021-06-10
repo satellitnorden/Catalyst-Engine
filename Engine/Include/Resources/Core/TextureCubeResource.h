@@ -5,6 +5,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/TextureCube.h>
 
 //Resources.
 #include <Resources/Core/Resource.h>
@@ -13,6 +14,9 @@ class TextureCubeResource final : public Resource
 {
 
 public:
+
+	//The texture cube.
+	TextureCube _TextureCube;
 
 	//The number of mipmap levels.
 	uint8 _MipmapLevels;

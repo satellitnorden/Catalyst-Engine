@@ -30,30 +30,37 @@ namespace CatalystScreenCoordinateSpace
 */
 namespace CatalystWorldCoordinateSpace
 {
+	//The left vector.
+	constexpr Vector3<float32> LEFT{ -1.0f, 0.0f, 0.0f };
 
 	//The right vector.
 	constexpr Vector3<float32> RIGHT{ 1.0f, 0.0f, 0.0f };
 
-	//The left vector.
-	constexpr Vector3<float32> LEFT{ -1.0f, 0.0f, 0.0f };
+	//The down vector.
+	constexpr Vector3<float32> DOWN{ 0.0f, -1.0f, 0.0f };
 
 	//The up vector.
 	constexpr Vector3<float32> UP{ 0.0f, 1.0f, 0.0f };
 
-	//The down vector.
-	constexpr Vector3<float32> DOWN{ 0.0f, -1.0f, 0.0f };
+	//The backward vector.
+	constexpr Vector3<float32> BACKWARD{ 0.0f, 0.0f, -1.0f };
 
 	//The forward vector.
 	constexpr Vector3<float32> FORWARD{ 0.0f, 0.0f, 1.0f };
-
-	//The backward vector.
-	constexpr Vector3<float32> BACKWARD{ 0.0f, 0.0f, -1.0f };
 
 }
 
 //Catalyst coordinate spaces utilities.
 namespace CatalystCoordinateSpacesUtilities
 {
+
+	/*
+	*	Returns a world space left vector with the given rotation.
+	*/
+	FORCE_INLINE static NO_DISCARD Vector3<float32> RotatedWorldLeftVector(const EulerAngles &rotation) NOEXCEPT
+	{
+		return CatalystWorldCoordinateSpace::LEFT.Rotated(rotation);
+	}
 
 	/*
 	*	Returns a world space right vector with the given rotation.
@@ -64,11 +71,27 @@ namespace CatalystCoordinateSpacesUtilities
 	}
 
 	/*
+	*	Returns a world space down vector with the given rotation.
+	*/
+	FORCE_INLINE static NO_DISCARD Vector3<float32> RotatedWorldDownVector(const EulerAngles &rotation) NOEXCEPT
+	{
+		return CatalystWorldCoordinateSpace::DOWN.Rotated(rotation);
+	}
+
+	/*
 	*	Returns a world space up vector with the given rotation.
 	*/
 	FORCE_INLINE static NO_DISCARD Vector3<float32> RotatedWorldUpVector(const EulerAngles &rotation) NOEXCEPT
 	{
 		return CatalystWorldCoordinateSpace::UP.Rotated(rotation);
+	}
+
+	/*
+	*	Returns a world space backward vector with the given rotation.
+	*/
+	FORCE_INLINE static NO_DISCARD Vector3<float32> RotatedWorldBackwardVector(const EulerAngles &rotation) NOEXCEPT
+	{
+		return CatalystWorldCoordinateSpace::BACKWARD.Rotated(rotation);
 	}
 
 	/*

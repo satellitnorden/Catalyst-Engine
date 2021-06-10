@@ -120,9 +120,11 @@ void VolumetricLightingGraphicsPipeline::Execute() NOEXCEPT
 		{
 			data._SkyLightLuminance = component->_Color * component->_Intensity;
 
-			if (Vector3<float32>::DotProduct(component->_Direction, Perceiver::Instance->GetForwardVector()) < 0.0f)
+			const Vector3<float32> direction{ CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation) };
+
+			if (Vector3<float32>::DotProduct(direction, Perceiver::Instance->GetForwardVector()) < 0.0f)
 			{
-				data._SkyLightScreenSpacePosition = RenderingUtilities::CalculateScreenCoordinate(*Perceiver::Instance->GetViewMatrix(), Perceiver::Instance->GetWorldTransform().GetLocalPosition() - component->_Direction);
+				data._SkyLightScreenSpacePosition = RenderingUtilities::CalculateScreenCoordinate(*Perceiver::Instance->GetViewMatrix(), Perceiver::Instance->GetWorldTransform().GetLocalPosition() - direction);
 			}
 
 			break;

@@ -22,8 +22,8 @@ public:
 
 	union
 	{
-		//The direction. Used for directional lights.
-		Vector3<float32> _Direction;
+		//The rotation. Used for directional lights.
+		EulerAngles _Rotation;
 
 		//The world position. Used for point lights.
 		WorldPosition _WorldPosition;
@@ -72,7 +72,7 @@ public:
 		{
 			case LightType::DIRECTIONAL:
 			{
-				_Direction = other._Direction;
+				_Rotation = other._Rotation;
 
 				break;
 			}

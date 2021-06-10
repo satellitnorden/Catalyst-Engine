@@ -96,7 +96,7 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 		LightInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<LightInitializationData>() };
 
 		data->_Properties = EntityInitializationData::Property::NONE;
-		data->_Direction = CatalystWorldCoordinateSpace::DOWN;
+		data->_Rotation = EulerAngles();
 		data->_Color = VectorConstants::ONE;
 		data->_LightType = LightType::DIRECTIONAL;
 		data->_LightProperties = CatalystShaderConstants::LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT | CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_BIT | CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT;
@@ -184,32 +184,24 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 	}
 
 	//Calculate the sky light direction.
-	Vector3<float32> sky_light_direction;
+	EulerAngles rotation;
 
 	if (_CurrentTimeOfDay >= 18.0f || _CurrentTimeOfDay < 6.0f)
 	{
-		EulerAngles rotation;
-
 		rotation._Roll = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
 		rotation._Yaw = 0.0f;
 		rotation._Pitch = CatalystBaseMath::DegreesToRadians(22.5f);
-
-		sky_light_direction = Vector3<float32>::Normalize(CatalystWorldCoordinateSpace::DOWN.Rotated(rotation));
 	}
 	
 	else
 	{
-		EulerAngles rotation;
-
 		rotation._Roll = CatalystBaseMath::DegreesToRadians(22.5f);
 		rotation._Yaw = 0.0f;
 		rotation._Pitch = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
-
-		sky_light_direction = Vector3<float32>::Normalize(CatalystWorldCoordinateSpace::DOWN.Rotated(rotation));
 	}
 
-	//Set the sky light direction.
-	_SkyLight->SetDirection(sky_light_direction);
+	//Set the sky light rotation.
+	_SkyLight->SetRotation(rotation);
 
 	//Update the sky light luminance.
 	{

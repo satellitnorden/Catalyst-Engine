@@ -56,14 +56,14 @@ public:
 	}
 
 	/*
-	*	Returns the direction of this light.
+	*	Returns the rotation of this light.
 	*/
-	Vector3<float32> GetDirection() const NOEXCEPT;
+	EulerAngles GetRotation() const NOEXCEPT;
 
 	/*
-	*	Sets the direction of this light.
+	*	Sets the rotation of this light.
 	*/
-	void SetDirection(const Vector3<float32>& direction) NOEXCEPT;
+	void SetRotation(const EulerAngles &rotation) NOEXCEPT;
 
 	/*
 	*	Returns the world position of this light.

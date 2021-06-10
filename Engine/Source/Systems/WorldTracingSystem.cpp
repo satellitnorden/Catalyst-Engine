@@ -5,6 +5,7 @@
 #include <Components/Core/ComponentManager.h>
 
 //Math.
+#include <Math/Core/CatalystCoordinateSpaces.h>
 #include <Math/Core/CatalystGeometryMath.h>
 #include <Math/Core/CatalystRandomMath.h>
 
@@ -189,7 +190,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 					case LightType::DIRECTIONAL:
 					{
 						//Calculate the direction to the light.
-						const Vector3<float32> direction_to_light{ Vector3<float32>::Normalize(-component->_Direction + CatalystRandomMath::RandomVector3InRange(-WorldTracingSystemConstants::DIRECTIONAL_LIGHT_SOFTNESS, WorldTracingSystemConstants::DIRECTIONAL_LIGHT_SOFTNESS)) };
+						const Vector3<float32> direction_to_light{ Vector3<float32>::Normalize(-CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation) + CatalystRandomMath::RandomVector3InRange(-WorldTracingSystemConstants::DIRECTIONAL_LIGHT_SOFTNESS, WorldTracingSystemConstants::DIRECTIONAL_LIGHT_SOFTNESS)) };
 
 						//Determine if there is occlusion.
 						{
@@ -552,7 +553,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray &ray) NOEXCEPT
 					if (component->_LightType == LightType::DIRECTIONAL)
 					{
 						sky_light_radiance = component->_Color * component->_Intensity;
-						sky_light_direction = component->_Direction;
+						sky_light_direction = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation);
 
 						break;
 					}
@@ -560,6 +561,18 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray &ray) NOEXCEPT
 			}
 
 			return CatalystAtmosphericScattering::CalculateAtmosphericScattering(ray._Origin, ray._Direction, sky_light_radiance, sky_light_direction);
+		}
+
+		case SkySystem::SkyMode::GRADIENT:
+		{
+			return Vector3<float32>(0.0f, 0.0f, 0.0f);
+		}
+
+		case SkySystem::SkyMode::TEXTURE:
+		{
+			const Vector4<float32> sky_color{ WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCube.Sample(ray._Direction) };
+
+			return Vector3<float32>(sky_color._R, sky_color._G, sky_color._B);
 		}
 
 		default:

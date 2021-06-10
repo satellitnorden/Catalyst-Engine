@@ -17,5 +17,4 @@ public:
 	//The texture 3D handle.
 	Texture3DHandle _Texture3DHandle{ EMPTY_HANDLE };
 
-
 };

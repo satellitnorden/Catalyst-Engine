@@ -158,7 +158,7 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 				data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(HashString("Catalyst_Engine_Default_Material"));
 			}
 
-			data->_ModelCollisionConfiguration._Type = ModelCollisionType::BOX;
+			data->_ModelCollisionConfiguration._Type = ModelCollisionType::NONE;
 			data->_ModelSimulationConfiguration._SimulatePhysics = false;
 
 			EntitySystem::Instance->RequestInitialization(entity, data, false);
@@ -202,7 +202,7 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 				data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(HashString("Catalyst_Engine_Default_Material"));
 			}
 
-			data->_ModelCollisionConfiguration._Type = ModelCollisionType::BOX;
+			data->_ModelCollisionConfiguration._Type = ModelCollisionType::NONE;
 
 			EntitySystem::Instance->RequestInitialization(entity, data, false);
 

@@ -77,6 +77,23 @@ public:
 	}
 
 	/*
+	*	Initializes this texture cube.
+	*/
+	FORCE_INLINE void Initialize(const uint32 resolution, const DynamicArray<float32> &data) NOEXCEPT
+	{
+		_Resolution = resolution;
+
+		const byte *RESTRICT byte_pointer{ reinterpret_cast<const byte *RESTRICT>(data.Data()) };
+
+		for (uint8 i{ 0 }; i < _Faces.Size(); ++i)
+		{
+			_Faces[i].Initialize(resolution, resolution, byte_pointer);
+
+			byte_pointer += resolution * resolution * sizeof(Vector4<float32>);
+		}
+	}
+
+	/*
 	*	Samples the value at the specified direction.
 	*/
 	FORCE_INLINE NO_DISCARD Vector4<float> Sample(const Vector3<float> &direction) const NOEXCEPT

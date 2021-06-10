@@ -13,7 +13,7 @@ ShaderLightComponent::ShaderLightComponent(const LightComponent& light_component
 	{
 		case LightType::DIRECTIONAL:
 		{
-			_Direction = light_component._Direction;
+			_Direction = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(light_component._Rotation);
 
 			break;
 		}

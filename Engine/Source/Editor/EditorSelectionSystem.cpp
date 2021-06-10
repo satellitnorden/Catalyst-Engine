@@ -301,29 +301,111 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 			case EntityType::Light:
 			{
+				//Cache the light entity.
 				LightEntity *const RESTRICT light_entity{ static_cast<LightEntity *const RESTRICT>(_CurrentlySelectedEntity) };
+
+				//Add a widget for modifying the light type of this light.
+				{
+					LightType current_light_type{ light_entity->GetLightType() };
+
+					char buffer[32];
+
+					switch (light_entity->GetLightType())
+					{
+						case LightType::DIRECTIONAL:
+						{
+							sprintf_s(buffer, "Light Type: %s", "Directional");
+
+							break;
+						}
+
+						case LightType::POINT:
+						{
+							sprintf_s(buffer, "Light Type: %s", "Point");
+
+							break;
+						}
+
+						default:
+						{
+							ASSERT(false, "Invalid case!");
+
+							break;
+						}
+					}
+					
+					if (ImGui::Button(buffer))
+					{
+						//Change the light type.
+						switch (light_entity->GetLightType())
+						{
+							case LightType::DIRECTIONAL:
+							{
+								light_entity->SetLightType(LightType::POINT);
+
+								break;
+							}
+
+							case LightType::POINT:
+							{
+								light_entity->SetLightType(LightType::DIRECTIONAL);
+
+								break;
+							}
+
+							default:
+							{
+								ASSERT(false, "Invalid case!");
+
+								break;
+							}
+						}
+					}
+				}
+
+				//Add checkboxes for the different light properties.
+				{
+					{
+						uint32 current_light_properties{ light_entity->GetLightProperties() };
+
+						bool surface_shadow_casting{ TEST_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT) };
+
+						if (ImGui::Checkbox("Surface Shadow Casting", &surface_shadow_casting))
+						{
+							if (surface_shadow_casting)
+							{
+								SET_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT);
+							}
+
+							else
+							{
+								CLEAR_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT);
+							}
+
+							light_entity->SetLightProperties(current_light_properties);
+						}
+					}
+				}
 
 				switch (light_entity->GetLightType())
 				{
 					case LightType::DIRECTIONAL:
 					{
-						//Add a widget for modifying the color of this light.
+						//Add a widget for modifying the rotation of this directional light.
 						{
-							Vector3<float32> color{ light_entity->GetColor() };
+							EulerAngles rotation{ light_entity->GetRotation() };
 
-							if (ImGui::ColorEdit3("Color", &color[0]))
+							rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
+							rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
+							rotation._Pitch = CatalystBaseMath::RadiansToDegrees(rotation._Pitch);
+
+							if (ImGui::DragFloat3("Rotation", rotation.Data(), 0.1f))
 							{
-								light_entity->SetColor(color);
-							}
-						}
+								rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation._Roll);
+								rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation._Yaw);
+								rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation._Pitch);
 
-						//Add a widget for modifying the intensity of this light.
-						{
-							float32 intensity{ light_entity->GetIntensity() };
-
-							if (ImGui::DragFloat("Intensity", &intensity))
-							{
-								light_entity->SetIntensity(intensity);
+								light_entity->SetRotation(rotation);
 							}
 						}
 
@@ -332,41 +414,75 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 					case LightType::POINT:
 					{
-						//Add the position editor.
-						Vector3<float32> position{ light_entity->GetWorldPosition().GetAbsolutePosition() };
-
-						if (ImGui::DragFloat3("Position", &position[0], 0.01f))
+						//Add a widget for modifying the position of this point light.
 						{
-							light_entity->SetWorldPosition(WorldPosition(position));
-						}
+							Vector3<float32> position{ light_entity->GetWorldPosition().GetAbsolutePosition() };
 
-						//Add a widget for modifying the color of this light.
-						{
-							Vector3<float32> color{ light_entity->GetColor() };
-
-							if (ImGui::ColorEdit3("Color", &color[0]))
+							if (ImGui::DragFloat3("Position", &position[0], 0.01f))
 							{
-								light_entity->SetColor(color);
+								light_entity->SetWorldPosition(WorldPosition(position));
 							}
 						}
 
-						//Add a widget for modifying the intensity of this light.
-						{
-							float32 intensity{ light_entity->GetIntensity() };
+						break;
+					}
 
-							if (ImGui::DragFloat("Intensity", &intensity))
-							{
-								light_entity->SetIntensity(intensity);
-							}
-						}
+					default:
+					{
+						ASSERT(false, "Invalid case!");
 
-						//Add a widget for modifying the radius of this light.
+						break;
+					}
+				}
+
+				//Add a widget for modifying the color of this light.
+				{
+					Vector3<float32> color{ light_entity->GetColor() };
+
+					if (ImGui::ColorEdit3("Color", &color[0]))
+					{
+						light_entity->SetColor(color);
+					}
+				}
+
+				//Add a widget for modifying the intensity of this light.
+				{
+					float32 intensity{ light_entity->GetIntensity() };
+
+					if (ImGui::DragFloat("Intensity", &intensity))
+					{
+						light_entity->SetIntensity(intensity);
+					}
+				}
+
+				switch (light_entity->GetLightType())
+				{
+					case LightType::DIRECTIONAL:
+					{
+						
+
+						break;
+					}
+
+					case LightType::POINT:
+					{
+						//Add a widget for modifying the radius of this point light.
 						{
 							float32 radius{ light_entity->GetRadius() };
 
 							if (ImGui::DragFloat("Radius", &radius))
 							{
 								light_entity->SetRadius(radius);
+							}
+						}
+
+						//Add a widget for modifying the size of this point light.
+						{
+							float32 size{ light_entity->GetSize() };
+
+							if (ImGui::DragFloat("Size", &size))
+							{
+								light_entity->SetSize(size);
 							}
 						}
 

@@ -1143,7 +1143,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 			if (component->_LightType == LightType::DIRECTIONAL)
 			{
 				_DynamicUniformData._SkyLightRadiance = Vector4<float32>(component->_Color, component->_Intensity);
-				_DynamicUniformData._SkyLightDirection = component->_Direction;
+				_DynamicUniformData._SkyLightDirection = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation);
 
 				break;
 			}

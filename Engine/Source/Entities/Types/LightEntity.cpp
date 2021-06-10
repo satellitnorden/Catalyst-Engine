@@ -35,7 +35,7 @@ void LightEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 	{
 		case LightType::DIRECTIONAL:
 		{
-			light_component._Direction = light_initialization_data->_Direction;
+			light_component._Rotation = light_initialization_data->_Rotation;
 
 			break;
 		}
@@ -69,23 +69,23 @@ void LightEntity::Terminate() NOEXCEPT
 }
 
 /*
-*	Returns the direction of this light.
+*	Returns the rotation of this light.
 */
-Vector3<float32> LightEntity::GetDirection() const NOEXCEPT
+EulerAngles LightEntity::GetRotation() const NOEXCEPT
 {
-	ASSERT(GetLightType() == LightType::DIRECTIONAL, "Direction is only used for directional lights!");
+	ASSERT(GetLightType() == LightType::DIRECTIONAL, "Rotation is only used for directional lights!");
 
-	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Direction;
+	return ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Rotation;
 }
 
 /*
-*	Sets the direction of this light.
+*	Sets the rotation of this light.
 */
-void LightEntity::SetDirection(const Vector3<float32>& direction) NOEXCEPT
+void LightEntity::SetRotation(const EulerAngles &rotation) NOEXCEPT
 {
-	ASSERT(GetLightType() == LightType::DIRECTIONAL, "Direction is only used for directional lights!");
+	ASSERT(GetLightType() == LightType::DIRECTIONAL, "Rotation is only used for directional lights!");
 
-	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Direction = direction;
+	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Rotation = rotation;
 }
 
 /*
@@ -137,6 +137,11 @@ LightType LightEntity::GetLightType() const NOEXCEPT
 */
 void LightEntity::SetLightType(const LightType type) NOEXCEPT
 {
+	//Reset the rotation/world position first, otherwise we'd get messed up values.
+	Memory::Set(&ComponentManager::GetLightLightComponents()[_ComponentsIndex]._Rotation, 0, sizeof(EulerAngles));
+	Memory::Set(&ComponentManager::GetLightLightComponents()[_ComponentsIndex]._WorldPosition, 0, sizeof(WorldPosition));
+
+	//Set the light type.
 	ComponentManager::GetLightLightComponents()[_ComponentsIndex]._LightType = type;
 }
 
