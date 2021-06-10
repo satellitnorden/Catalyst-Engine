@@ -3,8 +3,10 @@
 
 //Entities.
 #include <Entities/Creation/DynamicModelInitializationData.h>
+#include <Entities/Creation/LightInitializationData.h>
 #include <Entities/Creation/StaticModelInitializationData.h>
 #include <Entities/Types/DynamicModelEntity.h>
+#include <Entities/Types/LightEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
 
 //Systems.
@@ -47,6 +49,51 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 
 				data->_ModelCollisionConfiguration = level_entry._DynamicModelData._ModelCollisionConfiguration;
 				data->_ModelSimulationConfiguration = level_entry._DynamicModelData._ModelSimulationConfiguration;
+
+				EntitySystem::Instance->RequestInitialization(entity, data, false);
+
+				spawned_level._Entities.Emplace(entity);
+
+				break;
+			}
+
+			case LevelEntry::Type::LIGHT:
+			{
+				LightEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<LightEntity>() };
+				LightInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<LightInitializationData>() };
+
+				data->_Properties = EntityInitializationData::Property::NONE;
+				
+				switch (level_entry._LightData._LightType)
+				{
+					case LightType::DIRECTIONAL:
+					{
+						data->_Rotation = level_entry._LightData._Rotation;
+
+						break;
+					}
+
+					case LightType::POINT:
+					{
+						data->_WorldPosition = level_entry._LightData._WorldPosition;
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
+				}
+
+				data->_Color = level_entry._LightData._Color;
+				data->_LightType = level_entry._LightData._LightType;
+				data->_LightProperties = level_entry._LightData._LightProperties;
+				data->_Intensity = level_entry._LightData._Intensity;
+				data->_Radius = level_entry._LightData._Radius;
+				data->_Size = level_entry._LightData._Size;
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
 

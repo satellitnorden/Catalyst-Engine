@@ -195,6 +195,52 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 			}
 		}
 
+		//Add all light entities.
+		{
+			const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
+			const LightComponent *RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+			for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+			{
+				LevelEntry level_entry;
+
+				level_entry._Type = LevelEntry::Type::LIGHT;
+				
+				switch (component->_LightType)
+				{
+					case LightType::DIRECTIONAL:
+					{
+						level_entry._LightData._Rotation = component->_Rotation;
+
+						break;
+					}
+
+					case LightType::POINT:
+					{
+						level_entry._LightData._WorldPosition = component->_WorldPosition;
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
+				}
+
+				level_entry._LightData._Color = component->_Color;
+				level_entry._LightData._LightType = component->_LightType;
+				level_entry._LightData._LightProperties = component->_LightProperties;
+				level_entry._LightData._Intensity = component->_Intensity;
+				level_entry._LightData._Radius = component->_Radius;
+				level_entry._LightData._Size = component->_Size;
+
+				parameters._LevelEntries.Emplace(level_entry);
+			}
+		}
+
 		//Add all static model entities.
 		{
 			const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };

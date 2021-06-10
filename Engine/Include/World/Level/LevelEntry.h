@@ -5,6 +5,9 @@
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/HashString.h>
 
+//Lighting.
+#include <Lighting/LightingCore.h>
+
 //Physics.
 #include <Physics/Native/ModelCollisionConfiguration.h>
 #include <Physics/Native/ModelSimulationConfiguration.h>
@@ -24,6 +27,7 @@ public:
 	enum class Type : uint8
 	{
 		DYNAMIC_MODEL,
+		LIGHT,
 		STATIC_MODEL
 	};
 
@@ -49,6 +53,43 @@ public:
 
 		//The model simulation configuration.
 		ModelSimulationConfiguration _ModelSimulationConfiguration;
+
+	};
+
+	/*
+	*	Light data class definition.
+	*/
+	class LightData final
+	{
+
+	public:
+
+		union
+		{
+			//The rotation. Used for directional lights.
+			EulerAngles _Rotation;
+
+			//The world position. Used for point lights.
+			WorldPosition _WorldPosition;
+		};
+
+		//The color.
+		Vector3<float32> _Color;
+
+		//The light type.
+		LightType _LightType;
+
+		//The light properties.
+		uint32 _LightProperties;
+
+		//The intensity.
+		float32 _Intensity;
+
+		//The radius.
+		float32 _Radius;
+
+		//The size.
+		float32 _Size;
 
 	};
 
@@ -81,6 +122,9 @@ public:
 	{
 		//The dynamic model data.
 		DynamicModelData _DynamicModelData;
+
+		//The light data.
+		LightData _LightData;
 
 		//The static model data.
 		StaticModelData _StaticModelData;
