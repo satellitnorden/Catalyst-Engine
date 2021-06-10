@@ -11,6 +11,9 @@
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
+//Physics.
+#include <Physics/Native/ModelCollisionConfiguration.h>
+
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 #include <World/Core/WorldTransform.h>
@@ -116,6 +119,16 @@ public:
 	*	Returns the level of detail index at the given mesh index.
 	*/
 	NO_DISCARD uint64 GetLevelOfDetailindex(const uint64 mesh_index) const NOEXCEPT;
+
+	/*
+	*	Returns the model collision configuration.
+	*/
+	NO_DISCARD const ModelCollisionConfiguration &GetModelCollisionConfiguration() const NOEXCEPT;
+
+	/*
+	*	Sets the model collision configuration.
+	*/
+	void SetModelCollisionConfiguration(const ModelCollisionConfiguration &value) NOEXCEPT;
 
 private:
 

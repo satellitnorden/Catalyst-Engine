@@ -56,33 +56,21 @@ public:
 								material);
 		}
 
-		//Add the borders.
+		//Add the progress bar.
 		{
-			UserInterfaceMaterial material;
-			material.SetPrimaryColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
-			material.SetBorderOffset(0.0f);
-
-			AddImage(	Vector2<float32>(0.0f, 0.95f),
-						Vector2<float32>(1.0f, 1.0f),
-						material);
+			_ProgressBar = AddProgressBar(	Vector2<float32>(0.0f, 0.95f),
+											Vector2<float32>(1.0f, 1.0f),
+											"Current Number Of Samples: 0");
 		}
+	}
 
-		{
-			UserInterfaceMaterial material;
-			material.SetPrimaryColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
-			material.SetBorderOffset(0.0f);
-
-			AddImage(	Vector2<float32>(0.0f, 0.0f),
-						Vector2<float32>(1.0f, 0.05f),
-						material);
-		}
-
-		//Add the text.
-		{
-			_Text = AddText(Vector2<float32>(0.0f, 0.95f),
-							Vector2<float32>(1.0f, 1.0f),
-							"Current Number Of Samples: 1");
-		}
+	/*
+	*	Callback for when this user interface scene is deactivated.
+	*/
+	FORCE_INLINE void OnDeactivated() NOEXCEPT override
+	{
+		//Reset the progress bar.
+		_ProgressBar = nullptr;
 	}
 
 	/*
@@ -105,7 +93,18 @@ public:
 		char buffer[128];
 		sprintf_s(buffer, "Current Number Of Samples: %llu", value);
 
-		_Text->SetText(buffer);
+		_ProgressBar->SetText(buffer);
+	}
+
+	/*
+	*	Sets the progress.
+	*/
+	FORCE_INLINE void SetProgress(const float32 value) NOEXCEPT
+	{
+		if (_ProgressBar)
+		{
+			_ProgressBar->SetCurrentProgress(value);
+		}
 	}
 
 private:
@@ -113,8 +112,8 @@ private:
 	//The image.
 	UserInterfaceImage *RESTRICT _Image;
 
-	//The text.
-	UserInterfaceText *RESTRICT _Text;
+	//The progress bar.
+	UserInterfaceProgressBar *RESTRICT _ProgressBar{ nullptr };
 
 };
 
@@ -150,6 +149,12 @@ namespace RenderingReferenceSystemData
 
 	//The rendering reference user interface scene.
 	RenderingReferenceUserInterfaceScene _RenderingReferenceUserInterfaceScene;
+
+	//The current number of pixels.
+	Atomic<uint64> _CurrentNumberOfPixels{ 0 };
+
+	//The total number of pixels.
+	uint64 _TotalNumberOfPixels;
 }
 
 //Rendering reference system logic.
@@ -218,6 +223,9 @@ public:
 		//Activate the rendering reference user interface scene.
 		UserInterfaceSystem::Instance->ActivateScene(&RenderingReferenceSystemData::_RenderingReferenceUserInterfaceScene);
 
+		//Set the total number of pixels.
+		RenderingReferenceSystemData::_TotalNumberOfPixels = RenderingReferenceSystemData::_FinalTexture.GetWidth() * RenderingReferenceSystemData::_FinalTexture.GetHeight();
+
 		//Fire the tasks.
 		FireTasks();
 
@@ -241,6 +249,9 @@ public:
 	*/
 	FORCE_INLINE static void PreUpdate() NOEXCEPT
 	{
+		//Update the progress.
+		RenderingReferenceSystemData::_RenderingReferenceUserInterfaceScene.SetProgress(static_cast<float32>(RenderingReferenceSystemData::_CurrentNumberOfPixels) / static_cast<float32>(RenderingReferenceSystemData::_TotalNumberOfPixels));
+
 		//Are all tasks done?
 		if (AllTasksDone())
 		{
@@ -292,6 +303,9 @@ public:
 	*/
 	FORCE_INLINE static void FireTasks() NOEXCEPT
 	{
+		//Reset the current number of pixels.
+		RenderingReferenceSystemData::_CurrentNumberOfPixels = 0;
+
 		//Fill the queued task data, in an interleaved manner so that there are less false sharing.
 		for (uint32 Y{ 0 }; Y < RenderingReferenceSystemData::_IntermediateTexture.GetHeight(); Y += 2)
 		{
@@ -370,6 +384,9 @@ public:
 				final_sample._G = final_radiance._G;
 				final_sample._B = final_radiance._B;
 				final_sample._A = 1.0f;
+
+				//Update the current number of pixels.
+				++RenderingReferenceSystemData::_CurrentNumberOfPixels;
 			}
 		}
 	}

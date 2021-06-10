@@ -80,7 +80,7 @@ RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT StaticModelEntity
 	data->_WorldTransform = *GetWorldTransform();
 	data->_ModelResource = GetModelResource();
 	data->_MaterialResources = GetMaterialResources();
-	data->_ModelCollisionConfiguration._Type = ModelCollisionType::BOX;
+	data->_ModelCollisionConfiguration = GetModelCollisionConfiguration();
 
 	//Return the initialization data.
 	return data;
@@ -204,6 +204,29 @@ RESTRICTED NO_DISCARD const WorldSpaceAxisAlignedBoundingBox3D *const RESTRICT S
 NO_DISCARD uint64 StaticModelEntity::GetLevelOfDetailindex(const uint64 mesh_index) const NOEXCEPT
 {
 	return ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._LevelOfDetailIndices[mesh_index];
+}
+
+/*
+*	Returns the model collision configuration.
+*/
+NO_DISCARD const ModelCollisionConfiguration &StaticModelEntity::GetModelCollisionConfiguration() const NOEXCEPT
+{
+	return ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration;
+}
+
+/*
+*	Sets the model collision configuration.
+*/
+void StaticModelEntity::SetModelCollisionConfiguration(const ModelCollisionConfiguration& value) NOEXCEPT
+{
+	PhysicsSystem::Instance->TerminateEntityPhysics(this);
+
+	ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration = value;
+
+	if (ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
+	{
+		PhysicsSystem::Instance->InitializeEntityPhysics(this);
+	}
 }
 
 /*

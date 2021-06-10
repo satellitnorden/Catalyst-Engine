@@ -28,6 +28,7 @@ public:
 																aiPostProcessSteps::aiProcess_CalcTangentSpace
 																| aiPostProcessSteps::aiProcess_JoinIdenticalVertices
 																| aiPostProcessSteps::aiProcess_Triangulate
+																| aiPostProcessSteps::aiProcess_GenNormals
 																| aiPostProcessSteps::aiProcess_ImproveCacheLocality
 																| aiPostProcessSteps::aiProcess_FlipUVs) };
 
