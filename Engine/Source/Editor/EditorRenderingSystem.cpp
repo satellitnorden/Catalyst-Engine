@@ -220,6 +220,55 @@ void EditorRenderingSystem::Update() NOEXCEPT
 		}
 	}
 
+	//Add button for toggling surface shadows mode
+	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetVolumetricShadowsMode())
+	{
+		case RenderingConfiguration::VolumetricShadowsMode::NONE:
+		{
+			if (ImGui::Button("Volumetric Shadows Mode: None"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetVolumetricShadowsMode(RenderingConfiguration::VolumetricShadowsMode::SCREEN_SPACE);
+			}
+
+			break;
+		}
+
+		case RenderingConfiguration::VolumetricShadowsMode::SCREEN_SPACE:
+		{
+			if (ImGui::Button("Volumetric Shadows Mode: Screen Space"))
+			{
+				if (RenderingSystem::Instance->IsRayTracingSupported())
+				{
+					RenderingSystem::Instance->GetRenderingConfiguration()->SetVolumetricShadowsMode(RenderingConfiguration::VolumetricShadowsMode::RAY_TRACED);
+				}
+
+				else
+				{
+					RenderingSystem::Instance->GetRenderingConfiguration()->SetVolumetricShadowsMode(RenderingConfiguration::VolumetricShadowsMode::NONE);
+				}
+			}
+
+			break;
+		}
+
+		case RenderingConfiguration::VolumetricShadowsMode::RAY_TRACED:
+		{
+			if (ImGui::Button("Volumetric Shadows Mode: Ray Traced"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetVolumetricShadowsMode(RenderingConfiguration::VolumetricShadowsMode::NONE);
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
 	//Add button to toggle path tracing rendering path.
 	static bool path_tracing{ false };
 	ImGui::Checkbox("Path Tracing", &path_tracing);

@@ -259,7 +259,7 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 					level_entry._StaticModelData._MaterialResourceIdentifiers[i] = component->_MaterialResources[i] ? component->_MaterialResources[i]->_Header._ResourceIdentifier : HashString("");
 				}
 
-				level_entry._StaticModelData._ModelCollisionConfiguration._Type = ModelCollisionType::BOX;
+				level_entry._StaticModelData._ModelCollisionConfiguration = component->_ModelCollisionConfiguration;
 
 				parameters._LevelEntries.Emplace(level_entry);
 			}

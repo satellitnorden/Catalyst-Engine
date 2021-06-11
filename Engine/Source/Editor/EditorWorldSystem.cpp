@@ -42,6 +42,47 @@ void EditorWorldSystem::Update() NOEXCEPT
 		}
 	}
 
+	//Add a checkbox to define whether or not volumetric lighting is enabled.
+	{
+		bool volumetric_lighting_enabled{ WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Enabled };
+
+		if (ImGui::Checkbox("Volumetric Lighting Enabled", &volumetric_lighting_enabled))
+		{
+			WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Enabled = !WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Enabled;
+		}
+	}
+
+	//Add volumetric lighting widgets.
+	if (WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Enabled)
+	{
+		{
+			float32 current_volumetric_lighting_distance{ WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance };
+
+			if (ImGui::DragFloat("Volumetric Lighting Distance", &current_volumetric_lighting_distance))
+			{
+				WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance = current_volumetric_lighting_distance;
+			}
+		}
+
+		{
+			float32 current_volumetric_lighting_height{ WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height };
+
+			if (ImGui::DragFloat("Volumetric Lighting Height", &current_volumetric_lighting_height))
+			{
+				WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height = current_volumetric_lighting_height;
+			}
+		}
+
+		{
+			float32 current_volumetric_lighting_thickness{ WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness };
+
+			if (ImGui::DragFloat("Volumetric Lighting Thickness", &current_volumetric_lighting_thickness))
+			{
+				WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness = current_volumetric_lighting_thickness;
+			}
+		}
+	}
+
 	//End the window.
 	ImGui::End();
 }
