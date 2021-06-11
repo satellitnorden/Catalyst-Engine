@@ -88,6 +88,17 @@ void EditorResourcesSystem::Update() NOEXCEPT
 		_CurrentCreateResourceMode = CreateResourceMode::QUIXEL_MODEL;
 	}
 
+	//Add the button for creating a level from .obj and .mtl files resource.
+	if (ImGui::Button("Create Level From .obj And .mtl Files Resource"))
+	{
+		//Reset the create model resource data.
+		_CreateLevelResourceFromObjAndMtlData.~CreateLevelResourceFromObjAndMtlData();
+		new (&_CreateLevelResourceFromObjAndMtlData) CreateLevelResourceFromObjAndMtlData();
+
+		//Set the current create resource mode.
+		_CurrentCreateResourceMode = CreateResourceMode::LEVEL_FROM_OBJ_AND_MTL_FILES;
+	}
+
 	switch (_CurrentCreateResourceMode)
 	{
 		case CreateResourceMode::NONE:
@@ -128,6 +139,13 @@ void EditorResourcesSystem::Update() NOEXCEPT
 		case CreateResourceMode::QUIXEL_MODEL:
 		{
 			AddCreateQuixelModelResourceWindow();
+
+			break;
+		}
+
+		case CreateResourceMode::LEVEL_FROM_OBJ_AND_MTL_FILES:
+		{
+			AddCreateLevelResourceFromObjAndMtlFilesWindow();
 
 			break;
 		}
@@ -1599,6 +1617,135 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 
 		//No longer creating a resource.
 		_CurrentCreateResourceMode = CreateResourceMode::NONE;
+	}
+
+	ImGui::End();
+}
+
+/*
+*	Adds the create level resource from .obj and .mtl files window.
+*/
+void EditorResourcesSystem::AddCreateLevelResourceFromObjAndMtlFilesWindow() NOEXCEPT
+{
+	/*
+	*	Create level resource from .obj and .mtl files temporary data class definition.
+	*/
+	class CreateLevelResourceFomrObjAndMtlTemporaryData final
+	{
+
+	public:
+
+		//The .obj file path..
+		DynamicString _ObjFilePath;
+
+		//The .mtl file path..
+		DynamicString _MtlFilePath;
+
+	};
+
+	//Add the "Create Level From .obj And .mtl Files Resource" window.
+	ImGui::Begin("Create Level From .obj And .mtl Files Resource", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
+	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
+
+	//If the user has already selected a directory path, display it.
+	if (_CreateLevelResourceFromObjAndMtlData._DirectoryPath.Data())
+	{
+		ImGui::Text("Directory Path:");
+		ImGui::Text(_CreateLevelResourceFromObjAndMtlData._DirectoryPath.Data());
+	}
+
+	//Add the button to set the directory path.
+	if (ImGui::Button("Select Directory Path"))
+	{
+		File::BrowseForFolder(&_CreateLevelResourceFromObjAndMtlData._DirectoryPath);
+	}
+
+	//Add some padding before the "Create Level Resource" button.
+	ImGui::Text("");
+
+	//Add the button to create the level resource.
+	if (ImGui::Button("Create Level Resource"))
+	{
+		//Fill in the temporary data.
+		CreateLevelResourceFomrObjAndMtlTemporaryData temporary_data;
+
+		//Iterate over all the files in the directory and process them.
+		for (const auto &entry : std::filesystem::directory_iterator(std::string(_CreateLevelResourceFromObjAndMtlData._DirectoryPath.Data())))
+		{
+			//Cache the file path.
+			const DynamicString entry_file_path{ entry.path().generic_u8string().c_str() };
+
+			//Cache the file extension.
+			const File::Extension file_extension{ File::GetExtension(entry_file_path.Data()) };
+
+			//Is this a .jpg file?
+			if (file_extension == File::Extension::JPG)
+			{
+				//Extract the identifier.
+				DynamicString identifier;
+
+				for (int64 i{ static_cast<int64>(entry_file_path.Length()) - 1 }; i >= 0; --i)
+				{
+					if (entry_file_path[i] == '\\' || entry_file_path[i] == '/')
+					{
+						identifier = &entry_file_path.Data()[i + 1];
+						identifier[identifier.Length() - 4] = '\0';
+
+						break;
+					}
+				}
+
+				//Build the texture 2D.
+				{
+					Texture2DBuildParameters parameters;
+
+					char output_file_path_buffer[128];
+					sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s_Texture2D", identifier.Data());
+					parameters._Output = output_file_path_buffer;
+
+					char identifier_buffer[128];
+					sprintf_s(identifier_buffer, "%s_Texture2D", identifier.Data());
+
+					parameters._ID = identifier_buffer;
+					parameters._DefaultWidth = 0;
+					parameters._DefaultHeight = 0;
+					parameters._File1 = entry_file_path.Data();
+					parameters._File2 = nullptr;
+					parameters._File3 = nullptr;
+					parameters._File4 = nullptr;
+					parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.5f);
+					parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+					parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+					parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+					parameters._ChannelMappings[3] =  Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
+					parameters._ApplyGammaCorrection = false;
+					parameters._TransformFunction = nullptr;
+					parameters._BaseMipmapLevel = 0;
+					parameters._MipmapLevels = 1;
+
+					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+
+					//Now load the texture 2D.
+					sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s_Texture2D.cr", identifier.Data());
+					ResourceSystem::Instance->LoadResource(output_file_path_buffer);
+				}
+			}
+
+			//Is this a .mtl file?
+			if (file_extension == File::Extension::MTL)
+			{
+				//Remember the file path for later.
+				temporary_data._MtlFilePath = entry_file_path;
+			}
+
+			//Is this a .obj file?
+			if (file_extension == File::Extension::OBJ)
+			{
+				//Remember the file path for later.
+				temporary_data._ObjFilePath = entry_file_path;
+			}
+		}
 	}
 
 	ImGui::End();

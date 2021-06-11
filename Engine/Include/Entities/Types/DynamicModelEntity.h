@@ -102,7 +102,12 @@ public:
 	/*
 	*	Returns the model collision configuration.
 	*/
-	RESTRICTED NO_DISCARD const ModelCollisionConfiguration *const RESTRICT GetModelCollisionConfiguration() const NOEXCEPT;
+	NO_DISCARD const ModelCollisionConfiguration &GetModelCollisionConfiguration() const NOEXCEPT;
+
+	/*
+	*	Sets the model collision configuration.
+	*/
+	void SetModelCollisionConfiguration(const ModelCollisionConfiguration &value) NOEXCEPT;
 
 	/*
 	*	Returns the model simulation configuration.

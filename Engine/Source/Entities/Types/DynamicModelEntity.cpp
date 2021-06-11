@@ -61,6 +61,12 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 */
 void DynamicModelEntity::Terminate() NOEXCEPT
 {
+	//Terminate the entity physics.
+	if (GetModelCollisionConfiguration()._Type != ModelCollisionType::NONE)
+	{
+		PhysicsSystem::Instance->TerminateEntityPhysics(this);
+	}
+
 	//Return this entitiy's components index.
 	ComponentManager::ReturnDynamicModelComponentsIndex(_ComponentsIndex);
 }
@@ -78,7 +84,7 @@ RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT DynamicModelEntit
 	data->_InitialWorldTransform = *GetWorldTransform();
 	data->_ModelResource = GetModelResource();
 	data->_MaterialResources = GetMaterialResources();
-	data->_ModelCollisionConfiguration = *GetModelCollisionConfiguration();
+	data->_ModelCollisionConfiguration = GetModelCollisionConfiguration();
 	data->_ModelSimulationConfiguration = *GetModelSimulationConfiguration();
 
 	//Return the initialization data.
@@ -160,19 +166,26 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT DynamicMode
 }
 
 /*
-*	Returns the world space axis aligned bounding box.
+*	Returns the model collision configuration.
 */
-RESTRICTED NO_DISCARD const WorldSpaceAxisAlignedBoundingBox3D *const RESTRICT DynamicModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
+NO_DISCARD const ModelCollisionConfiguration &DynamicModelEntity::GetModelCollisionConfiguration() const NOEXCEPT
 {
-	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
+	return ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration;
 }
 
 /*
-*	Returns the model collision configuration.
+*	Sets the model collision configuration.
 */
-RESTRICTED NO_DISCARD const ModelCollisionConfiguration *const RESTRICT DynamicModelEntity::GetModelCollisionConfiguration() const NOEXCEPT
+void DynamicModelEntity::SetModelCollisionConfiguration(const ModelCollisionConfiguration& value) NOEXCEPT
 {
-	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration;
+	PhysicsSystem::Instance->TerminateEntityPhysics(this);
+
+	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration = value;
+
+	if (ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
+	{
+		PhysicsSystem::Instance->InitializeEntityPhysics(this);
+	}
 }
 
 /*

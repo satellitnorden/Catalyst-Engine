@@ -61,7 +61,10 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 void StaticModelEntity::Terminate() NOEXCEPT
 {
 	//Terminate the entity physics.
-	PhysicsSystem::Instance->TerminateEntityPhysics(this);
+	if (GetModelCollisionConfiguration()._Type != ModelCollisionType::NONE)
+	{
+		PhysicsSystem::Instance->TerminateEntityPhysics(this);
+	}
 
 	//Return this entitiy's components index.
 	ComponentManager::ReturnStaticModelComponentsIndex(_ComponentsIndex);

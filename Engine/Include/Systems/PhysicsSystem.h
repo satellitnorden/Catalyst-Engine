@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Concurrency.
+#include <Concurrency/Spinlock.h>
+
 //File.
 #include <File/Types/ModelFile.h>
 
@@ -87,6 +90,9 @@ public:
 	void BuildCollisionModel(const ModelFile &model_file, CollisionModelData *const RESTRICT collision_model_data) NOEXCEPT;
 
 private:
+
+	//The initialization lock.
+	Spinlock _InitializationLock;
 
 	//Denotes if the physics system is initialized.
 	bool _Initialized{ false };

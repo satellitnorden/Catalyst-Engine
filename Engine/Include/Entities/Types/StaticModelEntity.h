@@ -6,13 +6,13 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
+//Physics.
+#include <Physics/Native/ModelCollisionConfiguration.h>
+
 //Resources.
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
-
-//Physics.
-#include <Physics/Native/ModelCollisionConfiguration.h>
 
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>

@@ -212,6 +212,90 @@ void EditorSelectionSystem::Update() NOEXCEPT
 					}
 				}
 
+				//Add widgets for the model collision configuration.
+				{
+					ModelCollisionConfiguration current_model_collision_configuration{ dynamic_model_entity->GetModelCollisionConfiguration() };
+
+					{
+						char buffer[128];
+
+						switch (current_model_collision_configuration._Type)
+						{
+							case ModelCollisionType::NONE:
+							{
+								sprintf_s(buffer, "Model Collision Type: None");
+
+								break;
+							}
+
+							case ModelCollisionType::BOX:
+							{
+								sprintf_s(buffer, "Model Collision Type: Box");
+
+								break;
+							}
+
+							case ModelCollisionType::COLLISION_MODEL:
+							{
+								sprintf_s(buffer, "Model Collision Type: Collision Model");
+
+								break;
+							}
+
+							default:
+							{
+								ASSERT(false, "Invalid case!");
+
+								break;
+							}
+						}
+
+						if (ImGui::Button(buffer))
+						{
+							switch (current_model_collision_configuration._Type)
+							{
+								case ModelCollisionType::NONE:
+								{
+									current_model_collision_configuration._Type = ModelCollisionType::BOX;
+
+									break;
+								}
+
+								case ModelCollisionType::BOX:
+								{
+									if (dynamic_model_entity->GetModelResource()->_CollisionModel)
+									{
+										current_model_collision_configuration._Type = ModelCollisionType::COLLISION_MODEL;
+									}
+
+									else
+									{
+										current_model_collision_configuration._Type = ModelCollisionType::NONE;
+									}
+
+									break;
+								}
+
+								case ModelCollisionType::COLLISION_MODEL:
+								{
+									current_model_collision_configuration._Type = ModelCollisionType::NONE;
+
+									break;
+								}
+
+								default:
+								{
+									ASSERT(false, "Invalid case!");
+
+									break;
+								}
+							}
+
+							dynamic_model_entity->SetModelCollisionConfiguration(current_model_collision_configuration);
+						}
+					}
+				}
+
 				if (_DynamicModelSelectionData._IsSelectingModelResource)
 				{
 					ImGui::Begin("Choose New Model Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
@@ -585,7 +669,15 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 								case ModelCollisionType::BOX:
 								{
-									current_model_collision_configuration._Type = ModelCollisionType::COLLISION_MODEL;
+									if (static_model_entity->GetModelResource()->_CollisionModel)
+									{
+										current_model_collision_configuration._Type = ModelCollisionType::COLLISION_MODEL;
+									}
+
+									else
+									{
+										current_model_collision_configuration._Type = ModelCollisionType::NONE;
+									}
 
 									break;
 								}

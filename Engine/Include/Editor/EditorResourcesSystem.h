@@ -35,7 +35,8 @@ private:
 		MODEL,
 		TEXTURE_2D,
 		QUIXEL_MATERIAL,
-		QUIXEL_MODEL
+		QUIXEL_MODEL,
+		LEVEL_FROM_OBJ_AND_MTL_FILES
 	};
 
 	/*
@@ -190,6 +191,19 @@ private:
 
 	};
 
+	/*
+	*	Create level resource from .obj and .mtl data class definition.
+	*/
+	class CreateLevelResourceFromObjAndMtlData final
+	{
+
+	public:
+
+		//The directory path.
+		DynamicString _DirectoryPath;
+
+	};
+
 	//The current create resource mode.
 	CreateResourceMode _CurrentCreateResourceMode{ CreateResourceMode::NONE };
 
@@ -207,6 +221,9 @@ private:
 
 	//The create quixel model resource data.
 	CreateQuixelModelResourceData _CreateQuixelModelResourceData;
+
+	//The create level resource from obj. and .mtl files data.
+	CreateLevelResourceFromObjAndMtlData _CreateLevelResourceFromObjAndMtlData;
 
 	/*
 	*	Adds the create material resource window.
@@ -232,6 +249,11 @@ private:
 	*	Adds the create Quixel model resource window.
 	*/
 	void AddCreateQuixelModelResourceWindow() NOEXCEPT;
+
+	/*
+	*	Adds the create level resource from .obj and .mtl files window.
+	*/
+	void AddCreateLevelResourceFromObjAndMtlFilesWindow() NOEXCEPT;
 
 };
 #endif

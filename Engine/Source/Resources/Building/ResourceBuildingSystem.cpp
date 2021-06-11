@@ -1581,13 +1581,15 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 					texel[i] = powf(texel[i], 2.2f);
 				}
 			}
-
-			//Apply the transform function.
-			if (parameters._TransformFunction)
-			{
-				parameters._TransformFunction(X, Y, &texel);
-			}
 		}
+	}
+
+	//Apply the transform function.
+	if (parameters._TransformFunction)
+	{
+		Texture2D<Vector4<float32>> temporary_composite_texture{ composite_texture };
+
+		parameters._TransformFunction(temporary_composite_texture, &composite_texture);
 	}
 
 	//Generate the mip chain.

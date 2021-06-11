@@ -14,6 +14,7 @@
 
 //Physics.
 #include <Physics/Abstraction/PhysXCharacterControllerAbstractionData.h>
+#include <Physics/Native/PhysicsUtilities.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
@@ -360,8 +361,30 @@ void PhysicsSystem::SubCreateCollisionModel(const CollisionModelData &collision_
 	//Set up the memory input data.
 	physx::PxDefaultMemoryInputData memory_input_data{ const_cast<byte *const RESTRICT>(collision_model_data._Data.Data()), static_cast<uint32>(collision_model_data._Data.Size()) };
 
-	//Create the convex mesh.
-	*collision_model = PhysXPhysicsSystemData::_Physics->createConvexMesh(memory_input_data);
+	//Create the mesh.
+	switch (collision_model_data._Type)
+	{
+		case CollisionModelData::Type::CONCAVE:
+		{
+			*collision_model = PhysXPhysicsSystemData::_Physics->createTriangleMesh(memory_input_data);
+
+			break;
+		}
+
+		case CollisionModelData::Type::CONVEX:
+		{
+			*collision_model = PhysXPhysicsSystemData::_Physics->createConvexMesh(memory_input_data);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
 }
 
 /*
@@ -534,9 +557,26 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 
 					case ModelCollisionType::COLLISION_MODEL:
 					{
-						physx::PxConvexMesh *const RESTRICT convex_mesh{ static_cast<physx::PxConvexMesh *const RESTRICT>(component._ModelResource->_CollisionModel) };
-						const physx::PxConvexMeshGeometry geometry{ convex_mesh };
-						shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
+						physx::PxBase *const RESTRICT mesh{ static_cast<physx::PxBase *const RESTRICT>(component._ModelResource->_CollisionModel) };
+
+						if (mesh->is<physx::PxTriangleMesh>())
+						{
+							physx::PxTriangleMesh *const RESTRICT triangle_mesh{ static_cast<physx::PxTriangleMesh *const RESTRICT>(component._ModelResource->_CollisionModel) };
+							const physx::PxTriangleMeshGeometry geometry{ triangle_mesh };
+							shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
+						}
+
+						else if (mesh->is<physx::PxConvexMesh>())
+						{
+							physx::PxConvexMesh *const RESTRICT convex_mesh{ static_cast<physx::PxConvexMesh *const RESTRICT>(component._ModelResource->_CollisionModel) };
+							const physx::PxConvexMeshGeometry geometry{ convex_mesh };
+							shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
+						}
+
+						else
+						{
+							ASSERT(false, "What happened here?");
+						}
 
 						break;
 					}
@@ -631,9 +671,26 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 
 					case ModelCollisionType::COLLISION_MODEL:
 					{
-						physx::PxConvexMesh *const RESTRICT convex_mesh{ static_cast<physx::PxConvexMesh *const RESTRICT>(component._ModelResource->_CollisionModel) };
-						const physx::PxConvexMeshGeometry geometry{ convex_mesh };
-						shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
+						physx::PxBase *const RESTRICT mesh{ static_cast<physx::PxBase *const RESTRICT>(component._ModelResource->_CollisionModel) };
+
+						if (mesh->is<physx::PxTriangleMesh>())
+						{
+							physx::PxTriangleMesh *const RESTRICT triangle_mesh{ static_cast<physx::PxTriangleMesh *const RESTRICT>(component._ModelResource->_CollisionModel) };
+							const physx::PxTriangleMeshGeometry geometry{ triangle_mesh };
+							shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
+						}
+
+						else if (mesh->is<physx::PxConvexMesh>())
+						{
+							physx::PxConvexMesh *const RESTRICT convex_mesh{ static_cast<physx::PxConvexMesh *const RESTRICT>(component._ModelResource->_CollisionModel) };
+							const physx::PxConvexMeshGeometry geometry{ convex_mesh };
+							shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
+						}
+
+						else
+						{
+							ASSERT(false, "What happened here?");
+						}
 
 						break;
 					}
@@ -782,14 +839,52 @@ void PhysicsSystem::SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOE
 	{
 		case EntityType::DynamicModel:
 		{
+			//Cast to the type.
+			DynamicModelEntity *const RESTRICT dynamic_model_entity{ static_cast<DynamicModelEntity *const RESTRICT>(entity) };
 
+			//Find the dynamic model entity data.
+			for (uint64 i{ 0 }, size{ PhysXPhysicsSystemData::_DynamicModelEntityData.Size() }; i < size; ++i)
+			{
+				if (PhysXPhysicsSystemData::_DynamicModelEntityData[i]._Entity == entity)
+				{
+					//Remove the actor from the scene.
+					PhysXPhysicsSystemData::_Scene->removeActor(*PhysXPhysicsSystemData::_DynamicModelEntityData[i]._Actor);
+
+					//Release the actor.
+					PhysXPhysicsSystemData::_DynamicModelEntityData[i]._Actor->release();
+
+					//Remove the dynamic model entity data.
+					PhysXPhysicsSystemData::_DynamicModelEntityData.EraseAt<false>(i);
+
+					break;
+				}
+			}
 
 			break;
 		}
 
 		case EntityType::StaticModel:
 		{
+			//Cast to the type.
+			StaticModelEntity *const RESTRICT static_model_entity{ static_cast<StaticModelEntity *const RESTRICT>(entity) };
 
+			//Find the static model entity data.
+			for (uint64 i{ 0 }, size{ PhysXPhysicsSystemData::_StaticModelEntityData.Size() }; i < size; ++i)
+			{
+				if (PhysXPhysicsSystemData::_StaticModelEntityData[i]._Entity == entity)
+				{
+					//Remove the actor from the scene.
+					PhysXPhysicsSystemData::_Scene->removeActor(*PhysXPhysicsSystemData::_StaticModelEntityData[i]._Actor);
+
+					//Release the actor.
+					PhysXPhysicsSystemData::_StaticModelEntityData[i]._Actor->release();
+
+					//Remove the static model entity data.
+					PhysXPhysicsSystemData::_StaticModelEntityData.EraseAt<false>(i);
+
+					break;
+				}
+			}
 
 			break;
 		}
@@ -923,7 +1018,52 @@ void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, Collisio
 	//Cooking needs to be initialized, so initialize now.
 	Initialize();
 
-	//First of all, try to build a convex mesh.
+	//First of all, check the convexity of the model.
+	bool is_convex;
+
+	{
+		//Calculate the number of vertices.
+		uint64 number_of_vertices{ 0 };
+
+		for (const ModelFile::Mesh &mesh : model_file._Meshes)
+		{
+			number_of_vertices += mesh._Vertices.Size();
+		}
+
+		//Calculate the number of indices.
+		uint64 number_of_indices{ 0 };
+
+		for (const ModelFile::Mesh &mesh : model_file._Meshes)
+		{
+			number_of_indices += mesh._Indices.Size();
+		}
+
+		//Fill up the points/indices.
+		DynamicArray<Vector3<float32>> points;
+		DynamicArray<uint32> indices;
+
+		points.Reserve(number_of_vertices);
+		indices.Reserve(number_of_indices);
+
+		for (const ModelFile::Mesh &mesh : model_file._Meshes)
+		{
+			for (const Vertex &vertex : mesh._Vertices)
+			{
+				points.Emplace(vertex._Position);
+			}
+
+			for (const uint32 index : mesh._Indices)
+			{
+				indices.Emplace(index);
+			}
+		}
+
+		//Check the convexity.
+		is_convex = PhysicsUtilities::IsConvexSetOfPoints(points, indices);
+	}
+
+	//Try to build a convex mesh.
+	if (is_convex)
 	{
 		//Calculate the number of vertices.
 		uint64 number_of_vertices{ 0 };
@@ -967,12 +1107,67 @@ void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, Collisio
 		//Set the data.
 		collision_model_data->_Data.Upsize<false>(static_cast<uint64>(output_stream_buffer.getSize()));
 		Memory::Copy(collision_model_data->_Data.Data(), output_stream_buffer.getData(), sizeof(byte) * output_stream_buffer.getSize());
-
-		//Building of the convex mesh was successful, so return!
-		return;
 	}
 
-	//If this code executes, building a convex mesh failed, and a triangle mesh needs to be built instead.
-	ASSERT(false, "well");
+	else
+	{
+		//Calculate the number of vertices/indices.
+		uint64 number_of_vertices{ 0 };
+		uint64 number_of_indices{ 0 };
+
+		for (const ModelFile::Mesh &mesh : model_file._Meshes)
+		{
+			number_of_vertices += mesh._Vertices.Size();
+			number_of_indices += mesh._Indices.Size();
+		}
+
+		//Gather the vertices/indices.
+		DynamicArray<physx::PxVec3> vertices;
+		DynamicArray<physx::PxU32> indices;
+
+		vertices.Reserve(number_of_vertices);
+		indices.Reserve(number_of_vertices);
+
+		for (const ModelFile::Mesh &mesh : model_file._Meshes)
+		{
+			for (const Vertex &vertex : mesh._Vertices)
+			{
+				vertices.Emplace(physx::PxVec3(vertex._Position._X, vertex._Position._Y, -vertex._Position._Z));
+			}
+
+			for (const uint32 index : mesh._Indices)
+			{
+				indices.Emplace(index);
+			}
+		}
+
+		//Create the convex mesh description.
+		physx::PxTriangleMeshDesc triangle_mesh_description;
+
+		triangle_mesh_description.points.count = static_cast<uint32>(number_of_vertices);
+		triangle_mesh_description.points.stride = sizeof(physx::PxVec3);
+		triangle_mesh_description.points.data = vertices.Data();
+
+		triangle_mesh_description.triangles.count = static_cast<uint32>(number_of_indices);
+		triangle_mesh_description.triangles.stride = sizeof(physx::PxU32) * 3;
+		triangle_mesh_description.triangles.data = indices.Data();
+
+		triangle_mesh_description.flags = physx::PxMeshFlag::eFLIPNORMALS;
+
+		//Build the convex mesh.
+		physx::PxDefaultMemoryOutputStream output_stream_buffer;
+		physx::PxTriangleMeshCookingResult::Enum result;
+
+		PhysXPhysicsSystemData::_Cooking->cookTriangleMesh(triangle_mesh_description, output_stream_buffer, &result);
+
+		ASSERT(result == physx::PxTriangleMeshCookingResult::eSUCCESS, "Convex mesh building failed!");
+
+		//Set the type.
+		collision_model_data->_Type = CollisionModelData::Type::CONCAVE;
+
+		//Set the data.
+		collision_model_data->_Data.Upsize<false>(static_cast<uint64>(output_stream_buffer.getSize()));
+		Memory::Copy(collision_model_data->_Data.Data(), output_stream_buffer.getData(), sizeof(byte) * output_stream_buffer.getSize());
+	}
 }
 #endif

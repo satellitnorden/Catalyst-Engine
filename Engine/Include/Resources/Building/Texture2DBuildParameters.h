@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
 
+//Rendering.
+#include <Rendering/Native/Texture2D.h>
+
 class Texture2DBuildParameters final
 {
 
@@ -29,7 +32,7 @@ public:
 	};
 
 	//Transform function type alias.
-	using TransformFunction = void(*)(const uint32 X, const uint32 Y, Vector4<float32> *const RESTRICT texel);
+	using TransformFunction = void(*)(const Texture2D<Vector4<float32>> &input_texture, Texture2D<Vector4<float32>> *const RESTRICT output_texture);
 
 	/*
 	*	Channel mapping class definition.

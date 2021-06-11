@@ -18,6 +18,8 @@ namespace File
 		FBX,
 		JPG,
 		MID,
+		MTL,
+		OBJ,
 		PNG,
 		TGA,
 		WAV,
@@ -104,6 +106,16 @@ namespace File
 		if (strcmp(dot_position, ".mid") == 0)
 		{
 			return Extension::MID;
+		}
+
+		if (strcmp(dot_position, ".mtl") == 0)
+		{
+			return Extension::MTL;
+		}
+
+		if (strcmp(dot_position, ".obj") == 0)
+		{
+			return Extension::OBJ;
 		}
 
 		if (strcmp(dot_position, ".png") == 0)

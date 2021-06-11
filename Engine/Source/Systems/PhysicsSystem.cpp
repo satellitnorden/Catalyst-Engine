@@ -19,9 +19,15 @@ DEFINE_SINGLETON(PhysicsSystem);
 */
 void PhysicsSystem::Initialize() NOEXCEPT
 {
+	//Only one thread can try to initialize the physics system at one.
+	_InitializationLock.Lock();
+
 	//Only initialize once.
 	if (_Initialized)
 	{
+		//Other threads are now free to try to initialize the physics system. (:
+		_InitializationLock.Unlock();
+
 		return;
 	}
 
@@ -41,6 +47,9 @@ void PhysicsSystem::Initialize() NOEXCEPT
 
 	//The physics system is now initialized!
 	_Initialized = true;
+
+	//Other threads are now free to try to initialize the physics system. (:
+	_InitializationLock.Unlock();
 }
 
 /*
