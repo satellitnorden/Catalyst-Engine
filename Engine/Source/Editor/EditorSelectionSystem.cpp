@@ -469,6 +469,48 @@ void EditorSelectionSystem::Update() NOEXCEPT
 							light_entity->SetLightProperties(current_light_properties);
 						}
 					}
+
+					{
+						uint32 current_light_properties{ light_entity->GetLightProperties() };
+
+						bool volumetric{ TEST_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_BIT) };
+
+						if (ImGui::Checkbox("Volumetric", &volumetric))
+						{
+							if (volumetric)
+							{
+								SET_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_BIT);
+							}
+
+							else
+							{
+								CLEAR_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_BIT);
+							}
+
+							light_entity->SetLightProperties(current_light_properties);
+						}
+					}
+
+					{
+						uint32 current_light_properties{ light_entity->GetLightProperties() };
+
+						bool volumetric_shadow_casting{ TEST_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT) };
+
+						if (ImGui::Checkbox("Volumetric Shadow Casting", &volumetric_shadow_casting))
+						{
+							if (volumetric_shadow_casting)
+							{
+								SET_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT);
+							}
+
+							else
+							{
+								CLEAR_BIT(current_light_properties, CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT);
+							}
+
+							light_entity->SetLightProperties(current_light_properties);
+						}
+					}
 				}
 
 				switch (light_entity->GetLightType())

@@ -7,9 +7,6 @@
 #include "CatalystRayTracingData.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
-//Constants.
-#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
-
 //Descriptor set data.
 layout (set = 3, binding = 0) uniform sampler2D scene_features_2_texture;
 layout (set = 3, binding = 1, rgba32f) uniform image2D volumetric_lighting_image;
@@ -28,9 +25,10 @@ void CatalystShaderMain()
 	//Retrieve all properties.
 	vec3 world_position = CalculateWorldPosition(screen_coordinate, scene_features_2.w);
 	float hit_distance = length(world_position - PERCEIVER_WORLD_POSITION);
+	float hit_distance_reciprocal = 1.0f / hit_distance;
 
 	//Generate the ray direction.
-	vec3 ray_direction = (world_position - PERCEIVER_WORLD_POSITION) / hit_distance;
+	vec3 ray_direction = (world_position - PERCEIVER_WORLD_POSITION) * hit_distance_reciprocal;
 
 	//Calculate the volumetric lighting.
 	vec3 volumetric_lighting = vec3(0.0f);
@@ -93,7 +91,7 @@ void CatalystShaderMain()
 					}
 
 					//Add to the volumetric lighting.
-					volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * float(!hit_anything);
+					volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * float(!hit_anything);
 
 					break;
 				}
@@ -146,7 +144,7 @@ void CatalystShaderMain()
 							float attenuation = CalculateAttenuation(distance_to_light, light.radius);
 
 							//Add to the volumetric lighting.
-							volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * attenuation;
+							volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * attenuation;
 						}
 					}
 

@@ -2,9 +2,6 @@
 #define CATALYST_LIGHTING_DATA_SET_INDEX (2)
 #include "CatalystLightingData.glsl"
 
-//Constants.
-#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.1225f)
-
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -37,7 +34,7 @@ void CatalystShaderMain()
 	vec3 ambient_lighting = CalculateVolumetricAmbientLighting();
 
 	//Calculate the sky light lighting.
-	vec3 sky_light_lighting = VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_LUMINANCE * CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
+	vec3 sky_light_lighting = VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_LUMINANCE * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
 
 	//Calculate the sky light influence.
 	float sky_light_influence = min(abs(0.5f - SKY_LIGHT_SCREEN_SPACE_POSITION.x) * 2.0f * abs(0.5f - SKY_LIGHT_SCREEN_SPACE_POSITION.y) * 2.0f, 1.0f);

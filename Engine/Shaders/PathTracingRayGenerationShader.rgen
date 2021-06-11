@@ -5,9 +5,6 @@
 #include "CatalystRayTracingData.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
-//Constants.
-#define CATALYST_VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER (0.125f)
-
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
