@@ -3,7 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
-#include <Core/General/UpdateContext.h>
 
 //Concurrency.
 #include <Concurrency/Task.h>
@@ -36,7 +35,7 @@ public:
 	/*
 	*	Updates the save system during the sequential update phase.
 	*/
-	void SequentialUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT;
+	void SequentialUpdate() NOEXCEPT;
 
 	/*
 	*	Pre-terminates the save system.

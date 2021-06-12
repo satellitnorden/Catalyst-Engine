@@ -116,7 +116,7 @@ void TerrainSystem::PostInitialize(const CatalystProjectTerrainConfiguration &co
 /*
 *	Updates the terrain system during the sequential update phase.
 */
-void TerrainSystem::SequentialUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT
+void TerrainSystem::SequentialUpdate() NOEXCEPT
 {
 	//Check if the asynchronous update has finished.
 	if (_UpdateTask.IsExecuted())

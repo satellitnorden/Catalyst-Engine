@@ -58,8 +58,6 @@ namespace RenderingSystemLogic
 	*/
 	FORCE_INLINE void ExecuteRenderPasses(const DynamicArray<RenderPass *RESTRICT> &render_passes) NOEXCEPT
 	{
-		PROFILING_SCOPE("Execute Render Passes");
-
 		//Executes all render passes.
 		for (RenderPass *const RESTRICT render_pass : render_passes)
 		{
@@ -182,31 +180,63 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 /*
 *	Updates the rendering system during the render update phase.
 */
-void RenderingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+void RenderingSystem::RenderUpdate() NOEXCEPT
 {
 	//Begin the frame.
-	BeginFrame();
+	{
+		PROFILING_SCOPE("BeginFrame()");
 
+		BeginFrame();
+	}
+	
 	//Update the global render data.
-	UpdateGlobalRenderData();
+	{
+		PROFILING_SCOPE("UpdateGlobalRenderData()");
+
+		UpdateGlobalRenderData();
+	}
 
 	//Update the lighting system.
-	_LightingSystem.RenderUpdate(context);
+	{
+		PROFILING_SCOPE("_LightingSystem.RenderUpdate()");
+
+		_LightingSystem.RenderUpdate();
+	}
 
 	//Update the material system.
-	_MaterialSystem.RenderUpdate(context);
+	{
+		PROFILING_SCOPE("_MaterialSystem.RenderUpdate()");
+
+		_MaterialSystem.RenderUpdate();
+	}
 
 	//Update the ray tracing system.
-	_RayTracingSystem.RenderUpdate(context);
+	{
+		PROFILING_SCOPE("_RayTracingSystem.RenderUpdate()");
+
+		_RayTracingSystem.RenderUpdate();
+	}
 
 	//This shouldn't really be here, but let's have it here for now...
-	AnimationSystem::Instance->RenderUpdate(context);
+	{
+		PROFILING_SCOPE("AnimationSystem::Instance->RenderUpdate()");
+
+		AnimationSystem::Instance->RenderUpdate();
+	}
 
 	//Execute all render passes.
-	RenderingSystemLogic::ExecuteRenderPasses(_RenderPasses);
+	{
+		PROFILING_SCOPE("RenderingSystemLogic::ExecuteRenderPasses(_RenderPasses)");
+
+		RenderingSystemLogic::ExecuteRenderPasses(_RenderPasses);
+	}
 
 	//End the frame.
-	EndFrame();
+	{
+		PROFILING_SCOPE("EndFrame()");
+
+		EndFrame();
+	}
 }
 
 /*

@@ -44,7 +44,7 @@ void MaterialSystem::PostInitialize() NOEXCEPT
 /*
 *	Updates the material system during the render update phase.
 */
-void MaterialSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+void MaterialSystem::RenderUpdate() NOEXCEPT
 {
 	//Update all shader materials.
 	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)

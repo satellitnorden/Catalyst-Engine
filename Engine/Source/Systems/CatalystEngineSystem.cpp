@@ -2,7 +2,6 @@
 #include <Systems/CatalystEngineSystem.h>
 
 //Core.
-#include <Core/General/UpdateContext.h>
 #include <Core/General/DeltaTimer.h>
 
 //Components.
@@ -78,7 +77,7 @@ namespace CatalystEngineSystemLogic
 	/*
 	*	Executes a sequential update.
 	*/
-	FORCE_INLINE void ExecuteSequentialUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+	FORCE_INLINE void ExecuteSequentialUpdate() NOEXCEPT
 	{
 		//Execute the sequential update.
 		switch (CatalystEngineSystemData::_CurrentSequentialUpdate)
@@ -92,14 +91,14 @@ namespace CatalystEngineSystemLogic
 
 			case CatalystEngineSystemData::SequentialUpdate::SaveSystem:
 			{
-				SaveSystem::Instance->SequentialUpdate(context);
+				SaveSystem::Instance->SequentialUpdate();
 
 				break;
 			}
 
 			case CatalystEngineSystemData::SequentialUpdate::TerrainSystem:
 			{
-				TerrainSystem::Instance->SequentialUpdate(context);
+				TerrainSystem::Instance->SequentialUpdate();
 
 				break;
 			}
@@ -247,61 +246,90 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 		}
 	}
 
-	//Construct the update context.
-	UpdateContext context;
-
-	context._TotalFrames = _TotalFrames;
-	context._TotalTime = _TotalTime;
-	context._DeltaTime = _DeltaTime;
-
 	/*
 	*	Pre update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhase::PRE);
+	{
+		PROFILING_SCOPE("Pre Update Phase");
+
+		UpdateIndividualPhase(UpdatePhase::PRE);
+	}
 
 	/*
 	*	Entity update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhase::ENTITY);
+	{
+		PROFILING_SCOPE("Entity Update Phase");
+
+		UpdateIndividualPhase(UpdatePhase::ENTITY);
+	}
 
 	/*
 	*	Input update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhase::INPUT);
+	{
+		PROFILING_SCOPE("Input Update Phase");
+
+		UpdateIndividualPhase(UpdatePhase::INPUT);
+	}
 
 	/*
 	*	User interface update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhase::USER_INTERFACE);
+	{
+		PROFILING_SCOPE("User Interface Update Phase");
+
+		UpdateIndividualPhase(UpdatePhase::USER_INTERFACE);
+	}
 
 	/*
 	*	Logic update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhase::LOGIC);
+	{
+		PROFILING_SCOPE("Logic Update Phase");
+
+		UpdateIndividualPhase(UpdatePhase::LOGIC);
+	}
 
 	/*
 	*	Physics update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhase::PHYSICS);
+	{
+		PROFILING_SCOPE("Physics Update Phase");
+
+		UpdateIndividualPhase(UpdatePhase::PHYSICS);
+	}
 
 	/*
 	*	Render update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhase::RENDER);
+	{
+		PROFILING_SCOPE("Render Update Phase");
 
-	CullingSystem::Instance->RenderUpdate(&context);
-	LevelOfDetailSystem::Instance->RenderUpdate(&context);
-	RenderingSystem::Instance->RenderUpdate(&context);
+		UpdateIndividualPhase(UpdatePhase::RENDER);
+
+		CullingSystem::Instance->RenderUpdate();
+		LevelOfDetailSystem::Instance->RenderUpdate();
+		RenderingSystem::Instance->RenderUpdate();
+	}
 
 	/*
 	*	Post update phase.
 	*/
-	UpdateIndividualPhase(UpdatePhase::POST);
+	{
+		PROFILING_SCOPE("Post Update Phase");
+
+		UpdateIndividualPhase(UpdatePhase::POST);
+	}
 
 	/*
 	*	Sequential update phase.
 	*/
-	CatalystEngineSystemLogic::ExecuteSequentialUpdate(&context);
+	{
+		PROFILING_SCOPE("Sequential Update Phase");
+
+		CatalystEngineSystemLogic::ExecuteSequentialUpdate();
+	}
 
 	//Return if the game should be terminated.
 	return !_ShouldTerminate;

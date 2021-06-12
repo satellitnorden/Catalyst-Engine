@@ -15,6 +15,9 @@
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 
+//Profiling.
+#include <Profiling/ProfilingCore.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 #include <Rendering/Native/RenderingUtilities.h>
@@ -1686,19 +1689,39 @@ void RenderingSystem::PreInitialize() NOEXCEPT
 void RenderingSystem::BeginFrame() NOEXCEPT
 {
 	//Pre-update the Vulkan interface.
-	VulkanInterface::Instance->PreUpdate(VulkanRenderingSystemData::_FrameData.GetImageAvailableSemaphore());
+	{
+		PROFILING_SCOPE("VulkanInterface::Instance->PreUpdate(VulkanRenderingSystemData::_FrameData.GetImageAvailableSemaphore())");
+
+		VulkanInterface::Instance->PreUpdate(VulkanRenderingSystemData::_FrameData.GetImageAvailableSemaphore());
+	}
 
 	//Process the destruction queue.
-	VulkanRenderingSystemLogic::ProcessDestructionQueue();
+	{
+		PROFILING_SCOPE("VulkanRenderingSystemLogic::ProcessDestructionQueue()");
+
+		VulkanRenderingSystemLogic::ProcessDestructionQueue();
+	}
 
 	//Set the current frame.
-	VulkanRenderingSystemData::_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
+	{
+		PROFILING_SCOPE("VulkanRenderingSystemData::_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex())");
+
+		VulkanRenderingSystemData::_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
+	}
 
 	//Wait for the current fence to finish.
-	VulkanRenderingSystemData::_FrameData.GetCurrentFence()->WaitFor();
+	{
+		PROFILING_SCOPE("VulkanRenderingSystemData::_FrameData.GetCurrentFence()->WaitFor()");
+
+		VulkanRenderingSystemData::_FrameData.GetCurrentFence()->WaitFor();
+	}
 
 	//Reset the current fence.
-	VulkanRenderingSystemData::_FrameData.GetCurrentFence()->Reset();
+	{
+		PROFILING_SCOPE("VulkanRenderingSystemData::_FrameData.GetCurrentFence()->Reset()");
+
+		VulkanRenderingSystemData::_FrameData.GetCurrentFence()->Reset();
+	}
 }
 
 /*

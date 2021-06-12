@@ -11,6 +11,7 @@
 #include <Components/Core/ComponentManager.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -33,29 +34,32 @@ void AnimationSystem::PostInitialize() NOEXCEPT
 /*
 *	Updates the animation system during the render update phase.
 */
-void AnimationSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+void AnimationSystem::RenderUpdate() NOEXCEPT
 {
+	//Cache the delta time.
+	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
+
 	//Update all animated models.
 	const uint64 number_of_animated_model_components{ ComponentManager::GetNumberOfAnimatedModelComponents() };
 	AnimatedModelComponent *RESTRICT component{ ComponentManager::GetAnimatedModelAnimatedModelComponents() };
 
 	for (uint64 i{ 0 }; i < number_of_animated_model_components; ++i, ++component)
 	{
-		UpdateAnimatedModel(context, component);
+		UpdateAnimatedModel(delta_time, component);
 	}
 }
 
 /*
 *	Updates an animated model.
 */
-void AnimationSystem::UpdateAnimatedModel(const UpdateContext *const RESTRICT context, AnimatedModelComponent *const RESTRICT component) NOEXCEPT
+void AnimationSystem::UpdateAnimatedModel(const float32 delta_time, AnimatedModelComponent *const RESTRICT component) NOEXCEPT
 {
 	StaticArray<Matrix4x4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> bone_transforms;
 
 	if (component->_CurrentAnimationResource)
 	{
 		//Update the current animation time.
-		component->_CurrentAnimationTime += context->_DeltaTime;
+		component->_CurrentAnimationTime += delta_time;
 
 		//Wrap around if the animation is looping.
 		if (true) //IsLooping() or whater...

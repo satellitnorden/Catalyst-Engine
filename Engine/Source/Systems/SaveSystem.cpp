@@ -31,7 +31,7 @@ void SaveSystem::Initialize() NOEXCEPT
 /*
 *	Updates the save system during the sequential update phase.
 */
-void SaveSystem::SequentialUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT
+void SaveSystem::SequentialUpdate() NOEXCEPT
 {
 	//Check if any saves have been requested, and if the task is not executing. If so, fire it off!
 	if ((_RequestedLoadsMask != 0 || _RequestedSavesMask != 0) && _ProcessSavesTask.IsExecuted())

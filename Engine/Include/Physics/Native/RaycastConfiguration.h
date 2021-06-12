@@ -15,9 +15,9 @@ public:
 	PhysicsChannel _PhysicsChannels;
 
 	//The maximum hit distance.
-	float _MaximumHitDistance;
+	float32 _MaximumHitDistance;
 
 	//The terrain ray march step.
-	float _TerrainRayMarchStep;
+	float32 _TerrainRayMarchStep;
 
 };

@@ -6,7 +6,6 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/Map.h>
 #include <Core/Containers/StaticArray.h>
-#include <Core/General/UpdateContext.h>
 
 //Math.
 #include <Math/General/Matrix.h>
@@ -73,7 +72,7 @@ public:
 	/*
 	*	Updates the rendering system during the render update phase.
 	*/
-	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void RenderUpdate() NOEXCEPT;
 
 	/*
 	*	Terminates the rendering system.

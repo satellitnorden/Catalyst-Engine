@@ -47,7 +47,7 @@ void LightingSystem::PostInitialize() NOEXCEPT
 /*
 *	Updates the lighting system during the render update phase.
 */
-void LightingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+void LightingSystem::RenderUpdate() NOEXCEPT
 {
 	//Cache relevant data.
 	const uint64 number_of_lights{ ComponentManager::GetNumberOfLightComponents() };

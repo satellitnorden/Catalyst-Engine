@@ -48,6 +48,64 @@ void Character::UpdateCharacter(const float32 delta_time) NOEXCEPT
 */
 void Character::PostUpdateCharacter(const float32 delta_time) NOEXCEPT
 {
+	//Update whether or not this character is crouching.
+	if (_WantsToCrouch)
+	{
+		if (_IsCrouching)
+		{
+			//Nothing to do here. (:
+		}
+
+		else
+		{
+			_IsCrouching = true;
+		}
+	}
+
+	else
+	{
+		{
+			if (_IsCrouching && CanStandUp())
+			{
+				_IsCrouching = true;
+			}
+
+			else
+			{
+				//Nothing to do here. (:
+			}
+		}
+	}
+
+	//Update whether or not this character is sprinting.
+	if (_WantsToSprint)
+	{
+		if (_IsSprinting)
+		{
+			//Nothing to do here. (:
+		}
+
+		else
+		{
+			_IsSprinting = true;
+		}
+	}
+
+	else
+	{
+		{
+			if (_IsSprinting)
+			{
+				_IsSprinting = true;
+			}
+
+			else
+			{
+				//Nothing to do here. (:
+			}
+		}
+	}
+
 	//Update the speed spring damping system.
 	float32 desired_speed;
 
@@ -68,7 +126,7 @@ void Character::PostUpdateCharacter(const float32 delta_time) NOEXCEPT
 	//Update the vertical velocity.
 	if (_CharacterController->IsOnGround())
 	{
-		if (_CachedJump)
+		if (_WantsToJump)
 		{
 			_VerticalVelocity = _CharacterConfiguration._JumpForce;
 		}
@@ -81,12 +139,6 @@ void Character::PostUpdateCharacter(const float32 delta_time) NOEXCEPT
 
 	else
 	{
-		if (_CachedJump)
-		{
-			_VerticalVelocity = _CharacterConfiguration._JumpForce;
-		}
-
-		else
 		_VerticalVelocity += -PhysicsConstants::GRAVITY * delta_time;
 	}
 
@@ -104,7 +156,38 @@ void Character::PostUpdateCharacter(const float32 delta_time) NOEXCEPT
 	_CurrentHeight = _HeightSpringDampingSystem.Update(delta_time);
 	_CharacterController->ResizeCapsuleHeight(_CurrentHeight);
 
+	//Reset whether or not this character wants to jump.
+	_WantsToJump = false;
+
 	//Reset the cached movement/jump.
 	_CachedMovement = Vector3<float32>(0.0f, 0.0f, 0.0f);
-	_CachedJump = false;
+	
+}
+
+/*
+*	Returns whether or not this character can stand up.
+*/
+NO_DISCARD bool Character::CanStandUp() const NOEXCEPT
+{
+#if 0
+	//Do a raycast up. If it hits something, this character can't stand up.
+	Ray ray;
+
+	ray.SetOrigin(_CharacterController->GetWorldPosition().GetAbsolutePosition());
+	ray.SetDirection(Vector3<float32>(0.0f, 1.0f, 0.0f));
+
+	RaycastConfiguration raycast_configuration;
+
+	raycast_configuration._PhysicsChannels = PhysicsChannel::ALL;
+	raycast_configuration._MaximumHitDistance = 2.0f;
+	raycast_configuration._TerrainRayMarchStep = 1.0f;
+
+	RaycastResult raycast_result;
+
+	PhysicsSystem::Instance->CastRay(ray, raycast_configuration, &raycast_result);
+
+	return !raycast_result._HasHit;
+#else
+	return true;
+#endif
 }

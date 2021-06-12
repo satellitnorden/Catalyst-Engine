@@ -3,7 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
-#include <Core/General/UpdateContext.h>
 
 //Lighting.
 #include <Lighting/LightingCore.h>
@@ -25,7 +24,7 @@ public:
 	/*
 	*	Updates the lighting system during the render update phase.
 	*/
-	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void RenderUpdate() NOEXCEPT;
 
 	/*
 	*	Returns the lighting data render data table layout.

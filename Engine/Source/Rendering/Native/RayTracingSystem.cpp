@@ -20,7 +20,7 @@ void RayTracingSystem::PostInitialize()
 /*
 *	Updates the ray tracing system during the render update phase.
 */
-void RayTracingSystem::RenderUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT
+void RayTracingSystem::RenderUpdate() NOEXCEPT
 {
 	//No need to do anything if ray tracing isn't active.
 	if (!RenderingSystem::Instance->IsRayTracingActive())

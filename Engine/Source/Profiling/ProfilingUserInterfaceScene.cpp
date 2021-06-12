@@ -74,7 +74,7 @@ void ProfilingUserInterfaceScene::UpdateProfilingEntries() NOEXCEPT
 		const ProfilingEntry &current_profiling_entry{ _CurrentProfilingEntries[_CurrentProfilingEntries.LastIndex() - i] };
 
 		//Calculate the text.
-		char buffer[128];
+		char buffer[256];
 		sprintf_s(buffer, "%s: %.2f milliseconds", current_profiling_entry._Name, current_profiling_entry._Duration);
 
 		//Does a progress bar exist for this entry?

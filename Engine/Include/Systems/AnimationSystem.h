@@ -3,7 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/HashString.h>
-#include <Core/General/UpdateContext.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -36,7 +35,7 @@ public:
 	/*
 	*	Updates the animation system during the render update phase.
 	*/
-	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void RenderUpdate() NOEXCEPT;
 
 	/*
 	*	Returns the animation data render data table layout.
@@ -54,7 +53,7 @@ private:
 	/*
 	*	Updates an animated model.
 	*/
-	void UpdateAnimatedModel(const UpdateContext *const RESTRICT context, AnimatedModelComponent *const RESTRICT component) NOEXCEPT;
+	void UpdateAnimatedModel(const float32 delta_time, AnimatedModelComponent *const RESTRICT component) NOEXCEPT;
 
 	/*
 	*	Finds the bone index of the animated model with the given name.

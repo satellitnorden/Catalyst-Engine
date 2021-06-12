@@ -3,7 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
-#include <Core/General/UpdateContext.h>
 
 //Entities.
 #include <Entities/Types/DynamicModelEntity.h>

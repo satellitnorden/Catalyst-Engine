@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/UpdateContext.h>
 
 //Concurrency.
 #include <Concurrency/Task.h>
@@ -31,7 +30,7 @@ public:
 	/*
 	*	Updates the level of detail system during the render update phase.
 	*/
-	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void RenderUpdate() NOEXCEPT;
 
 	/*
 	*	Sets the screen coverage bias.

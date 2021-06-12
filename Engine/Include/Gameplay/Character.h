@@ -51,11 +51,17 @@ protected:
 	//The vertical velocity.
 	float32 _VerticalVelocity{ 0.0f };
 
-	//The cached jump.
-	bool _CachedJump{ false };
+	//Denotes if this character wants to jump.
+	bool _WantsToJump{ false };
+
+	//Denotes if this character wants to crouch.
+	bool _WantsToCrouch{ false };
 
 	//Denotes if this character is crouching.
 	bool _IsCrouching{ false };
+
+	//Denotes if this character wants to sprint.
+	bool _WantsToSprint{ false };
 
 	//Denotes if this character is sprinting.
 	bool _IsSprinting{ false };
@@ -84,27 +90,34 @@ protected:
 	}
 
 	/*
-	*	Jumps.
+	*	Sets whether or not this character wants to jump.
 	*/
-	FORCE_INLINE void Jump() NOEXCEPT
+	FORCE_INLINE void SetWantsToJump(const bool value) NOEXCEPT
 	{
-		_CachedJump = true;
+		_WantsToJump = value;
 	}
 
 	/*
-	*	Sets whether or not this character is crouching.
+	*	Sets whether or not this character wants to crouch.
 	*/
-	FORCE_INLINE void SetIsCrouching(const bool value) NOEXCEPT
+	FORCE_INLINE void SetWantsToCrouch(const bool value) NOEXCEPT
 	{
-		_IsCrouching = value;
+		_WantsToCrouch = value;
 	}
 
 	/*
-	*	Sets whether or not this character is sprinting.
+	*	Sets whether or not this character wants to sprint.
 	*/
-	FORCE_INLINE void SetIsSprinting(const bool value) NOEXCEPT
+	FORCE_INLINE void SetWantsToSprint(const bool value) NOEXCEPT
 	{
-		_IsSprinting = value;
+		_WantsToSprint = value;
 	}
+
+private:
+
+	/*
+	*	Returns whether or not this character can stand up.
+	*/
+	NO_DISCARD bool CanStandUp() const NOEXCEPT;
 
 };

@@ -51,7 +51,7 @@ void CullingSystem::Initialize() NOEXCEPT
 /*
 *	Updates the culling system during the render update phase.
 */
-void CullingSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+void CullingSystem::RenderUpdate() NOEXCEPT
 {
 	//Execute all tasks.
 	TaskSystem::Instance->ExecuteTask(&_DynamicModelsCullingTask);

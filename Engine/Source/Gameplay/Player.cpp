@@ -62,12 +62,12 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 		//Add jump.
 		if (_CurrentInputState._JumpButtonPressed)
 		{
-			Jump();
+			SetWantsToJump(true);
 		}
 
-		//Set whether the character is crouching/sprinting.
-		SetIsCrouching(_CurrentInputState._IsCrouching);
-		SetIsSprinting(_CurrentInputState._IsSprinting);
+		//Set whether the character wants to crouch/sprint.
+		SetWantsToCrouch(_CurrentInputState._IsCrouching);
+		SetWantsToSprint(_CurrentInputState._IsSprinting);
 
 		//Hide the cursor.
 		InputSystem::Instance->HideCursor();

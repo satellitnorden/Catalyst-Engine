@@ -41,17 +41,6 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	//Set up the style.
 	ImGuiStyle* style = &ImGui::GetStyle();
 
-	/*
-	style->Alpha = 1.0f;
-	style->WindowRounding = 0.0f;
-	style->ChildRounding = 0.0f;
-	style->PopupRounding = 0.0f;
-	style->FrameRounding = 0.0f;
-	style->ScrollbarRounding = 0.0f;
-	style->GrabRounding = 0.0f;
-	style->TabRounding = 0.0f;
-	*/
-
 	{
 		auto &colors{ ImGui::GetStyle().Colors };
 

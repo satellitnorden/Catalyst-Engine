@@ -4,7 +4,6 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
-#include <Core/General/UpdateContext.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -28,7 +27,7 @@ public:
 	/*
 	*	Updates the material system during the render update phase.
 	*/
-	void RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void RenderUpdate() NOEXCEPT;
 
 	/*
 	*	Registers a material.

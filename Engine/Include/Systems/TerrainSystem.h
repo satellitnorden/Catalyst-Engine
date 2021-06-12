@@ -60,7 +60,7 @@ public:
 	/*
 	*	Updates the terrain system during the sequential update phase.
 	*/
-	void SequentialUpdate(const UpdateContext* const RESTRICT context) NOEXCEPT;
+	void SequentialUpdate() NOEXCEPT;
 
 	/*
 	*	Returns the terrain properties.

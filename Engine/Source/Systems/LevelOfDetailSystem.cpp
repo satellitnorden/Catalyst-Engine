@@ -41,7 +41,7 @@ void LevelOfDetailSystem::Initialize() NOEXCEPT
 /*
 *	Updates the level of detail system during the render update phase.
 */
-void LevelOfDetailSystem::RenderUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+void LevelOfDetailSystem::RenderUpdate() NOEXCEPT
 {
 	//Execute all tasks.
 	TaskSystem::Instance->ExecuteTask(&_StaticModelsLevelOfDetailTask);
