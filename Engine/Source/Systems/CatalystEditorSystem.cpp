@@ -41,6 +41,7 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	//Set up the style.
 	ImGuiStyle* style = &ImGui::GetStyle();
 
+	/*
 	style->Alpha = 1.0f;
 	style->WindowRounding = 0.0f;
 	style->ChildRounding = 0.0f;
@@ -49,6 +50,7 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	style->ScrollbarRounding = 0.0f;
 	style->GrabRounding = 0.0f;
 	style->TabRounding = 0.0f;
+	*/
 
 	{
 		auto &colors{ ImGui::GetStyle().Colors };
@@ -178,7 +180,7 @@ void CatalystEditorSystem::UpdateIO() NOEXCEPT
 	};
 
 	//Define constants.
-	constexpr StaticArray<KeyboardButtonInputCharacterMapping, 38> KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS
+	constexpr StaticArray<KeyboardButtonInputCharacterMapping, 52> KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS
 	{
 		KeyboardButtonInputCharacterMapping(KeyboardButton::A, 'A', 'a'),
 		KeyboardButtonInputCharacterMapping(KeyboardButton::B, 'B', 'b'),
@@ -216,8 +218,22 @@ void CatalystEditorSystem::UpdateIO() NOEXCEPT
 		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadSeven, '7', '7'),
 		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadEight, '8', '8'),
 		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadNine, '9', '9'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadDecimal, ',', ','),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadSubtract, '-', '-')
+		KeyboardButtonInputCharacterMapping(KeyboardButton::MULTIPLY, '*', '*'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::ADD, '+', '+'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::SEPARATOR, '.', '.'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::SUBTRACT, '-', '-'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::DECIMAL, ',', ','),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::DIVIDE, '/', '/'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::ZERO, '0', '0'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::ONE, '1', '1'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::TWO, '2', '2'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::THREE, '3', '3'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::FOUR, '4', '4'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::FIVE, '5', '5'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::SIX, '6', '6'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::SEVEN, '7', '7'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::EIGHT, '8', '8'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NINE, '9', '9')
 	};
 
 	//Fill in ImGui's IO struct.

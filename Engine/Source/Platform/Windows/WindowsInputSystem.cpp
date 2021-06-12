@@ -230,16 +230,16 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_DELETE, &(*state)[KeyboardButton::Delete]);
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_HELP, &(*state)[KeyboardButton::Help]);
 
-	WindowsInputSystemLogic::UpdateWindowsButton(0x30, &(*state)[KeyboardButton::Zero]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x31, &(*state)[KeyboardButton::One]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x32, &(*state)[KeyboardButton::Two]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x33, &(*state)[KeyboardButton::Three]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x34, &(*state)[KeyboardButton::Four]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x35, &(*state)[KeyboardButton::Five]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x36, &(*state)[KeyboardButton::Six]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x37, &(*state)[KeyboardButton::Seven]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x38, &(*state)[KeyboardButton::Eight]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x39, &(*state)[KeyboardButton::Nine]);
+	WindowsInputSystemLogic::UpdateWindowsButton(0x30, &(*state)[KeyboardButton::ZERO]);
+	WindowsInputSystemLogic::UpdateWindowsButton(0x31, &(*state)[KeyboardButton::ONE]);
+	WindowsInputSystemLogic::UpdateWindowsButton(0x32, &(*state)[KeyboardButton::TWO]);
+	WindowsInputSystemLogic::UpdateWindowsButton(0x33, &(*state)[KeyboardButton::THREE]);
+	WindowsInputSystemLogic::UpdateWindowsButton(0x34, &(*state)[KeyboardButton::FOUR]);
+	WindowsInputSystemLogic::UpdateWindowsButton(0x35, &(*state)[KeyboardButton::FIVE]);
+	WindowsInputSystemLogic::UpdateWindowsButton(0x36, &(*state)[KeyboardButton::SIX]);
+	WindowsInputSystemLogic::UpdateWindowsButton(0x37, &(*state)[KeyboardButton::SEVEN]);
+	WindowsInputSystemLogic::UpdateWindowsButton(0x38, &(*state)[KeyboardButton::EIGHT]);
+	WindowsInputSystemLogic::UpdateWindowsButton(0x39, &(*state)[KeyboardButton::NINE]);
 
 	WindowsInputSystemLogic::UpdateWindowsButton(0x41, &(*state)[KeyboardButton::A]);
 	WindowsInputSystemLogic::UpdateWindowsButton(0x42, &(*state)[KeyboardButton::B]);
@@ -284,12 +284,12 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD8, &(*state)[KeyboardButton::NumpadEight]);
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD9, &(*state)[KeyboardButton::NumpadNine]);
 
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_MULTIPLY, &(*state)[KeyboardButton::NumpadMultiply]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_ADD, &(*state)[KeyboardButton::NumpadAdd]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_SEPARATOR, &(*state)[KeyboardButton::NumpadSeparator]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_SUBTRACT, &(*state)[KeyboardButton::NumpadSubtract]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_DECIMAL, &(*state)[KeyboardButton::NumpadDecimal]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_DIVIDE, &(*state)[KeyboardButton::NumpadDivide]);
+	WindowsInputSystemLogic::UpdateWindowsButton(VK_MULTIPLY, &(*state)[KeyboardButton::MULTIPLY]);
+	WindowsInputSystemLogic::UpdateWindowsButton(VK_ADD, &(*state)[KeyboardButton::ADD]);
+	WindowsInputSystemLogic::UpdateWindowsButton(VK_SEPARATOR, &(*state)[KeyboardButton::SEPARATOR]);
+	WindowsInputSystemLogic::UpdateWindowsButton(VK_SUBTRACT, &(*state)[KeyboardButton::SUBTRACT]);
+	WindowsInputSystemLogic::UpdateWindowsButton(VK_DECIMAL, &(*state)[KeyboardButton::DECIMAL]);
+	WindowsInputSystemLogic::UpdateWindowsButton(VK_DIVIDE, &(*state)[KeyboardButton::DIVIDE]);
 
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_F1, &(*state)[KeyboardButton::F1]);
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_F2, &(*state)[KeyboardButton::F2]);

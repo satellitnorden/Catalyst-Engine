@@ -147,3 +147,5 @@ public:
 	}
 
 };
+
+static_assert(sizeof(LevelEntry) == 112, "Level Entry size has changed, resources needs to be rebuilt.");
