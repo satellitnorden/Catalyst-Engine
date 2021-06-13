@@ -33,6 +33,60 @@
 #define PX_RELEASE(POINTER)	if(POINTER)	{ POINTER->release(); POINTER = nullptr; }
 
 /*
+*	Query filter callback class definition.
+*/
+
+class QueryFilterCallback final : public physx::PxQueryFilterCallback
+{
+
+public:
+
+	/*
+	*	Constructor taking in the raycast configuration.
+	*/
+	FORCE_INLINE QueryFilterCallback(const RaycastConfiguration &initial_raycast_configuration) NOEXCEPT
+		:
+		_RaycastConfiguration(initial_raycast_configuration)
+	{
+
+	}
+
+	/*
+	*	The pre filter callback.
+	*/
+	FORCE_INLINE physx::PxQueryHitType::Enum preFilter(const physx::PxFilterData &filter_data, const physx::PxShape *const RESTRICT shape, const physx::PxRigidActor *const RESTRICT actor, physx::PxHitFlags &queryFlags) NOEXCEPT
+	{
+		const bool is_character{ actor->userData == nullptr };
+		const bool is_dynamic_model{ actor->userData && static_cast<Entity *const RESTRICT>(actor->userData)->_Type == EntityType::DynamicModel };
+		const bool is_static_model{ actor->userData && static_cast<Entity *const RESTRICT>(actor->userData)->_Type == EntityType::StaticModel };
+
+		physx::PxQueryHitType::Enum final_return{ physx::PxQueryHitType::eBLOCK };
+
+		final_return = static_cast<physx::PxQueryHitType::Enum>(final_return * (is_character ? static_cast<int32>(TEST_BIT(_RaycastConfiguration._PhysicsChannels, PhysicsChannel::CHARACTERS)) : 1));
+		final_return = static_cast<physx::PxQueryHitType::Enum>(final_return * (is_dynamic_model ? static_cast<int32>(TEST_BIT(_RaycastConfiguration._PhysicsChannels, PhysicsChannel::DYNAMIC_MODELS)) : 1));
+		final_return = static_cast<physx::PxQueryHitType::Enum>(final_return * (is_static_model ? static_cast<int32>(TEST_BIT(_RaycastConfiguration._PhysicsChannels, PhysicsChannel::STATIC_MODELS)) : 1));
+
+		return final_return;
+	}
+
+	/*
+	*	The post filter callback.
+	*/
+	FORCE_INLINE physx::PxQueryHitType::Enum postFilter(const physx::PxFilterData &filter_data, const physx::PxQueryHit &hit) NOEXCEPT
+	{
+		ASSERT(false, "postFilter function shouldn't run?");
+
+		return physx::PxQueryHitType::eNONE;
+	}
+
+private:
+
+	//The raycast configuration.
+	RaycastConfiguration _RaycastConfiguration;
+
+};
+
+/*
 *	Dynamic model entity data class definition.
 */
 class DynamicModelEntityData final
@@ -907,12 +961,20 @@ void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &confi
 	const physx::PxVec3 physx_origin{ ray._Origin._X, ray._Origin._Y, -ray._Origin._Z };
 	const physx::PxVec3 physx_direction{ ray._Direction._X, ray._Direction._Y, -ray._Direction._Z };
 	physx::PxRaycastBuffer raycast_buffer;
+	const physx::PxHitFlags flags{ 0 };
+	physx::PxQueryFilterData filter_data;
+	QueryFilterCallback query_filter_callback{ configuration };
+
+	filter_data.flags |= physx::PxQueryFlag::ePREFILTER;
 
 	//Cast the ray!
 	result->_HasHit = PhysXPhysicsSystemData::_Scene->raycast(	physx_origin,
 																physx_direction,
 																configuration._MaximumHitDistance,
-																raycast_buffer);
+																raycast_buffer,
+																flags,
+																filter_data,
+																&query_filter_callback);
 
 	//Fill out the result.
 	if (result->_HasHit)

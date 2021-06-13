@@ -67,7 +67,7 @@ void Character::PostUpdateCharacter(const float32 delta_time) NOEXCEPT
 		{
 			if (_IsCrouching && CanStandUp())
 			{
-				_IsCrouching = true;
+				_IsCrouching = false;
 			}
 
 			else
@@ -169,17 +169,16 @@ void Character::PostUpdateCharacter(const float32 delta_time) NOEXCEPT
 */
 NO_DISCARD bool Character::CanStandUp() const NOEXCEPT
 {
-#if 0
 	//Do a raycast up. If it hits something, this character can't stand up.
 	Ray ray;
 
-	ray.SetOrigin(_CharacterController->GetWorldPosition().GetAbsolutePosition());
+	ray.SetOrigin(_CharacterController->GetWorldPosition().GetAbsolutePosition() + Vector3<float32>(0.0f, 1.0f, 0.0f));
 	ray.SetDirection(Vector3<float32>(0.0f, 1.0f, 0.0f));
 
 	RaycastConfiguration raycast_configuration;
 
-	raycast_configuration._PhysicsChannels = PhysicsChannel::ALL;
-	raycast_configuration._MaximumHitDistance = 2.0f;
+	raycast_configuration._PhysicsChannels = PhysicsChannel::DYNAMIC_MODELS | PhysicsChannel::STATIC_MODELS | PhysicsChannel::TERRAIN;
+	raycast_configuration._MaximumHitDistance = 1.1f;
 	raycast_configuration._TerrainRayMarchStep = 1.0f;
 
 	RaycastResult raycast_result;
@@ -187,7 +186,4 @@ NO_DISCARD bool Character::CanStandUp() const NOEXCEPT
 	PhysicsSystem::Instance->CastRay(ray, raycast_configuration, &raycast_result);
 
 	return !raycast_result._HasHit;
-#else
-	return true;
-#endif
 }

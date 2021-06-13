@@ -25,11 +25,12 @@ enum class ModelCollisionType : uint8
 //Enumeration covering all physics channels.
 enum class PhysicsChannel : uint8
 {
-	DYNAMIC_MODELS = BIT(0),
-	STATIC_MODELS = BIT(1),
-	TERRAIN = BIT(2),
+	CHARACTERS = BIT(0),
+	DYNAMIC_MODELS = BIT(1),
+	STATIC_MODELS = BIT(2),
+	TERRAIN = BIT(3),
 
-	ALL = DYNAMIC_MODELS | STATIC_MODELS | TERRAIN
+	ALL = CHARACTERS | DYNAMIC_MODELS | STATIC_MODELS | TERRAIN
 };
 
 ENUMERATION_BIT_OPERATIONS(PhysicsChannel);
