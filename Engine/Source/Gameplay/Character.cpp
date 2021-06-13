@@ -96,7 +96,7 @@ void Character::PostUpdateCharacter(const float32 delta_time) NOEXCEPT
 		{
 			if (_IsSprinting)
 			{
-				_IsSprinting = true;
+				_IsSprinting = false;
 			}
 
 			else
