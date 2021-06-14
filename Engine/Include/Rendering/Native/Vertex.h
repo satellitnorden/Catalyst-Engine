@@ -14,16 +14,16 @@ class Vertex final
 public:
 
 	//The position of this vertex.
-	Vector3<float> _Position;
+	Vector3<float32> _Position;
 
 	//The normal of this vertex.
-	Vector3<float> _Normal;
+	Vector3<float32> _Normal;
 
 	//The tangent of this vertex.
-	Vector3<float> _Tangent;
+	Vector3<float32> _Tangent;
 
 	//The texture coordinate of this vertex.
-	Vector2<float> _TextureCoordinate;
+	Vector2<float32> _TextureCoordinate;
 
 	//Some padding. (:
 	Padding<4> _Padding;
@@ -36,15 +36,15 @@ public:
 	/*
 	*	Constructor taking the position, normal and the color of this vertex.
 	*/
-	Vertex(	const Vector3<float> &newPosition,
-			const Vector3<float> &newNormal,
-			const Vector3<float> &newTangent,
-			const Vector2<float> &newTextureCoordinate) NOEXCEPT
+	Vertex(	const Vector3<float32> &initial_position,
+			const Vector3<float32> &initial_normal,
+			const Vector3<float32> &initial_tangent,
+			const Vector2<float32> &initial_texture_coordinate) NOEXCEPT
 		:
-		_Position(newPosition),
-		_Normal(newNormal),
-		_Tangent(newTangent),
-		_TextureCoordinate(newTextureCoordinate)
+		_Position(initial_position),
+		_Normal(initial_normal),
+		_Tangent(initial_tangent),
+		_TextureCoordinate(initial_texture_coordinate)
 	{
 
 	}
@@ -70,6 +70,14 @@ public:
 		_TextureCoordinate(newTextureCoordinateX, newTextureCoordinateY)
 	{
 
+	}
+
+	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE bool operator==(const Vertex &other) NOEXCEPT
+	{
+		return Memory::Compare(this, &other, sizeof(Vertex));
 	}
 
 	/*

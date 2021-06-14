@@ -81,6 +81,12 @@ target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:freetype>
 target_link_libraries(${PROJECT_NAME} vulkan-1)
 target_link_libraries(${PROJECT_NAME} Winmm)
 target_link_libraries(${PROJECT_NAME} xinput)
+target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/zlibstaticd>
+										$<$<CONFIG:DebugEditor>:Debug/zlibstaticd>
+										$<$<CONFIG:Profile>:Profile/zlibstatic>
+										$<$<CONFIG:ProfileEditor>:Profile/zlibstatic>
+										$<$<CONFIG:Final>:final/zlibstatic>
+										)
 
 #Set the startup project.
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})

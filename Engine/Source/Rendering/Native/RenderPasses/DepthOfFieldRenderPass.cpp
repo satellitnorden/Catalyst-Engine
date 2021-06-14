@@ -38,7 +38,6 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 	SetNumberOfPipelines(2);
 
 	AddPipeline(&_DepthOfFieldBokehBlurGraphicsPipeline);
-
 	AddPipeline(&_DepthOfFieldApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.

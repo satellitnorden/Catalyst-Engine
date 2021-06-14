@@ -15,6 +15,14 @@ class ModelFile final
 
 public:
 
+	//Enumeration covering all creators.
+	enum class Creator : uint8
+	{
+		BLENDER,
+
+		UNKNOWN
+	};
+
 	/*
 	*	Mesh class definition.
 	*/
@@ -30,6 +38,9 @@ public:
 		DynamicArray<uint32> _Indices;
 
 	};
+
+	//The creator.
+	Creator _Creator{ Creator::UNKNOWN };
 
 	//The meshes.
 	DynamicArray<Mesh> _Meshes;
