@@ -19,7 +19,8 @@ using EntityPlacementFunction = void(*)(const AxisAlignedBoundingBox3D &box, Dyn
 						ENTITY_TYPE(Light)					\
 						ENTITY_TYPE(ParticleSystem)			\
 						ENTITY_TYPE(Sound)					\
-						ENTITY_TYPE(StaticModel)
+						ENTITY_TYPE(StaticModel)			\
+						ENTITY_TYPE(UserInterface)
 
 //Enumeration covering all entity types.
 enum class EntityType : uint8

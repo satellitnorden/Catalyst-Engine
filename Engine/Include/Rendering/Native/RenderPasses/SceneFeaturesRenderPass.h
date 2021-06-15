@@ -23,6 +23,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ProceduralGrassSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TerrainSceneFeaturesGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VelocityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -93,6 +94,9 @@ private:
 
 	//The procedural grass graphics pipeline.
 	ProceduralGrassSceneFeaturesGraphicsPipeline _ProceduralGrassSceneFeaturesGraphicsPipeline;
+
+	//The user interface scene features graphics pipeline.
+	UserInterfaceSceneFeaturesGraphicsPipeline _UserInterfaceSceneFeaturesGraphicsPipeline;
 
 #if defined(CATALYST_EDITOR)
 	//The editor selected model graphics pipeline.

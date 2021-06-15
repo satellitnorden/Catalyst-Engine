@@ -14,8 +14,12 @@
 UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
 										const Vector2<float32> initial_maximum,
 										const UserInterfaceMaterial &initial_material,
-										const float32 opacity) NOEXCEPT
+										const float32 opacity,
+										const bool is_three_dimensional) NOEXCEPT
 {
+	//Remember whether or not this image is three dimensional.
+	_IsThreeDimensional = is_three_dimensional;
+
 	//Create the primitive.
 	{
 		ImageUserInterfacePrimitiveDescription description;
@@ -26,7 +30,7 @@ UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
 		description._Opacity = opacity;
 		description._Material = initial_material;
 
-		_Primitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
+		_Primitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
 	}
 }
 

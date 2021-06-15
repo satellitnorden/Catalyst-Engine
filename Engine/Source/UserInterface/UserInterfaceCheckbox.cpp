@@ -25,7 +25,8 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 												const UserInterfaceMaterial &initial_checked_hovered_material,
 												const UserInterfaceMaterial &initial_checked_pressed_material,
 												const char *const RESTRICT text,
-												const ResourcePointer<FontResource> font_resource) NOEXCEPT
+												const ResourcePointer<FontResource> font_resource,
+												const bool is_three_dimensional) NOEXCEPT
 {
 	//Calculate the extent.
 	const Vector2<float32> extent{ initial_maximum - initial_minimum };
@@ -58,6 +59,9 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 	//Set the font resource.
 	_FontResource = font_resource;
 
+	//Remember whether or not this checkbox is three dimensional.
+	_IsThreeDimensional = is_three_dimensional;
+
 	//Add the image primitive.
 	{
 		ImageUserInterfacePrimitiveDescription description;
@@ -68,7 +72,7 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 		description._Opacity = 1.0f;
 		description._Material = initial_unchecked_idle_material;
 
-		_ImagePrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
+		_ImagePrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
 	}
 
 	//Set the text.
@@ -131,7 +135,7 @@ void UserInterfaceCheckbox::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._TextSmoothingFactor = 0.2f;
 			description._Text = text;
 
-			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
+			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
 		}
 
 		else

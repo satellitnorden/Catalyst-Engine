@@ -129,6 +129,21 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 }
 
 /*
+*	Returns the user interface primitives for this scene.
+*/
+void UserInterfaceScene::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) NOEXCEPT
+{
+	//First of all, clear.
+	output->Clear();
+
+	//Retrieve all text primitives.
+	for (UserInterfaceText *const RESTRICT text : _Texts)
+	{
+		text->RetrieveUserInterfacePrimitives(output);
+	}
+}
+
+/*
 *	Adds a button, using cells.
 */
 RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButton(	const Vector2<uint32> &minimum_cell,
@@ -177,7 +192,8 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButton(	co
 																			hovered_material_override ? *hovered_material_override : _ButtonHoveredMaterial,
 																			pressed_material_override ? *pressed_material_override : _ButtonPressedMaterial,
 																			text,
-																			_FontResource) };
+																			_FontResource,
+																			_IsThreeDimensional) };
 
 	//Add the button to the container.
 	_Buttons.Emplace(new_button);
@@ -251,7 +267,8 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 																					checked_hovered_material_override ? *checked_hovered_material_override : _CheckboxCheckedHoveredMaterial,
 																					checked_pressed_material_override ? *checked_pressed_material_override : _CheckboxCheckedPressedMaterial,
 																					text,
-																					_FontResource) };
+																					_FontResource,
+																					_IsThreeDimensional) };
 
 	//Add the checkbox to the container.
 	_Checkboxes.Emplace(new_checkbox);
@@ -295,7 +312,8 @@ RESTRICTED UserInterfaceImage* const RESTRICT UserInterfaceScene::AddImage(	cons
 	UserInterfaceImage *const RESTRICT new_image{ new UserInterfaceImage(	minimum,
 																			maximum,
 																			material,
-																			opacity) };
+																			opacity,
+																			_IsThreeDimensional) };
 
 	//Add the image to the container.
 	_Images.Emplace(new_image);
@@ -341,7 +359,8 @@ RESTRICTED UserInterfaceProgressBar* const RESTRICT UserInterfaceScene::AddProgr
 																							maximum,
 																							bottom_material_override ? *bottom_material_override : _ProgressBarBottomMaterial,
 																							top_material_override ? *top_material_override : _ProgressBarTopMaterial,
-																							text) };
+																							text,
+																							_IsThreeDimensional) };
 
 	//Add the progress bar to the container.
 	_ProgressBars.Emplace(new_progress_bar);
@@ -396,7 +415,8 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddText(	const 
 																		scale_override ? *scale_override : _TextScale,
 																		horizontal_alignment,
 																		vertical_alignment,
-																		smoothing_factor_override ? *smoothing_factor_override : _TextSmoothingFactor) };
+																		smoothing_factor_override ? *smoothing_factor_override : _TextSmoothingFactor,
+																		_IsThreeDimensional) };
 
 	//Add the text to the container.
 	_Texts.Emplace(new_text);

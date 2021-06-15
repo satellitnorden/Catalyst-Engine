@@ -24,7 +24,8 @@ public:
 						const float32 scale,
 						const TextHorizontalAlignment horizontal_alignment,
 						const TextVerticalAlignment vertical_alignment,
-						const float32 smoothing_factor) NOEXCEPT;
+						const float32 smoothing_factor,
+						const bool is_three_dimensional) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -40,6 +41,11 @@ public:
 	*	Sets the opacity.
 	*/
 	void SetOpacity(const float32 opacity) NOEXCEPT;
+
+	/*
+	*	Returns the user interface primitives.
+	*/
+	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) NOEXCEPT;
 
 private:
 
@@ -66,5 +72,8 @@ private:
 
 	//The primitive.
 	TextUserInterfacePrimitive *RESTRICT _Primitive{ nullptr };
+
+	//Denotes whether or not this text is three dimensional.
+	bool _IsThreeDimensional{ false };
 
 };

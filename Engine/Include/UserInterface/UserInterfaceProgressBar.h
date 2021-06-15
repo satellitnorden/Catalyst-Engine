@@ -22,7 +22,8 @@ public:
 								const Vector2<float32> initial_maximum,
 								const UserInterfaceMaterial &initial_bottom_material,
 								const UserInterfaceMaterial &initial_top_material,
-								const char *const RESTRICT text) NOEXCEPT;
+								const char *const RESTRICT text,
+								const bool is_three_dimensional) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -60,5 +61,8 @@ private:
 
 	//The current progress.
 	float32 _CurrentProgress{ 0.0f };
+	
+	//Denotes whether or not this progress bar is three dimensional.
+	bool _IsThreeDimensional{ false };
 
 };

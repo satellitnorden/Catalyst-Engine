@@ -31,7 +31,8 @@ public:
 						const UserInterfaceMaterial &initial_hovered_material,
 						const UserInterfaceMaterial &initial_pressed_material,
 						const char *const RESTRICT text,
-						const ResourcePointer<FontResource> font_resource) NOEXCEPT;
+						const ResourcePointer<FontResource> font_resource,
+						const bool is_three_dimensional) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -175,5 +176,8 @@ private:
 
 	//The text primitive.
 	TextUserInterfacePrimitive *RESTRICT _TextPrimitive{ nullptr };
+
+	//Denotes whether or not this button is three dimensional.
+	bool _IsThreeDimensional{ false };
 
 };

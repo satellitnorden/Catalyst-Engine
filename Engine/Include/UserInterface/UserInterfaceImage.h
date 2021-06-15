@@ -20,7 +20,8 @@ public:
 	UserInterfaceImage(	const Vector2<float32> initial_minimum,
 						const Vector2<float32> initial_maximum,
 						const UserInterfaceMaterial &initial_material,
-						const float32 opacity) NOEXCEPT;
+						const float32 opacity,
+						const bool is_three_dimensional) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -36,5 +37,8 @@ private:
 
 	//The primitive.
 	ImageUserInterfacePrimitive *RESTRICT _Primitive;
+
+	//Denotes whether or not this image is three dimensional.
+	bool _IsThreeDimensional{ false };
 
 };

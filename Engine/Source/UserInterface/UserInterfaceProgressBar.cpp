@@ -16,8 +16,12 @@ UserInterfaceProgressBar::UserInterfaceProgressBar(	const Vector2<float32> initi
 													const Vector2<float32> initial_maximum,
 													const UserInterfaceMaterial &initial_bottom_material,
 													const UserInterfaceMaterial &initial_top_material,
-													const char *const RESTRICT text) NOEXCEPT
+													const char *const RESTRICT text,
+													const bool is_three_dimensional) NOEXCEPT
 {
+	//Remember whether or not this progress bar is three dimensional.
+	_IsThreeDimensional = is_three_dimensional;
+
 	//Create the bottom and top primitive.
 	{
 		ImageUserInterfacePrimitiveDescription description;
@@ -28,7 +32,7 @@ UserInterfaceProgressBar::UserInterfaceProgressBar(	const Vector2<float32> initi
 		description._Opacity = 1.0f;
 		description._Material = initial_bottom_material;
 
-		_BottomPrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
+		_BottomPrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
 	}
 
 	{
@@ -40,7 +44,7 @@ UserInterfaceProgressBar::UserInterfaceProgressBar(	const Vector2<float32> initi
 		description._Opacity = 1.0f;
 		description._Material = initial_top_material;
 
-		_TopPrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
+		_TopPrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
 	}
 
 	//Set the text.
@@ -96,7 +100,7 @@ void UserInterfaceProgressBar::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._TextSmoothingFactor = 0.2f;
 			description._Text = text;
 
-			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
+			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
 		}
 
 		else

@@ -35,7 +35,7 @@ void UserInterfaceSystem::Initialize() NOEXCEPT
 /*
 *	Creates a user interface primitive.
 */
-RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem::CreateUserInterfacePrimitive(const UserInterfacePrimitiveDescription *const RESTRICT description) NOEXCEPT
+RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem::CreateUserInterfacePrimitive(const UserInterfacePrimitiveDescription *const RESTRICT description, const bool is_three_dimensional) NOEXCEPT
 {
 	switch (description->_Type)
 	{

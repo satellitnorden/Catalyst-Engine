@@ -36,7 +36,7 @@ public:
 	/*
 	*	Creates a user interface primitive.
 	*/
-	RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT CreateUserInterfacePrimitive(const UserInterfacePrimitiveDescription *const RESTRICT description) NOEXCEPT;
+	RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT CreateUserInterfacePrimitive(const UserInterfacePrimitiveDescription *const RESTRICT description, const bool is_three_dimensional) NOEXCEPT;
 
 	/*
 	*	Destroys a user interface primitive.
@@ -49,6 +49,22 @@ public:
 	FORCE_INLINE RESTRICTED NO_DISCARD const DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT GetUserInterfacePrimitives() const NOEXCEPT
 	{
 		return &_UserInterfacePrimitives;
+	}
+
+	/*
+	*	Registers a scene.
+	*/
+	FORCE_INLINE void RegisterScene(UserInterfaceScene *const RESTRICT scene) NOEXCEPT
+	{
+		_RegisteredUserInterfaceScenes.Emplace(scene);
+	}
+
+	/*
+	*	Returns the registered scenes.
+	*/
+	FORCE_INLINE NO_DISCARD const DynamicArray<UserInterfaceScene *RESTRICT> &GetRegisteredScenes() const NOEXCEPT
+	{
+		return _RegisteredUserInterfaceScenes;
 	}
 
 	/*
@@ -80,7 +96,10 @@ public:
 
 private:
 
-	//The current Clairvoyant user interface scenes.
+	//The registered user interface scenes.
+	DynamicArray<UserInterfaceScene *RESTRICT> _RegisteredUserInterfaceScenes;
+
+	//The current user interface scenes.
 	DynamicArray<UserInterfaceScene *RESTRICT> _CurrentUserInterfaceScenes;
 
 	//The activation queue.

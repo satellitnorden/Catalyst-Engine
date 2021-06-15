@@ -1733,6 +1733,30 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ThreeDimensionalUserInterfaceFragmentShader";
+		parameters._ID = "ThreeDimensionalUserInterfaceFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceFragmentShader.frag";
+		parameters._Defines.Emplace("THREE_DIMENSIONAL_USER_INTERFACE");
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ThreeDimensionalUserInterfaceVertexShader";
+		parameters._ID = "ThreeDimensionalUserInterfaceVertexShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceVertexShader.vert";
+		parameters._Defines.Emplace("THREE_DIMENSIONAL_USER_INTERFACE");
+		parameters._Stage = ShaderStage::VERTEX;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ToneMappingFragmentShader";
 		parameters._ID = "ToneMappingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ToneMappingFragmentShader.frag";

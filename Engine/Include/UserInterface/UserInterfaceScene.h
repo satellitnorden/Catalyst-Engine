@@ -30,6 +30,21 @@ public:
 	FORCE_INLINE virtual ~UserInterfaceScene() = default;
 
 	/*
+	*	Coper operator overload.
+	*/
+	FORCE_INLINE void operator=(const UserInterfaceScene &other) NOEXCEPT
+	{
+		//Copy the name.
+		_Name = other._Name;
+
+		//Copy the idenfitier.
+		_Identifier = other._Identifier;
+
+		//Copy whether or not this scene is three dimensional.
+		_IsThreeDimensional = other._IsThreeDimensional;
+	}
+
+	/*
 	*	Returns whether or not this scene is active.
 	*/
 	FORCE_INLINE NO_DISCARD bool GetIsActive() const NOEXCEPT
@@ -60,7 +75,29 @@ public:
 	*/
 	virtual void OnDeactivated() NOEXCEPT;
 
+	/*
+	*	Sets whether or not this scene is three dimensional.
+	*/
+	FORCE_INLINE void SetIsThreeDimensional(const bool value) NOEXCEPT
+	{
+		_IsThreeDimensional = value;
+	}
+
+	/*
+	*	Returns the user interface primitives for this scene.
+	*/
+	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) NOEXCEPT;
+
 protected:
+
+	/*
+	*	Sets the name.
+	*/
+	FORCE_INLINE void SetName(const char *const RESTRICT value) NOEXCEPT
+	{
+		_Name = value;
+		_Identifier = HashString(value);
+	}
 
 	/*
 	*	Sets the horizontal subdivision.
@@ -648,6 +685,12 @@ private:
 
 	};
 
+	//The name.
+	DynamicString _Name;
+
+	//The identifier.
+	HashString _Identifier;
+
 	//Denotes whether or not this scene is active.
 	bool _IsActive{ false };
 
@@ -722,6 +765,9 @@ private:
 
 	//The button interfaces.
 	DynamicArray<ButtonInterface> _ButtonInterfaces;
+
+	//Denotes whether or not this scene is three dimensional.
+	bool _IsThreeDimensional{ false };
 
 	/*
 	*	Calculates the bounding box for the given minimum/maximum cell.
