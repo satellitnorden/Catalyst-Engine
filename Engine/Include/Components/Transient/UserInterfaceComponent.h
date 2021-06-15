@@ -7,7 +7,7 @@
 #include <UserInterface/UserInterfaceScene.h>
 
 //World.
-#include <World/Core/WorldPosition.h>
+#include <World/Core/WorldTransform.h>
 
 class UserInterfaceComponent final
 {
@@ -17,13 +17,7 @@ public:
 	//The user interface scene.
 	UserInterfaceScene *RESTRICT _UserInterfaceScene;
 
-	//The world position.
-	WorldPosition _WorldPosition;
-
-	//The rotation.
-	EulerAngles _Rotation;
-
-	//The scale.
-	Vector2<float32> _Scale;
+	//The world transform.
+	WorldTransform _WorldTransform;
 
 };

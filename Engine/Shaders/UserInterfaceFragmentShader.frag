@@ -5,9 +5,6 @@
 #define USER_INTERFACE_PRIMITIVE_TYPE_IMAGE (0)
 #define USER_INTERFACE_PRIMITIVE_TYPE_TEXT (1)
 
-//Layout specification.
-layout (early_fragment_tests) in;
-
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
@@ -78,20 +75,28 @@ void CatalystShaderMain()
 
 			//Calculate the opacity.
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-			float opacity = float(distance >= 0.5f);
+			float opacity = float(distance >= 0.5f) * COLOR.a;
 #else
-			float opacity = smoothstep(TEXT_SMOOTHING_FACTOR, 0.5f, distance);
+			float opacity = smoothstep(TEXT_SMOOTHING_FACTOR, 0.5f, distance) * COLOR.a;
 #endif
 
 			//Write the fragment(s).
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-			scene_features_1 = vec4(COLOR.rgb, 1.0f);
-			scene_features_2 = vec4(-PERCEIVER_FORWARD_VECTOR, gl_FragCoord.z);
-			scene_features_3 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
-			scene_features_4 = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-			scene = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+			if (opacity == 0.0f)
+			{
+				discard;
+			}
+			
+			else
+			{
+				scene_features_1 = vec4(COLOR.rgb, 1.0f);
+				scene_features_2 = vec4(-PERCEIVER_FORWARD_VECTOR, gl_FragCoord.z);
+				scene_features_3 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
+				scene_features_4 = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+				scene = vec4(COLOR.rgb, 1.0f);
+			}
 #else
-			fragment = vec4(COLOR.rgb, opacity * COLOR.a);
+			fragment = vec4(COLOR.rgb, opacity);
 #endif
 
 			break;
@@ -101,13 +106,13 @@ void CatalystShaderMain()
 		{
 			//Write the fragment(s).
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-			scene_features_1 = vec4(vec3(EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO) * COLOR), 1.0f);
-			scene_features_2 = vec4(-PERCEIVER_FORWARD_VECTOR, gl_FragCoord.z);
+			scene_features_1 = vec4(vec3(1.0f, 0.0f, 0.25f), 1.0f);
+			scene_features_2 = vec4(vec3(0.0f, 1.0f, 0.0f), gl_FragCoord.z);
 			scene_features_3 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
 			scene_features_4 = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-			scene = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+			scene = vec4(vec3(1.0f, 0.0f, 0.25f) * 1024.0f, 1.0f);
 #else
-			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO) * COLOR;
+			fragment = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 #endif
 
 			break;

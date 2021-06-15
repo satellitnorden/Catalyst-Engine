@@ -50,7 +50,10 @@ RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem
 			primitive->_Opacity = type_description->_Opacity;
 			primitive->_Material = type_description->_Material;
 
-			_UserInterfacePrimitives.Emplace(primitive);
+			if (!is_three_dimensional)
+			{
+				_UserInterfacePrimitives.Emplace(primitive);
+			}
 
 			return primitive;
 		}
@@ -72,7 +75,10 @@ RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem
 			primitive->_Opacity = type_description->_Opacity;
 			primitive->_Text = std::move(type_description->_Text);
 
-			_UserInterfacePrimitives.Emplace(primitive);
+			if (!is_three_dimensional)
+			{
+				_UserInterfacePrimitives.Emplace(primitive);
+			}
 
 			return primitive;
 		}
@@ -123,6 +129,32 @@ void UserInterfaceSystem::DestroyUserInterfacePrimitive(UserInterfacePrimitive *
 */
 void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 {
+
+	//Process the destruction queue.
+	while (UserInterfaceScene *const RESTRICT *const RESTRICT scene{ _DestructionQueue.Pop() })
+	{
+		//Deactivate this scene if is active.
+		if ((*scene)->GetIsActive())
+		{
+			(*scene)->OnDeactivated();
+
+			_ActiveUserInterfaceScenes.Erase<false>(*scene);
+
+			(*scene)->SetIsActive(false);
+		}
+
+		//Destroy the scene.
+		for (const UserInterfaceSceneFactory &factory : _RegisteredUserInterfaceSceneFactories)
+		{
+			if (factory.GetIdentifier() == (*scene)->GetIdentifier())
+			{
+				factory.Destroy((*scene));
+
+				break;
+			}
+		}
+	}
+
 	//Process the deactivation queue.
 	while (UserInterfaceScene *const RESTRICT *const RESTRICT scene{ _DeactivationQueue.Pop() })
 	{
@@ -130,7 +162,7 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 		{
 			(*scene)->OnDeactivated();
 
-			_CurrentUserInterfaceScenes.Erase<false>(*scene);
+			_ActiveUserInterfaceScenes.Erase<false>(*scene);
 
 			(*scene)->SetIsActive(false);
 		}
@@ -141,7 +173,7 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 	{
 		if (!(*scene)->GetIsActive())
 		{
-			_CurrentUserInterfaceScenes.Emplace(*scene);
+			_ActiveUserInterfaceScenes.Emplace(*scene);
 
 			(*scene)->OnActivated();
 
@@ -150,7 +182,7 @@ void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 	}
 
 	//Update all the current scenes.
-	for (UserInterfaceScene *const RESTRICT scene : _CurrentUserInterfaceScenes)
+	for (UserInterfaceScene *const RESTRICT scene : _ActiveUserInterfaceScenes)
 	{
 		scene->Update();
 	}

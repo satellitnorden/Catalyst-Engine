@@ -27,22 +27,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	FORCE_INLINE virtual ~UserInterfaceScene() = default;
-
-	/*
-	*	Coper operator overload.
-	*/
-	FORCE_INLINE void operator=(const UserInterfaceScene &other) NOEXCEPT
-	{
-		//Copy the name.
-		_Name = other._Name;
-
-		//Copy the idenfitier.
-		_Identifier = other._Identifier;
-
-		//Copy whether or not this scene is three dimensional.
-		_IsThreeDimensional = other._IsThreeDimensional;
-	}
+	virtual ~UserInterfaceScene();
 
 	/*
 	*	Returns whether or not this scene is active.
@@ -76,6 +61,38 @@ public:
 	virtual void OnDeactivated() NOEXCEPT;
 
 	/*
+	*	Returns the name.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT GetName() const NOEXCEPT
+	{
+		return _Name.Data();
+	}
+
+	/*
+	*	Sets the name.
+	*/
+	FORCE_INLINE void SetName(const char *const RESTRICT value) NOEXCEPT
+	{
+		_Name = value;
+	}
+
+	/*
+	*	Returns the identifier.
+	*/
+	FORCE_INLINE NO_DISCARD HashString GetIdentifier() const NOEXCEPT
+	{
+		return _Identifier;
+	}
+
+	/*
+	*	Sets the identifier.
+	*/
+	FORCE_INLINE void SetIdentifier(const HashString value) NOEXCEPT
+	{
+		_Identifier = value;
+	}
+
+	/*
 	*	Sets whether or not this scene is three dimensional.
 	*/
 	FORCE_INLINE void SetIsThreeDimensional(const bool value) NOEXCEPT
@@ -89,15 +106,6 @@ public:
 	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) NOEXCEPT;
 
 protected:
-
-	/*
-	*	Sets the name.
-	*/
-	FORCE_INLINE void SetName(const char *const RESTRICT value) NOEXCEPT
-	{
-		_Name = value;
-		_Identifier = HashString(value);
-	}
 
 	/*
 	*	Sets the horizontal subdivision.

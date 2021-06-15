@@ -30,6 +30,20 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
+	FORCE_INLINE explicit WorldTransform(	const WorldPosition &initial_world_position,
+											const EulerAngles &initial_rotation,
+											const float32 initial_scale) NOEXCEPT
+		:
+		_WorldPosition(initial_world_position),
+		_Rotation(initial_rotation),
+		_Scale(initial_scale)
+	{
+
+	}
+
+	/*
+	*	Constructor taking the cell, local position, rotation and scale.
+	*/
 	FORCE_INLINE explicit WorldTransform(	const Vector3<int32> &initial_cell,
 											const Vector3<float32> &initial_local_position,
 											const EulerAngles &initial_rotation,

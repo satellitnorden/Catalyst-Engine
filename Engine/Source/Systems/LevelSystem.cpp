@@ -5,9 +5,11 @@
 #include <Entities/Creation/DynamicModelInitializationData.h>
 #include <Entities/Creation/LightInitializationData.h>
 #include <Entities/Creation/StaticModelInitializationData.h>
+#include <Entities/Creation/UserInterfaceInitializationData.h>
 #include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
+#include <Entities/Types/UserInterfaceEntity.h>
 
 //Systems.
 #include <Systems/EntitySystem.h>
@@ -117,6 +119,22 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 				}
 
 				data->_ModelCollisionConfiguration._Type = level_entry._StaticModelData._ModelCollisionConfiguration._Type;
+
+				EntitySystem::Instance->RequestInitialization(entity, data, false);
+
+				spawned_level._Entities.Emplace(entity);
+
+				break;
+			}
+
+			case LevelEntry::Type::USER_INTERFACE:
+			{
+				UserInterfaceEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<UserInterfaceEntity>() };
+				UserInterfaceInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<UserInterfaceInitializationData>() };
+
+				data->_Properties = EntityInitializationData::Property::NONE;
+				data->_UserInterfaceSceneIdentifier = level_entry._UserInterfaceData._UserInterfaceSceneIdentifier;
+				data->_InitialWorldTransform = level_entry._UserInterfaceData._WorldTransform;
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
 

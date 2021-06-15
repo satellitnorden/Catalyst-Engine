@@ -41,7 +41,11 @@ void CatalystShaderMain()
     fragment_texture_coordinate.y = 1.0f - y;
     
     //Calculate the viewport coordinates.
+#if defined(THREE_DIMENSIONAL_USER_INTERFACE)
+    vec2 viewport_coordinates = vec2(mix(MINIMUM.x, MAXIMUM.x, x), mix(MINIMUM.y, MAXIMUM.y, y));
+#else
     vec2 viewport_coordinates = vec2(mix(MINIMUM.x, MAXIMUM.x, x), 1.0f - mix(MINIMUM.y, MAXIMUM.y, y));
+#endif
 
     //Write the position.
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)

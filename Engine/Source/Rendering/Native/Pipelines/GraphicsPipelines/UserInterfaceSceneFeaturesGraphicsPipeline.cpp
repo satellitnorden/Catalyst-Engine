@@ -111,7 +111,7 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	SetStencilCompareMask(0);
 	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
-	SetTopology(Topology::TriangleList);
+	SetTopology(Topology::TriangleFan);
 }
 
 /*
@@ -147,14 +147,14 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Render all user interface entities.
 	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 	{
-		//Cache the to world matrix for this component.
-		Matrix4x4 to_world_matrix;
-
+		//Skip if this component doesn't have a user interface scene yet.
+		if (!component->_UserInterfaceScene)
 		{
-			const Vector3<float32> relative_position{ component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
-
-			to_world_matrix = Matrix4x4(relative_position, component->_Rotation, Vector3<float32>(component->_Scale._X, component->_Scale._Y, 0.0f));
+			continue;
 		}
+
+		//Cache the to world matrix for this component.
+		const Matrix4x4 to_world_matrix{ component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()) };
 
 		//Retrieve the primitives for the given scene.
 		DynamicArray<const UserInterfacePrimitive *RESTRICT> primitives;

@@ -28,7 +28,8 @@ public:
 	{
 		DYNAMIC_MODEL,
 		LIGHT,
-		STATIC_MODEL
+		STATIC_MODEL,
+		USER_INTERFACE
 	};
 
 	/*
@@ -115,6 +116,21 @@ public:
 
 	};
 
+	/*
+	*	User interface data class definition.
+	*/
+	class UserInterfaceData final
+	{
+
+	public:
+
+		//The user interface scene identifier.
+		HashString _UserInterfaceSceneIdentifier;
+
+		//The world transform.
+		WorldTransform _WorldTransform;
+	};
+
 	//The type.
 	Type _Type;
 
@@ -128,6 +144,9 @@ public:
 
 		//The static model data.
 		StaticModelData _StaticModelData;
+
+		//The user interface data.
+		UserInterfaceData _UserInterfaceData;
 	};
 
 	/*

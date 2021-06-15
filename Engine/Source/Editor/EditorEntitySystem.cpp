@@ -9,9 +9,11 @@
 #include <Entities/Creation/DynamicModelInitializationData.h>
 #include <Entities/Creation/LightInitializationData.h>
 #include <Entities/Creation/StaticModelInitializationData.h>
+#include <Entities/Creation/UserInterfaceInitializationData.h>
 #include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
+#include <Entities/Types/UserInterfaceEntity.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
@@ -87,6 +89,21 @@ void EditorEntitySystem::Update() NOEXCEPT
 		{
 			_IsCurrentlyCreatingEntity = true;
 			_EntityTypeBeingCreated = EntityType::StaticModel;
+		}
+	}
+
+	//Add the button for creating a user interface entity.
+	if (ImGui::Button("Create User Interface Entity"))
+	{
+		if (_IsCurrentlyCreatingEntity)
+		{
+			_IsCurrentlyCreatingEntity = false;
+		}
+
+		else
+		{
+			_IsCurrentlyCreatingEntity = true;
+			_EntityTypeBeingCreated = EntityType::UserInterface;
 		}
 	}
 
@@ -203,6 +220,22 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 			}
 
 			data->_ModelCollisionConfiguration._Type = ModelCollisionType::NONE;
+
+			EntitySystem::Instance->RequestInitialization(entity, data, false);
+
+			CatalystEditorSystem::Instance->GetEditorSelectionSystem()->SetCurrentlySelectedEntityOverride(entity);
+
+			break;
+		}
+
+		case EntityType::UserInterface:
+		{
+			UserInterfaceEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<UserInterfaceEntity>() };
+			UserInterfaceInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<UserInterfaceInitializationData>() };
+
+			data->_Properties = EntityInitializationData::Property::NONE;
+			data->_UserInterfaceSceneIdentifier = HashString();
+			data->_InitialWorldTransform = WorldTransform(position, EulerAngles(), 1.0f);
 
 			EntitySystem::Instance->RequestInitialization(entity, data, false);
 

@@ -12,6 +12,7 @@
 #include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
 #include <Entities/Types/LightEntity.h>
+#include <Entities/Types/UserInterfaceEntity.h>
 
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
@@ -27,6 +28,7 @@
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/UserInterfaceSystem.h>
 
 //Third party.
 #include <ThirdParty/imgui.h>
@@ -830,6 +832,93 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 				break;
 			}
+
+			case EntityType::UserInterface:
+			{
+				//Cache the user interface entity.
+				UserInterfaceEntity *const RESTRICT user_interface_entity{ static_cast<UserInterfaceEntity *const RESTRICT>(_CurrentlySelectedEntity) };
+
+				//Retrieve the current user interface scene.
+				const UserInterfaceScene *const RESTRICT current_user_interface_scene{ user_interface_entity->GetUserInterfaceScene() };
+
+				char buffer[128];
+
+				if (current_user_interface_scene)
+				{
+					sprintf_s(buffer, "Scene: %s", current_user_interface_scene->GetName());
+				}
+
+				else
+				{
+					sprintf_s(buffer, "Scene: None");
+				}
+
+				if (ImGui::Button(buffer))
+				{
+					_UserInterfaceSelectionData._IsSelectingScene = true;
+				}
+
+				if (_UserInterfaceSelectionData._IsSelectingScene)
+				{
+					ImGui::Begin("Choose New Scene:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+					ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f - 256.0f, 512.0f));
+					ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
+
+					for (const UserInterfaceSceneFactory &factory : UserInterfaceSystem::Instance->GetRegisteredUserInterfaceSceneFactories())
+					{
+						if (ImGui::Button(factory.GetName()))
+						{
+							user_interface_entity->SetUserInterfaceScene(UserInterfaceSystem::Instance->CreateUserInterfaceScene(factory.GetIdentifier()));
+
+							_UserInterfaceSelectionData._IsSelectingScene = false;
+
+							break;
+						}
+					}
+
+					ImGui::End();
+				}
+
+				//Cache the world transform.
+				WorldTransform world_transform{ user_interface_entity->GetWorldTransform() };
+
+				//Add the position editor.
+				Vector3<float32> position{ world_transform.GetAbsolutePosition() };
+
+				if (ImGui::DragFloat3("Position", &position[0], 0.01f))
+				{
+					world_transform.SetAbsolutePosition(position);
+				}
+
+				//Add the rotation editor.
+				EulerAngles rotation{ world_transform.GetRotation() };
+
+				rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
+				rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
+				rotation._Pitch = CatalystBaseMath::RadiansToDegrees(rotation._Pitch);
+
+				if (ImGui::DragFloat3("Rotation", rotation.Data(), 0.1f))
+				{
+					rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation._Roll);
+					rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation._Yaw);
+					rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation._Pitch);
+
+					world_transform.SetRotation(rotation);
+				}
+
+				//Add the scale editor.
+				float32 scale{ world_transform.GetScale() };
+
+				if (ImGui::DragFloat("Scale", &scale, 0.01f))
+				{
+					world_transform.SetScale(scale);
+				}
+
+				//Set the world transform.
+				user_interface_entity->SetWorldTransform(world_transform);
+
+				break;
+			}
 		}
 
 		ImGui::End();
@@ -906,6 +995,23 @@ void EditorSelectionSystem::AddSceneWindow() NOEXCEPT
 		}
 	}
 
+	//List all user interface entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfUserInterfaceComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i)
+		{
+			char buffer[64];
+
+			sprintf_s(buffer, "User Interface Entity #%llu", i + 1);
+
+			if (ImGui::Button(buffer))
+			{
+				SetCurrentlySelectedEntity(ComponentManager::GetUserInterfaceEntities()->At(i));
+			}
+		}
+	}
+
 	ImGui::End();
 }
 
@@ -938,7 +1044,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 	{
 		case EntityType::DynamicModel:
 		{
-			world_transform = *static_cast<DynamicModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->GetWorldTransform();
+			world_transform = *static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetWorldTransform();
 
 			break;
 		}
@@ -976,7 +1082,14 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 
 		case EntityType::StaticModel:
 		{
-			world_transform = *static_cast<StaticModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->GetWorldTransform();
+			world_transform = *static_cast<StaticModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetWorldTransform();
+
+			break;
+		}
+
+		case EntityType::UserInterface:
+		{
+			world_transform = static_cast<UserInterfaceEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetWorldTransform();
 
 			break;
 		}
@@ -1048,7 +1161,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 	{
 		case EntityType::DynamicModel:
 		{
-			static_cast<DynamicModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->SetWorldTransform(world_transform);
+			static_cast<DynamicModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->SetWorldTransform(world_transform);
 
 			break;
 		}
@@ -1086,7 +1199,14 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 
 		case EntityType::StaticModel:
 		{
-			static_cast<StaticModelEntity* const RESTRICT>(_CurrentlySelectedEntity)->SetWorldTransform(world_transform);
+			static_cast<StaticModelEntity *const RESTRICT>(_CurrentlySelectedEntity)->SetWorldTransform(world_transform);
+
+			break;
+		}
+
+		case EntityType::UserInterface:
+		{
+			static_cast<UserInterfaceEntity *const RESTRICT>(_CurrentlySelectedEntity)->SetWorldTransform(world_transform);
 
 			break;
 		}

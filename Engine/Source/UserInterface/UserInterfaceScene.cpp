@@ -13,6 +13,19 @@ namespace UserInterfaceSceneConstants
 }
 
 /*
+*	Default destructor.
+*/
+UserInterfaceScene::~UserInterfaceScene()
+{
+	//Deactivate this user interface scene, if it is active.
+	if (_IsActive)
+	{
+		OnDeactivated();
+		_IsActive = false;
+	}
+}
+
+/*
 *	Callback for when this user interface scene is activated.
 */
 void UserInterfaceScene::OnActivated() NOEXCEPT

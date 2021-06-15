@@ -2,32 +2,23 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-
+#include <Core/General/HashString.h>
 
 //Entities.
 #include <Entities/Creation/EntityInitializationData.h>
 
-//User interface.
-#include <UserInterface/UserInterfaceScene.h>
-
 //World.
-#include <World/Core/WorldPosition.h>
+#include <World/Core/WorldTransform.h>
 
 class UserInterfaceInitializationData final : public EntityInitializationData
 {
 
 public:
 
-	//The user interface scene.
-	UserInterfaceScene *RESTRICT _UserInterfaceScene;
+	//The user interface scene identifier.
+	HashString _UserInterfaceSceneIdentifier;
 
-	//The initial world position.
-	WorldPosition _InitialWorldPosition;
-
-	//The initial rotation.
-	EulerAngles _InitialRotation;
-
-	//The initial scale.
-	Vector2<float32> _InitialScale;
+	//The initial world transform.
+	WorldTransform _InitialWorldTransform;
 
 };

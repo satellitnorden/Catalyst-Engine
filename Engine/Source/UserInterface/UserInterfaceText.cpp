@@ -115,7 +115,7 @@ void UserInterfaceText::SetOpacity(const float32 opacity) NOEXCEPT
 /*
 *	Returns the user interface primitives.
 */
-void UserInterfaceText::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) NOEXCEPT
+void UserInterfaceText::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
 {
 	if (_Primitive)
 	{

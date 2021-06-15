@@ -11,6 +11,7 @@
 #include <UserInterface/UserInterfacePrimitive.h>
 #include <UserInterface/UserInterfacePrimitiveDescription.h>
 #include <UserInterface/UserInterfaceScene.h>
+#include <UserInterface/UserInterfaceSceneFactory.h>
 
 class UserInterfaceSystem final
 {
@@ -52,19 +53,41 @@ public:
 	}
 
 	/*
-	*	Registers a scene.
+	*	Registers a user interface scene factory.
 	*/
-	FORCE_INLINE void RegisterScene(UserInterfaceScene *const RESTRICT scene) NOEXCEPT
+	FORCE_INLINE void RegisterUserInterfaceSceneFactory(const UserInterfaceSceneFactory &value) NOEXCEPT
 	{
-		_RegisteredUserInterfaceScenes.Emplace(scene);
+		_RegisteredUserInterfaceSceneFactories.Emplace(value);
 	}
 
 	/*
-	*	Returns the registered scenes.
+	*	Returns all the registered user interface scene factories.
 	*/
-	FORCE_INLINE NO_DISCARD const DynamicArray<UserInterfaceScene *RESTRICT> &GetRegisteredScenes() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const DynamicArray<UserInterfaceSceneFactory> &GetRegisteredUserInterfaceSceneFactories() const NOEXCEPT
 	{
-		return _RegisteredUserInterfaceScenes;
+		return _RegisteredUserInterfaceSceneFactories;
+	}
+
+	/*
+	*	Creates a user interface scene with the given identifier.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD UserInterfaceScene *const RESTRICT CreateUserInterfaceScene(const HashString identifier) NOEXCEPT
+	{
+		UserInterfaceScene *RESTRICT new_user_interface_scene{ nullptr };
+
+		for (const UserInterfaceSceneFactory &factory : _RegisteredUserInterfaceSceneFactories)
+		{
+			if (factory.GetIdentifier() == identifier)
+			{
+				new_user_interface_scene = factory.Create();
+				new_user_interface_scene->SetName(factory.GetName());
+				new_user_interface_scene->SetIdentifier(factory.GetIdentifier());
+
+				break;
+			}
+		}
+
+		return new_user_interface_scene;
 	}
 
 	/*
@@ -84,11 +107,19 @@ public:
 	}
 
 	/*
+	*	Destroys a user interface scene.
+	*/
+	FORCE_INLINE void DestroyUserInterfaceScene(UserInterfaceScene *const RESTRICT scene) NOEXCEPT
+	{
+		_DestructionQueue.Push(scene);
+	}
+
+	/*
 	*	Deactivates all active scenes.
 	*/
 	FORCE_INLINE void DeactivateAllActiveScenes() NOEXCEPT
 	{
-		for (UserInterfaceScene *const RESTRICT scene : _CurrentUserInterfaceScenes)
+		for (UserInterfaceScene *const RESTRICT scene : _ActiveUserInterfaceScenes)
 		{
 			DeactivateScene(scene);
 		}
@@ -96,17 +127,20 @@ public:
 
 private:
 
-	//The registered user interface scenes.
-	DynamicArray<UserInterfaceScene *RESTRICT> _RegisteredUserInterfaceScenes;
+	//The registered user interface scene factories.
+	DynamicArray<UserInterfaceSceneFactory> _RegisteredUserInterfaceSceneFactories;
 
-	//The current user interface scenes.
-	DynamicArray<UserInterfaceScene *RESTRICT> _CurrentUserInterfaceScenes;
+	//The active user interface scenes.
+	DynamicArray<UserInterfaceScene *RESTRICT> _ActiveUserInterfaceScenes;
 
 	//The activation queue.
 	AtomicQueue<UserInterfaceScene *RESTRICT, 4, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _ActivationQueue;
 
 	//The deactivation queue.
 	AtomicQueue<UserInterfaceScene *RESTRICT, 4, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DeactivationQueue;
+
+	//The destruction queue.
+	AtomicQueue<UserInterfaceScene *RESTRICT, 4, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DestructionQueue;
 
 	//Container for all user interface primitives.
 	DynamicArray<UserInterfacePrimitive *RESTRICT> _UserInterfacePrimitives;

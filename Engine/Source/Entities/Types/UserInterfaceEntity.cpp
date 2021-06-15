@@ -9,6 +9,7 @@
 
 //Systems.
 #include <Systems/EntitySystem.h>
+#include <Systems/UserInterfaceSystem.h>
 
 /*
 *	Default constructor.
@@ -31,17 +32,17 @@ void UserInterfaceEntity::Initialize(EntityInitializationData *const RESTRICT da
 	const UserInterfaceInitializationData *const RESTRICT user_interface_initialization_data{ static_cast<const UserInterfaceInitializationData *const RESTRICT>(data) };
 	UserInterfaceComponent& component{ ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex] };
 
-	component._UserInterfaceScene = user_interface_initialization_data->_UserInterfaceScene;
-	component._WorldPosition = user_interface_initialization_data->_InitialWorldPosition;
-	component._Rotation = user_interface_initialization_data->_InitialRotation;
-	component._Scale = user_interface_initialization_data->_InitialScale;
+	component._UserInterfaceScene = UserInterfaceSystem::Instance->CreateUserInterfaceScene(user_interface_initialization_data->_UserInterfaceSceneIdentifier);
+	component._WorldTransform = user_interface_initialization_data->_InitialWorldTransform;
 
-	//Tell the user interface scene that it is three dimensional.
-	component._UserInterfaceScene->SetIsThreeDimensional(true);
+	if (component._UserInterfaceScene)
+	{
+		//Tell the user interface scene that it is three dimensional.
+		component._UserInterfaceScene->SetIsThreeDimensional(true);
 
-	//Activate the user interface scene.
-	component._UserInterfaceScene->SetIsActive(true);
-	component._UserInterfaceScene->OnActivated();
+		//Activate the user interface scene.
+		UserInterfaceSystem::Instance->ActivateScene(component._UserInterfaceScene);
+	}
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<UserInterfaceInitializationData>(data);
@@ -55,9 +56,11 @@ void UserInterfaceEntity::Terminate() NOEXCEPT
 	//Cache the component.
 	UserInterfaceComponent& component{ ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex] };
 
-	//Deactivate the user interface scene.
-	component._UserInterfaceScene->SetIsActive(false);
-	component._UserInterfaceScene->OnDeactivated();
+	if (component._UserInterfaceScene)
+	{
+		//Deactivate the user interface scene.
+		UserInterfaceSystem::Instance->DeactivateScene(component._UserInterfaceScene);
+	}
 
 	//Return this entitiy's components index.
 	ComponentManager::ReturnUserInterfaceComponentsIndex(_ComponentsIndex);
@@ -75,11 +78,54 @@ RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT UserInterfaceEnti
 	UserInterfaceInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<UserInterfaceInitializationData>() };
 
 	//Set up the initialization data.
-	data->_UserInterfaceScene = component._UserInterfaceScene;
-	data->_InitialWorldPosition = component._WorldPosition;
-	data->_InitialRotation = component._Rotation;
-	data->_InitialScale = component._Scale;
+	data->_UserInterfaceSceneIdentifier = component._UserInterfaceScene->GetIdentifier();
+	data->_InitialWorldTransform = component._WorldTransform;
 
 	//Return the initialization data.
 	return data;
+}
+
+/*
+*	Returns the user interface scene.
+*/
+RESTRICTED NO_DISCARD const UserInterfaceScene *const RESTRICT UserInterfaceEntity::GetUserInterfaceScene() const NOEXCEPT
+{
+	return ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._UserInterfaceScene;
+}
+
+/*
+*	Sets the user interface scene.
+*/
+void UserInterfaceEntity::SetUserInterfaceScene(UserInterfaceScene *const RESTRICT value) NOEXCEPT
+{
+	//Deactivate/destroy the old user interface scene, if there is one.
+	if (ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._UserInterfaceScene)
+	{
+		UserInterfaceSystem::Instance->DestroyUserInterfaceScene(ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._UserInterfaceScene);
+	}
+
+	//Set the user interface scene.
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._UserInterfaceScene = value;
+
+	//Tell the user interface scene that it is three dimensional.
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._UserInterfaceScene->SetIsThreeDimensional(true);
+
+	//Activate the new user interface scene.
+	UserInterfaceSystem::Instance->ActivateScene(ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._UserInterfaceScene);
+}
+
+/*
+*	Returns the world transform.
+*/
+NO_DISCARD const WorldTransform &UserInterfaceEntity::GetWorldTransform() const NOEXCEPT
+{
+	return ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._WorldTransform;
+}
+
+/*
+*	Sets the world transform.
+*/
+void UserInterfaceEntity::SetWorldTransform(const WorldTransform &value) NOEXCEPT
+{
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._WorldTransform = value;
 }

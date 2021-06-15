@@ -89,6 +89,19 @@ private:
 
 	};
 
+	/*
+	*	User interface selection data class definition.
+	*/
+	class UserInterfaceSelectionData final
+	{
+
+	public:
+
+		//Denotes if the user is currently selecting the scene.
+		bool _IsSelectingScene{ false };
+
+	};
+
 	//The currently selected entity.
 	Entity *RESTRICT _CurrentlySelectedEntity{ nullptr };
 
@@ -105,6 +118,9 @@ private:
 
 		//The static model selection data.
 		StaticModelSelectionData _StaticModelSelectionData;
+
+		//The user interface selection data.
+		UserInterfaceSelectionData _UserInterfaceSelectionData;
 	};
 
 	/*

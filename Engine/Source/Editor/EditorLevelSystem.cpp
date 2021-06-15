@@ -163,7 +163,7 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 		}
 	}
 
-	//Build the empty level resource.
+	//Build the level resource.
 	{
 		LevelBuildParameters parameters;
 
@@ -260,6 +260,23 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 				}
 
 				level_entry._StaticModelData._ModelCollisionConfiguration = component->_ModelCollisionConfiguration;
+
+				parameters._LevelEntries.Emplace(level_entry);
+			}
+		}
+
+		//Add all user interface entities.
+		{
+			const uint64 number_of_components{ ComponentManager::GetNumberOfUserInterfaceComponents() };
+			const UserInterfaceComponent *RESTRICT component{ ComponentManager::GetUserInterfaceUserInterfaceComponents() };
+
+			for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+			{
+				LevelEntry level_entry;
+
+				level_entry._Type = LevelEntry::Type::USER_INTERFACE;
+				level_entry._UserInterfaceData._UserInterfaceSceneIdentifier = component->_UserInterfaceScene ? component->_UserInterfaceScene->GetIdentifier() : HashString ("");
+				level_entry._UserInterfaceData._WorldTransform = component->_WorldTransform;
 
 				parameters._LevelEntries.Emplace(level_entry);
 			}
