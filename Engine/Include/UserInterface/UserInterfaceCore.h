@@ -3,6 +3,16 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Enumeration covering all Window anchors.
+enum class WindowAnchor : uint8
+{
+	BOTTOM_LEFT,
+	BOTTOM_RIGHT,
+	TOP_LEFT,
+	TOP_RIGHT,
+	CENTER
+};
+
 //Enumeration covering all user interface primitive types.
 enum class UserInterfacePrimitiveType : uint8
 {

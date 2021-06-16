@@ -34,6 +34,16 @@ private:
 	*/
 	void SaveLevel() NOEXCEPT;
 
+	/*
+	*	Adds the contextual window.
+	*/
+	void AddContextualWindow();
+
+	/*
+	*	Adds the current level window.
+	*/
+	void AddCurrentLevelWindow() NOEXCEPT;
+
 };
 
 #endif

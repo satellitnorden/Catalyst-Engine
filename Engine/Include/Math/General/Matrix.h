@@ -364,15 +364,21 @@ public:
 	}
 
 	/*
-	*	Constructor taking position, rotation and scale as arguments.
+	*	Constructor taking translation, rotation and scale as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix4x4(const Vector3<float32> &position, const EulerAngles &rotation, const Vector3<float32> &scale) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const Vector3<float32> &translation, const EulerAngles &rotation, const Vector3<float32> &scale) NOEXCEPT
 		:
-		_Matrix{ { scale._X, 0.0f, 0.0f, 0.0f },
-				 { 0.0f, scale._Y, 0.0f, 0.0f },
-				 { 0.0f, 0.0f, scale._Z, 0.0f },
-				 { position._X, position._Y, position._Z, 1.0f } }
+		_Matrix{ { 1.0f, 0.0f, 0.0f, 0.0f },
+				 { 0.0f, 1.0f, 0.0f, 0.0f },
+				 { 0.0f, 0.0f, 1.0f, 0.0f },
+				 { 0.0f, 0.0f, 0.0f, 1.0f } }
 	{
+		//Translate this matrix.
+		Translate(translation);
+
+		//Scale this matrix.
+		Scale(scale);
+
 		//Rotate the matrix.
 		Rotate(rotation);
 	}
@@ -689,42 +695,64 @@ public:
 	}
 
 	/*
+	*	Translates this matrix.
+	*/
+	FORCE_INLINE constexpr void Translate(const Vector3<float32> &translation) NOEXCEPT
+	{
+		_Matrix[3] = _Matrix[0] * translation[0] + _Matrix[1] * translation[1] + _Matrix[2] * translation[2] + _Matrix[3];
+
+		Verify();
+	}
+
+	/*
 	*	Rotates this matrix.
 	*/
 	FORCE_INLINE constexpr void Rotate(const EulerAngles &rotation) NOEXCEPT
 	{
-		//Create a rotation matrix for the X axis.
-		if (rotation._Roll != 0.0f)
+		//Rotate on all axes.
+		for (uint8 i{ 0 }; i < 3; ++i)
 		{
-			const float xSine = CatalystBaseMath::Sine(rotation._Roll);
-			const float xCosine = CatalystBaseMath::Cosine(rotation._Roll);
+			if (rotation[i] == 0.0f)
+			{
+				continue;
+			}
 
-			const Matrix4x4 xRotationMatrix{ Vector4<float>(1.0f, 0.0f, 0.0f, 0.0f), Vector4<float>(0.0f, xCosine, xSine, 0.0f), Vector4<float>(0.0f, -xSine, xCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
+			const float32 angle{ rotation[i] };
+			const float32 c{ CatalystBaseMath::Cosine(angle) };
+			const float32 s{ CatalystBaseMath::Sine(angle) };
+			
+			const Vector3<float32> axis{ static_cast<float32>(i == 0), static_cast<float32>(i == 1), static_cast<float32>(i == 2) };
 
-			*this = *this * xRotationMatrix;
+			const Vector3<float32> temp{ (1.0f - c) * axis };
+
+			Matrix4x4 rotation_matrix;
+
+			rotation_matrix._Matrix[0][0] = c + temp[0] * axis[0];
+			rotation_matrix._Matrix[0][1] = temp[0] * axis[1] + s * axis[2];
+			rotation_matrix._Matrix[0][2] = temp[0] * axis[2] - s * axis[1];
+
+			rotation_matrix._Matrix[1][0] = temp[1] * axis[0] - s * axis[2];
+			rotation_matrix._Matrix[1][1] = c + temp[1] * axis[1];
+			rotation_matrix._Matrix[1][2] = temp[1] * axis[2] + s * axis[0];
+
+			rotation_matrix._Matrix[2][0] = temp[2] * axis[0] + s * axis[1];
+			rotation_matrix._Matrix[2][1] = temp[2] * axis[1] - s * axis[0];
+			rotation_matrix._Matrix[2][2] = c + temp[2] * axis[2];
+
+			*this = *this * rotation_matrix;
 		}
 
-		//Create a rotation matrix for the Y axis.
-		if (rotation._Yaw != 0.0f)
-		{
-			const float ySine = CatalystBaseMath::Sine(rotation._Yaw);
-			const float yCosine = CatalystBaseMath::Cosine(rotation._Yaw);
+		Verify();
+	}
 
-			const Matrix4x4 yRotationMatrix{ Vector4<float>(yCosine, 0.0f, -ySine, 0.0f), Vector4<float>(0.0f, 1.0f, 0.0f, 0.0f), Vector4<float>(ySine, 0.0f, yCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
-
-			*this = *this * yRotationMatrix;
-		}
-
-		//Create a rotation matrix for the Z axis.
-		if (rotation._Pitch != 0.0f)
-		{
-			const float zSine = CatalystBaseMath::Sine(rotation._Pitch);
-			const float zCosine = CatalystBaseMath::Cosine(rotation._Pitch);
-
-			const Matrix4x4 zRotationMatrix{ Vector4<float>(zCosine, zSine, 0.0f, 0.0f), Vector4<float>(-zSine, zCosine, 0.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 1.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
-
-			*this = *this * zRotationMatrix;
-		}
+	/*
+	*	Scales this matrix.
+	*/
+	FORCE_INLINE constexpr void Scale(const Vector3<float32> &scale) NOEXCEPT
+	{
+		_Matrix[0] = _Matrix[0] * scale[0];
+		_Matrix[1] = _Matrix[1] * scale[1];
+		_Matrix[2] = _Matrix[2] * scale[2];
 
 		Verify();
 	}

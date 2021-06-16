@@ -2,6 +2,10 @@
 //Header file.
 #include <Editor/EditorRenderingSystem.h>
 
+//Editor.
+#include <Editor/EditorCore.h>
+#include <Editor/EditorUtilities.h>
+
 //Systems.
 #include <Systems/CatalystEditorSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -21,9 +25,8 @@ void EditorRenderingSystem::Update() NOEXCEPT
 	}
 
 	//Add the rendering window.
-	ImGui::Begin("Rendering", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(0.0f, 256.0f));
-	ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
+	ImGui::Begin("Rendering", nullptr, EditorConstants::WINDOW_FLAGS);
+	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
 	//Add the start/stop taking screenshot button.
 	if (RenderingSystem::Instance->IsTakingScreenshot())

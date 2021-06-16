@@ -107,6 +107,13 @@ void StaticModelEntity::SetModelResource(const ResourcePointer<ModelResource> re
 
 	//Update the world space axis aligned bounding box.
 	UpdateWorldSpaceAxisAlignedBoundingBox();
+
+	//Re-initialize physics.
+	if (ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
+	{
+		PhysicsSystem::Instance->TerminateEntityPhysics(this);
+		PhysicsSystem::Instance->InitializeEntityPhysics(this);
+	}
 }
 
 /*

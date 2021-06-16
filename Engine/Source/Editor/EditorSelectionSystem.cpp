@@ -8,6 +8,10 @@
 //Componens.
 #include <Components/Core/ComponentManager.h>
 
+//Editor.
+#include <Editor/EditorCore.h>
+#include <Editor/EditorUtilities.h>
+
 //Entities.
 #include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
@@ -51,9 +55,6 @@ void EditorSelectionSystem::Update() NOEXCEPT
 	{
 		return;
 	}
-
-	//Add the scene window.
-	AddSceneWindow();
 
 	//Calculate the ray.
 	Ray ray;
@@ -128,9 +129,8 @@ void EditorSelectionSystem::Update() NOEXCEPT
 	if (_CurrentlySelectedEntity && _CurrentlySelectedEntity->_Initialized)
 	{
 		//Display a screen with this entities properties.
-		ImGui::Begin("Selected Entity", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-		ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f, 512.0f));
-		ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
+		ImGui::Begin("Selected Entity", nullptr, EditorConstants::WINDOW_FLAGS);
+		EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_RIGHT, Vector2<float32>(-EditorConstants::GENERAL_WINDOW_WIDTH, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
 		//Add a button for destroying the entity.
 		if (ImGui::Button("Destroy Entity")
@@ -300,7 +300,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 				if (_DynamicModelSelectionData._IsSelectingModelResource)
 				{
-					ImGui::Begin("Choose New Model Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+					ImGui::Begin("Choose New Model Resource:", nullptr, EditorConstants::WINDOW_FLAGS);
 					ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f - 256.0f, 512.0f));
 					ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
 
@@ -323,7 +323,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 				if (_DynamicModelSelectionData._IsSelectingMaterialResource)
 				{
-					ImGui::Begin("Choose New Material Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+					ImGui::Begin("Choose New Material Resource:", nullptr, EditorConstants::WINDOW_FLAGS);
 					ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f - 256.0f, 512.0f));
 					ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
 
@@ -748,7 +748,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 				if (_StaticModelSelectionData._IsSelectingModelResource)
 				{
-					ImGui::Begin("Choose New Model Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+					ImGui::Begin("Choose New Model Resource:", nullptr, EditorConstants::WINDOW_FLAGS);
 					ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f - 256.0f, 512.0f));
 					ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
 
@@ -771,7 +771,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 				if (_StaticModelSelectionData._IsSelectingMaterialResource)
 				{
-					ImGui::Begin("Choose New Material Resource:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+					ImGui::Begin("Choose New Material Resource:", nullptr, EditorConstants::WINDOW_FLAGS);
 					ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f - 256.0f, 512.0f));
 					ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
 
@@ -860,7 +860,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 				if (_UserInterfaceSelectionData._IsSelectingScene)
 				{
-					ImGui::Begin("Choose New Scene:", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+					ImGui::Begin("Choose New Scene:", nullptr, EditorConstants::WINDOW_FLAGS);
 					ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f - 256.0f, 512.0f));
 					ImGui::SetWindowSize(ImVec2(256.0f, 1080.0f - 512.0f));
 
@@ -932,87 +932,6 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 	//Transform the currently selected entity.
 	TransformCurrentlySelectedEntity(ray);
-}
-
-/*
-*	Adds the scene window.
-*/
-void EditorSelectionSystem::AddSceneWindow() NOEXCEPT
-{
-	//Add the level window.
-	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(1'920.0f - 256.0f, 0.0f));
-	ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
-
-	//List all dynamic model entities.
-	{
-		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
-
-		for (uint64 i{ 0 }; i < number_of_components; ++i)
-		{
-			char buffer[64];
-
-			sprintf_s(buffer, "Dynamic Model Entity #%llu", i + 1);
-
-			if (ImGui::Button(buffer))
-			{
-				SetCurrentlySelectedEntity(ComponentManager::GetDynamicModelEntities()->At(i));
-			}
-		}
-	}
-
-	//List all light entities.
-	{
-		const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
-
-		for (uint64 i{ 0 }; i < number_of_components; ++i)
-		{
-			char buffer[64];
-
-			sprintf_s(buffer, "Light Entity #%llu", i + 1);
-
-			if (ImGui::Button(buffer))
-			{
-				SetCurrentlySelectedEntity(ComponentManager::GetLightEntities()->At(i));
-			}
-		}
-	}
-
-	//List all static model entities.
-	{
-		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-
-		for (uint64 i{ 0 }; i < number_of_components; ++i)
-		{
-			char buffer[64];
-
-			sprintf_s(buffer, "Static Model Entity #%llu", i + 1);
-
-			if (ImGui::Button(buffer))
-			{
-				SetCurrentlySelectedEntity(ComponentManager::GetStaticModelEntities()->At(i));
-			}
-		}
-	}
-
-	//List all user interface entities.
-	{
-		const uint64 number_of_components{ ComponentManager::GetNumberOfUserInterfaceComponents() };
-
-		for (uint64 i{ 0 }; i < number_of_components; ++i)
-		{
-			char buffer[64];
-
-			sprintf_s(buffer, "User Interface Entity #%llu", i + 1);
-
-			if (ImGui::Button(buffer))
-			{
-				SetCurrentlySelectedEntity(ComponentManager::GetUserInterfaceEntities()->At(i));
-			}
-		}
-	}
-
-	ImGui::End();
 }
 
 /*

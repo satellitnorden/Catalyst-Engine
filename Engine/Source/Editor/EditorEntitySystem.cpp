@@ -5,6 +5,10 @@
 //Core.
 #include <Core/General/Perceiver.h>
 
+//Editor.
+#include <Editor/EditorCore.h>
+#include <Editor/EditorUtilities.h>
+
 //Entities.
 #include <Entities/Creation/DynamicModelInitializationData.h>
 #include <Entities/Creation/LightInitializationData.h>
@@ -43,9 +47,8 @@ void EditorEntitySystem::Update() NOEXCEPT
 	}
 
 	//Add the entities window.
-	ImGui::Begin("Entities", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(0.0f, 256.0f));
-	ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
+	ImGui::Begin("Entities", nullptr, EditorConstants::WINDOW_FLAGS);
+	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
 	//Add the button for creating a dynamic model entity.
 	if (ImGui::Button("Create Dynamic Model Entity"))

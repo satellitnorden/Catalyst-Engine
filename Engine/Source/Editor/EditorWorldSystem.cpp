@@ -5,6 +5,10 @@
 //Core.
 #include <Core/Algorithms/SortingAlgorithms.h>
 
+//Editor.
+#include <Editor/EditorCore.h>
+#include <Editor/EditorUtilities.h>
+
 //File.
 #include <File/Core/FileCore.h>
 
@@ -28,9 +32,8 @@ void EditorWorldSystem::Update() NOEXCEPT
 	}
 
 	//Begin the window.
-	ImGui::Begin("World", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(0.0f, 256.0f));
-	ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
+	ImGui::Begin("World", nullptr, EditorConstants::WINDOW_FLAGS);
+	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
 	//Add the time of day slider.
 	{

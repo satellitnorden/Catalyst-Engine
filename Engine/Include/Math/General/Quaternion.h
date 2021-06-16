@@ -51,7 +51,7 @@ public:
 	}
 
 	/*
-	*	Default constructor.
+	*	Constructor taking all the values as arguments.
 	*/
 	FORCE_INLINE constexpr Quaternion(const float32 initial_x, const float32 initial_y, const float32 initial_z, const float32 initial_w) NOEXCEPT
 		:
@@ -59,6 +59,19 @@ public:
 		_Y(initial_y),
 		_Z(initial_z),
 		_W(initial_w)
+	{
+
+	}
+
+	/*
+	*	Constructor taking an axis and an angle.
+	*/
+	FORCE_INLINE constexpr Quaternion(const Vector3<float32> &axis, const float32 angle) NOEXCEPT
+		:
+		_X(axis._X * CatalystBaseMath::Sine(angle * 0.5f)),
+		_Y(axis._Y * CatalystBaseMath::Sine(angle * 0.5f)),
+		_Z(axis._Z * CatalystBaseMath::Sine(angle * 0.5f)),
+		_W(CatalystBaseMath::Cosine(angle * 0.5f))
 	{
 
 	}
@@ -121,27 +134,43 @@ public:
 		EulerAngles angles;
 
 		//Roll.
-		const float32 sinr_cosp{ 2.0f * (_W * _X + _Y * _Z) };
-		const float32 cosr_cosp{ 1.0f - 2.0f * (_X * _X + _Y * _Y) };
-		angles._Roll = CatalystBaseMath::ArcTangent(sinr_cosp, cosr_cosp);
-
-		//Pitch.
-		const float32 sinp{ 2.0f * (_W * _Y - _Z * _X) };
-
-		if (CatalystBaseMath::Absolute(sinp) >= 1.0f)
 		{
-			angles._Yaw = std::copysign(CatalystBaseMathConstants::HALF_PI, sinp);
-		}
+			const float32 y{ 2.0f * (_Y * _Z + _W * _X) };
+			const float32 x{ _W * _W - _X * _X - _Y * _Y + _Z * _Z };
 
-		else
-		{
-			angles._Yaw = std::asin(sinp);
+			if (CatalystBaseMath::Absolute(x) <= FLOAT32_EPSILON
+				&& CatalystBaseMath::Absolute(y) <= FLOAT32_EPSILON)
+			{
+				angles._Roll = 2.0f * CatalystBaseMath::ArcTangent(_X, _W);
+			}
+
+			else
+			{
+				angles._Roll = CatalystBaseMath::ArcTangent(y, x);
+			}
 		}
 
 		//Yaw.
-		const float32 siny_cosp{ 2.0f * (_W * _Z + _X * _Y) };
-		const float32 cosy_cosp{ 1.0f - 2.0f * (_Y * _Y + _Z * _Z) };
-		angles._Pitch = CatalystBaseMath::ArcTangent(siny_cosp, cosy_cosp);
+		{
+			angles._Yaw = CatalystBaseMath::ArcSine(CatalystBaseMath::Clamp(-2.0f * (_X * _Z - _W * _Y), -1.0f, 1.0f));
+		}
+
+		//Pitch.
+		{
+			const float32 y{ 2.0f * (_X * _Y + _W * _Z) };
+			const float32 x{ _W * _W + _X * _X - _Y * _Y - _Z * _Z };
+
+			if (CatalystBaseMath::Absolute(x) <= FLOAT32_EPSILON
+				&& CatalystBaseMath::Absolute(y) <= FLOAT32_EPSILON)
+			{
+				angles._Pitch = 0.0f;
+			}
+
+			else
+			{
+				angles._Pitch = CatalystBaseMath::ArcTangent(y, x);
+			}
+		}
 
 		return angles;
 	}
@@ -151,17 +180,7 @@ public:
 	*/
 	FORCE_INLINE void FromEulerAngles(const EulerAngles &angles) NOEXCEPT
 	{
-		const float32 cr{ cos(angles._Roll * 0.5f) };
-		const float32 sr{ sin(angles._Roll * 0.5f) };
-		const float32 cp{ cos(angles._Yaw * 0.5f) };
-		const float32 sp{ sin(angles._Yaw * 0.5f) };
-		const float32 cy{ cos(angles._Pitch * 0.5f) };
-		const float32 sy{ sin(angles._Pitch * 0.5f) };
-
-		_X = sr * cp * cy - cr * sp * sy;
-		_Y = cr * sp * cy + sr * cp * sy;
-		_Z = cr * cp * sy - sr * sp * cy;
-		_W = cr * cp * cy + sr * sp * sy;
+		*this = Quaternion(Vector3<float32>(1.0f, 0.0f, 0.0f), angles._Roll) * Quaternion(Vector3<float32>(0.0f, 1.0f, 0.0f), angles._Yaw) * Quaternion(Vector3<float32>(0.0f, 0.0f, 1.0f), angles._Pitch);
 	}
 
 };

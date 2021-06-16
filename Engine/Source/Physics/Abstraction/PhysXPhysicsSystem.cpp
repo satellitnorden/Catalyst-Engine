@@ -490,10 +490,6 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 
 				Memory::Copy(&position, &final_transform.p, sizeof(Vector3<float32>));
 				Memory::Copy(&rotation, &final_transform.q, sizeof(Quaternion));
-
-				//PhysX uses a right handed coordinate system, while the Catalyst engine uses a left handed coordinate system, so transform between those.
-				position._Z = -position._Z;
-				rotation._Z = -rotation._Z;
 			}
 
 			//Set up the new world transform.
@@ -502,7 +498,7 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 			new_world_transform.SetAbsolutePosition(position);
 
 			const EulerAngles euler_angles{ rotation.ToEulerAngles() };
-			new_world_transform.SetRotation(-euler_angles);
+			new_world_transform.SetRotation(euler_angles);
 
 			//Set the world transform of the entity.
 			data._Entity->SetWorldTransform(new_world_transform);
@@ -645,13 +641,13 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 
 				//Set up the transform.
 				const Vector3<float32> absolute_world_position{ component._CurrentWorldTransform.GetAbsolutePosition() };
-				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
+				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
 				Quaternion rotation;
 				rotation.FromEulerAngles(component._CurrentWorldTransform.GetRotation());
 				physx::PxQuat physx_rotation;
 				physx_rotation.x = rotation._X;
 				physx_rotation.y = rotation._Y;
-				physx_rotation.z = -rotation._Z;
+				physx_rotation.z = rotation._Z;
 				physx_rotation.w = rotation._W;
 				const physx::PxTransform transform{ position, physx_rotation };
 
@@ -666,7 +662,7 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 
 				if (!component._ModelSimulationConfiguration._InitialVelocity.IsZero())
 				{
-					const physx::PxVec3 phsyx_initial_velocity{ component._ModelSimulationConfiguration._InitialVelocity._X, component._ModelSimulationConfiguration._InitialVelocity._Y, -component._ModelSimulationConfiguration._InitialVelocity._Z };
+					const physx::PxVec3 phsyx_initial_velocity{ component._ModelSimulationConfiguration._InitialVelocity._X, component._ModelSimulationConfiguration._InitialVelocity._Y, component._ModelSimulationConfiguration._InitialVelocity._Z };
 					data._Actor->setLinearVelocity(phsyx_initial_velocity);
 				}
 
@@ -757,14 +753,12 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 
 				//Set up the transform.
 				const Vector3<float32> absolute_world_position{ component._WorldTransform.GetAbsolutePosition() };
-				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
+				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
 				Quaternion rotation;
+
 				rotation.FromEulerAngles(component._WorldTransform.GetRotation());
-				physx::PxQuat physx_rotation;
-				physx_rotation.x = rotation._X;
-				physx_rotation.y = rotation._Y;
-				physx_rotation.z = -rotation._Z;
-				physx_rotation.w = rotation._W;
+
+				const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, rotation._Z, rotation._W };
 				const physx::PxTransform transform{ position, physx_rotation };
 
 				//Create the actor!
@@ -831,10 +825,10 @@ void PhysicsSystem::SubUpdateEntityWorldTransform(Entity *const RESTRICT entity,
 
 			//Set up the PhysX transform.
 			const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
-			const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
+			const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
 			Quaternion rotation;
 			rotation.FromEulerAngles(world_transform.GetRotation());
-			const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, -rotation._Z, rotation._W };
+			const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, rotation._Z, rotation._W };
 			const physx::PxTransform physx_transform{ physx_position, physx_rotation };
 
 			//Set the global pose.
@@ -862,10 +856,10 @@ void PhysicsSystem::SubUpdateEntityWorldTransform(Entity *const RESTRICT entity,
 
 			//Set up the PhysX transform.
 			const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
-			const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
+			const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
 			Quaternion rotation;
 			rotation.FromEulerAngles(world_transform.GetRotation());
-			const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, -rotation._Z, rotation._W };
+			const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, rotation._Z, rotation._W };
 			const physx::PxTransform physx_transform{ physx_position, physx_rotation };
 
 			//Set the global pose.
@@ -958,8 +952,8 @@ void PhysicsSystem::SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOE
 void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
 	//Construct the PhysX properties.
-	const physx::PxVec3 physx_origin{ ray._Origin._X, ray._Origin._Y, -ray._Origin._Z };
-	const physx::PxVec3 physx_direction{ ray._Direction._X, ray._Direction._Y, -ray._Direction._Z };
+	const physx::PxVec3 physx_origin{ ray._Origin._X, ray._Origin._Y, ray._Origin._Z };
+	const physx::PxVec3 physx_direction{ ray._Direction._X, ray._Direction._Y, ray._Direction._Z };
 	physx::PxRaycastBuffer raycast_buffer;
 	const physx::PxHitFlags flags{ 0 };
 	physx::PxQueryFilterData filter_data;
@@ -1031,14 +1025,14 @@ void PhysicsSystem::SubAddImpulse(const WorldPosition &world_position, const flo
 {
 	//Calculate the PhysX position.
 	const Vector3<float32> absolute_world_position{ world_position.GetAbsolutePosition() };
-	const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, -absolute_world_position._Z };
+	const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
 
 	//Apply impulses to all dynamic models.
 	for (const DynamicModelEntityData &data : PhysXPhysicsSystemData::_DynamicModelEntityData)
 	{
 		//Calculate the force magnitude.
 		const Vector3<float32> force_magnitude{ Vector3<float32>::Normalize(data._Entity->GetWorldTransform()->GetAbsolutePosition() - absolute_world_position) * force };
-		const physx::PxVec3 physx_force_magnitude{ force_magnitude._X, force_magnitude._Y, -force_magnitude._Z };
+		const physx::PxVec3 physx_force_magnitude{ force_magnitude._X, force_magnitude._Y, force_magnitude._Z };
 
 		physx::PxRigidBodyExt::addForceAtPos(*data._Actor, physx_force_magnitude, physx_position, physx::PxForceMode::Enum::eIMPULSE);
 	}
@@ -1148,7 +1142,7 @@ void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, Collisio
 		{
 			for (const Vertex &vertex : mesh._Vertices)
 			{
-				points.Emplace(physx::PxVec3(vertex._Position._X, vertex._Position._Y, -vertex._Position._Z));
+				points.Emplace(physx::PxVec3(vertex._Position._X, vertex._Position._Y, vertex._Position._Z));
 			}
 		}
 
@@ -1194,7 +1188,7 @@ void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, Collisio
 		{
 			for (const Vertex &vertex : mesh._Vertices)
 			{
-				vertices.Emplace(physx::PxVec3(vertex._Position._X, vertex._Position._Y, -vertex._Position._Z));
+				vertices.Emplace(physx::PxVec3(vertex._Position._X, vertex._Position._Y, vertex._Position._Z));
 			}
 
 			for (const uint32 index : mesh._Indices)

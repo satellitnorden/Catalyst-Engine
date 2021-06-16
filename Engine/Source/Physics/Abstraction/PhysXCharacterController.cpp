@@ -21,7 +21,7 @@ NO_DISCARD WorldPosition CharacterController::GetWorldPosition() NOEXCEPT
 
 	{
 		const physx::PxExtendedVec3 &position{ abstraction_data->_Controller->getFootPosition() };
-		world_position.SetLocalPosition(Vector3<float32>(static_cast<float32>(position.x), static_cast<float32>(position.y), static_cast<float32>(-position.z)));
+		world_position.SetLocalPosition(Vector3<float32>(static_cast<float32>(position.x), static_cast<float32>(position.y), static_cast<float32>(position.z)));
 	}
 
 	//Return the world position.
@@ -38,7 +38,7 @@ void CharacterController::SetWorldPosition(const WorldPosition &value) NOEXCEPT
 
 	//Set the foot position.
 	const Vector3<float32> absolute_world_position{ value.GetAbsolutePosition() };
-	const physx::PxExtendedVec3 physx_world_position{ static_cast<float64>(absolute_world_position._X), static_cast<float64>(absolute_world_position._Y), static_cast<float64>(-absolute_world_position._Z) };
+	const physx::PxExtendedVec3 physx_world_position{ static_cast<float64>(absolute_world_position._X), static_cast<float64>(absolute_world_position._Y), static_cast<float64>(absolute_world_position._Z) };
 
 	abstraction_data->_Controller->setFootPosition(physx_world_position);
 }
@@ -68,7 +68,7 @@ void CharacterController::Move(const Vector3<float32> &displacement) NOEXCEPT
 	PhysXCharacterControllerAbstractionData *const RESTRICT abstraction_data{ _AbstractionData.Get<PhysXCharacterControllerAbstractionData>() };
 
 	//Calculate the physx displacement.
-	const physx::PxVec3 physx_displacement{ physx::PxVec3(displacement._X, displacement._Y, -displacement._Z) };
+	const physx::PxVec3 physx_displacement{ physx::PxVec3(displacement._X, displacement._Y, displacement._Z) };
 
 	//Cache the delta time.
 	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };

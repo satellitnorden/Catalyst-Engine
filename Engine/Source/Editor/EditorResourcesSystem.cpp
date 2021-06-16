@@ -5,6 +5,10 @@
 //Core.
 #include <Core/Algorithms/SortingAlgorithms.h>
 
+//Editor.
+#include <Editor/EditorCore.h>
+#include <Editor/EditorUtilities.h>
+
 //File.
 #include <File/Core/FileCore.h>
 
@@ -29,9 +33,8 @@ void EditorResourcesSystem::Update() NOEXCEPT
 	}
 
 	//Add the entities window.
-	ImGui::Begin("Resources", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(0.0f, 256.0f));
-	ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
+	ImGui::Begin("Resources", nullptr, EditorConstants::WINDOW_FLAGS);
+	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
 	//Add the button for creating a material resource.
 	if (ImGui::Button("Create Material Resource"))
@@ -167,7 +170,7 @@ void EditorResourcesSystem::Update() NOEXCEPT
 void EditorResourcesSystem::AddCreateMaterialResourceWindow() NOEXCEPT
 {
 	//Add the "Create Material Resource" window.
-	ImGui::Begin("Create Material Resource", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::Begin("Create Material Resource", nullptr, EditorConstants::WINDOW_FLAGS);
 	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
 	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
 
@@ -552,7 +555,7 @@ void EditorResourcesSystem::AddCreateMaterialResourceWindow() NOEXCEPT
 void EditorResourcesSystem::AddCreateModelResourceWindow() NOEXCEPT
 {
 	//Add the "Create Model Resource" window.
-	ImGui::Begin("Create Model Resource", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::Begin("Create Model Resource", nullptr, EditorConstants::WINDOW_FLAGS);
 	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
 	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
 
@@ -679,7 +682,7 @@ void EditorResourcesSystem::AddCreateModelResourceWindow() NOEXCEPT
 void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 {
 	//Add the "Create Texture 2D Resource" window.
-	ImGui::Begin("Create Texture 2D Resource", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::Begin("Create Texture 2D Resource", nullptr, EditorConstants::WINDOW_FLAGS);
 	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
 	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
 
@@ -980,7 +983,7 @@ void EditorResourcesSystem::AddCreateQuixelMaterialResourceWindow() NOEXCEPT
 	};
 
 	//Add the "Create Quixel Model Resource" window.
-	ImGui::Begin("Create Quixel Material Resource", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::Begin("Create Quixel Material Resource", nullptr, EditorConstants::WINDOW_FLAGS);
 	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
 	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
 
@@ -1297,7 +1300,7 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 	};
 
 	//Add the "Create Quixel Model Resource" window.
-	ImGui::Begin("Create Quixel Model Resource", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::Begin("Create Quixel Model Resource", nullptr, EditorConstants::WINDOW_FLAGS);
 	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
 	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
 
@@ -1644,7 +1647,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromObjAndMtlFilesWindow() NOE
 	};
 
 	//Add the "Create Level From .obj And .mtl Files Resource" window.
-	ImGui::Begin("Create Level From .obj And .mtl Files Resource", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::Begin("Create Level From .obj And .mtl Files Resource", nullptr, EditorConstants::WINDOW_FLAGS);
 	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
 	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
 

@@ -42,6 +42,11 @@ public:
 	}
 
 	/*
+	*	Sets the currently selected entity.
+	*/
+	void SetCurrentlySelectedEntity(Entity *const RESTRICT entity) NOEXCEPT;
+
+	/*
 	*	Sets the currently selected entity override.
 	*/
 	FORCE_INLINE void SetCurrentlySelectedEntityOverride(Entity *const RESTRICT value) NOEXCEPT
@@ -122,16 +127,6 @@ private:
 		//The user interface selection data.
 		UserInterfaceSelectionData _UserInterfaceSelectionData;
 	};
-
-	/*
-	*	Adds the scene window.
-	*/
-	void AddSceneWindow() NOEXCEPT;
-
-	/*
-	*	Sets the currently selected entity.
-	*/
-	void SetCurrentlySelectedEntity(Entity *const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Transforms the currently selected entity.

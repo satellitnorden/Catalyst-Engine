@@ -2,6 +2,10 @@
 //Header file.
 #include <Systems/CatalystEditorSystem.h>
 
+//Editor.
+#include <Editor/EditorCore.h>
+#include <Editor/EditorUtilities.h>
+
 //File.
 #include <File/Core/FileCore.h>
 
@@ -350,9 +354,6 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 	//Update the editor Perceiver system.
 	_EditorPerceiverSystem.Update();
 
-	//Update the editor placement system.
-	_EditorPlacementSystem.Update();
-
 	//Update the editor rendering system.
 	_EditorRenderingSystem.Update();
 
@@ -372,9 +373,8 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 {
 	//Add the main window.
-	ImGui::Begin("Catalyst Editor", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
-	ImGui::SetWindowSize(ImVec2(256.0f, 256.0f));
+	ImGui::Begin("Catalyst Editor", nullptr, EditorConstants::WINDOW_FLAGS);
+	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::TOP_LEFT, Vector2<float32>(0.0f, -0.5f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
 	//Add the enter game button.
 	if (ImGui::Button("Enter Game"))
@@ -430,23 +430,6 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 		if (ImGui::Button("Perceiver"))
 		{
 			_CurrentContextualWindow = ContextualWindow::PERCEIVER;
-		}
-	}
-
-	//Opens the placement window.
-	if (_CurrentContextualWindow == ContextualWindow::PLACEMENT)
-	{
-		if (ImGui::Button("Placement"))
-		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
-		}
-	}
-
-	else
-	{
-		if (ImGui::Button("Placement"))
-		{
-			_CurrentContextualWindow = ContextualWindow::PLACEMENT;
 		}
 	}
 

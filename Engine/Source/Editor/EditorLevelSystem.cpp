@@ -5,6 +5,10 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Editor.
+#include <Editor/EditorCore.h>
+#include <Editor/EditorUtilities.h>
+
 //File.
 #include <File/Core/FileCore.h>
 
@@ -21,62 +25,11 @@
 */
 void EditorLevelSystem::Update() NOEXCEPT
 {
-	//Is the current contextual window LEVEL?
-	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() != CatalystEditorSystem::ContextualWindow::LEVEL)
-	{
-		return;
-	}
+	//Add the contextual window.
+	AddContextualWindow();
 
-	//Add the level window.
-	ImGui::Begin("Level", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(0.0f, 256.0f));
-	ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
-
-	//Add the button for creating a new level.
-	if (ImGui::Button("New Level"))
-	{
-		NewLevel();
-	}
-
-	//Add the button for opening a level.
-	if (ImGui::Button("Open Level"))
-	{
-		OpenLevel();
-	}
-
-	//Add the button for saving the current level.
-	if (ImGui::Button("Save Level"))
-	{
-		SaveLevel();
-	}
-
-	ImGui::End();
-
-	//If the user is opening a level, open a new window and display the options.
-	if (_IsCurrentlyOpeningLevel)
-	{
-		//Add the level window.
-		ImGui::Begin("Open Level", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-		ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
-		ImGui::SetWindowSize(ImVec2(256.0f, 512.0f));
-
-		const HashTable<HashString, LevelResource *RESTRICT> &all_level_resources{ ResourceSystem::Instance->GetAllLevelResources() };
-
-		for (const LevelResource *const RESTRICT level_resource : all_level_resources.ValueIterator())
-		{
-			if (ImGui::Button(level_resource->_Header._ResourceName.Data()))
-			{
-				LevelSystem::Instance->DespawnAllLevels();
-				LevelSystem::Instance->SpawnLevel(ResourceSystem::Instance->GetLevelResource(level_resource->_Header._ResourceIdentifier));
-
-				_IsCurrentlyOpeningLevel = false;
-
-				break;
-			}
-		}
-
-		ImGui::End();
-	}
+	//Add the current level window.
+	AddCurrentLevelWindow();
 }
 
 /*
@@ -290,5 +243,152 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 
 	//Now load the resource into memory!
 	ResourceSystem::Instance->LoadResource(chosen_file.Data());
+}
+
+/*
+*	Adds the contextual window.
+*/
+void EditorLevelSystem::AddContextualWindow()
+{
+	//Is the current contextual window LEVEL?
+	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() != CatalystEditorSystem::ContextualWindow::LEVEL)
+	{
+		return;
+	}
+
+	//Add the level window.
+	ImGui::Begin("Level", nullptr, EditorConstants::WINDOW_FLAGS);
+	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
+
+	//Add the button for creating a new level.
+	if (ImGui::Button("New Level"))
+	{
+		NewLevel();
+	}
+
+	//Add the button for opening a level.
+	if (ImGui::Button("Open Level"))
+	{
+		OpenLevel();
+	}
+
+	//Add the button for saving the current level.
+	if (ImGui::Button("Save Level"))
+	{
+		SaveLevel();
+	}
+
+	ImGui::End();
+
+	//If the user is opening a level, open a new window and display the options.
+	if (_IsCurrentlyOpeningLevel)
+	{
+		//Add the level window.
+		ImGui::Begin("Open Level", nullptr, EditorConstants::WINDOW_FLAGS);
+		EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
+
+		const HashTable<HashString, LevelResource *RESTRICT> &all_level_resources{ ResourceSystem::Instance->GetAllLevelResources() };
+
+		for (const LevelResource *const RESTRICT level_resource : all_level_resources.ValueIterator())
+		{
+			if (ImGui::Button(level_resource->_Header._ResourceName.Data()))
+			{
+				LevelSystem::Instance->DespawnAllLevels();
+				LevelSystem::Instance->SpawnLevel(ResourceSystem::Instance->GetLevelResource(level_resource->_Header._ResourceIdentifier));
+
+				_IsCurrentlyOpeningLevel = false;
+
+				break;
+			}
+		}
+
+		ImGui::End();
+	}
+}
+
+/*
+*	Adds the current level window.
+*/
+void EditorLevelSystem::AddCurrentLevelWindow() NOEXCEPT
+{
+	//Add the level window.
+	ImGui::Begin("Current Level", nullptr, EditorConstants::WINDOW_FLAGS);
+	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::TOP_RIGHT, Vector2<float32>(-EditorConstants::GENERAL_WINDOW_WIDTH, -0.5f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
+
+	//Begin the entities group.
+	ImGui::BeginGroup();
+
+	//List all dynamic model entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i)
+		{
+			char buffer[64];
+
+			sprintf_s(buffer, "Dynamic Model Entity #%llu", i + 1);
+
+			if (ImGui::Button(buffer))
+			{
+				CatalystEditorSystem::Instance->GetEditorSelectionSystem()->SetCurrentlySelectedEntity(ComponentManager::GetDynamicModelEntities()->At(i));
+			}
+		}
+	}
+
+	//List all light entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i)
+		{
+			char buffer[64];
+
+			sprintf_s(buffer, "Light Entity #%llu", i + 1);
+
+			if (ImGui::Button(buffer))
+			{
+				CatalystEditorSystem::Instance->GetEditorSelectionSystem()->SetCurrentlySelectedEntity(ComponentManager::GetLightEntities()->At(i));
+			}
+		}
+	}
+
+	//List all static model entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i)
+		{
+			char buffer[64];
+
+			sprintf_s(buffer, "Static Model Entity #%llu", i + 1);
+
+			if (ImGui::Button(buffer))
+			{
+				CatalystEditorSystem::Instance->GetEditorSelectionSystem()->SetCurrentlySelectedEntity(ComponentManager::GetStaticModelEntities()->At(i));
+			}
+		}
+	}
+
+	//List all user interface entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfUserInterfaceComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i)
+		{
+			char buffer[64];
+
+			sprintf_s(buffer, "User Interface Entity #%llu", i + 1);
+
+			if (ImGui::Button(buffer))
+			{
+				CatalystEditorSystem::Instance->GetEditorSelectionSystem()->SetCurrentlySelectedEntity(ComponentManager::GetUserInterfaceEntities()->At(i));
+			}
+		}
+	}
+
+	//End the entities group.
+	ImGui::EndGroup();
+
+	ImGui::End();
 }
 #endif

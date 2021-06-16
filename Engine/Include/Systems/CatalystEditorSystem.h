@@ -8,7 +8,6 @@
 #include <Editor/EditorEntitySystem.h>
 #include <Editor/EditorLevelSystem.h>
 #include <Editor/EditorPerceiverSystem.h>
-#include <Editor/EditorPlacementSystem.h>
 #include <Editor/EditorRenderingSystem.h>
 #include <Editor/EditorResourcesSystem.h>
 #include <Editor/EditorSelectionSystem.h>
@@ -29,7 +28,6 @@ public:
 		ENTITIES,
 		LEVEL,
 		PERCEIVER,
-		PLACEMENT,
 		RENDERING,
 		RESOURCES,
 		WORLD
@@ -86,14 +84,6 @@ public:
 	}
 
 	/*
-	*	Returns the editor placement system.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD EditorPlacementSystem *const RESTRICT GetEditorPlacementSystem() NOEXCEPT
-	{
-		return &_EditorPlacementSystem;
-	}
-
-	/*
 	*	Returns the editor selection system.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD EditorSelectionSystem *const RESTRICT GetEditorSelectionSystem() NOEXCEPT
@@ -117,9 +107,6 @@ private:
 
 	//The editor perceiver system.
 	EditorPerceiverSystem _EditorPerceiverSystem;
-
-	//The editor placement system.
-	EditorPlacementSystem _EditorPlacementSystem;
 
 	//The editor rendering system.
 	EditorRenderingSystem _EditorRenderingSystem;

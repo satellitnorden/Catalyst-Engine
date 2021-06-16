@@ -43,7 +43,7 @@ void PhysicsSystem::Initialize() NOEXCEPT
 	UpdatePhase::PHYSICS,
 	UpdatePhase::RENDER,
 	false,
-	true);
+	false);
 
 	//The physics system is now initialized!
 	_Initialized = true;
