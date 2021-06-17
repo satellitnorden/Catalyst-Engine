@@ -119,3 +119,17 @@ void UserInterfaceProgressBar::SetText(const char *const RESTRICT text) NOEXCEPT
 		_TextPrimitive = nullptr;
 	}
 }
+
+/*
+*	Returns the user interface primitives.
+*/
+void UserInterfaceProgressBar::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
+{
+	output->Emplace(_BottomPrimitive);
+	output->Emplace(_TopPrimitive);
+
+	if (_TextPrimitive)
+	{
+		output->Emplace(_TextPrimitive);
+	}
+}

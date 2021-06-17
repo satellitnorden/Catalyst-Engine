@@ -116,9 +116,7 @@ public:
 	*/
 	FORCE_INLINE constexpr void Normalize() NOEXCEPT
 	{
-		const float32 magnitude{ Magnitude() };
-
-		const float32 inverse_magnitude{ 1.0f / magnitude };
+		const float32 inverse_magnitude{ CatalystBaseMath::InverseSquareRoot(MagnitudeSquared()) };
 
 		_X *= inverse_magnitude;
 		_Y *= inverse_magnitude;

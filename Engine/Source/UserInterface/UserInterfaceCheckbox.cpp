@@ -156,6 +156,19 @@ void UserInterfaceCheckbox::SetText(const char *const RESTRICT text) NOEXCEPT
 }
 
 /*
+*	Returns the user interface primitives.
+*/
+void UserInterfaceCheckbox::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
+{
+	output->Emplace(_ImagePrimitive);
+
+	if (_TextPrimitive)
+	{
+		output->Emplace(_TextPrimitive);
+	}
+}
+
+/*
 *	Updates the material.
 */
 void UserInterfaceCheckbox::UpdateMaterial() NOEXCEPT

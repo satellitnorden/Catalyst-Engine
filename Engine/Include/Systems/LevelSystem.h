@@ -27,34 +27,26 @@ public:
 	}
 
 	/*
-	*	Spawns a level.
+	*	Loads a level.
 	*/
-	void SpawnLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT;
+	void LoadLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT;
 
 	/*
-	*	Despawns all levels.
+	*	Returns the current level.
 	*/
-	void DespawnAllLevels() NOEXCEPT;
+	NO_DISCARD ResourcePointer<LevelResource> GetCurrentLevel() const NOEXCEPT
+	{
+		return _CurrentLevel;
+	}
+
+	/*
+	*	Resets the current level.
+	*/
+	void ResetCurrentLevel() NOEXCEPT;
 
 private:
 
-	/*
-	*	Spawned level class definition.
-	*/
-	class SpawnedLevel final
-	{
-
-	public:
-
-		//The level resource.
-		ResourcePointer<LevelResource> _LevelResource;
-
-		//The entities.
-		DynamicArray<Entity *RESTRICT> _Entities;
-
-	};
-
-	//The spawned levels.
-	DynamicArray<SpawnedLevel> _SpawnedLevels;
+	//The current level.
+	ResourcePointer<LevelResource> _CurrentLevel;
 
 };

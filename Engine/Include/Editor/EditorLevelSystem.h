@@ -14,6 +14,11 @@ public:
 	*/
 	void Update() NOEXCEPT;
 
+	/*
+	*	Ends the game.
+	*/
+	void EndGame() NOEXCEPT;
+
 private:
 
 	//Denotes if the user is currently opening a level.

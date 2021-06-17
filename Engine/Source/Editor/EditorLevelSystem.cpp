@@ -33,6 +33,15 @@ void EditorLevelSystem::Update() NOEXCEPT
 }
 
 /*
+*	Ends the game.
+*/
+void EditorLevelSystem::EndGame() NOEXCEPT
+{
+	//Reset the current level.
+	LevelSystem::Instance->ResetCurrentLevel();
+}
+
+/*
 *	Called then the "New Level" button is pressed.
 */
 void EditorLevelSystem::NewLevel() NOEXCEPT
@@ -43,6 +52,12 @@ void EditorLevelSystem::NewLevel() NOEXCEPT
 	if (!File::BrowseForFile(true, &chosen_file))
 	{
 		return;
+	}
+
+	//Check for the ".cr" extension. Remove it if it exists.
+	if (chosen_file.Find(".cr"))
+	{
+		chosen_file.SetLength(chosen_file.Length() - 3);
 	}
 
 	//Retrieve the identifier.
@@ -74,6 +89,9 @@ void EditorLevelSystem::NewLevel() NOEXCEPT
 
 	//Now load the resource into memory!
 	ResourceSystem::Instance->LoadResource(chosen_file.Data());
+
+	//Load the level.
+	LevelSystem::Instance->LoadLevel(ResourceSystem::Instance->GetLevelResource(HashString(identifier.Data())));
 }
 
 /*
@@ -293,8 +311,7 @@ void EditorLevelSystem::AddContextualWindow()
 		{
 			if (ImGui::Button(level_resource->_Header._ResourceName.Data()))
 			{
-				LevelSystem::Instance->DespawnAllLevels();
-				LevelSystem::Instance->SpawnLevel(ResourceSystem::Instance->GetLevelResource(level_resource->_Header._ResourceIdentifier));
+				LevelSystem::Instance->LoadLevel(ResourceSystem::Instance->GetLevelResource(level_resource->_Header._ResourceIdentifier));
 
 				_IsCurrentlyOpeningLevel = false;
 
@@ -312,7 +329,22 @@ void EditorLevelSystem::AddContextualWindow()
 void EditorLevelSystem::AddCurrentLevelWindow() NOEXCEPT
 {
 	//Add the level window.
-	ImGui::Begin("Current Level", nullptr, EditorConstants::WINDOW_FLAGS);
+	{
+		char buffer[128];
+
+		if (LevelSystem::Instance->GetCurrentLevel())
+		{
+			sprintf_s(buffer, "Current Level: %s", LevelSystem::Instance->GetCurrentLevel()->_Header._ResourceName.Data());
+		}
+
+		else
+		{
+			sprintf_s(buffer, "Current Level: None");
+		}
+
+		ImGui::Begin(buffer, nullptr, EditorConstants::WINDOW_FLAGS);
+	}
+
 	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::TOP_RIGHT, Vector2<float32>(-EditorConstants::GENERAL_WINDOW_WIDTH, -0.5f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
 	//Begin the entities group.

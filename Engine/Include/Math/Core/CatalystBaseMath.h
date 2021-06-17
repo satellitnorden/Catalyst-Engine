@@ -205,6 +205,32 @@ public:
 	}
 
 	/*
+	*	Given a number, returns the inverse square root.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float32 InverseSquareRoot(const float32 number) NOEXCEPT
+	{
+		//Define constants.
+		constexpr float32 THREE_HALFS{ 1.5f };
+
+		//Calculate the half number.
+		const float32 half_number{ number * 0.5f };
+
+		//Do the evil bit hack.
+		float32 final_number{ number };
+
+		int32 integer{ *(int32*)&final_number };
+		integer = 0x5f3759df - (integer >> 1);
+		final_number = *(float32*)&integer;
+
+		//Perform the Newton iteration.
+		final_number = final_number * (THREE_HALFS - (half_number * final_number * final_number));
+		final_number = final_number * (THREE_HALFS - (half_number * final_number * final_number)); //Second iteration, can be skipped, tradeoff being less accuracy.
+
+		//Return the final number!
+		return final_number;
+	}
+
+	/*
 	*	Returns whether or not an integer is even or not.
 	*/
 	template <typename TYPE>

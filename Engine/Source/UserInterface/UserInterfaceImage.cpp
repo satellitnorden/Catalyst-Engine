@@ -50,3 +50,11 @@ void UserInterfaceImage::SetMaterial(const UserInterfaceMaterial &value) NOEXCEP
 {
 	_Primitive->_Material = value;
 }
+
+/*
+*	Returns the user interface primitives.
+*/
+void UserInterfaceImage::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
+{
+	output->Emplace(_Primitive);
+}

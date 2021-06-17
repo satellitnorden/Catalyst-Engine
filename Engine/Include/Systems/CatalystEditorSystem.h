@@ -131,6 +131,16 @@ private:
 	void SetIsInGame(const bool value) NOEXCEPT;
 
 	/*
+	*	Starts the game.
+	*/
+	void StartGame() NOEXCEPT;
+
+	/*
+	*	Ends the game.
+	*/
+	void EndGame() NOEXCEPT;
+
+	/*
 	*	Updates IO.
 	*/
 	void UpdateIO() NOEXCEPT;

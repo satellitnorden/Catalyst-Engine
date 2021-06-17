@@ -693,6 +693,22 @@ private:
 
 	};
 
+	/*
+	*	Cursor state class definition.
+	*/
+	class CursorState final
+	{
+
+	public:
+
+		//The position.
+		Vector2<float32> _Position;
+
+		//Denotes whether or not the cursor is pressed.
+		bool _Pressed;
+
+	};
+
 	//The name.
 	DynamicString _Name;
 
@@ -789,5 +805,10 @@ private:
 	*	Updates buttons.
 	*/
 	void UpdateButtons() NOEXCEPT;
+
+	/*
+	*	Retrieves the cursor state.
+	*/
+	NO_DISCARD CursorState RetrieveCursorState() NOEXCEPT;
 
 };

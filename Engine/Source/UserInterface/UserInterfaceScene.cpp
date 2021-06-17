@@ -149,6 +149,30 @@ void UserInterfaceScene::RetrieveUserInterfacePrimitives(DynamicArray<const User
 	//First of all, clear.
 	output->Clear();
 
+	//Retrieve all button primitives.
+	for (UserInterfaceButton *const RESTRICT button : _Buttons)
+	{
+		button->RetrieveUserInterfacePrimitives(output);
+	}
+
+	//Retrieve all checkbox primitives.
+	for (UserInterfaceCheckbox *const RESTRICT checkbox : _Checkboxes)
+	{
+		checkbox->RetrieveUserInterfacePrimitives(output);
+	}
+
+	//Retrieve all image primitives.
+	for (UserInterfaceImage *const RESTRICT image : _Images)
+	{
+		image->RetrieveUserInterfacePrimitives(output);
+	}
+
+	//Retrieve all progress bar primitives.
+	for (UserInterfaceProgressBar *const RESTRICT progress_bar : _ProgressBars)
+	{
+		progress_bar->RetrieveUserInterfacePrimitives(output);
+	}
+
 	//Retrieve all text primitives.
 	for (UserInterfaceText *const RESTRICT text : _Texts)
 	{
@@ -467,21 +491,8 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 	//Cache the input data.
 	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState() };
 
-	Vector2<float32> mouse_position;
-	bool mouse_pressed;
-
-	//Cheat a little bit and treat touch platforms the same as if they were a mouse.
-	if (InputSystem::Instance->GetLastUpdatedInputDeviceType() == InputDeviceType::TOUCH)
-	{
-		mouse_position = Vector2<float32>(InputSystem::Instance->GetTouchState()->_CurrentX, InputSystem::Instance->GetTouchState()->_CurrentY);
-		mouse_pressed = InputSystem::Instance->GetTouchState()->_ButtonState == ButtonState::PRESSED;
-	}
-
-	else
-	{
-		mouse_position = Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY);
-		mouse_pressed = InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED;
-	}
+	//Retrieve the cursor state.
+	const CursorState cursor_state{ RetrieveCursorState() };
 
 	//Update which button is gamepad selected.
 	if (InputSystem::Instance->GetLastUpdatedInputDeviceType() == InputDeviceType::GAMEPAD)
@@ -679,10 +690,10 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 				case InputDeviceType::TOUCH: //Touch input here is interpreted as mouse input, so cheat a little. (:
 				{
 					//Determine if the mouse is inside the element's bounding box.
-					const bool is_inside{	mouse_position._X >= button.GetMinimum()._X
-											&& mouse_position._X <= button.GetMaximum()._X
-											&& mouse_position._Y >= button.GetMinimum()._Y
-											&& mouse_position._Y <= button.GetMaximum()._Y };
+					const bool is_inside{	cursor_state._Position._X >= button.GetMinimum()._X
+											&& cursor_state._Position._X <= button.GetMaximum()._X
+											&& cursor_state._Position._Y >= button.GetMinimum()._Y
+											&& cursor_state._Position._Y <= button.GetMaximum()._Y };
 
 					//Mutate the state and call callbacks.
 					switch (button.GetCurrentState())
@@ -691,7 +702,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 						{
 							if (is_inside)
 							{
-								if (mouse_pressed)
+								if (cursor_state._Pressed)
 								{
 									button.OnStartPressed();
 									button.SetCurrentState(UserInterfaceButtonState::PRESSED);
@@ -711,7 +722,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 						{
 							if (is_inside)
 							{
-								if (mouse_pressed)
+								if (cursor_state._Pressed)
 								{
 									button.OnStartPressed();
 									button.SetCurrentState(UserInterfaceButtonState::PRESSED);
@@ -731,7 +742,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 						{
 							if (is_inside)
 							{
-								if (!mouse_pressed)
+								if (!cursor_state._Pressed)
 								{
 									button.OnStopPressed();
 									button.SetCurrentState(UserInterfaceButtonState::HOVERED);
@@ -752,4 +763,45 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 			}
 		}
 	}
+}
+
+/*
+*	Retrieves the cursor state.
+*/
+NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorState() NOEXCEPT
+{
+	CursorState output;
+
+	output._Position = Vector2<float32>(0.0f, 0.0f);
+	output._Pressed = false;
+
+	if (_IsThreeDimensional)
+	{
+
+	}
+
+	else
+	{
+		switch (InputSystem::Instance->GetLastUpdatedInputDeviceType())
+		{
+			case InputDeviceType::KEYBOARD:
+			case InputDeviceType::MOUSE:
+			{
+				output._Position = Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY);
+				output._Pressed = InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED;
+
+				break;
+			}
+
+			case InputDeviceType::TOUCH:
+			{
+				output._Position = Vector2<float32>(InputSystem::Instance->GetTouchState()->_CurrentX, InputSystem::Instance->GetTouchState()->_CurrentY);
+				output._Pressed = InputSystem::Instance->GetTouchState()->_ButtonState == ButtonState::PRESSED;
+
+				break;
+			}
+		}
+	}
+
+	return output;
 }

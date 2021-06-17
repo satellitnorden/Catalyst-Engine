@@ -123,16 +123,36 @@ void CatalystEditorSystem::SetIsInGame(const bool value) NOEXCEPT
 	{
 		if (_IsInGame)
 		{
+			EndGame();
+
 			CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._EndGameFunction();
 		}
 
 		else
 		{
+			StartGame();
+
 			CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._StartGameFunction();
 		}
 
 		_IsInGame = value;
 	}
+}
+
+/*
+*	Starts the game.
+*/
+void CatalystEditorSystem::StartGame() NOEXCEPT
+{
+
+}
+
+/*
+*	Ends the game.
+*/
+void CatalystEditorSystem::EndGame() NOEXCEPT
+{
+	_EditorLevelSystem.EndGame();
 }
 
 /*

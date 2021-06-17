@@ -19,16 +19,15 @@
 DEFINE_SINGLETON(LevelSystem);
 
 /*
-*	Spawns a level.
+*	Loads a level.
 */
-void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT
+void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT
 {
-	//Add the spawned level.
-	_SpawnedLevels.Emplace();
-	SpawnedLevel &spawned_level{ _SpawnedLevels.Back() };
+	//Destroy all entities.
+	EntitySystem::Instance->DestroyAllEntities();
 
-	//Set the level resource.
-	spawned_level._LevelResource = resource;
+	//Set the current level.
+	_CurrentLevel = resource;
 
 	//Process all level entries.
 	for (const LevelEntry &level_entry : resource->_LevelEntries)
@@ -53,8 +52,6 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 				data->_ModelSimulationConfiguration = level_entry._DynamicModelData._ModelSimulationConfiguration;
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
-
-				spawned_level._Entities.Emplace(entity);
 
 				break;
 			}
@@ -99,8 +96,6 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
 
-				spawned_level._Entities.Emplace(entity);
-
 				break;
 			}
 
@@ -122,8 +117,6 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
 
-				spawned_level._Entities.Emplace(entity);
-
 				break;
 			}
 
@@ -137,8 +130,6 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 				data->_InitialWorldTransform = level_entry._UserInterfaceData._WorldTransform;
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
-
-				spawned_level._Entities.Emplace(entity);
 
 				break;
 			}
@@ -154,20 +145,15 @@ void LevelSystem::SpawnLevel(const ResourcePointer<LevelResource> resource) NOEX
 }
 
 /*
-*	Despawns all levels.
+*	Resets the current level.
 */
-void LevelSystem::DespawnAllLevels() NOEXCEPT
+void LevelSystem::ResetCurrentLevel() NOEXCEPT
 {
-	//Terminate and destroy all entities.
-	for (const SpawnedLevel &spawned_level : _SpawnedLevels)
+	if (!_CurrentLevel)
 	{
-		for (Entity *const RESTRICT entity : spawned_level._Entities)
-		{
-			EntitySystem::Instance->RequestTermination(entity);
-			EntitySystem::Instance->RequestDestruction(entity);
-		}
+		return;
 	}
 
-	//Clear the spawned levels.
-	_SpawnedLevels.Clear();
+	//Simply re-load the level.
+	LoadLevel(_CurrentLevel);
 }

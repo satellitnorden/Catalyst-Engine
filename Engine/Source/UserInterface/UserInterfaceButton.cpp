@@ -160,3 +160,16 @@ void UserInterfaceButton::SetText(const char *const RESTRICT text) NOEXCEPT
 		_TextPrimitive = nullptr;
 	}
 }
+
+/*
+*	Returns the user interface primitives.
+*/
+void UserInterfaceButton::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
+{
+	output->Emplace(_ImagePrimitive);
+	
+	if (_TextPrimitive)
+	{
+		output->Emplace(_TextPrimitive);
+	}
+}

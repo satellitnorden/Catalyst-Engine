@@ -199,6 +199,41 @@ RESTRICTED NO_DISCARD Entity *const RESTRICT EntitySystem::DuplicateEntity(const
 }
 
 /*
+*	Terminates/destroys all entities.
+*/
+void EntitySystem::DestroyAllEntities() NOEXCEPT
+{
+	//Lock the entities.
+	_EntitiesLock.Lock();
+	
+	//Create a copy of the entities list.
+	DynamicArray<Entity *RESTRICT> entities{ _Entities };
+
+	//Unlock the entities.
+	_EntitiesLock.Unlock();
+
+	//Terminate/destroy all entities.
+	for (Entity *const RESTRICT entity : entities)
+	{
+		if (entity->_Initialized)
+		{
+			TerminateEntity(entity);
+		}
+
+		DestroyEntity(entity);
+	}
+
+	//Lock the entities.
+	_EntitiesLock.Lock();
+
+	//Clear the entities.
+	_Entities.Clear();
+
+	//Unlock the entities.
+	_EntitiesLock.Unlock();
+}
+
+/*
 *	Updates the entity system during the ENTITY update phase.
 */
 void EntitySystem::EntityUpdate() NOEXCEPT

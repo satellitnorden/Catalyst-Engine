@@ -348,11 +348,10 @@ public:
 	*/
 	FORCE_INLINE constexpr void Normalize() NOEXCEPT
 	{
-		const float length{ Length() };
-		const float inverseLength{ 1.0f / length };
+		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
 
-		_X *= inverseLength;
-		_Y *= inverseLength;
+		_X *= inverse_length;
+		_Y *= inverse_length;
 	}
 
 	/*
@@ -360,11 +359,10 @@ public:
 	*/
 	FORCE_INLINE constexpr void NormalizeSafe() NOEXCEPT
 	{
-		const float length{ CatalystBaseMath::Maximum<float>(Length(), FLOAT32_EPSILON) };
-		const float inverseLength{ 1.0f / length };
+		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(CatalystBaseMath::Maximum<float>(LengthSquared(), FLOAT32_EPSILON)) };
 
-		_X *= inverseLength;
-		_Y *= inverseLength;
+		_X *= inverse_length;
+		_Y *= inverse_length;
 	}
 
 	/*
@@ -941,12 +939,11 @@ public:
 	*/
 	FORCE_INLINE constexpr void Normalize() NOEXCEPT
 	{
-		const float length{ Length() };
-		const float inverseLength{ 1.0f / length };
+		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
 
-		_X *= inverseLength;
-		_Y *= inverseLength;
-		_Z *= inverseLength;
+		_X *= inverse_length;
+		_Y *= inverse_length;
+		_Z *= inverse_length;
 	}
 
 	/*
@@ -954,12 +951,11 @@ public:
 	*/
 	FORCE_INLINE constexpr void NormalizeSafe() NOEXCEPT
 	{
-		const float length{ CatalystBaseMath::Maximum<float>(Length(), FLOAT32_EPSILON) };
-		const float inverseLength{ 1.0f / length };
+		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(CatalystBaseMath::Maximum<float>(LengthSquared(), FLOAT32_EPSILON)) };
 
-		_X *= inverseLength;
-		_Y *= inverseLength;
-		_Z *= inverseLength;
+		_X *= inverse_length;
+		_Y *= inverse_length;
+		_Z *= inverse_length;
 	}
 
 	/*
@@ -969,11 +965,10 @@ public:
 	{
 		_Z = 0.0f;
 
-		const float length{ Length() };
-		const float inverseLength{ 1.0f / length };
+		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
 
-		_X *= inverseLength;
-		_Y *= inverseLength;
+		_X *= inverse_length;
+		_Y *= inverse_length;
 	}
 
 	/*
@@ -983,11 +978,10 @@ public:
 	{
 		_Y = 0.0f;
 
-		const float length{ Length() };
-		const float inverseLength{ 1.0f / length };
+		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
 
-		_X *= inverseLength;
-		_Z *= inverseLength;
+		_X *= inverse_length;
+		_Z *= inverse_length;
 	}
 
 	/*
@@ -997,11 +991,10 @@ public:
 	{
 		_X = 0.0f;
 
-		const float length{ Length() };
-		const float inverseLength{ 1.0f / length };
+		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
 
-		_Y *= inverseLength;
-		_Z *= inverseLength;
+		_Y *= inverse_length;
+		_Z *= inverse_length;
 	}
 
 	/*
@@ -1511,13 +1504,12 @@ public:
 	*/
 	FORCE_INLINE constexpr void Normalize() NOEXCEPT
 	{
-		const float length{ Length() };
-		const float inverseLength{ 1.0f / length };
+		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
 
-		_X *= inverseLength;
-		_Y *= inverseLength;
-		_Z *= inverseLength;
-		_W *= inverseLength;
+		_X *= inverse_length;
+		_Y *= inverse_length;
+		_Z *= inverse_length;
+		_W *= inverse_length;
 	}
 
 };

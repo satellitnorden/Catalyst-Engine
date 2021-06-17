@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Math.
 #include <Math/General/Vector.h>
@@ -47,6 +48,11 @@ public:
 	*	Sets the text.
 	*/
 	void SetText(const char *const RESTRICT text) NOEXCEPT;
+
+	/*
+	*	Returns the user interface primitives.
+	*/
+	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT;
 
 private:
 

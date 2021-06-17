@@ -97,6 +97,11 @@ public:
 	*/
 	RESTRICTED NO_DISCARD Entity *const RESTRICT DuplicateEntity(const Entity *const RESTRICT entity) NOEXCEPT;
 
+	/*
+	*	Terminates/destroys all entities.
+	*/
+	void DestroyAllEntities() NOEXCEPT;
+
 private:
 
 	/*
@@ -108,10 +113,10 @@ private:
 	public:
 
 		//The entity to initialize.
-		Entity* RESTRICT _Entity;
+		Entity *RESTRICT _Entity;
 
 		//The initialization data.
-		EntityInitializationData* RESTRICT _Data;
+		EntityInitializationData *RESTRICT _Data;
 
 		//Denotes whether or not to force this initialization.
 		bool _Force;
