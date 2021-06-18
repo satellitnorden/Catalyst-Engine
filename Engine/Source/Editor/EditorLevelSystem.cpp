@@ -116,10 +116,11 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 		return;
 	}
 
-	ASSERT(File::GetExtension(chosen_file.Data()) == File::Extension::CR, "The file must be a Catalast resource!");
-
 	//The user might already have chosen an existing level, so remove the ".cr" extension if that's the case.
-	chosen_file[chosen_file.Length() - 3] = '\0';
+	if (chosen_file.Find(".cr"))
+	{
+		chosen_file.SetLength(chosen_file.Length() - 3);
+	}
 
 	//Retrieve the identifier.
 	DynamicString identifier;
@@ -154,9 +155,14 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 				level_entry._DynamicModelData._WorldTransform = component->_CurrentWorldTransform;
 				level_entry._DynamicModelData._ModelResourceIdentifier = component->_ModelResource->_Header._ResourceIdentifier;
 
-				for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				for (uint64 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
 				{
-					level_entry._DynamicModelData._MaterialResourceIdentifiers[i] = component->_MaterialResources[i] ? component->_MaterialResources[i]->_Header._ResourceIdentifier : HashString("");
+					if (!component->_MaterialResources[i])
+					{
+						break;
+					}
+
+					level_entry._DynamicModelData._MaterialResourceIdentifiers.Emplace(component->_MaterialResources[i]->_Header._ResourceIdentifier);
 				}
 
 				level_entry._DynamicModelData._ModelCollisionConfiguration = component->_ModelCollisionConfiguration;
@@ -225,9 +231,14 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 				level_entry._StaticModelData._WorldTransform = component->_WorldTransform;
 				level_entry._StaticModelData._ModelResourceIdentifier = component->_ModelResource->_Header._ResourceIdentifier;
 
-				for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				for (uint64 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
 				{
-					level_entry._StaticModelData._MaterialResourceIdentifiers[i] = component->_MaterialResources[i] ? component->_MaterialResources[i]->_Header._ResourceIdentifier : HashString("");
+					if (!component->_MaterialResources[i])
+					{
+						break;
+					}
+
+					level_entry._StaticModelData._MaterialResourceIdentifiers.Emplace(component->_MaterialResources[i]->_Header._ResourceIdentifier);
 				}
 
 				level_entry._StaticModelData._ModelCollisionConfiguration = component->_ModelCollisionConfiguration;
@@ -257,10 +268,13 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 	}
 
 	//The resource building system automatically adds the ".cr" extension to Catalyst resources, so add it to the chosen file path.
-	chosen_file[chosen_file.Length() - 3] = '.';
+	chosen_file += ".cr";
 
 	//Now load the resource into memory!
 	ResourceSystem::Instance->LoadResource(chosen_file.Data());
+
+	//Load the level!
+	LevelSystem::Instance->LoadLevel(ResourceSystem::Instance->GetLevelResource(HashString(identifier.Data())));
 }
 
 /*
@@ -347,9 +361,6 @@ void EditorLevelSystem::AddCurrentLevelWindow() NOEXCEPT
 
 	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::TOP_RIGHT, Vector2<float32>(-EditorConstants::GENERAL_WINDOW_WIDTH, -0.5f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
-	//Begin the entities group.
-	ImGui::BeginGroup();
-
 	//List all dynamic model entities.
 	{
 		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
@@ -417,9 +428,6 @@ void EditorLevelSystem::AddCurrentLevelWindow() NOEXCEPT
 			}
 		}
 	}
-
-	//End the entities group.
-	ImGui::EndGroup();
 
 	ImGui::End();
 }

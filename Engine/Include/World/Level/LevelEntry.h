@@ -2,7 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/StaticArray.h>
+#include <Core/Containers/DynamicArray.h>
 #include <Core/General/HashString.h>
 
 //Lighting.
@@ -11,9 +11,6 @@
 //Physics.
 #include <Physics/Native/ModelCollisionConfiguration.h>
 #include <Physics/Native/ModelSimulationConfiguration.h>
-
-//Rendering.
-#include <Rendering/Native/RenderingCore.h>
 
 //World.
 #include <World/Core/WorldTransform.h>
@@ -26,6 +23,8 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
+		NONE,
+
 		DYNAMIC_MODEL,
 		LIGHT,
 		STATIC_MODEL,
@@ -40,6 +39,9 @@ public:
 
 	public:
 
+		//The current version.
+		constexpr static UINT64 CURRENT_VERSION{ 1 };
+
 		//The world transform.
 		WorldTransform _WorldTransform;
 
@@ -47,7 +49,7 @@ public:
 		HashString _ModelResourceIdentifier;
 
 		//The material resourceidentifiers.
-		StaticArray<HashString, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResourceIdentifiers;
+		DynamicArray<HashString> _MaterialResourceIdentifiers;
 
 		//The model collision configuration.
 		ModelCollisionConfiguration _ModelCollisionConfiguration;
@@ -64,6 +66,9 @@ public:
 	{
 
 	public:
+
+		//The current version.
+		constexpr static UINT64 CURRENT_VERSION{ 1 };
 
 		union
 		{
@@ -92,6 +97,22 @@ public:
 		//The size.
 		float32 _Size;
 
+		/*
+		*	Default constructor.
+		*/
+		FORCE_INLINE LightData() NOEXCEPT
+		{
+
+		}
+
+		/*
+		*	Copy operator overload.
+		*/
+		FORCE_INLINE void operator=(const LightData& other) NOEXCEPT
+		{
+			Memory::Copy(this, &other, sizeof(LightData));
+		}
+
 	};
 
 	/*
@@ -102,6 +123,9 @@ public:
 
 	public:
 
+		//The current version.
+		constexpr static UINT64 CURRENT_VERSION{ 1 };
+
 		//The world transform.
 		WorldTransform _WorldTransform;
 
@@ -109,7 +133,7 @@ public:
 		HashString _ModelResourceIdentifier;
 
 		//The material resourceidentifiers.
-		StaticArray<HashString, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResourceIdentifiers;
+		DynamicArray<HashString> _MaterialResourceIdentifiers;
 
 		//The model collision configuration.
 		ModelCollisionConfiguration _ModelCollisionConfiguration;
@@ -124,6 +148,9 @@ public:
 
 	public:
 
+		//The current version.
+		constexpr static UINT64 CURRENT_VERSION{ 1 };
+
 		//The user interface scene identifier.
 		HashString _UserInterfaceSceneIdentifier;
 
@@ -133,6 +160,9 @@ public:
 
 	//The type.
 	Type _Type;
+
+	//The version.
+	uint64 _Version;
 
 	union
 	{
@@ -154,6 +184,14 @@ public:
 	*/
 	FORCE_INLINE LevelEntry() NOEXCEPT
 	{
+		Memory::Set(this, 0, sizeof(LevelEntry));
+	}
+
+	/*
+	*	Default destructor.
+	*/
+	FORCE_INLINE ~LevelEntry() NOEXCEPT
+	{
 
 	}
 
@@ -162,9 +200,48 @@ public:
 	*/
 	FORCE_INLINE LevelEntry(const LevelEntry &other) NOEXCEPT
 	{
-		Memory::Copy(this, &other, sizeof(LevelEntry));
+		Memory::Set(this, 0, sizeof(LevelEntry));
+
+		_Type = other._Type;
+		_Version = other._Version;
+
+		switch (_Type)
+		{
+			case Type::DYNAMIC_MODEL:
+			{
+				_DynamicModelData = other._DynamicModelData;
+
+				break;
+			}
+
+			case Type::LIGHT:
+			{
+				_LightData = other._LightData;
+
+				break;
+			}
+
+			case Type::STATIC_MODEL:
+			{
+				_StaticModelData = other._StaticModelData;
+
+				break;
+			}
+
+			case Type::USER_INTERFACE:
+			{
+				_UserInterfaceData = other._UserInterfaceData;
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
 	}
 
 };
-
-static_assert(sizeof(LevelEntry) == 112, "Level Entry size has changed, resources needs to be rebuilt.");

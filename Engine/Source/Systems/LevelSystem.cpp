@@ -43,7 +43,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 				data->_InitialWorldTransform = level_entry._DynamicModelData._WorldTransform;
 				data->_ModelResource = ResourceSystem::Instance->GetModelResource(level_entry._DynamicModelData._ModelResourceIdentifier);
 
-				for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				for (uint64 i{ 0 }, size{ level_entry._DynamicModelData._MaterialResourceIdentifiers.Size() }; i < size; ++i)
 				{
 					data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(level_entry._DynamicModelData._MaterialResourceIdentifiers[i]);
 				}
@@ -108,7 +108,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 				data->_WorldTransform = level_entry._StaticModelData._WorldTransform;
 				data->_ModelResource = ResourceSystem::Instance->GetModelResource(level_entry._StaticModelData._ModelResourceIdentifier);
 
-				for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+				for (uint64 i{ 0 }, size{ level_entry._StaticModelData._MaterialResourceIdentifiers.Size() }; i < size; ++i)
 				{
 					data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(level_entry._StaticModelData._MaterialResourceIdentifiers[i]);
 				}

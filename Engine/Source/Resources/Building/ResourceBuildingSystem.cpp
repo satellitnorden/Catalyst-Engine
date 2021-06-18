@@ -411,7 +411,88 @@ void ResourceBuildingSystem::BuildLevel(const LevelBuildParameters &parameters) 
 	output_file.Write(&number_of_level_entries, sizeof(uint64));
 
 	//Write all the level entries to the output file.
-	output_file.Write(parameters._LevelEntries.Data(), sizeof(LevelEntry) * number_of_level_entries);
+	for (const LevelEntry &level_entry : parameters._LevelEntries)
+	{
+		//Write the type.
+		output_file.Write(&level_entry._Type, sizeof(LevelEntry::Type));
+
+		switch (level_entry._Type)
+		{
+			case LevelEntry::Type::DYNAMIC_MODEL:
+			{
+				//Write the version.
+				constexpr uint64 VERSION{ LevelEntry::DynamicModelData::CURRENT_VERSION };
+				output_file.Write(&VERSION, sizeof(uint64));
+
+				//Write the data.
+				output_file.Write(&level_entry._DynamicModelData._WorldTransform, sizeof(WorldTransform));
+				output_file.Write(&level_entry._DynamicModelData._ModelResourceIdentifier, sizeof(HashString));
+
+				{
+					const uint64 number_of_material_resource_identifiers{ level_entry._DynamicModelData._MaterialResourceIdentifiers.Size() };
+					output_file.Write(&number_of_material_resource_identifiers, sizeof(uint64));
+				}
+
+				output_file.Write(level_entry._DynamicModelData._MaterialResourceIdentifiers.Data(), sizeof(HashString) * level_entry._DynamicModelData._MaterialResourceIdentifiers.Size());
+				output_file.Write(&level_entry._DynamicModelData._ModelCollisionConfiguration, sizeof(ModelCollisionConfiguration));
+				output_file.Write(&level_entry._DynamicModelData._ModelSimulationConfiguration, sizeof(ModelSimulationConfiguration));
+
+				break;
+			}
+
+			case LevelEntry::Type::LIGHT:
+			{
+				//Write the version.
+				constexpr uint64 VERSION{ LevelEntry::LightData::CURRENT_VERSION };
+				output_file.Write(&VERSION, sizeof(uint64));
+
+				//Write the data.
+				output_file.Write(&level_entry._LightData, sizeof(LevelEntry::LightData));
+
+				break;
+			}
+
+			case LevelEntry::Type::STATIC_MODEL:
+			{
+				//Write the version.
+				constexpr uint64 VERSION{ LevelEntry::StaticModelData::CURRENT_VERSION };
+				output_file.Write(&VERSION, sizeof(uint64));
+
+				//Write the data.
+				output_file.Write(&level_entry._StaticModelData._WorldTransform, sizeof(WorldTransform));
+				output_file.Write(&level_entry._StaticModelData._ModelResourceIdentifier, sizeof(HashString));
+
+				{
+					const uint64 number_of_material_resource_identifiers{ level_entry._StaticModelData._MaterialResourceIdentifiers.Size() };
+					output_file.Write(&number_of_material_resource_identifiers, sizeof(uint64));
+				}
+
+				output_file.Write(level_entry._StaticModelData._MaterialResourceIdentifiers.Data(), sizeof(HashString) * level_entry._StaticModelData._MaterialResourceIdentifiers.Size());
+				output_file.Write(&level_entry._StaticModelData._ModelCollisionConfiguration, sizeof(ModelCollisionConfiguration));
+
+				break;
+			}
+
+			case LevelEntry::Type::USER_INTERFACE:
+			{
+				//Write the version.
+				constexpr uint64 VERSION{ LevelEntry::UserInterfaceData::CURRENT_VERSION };
+				output_file.Write(&VERSION, sizeof(uint64));
+
+				//Write the data.
+				output_file.Write(&level_entry._UserInterfaceData, sizeof(LevelEntry::UserInterfaceData));
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
 
 	//Close the output file.
 	output_file.Close();
