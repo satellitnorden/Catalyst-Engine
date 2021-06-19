@@ -133,5 +133,10 @@ private:
 	*/
 	void TransformCurrentlySelectedEntity(const Ray &ray);
 
+	/*
+	*	Adds a position editor.
+	*/
+	NO_DISCARD bool AddPositionEditor(Vector3<float32> *const RESTRICT value) NOEXCEPT;
+
 };
 #endif

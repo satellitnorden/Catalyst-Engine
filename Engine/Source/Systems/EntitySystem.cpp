@@ -217,10 +217,10 @@ void EntitySystem::DestroyAllEntities() NOEXCEPT
 	{
 		if (entity->_Initialized)
 		{
-			TerminateEntity(entity);
+			RequestTermination(entity);
 		}
 
-		DestroyEntity(entity);
+		RequestDestruction(entity);
 	}
 
 	//Lock the entities.

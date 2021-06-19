@@ -146,7 +146,7 @@ void CatalystEditorSystem::SetIsInGame(const bool value) NOEXCEPT
 */
 void CatalystEditorSystem::StartGame() NOEXCEPT
 {
-
+	_EditorLevelSystem.StartGame();
 }
 
 /*

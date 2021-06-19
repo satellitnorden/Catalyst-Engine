@@ -33,12 +33,24 @@ void EditorLevelSystem::Update() NOEXCEPT
 }
 
 /*
+*	Starts the game.
+*/
+void EditorLevelSystem::StartGame() NOEXCEPT
+{
+	//Gather the current level entries.
+	GatherLevelEntries(&_CurrentLevelEntries);
+}
+
+/*
 *	Ends the game.
 */
 void EditorLevelSystem::EndGame() NOEXCEPT
 {
-	//Reset the current level.
-	LevelSystem::Instance->ResetCurrentLevel();
+	//Load the level that was saved before entering the game.
+	LevelResource level_resource;
+	level_resource._LevelEntries = _CurrentLevelEntries;
+
+	LevelSystem::Instance->LoadLevel(ResourcePointer<LevelResource>(&level_resource));
 }
 
 /*
@@ -92,6 +104,9 @@ void EditorLevelSystem::NewLevel() NOEXCEPT
 
 	//Load the level.
 	LevelSystem::Instance->LoadLevel(ResourceSystem::Instance->GetLevelResource(HashString(identifier.Data())));
+
+	//Set the current level name.
+	_CurrentLevelName = identifier;
 }
 
 /*
@@ -142,133 +157,7 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 		parameters._OutputFilePath = chosen_file.Data();
 		parameters._Identifier = identifier.Data();
 
-		//Add all dynamic model entities.
-		{
-			const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
-			const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-			for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
-			{
-				LevelEntry level_entry;
-
-				level_entry._Type = LevelEntry::Type::DYNAMIC_MODEL;
-				level_entry._DynamicModelData._WorldTransform = component->_CurrentWorldTransform;
-				level_entry._DynamicModelData._ModelResourceIdentifier = component->_ModelResource->_Header._ResourceIdentifier;
-
-				for (uint64 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
-				{
-					if (!component->_MaterialResources[i])
-					{
-						break;
-					}
-
-					level_entry._DynamicModelData._MaterialResourceIdentifiers.Emplace(component->_MaterialResources[i]->_Header._ResourceIdentifier);
-				}
-
-				level_entry._DynamicModelData._ModelCollisionConfiguration = component->_ModelCollisionConfiguration;
-				level_entry._DynamicModelData._ModelSimulationConfiguration = component->_ModelSimulationConfiguration;
-
-				parameters._LevelEntries.Emplace(level_entry);
-			}
-		}
-
-		//Add all light entities.
-		{
-			const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
-			const LightComponent *RESTRICT component{ ComponentManager::GetLightLightComponents() };
-
-			for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
-			{
-				LevelEntry level_entry;
-
-				level_entry._Type = LevelEntry::Type::LIGHT;
-				
-				switch (component->_LightType)
-				{
-					case LightType::DIRECTIONAL:
-					{
-						level_entry._LightData._Rotation = component->_Rotation;
-
-						break;
-					}
-
-					case LightType::POINT:
-					{
-						level_entry._LightData._WorldPosition = component->_WorldPosition;
-
-						break;
-					}
-
-					default:
-					{
-						ASSERT(false, "Invalid case!");
-
-						break;
-					}
-				}
-
-				level_entry._LightData._Color = component->_Color;
-				level_entry._LightData._LightType = component->_LightType;
-				level_entry._LightData._LightProperties = component->_LightProperties;
-				level_entry._LightData._Intensity = component->_Intensity;
-				level_entry._LightData._Radius = component->_Radius;
-				level_entry._LightData._Size = component->_Size;
-
-				parameters._LevelEntries.Emplace(level_entry);
-			}
-		}
-
-		//Add all static model entities.
-		{
-			const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-			const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-			for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
-			{
-				LevelEntry level_entry;
-
-				level_entry._Type = LevelEntry::Type::STATIC_MODEL;
-				level_entry._StaticModelData._WorldTransform = component->_WorldTransform;
-				level_entry._StaticModelData._ModelResourceIdentifier = component->_ModelResource->_Header._ResourceIdentifier;
-
-				for (uint64 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
-				{
-					if (!component->_MaterialResources[i])
-					{
-						break;
-					}
-
-					level_entry._StaticModelData._MaterialResourceIdentifiers.Emplace(component->_MaterialResources[i]->_Header._ResourceIdentifier);
-				}
-
-				level_entry._StaticModelData._ModelCollisionConfiguration = component->_ModelCollisionConfiguration;
-
-				parameters._LevelEntries.Emplace(level_entry);
-			}
-		}
-
-		//Add all user interface entities.
-		{
-			const uint64 number_of_components{ ComponentManager::GetNumberOfUserInterfaceComponents() };
-			const UserInterfaceComponent *RESTRICT component{ ComponentManager::GetUserInterfaceUserInterfaceComponents() };
-
-			for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
-			{
-				LevelEntry level_entry;
-
-				level_entry._Type = LevelEntry::Type::USER_INTERFACE;
-				level_entry._UserInterfaceData._UserInterfaceSceneIdentifier = component->_UserInterfaceScene ? component->_UserInterfaceScene->GetIdentifier() : HashString ("");
-				level_entry._UserInterfaceData._WorldPosition = component->_WorldPosition;
-				level_entry._UserInterfaceData._Rotation = component->_Rotation;
-				level_entry._UserInterfaceData._Scale = component->_Scale;
-				level_entry._UserInterfaceData._Roughness = component->_Roughness;
-				level_entry._UserInterfaceData._Metallic = component->_Metallic;
-				level_entry._UserInterfaceData._AmbientOcclusion = component->_AmbientOcclusion;
-				level_entry._UserInterfaceData._EmissiveMultiplier = component->_EmissiveMultiplier;
-
-				parameters._LevelEntries.Emplace(level_entry);
-			}
-		}
+		GatherLevelEntries(&parameters._LevelEntries);
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildLevel(parameters);
 	}
@@ -281,6 +170,9 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 
 	//Load the level!
 	LevelSystem::Instance->LoadLevel(ResourceSystem::Instance->GetLevelResource(HashString(identifier.Data())));
+
+	//Set the current level name.
+	_CurrentLevelName = identifier;
 }
 
 /*
@@ -335,6 +227,8 @@ void EditorLevelSystem::AddContextualWindow()
 
 				_IsCurrentlyOpeningLevel = false;
 
+				_CurrentLevelName = ResourceSystem::Instance->GetLevelResource(level_resource->_Header._ResourceIdentifier)->_Header._ResourceName.Data();
+
 				break;
 			}
 		}
@@ -352,9 +246,9 @@ void EditorLevelSystem::AddCurrentLevelWindow() NOEXCEPT
 	{
 		char buffer[128];
 
-		if (LevelSystem::Instance->GetCurrentLevel())
+		if (_CurrentLevelName)
 		{
-			sprintf_s(buffer, "Current Level: %s", LevelSystem::Instance->GetCurrentLevel()->_Header._ResourceName.Data());
+			sprintf_s(buffer, "Current Level: %s", _CurrentLevelName.Data());
 		}
 
 		else
@@ -436,5 +330,139 @@ void EditorLevelSystem::AddCurrentLevelWindow() NOEXCEPT
 	}
 
 	ImGui::End();
+}
+
+/*
+*	Gathers the level entries.
+*/
+void EditorLevelSystem::GatherLevelEntries(DynamicArray<LevelEntry> *const RESTRICT output) const NOEXCEPT
+{
+	//Add all dynamic model entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+		{
+			LevelEntry level_entry;
+
+			level_entry._Type = LevelEntry::Type::DYNAMIC_MODEL;
+			level_entry._DynamicModelData._WorldTransform = component->_CurrentWorldTransform;
+			level_entry._DynamicModelData._ModelResourceIdentifier = component->_ModelResource->_Header._ResourceIdentifier;
+
+			for (uint64 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+			{
+				if (!component->_MaterialResources[i])
+				{
+					break;
+				}
+
+				level_entry._DynamicModelData._MaterialResourceIdentifiers.Emplace(component->_MaterialResources[i]->_Header._ResourceIdentifier);
+			}
+
+			level_entry._DynamicModelData._ModelCollisionConfiguration = component->_ModelCollisionConfiguration;
+			level_entry._DynamicModelData._ModelSimulationConfiguration = component->_ModelSimulationConfiguration;
+
+			output->Emplace(level_entry);
+		}
+	}
+
+	//Add all light entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
+		const LightComponent *RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+		{
+			LevelEntry level_entry;
+
+			level_entry._Type = LevelEntry::Type::LIGHT;
+
+			switch (component->_LightType)
+			{
+				case LightType::DIRECTIONAL:
+				{
+					level_entry._LightData._Rotation = component->_Rotation;
+
+					break;
+				}
+
+				case LightType::POINT:
+				{
+					level_entry._LightData._WorldPosition = component->_WorldPosition;
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			level_entry._LightData._Color = component->_Color;
+			level_entry._LightData._LightType = component->_LightType;
+			level_entry._LightData._LightProperties = component->_LightProperties;
+			level_entry._LightData._Intensity = component->_Intensity;
+			level_entry._LightData._Radius = component->_Radius;
+			level_entry._LightData._Size = component->_Size;
+
+			output->Emplace(level_entry);
+		}
+	}
+
+	//Add all static model entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+		{
+			LevelEntry level_entry;
+
+			level_entry._Type = LevelEntry::Type::STATIC_MODEL;
+			level_entry._StaticModelData._WorldTransform = component->_WorldTransform;
+			level_entry._StaticModelData._ModelResourceIdentifier = component->_ModelResource->_Header._ResourceIdentifier;
+
+			for (uint64 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+			{
+				if (!component->_MaterialResources[i])
+				{
+					break;
+				}
+
+				level_entry._StaticModelData._MaterialResourceIdentifiers.Emplace(component->_MaterialResources[i]->_Header._ResourceIdentifier);
+			}
+
+			level_entry._StaticModelData._ModelCollisionConfiguration = component->_ModelCollisionConfiguration;
+
+			output->Emplace(level_entry);
+		}
+	}
+
+	//Add all user interface entities.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfUserInterfaceComponents() };
+		const UserInterfaceComponent *RESTRICT component{ ComponentManager::GetUserInterfaceUserInterfaceComponents() };
+
+		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+		{
+			LevelEntry level_entry;
+
+			level_entry._Type = LevelEntry::Type::USER_INTERFACE;
+			level_entry._UserInterfaceData._UserInterfaceSceneIdentifier = component->_UserInterfaceScene ? component->_UserInterfaceScene->GetIdentifier() : HashString ("");
+			level_entry._UserInterfaceData._WorldPosition = component->_WorldPosition;
+			level_entry._UserInterfaceData._Rotation = component->_Rotation;
+			level_entry._UserInterfaceData._Scale = component->_Scale;
+			level_entry._UserInterfaceData._Roughness = component->_Roughness;
+			level_entry._UserInterfaceData._Metallic = component->_Metallic;
+			level_entry._UserInterfaceData._AmbientOcclusion = component->_AmbientOcclusion;
+			level_entry._UserInterfaceData._EmissiveMultiplier = component->_EmissiveMultiplier;
+
+			output->Emplace(level_entry);
+		}
+	}
 }
 #endif

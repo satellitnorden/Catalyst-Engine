@@ -47,8 +47,8 @@ void UserInterfaceEntity::Initialize(EntityInitializationData *const RESTRICT da
 
 	if (component._UserInterfaceScene)
 	{
-		//Tell the user interface scene that it is three dimensional.
-		component._UserInterfaceScene->SetIsThreeDimensional(true);
+		//Tell the user interface scene which is it's entity.
+		component._UserInterfaceScene->SetEntity(this);
 
 		//Activate the user interface scene.
 		UserInterfaceSystem::Instance->ActivateScene(component._UserInterfaceScene);
@@ -152,8 +152,8 @@ void UserInterfaceEntity::SetUserInterfaceScene(UserInterfaceScene *const RESTRI
 	//Set the user interface scene.
 	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._UserInterfaceScene = value;
 
-	//Tell the user interface scene that it is three dimensional.
-	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._UserInterfaceScene->SetIsThreeDimensional(true);
+	//Tell the user interface scene which is it's entity.
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._UserInterfaceScene->SetEntity(this);
 
 	//Activate the new user interface scene.
 	UserInterfaceSystem::Instance->ActivateScene(ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._UserInterfaceScene);

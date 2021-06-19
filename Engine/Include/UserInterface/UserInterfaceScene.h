@@ -11,6 +11,9 @@
 #include <UserInterface/UserInterfaceProgressBar.h>
 #include <UserInterface/UserInterfaceText.h>
 
+//Forward declarations.
+class UserInterfaceEntity;
+
 class UserInterfaceScene
 {
 
@@ -93,11 +96,11 @@ public:
 	}
 
 	/*
-	*	Sets whether or not this scene is three dimensional.
+	*	Sets the entity.
 	*/
-	FORCE_INLINE void SetIsThreeDimensional(const bool value) NOEXCEPT
+	FORCE_INLINE void SetEntity(UserInterfaceEntity *const RESTRICT value) NOEXCEPT
 	{
-		_IsThreeDimensional = value;
+		_Entity = value;
 	}
 
 	/*
@@ -793,8 +796,8 @@ private:
 	//The button interfaces.
 	DynamicArray<ButtonInterface> _ButtonInterfaces;
 
-	//Denotes whether or not this scene is three dimensional.
-	bool _IsThreeDimensional{ false };
+	//The entity.
+	UserInterfaceEntity *RESTRICT _Entity{ nullptr };
 
 	/*
 	*	Calculates the bounding box for the given minimum/maximum cell.

@@ -9,6 +9,6 @@
 //Editor constants.
 namespace EditorConstants
 {
-	constexpr float32 GENERAL_WINDOW_WIDTH{ 0.1'25f };
+	constexpr float32 GENERAL_WINDOW_WIDTH{ 0.1'50f };
 	constexpr ImGuiWindowFlags WINDOW_FLAGS{ ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings };
 }

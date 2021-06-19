@@ -1,10 +1,23 @@
 ﻿//Header file.
 #include <UserInterface/UserInterfaceScene.h>
 
+//Core.
+#include <Core/General/Perceiver.h>
+
+//Entities.
+#include <Entities/Types/UserInterfaceEntity.h>
+
+//Math.
+#include <Math/Core/CatalystgeometryMath.h>
+
 //Systems.
+#if defined(CATALYST_EDITOR)
+#include <Systems/CatalystEditorSystem.h>
+#endif
 #include <Systems/ResourceSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/UserInterfaceSystem.h>
+#include <Systems/WorldSystem.h>
 
 //User interface scene constants.
 namespace UserInterfaceSceneConstants
@@ -206,7 +219,7 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButton(	co
 																			pressed_material_override ? *pressed_material_override : _ButtonPressedMaterial,
 																			text,
 																			_FontResource,
-																			_IsThreeDimensional) };
+																			_Entity != nullptr) };
 
 	//Add the button to the container.
 	_Buttons.Emplace(new_button);
@@ -284,7 +297,7 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 																					checked_pressed_material_override ? *checked_pressed_material_override : _CheckboxCheckedPressedMaterial,
 																					text,
 																					_FontResource,
-																					_IsThreeDimensional) };
+																					_Entity != nullptr) };
 
 	//Add the checkbox to the container.
 	_Checkboxes.Emplace(new_checkbox);
@@ -332,7 +345,7 @@ RESTRICTED UserInterfaceImage* const RESTRICT UserInterfaceScene::AddImage(	cons
 																			maximum,
 																			material,
 																			opacity,
-																			_IsThreeDimensional) };
+																			_Entity != nullptr) };
 
 	//Add the image to the container.
 	_Images.Emplace(new_image);
@@ -382,7 +395,7 @@ RESTRICTED UserInterfaceProgressBar* const RESTRICT UserInterfaceScene::AddProgr
 																							bottom_material_override ? *bottom_material_override : _ProgressBarBottomMaterial,
 																							top_material_override ? *top_material_override : _ProgressBarTopMaterial,
 																							text,
-																							_IsThreeDimensional) };
+																							_Entity != nullptr) };
 
 	//Add the progress bar to the container.
 	_ProgressBars.Emplace(new_progress_bar);
@@ -441,7 +454,7 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddText(	const 
 																		horizontal_alignment,
 																		vertical_alignment,
 																		smoothing_factor_override ? *smoothing_factor_override : _TextSmoothingFactor,
-																		_IsThreeDimensional) };
+																		_Entity != nullptr) };
 
 	//Add the text to the container.
 	_Texts.Emplace(new_text);
@@ -473,6 +486,13 @@ void UserInterfaceScene::CalculateBoundingBox(	const Vector2<uint32>& minimum_ce
 */
 void UserInterfaceScene::UpdateButtons() NOEXCEPT
 {
+#if defined(CATALYST_EDITOR)
+	if (!CatalystEditorSystem::Instance->IsInGame())
+	{
+		return;
+	}
+#endif
+
 	//If there's no button interface to update, just quit.
 	if (_ButtonInterfaces.Empty())
 	{
@@ -766,9 +786,64 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 	output._Position = Vector2<float32>(0.0f, 0.0f);
 	output._Pressed = false;
 
-	if (_IsThreeDimensional)
+	if (_Entity != nullptr)
 	{
+		//Construct the ray.
+		Ray ray;
 
+		ray.SetOrigin(Perceiver::Instance->GetWorldTransform().GetLocalPosition());
+		ray.SetDirection(Perceiver::Instance->GetForwardVector());
+
+		//Construct the plane.
+		Plane plane;
+
+		plane._Position = _Entity->GetWorldPosition().GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
+		plane._Normal = CatalystCoordinateSpacesUtilities::RotatedWorldBackwardVector(_Entity->GetRotation());
+
+		//Intersect the plane!
+		float32 intersection_distance;
+		
+		if (CatalystGeometryMath::RayPlaneIntersection(ray, plane, &intersection_distance))
+		{
+			//Calculate the world position.
+			Vector3<float32> world_position{ ray._Origin + ray._Direction * intersection_distance };
+
+			//Undo the translation.
+			world_position -= _Entity->GetWorldPosition().GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
+
+			//Undo the rotation.
+			world_position.Rotate(-_Entity->GetRotation());
+
+			//Undo the scale.
+			world_position._X /= _Entity->GetScale()._X;
+			world_position._Y /= _Entity->GetScale()._Y;
+
+			//Shift the world position into the [0.0f, 1.0f] range.
+			world_position._X += 0.5f;
+			world_position._Y += 0.5f;
+
+			//This is now the cursor position!
+			output._Position = Vector2<float32>(world_position._X, world_position._Y);
+
+			//Determine if the cursor is pressed.
+			switch (InputSystem::Instance->GetLastUpdatedInputDeviceType())
+			{
+				case InputDeviceType::KEYBOARD:
+				case InputDeviceType::MOUSE:
+				{
+					output._Pressed = InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED;
+
+					break;
+				}
+
+				case InputDeviceType::TOUCH:
+				{
+					output._Pressed = InputSystem::Instance->GetTouchState()->_ButtonState == ButtonState::PRESSED;
+
+					break;
+				}
+			}
+		}
 	}
 
 	else

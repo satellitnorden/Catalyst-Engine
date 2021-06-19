@@ -165,7 +165,7 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			UserInterfaceUniformData uniform_data;
 
 			uniform_data._ToWorldMatrix = Matrix4x4(component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()), component->_Rotation, VectorConstants::ONE);
-			uniform_data._Normal = -CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(component->_Rotation);
+			uniform_data._Normal = CatalystCoordinateSpacesUtilities::RotatedWorldBackwardVector(component->_Rotation);
 			uniform_data._Scale = component->_Scale;
 			uniform_data._Roughness = component->_Roughness;
 			uniform_data._Metallic = component->_Metallic;

@@ -36,6 +36,7 @@
 
 //Third party.
 #include <ThirdParty/imgui.h>
+#include <ThirdParty/imgui_internal.h>
 
 /*
 *	Initializes the editor selection system.
@@ -798,7 +799,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				//Add the position editor.
 				Vector3<float32> position{ world_transform.GetAbsolutePosition() };
 
-				if (ImGui::DragFloat3("Position", &position[0], 0.01f))
+				if (AddPositionEditor(&position))
 				{
 					world_transform.SetAbsolutePosition(position);
 				}
@@ -1184,5 +1185,81 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 			break;
 		}
 	}
+}
+
+/*
+*	Adds a position editor.
+*/
+NO_DISCARD bool EditorSelectionSystem::AddPositionEditor(Vector3<float32> *const RESTRICT value) NOEXCEPT
+{
+#if 1
+	return ImGui::DragFloat3("Position", value->Data(), 0.01f, 0.0f, 0.0f, "%.2f");
+#else
+	bool changed{ false };
+
+	ImGui::Columns(2);
+	ImGui::SetColumnWidth(0, 1.0f);
+	ImGui::Text("Position");
+	ImGui::NextColumn();
+
+	ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0.0f, 0.0f });
+
+	const float32 line_height{ ImGui::GetCurrentContext()->Font->FontSize + ImGui::GetCurrentContext()->Style.FramePadding.y * 2.0f };
+	const ImVec2 button_size{ line_height + 3.0f, line_height };
+
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.75f, 0.0f, 0.0f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 1.0f, 0.0f, 0.0f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.75f, 0.0f, 0.0f, 1.0f });
+	if (ImGui::Button("X", button_size))
+	{
+		value->_X = 0.0f;
+
+		changed = true;
+	}
+	ImGui::PopStyleColor(3);
+
+	ImGui::SameLine();
+	changed |= ImGui::DragFloat("##X", &value->_X, 0.01f);
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.0f, 0.75f, 0.0f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.0f, 0.75f, 0.0f, 1.0f });
+	if (ImGui::Button("Y", button_size))
+	{
+		value->_Y = 0.0f;
+
+		changed = true;
+	}
+	ImGui::PopStyleColor(3);
+
+	ImGui::SameLine();
+	changed |= ImGui::DragFloat("##Y", &value->_Y, 0.01f);
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.0f, 0.0f, 0.75f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.0f, 0.0f, 1.0f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.0f, 0.0f, 0.75f, 1.0f });
+	if (ImGui::Button("Z", button_size))
+	{
+		value->_Z = 0.0f;
+
+		changed = true;
+	}
+	ImGui::PopStyleColor(3);
+
+	ImGui::SameLine();
+	changed |= ImGui::DragFloat("##Z", &value->_Z, 0.01f);
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+
+	ImGui::PopStyleVar();
+	ImGui::Columns(1);
+
+	return changed;
+#endif
 }
 #endif

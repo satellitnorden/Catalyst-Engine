@@ -3,6 +3,10 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/DynamicString.h>
+
+//World.
+#include <World/Level/LevelEntry.h>
 
 class EditorLevelSystem final
 {
@@ -15,6 +19,11 @@ public:
 	void Update() NOEXCEPT;
 
 	/*
+	*	Starts the game.
+	*/
+	void StartGame() NOEXCEPT;
+
+	/*
 	*	Ends the game.
 	*/
 	void EndGame() NOEXCEPT;
@@ -23,6 +32,12 @@ private:
 
 	//Denotes if the user is currently opening a level.
 	bool _IsCurrentlyOpeningLevel{ false };
+
+	//The current level name.
+	DynamicString _CurrentLevelName;
+
+	//The current level entries.
+	DynamicArray<LevelEntry> _CurrentLevelEntries;
 
 	/*
 	*	Called then the "New Level" button is pressed.
@@ -48,6 +63,11 @@ private:
 	*	Adds the current level window.
 	*/
 	void AddCurrentLevelWindow() NOEXCEPT;
+
+	/*
+	*	Gathers the level entries.
+	*/
+	void GatherLevelEntries(DynamicArray<LevelEntry> *const RESTRICT output) const NOEXCEPT;
 
 };
 
