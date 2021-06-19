@@ -9,8 +9,9 @@
 
 //User interface.
 #include <UserInterface/TextUserInterfacePrimitive.h>
+#include <UserInterface/UserInterfaceElement.h>
 
-class UserInterfaceText final
+class UserInterfaceText final : public UserInterfaceElement
 {
 
 public:
@@ -46,7 +47,7 @@ public:
 	/*
 	*	Returns the user interface primitives.
 	*/
-	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT;
+	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
 
 private:
 

@@ -149,34 +149,10 @@ void UserInterfaceScene::RetrieveUserInterfacePrimitives(DynamicArray<const User
 	//First of all, clear.
 	output->Clear();
 
-	//Retrieve all button primitives.
-	for (UserInterfaceButton *const RESTRICT button : _Buttons)
+	//Retrieve all the primitives from the elements.
+	for (UserInterfaceElement *const RESTRICT element : _Elements)
 	{
-		button->RetrieveUserInterfacePrimitives(output);
-	}
-
-	//Retrieve all checkbox primitives.
-	for (UserInterfaceCheckbox *const RESTRICT checkbox : _Checkboxes)
-	{
-		checkbox->RetrieveUserInterfacePrimitives(output);
-	}
-
-	//Retrieve all image primitives.
-	for (UserInterfaceImage *const RESTRICT image : _Images)
-	{
-		image->RetrieveUserInterfacePrimitives(output);
-	}
-
-	//Retrieve all progress bar primitives.
-	for (UserInterfaceProgressBar *const RESTRICT progress_bar : _ProgressBars)
-	{
-		progress_bar->RetrieveUserInterfacePrimitives(output);
-	}
-
-	//Retrieve all text primitives.
-	for (UserInterfaceText *const RESTRICT text : _Texts)
-	{
-		text->RetrieveUserInterfacePrimitives(output);
+		element->RetrieveUserInterfacePrimitives(output);
 	}
 }
 
@@ -237,6 +213,9 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButton(	co
 
 	//Add the button interface to the container.
 	_ButtonInterfaces.Emplace(new_button);
+
+	//Add the button to the elements container.
+	_Elements.Emplace(new_button);
 
 	//Return the button.
 	return new_button;
@@ -313,6 +292,9 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 	//Add the button interface to the container.
 	_ButtonInterfaces.Emplace(new_checkbox);
 
+	//Add the checkbox to the elements container.
+	_Elements.Emplace(new_checkbox);
+
 	//Return the checkbox.
 	return new_checkbox;
 }
@@ -354,6 +336,9 @@ RESTRICTED UserInterfaceImage* const RESTRICT UserInterfaceScene::AddImage(	cons
 
 	//Add the image to the container.
 	_Images.Emplace(new_image);
+
+	//Add the image to the elements container.
+	_Elements.Emplace(new_image);
 
 	//Return the image.
 	return new_image;
@@ -401,6 +386,9 @@ RESTRICTED UserInterfaceProgressBar* const RESTRICT UserInterfaceScene::AddProgr
 
 	//Add the progress bar to the container.
 	_ProgressBars.Emplace(new_progress_bar);
+
+	//Add the progress bar to the elements container.
+	_Elements.Emplace(new_progress_bar);
 
 	//Return the progress bar.
 	return new_progress_bar;
@@ -457,6 +445,9 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddText(	const 
 
 	//Add the text to the container.
 	_Texts.Emplace(new_text);
+
+	//Add the text to the elements container.
+	_Elements.Emplace(new_text);
 
 	//Return the text.
 	return new_text;

@@ -772,6 +772,9 @@ private:
 	//The text smoothing factor.
 	float32 _TextSmoothingFactor;
 
+	//Container for all the elements.
+	DynamicArray<UserInterfaceElement *const RESTRICT> _Elements;
+
 	//The buttons.
 	DynamicArray<UserInterfaceButton *const RESTRICT> _Buttons;
 

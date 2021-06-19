@@ -107,7 +107,7 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	SetCullMode(CullMode::None);
 	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
-	SetDepthWriteEnabled(true);
+	SetDepthWriteEnabled(false);
 	SetStencilTestEnabled(true);
 	SetStencilFailOperator(StencilOperator::Keep);
 	SetStencilPassOperator(StencilOperator::Replace);
