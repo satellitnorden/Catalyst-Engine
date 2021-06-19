@@ -258,7 +258,13 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 
 				level_entry._Type = LevelEntry::Type::USER_INTERFACE;
 				level_entry._UserInterfaceData._UserInterfaceSceneIdentifier = component->_UserInterfaceScene ? component->_UserInterfaceScene->GetIdentifier() : HashString ("");
-				level_entry._UserInterfaceData._WorldTransform = component->_WorldTransform;
+				level_entry._UserInterfaceData._WorldPosition = component->_WorldPosition;
+				level_entry._UserInterfaceData._Rotation = component->_Rotation;
+				level_entry._UserInterfaceData._Scale = component->_Scale;
+				level_entry._UserInterfaceData._Roughness = component->_Roughness;
+				level_entry._UserInterfaceData._Metallic = component->_Metallic;
+				level_entry._UserInterfaceData._AmbientOcclusion = component->_AmbientOcclusion;
+				level_entry._UserInterfaceData._EmissiveMultiplier = component->_EmissiveMultiplier;
 
 				parameters._LevelEntries.Emplace(level_entry);
 			}

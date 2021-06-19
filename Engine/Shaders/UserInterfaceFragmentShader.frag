@@ -5,20 +5,23 @@
 #define USER_INTERFACE_PRIMITIVE_TYPE_IMAGE (0)
 #define USER_INTERFACE_PRIMITIVE_TYPE_TEXT (1)
 
+#if defined(THREE_DIMENSIONAL_USER_INTERFACE)
+//User interface uniform data.
+layout (std140, set = 1, binding = 0) uniform UserInterfaceUniformData
+{
+	layout (offset = 0) mat4 TO_WORLD_MATRIX;
+	layout (offset = 64) vec3 NORMAL;
+	layout (offset = 80) vec2 SCALE;
+	layout (offset = 88) float ROUGHNESS;
+	layout (offset = 92) float METALLIC;
+	layout (offset = 96) float AMBIENT_OCCLUSION;
+	layout (offset = 100) float EMISSIVE_MULTIPLIER;
+};
+#endif
+
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-#if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-	layout (offset = 0) mat4 TO_WORLD_MATRIX;
-	layout (offset = 64) UserInterfaceMaterial MATERIAL;
-    layout (offset = 80) vec4 COLOR;
-    layout (offset = 96) vec2 MINIMUM;
-    layout (offset = 104) vec2 MAXIMUM;
-    layout (offset = 112) uint TYPE;
-    layout (offset = 116) float WIDTH_RANGE_START;
-    layout (offset = 120) float WIDTH_RANGE_END;
-    layout (offset = 124) float PRIMITIVE_ASPECT_RATIO;
-#else
     layout (offset = 0) UserInterfaceMaterial MATERIAL;
     layout (offset = 16) vec4 COLOR;
     layout (offset = 32) vec2 MINIMUM;
@@ -28,7 +31,6 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 56) float WIDTH_RANGE_END;
     layout (offset = 60) float PRIMITIVE_ASPECT_RATIO;
     layout (offset = 64) float TEXT_SMOOTHING_FACTOR;
-#endif
 };
 
 //In parameters.
@@ -56,11 +58,14 @@ void CatalystShaderMain()
 		{
 			//Write the fragment(s).
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-			scene_features_1 = vec4(vec3(EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO) * COLOR), 1.0f);
-			scene_features_2 = vec4(-PERCEIVER_FORWARD_VECTOR, gl_FragCoord.z);
-			scene_features_3 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
+			vec4 evaluated_material = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO);
+			evaluated_material.rgb = evaluated_material.rgb * evaluated_material.a * COLOR.rgb * COLOR.a;
+
+			scene_features_1 = vec4(evaluated_material.rgb, 1.0f);
+			scene_features_2 = vec4(NORMAL, gl_FragCoord.z);
+			scene_features_3 = vec4(ROUGHNESS, METALLIC, AMBIENT_OCCLUSION, 1.0f);
 			scene_features_4 = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-			scene = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+			scene = vec4(evaluated_material.rgb * EMISSIVE_MULTIPLIER, 1.0f);
 #else
 			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO) * COLOR;
 #endif
@@ -74,26 +79,22 @@ void CatalystShaderMain()
 			float distance = texture(sampler2D(GLOBAL_TEXTURES[MATERIAL._PrimaryColorTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), texture_coordinate).r;
 
 			//Calculate the opacity.
-#if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-			float opacity = float(distance >= 0.5f) * COLOR.a;
-#else
 			float opacity = smoothstep(TEXT_SMOOTHING_FACTOR, 0.5f, distance) * COLOR.a;
-#endif
 
 			//Write the fragment(s).
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-			if (opacity == 0.0f)
+			if (opacity < 0.5f)
 			{
 				discard;
 			}
 			
 			else
 			{
-				scene_features_1 = vec4(COLOR.rgb, 1.0f);
-				scene_features_2 = vec4(-PERCEIVER_FORWARD_VECTOR, gl_FragCoord.z);
-				scene_features_3 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
+				scene_features_1 = vec4(COLOR.rgb * COLOR.a, 1.0f);
+				scene_features_2 = vec4(NORMAL, gl_FragCoord.z);
+				scene_features_3 = vec4(ROUGHNESS, METALLIC, AMBIENT_OCCLUSION, 1.0f);
 				scene_features_4 = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-				scene = vec4(COLOR.rgb, 1.0f);
+				scene = vec4(COLOR.rgb * COLOR.a * EMISSIVE_MULTIPLIER, 1.0f);
 			}
 #else
 			fragment = vec4(COLOR.rgb, opacity);
@@ -106,13 +107,16 @@ void CatalystShaderMain()
 		{
 			//Write the fragment(s).
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-			scene_features_1 = vec4(vec3(1.0f, 0.0f, 0.25f), 1.0f);
-			scene_features_2 = vec4(vec3(0.0f, 1.0f, 0.0f), gl_FragCoord.z);
-			scene_features_3 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
+			vec4 evaluated_material = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO);
+			evaluated_material.rgb = evaluated_material.rgb * evaluated_material.a * COLOR.rgb * COLOR.a;
+
+			scene_features_1 = vec4(evaluated_material.rgb, 1.0f);
+			scene_features_2 = vec4(NORMAL, gl_FragCoord.z);
+			scene_features_3 = vec4(ROUGHNESS, METALLIC, AMBIENT_OCCLUSION, 1.0f);
 			scene_features_4 = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-			scene = vec4(vec3(1.0f, 0.0f, 0.25f) * 1024.0f, 1.0f);
+			scene = vec4(evaluated_material.rgb * EMISSIVE_MULTIPLIER, 1.0f);
 #else
-			fragment = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO) * COLOR;
 #endif
 
 			break;

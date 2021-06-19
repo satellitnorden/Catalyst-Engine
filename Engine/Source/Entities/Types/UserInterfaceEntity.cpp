@@ -7,8 +7,12 @@
 //Entities.
 #include <Entities/Creation/UserInterfaceInitializationData.h>
 
+//Rendering.
+#include <Rendering/Native/UserInterfaceUniformData.h>
+
 //Systems.
 #include <Systems/EntitySystem.h>
+#include <Systems/RenderingSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
 /*
@@ -33,7 +37,13 @@ void UserInterfaceEntity::Initialize(EntityInitializationData *const RESTRICT da
 	UserInterfaceComponent& component{ ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex] };
 
 	component._UserInterfaceScene = UserInterfaceSystem::Instance->CreateUserInterfaceScene(user_interface_initialization_data->_UserInterfaceSceneIdentifier);
-	component._WorldTransform = user_interface_initialization_data->_InitialWorldTransform;
+	component._WorldPosition = user_interface_initialization_data->_InitialWorldPosition;
+	component._Rotation = user_interface_initialization_data->_InitialRotation;
+	component._Scale = user_interface_initialization_data->_InitialScale;
+	component._Roughness = user_interface_initialization_data->_InitialRoughness;
+	component._Metallic = user_interface_initialization_data->_InitialMetallic;
+	component._AmbientOcclusion = user_interface_initialization_data->_InitialAmbientOcclusion;
+	component._EmissiveMultiplier = user_interface_initialization_data->_InitialEmissiveMultiplier;
 
 	if (component._UserInterfaceScene)
 	{
@@ -42,6 +52,23 @@ void UserInterfaceEntity::Initialize(EntityInitializationData *const RESTRICT da
 
 		//Activate the user interface scene.
 		UserInterfaceSystem::Instance->ActivateScene(component._UserInterfaceScene);
+	}
+
+	//Create the uniform buffers.
+	component._UniformBuffers.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (BufferHandle &uniform_buffer : component._UniformBuffers)
+	{
+		RenderingSystem::Instance->CreateBuffer(sizeof(UserInterfaceUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &uniform_buffer);
+	}
+
+	//Create the render data tables.
+	component._RenderDataTables.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (uint64 i{ 0 }, size{ component._RenderDataTables.Size() }; i < size; ++i)
+	{
+		RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::USER_INTERFACE), &component._RenderDataTables[i]);
+		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &component._RenderDataTables[i], component._UniformBuffers[i]);
 	}
 
 	//Destroy the initialization data.
@@ -62,6 +89,18 @@ void UserInterfaceEntity::Terminate() NOEXCEPT
 		UserInterfaceSystem::Instance->DeactivateScene(component._UserInterfaceScene);
 	}
 
+	//Destroy the render data tables.
+	for (RenderDataTableHandle &render_data_table : component._RenderDataTables)
+	{
+		RenderingSystem::Instance->DestroyRenderDataTable(&render_data_table);
+	}
+
+	//Destroy the uniform buffers.
+	for (BufferHandle &uniform_buffer : component._UniformBuffers)
+	{
+		RenderingSystem::Instance->DestroyBuffer(&uniform_buffer);
+	}
+
 	//Return this entitiy's components index.
 	ComponentManager::ReturnUserInterfaceComponentsIndex(_ComponentsIndex);
 }
@@ -79,7 +118,13 @@ RESTRICTED NO_DISCARD EntityInitializationData *const RESTRICT UserInterfaceEnti
 
 	//Set up the initialization data.
 	data->_UserInterfaceSceneIdentifier = component._UserInterfaceScene->GetIdentifier();
-	data->_InitialWorldTransform = component._WorldTransform;
+	data->_InitialWorldPosition = component._WorldPosition;
+	data->_InitialRotation = component._Rotation;
+	data->_InitialScale = component._Scale;
+	data->_InitialRoughness = component._Roughness;
+	data->_InitialMetallic = component._Metallic;
+	data->_InitialAmbientOcclusion = component._AmbientOcclusion;
+	data->_InitialEmissiveMultiplier = component._EmissiveMultiplier;
 
 	//Return the initialization data.
 	return data;
@@ -115,17 +160,113 @@ void UserInterfaceEntity::SetUserInterfaceScene(UserInterfaceScene *const RESTRI
 }
 
 /*
-*	Returns the world transform.
+*	Returns the world position.
 */
-NO_DISCARD const WorldTransform &UserInterfaceEntity::GetWorldTransform() const NOEXCEPT
+NO_DISCARD const WorldPosition &UserInterfaceEntity::GetWorldPosition() const NOEXCEPT
 {
-	return ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._WorldTransform;
+	return ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._WorldPosition;
 }
 
 /*
-*	Sets the world transform.
+*	Sets the world position.
 */
-void UserInterfaceEntity::SetWorldTransform(const WorldTransform &value) NOEXCEPT
+void UserInterfaceEntity::SetWorldPosition(const WorldPosition &value) NOEXCEPT
 {
-	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._WorldTransform = value;
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._WorldPosition = value;
+}
+
+/*
+*	Returns the rotation.
+*/
+NO_DISCARD const EulerAngles &UserInterfaceEntity::GetRotation() const NOEXCEPT
+{
+	return ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._Rotation;
+}
+
+/*
+*	Sets the rotation.
+*/
+void UserInterfaceEntity::SetRotation(const EulerAngles &value) NOEXCEPT
+{
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._Rotation = value;
+}
+
+/*
+*	Returns the scale.
+*/
+NO_DISCARD const Vector2<float32> &UserInterfaceEntity::GetScale() const NOEXCEPT
+{
+	return ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._Scale;
+}
+
+/*
+*	Sets the scale.
+*/
+void UserInterfaceEntity::SetScale(const Vector2<float32> &value) NOEXCEPT
+{
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._Scale = value;
+}
+
+/*
+*	Returns the roughness.
+*/
+NO_DISCARD float32 UserInterfaceEntity::GetRoughness() const NOEXCEPT
+{
+	return ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._Roughness;
+}
+
+/*
+*	Sets the roughness.
+*/
+void UserInterfaceEntity::SetRoughness(const float32 value) NOEXCEPT
+{
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._Roughness = value;
+}
+
+/*
+*	Returns the metallic.
+*/
+NO_DISCARD float32 UserInterfaceEntity::GetMetallic() const NOEXCEPT
+{
+	return ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._Metallic;
+}
+
+/*
+*	Sets the metallic.
+*/
+void UserInterfaceEntity::SetMetallic(const float32 value) NOEXCEPT
+{
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._Metallic = value;
+}
+
+/*
+*	Returns the ambient occlusion.
+*/
+NO_DISCARD float32 UserInterfaceEntity::GetAmbientOcclusion() const NOEXCEPT
+{
+	return ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._AmbientOcclusion;
+}
+
+/*
+*	Sets the ambient occlusion.
+*/
+void UserInterfaceEntity::SetAmbientOcclusion(const float32 value) NOEXCEPT
+{
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._AmbientOcclusion = value;
+}
+
+/*
+*	Returns the emissive multiplier.
+*/
+NO_DISCARD float32 UserInterfaceEntity::GetEmissiveMultiplier() const NOEXCEPT
+{
+	return ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._EmissiveMultiplier;
+}
+
+/*
+*	Sets the emissive multiplier.
+*/
+void UserInterfaceEntity::SetEmissiveMultiplier(const float32 value) NOEXCEPT
+{
+	ComponentManager::GetUserInterfaceUserInterfaceComponents()[_ComponentsIndex]._EmissiveMultiplier = value;
 }

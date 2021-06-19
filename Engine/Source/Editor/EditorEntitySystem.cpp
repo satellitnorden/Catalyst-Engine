@@ -238,7 +238,13 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 
 			data->_Properties = EntityInitializationData::Property::NONE;
 			data->_UserInterfaceSceneIdentifier = HashString();
-			data->_InitialWorldTransform = WorldTransform(position, EulerAngles(), 1.0f);
+			data->_InitialWorldPosition = WorldPosition(position);
+			data->_InitialRotation = EulerAngles();
+			data->_InitialScale = Vector2<float32>(1.0f, 1.0f);
+			data->_InitialRoughness = 1.0f;
+			data->_InitialMetallic = 0.0f;
+			data->_InitialAmbientOcclusion = 1.0f;
+			data->_InitialEmissiveMultiplier = 1.0f;
 
 			EntitySystem::Instance->RequestInitialization(entity, data, false);
 

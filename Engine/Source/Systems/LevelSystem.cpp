@@ -127,7 +127,13 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 
 				data->_Properties = EntityInitializationData::Property::NONE;
 				data->_UserInterfaceSceneIdentifier = level_entry._UserInterfaceData._UserInterfaceSceneIdentifier;
-				data->_InitialWorldTransform = level_entry._UserInterfaceData._WorldTransform;
+				data->_InitialWorldPosition = level_entry._UserInterfaceData._WorldPosition;
+				data->_InitialRotation = level_entry._UserInterfaceData._Rotation;
+				data->_InitialScale = level_entry._UserInterfaceData._Scale;
+				data->_InitialRoughness = level_entry._UserInterfaceData._Roughness;
+				data->_InitialMetallic = level_entry._UserInterfaceData._Metallic;
+				data->_InitialAmbientOcclusion = level_entry._UserInterfaceData._AmbientOcclusion;
+				data->_InitialEmissiveMultiplier = level_entry._UserInterfaceData._EmissiveMultiplier;
 
 				EntitySystem::Instance->RequestInitialization(entity, data, false);
 

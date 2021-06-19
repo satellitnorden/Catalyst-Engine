@@ -40,6 +40,8 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	//Fill in ImGui's IO struct.
 	ImGuiIO& io{ ImGui::GetIO() };
 
+	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 	io.FontDefault = io.Fonts->AddFontFromFileTTF("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Fonts\\OpenSans-Regular.ttf", 18.0f);
 
 	//Set up the style.

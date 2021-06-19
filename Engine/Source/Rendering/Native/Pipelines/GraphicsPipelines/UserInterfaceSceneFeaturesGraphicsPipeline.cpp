@@ -4,9 +4,13 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Math.
+#include <Math/Core/CatalystCoordinateSpaces.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 #include <Rendering/Native/UserInterfaceMaterial.h>
+#include <Rendering/Native/UserInterfaceUniformData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -25,9 +29,6 @@ class UserInterfaceSceneFeaturesPushConstantData final
 {
 
 public:
-
-	//The to world matrix.
-	Matrix4x4 _ToWorldMatrix;
 
 	//The material.
 	UserInterfaceMaterial _Material;
@@ -52,6 +53,9 @@ public:
 
 	//The primitive aspect ratio.
 	float32 _PrimitiveAspectRatio;
+
+	//The text smoothing factor.
+	float32 _TextSmoothingFactor;
 
 };
 
@@ -79,8 +83,9 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::USER_INTERFACE));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -121,7 +126,7 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Cache relevant data.
 	const uint64 number_of_components{ ComponentManager::GetNumberOfUserInterfaceComponents() };
-	const UserInterfaceComponent *RESTRICT component{ ComponentManager::GetUserInterfaceUserInterfaceComponents() };
+	UserInterfaceComponent *RESTRICT component{ ComponentManager::GetUserInterfaceUserInterfaceComponents() };
 
 	//If there's none to render, then... Don't.
 	if (number_of_components == 0)
@@ -153,8 +158,30 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			continue;
 		}
 
-		//Cache the to world matrix for this component.
-		const Matrix4x4 to_world_matrix{ component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()) };
+		//Update the current uniform buffer.
+		{
+			BufferHandle &current_uniform_buffer{ component->_UniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+
+			UserInterfaceUniformData uniform_data;
+
+			uniform_data._ToWorldMatrix = Matrix4x4(component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()), component->_Rotation, VectorConstants::ONE);
+			uniform_data._Normal = -CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(component->_Rotation);
+			uniform_data._Scale = component->_Scale;
+			uniform_data._Roughness = component->_Roughness;
+			uniform_data._Metallic = component->_Metallic;
+			uniform_data._AmbientOcclusion = component->_AmbientOcclusion;
+			uniform_data._EmissiveMultiplier = component->_EmissiveMultiplier;
+
+			{
+				const void *const RESTRICT data_chunks[]{ &uniform_data };
+				const uint64 data_sizes[]{ sizeof(UserInterfaceUniformData) };
+
+				RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_uniform_buffer);
+			}
+		}
+
+		//Bind the render data table.
+		command_buffer->BindRenderDataTable(this, 1, component->_RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);
 
 		//Retrieve the primitives for the given scene.
 		DynamicArray<const UserInterfacePrimitive *RESTRICT> primitives;
@@ -180,7 +207,6 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 					//Push constants.
 					UserInterfaceSceneFeaturesPushConstantData data;
 
-					data._ToWorldMatrix = to_world_matrix;
 					data._Material = type_primitive->_Material;
 					data._Color = Vector4<float32>(1.0f, 1.0f, 1.0f, primitive->_Opacity);
 					data._Minimum = type_primitive->_Minimum;
@@ -189,6 +215,7 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 					data._WidthRangeStart = 0.0f;
 					data._WidthRangeEnd = 1.0f;
 					data._PrimitiveAspectRatio = (type_primitive->_Maximum._X - type_primitive->_Minimum._X) / (type_primitive->_Maximum._Y - type_primitive->_Minimum._Y);
+					data._TextSmoothingFactor = 0.0f;
 
 					command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfaceSceneFeaturesPushConstantData), &data);
 
@@ -231,7 +258,6 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 							//Push constants.
 							UserInterfaceSceneFeaturesPushConstantData data;
 
-							data._ToWorldMatrix = to_world_matrix;
 							data._Material.SetPrimaryTextureIndex(type_primitive->_FontResource->_MasterTextureIndex);
 							data._Color = Vector4<float32>(1.0f, 1.0f, 1.0f, type_primitive->_Opacity);
 							data._Minimum._X = aligned_minimum._X + current_offset_X + type_primitive->_FontResource->_CharacterDescriptions[character]._Bearing._X * type_primitive->_Scale;
@@ -242,6 +268,7 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 							data._WidthRangeStart = type_primitive->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetStart;
 							data._WidthRangeEnd = type_primitive->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetEnd;
 							data._PrimitiveAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
+							data._TextSmoothingFactor = type_primitive->_TextSmoothingFactor;
 
 							command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfaceSceneFeaturesPushConstantData), &data);
 

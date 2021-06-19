@@ -879,43 +879,85 @@ void EditorSelectionSystem::Update() NOEXCEPT
 					ImGui::End();
 				}
 
-				//Cache the world transform.
-				WorldTransform world_transform{ user_interface_entity->GetWorldTransform() };
-
 				//Add the position editor.
-				Vector3<float32> position{ world_transform.GetAbsolutePosition() };
-
-				if (ImGui::DragFloat3("Position", &position[0], 0.01f))
 				{
-					world_transform.SetAbsolutePosition(position);
+					WorldPosition world_position{ user_interface_entity->GetWorldPosition() };
+					Vector3<float32> absolute_world_position{ world_position.GetAbsolutePosition() };
+
+					if (ImGui::DragFloat3("Position", absolute_world_position.Data(), 0.01f))
+					{
+						world_position.SetAbsolutePosition(absolute_world_position);
+						user_interface_entity->SetWorldPosition(world_position);
+					}
 				}
 
 				//Add the rotation editor.
-				EulerAngles rotation{ world_transform.GetRotation() };
-
-				rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
-				rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
-				rotation._Pitch = CatalystBaseMath::RadiansToDegrees(rotation._Pitch);
-
-				if (ImGui::DragFloat3("Rotation", rotation.Data(), 0.1f))
 				{
-					rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation._Roll);
-					rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation._Yaw);
-					rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation._Pitch);
+					EulerAngles rotation{ user_interface_entity->GetRotation() };
 
-					world_transform.SetRotation(rotation);
+					rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
+					rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
+					rotation._Pitch = CatalystBaseMath::RadiansToDegrees(rotation._Pitch);
+
+					if (ImGui::DragFloat3("Rotation", rotation.Data(), 0.1f))
+					{
+						rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation._Roll);
+						rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation._Yaw);
+						rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation._Pitch);
+
+						user_interface_entity->SetRotation(rotation);
+					}
 				}
 
 				//Add the scale editor.
-				float32 scale{ world_transform.GetScale() };
-
-				if (ImGui::DragFloat("Scale", &scale, 0.01f))
 				{
-					world_transform.SetScale(scale);
+					Vector2<float32> scale{ user_interface_entity->GetScale() };
+
+					if (ImGui::DragFloat2("Scale", scale.Data(), 0.01f))
+					{
+						user_interface_entity->SetScale(scale);
+					}
 				}
 
-				//Set the world transform.
-				user_interface_entity->SetWorldTransform(world_transform);
+				//Add the roughness editor.
+				{
+					float32 roughness{ user_interface_entity->GetRoughness() };
+
+					if (ImGui::DragFloat("Roughness", &roughness, 0.01f))
+					{
+						user_interface_entity->SetRoughness(roughness);
+					}
+				}
+
+				//Add the metallic editor.
+				{
+					float32 metallic{ user_interface_entity->GetMetallic() };
+
+					if (ImGui::DragFloat("Metallic", &metallic, 0.01f))
+					{
+						user_interface_entity->SetMetallic(metallic);
+					}
+				}
+
+				//Add the ambient occlusion editor.
+				{
+					float32 ambient_occlusion{ user_interface_entity->GetAmbientOcclusion() };
+
+					if (ImGui::DragFloat("Ambient Occlusion", &ambient_occlusion, 0.01f))
+					{
+						user_interface_entity->SetAmbientOcclusion(ambient_occlusion);
+					}
+				}
+
+				//Add the emissive multiplier editor.
+				{
+					float32 emissive_multiplier{ user_interface_entity->GetEmissiveMultiplier() };
+
+					if (ImGui::DragFloat("Emissive Multiplier", &emissive_multiplier, 0.01f))
+					{
+						user_interface_entity->SetEmissiveMultiplier(emissive_multiplier);
+					}
+				}
 
 				break;
 			}
@@ -1008,7 +1050,9 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 
 		case EntityType::UserInterface:
 		{
-			world_transform = static_cast<UserInterfaceEntity *const RESTRICT>(_CurrentlySelectedEntity)->GetWorldTransform();
+			const UserInterfaceEntity *const RESTRICT user_interface_entity{ static_cast<const UserInterfaceEntity *const RESTRICT>(_CurrentlySelectedEntity) };
+
+			world_transform = WorldTransform(user_interface_entity->GetWorldPosition(), user_interface_entity->GetRotation(), 1.0f);
 
 			break;
 		}
@@ -1124,8 +1168,11 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 		}
 
 		case EntityType::UserInterface:
-		{
-			static_cast<UserInterfaceEntity *const RESTRICT>(_CurrentlySelectedEntity)->SetWorldTransform(world_transform);
+		{			
+			UserInterfaceEntity *const RESTRICT user_interface_entity{ static_cast<UserInterfaceEntity *const RESTRICT>(_CurrentlySelectedEntity) };
+
+			user_interface_entity->SetWorldPosition(world_transform.GetWorldPosition());
+			user_interface_entity->SetRotation(world_transform.GetRotation());
 
 			break;
 		}

@@ -1,20 +1,23 @@
 //Includes.
 #include "CatalystUserInterfaceCore.glsl"
 
+#if defined(THREE_DIMENSIONAL_USER_INTERFACE)
+//User interface uniform data.
+layout (std140, set = 1, binding = 0) uniform UserInterfaceUniformData
+{
+	layout (offset = 0) mat4 TO_WORLD_MATRIX;
+	layout (offset = 64) vec3 NORMAL;
+	layout (offset = 80) vec2 SCALE;
+	layout (offset = 88) float ROUGHNESS;
+	layout (offset = 92) float METALLIC;
+	layout (offset = 96) float AMBIENT_OCCLUSION;
+	layout (offset = 100) float EMISSIVE_MULTIPLIER;
+};
+#endif
+
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-#if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-	layout (offset = 0) mat4 TO_WORLD_MATRIX;
-	layout (offset = 64) UserInterfaceMaterial MATERIAL;
-    layout (offset = 80) vec4 COLOR;
-    layout (offset = 96) vec2 MINIMUM;
-    layout (offset = 104) vec2 MAXIMUM;
-    layout (offset = 112) uint TYPE;
-    layout (offset = 116) float WIDTH_RANGE_START;
-    layout (offset = 120) float WIDTH_RANGE_END;
-    layout (offset = 124) float PRIMITIVE_ASPECT_RATIO;
-#else
     layout (offset = 0) UserInterfaceMaterial MATERIAL;
     layout (offset = 16) vec4 COLOR;
     layout (offset = 32) vec2 MINIMUM;
@@ -24,7 +27,6 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 56) float WIDTH_RANGE_END;
     layout (offset = 60) float PRIMITIVE_ASPECT_RATIO;
     layout (offset = 64) float TEXT_SMOOTHING_FACTOR;
-#endif
 };
 
 //Out parameters.
@@ -40,17 +42,20 @@ void CatalystShaderMain()
     fragment_texture_coordinate.x = x;
     fragment_texture_coordinate.y = 1.0f - y;
     
-    //Calculate the viewport coordinates.
+    
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-    vec2 viewport_coordinates = vec2(mix(MINIMUM.x, MAXIMUM.x, x), mix(MINIMUM.y, MAXIMUM.y, y));
-#else
-    vec2 viewport_coordinates = vec2(mix(MINIMUM.x, MAXIMUM.x, x), 1.0f - mix(MINIMUM.y, MAXIMUM.y, y));
-#endif
+    //Calculate the world coordinates.
+    vec2 world_coordinates = vec2(mix(MINIMUM.x, MAXIMUM.x, x), mix(MINIMUM.y, MAXIMUM.y, y));
+    world_coordinates -= 0.5f;
+    world_coordinates *= SCALE;
 
     //Write the position.
-#if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-    gl_Position = WORLD_TO_CLIP_MATRIX * TO_WORLD_MATRIX * vec4(viewport_coordinates.x * 2.0f - 1.0f, viewport_coordinates.y * 2.0f - 1.0f, 0.0f, 1.0f);
+    gl_Position = WORLD_TO_CLIP_MATRIX * TO_WORLD_MATRIX * vec4(world_coordinates, 0.0f, 1.0f);
 #else
+    //Calculate the viewport coordinates.
+    vec2 viewport_coordinates = vec2(mix(MINIMUM.x, MAXIMUM.x, x), 1.0f - mix(MINIMUM.y, MAXIMUM.y, y));
+
+    //Write the position.
     gl_Position = USER_INTERFACE_MATRIX * vec4(viewport_coordinates.x * 2.0f - 1.0f, viewport_coordinates.y * 2.0f - 1.0f, 0.0f, 1.0f);
 #endif
 } 

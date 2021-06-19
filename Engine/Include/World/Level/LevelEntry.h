@@ -154,8 +154,26 @@ public:
 		//The user interface scene identifier.
 		HashString _UserInterfaceSceneIdentifier;
 
-		//The world transform.
-		WorldTransform _WorldTransform;
+		//The world position.
+		WorldPosition _WorldPosition;
+
+		//The rotation.
+		EulerAngles _Rotation;
+
+		//The scale.
+		Vector2<float32> _Scale;
+
+		//The roughness.
+		float32 _Roughness;
+
+		//The metallic.
+		float32 _Metallic;
+
+		//The ambient occlusion.
+		float32 _AmbientOcclusion;
+
+		//The emissive multiplier.
+		float32 _EmissiveMultiplier;
 	};
 
 	//The type.
