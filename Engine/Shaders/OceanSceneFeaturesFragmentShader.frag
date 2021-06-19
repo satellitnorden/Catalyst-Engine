@@ -46,17 +46,6 @@ vec3 CalculateNormal(vec3 point)
 }
 
 /*
-* Returns the screen coordinate with the given view matrix and world position.
-*/
-vec2 CalculateScreenCoordinate(mat4 givenWORLD_TO_CLIP_MATRIX, vec3 worldPosition)
-{
-  vec4 viewSpacePosition = givenWORLD_TO_CLIP_MATRIX * vec4(worldPosition, 1.0f);
-  viewSpacePosition.xy /= viewSpacePosition.w;
-
-  return viewSpacePosition.xy * 0.5f + 0.5f;
-}
-
-/*
 *	Calculates the foam.
 */
 float CalculateFoam(vec3 point)

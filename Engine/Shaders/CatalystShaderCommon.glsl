@@ -223,6 +223,17 @@ vec3 SampleSky(vec3 direction, float mip_level)
 }
 
 /*
+*   Returns the screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateScreenCoordinate(mat4 matrix, vec3 world_position)
+{
+  vec4 view_space_position = matrix * vec4(world_position, 1.0f);
+  view_space_position.xy /= view_space_position.w;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
 *   Calculates volumetric ambient lighting.
 */
 vec3 CalculateVolumetricAmbientLighting()

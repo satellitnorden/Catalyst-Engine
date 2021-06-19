@@ -34,17 +34,6 @@ layout (location = 1) out vec4 scene_features_2;
 layout (location = 2) out vec4 scene_features_3;
 layout (location = 3) out vec4 scene_features_4;
 
-/*
-* Returns the screen coordinate with the given view matrix and world position.
-*/
-vec2 CalculateScreenCoordinate(mat4 givenWORLD_TO_CLIP_MATRIX, vec3 worldPosition)
-{
-  vec4 viewSpacePosition = givenWORLD_TO_CLIP_MATRIX * vec4(worldPosition, 1.0f);
-  viewSpacePosition.xy /= viewSpacePosition.w;
-
-  return viewSpacePosition.xy * 0.5f + 0.5f;
-}
-
 void CatalystShaderMain()
 {
 	//Retrieve the normal.

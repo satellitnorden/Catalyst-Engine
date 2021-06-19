@@ -34,7 +34,12 @@ layout (push_constant) uniform PushConstantData
 };
 
 //In parameters.
+#if defined(THREE_DIMENSIONAL_USER_INTERFACE)
+layout (location = 0) in vec3 fragment_world_position;
+layout (location = 1) in vec2 fragment_texture_coordinate;
+#else
 layout (location = 0) in vec2 fragment_texture_coordinate;
+#endif
 
 //Out parameters.
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)
@@ -52,6 +57,9 @@ void CatalystShaderMain()
 	//Calculate the texture coordinate.
 	vec2 texture_coordinate = vec2(mix(WIDTH_RANGE_START, WIDTH_RANGE_END, fragment_texture_coordinate.x), fragment_texture_coordinate.y);
 
+	//Sample the blue noise texture.
+	vec4 blue_noise_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+
 	switch (TYPE)
 	{
 		case USER_INTERFACE_PRIMITIVE_TYPE_IMAGE:
@@ -64,7 +72,7 @@ void CatalystShaderMain()
 			scene_features_1 = vec4(evaluated_material.rgb, 1.0f);
 			scene_features_2 = vec4(NORMAL, gl_FragCoord.z);
 			scene_features_3 = vec4(ROUGHNESS, METALLIC, AMBIENT_OCCLUSION, 1.0f);
-			scene_features_4 = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+			scene_features_4 = vec4(CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position), 0.0f, 0.0f);
 			scene = vec4(evaluated_material.rgb * EMISSIVE_MULTIPLIER, 1.0f);
 #else
 			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO) * COLOR;
@@ -83,7 +91,7 @@ void CatalystShaderMain()
 
 			//Write the fragment(s).
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)
-			if (opacity < 0.5f)
+			if (opacity < blue_noise_sample[0])
 			{
 				discard;
 			}
@@ -93,7 +101,7 @@ void CatalystShaderMain()
 				scene_features_1 = vec4(COLOR.rgb * COLOR.a, 1.0f);
 				scene_features_2 = vec4(NORMAL, gl_FragCoord.z);
 				scene_features_3 = vec4(ROUGHNESS, METALLIC, AMBIENT_OCCLUSION, 1.0f);
-				scene_features_4 = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+				scene_features_4 = vec4(CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position), 0.0f, 0.0f);
 				scene = vec4(COLOR.rgb * COLOR.a * EMISSIVE_MULTIPLIER, 1.0f);
 			}
 #else
@@ -113,7 +121,7 @@ void CatalystShaderMain()
 			scene_features_1 = vec4(evaluated_material.rgb, 1.0f);
 			scene_features_2 = vec4(NORMAL, gl_FragCoord.z);
 			scene_features_3 = vec4(ROUGHNESS, METALLIC, AMBIENT_OCCLUSION, 1.0f);
-			scene_features_4 = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+			scene_features_4 = vec4(CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position), 0.0f, 0.0f);
 			scene = vec4(evaluated_material.rgb * EMISSIVE_MULTIPLIER, 1.0f);
 #else
 			fragment = EvaluateUserInterfaceMaterial(MATERIAL, texture_coordinate, PRIMITIVE_ASPECT_RATIO) * COLOR;

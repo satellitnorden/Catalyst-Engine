@@ -30,7 +30,12 @@ layout (push_constant) uniform PushConstantData
 };
 
 //Out parameters.
+#if defined(THREE_DIMENSIONAL_USER_INTERFACE)
+layout (location = 0) out vec3 fragment_world_position;
+layout (location = 1) out vec2 fragment_texture_coordinate;
+#else
 layout (location = 0) out vec2 fragment_texture_coordinate;
+#endif
 
 void CatalystShaderMain()
 {
@@ -49,8 +54,11 @@ void CatalystShaderMain()
     world_coordinates -= 0.5f;
     world_coordinates *= SCALE;
 
+    //Calculate the world position.
+    fragment_world_position = vec3(TO_WORLD_MATRIX * vec4(world_coordinates, 0.0f, 1.0f));
+
     //Write the position.
-    gl_Position = WORLD_TO_CLIP_MATRIX * TO_WORLD_MATRIX * vec4(world_coordinates, 0.0f, 1.0f);
+    gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position, 1.0f);
 #else
     //Calculate the viewport coordinates.
     vec2 viewport_coordinates = vec2(mix(MINIMUM.x, MAXIMUM.x, x), 1.0f - mix(MINIMUM.y, MAXIMUM.y, y));
