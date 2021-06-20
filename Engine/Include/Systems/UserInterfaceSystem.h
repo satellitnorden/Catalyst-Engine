@@ -134,13 +134,13 @@ private:
 	DynamicArray<UserInterfaceScene *RESTRICT> _ActiveUserInterfaceScenes;
 
 	//The activation queue.
-	AtomicQueue<UserInterfaceScene *RESTRICT, 4, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _ActivationQueue;
+	AtomicQueue<UserInterfaceScene *RESTRICT, 8, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _ActivationQueue;
 
 	//The deactivation queue.
-	AtomicQueue<UserInterfaceScene *RESTRICT, 4, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DeactivationQueue;
+	AtomicQueue<UserInterfaceScene *RESTRICT, 8, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DeactivationQueue;
 
 	//The destruction queue.
-	AtomicQueue<UserInterfaceScene *RESTRICT, 4, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DestructionQueue;
+	AtomicQueue<UserInterfaceScene *RESTRICT, 8, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DestructionQueue;
 
 	//Container for all user interface primitives.
 	DynamicArray<UserInterfacePrimitive *RESTRICT> _UserInterfacePrimitives;

@@ -51,7 +51,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 				data->_ModelCollisionConfiguration = level_entry._DynamicModelData._ModelCollisionConfiguration;
 				data->_ModelSimulationConfiguration = level_entry._DynamicModelData._ModelSimulationConfiguration;
 
-				EntitySystem::Instance->RequestInitialization(entity, data, false);
+				EntitySystem::Instance->RequestInitialization(entity, data, true);
 
 				break;
 			}
@@ -94,7 +94,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 				data->_Radius = level_entry._LightData._Radius;
 				data->_Size = level_entry._LightData._Size;
 
-				EntitySystem::Instance->RequestInitialization(entity, data, false);
+				EntitySystem::Instance->RequestInitialization(entity, data, true);
 
 				break;
 			}
@@ -115,7 +115,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 
 				data->_ModelCollisionConfiguration._Type = level_entry._StaticModelData._ModelCollisionConfiguration._Type;
 
-				EntitySystem::Instance->RequestInitialization(entity, data, false);
+				EntitySystem::Instance->RequestInitialization(entity, data, true);
 
 				break;
 			}
@@ -135,7 +135,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 				data->_InitialAmbientOcclusion = level_entry._UserInterfaceData._AmbientOcclusion;
 				data->_InitialEmissiveMultiplier = level_entry._UserInterfaceData._EmissiveMultiplier;
 
-				EntitySystem::Instance->RequestInitialization(entity, data, false);
+				EntitySystem::Instance->RequestInitialization(entity, data, true);
 
 				break;
 			}
