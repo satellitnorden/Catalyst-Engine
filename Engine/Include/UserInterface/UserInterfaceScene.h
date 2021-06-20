@@ -96,6 +96,14 @@ public:
 	}
 
 	/*
+	*	Returns the entity.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD UserInterfaceEntity *const RESTRICT GetEntity() NOEXCEPT
+	{
+		return _Entity;
+	}
+
+	/*
 	*	Sets the entity.
 	*/
 	FORCE_INLINE void SetEntity(UserInterfaceEntity *const RESTRICT value) NOEXCEPT
