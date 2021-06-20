@@ -230,6 +230,9 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButton(	co
 	//Add the button to the elements container.
 	_Elements.Emplace(new_button);
 
+	//Set the parent.
+	new_button->SetParent(this);
+
 	//Return the button.
 	return new_button;
 }
@@ -308,6 +311,9 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 	//Add the checkbox to the elements container.
 	_Elements.Emplace(new_checkbox);
 
+	//Set the parent.
+	new_checkbox->SetParent(this);
+
 	//Return the checkbox.
 	return new_checkbox;
 }
@@ -352,6 +358,9 @@ RESTRICTED UserInterfaceImage* const RESTRICT UserInterfaceScene::AddImage(	cons
 
 	//Add the image to the elements container.
 	_Elements.Emplace(new_image);
+
+	//Set the parent.
+	new_image->SetParent(this);
 
 	//Return the image.
 	return new_image;
@@ -402,6 +411,9 @@ RESTRICTED UserInterfaceProgressBar* const RESTRICT UserInterfaceScene::AddProgr
 
 	//Add the progress bar to the elements container.
 	_Elements.Emplace(new_progress_bar);
+
+	//Set the parent.
+	new_progress_bar->SetParent(this);
 
 	//Return the progress bar.
 	return new_progress_bar;
@@ -461,6 +473,9 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddText(	const 
 
 	//Add the text to the elements container.
 	_Elements.Emplace(new_text);
+
+	//Set the parent.
+	new_text->SetParent(this);
 
 	//Return the text.
 	return new_text;
