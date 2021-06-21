@@ -4,7 +4,7 @@
 /*
 *	Determine whether or not to define function prototypes. This is platform dependant.
 */
-#if defined(CATALYST_PLATFORM_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	#define DEFINE_FUNCTION_PROTOTYPES (1)
 #elif defined(CATALYST_PLATFORM_WINDOWS)
 	#define DEFINE_FUNCTION_PROTOTYPES (0)
@@ -16,7 +16,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //ThirdParty
-#if defined(CATALYST_PLATFORM_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	#define VK_USE_PLATFORM_ANDROID_KHR
 #endif
 #if defined(CATALYST_PLATFORM_WINDOWS)
@@ -25,7 +25,7 @@
 #if DEFINE_FUNCTION_PROTOTYPES
 	#define VK_NO_PROTOTYPES (1)
 #endif
-#if defined(CATALYST_PLATFORM_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	#include <vulkan/vulkan.h>
 #endif
 #if defined(CATALYST_PLATFORM_WINDOWS)
@@ -197,6 +197,7 @@ extern PFN_vkCreateInstance vkCreateInstance;
 extern PFN_vkDestroyInstance vkDestroyInstance;
 extern PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices;
 extern PFN_vkGetPhysicalDeviceFeatures vkGetPhysicalDeviceFeatures;
+extern PFN_vkGetPhysicalDeviceFeatures2 vkGetPhysicalDeviceFeatures2;
 extern PFN_vkGetPhysicalDeviceFormatProperties vkGetPhysicalDeviceFormatProperties;
 extern PFN_vkGetPhysicalDeviceImageFormatProperties vkGetPhysicalDeviceImageFormatProperties;
 extern PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties;

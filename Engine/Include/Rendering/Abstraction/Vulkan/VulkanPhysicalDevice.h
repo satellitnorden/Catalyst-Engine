@@ -39,11 +39,6 @@ public:
 	const VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() const NOEXCEPT { return _PhysicalDeviceProperties; }
 
 	/*
-	*	Returns the ray tracing properties.
-	*/
-	const VkPhysicalDeviceRayTracingPropertiesNV& GetRayTracingProperties() const NOEXCEPT { return _RayTracingProperties; }
-
-	/*
 	*	Returns the surface format.
 	*/
 	const VkPresentModeKHR& GetPresentMode() const NOEXCEPT { return _PresentMode; }
@@ -59,11 +54,43 @@ public:
 	const VkSurfaceFormatKHR& GetSurfaceFormat() const NOEXCEPT { return _SurfaceFormat; }
 
 	/*
+	*	Returns whether or not this Vulkan physical device has multiview support.
+	*/
+	FORCE_INLINE NO_DISCARD bool HasMultiviewSupport() const NOEXCEPT
+	{
+		return _HasMultiviewSupport;
+	}
+
+	/*
+	*	Returns the multiview features.
+	*/
+	FORCE_INLINE NO_DISCARD const VkPhysicalDeviceMultiviewFeatures &GetMultiviewFeatures() const NOEXCEPT
+	{
+		return _MultiviewFeatures;
+	}
+
+	/*
+	*	Returns the multiview properties.
+	*/
+	FORCE_INLINE NO_DISCARD const VkPhysicalDeviceMultiviewProperties &GetMultiviewProperties() const NOEXCEPT
+	{
+		return _MultiviewProperties;
+	}
+
+	/*
 	*	Returns whether or not this Vulkan physical device has ray tracing support.
 	*/
 	FORCE_INLINE NO_DISCARD bool HasRayTracingSupport() const NOEXCEPT
 	{
 		return _HasRayTracingSupport;
+	}
+
+	/*
+	*	Returns the ray tracing properties.
+	*/
+	FORCE_INLINE NO_DISCARD const VkPhysicalDeviceRayTracingPropertiesNV &GetRayTracingProperties() const NOEXCEPT
+	{
+		return _RayTracingProperties;
 	}
 
 private:
@@ -80,9 +107,6 @@ private:
 	//The physical device properties.
 	VkPhysicalDeviceProperties _PhysicalDeviceProperties;
 
-	//The ray tracing properties.
-	VkPhysicalDeviceRayTracingPropertiesNV _RayTracingProperties;
-
 	//The present mode.
 	VkPresentModeKHR _PresentMode;
 
@@ -92,8 +116,20 @@ private:
 	//The surface format.
 	VkSurfaceFormatKHR _SurfaceFormat;
 
-	//Denotes if this Vulkan physical device has ray tracing support.
+	//Denotes whether or not this Vulkan physical device has multiview support.
+	bool _HasMultiviewSupport{ false };
+
+	//The multiview features.
+	VkPhysicalDeviceMultiviewFeatures _MultiviewFeatures;
+
+	//The multiview properties.
+	VkPhysicalDeviceMultiviewProperties _MultiviewProperties;
+
+	//Denotes whether or not this Vulkan physical device has ray tracing support.
 	bool _HasRayTracingSupport{ false };
+
+	//The ray tracing properties.
+	VkPhysicalDeviceRayTracingPropertiesNV _RayTracingProperties;
 
 	/*
 	*	Given a Vulkan physical device, return if it is suitable for this game.

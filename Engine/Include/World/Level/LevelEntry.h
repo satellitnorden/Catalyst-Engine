@@ -40,7 +40,7 @@ public:
 	public:
 
 		//The current version.
-		constexpr static UINT64 CURRENT_VERSION{ 1 };
+		constexpr static uint64 CURRENT_VERSION{ 1 };
 
 		//The world transform.
 		WorldTransform _WorldTransform;
@@ -68,7 +68,7 @@ public:
 	public:
 
 		//The current version.
-		constexpr static UINT64 CURRENT_VERSION{ 1 };
+		constexpr static uint64 CURRENT_VERSION{ 1 };
 
 		union
 		{
@@ -124,7 +124,7 @@ public:
 	public:
 
 		//The current version.
-		constexpr static UINT64 CURRENT_VERSION{ 1 };
+		constexpr static uint64 CURRENT_VERSION{ 1 };
 
 		//The world transform.
 		WorldTransform _WorldTransform;
@@ -149,7 +149,7 @@ public:
 	public:
 
 		//The current version.
-		constexpr static UINT64 CURRENT_VERSION{ 1 };
+		constexpr static uint64 CURRENT_VERSION{ 1 };
 
 		//The user interface scene identifier.
 		HashString _UserInterfaceSceneIdentifier;

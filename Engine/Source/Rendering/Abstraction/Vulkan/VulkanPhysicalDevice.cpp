@@ -13,18 +13,48 @@ namespace VulkanPhysicalDeviceLogic
 {
 
 	/*
-	*	Returns a physical device's ray tracing properties.
+	*	Returns a physical device's multiview features.
 	*/
-	FORCE_INLINE void GetRayTracingProperties(const VkPhysicalDevice physicalDevice, VkPhysicalDeviceRayTracingPropertiesNV *const RESTRICT rayTracingProperties) NOEXCEPT
+	FORCE_INLINE void GetMultiviewFeatures(const VkPhysicalDevice physical_device, VkPhysicalDeviceMultiviewFeatures *const RESTRICT multiview_features) NOEXCEPT
 	{
-		rayTracingProperties->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV;
-		rayTracingProperties->pNext = nullptr;
+		multiview_features->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES;
+		multiview_features->pNext = nullptr;
+
+		VkPhysicalDeviceFeatures2 properties;
+		properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		properties.pNext = multiview_features;
+
+		vkGetPhysicalDeviceFeatures2(physical_device, &properties);
+	}
+
+	/*
+	*	Returns a physical device's multiview properties.
+	*/
+	FORCE_INLINE void GetMultiviewProperties(const VkPhysicalDevice physical_device, VkPhysicalDeviceMultiviewProperties *const RESTRICT multiview_properties) NOEXCEPT
+	{
+		multiview_properties->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES;
+		multiview_properties->pNext = nullptr;
 
 		VkPhysicalDeviceProperties2 properties;
 		properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-		properties.pNext = rayTracingProperties;
+		properties.pNext = multiview_properties;
 
-		vkGetPhysicalDeviceProperties2(physicalDevice, &properties);
+		vkGetPhysicalDeviceProperties2(physical_device, &properties);
+	}
+
+	/*
+	*	Returns a physical device's ray tracing properties.
+	*/
+	FORCE_INLINE void GetRayTracingProperties(const VkPhysicalDevice physical_device, VkPhysicalDeviceRayTracingPropertiesNV *const RESTRICT ray_tracing_properties) NOEXCEPT
+	{
+		ray_tracing_properties->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV;
+		ray_tracing_properties->pNext = nullptr;
+
+		VkPhysicalDeviceProperties2 properties;
+		properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		properties.pNext = ray_tracing_properties;
+
+		vkGetPhysicalDeviceProperties2(physical_device, &properties);
 	}
 
 }
@@ -67,6 +97,22 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 
 	//Get the physical device properties.
 	vkGetPhysicalDeviceProperties(_VulkanPhysicalDevice, &_PhysicalDeviceProperties);
+
+	//Does the chosen Vulkan physical device have multiview support?
+	_HasMultiviewSupport = HasExtension(_VulkanPhysicalDevice, VK_KHR_MULTIVIEW_EXTENSION_NAME);
+
+	//Retrieve the multiview features/properties.
+	if (_HasMultiviewSupport)
+	{
+		VulkanPhysicalDeviceLogic::GetMultiviewFeatures(_VulkanPhysicalDevice, &_MultiviewFeatures);
+		VulkanPhysicalDeviceLogic::GetMultiviewProperties(_VulkanPhysicalDevice, &_MultiviewProperties);
+	}
+
+	else
+	{
+		Memory::Set(&_MultiviewFeatures, 0, sizeof(VkPhysicalDeviceMultiviewFeatures));
+		Memory::Set(&_MultiviewProperties, 0, sizeof(VkPhysicalDeviceMultiviewProperties));
+	}
 
 	//Does the chosen Vulkan physical device have ray tracing support?
 	_HasRayTracingSupport = HasExtension(_VulkanPhysicalDevice, VK_NV_RAY_TRACING_EXTENSION_NAME);

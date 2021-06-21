@@ -207,7 +207,7 @@ public:
 	/*
 	*	Given a number, returns the inverse square root.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float32 InverseSquareRoot(const float32 number) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 InverseSquareRoot(const float32 number) NOEXCEPT
 	{
 		//Define constants.
 		constexpr float32 THREE_HALFS{ 1.5f };

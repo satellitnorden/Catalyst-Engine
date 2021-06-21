@@ -148,6 +148,10 @@ namespace File
 	#include <Platform/Android/AndroidFileCore.inl>
 #endif
 
+#if defined(CATALYST_PLATFORM_OCULUS_QUEST)
+	#include <Platform/OculusQuest/OculusQuestFileCore.inl>
+#endif
+
 #if defined(CATALYST_PLATFORM_WINDOWS)
 	#include <Platform/Windows/WindowsFileCore.inl>
 #endif

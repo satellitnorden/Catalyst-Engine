@@ -51,12 +51,13 @@ add_compile_definitions(CATALYST_RENDERING_VULKAN)
 
 #Add the include/source files.
 file(GLOB_RECURSE ENGINE_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/*.h)
+file(GLOB_RECURSE ENGINE_INLINE_FILES ../../Catalyst-Engine/Engine/Include/*.inl)
 file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../Catalyst-Engine/Engine/Source/*.cpp)
 file(GLOB_RECURSE GAME_INCLUDE_FILES ../Code/Include/*.h)
 file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.cpp)
 
 #Add the executable.
-add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_SOURCE_FILES} ${GAME_INCLUDE_FILES} ${GAME_SOURCE_FILES})
+add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES} ${GAME_INCLUDE_FILES} ${GAME_SOURCE_FILES})
 
 #Set the include paths.
 target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include)
@@ -93,11 +94,10 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT $
 
 #Add the Visual Studio filters.
 set(ENGINE_INCLUDE_FILES_ROOT "${CMAKE_SOURCE_DIR}/../../Catalyst-Engine/Engine/Include")
-source_group(TREE ${ENGINE_INCLUDE_FILES_ROOT} PREFIX "Catalyst Engine Include" FILES ${ENGINE_INCLUDE_FILES})
+source_group(TREE ${ENGINE_INCLUDE_FILES_ROOT} PREFIX "Catalyst Engine Include" FILES ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES})
 
 set(ENGINE_SOURCE_FILES_ROOT "${CMAKE_SOURCE_DIR}/../../Catalyst-Engine/Engine/Source")
 source_group(TREE ${ENGINE_SOURCE_FILES_ROOT} PREFIX "Catalyst Engine Source" FILES ${ENGINE_SOURCE_FILES})
-
 
 set(GAME_INCLUDE_FILES_ROOT "${CMAKE_SOURCE_DIR}/../Code/Include")
 source_group(TREE ${GAME_INCLUDE_FILES_ROOT} PREFIX "${PROJECT_NAME} Include" FILES ${GAME_INCLUDE_FILES})

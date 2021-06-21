@@ -114,7 +114,7 @@ public:
 	/*
 	*	Normalizes this quaternion.
 	*/
-	FORCE_INLINE constexpr void Normalize() NOEXCEPT
+	FORCE_INLINE void Normalize() NOEXCEPT
 	{
 		const float32 inverse_magnitude{ CatalystBaseMath::InverseSquareRoot(MagnitudeSquared()) };
 

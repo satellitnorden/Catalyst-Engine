@@ -58,6 +58,16 @@ public:
 };
 
 /*
+*	Oculus quest parameters class definition.
+*/
+class OculusQuestParameters final
+{
+
+public:
+
+};
+
+/*
 *	Win64 parameters class definition.
 */
 class Win64Parameters final
@@ -348,6 +358,250 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 }
 
 /*
+*	Generates Oculus quest.
+*/
+void GenerateOculusQuest(const GeneralParameters &general_parameters, const OculusQuestParameters &platform_parameters)
+{
+	//Cache the lower case versions of developer_name and project_name.
+	std::string lower_developer_name{ general_parameters._DeveloperName };
+	std::transform(lower_developer_name.begin(), lower_developer_name.end(), lower_developer_name.begin(), [](unsigned char character) { return std::tolower(character); });
+
+	std::string lower_project_name{ general_parameters._ProjectName };
+	std::transform(lower_project_name.begin(), lower_project_name.end(), lower_project_name.begin(), [](unsigned char character) { return std::tolower(character); });
+
+	//Remember the error code for filesystem functions.
+	std::error_code error_code;
+
+	//Read the template CMakeLists.txt file and output a new file.
+	std::ifstream cmake_lists_input_file{ "C:\\Github\\Catalyst-Engine\\Templates\\CMakeLists_Oculus_Quest_Template.txt" };
+	std::ofstream cmake_lists_output_file{ "CMakeLists_Oculus_Quest.txt" };
+
+	std::string cmake_lists_line;
+
+	while (std::getline(cmake_lists_input_file, cmake_lists_line))
+	{
+		{
+			const size_t project_name_position{ cmake_lists_line.find("[PROJECT_NAME]") };
+
+			if (project_name_position != std::string::npos)
+			{
+				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), general_parameters._ProjectName);
+			}
+		}
+
+		cmake_lists_output_file << cmake_lists_line << std::endl;
+	}
+
+	//Close the files.
+	cmake_lists_input_file.close();
+	cmake_lists_output_file.close();
+
+	//Remove all the contents of the Oculus_Quest folder.
+	std::filesystem::remove_all("Oculus_Quest", error_code);
+
+	if (error_code)
+	{
+		std::cout << error_code.message() << std::endl;
+	}
+
+	//Copy the Oculus_Quest project template.
+	std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Templates\\Oculus_Quest_Project_Template", "Oculus_Quest", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive, error_code);
+
+	if (error_code)
+	{
+		std::cout << error_code.message() << std::endl;
+	}
+
+	//Copy the CMakeLists.txt file.
+	std::filesystem::copy("CMakeLists_Oculus_Quest.txt", "Oculus_Quest\\app\\src\\main\\cpp\\CMakeLists.txt", std::filesystem::copy_options::overwrite_existing, error_code);
+
+	if (error_code)
+	{
+		std::cout << error_code.message() << std::endl;
+	}
+
+	//Modify the AndroidManifest.xml file
+	{
+		std::ifstream input_file{ "Oculus_Quest\\app\\src\\main\\AndroidManifest.xml" };
+		std::ofstream output_file{ "Oculus_Quest\\app\\src\\main\\AndroidManifest_Temporary.xml" };
+
+		std::string input_line;
+
+		while (std::getline(input_file, input_line))
+		{
+			{
+				const size_t developer_name_position{ input_line.find("[DEVELOPER_NAME]") };
+
+				if (developer_name_position != std::string::npos)
+				{
+					input_line.replace(developer_name_position, strlen("[DEVELOPER_NAME]"), lower_developer_name);
+				}
+			}
+
+			{
+				const size_t project_name_position{ input_line.find("[PROJECT_NAME]") };
+
+				if (project_name_position != std::string::npos)
+				{
+					input_line.replace(project_name_position, strlen("[PROJECT_NAME]"), lower_project_name);
+				}
+			}
+
+			{
+				const size_t library_name_position{ input_line.find("[LIBRARY_NAME]") };
+
+				if (library_name_position != std::string::npos)
+				{
+					char buffer[128];
+					sprintf_s(buffer, "%s_Oculus_Quest-lib", general_parameters._ProjectName);
+
+					input_line.replace(library_name_position, strlen("[LIBRARY_NAME]"), buffer);
+				}
+			}
+
+			output_file << input_line << std::endl;
+		}
+
+		//Close the files.
+		input_file.close();
+		output_file.close();
+
+		//Replace the file.
+		std::filesystem::copy("Oculus_Quest\\app\\src\\main\\AndroidManifest_Temporary.xml", "Oculus_Quest\\app\\src\\main\\AndroidManifest.xml", std::filesystem::copy_options::overwrite_existing, error_code);
+
+		if (error_code)
+		{
+			std::cout << error_code.message() << std::endl;
+		}
+
+		std::filesystem::remove("Oculus_Quest\\app\\src\\main\\AndroidManifest_Temporary.xml", error_code);
+
+		if (error_code)
+		{
+			std::cout << error_code.message() << std::endl;
+		}
+	}
+
+	//Modify the strings.xml file
+	{
+		std::ifstream input_file{ "Oculus_Quest\\app\\src\\main\\res\\values\\strings.xml" };
+		std::ofstream output_file{ "Oculus_Quest\\app\\src\\main\\res\\values\\strings_Temporary.xml" };
+
+		std::string input_line;
+
+		while (std::getline(input_file, input_line))
+		{
+			{
+				const size_t position{ input_line.find("[PROJECT_NAME]") };
+
+				if (position != std::string::npos)
+				{
+					input_line.replace(position, strlen("[PROJECT_NAME]"), general_parameters._ProjectName);
+				}
+			}
+
+			output_file << input_line << std::endl;
+		}
+
+		//Close the files.
+		input_file.close();
+		output_file.close();
+
+		//Replace the file.
+		std::filesystem::copy("Oculus_Quest\\app\\src\\main\\res\\values\\strings_Temporary.xml", "Oculus_Quest\\app\\src\\main\\res\\values\\strings.xml", std::filesystem::copy_options::overwrite_existing, error_code);
+
+		if (error_code)
+		{
+			std::cout << error_code.message() << std::endl;
+		}
+
+		std::filesystem::remove("Oculus_Quest\\app\\src\\main\\res\\values\\strings_Temporary.xml", error_code);
+
+		if (error_code)
+		{
+			std::cout << error_code.message() << std::endl;
+		}
+	}
+
+	//Modify the build.gradle file
+	{
+		std::ifstream input_file{ "Oculus_Quest\\app\\build.gradle" };
+		std::ofstream output_file{ "Oculus_Quest\\app\\build_Temporary.gradle" };
+
+		std::string input_line;
+
+		while (std::getline(input_file, input_line))
+		{
+			{
+				const size_t position{ input_line.find("[DEVELOPER_NAME]") };
+
+				if (position != std::string::npos)
+				{
+					input_line.replace(position, strlen("[DEVELOPER_NAME]"), lower_developer_name);
+				}
+			}
+
+			{
+				const size_t position{ input_line.find("[PROJECT_NAME]") };
+
+				if (position != std::string::npos)
+				{
+					input_line.replace(position, strlen("[PROJECT_NAME]"), lower_project_name);
+				}
+			}
+
+			output_file << input_line << std::endl;
+		}
+
+		//Close the files.
+		input_file.close();
+		output_file.close();
+
+		//Replace the file.
+		std::filesystem::copy("Oculus_Quest\\app\\build_Temporary.gradle", "Oculus_Quest\\app\\build.gradle", std::filesystem::copy_options::overwrite_existing, error_code);
+
+		if (error_code)
+		{
+			std::cout << error_code.message() << std::endl;
+		}
+
+		std::filesystem::remove("Oculus_Quest\\app\\build_Temporary.gradle", error_code);
+
+		if (error_code)
+		{
+			std::cout << error_code.message() << std::endl;
+		}
+	}
+
+	//Copy over the relevant resource collections.
+	{
+		std::filesystem::create_directory("Oculus_Quest\\app\\src\\main\\assets");
+
+		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection_0.crc", "Oculus_Quest\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+
+		if (error_code)
+		{
+			std::cout << error_code.message() << std::endl;
+		}
+
+		for (const auto &entry : std::filesystem::directory_iterator(std::string("..\\Resources\\Final")))
+		{
+			const std::string file_path{ entry.path().string() };
+
+			if (file_path != ".gitignore")
+			{
+				std::filesystem::copy(file_path, "Oculus_Quest\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+
+				if (error_code)
+				{
+					std::cout << error_code.message() << std::endl;
+				}
+			}
+		}
+	}
+}
+
+/*
 *	Generates Win64.
 */
 void GenerateWin64(const GeneralParameters &general_parameters, const Win64Parameters &platform_parameters)
@@ -552,6 +806,7 @@ int main(int argc, char *argv[])
 	//Construct the parameters.
 	GeneralParameters general_parameters;
 	AndroidParameters android_parameters;
+	OculusQuestParameters oculus_quest_parameters;
 	Win64Parameters win64_parameters;
 
 	//Retrieve the developer name.
@@ -581,6 +836,9 @@ int main(int argc, char *argv[])
 
 	//Generate Android.
 	GenerateAndroid(general_parameters, android_parameters);
+
+	//Generate Oculus Quest.
+	GenerateOculusQuest(general_parameters, oculus_quest_parameters);
 
 	//Generate Win64.
 	GenerateWin64(general_parameters, win64_parameters);

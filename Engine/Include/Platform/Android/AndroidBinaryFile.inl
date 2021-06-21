@@ -1,3 +1,4 @@
+#if defined(CATALYST_PLATFORM_ANDROID)
 #pragma once
 
 //Android.
@@ -166,3 +167,4 @@ private:
 	std::ofstream _FileStream;
 
 };
+#endif

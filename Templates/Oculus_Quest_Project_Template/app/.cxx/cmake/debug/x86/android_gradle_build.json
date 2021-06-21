@@ -1,0 +1,46 @@
+{
+  "buildFiles": [
+    "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\cmake\\3.18.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\cmake\\3.18.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "native-activity::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "native-activity",
+      "output": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\build\\intermediates\\cmake\\debug\\obj\\x86\\libnative-activity.so",
+      "runtimeFiles": []
+    },
+    "native_app_glue::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "native_app_glue",
+      "output": "C:\\Users\\Denni\\Desktop\\ndk-samples-main\\ndk-samples-main\\native-activity\\app\\.cxx\\cmake\\debug\\x86\\libnative_app_glue.a"
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "C:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\ndk\\21.2.6472646\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
+      "cppCompilerExecutable": "C:\\Users\\Denni\\AppData\\Local\\Android\\Sdk\\ndk\\21.2.6472646\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+    }
+  },
+  "cFileExtensions": [
+    "c"
+  ],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

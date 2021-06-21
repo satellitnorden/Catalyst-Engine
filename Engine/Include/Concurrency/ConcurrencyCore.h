@@ -109,6 +109,10 @@ namespace Concurrency
 	#include <Platform/Android/AndroidConcurrencyCore.inl>
 #endif
 
+#if defined(CATALYST_PLATFORM_OCULUS_QUEST)
+	#include <Platform/OculusQuest/OculusQuestConcurrencyCore.inl>
+#endif
+
 #if defined(CATALYST_PLATFORM_WINDOWS)
 	#include <Platform/Windows/WindowsConcurrencyCore.inl>
 #endif

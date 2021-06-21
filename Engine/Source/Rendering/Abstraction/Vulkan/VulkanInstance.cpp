@@ -61,7 +61,6 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	applicationInfo.pEngineName = CATALYST_ENGINE_NAME;
 	applicationInfo.engineVersion = VK_MAKE_VERSION(CATALYST_ENGINE_MAJOR_VERSION, CATALYST_ENGINE_MINOR_VERSION, CATALYST_ENGINE_PATCH_VERSION);
-	applicationInfo.apiVersion = VK_API_VERSION_1_1;
 
 #if defined(CATALYST_PLATFORM_ANDROID)
 	applicationInfo.apiVersion = VK_API_VERSION_1_0;

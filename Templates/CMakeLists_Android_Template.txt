@@ -20,7 +20,6 @@ add_definitions(-DCATALYST_DISTRIBUTION_NULL)
 add_definitions(-DCATALYST_PHYSICS_NULL)
 add_definitions(-DCATALYST_PLATFORM_ANDROID)
 add_definitions(-DCATALYST_RENDERING_VULKAN)
-add_definitions(-DCATALYST_SIMPLIFIED_RENDERING)
 
 #Add the include/source files.
 file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../../../../../../Catalyst-Engine/Engine/Source/*.cpp)
