@@ -61,7 +61,7 @@ void OceanRenderPass::Initialize() NOEXCEPT
 void OceanRenderPass::Execute() NOEXCEPT
 {
 	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::MAIN/* || true*/)
+	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::DEFAULT)
 	{
 		SetEnabled(false);
 

@@ -8,13 +8,6 @@ class RenderingConfiguration final
 
 public:
 
-	//Enumeration covering all rendering paths.
-	enum class RenderingPath : uint8
-	{
-		MAIN,
-		PATH_TRACING
-	};
-
 	//Enumeration covering all ambient occlusion modes.
 	enum class AmbientOcclusionMode : uint8
 	{
@@ -60,22 +53,6 @@ public:
 		SCREEN_SPACE,
 		RAY_TRACED
 	};
-
-	/*
-	*	Returns the rendering path.
-	*/
-	FORCE_INLINE NO_DISCARD RenderingPath GetRenderingPath() const NOEXCEPT
-	{
-		return _RenderingPath;
-	}
-
-	/*
-	*	Sets the rendering path.
-	*/
-	FORCE_INLINE void SetRenderingPath(const RenderingPath value) NOEXCEPT
-	{
-		_RenderingPath = value;
-	}
 
 	/*
 	*	Returns the ambient occlusion mode.
@@ -174,9 +151,6 @@ public:
 	}
 
 private:
-
-	//The rendering path.
-	RenderingPath _RenderingPath{ RenderingPath::MAIN };
 
 	//The ambient occlusion mode.
 	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::SCREEN_SPACE };

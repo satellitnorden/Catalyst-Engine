@@ -278,12 +278,12 @@ void EditorRenderingSystem::Update() NOEXCEPT
 
 	if (path_tracing)
 	{
-		RenderingSystem::Instance->GetRenderingConfiguration()->SetRenderingPath(RenderingConfiguration::RenderingPath::PATH_TRACING);
+		RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::PATH_TRACING);
 	}
 
 	else
 	{
-		RenderingSystem::Instance->GetRenderingConfiguration()->SetRenderingPath(RenderingConfiguration::RenderingPath::MAIN);
+		RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::DEFAULT);
 	}
 
 	ImGui::End();

@@ -127,7 +127,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 void SceneFeaturesRenderPass::Execute() NOEXCEPT
 {	
 	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::MAIN)
+	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::DEFAULT)
 	{
 		SetEnabled(false);
 

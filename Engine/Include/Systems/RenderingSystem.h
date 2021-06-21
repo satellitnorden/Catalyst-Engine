@@ -25,6 +25,7 @@
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/SamplerProperties.h>
+#include <Rendering/Native/SubRenderingSystemInterface.h>
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
@@ -80,6 +81,22 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Returns the current rendering path.
+	*/
+	FORCE_INLINE NO_DISCARD RenderingPath GetCurrentRenderingPath() const NOEXCEPT
+	{
+		return _CurrentRenderingPath;
+	}
+
+	/*
+	*	Sets the current rendering path.
+	*/
+	FORCE_INLINE void SetCurrentRenderingPath(const RenderingPath value) NOEXCEPT
+	{
+		_CurrentRenderingPath = value;
+	}
+
+	/*
 	*	Returns whether or not ray tracing is supported.
 	*/
 	NO_DISCARD bool IsRayTracingSupported() const NOEXCEPT;
@@ -121,17 +138,17 @@ public:
 	/*
 	*	Returns the number of framebuffers.
 	*/
-	uint8 GetNumberOfFramebuffers() const NOEXCEPT;
+	NO_DISCARD uint8 GetNumberOfFramebuffers() const NOEXCEPT;
 
 	/*
 	*	Returns the current framebuffer index.
 	*/
-	uint8 GetCurrentFramebufferIndex() const NOEXCEPT;
+	NO_DISCARD uint8 GetCurrentFramebufferIndex() const NOEXCEPT;
 
 	/*
 	*	Returns the current surface transform.
 	*/
-	SurfaceTransform GetCurrentSurfaceTransform() const NOEXCEPT;
+	NO_DISCARD SurfaceTransform GetCurrentSurfaceTransform() const NOEXCEPT;
 
 	/*
 	*	Returns the current surface transform rotation matrix.
@@ -217,10 +234,10 @@ public:
 	/*
 	*	Creates a bottom level acceleration structure.
 	*/
-	void CreateBottomLevelAccelerationStructure(const BufferHandle &vertexBuffer,
-												const uint32 numberOfVertices,
-												const BufferHandle &indexBuffer,
-												const uint32 numberOfIndices,
+	void CreateBottomLevelAccelerationStructure(const BufferHandle vertex_buffer,
+												const uint32 number_of_vertices,
+												const BufferHandle index_buffer,
+												const uint32 number_of_indices,
 												AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
@@ -236,12 +253,12 @@ public:
 	/*
 	*	Creates a buffer.
 	*/
-	void CreateBuffer(const uint64 size, const BufferUsage usage, const MemoryProperty memoryProperties, BufferHandle *const RESTRICT handle) const NOEXCEPT;
+	void CreateBuffer(const uint64 size, const BufferUsage usage, const MemoryProperty memory_properties, BufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Uploads data to a buffer.
 	*/
-	void UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, BufferHandle *const RESTRICT handle) const NOEXCEPT;
+	void UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT data_sizes, const uint8 data_chunks, BufferHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Destroys a buffer.
@@ -286,12 +303,12 @@ public:
 	/*
 	*	Resets an event.
 	*/
-	void ResetEvent(EventHandle handle) NOEXCEPT;
+	void ResetEvent(const EventHandle handle) NOEXCEPT;
 
 	/*
 	*	Waits for an event.
 	*/
-	void WaitForEvent(EventHandle handle) NOEXCEPT;
+	void WaitForEvent(const EventHandle handle) NOEXCEPT;
 
 	/*
 	*	Creates a query pool.
@@ -312,49 +329,49 @@ public:
 	/*
 	*	Creates a render data table layout.
 	*/
-	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT;
+	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 number_of_bindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Creates a render data table.
 	*/
-	void CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT;
+	void CreateRenderDataTable(const RenderDataTableLayoutHandle render_data_table_layout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Binds an acceleration structure to a render data table.
 	*/
-	void BindAccelerationStructureToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, AccelerationStructureHandle accelerationStructure) const NOEXCEPT;
+	void BindAccelerationStructureToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const AccelerationStructureHandle acceleration_structure) const NOEXCEPT;
 
 	/*
 	*	Binds a combined image sampler to a render data table.
 	*	Accepts render target, texture 2D and texture cube handles.
 	*/
-	void BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT;
+	void BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const OpaqueHandle image, const SamplerHandle sampler) const NOEXCEPT;
 
 	/*
 	*	Binds a sampled image to a render data table.
 	*	Accepts render target, texture 2D and texture cube handles.
 	*/
-	void BindSampledImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, OpaqueHandle image) const NOEXCEPT;
+	void BindSampledImageToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const OpaqueHandle image) const NOEXCEPT;
 
 	/*
 	*	Binds a sampler to a render data table.
 	*/
-	void BindSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, SamplerHandle sampler) const NOEXCEPT;
+	void BindSamplerToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const SamplerHandle sampler) const NOEXCEPT;
 
 	/*
 	*	Binds a storage buffer to a render data table.
 	*/
-	void BindStorageBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, BufferHandle buffer) const NOEXCEPT;
+	void BindStorageBufferToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const BufferHandle buffer) const NOEXCEPT;
 
 	/*
 	*	Binds a storage image to a render data table.
 	*/
-	void BindStorageImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, OpaqueHandle image) const NOEXCEPT;
+	void BindStorageImageToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const OpaqueHandle image) const NOEXCEPT;
 
 	/*
 	*	Binds a uniform buffer to a render data table.
 	*/
-	void BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, BufferHandle buffer) const NOEXCEPT;
+	void BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const BufferHandle buffer) const NOEXCEPT;
 
 	/*
 	*	Destroys a render data table.
@@ -374,7 +391,7 @@ public:
 	/*
 	*	Creates a texture 2D.
 	*/
-	void CreateTexture2D(const TextureData &textureData, Texture2DHandle *const RESTRICT handle) const NOEXCEPT;
+	void CreateTexture2D(const TextureData &data, Texture2DHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Destroys a texture 2D.
@@ -384,12 +401,12 @@ public:
 	/*
 	*	Creates a texture 3D.
 	*/
-	void CreateTexture3D(const TextureData& textureData, Texture3DHandle* const RESTRICT handle) const NOEXCEPT;
+	void CreateTexture3D(const TextureData &data, Texture3DHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Creates a texture cube.
 	*/
-	void CreateTextureCube(const TextureCubeData& data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT;
+	void CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Initializes a pipeline
@@ -422,6 +439,14 @@ public:
 	RenderDataTableHandle GetCommonRenderDataTable(const CommonRenderDataTable common_render_data_table) const NOEXCEPT;
 
 	/*
+	*	Returns the render passes.
+	*/
+	FORCE_INLINE NO_DISCARD const DynamicArray<RenderPass *RESTRICT> &GetRenderPasses() const NOEXCEPT
+	{
+		return _RenderPasses;
+	}
+
+	/*
 	*	Takes an immedate screenshot and writes it to the given file path.
 	*/
 	void TakeImmediateScreenshot(const char *const RESTRICT file_path) NOEXCEPT;
@@ -443,17 +468,16 @@ public:
 	*/
 	void StopTakingScreenshot(const char *const RESTRICT file_path) NOEXCEPT;
 
-#if defined(CATALYST_EDITOR)
-	/*
-	*	Post initializes the rendering system in editor builds.
-	*/
-	void EditorPostInitialize() NOEXCEPT;
-#endif
-
 private:
 
 	//The rendering configuration.
 	RenderingConfiguration _RenderingConfiguration;
+
+	//The sub rendering system.
+	SubRenderingSystemInterface *RESTRICT _SubRenderingSystem;
+
+	//The current rendering path.
+	RenderingPath _CurrentRenderingPath;
 
 	//The full resolution.
 	Resolution _FullResolution;
@@ -525,21 +549,6 @@ private:
 
 	//Denotes if the rendering system is currently taking a screenshot.
 	bool _IsTakingScreenshot{ false };
-
-	/*
-	*	Pre-initializes the rendering system.
-	*/
-	void PreInitialize() NOEXCEPT;
-
-	/*
-	*	Begins a frame.
-	*/
-	void BeginFrame() NOEXCEPT;
-
-	/*
-	*	Ends a frame.
-	*/
-	void EndFrame() NOEXCEPT;
 
 	/*
 	*	Pre-initializes the global render data.

@@ -1,6 +1,6 @@
 #if defined(CATALYST_RENDERING_VULKAN)
 //Header file.
-#include <Systems/RenderingSystem.h>
+#include <Rendering/Translation/Vulkan/VulkanSubRenderingSystem.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -55,7 +55,7 @@
 #endif
 
 //Vulkan rendering system data.
-namespace VulkanRenderingSystemData
+namespace VulkanSubRenderingSystemData
 {
 	/*
 	*	Vulkan destruction data definition.
@@ -104,16 +104,16 @@ namespace VulkanRenderingSystemData
 }
 
 //Vulkan rendering system logic.
-namespace VulkanRenderingSystemLogic
+namespace VulkanSubRenderingSystemLogic
 {
 
 	/*
 	*	Concatenates all secondary command buffers into the previous one.
 	*/
-	void ConcatenateCommandBuffers(DynamicArray<RenderPass *RESTRICT> &render_passes) NOEXCEPT
+	void ConcatenateCommandBuffers(const DynamicArray<RenderPass *RESTRICT> &render_passes) NOEXCEPT
 	{
 		//Begin the current primary command buffer.
-		VulkanCommandBuffer *const RESTRICT currentPrimaryCommandBuffer{ VulkanRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer() };
+		VulkanCommandBuffer *const RESTRICT currentPrimaryCommandBuffer{ VulkanSubRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer() };
 		currentPrimaryCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
@@ -686,38 +686,38 @@ namespace VulkanRenderingSystemLogic
 	*/
 	void ProcessDestructionQueue() NOEXCEPT
 	{
-		for (uint64 i = 0; i < VulkanRenderingSystemData::_DestructionQueue.Size();)
+		for (uint64 i = 0; i < VulkanSubRenderingSystemData::_DestructionQueue.Size();)
 		{
-			++VulkanRenderingSystemData::_DestructionQueue[i]._Frames;
+			++VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames;
 
-			if (VulkanRenderingSystemData::_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() + 1)
+			if (VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() + 1)
 			{
-				switch (VulkanRenderingSystemData::_DestructionQueue[i]._Type)
+				switch (VulkanSubRenderingSystemData::_DestructionQueue[i]._Type)
 				{
-					case VulkanRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE:
+					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE:
 					{
-						VulkanInterface::Instance->DestroyAccelerationStructure(static_cast<VulkanAccelerationStructure *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
+						VulkanInterface::Instance->DestroyAccelerationStructure(static_cast<VulkanAccelerationStructure *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
 
-					case VulkanRenderingSystemData::VulkanDestructionData::Type::BUFFER:
+					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::BUFFER:
 					{
-						VulkanInterface::Instance->DestroyBuffer(static_cast<VulkanBuffer *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
+						VulkanInterface::Instance->DestroyBuffer(static_cast<VulkanBuffer *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
 
-					case VulkanRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE:
+					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE:
 					{
-						VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
+						VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
 
-					case VulkanRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D:
+					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D:
 					{
-						VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(VulkanRenderingSystemData::_DestructionQueue[i]._Handle));
+						VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
@@ -730,7 +730,7 @@ namespace VulkanRenderingSystemLogic
 					}
 				}
 
-				VulkanRenderingSystemData::_DestructionQueue.EraseAt<false>(i);
+				VulkanSubRenderingSystemData::_DestructionQueue.EraseAt<false>(i);
 			}
 
 			else
@@ -743,9 +743,80 @@ namespace VulkanRenderingSystemLogic
 }
 
 /*
+*	Pre-initializes the sub rendering system.
+*/
+void VulkanSubRenderingSystem::PreInitialize() NOEXCEPT
+{
+	//Initialize the Vulkan interface.
+	VulkanInterface::Instance->Initialize();
+
+	//Initialize the Vulkan frame data.
+	VulkanSubRenderingSystemData::_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages());
+}
+
+/*
+*	Initializes the sub rendering system.
+*/
+void VulkanSubRenderingSystem::Initialize() NOEXCEPT
+{
+
+}
+
+#if defined(CATALYST_EDITOR)
+/*
+*	Post initializes the sub rendering system in editor builds.
+*/
+void VulkanSubRenderingSystem::EditorPostInitialize() NOEXCEPT
+{
+	//Set up ImGui for Vulkan.
+	{
+		ImGui_ImplVulkan_InitInfo imgui_init_info{ };
+
+		imgui_init_info.Instance = VulkanInterface::Instance->GetInstance().Get();
+		imgui_init_info.PhysicalDevice = VulkanInterface::Instance->GetPhysicalDevice().Get();
+		imgui_init_info.Device = VulkanInterface::Instance->GetLogicalDevice().Get();
+		imgui_init_info.QueueFamily = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::GRAPHICS);
+		imgui_init_info.Queue = VulkanInterface::Instance->GetGraphicsQueue()->Get();
+		imgui_init_info.PipelineCache = VK_NULL_HANDLE;
+		imgui_init_info.DescriptorPool = VulkanInterface::Instance->GetDescriptorPool().Get();
+		imgui_init_info.Allocator = nullptr;
+		imgui_init_info.MinImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
+		imgui_init_info.ImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
+		imgui_init_info.CheckVkResultFn = nullptr;
+
+		ImGui_ImplVulkan_Init(&imgui_init_info, static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(EditorUserInterfaceRenderPass::Instance->GetEditorUserInterfaceGraphicsPipeline()->GetData())->_RenderPass->Get());
+	}
+
+	//Create the fonts texture.
+	{
+		CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::PRIMARY) };
+		VkCommandBuffer vulkan_command_buffer{ static_cast<VulkanCommandBuffer* const RESTRICT>(command_buffer->GetCommandBufferData())->Get() };
+
+		VkCommandBufferBeginInfo begin_info = {};
+		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		vkBeginCommandBuffer(vulkan_command_buffer, &begin_info);
+
+		ImGui_ImplVulkan_CreateFontsTexture(vulkan_command_buffer);
+
+		VkSubmitInfo end_info = {};
+		end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		end_info.commandBufferCount = 1;
+		end_info.pCommandBuffers = &vulkan_command_buffer;
+		vkEndCommandBuffer(vulkan_command_buffer);
+
+		vkQueueSubmit(VulkanInterface::Instance->GetGraphicsQueue()->Get(), 1, &end_info, VK_NULL_HANDLE);
+		vkDeviceWaitIdle(VulkanInterface::Instance->GetLogicalDevice().Get());
+
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
+	}
+}
+#endif
+
+/*
 *	Terminates the rendering system.
 */
-void RenderingSystem::Terminate() NOEXCEPT
+void VulkanSubRenderingSystem::Terminate() NOEXCEPT
 {
 	//First of all, wait for all queues to finish their tasks.
 	VulkanInterface::Instance->GetComputeQueue()->WaitIdle();
@@ -765,7 +836,7 @@ void RenderingSystem::Terminate() NOEXCEPT
 /*
 *	Returns whether or not ray tracing is supported.
 */
-NO_DISCARD bool RenderingSystem::IsRayTracingSupported() const NOEXCEPT
+NO_DISCARD bool VulkanSubRenderingSystem::IsRayTracingSupported() const NOEXCEPT
 {
 	//Just check if the physical device has ray tracing support.
 	return VulkanInterface::Instance->GetPhysicalDevice().HasRayTracingSupport();
@@ -774,7 +845,7 @@ NO_DISCARD bool RenderingSystem::IsRayTracingSupported() const NOEXCEPT
 /*
 *	Returns the number of framebuffers.
 */
-uint8 RenderingSystem::GetNumberOfFramebuffers() const NOEXCEPT
+uint8 VulkanSubRenderingSystem::GetNumberOfFramebuffers() const NOEXCEPT
 {
 	return VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
 }
@@ -782,7 +853,7 @@ uint8 RenderingSystem::GetNumberOfFramebuffers() const NOEXCEPT
 /*
 *	Returns the current framebuffer index.
 */
-uint8 RenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
+uint8 VulkanSubRenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
 {
 	return VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
 }
@@ -790,7 +861,7 @@ uint8 RenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
 /*
 *	Returns the current surface transform.
 */
-SurfaceTransform RenderingSystem::GetCurrentSurfaceTransform() const NOEXCEPT
+SurfaceTransform VulkanSubRenderingSystem::GetCurrentSurfaceTransform() const NOEXCEPT
 {
 	switch (VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceCapabilities().currentTransform)
 	{
@@ -816,11 +887,11 @@ SurfaceTransform RenderingSystem::GetCurrentSurfaceTransform() const NOEXCEPT
 /*
 *	Creates a bottom level acceleration structure.
 */
-void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle &vertexBuffer,
-																const uint32 numberOfVertices,
-																const BufferHandle &indexBuffer,
-																const uint32 numberOfIndices,
-																AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+void VulkanSubRenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle vertex_buffer,
+																	const uint32 number_of_vertices,
+																	const BufferHandle index_buffer,
+																	const uint32 number_of_indices,
+																	AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
 	if (IsRayTracingSupported())
 	{
@@ -831,14 +902,14 @@ void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle
 		geometry.geometryType = VkGeometryTypeNV::VK_GEOMETRY_TYPE_TRIANGLES_NV;
 		geometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;
 		geometry.geometry.triangles.pNext = nullptr;
-		geometry.geometry.triangles.vertexData = static_cast<VulkanBuffer *const RESTRICT>(vertexBuffer)->Get();
+		geometry.geometry.triangles.vertexData = static_cast<VulkanBuffer *const RESTRICT>(vertex_buffer)->Get();
 		geometry.geometry.triangles.vertexOffset = 0;
-		geometry.geometry.triangles.vertexCount = numberOfVertices;
+		geometry.geometry.triangles.vertexCount = number_of_vertices;
 		geometry.geometry.triangles.vertexStride = sizeof(Vertex);
 		geometry.geometry.triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
-		geometry.geometry.triangles.indexData = static_cast<VulkanBuffer *const RESTRICT>(indexBuffer)->Get();
+		geometry.geometry.triangles.indexData = static_cast<VulkanBuffer *const RESTRICT>(index_buffer)->Get();
 		geometry.geometry.triangles.indexOffset = 0;
-		geometry.geometry.triangles.indexCount = numberOfIndices;
+		geometry.geometry.triangles.indexCount = number_of_indices;
 		geometry.geometry.triangles.indexType = VkIndexType::VK_INDEX_TYPE_UINT32;
 		geometry.geometry.triangles.transformData = VK_NULL_HANDLE;
 		geometry.geometry.triangles.transformOffset = 0;
@@ -864,7 +935,7 @@ void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle
 /*
 *	Creates a top level acceleration structure.
 */
-void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+void VulkanSubRenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
 	if (IsRayTracingSupported())
 	{
@@ -891,43 +962,43 @@ void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLe
 /*
 *	Destroys an acceleration structure.
 */
-void RenderingSystem::DestroyAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+void VulkanSubRenderingSystem::DestroyAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE, *handle);
+	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE, *handle);
 }
 
 /*
 *	Creates a buffer.
 */
-void RenderingSystem::CreateBuffer(const uint64 size, const BufferUsage usage, const MemoryProperty memoryProperties, BufferHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateBuffer(const uint64 size, const BufferUsage usage, const MemoryProperty memory_properties, BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the buffer.
-	*handle = static_cast<BufferHandle>(VulkanInterface::Instance->CreateBuffer(size, VulkanTranslationUtilities::GetVulkanBufferUsage(usage), VulkanTranslationUtilities::GetVulkanMemoryProperty(memoryProperties)));
+	*handle = static_cast<BufferHandle>(VulkanInterface::Instance->CreateBuffer(size, VulkanTranslationUtilities::GetVulkanBufferUsage(usage), VulkanTranslationUtilities::GetVulkanMemoryProperty(memory_properties)));
 }
 
 /*
 *	Uploads data to a buffer.
 */
-void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, BufferHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT data_sizes, const uint8 data_chunks, BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Upload data to the buffer.
-	static_cast<VulkanBuffer *const RESTRICT>(*handle)->UploadData(data, dataSizes, dataChunks);
+	static_cast<VulkanBuffer *const RESTRICT>(*handle)->UploadData(data, data_sizes, data_chunks);
 }
 
 /*
 *	Destroys a buffer.
 */
-void RenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::BUFFER, *handle);
+	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::BUFFER, *handle);
 }
 
 /*
 *	Creates a command pool.
 */
-void RenderingSystem::CreateCommandPool(const Pipeline::Type type, CommandPoolHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateCommandPool(const Pipeline::Type type, CommandPoolHandle *const RESTRICT handle) const NOEXCEPT
 {
 	switch (type)
 	{
@@ -958,7 +1029,7 @@ void RenderingSystem::CreateCommandPool(const Pipeline::Type type, CommandPoolHa
 /*
 *	Resets a command pool.
 */
-void RenderingSystem::ResetCommandPool(CommandPoolHandle *const RESTRICT handle) NOEXCEPT
+void VulkanSubRenderingSystem::ResetCommandPool(CommandPoolHandle *const RESTRICT handle) NOEXCEPT
 {
 	static_cast<VulkanCommandPool *const RESTRICT>(*handle)->Reset();
 }
@@ -966,7 +1037,7 @@ void RenderingSystem::ResetCommandPool(CommandPoolHandle *const RESTRICT handle)
 /*
 *	Allocates a command buffer from the given command pool.
 */
-RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT RenderingSystem::AllocateCommandBuffer(const CommandPoolHandle command_pool, const CommandBufferLevel level) const NOEXCEPT
+RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT VulkanSubRenderingSystem::AllocateCommandBuffer(const CommandPoolHandle command_pool, const CommandBufferLevel level) const NOEXCEPT
 {
 	//Cache the vulkan command pool.
 	VulkanCommandPool *const RESTRICT vulkan_command_pool{ static_cast<VulkanCommandPool *const RESTRICT>(command_pool) };
@@ -1008,7 +1079,7 @@ RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT RenderingSystem::AllocateCom
 /*
 *	Submits a command buffer.
 */
-void RenderingSystem::SubmitCommandBuffer(const CommandBuffer* const RESTRICT command_buffer) NOEXCEPT
+void VulkanSubRenderingSystem::SubmitCommandBuffer(const CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
 {
 	VulkanInterface::Instance->GetComputeQueue()->Submit(	*static_cast<VulkanCommandBuffer *const RESTRICT>(command_buffer->GetCommandBufferData()),
 															0,
@@ -1022,7 +1093,7 @@ void RenderingSystem::SubmitCommandBuffer(const CommandBuffer* const RESTRICT co
 /*
 *	Creates a depth buffer.
 */
-void RenderingSystem::CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the depth buffer.
 	*handle = static_cast<DepthBufferHandle>(VulkanInterface::Instance->CreateDepthBuffer(VkExtent2D{ resolution._Width, resolution._Height }));
@@ -1031,7 +1102,7 @@ void RenderingSystem::CreateDepthBuffer(const Resolution resolution, DepthBuffer
 /*
 *	Creates an event.
 */
-void RenderingSystem::CreateEvent(EventHandle *const RESTRICT handle) NOEXCEPT
+void VulkanSubRenderingSystem::CreateEvent(EventHandle *const RESTRICT handle) NOEXCEPT
 {
 	*handle = static_cast<EventHandle>(VulkanInterface::Instance->CreateEvent());
 }
@@ -1039,7 +1110,7 @@ void RenderingSystem::CreateEvent(EventHandle *const RESTRICT handle) NOEXCEPT
 /*
 *	Resets an event.
 */
-void RenderingSystem::ResetEvent(EventHandle handle) NOEXCEPT
+void VulkanSubRenderingSystem::ResetEvent(EventHandle handle) NOEXCEPT
 {
 	static_cast<VulkanEvent *const RESTRICT>(handle)->Reset();
 }
@@ -1047,7 +1118,7 @@ void RenderingSystem::ResetEvent(EventHandle handle) NOEXCEPT
 /*
 *	Waits for an event.
 */
-void RenderingSystem::WaitForEvent(EventHandle handle) NOEXCEPT
+void VulkanSubRenderingSystem::WaitForEvent(EventHandle handle) NOEXCEPT
 {
 	static_cast<VulkanEvent *const RESTRICT>(handle)->WaitFor();
 }
@@ -1055,7 +1126,7 @@ void RenderingSystem::WaitForEvent(EventHandle handle) NOEXCEPT
 /*
 *	Creates a query pool.
 */
-void RenderingSystem::CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT
+void VulkanSubRenderingSystem::CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT
 {
 	*handle = static_cast<QueryPoolHandle>(VulkanInterface::Instance->CreateQueryPool(VkQueryType::VK_QUERY_TYPE_TIMESTAMP, 2));
 }
@@ -1064,7 +1135,7 @@ void RenderingSystem::CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NO
 *	Returns the execution time, in nanoseconds, from the given query pool.
 *	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
 */
-NO_DISCARD uint32 RenderingSystem::GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT
+NO_DISCARD uint32 VulkanSubRenderingSystem::GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT
 {
 	//Get the query results.
 	StaticArray<uint32, 2> query_pool_results;
@@ -1080,7 +1151,7 @@ NO_DISCARD uint32 RenderingSystem::GetExecutionTime(const QueryPoolHandle query_
 /*
 *	Creates a Shader.
 */
-void RenderingSystem::CreateShader(const ArrayProxy<byte> &data, const ShaderStage stage, ShaderHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateShader(const ArrayProxy<byte> &data, const ShaderStage stage, ShaderHandle *const RESTRICT handle) const NOEXCEPT
 {
 	VkShaderStageFlagBits vulkan_stage;
 
@@ -1177,38 +1248,38 @@ void RenderingSystem::CreateShader(const ArrayProxy<byte> &data, const ShaderSta
 /*
 *	Creates a render data table layout.
 */
-void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 number_of_bindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Translate from the API-agnostic structure to the Vulkan-specific.
 	DynamicArray<VkDescriptorSetLayoutBinding> vulkanBindings;
-	vulkanBindings.Reserve(numberOfBindings);
+	vulkanBindings.Reserve(number_of_bindings);
 
-	for (uint32 i = 0; i < numberOfBindings; ++i)
+	for (uint32 i = 0; i < number_of_bindings; ++i)
 	{
 		const RenderDataTableLayoutBinding &binding{ bindings[i] };
 
 		vulkanBindings.Emplace(VulkanUtilities::CreateDescriptorSetLayoutBinding(binding._Binding, VulkanTranslationUtilities::GetVulkanDescriptorType(binding._Type), binding._NumberOfArrayElements, VulkanTranslationUtilities::GetVulkanShaderStages(binding._ShaderStage)));
 	}
 
-	*handle = VulkanInterface::Instance->CreateDescriptorSetLayout(vulkanBindings.Data(), numberOfBindings);
+	*handle = VulkanInterface::Instance->CreateDescriptorSetLayout(vulkanBindings.Data(), number_of_bindings);
 }
 
 /*
 *	Creates a render data table.
 */
-void RenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHandle render_data_table_layout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
 {
-	*handle = VulkanInterface::Instance->CreateDescriptorSet(*static_cast<const VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
+	*handle = VulkanInterface::Instance->CreateDescriptorSet(*static_cast<const VulkanDescriptorSetLayout *const RESTRICT>(render_data_table_layout));
 }
 
 /*
 *	Binds an acceleration structure to a render data table.
 */
-void RenderingSystem::BindAccelerationStructureToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, AccelerationStructureHandle accelerationStructure) const NOEXCEPT
+void VulkanSubRenderingSystem::BindAccelerationStructureToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const AccelerationStructureHandle acceleration_structure) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
-	VulkanAccelerationStructure *const RESTRICT vulkanAccelerationStructure{ static_cast<VulkanAccelerationStructure *const RESTRICT>(accelerationStructure) };
+	VulkanAccelerationStructure *const RESTRICT vulkanAccelerationStructure{ static_cast<VulkanAccelerationStructure *const RESTRICT>(acceleration_structure) };
 
 	//Create the acceleration structure write descriptor set.
 	VkWriteDescriptorSetAccelerationStructureNV accelerationStructureWriteDescriptorSet;
@@ -1225,7 +1296,7 @@ void RenderingSystem::BindAccelerationStructureToRenderDataTable(const uint32 bi
 	writeDescriptorSet.pNext = &accelerationStructureWriteDescriptorSet;
 	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
 	writeDescriptorSet.dstBinding = binding;
-	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.dstArrayElement = array_element;
 	writeDescriptorSet.descriptorCount = 1;
 	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV;
 	writeDescriptorSet.pImageInfo = nullptr;
@@ -1240,7 +1311,7 @@ void RenderingSystem::BindAccelerationStructureToRenderDataTable(const uint32 bi
 *	Binds a combined image sampler to a render data table.
 *	Accepts render target, texture 2D and texture cube handles.
 */
-void RenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT
+void VulkanSubRenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const OpaqueHandle image, const SamplerHandle sampler) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
@@ -1261,7 +1332,7 @@ void RenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 bin
 	writeDescriptorSet.pNext = nullptr;
 	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
 	writeDescriptorSet.dstBinding = binding;
-	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.dstArrayElement = array_element;
 	writeDescriptorSet.descriptorCount = 1;
 	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	writeDescriptorSet.pImageInfo = &descriptorImageInfo;
@@ -1276,7 +1347,7 @@ void RenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 bin
 *	Binds a sampled image to a render data table.
 *	Accepts render target, texture 2D and texture cube handles.
 */
-void RenderingSystem::BindSampledImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, OpaqueHandle image) const NOEXCEPT
+void VulkanSubRenderingSystem::BindSampledImageToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const OpaqueHandle image) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
@@ -1296,7 +1367,7 @@ void RenderingSystem::BindSampledImageToRenderDataTable(const uint32 binding, co
 	writeDescriptorSet.pNext = nullptr;
 	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
 	writeDescriptorSet.dstBinding = binding;
-	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.dstArrayElement = array_element;
 	writeDescriptorSet.descriptorCount = 1;
 	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 	writeDescriptorSet.pImageInfo = &descriptorImageInfo;
@@ -1310,7 +1381,7 @@ void RenderingSystem::BindSampledImageToRenderDataTable(const uint32 binding, co
 /*
 *	Binds a sampler to a render data table.
 */
-void RenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, SamplerHandle sampler) const NOEXCEPT
+void VulkanSubRenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const SamplerHandle sampler) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
@@ -1330,7 +1401,7 @@ void RenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const u
 	writeDescriptorSet.pNext = nullptr;
 	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
 	writeDescriptorSet.dstBinding = binding;
-	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.dstArrayElement = array_element;
 	writeDescriptorSet.descriptorCount = 1;
 	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
 	writeDescriptorSet.pImageInfo = &descriptorImageInfo;
@@ -1344,7 +1415,7 @@ void RenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const u
 /*
 *	Binds a storage image to a render data table.
 */
-void RenderingSystem::BindStorageImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, OpaqueHandle image) const NOEXCEPT
+void VulkanSubRenderingSystem::BindStorageImageToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const OpaqueHandle image) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
@@ -1364,7 +1435,7 @@ void RenderingSystem::BindStorageImageToRenderDataTable(const uint32 binding, co
 	writeDescriptorSet.pNext = nullptr;
 	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
 	writeDescriptorSet.dstBinding = binding;
-	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.dstArrayElement = array_element;
 	writeDescriptorSet.descriptorCount = 1;
 	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	writeDescriptorSet.pImageInfo = &descriptorImageInfo;
@@ -1378,7 +1449,7 @@ void RenderingSystem::BindStorageImageToRenderDataTable(const uint32 binding, co
 /*
 *	Binds a storage buffer to a render data table.
 */
-void RenderingSystem::BindStorageBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, BufferHandle buffer) const NOEXCEPT
+void VulkanSubRenderingSystem::BindStorageBufferToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const BufferHandle buffer) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
@@ -1398,7 +1469,7 @@ void RenderingSystem::BindStorageBufferToRenderDataTable(const uint32 binding, c
 	writeDescriptorSet.pNext = nullptr;
 	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
 	writeDescriptorSet.dstBinding = binding;
-	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.dstArrayElement = array_element;
 	writeDescriptorSet.descriptorCount = 1;
 	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	writeDescriptorSet.pImageInfo = nullptr;
@@ -1412,7 +1483,7 @@ void RenderingSystem::BindStorageBufferToRenderDataTable(const uint32 binding, c
 /*
 *	Binds a uniform buffer to a render data table.
 */
-void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle *const RESTRICT handle, BufferHandle buffer) const NOEXCEPT
+void VulkanSubRenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const BufferHandle buffer) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(*handle) };
@@ -1432,7 +1503,7 @@ void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, c
 	writeDescriptorSet.pNext = nullptr;
 	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
 	writeDescriptorSet.dstBinding = binding;
-	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.dstArrayElement = array_element;
 	writeDescriptorSet.descriptorCount = 1;
 	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	writeDescriptorSet.pImageInfo = nullptr;
@@ -1446,16 +1517,16 @@ void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, c
 /*
 *	Destroys a render data table.
 */
-void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE, *handle);
+	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE, *handle);
 }
 
 /*
 *	Creates a render target.
 */
-void RenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the render target.
 	*handle = static_cast<RenderTargetHandle>(VulkanInterface::Instance->CreateRenderTarget(VulkanTranslationUtilities::GetVulkanExtent(resolution),
@@ -1465,7 +1536,7 @@ void RenderingSystem::CreateRenderTarget(const Resolution resolution, const Text
 /*
 *	Creates a sampler.
 */
-void RenderingSystem::CreateSampler(const SamplerProperties &properties, SamplerHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateSampler(const SamplerProperties &properties, SamplerHandle *const RESTRICT handle) const NOEXCEPT
 {
 	*handle = VulkanInterface::Instance->CreateSampler(	VulkanTranslationUtilities::GetVulkanTextureFilter(properties._MagnificationFilter),
 														VulkanTranslationUtilities::GetVulkanMipmapMode(properties._MipmapMode),
@@ -1476,7 +1547,7 @@ void RenderingSystem::CreateSampler(const SamplerProperties &properties, Sampler
 /*
 *	Creates a texture 2D.
 */
-void RenderingSystem::CreateTexture2D(const TextureData &data, Texture2DHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateTexture2D(const TextureData &data, Texture2DHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the texture 2D.
 	*handle = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(	static_cast<uint32>(data._TextureDataContainer._TextureData.Size()),
@@ -1490,9 +1561,18 @@ void RenderingSystem::CreateTexture2D(const TextureData &data, Texture2DHandle *
 }
 
 /*
+*	Destroys a texture 2D.
+*/
+void VulkanSubRenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT
+{
+	//Put in a queue, destroy when no command buffer uses it anymore.
+	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D, *handle);
+}
+
+/*
 *	Creates a texture 3D.
 */
-void RenderingSystem::CreateTexture3D(const TextureData& data, Texture3DHandle* const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateTexture3D(const TextureData &data, Texture3DHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the texture 3D.
 	*handle = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create3DTexture(	static_cast<uint32>(data._TextureDataContainer._TextureData.Size()),
@@ -1506,18 +1586,9 @@ void RenderingSystem::CreateTexture3D(const TextureData& data, Texture3DHandle* 
 }
 
 /*
-*	Destroys a texture 2D.
-*/
-void RenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT
-{
-	//Put in a queue, destroy when no command buffer uses it anymore.
-	VulkanRenderingSystemData::_DestructionQueue.Emplace(VulkanRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D, *handle);
-}
-
-/*
 *	Creates a texture cube.
 */
-void RenderingSystem::CreateTextureCube(const TextureCubeData& data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the texture cube.
 	*handle = static_cast<TextureCubeHandle>(VulkanInterface::Instance->CreateCubeMapTexture(data._Data, data._Resolution, data._Resolution));
@@ -1526,20 +1597,20 @@ void RenderingSystem::CreateTextureCube(const TextureCubeData& data, TextureCube
 /*
 *	Initializes a pipeline
 */
-void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT
+void VulkanSubRenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT
 {
 	switch (pipeline->GetType())
 	{
 		case Pipeline::Type::Compute:
 		{
-			VulkanRenderingSystemLogic::InitializeComputePipeline(static_cast<ComputePipeline *const RESTRICT>(pipeline));
+			VulkanSubRenderingSystemLogic::InitializeComputePipeline(static_cast<ComputePipeline *const RESTRICT>(pipeline));
 
 			break;
 		}
 
 		case Pipeline::Type::Graphics:
 		{
-			VulkanRenderingSystemLogic::InitializeGraphicsPipeline(static_cast<GraphicsPipeline *const RESTRICT>(pipeline));
+			VulkanSubRenderingSystemLogic::InitializeGraphicsPipeline(static_cast<GraphicsPipeline *const RESTRICT>(pipeline));
 
 			break;
 		}
@@ -1548,7 +1619,7 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 		{
 			if (RenderingSystem::Instance->IsRayTracingSupported())
 			{
-				VulkanRenderingSystemLogic::InitializeRayTracingPipeline(static_cast<RayTracingPipeline *const RESTRICT>(pipeline));
+				VulkanSubRenderingSystemLogic::InitializeRayTracingPipeline(static_cast<RayTracingPipeline *const RESTRICT>(pipeline));
 			}
 			
 			break;
@@ -1559,7 +1630,7 @@ void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) cons
 /*
 *	Takes an immedate screenshot and writes it to the given file path.
 */
-void RenderingSystem::TakeImmediateScreenshot(const char *const RESTRICT file_path) NOEXCEPT
+void VulkanSubRenderingSystem::TakeImmediateScreenshot(const char *const RESTRICT file_path) NOEXCEPT
 {
 	//First of all, wait for all queues to finish their tasks.
 	VulkanInterface::Instance->GetComputeQueue()->WaitIdle();
@@ -1568,10 +1639,10 @@ void RenderingSystem::TakeImmediateScreenshot(const char *const RESTRICT file_pa
 	VulkanInterface::Instance->GetTransferQueue()->WaitIdle();
 
 	//Cache the Vulkan render target.
-	VulkanRenderTarget *const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget *const RESTRICT>(GetRenderTarget(RenderTarget::SCENE)) };
+	VulkanRenderTarget *const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE)) };
 
 	//Calculate the image size.
-	VkDeviceSize image_size{ GetScaledResolution(0)._Width * GetScaledResolution(0)._Height * sizeof(Vector4<float32>) };
+	VkDeviceSize image_size{ RenderingSystem::Instance->GetFullResolution()._Width * RenderingSystem::Instance->GetFullResolution()._Height * sizeof(Vector4<float32>) };
 
 	//Create a temporary CPU-accesible buffer and copy the data over there.
 	VkBuffer temporary_buffer;
@@ -1580,10 +1651,10 @@ void RenderingSystem::TakeImmediateScreenshot(const char *const RESTRICT file_pa
 	VulkanUtilities::CreateVulkanBuffer(image_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, temporary_buffer, temporary_buffer_device_memory);
 
 	//Copy the image to the buffer.
-	VulkanUtilities::CopyImageToBuffer(GetScaledResolution(0)._Width, GetScaledResolution(0)._Height, vulkan_render_target->GetImage(), temporary_buffer);
+	VulkanUtilities::CopyImageToBuffer(RenderingSystem::Instance->GetFullResolution()._Width, RenderingSystem::Instance->GetFullResolution()._Height, vulkan_render_target->GetImage(), temporary_buffer);
 
 	//Map the memory and copy it over into a Texture2D<Vector4<float32>>.
-	Texture2D<Vector4<float32>> image{ GetScaledResolution(0)._Width, GetScaledResolution(0)._Height };
+	Texture2D<Vector4<float32>> image{ RenderingSystem::Instance->GetFullResolution()._Width, RenderingSystem::Instance->GetFullResolution()._Height };
 
 	void *data;
 	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), temporary_buffer_device_memory, 0, VK_WHOLE_SIZE, 0, &data));
@@ -1620,131 +1691,68 @@ void RenderingSystem::TakeImmediateScreenshot(const char *const RESTRICT file_pa
 	TGAWriter::Write(image, file_path);
 }
 
-#if defined(CATALYST_EDITOR)
-/*
-*	Post initializes the rendering system in editor builds.
-*/
-void RenderingSystem::EditorPostInitialize() NOEXCEPT
-{
-	//Set up ImGui for Vulkan.
-	{
-		ImGui_ImplVulkan_InitInfo imgui_init_info{ };
-
-		imgui_init_info.Instance = VulkanInterface::Instance->GetInstance().Get();
-		imgui_init_info.PhysicalDevice = VulkanInterface::Instance->GetPhysicalDevice().Get();
-		imgui_init_info.Device = VulkanInterface::Instance->GetLogicalDevice().Get();
-		imgui_init_info.QueueFamily = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::GRAPHICS);
-		imgui_init_info.Queue = VulkanInterface::Instance->GetGraphicsQueue()->Get();
-		imgui_init_info.PipelineCache = VK_NULL_HANDLE;
-		imgui_init_info.DescriptorPool = VulkanInterface::Instance->GetDescriptorPool().Get();
-		imgui_init_info.Allocator = nullptr;
-		imgui_init_info.MinImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
-		imgui_init_info.ImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
-		imgui_init_info.CheckVkResultFn = nullptr;
-
-		ImGui_ImplVulkan_Init(&imgui_init_info, static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(EditorUserInterfaceRenderPass::Instance->GetEditorUserInterfaceGraphicsPipeline()->GetData())->_RenderPass->Get());
-	}
-
-	//Create the fonts texture.
-	{
-		CommandBuffer *const RESTRICT command_buffer{ GetGlobalCommandBuffer(CommandBufferLevel::PRIMARY) };
-		VkCommandBuffer vulkan_command_buffer{ static_cast<VulkanCommandBuffer* const RESTRICT>(command_buffer->GetCommandBufferData())->Get() };
-
-		VkCommandBufferBeginInfo begin_info = {};
-		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-		vkBeginCommandBuffer(vulkan_command_buffer, &begin_info);
-
-		ImGui_ImplVulkan_CreateFontsTexture(vulkan_command_buffer);
-
-		VkSubmitInfo end_info = {};
-		end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		end_info.commandBufferCount = 1;
-		end_info.pCommandBuffers = &vulkan_command_buffer;
-		vkEndCommandBuffer(vulkan_command_buffer);
-
-		vkQueueSubmit(VulkanInterface::Instance->GetGraphicsQueue()->Get(), 1, &end_info, VK_NULL_HANDLE);
-		vkDeviceWaitIdle(VulkanInterface::Instance->GetLogicalDevice().Get());
-
-		ImGui_ImplVulkan_DestroyFontUploadObjects();
-	}
-}
-#endif
-
-/*
-*	Pre-initializes the rendering system.
-*/
-void RenderingSystem::PreInitialize() NOEXCEPT
-{
-	//Initialize the Vulkan interface.
-	VulkanInterface::Instance->Initialize();
-
-	//Initialize the Vulkan frame data.
-	VulkanRenderingSystemData::_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages());
-}
-
 /*
 *	Begins a frame.
 */
-void RenderingSystem::BeginFrame() NOEXCEPT
+void VulkanSubRenderingSystem::BeginFrame() NOEXCEPT
 {
 	//Pre-update the Vulkan interface.
 	{
-		PROFILING_SCOPE("VulkanInterface::Instance->PreUpdate(VulkanRenderingSystemData::_FrameData.GetImageAvailableSemaphore())");
+		PROFILING_SCOPE("VulkanInterface::Instance->PreUpdate(VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore())");
 
-		VulkanInterface::Instance->PreUpdate(VulkanRenderingSystemData::_FrameData.GetImageAvailableSemaphore());
+		VulkanInterface::Instance->PreUpdate(VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore());
 	}
 
 	//Process the destruction queue.
 	{
-		PROFILING_SCOPE("VulkanRenderingSystemLogic::ProcessDestructionQueue()");
+		PROFILING_SCOPE("VulkanSubRenderingSystemLogic::ProcessDestructionQueue()");
 
-		VulkanRenderingSystemLogic::ProcessDestructionQueue();
+		VulkanSubRenderingSystemLogic::ProcessDestructionQueue();
 	}
 
 	//Set the current frame.
 	{
-		PROFILING_SCOPE("VulkanRenderingSystemData::_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex())");
+		PROFILING_SCOPE("VulkanSubRenderingSystemData::_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex())");
 
-		VulkanRenderingSystemData::_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
+		VulkanSubRenderingSystemData::_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
 	}
 
 	//Wait for the current fence to finish.
 	{
-		PROFILING_SCOPE("VulkanRenderingSystemData::_FrameData.GetCurrentFence()->WaitFor()");
+		PROFILING_SCOPE("VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->WaitFor()");
 
-		VulkanRenderingSystemData::_FrameData.GetCurrentFence()->WaitFor();
+		VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->WaitFor();
 	}
 
 	//Reset the current fence.
 	{
-		PROFILING_SCOPE("VulkanRenderingSystemData::_FrameData.GetCurrentFence()->Reset()");
+		PROFILING_SCOPE("VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->Reset()");
 
-		VulkanRenderingSystemData::_FrameData.GetCurrentFence()->Reset();
+		VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->Reset();
 	}
 }
 
 /*
 *	Ends a frame.
 */
-void RenderingSystem::EndFrame() NOEXCEPT
+void VulkanSubRenderingSystem::EndFrame() NOEXCEPT
 {
 	//Concatenate all secondary command buffers into the previous one.
-	VulkanRenderingSystemLogic::ConcatenateCommandBuffers(_RenderPasses);
+	VulkanSubRenderingSystemLogic::ConcatenateCommandBuffers(RenderingSystem::Instance->GetRenderPasses());
 
 	//End the current command buffer.
-	VulkanRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer()->End();
+	VulkanSubRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer()->End();
 
 	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue()->Submit(	*VulkanRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer(),
+	VulkanInterface::Instance->GetGraphicsQueue()->Submit(	*VulkanSubRenderingSystemData::_FrameData.GetCurrentPrimaryCommandBuffer(),
 															1,
-															VulkanRenderingSystemData::_FrameData.GetImageAvailableSemaphore(),
+															VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore(),
 															VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 															1,
-															VulkanRenderingSystemData::_FrameData.GetRenderFinishedSemaphore(),
-															VulkanRenderingSystemData::_FrameData.GetCurrentFence()->Get());
+															VulkanSubRenderingSystemData::_FrameData.GetRenderFinishedSemaphore(),
+															VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->Get());
 
 	//Post-update the Vulkan interface.
-	VulkanInterface::Instance->PostUpdate(VulkanRenderingSystemData::_FrameData.GetRenderFinishedSemaphore());
+	VulkanInterface::Instance->PostUpdate(VulkanSubRenderingSystemData::_FrameData.GetRenderFinishedSemaphore());
 }
 #endif

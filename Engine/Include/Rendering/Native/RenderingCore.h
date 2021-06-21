@@ -60,6 +60,24 @@ using TextureCubeHandle = void *RESTRICT;
 constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 
 /*
+*	Enumeration covering all sub rendering systems.
+*/
+enum class SubRenderingSystem : uint8
+{
+	OPEN_GL,
+	VULKAN
+};
+
+//Enumeration covering all rendering paths.
+enum class RenderingPath : uint8
+{
+	DEFAULT,
+	PATH_TRACING,
+
+	NUMBER_OF_RENDERING_PATHS
+};
+
+/*
 *	Enumeration covering all native render pass stages.
 *	The order of the stages define in what order they will execute in.
 */

@@ -54,7 +54,7 @@ void PathTracingRenderPass::Initialize() NOEXCEPT
 void PathTracingRenderPass::Execute() NOEXCEPT
 {
 	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetRenderingPath() != RenderingConfiguration::RenderingPath::PATH_TRACING)
+	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::PATH_TRACING)
 	{
 		SetEnabled(false);
 

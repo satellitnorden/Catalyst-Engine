@@ -6,6 +6,7 @@
 #include <Core/General/HashString.h>
 
 //Rendering.
+#include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
 
 //Sound.
@@ -91,6 +92,17 @@ class CatalystProjectRenderingConfiguration final
 {
 
 public:
+
+	/*
+	*	Determines the sub rendering system.
+	*	Recommended: SubRenderingSystem::VULKAN.
+	*/
+	SubRenderingSystem _SubRenderingSystem;
+
+	/*
+	*	The initial rendering path.
+	*/
+	RenderingPath _InitialRenderingPath;
 
 	/*
 	*	Denotes the focused frame time, denoted in seconds. Set to <= 0.0f if it doesn't matter.

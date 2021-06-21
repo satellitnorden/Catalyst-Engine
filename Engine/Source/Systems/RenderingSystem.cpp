@@ -25,6 +25,8 @@
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/RenderPasses/RenderPassManager.h>
+#include <Rendering/Translation/OpenGL/OpenGLSubRenderingSystem.h>
+#include <Rendering/Translation/Vulkan/VulkanSubRenderingSystem.h>
 
 //Systems.
 #include <Systems/AnimationSystem.h>
@@ -72,6 +74,34 @@ namespace RenderingSystemLogic
 */
 void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT
 {
+	//Create the sub rendering system.
+	switch (configuration._SubRenderingSystem)
+	{
+		case SubRenderingSystem::OPEN_GL:
+		{
+			_SubRenderingSystem = new OpenGLSubRenderingSystem();
+
+			break;
+		}
+
+		case SubRenderingSystem::VULKAN:
+		{
+			_SubRenderingSystem = new VulkanSubRenderingSystem();
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Set the initial rendering path.
+	_CurrentRenderingPath = configuration._InitialRenderingPath;
+
 	//Set the full resolution.
 	_FullResolution = configuration._Resolution;
 
@@ -117,8 +147,8 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	//Set the far plane of the perceiver.
 	Perceiver::Instance->SetFarPlane(configuration._ViewDistance * 2.0f);
 
-	//Pre-initialize the rendering system.
-	PreInitialize();
+	//Pre-initialize the sub rendering system.
+	_SubRenderingSystem->PreInitialize();
 
 	//Initialize all render targets.
 	InitializeRenderTargets();
@@ -140,6 +170,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 	//Pre-initialize the global render data.
 	PreInitializeGlobalRenderData();
+
+	//Initialize the sub rendering system.
+	_SubRenderingSystem->Initialize();
 }
 
 /*
@@ -175,6 +208,11 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 
 	//Initialize all render passes.
 	RenderingSystemLogic::InitializeRenderPasses(_RenderPasses);
+
+#if defined(CATALYST_EDITOR)
+	//Editor post-initialize the sub rendering system.
+	_SubRenderingSystem->EditorPostInitialize();
+#endif
 }
 
 /*
@@ -182,11 +220,11 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 */
 void RenderingSystem::RenderUpdate() NOEXCEPT
 {
-	//Begin the frame.
+	//Tell the sub rendering to begin the frame.
 	{
-		PROFILING_SCOPE("BeginFrame()");
+		PROFILING_SCOPE("_SubRenderingSystem->BeginFrame()");
 
-		BeginFrame();
+		_SubRenderingSystem->BeginFrame();
 	}
 	
 	//Update the global render data.
@@ -231,12 +269,32 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		RenderingSystemLogic::ExecuteRenderPasses(_RenderPasses);
 	}
 
-	//End the frame.
+	//Tell the sub rendering system to end the frame.
 	{
-		PROFILING_SCOPE("EndFrame()");
+		PROFILING_SCOPE("_SubRenderingSystem->EndFrame()");
 
-		EndFrame();
+		_SubRenderingSystem->EndFrame();
 	}
+}
+
+/*
+*	Terminates the rendering system.
+*/
+void RenderingSystem::Terminate() NOEXCEPT
+{
+	//Terminate the sub rendering system.
+	_SubRenderingSystem->Terminate();
+
+	//Destroy the sub rendering system.
+	delete _SubRenderingSystem;
+}
+
+/*
+*	Returns whether or not ray tracing is supported.
+*/
+NO_DISCARD bool RenderingSystem::IsRayTracingSupported() const NOEXCEPT
+{
+	return _SubRenderingSystem->IsRayTracingSupported();
 }
 
 /*
@@ -245,7 +303,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
 {
 	return	IsRayTracingSupported() &&
-			(_RenderingConfiguration.GetRenderingPath() == RenderingConfiguration::RenderingPath::PATH_TRACING
+			(GetCurrentRenderingPath() == RenderingPath::PATH_TRACING
 			|| _RenderingConfiguration.GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED
 			|| _RenderingConfiguration.GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RAY_TRACED
 			|| _RenderingConfiguration.GetVolumetricShadowsMode() == RenderingConfiguration::VolumetricShadowsMode::RAY_TRACED);
@@ -257,6 +315,30 @@ NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
 NO_DISCARD bool RenderingSystem::IsRayTracingPossible() const NOEXCEPT
 {
 	return _RayTracingSystem.DoesRayTracingDataExist();
+}
+
+/*
+*	Returns the number of framebuffers.
+*/
+NO_DISCARD uint8 RenderingSystem::GetNumberOfFramebuffers() const NOEXCEPT
+{
+	return _SubRenderingSystem->GetNumberOfFramebuffers();
+}
+
+/*
+*	Returns the current framebuffer index.
+*/
+NO_DISCARD uint8 RenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
+{
+	return _SubRenderingSystem->GetCurrentFramebufferIndex();
+}
+
+/*
+*	Returns the current surface transform.
+*/
+NO_DISCARD SurfaceTransform RenderingSystem::GetCurrentSurfaceTransform() const NOEXCEPT
+{
+	return _SubRenderingSystem->GetCurrentSurfaceTransform();
 }
 
 /*
@@ -636,6 +718,82 @@ void RenderingSystem::AddCustomRenderPass(RenderPass *const RESTRICT render_pass
 }
 
 /*
+*	Creates a bottom level acceleration structure.
+*/
+void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle vertex_buffer,
+																const uint32 number_of_vertices,
+																const BufferHandle index_buffer,
+																const uint32 number_of_indices,
+																AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+{
+	_SubRenderingSystem->CreateBottomLevelAccelerationStructure(vertex_buffer, number_of_vertices, index_buffer, number_of_indices, handle);
+}
+
+/*
+*	Creates a top level acceleration structure.
+*/
+void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+{
+	_SubRenderingSystem->CreateTopLevelAccelerationStructure(instance_data, handle);
+}
+
+/*
+*	Destroys an acceleration structure.
+*/
+void RenderingSystem::DestroyAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+{
+	_SubRenderingSystem->DestroyAccelerationStructure(handle);
+}
+
+/*
+*	Creates a buffer.
+*/
+void RenderingSystem::CreateBuffer(const uint64 size, const BufferUsage usage, const MemoryProperty memory_properties, BufferHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateBuffer(size, usage, memory_properties, handle);
+}
+
+/*
+*	Uploads data to a buffer.
+*/
+void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT data_sizes, const uint8 data_chunks, BufferHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->UploadDataToBuffer(data, data_sizes, data_chunks, handle);
+}
+
+/*
+*	Destroys a buffer.
+*/
+void RenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->DestroyBuffer(handle);
+}
+
+/*
+*	Creates a command pool.
+*/
+void RenderingSystem::CreateCommandPool(const Pipeline::Type type, CommandPoolHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateCommandPool(type, handle);
+}
+
+/*
+*	Resets a command pool.
+*/
+void RenderingSystem::ResetCommandPool(CommandPoolHandle *const RESTRICT handle) NOEXCEPT
+{
+	_SubRenderingSystem->ResetCommandPool(handle);
+}
+
+/*
+*	Allocates a command buffer from the given command pool.
+*/
+RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT RenderingSystem::AllocateCommandBuffer(const CommandPoolHandle command_pool, const CommandBufferLevel level) const NOEXCEPT
+{
+	return _SubRenderingSystem->AllocateCommandBuffer(command_pool, level);
+}
+
+/*
 *	Returns a global command buffer from the global command pool.
 */
 RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT RenderingSystem::GetGlobalCommandBuffer(const CommandBufferLevel level) NOEXCEPT
@@ -675,6 +833,209 @@ RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT RenderingSystem::GetGlobalCo
 			return nullptr;
 		}
 	}
+}
+
+/*
+*	Submits a command buffer.
+*/
+void RenderingSystem::SubmitCommandBuffer(const CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
+{
+	_SubRenderingSystem->SubmitCommandBuffer(command_buffer);
+}
+
+/*
+*	Creates a depth buffer.
+*/
+void RenderingSystem::CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateDepthBuffer(resolution, handle);
+}
+
+/*
+*	Creates an event.
+*/
+void RenderingSystem::CreateEvent(EventHandle *const RESTRICT handle) NOEXCEPT
+{
+	_SubRenderingSystem->CreateEvent(handle);
+}
+
+/*
+*	Resets an event.
+*/
+void RenderingSystem::ResetEvent(const EventHandle handle) NOEXCEPT
+{
+	_SubRenderingSystem->ResetEvent(handle);
+}
+
+/*
+*	Waits for an event.
+*/
+void RenderingSystem::WaitForEvent(const EventHandle handle) NOEXCEPT
+{
+	_SubRenderingSystem->WaitForEvent(handle);
+}
+
+/*
+*	Creates a query pool.
+*/
+void RenderingSystem::CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT
+{
+	_SubRenderingSystem->CreateQueryPool(handle);
+}
+
+/*
+*	Returns the execution time, in nanoseconds, from the given query pool.
+*	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
+*/
+NO_DISCARD uint32 RenderingSystem::GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT
+{
+	return _SubRenderingSystem->GetExecutionTime(query_pool);
+}
+
+/*
+*	Creates a Shader.
+*/
+void RenderingSystem::CreateShader(const ArrayProxy<byte> &data, const ShaderStage stage, ShaderHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateShader(data, stage, handle);
+}
+
+/*
+*	Creates a render data table layout.
+*/
+void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 number_of_bindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateRenderDataTableLayout(bindings, number_of_bindings, handle);
+}
+
+/*
+*	Creates a render data table.
+*/
+void RenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHandle render_data_table_layout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateRenderDataTable(render_data_table_layout, handle);
+}
+
+/*
+*	Binds an acceleration structure to a render data table.
+*/
+void RenderingSystem::BindAccelerationStructureToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const AccelerationStructureHandle acceleration_structure) const NOEXCEPT
+{
+	_SubRenderingSystem->BindAccelerationStructureToRenderDataTable(binding, array_element, handle, acceleration_structure);
+}
+
+/*
+*	Binds a combined image sampler to a render data table.
+*	Accepts render target, texture 2D and texture cube handles.
+*/
+void RenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const OpaqueHandle image, const SamplerHandle sampler) const NOEXCEPT
+{
+	_SubRenderingSystem->BindCombinedImageSamplerToRenderDataTable(binding, array_element, handle, image, sampler);
+}
+
+/*
+*	Binds a sampled image to a render data table.
+*	Accepts render target, texture 2D and texture cube handles.
+*/
+void RenderingSystem::BindSampledImageToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const OpaqueHandle image) const NOEXCEPT
+{
+	_SubRenderingSystem->BindSampledImageToRenderDataTable(binding, array_element, handle, image);
+}
+
+/*
+*	Binds a sampler to a render data table.
+*/
+void RenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const SamplerHandle sampler) const NOEXCEPT
+{
+	_SubRenderingSystem->BindSamplerToRenderDataTable(binding, array_element, handle, sampler);
+}
+
+/*
+*	Binds a storage buffer to a render data table.
+*/
+void RenderingSystem::BindStorageBufferToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const BufferHandle buffer) const NOEXCEPT
+{
+	_SubRenderingSystem->BindStorageBufferToRenderDataTable(binding, array_element, handle, buffer);
+}
+
+/*
+*	Binds a storage image to a render data table.
+*/
+void RenderingSystem::BindStorageImageToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const OpaqueHandle image) const NOEXCEPT
+{
+	_SubRenderingSystem->BindStorageImageToRenderDataTable(binding, array_element, handle, image);
+}
+
+/*
+*	Binds a uniform buffer to a render data table.
+*/
+void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const BufferHandle buffer) const NOEXCEPT
+{
+	_SubRenderingSystem->BindUniformBufferToRenderDataTable(binding, array_element, handle, buffer);
+}
+
+/*
+*	Destroys a render data table.
+*/
+void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->DestroyRenderDataTable(handle);
+}
+
+/*
+*	Creates a render target.
+*/
+void RenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateRenderTarget(resolution, format, handle);
+}
+
+/*
+*	Creates and returns a sampler.
+*/
+void RenderingSystem::CreateSampler(const SamplerProperties &properties, SamplerHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateSampler(properties, handle);
+}
+
+/*
+*	Creates a texture 2D.
+*/
+void RenderingSystem::CreateTexture2D(const TextureData &data, Texture2DHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateTexture2D(data, handle);
+}
+
+/*
+*	Destroys a texture 2D.
+*/
+void RenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->DestroyTexture2D(handle);
+}
+
+/*
+*	Creates a texture 3D.
+*/
+void RenderingSystem::CreateTexture3D(const TextureData &data, Texture3DHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateTexture3D(data, handle);
+}
+
+/*
+*	Creates a texture cube.
+*/
+void RenderingSystem::CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->CreateTextureCube(data, handle);
+}
+
+/*
+*	Initializes a pipeline
+*/
+void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT
+{
+	_SubRenderingSystem->InitializePipeline(pipeline);
 }
 
 /*
@@ -760,6 +1121,14 @@ RenderDataTableHandle RenderingSystem::GetCommonRenderDataTable(const CommonRend
 {
 	//Return the given common render data table layout.
 	return _CommonRenderDataTables[UNDERLYING(common_render_data_table)];
+}
+
+/*
+*	Takes an immedate screenshot and writes it to the given file path.
+*/
+void RenderingSystem::TakeImmediateScreenshot(const char *const RESTRICT file_path) NOEXCEPT
+{
+	_SubRenderingSystem->TakeImmediateScreenshot(file_path);
 }
 
 /*

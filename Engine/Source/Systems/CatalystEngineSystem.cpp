@@ -184,9 +184,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	RenderingSystem::Instance->PostInitialize();
 	TerrainSystem::Instance->PostInitialize(_ProjectConfiguration._TerrainConfiguration);
 	WorldSystem::Instance->PostInitialize();
-#if defined(CATALYST_EDITOR)
-	RenderingSystem::Instance->EditorPostInitialize();
-#endif
 
 	//Post-initialize the game system.
 	_ProjectConfiguration._GeneralConfiguration._PostInitializationFunction();
