@@ -42,14 +42,6 @@ public:
 	}
 
 	/*
-	*	Returns the stage.
-	*/
-	FORCE_INLINE NO_DISCARD NativeRenderPassStage GetStage() const NOEXCEPT
-	{
-		return _Stage;
-	}
-
-	/*
 	*	Returns the number of pipelines.
 	*/
 	FORCE_INLINE NO_DISCARD uint64 GetNumberOfPipelines() const NOEXCEPT
@@ -74,11 +66,6 @@ protected:
 	{
 		_Enabled = enabled;
 	}
-
-	/*
-	*	Sets the stage.
-	*/
-	void SetStage(const NativeRenderPassStage stage) NOEXCEPT;
 
 	/*
 	*	Sets the initialization function.
@@ -116,9 +103,6 @@ private:
 
 	//Denotes if this render pass is enabled or not.
 	bool _Enabled{ true };
-
-	//The stage.
-	NativeRenderPassStage _Stage{ NativeRenderPassStage::NONE };
 
 	//The initialization function.
 	InitializationFunction _InitializationFunction;

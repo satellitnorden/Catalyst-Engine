@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/FastApproximateAntiAliasingRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,9 @@ DEFINE_SINGLETON(FastApproximateAntiAliasingRenderPass);
 */
 FastApproximateAntiAliasingRenderPass::FastApproximateAntiAliasingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::FAST_APPROXIMATE_ANTI_ALIASING);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::FAST_APPROXIMATE_ANTI_ALIASING, this);
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::FAST_APPROXIMATE_ANTI_ALIASING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -56,4 +59,3 @@ void FastApproximateAntiAliasingRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_FastApproximateAntiAliasingGraphicsPipeline.Execute();
 }
-#endif

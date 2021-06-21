@@ -1,4 +1,3 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #pragma once
 
@@ -43,5 +42,4 @@ private:
 	void Execute() NOEXCEPT;
 
 };
-#endif
 #endif

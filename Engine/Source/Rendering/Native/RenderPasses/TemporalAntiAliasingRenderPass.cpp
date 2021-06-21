@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/TemporalAntiAliasingRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,9 @@ DEFINE_SINGLETON(TemporalAntiAliasingRenderPass);
 */
 TemporalAntiAliasingRenderPass::TemporalAntiAliasingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::TEMPORAL_ANTI_ALIASING);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::TEMPORAL_ANTI_ALIASING, this);
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::TEMPORAL_ANTI_ALIASING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -97,4 +100,3 @@ void TemporalAntiAliasingRenderPass::Execute() NOEXCEPT
 	//Update the current buffer index.
 	_CurrentBufferIndex = _CurrentBufferIndex == _TemporalAntiAliasingGraphicsPipelines.Size() - 1 ? 0 : _CurrentBufferIndex + 1;
 }
-#endif

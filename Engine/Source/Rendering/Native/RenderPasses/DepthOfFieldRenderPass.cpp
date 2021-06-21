@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/DepthOfFieldRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,9 @@ DEFINE_SINGLETON(DepthOfFieldRenderPass);
 */
 DepthOfFieldRenderPass::DepthOfFieldRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::DEPTH_OF_FIELD);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::DEPTH_OF_FIELD, this);
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::DEPTH_OF_FIELD, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -73,4 +76,3 @@ void DepthOfFieldRenderPass::Execute() NOEXCEPT
 	_DepthOfFieldBokehBlurGraphicsPipeline.Execute();
 	_DepthOfFieldApplicationGraphicsPipeline.Execute();
 }
-#endif

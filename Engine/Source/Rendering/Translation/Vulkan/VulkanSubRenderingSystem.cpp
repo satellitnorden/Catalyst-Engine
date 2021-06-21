@@ -29,7 +29,6 @@
 #if defined(CATALYST_EDITOR)
 #include <Rendering/Native/RenderPasses/EditorUserInterfaceRenderPass.h>
 #endif
-#include <Rendering/Native/RenderPasses/RenderPassManager.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanComputePipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanGraphicsPipelineData.h>
@@ -1625,6 +1624,14 @@ void VulkanSubRenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipel
 			break;
 		}
 	}
+}
+
+/*
+*	Terminates a pipeline
+*/
+void VulkanSubRenderingSystem::TerminatePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT
+{
+
 }
 
 /*

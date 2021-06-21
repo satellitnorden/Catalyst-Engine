@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/UserInterfaceRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,9 @@ DEFINE_SINGLETON(UserInterfaceRenderPass);
 */
 UserInterfaceRenderPass::UserInterfaceRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::USER_INTERFACE);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::USER_INTERFACE, this);
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::USER_INTERFACE, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -56,4 +59,3 @@ void UserInterfaceRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_UserInterfaceGraphicsPipeline.Execute();
 }
-#endif

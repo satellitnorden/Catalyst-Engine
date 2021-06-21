@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/PathTracingRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,8 @@ DEFINE_SINGLETON(PathTracingRenderPass);
 */
 PathTracingRenderPass::PathTracingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::PATH_TRACING);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::PATH_TRACING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -69,4 +71,3 @@ void PathTracingRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_PathTracingRayTracingPipeline.Execute();
 }
-#endif

@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/ScreenRenderPass.h>
 
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -12,8 +15,9 @@ DEFINE_SINGLETON(ScreenRenderPass);
 */
 ScreenRenderPass::ScreenRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::SCREEN);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::SCREEN, this);
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::SCREEN, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

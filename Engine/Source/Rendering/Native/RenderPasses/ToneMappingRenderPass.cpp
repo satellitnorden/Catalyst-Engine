@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/ToneMappingRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,9 @@ DEFINE_SINGLETON(ToneMappingRenderPass);
 */
 ToneMappingRenderPass::ToneMappingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::TONE_MAPPING);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::TONE_MAPPING, this);
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::TONE_MAPPING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -56,4 +59,3 @@ void ToneMappingRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_ToneMappingGraphicsPipeline.Execute();
 }
-#endif

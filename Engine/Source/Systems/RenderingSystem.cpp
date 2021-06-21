@@ -24,7 +24,7 @@
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
-#include <Rendering/Native/RenderPasses/RenderPassManager.h>
+#include <Rendering/Native/NativeRenderPassManager.h>
 #include <Rendering/Translation/OpenGL/OpenGLSubRenderingSystem.h>
 #include <Rendering/Translation/Vulkan/VulkanSubRenderingSystem.h>
 
@@ -38,36 +38,6 @@
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
-
-//Rendering system logic.
-namespace RenderingSystemLogic
-{
-
-	/*
-	*	Initializes all render passes.
-	*/
-	FORCE_INLINE void InitializeRenderPasses(const DynamicArray<RenderPass *RESTRICT> &render_passes) NOEXCEPT
-	{
-		//Initialize all render passes.
-		for (RenderPass *const RESTRICT render_pass : render_passes)
-		{
-			render_pass->Initialize();
-		}
-	}
-
-	/*
-	*	Executes all render passes.
-	*/
-	FORCE_INLINE void ExecuteRenderPasses(const DynamicArray<RenderPass *RESTRICT> &render_passes) NOEXCEPT
-	{
-		//Executes all render passes.
-		for (RenderPass *const RESTRICT render_pass : render_passes)
-		{
-			render_pass->Execute();
-		}
-	}
-
-}
 
 /*
 *	Initializes the rendering system.
@@ -198,16 +168,14 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 	//Post-initialize the ray tracing system.
 	_RayTracingSystem.PostInitialize();
 
-	//Fill up the render passes container.
-	_RenderPasses.Reserve(UNDERLYING(NativeRenderPassStage::NUMBER_OF_RENDER_PASS_STAGES));
-
-	for (RenderPass *const RESTRICT native_render_pass : *RenderPassManager::GetRenderPasses())
-	{
-		_RenderPasses.Emplace(native_render_pass);
-	}
+	//Retrieve the render passes.
+	NativeRenderPassManager::GetRenderPasses(_CurrentRenderingPath, &_RenderPasses);
 
 	//Initialize all render passes.
-	RenderingSystemLogic::InitializeRenderPasses(_RenderPasses);
+	for (RenderPass *const RESTRICT render_pass : _RenderPasses)
+	{
+		render_pass->Initialize();
+	}
 
 #if defined(CATALYST_EDITOR)
 	//Editor post-initialize the sub rendering system.
@@ -264,9 +232,12 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 
 	//Execute all render passes.
 	{
-		PROFILING_SCOPE("RenderingSystemLogic::ExecuteRenderPasses(_RenderPasses)");
+		PROFILING_SCOPE("Execute All Render Passes");
 
-		RenderingSystemLogic::ExecuteRenderPasses(_RenderPasses);
+		for (RenderPass *const RESTRICT render_pass : _RenderPasses)
+		{
+			render_pass->Execute();
+		}
 	}
 
 	//Tell the sub rendering system to end the frame.
@@ -287,6 +258,18 @@ void RenderingSystem::Terminate() NOEXCEPT
 
 	//Destroy the sub rendering system.
 	delete _SubRenderingSystem;
+}
+
+/*
+*	Sets the current rendering path.
+*/
+void RenderingSystem::SetCurrentRenderingPath(const RenderingPath value) NOEXCEPT
+{
+	//Set the current rendering path.
+	_CurrentRenderingPath = value;
+
+	//Re-retrieve the render passes.
+	NativeRenderPassManager::GetRenderPasses(_CurrentRenderingPath, &_RenderPasses);
 }
 
 /*
@@ -633,91 +616,6 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 }
 
 /*
-*	Adds a custom render pass.
-*/
-void RenderingSystem::AddCustomRenderPass(RenderPass *const RESTRICT render_pass, const NativeRenderPassStage anchor, const CustomRenderPassOrdering ordering, const CustomRenderPassMode mode) NOEXCEPT
-{
-	//Find the custom render pass index and insert the custom render pass.
-	uint64 custom_render_pass_index{ UINT64_MAXIMUM };
-
-	for (uint64 i{ 0 }, size{ _RenderPasses.Size() }; i < size; ++i)
-	{
-		if (_RenderPasses[i]->GetStage() == anchor)
-		{
-			switch (ordering)
-			{
-				case CustomRenderPassOrdering::BEFORE:
-				{
-					custom_render_pass_index = i;
-
-					_RenderPasses.Insert(render_pass, custom_render_pass_index);
-
-					break;
-				}
-
-				case CustomRenderPassOrdering::AFTER:
-				{
-					custom_render_pass_index = i + 1;
-
-					_RenderPasses.Insert(render_pass, custom_render_pass_index);
-
-					break;
-				}
-
-				default:
-				{
-					ASSERT(false, "Invalid case!");
-
-					break;
-				}
-			}
-
-			break;
-		}
-	}
-
-	//Couldn't find the custom render pass index?
-	if (custom_render_pass_index == UINT64_MAXIMUM)
-	{
-		ASSERT(false, "Couldn't find custom render pass index!");
-
-		return;
-	}
-
-	//Apply the mode.
-	switch (mode)
-	{
-		case CustomRenderPassMode::ADD:
-		{
-			//Nothing to do here.
-
-			break;
-		}
-
-		case CustomRenderPassMode::OVERRIDE:
-		{
-			//Remove all previous render passes before the anchor index.
-			for (uint64 i{ 0 }; i < custom_render_pass_index; ++i)
-			{
-				_RenderPasses.EraseAt<true>(0);
-			}
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
-
-	//Initialize the render pass.
-	render_pass->Initialize();
-}
-
-/*
 *	Creates a bottom level acceleration structure.
 */
 void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle vertex_buffer,
@@ -1031,11 +929,41 @@ void RenderingSystem::CreateTextureCube(const TextureCubeData &data, TextureCube
 }
 
 /*
+*	Initializes a render pass.
+*/
+void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT render_pass) NOEXCEPT
+{
+	for (Pipeline* const RESTRICT pipeline : render_pass->GetPipelines())
+	{
+		InitializePipeline(pipeline);
+	}
+}
+
+/*
 *	Initializes a pipeline
 */
 void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT
 {
 	_SubRenderingSystem->InitializePipeline(pipeline);
+}
+
+/*
+*	Terminates a pipeline.
+*/
+void RenderingSystem::TerminatePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT
+{
+	_SubRenderingSystem->TerminatePipeline(pipeline);
+}
+
+/*
+*	Terminates a render pass.
+*/
+void RenderingSystem::TerminateRenderPass(RenderPass *const RESTRICT render_pass) const NOEXCEPT
+{
+	for (Pipeline* const RESTRICT pipeline : render_pass->GetPipelines())
+	{
+		TerminatePipeline(pipeline);
+	}
 }
 
 /*
@@ -1208,7 +1136,6 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all render targets.
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_1)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_2)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3)]);
@@ -1218,9 +1145,7 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RG_FLOAT16, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::AMBIENT_OCCLUSION)]);
-#endif
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE)]);
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_1)]);
@@ -1244,7 +1169,6 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(6), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH)]);
 	CreateRenderTarget(GetScaledResolution(7), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH)]);
 	CreateRenderTarget(GetScaledResolution(8), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH)]);
-#endif
 }
 
 /*

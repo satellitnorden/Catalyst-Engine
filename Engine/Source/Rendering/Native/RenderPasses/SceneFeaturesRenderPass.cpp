@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,8 @@ DEFINE_SINGLETON(SceneFeaturesRenderPass);
 */
 SceneFeaturesRenderPass::SceneFeaturesRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::SCENE_FEATURES);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::SCENE_FEATURES, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -126,19 +128,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 */
 void SceneFeaturesRenderPass::Execute() NOEXCEPT
 {	
-	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::DEFAULT)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
-	else
-	{
-		SetEnabled(true);
-	}
-
 	//Execute all pipelines.
 	_ClearGraphicsPipeline.Execute();
 	_ParticleSystemComputePipeline.Execute();
@@ -184,4 +173,3 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 #endif
 	_VelocityGraphicsPipeline.Execute();
 }
-#endif

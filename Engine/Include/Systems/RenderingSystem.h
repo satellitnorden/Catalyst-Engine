@@ -91,10 +91,7 @@ public:
 	/*
 	*	Sets the current rendering path.
 	*/
-	FORCE_INLINE void SetCurrentRenderingPath(const RenderingPath value) NOEXCEPT
-	{
-		_CurrentRenderingPath = value;
-	}
+	void SetCurrentRenderingPath(const RenderingPath value) NOEXCEPT;
 
 	/*
 	*	Returns whether or not ray tracing is supported.
@@ -225,11 +222,6 @@ public:
 	{
 		return &_RenderingReferenceSystem;
 	}
-
-	/*
-	*	Adds a custom render pass.
-	*/
-	void AddCustomRenderPass(RenderPass *const RESTRICT render_pass, const NativeRenderPassStage anchor, const CustomRenderPassOrdering ordering, const CustomRenderPassMode mode) NOEXCEPT;
 
 	/*
 	*	Creates a bottom level acceleration structure.
@@ -409,9 +401,24 @@ public:
 	void CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
+	*	Initializes a render pass.
+	*/
+	void InitializeRenderPass(RenderPass *const RESTRICT render_pass) NOEXCEPT;
+
+	/*
 	*	Initializes a pipeline
 	*/
 	void InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT;
+
+	/*
+	*	Terminates a pipeline.
+	*/
+	void TerminatePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT;
+
+	/*
+	*	Terminates a render pass.
+	*/
+	void TerminateRenderPass(RenderPass *const RESTRICT render_pass) const NOEXCEPT;
 
 	/*
 	*	Returns the global render data table.

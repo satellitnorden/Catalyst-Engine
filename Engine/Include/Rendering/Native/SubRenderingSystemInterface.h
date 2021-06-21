@@ -247,6 +247,11 @@ public:
 	virtual void InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT = 0;
 
 	/*
+	*	Terminates a pipeline
+	*/
+	virtual void TerminatePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT = 0;
+
+	/*
 	*	Takes an immedate screenshot and writes it to the given file path.
 	*/
 	virtual void TakeImmediateScreenshot(const char *const RESTRICT file_path) NOEXCEPT = 0;

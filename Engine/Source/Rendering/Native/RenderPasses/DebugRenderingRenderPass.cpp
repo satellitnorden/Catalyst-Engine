@@ -1,10 +1,12 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Header file.
 #include <Rendering/Native/RenderPasses/DebugRenderingRenderPass.h>
 
 //Rendering.
 #include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -17,8 +19,9 @@ DEFINE_SINGLETON(DebugRenderingRenderPass);
 */
 DebugRenderingRenderPass::DebugRenderingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::DEBUG_RENDERING);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::DEBUG_RENDERING, this);
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::DEBUG_RENDERING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -75,5 +78,4 @@ void DebugRenderingRenderPass::Execute() NOEXCEPT
 
 	_DebugRenderSphereGraphicsPipeline.Execute();
 }
-#endif
 #endif

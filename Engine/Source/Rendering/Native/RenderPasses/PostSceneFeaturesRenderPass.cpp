@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/PostSceneFeaturesRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,8 @@ DEFINE_SINGLETON(PostSceneFeaturesRenderPass);
 */
 PostSceneFeaturesRenderPass::PostSceneFeaturesRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::POST_SCENE_FEATURES);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::POST_SCENE_FEATURES, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -69,4 +71,3 @@ void PostSceneFeaturesRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_SceneFeaturesDownsampleGraphicsPipeline.Execute();
 }
-#endif

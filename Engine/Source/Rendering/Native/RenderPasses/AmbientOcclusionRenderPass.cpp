@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/AmbientOcclusionRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,8 @@ DEFINE_SINGLETON(AmbientOcclusionRenderPass);
 */
 AmbientOcclusionRenderPass::AmbientOcclusionRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::AMBIENT_OCCLUSION);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::AMBIENT_OCCLUSION, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -155,4 +157,3 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	//Enable this render pass.
 	SetEnabled(true);
 }
-#endif

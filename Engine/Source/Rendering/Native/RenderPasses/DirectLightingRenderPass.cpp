@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/DirectLightingRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,8 @@ DEFINE_SINGLETON(DirectLightingRenderPass);
 */
 DirectLightingRenderPass::DirectLightingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::DIRECT_LIGHTING);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::DIRECT_LIGHTING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -68,4 +70,3 @@ void DirectLightingRenderPass::Execute() NOEXCEPT
 
 	_DirectLightingGraphicsPipeline.Execute();
 }
-#endif

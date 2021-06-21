@@ -231,6 +231,11 @@ public:
 	void InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT override;
 
 	/*
+	*	Terminates a pipeline
+	*/
+	void TerminatePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT override;
+
+	/*
 	*	Takes an immedate screenshot and writes it to the given file path.
 	*/
 	void TakeImmediateScreenshot(const char *const RESTRICT file_path) NOEXCEPT override;

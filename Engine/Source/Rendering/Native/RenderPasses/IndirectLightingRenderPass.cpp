@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/IndirectLightingRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -17,8 +19,8 @@ DEFINE_SINGLETON(IndirectLightingRenderPass);
 */
 IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::INDIRECT_LIGHTING);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::INDIRECT_LIGHTING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -364,4 +366,3 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	//Update the current buffer index.
 	_CurrentTemporalBufferIndex ^= static_cast<uint8>(1);
 }
-#endif

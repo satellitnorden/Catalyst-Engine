@@ -1,6 +1,8 @@
-#if defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/SimplifiedRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,8 @@ DEFINE_SINGLETON(SimplifiedRenderPass);
 */
 SimplifiedRenderPass::SimplifiedRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::SIMPLIFIED);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterSimplifiedRenderPass(SimplifiedNativeRenderPassStage::SIMPLIFIED, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -68,4 +70,3 @@ void SimplifiedRenderPass::Execute() NOEXCEPT
 	//Enable this render pass.
 	SetEnabled(true);
 }
-#endif

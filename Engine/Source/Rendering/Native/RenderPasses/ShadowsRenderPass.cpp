@@ -1,4 +1,3 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/ShadowsRenderPass.h>
 
@@ -9,6 +8,7 @@
 #include <Components/Core/ComponentManager.h>
 
 //Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 #include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
@@ -95,8 +95,8 @@ FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_ind
 */
 ShadowsRenderPass::ShadowsRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::SHADOWS);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::SHADOWS, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -343,4 +343,3 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 	//Enable this render pass.
 	SetEnabled(true);
 }
-#endif

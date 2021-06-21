@@ -73,17 +73,17 @@ enum class RenderingPath : uint8
 {
 	DEFAULT,
 	PATH_TRACING,
+	SIMPLIFIED,
 
 	NUMBER_OF_RENDERING_PATHS
 };
 
 /*
-*	Enumeration covering all native render pass stages.
+*	Enumeration covering all default native render pass stages.
 *	The order of the stages define in what order they will execute in.
 */
-enum class NativeRenderPassStage : uint8
+enum class DefaultNativeRenderPassStage : uint8
 {
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 	SCENE_FEATURES,
 	OCEAN,
 	POST_SCENE_FEATURES,
@@ -93,6 +93,31 @@ enum class NativeRenderPassStage : uint8
 	INDIRECT_LIGHTING,
 	SKY,
 	VOLUMETRIC_LIGHTING,
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	DEBUG_RENDERING,
+#endif
+	DEPTH_OF_FIELD,
+	MOTION_BLUR,
+	BLOOM,
+	TONE_MAPPING,
+	FAST_APPROXIMATE_ANTI_ALIASING,
+	TEMPORAL_ANTI_ALIASING,
+	POST_PROCESSING,
+	USER_INTERFACE,
+#if defined(CATALYST_EDITOR)
+	EDITOR_USER_INTERFACE,
+#endif
+	SCREEN,
+
+	NUMBER_OF_STAGES
+};
+
+/*
+*	Enumeration covering all path tracing native render pass stages.
+*	The order of the stages define in what order they will execute in.
+*/
+enum class PathTracingNativeRenderPassStage : uint8
+{
 	PATH_TRACING,
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DEBUG_RENDERING,
@@ -104,21 +129,24 @@ enum class NativeRenderPassStage : uint8
 	FAST_APPROXIMATE_ANTI_ALIASING,
 	TEMPORAL_ANTI_ALIASING,
 	POST_PROCESSING,
-#if defined(CATALYST_ENABLE_RENDERING_REFERENCE)
-	RENDERING_REFERENCE,
-#endif
 	USER_INTERFACE,
 #if defined(CATALYST_EDITOR)
 	EDITOR_USER_INTERFACE,
 #endif
-#endif
-#if defined(CATALYST_SIMPLIFIED_RENDERING)
-	SIMPLIFIED,
-#endif
 	SCREEN,
 
-	NUMBER_OF_RENDER_PASS_STAGES,
-	NONE
+	NUMBER_OF_STAGES
+};
+
+/*
+*	Enumeration covering all simplified native render pass stages.
+*	The order of the stages define in what order they will execute in.
+*/
+enum class SimplifiedNativeRenderPassStage : uint8
+{
+	SIMPLIFIED,
+
+	NUMBER_OF_STAGES
 };
 
 //Enumeration covering all attachment load operators.
@@ -134,20 +162,6 @@ enum class AttachmentStoreOperator : uint8
 {
 	STORE,
 	DONT_CARE
-};
-
-//Enumeration covering all custom render pass orderings.
-enum class CustomRenderPassOrdering : uint8
-{
-	BEFORE,
-	AFTER
-};
-
-//Enumeration covering all custom render pass modes.
-enum class CustomRenderPassMode : uint8
-{
-	ADD,
-	OVERRIDE
 };
 
 //Enumeration covering all blend factors.

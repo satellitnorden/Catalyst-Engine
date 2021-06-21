@@ -348,6 +348,14 @@ void OpenGLSubRenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipel
 }
 
 /*
+*	Terminates a pipeline
+*/
+void OpenGLSubRenderingSystem::TerminatePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT
+{
+
+}
+
+/*
 *	Takes an immedate screenshot and writes it to the given file path.
 */
 void OpenGLSubRenderingSystem::TakeImmediateScreenshot(const char *const RESTRICT file_path) NOEXCEPT

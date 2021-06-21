@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/BloomRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,9 @@ DEFINE_SINGLETON(BloomRenderPass);
 */
 BloomRenderPass::BloomRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::BLOOM);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::BLOOM, this);
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::BLOOM, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -186,4 +189,3 @@ void BloomRenderPass::Execute() NOEXCEPT
 
 	_BloomApplicationGraphicsPipeline.Execute();
 }
-#endif

@@ -1,8 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/SkyRenderPass.h>
 
 //Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 #include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
 //Systems.
@@ -16,8 +16,8 @@ DEFINE_SINGLETON(SkyRenderPass);
 */
 SkyRenderPass::SkyRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::SKY);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::SKY, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -67,4 +67,3 @@ void SkyRenderPass::Execute() NOEXCEPT
 		_SkyGraphicsPipeline.SetIncludeInRender(false);
 	}
 }
-#endif

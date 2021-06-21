@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/VolumetricLightingRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -14,8 +16,8 @@ DEFINE_SINGLETON(VolumetricLightingRenderPass);
 */
 VolumetricLightingRenderPass::VolumetricLightingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::VOLUMETRIC_LIGHTING);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::VOLUMETRIC_LIGHTING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -80,9 +82,8 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 */
 void VolumetricLightingRenderPass::Execute() NOEXCEPT
 {	
-	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::DEFAULT
-		|| !WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Enabled)
+	//Selectively enable this render pass.
+	if (!WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Enabled)
 	{
 		SetEnabled(false);
 
@@ -148,4 +149,3 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 
 	_VolumetricLightingApplicationGraphicsPipeline.Execute();
 }
-#endif

@@ -1,9 +1,11 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/OceanRenderPass.h>
 
 //Rendering.
 #include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -16,8 +18,8 @@ DEFINE_SINGLETON(OceanRenderPass);
 */
 OceanRenderPass::OceanRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::OCEAN);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::OCEAN, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -78,4 +80,3 @@ void OceanRenderPass::Execute() NOEXCEPT
 	_SceneFeatures2CopyGraphicsPipeline.Execute();
 	_OceanSceneFeaturesGraphicsPipeline.Execute();
 }
-#endif

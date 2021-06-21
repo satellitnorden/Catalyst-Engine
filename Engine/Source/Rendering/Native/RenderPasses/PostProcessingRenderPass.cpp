@@ -1,6 +1,8 @@
-#if !defined(CATALYST_SIMPLIFIED_RENDERING)
 //Header file.
 #include <Rendering/Native/RenderPasses/PostProcessingRenderPass.h>
+
+//Rendering.
+#include <Rendering/Native/NativeRenderPassManager.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -13,8 +15,9 @@ DEFINE_SINGLETON(PostProcessingRenderPass);
 */
 PostProcessingRenderPass::PostProcessingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(NativeRenderPassStage::POST_PROCESSING);
+	//Register this render pass.
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::POST_PROCESSING, this);
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::POST_PROCESSING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
@@ -56,4 +59,3 @@ void PostProcessingRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_PostProcessingGraphicsPipeline.Execute();
 }
-#endif
