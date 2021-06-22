@@ -17,7 +17,7 @@
 /*
 *	Initializes this ray tracing pipeline.
 */
-void AmbientOcclusionRayTracingPipeline::Initialize() NOEXCEPT
+void AmbientOcclusionRayTracingPipeline::Initialize(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT
 {
 	//Reset this ray tracing pipeline.
 	ResetRayTracingPipeline();
@@ -26,7 +26,7 @@ void AmbientOcclusionRayTracingPipeline::Initialize() NOEXCEPT
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable();
+	CreateRenderDataTable(ambient_occlusion_render_target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(4);
@@ -111,10 +111,10 @@ void AmbientOcclusionRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void AmbientOcclusionRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
+void AmbientOcclusionRayTracingPipeline::CreateRenderDataTable(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, ambient_occlusion_render_target);
 }

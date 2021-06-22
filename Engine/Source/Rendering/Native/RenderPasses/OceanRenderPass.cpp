@@ -65,19 +65,6 @@ void OceanRenderPass::Initialize() NOEXCEPT
 */
 void OceanRenderPass::Execute() NOEXCEPT
 {
-	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::DEFAULT)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
-	else
-	{
-		SetEnabled(true);
-	}
-
 	//Execute all pipelines.
 	_SceneFeatures1CopyGraphicsPipeline.Execute();
 	_SceneFeatures2CopyGraphicsPipeline.Execute();

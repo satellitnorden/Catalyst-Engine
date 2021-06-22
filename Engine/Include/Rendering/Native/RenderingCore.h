@@ -308,11 +308,6 @@ enum class RenderTarget : uint8
 	SCENE_FEATURES_4_HALF,
 
 	/*
-	*	Contains the ambient occlusion.
-	*/
-	AMBIENT_OCCLUSION,
-
-	/*
 	*	Contains the final color for the scene.
 	*/
 	SCENE,

@@ -11,10 +11,16 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void AmbientOcclusionApplicationGraphicsPipeline::Initialize() NOEXCEPT
+void AmbientOcclusionApplicationGraphicsPipeline::Initialize(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
+
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable(ambient_occlusion_render_target);
 
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -28,8 +34,9 @@ void AmbientOcclusionApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -76,6 +83,7 @@ void AmbientOcclusionApplicationGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -88,9 +96,36 @@ void AmbientOcclusionApplicationGraphicsPipeline::Execute() NOEXCEPT
 }
 
 /*
-*	Terminates this graphics pipeline.
+*	Terminates this ray tracing pipeline.
 */
 void AmbientOcclusionApplicationGraphicsPipeline::Terminate() NOEXCEPT
 {
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
 
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void AmbientOcclusionApplicationGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void AmbientOcclusionApplicationGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, ambient_occlusion_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

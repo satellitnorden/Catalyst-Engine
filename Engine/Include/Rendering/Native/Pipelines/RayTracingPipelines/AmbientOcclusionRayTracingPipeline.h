@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes this ray tracing pipeline.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT;
 
 	/*
 	*	Executes this ray tracing pipeline.
@@ -42,6 +42,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable() NOEXCEPT;
+	void CreateRenderDataTable(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT;
 
 };

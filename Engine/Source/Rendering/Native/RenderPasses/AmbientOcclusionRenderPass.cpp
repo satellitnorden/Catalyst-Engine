@@ -45,6 +45,9 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
+	//Create the ambient occlusion render target.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, &_AmbientOcclusionRenderTarget);
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1 + 1 + _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size() + _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() + 1);
 	AddPipeline(&_ScreenSpaceAmbientOcclusionGraphicsPipeline);
@@ -63,19 +66,21 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_AmbientOcclusionApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize();
-	_AmbientOcclusionRayTracingPipeline.Initialize();
-	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[0].Initialize(	CatalystShaderConstants::AMBIENT_OCCLUSION_RENDER_TARGET_INDEX,
+	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize(_AmbientOcclusionRenderTarget);
+	_AmbientOcclusionRayTracingPipeline.Initialize(_AmbientOcclusionRenderTarget);
+	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[0].Initialize(	_AmbientOcclusionRenderTarget,
 																		1,
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF));
-	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[1].Initialize(	CatalystShaderConstants::INTERMEDIATE_R_UINT8_HALF_RENDER_TARGET_INDEX,
+	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF),
 																		2,
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION));
-	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	CatalystShaderConstants::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2_RENDER_TARGET_INDEX,
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1));
-	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(	CatalystShaderConstants::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1_RENDER_TARGET_INDEX,
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2));
-	_AmbientOcclusionApplicationGraphicsPipeline.Initialize();
+																		_AmbientOcclusionRenderTarget);
+	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2),
+																		_AmbientOcclusionRenderTarget);
+	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2),
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1),
+																		_AmbientOcclusionRenderTarget);
+	_AmbientOcclusionApplicationGraphicsPipeline.Initialize(_AmbientOcclusionRenderTarget);
 }
 
 /*
@@ -83,14 +88,6 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 */
 void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 {	
-	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::DEFAULT)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
 	//Nothing to do here if ambient occlusion isn't enabled.
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::NONE)
 	{
@@ -181,4 +178,7 @@ void AmbientOcclusionRenderPass::Terminate() NOEXCEPT
 	}
 
 	_AmbientOcclusionApplicationGraphicsPipeline.Terminate();
+
+	//Destroy the ambient occlusion render target.
+	RenderingSystem::Instance->DestroyRenderTarget(&_AmbientOcclusionRenderTarget);
 }

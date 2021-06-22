@@ -1,13 +1,15 @@
 //Defines.
 #define DEPTH_WEIGHT (2.0f)
-#define DITHER_STRENGTH (0.1f)
-#define BIAS_AMBIENT_OCCLUSION(X) (X * X * X)
+#define BIAS_AMBIENT_OCCLUSION(X) (X * X * X * X)
 
 //Layout specification.
 layout (early_fragment_tests) in;
 
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
+
+//Texture samplers.
+layout (set = 1, binding = 0) uniform sampler2D AMBIENT_OCCLUSION_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 scene_features_3;
@@ -21,13 +23,13 @@ float SampleAmbientOcclusion(vec2 coordinate)
 	float current_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate).w);
 
 	//Sample the four neighbor samples along with their depth.
-	float sample_1_color = texture(sampler2D(RENDER_TARGETS[AMBIENT_OCCLUSION_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, 0.0f)).r;
+	float sample_1_color = texture(AMBIENT_OCCLUSION_TEXTURE, coordinate + vec2(0.0f, 0.0f)).r;
 	float sample_1_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, 0.0f)).w);
-	float sample_2_color = texture(sampler2D(RENDER_TARGETS[AMBIENT_OCCLUSION_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).r;
+	float sample_2_color = texture(AMBIENT_OCCLUSION_TEXTURE, coordinate + vec2(0.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).r;
 	float sample_2_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).w);
-	float sample_3_color = texture(sampler2D(RENDER_TARGETS[AMBIENT_OCCLUSION_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, 0.0f)).r;
+	float sample_3_color = texture(AMBIENT_OCCLUSION_TEXTURE, coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, 0.0f)).r;
 	float sample_3_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, 0.0f)).w);
-	float sample_4_color = texture(sampler2D(RENDER_TARGETS[AMBIENT_OCCLUSION_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).r;
+	float sample_4_color = texture(AMBIENT_OCCLUSION_TEXTURE, coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).r;
 	float sample_4_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).w);
 
 	//Calculate the horizontal and vertical weights.
@@ -66,16 +68,8 @@ float SampleAmbientOcclusion(vec2 coordinate)
 
 void CatalystShaderMain()
 {
-	//Sample the ambient occlusion while sharpening it a bit.
-	float ambient_occlusion = 	SampleAmbientOcclusion(fragment_texture_coordinate) * 9.0f
-								+ SampleAmbientOcclusion(fragment_texture_coordinate + vec2(-1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleAmbientOcclusion(fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleAmbientOcclusion(fragment_texture_coordinate + vec2(-1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleAmbientOcclusion(fragment_texture_coordinate + vec2(0.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleAmbientOcclusion(fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleAmbientOcclusion(fragment_texture_coordinate + vec2(1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleAmbientOcclusion(fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleAmbientOcclusion(fragment_texture_coordinate + vec2(1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
+	//Sample the ambient occlusion.
+	float ambient_occlusion = 	SampleAmbientOcclusion(fragment_texture_coordinate);
 
 	//Sample the scene features 3 texture.
 	vec4 scene_features_3_texture_sampler = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);

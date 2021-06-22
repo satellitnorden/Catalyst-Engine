@@ -17,7 +17,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -28,5 +28,23 @@ public:
 	*	Terminates this graphics pipeline.
 	*/
 	void Terminate() NOEXCEPT;
+
+private:
+
+	//The render data table layout.
+	RenderDataTableLayoutHandle _RenderDataTableLayout;
+
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
+	/*
+	*	Creates the render data table layout.
+	*/
+	void CreateRenderDataTableLayout() NOEXCEPT;
+
+	/*
+	*	Creates the render data table.
+	*/
+	void CreateRenderDataTable(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT;
 
 };

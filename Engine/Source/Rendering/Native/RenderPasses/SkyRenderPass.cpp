@@ -60,15 +60,7 @@ void SkyRenderPass::Initialize() NOEXCEPT
 void SkyRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::DEFAULT)
-	{
-		_SkyGraphicsPipeline.Execute();
-	}
-
-	else
-	{
-		_SkyGraphicsPipeline.SetIncludeInRender(false);
-	}
+	_SkyGraphicsPipeline.Execute();
 }
 
 /*

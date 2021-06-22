@@ -58,19 +58,6 @@ void PathTracingRenderPass::Initialize() NOEXCEPT
 */
 void PathTracingRenderPass::Execute() NOEXCEPT
 {
-	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::PATH_TRACING)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
-	else
-	{
-		SetEnabled(true);
-	}
-
 	//Execute all pipelines.
 	_PathTracingRayTracingPipeline.Execute();
 }

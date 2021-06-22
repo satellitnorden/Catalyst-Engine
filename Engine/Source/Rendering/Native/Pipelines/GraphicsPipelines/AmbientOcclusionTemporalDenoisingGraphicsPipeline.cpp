@@ -12,32 +12,20 @@
 #include <Systems/ResourceSystem.h>
 
 /*
-*	Ambient occlsion temporal denoising push constant data definition.
-*/
-class  AmbientOcclusionTemporalDenoisingPushConstantData final
-{
-
-public:
-
-	//The previous render target index.
-	uint32 _PreviousRenderTargetIndex;
-
-	//The current render target index.
-	uint32 _CurrentRenderTargetIndex;
-
-};
-
-/*
 *	Initializes this graphics pipeline.
 */
-void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Initialize(	const uint32 source_render_target_index,
-																	const RenderTargetHandle target) NOEXCEPT
+void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Initialize(	const RenderTargetHandle previous_temporal_buffer_render_target,
+																	const RenderTargetHandle current_temporal_buffer_render_target,
+																	const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
 
-	//Set the source render target index.
-	_SourceRenderTargetIndex = source_render_target_index;
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable(previous_temporal_buffer_render_target, ambient_occlusion_render_target);
 
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -48,16 +36,13 @@ void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Initialize(	const uint32
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(2);
-	AddOutputRenderTarget(target);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION));
+	AddOutputRenderTarget(current_temporal_buffer_render_target);
+	AddOutputRenderTarget(ambient_occlusion_render_target);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
-
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(AmbientOcclusionTemporalDenoisingPushConstantData));
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
@@ -104,14 +89,7 @@ void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-
-	//Push constants.
-	AmbientOcclusionTemporalDenoisingPushConstantData data;
-
-	data._PreviousRenderTargetIndex = _SourceRenderTargetIndex;
-	data._CurrentRenderTargetIndex = CatalystShaderConstants::AMBIENT_OCCLUSION_RENDER_TARGET_INDEX;
-
-	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(AmbientOcclusionTemporalDenoisingPushConstantData), &data);
+	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -128,5 +106,34 @@ void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Execute() NOEXCEPT
 */
 void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Terminate() NOEXCEPT
 {
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
 
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void AmbientOcclusionTemporalDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void AmbientOcclusionTemporalDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle previous_temporal_buffer_render_target, const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, previous_temporal_buffer_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, ambient_occlusion_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }

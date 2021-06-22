@@ -27,6 +27,9 @@ public:
 
 private:
 
+	//The ambient occlusion render target.
+	RenderTargetHandle _AmbientOcclusionRenderTarget;
+
 	//The screen space ambient occlusion graphics pipeline.
 	ScreenSpaceAmbientOcclusionGraphicsPipeline _ScreenSpaceAmbientOcclusionGraphicsPipeline;
 

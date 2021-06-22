@@ -145,19 +145,6 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
-	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::DEFAULT)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
-	else
-	{
-		SetEnabled(true);
-	}
-
 	//Execute all pipelines.
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() == RenderingConfiguration::IndirectLightingMode::NONE)
 	{

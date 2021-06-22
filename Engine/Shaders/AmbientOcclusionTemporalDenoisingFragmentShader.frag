@@ -7,18 +7,15 @@
 //Layout specification.
 layout (early_fragment_tests) in;
 
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) uint PREVIOUS_RENDER_TARGET_INDEX;
-	layout (offset = 4) uint CURRENT_RENDER_TARGET_INDEX;
-};
-
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
+//Texture samplers.
+layout (set = 1, binding = 0) uniform sampler2D PREVIOUS_TEMPORAL_BUFFER_TEXTURE;
+layout (set = 1, binding = 1) uniform sampler2D AMBIENT_OCCLUSION_TEXTURE;
+
 //Out parameters.
-layout (location = 0) out vec4 current_ambient_occlusion;
+layout (location = 0) out vec4 current_temporal_buffer;
 layout (location = 1) out vec4 ambient_occlusion;
 
 /*
@@ -45,7 +42,7 @@ void CatalystShaderMain()
 	vec2 unjittered_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER;
 
 	//Sample the current ambient occlusion texture.
-	vec4 current_ambient_occlusion_texture_sampler = texture(sampler2D(RENDER_TARGETS[CURRENT_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), unjittered_screen_coordinate);
+	vec4 current_ambient_occlusion_texture_sampler = texture(AMBIENT_OCCLUSION_TEXTURE, unjittered_screen_coordinate);
 
 	//Calculate the minimum/maximum ambient occlusion values in the neighborhood of the current frame.
 	float minimum = current_ambient_occlusion_texture_sampler.x;
@@ -57,7 +54,7 @@ void CatalystShaderMain()
 		{
 			vec2 sample_coordinate = unjittered_screen_coordinate + vec2(x, y) * INVERSE_SCALED_RESOLUTION * 2.0f;
 		
-			float neighbordhood_sample = texture(sampler2D(RENDER_TARGETS[CURRENT_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate).x;
+			float neighbordhood_sample = texture(AMBIENT_OCCLUSION_TEXTURE, sample_coordinate).x;
 
 			minimum = min(minimum, neighbordhood_sample);
 			maximum = max(maximum, neighbordhood_sample);
@@ -68,7 +65,7 @@ void CatalystShaderMain()
 	vec2 previous_screen_coordinate = unjittered_screen_coordinate - texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), unjittered_screen_coordinate).xy;
 
 	//Sample the previous ambient occlusion texture.
-	vec4 previous_ambient_occlusion_texture_sampler = texture(sampler2D(RENDER_TARGETS[PREVIOUS_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), previous_screen_coordinate);
+	vec4 previous_ambient_occlusion_texture_sampler = texture(PREVIOUS_TEMPORAL_BUFFER_TEXTURE, previous_screen_coordinate);
 
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
@@ -81,11 +78,10 @@ void CatalystShaderMain()
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
 	previous_sample_weight *= NeighborhoodWeight(previous_ambient_occlusion_texture_sampler.x, minimum, maximum);
 
-
 	//Blend the previous and the current ambient occlusion.
 	float blended_ambient_occlusion = mix(current_ambient_occlusion_texture_sampler.x, previous_ambient_occlusion_texture_sampler.x, AMBIENT_OCCLUSION_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR + AMBIENT_OCCLUSION_TEMPORAL_DENOISING_BONUS_FEEDBACK_FACTOR * previous_sample_weight);
 
 	//Write the fragments.
-	current_ambient_occlusion = vec4(vec3(blended_ambient_occlusion), 1.0f);
+	current_temporal_buffer = vec4(vec3(blended_ambient_occlusion), 1.0f);
 	ambient_occlusion = vec4(vec3(blended_ambient_occlusion), 1.0f);
 }

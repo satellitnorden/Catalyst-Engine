@@ -22,9 +22,6 @@ public:
 	//The inverse resolution.
 	Vector2<float32> _InverseResolution;
 
-	//The source render target index.
-	uint32 _SourceRenderTargetIndex;
-
 	//The stride.
 	int32 _Stride;
 
@@ -33,13 +30,16 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const uint32 source_render_target_index, const int32 stride, const RenderTargetHandle target) NOEXCEPT
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const RenderTargetHandle source, const int32 stride, const RenderTargetHandle target) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
 
-	//Set the source render target index.
-	_SourceRenderTargetIndex = source_render_target_index;
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable(source);
 
 	//Set the stride.
 	_Stride = stride;
@@ -56,8 +56,9 @@ void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const uint32 s
 	AddOutputRenderTarget(target);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -108,12 +109,12 @@ void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Push constants.
 	PushConstantData data;
 
 	data._InverseResolution = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height));
-	data._SourceRenderTargetIndex = _SourceRenderTargetIndex;
 	data._Stride = _Stride;
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(PushConstantData), &data);
@@ -133,5 +134,32 @@ void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 */
 void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Terminate() NOEXCEPT
 {
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
 
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

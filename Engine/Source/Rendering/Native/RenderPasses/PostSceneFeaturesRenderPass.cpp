@@ -58,19 +58,6 @@ void PostSceneFeaturesRenderPass::Initialize() NOEXCEPT
 */
 void PostSceneFeaturesRenderPass::Execute() NOEXCEPT
 {
-	//Selectively enable this rendering path.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::DEFAULT)
-	{
-		SetEnabled(false);
-
-		return;
-	}
-
-	else
-	{
-		SetEnabled(true);
-	}
-
 	//Execute all pipelines.
 	_SceneFeaturesDownsampleGraphicsPipeline.Execute();
 }

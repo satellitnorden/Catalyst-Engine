@@ -17,7 +17,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.

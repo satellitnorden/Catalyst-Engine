@@ -14,7 +14,7 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void ScreenSpaceAmbientOcclusionGraphicsPipeline::Initialize() NOEXCEPT
+void ScreenSpaceAmbientOcclusionGraphicsPipeline::Initialize(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -34,7 +34,7 @@ void ScreenSpaceAmbientOcclusionGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::AMBIENT_OCCLUSION));
+	AddOutputRenderTarget(ambient_occlusion_render_target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

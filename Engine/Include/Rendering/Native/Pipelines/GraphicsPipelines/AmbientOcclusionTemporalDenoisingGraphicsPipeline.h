@@ -14,8 +14,9 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const uint32 source_render_target_index,
-					const RenderTargetHandle target) NOEXCEPT;
+	void Initialize(const RenderTargetHandle previous_temporal_buffer_render_target,
+					const RenderTargetHandle current_temporal_buffer_render_target,
+					const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -29,7 +30,20 @@ public:
 
 private:
 
-	//The source render target index.
-	uint32 _SourceRenderTargetIndex;
+	//The render data table layout.
+	RenderDataTableLayoutHandle _RenderDataTableLayout;
+
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
+	/*
+	*	Creates the render data table layout.
+	*/
+	void CreateRenderDataTableLayout() NOEXCEPT;
+
+	/*
+	*	Creates the render data table.
+	*/
+	void CreateRenderDataTable(const RenderTargetHandle previous_temporal_buffer_render_target, const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT;
 
 };
