@@ -5,6 +5,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Concurreny.
+#include <Concurrency/Spinlock.h>
+
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/Vulkan2DTexture.h>
 #include <Rendering/Abstraction/Vulkan/Vulkan3DTexture.h>
@@ -338,68 +341,128 @@ private:
 	//Container for all Vulkan 2D textures.
 	DynamicArray<Vulkan2DTexture *RESTRICT> _Vulkan2DTextures;
 
+	//The Vulkan 2D textures lock.
+	Spinlock _Vulkan2DTexturesLock;
+
 	//Container for all Vulkan 3D textures.
 	DynamicArray<Vulkan3DTexture * RESTRICT> _Vulkan3DTextures;
+
+	//The Vulkan 3D textures lock.
+	Spinlock _Vulkan3DTexturesLock;
 
 	//Container for all Vulkan acceleration structures.
 	DynamicArray<VulkanAccelerationStructure *RESTRICT> _VulkanAccelerationStructures;
 
+	//The Vulkan acceleration structures lock.
+	Spinlock _VulkanAccelerationStructuresLock;
+
 	//Container for all Vulkan buffers.
 	DynamicArray<VulkanBuffer *RESTRICT> _VulkanBuffers;
 
-	//The lock for all Vulkan command pools.
-	Spinlock _VulkanCommandPoolsLock;
+	//The Vulkan buffers lock.
+	Spinlock _VulkanBuffersLock;
 
 	//Container for all Vulkan command pools.
 	DynamicArray<VulkanCommandPool *RESTRICT> _VulkanCommandPools;
 
+	//The Vulkan command pools lock.
+	Spinlock _VulkanCommandPoolsLock;
+
 	//Container for all Vulkan cube map textures.
 	DynamicArray<VulkanCubeMapTexture *RESTRICT> _VulkanCubeMapTextures;
+
+	//The Vulkan cube map textures lock.
+	Spinlock _VulkanCubeMapTexturesLock;
 
 	//Container for all Vulkan depth buffers.
 	DynamicArray<VulkanDepthBuffer *RESTRICT> _VulkanDepthBuffers;
 
+	//The Vulkan depth buffers lock.
+	Spinlock _VulkanDepthBuffersLock;
+
 	//Container for all Vulkan descriptor set layouts.
 	DynamicArray<VulkanDescriptorSetLayout *RESTRICT> _VulkanDescriptorSetLayouts;
+
+	//The Vulkan descriptor set layouts lock.
+	Spinlock _VulkanDescriptorSetLayoutsLock;
 
 	//Container for all Vulkan descriptor sets.
 	DynamicArray<VulkanDescriptorSet *RESTRICT> _VulkanDescriptorSets;
 
+	//The Vulkan descriptor sets lock.
+	Spinlock _VulkanDescriptorSetsLock;
+
 	//Container for all Vulkan events.
 	DynamicArray<VulkanEvent *RESTRICT> _VulkanEvents;
+
+	//The Vulkan events lock.
+	Spinlock _VulkanEventsLock;
 
 	//Container for all Vulkan fences.
 	DynamicArray<VulkanFence *RESTRICT> _VulkanFences;
 
+	//The Vulkan fences lock.
+	Spinlock _VulkanFencesLock;
+
 	//Container for all Vulkan framebuffers.
 	DynamicArray<VulkanFramebuffer *RESTRICT> _VulkanFramebuffers;
+
+	//The Vulkan framebuffers lock.
+	Spinlock _VulkanFramebuffersLock;
 
 	//Container for all Vulkan compute pipelines.
 	DynamicArray<VulkanComputePipeline *RESTRICT> _VulkanComputePipelines;
 
+	//The Vulkan compute pipelines lock.
+	Spinlock _VulkanComputePipelinesLock;
+
 	//Container for all Vulkan graphics pipelines.
 	DynamicArray<VulkanGraphicsPipeline *RESTRICT> _VulkanGraphicsPipelines;
+
+	//The Vulkan graphics pipelines lock.
+	Spinlock _VulkanGraphicsPipelinesLock;
 
 	//Container for all Vulkan ray tracing pipelines.
 	DynamicArray<VulkanRayTracingPipeline *RESTRICT> _VulkanRayTracingPipelines;
 
+	//The Vulkan ray tracing pipelines lock.
+	Spinlock _VulkanRayTracingPipelinesLock;
+
 	//Container for all Vulkan query pools.
 	DynamicArray<VulkanQueryPool *RESTRICT> _VulkanQueryPools;
+
+	//The Vulkan query pools lock.
+	Spinlock _VulkanQueryPoolsLock;
 
 	//Container for all Vulkan render passes.
 	DynamicArray<VulkanRenderPass *RESTRICT> _VulkanRenderPasses;
 
+	//The Vulkan render passes lock.
+	Spinlock _VulkanRenderPassesLock;
+
 	//Container for all Vulkan render targets.
 	DynamicArray<VulkanRenderTarget *RESTRICT> _VulkanRenderTargets;
+
+	//The Vulkan render targets lock.
+	Spinlock _VulkanRenderTargetsLock;
 
 	//Container for all Vulkan semaphores.
 	DynamicArray<VulkanSemaphore *RESTRICT> _VulkanSemaphores;
 
+	//The Vulkan semaphores lock.
+	Spinlock _VulkanSemaphoresLock;
+
 	//Container for all Vulkan samplers.
 	DynamicArray<VulkanSampler *RESTRICT> _VulkanSamplers;
 
+	//The Vulkan samplers lock.
+	Spinlock _VulkanSamplersLock;
+
 	//Container for all Vulkan shader modules.
 	DynamicArray<VulkanShaderModule *RESTRICT> _VulkanShaderModules;
+
+	//The Vulkan shader modules lock.
+	Spinlock _VulkanShaderModulesLock;
 
 };
 #endif
