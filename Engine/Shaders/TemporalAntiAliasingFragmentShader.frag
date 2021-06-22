@@ -15,9 +15,9 @@ layout (push_constant) uniform PushConstantData
 };
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D scene_features_4_texture;
-layout (set = 1, binding = 1) uniform sampler2D previous_frame_texture;
-layout (set = 1, binding = 2) uniform sampler2D current_frame_texture;
+layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_4_TEXTURE;
+layout (set = 1, binding = 1) uniform sampler2D PREVIOUS_FRAME_TEXTURE;
+layout (set = 1, binding = 2) uniform sampler2D CURRENT_FRAME_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 current_frame;
@@ -51,11 +51,11 @@ void CatalystShaderMain()
 		vec2 unjittered_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER;
 
 		//Sample the current frame texture.
-		vec4 current_frame_texture_sampler = texture(current_frame_texture, unjittered_screen_coordinate);
+		vec4 current_frame_texture_sampler = texture(CURRENT_FRAME_TEXTURE, unjittered_screen_coordinate);
 
 		//Calculate the minimum/maximum color values in the neighborhood of the current frame. Also find the velocity of the closest fragment.
 		float closest_depth = 0.0f;
-		vec2 closest_velocity = texture(scene_features_4_texture, unjittered_screen_coordinate).xy;
+		vec2 closest_velocity = texture(SCENE_FEATURES_4_TEXTURE, unjittered_screen_coordinate).xy;
 		vec3 minimum = current_frame_texture_sampler.rgb;
 		vec3 maximum = current_frame_texture_sampler.rgb;
 
@@ -65,7 +65,7 @@ void CatalystShaderMain()
 			{
 				vec2 sample_coordinate = unjittered_screen_coordinate + vec2(float(X), float(Y)) * INVERSE_SCALED_RESOLUTION;
 			
-				vec3 neighbordhood_sample = texture(current_frame_texture, sample_coordinate).rgb;
+				vec3 neighbordhood_sample = texture(CURRENT_FRAME_TEXTURE, sample_coordinate).rgb;
 
 				minimum = min(minimum, neighbordhood_sample);
 				maximum = max(maximum, neighbordhood_sample);
@@ -75,7 +75,7 @@ void CatalystShaderMain()
 				if (closest_depth < neighborhood_depth)
 				{
 					closest_depth = neighborhood_depth;
-					closest_velocity = texture(scene_features_4_texture, sample_coordinate).xy;
+					closest_velocity = texture(SCENE_FEATURES_4_TEXTURE, sample_coordinate).xy;
 				}
 			}
 		}
@@ -84,7 +84,7 @@ void CatalystShaderMain()
 		vec2 previous_screen_coordinate = unjittered_screen_coordinate - closest_velocity;
 
 		//Sample the previous frame texture.
-		vec4 previous_frame_texture_sampler = texture(previous_frame_texture, previous_screen_coordinate);
+		vec4 previous_frame_texture_sampler = texture(PREVIOUS_FRAME_TEXTURE, previous_screen_coordinate);
 
 		//Constrain the previous sample.
 		previous_frame_texture_sampler.rgb = Constrain(previous_frame_texture_sampler.rgb, minimum, maximum);
@@ -112,7 +112,7 @@ void CatalystShaderMain()
 	else
 	{
 		//Sample the previous frame texture.
-		vec4 previous_frame_texture_sampler = texture(previous_frame_texture, fragment_texture_coordinate);
+		vec4 previous_frame_texture_sampler = texture(PREVIOUS_FRAME_TEXTURE, fragment_texture_coordinate);
 
 		//Sample the current frame texture.
 		vec4 current_frame_texture_sampler = texture(current_frame_texture, fragment_texture_coordinate);

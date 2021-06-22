@@ -145,6 +145,10 @@ enum class PathTracingNativeRenderPassStage : uint8
 enum class SimplifiedNativeRenderPassStage : uint8
 {
 	SIMPLIFIED,
+#if defined(CATALYST_EDITOR)
+	EDITOR_USER_INTERFACE,
+#endif
+	SCREEN,
 
 	NUMBER_OF_STAGES
 };

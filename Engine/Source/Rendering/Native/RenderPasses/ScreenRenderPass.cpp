@@ -18,6 +18,7 @@ ScreenRenderPass::ScreenRenderPass() NOEXCEPT
 	//Register this render pass.
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::SCREEN, this);
 	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::SCREEN, this);
+	NativeRenderPassManager::RegisterSimplifiedRenderPass(SimplifiedNativeRenderPassStage::SCREEN, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

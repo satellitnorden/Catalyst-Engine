@@ -272,18 +272,49 @@ void EditorRenderingSystem::Update() NOEXCEPT
 		}
 	}
 
-	//Add button to toggle path tracing rendering path.
-	static bool path_tracing{ false };
-	ImGui::Checkbox("Path Tracing", &path_tracing);
-
-	if (path_tracing)
+	//Add a button to toggle between different rendering paths.
 	{
-		RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::PATH_TRACING);
-	}
+		const RenderingPath current_rendering_path{ RenderingSystem::Instance->GetCurrentRenderingPath() };
 
-	else
-	{
-		RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::DEFAULT);
+		switch (current_rendering_path)
+		{
+			case RenderingPath::DEFAULT:
+			{
+				if (ImGui::Button("Rendering Path: Default"))
+				{
+					RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::PATH_TRACING);
+				}
+
+				break;
+			}
+
+			case RenderingPath::PATH_TRACING:
+			{
+				if (ImGui::Button("Rendering Path: Path Tracing"))
+				{
+					RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::SIMPLIFIED);
+				}
+
+				break;
+			}
+
+			case RenderingPath::SIMPLIFIED:
+			{
+				if (ImGui::Button("Rendering Path: Simplified"))
+				{
+					RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::DEFAULT);
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
 	}
 
 	ImGui::End();
