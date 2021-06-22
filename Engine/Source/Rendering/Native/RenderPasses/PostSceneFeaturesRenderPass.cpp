@@ -29,6 +29,12 @@ PostSceneFeaturesRenderPass::PostSceneFeaturesRenderPass() NOEXCEPT
 	{
 		PostSceneFeaturesRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		PostSceneFeaturesRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -36,18 +42,15 @@ PostSceneFeaturesRenderPass::PostSceneFeaturesRenderPass() NOEXCEPT
 */
 void PostSceneFeaturesRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
 	AddPipeline(&_SceneFeaturesDownsampleGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_SceneFeaturesDownsampleGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -70,4 +73,13 @@ void PostSceneFeaturesRenderPass::Execute() NOEXCEPT
 
 	//Execute all pipelines.
 	_SceneFeaturesDownsampleGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void PostSceneFeaturesRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_SceneFeaturesDownsampleGraphicsPipeline.Terminate();
 }

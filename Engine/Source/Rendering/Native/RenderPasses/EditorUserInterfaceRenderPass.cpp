@@ -31,6 +31,12 @@ EditorUserInterfaceRenderPass::EditorUserInterfaceRenderPass() NOEXCEPT
 	{
 		EditorUserInterfaceRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		EditorUserInterfaceRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -38,18 +44,15 @@ EditorUserInterfaceRenderPass::EditorUserInterfaceRenderPass() NOEXCEPT
 */
 void EditorUserInterfaceRenderPass::Initialize() NOEXCEPT
 {	
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
 	AddPipeline(&_EditorUserInterfaceGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_EditorUserInterfaceGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -59,5 +62,14 @@ void EditorUserInterfaceRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
 	_EditorUserInterfaceGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void EditorUserInterfaceRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_EditorUserInterfaceGraphicsPipeline.Terminate();
 }
 #endif

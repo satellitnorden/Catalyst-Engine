@@ -30,6 +30,12 @@ SkyRenderPass::SkyRenderPass() NOEXCEPT
 	{
 		SkyRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		SkyRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -37,18 +43,15 @@ SkyRenderPass::SkyRenderPass() NOEXCEPT
 */
 void SkyRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
 	AddPipeline(&_SkyGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_SkyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -66,4 +69,13 @@ void SkyRenderPass::Execute() NOEXCEPT
 	{
 		_SkyGraphicsPipeline.SetIncludeInRender(false);
 	}
+}
+
+/*
+*	Terminates this render pass.
+*/
+void SkyRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_SkyGraphicsPipeline.Terminate();
 }

@@ -42,6 +42,9 @@ public:
 */
 void InstancedOpaqueModelShadowsGraphicsPipeline::Initialize(const bool double_sided, const DepthBufferHandle depth_buffer, const RenderTargetHandle render_target) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set double sided.
 	_DoubleSided = double_sided;
 
@@ -271,4 +274,12 @@ void InstancedOpaqueModelShadowsGraphicsPipeline::Execute(const uint8 cascade_in
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void InstancedOpaqueModelShadowsGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

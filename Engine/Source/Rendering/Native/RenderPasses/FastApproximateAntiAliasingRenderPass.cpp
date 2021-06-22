@@ -30,6 +30,12 @@ FastApproximateAntiAliasingRenderPass::FastApproximateAntiAliasingRenderPass() N
 	{
 		FastApproximateAntiAliasingRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		FastApproximateAntiAliasingRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -37,18 +43,15 @@ FastApproximateAntiAliasingRenderPass::FastApproximateAntiAliasingRenderPass() N
 */
 void FastApproximateAntiAliasingRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
 	AddPipeline(&_FastApproximateAntiAliasingGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_FastApproximateAntiAliasingGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -58,4 +61,13 @@ void FastApproximateAntiAliasingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
 	_FastApproximateAntiAliasingGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void FastApproximateAntiAliasingRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_FastApproximateAntiAliasingGraphicsPipeline.Terminate();
 }

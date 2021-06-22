@@ -109,6 +109,12 @@ ShadowsRenderPass::ShadowsRenderPass() NOEXCEPT
 	{
 		ShadowsRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		ShadowsRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -116,6 +122,9 @@ ShadowsRenderPass::ShadowsRenderPass() NOEXCEPT
 */
 void ShadowsRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Create the shadow map depth buffers.
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
@@ -222,12 +231,6 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	_ShadowsSpatialDenoisingGraphicsPipelines[1].Initialize(CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_HALF_2_RENDER_TARGET_INDEX,
 															1,
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -342,4 +345,71 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 
 	//Enable this render pass.
 	SetEnabled(true);
+}
+
+/*
+*	Terminates this render pass.
+*/
+void ShadowsRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	for (TerrainShadowMapGraphicsPipeline &pipeline : _TerrainShadowMapGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (InstancedOpaqueModelShadowsGraphicsPipeline &pipeline : _InstancedOpaqueModelShadowsGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (ModelShadowMapGraphicsPipeline &pipeline : _ModelShadowMapGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_RasterizedShadowsGraphicsPipeline.Terminate();
+	_ShadowsRayTracingPipeline.Terminate();
+
+	for (ShadowsSpatialDenoisingGraphicsPipeline &pipeline : _ShadowsSpatialDenoisingGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	//Destroy all shadow uniform data render data tables.
+	for (RenderDataTableHandle &render_data_table : _ShadowUniformDataRenderDataTables)
+	{
+		RenderingSystem::Instance->DestroyRenderDataTable(&render_data_table);
+	}
+
+	_ShadowUniformDataRenderDataTables.Clear();
+
+	//Destroy all shadow uniform data buffers.
+	for (BufferHandle &buffer : _ShadowUniformDataBuffers)
+	{
+		RenderingSystem::Instance->DestroyBuffer(&buffer);
+	}
+
+	_ShadowUniformDataBuffers.Clear();
+
+	//Clear the shadow uniform data.
+	_ShadowUniformData.Clear();
+
+	//Return the render target indices to the global render data.
+	for (const uint32 index : _ShadowMapRenderTargetIndices)
+	{
+		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(index);
+	}
+
+	//Destroy the shadow map render targets.
+	for (RenderTargetHandle &render_target : _ShadowMapRenderTargets)
+	{
+		RenderingSystem::Instance->DestroyRenderTarget(&render_target);
+	}
+
+	//Destroy the shadow map depth buffers.
+	for (DepthBufferHandle &depth_buffer : _ShadowMapDepthBuffers)
+	{
+		RenderingSystem::Instance->DestroyDepthBuffer(&depth_buffer);
+	}
 }

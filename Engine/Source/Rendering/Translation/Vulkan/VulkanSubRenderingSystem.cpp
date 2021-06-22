@@ -69,7 +69,10 @@ namespace VulkanSubRenderingSystemData
 		{
 			ACCELERATION_STRUCTURE,
 			BUFFER,
+			DEPTH_BUFFER,
 			RENDER_DATA_TABLE,
+			RENDER_DATA_TABLE_LAYOUT,
+			RENDER_TARGET,
 			TEXTURE_2D
 		};
 
@@ -307,7 +310,7 @@ namespace VulkanSubRenderingSystemLogic
 		parameters._ShaderModule = static_cast<VulkanShaderModule *const RESTRICT>(pipeline->GetShader()->_Handle);
 
 		//Create the pipeline sub stage data.
-		VulkanComputePipelineData *const RESTRICT data{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(VulkanComputePipelineData))) VulkanComputePipelineData() };
+		VulkanComputePipelineData *const RESTRICT data{ new (MemorySystem::Instance->TypeAllocate<VulkanComputePipelineData>()) VulkanComputePipelineData() };
 		pipeline->SetData(data);
 
 		//Create the pipeline!
@@ -320,7 +323,7 @@ namespace VulkanSubRenderingSystemLogic
 	void InitializeGraphicsPipeline(GraphicsPipeline *const RESTRICT pipeline) NOEXCEPT
 	{
 		//Create the graphics pipeline data.
-		VulkanGraphicsPipelineData *const RESTRICT data{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(VulkanGraphicsPipelineData))) VulkanGraphicsPipelineData() };
+		VulkanGraphicsPipelineData *const RESTRICT data{ new (MemorySystem::Instance->TypeAllocate<VulkanGraphicsPipelineData>()) VulkanGraphicsPipelineData() };
 		pipeline->SetData(data);
 
 		{
@@ -631,7 +634,7 @@ namespace VulkanSubRenderingSystemLogic
 		}
 
 		//Create the pipeline sub stage data.
-		VulkanRayTracingPipelineData *const RESTRICT data{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(VulkanRayTracingPipelineData))) VulkanRayTracingPipelineData() };
+		VulkanRayTracingPipelineData *const RESTRICT data{ new (MemorySystem::Instance->TypeAllocate<VulkanRayTracingPipelineData>()) VulkanRayTracingPipelineData() };
 		pipeline->SetData(data);
 
 		//Create the pipeline!
@@ -681,6 +684,66 @@ namespace VulkanSubRenderingSystemLogic
 	}
 
 	/*
+	*	Terminates a compute pipeline.
+	*/
+	void TerminateComputePipeline(ComputePipeline *const RESTRICT pipeline) NOEXCEPT
+	{
+		//Cache the data.
+		VulkanComputePipelineData *const RESTRICT data{ static_cast<VulkanComputePipelineData *const RESTRICT>(pipeline->GetData()) };
+
+		//Destroy the pipeline
+		VulkanInterface::Instance->DestroyComputePipeline(data->_Pipeline);
+
+		//Free the data.
+		data->~VulkanComputePipelineData();
+		MemorySystem::Instance->TypeFree<VulkanComputePipelineData>(data);
+	}
+
+	/*
+	*	Terminates a graphics pipeline.
+	*/
+	void TerminateGraphicsPipeline(GraphicsPipeline *const RESTRICT pipeline) NOEXCEPT
+	{
+		//Cache the data.
+		VulkanGraphicsPipelineData *const RESTRICT data{ static_cast<VulkanGraphicsPipelineData *const RESTRICT>(pipeline->GetData()) };
+
+		//Destroy the framebuffers.
+		for (VulkanFramebuffer *const RESTRICT framebuffer : data->_FrameBuffers)
+		{
+			VulkanInterface::Instance->DestroyFramebuffer(framebuffer);
+		}
+
+		//Destroy the render pass.
+		VulkanInterface::Instance->DestroyRenderPass(data->_RenderPass);
+
+		//Destroy the pipeline.
+		VulkanInterface::Instance->DestroyGraphicsPipeline(data->_Pipeline);
+
+		//Free the data.
+		data->~VulkanGraphicsPipelineData();
+		MemorySystem::Instance->TypeFree<VulkanGraphicsPipelineData>(data);
+	}
+
+	/*
+	*	Terminates a ray tracing pipeline.
+	*/
+	void TerminateRayTracingPipeline(RayTracingPipeline *const RESTRICT pipeline) NOEXCEPT
+	{
+		//Cache the data.
+		VulkanRayTracingPipelineData *const RESTRICT data{ static_cast<VulkanRayTracingPipelineData *const RESTRICT>(pipeline->GetData()) };
+
+		//Destroy the shader binding table buffer.
+		VulkanInterface::Instance->DestroyBuffer(data->_ShaderBindingTableBuffer);
+
+		//Destroy the pipeline
+		VulkanInterface::Instance->DestroyRayTracingPipeline(data->_Pipeline);
+
+		//Free the data.
+		data->~VulkanRayTracingPipelineData();
+		MemorySystem::Instance->TypeFree<VulkanRayTracingPipelineData>(data);
+	}
+
+	/*
 	*	Processes the destruction queue.
 	*/
 	void ProcessDestructionQueue() NOEXCEPT
@@ -707,9 +770,30 @@ namespace VulkanSubRenderingSystemLogic
 						break;
 					}
 
+					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::DEPTH_BUFFER:
+					{
+						VulkanInterface::Instance->DestroyDepthBuffer(static_cast<VulkanDepthBuffer *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
+
+						break;
+					}
+
 					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE:
 					{
 						VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
+
+						break;
+					}
+
+					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE_LAYOUT:
+					{
+						VulkanInterface::Instance->DestroyDescriptorSetLayout(static_cast<VulkanDescriptorSetLayout *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
+
+						break;
+					}
+
+					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_TARGET:
+					{
+						VulkanInterface::Instance->DestroyRenderTarget(static_cast<VulkanRenderTarget *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
 
 						break;
 					}
@@ -1099,6 +1183,15 @@ void VulkanSubRenderingSystem::CreateDepthBuffer(const Resolution resolution, De
 }
 
 /*
+*	Destroys a depth buffer.
+*/
+void VulkanSubRenderingSystem::DestroyDepthBuffer(DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
+{
+	//Put in a queue, destroy when no command buffer uses it anymore.
+	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::DEPTH_BUFFER, *handle);
+}
+
+/*
 *	Creates an event.
 */
 void VulkanSubRenderingSystem::CreateEvent(EventHandle *const RESTRICT handle) NOEXCEPT
@@ -1261,6 +1354,15 @@ void VulkanSubRenderingSystem::CreateRenderDataTableLayout(const RenderDataTable
 	}
 
 	*handle = VulkanInterface::Instance->CreateDescriptorSetLayout(vulkanBindings.Data(), number_of_bindings);
+}
+
+/*
+*	Destroys a render data table layout.
+*/
+void VulkanSubRenderingSystem::DestroyRenderDataTableLayout(RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
+{
+	//Put in a queue, destroy when no command buffer uses it anymore.
+	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE_LAYOUT, *handle);
 }
 
 /*
@@ -1533,6 +1635,15 @@ void VulkanSubRenderingSystem::CreateRenderTarget(const Resolution resolution, c
 }
 
 /*
+*	Destroys a render target.
+*/
+void VulkanSubRenderingSystem::DestroyRenderTarget(RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+{
+	//Put in a queue, destroy when no command buffer uses it anymore.
+	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_TARGET, *handle);
+}
+
+/*
 *	Creates a sampler.
 */
 void VulkanSubRenderingSystem::CreateSampler(const SamplerProperties &properties, SamplerHandle *const RESTRICT handle) const NOEXCEPT
@@ -1631,7 +1742,32 @@ void VulkanSubRenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipel
 */
 void VulkanSubRenderingSystem::TerminatePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT
 {
+	switch (pipeline->GetType())
+	{
+		case Pipeline::Type::Compute:
+		{
+			VulkanSubRenderingSystemLogic::TerminateComputePipeline(static_cast<ComputePipeline *const RESTRICT>(pipeline));
 
+			break;
+		}
+
+		case Pipeline::Type::Graphics:
+		{
+			VulkanSubRenderingSystemLogic::TerminateGraphicsPipeline(static_cast<GraphicsPipeline *const RESTRICT>(pipeline));
+
+			break;
+		}
+
+		case Pipeline::Type::RayTracing:
+		{
+			if (RenderingSystem::Instance->IsRayTracingSupported())
+			{
+				VulkanSubRenderingSystemLogic::TerminateRayTracingPipeline(static_cast<RayTracingPipeline *const RESTRICT>(pipeline));
+			}
+
+			break;
+		}
+	}
 }
 
 /*

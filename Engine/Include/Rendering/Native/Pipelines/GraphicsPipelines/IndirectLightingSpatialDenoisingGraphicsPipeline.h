@@ -29,6 +29,11 @@ public:
 	*/
 	void Execute() NOEXCEPT;
 
+	/*
+	*	Terminates this graphics pipeline.
+	*/
+	void Terminate() NOEXCEPT;
+
 private:
 
 	//The source render target index.

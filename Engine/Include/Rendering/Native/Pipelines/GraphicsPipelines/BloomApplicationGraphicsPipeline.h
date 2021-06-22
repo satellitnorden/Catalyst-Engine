@@ -24,6 +24,11 @@ public:
 	*/
 	void Execute() NOEXCEPT;
 
+	/*
+	*	Terminates this graphics pipeline.
+	*/
+	void Terminate() NOEXCEPT;
+
 private:
 
 	//The render data table layout.

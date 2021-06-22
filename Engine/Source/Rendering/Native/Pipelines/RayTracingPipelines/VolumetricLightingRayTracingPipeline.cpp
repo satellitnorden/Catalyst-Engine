@@ -16,6 +16,9 @@
 */
 void VolumetricLightingRayTracingPipeline::Initialize() NOEXCEPT
 {
+	//Reset this ray tracing pipeline.
+	ResetRayTracingPipeline();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
@@ -74,6 +77,18 @@ void VolumetricLightingRayTracingPipeline::Execute() NOEXCEPT
 
 	//Include in render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this ray tracing pipeline.
+*/
+void VolumetricLightingRayTracingPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
 }
 
 /*

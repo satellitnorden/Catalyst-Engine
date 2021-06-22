@@ -13,6 +13,9 @@
 */
 void SceneFeaturesDownsampleGraphicsPipeline::Initialize() NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -85,4 +88,12 @@ void SceneFeaturesDownsampleGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void SceneFeaturesDownsampleGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

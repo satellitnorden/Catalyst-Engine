@@ -11,6 +11,7 @@
 //Type alises.
 using InitializationFunction = void(*)();
 using ExecutionFunction = void(*)();
+using TerminationFunction = void(*)();
 
 class RenderPass
 {
@@ -28,18 +29,17 @@ public:
 	/*
 	*	Initializes this render pass.
 	*/
-	FORCE_INLINE void Initialize() NOEXCEPT
-	{
-		_InitializationFunction();
-	}
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Executes this render pass.
 	*/
-	FORCE_INLINE void Execute() NOEXCEPT
-	{
-		_ExecutionFunction();
-	}
+	void Execute() NOEXCEPT;
+
+	/*
+	*	Terminates this render pass.
+	*/
+	void Terminate() NOEXCEPT;
 
 	/*
 	*	Returns the number of pipelines.
@@ -58,6 +58,11 @@ public:
 	}
 
 protected:
+
+	/*
+	*	Resets this render pass.
+	*/
+	void ResetRenderPass() NOEXCEPT;
 
 	/*
 	*	Ses whether or not this render pass is enabled.
@@ -81,6 +86,14 @@ protected:
 	FORCE_INLINE void SetExecutionFunction(const ExecutionFunction function) NOEXCEPT
 	{
 		_ExecutionFunction = function;
+	}
+
+	/*
+	*	Sets the termination function.
+	*/
+	FORCE_INLINE void SetTerminationFunction(const TerminationFunction function) NOEXCEPT
+	{
+		_TerminationFunction = function;
 	}
 
 	/*
@@ -109,6 +122,9 @@ private:
 
 	//The execution function.
 	ExecutionFunction _ExecutionFunction;
+
+	//The termination function.
+	TerminationFunction _TerminationFunction;
 
 	//The pipelines.
 	DynamicArray<Pipeline *RESTRICT> _Pipelines;

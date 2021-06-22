@@ -69,6 +69,9 @@ public:
 */
 void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const RenderTargetHandle render_target) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("TerrainShadowVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -195,4 +198,12 @@ void TerrainShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_m
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void TerrainShadowMapGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

@@ -29,6 +29,12 @@ SceneFeaturesRenderPass::SceneFeaturesRenderPass() NOEXCEPT
 	{
 		SceneFeaturesRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		SceneFeaturesRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -36,6 +42,9 @@ SceneFeaturesRenderPass::SceneFeaturesRenderPass() NOEXCEPT
 */
 void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Create the scene depth buffer.
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(0), &_SceneDepthBuffer);
 
@@ -115,12 +124,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	_EditorSelectedModelGraphicsPipeline.Initialize(_SceneDepthBuffer);
 #endif
 	_VelocityGraphicsPipeline.Initialize(_SceneDepthBuffer);
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -172,4 +175,58 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 	_EditorSelectedModelGraphicsPipeline.Execute();
 #endif
 	_VelocityGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void SceneFeaturesRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_ClearGraphicsPipeline.Terminate();
+	_ParticleSystemComputePipeline.Terminate();
+
+	for (MaskedModelDepthSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelDepthSceneFeaturesGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Terminate();
+
+	for (InstancedStaticModelDepthSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelDepthSceneFeaturesGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Terminate();
+
+	for (MaskedModelColorSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelColorSceneFeaturesGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Terminate();
+
+	for (OpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _OpaqueModelSceneFeaturesGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (InstancedStaticModelColorSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelColorSceneFeaturesGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_TerrainSceneFeaturesGraphicsPipeline.Terminate();
+	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Terminate();
+	_AnimatedModelSceneFeaturesGraphicsPipeline.Terminate();
+	_ProceduralGrassSceneFeaturesGraphicsPipeline.Terminate();
+	_UserInterfaceSceneFeaturesGraphicsPipeline.Terminate();
+#if defined(CATALYST_EDITOR)
+	_EditorSelectedModelGraphicsPipeline.Terminate();
+#endif
+	_VelocityGraphicsPipeline.Terminate();
+
+	//Destroy the scene depth buffer.
+	RenderingSystem::Instance->DestroyDepthBuffer(&_SceneDepthBuffer);
 }

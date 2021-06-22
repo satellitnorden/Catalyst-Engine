@@ -1,13 +1,14 @@
 //Header file.
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
-//Systems.
-#include <Systems/RenderingSystem.h>
-
 /*
-*	Post-initializes this pipeline.
+*	Resets this pipeline.
 */
-void Pipeline::PostInitialize() NOEXCEPT
+void Pipeline::ResetPipeline() NOEXCEPT
 {
-	RenderingSystem::Instance->InitializePipeline(this);
+	//Clear the render data table layouts.
+	_RenderDataTableLayouts.Clear();
+
+	//Clear the push constant ranges.
+	_PushConstantRanges.Clear();
 }

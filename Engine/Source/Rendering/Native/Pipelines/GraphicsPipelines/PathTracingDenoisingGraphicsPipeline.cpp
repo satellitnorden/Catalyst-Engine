@@ -29,6 +29,9 @@ public:
 */
 void PathTracingDenoisingGraphicsPipeline::Initialize(const Direction direction, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
@@ -87,37 +90,6 @@ void PathTracingDenoisingGraphicsPipeline::Initialize(const Direction direction,
 }
 
 /*
-*	Creates the render data table layout.
-*/
-void PathTracingDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
-{
-	StaticArray<RenderDataTableLayoutBinding, 5> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data table.
-*/
-void PathTracingDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(4, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-}
-
-/*
 *	Executes this graphics pipeline.
 */
 void PathTracingDenoisingGraphicsPipeline::Execute() NOEXCEPT
@@ -159,4 +131,47 @@ void PathTracingDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void PathTracingDenoisingGraphicsPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void PathTracingDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 5> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void PathTracingDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(4, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

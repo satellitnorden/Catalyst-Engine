@@ -83,14 +83,14 @@ void TerrainSystem::PostInitialize(const CatalystProjectTerrainConfiguration &co
 	if (!configuration._TerrainHeightGenerationShaderIdentifier.Empty())
 	{
 		_TerrainHeightGenerationComputePipeline.Initialize(ResourceSystem::Instance->GetShaderResource(configuration._TerrainHeightGenerationShaderIdentifier));
-		_TerrainHeightGenerationComputePipeline.PostInitialize();
+		RenderingSystem::Instance->InitializePipeline(&_TerrainHeightGenerationComputePipeline);
 	}
 
 	//Initialize the terrain materials generation compute pipeline.
 	if (!configuration._TerrainMaterialsGenerationShaderIdentifier.Empty())
 	{
 		_TerrainMaterialsGenerationComputePipeline.Initialize(ResourceSystem::Instance->GetShaderResource(configuration._TerrainMaterialsGenerationShaderIdentifier));
-		_TerrainMaterialsGenerationComputePipeline.PostInitialize();
+		RenderingSystem::Instance->InitializePipeline(&_TerrainMaterialsGenerationComputePipeline);
 	}
 
 	//If the height and/or materials generation shaders exist, create the command buffer and event.

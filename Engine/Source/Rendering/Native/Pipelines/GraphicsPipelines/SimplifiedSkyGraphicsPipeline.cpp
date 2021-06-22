@@ -20,6 +20,9 @@
 */
 void SimplifiedSkyGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -92,4 +95,12 @@ void SimplifiedSkyGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void SimplifiedSkyGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

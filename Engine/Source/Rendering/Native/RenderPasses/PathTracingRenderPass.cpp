@@ -29,6 +29,12 @@ PathTracingRenderPass::PathTracingRenderPass() NOEXCEPT
 	{
 		PathTracingRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		PathTracingRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -36,18 +42,15 @@ PathTracingRenderPass::PathTracingRenderPass() NOEXCEPT
 */
 void PathTracingRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
 	AddPipeline(&_PathTracingRayTracingPipeline);
 
 	//Initialize all pipelines.
 	_PathTracingRayTracingPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -70,4 +73,13 @@ void PathTracingRenderPass::Execute() NOEXCEPT
 
 	//Execute all pipelines.
 	_PathTracingRayTracingPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void PathTracingRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_PathTracingRayTracingPipeline.Terminate();
 }

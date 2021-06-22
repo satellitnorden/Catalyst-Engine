@@ -21,6 +21,11 @@ public:
 	*/
 	void Execute() NOEXCEPT;
 
+	/*
+	*	Terminates this graphics pipeline.
+	*/
+	void Terminate() NOEXCEPT;
+
 private:
 
 	//Denotes whether or not instanced models should be drawn double sided.

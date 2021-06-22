@@ -23,6 +23,9 @@ public:
 
 private:
 
+	//The render targets.
+	StaticArray<RenderTargetHandle, 2> _RenderTargets;
+
 	//The temporal anti aliasing graphics pipelines.
 	StaticArray<TemporalAntiAliasingGraphicsPipeline, 2> _TemporalAntiAliasingGraphicsPipelines;
 
@@ -41,5 +44,10 @@ private:
 	*	Executes this render pass.
 	*/
 	void Execute() NOEXCEPT;
+
+	/*
+	*	Terminates this render pass.
+	*/
+	void Terminate() NOEXCEPT;
 
 };

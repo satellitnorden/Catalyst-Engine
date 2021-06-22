@@ -358,16 +358,6 @@ enum class RenderTarget : uint8
 	TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2,
 
 	/*
-	*	Contains the first temporal anti aliasing buffer.
-	*/
-	TEMPORAL_ANTI_ALIASING_BUFFER_1,
-
-	/*
-	*	Contains the second temporal anti aliasing buffer.
-	*/
-	TEMPORAL_ANTI_ALIASING_BUFFER_2,
-
-	/*
 	*	Intermediate render target.
 	*/
 	INTERMEDIATE_RGBA_UINT8,

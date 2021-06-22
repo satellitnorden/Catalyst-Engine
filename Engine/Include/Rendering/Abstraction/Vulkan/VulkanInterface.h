@@ -201,9 +201,19 @@ public:
 	RESTRICTED VulkanDepthBuffer *const RESTRICT CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT;
 
 	/*
+	*	Destroys a depth buffer.
+	*/
+	void DestroyDepthBuffer(VulkanDepthBuffer *const RESTRICT depth_buffer) NOEXCEPT;
+
+	/*
 	*	Creates and returns a descriptor set layout.
 	*/
 	RESTRICTED VulkanDescriptorSetLayout *const RESTRICT CreateDescriptorSetLayout(const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings, const uint32 numberOfDescriptorSetLayoutBindings) NOEXCEPT;
+
+	/*
+	*	Destroys a descriptor set layout.
+	*/
+	void DestroyDescriptorSetLayout(VulkanDescriptorSetLayout *const RESTRICT descriptor_set_layout) NOEXCEPT;
 
 	/*
 	*	Creates and returns a descriptor set.
@@ -231,9 +241,19 @@ public:
 	RESTRICTED VulkanFramebuffer *const RESTRICT CreateFramebuffer(const VulkanFramebufferCreationParameters &parameters) NOEXCEPT;
 
 	/*
+	*	Destroys a framebuffer.
+	*/
+	void DestroyFramebuffer(VulkanFramebuffer *const RESTRICT framebuffer) NOEXCEPT;
+
+	/*
 	*	Creates and returns a compute pipeline.
 	*/
 	RESTRICTED VulkanComputePipeline *const RESTRICT CreateComputePipeline(const VulkanComputePipelineCreationParameters &parameters) NOEXCEPT;
+
+	/*
+	*	Destroys a compute pipeline.
+	*/
+	void DestroyComputePipeline(VulkanComputePipeline *const RESTRICT pipeline) NOEXCEPT;
 
 	/*
 	*	Creates and returns a graphics pipeline.
@@ -241,9 +261,19 @@ public:
 	RESTRICTED VulkanGraphicsPipeline *const RESTRICT CreateGraphicsPipeline(const VulkanGraphicsPipelineCreationParameters &parameters) NOEXCEPT;
 
 	/*
+	*	Destroys a graphics pipeline.
+	*/
+	void DestroyGraphicsPipeline(VulkanGraphicsPipeline *const RESTRICT pipeline) NOEXCEPT;
+
+	/*
 	*	Creates and returns a ray tracing pipeline.
 	*/
 	RESTRICTED VulkanRayTracingPipeline *const RESTRICT CreateRayTracingPipeline(const VulkanRayTracingPipelineCreationParameters &parameters) NOEXCEPT;
+
+	/*
+	*	Destroys a ray tracing pipeline.
+	*/
+	void DestroyRayTracingPipeline(VulkanRayTracingPipeline *const RESTRICT pipeline) NOEXCEPT;
 
 	/*
 	*	Creates and returns a query pool.
@@ -256,9 +286,19 @@ public:
 	RESTRICTED VulkanRenderPass *const RESTRICT CreateRenderPass(const VulkanRenderPassCreationParameters &parameters) NOEXCEPT;
 
 	/*
+	*	Destroys a render pass.
+	*/
+	void DestroyRenderPass(VulkanRenderPass *const RESTRICT render_pass) NOEXCEPT;
+
+	/*
 	*	Creates and returns a render target.
 	*/
 	RESTRICTED VulkanRenderTarget *const RESTRICT CreateRenderTarget(const VkExtent2D extent, const VkFormat format) NOEXCEPT;
+
+	/*
+	*	Destroys a render target.
+	*/
+	void DestroyRenderTarget(VulkanRenderTarget *const RESTRICT render_target) NOEXCEPT;
 
 	/*
 	*	Creates and returns a semaphore.

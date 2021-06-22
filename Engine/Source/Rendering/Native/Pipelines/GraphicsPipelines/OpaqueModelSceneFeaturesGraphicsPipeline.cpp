@@ -45,6 +45,9 @@ public:
 */
 void OpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const bool double_sided) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Remember whether or not to render opaque models double-sided.
 	_DoubleSided = double_sided;
 
@@ -291,4 +294,12 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void OpaqueModelSceneFeaturesGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

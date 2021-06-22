@@ -46,6 +46,9 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(	const uint32 
 																	const RenderTargetHandle target,
 																	const Resolution render_resolution) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the source render target index.
 	_SourceRenderTargetIndex = source_render_target_index;
 
@@ -142,4 +145,12 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void IndirectLightingSpatialDenoisingGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

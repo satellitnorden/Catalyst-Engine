@@ -13,6 +13,9 @@
 */
 void BloomIsolationGraphicsPipeline::Initialize() NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -82,4 +85,12 @@ void BloomIsolationGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void BloomIsolationGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

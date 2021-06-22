@@ -30,6 +30,12 @@ DepthOfFieldRenderPass::DepthOfFieldRenderPass() NOEXCEPT
 	{
 		DepthOfFieldRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		DepthOfFieldRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -37,6 +43,9 @@ DepthOfFieldRenderPass::DepthOfFieldRenderPass() NOEXCEPT
 */
 void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(2);
 
@@ -46,12 +55,6 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_DepthOfFieldBokehBlurGraphicsPipeline.Initialize();
 	_DepthOfFieldApplicationGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -75,4 +78,14 @@ void DepthOfFieldRenderPass::Execute() NOEXCEPT
 	//Execute all pipelines.
 	_DepthOfFieldBokehBlurGraphicsPipeline.Execute();
 	_DepthOfFieldApplicationGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void DepthOfFieldRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_DepthOfFieldBokehBlurGraphicsPipeline.Terminate();
+	_DepthOfFieldApplicationGraphicsPipeline.Terminate();
 }

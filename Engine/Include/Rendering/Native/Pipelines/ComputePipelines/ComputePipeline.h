@@ -31,6 +31,11 @@ public:
 protected:
 
 	/*
+	*	Resets this compute pipeline.
+	*/
+	void ResetComputePipeline() NOEXCEPT;
+
+	/*
 	*	Sets the shader.
 	*/
 	FORCE_INLINE void SetShader(const ResourcePointer<ShaderResource> shader) NOEXCEPT

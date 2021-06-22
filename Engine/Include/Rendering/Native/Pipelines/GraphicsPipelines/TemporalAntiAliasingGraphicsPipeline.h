@@ -26,6 +26,11 @@ public:
 	*/
 	void Execute(const float32 weight_override, const float32 weight_override_weight) NOEXCEPT;
 
+	/*
+	*	Terminates this graphics pipeline.
+	*/
+	void Terminate() NOEXCEPT;
+
 private:
 
 	//The render data table layout.

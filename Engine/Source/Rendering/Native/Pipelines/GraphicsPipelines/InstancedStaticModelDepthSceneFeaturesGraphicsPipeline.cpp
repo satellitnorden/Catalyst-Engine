@@ -47,6 +47,9 @@ public:
 */
 void InstancedStaticModelDepthSceneFeaturesGraphicsPipeline::Initialize(const bool double_sided, const DepthBufferHandle depth_buffer) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set double sided.
 	_DoubleSided = double_sided;
 
@@ -234,4 +237,12 @@ void InstancedStaticModelDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void InstancedStaticModelDepthSceneFeaturesGraphicsPipeline::Terminate() NOEXCEPT
+{
+	
 }

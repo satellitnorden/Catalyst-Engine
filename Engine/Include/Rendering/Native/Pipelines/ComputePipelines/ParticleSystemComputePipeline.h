@@ -20,4 +20,9 @@ public:
 	*/
 	void Execute() NOEXCEPT;
 
+	/*
+	*	Terminates this compute pipeline.
+	*/
+	void Terminate() NOEXCEPT;
+
 };

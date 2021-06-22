@@ -59,6 +59,9 @@ public:
 */
 void InstancedImpostorDepthSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedImpostorDepthSceneFeaturesVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -191,4 +194,12 @@ void InstancedImpostorDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void InstancedImpostorDepthSceneFeaturesGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

@@ -115,4 +115,9 @@ private:
 	*/
 	void Execute() NOEXCEPT;
 
+	/*
+	*	Terminates this render pass.
+	*/
+	void Terminate() NOEXCEPT;
+
 };

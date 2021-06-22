@@ -382,6 +382,13 @@ public:
 	*/
 	void SetTopology(const Topology newTopology) NOEXCEPT { _Topology = newTopology; }
 
+protected:
+
+	/*
+	*	Resetis this graphics pipeline.
+	*/
+	void ResetGraphicsPipeline() NOEXCEPT;
+
 private:
 
 	//The vertex shader.

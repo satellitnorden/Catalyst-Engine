@@ -30,6 +30,12 @@ TemporalAntiAliasingRenderPass::TemporalAntiAliasingRenderPass() NOEXCEPT
 	{
 		TemporalAntiAliasingRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		TemporalAntiAliasingRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -37,24 +43,27 @@ TemporalAntiAliasingRenderPass::TemporalAntiAliasingRenderPass() NOEXCEPT
 */
 void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
+	//Create the render targets.
+	for (RenderTargetHandle &render_target : _RenderTargets)
+	{
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetFullResolution(), TextureFormat::RGBA_FLOAT32, &render_target);
+	}
+
 	//Initialize and add the pipelines.
 	SetNumberOfPipelines(_TemporalAntiAliasingGraphicsPipelines.Size());
 
-	_TemporalAntiAliasingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_2),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_1));
+	_TemporalAntiAliasingGraphicsPipelines[0].Initialize(	_RenderTargets[0],
+															_RenderTargets[1]);
 
-	_TemporalAntiAliasingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_1),
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_2));
+	_TemporalAntiAliasingGraphicsPipelines[1].Initialize(	_RenderTargets[1],
+															_RenderTargets[0]);
 
 	for (TemporalAntiAliasingGraphicsPipeline &pipeline : _TemporalAntiAliasingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
-	}
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
 	}
 }
 
@@ -99,4 +108,22 @@ void TemporalAntiAliasingRenderPass::Execute() NOEXCEPT
 
 	//Update the current buffer index.
 	_CurrentBufferIndex = _CurrentBufferIndex == _TemporalAntiAliasingGraphicsPipelines.Size() - 1 ? 0 : _CurrentBufferIndex + 1;
+}
+
+/*
+*	Terminates this render pass.
+*/
+void TemporalAntiAliasingRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	for (TemporalAntiAliasingGraphicsPipeline &pipeline : _TemporalAntiAliasingGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	//Destroy the render targets.
+	for (RenderTargetHandle &render_target : _RenderTargets)
+	{
+		RenderingSystem::Instance->DestroyRenderTarget(&render_target);
+	}
 }

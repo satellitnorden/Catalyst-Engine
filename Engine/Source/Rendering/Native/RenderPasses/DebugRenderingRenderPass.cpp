@@ -34,6 +34,12 @@ DebugRenderingRenderPass::DebugRenderingRenderPass() NOEXCEPT
 	{
 		DebugRenderingRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		DebugRenderingRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -41,6 +47,9 @@ DebugRenderingRenderPass::DebugRenderingRenderPass() NOEXCEPT
 */
 void DebugRenderingRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines.Size() + 1);
 
@@ -57,12 +66,6 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[2].Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer(), true, false);
 	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[3].Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer(), true, true);
 	_DebugRenderSphereGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -77,5 +80,18 @@ void DebugRenderingRenderPass::Execute() NOEXCEPT
 	}
 
 	_DebugRenderSphereGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void DebugRenderingRenderPass::Terminate() NOEXCEPT
+{
+	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_DebugRenderSphereGraphicsPipeline.Terminate();
 }
 #endif

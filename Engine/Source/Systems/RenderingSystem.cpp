@@ -265,11 +265,28 @@ void RenderingSystem::Terminate() NOEXCEPT
 */
 void RenderingSystem::SetCurrentRenderingPath(const RenderingPath value) NOEXCEPT
 {
+	if (_CurrentRenderingPath == value)
+	{
+		return;
+	}
+
+	//Terminate all the current render passes.
+	for (RenderPass *const RESTRICT render_pass : _RenderPasses)
+	{
+		render_pass->Terminate();
+	}
+
 	//Set the current rendering path.
 	_CurrentRenderingPath = value;
 
 	//Re-retrieve the render passes.
 	NativeRenderPassManager::GetRenderPasses(_CurrentRenderingPath, &_RenderPasses);
+
+	//Initialize all new render passes.
+	for (RenderPass *const RESTRICT render_pass : _RenderPasses)
+	{
+		render_pass->Initialize();
+	}
 }
 
 /*
@@ -487,20 +504,6 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 			case RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2:
 			{
 				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2)]);
-
-				break;
-			}
-
-			case RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_1:
-			{
-				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_1)]);
-
-				break;
-			}
-
-			case RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_2:
-			{
-				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_2)]);
 
 				break;
 			}
@@ -750,6 +753,14 @@ void RenderingSystem::CreateDepthBuffer(const Resolution resolution, DepthBuffer
 }
 
 /*
+*	Destroys a depth buffer.
+*/
+void RenderingSystem::DestroyDepthBuffer(DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->DestroyDepthBuffer(handle);
+}
+
+/*
 *	Creates an event.
 */
 void RenderingSystem::CreateEvent(EventHandle *const RESTRICT handle) NOEXCEPT
@@ -804,6 +815,14 @@ void RenderingSystem::CreateShader(const ArrayProxy<byte> &data, const ShaderSta
 void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 number_of_bindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
 {
 	_SubRenderingSystem->CreateRenderDataTableLayout(bindings, number_of_bindings, handle);
+}
+
+/*
+*	Destroys a render data table layout.
+*/
+void RenderingSystem::DestroyRenderDataTableLayout(RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->DestroyRenderDataTableLayout(handle);
 }
 
 /*
@@ -886,6 +905,14 @@ void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *const RESTRI
 void RenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
 {
 	_SubRenderingSystem->CreateRenderTarget(resolution, format, handle);
+}
+
+/*
+*	Destroys a render target.
+*/
+void RenderingSystem::DestroyRenderTarget(RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+{
+	_SubRenderingSystem->DestroyRenderTarget(handle);
 }
 
 /*
@@ -1154,8 +1181,6 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_2)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_1)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2)]);
-	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_1)]);
-	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_ANTI_ALIASING_BUFFER_2)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_UINT8)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2)]);

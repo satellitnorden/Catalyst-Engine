@@ -44,6 +44,9 @@ public:
 */
 void OceanSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Cache the ocean texture index.
 	_OceanTextureIndex = ResourceSystem::Instance->GetTexture2DResource(HashString("Ocean_Texture2D"))->_Index;
 
@@ -179,6 +182,18 @@ void OceanSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void OceanSceneFeaturesGraphicsPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
 }
 
 /*

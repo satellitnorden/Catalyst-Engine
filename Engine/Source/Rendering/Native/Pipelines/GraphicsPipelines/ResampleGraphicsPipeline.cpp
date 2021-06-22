@@ -26,6 +26,9 @@ public:
 */
 void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const RenderTargetHandle target, const Vector2<float> delta, const Resolution resolution, const bool blend_enabled) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Store the delta.
 	_Delta = delta;
 
@@ -117,6 +120,18 @@ void ResampleGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void ResampleGraphicsPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
 }
 
 /*

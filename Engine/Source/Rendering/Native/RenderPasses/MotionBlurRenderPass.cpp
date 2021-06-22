@@ -30,6 +30,12 @@ MotionBlurRenderPass::MotionBlurRenderPass() NOEXCEPT
 	{
 		MotionBlurRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		MotionBlurRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -37,18 +43,15 @@ MotionBlurRenderPass::MotionBlurRenderPass() NOEXCEPT
 */
 void MotionBlurRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
 	AddPipeline(&_MotionBlurGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_MotionBlurGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -58,4 +61,13 @@ void MotionBlurRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
 	_MotionBlurGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void MotionBlurRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_MotionBlurGraphicsPipeline.Terminate();
 }

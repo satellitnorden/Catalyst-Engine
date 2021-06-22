@@ -32,6 +32,12 @@ OceanRenderPass::OceanRenderPass() NOEXCEPT
 	{
 		OceanRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		OceanRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -39,6 +45,9 @@ OceanRenderPass::OceanRenderPass() NOEXCEPT
 */
 void OceanRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(3);
 	AddPipeline(&_SceneFeatures1CopyGraphicsPipeline);
@@ -49,12 +58,6 @@ void OceanRenderPass::Initialize() NOEXCEPT
 	_SceneFeatures1CopyGraphicsPipeline.Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1), RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_UINT8));
 	_SceneFeatures2CopyGraphicsPipeline.Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
 	_OceanSceneFeaturesGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -79,4 +82,15 @@ void OceanRenderPass::Execute() NOEXCEPT
 	_SceneFeatures1CopyGraphicsPipeline.Execute();
 	_SceneFeatures2CopyGraphicsPipeline.Execute();
 	_OceanSceneFeaturesGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void OceanRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_SceneFeatures1CopyGraphicsPipeline.Terminate();
+	_SceneFeatures2CopyGraphicsPipeline.Terminate();
+	_OceanSceneFeaturesGraphicsPipeline.Terminate();
 }

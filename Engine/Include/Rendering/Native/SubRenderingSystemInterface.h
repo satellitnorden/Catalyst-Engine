@@ -129,6 +129,11 @@ public:
 	virtual void CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT = 0;
 
 	/*
+	*	Destroys a depth buffer.
+	*/
+	virtual void DestroyDepthBuffer(DepthBufferHandle *const RESTRICT handle) const NOEXCEPT = 0;
+
+	/*
 	*	Creates an event.
 	*/
 	virtual void CreateEvent(EventHandle *const RESTRICT handle) NOEXCEPT = 0;
@@ -163,6 +168,11 @@ public:
 	*	Creates a render data table layout.
 	*/
 	virtual void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 number_of_bindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT = 0;
+
+	/*
+	*	Destroys a render data table layout.
+	*/
+	virtual void DestroyRenderDataTableLayout(RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT = 0;
 
 	/*
 	*	Creates a render data table.
@@ -215,6 +225,11 @@ public:
 	*	Creates a render target.
 	*/
 	virtual void CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT = 0;
+
+	/*
+	*	Destroys a render target.
+	*/
+	virtual void DestroyRenderTarget(RenderTargetHandle *const RESTRICT handle) const NOEXCEPT = 0;
 
 	/*
 	*	Creates a sampler.

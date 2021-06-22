@@ -21,4 +21,9 @@ public:
 	*/
 	void Execute(const RenderDataTableHandle current_render_data_table) NOEXCEPT;
 
+	/*
+	*	Terminates this graphics pipeline.
+	*/
+	void Terminate() NOEXCEPT;
+
 };

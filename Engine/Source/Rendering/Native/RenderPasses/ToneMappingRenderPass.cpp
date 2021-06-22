@@ -30,6 +30,12 @@ ToneMappingRenderPass::ToneMappingRenderPass() NOEXCEPT
 	{
 		ToneMappingRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		ToneMappingRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -37,18 +43,15 @@ ToneMappingRenderPass::ToneMappingRenderPass() NOEXCEPT
 */
 void ToneMappingRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
 	AddPipeline(&_ToneMappingGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_ToneMappingGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -58,4 +61,13 @@ void ToneMappingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
 	_ToneMappingGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void ToneMappingRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_ToneMappingGraphicsPipeline.Terminate();
 }

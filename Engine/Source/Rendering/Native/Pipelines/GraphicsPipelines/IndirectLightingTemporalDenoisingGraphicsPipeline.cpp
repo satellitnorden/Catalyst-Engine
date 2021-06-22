@@ -43,6 +43,9 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32
 																	const RenderTargetHandle target_2,
 																	const Resolution render_resolution) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the first source render target index.
 	_SourceRenderTargetIndex1 = source_render_target_index_1;
 
@@ -136,4 +139,12 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void IndirectLightingTemporalDenoisingGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

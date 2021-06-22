@@ -77,6 +77,9 @@ public:
 */
 void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("TerrainSceneFeaturesVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -227,4 +230,12 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void TerrainSceneFeaturesGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

@@ -31,6 +31,9 @@ public:
 */
 void EditorUserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
@@ -127,6 +130,15 @@ void EditorUserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void EditorUserInterfaceGraphicsPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
 }
 
 /*

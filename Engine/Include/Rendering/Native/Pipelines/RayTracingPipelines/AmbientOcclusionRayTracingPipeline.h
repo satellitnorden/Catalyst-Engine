@@ -21,6 +21,11 @@ public:
 	*/
 	void Execute() NOEXCEPT;
 
+	/*
+	*	Terminates this ray tracing pipeline.
+	*/
+	void Terminate() NOEXCEPT;
+
 private:
 
 	//The render data table layout.

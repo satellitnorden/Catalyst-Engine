@@ -33,6 +33,9 @@ public:
 void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Initialize(	const uint32 source_render_target_index,
 																	const RenderTargetHandle target) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the source render target index.
 	_SourceRenderTargetIndex = source_render_target_index;
 
@@ -118,4 +121,12 @@ void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

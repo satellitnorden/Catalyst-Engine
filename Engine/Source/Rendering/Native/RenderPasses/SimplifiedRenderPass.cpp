@@ -29,6 +29,12 @@ SimplifiedRenderPass::SimplifiedRenderPass() NOEXCEPT
 	{
 		SimplifiedRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		SimplifiedRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -36,6 +42,9 @@ SimplifiedRenderPass::SimplifiedRenderPass() NOEXCEPT
 */
 void SimplifiedRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Create the scene depth buffer.
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetFullResolution(), &_SceneDepthBuffer);
 
@@ -49,12 +58,6 @@ void SimplifiedRenderPass::Initialize() NOEXCEPT
 	_SimplifiedModelGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_SimplifiedSkyGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_UserInterfaceGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -69,4 +72,15 @@ void SimplifiedRenderPass::Execute() NOEXCEPT
 
 	//Enable this render pass.
 	SetEnabled(true);
+}
+
+/*
+*	Terminates this render pass.
+*/
+void SimplifiedRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_SimplifiedModelGraphicsPipeline.Terminate();
+	_SimplifiedSkyGraphicsPipeline.Terminate();
+	_UserInterfaceGraphicsPipeline.Terminate();
 }

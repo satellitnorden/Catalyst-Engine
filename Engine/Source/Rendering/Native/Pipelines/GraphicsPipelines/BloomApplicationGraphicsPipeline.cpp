@@ -13,6 +13,9 @@
 */
 void BloomApplicationGraphicsPipeline::Initialize() NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
@@ -113,4 +116,16 @@ void BloomApplicationGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void BloomApplicationGraphicsPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
 }

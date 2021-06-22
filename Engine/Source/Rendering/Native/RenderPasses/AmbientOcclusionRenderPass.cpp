@@ -29,6 +29,12 @@ AmbientOcclusionRenderPass::AmbientOcclusionRenderPass() NOEXCEPT
 	{
 		AmbientOcclusionRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		AmbientOcclusionRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -36,6 +42,9 @@ AmbientOcclusionRenderPass::AmbientOcclusionRenderPass() NOEXCEPT
 */
 void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1 + 1 + _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size() + _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() + 1);
 	AddPipeline(&_ScreenSpaceAmbientOcclusionGraphicsPipeline);
@@ -67,12 +76,6 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(	CatalystShaderConstants::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1_RENDER_TARGET_INDEX,
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2));
 	_AmbientOcclusionApplicationGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -156,4 +159,26 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 
 	//Enable this render pass.
 	SetEnabled(true);
+}
+
+/*
+*	Terminates this render pass.
+*/
+void AmbientOcclusionRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Terminate();
+	_AmbientOcclusionRayTracingPipeline.Terminate();
+
+	for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_AmbientOcclusionApplicationGraphicsPipeline.Terminate();
 }

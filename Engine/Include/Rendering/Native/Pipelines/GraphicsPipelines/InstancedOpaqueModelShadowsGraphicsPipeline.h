@@ -21,6 +21,11 @@ public:
 	*/
 	void Execute(const uint8 cascade_index, const Matrix4x4 &world_to_light_matrix) NOEXCEPT;
 
+	/*
+	*	Terminates this graphics pipeline.
+	*/
+	void Terminate() NOEXCEPT;
+
 private:
 
 	//Denotes whether or not instanced models should be drawn double sided.

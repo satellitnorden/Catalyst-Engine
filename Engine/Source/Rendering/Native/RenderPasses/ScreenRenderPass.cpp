@@ -30,6 +30,12 @@ ScreenRenderPass::ScreenRenderPass() NOEXCEPT
 	{
 		ScreenRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		ScreenRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -37,18 +43,15 @@ ScreenRenderPass::ScreenRenderPass() NOEXCEPT
 */
 void ScreenRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
 	AddPipeline(&_ScreenGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_ScreenGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -58,4 +61,13 @@ void ScreenRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
 	_ScreenGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void ScreenRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_ScreenGraphicsPipeline.Terminate();
 }

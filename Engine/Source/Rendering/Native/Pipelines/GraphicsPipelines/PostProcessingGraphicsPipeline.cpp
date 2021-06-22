@@ -38,6 +38,9 @@ public:
 */
 void PostProcessingGraphicsPipeline::Initialize() NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
@@ -93,7 +96,7 @@ void PostProcessingGraphicsPipeline::Initialize() NOEXCEPT
 }
 
 /*
-*	Initializes this graphics pipeline.
+*	Executes this graphics pipeline.
 */
 void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
 {
@@ -130,6 +133,18 @@ void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void PostProcessingGraphicsPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
 }
 
 /*

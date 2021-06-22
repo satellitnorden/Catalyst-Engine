@@ -22,22 +22,22 @@ class ParticleSystemComputePushConstantData final
 
 public:
 
-	Vector3<float> _Position;
-	Vector3<float> _MinimumPosition;
-	Vector3<float> _MaximumPosition;
-	Vector3<float> _MinimumVelocity;
-	Vector3<float> _MaximumVelocity;
-	Vector2<float> _MinimumSize;
-	Vector2<float> _MaximumSize;
-	float _Lifetime;
-	float _FadeTime;
-	float _PositionSeed1;
-	float _PositionSeed2;
-	float _PositionSeed3;
-	float _VelocitySeed1;
-	float _VelocitySeed2;
-	float _VelocitySeed3;
-	float _SizeSeed;
+	Vector3<float32> _Position;
+	Vector3<float32> _MinimumPosition;
+	Vector3<float32> _MaximumPosition;
+	Vector3<float32> _MinimumVelocity;
+	Vector3<float32> _MaximumVelocity;
+	Vector2<float32> _MinimumSize;
+	Vector2<float32> _MaximumSize;
+	float32 _Lifetime;
+	float32 _FadeTime;
+	float32 _PositionSeed1;
+	float32 _PositionSeed2;
+	float32 _PositionSeed3;
+	float32 _VelocitySeed1;
+	float32 _VelocitySeed2;
+	float32 _VelocitySeed3;
+	float32 _SizeSeed;
 	uint32 _FirstParticleIndexToSpawn;
 	uint32 _NumberOfParticlesToSpawn;
 	uint32 _NumberOfInstances;
@@ -49,6 +49,9 @@ public:
 */
 void ParticleSystemComputePipeline::Initialize() NOEXCEPT
 {
+	//Reset this compute pipeline.
+	ResetComputePipeline();
+
 	//Set the shader.
 	SetShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemComputeShader")));
 
@@ -140,4 +143,12 @@ void ParticleSystemComputePipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this compute pipeline.
+*/
+void ParticleSystemComputePipeline::Terminate() NOEXCEPT
+{
+
 }

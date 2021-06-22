@@ -53,6 +53,9 @@ public:
 */
 void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemMaskedDepthSceneFeaturesVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -196,4 +199,12 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

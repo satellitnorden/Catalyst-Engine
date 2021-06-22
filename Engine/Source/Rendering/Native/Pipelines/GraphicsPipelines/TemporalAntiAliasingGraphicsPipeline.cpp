@@ -33,6 +33,9 @@ public:
 void TemporalAntiAliasingGraphicsPipeline::Initialize(	const RenderTargetHandle source,
 														const RenderTargetHandle target) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
@@ -123,6 +126,18 @@ void TemporalAntiAliasingGraphicsPipeline::Execute(const float32 weight_override
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void TemporalAntiAliasingGraphicsPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
 }
 
 /*

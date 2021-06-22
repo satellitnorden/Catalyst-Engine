@@ -19,6 +19,9 @@
 */
 void AmbientOcclusionRayTracingPipeline::Initialize() NOEXCEPT
 {
+	//Reset this ray tracing pipeline.
+	ResetRayTracingPipeline();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
@@ -77,6 +80,18 @@ void AmbientOcclusionRayTracingPipeline::Execute() NOEXCEPT
 
 	//Include in render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this ray tracing pipeline.
+*/
+void AmbientOcclusionRayTracingPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
 }
 
 /*

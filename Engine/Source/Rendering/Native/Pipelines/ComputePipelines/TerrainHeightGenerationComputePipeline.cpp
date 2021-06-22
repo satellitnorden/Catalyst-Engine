@@ -32,6 +32,9 @@ public:
 */
 void TerrainHeightGenerationComputePipeline::Initialize(const ResourcePointer<ShaderResource> shader) NOEXCEPT
 {
+	//Reset this compute pipeline.
+	ResetComputePipeline();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 

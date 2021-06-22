@@ -78,6 +78,11 @@ public:
 protected:
 
 	/*
+	*	Resets this ray tracing pipeline.
+	*/
+	void ResetRayTracingPipeline() NOEXCEPT;
+
+	/*
 	*	Sets the ray generation shader.
 	*/
 	FORCE_INLINE void SetRayGenerationShader(const ResourcePointer<ShaderResource> shader) NOEXCEPT

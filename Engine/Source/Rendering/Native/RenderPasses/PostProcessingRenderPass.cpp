@@ -30,6 +30,12 @@ PostProcessingRenderPass::PostProcessingRenderPass() NOEXCEPT
 	{
 		PostProcessingRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		PostProcessingRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -37,18 +43,15 @@ PostProcessingRenderPass::PostProcessingRenderPass() NOEXCEPT
 */
 void PostProcessingRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
 	AddPipeline(&_PostProcessingGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_PostProcessingGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -58,4 +61,13 @@ void PostProcessingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
 	_PostProcessingGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void PostProcessingRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_PostProcessingGraphicsPipeline.Terminate();
 }

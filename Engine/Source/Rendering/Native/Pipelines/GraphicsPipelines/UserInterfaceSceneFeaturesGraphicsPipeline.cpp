@@ -64,6 +64,9 @@ public:
 */
 void UserInterfaceSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ThreeDimensionalUserInterfaceVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -334,4 +337,12 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void UserInterfaceSceneFeaturesGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

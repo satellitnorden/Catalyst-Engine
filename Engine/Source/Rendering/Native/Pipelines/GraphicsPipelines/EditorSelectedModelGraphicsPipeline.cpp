@@ -34,6 +34,9 @@ public:
 */
 void EditorSelectedModelGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorSelectedModelVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -208,5 +211,13 @@ void EditorSelectedModelGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void EditorSelectedModelGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }
 #endif

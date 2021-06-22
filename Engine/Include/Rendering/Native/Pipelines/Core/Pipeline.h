@@ -32,19 +32,28 @@ public:
 	}
 
 	/*
-	*	Post-initializes this pipeline.
+	*	Returns the data for this pipeline, const.
 	*/
-	void PostInitialize() NOEXCEPT;
+	FORCE_INLINE const void *const RESTRICT GetData() const NOEXCEPT
+	{
+		return _Data;
+	}
 
 	/*
-	*	Returns the data for this pipeline.
+	*	Returns the data for this pipeline, non-const.
 	*/
-	FORCE_INLINE const void *const RESTRICT GetData() const NOEXCEPT { return _Data; }
+	FORCE_INLINE void *const RESTRICT GetData() NOEXCEPT
+	{
+		return _Data;
+	}
 
 	/*
 	*	Sets the data for this pipeline.
 	*/
-	FORCE_INLINE void SetData(const void *const RESTRICT newData) NOEXCEPT { _Data = newData; }
+	FORCE_INLINE void SetData(void *const RESTRICT newData) NOEXCEPT
+	{
+		_Data = newData;
+	}
 
 	/*
 	*	Returns the render data table layouts.
@@ -93,6 +102,11 @@ public:
 protected:
 
 	/*
+	*	Resets this pipeline.
+	*/
+	void ResetPipeline() NOEXCEPT;
+
+	/*
 	*	Sets the type.
 	*/
 	FORCE_INLINE void SetType(const Type type) NOEXCEPT
@@ -132,7 +146,7 @@ private:
 	Type _Type;
 
 	//The data for this pipeline.
-	const void *RESTRICT _Data;
+	void *RESTRICT _Data;
 
 	//The render data table layouts.
 	DynamicArray<RenderDataTableLayoutHandle> _RenderDataTableLayouts;

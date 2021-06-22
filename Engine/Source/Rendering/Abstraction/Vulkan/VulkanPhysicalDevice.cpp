@@ -27,6 +27,7 @@ namespace VulkanPhysicalDeviceLogic
 		vkGetPhysicalDeviceFeatures2(physical_device, &properties);
 	}
 
+
 	/*
 	*	Returns a physical device's multiview properties.
 	*/

@@ -33,6 +33,12 @@ IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 	{
 		IndirectLightingRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		IndirectLightingRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -40,6 +46,9 @@ IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 */
 void IndirectLightingRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(_ScreenSpaceIndirectLightingGraphicsPipelines.Size() + _RayTracedIndirectLightingRayTracingPipelines.Size() + _IndirectLightingSpatialDenoisingGraphicsPipelines.Size() + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
 
@@ -129,12 +138,6 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 																		RenderingSystem::Instance->GetScaledResolution(0));
 
 	_IndirectLightingApplicationGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -365,4 +368,32 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 
 	//Update the current buffer index.
 	_CurrentTemporalBufferIndex ^= static_cast<uint8>(1);
+}
+
+/*
+*	Terminates this render pass.
+*/
+void IndirectLightingRenderPass::Terminate() NOEXCEPT
+{
+	for (ScreenSpaceIndirectLightingGraphicsPipeline &pipeline : _ScreenSpaceIndirectLightingGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (RayTracedIndirectLightingRayTracingPipeline &pipeline : _RayTracedIndirectLightingRayTracingPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (IndirectLightingSpatialDenoisingGraphicsPipeline &pipeline : _IndirectLightingSpatialDenoisingGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_IndirectLightingApplicationGraphicsPipeline.Terminate();
 }

@@ -32,6 +32,9 @@ public:
 */
 void RayTracedIndirectLightingRayTracingPipeline::Initialize(const RenderingConfiguration::IndirectLightingQuality quality) NOEXCEPT
 {
+	//Reset this ray tracing pipeline.
+	ResetRayTracingPipeline();
+
 	//Set the indirect lighting quality.
 	_IndirectLightingQuality = quality;
 
@@ -139,6 +142,18 @@ void RayTracedIndirectLightingRayTracingPipeline::Execute() NOEXCEPT
 
 	//Include in render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this ray tracing pipeline.
+*/
+void RayTracedIndirectLightingRayTracingPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
 }
 
 /*

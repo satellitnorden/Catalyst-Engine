@@ -30,6 +30,12 @@ BloomRenderPass::BloomRenderPass() NOEXCEPT
 	{
 		BloomRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		BloomRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -37,6 +43,9 @@ BloomRenderPass::BloomRenderPass() NOEXCEPT
 */
 void BloomRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1 + _BloomDownsampleGraphicsPipelines.Size() + _BloomUpsampleGraphicsPipelines.Size() + 1);
 	AddPipeline(&_BloomIsolationGraphicsPipeline);
@@ -153,12 +162,6 @@ void BloomRenderPass::Initialize() NOEXCEPT
 													true);
 
 	_BloomApplicationGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -188,4 +191,25 @@ void BloomRenderPass::Execute() NOEXCEPT
 	}
 
 	_BloomApplicationGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void BloomRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_BloomIsolationGraphicsPipeline.Terminate();
+
+	for (ResampleGraphicsPipeline &pipeline : _BloomDownsampleGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (ResampleGraphicsPipeline &pipeline : _BloomUpsampleGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_BloomApplicationGraphicsPipeline.Terminate();
 }

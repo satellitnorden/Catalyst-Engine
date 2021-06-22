@@ -52,6 +52,9 @@ public:
 */
 void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const bool depth_test, const bool wireframe) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set whether or not to perform depth test.
 	_DepthTest = depth_test;
 
@@ -212,5 +215,13 @@ void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }
 #endif

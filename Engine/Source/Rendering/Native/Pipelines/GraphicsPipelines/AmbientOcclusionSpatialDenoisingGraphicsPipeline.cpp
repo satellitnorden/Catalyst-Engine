@@ -35,6 +35,9 @@ public:
 */
 void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const uint32 source_render_target_index, const int32 stride, const RenderTargetHandle target) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Set the source render target index.
 	_SourceRenderTargetIndex = source_render_target_index;
 
@@ -123,4 +126,12 @@ void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline-
+*/
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Terminate() NOEXCEPT
+{
+
 }

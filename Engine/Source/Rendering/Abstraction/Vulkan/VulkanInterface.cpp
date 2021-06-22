@@ -416,6 +416,16 @@ RESTRICTED VulkanDepthBuffer *const RESTRICT VulkanInterface::CreateDepthBuffer(
 }
 
 /*
+*	Destroys a depth buffer.
+*/
+void VulkanInterface::DestroyDepthBuffer(VulkanDepthBuffer *const RESTRICT depth_buffer) NOEXCEPT
+{
+	_VulkanDepthBuffers.Erase<false>(depth_buffer);
+	depth_buffer->Release();
+	Memory::Free(depth_buffer);
+}
+
+/*
 *	Creates and returns a descriptor set layout.
 */
 RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDescriptorSetLayout(const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings, const uint32 numberOfDescriptorSetLayoutBindings) NOEXCEPT
@@ -429,6 +439,16 @@ RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDesc
 	_VulkanDescriptorSetLayouts.Emplace(newDescriptorSetLayout);
 
 	return newDescriptorSetLayout;
+}
+
+/*
+*	Destroys a descriptor set layout.
+*/
+void VulkanInterface::DestroyDescriptorSetLayout(VulkanDescriptorSetLayout *const RESTRICT descriptor_set_layout) NOEXCEPT
+{
+	_VulkanDescriptorSetLayouts.Erase<false>(descriptor_set_layout);
+	descriptor_set_layout->Release();
+	Memory::Free(descriptor_set_layout);
 }
 
 /*
@@ -506,6 +526,16 @@ RESTRICTED VulkanFramebuffer *const RESTRICT VulkanInterface::CreateFramebuffer(
 }
 
 /*
+*	Destroys a framebuffer.
+*/
+void VulkanInterface::DestroyFramebuffer(VulkanFramebuffer *const RESTRICT framebuffer) NOEXCEPT
+{
+	framebuffer->Release();
+	_VulkanFramebuffers.Erase<false>(framebuffer);
+	Memory::Free(framebuffer);
+}
+
+/*
 *	Creates and returns a compute pipeline.
 */
 RESTRICTED VulkanComputePipeline *const RESTRICT VulkanInterface::CreateComputePipeline(const VulkanComputePipelineCreationParameters &parameters) NOEXCEPT
@@ -519,6 +549,16 @@ RESTRICTED VulkanComputePipeline *const RESTRICT VulkanInterface::CreateComputeP
 	_VulkanComputePipelines.Emplace(newPipeline);
 
 	return newPipeline;
+}
+
+/*
+*	Destroys a compute pipeline.
+*/
+void VulkanInterface::DestroyComputePipeline(VulkanComputePipeline *const RESTRICT pipeline) NOEXCEPT
+{
+	pipeline->Release();
+	_VulkanComputePipelines.Erase<false>(pipeline);
+	Memory::Free(pipeline);
 }
 
 /*
@@ -538,6 +578,16 @@ RESTRICTED VulkanGraphicsPipeline *const RESTRICT VulkanInterface::CreateGraphic
 }
 
 /*
+*	Destroys a graphics pipeline.
+*/
+void VulkanInterface::DestroyGraphicsPipeline(VulkanGraphicsPipeline *const RESTRICT pipeline) NOEXCEPT
+{
+	pipeline->Release();
+	_VulkanGraphicsPipelines.Erase<false>(pipeline);
+	Memory::Free(pipeline);
+}
+
+/*
 *	Creates and returns a ray tracing pipeline.
 */
 RESTRICTED VulkanRayTracingPipeline *const RESTRICT VulkanInterface::CreateRayTracingPipeline(const VulkanRayTracingPipelineCreationParameters &parameters) NOEXCEPT
@@ -551,6 +601,16 @@ RESTRICTED VulkanRayTracingPipeline *const RESTRICT VulkanInterface::CreateRayTr
 	_VulkanRayTracingPipelines.Emplace(newPipeline);
 
 	return newPipeline;
+}
+
+/*
+*	Destroys a ray tracing pipeline.
+*/
+void VulkanInterface::DestroyRayTracingPipeline(VulkanRayTracingPipeline *const RESTRICT pipeline) NOEXCEPT
+{
+	pipeline->Release();
+	_VulkanRayTracingPipelines.Erase<false>(pipeline);
+	Memory::Free(pipeline);
 }
 
 /*
@@ -586,6 +646,16 @@ RESTRICTED VulkanRenderPass *const RESTRICT VulkanInterface::CreateRenderPass(co
 }
 
 /*
+*	Destroys a render pass.
+*/
+void VulkanInterface::DestroyRenderPass(VulkanRenderPass *const RESTRICT render_pass) NOEXCEPT
+{
+	render_pass->Release();
+	_VulkanRenderPasses.Erase<false>(render_pass);
+	Memory::Free(render_pass);
+}
+
+/*
 *	Creates and returns a render target.
 */
 RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarget(const VkExtent2D extent, const VkFormat format) NOEXCEPT
@@ -599,6 +669,16 @@ RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarge
 	_VulkanRenderTargets.Emplace(newRenderTarget);
 
 	return newRenderTarget;
+}
+
+/*
+*	Destroys a render target.
+*/
+void VulkanInterface::DestroyRenderTarget(VulkanRenderTarget *const RESTRICT render_target) NOEXCEPT
+{
+	render_target->Release();
+	_VulkanRenderTargets.Erase<false>(render_target);
+	Memory::Free(render_target);
 }
 
 /*

@@ -30,6 +30,12 @@ VolumetricLightingRenderPass::VolumetricLightingRenderPass() NOEXCEPT
 	{
 		VolumetricLightingRenderPass::Instance->Execute();
 	});
+
+	//Set the termination function function.
+	SetTerminationFunction([]()
+	{
+		VolumetricLightingRenderPass::Instance->Terminate();
+	});
 }
 
 /*
@@ -37,6 +43,9 @@ VolumetricLightingRenderPass::VolumetricLightingRenderPass() NOEXCEPT
 */
 void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 {
+	//Reset this render pass.
+	ResetRenderPass();
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1 + 1 + _VolumetricLightingSpatialDenoisingGraphicsPipelines.Size() + _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() + 2);
 	
@@ -69,12 +78,6 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	_VolumetricLightingTemporalDenoisingGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_1),
 																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2));
 	_VolumetricLightingApplicationGraphicsPipeline.Initialize();
-
-	//Post-initialize all pipelines.
-	for (Pipeline *const RESTRICT pipeline : GetPipelines())
-	{
-		pipeline->PostInitialize();
-	}
 }
 
 /*
@@ -148,4 +151,26 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
 
 	_VolumetricLightingApplicationGraphicsPipeline.Execute();
+}
+
+/*
+*	Terminates this render pass.
+*/
+void VolumetricLightingRenderPass::Terminate() NOEXCEPT
+{
+	//Terminate all pipelines.
+	_VolumetricLightingGraphicsPipeline.Terminate();
+	_VolumetricLightingRayTracingPipeline.Terminate();
+
+	for (VolumetricLightingSpatialDenoisingGraphicsPipeline &pipeline : _VolumetricLightingSpatialDenoisingGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (VolumetricLightingTemporalDenoisingGraphicsPipeline &pipeline : _VolumetricLightingTemporalDenoisingGraphicsPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_VolumetricLightingApplicationGraphicsPipeline.Terminate();
 }

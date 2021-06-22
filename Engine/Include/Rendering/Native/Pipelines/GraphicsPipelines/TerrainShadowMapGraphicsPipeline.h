@@ -21,4 +21,9 @@ public:
 	*/
 	void Execute(const Matrix4x4 &world_to_light_matrix) NOEXCEPT;
 
+	/*
+	*	Terminates this graphics pipeline.
+	*/
+	void Terminate() NOEXCEPT;
+
 };

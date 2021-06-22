@@ -32,6 +32,9 @@ public:
 */
 void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 stride, const RenderTargetHandle source, const RenderTargetHandle target) NOEXCEPT
 {
+	//Reset this graphics pipeline.
+	ResetGraphicsPipeline();
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
 
@@ -90,31 +93,6 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 
 }
 
 /*
-*	Creates the render data table layout.
-*/
-void VolumetricLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
-{
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
-	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
-	};
-
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data table.
-*/
-void VolumetricLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
-{
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-}
-
-/*
 *	Executes this graphics pipeline.
 */
 void VolumetricLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
@@ -149,4 +127,41 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+}
+
+/*
+*	Terminates this graphics pipeline.
+*/
+void VolumetricLightingSpatialDenoisingGraphicsPipeline::Terminate() NOEXCEPT
+{
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void VolumetricLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void VolumetricLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

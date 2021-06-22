@@ -161,6 +161,14 @@ void OpenGLSubRenderingSystem::CreateDepthBuffer(const Resolution resolution, De
 }
 
 /*
+*	Destroys a depth buffer.
+*/
+void OpenGLSubRenderingSystem::DestroyDepthBuffer(DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
+{
+
+}
+
+/*
 *	Creates an event.
 */
 void OpenGLSubRenderingSystem::CreateEvent(EventHandle *const RESTRICT handle) NOEXCEPT
@@ -215,6 +223,14 @@ void OpenGLSubRenderingSystem::CreateShader(const ArrayProxy<byte> &data, const 
 void OpenGLSubRenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 number_of_bindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
 {
 	
+}
+
+/*
+*	Destroys a render data table layout.
+*/
+void OpenGLSubRenderingSystem::DestroyRenderDataTableLayout(RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
+{
+
 }
 
 /*
@@ -297,6 +313,14 @@ void OpenGLSubRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *con
 void OpenGLSubRenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
 {
 	
+}
+
+/*
+*	Destroys a render target.
+*/
+void OpenGLSubRenderingSystem::DestroyRenderTarget(RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+{
+
 }
 
 /*
