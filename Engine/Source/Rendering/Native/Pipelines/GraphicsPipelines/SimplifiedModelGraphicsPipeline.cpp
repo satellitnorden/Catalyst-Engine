@@ -92,7 +92,7 @@ void SimplifiedModelGraphicsPipeline::Initialize(const DepthBufferHandle depth_b
 	AddVertexInputBindingDescription(0, sizeof(Vertex), VertexInputBindingDescription::InputRate::Vertex);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
 	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::CLEAR);

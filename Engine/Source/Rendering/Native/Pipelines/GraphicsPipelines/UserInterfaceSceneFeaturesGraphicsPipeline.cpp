@@ -95,7 +95,7 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfaceSceneFeaturesPushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
 	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::LOAD);

@@ -128,7 +128,7 @@ void ProceduralGrassSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	ProceduralGrassPushConstantData data;
 
-	const float32 aspect_ratio{ static_cast<float32>(RenderingSystem::Instance->GetFullResolution()._Width) / static_cast<float32>(RenderingSystem::Instance->GetFullResolution()._Height) };
+	const float32 aspect_ratio{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width) / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
 	data._Resolution._X = CatalystBaseMath::Round<uint32>(procedural_grass_properties._ScreenCoverage * aspect_ratio);
 	data._Resolution._Y = CatalystBaseMath::Round<uint32>(procedural_grass_properties._ScreenCoverage);
 	data._ResolutionReciprocal._X = 1.0f / static_cast<float32>(data._Resolution._X);

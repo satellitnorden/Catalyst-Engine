@@ -83,7 +83,7 @@ void EditorSelectedModelGraphicsPipeline::Initialize(const DepthBufferHandle dep
 	AddVertexInputBindingDescription(0, sizeof(Vertex), VertexInputBindingDescription::InputRate::Vertex);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
 	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::LOAD);

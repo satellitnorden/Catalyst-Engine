@@ -34,7 +34,7 @@ void Perceiver::CheckUpdates() NOEXCEPT
 void Perceiver::UpdateProjectionMatrix() NOEXCEPT
 {
 	//Update the projection matrix.
-	_ProjectionMatrix = Matrix4x4::ReversePerspective(CatalystBaseMath::DegreesToRadians(_FieldOfView), static_cast<float>(RenderingSystem::Instance->GetFullResolution()._Width) / static_cast<float>(RenderingSystem::Instance->GetFullResolution()._Height), _NearPlane, _FarPlane);
+	_ProjectionMatrix = Matrix4x4::ReversePerspective(CatalystBaseMath::DegreesToRadians(_FieldOfView), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Width) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Height), _NearPlane, _FarPlane);
 
 	//Apply the jitter.
 	_ProjectionMatrix._Matrix[2]._X += _ProjectionMatrixJitter._X;

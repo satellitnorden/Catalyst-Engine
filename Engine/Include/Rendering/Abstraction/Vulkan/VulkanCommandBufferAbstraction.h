@@ -99,6 +99,17 @@ public:
 	void CommandExecuteCommands(const VkCommandBuffer commandBuffer) NOEXCEPT;
 
 	/*
+	*	Records an image memory barrier command.
+	*/
+	void CommandImageMemoryBarrier(	const VkAccessFlags source_access_mask,
+									const VkAccessFlags destination_access_mask,
+									const VkImageLayout old_layout,
+									const VkImageLayout new_layout,
+									const VkImage image,
+									const VkPipelineStageFlags source_stage_mask,
+									const VkPipelineStageFlags destination_stage_mask) NOEXCEPT;
+
+	/*
 	*	Records a next subpass command.
 	*/
 	void CommandNextSubpass() NOEXCEPT;

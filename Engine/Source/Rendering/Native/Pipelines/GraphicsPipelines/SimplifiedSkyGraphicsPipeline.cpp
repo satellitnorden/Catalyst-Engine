@@ -42,7 +42,7 @@ void SimplifiedSkyGraphicsPipeline::Initialize(const DepthBufferHandle depth_buf
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
 	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::LOAD);

@@ -24,7 +24,7 @@ namespace EditorUtilities
 	FORCE_INLINE void SetWindowPositionAndSize(const WindowAnchor anchor, const Vector2<float32> position, const Vector2<float32> size) NOEXCEPT
 	{
 		//Retrieve the window resolution.
-		const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetFullResolution()._Width), static_cast<float32>(RenderingSystem::Instance->GetFullResolution()._Height) };
+		const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
 	
 		//Calculate the window position.
 		Vector2<float32> window_position{ CatalystBaseMath::LinearlyInterpolate(0.0f, window_resolution._X, position._X), CatalystBaseMath::LinearlyInterpolate(0.0f, window_resolution._Y, position._Y) };

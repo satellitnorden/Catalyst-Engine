@@ -153,6 +153,12 @@ enum class SimplifiedNativeRenderPassStage : uint8
 	NUMBER_OF_STAGES
 };
 
+//Enumeration covering all access flags.
+enum class AccessFlags : uint8
+{
+	NONE
+};
+
 //Enumeration covering all attachment load operators.
 enum class AttachmentLoadOperator : uint8
 {
@@ -244,6 +250,12 @@ enum class CullMode : uint8
 	FrontAndBack
 };
 
+//Enumeration covering all image layouts.
+enum class ImageLayout : uint8
+{
+	NONE
+};
+
 //Enumeration covering all memory properties.
 enum class MemoryProperty : uint8
 {
@@ -267,6 +279,12 @@ enum class ModelFlags : uint32
 };
 
 ENUMERATION_BIT_OPERATIONS(ModelFlags);
+
+//Enumeration covering all pipeline stage flags.
+enum class PipelineStageFlags : uint8
+{
+	NONE
+};
 
 //Enumeration covering all render targets.
 enum class RenderTarget : uint8

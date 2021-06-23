@@ -100,7 +100,14 @@ public:
 	/*
 	*	Establishes an image memory barrier.
 	*/
-	void ImageMemoryBarrier(const Pipeline* const RESTRICT pipeline, const OpaqueHandle image) NOEXCEPT;
+	void ImageMemoryBarrier(const Pipeline* const RESTRICT pipeline,
+							const AccessFlags source_access_mask,
+							const AccessFlags destination_access_mask,
+							const ImageLayout old_layout,
+							const ImageLayout new_layout,
+							const OpaqueHandle image,
+							const PipelineStageFlags source_stage_mask,
+							const PipelineStageFlags destination_stage_mask) NOEXCEPT;
 
 	/*
 	*	Pushes constants.

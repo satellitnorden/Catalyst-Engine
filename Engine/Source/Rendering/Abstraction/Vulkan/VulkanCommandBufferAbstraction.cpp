@@ -203,6 +203,41 @@ void VulkanCommandBuffer::CommandExecuteCommands(const VkCommandBuffer commandBu
 }
 
 /*
+*	Records an image memory barrier command.
+*/
+void VulkanCommandBuffer::CommandImageMemoryBarrier(const VkAccessFlags source_access_mask,
+													const VkAccessFlags destination_access_mask,
+													const VkImageLayout old_layout,
+													const VkImageLayout new_layout,
+													const VkImage image,
+													const VkPipelineStageFlags source_stage_mask,
+													const VkPipelineStageFlags destination_stage_mask) NOEXCEPT
+{
+	//Create the image memory barrier.
+	VkImageMemoryBarrier image_memory_barrier;
+
+	image_memory_barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	image_memory_barrier.pNext = nullptr;
+	image_memory_barrier.srcAccessMask = source_access_mask;
+	image_memory_barrier.dstAccessMask = destination_access_mask;
+	image_memory_barrier.subresourceRange.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+
+	image_memory_barrier.oldLayout = old_layout;
+	image_memory_barrier.newLayout = new_layout;
+	image_memory_barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	image_memory_barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	image_memory_barrier.image = image;
+
+	image_memory_barrier.subresourceRange.baseMipLevel = 0;
+	image_memory_barrier.subresourceRange.levelCount = 1;
+	image_memory_barrier.subresourceRange.baseArrayLayer = 0;
+	image_memory_barrier.subresourceRange.layerCount = 1;
+
+	//Record the pipeline barrier command.
+	vkCmdPipelineBarrier(_VulkanCommandBuffer, source_stage_mask, destination_stage_mask, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+}
+
+/*
 *	Records a next subpass command.
 */
 void VulkanCommandBuffer::CommandNextSubpass() NOEXCEPT

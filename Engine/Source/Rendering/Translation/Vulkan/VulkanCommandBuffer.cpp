@@ -292,37 +292,26 @@ void CommandBuffer::ExecuteCommands(const Pipeline *const RESTRICT pipeline, con
 /*
 *	Establishes an image memory barrier.
 */
-void CommandBuffer::ImageMemoryBarrier(const Pipeline* const RESTRICT pipeline, const OpaqueHandle image) NOEXCEPT
+void CommandBuffer::ImageMemoryBarrier(	const Pipeline* const RESTRICT pipeline,
+										const AccessFlags source_access_mask,
+										const AccessFlags destination_access_mask,
+										const ImageLayout old_layout,
+										const ImageLayout new_layout,
+										const OpaqueHandle image,
+										const PipelineStageFlags source_stage_mask,
+										const PipelineStageFlags destination_stage_mask) NOEXCEPT
 {
-	//Retrieve the Vulkan command buffer.
-	VulkanCommandBuffer* const RESTRICT vulkan_command_buffer{ static_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData) };
-
-	//Retrieve the Vulkan image.
-	VulkanImage* const RESTRICT vulkan_image{ static_cast<VulkanImage* const RESTRICT>(image) };
-
-	//Create the image memory barrier.
-	VkImageMemoryBarrier image_memory_barrier;
-
-	image_memory_barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	image_memory_barrier.pNext = nullptr;
-	image_memory_barrier.srcAccessMask = VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	image_memory_barrier.dstAccessMask =	VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
-											| VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	image_memory_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-
-	image_memory_barrier.oldLayout = vulkan_image->GetImageLayout();
-	image_memory_barrier.newLayout = vulkan_image->GetImageLayout();
-	image_memory_barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	image_memory_barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	image_memory_barrier.image = vulkan_image->GetImage();
-
-	image_memory_barrier.subresourceRange.baseMipLevel = 0;
-	image_memory_barrier.subresourceRange.levelCount = 1;
-	image_memory_barrier.subresourceRange.baseArrayLayer = 0;
-	image_memory_barrier.subresourceRange.layerCount = 1;
-
-	//Record the pipeline barrier command.
-	vkCmdPipelineBarrier(vulkan_command_buffer->Get(), VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+	//Record the command.
+	reinterpret_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData)->CommandImageMemoryBarrier
+	(
+		VulkanTranslationUtilities::GetVulkanAccessFlags(source_access_mask),
+		VulkanTranslationUtilities::GetVulkanAccessFlags(destination_access_mask),
+		VulkanTranslationUtilities::GetVulkanImageLayout(old_layout),
+		VulkanTranslationUtilities::GetVulkanImageLayout(new_layout),
+		static_cast<VulkanImage* const RESTRICT>(image)->GetImage(),
+		VulkanTranslationUtilities::GetVulkanPipelineStageFlags(source_stage_mask),
+		VulkanTranslationUtilities::GetVulkanPipelineStageFlags(destination_stage_mask)
+	);
 }
 
 /*
@@ -334,7 +323,6 @@ void CommandBuffer::PushConstants(const Pipeline *const RESTRICT pipeline, Shade
 	{
 		//Cache the Vulkan ray tracing pipeline data.
 		const VulkanComputePipelineData *const RESTRICT pipelineData{ static_cast<const VulkanComputePipelineData *const RESTRICT>(pipeline->GetData()) };
-
 
 		//Push the constants.
 		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandPushConstants(pipelineData->_Pipeline->GetPipelineLayout(), VulkanTranslationUtilities::GetVulkanShaderStages(shaderStage), offset, size, data);

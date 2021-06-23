@@ -101,20 +101,8 @@ vec4 SampleIndirectLighting(vec2 coordinate)
 
 void CatalystShaderMain()
 {
-	//Sample the indirect lighting while sharpening it a bit.
-#if 0 //Apply sharpening.
-	vec4 indirect_lighting = 	SampleIndirectLighting(fragment_texture_coordinate) * 9.0f
-								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(-1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(0.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(0.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, -1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, 0.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f
-								+ SampleIndirectLighting(fragment_texture_coordinate + vec2(1.0f, 1.0f) * INVERSE_SCALED_RESOLUTION) * -1.0f;
-#else
+	//Sample the indirect lighting.
 	vec4 indirect_lighting = SampleIndirectLighting(fragment_texture_coordinate);
-#endif
 
 	//No negative values. \o/
 	indirect_lighting = vec4(max(indirect_lighting.rgb, vec3(0.0f, 0.0f, 0.0f)), clamp(indirect_lighting.a, 0.0f, 1.0f));

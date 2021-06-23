@@ -21,6 +21,14 @@ class VulkanTranslationUtilities
 public:
 
 	/*
+	*	Given adress flags, return the corresponding Vulkan access flags.
+	*/
+	static VkAccessFlags GetVulkanAccessFlags(const AccessFlags access_flags) NOEXCEPT
+	{
+		return 0;
+	}
+
+	/*
 	*	Given an address mode, return the corresponding Vulkan address mode.
 	*/
 	static VkSamplerAddressMode GetVulkanAddressMode(const AddressMode addressMode) NOEXCEPT
@@ -288,6 +296,14 @@ public:
 	}
 
 	/*
+	*	Given an image layout, return the corresponding Vulkan image layout.
+	*/
+	static VkImageLayout GetVulkanImageLayout(const ImageLayout image_layout) NOEXCEPT
+	{
+		return VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+	}
+
+	/*
 	*	Given a texture usage, returns the corresponding Vulkan image usage.
 	*/
 	static VkImageUsageFlags GetVulkanImageUsage(const TextureUsage usage) NOEXCEPT
@@ -338,6 +354,14 @@ public:
 				return VK_SAMPLER_MIPMAP_MODE_NEAREST;
 			}
 		}
+	}
+
+	/*
+	*	Given pipeline stage flags, return the corresponding Vulkan pipeline stage flags.
+	*/
+	static VkPipelineStageFlags GetVulkanPipelineStageFlags(const PipelineStageFlags pipeline_stage_flags) NOEXCEPT
+	{
+		return 0;
 	}
 
 	/*
