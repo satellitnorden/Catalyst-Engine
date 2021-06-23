@@ -279,6 +279,6 @@ public:
 	/*
 	*	Ends a frame.
 	*/
-	virtual void EndFrame() NOEXCEPT = 0;
+	virtual void EndFrame(const CommandBuffer *const RESTRICT frame_command_buffer) NOEXCEPT = 0;
 
 };

@@ -11,6 +11,8 @@
 //Type alises.
 using InitializationFunction = void(*)();
 using ExecutionFunction = void(*)();
+using PreRecordFunction = void(*)(CommandBuffer *const RESTRICT frame_command_buffer);
+using PostRecordFunction = void(*)(CommandBuffer *const RESTRICT frame_command_buffer);
 using TerminationFunction = void(*)();
 
 class RenderPass
@@ -35,6 +37,16 @@ public:
 	*	Executes this render pass.
 	*/
 	void Execute() NOEXCEPT;
+
+	/*
+	*	Pre records this render pass.
+	*/
+	void PreRecord(CommandBuffer *const RESTRICT frame_command_buffer) NOEXCEPT;
+
+	/*
+	*	Post records this render pass.
+	*/
+	void PostRecord(CommandBuffer *const RESTRICT frame_command_buffer) NOEXCEPT;
 
 	/*
 	*	Terminates this render pass.
@@ -89,6 +101,22 @@ protected:
 	}
 
 	/*
+	*	Sets the pre record function.
+	*/
+	FORCE_INLINE void SetPreRecordFunction(const PreRecordFunction function) NOEXCEPT
+	{
+		_PreRecordFunction = function;
+	}
+
+	/*
+	*	Sets the post record function.
+	*/
+	FORCE_INLINE void SetPostRecordFunction(const PostRecordFunction function) NOEXCEPT
+	{
+		_PostRecordFunction = function;
+	}
+
+	/*
 	*	Sets the termination function.
 	*/
 	FORCE_INLINE void SetTerminationFunction(const TerminationFunction function) NOEXCEPT
@@ -122,6 +150,12 @@ private:
 
 	//The execution function.
 	ExecutionFunction _ExecutionFunction;
+
+	//The pre record function.
+	PreRecordFunction _PreRecordFunction{ nullptr };
+
+	//The post record function.
+	PostRecordFunction _PostRecordFunction{ nullptr };
 
 	//The termination function.
 	TerminationFunction _TerminationFunction;

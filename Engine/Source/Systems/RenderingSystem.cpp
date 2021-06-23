@@ -240,11 +240,45 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		}
 	}
 
+	//Record the frame command buffer.
+	CommandBuffer *const RESTRICT frame_command_buffer{ GetGlobalCommandBuffer(CommandBufferLevel::PRIMARY) };
+
+	{
+		//Begin the command buffer.
+		frame_command_buffer->Begin(nullptr);
+
+		//Record all execute commands.
+		for (RenderPass *const RESTRICT render_pass : _RenderPasses)
+		{
+			if (!render_pass->IsEnabled())
+			{
+				continue;
+			}
+
+			render_pass->PreRecord(frame_command_buffer);
+
+			for (Pipeline *const RESTRICT pipeline : render_pass->GetPipelines())
+			{
+				if (!pipeline->IncludeInRender())
+				{
+					continue;
+				}
+
+				frame_command_buffer->ExecuteCommands(pipeline, pipeline->GetCommandBuffer());
+			}
+
+			render_pass->PostRecord(frame_command_buffer);
+		}
+
+		//End the command buffer.
+		frame_command_buffer->End(nullptr);
+	}
+
 	//Tell the sub rendering system to end the frame.
 	{
 		PROFILING_SCOPE("_SubRenderingSystem->EndFrame()");
 
-		_SubRenderingSystem->EndFrame();
+		_SubRenderingSystem->EndFrame(frame_command_buffer);
 	}
 }
 
@@ -441,20 +475,6 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 			case RenderTarget::SCENE:
 			{
 				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE)]);
-
-				break;
-			}
-
-			case RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1:
-			{
-				CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1)]);
-
-				break;
-			}
-
-			case RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2:
-			{
-				CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2)]);
 
 				break;
 			}
@@ -1165,8 +1185,6 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RG_FLOAT16, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4_HALF)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE)]);
-	CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1)]);
-	CreateRenderTarget(GetScaledResolution(1), TextureFormat::R_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_1)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_2)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_1)]);

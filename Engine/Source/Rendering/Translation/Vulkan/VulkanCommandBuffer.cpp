@@ -13,6 +13,7 @@
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Third party.
@@ -26,25 +27,33 @@
 */
 void CommandBuffer::Begin(const Pipeline *const RESTRICT pipeline) NOEXCEPT
 {
-	if (pipeline->GetType() == Pipeline::Type::Compute)
+	if (pipeline)
 	{
-		//Begin the command buffer.
-		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
+		if (pipeline->GetType() == Pipeline::Type::Compute)
+		{
+			//Begin the command buffer.
+			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
+		}
+
+		else if (pipeline->GetType() == Pipeline::Type::Graphics)
+		{
+			//Cache the Vulkan graphics pipeline data.
+			const VulkanGraphicsPipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
+
+			//Begin the command buffer.
+			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipeline_data->_RenderPass->Get(), 0, static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetOutputRenderTargets().Empty() ? pipeline_data->_FrameBuffers[0]->Get() : static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetOutputRenderTargets()[0] == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? pipeline_data->_FrameBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]->Get() : pipeline_data->_FrameBuffers[0]->Get());
+		}
+
+		else if (pipeline->GetType() == Pipeline::Type::RayTracing)
+		{
+			//Begin the command buffer.
+			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
+		}
 	}
 
-	else if (pipeline->GetType() == Pipeline::Type::Graphics)
+	else
 	{
-		//Cache the Vulkan graphics pipeline data.
-		const VulkanGraphicsPipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
-
-		//Begin the command buffer.
-		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipeline_data->_RenderPass->Get(), 0, static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetOutputRenderTargets().Empty() ? pipeline_data->_FrameBuffers[0]->Get() : static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetOutputRenderTargets()[0] == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? pipeline_data->_FrameBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]->Get() : pipeline_data->_FrameBuffers[0]->Get());
-	}
-	
-	else if (pipeline->GetType() == Pipeline::Type::RayTracing)
-	{
-		//Begin the command buffer.
-		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, VK_NULL_HANDLE, 0, VK_NULL_HANDLE);
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 	}
 }
 
@@ -133,6 +142,17 @@ void CommandBuffer::BindVertexBuffer(const Pipeline *const RESTRICT pipeline, co
 }
 
 /*
+*	Blits an image.
+*/
+void CommandBuffer::BlitImage(const Pipeline *const RESTRICT pipeline, const OpaqueHandle source, const OpaqueHandle target) NOEXCEPT
+{
+	VulkanImage *const RESTRICT source_image{ static_cast<VulkanImage* const RESTRICT>(source) };
+	VulkanImage *const RESTRICT target_image{ static_cast<VulkanImage* const RESTRICT>(source) };
+
+	static_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData)->CommandBlitImage(source_image->GetImage(), target_image->GetImage());
+}
+
+/*
 *	Dispatches.
 */
 void CommandBuffer::Dispatch(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT
@@ -167,6 +187,106 @@ void CommandBuffer::DrawIndexed(const Pipeline *const RESTRICT pipeline, const u
 {
 	//Draw indexed.
 	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandDrawIndexed(indexCount, instanceCount);
+}
+
+/*
+*	Executes commands from a secondary command buffer.
+*/
+void CommandBuffer::ExecuteCommands(const Pipeline *const RESTRICT pipeline, const CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
+{
+	if (pipeline->GetType() == Pipeline::Type::Graphics)
+	{
+		//Cache the Vulkan graphics pipeline data.
+		const VulkanGraphicsPipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
+
+		if (static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetDepthStencilAttachmentLoadOperator() == AttachmentLoadOperator::CLEAR
+			|| static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetColorAttachmentLoadOperator() == AttachmentLoadOperator::CLEAR)
+		{
+			Vector4<float32> clear_color;
+			float32 depth_value;
+
+			if (pipeline_data->_Extent.width == CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution)
+			{
+				clear_color = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
+				depth_value = 1.0f;
+			}
+
+			else
+			{
+				clear_color = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+				depth_value = 0.0f;
+			}
+
+			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBeginRenderPassAndClear
+			(
+			clear_color,
+			depth_value,
+			pipeline_data->_RenderPass->Get(),
+			pipeline_data->_FrameBuffers[0]->Get(),
+			pipeline_data->_Extent,
+			VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, pipeline_data->_NumberOfAttachments
+			);
+		}
+
+		else
+		{
+			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBeginRenderPass
+			(
+			pipeline_data->_RenderPass->Get(),
+			pipeline_data->_FrameBuffers[pipeline_data->_RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+			pipeline_data->_RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : pipeline_data->_Extent,
+			VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS
+			);
+		}
+	}
+
+	//Record the execution of the secondary command buffer.
+	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandExecuteCommands(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(pipeline->GetCommandBuffer()->GetCommandBufferData())->Get());
+
+	if (pipeline->GetType() == Pipeline::Type::Graphics)
+	{
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandEndRenderPass();
+	}
+
+	//Insert image barriers.
+	if (true)
+	{
+		if (pipeline->GetType() == Pipeline::Type::Graphics)
+		{
+			for (const RenderTargetHandle render_target : static_cast<const GraphicsPipeline* const RESTRICT>(pipeline)->GetOutputRenderTargets())
+			{
+				if (render_target == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN))
+				{
+					continue;
+				}
+
+				VulkanRenderTarget* const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget* const RESTRICT>(render_target) };
+
+				//Create the image memory barrier.
+				VkImageMemoryBarrier imageMemoryBarrier{ };
+
+				imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				imageMemoryBarrier.pNext = nullptr;
+				imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+				imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+				imageMemoryBarrier.oldLayout = vulkan_render_target->GetImageLayout();
+				imageMemoryBarrier.newLayout = vulkan_render_target->GetImageLayout();
+				imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				imageMemoryBarrier.image = vulkan_render_target->GetImage();
+
+				imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
+				imageMemoryBarrier.subresourceRange.levelCount = 1;
+				imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
+				imageMemoryBarrier.subresourceRange.layerCount = 1;
+
+				//Record the pipeline barrier command.
+				vkCmdPipelineBarrier(reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->Get(), VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+			}
+		}
+	}
 }
 
 /*

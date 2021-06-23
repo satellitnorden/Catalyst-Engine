@@ -23,17 +23,6 @@ public:
 		//Create the render finished semaphore.
 		_RenderFinishedSemaphore = VulkanInterface::Instance->CreateSemaphore();
 
-		//Create the primary command pool.
-		_PrimaryCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-		//Create the primary command buffers.
-		_PrimaryCommandBuffers.Upsize<false>(frameDataCount);
-
-		for (VulkanCommandBuffer &primaryCommandBuffer : _PrimaryCommandBuffers)
-		{
-			_PrimaryCommandPool->AllocatePrimaryCommandBuffer(primaryCommandBuffer);
-		}
-
 		//Create the fences.
 		_Fences.Upsize<false>(frameDataCount);
 
@@ -76,11 +65,6 @@ public:
 	}
 
 	/*
-	*	Returns the current primary command buffer.
-	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentPrimaryCommandBuffer() NOEXCEPT { return &_PrimaryCommandBuffers[_CurrentFrame]; }
-
-	/*
 	*	Returns the current fence.
 	*/
 	VulkanFence *RESTRICT GetCurrentFence() NOEXCEPT
@@ -99,12 +83,6 @@ private:
 
 	//Keeps track of the current frame.
 	uint32 _CurrentFrame;
-
-	//The primary command pool.
-	VulkanCommandPool *RESTRICT _PrimaryCommandPool;
-
-	//The primary command buffers.
-	DynamicArray<VulkanCommandBuffer> _PrimaryCommandBuffers;
 
 	//The fences.
 	DynamicArray<VulkanFence *RESTRICT> _Fences;

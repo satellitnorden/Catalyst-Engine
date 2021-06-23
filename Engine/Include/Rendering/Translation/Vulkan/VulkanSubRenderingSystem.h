@@ -263,6 +263,6 @@ public:
 	/*
 	*	Ends a frame.
 	*/
-	void EndFrame() NOEXCEPT override;
+	void EndFrame(const CommandBuffer *const RESTRICT frame_command_buffer) NOEXCEPT override;
 
 };

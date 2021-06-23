@@ -48,6 +48,12 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	//Create the ambient occlusion render target.
 	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, &_AmbientOcclusionRenderTarget);
 
+	//Create the ambient occlusion temporal buffer render targets.
+	for (RenderTargetHandle &render_target : _AmbientOcclusionTemporalBufferRenderTargets)
+	{
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, &render_target);
+	}
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1 + 1 + _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size() + _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() + 1);
 	AddPipeline(&_ScreenSpaceAmbientOcclusionGraphicsPipeline);
@@ -74,11 +80,11 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF),
 																		2,
 																		_AmbientOcclusionRenderTarget);
-	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1),
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2),
+	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[0],
+																		_AmbientOcclusionTemporalBufferRenderTargets[1],
 																		_AmbientOcclusionRenderTarget);
-	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2),
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1),
+	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[1],
+																		_AmbientOcclusionTemporalBufferRenderTargets[0],
 																		_AmbientOcclusionRenderTarget);
 	_AmbientOcclusionApplicationGraphicsPipeline.Initialize(_AmbientOcclusionRenderTarget);
 }
@@ -181,4 +187,10 @@ void AmbientOcclusionRenderPass::Terminate() NOEXCEPT
 
 	//Destroy the ambient occlusion render target.
 	RenderingSystem::Instance->DestroyRenderTarget(&_AmbientOcclusionRenderTarget);
+
+	//Destroy the ambient occlusion temporal buffer render targets.
+	for (RenderTargetHandle &render_target : _AmbientOcclusionTemporalBufferRenderTargets)
+	{
+		RenderingSystem::Instance->DestroyRenderTarget(&render_target);
+	}
 }

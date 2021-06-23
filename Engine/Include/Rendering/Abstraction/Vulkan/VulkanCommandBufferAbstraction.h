@@ -69,9 +69,9 @@ public:
 	void CommandBindVertexBuffers(const uint32 firstBinding, const uint32 vertexBufferCount, const VkBuffer *RESTRICT vertexBuffers, const VkDeviceSize *RESTRICT offsets) NOEXCEPT;
 
 	/*
-	*	Records a copy image command.
+	*	Records a blit image command.
 	*/
-	void CommandCopyImage(VkImage source, VkImage destination, const VkExtent3D extent) NOEXCEPT;
+	void CommandBlitImage(VkImage source, VkImage destination) NOEXCEPT;
 
 	/*
 	*	Records a dispatch command.

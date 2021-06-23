@@ -398,7 +398,7 @@ void OpenGLSubRenderingSystem::BeginFrame() NOEXCEPT
 /*
 *	Ends a frame.
 */
-void OpenGLSubRenderingSystem::EndFrame() NOEXCEPT
+void OpenGLSubRenderingSystem::EndFrame(const CommandBuffer *const RESTRICT frame_command_buffer) NOEXCEPT
 {
 	
 }

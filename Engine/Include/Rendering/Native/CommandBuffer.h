@@ -66,6 +66,11 @@ public:
 	void BindVertexBuffer(const Pipeline *const RESTRICT pipeline, const uint32 binding, BufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT;
 
 	/*
+	*	Blits an image.
+	*/
+	void BlitImage(const Pipeline *const RESTRICT pipeline, const OpaqueHandle source, const OpaqueHandle target) NOEXCEPT;
+
+	/*
 	*	Dispatches.
 	*/
 	void Dispatch(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT;
@@ -86,6 +91,11 @@ public:
 	*	Draws indexed.
 	*/
 	void DrawIndexed(const Pipeline *const RESTRICT pipeline, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT;
+
+	/*
+	*	Executes commands from a secondary command buffer.
+	*/
+	void ExecuteCommands(const Pipeline *const RESTRICT pipeline, const CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;
 
 	/*
 	*	Establishes an image memory barrier.

@@ -317,16 +317,6 @@ enum class RenderTarget : uint8
 	SCENE,
 
 	/*
-	*	Contains the first temporal ambient occlusion buffer.
-	*/
-	TEMPORAL_AMBIENT_OCCLUSION_BUFFER_1,
-
-	/*
-	*	Contains the second temporal ambient occlusion buffer.
-	*/
-	TEMPORAL_AMBIENT_OCCLUSION_BUFFER_2,
-
-	/*
 	*	Contains the first half resolution temporal indirect lighting buffer.
 	*/
 	TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_1,

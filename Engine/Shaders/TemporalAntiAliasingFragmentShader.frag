@@ -115,7 +115,7 @@ void CatalystShaderMain()
 		vec4 previous_frame_texture_sampler = texture(PREVIOUS_FRAME_TEXTURE, fragment_texture_coordinate);
 
 		//Sample the current frame texture.
-		vec4 current_frame_texture_sampler = texture(current_frame_texture, fragment_texture_coordinate);
+		vec4 current_frame_texture_sampler = texture(CURRENT_FRAME_TEXTURE, fragment_texture_coordinate);
 
 		//Blend the previous and the current frame.
 		vec3 blended_frame = mix(current_frame_texture_sampler.rgb, previous_frame_texture_sampler.rgb, WEIGHT_OVERRIDE);

@@ -140,25 +140,26 @@ void VulkanCommandBuffer::CommandBindVertexBuffers(const uint32 firstBinding, co
 }
 
 /*
-*	Records a copy image command.
+*	Records a blit image command.
 */
-void VulkanCommandBuffer::CommandCopyImage(VkImage source, VkImage destination, const VkExtent3D extent) NOEXCEPT
+void VulkanCommandBuffer::CommandBlitImage(VkImage source, VkImage destination) NOEXCEPT
 {
-	VkImageCopy imageCopy;
+	VkImageBlit image_blit;
 
-	imageCopy.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	imageCopy.srcSubresource.mipLevel = 0;
-	imageCopy.srcSubresource.baseArrayLayer = 0;
-	imageCopy.srcSubresource.layerCount = 1;
-	imageCopy.srcOffset = { 0, 0, 0 };
-	imageCopy.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	imageCopy.dstSubresource.mipLevel = 0;
-	imageCopy.dstSubresource.baseArrayLayer = 0;
-	imageCopy.dstSubresource.layerCount = 1;
-	imageCopy.dstOffset = { 0, 0, 0 };
-	imageCopy.extent = extent;
+	image_blit.srcSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+	image_blit.srcSubresource.mipLevel = 0;
+	image_blit.srcSubresource.baseArrayLayer = 0;
+	image_blit.srcSubresource.layerCount = 1;
+	image_blit.srcOffsets[0] = VkOffset3D{ 0, 0, 0 };
+	image_blit.srcOffsets[1] = VkOffset3D{ 0, 0, 0 };
+	image_blit.dstSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+	image_blit.dstSubresource.mipLevel = 0;
+	image_blit.dstSubresource.baseArrayLayer = 0;
+	image_blit.dstSubresource.layerCount = 1;
+	image_blit.dstOffsets[0] = VkOffset3D{ 0, 0, 0 };
+	image_blit.dstOffsets[1] = VkOffset3D{ 0, 0, 0 };
 
-	vkCmdCopyImage(_VulkanCommandBuffer, source, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
+	vkCmdBlitImage(_VulkanCommandBuffer, source, VkImageLayout::VK_IMAGE_LAYOUT_GENERAL, destination, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, 1, &image_blit, VkFilter::VK_FILTER_NEAREST);
 }
 
 /*
