@@ -19,7 +19,10 @@ public:
 	/*
 	*	Returns the underlying Vulkan swap chain.
 	*/
-	const VkSwapchainKHR Get() const NOEXCEPT { return _VulkanSwapChain; }
+	const VkSwapchainKHR Get() const NOEXCEPT
+	{
+		return _VulkanSwapChain;
+	}
 
 	/*
 	*	Initializes this Vulkan swap chain.

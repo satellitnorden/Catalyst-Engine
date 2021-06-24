@@ -8,6 +8,9 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 
+//Third party.
+#include <ThirdParty/VrApi/VrApi_Helpers.h>
+
 //Android.
 #include <android/input.h>
 #include <android/log.h>
@@ -15,16 +18,52 @@
 //Static variable definitions.
 android_app *RESTRICT CatalystPlatform::_App = nullptr;
 ANativeWindow *RESTRICT CatalystPlatform::_Window = nullptr;
+ovrJava CatalystPlatform::_ovrJava;
 
-//Catalyst platform Android data.
-namespace CatalystPlatformAndroidData
+//Catalyst platform Oculus Quest data.
+namespace CatalystPlatformOculusQuestData
 {
 
-	//The screen width.
-	uint32 _ScreenWidth;
+	//Denotes if the VrApi is initialized.
+	bool _VrApiInitialized{ false };
 
-	//The screen height.
-	uint32 _ScreenHeight;
+}
+
+//Catalyst platform Oculus Quest logic.
+namespace CatalystPlatformOculusQuestLogic
+{
+
+	/*
+	*	Initializes the VrApi.
+	*/
+	void InitializeVrApi() NOEXCEPT
+	{
+		if (CatalystPlatformOculusQuestData::_VrApiInitialized)
+		{
+			return;
+		}
+
+		//Set up the ovrJava object.
+		CatalystPlatform::_ovrJava.Vm = CatalystPlatform::_App->activity->vm;
+		CatalystPlatform::_ovrJava.Vm->AttachCurrentThread(&CatalystPlatform::_ovrJava.Env, nullptr);
+		CatalystPlatform::_ovrJava.ActivityObject = CatalystPlatform::_App->activity->clazz;
+
+		//Initialize the VrApi.
+		ovrInitParms initialization_parameters{ vrapi_DefaultInitParms(&CatalystPlatform::_ovrJava) };
+
+		initialization_parameters.GraphicsAPI = VRAPI_GRAPHICS_API_VULKAN_1;
+		const int32 result{ vrapi_Initialize(&initialization_parameters) };
+
+		if (result != VRAPI_INITIALIZE_SUCCESS)
+		{
+			ASSERT(false, "Oh no!");
+
+			return;
+		}
+
+		CatalystPlatformOculusQuestData::_VrApiInitialized = true;
+	}
+
 }
 
 /*
@@ -37,8 +76,6 @@ void HandleCommand(android_app *RESTRICT app, int32 command) NOEXCEPT
 		case APP_CMD_INIT_WINDOW:
 		{
 			CatalystPlatform::_Window = app->window;
-			CatalystPlatformAndroidData::_ScreenWidth = ANativeWindow_getWidth(CatalystPlatform::_Window);
-			CatalystPlatformAndroidData::_ScreenHeight = ANativeWindow_getHeight(CatalystPlatform::_Window);
 
 			break;
 		}
@@ -90,7 +127,7 @@ void PostUpdate() NOEXCEPT
 	//If the app has received a destroy request, oblige.
 	if (CatalystPlatform::_App->destroyRequested != 0)
 	{
-		//CatalystEngineSystem::Instance->SetShouldTerminate();
+		CatalystEngineSystem::Instance->SetShouldTerminate();
 	}
 }
 
@@ -99,6 +136,9 @@ void PostUpdate() NOEXCEPT
 */
 void CatalystPlatform::Initialize() NOEXCEPT
 {
+	//Initialize the VrApi.
+	CatalystPlatformOculusQuestLogic::InitializeVrApi();
+
 	//Set callbacks.
     _App->onAppCmd = HandleCommand;
     _App->onInputEvent = HandleInput;
@@ -135,18 +175,12 @@ bool CatalystPlatform::IsWindowInFocus() NOEXCEPT
 */
 Resolution CatalystPlatform::GetDefaultResolution() NOEXCEPT
 {
-	//Need the callbacks to be set.
-	_App->onAppCmd = HandleCommand;
-	_App->onInputEvent = HandleInput;
+	//Initialize the VrApi.
+	CatalystPlatformOculusQuestLogic::InitializeVrApi();
 
-	//Need to wait for the window to be set before proceeding.
-	while (CatalystPlatform::_Window == nullptr)
-	{
-		PollEvents();
-	}
-
-	//Return the default resolution.
-	return Resolution(CatalystPlatformAndroidData::_ScreenWidth, CatalystPlatformAndroidData::_ScreenHeight);
+	//Ask the VR api. (:
+	return Resolution(static_cast<uint32>(vrapi_GetSystemPropertyInt(&_ovrJava, VRAPI_SYS_PROP_SUGGESTED_EYE_TEXTURE_WIDTH)),
+					  static_cast<uint32>(vrapi_GetSystemPropertyInt(&_ovrJava, VRAPI_SYS_PROP_SUGGESTED_EYE_TEXTURE_HEIGHT)));
 }
 
 /*

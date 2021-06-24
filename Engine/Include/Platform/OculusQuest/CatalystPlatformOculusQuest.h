@@ -7,6 +7,9 @@
 //Rendering.
 #include <Rendering/Native/Resolution.h>
 
+//Third party.
+#include <ThirdParty/VrApi/VrAPi.h>
+
 //Android specific third party includes.
 #include <android_native_app_glue.h>
 
@@ -25,6 +28,9 @@ class CatalystPlatform final
 {
 
 public:
+
+	//The overJava object.
+	static ovrJava _ovrJava;
 
 	//Handle to the app.
 	static android_app *RESTRICT _App;

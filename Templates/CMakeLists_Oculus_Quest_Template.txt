@@ -35,4 +35,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ../../../../../../Code/Include
 target_include_directories(${PROJECT_NAME} PRIVATE ${ANDROID_NDK}/sources/android/native_app_glue)
 
 #Link the libraries.
-target_link_libraries(${PROJECT_NAME} aaudio android log native_app_glue vulkan)
+add_library(vrapi-lib SHARED IMPORTED)
+set_target_properties(vrapi-lib PROPERTIES IMPORTED_LOCATION C:/Github/Catalyst-Engine/Engine/Libraries/Static/Debug/${ANDROID_ABI}/libvrapi.so)
+target_link_libraries(${PROJECT_NAME} aaudio android log native_app_glue vulkan vrapi-lib)

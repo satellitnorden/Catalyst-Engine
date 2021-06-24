@@ -6,6 +6,9 @@
 #include <Concurrency/ScopedLock.h>
 #include <Concurrency/Spinlock.h>
 
+//Rendering.
+#include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
+
 //Systems.
 #include <Systems/MemorySystem.h>
 
@@ -40,6 +43,9 @@ void VulkanInterface::Initialize() NOEXCEPT
 
 	//Initialize the Vulkan logical device.
 	_VulkanLogicalDevice.Initialize();
+
+	//Tell the platform that the logical device has been created.
+	VulkanPlatform::OnLogicalDeviceCreated();
 
 	//Initialize the Vulkan swap chain.
 	_VulkanSwapchain.Initialize();
@@ -76,6 +82,9 @@ void VulkanInterface::Release() NOEXCEPT
 	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::GRAPHICS)->WaitIdle();
 	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::PRESENT)->WaitIdle();
 	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::TRANSFER)->WaitIdle();
+
+	//Tell the platform to terminate
+	VulkanPlatform::Terminate();
 
 	//Release all Vulkan 2D textures.
 	for (Vulkan2DTexture *const RESTRICT vulkan_2D_texture : _Vulkan2DTextures)
