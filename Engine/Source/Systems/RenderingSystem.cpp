@@ -612,13 +612,6 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 				break;
 			}
 
-			case RenderTarget::SCREEN:
-			{
-				//Do nothing, this is initialized by the subsystem. (:
-
-				break;
-			}
-
 			default:
 			{
 				ASSERT(false, "Invalid case!");

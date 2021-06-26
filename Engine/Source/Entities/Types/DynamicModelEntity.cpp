@@ -166,6 +166,14 @@ RESTRICTED NO_DISCARD const AxisAlignedBoundingBox3D *const RESTRICT DynamicMode
 }
 
 /*
+*	Returns the world space axis aligned bounding box.
+*/
+RESTRICTED NO_DISCARD const WorldSpaceAxisAlignedBoundingBox3D *const RESTRICT DynamicModelEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
+{
+	return &ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
+}
+
+/*
 *	Returns the model collision configuration.
 */
 NO_DISCARD const ModelCollisionConfiguration &DynamicModelEntity::GetModelCollisionConfiguration() const NOEXCEPT

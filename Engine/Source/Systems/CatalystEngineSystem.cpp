@@ -361,6 +361,9 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 
 	//Terminate the rendering system last, currently it might cause crashes, so make sure systems that save to disk do that first at least as to not lose data.
 	RenderingSystem::Instance->Terminate();
+
+	//Terminate the platform.
+	CatalystPlatform::Terminate();
 }
 
 /*

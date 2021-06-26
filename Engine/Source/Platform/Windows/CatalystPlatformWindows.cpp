@@ -238,6 +238,14 @@ void CatalystPlatform::Initialize() NOEXCEPT
 }
 
 /*
+*	Terminates the platform.
+*/
+void CatalystPlatform::Terminate() NOEXCEPT
+{
+
+}
+
+/*
 *	Returns whether or not the window is in focus.
 */
 bool CatalystPlatform::IsWindowInFocus() NOEXCEPT

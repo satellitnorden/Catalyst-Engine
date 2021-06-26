@@ -54,6 +54,14 @@ public:
 	DepthBufferHandle GetDepthBuffer() const NOEXCEPT { return _DepthBuffer; }
 
 	/*
+	*	Returns whether or not this graphics pipeline is rendering directly to the screen.
+	*/
+	FORCE_INLINE NO_DISCARD bool IsRenderingDirectlyToScreen() const NOEXCEPT
+	{
+		return _IsRenderingDirectlyToScreen;
+	}
+
+	/*
 	*	Returns the output render targets.
 	*/
 	const DynamicArray<RenderTargetHandle>& GetOutputRenderTargets() const NOEXCEPT { return _OutputRenderTargets; }
@@ -224,6 +232,14 @@ public:
 	*	Sets the depth buffer.
 	*/
 	void SetDepthBuffer(const DepthBufferHandle depthBuffer) NOEXCEPT { _DepthBuffer = depthBuffer; }
+
+	/*
+	*	Sets whether or not this graphics pipeline is rendering directly to the screen.
+	*/
+	FORCE_INLINE void SetIsRenderingDirectlyToScreen(const bool value) NOEXCEPT
+	{
+		_IsRenderingDirectlyToScreen = value;
+	}
 
 	/*
 	*	Sets the number of output render targets.
@@ -408,6 +424,9 @@ private:
 
 	//The depth buffer.
 	DepthBufferHandle _DepthBuffer{ EMPTY_HANDLE };
+
+	//Denotes whether or not this graphics pipeline is rendering directly to the screen.
+	bool _IsRenderingDirectlyToScreen{ false };
 
 	//The output render targets.
 	DynamicArray<RenderTargetHandle> _OutputRenderTargets;

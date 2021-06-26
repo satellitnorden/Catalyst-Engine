@@ -41,7 +41,7 @@ void CommandBuffer::Begin(const Pipeline *const RESTRICT pipeline) NOEXCEPT
 			const VulkanGraphicsPipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
 
 			//Begin the command buffer.
-			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipeline_data->_RenderPass->Get(), 0, static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetOutputRenderTargets().Empty() ? pipeline_data->_FrameBuffers[0]->Get() : static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetOutputRenderTargets()[0] == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? pipeline_data->_FrameBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]->Get() : pipeline_data->_FrameBuffers[0]->Get());
+			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipeline_data->_RenderPass->Get(), 0, static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetOutputRenderTargets().Empty() ? pipeline_data->_FrameBuffers[0]->Get() : static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->IsRenderingDirectlyToScreen() ? pipeline_data->_FrameBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]->Get() : pipeline_data->_FrameBuffers[0]->Get());
 		}
 
 		else if (pipeline->GetType() == Pipeline::Type::RayTracing)
@@ -251,16 +251,12 @@ void CommandBuffer::ExecuteCommands(const Pipeline *const RESTRICT pipeline, con
 	//Insert image barriers.
 	if (true)
 	{
-		if (pipeline->GetType() == Pipeline::Type::Graphics)
+		if (pipeline->GetType() == Pipeline::Type::Graphics
+			&& !static_cast<const GraphicsPipeline* const RESTRICT>(pipeline)->IsRenderingDirectlyToScreen())
 		{
 			for (const RenderTargetHandle render_target : static_cast<const GraphicsPipeline* const RESTRICT>(pipeline)->GetOutputRenderTargets())
 			{
-				if (render_target == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN))
-				{
-					continue;
-				}
-
-				VulkanRenderTarget* const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget* const RESTRICT>(render_target) };
+				VulkanRenderTarget *const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget* const RESTRICT>(render_target) };
 
 				//Create the image memory barrier.
 				VkImageMemoryBarrier imageMemoryBarrier{ };

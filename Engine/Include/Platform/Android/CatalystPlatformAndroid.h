@@ -60,6 +60,11 @@ public:
 	static void Initialize() NOEXCEPT;
 
 	/*
+	*	Terminates the platform.
+	*/
+	static void Terminate() NOEXCEPT;
+
+	/*
 	*	Returns whether or not the window is in focus.
 	*/
 	static bool IsWindowInFocus() NOEXCEPT;

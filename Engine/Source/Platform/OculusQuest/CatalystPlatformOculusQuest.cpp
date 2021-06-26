@@ -17,8 +17,10 @@
 
 //Static variable definitions.
 android_app *RESTRICT CatalystPlatform::_App = nullptr;
-ANativeWindow *RESTRICT CatalystPlatform::_Window = nullptr;
 ovrJava CatalystPlatform::_ovrJava;
+ovrMobile *RESTRICT CatalystPlatform::_ovrMobile = nullptr;
+bool CatalystPlatform::_IsResumed = false;
+ANativeWindow *RESTRICT CatalystPlatform::_NativeWindow = nullptr;
 
 //Catalyst platform Oculus Quest data.
 namespace CatalystPlatformOculusQuestData
@@ -73,16 +75,37 @@ void HandleCommand(android_app *RESTRICT app, int32 command) NOEXCEPT
 {
 	switch (command)
 	{
+		case APP_CMD_RESUME:
+		{
+			CatalystPlatform::_IsResumed = true;
+
+			break;
+		}
+
+		case APP_CMD_PAUSE:
+		{
+			CatalystPlatform::_IsResumed = false;
+
+			break;
+		}
+
+		case APP_CMD_DESTROY:
+		{
+			CatalystPlatform::_NativeWindow = nullptr;
+
+			break;
+		}
+
 		case APP_CMD_INIT_WINDOW:
 		{
-			CatalystPlatform::_Window = app->window;
+			CatalystPlatform::_NativeWindow = app->window;
 
 			break;
 		}
 
 		case APP_CMD_TERM_WINDOW:
 		{
-			//CatalystEngineSystem::Instance->SetShouldTerminate();
+			CatalystPlatform::_NativeWindow = nullptr;
 
 			break;
 		}
@@ -98,18 +121,71 @@ int32 HandleInput(android_app *RESTRICT app, AInputEvent *RESTRICT event) NOEXCE
 }
 
 /*
+*	Handles vr mode changes.
+*/
+void HandleVrModeChanges() NOEXCEPT
+{
+	//Should the app enter vr mode?
+	if (CatalystPlatform::_IsResumed && CatalystPlatform::_NativeWindow)
+	{
+		/*
+		ovrModeParmsVulkan mode_parameters_vulkan = vrapi_DefaultModeParmsVulkan(&CatalystPlatform::_ovrJava, (unsigned long long)app->Context.queue);
+		// No need to reset the FLAG_FULLSCREEN window flag when using a View
+		parms.ModeParms.Flags &= ~VRAPI_MODE_FLAG_RESET_WINDOW_FULLSCREEN;
+
+		parms.ModeParms.Flags |= VRAPI_MODE_FLAG_NATIVE_WINDOW;
+		parms.ModeParms.WindowSurface = (size_t)app->NativeWindow;
+		// Leave explicit egl objects defaulted.
+		parms.ModeParms.Display = 0;
+		parms.ModeParms.ShareContext = 0;
+
+		ALOGV("        vrapi_EnterVrMode()");
+
+		app->Ovr = vrapi_EnterVrMode((ovrModeParms*)&parms);
+
+		// If entering VR mode failed then the ANativeWindow was not valid.
+		if (app->Ovr == NULL) {
+			ALOGE("Invalid ANativeWindow!");
+			app->NativeWindow = NULL;
+		}
+
+		// Set performance parameters once we have entered VR mode and have a valid ovrMobile.
+		if (app->Ovr != NULL) {
+			vrapi_SetClockLevels(app->Ovr, app->CpuLevel, app->GpuLevel);
+
+			ALOGV("		vrapi_SetClockLevels( %d, %d )", app->CpuLevel, app->GpuLevel);
+
+			vrapi_SetPerfThread(app->Ovr, VRAPI_PERF_THREAD_TYPE_MAIN, app->MainThreadTid);
+
+			ALOGV("		vrapi_SetPerfThread( MAIN, %d )", app->MainThreadTid);
+
+			vrapi_SetPerfThread(
+					app->Ovr, VRAPI_PERF_THREAD_TYPE_RENDERER, app->RenderThreadTid);
+
+			ALOGV("		vrapi_SetPerfThread( RENDERER, %d )", app->RenderThreadTid);
+		}
+		 */
+	}
+
+	//Should the app exit vr mode?
+	else
+	{
+
+	}
+}
+
+/*
 *	Polls events.
 */
 void PollEvents() NOEXCEPT
 {
 	int32 events;
 	android_poll_source *RESTRICT source;
+	const int32 timeout_milliseconds{ CatalystPlatform::_ovrMobile == nullptr && CatalystPlatform::_App->destroyRequested == 0 ? -1 : 0 };
 
-	if (ALooper_pollAll(0, nullptr, &events, (void**) &source) >= 0)
+	if (ALooper_pollAll(timeout_milliseconds, nullptr, &events, (void**) &source) >= 0)
 	{
-		if (source &&
-			(source->id == LOOPER_ID_MAIN
-			|| source->id == LOOPER_ID_INPUT))
+		if (source)
 		{
 			source->process(CatalystPlatform::_App, source);
 		}
@@ -117,12 +193,15 @@ void PollEvents() NOEXCEPT
 }
 
 /*
-*	Updates the Catalyst Platform Android during the POST update phase.
+*	Updates the Catalyst platform during the PRE update phase.
 */
-void PostUpdate() NOEXCEPT
+void PreUpdate() NOEXCEPT
 {
 	//Poll events.
 	PollEvents();
+
+	//Handle Vr mode changes.
+	HandleVrModeChanges();
 
 	//If the app has received a destroy request, oblige.
 	if (CatalystPlatform::_App->destroyRequested != 0)
@@ -144,21 +223,33 @@ void CatalystPlatform::Initialize() NOEXCEPT
     _App->onInputEvent = HandleInput;
 
 	//Need to wait for the window to be set before proceeding.
-	while (CatalystPlatform::_Window == nullptr)
+	while (CatalystPlatform::_NativeWindow == nullptr)
 	{
 		PollEvents();
 	}
 
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT)
-	{
-	    PostUpdate();
-	},
-	nullptr,
-	UpdatePhase::POST,
-	UpdatePhase::PRE,
-	true,
-	false);
+	//Register the updates.
+	CatalystEngineSystem::Instance->RegisterUpdate
+	(
+		[](void* const RESTRICT)
+		{
+		   PreUpdate();
+		},
+		nullptr,
+		UpdatePhase::PRE,
+		UpdatePhase::ENTITY,
+		true,
+		false
+	);
+}
+
+/*
+*	Terminates the platform.
+*/
+void CatalystPlatform::Terminate() NOEXCEPT
+{
+	//Detach the current thread.
+	CatalystPlatform::_ovrJava.Vm->DetachCurrentThread();
 }
 
 /*

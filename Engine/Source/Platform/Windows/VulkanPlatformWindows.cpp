@@ -2,6 +2,30 @@
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
 
+//Rendering.
+#include <Rendering/Abstraction/Vulkan/VulkanCore.h>
+
+/*
+*	Returns the required instance extensions.
+*/
+void VulkanPlatform::RequiredInstanceExtensions(DynamicArray<const char *const RESTRICT> *const RESTRICT output) NOEXCEPT
+{
+	output->Emplace(VK_KHR_SURFACE_EXTENSION_NAME);
+	output->Emplace(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+
+#if VULKAN_DEBUGGING
+	output->Emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
+}
+
+/*
+*	Returns the required logical device extensions.
+*/
+void VulkanPlatform::RequiredLogicalDeviceExtensions(DynamicArray<const char *const RESTRICT> *const RESTRICT output) NOEXCEPT
+{
+
+}
+
 /*
 *	Callback for when the logical device has been created.
 */

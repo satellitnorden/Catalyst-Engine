@@ -30,7 +30,7 @@ void VulkanInterface::Initialize() NOEXCEPT
 	//Initialize the Vulkan instance.
 	_VulkanInstance.Initialize();
 
-#if VULKAN_DEBUGGING && !defined(CATALYST_PLATFORM_ANDROID)
+#if VULKAN_DEBUGGING && !defined(CATALYST_PLATFORM_ANDROID) && !defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	//Initialize the Vulkan error reporting.
 	VulkanErrorReporting::Initialize();
 #endif

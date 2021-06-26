@@ -6,11 +6,12 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
 
+//Rendering.
+#include <Rendering/Abstraction/Vulkan/VulkanCore.h>
+#include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
+
 //System.
 #include <Systems/CatalystEngineSystem.h>
-
-//Vulkan.
-#include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 
 #if VULKAN_DEBUGGING
 //Define the validation layers.
@@ -30,15 +31,15 @@ DynamicArray<const char *const RESTRICT> extensions;
 void VulkanInstance::Initialize() NOEXCEPT
 {
 	//Create the application info.
-	VkApplicationInfo applicationInfo;
-	CreateApplicationInfo(applicationInfo);
+	VkApplicationInfo application_info;
+	CreateApplicationInfo(application_info);
 
 	//Create the instance create info.
-	VkInstanceCreateInfo instanceCreateInfo;
-	CreateInstanceCreateInfo(instanceCreateInfo, applicationInfo);
+	VkInstanceCreateInfo instance_create_info;
+	CreateInstanceCreateInfo(instance_create_info, application_info);
 
 	//Create the instance!
-	VULKAN_ERROR_CHECK(vkCreateInstance(&instanceCreateInfo, nullptr, &_VulkanInstance));
+	VULKAN_ERROR_CHECK(vkCreateInstance(&instance_create_info, nullptr, &_VulkanInstance));
 }
 
 /*
@@ -116,25 +117,8 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 		createInstanceInfo.ppEnabledLayerNames = nullptr;
 	}
 
-#if VULKAN_DEBUGGING && !defined(CATALYST_PLATFORM_ANDROID)
-	extensions.Reserve(3);
-#else
-	extensions.Reserve(2);
-#endif
-
-	extensions.Emplace(VK_KHR_SURFACE_EXTENSION_NAME);
-
-#if defined(CATALYST_PLATFORM_ANDROID)
-	extensions.Emplace(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
-#endif
-
-#if defined(CATALYST_PLATFORM_WINDOWS)
-	extensions.Emplace(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-#endif
-
-#if VULKAN_DEBUGGING && !defined(CATALYST_PLATFORM_ANDROID)
-	extensions.Emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-#endif
+	//Get the required instance extensions for the platform.
+	VulkanPlatform::RequiredInstanceExtensions(&extensions);
 
 	createInstanceInfo.enabledExtensionCount = static_cast<uint32>(extensions.Size());
 	createInstanceInfo.ppEnabledExtensionNames = (const char *const *) extensions.Data();

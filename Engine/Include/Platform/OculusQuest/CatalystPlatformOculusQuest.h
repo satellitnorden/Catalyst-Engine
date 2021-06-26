@@ -29,19 +29,30 @@ class CatalystPlatform final
 
 public:
 
-	//The overJava object.
-	static ovrJava _ovrJava;
-
 	//Handle to the app.
 	static android_app *RESTRICT _App;
 
-	//Handle to the window.
-	static ANativeWindow *RESTRICT _Window;
+	//The ovrJava object.
+	static ovrJava _ovrJava;
+
+	//The ovrMobile object.
+	static ovrMobile *RESTRICT _ovrMobile;
+
+	//Denotes whether or not the app is resumed.
+	static bool _IsResumed;
+
+	//Handle to the native window.
+	static ANativeWindow *RESTRICT _NativeWindow;
 
 	/*
 	*	Initializes the platform.
 	*/
 	static void Initialize() NOEXCEPT;
+
+	/*
+	*	Terminates the platform.
+	*/
+	static void Terminate() NOEXCEPT;
 
 	/*
 	*	Returns whether or not the window is in focus.

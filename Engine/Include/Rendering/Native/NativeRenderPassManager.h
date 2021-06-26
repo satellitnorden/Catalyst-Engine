@@ -39,6 +39,14 @@ public:
 	}
 
 	/*
+	*	Registers a render pass for the VIRTUAL_REALITY rendering path.
+	*/
+	FORCE_INLINE static void RegisterVirtualRealityRenderPass(const VirtualRealityNativeRenderPassStage stage, RenderPass *const RESTRICT render_pass) NOEXCEPT
+	{
+		GetVirtualRealityRenderPasses()->At(UNDERLYING(stage)) = render_pass;
+	}
+
+	/*
 	*	Returns the render passes for the given rendering path.
 	*/
 	FORCE_INLINE static void GetRenderPasses(const RenderingPath rendering_path, DynamicArray<RenderPass *RESTRICT> *const RESTRICT render_passes) NOEXCEPT
@@ -83,6 +91,18 @@ public:
 				break;
 			}
 
+			case RenderingPath::VIRTUAL_REALITY:
+			{
+				render_passes->Reserve(UNDERLYING(VirtualRealityNativeRenderPassStage::NUMBER_OF_STAGES));
+
+				for (RenderPass *const RESTRICT render_pass : *GetVirtualRealityRenderPasses())
+				{
+					render_passes->Emplace(render_pass);
+				}
+
+				break;
+			}
+
 			default:
 			{
 				ASSERT(false, "Invalid case!");
@@ -120,6 +140,16 @@ private:
 	FORCE_INLINE NO_DISCARD static StaticArray<RenderPass *RESTRICT, UNDERLYING(SimplifiedNativeRenderPassStage::NUMBER_OF_STAGES)> *const RESTRICT GetSimplifiedRenderPasses() NOEXCEPT
 	{
 		static StaticArray<RenderPass *RESTRICT, UNDERLYING(SimplifiedNativeRenderPassStage::NUMBER_OF_STAGES)> render_passes;
+
+		return &render_passes;
+	}
+
+	/*
+	*	Returns the render passes for the VIRTUAL_REALITY rendering path.
+	*/
+	FORCE_INLINE NO_DISCARD static StaticArray<RenderPass *RESTRICT, UNDERLYING(VirtualRealityNativeRenderPassStage::NUMBER_OF_STAGES)> *const RESTRICT GetVirtualRealityRenderPasses() NOEXCEPT
+	{
+		static StaticArray<RenderPass *RESTRICT, UNDERLYING(VirtualRealityNativeRenderPassStage::NUMBER_OF_STAGES)> render_passes;
 
 		return &render_passes;
 	}

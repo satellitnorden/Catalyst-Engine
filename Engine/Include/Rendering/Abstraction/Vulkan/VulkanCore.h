@@ -1,6 +1,9 @@
 #if defined(CATALYST_RENDERING_VULKAN)
 #pragma once
 
+//Core.
+#include <Core/Essential/CatalystEssential.h>
+
 /*
 *	Determine whether or not to define function prototypes. This is platform dependant.
 */
@@ -12,8 +15,16 @@
 	#error Unknown platform!
 #endif
 
-//Core.
-#include <Core/Essential/CatalystEssential.h>
+/*
+*	Determine whether or not the swapchain is received from the platform. This is platform dependant.
+*/
+#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_WINDOWS)
+	#define VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM (0)
+#elif defined(CATALYST_PLATFORM_OCULUS_QUEST)
+	#define VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM (1)
+#else
+	#error Unknown platform!
+#endif
 
 //ThirdParty
 #if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)

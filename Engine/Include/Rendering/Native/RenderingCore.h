@@ -74,6 +74,7 @@ enum class RenderingPath : uint8
 	DEFAULT,
 	PATH_TRACING,
 	SIMPLIFIED,
+	VIRTUAL_REALITY,
 
 	NUMBER_OF_RENDERING_PATHS
 };
@@ -149,6 +150,23 @@ enum class SimplifiedNativeRenderPassStage : uint8
 	EDITOR_USER_INTERFACE,
 #endif
 	SCREEN,
+
+	NUMBER_OF_STAGES
+};
+
+/*
+*	Enumeration covering all virtual reality native render pass stages.
+*	The order of the stages define in what order they will execute in.
+*/
+enum class VirtualRealityNativeRenderPassStage : uint8
+{
+	VIRTUAL_REALITY,
+#if defined(CATALYST_PLATFORM_WINDOWS)
+	VIRTUAL_REALITY_VISUALIZATION,
+#endif
+#if defined(CATALYST_EDITOR)
+	EDITOR_USER_INTERFACE,
+#endif
 
 	NUMBER_OF_STAGES
 };
@@ -428,11 +446,6 @@ enum class RenderTarget : uint8
 	*	Intermediate render target at twohundredfiftysixth resolution.
 	*/
 	INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH,
-
-	/*
-	*	Special render target for rendering directly to the screen.
-	*/
-	SCREEN,
 
 	NUMBER_OF_RENDER_TARGETS
 };

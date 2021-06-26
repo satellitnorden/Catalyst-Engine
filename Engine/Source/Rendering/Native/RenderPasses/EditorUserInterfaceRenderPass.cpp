@@ -20,6 +20,7 @@ EditorUserInterfaceRenderPass::EditorUserInterfaceRenderPass() NOEXCEPT
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::EDITOR_USER_INTERFACE, this);
 	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::EDITOR_USER_INTERFACE, this);
 	NativeRenderPassManager::RegisterSimplifiedRenderPass(SimplifiedNativeRenderPassStage::EDITOR_USER_INTERFACE, this);
+	NativeRenderPassManager::RegisterVirtualRealityRenderPass(VirtualRealityNativeRenderPassStage::EDITOR_USER_INTERFACE, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

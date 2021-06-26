@@ -302,6 +302,16 @@ void EditorRenderingSystem::Update() NOEXCEPT
 			{
 				if (ImGui::Button("Rendering Path: Simplified"))
 				{
+					RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::VIRTUAL_REALITY);
+				}
+
+				break;
+			}
+
+			case RenderingPath::VIRTUAL_REALITY:
+			{
+				if (ImGui::Button("Rendering Path: Virtual Reality"))
+				{
 					RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::DEFAULT);
 				}
 

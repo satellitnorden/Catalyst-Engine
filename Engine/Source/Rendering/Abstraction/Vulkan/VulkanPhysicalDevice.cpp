@@ -128,14 +128,20 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 		Memory::Set(&_RayTracingProperties, 0, sizeof(VkPhysicalDeviceRayTracingPropertiesNV));
 	}
 
+#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 	//Get the most optimal present mode.
 	_PresentMode = GetMostOptimalPresentMode();
+#endif
 
+#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 	//Get the surface capabilities.
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &_SurfaceCapabilities));
+#endif
 
+#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 	//Get the most optimal surface format.
 	_SurfaceFormat = GetMostOptimalSurfaceFormat();
+#endif
 }
 
 /*
@@ -149,11 +155,13 @@ bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulk
 		return false;
 	}
 
+#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 	//Check if the physical device has proper swap chain support.
 	if (!HasProperSwapChainSupport(vulkanPhysicalDevice))
 	{
 		return false;
 	}
+#endif
 
 	//If the device has not failed on any of the previous checks, it is deemed suitable.
 	return true;
@@ -170,6 +178,7 @@ bool VulkanPhysicalDevice::HasRequiredFeatures(const VkPhysicalDevice vulkanPhys
 	return	features.geometryShader == VK_TRUE;
 }
 
+#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 /*
 *	Given a Vulkan physical device and a Vulkan surface, return if the Physical device has the proper swap chain support.
 */
@@ -196,6 +205,7 @@ bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vul
 	//If there are at least one format and one present mode available, this physical device is considered to have proper swap chain support.
 	return !formats.Empty() && !presentModes.Empty();
 }
+#endif
 
 /*
 *	Given a Vulkan physical device and an extension name, returns if the Vulkan physical device has that extension.
@@ -276,6 +286,7 @@ VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<
 	return *most_suitable_physical_device;
 }
 
+#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 /*
 *	Given a physical device and a surface, returns the most optimal surface format.
 */
@@ -306,7 +317,9 @@ VkSurfaceFormatKHR VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() const NOE
 
 	return availableFormats[0];
 }
+#endif
 
+#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 /*
 *	Given a physical device and a surface, returns the most optimal present mode.
 */
@@ -332,4 +345,5 @@ VkPresentModeKHR VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEP
 
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
+#endif
 #endif

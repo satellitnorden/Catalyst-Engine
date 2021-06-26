@@ -215,15 +215,28 @@ namespace VulkanSubRenderingSystemLogic
 
 			for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 			{
-				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format : static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
+				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
 																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetColorAttachmentLoadOperator()),
 																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetColorAttachmentStoreOperator()),
 																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 																							VK_ATTACHMENT_STORE_OP_DONT_CARE,
-																							uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_GENERAL,
-																							uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_GENERAL));
+																							VK_IMAGE_LAYOUT_GENERAL,
+																							VK_IMAGE_LAYOUT_GENERAL));
 
-				colorAttachmentReferences.Emplace(VkAttachmentReference{ counter++, uniqueAttachment._First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL });
+				colorAttachmentReferences.Emplace(VkAttachmentReference{ counter++, VK_IMAGE_LAYOUT_GENERAL });
+			}
+
+			if (pipeline->IsRenderingDirectlyToScreen())
+			{
+				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format,
+																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetColorAttachmentLoadOperator()),
+																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetColorAttachmentStoreOperator()),
+																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																							VK_ATTACHMENT_STORE_OP_DONT_CARE,
+																							VK_IMAGE_LAYOUT_UNDEFINED,
+																							VK_IMAGE_LAYOUT_PRESENT_SRC_KHR));
+
+				colorAttachmentReferences.Emplace(VkAttachmentReference{ counter++, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL });
 			}
 
 			parameters._AttachmentCount = static_cast<uint32>(attachmentDescriptions.Size());
@@ -271,7 +284,7 @@ namespace VulkanSubRenderingSystemLogic
 			data->_RenderPass = VulkanInterface::Instance->CreateRenderPass(parameters);
 
 			//Create the framebuffer(s).
-			if (!uniqueAttachments.Empty() && uniqueAttachments.begin()->_First == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN))
+			if (pipeline->IsRenderingDirectlyToScreen())
 			{
 				//Create the framebuffers.
 				const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
@@ -334,7 +347,7 @@ namespace VulkanSubRenderingSystemLogic
 			parameters._BlendFactorDestinationColor = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationColor());
 			parameters._BlendFactorSourceAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorSourceAlpha());
 			parameters._BlendFactorDestinationAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationAlpha());
-			parameters._ColorAttachmentCount = static_cast<uint32>(pipeline->GetOutputRenderTargets().Size());
+			parameters._ColorAttachmentCount = static_cast<uint32>(pipeline->GetOutputRenderTargets().Size()) + static_cast<uint32>(pipeline->IsRenderingDirectlyToScreen());
 			parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(pipeline->GetCullMode());
 			parameters._DepthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(pipeline->GetDepthCompareOperator());
 			parameters._DepthTestEnable = pipeline->IsDepthTestEnabled();
@@ -412,7 +425,16 @@ namespace VulkanSubRenderingSystemLogic
 
 			parameters._VertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
 			parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
-			parameters._ViewportExtent = pipeline->GetOutputRenderTargets().Empty() ? VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height } : pipeline->GetOutputRenderTargets()[0] == RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCREEN) ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
+
+			if (pipeline->IsRenderingDirectlyToScreen())
+			{
+				parameters._ViewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+			}
+
+			else
+			{
+				parameters._ViewportExtent = pipeline->GetOutputRenderTargets().Empty() ? VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height } : VkExtent2D{ pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
+			}
 
 			parameters._RenderPass = data->_RenderPass;
 
