@@ -45,7 +45,30 @@ void VulkanPlatform::RequiredInstanceExtensions(DynamicArray<const char *const R
 */
 void VulkanPlatform::RequiredLogicalDeviceExtensions(DynamicArray<const char *const RESTRICT> *const RESTRICT output) NOEXCEPT
 {
+    //Retrieve the logical device extensions names.
+    static char logical_device_extension_names[4096];
+    uint32 logical_device_extension_names_size{ sizeof(logical_device_extension_names) };
 
+    if (vrapi_GetDeviceExtensionsVulkan(logical_device_extension_names, &logical_device_extension_names_size))
+    {
+        ASSERT(false, "oh no");
+    }
+
+    else
+    {
+        output->Emplace(logical_device_extension_names);
+
+        for (uint32 i{ 0 }; i < logical_device_extension_names_size; ++i)
+        {
+            if (logical_device_extension_names[i] == ' ')
+            {
+                logical_device_extension_names[i] = '\0';
+                output->Emplace(&logical_device_extension_names[i + 1]);
+            }
+        }
+
+        logical_device_extension_names[logical_device_extension_names_size] = '\0';
+    }
 }
 
 /*
@@ -60,7 +83,10 @@ void VulkanPlatform::OnLogicalDeviceCreated() NOEXCEPT
 	system_create_info_vulkan.PhysicalDevice = VulkanInterface::Instance->GetPhysicalDevice().Get();
 	system_create_info_vulkan.Device = VulkanInterface::Instance->GetLogicalDevice().Get();
 
-	vrapi_CreateSystemVulkan(&system_create_info_vulkan);
+	if (vrapi_CreateSystemVulkan(&system_create_info_vulkan))
+    {
+	    ASSERT(false, "oh no");
+    }
 }
 
 /*

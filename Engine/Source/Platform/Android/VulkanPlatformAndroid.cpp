@@ -19,7 +19,7 @@ void VulkanPlatform::RequiredInstanceExtensions(DynamicArray<const char *const R
 */
 void VulkanPlatform::RequiredLogicalDeviceExtensions(DynamicArray<const char *const RESTRICT> *const RESTRICT output) NOEXCEPT
 {
-
+	output->Emplace(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 }
 
 /*

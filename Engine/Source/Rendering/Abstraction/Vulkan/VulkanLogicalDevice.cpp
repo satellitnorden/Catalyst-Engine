@@ -5,8 +5,9 @@
 //Core.
 #include <Core/Containers/Map.h>
 
-//Vulkan.
+//Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
+#include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
 
 /*
 *	Initializes this Vulkan logical device.
@@ -25,15 +26,27 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 	CreatePhysicalDeviceFeatures(physicalDeviceFeatures);
 
 	//Create the device create info.
-	DynamicArray<const char *RESTRICT> required_extensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+	DynamicArray<const char *const RESTRICT> extensions;
+
+	VulkanPlatform::RequiredLogicalDeviceExtensions(&extensions);
+
+	for (const char *const RESTRICT extension : extensions)
+	{
+		PRINT_TO_OUTPUT(extension);
+	}
+
+	if (VulkanInterface::Instance->GetPhysicalDevice().HasMultiviewSupport())
+	{
+		extensions.Emplace(VK_KHR_MULTIVIEW_EXTENSION_NAME);
+	}
 
 	if (VulkanInterface::Instance->GetPhysicalDevice().HasRayTracingSupport())
 	{
-		required_extensions.Emplace(VK_NV_RAY_TRACING_EXTENSION_NAME);
+		extensions.Emplace(VK_NV_RAY_TRACING_EXTENSION_NAME);
 	}
 
 	VkDeviceCreateInfo deviceCreateInfo;
-	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, required_extensions, &physicalDeviceFeatures);
+	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, extensions, &physicalDeviceFeatures);
 
 	//Create the logical device!
 	VULKAN_ERROR_CHECK(vkCreateDevice(VulkanInterface::Instance->GetPhysicalDevice().Get(), &deviceCreateInfo, nullptr, &_VulkanLogicalDevice));
@@ -166,7 +179,7 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 /*
 *	Creates the device create info.
 */
-void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreateInfo, const DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const DynamicArray<const char *RESTRICT> &requiredExtensions, const VkPhysicalDeviceFeatures *RESTRICT enabledFeatures) const NOEXCEPT
+void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreateInfo, const DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const DynamicArray<const char *const RESTRICT> &requiredExtensions, const VkPhysicalDeviceFeatures *RESTRICT enabledFeatures) const NOEXCEPT
 {
 	static VkPhysicalDeviceDescriptorIndexingFeaturesEXT extension;
 
@@ -234,14 +247,18 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 	//First run, try to find optimal indices; All queues coming from the same family.
 	for (VkQueueFamilyProperties &queue_family_property : queue_family_properties)
 	{
+#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 		//We want the graphics and present queue to come from the same family.
 		VkBool32 has_present_support{ false };
 		VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), queue_family_counter, VulkanInterface::Instance->GetSurface().Get(), &has_present_support));
+#endif
 
 		if (queue_family_property.queueCount >= 1
 			&& queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT
 			&& queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT
+#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 			&& has_present_support
+#endif
 			/*Transfer functionality is implicit.*/)
 		{
 			_QueueFamilyIndices[UNDERLYING(QueueType::COMPUTE)] = queue_family_counter;
