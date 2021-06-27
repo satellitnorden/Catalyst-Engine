@@ -94,6 +94,11 @@ public:
 	void SetCurrentRenderingPath(const RenderingPath value) NOEXCEPT;
 
 	/*
+	*	Returns whether or not multiview is supported.
+	*/
+	NO_DISCARD bool IsMultiviewSupported() const NOEXCEPT;
+
+	/*
 	*	Returns whether or not ray tracing is supported.
 	*/
 	NO_DISCARD bool IsRayTracingSupported() const NOEXCEPT;

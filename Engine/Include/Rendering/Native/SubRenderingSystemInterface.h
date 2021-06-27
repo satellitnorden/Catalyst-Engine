@@ -50,6 +50,11 @@ public:
 	virtual void Terminate() NOEXCEPT = 0;
 
 	/*
+	*	Returns whether or not multiview is supported.
+	*/
+	virtual NO_DISCARD bool IsMultiviewSupported() const NOEXCEPT = 0;
+
+	/*
 	*	Returns whether or not ray tracing is supported.
 	*/
 	virtual NO_DISCARD bool IsRayTracingSupported() const NOEXCEPT = 0;

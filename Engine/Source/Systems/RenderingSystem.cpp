@@ -324,6 +324,14 @@ void RenderingSystem::SetCurrentRenderingPath(const RenderingPath value) NOEXCEP
 }
 
 /*
+*	Returns whether or not multiview is supported.
+*/
+NO_DISCARD bool RenderingSystem::IsMultiviewSupported() const NOEXCEPT
+{
+	return _SubRenderingSystem->IsMultiviewSupported();
+}
+
+/*
 *	Returns whether or not ray tracing is supported.
 */
 NO_DISCARD bool RenderingSystem::IsRayTracingSupported() const NOEXCEPT

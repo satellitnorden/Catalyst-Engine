@@ -21,7 +21,7 @@ public:
 	*/
 	const VkSwapchainKHR Get() const NOEXCEPT
 	{
-		return _VulkanSwapChain;
+		return _VulkanSwapchain;
 	}
 
 	/*
@@ -37,27 +37,74 @@ public:
 	/*
 	*	Returns the number of swapchain images.
 	*/
-	uint32 GetNumberOfSwapChainImages() const NOEXCEPT { return _NumberOfSwapChainImages; }
+	FORCE_INLINE uint32 GetNumberOfSwapchainImages() const NOEXCEPT
+	{
+		return _NumberOfSwapchainImages;
+	}
+
+	/*
+	*	Sets the number of swapchain images.
+	*/
+	FORCE_INLINE void SetNumberOfSwapchainImages(const uint32 value) NOEXCEPT
+	{
+		_NumberOfSwapchainImages = value;
+	}
 
 	/*
 	*	Returns the swap chain images.
 	*/
-	const DynamicArray<VkImage>& GetSwapChainImages() const NOEXCEPT { return _SwapChainImages; }
+	FORCE_INLINE const DynamicArray<VkImage> &GetSwapchainImages() const NOEXCEPT
+	{
+		return _SwapchainImages;
+	}
+
+	/*
+	*	Adds a swapchain image.
+	*/
+	FORCE_INLINE void AddSwapchainImage(const VkImage new_image) NOEXCEPT
+	{
+		_SwapchainImages.Emplace(new_image);
+	}
 
 	/*
 	*	Returns the swap chain image views.
 	*/
-	const DynamicArray<VkImageView>& GetSwapChainImageViews() const NOEXCEPT { return _SwapChainImageViews; }
+	FORCE_INLINE const DynamicArray<VkImageView> &GetSwapchainImageViews() const NOEXCEPT
+	{
+		return _SwapchainImageViews;
+	}
+
+	/*
+	*	Adds a swapchain image view.
+	*/
+	FORCE_INLINE void AddSwapchainImageView(const VkImageView new_image_view) NOEXCEPT
+	{
+		_SwapchainImageViews.Emplace(new_image_view);
+	}
 
 	/*
 	*	Returns the swap extent.
 	*/
-	VkExtent2D GetSwapExtent() const NOEXCEPT { return _SwapExtent; }
+	FORCE_INLINE VkExtent2D GetSwapExtent() const NOEXCEPT
+	{
+		return _SwapExtent;
+	}
+
+	/*
+	*	Sets the swap extent.
+	*/
+	FORCE_INLINE void SetSwapExtent(const VkExtent2D value) NOEXCEPT
+	{
+		_SwapExtent = value;
+	}
 
 	/*
 	*	Returns the current image index.
 	*/
-	uint32 GetCurrentImageIndex() const NOEXCEPT { return _CurrentImageIndex; }
+	FORCE_INLINE uint32 GetCurrentImageIndex() const NOEXCEPT
+	{
+		return _CurrentImageIndex;
+	}
 
 	/*
 	*	Updates the next image index in the swap chain.
@@ -71,19 +118,19 @@ public:
 
 private:
 
-	//The underlying Vulkan swap chain.
-	VkSwapchainKHR _VulkanSwapChain;
+	//The underlying Vulkan swapchain.
+	VkSwapchainKHR _VulkanSwapchain;
 
-	//The number of swap chain images.
-	uint32 _NumberOfSwapChainImages;
+	//The number of swapchain images.
+	uint32 _NumberOfSwapchainImages;
 
-	//The swap chain images.
-	DynamicArray<VkImage> _SwapChainImages;
+	//The swapchain images.
+	DynamicArray<VkImage> _SwapchainImages;
 
-	//The swap chain image views.
-	DynamicArray<VkImageView> _SwapChainImageViews;
+	//The swapchain image views.
+	DynamicArray<VkImageView> _SwapchainImageViews;
 
-	//The extent of the swap chain.
+	//The extent of the swapchain.
 	VkExtent2D _SwapExtent;
 
 	//The current image index.

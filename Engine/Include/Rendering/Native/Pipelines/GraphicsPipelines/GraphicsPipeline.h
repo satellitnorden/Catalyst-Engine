@@ -204,6 +204,16 @@ public:
 	Topology GetTopology() const NOEXCEPT { return _Topology; }
 
 	/*
+	*	Returns whether or not multiview is enabled.
+	*/
+	FORCE_INLINE bool GetMultiviewEnabled() NOEXCEPT
+	{
+		return _MultiviewEnabled;
+	}
+
+protected:
+
+	/*
 	*	Sets the vertex shader.
 	*/
 	void SetVertexShader(const ResourcePointer<ShaderResource> newVertexShader) NOEXCEPT { _VertexShader = newVertexShader; }
@@ -398,7 +408,13 @@ public:
 	*/
 	void SetTopology(const Topology newTopology) NOEXCEPT { _Topology = newTopology; }
 
-protected:
+	/*
+	*	Sets whether or not multiview is enabled.
+	*/
+	FORCE_INLINE void SetMultiviewEnalbed(const bool value) NOEXCEPT
+	{
+		_MultiviewEnabled = value;
+	}
 
 	/*
 	*	Resetis this graphics pipeline.
@@ -505,5 +521,8 @@ private:
 
 	//The topology.
 	Topology _Topology;
+
+	//Denotes whether or not multiview is enabled.
+	bool _MultiviewEnabled{ false };
 
 };

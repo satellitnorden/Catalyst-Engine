@@ -19,6 +19,7 @@
 #include <Profiling/ProfilingCore.h>
 
 //Rendering.
+#include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
 #include <Rendering/Native/CommandBuffer.h>
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/TextureData.h>
@@ -287,7 +288,7 @@ namespace VulkanSubRenderingSystemLogic
 			if (pipeline->IsRenderingDirectlyToScreen())
 			{
 				//Create the framebuffers.
-				const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
+				const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapchainImageViews() };
 				data->_FrameBuffers.Reserve(swapchainImages.Size());
 
 				for (VkImageView swapchainImage : swapchainImages)
@@ -616,7 +617,7 @@ namespace VulkanSubRenderingSystemLogic
 		{
 			++VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames;
 
-			if (VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() + 1)
+			if (VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages() + 1)
 			{
 				switch (VulkanSubRenderingSystemData::_DestructionQueue[i]._Type)
 				{
@@ -698,7 +699,7 @@ void VulkanSubRenderingSystem::PreInitialize() NOEXCEPT
 	VulkanInterface::Instance->Initialize();
 
 	//Initialize the Vulkan frame data.
-	VulkanSubRenderingSystemData::_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages());
+	VulkanSubRenderingSystemData::_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages());
 }
 
 /*
@@ -727,8 +728,8 @@ void VulkanSubRenderingSystem::EditorPostInitialize() NOEXCEPT
 		imgui_init_info.PipelineCache = VK_NULL_HANDLE;
 		imgui_init_info.DescriptorPool = VulkanInterface::Instance->GetDescriptorPool().Get();
 		imgui_init_info.Allocator = nullptr;
-		imgui_init_info.MinImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
-		imgui_init_info.ImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
+		imgui_init_info.MinImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages();
+		imgui_init_info.ImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages();
 		imgui_init_info.CheckVkResultFn = nullptr;
 
 		ImGui_ImplVulkan_Init(&imgui_init_info, static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(EditorUserInterfaceRenderPass::Instance->GetEditorUserInterfaceGraphicsPipeline()->GetData())->_RenderPass->Get());
@@ -781,6 +782,15 @@ void VulkanSubRenderingSystem::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns whether or not multiview is supported.
+*/
+NO_DISCARD bool VulkanSubRenderingSystem::IsMultiviewSupported() const NOEXCEPT
+{
+	//Just check if the physical device has multview support.
+	return VulkanInterface::Instance->GetPhysicalDevice().HasMultiviewSupport();
+}
+
+/*
 *	Returns whether or not ray tracing is supported.
 */
 NO_DISCARD bool VulkanSubRenderingSystem::IsRayTracingSupported() const NOEXCEPT
@@ -794,7 +804,7 @@ NO_DISCARD bool VulkanSubRenderingSystem::IsRayTracingSupported() const NOEXCEPT
 */
 uint8 VulkanSubRenderingSystem::GetNumberOfFramebuffers() const NOEXCEPT
 {
-	return VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
+	return VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages();
 }
 
 /*
@@ -1703,6 +1713,13 @@ void VulkanSubRenderingSystem::TakeImmediateScreenshot(const char *const RESTRIC
 */
 void VulkanSubRenderingSystem::BeginFrame() NOEXCEPT
 {
+	//Begin the frame for the platform.
+	{
+		PROFILING_SCOPE("VulkanPlatform::BeginFrame();");
+
+		VulkanPlatform::BeginFrame();
+	}
+
 	//Pre-update the Vulkan interface.
 	{
 		PROFILING_SCOPE("VulkanInterface::Instance->PreUpdate(VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore())");

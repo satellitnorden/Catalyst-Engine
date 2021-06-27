@@ -31,6 +31,30 @@ void VulkanPlatform::OnLogicalDeviceCreated() NOEXCEPT
 }
 
 /*
+*	Initializes the swapchain.
+*/
+void VulkanPlatform::InitializeSwapchain(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT
+{
+
+}
+
+/*
+*	Callback for when a frame is started.
+*/
+void VulkanPlatform::BeginFrame() NOEXCEPT
+{
+
+}
+
+/*
+*	Releases the swapchain.
+*/
+void VulkanPlatform::ReleaseSwapchain(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT
+{
+
+}
+
+/*
 *	Terminates Vulkan for the current platform.
 */
 void VulkanPlatform::Terminate() NOEXCEPT

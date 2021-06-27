@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Rendering.
+#include <Rendering/Abstraction/Vulkan/VulkanSwapChain.h>
+
 class VulkanPlatform final
 {
 
@@ -23,6 +26,21 @@ public:
 	*	Callback for when the logical device has been created.
 	*/
 	static void OnLogicalDeviceCreated() NOEXCEPT;
+
+	/*
+	*	Initializes the swapchain.
+	*/
+	static void InitializeSwapchain(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT;
+
+	/*
+	*	Callback for when a frame is started.
+	*/
+	static void BeginFrame() NOEXCEPT;
+
+	/*
+	*	Releases the swapchain.
+	*/
+	static void ReleaseSwapchain(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT;
 
 	/*
 	*	Terminates Vulkan for the current platform.

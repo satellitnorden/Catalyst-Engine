@@ -37,6 +37,14 @@ void OpenGLSubRenderingSystem::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns whether or not multiview is supported.
+*/
+NO_DISCARD bool OpenGLSubRenderingSystem::IsMultiviewSupported() const NOEXCEPT
+{
+	return false;
+}
+
+/*
 *	Returns whether or not ray tracing is supported.
 */
 NO_DISCARD bool OpenGLSubRenderingSystem::IsRayTracingSupported() const NOEXCEPT
