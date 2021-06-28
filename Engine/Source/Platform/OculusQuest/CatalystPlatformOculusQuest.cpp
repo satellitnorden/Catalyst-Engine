@@ -121,56 +121,21 @@ int32 HandleInput(android_app *RESTRICT app, AInputEvent *RESTRICT event) NOEXCE
 }
 
 /*
-*	Handles vr mode changes.
+*	Handls VrApi evenets.
 */
-void HandleVrModeChanges() NOEXCEPT
+void HandleVrApiEvents() NOEXCEPT
 {
-	//Should the app enter vr mode?
-	if (CatalystPlatform::_IsResumed && CatalystPlatform::_NativeWindow)
+	ovrEventDataBuffer eventDataBuffer{ };
+
+	for (;;)
 	{
-		/*
-		ovrModeParmsVulkan mode_parameters_vulkan = vrapi_DefaultModeParmsVulkan(&CatalystPlatform::_ovrJava, (unsigned long long)app->Context.queue);
-		// No need to reset the FLAG_FULLSCREEN window flag when using a View
-		parms.ModeParms.Flags &= ~VRAPI_MODE_FLAG_RESET_WINDOW_FULLSCREEN;
+		ovrEventHeader *const RESTRICT event_header{ (ovrEventHeader*)(&eventDataBuffer) };
+		ovrResult result{ vrapi_PollEvent(event_header) };
 
-		parms.ModeParms.Flags |= VRAPI_MODE_FLAG_NATIVE_WINDOW;
-		parms.ModeParms.WindowSurface = (size_t)app->NativeWindow;
-		// Leave explicit egl objects defaulted.
-		parms.ModeParms.Display = 0;
-		parms.ModeParms.ShareContext = 0;
-
-		ALOGV("        vrapi_EnterVrMode()");
-
-		app->Ovr = vrapi_EnterVrMode((ovrModeParms*)&parms);
-
-		// If entering VR mode failed then the ANativeWindow was not valid.
-		if (app->Ovr == NULL) {
-			ALOGE("Invalid ANativeWindow!");
-			app->NativeWindow = NULL;
+		if (result != ovrSuccess)
+		{
+			break;
 		}
-
-		// Set performance parameters once we have entered VR mode and have a valid ovrMobile.
-		if (app->Ovr != NULL) {
-			vrapi_SetClockLevels(app->Ovr, app->CpuLevel, app->GpuLevel);
-
-			ALOGV("		vrapi_SetClockLevels( %d, %d )", app->CpuLevel, app->GpuLevel);
-
-			vrapi_SetPerfThread(app->Ovr, VRAPI_PERF_THREAD_TYPE_MAIN, app->MainThreadTid);
-
-			ALOGV("		vrapi_SetPerfThread( MAIN, %d )", app->MainThreadTid);
-
-			vrapi_SetPerfThread(
-					app->Ovr, VRAPI_PERF_THREAD_TYPE_RENDERER, app->RenderThreadTid);
-
-			ALOGV("		vrapi_SetPerfThread( RENDERER, %d )", app->RenderThreadTid);
-		}
-		 */
-	}
-
-	//Should the app exit vr mode?
-	else
-	{
-
 	}
 }
 
@@ -179,15 +144,25 @@ void HandleVrModeChanges() NOEXCEPT
 */
 void PollEvents() NOEXCEPT
 {
-	int32 events;
-	android_poll_source *RESTRICT source;
-	const int32 timeout_milliseconds{ CatalystPlatform::_ovrMobile == nullptr && CatalystPlatform::_App->destroyRequested == 0 ? -1 : 0 };
-
-	if (ALooper_pollAll(timeout_milliseconds, nullptr, &events, (void**) &source) >= 0)
+	for (;;)
 	{
-		if (source)
+		int32 events;
+		android_poll_source *RESTRICT source;
+		const int32 timeout_milliseconds{ CatalystPlatform::_ovrMobile == nullptr && CatalystPlatform::_App->destroyRequested == 0 ? -1 : 0 };
+
+		if (ALooper_pollAll(timeout_milliseconds, nullptr, &events, (void**) &source) >= 0)
 		{
-			source->process(CatalystPlatform::_App, source);
+			if (source)
+			{
+				source->process(CatalystPlatform::_App, source);
+			}
+
+			HandleVrApiEvents();
+		}
+
+		else
+		{
+			break;
 		}
 	}
 }
@@ -199,9 +174,6 @@ void PreUpdate() NOEXCEPT
 {
 	//Poll events.
 	PollEvents();
-
-	//Handle Vr mode changes.
-	HandleVrModeChanges();
 
 	//If the app has received a destroy request, oblige.
 	if (CatalystPlatform::_App->destroyRequested != 0)

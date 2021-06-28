@@ -406,6 +406,17 @@ Matrix4x4 RenderingSystem::GetCurrentSurfaceTransformRotationMatrix() const NOEX
 			);
 		}
 
+		case SurfaceTransform::ROTATE_270:
+		{
+			return Matrix4x4
+			(
+					0.0f, -1.0f, 0.0f, 0.0f,
+					1.0f, 0.0f, 0.0f, 0.0f,
+					0.0f, 0.0f, 1.0f, 0.0f,
+					0.0f, 0.0f, 0.0f, 1.0f
+			);
+		}
+
 		default:
 		{
 			ASSERT(false, "Invalid case!");

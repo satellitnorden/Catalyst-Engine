@@ -31,7 +31,7 @@
 #include <Terrain/TerrainRayTracingData.h>
 #include <Terrain/TerrainUpdate.h>
 
-class TerrainSystem final
+class ALIGN(8) TerrainSystem final
 {
 
 public:

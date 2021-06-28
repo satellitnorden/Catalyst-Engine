@@ -281,6 +281,9 @@ namespace VulkanSubRenderingSystemLogic
 			parameters._SubpassDependencyCount = static_cast<uint32>(dependencies.Size());
 			parameters._SubpassDependencies = dependencies.Data();
 
+			//Set whether or not multiview should be enabled.
+			parameters._MultiviewEnabled = pipeline->GetMultiviewEnabled();
+
 			//Create the render pass!
 			data->_RenderPass = VulkanInterface::Instance->CreateRenderPass(parameters);
 
@@ -830,6 +833,11 @@ SurfaceTransform VulkanSubRenderingSystem::GetCurrentSurfaceTransform() const NO
 		case VkSurfaceTransformFlagBitsKHR::VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR:
 		{
 			return SurfaceTransform::ROTATE_90;
+		}
+
+		case VkSurfaceTransformFlagBitsKHR::VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR:
+		{
+			return SurfaceTransform::ROTATE_270;
 		}
 
 		default:
@@ -1763,8 +1771,13 @@ void VulkanSubRenderingSystem::EndFrame(const CommandBuffer *const RESTRICT fram
 {
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue()->Submit(	*static_cast<const VulkanCommandBuffer *const RESTRICT>(frame_command_buffer->GetCommandBufferData()),
+#if VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
+															0,
+															nullptr,
+#else
 															1,
 															VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore(),
+#endif
 															VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 															1,
 															VulkanSubRenderingSystemData::_FrameData.GetRenderFinishedSemaphore(),

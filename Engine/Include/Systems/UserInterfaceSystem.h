@@ -13,7 +13,7 @@
 #include <UserInterface/UserInterfaceScene.h>
 #include <UserInterface/UserInterfaceSceneFactory.h>
 
-class UserInterfaceSystem final
+class ALIGN(8) UserInterfaceSystem final
 {
 
 public:

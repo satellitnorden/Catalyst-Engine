@@ -6,7 +6,7 @@
 //Concurrency.
 #include <Concurrency/Task.h>
 
-class CullingSystem final
+class ALIGN(8) CullingSystem final
 {
 
 public:

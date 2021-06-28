@@ -167,7 +167,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
 
 	//Register the Catalyst Engine resource collection. 
-#if defined(CATALYST_PLATFORM_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	ResourceSystem::Instance->LoadResourceCollection("CatalystEngineResourceCollection_0.crc");
 #endif
 

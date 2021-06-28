@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/GraphicsPipelines/VirtualRealityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class VirtualRealityRenderPass final : public RenderPass
@@ -20,6 +21,9 @@ public:
 	VirtualRealityRenderPass() NOEXCEPT;
 
 private:
+
+	//The virtual reality graphics pipeline.
+	VirtualRealityGraphicsPipeline _VirtualRealityGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

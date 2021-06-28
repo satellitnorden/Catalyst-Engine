@@ -13,7 +13,7 @@
 #include <Editor/EditorSelectionSystem.h>
 #include <Editor/EditorWorldSystem.h>
 
-class CatalystEditorSystem final
+class ALIGN(8) CatalystEditorSystem final
 {
 
 public:

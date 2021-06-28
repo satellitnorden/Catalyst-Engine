@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-class TimeSystem final
+class ALIGN(8) TimeSystem final
 {
 
 public:

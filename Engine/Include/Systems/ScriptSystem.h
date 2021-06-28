@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-class ScriptSystem final
+class ALIGN(8) ScriptSystem final
 {
 
 public:

@@ -44,6 +44,13 @@ void VirtualRealityRenderPass::Initialize() NOEXCEPT
 {
 	//Reset this render pass.
 	ResetRenderPass();
+
+	//Add all pipelines.
+	SetNumberOfPipelines(1);
+	AddPipeline(&_VirtualRealityGraphicsPipeline);
+
+	//Initialize all pipelines.
+	_VirtualRealityGraphicsPipeline.Initialize();
 }
 
 /*
@@ -51,8 +58,8 @@ void VirtualRealityRenderPass::Initialize() NOEXCEPT
 */
 void VirtualRealityRenderPass::Execute() NOEXCEPT
 {
-	//Completely disabled, for now.
-	SetEnabled(false);
+	//Execute all pipelines.
+	_VirtualRealityGraphicsPipeline.Execute();
 }
 
 /*
@@ -60,5 +67,6 @@ void VirtualRealityRenderPass::Execute() NOEXCEPT
 */
 void VirtualRealityRenderPass::Terminate() NOEXCEPT
 {
-	
+	//Terminate all pipelines.
+	_VirtualRealityGraphicsPipeline.Terminate();
 }

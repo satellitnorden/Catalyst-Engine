@@ -6,7 +6,7 @@
 //Distribution.
 #include <Distribution/AchievementIdentifier.h>
 
-class DistributionSystem final
+class ALIGN(8) DistributionSystem final
 {
 
 public:

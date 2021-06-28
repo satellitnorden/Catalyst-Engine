@@ -10,7 +10,7 @@
 #include <Resources/Core/LevelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
-class LevelSystem final
+class ALIGN(8) LevelSystem final
 {
 
 public:

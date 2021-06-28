@@ -11,7 +11,7 @@
 class AnimatedModelComponent;
 class Bone;
 
-class AnimationSystem final
+class ALIGN(8) AnimationSystem final
 {
 
 public:

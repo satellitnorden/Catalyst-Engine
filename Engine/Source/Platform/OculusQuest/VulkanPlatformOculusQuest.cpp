@@ -18,6 +18,9 @@ namespace VulkanPlatformOculusQuestData
     //The swapchain.
     ovrTextureSwapChain *RESTRICT _Swapchain;
 
+    //The frame index.
+    uint32 _FrameIndex{ 0 };
+
 }
 
 /*
@@ -141,6 +144,16 @@ void VulkanPlatform::InitializeSwapchain(VulkanSwapchain *const RESTRICT swapcha
 }
 
 /*
+*	Updates the next image index for the given swapchain.
+*/
+void VulkanPlatform::UpdateNextSwapchainImageIndex(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT
+{
+    ++VulkanPlatformOculusQuestData::_FrameIndex;
+
+    swapchain->SetCurrentImageIndex(VulkanPlatformOculusQuestData::_FrameIndex % swapchain->GetNumberOfSwapchainImages());
+}
+
+/*
 *	Callback for when a frame is started.
 */
 void VulkanPlatform::BeginFrame() NOEXCEPT
@@ -180,6 +193,43 @@ void VulkanPlatform::BeginFrame() NOEXCEPT
         vrapi_LeaveVrMode(CatalystPlatform::_ovrMobile);
         CatalystPlatform::_ovrMobile = nullptr;
     }
+}
+
+/*
+*	Presents the given swapchain.
+*/
+void VulkanPlatform::PresentSwapchain(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT
+{
+    //Retrieve the predicted display time.
+    const float64 predicted_display_time{ vrapi_GetPredictedDisplayTime(CatalystPlatform::_ovrMobile, VulkanPlatformOculusQuestData::_FrameIndex) };
+
+    //Retrieve the predicted tracking.
+    const ovrTracking2 prediected_tracking{ vrapi_GetPredictedTracking2(CatalystPlatform::_ovrMobile, predicted_display_time) };
+
+    //Create the layer.
+    ovrLayerProjection2 world_layer{ vrapi_DefaultLayerProjection2() };
+
+    for (uint8 eye_index{ 0 }; eye_index < VRAPI_FRAME_LAYER_EYE_MAX; ++eye_index)
+    {
+        world_layer.Textures[eye_index].ColorSwapChain = VulkanPlatformOculusQuestData::_Swapchain;
+        world_layer.Textures[eye_index].SwapChainIndex = VulkanPlatformOculusQuestData::_FrameIndex % swapchain->GetNumberOfSwapchainImages();
+        world_layer.Textures[eye_index].TexCoordsFromTanAngles = ovrMatrix4f_TanAngleMatrixFromProjection(&prediected_tracking.Eye[eye_index].ProjectionMatrix);
+    }
+
+    const ovrLayerHeader2 *const RESTRICT layers[]{ &world_layer.Header };
+
+    //Submit the frame.
+    ovrSubmitFrameDescription2 submit_frame_description;
+
+    submit_frame_description.Flags = 0;
+    submit_frame_description.SwapInterval = 1;
+    submit_frame_description.FrameIndex = VulkanPlatformOculusQuestData::_FrameIndex;
+    submit_frame_description.DisplayTime = predicted_display_time;
+    submit_frame_description.LayerCount = 1;
+    submit_frame_description.Layers = layers;
+
+    // Hand over the eye images to the time warp.
+    vrapi_SubmitFrame2(CatalystPlatform::_ovrMobile, &submit_frame_description);
 }
 
 /*

@@ -26,7 +26,7 @@
 #include <Resources/Creation/ResourceCreationSystem.h>
 #include <Resources/Loading/ResourceLoadingSystem.h>
 
-class ResourceSystem final
+class ALIGN(8) ResourceSystem final
 {
 
 public:

@@ -23,7 +23,7 @@
 //World.
 #include <World/Core/WorldTransform.h>
 
-class PhysicsSystem final
+class ALIGN(8) PhysicsSystem final
 {
 
 public:

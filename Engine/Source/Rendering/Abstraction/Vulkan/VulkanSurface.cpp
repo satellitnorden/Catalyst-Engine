@@ -10,13 +10,13 @@
 */
 void VulkanSurface::Initialize() NOEXCEPT
 {
-#if defined(CATALYST_PLATFORM_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo;
 
 	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
 	surfaceCreateInfo.pNext = nullptr;
 	surfaceCreateInfo.flags = 0;
-	surfaceCreateInfo.window = CatalystPlatform::_Window;
+	surfaceCreateInfo.window = CatalystPlatform::_NativeWindow;
 
 	VULKAN_ERROR_CHECK(vkCreateAndroidSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
 #endif

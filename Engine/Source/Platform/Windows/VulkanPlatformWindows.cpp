@@ -43,9 +43,25 @@ void VulkanPlatform::InitializeSwapchain(VulkanSwapchain *const RESTRICT swapcha
 }
 
 /*
+*	Updates the next image index for the given swapchain.
+*/
+void VulkanPlatform::UpdateNextSwapchainImageIndex(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT
+{
+
+}
+
+/*
 *	Callback for when a frame is started.
 */
 void VulkanPlatform::BeginFrame() NOEXCEPT
+{
+
+}
+
+/*
+*	Presents the given swapchain.
+*/
+void VulkanPlatform::PresentSwapchain(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT
 {
 
 }

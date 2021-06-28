@@ -17,7 +17,7 @@
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
-class WorldTracingSystem final
+class ALIGN(8) WorldTracingSystem final
 {
 
 public:

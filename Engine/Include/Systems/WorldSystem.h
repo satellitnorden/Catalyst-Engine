@@ -13,7 +13,7 @@
 //Forward declarations.
 class LevelResource;
 
-class WorldSystem final
+class ALIGN(8) WorldSystem final
 {
 
 public:

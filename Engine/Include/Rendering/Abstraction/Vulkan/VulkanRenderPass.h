@@ -41,5 +41,10 @@ private:
 	*/
 	void CreateRenderPassCreateInfo(VkRenderPassCreateInfo &renderPassCreateInfo, const VulkanRenderPassCreationParameters &parameters) const NOEXCEPT;
 
+	/*
+	*	Enables multiview.
+	*/
+	void EnableMultiview(VkRenderPassMultiviewCreateInfoKHR *const RESTRICT render_pass_multiview_create_info, VkRenderPassCreateInfo *const RESTRICT render_pass_create_info) NOEXCEPT;
+
 };
 #endif

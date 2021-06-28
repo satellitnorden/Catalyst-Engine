@@ -6,7 +6,7 @@
 //Concurrency.
 #include <Concurrency/Task.h>
 
-class LevelOfDetailSystem final
+class ALIGN(8) LevelOfDetailSystem final
 {
 
 public:

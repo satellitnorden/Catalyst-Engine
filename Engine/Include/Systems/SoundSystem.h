@@ -17,7 +17,7 @@
 #include <Sound/SoundCore.h>
 #include <Sound/SoundMixComponent.h>
 
-class SoundSystem final
+class ALIGN(8) SoundSystem final
 {
 
 public:

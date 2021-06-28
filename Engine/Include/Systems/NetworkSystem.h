@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-class NetworkSystem final
+class ALIGN(8) NetworkSystem final
 {
 
 public:

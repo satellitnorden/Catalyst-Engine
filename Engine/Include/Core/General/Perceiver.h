@@ -18,7 +18,7 @@
 //World.
 #include <World/Core/WorldTransform.h>
 
-class Perceiver final
+class ALIGN(8) Perceiver final
 {
 
 public:

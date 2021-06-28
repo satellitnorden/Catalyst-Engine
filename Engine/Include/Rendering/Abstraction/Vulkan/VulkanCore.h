@@ -361,7 +361,7 @@ extern PFN_vkCreateDisplayModeKHR vkCreateDisplayModeKHR;
 extern PFN_vkGetDisplayPlaneCapabilitiesKHR vkGetDisplayPlaneCapabilitiesKHR;
 extern PFN_vkCreateDisplayPlaneSurfaceKHR vkCreateDisplayPlaneSurfaceKHR;
 extern PFN_vkCreateSharedSwapchainsKHR vkCreateSharedSwapchainsKHR;
-#if defined(CATALYST_PLATFORM_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 extern PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
 #endif
 #if defined(CATALYST_PLATFORM_WINDOWS)

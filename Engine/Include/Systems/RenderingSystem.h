@@ -44,7 +44,7 @@ class Entity;
 class Resolution;
 class TextureCubeData;
 
-class RenderingSystem final
+class ALIGN(8) RenderingSystem final
 {
 
 public:

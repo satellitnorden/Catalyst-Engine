@@ -17,7 +17,7 @@
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
-class PlacementSystem final
+class ALIGN(8) PlacementSystem final
 {
 
 public:

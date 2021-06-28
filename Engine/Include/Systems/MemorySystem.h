@@ -11,7 +11,7 @@
 #include <Memory/FrameAllocator.h>
 #include <Memory/PoolAllocator.h>
 
-class MemorySystem final
+class ALIGN(8) MemorySystem final
 {
 
 public:

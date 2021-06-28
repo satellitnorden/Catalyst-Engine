@@ -12,7 +12,7 @@
 //Forward declarations.
 class Task;
 
-class TaskSystem final
+class ALIGN(8) TaskSystem final
 {
 
 public:
@@ -60,6 +60,12 @@ private:
 	//The maximum number of tasks.
 	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 1'024 };
 
+	//Container for all atomic queues in which to put tasks in.
+	AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::MULTIPLE> _TaskQueue;
+
+	//Denotes how many tasks are currently queued.
+	Atomic<uint64> _TasksInQueue{ 0 };
+
 	//Denotes whether or not the task system is initialized.
 	bool _IsInitialized{ false };
 
@@ -71,12 +77,6 @@ private:
 
 	//Container for all task executor threads.
 	DynamicArray<Thread> _TaskExecutorThreads;
-
-	//Container for all atomic queues in which to put tasks in.
-	AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::MULTIPLE> _TaskQueue;
-
-	//Denotes how many tasks are currently queued.
-	Atomic<uint64> _TasksInQueue{ 0 };
 
 	/*
 	*	Executes tasks.

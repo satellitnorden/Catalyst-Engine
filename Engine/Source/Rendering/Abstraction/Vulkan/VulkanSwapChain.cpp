@@ -81,7 +81,11 @@ void VulkanSwapchain::Release() NOEXCEPT
 */
 void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const RESTRICT imageAvailableSemaphore) NOEXCEPT
 {
+#if VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
+	VulkanPlatform::UpdateNextSwapchainImageIndex(this);
+#else
 	VULKAN_ERROR_CHECK(vkAcquireNextImageKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapchain, UINT64_MAXIMUM, imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &_CurrentImageIndex));
+#endif
 }
 
 /*
@@ -89,8 +93,12 @@ void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const RESTRICT
 */
 void VulkanSwapchain::Present(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore) NOEXCEPT
 {
+#if VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
+	VulkanPlatform::PresentSwapchain(this);
+#else
 	//Present on the present queue!
 	VulkanInterface::Instance->GetPresentQueue()->Present(renderFinishedSemaphore, &_VulkanSwapchain, &_CurrentImageIndex);
+#endif
 }
 
 /*

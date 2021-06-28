@@ -204,7 +204,6 @@ void ResourceLoadingSystem::LoadLevel(BinaryFile<BinaryFileMode::IN> *const REST
 			}
 		}
 	}
-	file->Read(data->_LevelEntries.Data(), sizeof(LevelEntry) * number_of_level_entries);
 }
 
 /*

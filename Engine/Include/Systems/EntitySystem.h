@@ -16,7 +16,7 @@
 //Systems.
 #include <Systems/MemorySystem.h>
 
-class EntitySystem final
+class ALIGN(8) EntitySystem final
 {
 
 public:

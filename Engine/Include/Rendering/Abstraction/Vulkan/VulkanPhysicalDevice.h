@@ -141,12 +141,10 @@ private:
 	*/
 	bool HasRequiredFeatures(const VkPhysicalDevice vulkanPhysicalDevice) const NOEXCEPT;
 
-#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 	/*
 	*	Given a Vulkan physical device and a Vulkan surface, return if the Physical device has the proper swap chain support.
 	*/
 	bool HasProperSwapChainSupport(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT;
-#endif
 
 	/*
 	*	Given a Vulkan physical device and an extension name, returns if the Vulkan physical device has that extension.
@@ -158,19 +156,15 @@ private:
 	*/
 	VkPhysicalDevice GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitable_physical_devices) const NOEXCEPT;
 
-#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 	/*
 	*	Given a physical device and a surface, returns the most optimal surface format.
 	*/
 	VkSurfaceFormatKHR GetMostOptimalSurfaceFormat() const NOEXCEPT;
-#endif
 
-#if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 	/*
 	*	Given a physical device and a surface, returns the most optimal present mode.
 	*/
 	VkPresentModeKHR GetMostOptimalPresentMode() const NOEXCEPT;
-#endif
 
 };
 #endif

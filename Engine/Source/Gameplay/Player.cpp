@@ -167,13 +167,6 @@ void Player::UpdateCurrentInputState(const float32 delta_time) NOEXCEPT
 
 			break;
 		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
 	}
 
 	//Update if the player is sprinting.
@@ -194,13 +187,6 @@ void Player::UpdateCurrentInputState(const float32 delta_time) NOEXCEPT
 		case InputDeviceType::MOUSE:
 		{
 			_CurrentInputState._IsSprinting = keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED_HELD;
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
 
 			break;
 		}

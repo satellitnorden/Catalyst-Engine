@@ -33,9 +33,19 @@ public:
 	static void InitializeSwapchain(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT;
 
 	/*
+	*	Updates the next image index for the given swapchain.
+	*/
+	static void UpdateNextSwapchainImageIndex(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT;
+
+	/*
 	*	Callback for when a frame is started.
 	*/
 	static void BeginFrame() NOEXCEPT;
+
+	/*
+	*	Presents the given swapchain.
+	*/
+	static void PresentSwapchain(VulkanSwapchain *const RESTRICT swapchain) NOEXCEPT;
 
 	/*
 	*	Releases the swapchain.

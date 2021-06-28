@@ -11,7 +11,7 @@
 #include <Save/SaveCore.h>
 #include <Save/SaveEntry.h>
 
-class SaveSystem final
+class ALIGN(8) SaveSystem final
 {
 
 public:

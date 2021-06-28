@@ -110,7 +110,7 @@
 /*
 *	Defines a singleton class. Must be done in the source file.
 */
-#define DEFINE_SINGLETON(CLASS) DestructorPointer<CLASS> CLASS::Instance{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(CLASS))) CLASS() };
+#define DEFINE_SINGLETON(CLASS) DestructorPointer<CLASS> CLASS::Instance{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(CLASS))) CLASS() }; static_assert(sizeof(CLASS) % 8 == 0, "Singleton classes needs to be 8-byte aligned!");
 
 /*
 *	Defines bit operations for an enumeration. Must be placed in the global namespace.

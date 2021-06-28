@@ -107,6 +107,14 @@ public:
 	}
 
 	/*
+	*	Sets the current image index.
+	*/
+	FORCE_INLINE void SetCurrentImageIndex(const uint32 value) NOEXCEPT
+	{
+		_CurrentImageIndex = value;
+	}
+
+	/*
 	*	Updates the next image index in the swap chain.
 	*/
 	void UpdateNextImageIndex(const VulkanSemaphore *const RESTRICT imageAvailableSemaphore) NOEXCEPT;

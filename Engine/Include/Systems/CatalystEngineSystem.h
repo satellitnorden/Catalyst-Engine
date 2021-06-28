@@ -9,7 +9,7 @@
 //Concurrency.
 #include <Concurrency/Task.h>
 
-class CatalystEngineSystem final
+class ALIGN(8) CatalystEngineSystem final
 {
 
 public:

@@ -12,7 +12,7 @@
 #include <Profiling/ProfilingEntry.h>
 #include <Profiling/ProfilingUserInterfaceScene.h>
 
-class ProfilingSystem final
+class ALIGN(8) ProfilingSystem final
 {
 
 public:

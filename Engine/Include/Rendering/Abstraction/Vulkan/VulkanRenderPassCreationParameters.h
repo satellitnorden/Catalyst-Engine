@@ -27,5 +27,8 @@ public:
 	//The subpass dependencies.
 	const VkSubpassDependency *RESTRICT _SubpassDependencies;
 
+	//Denotes whether or not multiview should be enabled.
+	bool _MultiviewEnabled;
+
 };
 #endif
