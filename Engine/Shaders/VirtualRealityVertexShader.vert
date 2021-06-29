@@ -1,6 +1,12 @@
 //Enable extensions.
 #extension GL_EXT_multiview : enable
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) vec3 COLOR;
+};
+
 //Out parameters.
 layout (location = 0) out vec2 fragment_texture_coordinate;
 

@@ -193,6 +193,12 @@ void VulkanPlatform::BeginFrame() NOEXCEPT
         vrapi_LeaveVrMode(CatalystPlatform::_ovrMobile);
         CatalystPlatform::_ovrMobile = nullptr;
     }
+
+    //Wait for the frame.
+    vrapi_WaitFrame(CatalystPlatform::_ovrMobile, VulkanPlatformOculusQuestData::_FrameIndex);
+
+    //Begin the frame.
+    vrapi_BeginFrame(CatalystPlatform::_ovrMobile, VulkanPlatformOculusQuestData::_FrameIndex);
 }
 
 /*
@@ -204,16 +210,18 @@ void VulkanPlatform::PresentSwapchain(VulkanSwapchain *const RESTRICT swapchain)
     const float64 predicted_display_time{ vrapi_GetPredictedDisplayTime(CatalystPlatform::_ovrMobile, VulkanPlatformOculusQuestData::_FrameIndex) };
 
     //Retrieve the predicted tracking.
-    const ovrTracking2 prediected_tracking{ vrapi_GetPredictedTracking2(CatalystPlatform::_ovrMobile, predicted_display_time) };
+    const ovrTracking2 predicted_tracking{ vrapi_GetPredictedTracking2(CatalystPlatform::_ovrMobile, predicted_display_time) };
 
     //Create the layer.
     ovrLayerProjection2 world_layer{ vrapi_DefaultLayerProjection2() };
+
+    world_layer.HeadPose = predicted_tracking.HeadPose;
 
     for (uint8 eye_index{ 0 }; eye_index < VRAPI_FRAME_LAYER_EYE_MAX; ++eye_index)
     {
         world_layer.Textures[eye_index].ColorSwapChain = VulkanPlatformOculusQuestData::_Swapchain;
         world_layer.Textures[eye_index].SwapChainIndex = VulkanPlatformOculusQuestData::_FrameIndex % swapchain->GetNumberOfSwapchainImages();
-        world_layer.Textures[eye_index].TexCoordsFromTanAngles = ovrMatrix4f_TanAngleMatrixFromProjection(&prediected_tracking.Eye[eye_index].ProjectionMatrix);
+        world_layer.Textures[eye_index].TexCoordsFromTanAngles = ovrMatrix4f_TanAngleMatrixFromProjection(&predicted_tracking.Eye[eye_index].ProjectionMatrix);
     }
 
     const ovrLayerHeader2 *const RESTRICT layers[]{ &world_layer.Header };

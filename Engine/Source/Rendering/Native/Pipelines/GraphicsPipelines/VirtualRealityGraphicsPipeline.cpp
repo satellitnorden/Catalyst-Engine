@@ -1,12 +1,28 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VirtualRealityGraphicsPipeline.h>
 
+//Math.
+#include <Math/Core/CatalystRandomMath.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+
+/*
+*	Virtual reality push constant data.
+*/
+class VirtualRealityPushConstantData final
+{
+
+public:
+
+	//The color.
+	Vector3<float32> _Color;
+
+};
 
 /*
 *	Initializes this graphics pipeline.
@@ -29,6 +45,10 @@ void VirtualRealityGraphicsPipeline::Initialize() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(VirtualRealityPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -75,6 +95,15 @@ void VirtualRealityGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+
+	//Push constants.
+	{
+		VirtualRealityPushConstantData data;
+
+		data._Color = Vector3<float32>(CatalystRandomMath::RandomFloat(), CatalystRandomMath::RandomFloat(), CatalystRandomMath::RandomFloat());
+
+		command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(VirtualRealityPushConstantData), &data);
+	}
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

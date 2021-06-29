@@ -302,6 +302,11 @@ namespace VulkanSubRenderingSystemLogic
 					framebufferParameters._AttachmentCount = 1;
 					framebufferParameters._Attachments = &swapchainImage;
 					framebufferParameters._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+#if defined(CATALYST_PLATFORM_OCULUS_QUEST)
+					framebufferParameters._NumberOfLayers = 2;
+#else
+					framebufferParameters._NumberOfLayers = 1;
+#endif
 
 					data->_FrameBuffers.Emplace(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 				}
@@ -333,6 +338,7 @@ namespace VulkanSubRenderingSystemLogic
 				framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
 				framebufferParameters._Attachments = attachments.Data();
 				framebufferParameters._Extent = { pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
+				framebufferParameters._NumberOfLayers = 1;
 
 				data->_FrameBuffers.Reserve(1);
 				data->_FrameBuffers.Emplace(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));

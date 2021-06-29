@@ -40,6 +40,6 @@ void VulkanFramebuffer::CreateFramebufferCreateInfo(VkFramebufferCreateInfo &fra
 	framebufferCreateInfo.pAttachments = parameters._Attachments;
 	framebufferCreateInfo.width = parameters._Extent.width;
 	framebufferCreateInfo.height = parameters._Extent.height;
-	framebufferCreateInfo.layers = 1;
+	framebufferCreateInfo.layers = parameters._NumberOfLayers;
 }
 #endif

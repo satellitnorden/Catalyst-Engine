@@ -24,5 +24,8 @@ public:
 	//The extent.
 	VkExtent2D _Extent;
 
+	//The number of layers.
+	uint32 _NumberOfLayers;
+
 };
 #endif
