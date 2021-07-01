@@ -178,7 +178,8 @@ RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButton(	co
 																				UserInterfaceMaterial *const RESTRICT idle_material_override,
 																				UserInterfaceMaterial *const RESTRICT hovered_material_override,
 																				UserInterfaceMaterial *const RESTRICT pressed_material_override,
-																				const char *const RESTRICT text) NOEXCEPT
+																				const char *const RESTRICT text,
+																				const float32 *const RESTRICT text_scale_override) NOEXCEPT
 {
 	//Calculate the bounding box.
 	Vector2<float32> minimum;
@@ -193,7 +194,8 @@ RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButton(	co
 						idle_material_override,
 						hovered_material_override,
 						pressed_material_override,
-						text);
+						text,
+						text_scale_override);
 }
 
 /*
@@ -205,7 +207,8 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButton(	co
 																				UserInterfaceMaterial *const RESTRICT idle_material_override,
 																				UserInterfaceMaterial *const RESTRICT hovered_material_override,
 																				UserInterfaceMaterial *const RESTRICT pressed_material_override,
-																				const char *const RESTRICT text) NOEXCEPT
+																				const char *const RESTRICT text,
+																				const float32 *const RESTRICT text_scale_override) NOEXCEPT
 {
 	//Allocate the button.
 	UserInterfaceButton *const RESTRICT new_button{ new UserInterfaceButton(minimum,
@@ -219,6 +222,7 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButton(	co
 																			pressed_material_override ? *pressed_material_override : _ButtonPressedMaterial,
 																			text,
 																			_FontResource,
+																			text_scale_override ? *text_scale_override : _TextScale,
 																			_Entity != nullptr) };
 
 	//Add the button to the container.

@@ -34,6 +34,7 @@ public:
 						const UserInterfaceMaterial &initial_pressed_material,
 						const char *const RESTRICT text,
 						const ResourcePointer<FontResource> font_resource,
+						const float32 text_scale,
 						const bool is_three_dimensional) NOEXCEPT;
 
 	/*
@@ -177,6 +178,9 @@ private:
 
 	//Denotes whether or not this button is gamepad selected.
 	bool _GamepadSelected{ false };
+
+	//The text scale.
+	float32 _TextScale;
 
 	//The image primitive.
 	ImageUserInterfacePrimitive *RESTRICT _ImagePrimitive;

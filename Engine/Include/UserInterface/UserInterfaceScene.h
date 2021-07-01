@@ -185,7 +185,8 @@ protected:
 																UserInterfaceMaterial *const RESTRICT idle_material_override = nullptr,
 																UserInterfaceMaterial *const RESTRICT hovered_material_override = nullptr,
 																UserInterfaceMaterial *const RESTRICT pressed_material_override = nullptr,
-																const char *const RESTRICT text = "") NOEXCEPT;
+																const char *const RESTRICT text = "",
+																const float32 *const RESTRICT text_scale_override = nullptr) NOEXCEPT;
 
 	/*
 	*	Adds a button, raw coordinates.
@@ -196,7 +197,8 @@ protected:
 																UserInterfaceMaterial *const RESTRICT idle_material_override = nullptr,
 																UserInterfaceMaterial *const RESTRICT hovered_material_override = nullptr,
 																UserInterfaceMaterial *const RESTRICT pressed_material_override = nullptr,
-																const char *const RESTRICT text = "") NOEXCEPT;
+																const char *const RESTRICT text = "",
+																const float32 *const RESTRICT text_scale_override = nullptr) NOEXCEPT;
 
 	/*
 	*	Adds a checkbox, using cells.
