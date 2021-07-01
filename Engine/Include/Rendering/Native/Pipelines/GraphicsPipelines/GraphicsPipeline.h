@@ -411,7 +411,7 @@ protected:
 	/*
 	*	Sets whether or not multiview is enabled.
 	*/
-	FORCE_INLINE void SetMultiviewEnalbed(const bool value) NOEXCEPT
+	FORCE_INLINE void SetMultiviewEnabled(const bool value) NOEXCEPT
 	{
 		_MultiviewEnabled = value;
 	}

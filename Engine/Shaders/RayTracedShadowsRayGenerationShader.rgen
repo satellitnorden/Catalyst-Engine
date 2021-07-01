@@ -26,7 +26,7 @@ void CatalystShaderMain()
 
 	//Calculate the world position.
 	vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
-	world_position += shading_normal * CalculateFloatingPointCompensation(world_position);
+	world_position += shading_normal;
 
 	//Sample the noise texture.
 	vec4 random_noise = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);

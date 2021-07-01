@@ -2,10 +2,12 @@
 #include "CatalystGeometryMath.glsl"
 #define CATALYST_LIGHTING_DATA_SET_INDEX (2)
 #include "CatalystLightingData.glsl"
-#include "CatalystPackingUtilities.glsl"
-#include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
+#include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
+
+//Constants.
+#define NUMBER_OF_SAMPLES (2)
 
 //Descriptor set data.
 layout (set = 3, binding = 0) uniform sampler2D scene_features_2_texture;
@@ -13,6 +15,17 @@ layout (set = 3, binding = 1, rgba32f) uniform image2D volumetric_lighting_image
 
 //In parameters.
 layout(location = 1) rayPayloadNV float visibility;
+
+/*
+*	Returns a dithered sample offset.
+*/
+float GetDitheredSampleOffset(vec4 sample_offsets, uint index)
+{
+	float actual_sample_offset = sample_offsets[index & 3];
+	float dither_sample_offset = sample_offsets[(index + 1) & 3];
+
+	return actual_sample_offset + mix(-0.0039211568627450f, 0.0039211568627450f, dither_sample_offset);
+}
 
 void CatalystShaderMain() 
 {
@@ -36,20 +49,13 @@ void CatalystShaderMain()
 	//Add the ambient lighting.
 	volumetric_lighting += CalculateVolumetricAmbientLighting();
 
-	//Sample the noise texture.
-	vec4 noise_texture = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);
-
-	float samples_offsets[4];
-
-	samples_offsets[0] = noise_texture[0];
-	samples_offsets[1] = noise_texture[1];
-	samples_offsets[2] = noise_texture[2];
-	samples_offsets[3] = noise_texture[3];
-
-	uint current_sample_offset_index = 0;
+	//Sample the offsets.
+	vec4 sample_offsets = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);
 
 	//Calculate the volumetric lighting for all volumetric lights.
-	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i, ++current_sample_offset_index)
+	uint current_sample_offset_index = 0;
+
+	for (uint i = 0; i < NUMBER_OF_LIGHTS; ++i)
 	{
 		//Unpack the light.
 		Light light = UnpackLight(i);
@@ -60,38 +66,45 @@ void CatalystShaderMain()
 			{
 				case LIGHT_TYPE_DIRECTIONAL:
 				{
-					//Calculate the volumetric particle hit distance.
-					float volumetric_particle_hit_distance = hit_distance * samples_offsets[current_sample_offset_index & 3];
-
-					//Calculate the volumetric particle hit position.
-					vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + ray_direction * volumetric_particle_hit_distance;
-
-					//Determine the visibility.
-					bool hit_anything = false;
-
-					if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT))
+					for (uint sample_index = 0; sample_index < NUMBER_OF_SAMPLES; ++sample_index)
 					{
-						visibility = 0.0f;
+						//Calculate the volumetric particle hit distance.
+						float volumetric_particle_hit_distance = hit_distance * GetDitheredSampleOffset(sample_offsets, current_sample_offset_index++);
 
-						traceNV(
-								TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
-								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-								0xff, 																						//cullMask
-								0, 																							//sbtRecordOffset
-								0, 																							//sbtRecordStride
-								0, 																							//missIndex
-								volumetric_particle_hit_position, 															//origin
-								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-								-light.position_or_direction,																//direction
-								VIEW_DISTANCE,																				//Tmax
-								1 																							//payload
-								);
+						//Calculate the volumetric particle hit position.
+						vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + ray_direction * volumetric_particle_hit_distance;
 
-						hit_anything = visibility < 1.0f;
+						//Determine the visibility.
+						bool hit_anything = false;
+
+						if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT))
+						{
+							visibility = 0.0f;
+
+							traceNV(
+									TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
+									gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+									0xff, 																						//cullMask
+									0, 																							//sbtRecordOffset
+									0, 																							//sbtRecordStride
+									0, 																							//missIndex
+									volumetric_particle_hit_position, 															//origin
+									0.0f, 																						//Tmin
+									-light.position_or_direction,																//direction
+									VIEW_DISTANCE,																				//Tmax
+									1 																							//payload
+									);
+
+							hit_anything = visibility < 1.0f;
+						}
+
+						//Calculate the volumetric particle to perceiver opacity.
+						float volumetric_particle_to_perceiver_opacity = CalculateVolumetricLightingOpacity(volumetric_particle_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, volumetric_particle_hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_ABSOLUTE_HEIGHT);
+
+						//Add to the volumetric lighting.
+						volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * (1.0f - volumetric_particle_to_perceiver_opacity) * float(!hit_anything) / float(NUMBER_OF_SAMPLES);
 					}
 
-					//Add to the volumetric lighting.
-					volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * float(!hit_anything);
 
 					break;
 				}
@@ -113,38 +126,74 @@ void CatalystShaderMain()
 
 					if (result._Result != RAY_SPHERE_INTERSECTION_RESULT_NO_HIT)
 					{
-						float volumetric_particle_hit_distance;
-
-						switch (result._Result)
+						for (uint sample_index = 0; sample_index < NUMBER_OF_SAMPLES; ++sample_index)
 						{
-							case RAY_SPHERE_INTERSECTION_RESULT_ONE_HIT:
-							{
-								volumetric_particle_hit_distance = mix(0.0f, result._ClosestHitDistance, samples_offsets[current_sample_offset_index & 3]);
+							float volumetric_particle_hit_distance;
 
-								break;
+							switch (result._Result)
+							{
+								case RAY_SPHERE_INTERSECTION_RESULT_ONE_HIT:
+								{
+									volumetric_particle_hit_distance = mix(0.0f, min(result._ClosestHitDistance, hit_distance), GetDitheredSampleOffset(sample_offsets, current_sample_offset_index++));
+
+									break;
+								}
+
+								case RAY_SPHERE_INTERSECTION_RESULT_TWO_HITS:
+								{
+									volumetric_particle_hit_distance = mix(min(result._ClosestHitDistance, hit_distance), min(result._FarthestHitDistance, hit_distance), GetDitheredSampleOffset(sample_offsets, current_sample_offset_index++));
+									
+									break;
+								}
 							}
 
-							case RAY_SPHERE_INTERSECTION_RESULT_TWO_HITS:
-							{
-								volumetric_particle_hit_distance = mix(result._ClosestHitDistance, result._FarthestHitDistance, samples_offsets[current_sample_offset_index & 3]);
-								
-								break;
-							}
-						}
-
-						if (volumetric_particle_hit_distance < hit_distance)
-						{
 							//Calculate the volumetric particle hit position.
 							vec3 volumetric_particle_hit_position = ray._Origin + ray._Direction * volumetric_particle_hit_distance;
 
-							//Determine the distance to the light.
+							//Calculate the distance to the light.
 							float distance_to_light = length(light.position_or_direction - volumetric_particle_hit_position);
+
+							//Calculate the reciprocal of the distance to light.
+							float distance_to_light_reciprocal = 1.0f / distance_to_light;
 
 							//Calculate the attenuation.
 							float attenuation = CalculateAttenuation(distance_to_light, light.radius);
 
+							//Determine the visibility.
+							bool hit_anything = false;
+
+							if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT))
+							{
+								//Calculate the direction to the light.
+								vec3 direction_to_light = vec3(light.position_or_direction - volumetric_particle_hit_position) * distance_to_light_reciprocal;
+
+								visibility = 0.0f;
+
+								traceNV(
+										TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
+										gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+										0xff, 																						//cullMask
+										0, 																							//sbtRecordOffset
+										0, 																							//sbtRecordStride
+										0, 																							//missIndex
+										volumetric_particle_hit_position, 															//origin
+										0.0f, 																						//Tmin
+										direction_to_light,																			//direction
+										distance_to_light,																			//Tmax
+										1 																							//payload
+										);
+
+								hit_anything = visibility < 1.0f;
+							}
+
+							//Calculate the light to volumetric particle opacity.
+							float light_to_volumetric_particle_opacity = CalculateVolumetricLightingOpacity(distance_to_light, VOLUMETRIC_LIGHTING_DISTANCE, light.position_or_direction.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, volumetric_particle_hit_position.y);
+
+							//Calculate the volumetric particle to perceiver opacity.
+							float volumetric_particle_to_perceiver_opacity = CalculateVolumetricLightingOpacity(volumetric_particle_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, volumetric_particle_hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_ABSOLUTE_HEIGHT);
+
 							//Add to the volumetric lighting.
-							volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * attenuation;
+							volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * attenuation * (1.0f - light_to_volumetric_particle_opacity) * (1.0f - volumetric_particle_to_perceiver_opacity) * float(!hit_anything) / float(NUMBER_OF_SAMPLES);
 						}
 					}
 

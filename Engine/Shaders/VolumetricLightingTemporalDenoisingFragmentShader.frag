@@ -1,5 +1,5 @@
 //Constants.
-#define VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.75f) //0.025f step.
+#define VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR (0.775f) //0.025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -38,7 +38,6 @@ void main()
 	float previous_sample_weight = 1.0f;
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
-
 
 	//Blend the previous and the current volumetric lighting.
 	vec3 blended_volumetric_lighting = mix(current_volumetric_lighting_texture_sampler.rgb, previous_volumetric_lighting_texture_sampler.rgb, VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR * previous_sample_weight);

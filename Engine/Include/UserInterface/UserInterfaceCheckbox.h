@@ -129,12 +129,12 @@ public:
 	*/
 	FORCE_INLINE void OnStartPressed() NOEXCEPT
 	{
+		SetIsChecked(!GetIsChecked());
+
 		if (_StartPressedCallback)
 		{
 			_StartPressedCallback(this);
 		}
-
-		SetIsChecked(!GetIsChecked());
 	}
 
 	/*

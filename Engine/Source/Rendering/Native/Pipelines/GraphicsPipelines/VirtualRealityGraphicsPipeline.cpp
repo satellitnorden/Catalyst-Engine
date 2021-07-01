@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VirtualRealityGraphicsPipeline.h>
 
+//Components.
+#include <Components/Core/ComponentManager.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
@@ -10,6 +13,7 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/WorldSystem.h>
 
 /*
 *	Virtual reality push constant data.
@@ -19,8 +23,8 @@ class VirtualRealityPushConstantData final
 
 public:
 
-	//The color.
-	Vector3<float32> _Color;
+	//The model matrix.
+	Matrix4x4 _ModelMatrix;
 
 };
 
@@ -43,20 +47,21 @@ void VirtualRealityGraphicsPipeline::Initialize() NOEXCEPT
 	SetIsRenderingDirectlyToScreen(true);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetVirtualRealitySystem()->GetVirtualRealityDataRenderDataTableLayout());
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
 	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(VirtualRealityPushConstantData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
+	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
 
 	//Set the properties of the render pass.
 	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
 	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::CLEAR);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
@@ -75,7 +80,8 @@ void VirtualRealityGraphicsPipeline::Initialize() NOEXCEPT
 	SetStencilCompareMask(0);
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
-	SetTopology(Topology::TriangleFan);
+	SetTopology(Topology::TriangleList);
+	SetMultiviewEnabled(true);
 }
 
 /*
@@ -83,6 +89,9 @@ void VirtualRealityGraphicsPipeline::Initialize() NOEXCEPT
 */
 void VirtualRealityGraphicsPipeline::Execute() NOEXCEPT
 {
+	//Define constants.
+	constexpr uint64 OFFSET{ 0 };
+
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
 	SetCommandBuffer(command_buffer);
@@ -95,18 +104,81 @@ void VirtualRealityGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetVirtualRealitySystem()->GetCurrentVirtualRealityDataRenderDataTable());
 
-	//Push constants.
+	//Draw static models.
 	{
-		VirtualRealityPushConstantData data;
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
 
-		data._Color = Vector3<float32>(CatalystRandomMath::RandomFloat(), CatalystRandomMath::RandomFloat(), CatalystRandomMath::RandomFloat());
+		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		{
+			//Draw all meshes.
+			for (uint64 mesh_index{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+			{
+				//Skip this mesh if it's hidden.
+				if (!TEST_BIT(component->_MeshesVisibleMask, BIT(mesh_index)))
+				{
+					continue;
+				}
 
-		command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(VirtualRealityPushConstantData), &data);
+				//Cache the mesh.
+				const Mesh& mesh{ component->_ModelResource->_Meshes[mesh_index] };
+
+				//Push constants.
+				VirtualRealityPushConstantData data;
+
+				data._ModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+
+				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(VirtualRealityPushConstantData), &data);
+
+				//Bind the vertex/inder buffer.
+				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._VertexBuffer, &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexBuffer, OFFSET);
+
+				//Draw!
+				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexCount, 1);
+			}
+		}
 	}
 
-	//Draw!
-	command_buffer->Draw(this, 3, 1);
+	//Draw dynamic models.
+	{
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		{
+			//Draw all meshes.
+			for (uint64 mesh_index{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+			{
+				//Skip this mesh depending on the material type.
+				if (component->_MaterialResources[mesh_index]->_Type != MaterialResource::Type::OPAQUE)
+				{
+					continue;
+				}
+
+				//Cache the mesh.
+				const Mesh& mesh{ component->_ModelResource->_Meshes[mesh_index] };
+
+				//Push constants.
+				VirtualRealityPushConstantData data;
+
+				data._ModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+
+				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(VirtualRealityPushConstantData), &data);
+
+				//Bind the vertex/inder buffer.
+				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._VertexBuffer, &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexBuffer, OFFSET);
+
+				//Draw!
+				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexCount, 1);
+			}
+		}
+	}
 
 	//End the command buffer.
 	command_buffer->End(this);

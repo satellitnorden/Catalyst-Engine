@@ -168,6 +168,9 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 	//Post-initialize the ray tracing system.
 	_RayTracingSystem.PostInitialize();
 
+	//Post-initialize the virtual reality system.
+	_VirtualRealitySystem.PostInitialize();
+
 	//Retrieve the render passes.
 	NativeRenderPassManager::GetRenderPasses(_CurrentRenderingPath, &_RenderPasses);
 
@@ -221,6 +224,13 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		PROFILING_SCOPE("_RayTracingSystem.RenderUpdate()");
 
 		_RayTracingSystem.RenderUpdate();
+	}
+
+	//Update the virtual reality system.
+	{
+		PROFILING_SCOPE("_VirtualRealitySystem.RenderUpdate()");
+
+		_VirtualRealitySystem.RenderUpdate();
 	}
 
 	//This shouldn't really be here, but let's have it here for now...

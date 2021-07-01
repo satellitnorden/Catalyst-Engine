@@ -38,20 +38,4 @@ vec3 CalculateRayDirection(vec2 coordinate)
 	return normalize(worldPosition - PERCEIVER_WORLD_POSITION);
 }
 
-/*
-*	given an input coordinate, calculate which screen coordinate in the input coordinate's NxN box that should remain stale (for example not generate any new numbers to be able to estimate variance over time).
-*/
-uvec2 CalculateStaleScreenCoordinate(uvec2 input_coordinate)
-{
-	return (input_coordinate / 4) * 4;
-}
-
-/*
-*	Calculates the floating point compensation for the given world position.
-*/
-float CalculateFloatingPointCompensation(vec3 world_position)
-{
-	return 0.0f;
-}
-
 #endif

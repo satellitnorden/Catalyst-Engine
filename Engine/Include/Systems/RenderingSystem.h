@@ -28,6 +28,7 @@
 #include <Rendering/Native/SubRenderingSystemInterface.h>
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
+#include <Rendering/Native/VirtualRealitySystem.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
@@ -226,6 +227,14 @@ public:
 	RESTRICTED NO_DISCARD RenderingReferenceSystem *const RESTRICT GetRenderingReferenceSystem() NOEXCEPT
 	{
 		return &_RenderingReferenceSystem;
+	}
+
+	/*
+	*	Returns the virtual reality system.
+	*/
+	RESTRICTED NO_DISCARD VirtualRealitySystem *const RESTRICT GetVirtualRealitySystem() NOEXCEPT
+	{
+		return &_VirtualRealitySystem;
 	}
 
 	/*
@@ -558,6 +567,9 @@ private:
 
 	//The rendering reference system.
 	RenderingReferenceSystem _RenderingReferenceSystem;
+
+	//The virtual reality system.
+	VirtualRealitySystem _VirtualRealitySystem;
 
 	//Container for all the render passes.
 	DynamicArray<RenderPass *RESTRICT> _RenderPasses;
