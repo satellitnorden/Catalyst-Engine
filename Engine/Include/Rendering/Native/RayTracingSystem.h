@@ -40,6 +40,22 @@ public:
 	}
 
 	/*
+	*	Reports that dynamic models have been updated.
+	*/
+	FORCE_INLINE void ReportDynamicModelsUpdated() NOEXCEPT
+	{
+		_DynamicModelsUpdated = true;
+	}
+
+	/*
+	*	Reports that static models have been updated.
+	*/
+	FORCE_INLINE void ReportStaticModelsUpdated() NOEXCEPT
+	{
+		_StaticModelsUpdated = true;
+	}
+
+	/*
 	*	Sets the terrain bottom level acceleration structure.
 	*/
 	void SetTerrainBottomLevelAccelerationStructure(const AccelerationStructureHandle handle) NOEXCEPT;
@@ -69,17 +85,29 @@ private:
 	//The terrain bottom level acceleration structure.
 	AccelerationStructureHandle _TerrainBottomAccelerationStructure{ EMPTY_HANDLE };
 
-	//The static models material indices.
-	DynamicArray<uint32> _StaticModelsMaterialindices;
+	//Denotes whether or not dynamic models have been updated.
+	bool _DynamicModelsUpdated{ false };
 
-	//The static models material buffer.
-	BufferHandle _StaticModelsMaterialBuffer{ EMPTY_HANDLE };
+	//Container for all the dynamic model top level acceleration structure instance data.
+	DynamicArray<TopLevelAccelerationStructureInstanceData> _DynamicModelTopLevelAccelerationStructureInstanceData;
 
 	//The dynamic models material indices.
 	DynamicArray<uint32> _DynamicModelsMaterialindices;
 
 	//The dynamic models material buffer.
 	BufferHandle _DynamicModelsMaterialBuffer{ EMPTY_HANDLE };
+
+	//Denotes whether or not static models have been updated.
+	bool _StaticModelsUpdated{ false };
+
+	//Container for all the static model top level acceleration structure instance data.
+	DynamicArray<TopLevelAccelerationStructureInstanceData> _StaticModelTopLevelAccelerationStructureInstanceData;
+
+	//The static models material indices.
+	DynamicArray<uint32> _StaticModelsMaterialindices;
+
+	//The static models material buffer.
+	BufferHandle _StaticModelsMaterialBuffer{ EMPTY_HANDLE };
 
 	/*
 	*	Creates the render data table layout.
@@ -97,13 +125,13 @@ private:
 	void UpdateTerrain() NOEXCEPT;
 
 	/*
-	*	Updates static models.
-	*/
-	void UpdateStaticModels() NOEXCEPT;
-
-	/*
 	*	Updates dynamic models.
 	*/
 	void UpdateDynamicModels() NOEXCEPT;
+
+	/*
+	*	Updates static models.
+	*/
+	void UpdateStaticModels() NOEXCEPT;
 
 };

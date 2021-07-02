@@ -54,6 +54,9 @@ void DynamicModelEntity::Initialize(EntityInitializationData *const RESTRICT dat
 	{
 		PhysicsSystem::Instance->InitializeEntityPhysics(this);
 	}
+
+	//Report to the ray tracing system that dynamic models have been updated.
+	RenderingSystem::Instance->GetRayTracingSystem()->ReportDynamicModelsUpdated();
 }
 
 /*
@@ -69,6 +72,9 @@ void DynamicModelEntity::Terminate() NOEXCEPT
 
 	//Return this entitiy's components index.
 	ComponentManager::ReturnDynamicModelComponentsIndex(_ComponentsIndex);
+
+	//Report to the ray tracing system that dynamic models have been updated.
+	RenderingSystem::Instance->GetRayTracingSystem()->ReportDynamicModelsUpdated();
 }
 
 /*
@@ -104,7 +110,11 @@ NO_DISCARD ResourcePointer<ModelResource> DynamicModelEntity::GetModelResource()
 */
 void DynamicModelEntity::SetModelResource(const ResourcePointer<ModelResource> resource) NOEXCEPT
 {
+	//Set the model resource.
 	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._ModelResource = resource;
+
+	//Report to the ray tracing system that dynamic models have been updated.
+	RenderingSystem::Instance->GetRayTracingSystem()->ReportDynamicModelsUpdated();
 }
 
 /*
@@ -120,7 +130,11 @@ NO_DISCARD const StaticArray<ResourcePointer<MaterialResource>, RenderingConstan
 */
 void DynamicModelEntity::SetMaterialResource(const uint8 index, const ResourcePointer<MaterialResource> resource) NOEXCEPT
 {
+	//Set the material resource.
 	ComponentManager::GetDynamicModelDynamicModelComponents()[_ComponentsIndex]._MaterialResources[index] = resource;
+
+	//Report to the ray tracing system that dynamic models have been updated.
+	RenderingSystem::Instance->GetRayTracingSystem()->ReportDynamicModelsUpdated();
 }
 
 /*
@@ -155,6 +169,9 @@ void DynamicModelEntity::SetWorldTransform(const WorldTransform &new_world_trans
 	{
 		PhysicsSystem::Instance->UpdateEntityWorldTransform(this, new_world_transform);
 	}
+
+	//Report to the ray tracing system that dynamic models have been updated.
+	RenderingSystem::Instance->GetRayTracingSystem()->ReportDynamicModelsUpdated();
 }
 
 /*

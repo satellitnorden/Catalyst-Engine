@@ -28,8 +28,8 @@ void RayTracingSystem::RenderUpdate() NOEXCEPT
 		return;
 	}
 
-	//Clear the top level acceleration structres instance data.
-	_TopLevelAccelerationStructureInstanceData.Clear();
+	//Remember if anything has been updated.
+	const bool anything_updated{ _DynamicModelsUpdated || _StaticModelsUpdated };
 
 	//Perform updates.
 	UpdateTerrain();
@@ -37,7 +37,10 @@ void RayTracingSystem::RenderUpdate() NOEXCEPT
 	UpdateDynamicModels();
 
 	//Rebuild the render data table.
-	CreateRenderDataTable();
+	if (anything_updated)
+	{
+		CreateRenderDataTable();
+	}
 }
 
 /*
@@ -77,12 +80,6 @@ void RayTracingSystem::CreateRenderDataTableLayout() NOEXCEPT
 */
 void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 {
-	//No need to create anything if there's nothing to trace against.
-	if (_TopLevelAccelerationStructureInstanceData.Empty())
-	{
-		return;
-	}
-
 	//Destroy the old render data table, if necessary.
 	if (_RenderDataTable)
 	{
@@ -96,6 +93,25 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 	if (_TopLevelAccelerationStructure)
 	{
 		RenderingSystem::Instance->DestroyAccelerationStructure(&_TopLevelAccelerationStructure);
+	}
+
+	//Fill up the top level acceleration structure instance data.
+	_TopLevelAccelerationStructureInstanceData.Clear();
+
+	for (const TopLevelAccelerationStructureInstanceData &data : _DynamicModelTopLevelAccelerationStructureInstanceData)
+	{
+		_TopLevelAccelerationStructureInstanceData.Emplace(data);
+	}
+
+	for (const TopLevelAccelerationStructureInstanceData &data : _StaticModelTopLevelAccelerationStructureInstanceData)
+	{
+		_TopLevelAccelerationStructureInstanceData.Emplace(data);
+	}
+
+	//No need to create anything if there's nothing to trace against.
+	if (_TopLevelAccelerationStructureInstanceData.Empty())
+	{
+		return;
 	}
 
 	//Create the top level acceleration structure.
@@ -166,10 +182,89 @@ void RayTracingSystem::UpdateTerrain() NOEXCEPT
 }
 
 /*
+*	Updates dynamic models.
+*/
+void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
+{
+	//Don't update dynamic models if they haven't been updated. (:
+	if (!_DynamicModelsUpdated)
+	{
+		return;
+	}
+
+	//Reset whether or not stdynamicatic models have been updated.
+	_DynamicModelsUpdated = false;
+
+	//Clear the dynamic model top level acceleration instance data.
+	_DynamicModelTopLevelAccelerationStructureInstanceData.Clear();
+
+	//Destroy the old data.
+	if (_DynamicModelsMaterialBuffer)
+	{
+		RenderingSystem::Instance->DestroyBuffer(&_DynamicModelsMaterialBuffer);
+		_DynamicModelsMaterialBuffer = EMPTY_HANDLE;
+	}
+
+	//If there's no dynamic models left, no need to do anything.
+	if (ComponentManager::GetNumberOfDynamicModelComponents() == 0)
+	{
+		return;
+	}
+
+	//Gather the instances and the material indices.
+	_DynamicModelsMaterialindices.Clear();
+
+	const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+	const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+	uint32 mesh_counter{ 0 };
+
+	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
+	{
+		for (uint64 j{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; j < size; ++j)
+		{
+			_DynamicModelsMaterialindices.Emplace(component->_MaterialResources[j]->_Index);
+		}
+
+		for (const Mesh &mesh : component->_ModelResource->_Meshes)
+		{
+			_DynamicModelTopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), mesh._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::DYNAMIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
+
+			++mesh_counter;
+		}
+	}
+
+	//If the capacity is more than double the size, downsize the material indices buffer a bit to save memory. (:
+	if (_DynamicModelsMaterialindices.Capacity() > _DynamicModelsMaterialindices.Size() * 2)
+	{
+		_DynamicModelsMaterialindices.Reserve(_DynamicModelsMaterialindices.Size());
+	}
+
+	//Create the dynamic models material buffer.
+	RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * _DynamicModelsMaterialindices.Size(), BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_DynamicModelsMaterialBuffer);
+
+	const void* RESTRICT data_chunks[]{ _DynamicModelsMaterialindices.Data() };
+	const uint64 data_sizes[]{ sizeof(uint32) * _DynamicModelsMaterialindices.Size() };
+	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_DynamicModelsMaterialBuffer);
+}
+
+/*
 *	Updates static models.
 */
 void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 {
+	//Don't update static models if they haven't been updated. (:
+	if (!_StaticModelsUpdated)
+	{
+		return;
+	}
+
+	//Reset whether or not static models have been updated.
+	_StaticModelsUpdated = false;
+
+	//Clear the static model top level acceleration instance data.
+	_StaticModelTopLevelAccelerationStructureInstanceData.Clear();
+
 	//Destroy the old data.
 	if (_StaticModelsMaterialBuffer)
 	{
@@ -202,7 +297,7 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 
 			_StaticModelsMaterialindices.Emplace(component->_MaterialResources[mesh_index]->_Index);
 
-			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
+			_StaticModelTopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
 
 			++mesh_counter;
 		}
@@ -220,59 +315,4 @@ void RayTracingSystem::UpdateStaticModels() NOEXCEPT
 	const void* RESTRICT data_chunks[]{ _StaticModelsMaterialindices.Data() };
 	const uint64 data_sizes[]{ sizeof(uint32) * _StaticModelsMaterialindices.Size() };
 	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_StaticModelsMaterialBuffer);
-}
-
-/*
-*	Updates dynamic models.
-*/
-void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
-{
-	//Destroy the old data.
-	if (_DynamicModelsMaterialBuffer)
-	{
-		RenderingSystem::Instance->DestroyBuffer(&_DynamicModelsMaterialBuffer);
-		_DynamicModelsMaterialBuffer = EMPTY_HANDLE;
-	}
-
-	//If there's no dynamic models left, no need to do anything.
-	if (ComponentManager::GetNumberOfDynamicModelComponents() == 0)
-	{
-		return;
-	}
-
-	//Gather the instances and the material indices.
-	_DynamicModelsMaterialindices.Clear();
-
-	const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
-	const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-	uint32 mesh_counter{ 0 };
-
-	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
-	{
-		for (uint64 j{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; j < size; ++j)
-		{
-			_DynamicModelsMaterialindices.Emplace(component->_MaterialResources[j]->_Index);
-		}
-
-		for (const Mesh &mesh : component->_ModelResource->_Meshes)
-		{
-			_TopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), mesh._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::DYNAMIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
-
-			++mesh_counter;
-		}
-	}
-
-	//If the capacity is more than double the size, downsize the material indices buffer a bit to save memory. (:
-	if (_DynamicModelsMaterialindices.Capacity() > _DynamicModelsMaterialindices.Size() * 2)
-	{
-		_DynamicModelsMaterialindices.Reserve(_DynamicModelsMaterialindices.Size());
-	}
-
-	//Create the dynamic models material buffer.
-	RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * _DynamicModelsMaterialindices.Size(), BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_DynamicModelsMaterialBuffer);
-
-	const void* RESTRICT data_chunks[]{ _DynamicModelsMaterialindices.Data() };
-	const uint64 data_sizes[]{ sizeof(uint32) * _DynamicModelsMaterialindices.Size() };
-	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_DynamicModelsMaterialBuffer);
 }
