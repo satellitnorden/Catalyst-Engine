@@ -84,6 +84,7 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 	if (_RenderDataTable)
 	{
 		RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+		_RenderDataTable = EMPTY_HANDLE;
 	}
 
 	//Create the render data table.
@@ -93,6 +94,7 @@ void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
 	if (_TopLevelAccelerationStructure)
 	{
 		RenderingSystem::Instance->DestroyAccelerationStructure(&_TopLevelAccelerationStructure);
+		_TopLevelAccelerationStructure = EMPTY_HANDLE;
 	}
 
 	//Fill up the top level acceleration structure instance data.
