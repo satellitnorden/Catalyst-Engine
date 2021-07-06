@@ -98,15 +98,9 @@ void CatalystShaderMain()
 
 							hit_anything = visibility < 1.0f;
 						}
-
-						//Calculate the light to volumetric particle opacity.
-						float light_to_volumetric_particle_opacity = CalculateVolumetricLightingOpacity(FLOAT32_MAXIMUM, VOLUMETRIC_LIGHTING_DISTANCE, FLOAT32_MAXIMUM, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, volumetric_particle_hit_position.y);
-
-						//Calculate the volumetric particle to perceiver opacity.
-						float volumetric_particle_to_perceiver_opacity = CalculateVolumetricLightingOpacity(volumetric_particle_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, volumetric_particle_hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_ABSOLUTE_HEIGHT);
-
+						
 						//Add to the volumetric lighting.
-						volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * (1.0f - light_to_volumetric_particle_opacity) * (1.0f - volumetric_particle_to_perceiver_opacity) * float(!hit_anything) / float(NUMBER_OF_DIRECTIONAL_LIGHT_SAMPLES);
+						volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * float(!hit_anything) / float(NUMBER_OF_DIRECTIONAL_LIGHT_SAMPLES);
 					}
 
 					break;

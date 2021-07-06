@@ -69,7 +69,7 @@ void CatalystShaderMain()
 
 		float shadow_factor = 1.0f;
 
-		if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT))
+		if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT) && current_shadow_index < 4)
 		{
 			shadow_factor = shadows[current_shadow_index++];
 		}

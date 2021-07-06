@@ -20,14 +20,8 @@ class VolumetricLightingPushConstantData final
 
 public:
 
-	//The sky light luminance.
-	Vector3<float32> _SkyLightLuminance;
-
-	//Padding.
-	Padding<4> _Padding;
-
-	//The sky light screen space position.
-	Vector2<float32> _SkyLightScreenSpacePosition;
+	//The volumetric shadows mode.
+	uint32 _VolumetricShadowsMode;
 
 };
 
@@ -38,6 +32,12 @@ void VolumetricLightingGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
+
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
 
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -53,8 +53,8 @@ void VolumetricLightingGraphicsPipeline::Initialize() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetModelSystem()->GetModelDataRenderDataTableLayout());
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataRenderDataTableLayout());
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -105,34 +105,13 @@ void VolumetricLightingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
-	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetModelSystem()->GetCurrentModelDataRenderDataTable());
-	command_buffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 2, _RenderDataTable);
 
 	//Push constants.
 	VolumetricLightingPushConstantData data;
 
-	data._SkyLightLuminance = VectorConstants::ZERO;
-	data._SkyLightScreenSpacePosition = Vector2<float32>(FLOAT_MAXIMUM, FLOAT_MAXIMUM);
-
-	const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
-	const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
-
-	for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
-	{
-		if (component->_LightType == LightType::DIRECTIONAL)
-		{
-			data._SkyLightLuminance = component->_Color * component->_Intensity;
-
-			const Vector3<float32> direction{ CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation) };
-
-			if (Vector3<float32>::DotProduct(direction, Perceiver::Instance->GetForwardVector()) < 0.0f)
-			{
-				data._SkyLightScreenSpacePosition = RenderingUtilities::CalculateScreenCoordinate(*Perceiver::Instance->GetViewMatrix(), Perceiver::Instance->GetWorldTransform().GetLocalPosition() - direction);
-			}
-
-			break;
-		}
-	}
+	data._VolumetricShadowsMode = static_cast<uint32>(RenderingSystem::Instance->GetRenderingConfiguration()->GetVolumetricShadowsMode());
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(VolumetricLightingPushConstantData), &data);
 
@@ -151,5 +130,32 @@ void VolumetricLightingGraphicsPipeline::Execute() NOEXCEPT
 */
 void VolumetricLightingGraphicsPipeline::Terminate() NOEXCEPT
 {
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
 
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void VolumetricLightingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void VolumetricLightingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }
