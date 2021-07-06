@@ -129,7 +129,6 @@ void UserInterfaceSystem::DestroyUserInterfacePrimitive(UserInterfacePrimitive *
 */
 void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 {
-
 	//Process the destruction queue.
 	while (UserInterfaceScene *const RESTRICT *const RESTRICT scene{ _DestructionQueue.Pop() })
 	{

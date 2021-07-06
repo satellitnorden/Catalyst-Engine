@@ -14,8 +14,10 @@
 #if defined(CATALYST_EDITOR)
 #include <Systems/CatalystEditorSystem.h>
 #endif
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/InputSystem.h>
+#include <Systems/MemorySystem.h>
 #include <Systems/UserInterfaceSystem.h>
 #include <Systems/WorldSystem.h>
 
@@ -31,7 +33,7 @@ namespace UserInterfaceSceneConstants
 UserInterfaceScene::~UserInterfaceScene()
 {
 	//Deactivate this user interface scene, if it is active.
-	if (_IsActive)
+	if (!CatalystEngineSystem::Instance->ShouldTerminate() && _IsActive)
 	{
 		OnDeactivated();
 		_IsActive = false;
@@ -116,7 +118,8 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 	//Free all buttons.
 	for (UserInterfaceButton *const RESTRICT button : _Buttons)
 	{
-		delete button;
+		button->~UserInterfaceButton();
+		MemorySystem::Instance->TypeFree<UserInterfaceButton>(button);
 	}
 
 	_Buttons.Clear();
@@ -124,7 +127,8 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 	//Free all checkboxes.
 	for (UserInterfaceCheckbox *const RESTRICT checkbox : _Checkboxes)
 	{
-		delete checkbox;
+		checkbox->~UserInterfaceCheckbox();
+		MemorySystem::Instance->TypeFree<UserInterfaceCheckbox>(checkbox);
 	}
 
 	_Checkboxes.Clear();
@@ -132,7 +136,8 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 	//Free all images.
 	for (UserInterfaceImage *const RESTRICT image : _Images)
 	{
-		delete image;
+		image->~UserInterfaceImage();
+		MemorySystem::Instance->TypeFree<UserInterfaceImage>(image);
 	}
 
 	_Images.Clear();
@@ -140,7 +145,8 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 	//Free all progress bars.
 	for (UserInterfaceProgressBar *const RESTRICT progress_bar : _ProgressBars)
 	{
-		delete progress_bar;
+		progress_bar->~UserInterfaceProgressBar();
+		MemorySystem::Instance->TypeFree<UserInterfaceProgressBar>(progress_bar);
 	}
 
 	_ProgressBars.Clear();
@@ -148,10 +154,14 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 	//Free all texts.
 	for (UserInterfaceText *const RESTRICT text : _Texts)
 	{
-		delete text;
+		text->~UserInterfaceText();
+		MemorySystem::Instance->TypeFree<UserInterfaceText>(text);
 	}
 
 	_Texts.Clear();
+
+	//Clear the button interfaces.
+	_ButtonInterfaces.Clear();
 }
 
 /*
@@ -211,7 +221,7 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButton(	co
 																				const float32 *const RESTRICT text_scale_override) NOEXCEPT
 {
 	//Allocate the button.
-	UserInterfaceButton *const RESTRICT new_button{ new UserInterfaceButton(minimum,
+	UserInterfaceButton *const RESTRICT new_button{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceButton>()) UserInterfaceButton(minimum,
 																			maximum,
 																			nullptr,
 																			nullptr,
@@ -290,7 +300,7 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 																					const char *const RESTRICT text) NOEXCEPT
 {
 	//Allocate the checkbox.
-	UserInterfaceCheckbox *const RESTRICT new_checkbox{ new UserInterfaceCheckbox(	minimum,
+	UserInterfaceCheckbox *const RESTRICT new_checkbox{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceCheckbox>()) UserInterfaceCheckbox(	minimum,
 																					maximum,
 																					nullptr,
 																					nullptr,
@@ -351,7 +361,7 @@ RESTRICTED UserInterfaceImage* const RESTRICT UserInterfaceScene::AddImage(	cons
 																			const float32 opacity) NOEXCEPT
 {
 	//Allocate the image.
-	UserInterfaceImage *const RESTRICT new_image{ new UserInterfaceImage(	minimum,
+	UserInterfaceImage *const RESTRICT new_image{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceImage>()) UserInterfaceImage(	minimum,
 																			maximum,
 																			material,
 																			opacity,
@@ -403,7 +413,7 @@ RESTRICTED UserInterfaceProgressBar* const RESTRICT UserInterfaceScene::AddProgr
 																						UserInterfaceMaterial *const RESTRICT top_material_override) NOEXCEPT
 {
 	//Allocate the progress bar.
-	UserInterfaceProgressBar* const RESTRICT new_progress_bar{ new UserInterfaceProgressBar(minimum,
+	UserInterfaceProgressBar* const RESTRICT new_progress_bar{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceProgressBar>()) UserInterfaceProgressBar(minimum,
 																							maximum,
 																							bottom_material_override ? *bottom_material_override : _ProgressBarBottomMaterial,
 																							top_material_override ? *top_material_override : _ProgressBarTopMaterial,
@@ -462,7 +472,7 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddText(	const 
 																			const float32 *const RESTRICT smoothing_factor_override) NOEXCEPT
 {
 	//Allocate the text.
-	UserInterfaceText* const RESTRICT new_text{ new UserInterfaceText(	minimum,
+	UserInterfaceText* const RESTRICT new_text{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceText>()) UserInterfaceText(	minimum,
 																		maximum,
 																		text,
 																		_FontResource,
