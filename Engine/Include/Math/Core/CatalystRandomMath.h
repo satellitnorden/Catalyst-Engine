@@ -53,6 +53,15 @@ public:
 	*	Template specialization of the random integer in range function.
 	*/
 	template <>
+	FORCE_INLINE static NO_DISCARD int8 RandomIntegerInRange<int8>(const int8 minimum, const int8 maximum) NOEXCEPT
+	{
+		return static_cast<int8>(RandomIntegerInRange<uint32>(minimum, maximum));
+	}
+
+	/*
+	*	Template specialization of the random integer in range function.
+	*/
+	template <>
 	FORCE_INLINE static NO_DISCARD uint8 RandomIntegerInRange<uint8>(const uint8 minimum, const uint8 maximum) NOEXCEPT
 	{
 		return static_cast<uint8>(RandomIntegerInRange<uint32>(minimum, maximum));

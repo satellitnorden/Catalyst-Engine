@@ -97,6 +97,13 @@ void Thread::Launch() NOEXCEPT
 
 				break;
 			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
 		}
 
 		const HRESULT result{ SetThreadPriority(native_handle, windows_priority) };

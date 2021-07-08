@@ -598,8 +598,8 @@ void SoundSystem::Mix() NOEXCEPT
 
 		if (_MixingBuffersReady == _NumberOfMixingBuffers)
 		{
-			//Sleep for some time.
-			Concurrency::CurrentThread::SleepFor(1'000);
+			//Yield for some time.
+			Concurrency::CurrentThread::Yield();
 		}
 	}
 }
