@@ -142,7 +142,6 @@ void UserInterfaceButton::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Scale = _TextScale;
 			description._HorizontalAlignment = TextHorizontalAlignment::CENTER;
 			description._VerticalAlignment = TextVerticalAlignment::CENTER;
-			description._TextSmoothingFactor = 0.2f;
 			description._Text = text;
 
 			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));

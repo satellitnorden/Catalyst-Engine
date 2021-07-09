@@ -18,7 +18,6 @@ UserInterfaceText::UserInterfaceText(	const Vector2<float32> initial_minimum,
 										const float32 scale,
 										const TextHorizontalAlignment horizontal_alignment,
 										const TextVerticalAlignment vertical_alignment,
-										const float32 smoothing_factor,
 										const bool is_three_dimensional) NOEXCEPT
 {
 	//Set the minimum/maximum.
@@ -36,9 +35,6 @@ UserInterfaceText::UserInterfaceText(	const Vector2<float32> initial_minimum,
 
 	//Set the vertical alignment.
 	_VerticalAlignment = vertical_alignment;
-
-	//Set the smoothing factor.
-	_SmoothingFactor = smoothing_factor;
 
 	//Remember whether or not this text is three dimensional.
 	_IsThreeDimensional = is_three_dimensional;
@@ -78,7 +74,6 @@ void UserInterfaceText::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Scale = _Scale;
 			description._HorizontalAlignment = _HorizontalAlignment;
 			description._VerticalAlignment = _VerticalAlignment;
-			description._TextSmoothingFactor = _SmoothingFactor;
 			description._Text = text;
 
 			_Primitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));

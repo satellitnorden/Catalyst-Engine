@@ -219,7 +219,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						data._WidthRangeStart = type_primitive->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetStart;
 						data._WidthRangeEnd = type_primitive->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetEnd;
 						data._PrimitiveAspectRatio = (aligned_maximum._X - aligned_minimum._X) / (aligned_maximum._Y - aligned_minimum._Y);
-						data._TextSmoothingFactor = type_primitive->_TextSmoothingFactor;
+						data._TextSmoothingFactor = UserInterfaceUtilities::CalculateOptimalTextSmoothingFactor(type_primitive->_FontResource, type_primitive->_Scale);
 
 						command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(UserInterfacePushConstantData), &data);
 

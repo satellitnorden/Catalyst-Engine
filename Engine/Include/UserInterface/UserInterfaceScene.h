@@ -169,14 +169,6 @@ protected:
 	}
 
 	/*
-	*	Sets the text smoothing factor.
-	*/
-	FORCE_INLINE void SetTextSmoothingFactor(const float32 value) NOEXCEPT
-	{
-		_TextSmoothingFactor = value;
-	}
-
-	/*
 	*	Adds a button, using cells.
 	*/
 	RESTRICTED UserInterfaceButton *const RESTRICT AddButton(	const Vector2<uint32> &minimum_cell,
@@ -269,8 +261,7 @@ protected:
 															const char *const RESTRICT text = "",
 															const float32 *const RESTRICT scale_override = nullptr,
 															const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::CENTER,
-															const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER,
-															const float32 *const RESTRICT smoothing_factor_override = nullptr) NOEXCEPT;
+															const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER) NOEXCEPT;
 
 	/*
 	*	Adds a text, using raw coordinates.
@@ -280,8 +271,7 @@ protected:
 															const char *const RESTRICT text = "",
 															const float32 *const RESTRICT scale_override = nullptr,
 															const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::CENTER,
-															const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER,
-															const float32 *const RESTRICT smoothing_factor_override = nullptr) NOEXCEPT;
+															const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER) NOEXCEPT;
 
 private:
 
@@ -781,9 +771,6 @@ private:
 
 	//The text scale.
 	float32 _TextScale;
-
-	//The text smoothing factor.
-	float32 _TextSmoothingFactor;
 
 	//Container for all the elements.
 	DynamicArray<UserInterfaceElement *const RESTRICT> _Elements;

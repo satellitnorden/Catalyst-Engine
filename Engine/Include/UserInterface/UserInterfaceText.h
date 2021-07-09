@@ -26,7 +26,6 @@ public:
 						const float32 scale,
 						const TextHorizontalAlignment horizontal_alignment,
 						const TextVerticalAlignment vertical_alignment,
-						const float32 smoothing_factor,
 						const bool is_three_dimensional) NOEXCEPT;
 
 	/*
@@ -68,9 +67,6 @@ private:
 
 	//The vertical alignment.
 	TextVerticalAlignment _VerticalAlignment;
-
-	//The smoothing factor.
-	float32 _SmoothingFactor;
 
 	//The primitive.
 	TextUserInterfacePrimitive *RESTRICT _Primitive{ nullptr };

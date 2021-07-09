@@ -71,7 +71,6 @@ RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem
 			primitive->_Scale = type_description->_Scale;
 			primitive->_HorizontalAlignment = type_description->_HorizontalAlignment;
 			primitive->_VerticalAlignment = type_description->_VerticalAlignment;
-			primitive->_TextSmoothingFactor = type_description->_TextSmoothingFactor;
 			primitive->_Opacity = type_description->_Opacity;
 			primitive->_Text = std::move(type_description->_Text);
 

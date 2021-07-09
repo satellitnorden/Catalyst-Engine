@@ -98,7 +98,6 @@ void UserInterfaceScene::OnActivated() NOEXCEPT
 	_ProgressBarTopMaterial.SetSecondaryColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
 
 	_TextScale = 0.015f;
-	_TextSmoothingFactor = 0.2f;
 }
 
 /*
@@ -441,8 +440,7 @@ RESTRICTED UserInterfaceText *const RESTRICT UserInterfaceScene::AddText(	const 
 																			const char *const RESTRICT text,
 																			const float32 *const RESTRICT scale_override,
 																			const TextHorizontalAlignment horizontal_alignment,
-																			const TextVerticalAlignment vertical_alignment,
-																			const float32 *const RESTRICT smoothing_factor_override) NOEXCEPT
+																			const TextVerticalAlignment vertical_alignment) NOEXCEPT
 {
 	//Calculate the bounding box.
 	Vector2<float32> minimum;
@@ -456,8 +454,7 @@ RESTRICTED UserInterfaceText *const RESTRICT UserInterfaceScene::AddText(	const 
 					text,
 					scale_override,
 					horizontal_alignment,
-					vertical_alignment,
-					smoothing_factor_override);
+					vertical_alignment);
 }
 
 /*
@@ -468,8 +465,7 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddText(	const 
 																			const char *const RESTRICT text,
 																			const float32 *const RESTRICT scale_override,
 																			const TextHorizontalAlignment horizontal_alignment,
-																			const TextVerticalAlignment vertical_alignment,
-																			const float32 *const RESTRICT smoothing_factor_override) NOEXCEPT
+																			const TextVerticalAlignment vertical_alignment) NOEXCEPT
 {
 	//Allocate the text.
 	UserInterfaceText* const RESTRICT new_text{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceText>()) UserInterfaceText(	minimum,
@@ -479,7 +475,6 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddText(	const 
 																		scale_override ? *scale_override : _TextScale,
 																		horizontal_alignment,
 																		vertical_alignment,
-																		smoothing_factor_override ? *smoothing_factor_override : _TextSmoothingFactor,
 																		_Entity != nullptr) };
 
 	//Add the text to the container.

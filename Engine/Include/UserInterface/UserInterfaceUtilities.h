@@ -128,4 +128,19 @@ namespace UserInterfaceUtilities
 		return Vector2<float32>(static_cast<float32>(coordinate._X) / static_cast<float32>(resolution._Width), static_cast<float32>(coordinate._Y) / static_cast<float32>(resolution._Height));
 	}
 
+	/*
+	*	Calculates the optimal text smoothing factor based on the text scale.
+	*/
+	FORCE_INLINE static NO_DISCARD float32 CalculateOptimalTextSmoothingFactor(ResourcePointer<FontResource> font_resource, const float32 scale) NOEXCEPT
+	{
+		float32 biased_scale{ scale };
+
+		for (uint8 i{ 0 }; i < 5; ++i)
+		{
+			biased_scale = CatalystBaseMath::InverseSquare(biased_scale);
+		}
+
+		return CatalystBaseMath::LinearlyInterpolate(0.0f, 0.5f, biased_scale);
+	}
+
 }
