@@ -255,6 +255,7 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButton(	co
 */
 RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox(	const Vector2<uint32> &minimum_cell,
 																					const Vector2<uint32> &maximum_cell,
+																					const bool initially_checked,
 																					const UserInterfaceCheckbox::Callback start_pressed_callback,
 																					UserInterfaceMaterial *const RESTRICT unchecked_idle_material_override,
 																					UserInterfaceMaterial *const RESTRICT unchecked_hovered_material_override,
@@ -273,6 +274,7 @@ RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox
 	//Add the checkbox.
 	return AddCheckbox(	minimum,
 						maximum,
+						initially_checked,
 						start_pressed_callback,
 						unchecked_idle_material_override,
 						unchecked_hovered_material_override,
@@ -289,6 +291,7 @@ RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox
 */
 RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox(	const Vector2<float32> &minimum,
 																					const Vector2<float32> &maximum,
+																					const bool initially_checked,
 																					const UserInterfaceCheckbox::Callback start_pressed_callback,
 																					UserInterfaceMaterial *const RESTRICT unchecked_idle_material_override,
 																					UserInterfaceMaterial *const RESTRICT unchecked_hovered_material_override,
@@ -301,6 +304,7 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 	//Allocate the checkbox.
 	UserInterfaceCheckbox *const RESTRICT new_checkbox{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceCheckbox>()) UserInterfaceCheckbox(	minimum,
 																					maximum,
+																					initially_checked,
 																					nullptr,
 																					nullptr,
 																					start_pressed_callback,

@@ -14,6 +14,7 @@
 */
 UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_minimum,
 												const Vector2<float32> initial_maximum,
+												const bool initially_checked,
 												const Callback initial_start_hovered_callback,
 												const Callback initial_stop_hovered_callback,
 												const Callback initial_start_pressed_callback,
@@ -38,6 +39,9 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 	//Calculate the text minimum/maximum.
 	_TextMinimum = Vector2<float32>(_ButtonMaximum._X, _ButtonMinimum._Y);
 	_TextMaximum = initial_maximum;
+
+	//Set whether or not this checkbox is initially checked.
+	_IsChecked = initially_checked;
 
 	//Set the current state.
 	_CurrentState = UserInterfaceButtonState::IDLE;
@@ -77,6 +81,9 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 
 	//Set the text.
 	SetText(text);
+
+	//Update the material.
+	UpdateMaterial();
 }
 
 /*

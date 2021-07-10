@@ -197,6 +197,7 @@ protected:
 	*/
 	RESTRICTED UserInterfaceCheckbox *const RESTRICT AddCheckbox(	const Vector2<uint32> &minimum_cell,
 																	const Vector2<uint32> &maximum_cell,
+																	const bool initially_checked,
 																	const UserInterfaceCheckbox::Callback start_pressed_callback,
 																	UserInterfaceMaterial *const RESTRICT unchecked_idle_material_override = nullptr,
 																	UserInterfaceMaterial *const RESTRICT unchecked_hovered_material_overrid = nullptr,
@@ -206,12 +207,12 @@ protected:
 																	UserInterfaceMaterial *const RESTRICT checked_pressed_material_override = nullptr,
 																	const char *const RESTRICT text = "") NOEXCEPT;
 
-
 	/*
 	*	Adds a checkbox, using raw coordinates.
 	*/
 	RESTRICTED UserInterfaceCheckbox *const RESTRICT AddCheckbox(	const Vector2<float32> &minimum,
 																	const Vector2<float32> &maximum,
+																	const bool initially_checked,
 																	const UserInterfaceCheckbox::Callback start_pressed_callback,
 																	UserInterfaceMaterial *const RESTRICT unchecked_idle_material_override = nullptr,
 																	UserInterfaceMaterial *const RESTRICT unchecked_hovered_material_overrid = nullptr,

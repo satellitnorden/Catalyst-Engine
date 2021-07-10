@@ -25,6 +25,7 @@ public:
 	*/
 	UserInterfaceCheckbox(	const Vector2<float32> initial_minimum,
 							const Vector2<float32> initial_maximum,
+							const bool initially_checked,
 							const Callback initial_start_hovered_callback,
 							const Callback initial_stop_hovered_callback,
 							const Callback initial_start_pressed_callback,
