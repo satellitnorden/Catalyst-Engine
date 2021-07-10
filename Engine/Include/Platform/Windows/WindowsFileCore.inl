@@ -89,47 +89,54 @@ namespace File
 	*/
 	FORCE_INLINE static NO_DISCARD bool BrowseForFolder(DynamicString *const RESTRICT chosen_folder) NOEXCEPT
 	{
-		//Store the folder.
-		TCHAR path[MAX_PATH];
+		bool success{ false };
 
-		//Set up the browse info structure.
-		BROWSEINFO bi = { 0 };
-		bi.lpszTitle = { };
-		bi.ulFlags = BIF_RETURNONLYFSDIRS;
-		bi.lpfn = WindowsFile::BrowseForFolderCallback;
-		bi.lParam = (LPARAM)"";
+		IFileDialog *RESTRICT file_dialog;
 
-		const LPITEMIDLIST pidl{ SHBrowseForFolder(&bi) };
-
-		if (pidl)
+		if (SUCCEEDED(::CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, IID_IFileOpenDialog, IID_PPV_ARGS_Helper(&file_dialog))))
 		{
-			//Get the name of the chosen.
-			SHGetPathFromIDList(pidl, path);
+			//Set the title.
+			file_dialog->SetTitle(L"Choose A File:");
 
-			//Free memory used.
-			IMalloc *RESTRICT imalloc{ nullptr };
+			//Set options.
+			DWORD current_options{ 0 };
+			file_dialog->GetOptions(&current_options);
+			file_dialog->SetOptions(current_options | FOS_PICKFOLDERS);
 
-			if (SUCCEEDED(SHGetMalloc(&imalloc)))
+			//Show the file dialog.
+			if (SUCCEEDED(file_dialog->Show(nullptr)))
 			{
-				imalloc->Free(pidl);
-				imalloc->Release();
+				IShellItem *RESTRICT result;
+
+				if (SUCCEEDED(file_dialog->GetResult(&result)))
+				{
+					PWSTR file_path{ nullptr };
+
+					if (SUCCEEDED(result->GetDisplayName(SIGDN_FILESYSPATH, &file_path)))
+					{
+						char converted_file_path[MAX_PATH];
+
+						for (uint16 i{ 0 }; i < MAX_PATH; ++i)
+						{
+							converted_file_path[i] = static_cast<char>(file_path[i]);
+
+							if (!file_path[i])
+							{
+								break;
+							}
+						}
+
+						*chosen_folder = converted_file_path;
+
+						::CoTaskMemFree(file_path);
+
+						success = true;
+					}
+				}
 			}
-
-			//Make sure the output has the correct length.
-			chosen_folder->SetLength(MAX_PATH);
-
-			//Copy the result into the output.
-			for (int32 i{ 0 }; i < MAX_PATH; ++i)
-			{
-				(*chosen_folder)[i] = path[i];
-			}
-
-			//Succes!
-			return true;
 		}
 
-		//Failure.
-		return false;
+		return success;
 	}
 
 	/*
