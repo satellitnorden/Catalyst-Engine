@@ -25,6 +25,7 @@ public:
 								const UserInterfaceMaterial &initial_bottom_material,
 								const UserInterfaceMaterial &initial_top_material,
 								const char *const RESTRICT text,
+								const ResourcePointer<FontResource> font_resource,
 								const bool is_three_dimensional) NOEXCEPT;
 
 	/*
@@ -56,6 +57,9 @@ public:
 	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
 
 private:
+
+	//The font resource.
+	ResourcePointer<FontResource> _FontResource;
 
 	//The bottom primitive.
 	ImageUserInterfacePrimitive *RESTRICT _BottomPrimitive;

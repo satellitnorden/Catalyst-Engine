@@ -17,8 +17,12 @@ UserInterfaceProgressBar::UserInterfaceProgressBar(	const Vector2<float32> initi
 													const UserInterfaceMaterial &initial_bottom_material,
 													const UserInterfaceMaterial &initial_top_material,
 													const char *const RESTRICT text,
+													const ResourcePointer<FontResource> font_resource,
 													const bool is_three_dimensional) NOEXCEPT
 {
+	//Set the font resource.
+	_FontResource = font_resource;
+
 	//Remember whether or not this progress bar is three dimensional.
 	_IsThreeDimensional = is_three_dimensional;
 
@@ -93,7 +97,7 @@ void UserInterfaceProgressBar::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Minimum = _BottomPrimitive->_Minimum;
 			description._Maximum = _BottomPrimitive->_Maximum;
 			description._Opacity = 1.0f;
-			description._FontResource = ResourceSystem::Instance->GetFontResource(HashString("Catalyst_Engine_Default_Font"));
+			description._FontResource = _FontResource;
 			description._Scale = 0.015f;
 			description._HorizontalAlignment = TextHorizontalAlignment::CENTER;
 			description._VerticalAlignment = TextVerticalAlignment::CENTER;

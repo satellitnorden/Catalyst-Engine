@@ -421,6 +421,7 @@ RESTRICTED UserInterfaceProgressBar* const RESTRICT UserInterfaceScene::AddProgr
 																							bottom_material_override ? *bottom_material_override : _ProgressBarBottomMaterial,
 																							top_material_override ? *top_material_override : _ProgressBarTopMaterial,
 																							text,
+																							_FontResource,
 																							_Entity != nullptr) };
 
 	//Add the progress bar to the container.
