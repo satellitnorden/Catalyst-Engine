@@ -6,6 +6,24 @@ class StringUtilities
 public:
 
 	/*
+	*	Returns the full name from a full file path.
+	*/
+	FORCE_INLINE RESTRICTED static constexpr NO_DISCARD const char *const RESTRICT GetFileNameFromFilePath(const char* const RESTRICT file_path) NOEXCEPT
+	{
+		const uint64 length{ StringLength(file_path) };
+
+		for (int64 i{ static_cast<int64>(length) - 1 }; i >= 0; --i)
+		{
+			if (file_path[i] == '\\')
+			{
+				return &file_path[i + 1];
+			}
+		}
+
+		return file_path;
+	}
+
+	/*
 	*	Returns if the two provided strings are equal.
 	*/
 	FORCE_INLINE static constexpr NO_DISCARD bool IsEqual(const char *const RESTRICT first, const char *const RESTRICT second) NOEXCEPT

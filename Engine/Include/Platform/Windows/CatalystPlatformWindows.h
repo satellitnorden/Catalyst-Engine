@@ -50,6 +50,7 @@ __pragma(warning(disable : 4530)) //Disable warning C4530: C++ exception handler
 #undef Yield
 #undef IN
 #undef OUT
+#undef ERROR
 
 /*
 *	Main function.

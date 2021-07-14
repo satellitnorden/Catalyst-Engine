@@ -28,6 +28,7 @@
 #include <Systems/EntitySystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
+#include <Systems/LogSystem.h>
 #include <Systems/MemorySystem.h>
 #include <Systems/NetworkSystem.h>
 #include <Systems/PhysicsSystem.h>
@@ -148,6 +149,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	EntitySystem::Instance->Initialize();
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
 	LevelOfDetailSystem::Instance->Initialize();
+	LogSystem::Instance->Initialize();
 	MemorySystem::Instance->Initialize();
 	NetworkSystem::Instance->Initialize();
 	PhysicsSystem::Instance->Initialize();
@@ -192,6 +194,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//If this is a pure game build, start the game immediately.
 	_ProjectConfiguration._GeneralConfiguration._StartGameFunction();
 #endif
+
+	//Flush the logs after initialization.
+	LogSystem::Instance->Flush();
 
 	//Reset the delta timer right before entering the game loop, so that the first update doesn't get messed up delta times.
 	CatalystEngineSystemData::_DeltaTimer.Reset();
@@ -337,6 +342,9 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 */
 void CatalystEngineSystem::Terminate() NOEXCEPT
 {
+	//Flush the logs before termination.
+	LogSystem::Instance->Flush();
+
 	//Pre-terminate all systems.
 	SaveSystem::Instance->PreTerminate();
 

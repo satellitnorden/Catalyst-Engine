@@ -11,6 +11,7 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/LogSystem.h>
 #include <Systems/MemorySystem.h>
 
 //Third party.
@@ -706,7 +707,7 @@ NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi
 void SoundSystem::DefaultAsynchronousUpdate() NOEXCEPT
 {
 	//Define macros.
-#define HANDLE_ERROR(FUNCTION) if (FAILED(FUNCTION)) { ASSERT(false, "Windows Catalyst sound system couldn't be initialized!"); goto CLEANUP; }
+#define HANDLE_ERROR(FUNCTION) if (FAILED(FUNCTION)) { LOG_ERROR("Sound system failted to initialize!, %s failed!", #FUNCTION); goto CLEANUP; }
 
 	//Define local variables.
 	IMMDeviceEnumerator* RESTRICT device_enumerator{ nullptr };
@@ -764,8 +765,22 @@ void SoundSystem::DefaultAsynchronousUpdate() NOEXCEPT
 	{
 		ASSERT(false, "None of the desired mix formats were supported!");
 
+		LOG_ERROR("Couldn't find a supported mix format!");
+
+		WAVEFORMATEX *RESTRICT device_format{ nullptr };
+		HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetMixFormat(&device_format));
+
+		if (device_format)
+		{
+			LOG_INFORMATION("Device format - nChannels: %i - nSamplesPerSec: %i - wBitsPerSample: %i", device_format->nChannels, device_format->nSamplesPerSec, device_format->wBitsPerSample);
+		
+			CoTaskMemFree(device_format);
+		}
+
 		goto CLEANUP;
 	}
+
+	LOG_INFORMATION("Chosen mix format - nChannels: %i - nSamplesPerSec: %i - wBitsPerSample: %i", chosen_mix_format->nChannels, chosen_mix_format->nSamplesPerSec, chosen_mix_format->wBitsPerSample);
 
 	//Retrieve the default and minimum device period.
 	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetDevicePeriod(&default_device_period, &minimum_device_period));
@@ -805,6 +820,9 @@ void SoundSystem::DefaultAsynchronousUpdate() NOEXCEPT
 
 	//Start playing.
 	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->Start());
+
+	//Log.
+	LOG_INFORMATION("Sound system successfully initialized!");
 
 	//Main update loop.
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())

@@ -72,10 +72,10 @@ target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:assimp>
 										$<$<CONFIG:Profile>:assimp>
 										$<$<CONFIG:ProfileEditor>:assimp>
 										)
-target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:freetype>
-										$<$<CONFIG:DebugEditor>:freetype>
-										$<$<CONFIG:Profile>:freetype>
-										$<$<CONFIG:ProfileEditor>:freetype>
+target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/freetype>
+										$<$<CONFIG:DebugEditor>:Debug/freetype>
+										$<$<CONFIG:Profile>:Profile/freetype>
+										$<$<CONFIG:ProfileEditor>:Profile/freetype>
 										)
 [LINK_PHYSX_LIBRARIES]
 [LINK_STEAM_LIBRARIES]

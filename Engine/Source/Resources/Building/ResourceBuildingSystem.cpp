@@ -45,7 +45,7 @@
 
 //Third party.
 #include <ThirdParty/ft2build.h>
-#include FT_FREETYPE_H
+#include <ThirdParty/freetype/freetype.h>
 #include <ThirdParty/stb_image.h>
 #include <ThirdParty/stb_image_resize.h>
 #include <ThirdParty/glslang/Public/ShaderLang.h>

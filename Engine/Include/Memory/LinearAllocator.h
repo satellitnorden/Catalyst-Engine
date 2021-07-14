@@ -15,7 +15,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	LinearAllocator() NOEXCEPT
+	FORCE_INLINE LinearAllocator() NOEXCEPT
 	{
 		//Allocate the memory.
 		_Memory = malloc(SIZE);
@@ -24,7 +24,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~LinearAllocator() NOEXCEPT
+	FORCE_INLINE ~LinearAllocator() NOEXCEPT
 	{
 		//Free the memory.
 		free(_Memory);
@@ -33,7 +33,7 @@ public:
 	/*
 	*	Allocates memory.
 	*/
-	RESTRICTED NO_DISCARD void *const RESTRICT Allocate(const uint64 size) NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD void *const RESTRICT Allocate(const uint64 size) NOEXCEPT
 	{
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 		if (_Index.load() + size > SIZE)
@@ -44,6 +44,14 @@ public:
 
 		//Just return the memory at the current index and increase the index.
 		return static_cast<void *const RESTRICT>(static_cast<byte *const RESTRICT>(_Memory) + _Index.fetch_add(size));
+	}
+
+	/*
+	*	Resets this allocator.
+	*/
+	FORCE_INLINE void Reset() NOEXCEPT
+	{
+		_Index = 0;
 	}
 
 private:
