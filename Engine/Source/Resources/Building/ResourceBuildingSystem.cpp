@@ -1350,7 +1350,7 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 
 	else
 	{
-		ASSERT(false, "Couldn't build sound!");
+		ASSERT(false, "Couldn't build sound with output; " << parameters._Output << ", ID; " << parameters._ID << ", file path; " << parameters._File);
 	}
 }
 
