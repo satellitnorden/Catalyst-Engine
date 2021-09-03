@@ -239,4 +239,14 @@ private:
 	*/
 	void FinishTerrainGeneration() NOEXCEPT;
 
+	/*
+	*	Saves the terrain data.
+	*/
+	void SaveTerrainData() NOEXCEPT;
+
+	/*
+	*	Loads the terrain data.
+	*/
+	void LoadTerrainData() NOEXCEPT;
+
 };

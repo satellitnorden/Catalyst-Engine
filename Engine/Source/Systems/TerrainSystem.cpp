@@ -7,6 +7,10 @@
 #include <Core/General/CatalystProjectConfiguration.h>
 #include <Core/General/Perceiver.h>
 
+//File.
+#include <File/Core/FileCore.h>
+#include <File/Core/BinaryFile.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -906,7 +910,7 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 1'024 };
+	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 128 };
 
 	//Initialize the command buffer, if needed.
 	if (!_TerrainGenerationRunning
@@ -1117,5 +1121,32 @@ void TerrainSystem::FinishTerrainGeneration() NOEXCEPT
 
 		//Terrain generation is no longer running.
 		_TerrainGenerationRunning = false;
+	}
+}
+
+/*
+*	Saves the terrain data.
+*/
+void TerrainSystem::SaveTerrainData() NOEXCEPT
+{
+	//Check if the terrain sava data folder is set.
+	if (!_Properties._TerrainDataSaveFolder)
+	{
+		return;
+	}
+
+	//Create the directory, if needed.
+	File::CreateDirectory(_Properties._TerrainDataSaveFolder.Data());
+}
+
+/*
+*	Loads the terrain data.
+*/
+void TerrainSystem::LoadTerrainData() NOEXCEPT
+{
+	//Check if the terrain sava data folder is set.
+	if (!_Properties._TerrainDataSaveFolder)
+	{
+		return;
 	}
 }
