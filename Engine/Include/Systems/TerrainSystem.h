@@ -1,26 +1,12 @@
 #pragma once
 
-//Constants.
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	#define TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION (1)
-#else
-	#define TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION (0)
-#endif
-
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/CatalystProjectConfiguration.h>
 
-//Concurrency.
-#include <Concurrency/Task.h>
-
 //Math.
 #include <Math/Geometry/GridPoint2.h>
-
-//Rendering.
-#include <Rendering/Native/Pipelines/ComputePipelines/TerrainHeightGenerationComputePipeline.h>
-#include <Rendering/Native/Pipelines/ComputePipelines/TerrainMaterialsGenerationComputePipeline.h>
 
 //Terrain.
 #include <Terrain/TerrainCore.h>
@@ -28,6 +14,7 @@
 #include <Terrain/TerrainPatchRenderInformation.h>
 #include <Terrain/TerrainProperties.h>
 #include <Terrain/TerrainQuadTree.h>
+#include <Terrain/TerrainQuadTreeNodeUpdate.h>
 #include <Terrain/TerrainRayTracingData.h>
 #include <Terrain/TerrainUpdate.h>
 
@@ -97,11 +84,6 @@ public:
 	}
 
 	/*
-	*	Returns the terrain map coordinate at the given position.
-	*/
-	NO_DISCARD Vector2<float32> GetTerrainMapCoordinateAtPosition(const Vector3<float32> &position) const NOEXCEPT;
-
-	/*
 	*	Returns the terrain height at the given position.
 	*/
 	bool GetTerrainHeightAtPosition(const Vector3<float32> &position, float32 *const RESTRICT height, const void *const RESTRICT context = nullptr) const NOEXCEPT;
@@ -120,59 +102,33 @@ private:
 	//The quad tree.
 	TerrainQuadTree _QuadTree;
 
-	//The update task.
-	Task _UpdateTask;
-
 	//The patch informations.
 	DynamicArray<TerrainPatchInformation> _PatchInformations;
 
 	//The patch render informations.
 	DynamicArray<TerrainPatchRenderInformation> _PatchRenderInformations;
 
-	//The update.
-	TerrainUpdate _Update;
+	//The updates.
+	DynamicArray<TerrainQuadTreeNodeUpdate *RESTRICT> _Updates;
+
+	//The current number of updates in flight.
+	uint32 _CurrentNumberOfUpdatesInFlight;
+
+	//The maximum number of updates in flight.
+	uint32 _MaximumNumberOfUpdatesInFlight;
 
 	//The terrain ray tracing data.
 	TerrainRayTracingData _TerrainRayTracingData;
 
-	//Denotes if terrain generation is running.
-	bool _TerrainGenerationRunning{ false };
-
-	//The commandbuffer.
-	CommandBuffer *RESTRICT _CommandBuffer{ nullptr };
-
-#if TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION
-	QueryPoolHandle _QueryPool;
-#endif
-
-	//The terrain generation event.
-	EventHandle _TerrainGenerationEvent;
-
-	//The terrain height generation compute pipeline.
-	TerrainHeightGenerationComputePipeline _TerrainHeightGenerationComputePipeline;
-
-	//The terrain materials generation compute pipeline.
-	TerrainMaterialsGenerationComputePipeline _TerrainMaterialsGenerationComputePipeline;
-
 	/*
-	*	Processes the update.
+	*	Processes the updates. Returns if there were any updates.
 	*/
-	void ProcessUpdate() NOEXCEPT;
-
-	/*
-	*	Updates the terrain system asynchronously.
-	*/
-	void UpdateAsynchronous() NOEXCEPT;
+	NO_DISCARD bool ProcessUpdates() NOEXCEPT;
 
 	/*
 	*	Removes a quad tree root node.
 	*/
 	void RemoveRootNode(const GridPoint2 grid_point) NOEXCEPT;
-
-	/*
-	*	Adds a quad tree root node.
-	*/
-	void AddRootNode(const GridPoint2 grid_point) NOEXCEPT;
 
 	/*
 	*	Removes a node.
@@ -188,16 +144,6 @@ private:
 	*	Checks subdivisions of a node.
 	*/
 	void CheckSubdivision(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
-
-	/*
-	*	Combines a node.
-	*/
-	void CombineNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
-
-	/*
-	*	Subdivides a node.
-	*/
-	void SubdivideNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Finds the highest depth.
@@ -235,9 +181,9 @@ private:
 	void DestroyMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
-	*	Finishes terrain generation.
+	*	Performs the given update.
 	*/
-	void FinishTerrainGeneration() NOEXCEPT;
+	void PerformUpdate(TerrainQuadTreeNodeUpdate *const RESTRICT update) NOEXCEPT;
 
 	/*
 	*	Saves the terrain data.

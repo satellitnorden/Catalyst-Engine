@@ -13,6 +13,7 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/MemorySystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/TaskSystem.h>
@@ -23,6 +24,12 @@
 
 //Singleton definition.
 DEFINE_SINGLETON(TerrainSystem);
+
+//Terrain system constants.
+namespace TerrainSystemConstants
+{
+	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 256 };
+}
 
 /*
 *	Initializes the terrain system.
@@ -36,14 +43,6 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 	_Properties._TerrainHeightFunction = configuration._TerrainHeightFunction;
 	_Properties._TerrainMaterialFunction = configuration._TerrainMaterialFunction;
 	_Properties._TerrainDataSaveFolder = configuration._TerrainDataSaveFolder;
-
-	//Set the function for the update task.
-	_UpdateTask._Function = [](void* const RESTRICT)
-	{
-		TerrainSystem::Instance->UpdateAsynchronous();
-	};
-	_UpdateTask._Arguments = nullptr;
-	_UpdateTask._ExecutableOnSameThread = false;
 
 	//Generate the terrain plane.
 	DynamicArray<TerrainVertex> vertices;
@@ -76,6 +75,9 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 	//Reserve an appropriate amount of memory.
 	_PatchInformations.Reserve(UINT8_MAXIMUM);
 	_PatchRenderInformations.Reserve(UINT8_MAXIMUM);
+
+	//Determine the maximum number of updates in flight.
+	_MaximumNumberOfUpdatesInFlight = TaskSystem::Instance->GetNumberOfTaskExecutors() / 4;
 }
 
 /*
@@ -83,38 +85,7 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 */
 void TerrainSystem::PostInitialize(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT
 {
-	//Initialize the terrain height generation compute pipeline.
-	if (!configuration._TerrainHeightGenerationShaderIdentifier.Empty())
-	{
-		_TerrainHeightGenerationComputePipeline.Initialize(ResourceSystem::Instance->GetShaderResource(configuration._TerrainHeightGenerationShaderIdentifier));
-		RenderingSystem::Instance->InitializePipeline(&_TerrainHeightGenerationComputePipeline);
-	}
-
-	//Initialize the terrain materials generation compute pipeline.
-	if (!configuration._TerrainMaterialsGenerationShaderIdentifier.Empty())
-	{
-		_TerrainMaterialsGenerationComputePipeline.Initialize(ResourceSystem::Instance->GetShaderResource(configuration._TerrainMaterialsGenerationShaderIdentifier));
-		RenderingSystem::Instance->InitializePipeline(&_TerrainMaterialsGenerationComputePipeline);
-	}
-
-	//If the height and/or materials generation shaders exist, create the command buffer and event.
-	if (!configuration._TerrainHeightGenerationShaderIdentifier.Empty()
-		|| !configuration._TerrainMaterialsGenerationShaderIdentifier.Empty())
-	{
-		//Create the command buffer.
-		CommandPoolHandle command_pool;
-		RenderingSystem::Instance->CreateCommandPool(Pipeline::Type::Compute, &command_pool);
-
-		_CommandBuffer = RenderingSystem::Instance->AllocateCommandBuffer(command_pool, CommandBufferLevel::PRIMARY);
-
-#if TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION
-		//Create the query pool.
-		RenderingSystem::Instance->CreateQueryPool(&_QueryPool);
-#endif
-
-		//Create the event.
-		RenderingSystem::Instance->CreateEvent(&_TerrainGenerationEvent);
-	}
+	
 }
 
 /*
@@ -122,172 +93,67 @@ void TerrainSystem::PostInitialize(const CatalystProjectTerrainConfiguration &co
 */
 void TerrainSystem::SequentialUpdate() NOEXCEPT
 {
-	//Check if the asynchronous update has finished.
-	if (_UpdateTask.IsExecuted())
-	{
-		//Process the update.
-		ProcessUpdate();
-
-		//Fire off another asynchronous update.
-		TaskSystem::Instance->ExecuteTask(&_UpdateTask);
-	}
-}
-
-/*
-*	Returns if terrain can be generated.
-*/
-NO_DISCARD bool TerrainSystem::CanTerrainBeGenerated() const NOEXCEPT
-{
-	//Need the functions.
-	return _Properties._TerrainHeightFunction && _Properties._TerrainMaterialFunction;
-}
-
-/*
-*	Sets the maximum quad tree depth.
-*/
-void TerrainSystem::SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT
-{
-	_Properties._MaximumQuadTreeDepth = value;
-}
-
-/*
-*	Returns the terrain map coordinate at the given position.
-*/
-NO_DISCARD Vector2<float32> TerrainSystem::GetTerrainMapCoordinateAtPosition(const Vector3<float32> &position) const NOEXCEPT
-{
-	/*
-	//Need that height map.
-	if (_Properties._HasHeightMap)
-	{
-		//Apply the world center offset.
-		Vector3<float32> offset_position;
-
-		{
-			SCOPED_LOCK(_Properties._WorldCenterLock);
-
-			offset_position = position - _Properties._WorldCenter.GetAbsolutePosition();
-		}
-
-		//Calculate the coordinate. Assume that all maps has the same resolution.
-		float32 half_resolution;
-		float32 full_resolution;
-
-		{
-			SCOPED_LOCK(_Properties._HeightMapLock);
-
-			half_resolution = static_cast<float32>(_Properties._HeightMap.GetWidth()) * 0.5f;
-			full_resolution = static_cast<float32>(_Properties._HeightMap.GetWidth());
-		}
-		
-		Vector2<float32> coordinate{ (offset_position._X - 0.5f + half_resolution) / full_resolution, (offset_position._Z - 0.5f + half_resolution) / full_resolution };
-
-		//Clamp the coordinate.
-		coordinate._X = CatalystBaseMath::Clamp<float32>(coordinate._X, 0.0f, 1.0f - FLOAT32_EPSILON);
-		coordinate._Y = CatalystBaseMath::Clamp<float32>(coordinate._Y, 0.0f, 1.0f - FLOAT32_EPSILON);
-
-		//Return the coordinate.
-		return coordinate;
-	}
-
-	else
-	*/
-	{
-		return Vector2<float>(0.0f, 0.0f);
-	}
-}
-
-/*
-*	Returns the terrain height at the given position.
-*/
-bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float>& position, float* const RESTRICT height, const void* const RESTRICT context) const NOEXCEPT
-{
-	if (!_Properties._TerrainHeightFunction)
-	{
-		if (height)
-		{
-			*height = 0.0f;
-		}
-
-		return false;
-	}
-
-	else
-	{
-		if (height)
-		{
-			*height = _Properties._TerrainHeightFunction(WorldPosition(position));
-		}
-
-		return true;
-	}
-}
-
-/*
-*	Returns the terrain normal at the given position.
-*/
-bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float>& position, Vector3<float>* const RESTRICT normal, float* const RESTRICT height, const void* const RESTRICT context) const NOEXCEPT
-{
-	//Calculate the normal.
-	float32 left;
-	float32 right;
-	float32 down;
-	float32 up;
-
-	GetTerrainHeightAtPosition(position + Vector3<float32>(-1.0f, 0.0f, 0.0f), &left);
-	GetTerrainHeightAtPosition(position + Vector3<float32>(1.0f, 0.0f, 0.0f), &right);
-	GetTerrainHeightAtPosition(position + Vector3<float32>(0.0f, 0.0f, -1.0f), &down);
-	GetTerrainHeightAtPosition(position + Vector3<float32>(0.0f, 0.0f, 1.0f), &up);
-
-	*normal = Vector3<float32>::Normalize(Vector3<float32>(left - right, 2.0f, down - up));
-
-	if (height)
-	{
-		GetTerrainHeightAtPosition(position, height);
-	}
-
-	//Return that the retrieval succeeded.
-	return true;
-}
-
-/*
-*	Processes the update.
-*/
-void TerrainSystem::ProcessUpdate() NOEXCEPT
-{
-	//Just copy the updated informations over.
-	_PatchInformations = std::move(_Update._PatchInformations);
-	_PatchRenderInformations = std::move(_Update._PatchRenderInformations);
-
-	for (Pair<Texture2DHandle, uint32> &texture_to_remove : _Update._TexturesToRemove)
-	{
-		RenderingSystem::Instance->DestroyTexture2D(&texture_to_remove._First);
-		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(texture_to_remove._Second);
-	}
-
-	_Update._TexturesToRemove.Clear();
-
-	/*
-	if (RenderingSystem::Instance->IsRayTracingActive())
-	{
-		//Update the terrain top level acceleration structure.
-		RenderingSystem::Instance->GetRayTracingSystem()->SetTerrainBottomLevelAccelerationStructure(_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
-	
-		//Update the current buffer index.
-		_TerrainRayTracingData._CurrentBufferIndex ^= static_cast<uint8>(1);
-	}
-	*/
-}
-
-/*
-*	Updates the terrain system asynchronously.
-*/
-void TerrainSystem::UpdateAsynchronous() NOEXCEPT
-{
-	//If there are no proper functions, just return.
-	if (!_Properties._TerrainHeightFunction || !_Properties._TerrainMaterialFunction)
+	//Return if terrain cannot be generated.
+	if (!CanTerrainBeGenerated())
 	{
 		return;
 	}
+
+	//Check if all updates are done. Return if not.
+	for (TerrainQuadTreeNodeUpdate *const RESTRICT update : _Updates)
+	{
+		switch (update->_Type)
+		{
+			case TerrainQuadTreeNodeUpdate::Type::ADD_ROOT_NODE:
+			{
+				if (!update->_AddRootNodeData._Task.IsExecuted())
+				{
+					return;
+				}
+
+				break;
+			}
+
+			case TerrainQuadTreeNodeUpdate::Type::COMBINE:
+			{
+				if (!update->_CombineData._Task.IsExecuted())
+				{
+					return;
+				}
+
+				break;
+			}
+
+			case TerrainQuadTreeNodeUpdate::Type::SUBDIVIDE:
+			{
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					if (!update->_SubdivideData._Tasks[i].IsExecuted())
+					{
+						return;
+					}
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
+
+	//Remember if anything was updated.
+	bool anything_updated{ false };
+
+	//Process the updates. (:
+	anything_updated |= ProcessUpdates();
+
+	//Reset the current number of updates in flight.
+	_CurrentNumberOfUpdatesInFlight = 0;
 
 	//Cache the current perceiver position.
 	const Vector3<float32> current_perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
@@ -337,6 +203,9 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 		{
 			//Remove the root node.
 			RemoveRootNode(_QuadTree._RootGridPoints[i]);
+
+			//Remember that something was updated.
+			anything_updated = true;
 		}
 	}
 
@@ -357,8 +226,25 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 
 		if (!exists)
 		{
-			//Add the root node.
-			AddRootNode(valid_grid_point);
+			if (_CurrentNumberOfUpdatesInFlight < _MaximumNumberOfUpdatesInFlight)
+			{
+				//Create the new update.
+				TerrainQuadTreeNodeUpdate *const RESTRICT new_update{ new (MemorySystem::Instance->TypeAllocate<TerrainQuadTreeNodeUpdate>()) TerrainQuadTreeNodeUpdate(TerrainQuadTreeNodeUpdate::Type::ADD_ROOT_NODE) };
+
+				new_update->_AddRootNodeData._Task._Function = [](void *const RESTRICT arguments)
+				{
+					TerrainSystem::Instance->PerformUpdate(static_cast<TerrainQuadTreeNodeUpdate *const RESTRICT>(arguments));
+				};
+				new_update->_AddRootNodeData._Task._Arguments = new_update;
+				new_update->_AddRootNodeData._Task._ExecutableOnSameThread = false;
+				new_update->_AddRootNodeData._GridPoint = valid_grid_point;
+
+				_Updates.Emplace(new_update);
+
+				TaskSystem::Instance->ExecuteTask(&new_update->_AddRootNodeData._Task);
+
+				++_CurrentNumberOfUpdatesInFlight;
+			}
 		}
 	}
 
@@ -403,25 +289,175 @@ void TerrainSystem::UpdateAsynchronous() NOEXCEPT
 		}
 	}
 
-	//Calculate the borders.
-	CalculateNewBorders();
-
-	//Generate the patch informations.
-	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	//Was anything updated?
+	if (anything_updated)
 	{
-		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+		//Calculate the borders.
+		CalculateNewBorders();
+
+		//Generate the patch informations.
+		_PatchInformations.Clear();
+		_PatchRenderInformations.Clear();
+
+		for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
 		{
-			continue;
+			if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+			{
+				continue;
+			}
+
+			GeneratePatchInformations(&_QuadTree._RootNodes[i]);
 		}
 
-		GeneratePatchInformations(&_QuadTree._RootNodes[i]);
+		//Update the terrain ray tracing data.
+		UpdateTerrainRayTracingData();
+	}
+}
+
+/*
+*	Returns if terrain can be generated.
+*/
+NO_DISCARD bool TerrainSystem::CanTerrainBeGenerated() const NOEXCEPT
+{
+	//Need the functions.
+	return _Properties._TerrainHeightFunction && _Properties._TerrainMaterialFunction;
+}
+
+/*
+*	Sets the maximum quad tree depth.
+*/
+void TerrainSystem::SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT
+{
+	_Properties._MaximumQuadTreeDepth = value;
+}
+
+/*
+*	Returns the terrain height at the given position.
+*/
+bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float32> &position, float32 *const RESTRICT height, const void *const RESTRICT context) const NOEXCEPT
+{
+	if (_Properties._TerrainHeightFunction)
+	{
+		if (height)
+		{
+			*height = _Properties._TerrainHeightFunction(WorldPosition(position));
+		}
+
+		return true;
 	}
 
-	//Update the terrain ray tracing data.
-	UpdateTerrainRayTracingData();
+	else
+	{
+		if (height)
+		{
+			*height = 0.0f;
+		}
 
-	//Finish the terrain generation.
-	FinishTerrainGeneration();
+		return false;
+	}
+}
+
+/*
+*	Returns the terrain normal at the given position.
+*/
+bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float>& position, Vector3<float>* const RESTRICT normal, float* const RESTRICT height, const void* const RESTRICT context) const NOEXCEPT
+{
+	//Calculate the normal.
+	float32 left;
+	float32 right;
+	float32 down;
+	float32 up;
+
+	GetTerrainHeightAtPosition(position + Vector3<float32>(-1.0f, 0.0f, 0.0f), &left);
+	GetTerrainHeightAtPosition(position + Vector3<float32>(1.0f, 0.0f, 0.0f), &right);
+	GetTerrainHeightAtPosition(position + Vector3<float32>(0.0f, 0.0f, -1.0f), &down);
+	GetTerrainHeightAtPosition(position + Vector3<float32>(0.0f, 0.0f, 1.0f), &up);
+
+	*normal = Vector3<float32>::Normalize(Vector3<float32>(left - right, 2.0f, down - up));
+
+	if (height)
+	{
+		GetTerrainHeightAtPosition(position, height);
+	}
+
+	//Return that the retrieval succeeded.
+	return true;
+}
+
+/*
+*	Processes the updates. Returns if there were any updates.
+*/
+NO_DISCARD bool TerrainSystem::ProcessUpdates() NOEXCEPT
+{
+	//Was there any updates?
+	const bool was_updates{ !_Updates.Empty() };
+
+	//Process all updates.
+	for (TerrainQuadTreeNodeUpdate *const RESTRICT update : _Updates)
+	{
+		switch (update->_Type)
+		{
+			case TerrainQuadTreeNodeUpdate::Type::ADD_ROOT_NODE:
+			{
+				for (uint64 i{ 0 }, size{ _QuadTree._RootGridPoints.Size() }; i < size; ++i)
+				{
+					if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+					{
+						_QuadTree._RootGridPoints[i] = update->_AddRootNodeData._GridPoint;
+						_QuadTree._RootNodes[i] = update->_AddRootNodeData._NewNode;
+
+						break;
+					}
+				}
+
+				break;
+			}
+
+			case TerrainQuadTreeNodeUpdate::Type::COMBINE:
+			{
+				//Destroy the maps for all the child nodes.
+				for (TerrainQuadTreeNode &child_node : update->_CombineData._Node->_ChildNodes)
+				{
+					DestroyMaps(&child_node);
+				}
+
+				//Replace the node.
+				*update->_CombineData._Node = update->_CombineData._NewNode;
+
+				break;
+			}
+
+			case TerrainQuadTreeNodeUpdate::Type::SUBDIVIDE:
+			{
+				//Destroy the maps for the parent node.
+				DestroyMaps(update->_SubdivideData._ParentNode);
+
+				//Add the child nodes.
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					update->_SubdivideData._ParentNode->_ChildNodes.Emplace(update->_SubdivideData._NewNodes[i]);
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+
+		update->~TerrainQuadTreeNodeUpdate();
+		MemorySystem::Instance->TypeFree<TerrainQuadTreeNodeUpdate>(update);
+	}
+
+	//Clear the updates.
+	_Updates.Clear();
+
+	//Return if there was any updates.
+	return was_updates;
 }
 
 /*
@@ -439,29 +475,6 @@ void TerrainSystem::RemoveRootNode(const GridPoint2 grid_point) NOEXCEPT
 
 			//Remove the node.
 			RemoveNode(&_QuadTree._RootNodes[i]);
-
-			break;
-		}
-	}
-}
-
-/*
-*	Adds a quad tree root node.
-*/
-void TerrainSystem::AddRootNode(const GridPoint2 grid_point) NOEXCEPT
-{
-	for (uint64 i{ 0 }, size{ _QuadTree._RootGridPoints.Size() }; i < size; ++i)
-	{
-		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
-		{
-			const Vector3<float> grid_point_world_position{ GridPoint2::GridPointToWorldPosition(grid_point, _Properties._PatchSize) };
-
-			_QuadTree._RootGridPoints[i] = grid_point;
-			_QuadTree._RootNodes[i]._Depth = 0;
-			_QuadTree._RootNodes[i]._Borders = 0;
-			_QuadTree._RootNodes[i]._Minimum = Vector2<float>(grid_point_world_position._X - (_Properties._PatchSize * 0.5f), grid_point_world_position._Z - (_Properties._PatchSize * 0.5f));
-			_QuadTree._RootNodes[i]._Maximum = Vector2<float>(grid_point_world_position._X + (_Properties._PatchSize * 0.5f), grid_point_world_position._Z + (_Properties._PatchSize * 0.5f));
-			GenerateMaps(&_QuadTree._RootNodes[i]);
 
 			break;
 		}
@@ -491,14 +504,32 @@ void TerrainSystem::RemoveNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEP
 /*
 *	Checks combination of a node.
 */
-void TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
+void TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->IsSubdivided())
 	{
 		if (node->_Depth == depth && TerrainQuadTreeUtilities::ShouldBeCombined(_Properties, *node, perceiverPosition))
 		{
-			CombineNode(node);
+			if (_CurrentNumberOfUpdatesInFlight < _MaximumNumberOfUpdatesInFlight)
+			{
+				//Create the new update.
+				TerrainQuadTreeNodeUpdate *const RESTRICT new_update{ new (MemorySystem::Instance->TypeAllocate<TerrainQuadTreeNodeUpdate>()) TerrainQuadTreeNodeUpdate(TerrainQuadTreeNodeUpdate::Type::COMBINE) };
+
+				new_update->_CombineData._Task._Function = [](void *const RESTRICT arguments)
+				{
+					TerrainSystem::Instance->PerformUpdate(static_cast<TerrainQuadTreeNodeUpdate *const RESTRICT>(arguments));
+				};
+				new_update->_CombineData._Task._Arguments = new_update;
+				new_update->_CombineData._Task._ExecutableOnSameThread = false;
+				new_update->_CombineData._Node = node;
+
+				_Updates.Emplace(new_update);
+
+				TaskSystem::Instance->ExecuteTask(&new_update->_CombineData._Task);
+
+				++_CurrentNumberOfUpdatesInFlight;
+			}
 		}
 
 		else
@@ -534,65 +565,36 @@ void TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float>& pe
 	//Else, check if this node should be subdivided.
 	else
 	{
-		if (TerrainQuadTreeUtilities::ShouldBeSubdivided(_Properties, *node, perceiverPosition))
+		if (_CurrentNumberOfUpdatesInFlight < _MaximumNumberOfUpdatesInFlight)
 		{
-			SubdivideNode(node);
+			if (TerrainQuadTreeUtilities::ShouldBeSubdivided(_Properties, *node, perceiverPosition))
+			{
+				//Create the new update.
+				TerrainQuadTreeNodeUpdate *const RESTRICT new_update{ new (MemorySystem::Instance->TypeAllocate<TerrainQuadTreeNodeUpdate>()) TerrainQuadTreeNodeUpdate(TerrainQuadTreeNodeUpdate::Type::SUBDIVIDE) };
+
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					new_update->_SubdivideData._Tasks[i]._Function = [](void *const RESTRICT arguments)
+					{
+						TerrainSystem::Instance->PerformUpdate(static_cast<TerrainQuadTreeNodeUpdate *const RESTRICT>(arguments));
+					};
+					new_update->_SubdivideData._Tasks[i]._Arguments = new_update;
+					new_update->_SubdivideData._Tasks[i]._ExecutableOnSameThread = false;
+				}
+
+				new_update->_SubdivideData._ParentNode = node;
+				new_update->_SubdivideData._NodeIndex = 0;
+
+				_Updates.Emplace(new_update);
+
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					TaskSystem::Instance->ExecuteTask(&new_update->_SubdivideData._Tasks[i]);
+
+					++_CurrentNumberOfUpdatesInFlight;
+				}
+			}
 		}
-	}
-}
-
-/*
-*	Combine a node.
-*/
-void TerrainSystem::CombineNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
-{
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		DestroyMaps(&node->_ChildNodes[i]);
-	}
-
-	node->_ChildNodes.Clear();
-
-	GenerateMaps(node);
-}
-
-/*
-*	Subdivides a node.
-*/
-void TerrainSystem::SubdivideNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
-{
-	DestroyMaps(node);
-
-	const float32 patch_size_multiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) * 0.5f };
-
-	const StaticArray<Vector3<float32>, 4> positions
-	{
-		Vector3<float32>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
-						0.0f,
-						node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f),
-
-		Vector3<float32>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
-						0.0f,
-						node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 1.5f),
-
-		Vector3<float32>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
-						0.0f,
-						node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 1.5f),
-
-		Vector3<float32>(node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
-						0.0f,
-						node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f)
-	};
-
-	node->_ChildNodes.Upsize<true>(4);
-
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		node->_ChildNodes[i]._Depth = node->_Depth + 1;
-		node->_ChildNodes[i]._Borders = 0;
-		node->_ChildNodes[i]._Minimum = Vector2<float>(positions[i]._X - (_Properties._PatchSize * patch_size_multiplier * 0.5f), positions[i]._Z - (_Properties._PatchSize * patch_size_multiplier * 0.5f));
-		node->_ChildNodes[i]._Maximum = Vector2<float>(positions[i]._X + (_Properties._PatchSize * patch_size_multiplier * 0.5f), positions[i]._Z + (_Properties._PatchSize * patch_size_multiplier * 0.5f));
-		GenerateMaps(&node->_ChildNodes[i]);
 	}
 }
 
@@ -621,16 +623,16 @@ void TerrainSystem::FindHighestDepth(const TerrainQuadTreeNode &node, uint8 *con
 void TerrainSystem::CalculateNewBorders() NOEXCEPT
 {
 	//Iterate over all root nodes and calculate new borders for them.
-	for (TerrainQuadTreeNode& rootNode : _QuadTree._RootNodes)
+	for (TerrainQuadTreeNode &root_node : _QuadTree._RootNodes)
 	{
-		CalculateNewBorders(&rootNode);
+		CalculateNewBorders(&root_node);
 	}
 }
 
 /*
 *	Calculates new borders for one node and fills in the update.
 */
-void TerrainSystem::CalculateNewBorders(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
+void TerrainSystem::CalculateNewBorders(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//If this node is subdivided, calculate new borders for it's child nodes.
 	if (node->IsSubdivided())
@@ -735,11 +737,11 @@ void TerrainSystem::GeneratePatchInformations(TerrainQuadTreeNode* const RESTRIC
 												node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f };
 
 		//Generate the informations.
-		_Update._PatchInformations.Emplace();
-		_Update._PatchRenderInformations.Emplace();
+		_PatchInformations.Emplace();
+		_PatchRenderInformations.Emplace();
 
-		TerrainPatchInformation &information{ _Update._PatchInformations.Back() };
-		TerrainPatchRenderInformation &render_information{ _Update._PatchRenderInformations.Back() };
+		TerrainPatchInformation &information{ _PatchInformations.Back() };
+		TerrainPatchRenderInformation &render_information{ _PatchRenderInformations.Back() };
 
 		information._AxisAlignedBoundingBox._Minimum = Vector3<float32>(node->_Minimum._X, -FLOAT_MAXIMUM, node->_Minimum._Y);
 		information._AxisAlignedBoundingBox._Maximum = Vector3<float32>(node->_Maximum._X, FLOAT_MAXIMUM, node->_Maximum._Y);
@@ -808,10 +810,10 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 	DynamicArray<Vertex> master_vertices;
 	DynamicArray<uint32> master_indices;
 
-	const TerrainPatchInformation* RESTRICT patch_information{ _Update._PatchInformations.Data() };
-	const TerrainPatchRenderInformation* RESTRICT patch_render_information{ _Update._PatchRenderInformations.Data() };
+	const TerrainPatchInformation* RESTRICT patch_information{ _PatchInformations.Data() };
+	const TerrainPatchRenderInformation* RESTRICT patch_render_information{ _PatchRenderInformations.Data() };
 
-	for (uint64 i{ 0 }, size{ _Update._PatchInformations.Size() }; i < size; ++i, ++patch_information, ++patch_render_information)
+	for (uint64 i{ 0 }, size{ _PatchInformations.Size() }; i < size; ++i, ++patch_information, ++patch_render_information)
 	{
 		//Cache relevant data.
 		const int32 patch_borders{ patch_render_information->_Borders };
@@ -909,30 +911,12 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 */
 void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
-	//Define constants.
-	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 128 };
-
-	//Initialize the command buffer, if needed.
-	if (!_TerrainGenerationRunning
-		&& (_TerrainHeightGenerationComputePipeline.IsInitialized() || _TerrainMaterialsGenerationComputePipeline.IsInitialized()))
-	{
-		//Begin the command buffer.
-		_CommandBuffer->Begin(&_TerrainHeightGenerationComputePipeline);
-
-#if TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION
-		//Write the timestamp.
-		_CommandBuffer->WriteTimestamp(nullptr, _QueryPool, 0);
-#endif
-
-		_TerrainGenerationRunning = true;
-	}
-
 	//Calculate the patch size.
 	const float32 patch_size{ _Properties._PatchSize * TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
 
 	//Calculate the height/material map(s) resolution.
 	node->_HeightMapResolution = _Properties._PatchResolution;
-	node->_MaterialMapsResolution = CatalystBaseMath::Clamp<uint32>(CatalystBaseMath::Round<uint32>(patch_size), 1, MAXIMUM_MATERIAL_MAPS_RESOLUTION);
+	node->_MaterialMapsResolution = CatalystBaseMath::Clamp<uint32>(CatalystBaseMath::Round<uint32>(patch_size), 1, TerrainSystemConstants::MAXIMUM_MATERIAL_MAPS_RESOLUTION);
 
 	//Initialize the height/index/blend maps.
 	Texture2D<float32> height_map{ node->_HeightMapResolution };
@@ -941,102 +925,63 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 	Texture2D<Vector4<uint8>> blend_map{ node->_MaterialMapsResolution };
 
 	//Generate the height map.
-	if (_TerrainHeightGenerationComputePipeline.IsInitialized())
+	for (uint32 Y{ 0 }; Y < node->_HeightMapResolution; ++Y)
 	{
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32, TextureUsage::STORAGE), &node->_HeightMapTexture);
-		node->_HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_HeightMapTexture);
-
-		_TerrainHeightGenerationComputePipeline.Execute(node->_Minimum,
-														node->_Maximum,
-														node->_HeightMapResolution,
-														node->_HeightMapTexture,
-														_CommandBuffer);
-	}
-
-	else
-	{
-		for (uint32 Y{ 0 }; Y < node->_HeightMapResolution; ++Y)
+		for (uint32 X{ 0 }; X < node->_HeightMapResolution; ++X)
 		{
-			for (uint32 X{ 0 }; X < node->_HeightMapResolution; ++X)
-			{
-				//Calculate the normalized coordinate.
-				const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(node->_HeightMapResolution - 1), static_cast<float32>(Y) / static_cast<float32>(node->_HeightMapResolution - 1) };
+			//Calculate the normalized coordinate.
+			const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(node->_HeightMapResolution - 1), static_cast<float32>(Y) / static_cast<float32>(node->_HeightMapResolution - 1) };
 
-				//Calculate the world position.
-				const WorldPosition world_position{ Vector3<float32>(	CatalystBaseMath::LinearlyInterpolate(node->_Minimum._X, node->_Maximum._X, normalized_coordinate._X),
-																		0.0f,
-																		CatalystBaseMath::LinearlyInterpolate(node->_Minimum._Y, node->_Maximum._Y, normalized_coordinate._Y)
-																		) };
+			//Calculate the world position.
+			const WorldPosition world_position{ Vector3<float32>(	CatalystBaseMath::LinearlyInterpolate(node->_Minimum._X, node->_Maximum._X, normalized_coordinate._X),
+																	0.0f,
+																	CatalystBaseMath::LinearlyInterpolate(node->_Minimum._Y, node->_Maximum._Y, normalized_coordinate._Y)
+																	) };
 
-				//Generate the height.
-				height_map.At(X, Y) = _Properties._TerrainHeightFunction(world_position);
-			}
+			//Generate the height.
+			height_map.At(X, Y) = _Properties._TerrainHeightFunction(world_position);
 		}
-
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32, TextureUsage::STORAGE), &node->_HeightMapTexture);
-		
-		node->_HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_HeightMapTexture);
 	}
 
-	if (_TerrainMaterialsGenerationComputePipeline.IsInitialized())
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32, TextureUsage::STORAGE), &node->_HeightMapTexture);
+
+	node->_HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_HeightMapTexture);
+
+	//Generate the material maps.
+	for (uint32 Y{ 0 }; Y < node->_MaterialMapsResolution; ++Y)
 	{
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(normal_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_NormalMapTexture);
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_IndexMapTexture);
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_BlendMapTexture);
-
-		node->_NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_NormalMapTexture);
-		node->_IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_IndexMapTexture);
-		node->_BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_BlendMapTexture);
-
-		_TerrainMaterialsGenerationComputePipeline.Execute(	node->_Minimum,
-															node->_Maximum,
-															node->_MaterialMapsResolution,
-															node->_NormalMapTexture,
-															node->_IndexMapTexture,
-															node->_BlendMapTexture,
-															_CommandBuffer);
-	}
-
-	else
-	{
-		//Generate the material maps.
-		for (uint32 Y{ 0 }; Y < node->_MaterialMapsResolution; ++Y)
+		for (uint32 X{ 0 }; X < node->_MaterialMapsResolution; ++X)
 		{
-			for (uint32 X{ 0 }; X < node->_MaterialMapsResolution; ++X)
+			//Calculate the normalized coordinate.
+			const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(node->_MaterialMapsResolution - 1), static_cast<float32>(Y) / static_cast<float32>(node->_MaterialMapsResolution - 1) };
+
+			//Calculate the world position.
+			const WorldPosition world_position{ Vector3<float32>(	CatalystBaseMath::LinearlyInterpolate(node->_Minimum._X, node->_Maximum._X, normalized_coordinate._X),
+																	0.0f,
+																	CatalystBaseMath::LinearlyInterpolate(node->_Minimum._Y, node->_Maximum._Y, normalized_coordinate._Y)
+																	) };
+
+			//Generate the normal.
+			Vector3<float32> terrain_normal;
+			GetTerrainNormalAtPosition(world_position.GetAbsolutePosition(), &terrain_normal);
+
+			for (uint8 i{ 0 }; i < 3; ++i)
 			{
-				//Calculate the normalized coordinate.
-				const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(node->_MaterialMapsResolution - 1), static_cast<float32>(Y) / static_cast<float32>(node->_MaterialMapsResolution - 1) };
-
-				//Calculate the world position.
-				const WorldPosition world_position{ Vector3<float32>(	CatalystBaseMath::LinearlyInterpolate(node->_Minimum._X, node->_Maximum._X, normalized_coordinate._X),
-																		0.0f,
-																		CatalystBaseMath::LinearlyInterpolate(node->_Minimum._Y, node->_Maximum._Y, normalized_coordinate._Y)
-																		) };
-
-				//Generate the normal.
-				Vector3<float32> terrain_normal;
-				GetTerrainNormalAtPosition(world_position.GetAbsolutePosition(), &terrain_normal);
-
-				for (uint8 i{ 0 }; i < 3; ++i)
-				{
-					normal_map.At(X, Y)[i] = static_cast<uint8>((terrain_normal[i] * 0.5f + 0.5f) * static_cast<float32>(UINT8_MAXIMUM));
-				}
-
-				//Generate the materials.
-				_Properties._TerrainMaterialFunction(world_position, &index_map.At(X, Y), &blend_map.At(X, Y));
+				normal_map.At(X, Y)[i] = static_cast<uint8>((terrain_normal[i] * 0.5f + 0.5f) * static_cast<float32>(UINT8_MAXIMUM));
 			}
+
+			//Generate the materials.
+			_Properties._TerrainMaterialFunction(world_position, &index_map.At(X, Y), &blend_map.At(X, Y));
 		}
-
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(normal_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_NormalMapTexture);
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_IndexMapTexture);
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_BlendMapTexture);
-
-		node->_NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_NormalMapTexture);
-		node->_IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_IndexMapTexture);
-		node->_BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_BlendMapTexture);
 	}
 
-	FinishTerrainGeneration();
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(normal_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_NormalMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_IndexMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_BlendMapTexture);
+
+	node->_NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_NormalMapTexture);
+	node->_IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_IndexMapTexture);
+	node->_BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_BlendMapTexture);
 }
 
 /*
@@ -1046,81 +991,154 @@ void TerrainSystem::DestroyMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 {
 	if (node->_HeightMapTexture)
 	{
-		_Update._TexturesToRemove.Emplace(node->_HeightMapTexture, node->_HeightMapTextureIndex);
+		RenderingSystem::Instance->DestroyTexture2D(&node->_HeightMapTexture);
+		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(node->_HeightMapTextureIndex);
 
 		node->_HeightMapTexture = EMPTY_HANDLE;
 	}
 
 	if (node->_NormalMapTexture)
 	{
-		_Update._TexturesToRemove.Emplace(node->_NormalMapTexture, node->_NormalMapTextureIndex);
+		RenderingSystem::Instance->DestroyTexture2D(&node->_NormalMapTexture);
+		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(node->_NormalMapTextureIndex);
 
 		node->_NormalMapTexture = EMPTY_HANDLE;
 	}
 	
 	if (node->_IndexMapTexture)
 	{
-		_Update._TexturesToRemove.Emplace(node->_IndexMapTexture, node->_IndexMapTextureIndex);
+		RenderingSystem::Instance->DestroyTexture2D(&node->_IndexMapTexture);
+		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(node->_IndexMapTextureIndex);
 
 		node->_IndexMapTexture = EMPTY_HANDLE;
 	}
 
 	if (node->_BlendMapTexture)
 	{
-		_Update._TexturesToRemove.Emplace(node->_BlendMapTexture, node->_BlendMapTextureIndex);
+		RenderingSystem::Instance->DestroyTexture2D(&node->_BlendMapTexture);
+		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(node->_BlendMapTextureIndex);
 
 		node->_BlendMapTexture = EMPTY_HANDLE;
 	}
 }
 
-/*
-*	Finishes terrain generation.
+/*p
+*	Performs the given update.
 */
-void TerrainSystem::FinishTerrainGeneration() NOEXCEPT
+void TerrainSystem::PerformUpdate(TerrainQuadTreeNodeUpdate *const RESTRICT update) NOEXCEPT
 {
-	if (_TerrainGenerationRunning)
+	switch (update->_Type)
 	{
-		//Set the event.
-		_CommandBuffer->SetEvent(nullptr, _TerrainGenerationEvent);
-
-#if TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION
-		//Write the timestamp.
-		_CommandBuffer->WriteTimestamp(nullptr, _QueryPool, 1);
-#endif
-
-		//End the command buffer.
-		_CommandBuffer->End(nullptr);
-
-		//Submit the command buffer.
-		RenderingSystem::Instance->SubmitCommandBuffer(_CommandBuffer);
-
-		//Wait for the event.
-		RenderingSystem::Instance->WaitForEvent(_TerrainGenerationEvent);
-
-#if TERRAIN_SYSTEM_TIMESTAMP_GPU_GENERATION
-		//Retrieve the execution time.
+		case TerrainQuadTreeNodeUpdate::Type::ADD_ROOT_NODE:
 		{
-			static uint64 total_execution_time{ 0 };
-			static uint64 total_executions{ 0 };
+			const Vector3<float32> grid_point_world_position{ GridPoint2::GridPointToWorldPosition(update->_AddRootNodeData._GridPoint, _Properties._PatchSize) };
 
-			total_execution_time += static_cast<uint64>(RenderingSystem::Instance->GetExecutionTime(_QueryPool));
-			++total_executions;
+			update->_AddRootNodeData._NewNode._Depth = 0;
+			update->_AddRootNodeData._NewNode._Borders = 0;
+			update->_AddRootNodeData._NewNode._Minimum = Vector2<float32>(grid_point_world_position._X - (_Properties._PatchSize * 0.5f), grid_point_world_position._Z - (_Properties._PatchSize * 0.5f));
+			update->_AddRootNodeData._NewNode._Maximum = Vector2<float32>(grid_point_world_position._X + (_Properties._PatchSize * 0.5f), grid_point_world_position._Z + (_Properties._PatchSize * 0.5f));
+			
+			GenerateMaps(&update->_AddRootNodeData._NewNode);
 
-			const uint64 average_execution_time{ total_execution_time / total_executions };
-
-			PRINT_TO_OUTPUT("Average terrain GPU generation time: " << static_cast<float64>(average_execution_time) / 1'000'000.0 << " milliseconds.");
+			break;
 		}
-#endif
 
-		//Reset the event.
-		RenderingSystem::Instance->ResetEvent(_TerrainGenerationEvent);
+		case TerrainQuadTreeNodeUpdate::Type::COMBINE:
+		{
+			//Set up the new node.
+			update->_CombineData._NewNode._Depth = update->_CombineData._Node->_Depth;
+			update->_CombineData._NewNode._Borders = 0;
+			update->_CombineData._NewNode._Minimum = update->_CombineData._Node->_Minimum;
+			update->_CombineData._NewNode._Maximum = update->_CombineData._Node->_Maximum;
 
-		//Destroy the render data tables.
-		_TerrainHeightGenerationComputePipeline.DestroyRenderDataTables();
-		_TerrainMaterialsGenerationComputePipeline.DestroyRenderDataTables();
+			//Generate the maps.
+			GenerateMaps(&update->_CombineData._NewNode);
 
-		//Terrain generation is no longer running.
-		_TerrainGenerationRunning = false;
+			break;
+		}
+
+		case TerrainQuadTreeNodeUpdate::Type::SUBDIVIDE:
+		{
+			//Retrieve the current node index.
+			const uint64 current_node_index{ update->_SubdivideData._NodeIndex.fetch_add(1) };
+
+			//Calculate the patch size multiplier.
+			const float32 patch_size_multiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*update->_SubdivideData._ParentNode) * 0.5f };
+
+			//Set up the new node.
+			update->_SubdivideData._NewNodes[current_node_index]._Depth = update->_SubdivideData._ParentNode->_Depth + 1;
+			update->_SubdivideData._NewNodes[current_node_index]._Borders = 0;
+
+			switch (current_node_index)
+			{
+				case 0:
+				{
+					update->_SubdivideData._NewNodes[current_node_index]._Minimum =
+					update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
+																										update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f);
+
+					update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+					update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+
+					break;
+				}
+
+				case 1:
+				{
+					update->_SubdivideData._NewNodes[current_node_index]._Minimum =
+					update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
+																										update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 1.5f);
+
+					update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+					update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+
+					break;
+				}
+
+				case 2:
+				{
+					update->_SubdivideData._NewNodes[current_node_index]._Minimum =
+					update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
+																										update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 1.5f);
+
+					update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+					update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+
+					break;
+				}
+
+				case 3:
+				{
+					update->_SubdivideData._NewNodes[current_node_index]._Minimum =
+					update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
+																										update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f);
+
+					update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+					update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			//Generate the maps.
+			GenerateMaps(&update->_SubdivideData._NewNodes[current_node_index]);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
 	}
 }
 

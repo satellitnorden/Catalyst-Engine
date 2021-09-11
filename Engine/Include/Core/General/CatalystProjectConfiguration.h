@@ -231,22 +231,6 @@ public:
 	TerrainMaterialFunction _TerrainMaterialFunction;
 
 	/*
-	*	The terrain height generation shader identifier.
-	*	The (compute) shader that runs the terrain height generation on the GPU.
-	*	If empty, terrain height generation will run on the CPU, which will be decidely slower.
-	*	Recommended: A valid resource identifier to a shader resource.
-	*/
-	HashString _TerrainHeightGenerationShaderIdentifier;
-
-	/*
-	*	The terrain materials generation shader identifier.
-	*	The (compute) shader that runs the terrain materials generation on the GPU.
-	*	If empty, terrain materials generation will run on the CPU, which will be decidely slower.
-	*	Recommended: A valid resource identifier to a shader resource.
-	*/
-	HashString _TerrainMaterialsGenerationShaderIdentifier;
-
-	/*
 	*	The terrain data save folder.
 	*	This is where terrain data will be saved to disk between sessions, for faster loading when the height/material functions don't change.
 	*	Recommended: A valid string containing a file path to a folder where the terrain data will be saved.

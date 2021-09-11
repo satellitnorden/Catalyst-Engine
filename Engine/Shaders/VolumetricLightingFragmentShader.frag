@@ -161,6 +161,12 @@ void CatalystShaderMain()
 						light_screen_space_position.z = LinearizeDepth(light_view_space_position.z);
 					}
 
+					//Calculate the screen factor.
+					float screen_factor = min(abs(light_screen_space_position.x - 0.5f) * abs(light_screen_space_position.y - 0.5f), 1.0f);
+					screen_factor *= screen_factor;
+					screen_factor = 1.0f - screen_factor;
+					screen_factor = light_screen_space_position.z < 1.0f ? screen_factor : 0.0f;
+
 					for (uint sample_index = 0; sample_index < NUMBER_OF_DIRECTIONAL_LIGHT_SAMPLES; ++sample_index)
 					{
 						//Calculate the volumetric particle hit distance.
@@ -187,7 +193,7 @@ void CatalystShaderMain()
 						if (VOLUMETRIC_SHADOWS_MODE != VOLUMETRIC_SHADOWS_MODE_NONE
 							&& TEST_BIT(light.light_properties, LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT))
 						{
-							hit_factor = CastDirectionalLightRay(volumetric_particle_screen_space_position, light_screen_space_position, current_blue_noise_index++);
+							hit_factor = mix(1.0f, CastDirectionalLightRay(volumetric_particle_screen_space_position, light_screen_space_position, current_blue_noise_index++), screen_factor);
 						}
 						
 						//Add to the volumetric lighting.

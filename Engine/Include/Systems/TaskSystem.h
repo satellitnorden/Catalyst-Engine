@@ -58,7 +58,7 @@ public:
 private:
 
 	//The maximum number of tasks.
-	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 2'048 };
+	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 4'096 };
 
 	//Container for all atomic queues in which to put tasks in.
 	AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::MULTIPLE> _TaskQueue;
