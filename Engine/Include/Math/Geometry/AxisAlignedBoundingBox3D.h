@@ -105,6 +105,15 @@ public:
 	}
 
 	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool operator==(const AxisAlignedBoundingBox3D &other) NOEXCEPT
+	{
+		return	_Minimum == other._Minimum
+				&& _Maximum == other._Maximum;
+	}
+
+	/*
 	*	Subscript operator overload, const.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD const Vector3<float32> &operator[](const uint64 index) const NOEXCEPT

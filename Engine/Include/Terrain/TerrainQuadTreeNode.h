@@ -58,6 +58,12 @@ public:
 	//The blend map texture index.
 	uint32 _BlendMapTextureIndex;
 
+	//The terrain patch information.
+	TerrainPatchInformation _TerrainPatchInformation;
+
+	//The terrain patch render information.
+	TerrainPatchRenderInformation _TerrainPatchRenderInformation;
+
 	/*
 	*	Returns whether or not this node is subdivided.
 	*/

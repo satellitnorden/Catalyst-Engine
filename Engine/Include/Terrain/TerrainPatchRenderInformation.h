@@ -41,27 +41,19 @@ public:
 	//Denotes the visibilty of this patch.
 	bool _Visibility{ false };
 
-#if 0
 	/*
 	*	Equality operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD bool operator==(const TerrainPatchRenderInformation &other) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool operator==(const TerrainPatchRenderInformation &other) NOEXCEPT
 	{
 		return	_WorldPosition == other._WorldPosition
 				&& _PatchSize == other._PatchSize
-				&& _Borders == other._Borders
 				&& _HeightMapTextureIndex == other._HeightMapTextureIndex
-				&& _MaterialMapTextureIndex == other._MaterialMapTextureIndex
-				&& _Visibility == other._Visibility;
+				&& _HeightMapResolution == other._HeightMapResolution
+				&& _MaterialMapsResolution == other._MaterialMapsResolution
+				&& _NormalMapTextureIndex == other._NormalMapTextureIndex
+				&& _IndexMapTextureIndex == other._IndexMapTextureIndex
+				&& _BlendMapTextureIndex == other._BlendMapTextureIndex;
 	}
-
-	/*
-	*	Inequality operator overload.
-	*/
-	FORCE_INLINE NO_DISCARD bool operator!=(const TerrainPatchRenderInformation &other) const NOEXCEPT
-	{
-		return !operator==(other);
-	}
-#endif
 
 };

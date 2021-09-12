@@ -18,4 +18,12 @@ public:
 	//The axis-aligned bounding box for this terrain patch.
 	AxisAlignedBoundingBox3D _AxisAlignedBoundingBox;
 
+	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD bool operator==(const TerrainPatchInformation &other) NOEXCEPT
+	{
+		return _AxisAlignedBoundingBox == other._AxisAlignedBoundingBox;
+	}
+
 };

@@ -252,20 +252,6 @@ void TerrainSystem::SequentialUpdate() NOEXCEPT
 		//Calculate the borders.
 		CalculateNewBorders();
 
-		//Generate the patch informations.
-		_PatchInformations.Clear();
-		_PatchRenderInformations.Clear();
-
-		for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
-		{
-			if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
-			{
-				continue;
-			}
-
-			GeneratePatchInformations(&_QuadTree._RootNodes[i]);
-		}
-
 		//Update the terrain ray tracing data.
 		UpdateTerrainRayTracingData();
 	}
@@ -367,6 +353,9 @@ NO_DISCARD bool TerrainSystem::ProcessUpdates() NOEXCEPT
 					}
 				}
 
+				_PatchInformations.Emplace(update->_AddRootNodeData._NewNode._TerrainPatchInformation);
+				_PatchRenderInformations.Emplace(update->_AddRootNodeData._NewNode._TerrainPatchRenderInformation);
+
 				break;
 			}
 
@@ -378,8 +367,19 @@ NO_DISCARD bool TerrainSystem::ProcessUpdates() NOEXCEPT
 					DestroyMaps(&child_node);
 				}
 
+				//Erase the patch informations.
+				for (TerrainQuadTreeNode &child_node : update->_CombineData._Node->_ChildNodes)
+				{
+					_PatchInformations.Erase<false>(child_node._TerrainPatchInformation);
+					_PatchRenderInformations.Erase<false>(child_node._TerrainPatchRenderInformation);
+				}
+				
 				//Replace the node.
 				*update->_CombineData._Node = update->_CombineData._NewNode;
+
+				//Add the patch informations.
+				_PatchInformations.Emplace(update->_CombineData._NewNode._TerrainPatchInformation);
+				_PatchRenderInformations.Emplace(update->_CombineData._NewNode._TerrainPatchRenderInformation);
 
 				break;
 			}
@@ -389,10 +389,21 @@ NO_DISCARD bool TerrainSystem::ProcessUpdates() NOEXCEPT
 				//Destroy the maps for the parent node.
 				DestroyMaps(update->_SubdivideData._ParentNode);
 
+				//Erase the patch informations for the parent node.
+				_PatchInformations.Erase<false>(update->_SubdivideData._ParentNode->_TerrainPatchInformation);
+				_PatchRenderInformations.Erase<false>(update->_SubdivideData._ParentNode->_TerrainPatchRenderInformation);
+
 				//Add the child nodes.
 				for (uint8 i{ 0 }; i < 4; ++i)
 				{
 					update->_SubdivideData._ParentNode->_ChildNodes.Emplace(update->_SubdivideData._NewNodes[i]);
+				}
+
+				//Add the patch informations.
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					_PatchInformations.Emplace(update->_SubdivideData._NewNodes[i]._TerrainPatchInformation);
+					_PatchRenderInformations.Emplace(update->_SubdivideData._NewNodes[i]._TerrainPatchRenderInformation);
 				}
 
 				break;
@@ -456,6 +467,10 @@ void TerrainSystem::RemoveNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEP
 
 	//Destroy the maps.
 	DestroyMaps(node);
+
+	//Erase the patch informations.
+	_PatchInformations.Erase<false>(node->_TerrainPatchInformation);
+	_PatchRenderInformations.Erase<false>(node->_TerrainPatchRenderInformation);
 }
 
 /*
@@ -667,44 +682,26 @@ void TerrainSystem::CalculateNewBorders(TerrainQuadTreeNode *const RESTRICT node
 */
 void TerrainSystem::GeneratePatchInformations(TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
-	//If this node is subdivided, generate patch informations for it's children instead.
-	if (node->IsSubdivided())
-	{
-		for (uint8 i{ 0 }; i < 4; ++i)
-		{
-			GeneratePatchInformations(&node->_ChildNodes[i]);
-		}
-	}
+	//Calculate the world position.
+	const float32 patch_size_multiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
 
-	else
-	{
-		//Calculate the world position.
-		const float32 patch_size_multiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
+	const Vector3<float32> world_position{	node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
+											0.0f,
+											node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f };
 
-		const Vector3<float32> world_position{	node->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
-												0.0f,
-												node->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f };
-
-		//Generate the informations.
-		_PatchInformations.Emplace();
-		_PatchRenderInformations.Emplace();
-
-		TerrainPatchInformation &information{ _PatchInformations.Back() };
-		TerrainPatchRenderInformation &render_information{ _PatchRenderInformations.Back() };
-
-		information._AxisAlignedBoundingBox._Minimum = Vector3<float32>(node->_Minimum._X, -FLOAT_MAXIMUM, node->_Minimum._Y);
-		information._AxisAlignedBoundingBox._Maximum = Vector3<float32>(node->_Maximum._X, FLOAT_MAXIMUM, node->_Maximum._Y);
-		render_information._WorldPosition = Vector2<float32>(world_position._X, world_position._Z);
-		render_information._PatchSize = _Properties._PatchSize * patch_size_multiplier;
-		render_information._Borders = node->_Borders;
-		render_information._HeightMapTextureIndex = node->_HeightMapTextureIndex;
-		render_information._HeightMapResolution = node->_HeightMapResolution;
-		render_information._MaterialMapsResolution = node->_MaterialMapsResolution;
-		render_information._NormalMapTextureIndex = node->_NormalMapTextureIndex;
-		render_information._IndexMapTextureIndex = node->_IndexMapTextureIndex;
-		render_information._BlendMapTextureIndex = node->_BlendMapTextureIndex;
-		render_information._Visibility = false;
-	}
+	//Generate the informations.
+	node->_TerrainPatchInformation._AxisAlignedBoundingBox._Minimum = Vector3<float32>(node->_Minimum._X, -FLOAT_MAXIMUM, node->_Minimum._Y);
+	node->_TerrainPatchInformation._AxisAlignedBoundingBox._Maximum = Vector3<float32>(node->_Maximum._X, FLOAT_MAXIMUM, node->_Maximum._Y);
+	node->_TerrainPatchRenderInformation._WorldPosition = Vector2<float32>(world_position._X, world_position._Z);
+	node->_TerrainPatchRenderInformation._PatchSize = _Properties._PatchSize * patch_size_multiplier;
+	node->_TerrainPatchRenderInformation._Borders = node->_Borders;
+	node->_TerrainPatchRenderInformation._HeightMapTextureIndex = node->_HeightMapTextureIndex;
+	node->_TerrainPatchRenderInformation._HeightMapResolution = node->_HeightMapResolution;
+	node->_TerrainPatchRenderInformation._MaterialMapsResolution = node->_MaterialMapsResolution;
+	node->_TerrainPatchRenderInformation._NormalMapTextureIndex = node->_NormalMapTextureIndex;
+	node->_TerrainPatchRenderInformation._IndexMapTextureIndex = node->_IndexMapTextureIndex;
+	node->_TerrainPatchRenderInformation._BlendMapTextureIndex = node->_BlendMapTextureIndex;
+	node->_TerrainPatchRenderInformation._Visibility = false;
 }
 
 /*
@@ -988,6 +985,7 @@ void TerrainSystem::PerformUpdate(TerrainQuadTreeNodeUpdate *const RESTRICT upda
 			update->_AddRootNodeData._NewNode._Maximum = Vector2<float32>(grid_point_world_position._X + (_Properties._PatchSize * 0.5f), grid_point_world_position._Z + (_Properties._PatchSize * 0.5f));
 			
 			GenerateMaps(&update->_AddRootNodeData._NewNode);
+			GeneratePatchInformations(&update->_AddRootNodeData._NewNode);
 
 			break;
 		}
@@ -1002,6 +1000,7 @@ void TerrainSystem::PerformUpdate(TerrainQuadTreeNodeUpdate *const RESTRICT upda
 
 			//Generate the maps.
 			GenerateMaps(&update->_CombineData._NewNode);
+			GeneratePatchInformations(&update->_CombineData._NewNode);
 
 			break;
 		}
@@ -1078,6 +1077,9 @@ void TerrainSystem::PerformUpdate(TerrainQuadTreeNodeUpdate *const RESTRICT upda
 
 				//Generate the maps.
 				GenerateMaps(&update->_SubdivideData._NewNodes[current_node_index]);
+
+				//Generate the patch informations.
+				GeneratePatchInformations(&update->_SubdivideData._NewNodes[current_node_index]);
 			}
 
 			break;
