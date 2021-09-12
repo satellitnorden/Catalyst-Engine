@@ -65,6 +65,46 @@ public:
 	TerrainPatchRenderInformation _TerrainPatchRenderInformation;
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE TerrainQuadTreeNode() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Move constructor.
+	*/
+	FORCE_INLINE TerrainQuadTreeNode(TerrainQuadTreeNode &&other) NOEXCEPT
+	{
+		_Depth = other._Depth;
+		_Borders = other._Borders;
+		_ChildNodes = std::move(other._ChildNodes);
+		_Minimum = other._Minimum;
+		_Maximum = other._Maximum;
+		_HeightMapResolution = other._HeightMapResolution;
+		_HeightMapTexture = other._HeightMapTexture;
+		_HeightMapTextureIndex = other._HeightMapTextureIndex;
+		_MaterialMapsResolution = other._MaterialMapsResolution;
+		_NormalMapTexture = other._NormalMapTexture;
+		_NormalMapTextureIndex = other._NormalMapTextureIndex;
+		_IndexMapTexture = other._IndexMapTexture;
+		_IndexMapTextureIndex = other._IndexMapTextureIndex;
+		_BlendMapTexture = other._BlendMapTexture;
+		_BlendMapTextureIndex = other._BlendMapTextureIndex;
+		_TerrainPatchInformation = other._TerrainPatchInformation;
+		_TerrainPatchRenderInformation = other._TerrainPatchRenderInformation;
+	}
+
+	/*
+	*	Move operator overload.
+	*/
+	FORCE_INLINE void operator=(TerrainQuadTreeNode &&other) NOEXCEPT
+	{
+		new (this) TerrainQuadTreeNode(std::move(other));
+	}
+
+	/*
 	*	Returns whether or not this node is subdivided.
 	*/
 	FORCE_INLINE NO_DISCARD bool IsSubdivided() const NOEXCEPT

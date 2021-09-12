@@ -165,7 +165,7 @@ void CatalystShaderMain()
 					float screen_factor = min(abs(light_screen_space_position.x - 0.5f) * abs(light_screen_space_position.y - 0.5f), 1.0f);
 					screen_factor *= screen_factor;
 					screen_factor = 1.0f - screen_factor;
-					screen_factor = light_screen_space_position.z < 1.0f ? screen_factor : 0.0f;
+					screen_factor = dot(light.position_or_direction, PERCEIVER_FORWARD_VECTOR) <= 0.0f ? screen_factor : 0.0f;
 
 					for (uint sample_index = 0; sample_index < NUMBER_OF_DIRECTIONAL_LIGHT_SAMPLES; ++sample_index)
 					{

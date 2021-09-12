@@ -347,7 +347,7 @@ NO_DISCARD bool TerrainSystem::ProcessUpdates() NOEXCEPT
 					if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
 					{
 						_QuadTree._RootGridPoints[i] = update->_AddRootNodeData._GridPoint;
-						_QuadTree._RootNodes[i] = update->_AddRootNodeData._NewNode;
+						_QuadTree._RootNodes[i] = std::move(update->_AddRootNodeData._NewNode);
 
 						break;
 					}
@@ -375,7 +375,7 @@ NO_DISCARD bool TerrainSystem::ProcessUpdates() NOEXCEPT
 				}
 				
 				//Replace the node.
-				*update->_CombineData._Node = update->_CombineData._NewNode;
+				*update->_CombineData._Node = std::move(update->_CombineData._NewNode);
 
 				//Add the patch informations.
 				_PatchInformations.Emplace(update->_CombineData._NewNode._TerrainPatchInformation);
@@ -396,7 +396,7 @@ NO_DISCARD bool TerrainSystem::ProcessUpdates() NOEXCEPT
 				//Add the child nodes.
 				for (uint8 i{ 0 }; i < 4; ++i)
 				{
-					update->_SubdivideData._ParentNode->_ChildNodes.Emplace(update->_SubdivideData._NewNodes[i]);
+					update->_SubdivideData._ParentNode->_ChildNodes.Emplace(std::move(update->_SubdivideData._NewNodes[i]));
 				}
 
 				//Add the patch informations.
