@@ -30,6 +30,9 @@ public:
 	//The patch resolution.
 	uint32 _PatchResolution;
 
+	//The maximum material maps resolution.
+	uint32 _MaximumMaterialMapsResolution;
+
 	//The maximum quad tree depth.
 	uint8 _MaximumQuadTreeDepth;
 

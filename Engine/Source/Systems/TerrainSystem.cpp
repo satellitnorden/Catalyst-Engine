@@ -25,12 +25,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(TerrainSystem);
 
-//Terrain system constants.
-namespace TerrainSystemConstants
-{
-	constexpr uint32 MAXIMUM_MATERIAL_MAPS_RESOLUTION{ 256 };
-}
-
 /*
 *	Initializes the terrain system.
 */
@@ -39,6 +33,7 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 	//Copy over the properties.
 	_Properties._PatchSize = configuration._PatchSize;
 	_Properties._PatchResolution = configuration._PatchResolution;
+	_Properties._MaximumMaterialMapsResolution = configuration._MaximumMaterialMapsResolution;
 	_Properties._MaximumQuadTreeDepth = configuration._MaximumQuadTreeDepth;
 	_Properties._TerrainHeightFunction = configuration._TerrainHeightFunction;
 	_Properties._TerrainMaterialFunction = configuration._TerrainMaterialFunction;
@@ -77,7 +72,7 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 	_PatchRenderInformations.Reserve(UINT8_MAXIMUM);
 
 	//Determine the maximum number of updates in flight.
-	_MaximumNumberOfUpdatesInFlight = TaskSystem::Instance->GetNumberOfTaskExecutors() / 4;
+	_MaximumNumberOfUpdatesInFlight = TaskSystem::Instance->GetNumberOfTaskExecutors() / 2;
 }
 
 /*
@@ -102,47 +97,9 @@ void TerrainSystem::SequentialUpdate() NOEXCEPT
 	//Check if all updates are done. Return if not.
 	for (TerrainQuadTreeNodeUpdate *const RESTRICT update : _Updates)
 	{
-		switch (update->_Type)
+		if (!update->_Task.IsExecuted())
 		{
-			case TerrainQuadTreeNodeUpdate::Type::ADD_ROOT_NODE:
-			{
-				if (!update->_AddRootNodeData._Task.IsExecuted())
-				{
-					return;
-				}
-
-				break;
-			}
-
-			case TerrainQuadTreeNodeUpdate::Type::COMBINE:
-			{
-				if (!update->_CombineData._Task.IsExecuted())
-				{
-					return;
-				}
-
-				break;
-			}
-
-			case TerrainQuadTreeNodeUpdate::Type::SUBDIVIDE:
-			{
-				for (uint8 i{ 0 }; i < 4; ++i)
-				{
-					if (!update->_SubdivideData._Tasks[i].IsExecuted())
-					{
-						return;
-					}
-				}
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
+			return;
 		}
 	}
 
@@ -231,17 +188,17 @@ void TerrainSystem::SequentialUpdate() NOEXCEPT
 				//Create the new update.
 				TerrainQuadTreeNodeUpdate *const RESTRICT new_update{ new (MemorySystem::Instance->TypeAllocate<TerrainQuadTreeNodeUpdate>()) TerrainQuadTreeNodeUpdate(TerrainQuadTreeNodeUpdate::Type::ADD_ROOT_NODE) };
 
-				new_update->_AddRootNodeData._Task._Function = [](void *const RESTRICT arguments)
+				new_update->_Task._Function = [](void *const RESTRICT arguments)
 				{
 					TerrainSystem::Instance->PerformUpdate(static_cast<TerrainQuadTreeNodeUpdate *const RESTRICT>(arguments));
 				};
-				new_update->_AddRootNodeData._Task._Arguments = new_update;
-				new_update->_AddRootNodeData._Task._ExecutableOnSameThread = false;
+				new_update->_Task._Arguments = new_update;
+				new_update->_Task._ExecutableOnSameThread = false;
 				new_update->_AddRootNodeData._GridPoint = valid_grid_point;
 
 				_Updates.Emplace(new_update);
 
-				TaskSystem::Instance->ExecuteTask(&new_update->_AddRootNodeData._Task);
+				TaskSystem::Instance->ExecuteTask(&new_update->_Task);
 
 				++_CurrentNumberOfUpdatesInFlight;
 			}
@@ -516,17 +473,17 @@ void TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float>& pe
 				//Create the new update.
 				TerrainQuadTreeNodeUpdate *const RESTRICT new_update{ new (MemorySystem::Instance->TypeAllocate<TerrainQuadTreeNodeUpdate>()) TerrainQuadTreeNodeUpdate(TerrainQuadTreeNodeUpdate::Type::COMBINE) };
 
-				new_update->_CombineData._Task._Function = [](void *const RESTRICT arguments)
+				new_update->_Task._Function = [](void *const RESTRICT arguments)
 				{
 					TerrainSystem::Instance->PerformUpdate(static_cast<TerrainQuadTreeNodeUpdate *const RESTRICT>(arguments));
 				};
-				new_update->_CombineData._Task._Arguments = new_update;
-				new_update->_CombineData._Task._ExecutableOnSameThread = false;
+				new_update->_Task._Arguments = new_update;
+				new_update->_Task._ExecutableOnSameThread = false;
 				new_update->_CombineData._Node = node;
 
 				_Updates.Emplace(new_update);
 
-				TaskSystem::Instance->ExecuteTask(&new_update->_CombineData._Task);
+				TaskSystem::Instance->ExecuteTask(&new_update->_Task);
 
 				++_CurrentNumberOfUpdatesInFlight;
 			}
@@ -572,27 +529,19 @@ void TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float>& pe
 				//Create the new update.
 				TerrainQuadTreeNodeUpdate *const RESTRICT new_update{ new (MemorySystem::Instance->TypeAllocate<TerrainQuadTreeNodeUpdate>()) TerrainQuadTreeNodeUpdate(TerrainQuadTreeNodeUpdate::Type::SUBDIVIDE) };
 
-				for (uint8 i{ 0 }; i < 4; ++i)
+				new_update->_Task._Function = [](void *const RESTRICT arguments)
 				{
-					new_update->_SubdivideData._Tasks[i]._Function = [](void *const RESTRICT arguments)
-					{
-						TerrainSystem::Instance->PerformUpdate(static_cast<TerrainQuadTreeNodeUpdate *const RESTRICT>(arguments));
-					};
-					new_update->_SubdivideData._Tasks[i]._Arguments = new_update;
-					new_update->_SubdivideData._Tasks[i]._ExecutableOnSameThread = false;
-				}
-
+					TerrainSystem::Instance->PerformUpdate(static_cast<TerrainQuadTreeNodeUpdate *const RESTRICT>(arguments));
+				};
+				new_update->_Task._Arguments = new_update;
+				new_update->_Task._ExecutableOnSameThread = false;
 				new_update->_SubdivideData._ParentNode = node;
-				new_update->_SubdivideData._NodeIndex = 0;
 
 				_Updates.Emplace(new_update);
 
-				for (uint8 i{ 0 }; i < 4; ++i)
-				{
-					TaskSystem::Instance->ExecuteTask(&new_update->_SubdivideData._Tasks[i]);
+				TaskSystem::Instance->ExecuteTask(&new_update->_Task);
 
-					++_CurrentNumberOfUpdatesInFlight;
-				}
+				++_CurrentNumberOfUpdatesInFlight;
 			}
 		}
 	}
@@ -916,7 +865,7 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 
 	//Calculate the height/material map(s) resolution.
 	node->_HeightMapResolution = _Properties._PatchResolution;
-	node->_MaterialMapsResolution = CatalystBaseMath::Clamp<uint32>(CatalystBaseMath::Round<uint32>(patch_size), 1, TerrainSystemConstants::MAXIMUM_MATERIAL_MAPS_RESOLUTION);
+	node->_MaterialMapsResolution = CatalystBaseMath::Clamp<uint32>(CatalystBaseMath::Round<uint32>(patch_size), 1, _Properties._MaximumMaterialMapsResolution);
 
 	//Initialize the height/index/blend maps.
 	Texture2D<float32> height_map{ node->_HeightMapResolution };
@@ -1059,76 +1008,77 @@ void TerrainSystem::PerformUpdate(TerrainQuadTreeNodeUpdate *const RESTRICT upda
 
 		case TerrainQuadTreeNodeUpdate::Type::SUBDIVIDE:
 		{
-			//Retrieve the current node index.
-			const uint64 current_node_index{ update->_SubdivideData._NodeIndex.fetch_add(1) };
-
 			//Calculate the patch size multiplier.
 			const float32 patch_size_multiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*update->_SubdivideData._ParentNode) * 0.5f };
 
-			//Set up the new node.
-			update->_SubdivideData._NewNodes[current_node_index]._Depth = update->_SubdivideData._ParentNode->_Depth + 1;
-			update->_SubdivideData._NewNodes[current_node_index]._Borders = 0;
-
-			switch (current_node_index)
+			//Set up the new nodes.
+			for (uint64 current_node_index{ 0 }; current_node_index < 4; ++current_node_index)
 			{
-				case 0:
+				//Set up the new node.
+				update->_SubdivideData._NewNodes[current_node_index]._Depth = update->_SubdivideData._ParentNode->_Depth + 1;
+				update->_SubdivideData._NewNodes[current_node_index]._Borders = 0;
+
+				switch (current_node_index)
 				{
-					update->_SubdivideData._NewNodes[current_node_index]._Minimum =
-					update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
-																										update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f);
+					case 0:
+					{
+						update->_SubdivideData._NewNodes[current_node_index]._Minimum =
+						update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
+																											update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f);
 
-					update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
-					update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+						update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+						update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
 
-					break;
+						break;
+					}
+
+					case 1:
+					{
+						update->_SubdivideData._NewNodes[current_node_index]._Minimum =
+						update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
+																											update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 1.5f);
+
+						update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+						update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+
+						break;
+					}
+
+					case 2:
+					{
+						update->_SubdivideData._NewNodes[current_node_index]._Minimum =
+						update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
+																											update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 1.5f);
+
+						update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+						update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+
+						break;
+					}
+
+					case 3:
+					{
+						update->_SubdivideData._NewNodes[current_node_index]._Minimum =
+						update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
+																											update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f);
+
+						update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+						update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
 				}
 
-				case 1:
-				{
-					update->_SubdivideData._NewNodes[current_node_index]._Minimum =
-					update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 1.5f,
-																										update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 1.5f);
-
-					update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
-					update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
-
-					break;
-				}
-
-				case 2:
-				{
-					update->_SubdivideData._NewNodes[current_node_index]._Minimum =
-					update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
-																										update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 1.5f);
-
-					update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
-					update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
-
-					break;
-				}
-
-				case 3:
-				{
-					update->_SubdivideData._NewNodes[current_node_index]._Minimum =
-					update->_SubdivideData._NewNodes[current_node_index]._Maximum = Vector2<float32>(	update->_SubdivideData._ParentNode->_Minimum._X + _Properties._PatchSize * patch_size_multiplier * 0.5f,
-																										update->_SubdivideData._ParentNode->_Minimum._Y + _Properties._PatchSize * patch_size_multiplier * 0.5f);
-
-					update->_SubdivideData._NewNodes[current_node_index]._Minimum -= Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
-					update->_SubdivideData._NewNodes[current_node_index]._Maximum += Vector2<float32>(_Properties._PatchSize * patch_size_multiplier * 0.5f, _Properties._PatchSize * patch_size_multiplier * 0.5f);
-
-					break;
-				}
-
-				default:
-				{
-					ASSERT(false, "Invalid case!");
-
-					break;
-				}
+				//Generate the maps.
+				GenerateMaps(&update->_SubdivideData._NewNodes[current_node_index]);
 			}
-
-			//Generate the maps.
-			GenerateMaps(&update->_SubdivideData._NewNodes[current_node_index]);
 
 			break;
 		}

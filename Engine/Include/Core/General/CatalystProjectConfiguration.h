@@ -209,6 +209,15 @@ public:
 	uint32 _PatchResolution;
 
 	/*
+	*	The maximum material maps resolution.
+	*	Defines the texture resolution of the material maps.
+	*	Higher resolutions means better quality for the terrain, but worse performance.
+	*	MUST be a power of two.
+	*	Recommended: 256.
+	*/
+	uint32 _MaximumMaterialMapsResolution;
+
+	/*
 	*	The maximum quad tree depth.
 	*	Defines the maximum number of times each quad tree node can be subdivided.
 	*	Higher depths means better quality for displacement, but worse performance.

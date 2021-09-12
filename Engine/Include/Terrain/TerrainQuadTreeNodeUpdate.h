@@ -34,13 +34,13 @@ public:
 	//The type.
 	Type _Type;
 
+	//The task.
+	Task _Task;
+
 	union
 	{
 		struct
 		{
-			//The task.
-			Task _Task;
-
 			//The grid point.
 			GridPoint2 _GridPoint;
 
@@ -50,9 +50,6 @@ public:
 
 		struct
 		{
-			//The task.
-			Task _Task;
-
 			//The node.
 			TerrainQuadTreeNode *RESTRICT _Node;
 
@@ -62,14 +59,8 @@ public:
 
 		struct
 		{
-			//The tasks.
-			StaticArray<Task, 4> _Tasks;
-
 			//The parent node.
 			TerrainQuadTreeNode *RESTRICT _ParentNode;
-
-			//The node index.
-			Atomic<uint64> _NodeIndex;
 
 			//The new nodes.
 			StaticArray<TerrainQuadTreeNode, 4> _NewNodes;
