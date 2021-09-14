@@ -5,6 +5,10 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Concurrency.
+#include <Concurrency/AssertLock.h>
+#include <Concurrency/ScopedLock.h>
+
 //File.
 #include <File/Core/BinaryFile.h>
 #include <File/Writers/TGAWriter.h>
@@ -104,6 +108,9 @@ namespace VulkanSubRenderingSystemData
 
 	//The destruction queue.
 	DynamicArray<VulkanDestructionData> _DestructionQueue;
+
+	//The destruction queue lock.
+	AssertLock _DestructionQueueLock;
 }
 
 //Vulkan rendering system logic.
@@ -622,6 +629,8 @@ namespace VulkanSubRenderingSystemLogic
 	*/
 	void ProcessDestructionQueue() NOEXCEPT
 	{
+		SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
+
 		for (uint64 i = 0; i < VulkanSubRenderingSystemData::_DestructionQueue.Size();)
 		{
 			++VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames;
@@ -936,6 +945,8 @@ void VulkanSubRenderingSystem::CreateTopLevelAccelerationStructure(const ArrayPr
 void VulkanSubRenderingSystem::DestroyAccelerationStructure(AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
+	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
+
 	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE, *handle);
 }
 
@@ -963,6 +974,8 @@ void VulkanSubRenderingSystem::UploadDataToBuffer(const void *const RESTRICT *co
 void VulkanSubRenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
+	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
+
 	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::BUFFER, *handle);
 }
 
@@ -1076,6 +1089,8 @@ void VulkanSubRenderingSystem::CreateDepthBuffer(const Resolution resolution, De
 void VulkanSubRenderingSystem::DestroyDepthBuffer(DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
+	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
+
 	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::DEPTH_BUFFER, *handle);
 }
 
@@ -1250,6 +1265,8 @@ void VulkanSubRenderingSystem::CreateRenderDataTableLayout(const RenderDataTable
 void VulkanSubRenderingSystem::DestroyRenderDataTableLayout(RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
+	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
+
 	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE_LAYOUT, *handle);
 }
 
@@ -1509,6 +1526,8 @@ void VulkanSubRenderingSystem::BindUniformBufferToRenderDataTable(const uint32 b
 void VulkanSubRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
+	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
+
 	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE, *handle);
 }
 
@@ -1528,6 +1547,8 @@ void VulkanSubRenderingSystem::CreateRenderTarget(const Resolution resolution, c
 void VulkanSubRenderingSystem::DestroyRenderTarget(RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
+	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
+
 	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_TARGET, *handle);
 }
 
@@ -1564,6 +1585,8 @@ void VulkanSubRenderingSystem::CreateTexture2D(const TextureData &data, Texture2
 void VulkanSubRenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
+	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
+
 	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D, *handle);
 }
 

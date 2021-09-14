@@ -297,14 +297,14 @@ RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(cons
 void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) NOEXCEPT
 {
 	texture->Release();
+	texture->~Vulkan2DTexture();
+	MemorySystem::Instance->TypeFree<Vulkan2DTexture>(texture);
 
 	{
 		SCOPED_LOCK(_Vulkan2DTexturesLock);
 
 		_Vulkan2DTextures.Erase<false>(texture);
 	}
-	
-	MemorySystem::Instance->TypeFree<Vulkan2DTexture>(texture);
 }
 
 /*

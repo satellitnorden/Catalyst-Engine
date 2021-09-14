@@ -56,11 +56,11 @@ namespace CatalystEngineSystemData
 	//Enumeration covering all sequential updates.
 	enum class SequentialUpdate : uint8
 	{
-		PlacementSystem,
-		SaveSystem,
-		TerrainSystem,
+		PLACEMENT_SYSTEM,
+		SAVE_SYSTEM,
+		TERRAIN_SYSTEM,
 
-		NumberOfSequentialUpdates
+		NUMBER_OF_SEQUENTIAL_UPDATES
 	};
 
 	//The delta timer.
@@ -83,21 +83,21 @@ namespace CatalystEngineSystemLogic
 		//Execute the sequential update.
 		switch (CatalystEngineSystemData::_CurrentSequentialUpdate)
 		{
-			case CatalystEngineSystemData::SequentialUpdate::PlacementSystem:
+			case CatalystEngineSystemData::SequentialUpdate::PLACEMENT_SYSTEM:
 			{
 				PlacementSystem::Instance->SequentialUpdate();
 
 				break;
 			}
 
-			case CatalystEngineSystemData::SequentialUpdate::SaveSystem:
+			case CatalystEngineSystemData::SequentialUpdate::SAVE_SYSTEM:
 			{
 				SaveSystem::Instance->SequentialUpdate();
 
 				break;
 			}
 
-			case CatalystEngineSystemData::SequentialUpdate::TerrainSystem:
+			case CatalystEngineSystemData::SequentialUpdate::TERRAIN_SYSTEM:
 			{
 				TerrainSystem::Instance->SequentialUpdate();
 
@@ -113,7 +113,7 @@ namespace CatalystEngineSystemLogic
 		}
 
 		//Update the current sequential update.
-		CatalystEngineSystemData::_CurrentSequentialUpdate = CatalystEngineSystemData::_CurrentSequentialUpdate == static_cast<CatalystEngineSystemData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemData::SequentialUpdate::NumberOfSequentialUpdates) - 1) ? static_cast<CatalystEngineSystemData::SequentialUpdate>(0) : static_cast<CatalystEngineSystemData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemData::_CurrentSequentialUpdate) + 1);
+		CatalystEngineSystemData::_CurrentSequentialUpdate = CatalystEngineSystemData::_CurrentSequentialUpdate == static_cast<CatalystEngineSystemData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemData::SequentialUpdate::NUMBER_OF_SEQUENTIAL_UPDATES) - 1) ? static_cast<CatalystEngineSystemData::SequentialUpdate>(0) : static_cast<CatalystEngineSystemData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemData::_CurrentSequentialUpdate) + 1);
 	}
 
 }

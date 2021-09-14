@@ -5,6 +5,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/CatalystProjectConfiguration.h>
 
+//Concurrency.
+#include <Concurrency/Task.h>
+
 //Math.
 #include <Math/Geometry/GridPoint2.h>
 
@@ -12,6 +15,7 @@
 #include <Terrain/TerrainCore.h>
 #include <Terrain/TerrainPatchInformation.h>
 #include <Terrain/TerrainPatchRenderInformation.h>
+#include <Terrain/TerrainProcessedUpdate.h>
 #include <Terrain/TerrainProperties.h>
 #include <Terrain/TerrainQuadTree.h>
 #include <Terrain/TerrainQuadTreeNodeUpdate.h>
@@ -96,6 +100,14 @@ public:
 
 private:
 
+	//Enumeration covering all update stages.
+	enum class UpdateStage : uint8
+	{
+		GENERATE_UPDATES,
+		WAIT_FOR_UPDATES,
+		PROCESS_UPDATES
+	};
+
 	//The properties.
 	TerrainProperties _Properties;
 
@@ -108,8 +120,17 @@ private:
 	//The patch render informations.
 	DynamicArray<TerrainPatchRenderInformation> _PatchRenderInformations;
 
+	//The current update stage.
+	UpdateStage _CurrentUpdateStage{ UpdateStage::GENERATE_UPDATES };
+
 	//The updates.
 	DynamicArray<TerrainQuadTreeNodeUpdate *RESTRICT> _Updates;
+
+	//The process updates task.
+	Task _ProcessUpdatesTask;
+
+	//The processed update.
+	TerrainProcessedUpdate _ProcessedUpdate;
 
 	//The current number of updates in flight.
 	uint32 _CurrentNumberOfUpdatesInFlight;
@@ -121,14 +142,19 @@ private:
 	TerrainRayTracingData _TerrainRayTracingData;
 
 	/*
-	*	Processes the updates. Returns if there were any updates.
+	*	Updates the GENERATE_UPDATES stage.
 	*/
-	NO_DISCARD bool ProcessUpdates() NOEXCEPT;
+	void UpdateGenerateUpdatesStage() NOEXCEPT;
 
 	/*
-	*	Removes a quad tree root node.
+	*	Updates the WAIT_FOR_UPDATES stage.
 	*/
-	void RemoveRootNode(const GridPoint2 grid_point) NOEXCEPT;
+	void UpdateWaitForUpdatesStage() NOEXCEPT;
+
+	/*
+	*	Updates the PROCESS_UPDATES stage.
+	*/
+	void UpdateProcessUpdatesStage() NOEXCEPT;
 
 	/*
 	*	Removes a node.
@@ -138,17 +164,12 @@ private:
 	/*
 	*	Checks combination of a node.
 	*/
-	void CheckCombination(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
+	void CheckCombination(const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Checks subdivisions of a node.
 	*/
-	void CheckSubdivision(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
-
-	/*
-	*	Finds the highest depth.
-	*/
-	void FindHighestDepth(const TerrainQuadTreeNode &node, uint8 *const RESTRICT highest_depth) NOEXCEPT;
+	void CheckSubdivision(const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Traverses the quad tree, calculates new borders for all nodes and fills in the update.
@@ -159,6 +180,11 @@ private:
 	*	Calculates new borders for one node and fills in the update.
 	*/
 	void CalculateNewBorders(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
+	/*
+	*	Gathers patch informations.
+	*/
+	void GatherPatchInformations(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Generates the patch informations.
@@ -184,6 +210,11 @@ private:
 	*	Performs the given update.
 	*/
 	void PerformUpdate(TerrainQuadTreeNodeUpdate *const RESTRICT update) NOEXCEPT;
+
+	/*
+	*	Processes updates asynchronously.
+	*/
+	void ProcessUpdatesAsynchronously() NOEXCEPT;
 
 	/*
 	*	Saves the terrain data.

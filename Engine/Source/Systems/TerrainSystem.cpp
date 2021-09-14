@@ -73,6 +73,14 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 
 	//Determine the maximum number of updates in flight.
 	_MaximumNumberOfUpdatesInFlight = TaskSystem::Instance->GetNumberOfTaskExecutors() / 2;
+
+	//Set up the process updates task.
+	_ProcessUpdatesTask._Function = [](void* const RESTRICT)
+	{
+		TerrainSystem::Instance->ProcessUpdatesAsynchronously();
+	};
+	_ProcessUpdatesTask._Arguments = nullptr;
+	_ProcessUpdatesTask._ExecutableOnSameThread = false;
 }
 
 /*
@@ -94,166 +102,36 @@ void TerrainSystem::SequentialUpdate() NOEXCEPT
 		return;
 	}
 
-	//Check if all updates are done. Return if not.
-	for (TerrainQuadTreeNodeUpdate *const RESTRICT update : _Updates)
+	//Update the current stage.
+	switch (_CurrentUpdateStage)
 	{
-		if (!update->_Task.IsExecuted())
+		case UpdateStage::GENERATE_UPDATES:
 		{
-			return;
-		}
-	}
+			UpdateGenerateUpdatesStage();
 
-	//Remember if anything was updated.
-	bool anything_updated{ false };
-
-	//Process the updates. (:
-	anything_updated |= ProcessUpdates();
-
-	//Reset the current number of updates in flight.
-	_CurrentNumberOfUpdatesInFlight = 0;
-
-	//Cache the current perceiver position.
-	const Vector3<float32> current_perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
-
-	//Calculate the perceiver grid point.
-	const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(current_perceiver_position, _Properties._PatchSize) };
-
-	//Calculate the valid grid points.
-	const StaticArray<GridPoint2, 9> valid_grid_points
-	{
-		GridPoint2(current_grid_point._X, current_grid_point._Y),
-
-		GridPoint2(current_grid_point._X - 1, current_grid_point._Y - 1),
-		GridPoint2(current_grid_point._X - 1, current_grid_point._Y),
-		GridPoint2(current_grid_point._X - 1, current_grid_point._Y + 1),
-
-		GridPoint2(current_grid_point._X, current_grid_point._Y - 1),
-		GridPoint2(current_grid_point._X, current_grid_point._Y + 1),
-
-		GridPoint2(current_grid_point._X + 1, current_grid_point._Y - 1),
-		GridPoint2(current_grid_point._X + 1, current_grid_point._Y),
-		GridPoint2(current_grid_point._X + 1, current_grid_point._Y + 1)
-	};
-
-
-	//If a root grid point does exist that isn't valid, remove it.
-	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
-	{
-		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
-		{
-			continue;
+			break;
 		}
 
-		bool exists{ false };
-
-		for (const GridPoint2 valid_grid_point : valid_grid_points)
+		case UpdateStage::WAIT_FOR_UPDATES:
 		{
-			if (valid_grid_point == _QuadTree._RootGridPoints[i])
-			{
-				exists = true;
+			UpdateWaitForUpdatesStage();
 
-				break;
-			}
+			break;
 		}
 
-		if (!exists)
+		case UpdateStage::PROCESS_UPDATES:
 		{
-			//Remove the root node.
-			RemoveRootNode(_QuadTree._RootGridPoints[i]);
+			UpdateProcessUpdatesStage();
 
-			//Remember that something was updated.
-			anything_updated = true;
-		}
-	}
-
-	//If a valid grid point does not exist, construct a new update.
-	for (const GridPoint2 valid_grid_point : valid_grid_points)
-	{
-		bool exists{ false };
-
-		for (const GridPoint2 root_grid_point : _QuadTree._RootGridPoints)
-		{
-			if (root_grid_point == valid_grid_point)
-			{
-				exists = true;
-
-				break;
-			}
+			break;
 		}
 
-		if (!exists)
+		default:
 		{
-			if (_CurrentNumberOfUpdatesInFlight < _MaximumNumberOfUpdatesInFlight)
-			{
-				//Create the new update.
-				TerrainQuadTreeNodeUpdate *const RESTRICT new_update{ new (MemorySystem::Instance->TypeAllocate<TerrainQuadTreeNodeUpdate>()) TerrainQuadTreeNodeUpdate(TerrainQuadTreeNodeUpdate::Type::ADD_ROOT_NODE) };
+			ASSERT(false, "Invalid case!");
 
-				new_update->_Task._Function = [](void *const RESTRICT arguments)
-				{
-					TerrainSystem::Instance->PerformUpdate(static_cast<TerrainQuadTreeNodeUpdate *const RESTRICT>(arguments));
-				};
-				new_update->_Task._Arguments = new_update;
-				new_update->_Task._ExecutableOnSameThread = false;
-				new_update->_AddRootNodeData._GridPoint = valid_grid_point;
-
-				_Updates.Emplace(new_update);
-
-				TaskSystem::Instance->ExecuteTask(&new_update->_Task);
-
-				++_CurrentNumberOfUpdatesInFlight;
-			}
+			break;
 		}
-	}
-
-	//Find the highest depth of any node.
-	uint8 highest_depth{ 0 };
-
-	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
-	{
-		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
-		{
-			continue;
-		}
-
-		FindHighestDepth(_QuadTree._RootNodes[i], &highest_depth);
-	}
-
-	//Check if a node should be combined.
-	for (uint8 depth{ highest_depth }; depth > 0; --depth)
-	{
-		for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
-		{
-			if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
-			{
-				continue;
-			}
-
-			CheckCombination(depth, current_perceiver_position, &_QuadTree._RootNodes[i]);
-		}
-	}
-
-	//Check if a node should be subdivided.
-	for (uint8 depth{ 0 }; depth < _Properties._MaximumQuadTreeDepth; ++depth)
-	{
-		for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
-		{
-			if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
-			{
-				continue;
-			}
-
-			CheckSubdivision(depth, current_perceiver_position, &_QuadTree._RootNodes[i]);
-		}
-	}
-
-	//Was anything updated?
-	if (anything_updated)
-	{
-		//Calculate the borders.
-		CalculateNewBorders();
-
-		//Update the terrain ray tracing data.
-		UpdateTerrainRayTracingData();
 	}
 }
 
@@ -328,125 +206,176 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float>& position, V
 }
 
 /*
-*	Processes the updates. Returns if there were any updates.
+*	Updates the GENERATE_UPDATES stage.
 */
-NO_DISCARD bool TerrainSystem::ProcessUpdates() NOEXCEPT
+void TerrainSystem::UpdateGenerateUpdatesStage() NOEXCEPT
 {
-	//Was there any updates?
-	const bool was_updates{ !_Updates.Empty() };
+	//Cache the current perceiver position.
+	const Vector3<float32> current_perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
 
-	//Process all updates.
-	for (TerrainQuadTreeNodeUpdate *const RESTRICT update : _Updates)
+	//Calculate the perceiver grid point.
+	const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(current_perceiver_position, _Properties._PatchSize) };
+
+	//Calculate the valid grid points.
+	const StaticArray<GridPoint2, 9> valid_grid_points
 	{
-		switch (update->_Type)
+		GridPoint2(current_grid_point._X, current_grid_point._Y),
+
+		GridPoint2(current_grid_point._X - 1, current_grid_point._Y - 1),
+		GridPoint2(current_grid_point._X - 1, current_grid_point._Y),
+		GridPoint2(current_grid_point._X - 1, current_grid_point._Y + 1),
+
+		GridPoint2(current_grid_point._X, current_grid_point._Y - 1),
+		GridPoint2(current_grid_point._X, current_grid_point._Y + 1),
+
+		GridPoint2(current_grid_point._X + 1, current_grid_point._Y - 1),
+		GridPoint2(current_grid_point._X + 1, current_grid_point._Y),
+		GridPoint2(current_grid_point._X + 1, current_grid_point._Y + 1)
+	};
+
+
+	//If a root grid point does exist that isn't valid, remove it.
+	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	{
+		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
 		{
-			case TerrainQuadTreeNodeUpdate::Type::ADD_ROOT_NODE:
+			continue;
+		}
+
+		bool exists{ false };
+
+		for (const GridPoint2 valid_grid_point : valid_grid_points)
+		{
+			if (valid_grid_point == _QuadTree._RootGridPoints[i])
 			{
-				for (uint64 i{ 0 }, size{ _QuadTree._RootGridPoints.Size() }; i < size; ++i)
-				{
-					if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
-					{
-						_QuadTree._RootGridPoints[i] = update->_AddRootNodeData._GridPoint;
-						_QuadTree._RootNodes[i] = std::move(update->_AddRootNodeData._NewNode);
-
-						break;
-					}
-				}
-
-				_PatchInformations.Emplace(update->_AddRootNodeData._NewNode._TerrainPatchInformation);
-				_PatchRenderInformations.Emplace(update->_AddRootNodeData._NewNode._TerrainPatchRenderInformation);
-
-				break;
-			}
-
-			case TerrainQuadTreeNodeUpdate::Type::COMBINE:
-			{
-				//Destroy the maps for all the child nodes.
-				for (TerrainQuadTreeNode &child_node : update->_CombineData._Node->_ChildNodes)
-				{
-					DestroyMaps(&child_node);
-				}
-
-				//Erase the patch informations.
-				for (TerrainQuadTreeNode &child_node : update->_CombineData._Node->_ChildNodes)
-				{
-					_PatchInformations.Erase<false>(child_node._TerrainPatchInformation);
-					_PatchRenderInformations.Erase<false>(child_node._TerrainPatchRenderInformation);
-				}
-				
-				//Replace the node.
-				*update->_CombineData._Node = std::move(update->_CombineData._NewNode);
-
-				//Add the patch informations.
-				_PatchInformations.Emplace(update->_CombineData._NewNode._TerrainPatchInformation);
-				_PatchRenderInformations.Emplace(update->_CombineData._NewNode._TerrainPatchRenderInformation);
-
-				break;
-			}
-
-			case TerrainQuadTreeNodeUpdate::Type::SUBDIVIDE:
-			{
-				//Destroy the maps for the parent node.
-				DestroyMaps(update->_SubdivideData._ParentNode);
-
-				//Erase the patch informations for the parent node.
-				_PatchInformations.Erase<false>(update->_SubdivideData._ParentNode->_TerrainPatchInformation);
-				_PatchRenderInformations.Erase<false>(update->_SubdivideData._ParentNode->_TerrainPatchRenderInformation);
-
-				//Add the child nodes.
-				for (uint8 i{ 0 }; i < 4; ++i)
-				{
-					update->_SubdivideData._ParentNode->_ChildNodes.Emplace(std::move(update->_SubdivideData._NewNodes[i]));
-				}
-
-				//Add the patch informations.
-				for (uint8 i{ 0 }; i < 4; ++i)
-				{
-					_PatchInformations.Emplace(update->_SubdivideData._NewNodes[i]._TerrainPatchInformation);
-					_PatchRenderInformations.Emplace(update->_SubdivideData._NewNodes[i]._TerrainPatchRenderInformation);
-				}
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
+				exists = true;
 
 				break;
 			}
 		}
 
-		update->~TerrainQuadTreeNodeUpdate();
-		MemorySystem::Instance->TypeFree<TerrainQuadTreeNodeUpdate>(update);
+		if (!exists)
+		{
+			//Remove the root node.
+			RemoveNode(&_QuadTree._RootNodes[i]);
+			_QuadTree._RootGridPoints[i] = GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM);
+		}
 	}
 
-	//Clear the updates.
-	_Updates.Clear();
+	//If a valid grid point does not exist, construct a new update.
+	for (const GridPoint2 valid_grid_point : valid_grid_points)
+	{
+		bool exists{ false };
 
-	//Return if there was any updates.
-	return was_updates;
+		for (const GridPoint2 root_grid_point : _QuadTree._RootGridPoints)
+		{
+			if (root_grid_point == valid_grid_point)
+			{
+				exists = true;
+
+				break;
+			}
+		}
+
+		if (!exists)
+		{
+			if (_CurrentNumberOfUpdatesInFlight < _MaximumNumberOfUpdatesInFlight)
+			{
+				//Create the new update.
+				TerrainQuadTreeNodeUpdate *const RESTRICT new_update{ new (MemorySystem::Instance->TypeAllocate<TerrainQuadTreeNodeUpdate>()) TerrainQuadTreeNodeUpdate(TerrainQuadTreeNodeUpdate::Type::ADD_ROOT_NODE) };
+
+				new_update->_Task._Function = [](void *const RESTRICT arguments)
+				{
+					TerrainSystem::Instance->PerformUpdate(static_cast<TerrainQuadTreeNodeUpdate *const RESTRICT>(arguments));
+				};
+				new_update->_Task._Arguments = new_update;
+				new_update->_Task._ExecutableOnSameThread = false;
+				new_update->_AddRootNodeData._GridPoint = valid_grid_point;
+
+				_Updates.Emplace(new_update);
+
+				TaskSystem::Instance->ExecuteTask(&new_update->_Task);
+
+				++_CurrentNumberOfUpdatesInFlight;
+			}
+		}
+	}
+
+	//Check if a node should be combined.
+	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	{
+		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+		{
+			continue;
+		}
+
+		CheckCombination(current_perceiver_position, &_QuadTree._RootNodes[i]);
+	}
+
+	//Check if a node should be subdivided.
+	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	{
+		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+		{
+			continue;
+		}
+
+		CheckSubdivision(current_perceiver_position, &_QuadTree._RootNodes[i]);
+	}
+
+	//Update the current update stage.
+	_CurrentUpdateStage = UpdateStage::WAIT_FOR_UPDATES;
 }
 
 /*
-*	Removes a quad tree root node.
+*	Updates the WAIT_FOR_UPDATES stage.
 */
-void TerrainSystem::RemoveRootNode(const GridPoint2 grid_point) NOEXCEPT
+void TerrainSystem::UpdateWaitForUpdatesStage() NOEXCEPT
 {
-	//Iterate over all root grid points to see which one matches.
-	for (uint64 i{ 0 }, size{ _QuadTree._RootGridPoints.Size() }; i < size; ++i)
+	//Check if all updates are done. Return if not.
+	for (TerrainQuadTreeNodeUpdate *const RESTRICT update : _Updates)
 	{
-		if (_QuadTree._RootGridPoints[i] == grid_point)
+		if (!update->_Task.IsExecuted())
 		{
-			//Set the root grid point to invalid.
-			_QuadTree._RootGridPoints[i] = GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM);
-
-			//Remove the node.
-			RemoveNode(&_QuadTree._RootNodes[i]);
-
-			break;
+			return;
 		}
 	}
+
+	//Fire off the process updates task.
+	TaskSystem::Instance->ExecuteTask(&_ProcessUpdatesTask);
+
+	//Update the current update stage.
+	_CurrentUpdateStage = UpdateStage::PROCESS_UPDATES;
+}
+
+/*
+*	Updates the PROCESS_UPDATES stage.
+*/
+void TerrainSystem::UpdateProcessUpdatesStage() NOEXCEPT
+{
+	//Wait for the process updates task to finish.
+	if (!_ProcessUpdatesTask.IsExecuted())
+	{
+		return;
+	}
+
+	//Move the patch informations.
+	_PatchInformations = std::move(_ProcessedUpdate._PatchInformations);
+	_PatchRenderInformations = std::move(_ProcessedUpdate._PatchRenderInformations);
+
+	//Destroy the maps for the nodes.
+	for (TerrainQuadTreeNode &node : _ProcessedUpdate._NodesToDestroy)
+	{
+		DestroyMaps(&node);
+	}
+
+	_ProcessedUpdate._NodesToDestroy.Clear();
+
+	//Reset the current number of updates in flight.
+	_CurrentNumberOfUpdatesInFlight = 0;
+
+	//Update the current update stage.
+	_CurrentUpdateStage = UpdateStage::GENERATE_UPDATES;
 }
 
 /*
@@ -476,12 +405,12 @@ void TerrainSystem::RemoveNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEP
 /*
 *	Checks combination of a node.
 */
-void TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+void TerrainSystem::CheckCombination(const Vector3<float>& perceiverPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->IsSubdivided())
 	{
-		if (node->_Depth == depth && TerrainQuadTreeUtilities::ShouldBeCombined(_Properties, *node, perceiverPosition))
+		if (TerrainQuadTreeUtilities::ShouldBeCombined(_Properties, *node, perceiverPosition))
 		{
 			if (_CurrentNumberOfUpdatesInFlight < _MaximumNumberOfUpdatesInFlight)
 			{
@@ -508,7 +437,7 @@ void TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float>& pe
 		{
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				CheckCombination(depth, perceiverPosition, &node->_ChildNodes[i]);
+				CheckCombination(perceiverPosition, &node->_ChildNodes[i]);
 			}
 		}
 	}
@@ -517,20 +446,14 @@ void TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float>& pe
 /*
 *	Checks subdivisions of a node.
 */
-void TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
+void TerrainSystem::CheckSubdivision(const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
-	//Don't go further down than the depth.
-	if (node->_Depth > depth)
-	{
-		return;
-	}
-
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->IsSubdivided())
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			CheckSubdivision(depth, perceiverPosition, &node->_ChildNodes[i]);
+			CheckSubdivision(perceiverPosition, &node->_ChildNodes[i]);
 		}
 	}
 
@@ -559,25 +482,6 @@ void TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float>& pe
 				++_CurrentNumberOfUpdatesInFlight;
 			}
 		}
-	}
-}
-
-/*
-*	Finds the highest depth.
-*/
-void TerrainSystem::FindHighestDepth(const TerrainQuadTreeNode &node, uint8 *const RESTRICT highest_depth) NOEXCEPT
-{
-	if (node.IsSubdivided())
-	{
-		for (uint8 i{ 0 }; i < 4; ++i)
-		{
-			FindHighestDepth(node._ChildNodes[i], highest_depth);
-		}
-	}
-
-	else
-	{
-		*highest_depth = CatalystBaseMath::Maximum<uint8>(*highest_depth, node._Depth);
 	}
 }
 
@@ -674,6 +578,28 @@ void TerrainSystem::CalculateNewBorders(TerrainQuadTreeNode *const RESTRICT node
 
 		//Update the node with the borders.
 		node->_Borders = borders;
+	}
+}
+
+/*
+*	Gathers patch informations.
+*/
+void TerrainSystem::GatherPatchInformations(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+{
+	if (node->IsSubdivided())
+	{
+		for (TerrainQuadTreeNode &child_node : node->_ChildNodes)
+		{
+			GatherPatchInformations(&child_node);
+		}
+	}
+
+	else
+	{
+		GeneratePatchInformations(node);
+
+		_ProcessedUpdate._PatchInformations.Emplace(node->_TerrainPatchInformation);
+		_ProcessedUpdate._PatchRenderInformations.Emplace(node->_TerrainPatchRenderInformation);
 	}
 }
 
@@ -943,12 +869,22 @@ void TerrainSystem::DestroyMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 		node->_HeightMapTexture = EMPTY_HANDLE;
 	}
 
+	else
+	{
+		ASSERT(false, "This is weird. /:");
+	}
+
 	if (node->_NormalMapTexture)
 	{
 		RenderingSystem::Instance->DestroyTexture2D(&node->_NormalMapTexture);
 		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(node->_NormalMapTextureIndex);
 
 		node->_NormalMapTexture = EMPTY_HANDLE;
+	}
+
+	else
+	{
+		ASSERT(false, "This is weird. /:");
 	}
 	
 	if (node->_IndexMapTexture)
@@ -959,6 +895,11 @@ void TerrainSystem::DestroyMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 		node->_IndexMapTexture = EMPTY_HANDLE;
 	}
 
+	else
+	{
+		ASSERT(false, "This is weird. /:");
+	}
+
 	if (node->_BlendMapTexture)
 	{
 		RenderingSystem::Instance->DestroyTexture2D(&node->_BlendMapTexture);
@@ -966,9 +907,14 @@ void TerrainSystem::DestroyMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 
 		node->_BlendMapTexture = EMPTY_HANDLE;
 	}
+
+	else
+	{
+		ASSERT(false, "This is weird. /:");
+	}
 }
 
-/*p
+/*
 *	Performs the given update.
 */
 void TerrainSystem::PerformUpdate(TerrainQuadTreeNodeUpdate *const RESTRICT update) NOEXCEPT
@@ -1092,6 +1038,95 @@ void TerrainSystem::PerformUpdate(TerrainQuadTreeNodeUpdate *const RESTRICT upda
 			break;
 		}
 	}
+}
+
+/*
+*	Processes updates asynchronously.
+*/
+void TerrainSystem::ProcessUpdatesAsynchronously() NOEXCEPT
+{
+	//Process all updates.
+	for (TerrainQuadTreeNodeUpdate *const RESTRICT update : _Updates)
+	{
+		ASSERT(update->_Task.IsExecuted(), "Task hasn't been executed yet... :c");
+
+		switch (update->_Type)
+		{
+			case TerrainQuadTreeNodeUpdate::Type::ADD_ROOT_NODE:
+			{
+				for (uint64 i{ 0 }, size{ _QuadTree._RootGridPoints.Size() }; i < size; ++i)
+				{
+					if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+					{
+						_QuadTree._RootGridPoints[i] = update->_AddRootNodeData._GridPoint;
+						_QuadTree._RootNodes[i] = std::move(update->_AddRootNodeData._NewNode);
+
+						break;
+					}
+				}
+
+				break;
+			}
+
+			case TerrainQuadTreeNodeUpdate::Type::COMBINE:
+			{
+				//Destroy the maps for all the child nodes.
+				for (TerrainQuadTreeNode &child_node : update->_CombineData._Node->_ChildNodes)
+				{
+					_ProcessedUpdate._NodesToDestroy.Emplace(child_node);
+				}
+
+				//Replace the node.
+				*update->_CombineData._Node = std::move(update->_CombineData._NewNode);
+
+				break;
+			}
+
+			case TerrainQuadTreeNodeUpdate::Type::SUBDIVIDE:
+			{
+				//Destroy the maps for the parent node.
+				_ProcessedUpdate._NodesToDestroy.Emplace(*update->_SubdivideData._ParentNode);
+
+				//Add the child nodes.
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					update->_SubdivideData._ParentNode->_ChildNodes.Emplace(std::move(update->_SubdivideData._NewNodes[i]));
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+
+		update->~TerrainQuadTreeNodeUpdate();
+		MemorySystem::Instance->TypeFree<TerrainQuadTreeNodeUpdate>(update);
+	}
+
+	//Clear the updates.
+	_Updates.Clear();
+
+	//Calculate the borders.
+	CalculateNewBorders();
+
+	//Gather the patch informations.
+	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	{
+		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+		{
+			continue;
+		}
+
+		GatherPatchInformations(&_QuadTree._RootNodes[i]);
+	}
+
+	//Update the terrain ray tracing data.
+	UpdateTerrainRayTracingData();
 }
 
 /*

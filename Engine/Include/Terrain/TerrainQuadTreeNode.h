@@ -73,6 +73,30 @@ public:
 	}
 
 	/*
+	*	Copy constructor.
+	*/
+	FORCE_INLINE TerrainQuadTreeNode(const TerrainQuadTreeNode &other) NOEXCEPT
+	{
+		_Depth = other._Depth;
+		_Borders = other._Borders;
+		_ChildNodes = other._ChildNodes;
+		_Minimum = other._Minimum;
+		_Maximum = other._Maximum;
+		_HeightMapResolution = other._HeightMapResolution;
+		_HeightMapTexture = other._HeightMapTexture;
+		_HeightMapTextureIndex = other._HeightMapTextureIndex;
+		_MaterialMapsResolution = other._MaterialMapsResolution;
+		_NormalMapTexture = other._NormalMapTexture;
+		_NormalMapTextureIndex = other._NormalMapTextureIndex;
+		_IndexMapTexture = other._IndexMapTexture;
+		_IndexMapTextureIndex = other._IndexMapTextureIndex;
+		_BlendMapTexture = other._BlendMapTexture;
+		_BlendMapTextureIndex = other._BlendMapTextureIndex;
+		_TerrainPatchInformation = other._TerrainPatchInformation;
+		_TerrainPatchRenderInformation = other._TerrainPatchRenderInformation;
+	}
+
+	/*
 	*	Move constructor.
 	*/
 	FORCE_INLINE TerrainQuadTreeNode(TerrainQuadTreeNode &&other) NOEXCEPT
