@@ -10,7 +10,9 @@
 #include <Concurrency/ScopedLock.h>
 
 //File.
+#include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
+#include <File/Writers/PNGWriter.h>
 #include <File/Writers/TGAWriter.h>
 
 //Lighting.
@@ -1587,6 +1589,15 @@ void VulkanSubRenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT 
 	//Put in a queue, destroy when no command buffer uses it anymore.
 	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
 
+	for (VulkanSubRenderingSystemData::VulkanDestructionData& data : VulkanSubRenderingSystemData::_DestructionQueue)
+	{
+		if (data._Type == VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D
+			&& data._Handle == *handle)
+		{
+			ASSERT(false, "oh no");
+		}
+	}
+
 	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D, *handle);
 }
 
@@ -1742,7 +1753,29 @@ void VulkanSubRenderingSystem::TakeImmediateScreenshot(const char *const RESTRIC
 	}
 
 	//Write to file.
-	TGAWriter::Write(image, file_path);
+	switch (File::GetExtension(file_path))
+	{
+		case File::Extension::PNG:
+		{
+			PNGWriter::Write(image, file_path);
+
+			break;
+		}
+
+		case File::Extension::TGA:
+		{
+			TGAWriter::Write(image, file_path);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
 }
 
 /*
