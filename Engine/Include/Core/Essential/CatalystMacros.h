@@ -8,7 +8,6 @@
 */
 #define ALIGN(N) alignas(N)
 
-
 /*
 *	Calculates the length of a C-style array.
 */
@@ -33,7 +32,7 @@
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	#if defined(CATALYST_MSVC)
-		#define BREAKPOINT() { __debugbreak(); }
+		#define BREAKPOINT() { __nop(); __debugbreak(); }
 	#elif defined(CATALYST_CLANG)
 		#define BREAKPOINT() { __builtin_debugtrap(); }
 	#endif
