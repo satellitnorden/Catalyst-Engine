@@ -390,6 +390,17 @@ public:
 	}
 
 	/*
+	*	Fills this dynamic array with N number of elements with the given value.
+	*/
+	FORCE_INLINE void Fill(const uint64 number_of_elements, const TYPE &value) NOEXCEPT
+	{
+		for (uint64 i{ 0 }; i < number_of_elements; ++i)
+		{
+			Emplace(value);
+		}
+	}
+
+	/*
 	*	Inserts an element at the given index.
 	*/
 	FORCE_INLINE void Insert(const TYPE &element, const uint64 index) NOEXCEPT
