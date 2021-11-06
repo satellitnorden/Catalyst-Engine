@@ -7,7 +7,6 @@
 //Sound offline renderer constants.
 namespace SoundOfflineRendererConstants
 {
-	constexpr float32 SAMPLE_RATE{ 44'100.0f };
 	constexpr uint8 NUMBER_OF_CHANNELS{ 2 };
 }
 
@@ -19,6 +18,9 @@ void SoundOfflineRenderer::Initialize(const Parameters &parameters) NOEXCEPT
 	//Set the output file path.
 	_OutputFilePath = parameters._OutputFilePath;
 
+	//Set the sample rate.
+	_SampleRate = parameters._SampleRate;
+
 	//Set the callback.
 	_Callback = parameters._Callback;
 
@@ -26,7 +28,7 @@ void SoundOfflineRenderer::Initialize(const Parameters &parameters) NOEXCEPT
 	_SoundMixComponents = parameters._SoundMixComponents;
 
 	//Set up the sound resource.
-	_SoundResource._SampleRate = SoundOfflineRendererConstants::SAMPLE_RATE;
+	_SoundResource._SampleRate = _SampleRate;
 	_SoundResource._NumberOfChannels = SoundOfflineRendererConstants::NUMBER_OF_CHANNELS;
 	_SoundResource._Samples.Upsize<true>(SoundOfflineRendererConstants::NUMBER_OF_CHANNELS);
 
@@ -117,9 +119,9 @@ void SoundOfflineRenderer::PlaySound(const PlaySoundRequest &request) NOEXCEPT
 	new_playing_sound._SoundResourcePlayer.SetSoundResource(request._SoundResource);
 	new_playing_sound._SoundResourcePlayer.SetGain(request._Gain);
 	new_playing_sound._SoundResourcePlayer.SetPan(request._Pan);
-	new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(request._SoundResource->_SampleRate / SoundOfflineRendererConstants::SAMPLE_RATE * request._PlaybackRate);
+	new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(request._SoundResource->_SampleRate / _SampleRate * request._PlaybackRate);
 	new_playing_sound._SoundResourcePlayer.SetIsLooping(request._IsLooping);
-	new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetSampleRate(SoundOfflineRendererConstants::SAMPLE_RATE);
+	new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetSampleRate(_SampleRate);
 	new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetStageValues(request._AttackTime,
 																			request._DecayTime,
 																			request._SustainGain,

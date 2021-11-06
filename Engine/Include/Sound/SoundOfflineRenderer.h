@@ -34,6 +34,9 @@ public:
 		//The requested length of the sound file, in seconds.
 		float64 _RequestedLength;
 
+		//The sample rate.
+		float32 _SampleRate;
+
 		//The callback.
 		Callback _Callback;
 
@@ -77,6 +80,14 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Returns the sample rate.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetSampleRate() const NOEXCEPT
+	{
+		return _SampleRate;
+	}
+
+	/*
 	*	Plays a sound.
 	*/
 	void PlaySound(const PlaySoundRequest &request) NOEXCEPT;
@@ -90,6 +101,9 @@ private:
 
 	//The output file path.
 	DynamicString _OutputFilePath;
+
+	//The sample rate.
+	float32 _SampleRate;
 
 	//The callback.
 	Callback _Callback;
