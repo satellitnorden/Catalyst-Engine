@@ -141,6 +141,14 @@ FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
 }
 
 /*
+*	Pre-initializes the platform.
+*/
+void CatalystPlatform::PreInitialize() NOEXCEPT
+{
+
+}
+
+/*
 *	Initializes the platform.
 */
 void CatalystPlatform::Initialize() NOEXCEPT

@@ -241,7 +241,7 @@ public:
 	FORCE_INLINE void ExportTrainingData(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Open the output file.
-		BinaryFile<IOMode::Out> output_file{ file_path };
+		BinaryFile<BinaryFileMode::OUT> output_file{ file_path };
 
 		//Write all weights for all neurons.
 		for (const Neuron &neuron : _InputLayer._Neurons)
@@ -281,7 +281,7 @@ public:
 	FORCE_INLINE void ImportTrainingData(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Open the input file.
-		BinaryFile<IOMode::In> input_file{ file_path };
+		BinaryFile<BinaryFileMode::IN> input_file{ file_path };
 
 		//Write all weights for all neurons.
 		for (Neuron &neuron : _InputLayer._Neurons)

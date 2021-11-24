@@ -55,15 +55,17 @@ __pragma(warning(disable : 4530)) //Disable warning C4530: C++ exception handler
 /*
 *	Main function.
 */
-#define MAIN_FUNCTION(implementation) int32 WINAPI WinMain(	_In_ HINSTANCE hInstance,		\
+#define MAIN_FUNCTION(IMPLEMENTATION) int32 WINAPI WinMain(	_In_ HINSTANCE hInstance,		\
 															_In_ HINSTANCE hPrevInstance,	\
 															_In_opt_ LPSTR lpCmdLine,		\
 															_In_ int32 nCmdShow)			\
 {																							\
+	CatalystPlatform::PreInitialize();														\
+																							\
 	CatalystPlatform::_Instance = hInstance;												\
 	CatalystPlatform::_ShowCommand = nCmdShow;												\
 																							\
-	implementation;																			\
+	IMPLEMENTATION;																			\
 																							\
 	return 0;																				\
 }																							\
@@ -84,6 +86,11 @@ public:
 
 	//Handle to the window.
 	static HWND _Window;
+
+	/*
+	*	Pre-initializes the platform.
+	*/
+	static void PreInitialize() NOEXCEPT;
 
 	/*
 	*	Initializes the platform.
