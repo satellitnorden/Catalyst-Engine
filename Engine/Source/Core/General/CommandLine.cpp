@@ -33,6 +33,11 @@ void CommandLine::Initialize() NOEXCEPT
 					_CommandLine[i] = '\0';
 				}
 
+				if (_Keys.Size() > _Values.Size())
+				{
+					_Values.Emplace(nullptr);
+				}
+
 				_Keys.Emplace(current_argument + 1);
 			}
 
@@ -48,6 +53,12 @@ void CommandLine::Initialize() NOEXCEPT
 
 			current_argument = &_CommandLine[i + 1];
 		}
+	}
+
+	//If the last key didn't have a value, insert an empty value.
+	if (_Keys.Size() > _Values.Size())
+	{
+		_Values.Emplace(nullptr);
 	}
 
 	//The command line is now initialized!
