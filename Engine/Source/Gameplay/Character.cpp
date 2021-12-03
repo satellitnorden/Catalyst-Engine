@@ -161,7 +161,6 @@ void Character::PostUpdateCharacter(const float32 delta_time) NOEXCEPT
 
 	//Reset the cached movement/jump.
 	_CachedMovement = Vector3<float32>(0.0f, 0.0f, 0.0f);
-	
 }
 
 /*
