@@ -80,6 +80,12 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF),
 																		2,
 																		_AmbientOcclusionRenderTarget);
+	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[2].Initialize(	_AmbientOcclusionRenderTarget,
+																		3,
+																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF));
+	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[3].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF),
+																		4,
+																		_AmbientOcclusionRenderTarget);
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[0],
 																		_AmbientOcclusionTemporalBufferRenderTargets[1],
 																		_AmbientOcclusionRenderTarget);
