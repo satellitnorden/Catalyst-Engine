@@ -16,6 +16,14 @@ public:
 		RAY_TRACED
 	};
 
+	//Enumeration covering all ambient occlusion qualities.
+	enum class AmbientOcclusionQuality : uint8
+	{
+		LOW,
+		MEDIUM,
+		HIGH
+	};
+
 	//Enumeration covering all indirect lighting modes.
 	enum class IndirectLightingMode : uint8
 	{
@@ -68,6 +76,22 @@ public:
 	FORCE_INLINE void SetAmbientOcclusionMode(const AmbientOcclusionMode value) NOEXCEPT
 	{
 		_AmbientOcclusionMode = value;
+	}
+
+	/*
+	*	Returns the ambient occlusion quality.
+	*/
+	FORCE_INLINE NO_DISCARD AmbientOcclusionQuality GetAmbientOcclusionQuality() const NOEXCEPT
+	{
+		return _AmbientOcclusionQuality;
+	}
+
+	/*
+	*	Sets the ambient occlusion quality.
+	*/
+	FORCE_INLINE void SetAmbientOcclusionQuality(const AmbientOcclusionQuality value) NOEXCEPT
+	{
+		_AmbientOcclusionQuality = value;
 	}
 
 	/*
@@ -154,6 +178,9 @@ private:
 
 	//The ambient occlusion mode.
 	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::SCREEN_SPACE };
+
+	//The ambient occlusion quality.
+	AmbientOcclusionQuality _AmbientOcclusionQuality{ AmbientOcclusionQuality::MEDIUM };
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };

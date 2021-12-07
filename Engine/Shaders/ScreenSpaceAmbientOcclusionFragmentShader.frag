@@ -10,6 +10,12 @@
 //Layout specification.
 layout (early_fragment_tests) in;
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) uint AMBIENT_OCCLUSION_NUMBER_OF_SAMPLES;
+};
+
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
@@ -95,6 +101,9 @@ void CatalystShaderMain()
 
 	//Normalize the ambient occlusion.
 	occlusion = total_weight != 0.0f ? 1.0f - (occlusion / total_weight) : 1.0f;
+
+	//Bias the occlusion.
+	occlusion *= occlusion;
 
     //Write the fragment
     fragment = vec4(vec3(occlusion), 1.0f);

@@ -15,6 +15,19 @@
 #include <Systems/ResourceSystem.h>
 
 /*
+*	Ray traced ambient occlusion push constant data definition.
+*/
+class RayTracedAmbientOcclusionPushConstantData final
+{
+
+public:
+
+	//The ambient occlusion number of samples.
+	uint32 _AmbientOcclusionNumberOfSamples;
+
+};
+
+/*
 *	Initializes this ray tracing pipeline.
 */
 void AmbientOcclusionRayTracingPipeline::Initialize(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT
@@ -34,6 +47,10 @@ void AmbientOcclusionRayTracingPipeline::Initialize(const RenderTargetHandle amb
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTableLayout());
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetLightingSystem()->GetLightingDataRenderDataTableLayout());
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::RAY_GENERATION, 0, sizeof(RayTracedAmbientOcclusionPushConstantData));
 
 	//Set the ray generation shader.
 	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("RayTracedAmbientOcclusionRayGenerationShader")));
@@ -71,6 +88,42 @@ void AmbientOcclusionRayTracingPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetLightingSystem()->GetCurrentLightingDataRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 3, _RenderDataTable);
+
+	//Push constants.
+	RayTracedAmbientOcclusionPushConstantData data;
+
+	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionQuality())
+	{
+		case RenderingConfiguration::AmbientOcclusionQuality::LOW:
+		{
+			data._AmbientOcclusionNumberOfSamples = 4;
+
+			break;
+		}
+
+		case RenderingConfiguration::AmbientOcclusionQuality::MEDIUM:
+		{
+			data._AmbientOcclusionNumberOfSamples = 8;
+
+			break;
+		}
+
+		case RenderingConfiguration::AmbientOcclusionQuality::HIGH:
+		{
+			data._AmbientOcclusionNumberOfSamples = 16;
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	command_buffer->PushConstants(this, ShaderStage::RAY_GENERATION, 0, sizeof(RayTracedAmbientOcclusionPushConstantData), &data);
 
 	//Trace rays!
 	command_buffer->TraceRays(this, RenderingSystem::Instance->GetScaledResolution(1)._Width, RenderingSystem::Instance->GetScaledResolution(1)._Height);

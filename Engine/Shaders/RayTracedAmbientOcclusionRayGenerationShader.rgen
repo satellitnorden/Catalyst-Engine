@@ -4,6 +4,12 @@
 #include "CatalystRayTracingCore.glsl"
 #include "CatalystRayTracingData.glsl"
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) uint AMBIENT_OCCLUSION_NUMBER_OF_SAMPLES;
+};
+
 //Descriptor set data.
 layout (set = 3, binding = 0, rgba32f) uniform image2D scene_features_2_image;
 layout (set = 3, binding = 1, r8) uniform image2D ambient_occlusion_image;
