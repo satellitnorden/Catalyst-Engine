@@ -50,7 +50,7 @@ public:
 private:
 
 	//The scene depth buffer.
-	DepthBufferHandle _SceneDepthBuffer;
+	DepthBufferHandle _SceneDepthBuffer{ EMPTY_HANDLE };
 
 	//The clear graphics pipeline.
 	ClearGraphicsPipeline _ClearGraphicsPipeline;

@@ -22,15 +22,15 @@ public:
 	//The inverse resolution.
 	Vector2<float32> _InverseResolution;
 
-	//The stride.
-	int32 _Stride;
+	//The direction.
+	int32 _Direction;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const RenderTargetHandle source, const int32 stride, const RenderTargetHandle target) NOEXCEPT
+void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const RenderTargetHandle source, const int32 direction, const RenderTargetHandle target) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -41,8 +41,8 @@ void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const RenderTa
 	//Create the render data table.
 	CreateRenderDataTable(source);
 
-	//Set the stride.
-	_Stride = stride;
+	//Set the direction.
+	_Direction = direction;
 
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -115,7 +115,7 @@ void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	PushConstantData data;
 
 	data._InverseResolution = Vector2<float>(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height));
-	data._Stride = _Stride;
+	data._Direction = _Direction;
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(PushConstantData), &data);
 

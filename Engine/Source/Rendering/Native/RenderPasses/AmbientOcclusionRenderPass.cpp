@@ -10,6 +10,60 @@
 //Singleton definition.
 DEFINE_SINGLETON(AmbientOcclusionRenderPass);
 
+//TEMP
+#include <Systems/InputSystem.h>
+
+bool USE_SPATIAL_DENOISING{ true };
+bool USE_TEMPORAL_DENOISING{ true };
+
+void TEMP()
+{
+	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F1) == ButtonState::PRESSED)
+	{
+		USE_SPATIAL_DENOISING = !USE_SPATIAL_DENOISING;
+	}
+
+	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F2) == ButtonState::PRESSED)
+	{
+		USE_TEMPORAL_DENOISING = !USE_TEMPORAL_DENOISING;
+	}
+
+	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F3) == ButtonState::PRESSED)
+	{
+		switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionQuality())
+		{
+			case RenderingConfiguration::AmbientOcclusionQuality::LOW:
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionQuality(RenderingConfiguration::AmbientOcclusionQuality::MEDIUM);
+
+				break;
+			}
+
+			case RenderingConfiguration::AmbientOcclusionQuality::MEDIUM:
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionQuality(RenderingConfiguration::AmbientOcclusionQuality::HIGH);
+
+				break;
+			}
+
+			case RenderingConfiguration::AmbientOcclusionQuality::HIGH:
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionQuality(RenderingConfiguration::AmbientOcclusionQuality::LOW);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
+}
+//TEMP
+
 /*
 *	Default constructor.
 */
@@ -74,12 +128,17 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize(_AmbientOcclusionRenderTarget);
 	_AmbientOcclusionRayTracingPipeline.Initialize(_AmbientOcclusionRenderTarget);
-	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[0].Initialize(	_AmbientOcclusionRenderTarget,
-																		1,
-																		RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF));
-	_AmbientOcclusionSpatialDenoisingGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF),
-																		2,
-																		_AmbientOcclusionRenderTarget);
+
+	for (uint64 i{ 0 }; i < _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size(); i += 2)
+	{
+		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 0].Initialize(	_AmbientOcclusionRenderTarget,
+																				0,
+																				RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF));
+		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF),
+																				1,
+																				_AmbientOcclusionRenderTarget);
+	}
+
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[0],
 																		_AmbientOcclusionTemporalBufferRenderTargets[1],
 																		_AmbientOcclusionRenderTarget);
@@ -157,6 +216,54 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 			pipeline.SetIncludeInRender(false);
 		}
 	}
+
+	/*
+	TEMP();
+
+	if (USE_SPATIAL_DENOISING)
+	{
+		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+		{
+			pipeline.Execute();
+		}
+	}
+
+	else
+	{
+		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
+	}
+
+	if (USE_TEMPORAL_DENOISING)
+	{
+		//Execute the current buffer, don't include the rest.
+		for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
+		{
+			if (i == _CurrentTemporalBufferIndex)
+			{
+				_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].Execute();
+			}
+
+			else
+			{
+				_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+			}
+		}
+
+		//Update the current buffer index.
+		_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
+	}
+
+	else
+	{
+		for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
+		{
+			pipeline.SetIncludeInRender(false);
+		}
+	}
+	*/
 
 	_AmbientOcclusionApplicationGraphicsPipeline.Execute();
 

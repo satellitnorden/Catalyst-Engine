@@ -12,6 +12,19 @@
 #include <Systems/ResourceSystem.h>
 
 /*
+*	Screen space ambient occlusion push constant data definition.
+*/
+class ScreenSpaceAmbientOcclusionPushConstantData final
+{
+
+public:
+
+	//The ambient occlusion number of samples.
+	uint32 _AmbientOcclusionNumberOfSamples;
+
+};
+
+/*
 *	Initializes this graphics pipeline.
 */
 void ScreenSpaceAmbientOcclusionGraphicsPipeline::Initialize(const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT
@@ -40,6 +53,10 @@ void ScreenSpaceAmbientOcclusionGraphicsPipeline::Initialize(const RenderTargetH
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(ScreenSpaceAmbientOcclusionPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
@@ -87,6 +104,42 @@ void ScreenSpaceAmbientOcclusionGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	ScreenSpaceAmbientOcclusionPushConstantData data;
+
+	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionQuality())
+	{
+		case RenderingConfiguration::AmbientOcclusionQuality::LOW:
+		{
+			data._AmbientOcclusionNumberOfSamples = 4;
+
+			break;
+		}
+
+		case RenderingConfiguration::AmbientOcclusionQuality::MEDIUM:
+		{
+			data._AmbientOcclusionNumberOfSamples = 8;
+
+			break;
+		}
+
+		case RenderingConfiguration::AmbientOcclusionQuality::HIGH:
+		{
+			data._AmbientOcclusionNumberOfSamples = 16;
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(ScreenSpaceAmbientOcclusionPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
