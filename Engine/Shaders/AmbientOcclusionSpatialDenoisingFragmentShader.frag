@@ -2,12 +2,16 @@
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 
+//Constants.
+#define DENOISE_SIZE (3)
+
 /*
 *	Scene features struct definition.
 */
 struct SceneFeatures
 {
-	float view_distance;
+	vec3 _Normal;
+	float _ViewDistance;
 };
 
 //Layout specification.
@@ -17,7 +21,8 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 INVERSE_RESOLUTION;
-	layout (offset = 8) int DIRECTION;
+	layout (offset = 8) int STRIDE;
+	layout (offset = 12) int DIRECTION;
 };
 
 //In parameters.
@@ -38,7 +43,8 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 
 	SceneFeatures features;
 
-	features.view_distance = CalculateViewSpacePosition(coordinate, scene_features_2.w).z;
+	features._Normal = scene_features_2.xyz;
+	features._ViewDistance = CalculateViewSpacePosition(coordinate, scene_features_2.w).z;
 
 	return features;
 }
@@ -53,7 +59,7 @@ void CatalystShaderMain()
 	float denoised_ambient_occlusion = 0.0f;
 	float weight_sum = 0.0f;
 
-	for (int sample_position = -1; sample_position <= 1; ++sample_position)
+	for (int sample_position = -STRIDE; sample_position <= STRIDE; sample_position += STRIDE)
 	{
 		vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(sample_position) * float(DIRECTION == 0), float(sample_position) * float(DIRECTION == 1)) * INVERSE_RESOLUTION;
 
@@ -64,12 +70,14 @@ void CatalystShaderMain()
 		*	Calculate the sample weight based on certain criteria;
 		*	
 		*	1. Is the sample coordinate valid?
-		*	2. How closely aligned are the depths to each other?
+		*	2. How closely aligned are the normals to each other?
+		*	3. How closely aligned are the depths to each other?
 		*/
 		float sample_weight = 1.0f;
 
 		sample_weight *= float(ValidCoordinate(sample_coordinate));
-		sample_weight *= 1.0f - SmoothStep(min(abs(current_scene_features.view_distance - sample_scene_features.view_distance), 1.0f));
+		sample_weight *= max(dot(current_scene_features._Normal, sample_scene_features._Normal), 0.0f);
+		sample_weight *= 1.0f - SmoothStep(min(abs(current_scene_features._ViewDistance - sample_scene_features._ViewDistance), 1.0f));
 
 		denoised_ambient_occlusion += sample_ambient_occlusion * sample_weight;
 		weight_sum += sample_weight;

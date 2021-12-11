@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const RenderTargetHandle source, const int32 direction, const RenderTargetHandle target) NOEXCEPT;
+	void Initialize(const RenderTargetHandle source, const int32 stride, const int32 direction, const RenderTargetHandle target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -27,6 +27,9 @@ public:
 	void Terminate() NOEXCEPT;
 
 private:
+
+	//The stride.
+	int32 _Stride;
 
 	//The direction.
 	int32 _Direction;

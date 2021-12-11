@@ -61,6 +61,33 @@ void TEMP()
 			}
 		}
 	}
+
+	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F4) == ButtonState::PRESSED)
+	{
+		switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode())
+		{
+			case RenderingConfiguration::AmbientOcclusionMode::SCREEN_SPACE:
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionMode(RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED);
+
+				break;
+			}
+
+			case RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED:
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionMode(RenderingConfiguration::AmbientOcclusionMode::SCREEN_SPACE);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
 }
 //TEMP
 
@@ -132,9 +159,11 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	for (uint64 i{ 0 }; i < _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size(); i += 2)
 	{
 		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 0].Initialize(	_AmbientOcclusionRenderTarget,
+																				static_cast<int32>(i / 2 + 1),
 																				0,
 																				RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF));
 		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF),
+																				static_cast<int32>(i / 2 + 1),
 																				1,
 																				_AmbientOcclusionRenderTarget);
 	}
@@ -145,6 +174,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[1],
 																		_AmbientOcclusionTemporalBufferRenderTargets[0],
 																		_AmbientOcclusionRenderTarget);
+
 	_AmbientOcclusionApplicationGraphicsPipeline.Initialize(_AmbientOcclusionRenderTarget);
 }
 
@@ -178,7 +208,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 		_ScreenSpaceAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
 		_AmbientOcclusionRayTracingPipeline.Execute();
 	}
-	
+
 	if (!RenderingSystem::Instance->IsTakingScreenshot())
 	{
 		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
@@ -206,12 +236,12 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	
 	else
 	{
-		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+		for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
 		{
 			pipeline.SetIncludeInRender(false);
 		}
 
-		for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
+		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 		{
 			pipeline.SetIncludeInRender(false);
 		}

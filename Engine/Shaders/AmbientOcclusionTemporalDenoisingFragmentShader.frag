@@ -13,11 +13,29 @@ layout (location = 0) out vec4 current_temporal_buffer;
 layout (location = 1) out vec4 ambient_occlusion;
 
 /*
-*	Constains.
+*	Constrains.
 */
 float Constrain(float previous, float minimum, float maximum)
 {
 	return clamp(previous, minimum, maximum);
+}
+
+/*
+*	Calculates the neighborhood weight.
+*/
+float NeighborhoodWeight(float previous, float minimum, float maximum)
+{
+	//Calculate the weight.
+	float weight = 1.0f;
+
+	weight *= 1.0f - clamp(minimum - previous, 0.0f, 1.0f);
+	weight *= 1.0f - clamp(previous - maximum, 0.0f, 1.0f);
+
+	//Bias the weight.
+	weight = weight * weight * weight;
+
+	//Return the weight.
+	return weight;
 }
 
 void CatalystShaderMain()
@@ -51,8 +69,8 @@ void CatalystShaderMain()
 	//Sample the previous ambient occlusion texture.
 	float previous_ambient_occlusion = texture(PREVIOUS_TEMPORAL_BUFFER_TEXTURE, previous_screen_coordinate).r;
 
-	//Constraint the previous ambient occlusion.
-	previous_ambient_occlusion = Constrain(previous_ambient_occlusion, minimum, maximum);
+	//Constrain the previous sample.
+	//previous_ambient_occlusion = Constrain(previous_ambient_occlusion, minimum, maximum);
 
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
@@ -63,7 +81,7 @@ void CatalystShaderMain()
 	float previous_sample_weight = 1.0f;
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
-	//previous_sample_weight *= NeighborhoodWeight(previous_ambient_occlusion, minimum, maximum);
+	previous_sample_weight *= NeighborhoodWeight(previous_ambient_occlusion, minimum, maximum);
 
 	//Blend the previous and the current ambient occlusion.
 	float blended_ambient_occlusion = mix(current_ambient_occlusion, previous_ambient_occlusion, previous_sample_weight);
