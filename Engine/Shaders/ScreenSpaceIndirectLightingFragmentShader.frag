@@ -6,8 +6,9 @@
 
 //Constants.
 #define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (1)
-#define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES (32)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES (16)
 #define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_STEP (1.0f / SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_REFINE_STEPS (4)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -58,6 +59,36 @@ void CalculateIndirectLightingRayDirectionAndStartOffset(uint index, vec3 view_d
 
 	//Write the start offset.
 	start_offset = random_length;
+}
+
+/*
+*	Refines.
+*/
+vec3 Refine(vec3 previous_sample_position, vec3 current_sample_position)
+{
+	vec3 minimum = previous_sample_position;
+	vec3 maximum = current_sample_position;
+
+	for (uint i = 0; i < SCREEN_SPACE_INDIRECT_LIGHTING_REFINE_STEPS; ++i)
+	{
+		vec3 mid = mix(minimum, maximum, 0.5f);
+
+		//Sample the depth at the current sample position.
+		vec4 sample_scene_features_2 = texture(scene_features_2_texture, mid.xy);
+		float sample_depth = LinearizeDepth(sample_scene_features_2.w);
+
+		if (mid.z < sample_depth)
+		{
+			maximum = mid;
+		}
+
+		else
+		{
+			minimum = mid;
+		}
+	}
+
+	return maximum;
 }
 
 /*
@@ -128,6 +159,9 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 
 				if (dot(ray_direction, direction_to_hit_position) > 0.0f)
 				{
+					//Refine.
+					screen_space_sample_position = Refine(screen_space_origin + screen_space_direction * max(current_step - SCREEN_SPACE_INDIRECT_LIGHTING_RAY_STEP, 0.0f), screen_space_sample_position);
+
 					//Sample the scene radiance at the sample screen coordinate.
 					vec3 scene_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
 
