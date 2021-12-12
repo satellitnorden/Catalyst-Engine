@@ -100,20 +100,12 @@ void CatalystShaderMain()
 				0 											//payload
 				);
 
-		radiance += CalculateLighting(	-view_direction,
-										albedo,
-										shading_normal,
-										roughness,
-										metallic,
-										ambient_occlusion,
-										1.0f,
-										-indirect_lighting_direction,
-										path_tracing_ray_payload.radiance);
+		radiance += path_tracing_ray_payload.radiance;
 		hit += float(path_tracing_ray_payload.hit_distance < VIEW_DISTANCE);
 	}
 
-	//Normalize the output data.
-	radiance /= float(NUMBER_OF_SAMPLES);
+	//Normalize the indirect lighting.
+	radiance = hit != 0.0f ? radiance / hit : vec3(0.0f);
 
 	//Write to the image.
 	imageStore(indirect_lighting_image, ivec2(gl_LaunchIDNV.xy), vec4(radiance, min(hit, 1.0f)));
