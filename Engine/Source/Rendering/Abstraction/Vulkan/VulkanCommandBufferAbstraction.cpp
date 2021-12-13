@@ -373,7 +373,7 @@ void VulkanCommandBuffer::CreateCommandBufferInheritanceInfo(VkCommandBufferInhe
 	commandBufferInheritanceInfo.framebuffer = framebuffer;
 	commandBufferInheritanceInfo.occlusionQueryEnable = VK_FALSE;
 	commandBufferInheritanceInfo.queryFlags = 0;
-	commandBufferInheritanceInfo.pipelineStatistics = VK_NULL_HANDLE;
+	commandBufferInheritanceInfo.pipelineStatistics = 0;
 }
 
 /*

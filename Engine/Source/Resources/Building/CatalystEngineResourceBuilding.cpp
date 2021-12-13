@@ -950,6 +950,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthDownsampleFragmentShader";
+		parameters._ID = "DepthDownsampleFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthDownsampleFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthOfFieldApplicationFragmentShader";
 		parameters._ID = "DepthOfFieldApplicationFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldApplicationFragmentShader.frag";

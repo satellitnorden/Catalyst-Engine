@@ -71,6 +71,9 @@ enum TOperator {
     EOpFunctionCall,
     EOpFunction,        // For function definition
     EOpParameters,      // an aggregate listing the parameters to a function
+#ifndef GLSLANG_WEB
+    EOpSpirvInst,
+#endif
 
     //
     // Unary operators
@@ -593,6 +596,7 @@ enum TOperator {
     EOpTime,
 
     EOpAtomicAdd,
+    EOpAtomicSubtract,
     EOpAtomicMin,
     EOpAtomicMax,
     EOpAtomicAnd,
@@ -922,6 +926,7 @@ enum TOperator {
     EOpMul32x16,
 
     EOpTraceNV,
+    EOpTraceRayMotionNV,
     EOpTraceKHR,
     EOpReportIntersection,
     EOpIgnoreIntersectionNV,
@@ -1135,6 +1140,8 @@ public:
     virtual TBasicType getBasicType() const { return type.getBasicType(); }
     virtual TQualifier& getQualifier() { return type.getQualifier(); }
     virtual const TQualifier& getQualifier() const { return type.getQualifier(); }
+    virtual TArraySizes* getArraySizes() { return type.getArraySizes(); }
+    virtual const TArraySizes* getArraySizes() const { return type.getArraySizes(); }
     virtual void propagatePrecision(TPrecisionQualifier);
     virtual int getVectorSize() const { return type.getVectorSize(); }
     virtual int getMatrixCols() const { return type.getMatrixCols(); }
@@ -1613,8 +1620,15 @@ public:
     virtual       TIntermUnary* getAsUnaryNode()       { return this; }
     virtual const TIntermUnary* getAsUnaryNode() const { return this; }
     virtual void updatePrecision();
+#ifndef GLSLANG_WEB
+    void setSpirvInstruction(const TSpirvInstruction& inst) { spirvInst = inst; }
+    const TSpirvInstruction& getSpirvInstruction() const { return spirvInst; }
+#endif
 protected:
     TIntermTyped* operand;
+#ifndef GLSLANG_WEB
+    TSpirvInstruction spirvInst;
+#endif
 };
 
 typedef TVector<TIntermNode*> TIntermSequence;
@@ -1629,6 +1643,7 @@ public:
     ~TIntermAggregate() { delete pragmaTable; }
     virtual       TIntermAggregate* getAsAggregate()       { return this; }
     virtual const TIntermAggregate* getAsAggregate() const { return this; }
+    virtual void updatePrecision();
     virtual void setOperator(TOperator o) { op = o; }
     virtual       TIntermSequence& getSequence()       { return sequence; }
     virtual const TIntermSequence& getSequence() const { return sequence; }
@@ -1645,6 +1660,10 @@ public:
     bool getDebug() const { return debug; }
     void setPragmaTable(const TPragmaTable& pTable);
     const TPragmaTable& getPragmaTable() const { return *pragmaTable; }
+#ifndef GLSLANG_WEB
+    void setSpirvInstruction(const TSpirvInstruction& inst) { spirvInst = inst; }
+    const TSpirvInstruction& getSpirvInstruction() const { return spirvInst; }
+#endif
 protected:
     TIntermAggregate(const TIntermAggregate&); // disallow copy constructor
     TIntermAggregate& operator=(const TIntermAggregate&); // disallow assignment operator
@@ -1655,6 +1674,9 @@ protected:
     bool optimize;
     bool debug;
     TPragmaTable* pragmaTable;
+#ifndef GLSLANG_WEB
+    TSpirvInstruction spirvInst;
+#endif
 };
 
 //
@@ -1672,8 +1694,11 @@ public:
         flatten(false), dontFlatten(false) {}
     virtual void traverse(TIntermTraverser*);
     virtual TIntermTyped* getCondition() const { return condition; }
+    virtual void setCondition(TIntermTyped* c) { condition = c; }
     virtual TIntermNode* getTrueBlock() const { return trueBlock; }
+    virtual void setTrueBlock(TIntermTyped* tb) { trueBlock = tb; }
     virtual TIntermNode* getFalseBlock() const { return falseBlock; }
+    virtual void setFalseBlock(TIntermTyped* fb) { falseBlock = fb; }
     virtual       TIntermSelection* getAsSelectionNode()       { return this; }
     virtual const TIntermSelection* getAsSelectionNode() const { return this; }
 
