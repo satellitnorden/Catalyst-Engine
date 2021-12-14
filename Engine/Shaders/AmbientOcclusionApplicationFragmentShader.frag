@@ -1,5 +1,5 @@
 //Defines.
-#define DEPTH_WEIGHT (2.0f)
+#define DEPTH_WEIGHT (4.0f)
 #define BIAS_AMBIENT_OCCLUSION(X) (X * X * X * X)
 
 //Layout specification.

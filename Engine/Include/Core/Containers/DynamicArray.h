@@ -390,6 +390,22 @@ public:
 	}
 
 	/*
+	*	Returns whether or not the given element exists in this container.
+	*/
+	FORCE_INLINE NO_DISCARD bool Exists(const TYPE &element) NOEXCEPT
+	{
+		for (uint64 i{ 0 }; i < _Size; ++i)
+		{
+			if (_Array[i] == element)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/*
 	*	Fills this dynamic array with N number of elements with the given value.
 	*/
 	FORCE_INLINE void Fill(const uint64 number_of_elements, const TYPE &value) NOEXCEPT

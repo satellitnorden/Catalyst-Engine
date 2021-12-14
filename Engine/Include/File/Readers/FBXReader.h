@@ -1033,29 +1033,76 @@ private:
 		//Check for NaN's/invalid values.
 		for (ModelFile::Mesh &mesh : model_file->_Meshes)
 		{
-			for (Vertex &vertex : mesh._Vertices)
+			//Go over all vertices, storing the indices of invalid vertices.
+			DynamicArray<uint64> invalid_indices;
+
+			for (uint64 vertex_index{ 0 }; vertex_index < mesh._Vertices.Size(); ++vertex_index)
 			{
-				ASSERT(!vertex._Normal.IsZero(), "Normal is zero!");
-				ASSERT(!vertex._Tangent.IsZero(), "Normal is zero!");
-
-				for (uint8 i{ 0 }; i < 3; ++i)
+				if (mesh._Vertices[vertex_index]._Normal.IsZero())
 				{
-					ASSERT(!CatalystBaseMath::IsNaN(vertex._Position[i]), "Value is NaN!");
+					invalid_indices.Emplace(vertex_index);
+
+					continue;
 				}
 
-				for (uint8 i{ 0 }; i < 3; ++i)
+				if (mesh._Vertices[vertex_index]._Tangent.IsZero())
 				{
-					ASSERT(!CatalystBaseMath::IsNaN(vertex._Normal[i]), "Value is NaN!");
+					invalid_indices.Emplace(vertex_index);
+
+					continue;
 				}
 
-				for (uint8 i{ 0 }; i < 3; ++i)
+				if (CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[0])
+					|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[1])
+					|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[2]))
 				{
-					ASSERT(!CatalystBaseMath::IsNaN(vertex._Tangent[i]), "Value is NaN!");
+					invalid_indices.Emplace(vertex_index);
+
+					continue;
 				}
 
-				for (uint8 i{ 0 }; i < 2; ++i)
+				if (CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Normal[0])
+					|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Normal[1])
+					|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Normal[2]))
 				{
-					ASSERT(!CatalystBaseMath::IsNaN(vertex._TextureCoordinate[i]), "Value is NaN!");
+					invalid_indices.Emplace(vertex_index);
+
+					continue;
+				}
+
+				if (CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Tangent[0])
+					|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Tangent[1])
+					|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Tangent[2]))
+				{
+					invalid_indices.Emplace(vertex_index);
+
+					continue;
+				}
+
+				if (CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._TextureCoordinate[0])
+					|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._TextureCoordinate[1]))
+				{
+					invalid_indices.Emplace(vertex_index);
+
+					continue;
+				}
+			}
+
+			//Go over the indices, removing invalid triangles.
+			for (uint64 index_index{ 0 }; index_index < mesh._Indices.Size();)
+			{
+				if (invalid_indices.Exists(mesh._Indices[index_index + 0])
+					|| invalid_indices.Exists(mesh._Indices[index_index + 1])
+					|| invalid_indices.Exists(mesh._Indices[index_index + 2]))
+				{
+					mesh._Indices.EraseAt<true>(index_index + 0);
+					mesh._Indices.EraseAt<true>(index_index + 1);
+					mesh._Indices.EraseAt<true>(index_index + 2);
+				}
+
+				else
+				{
+					index_index += 3;
 				}
 			}
 		}

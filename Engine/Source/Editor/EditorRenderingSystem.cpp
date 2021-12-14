@@ -33,7 +33,7 @@ void EditorRenderingSystem::Update() NOEXCEPT
 	{
 		if (ImGui::Button("Stop Taking Screenshot"))
 		{
-			RenderingSystem::Instance->StopTakingScreenshot("Catalyst Editor Screenshot.tga");
+			RenderingSystem::Instance->StopTakingScreenshot("Catalyst Editor Screenshot.png");
 		}
 	}
 
@@ -302,7 +302,7 @@ void EditorRenderingSystem::Update() NOEXCEPT
 			{
 				if (ImGui::Button("Rendering Path: Simplified"))
 				{
-					RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::VIRTUAL_REALITY);
+					RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::DEFAULT);
 				}
 
 				break;

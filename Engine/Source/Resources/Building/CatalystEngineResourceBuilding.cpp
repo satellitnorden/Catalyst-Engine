@@ -12,6 +12,7 @@
 
 //File.
 #include <File/Core/BinaryFile.h>
+#include <File/Writers/PNGWriter.h>
 
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
@@ -37,6 +38,7 @@
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE (0)
 #define BUILD_ENGINE_MATERIALS (0)
 #define BUILD_ENGINE_MODELS (0)
+#define BUILD_ENGINE_TEXTURES (0)
 #define BUILD_ENGINE_MISCELLANEOUS (0)
 
 #define BUILD_ENGINE_RESOURCE_COLLECTION (0)
@@ -1930,6 +1932,68 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		TaskSystem::Instance->ExecuteTask(&task);
 	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the material.
+			MaterialBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Arch_Material";
+			parameters._ID = "Sponza_Arch_Material";
+			parameters._Type = MaterialResource::Type::OPAQUE;
+			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString("Sponza_Arch_AlbedoThickness_Texture2D");
+			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
+			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.789f, 0.0f, 1.0f, 0.0f));
+			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+			parameters._EmissiveMultiplier = 0.0f;
+			parameters._DoubleSided = false;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the material.
+			MaterialBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Bricks_Material";
+			parameters._ID = "Sponza_Bricks_Material";
+			parameters._Type = MaterialResource::Type::OPAQUE;
+			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString("Sponza_Bricks_AlbedoThickness_Texture2D");
+			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			parameters._NormalMapDisplacementComponent._TextureResourceIdentifier = HashString("Sponza_Bricks_NormalMapDisplacement_Texture2D");
+			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.895f, 0.0f, 1.0f, 0.0f));
+			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+			parameters._EmissiveMultiplier = 0.0f;
+			parameters._DoubleSided = false;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
 #endif
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_MODELS
@@ -1945,13 +2009,858 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Model";
 			parameters._ResourceIdentifier = "Catalyst_Engine_Default_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Catalyst_Engine_Default_Model.fbx");
-			parameters._Transformation = Matrix4x4(VectorConstants::ZERO, EulerAngles(-CatalystBaseMathConstants::HALF_PI, 0.0f, 0.0f), VectorConstants::ONE);
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Catalyst_Engine_Default_Model.fbx";
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Arch_Model";
+			parameters._ResourceIdentifier = "Sponza_Arch_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Arch.fbx");
+			parameters._Transformation = Matrix4x4();
 			parameters._TextureCoordinateMultiplier = 1.0f;
 			parameters._TexturCoordinateRotation = 0.0f;
 			parameters._ProceduralFunction = nullptr;
 			parameters._CollisionModelFilePath = nullptr;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Bricks_Model";
+			parameters._ResourceIdentifier = "Sponza_Bricks_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Bricks.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Ceiling_Model";
+			parameters._ResourceIdentifier = "Sponza_Ceiling_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Ceiling.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Chain_Model";
+			parameters._ResourceIdentifier = "Sponza_Chain_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Chain.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Column_A_Model";
+			parameters._ResourceIdentifier = "Sponza_Column_A_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Column_A.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Column_B_Model";
+			parameters._ResourceIdentifier = "Sponza_Column_B_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Column_B.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Column_C_Model";
+			parameters._ResourceIdentifier = "Sponza_Column_C_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Column_C.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Details_Model";
+			parameters._ResourceIdentifier = "Sponza_Details_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Details.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_A_Model";
+			parameters._ResourceIdentifier = "Sponza_Fabric_A_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_A.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_C_Model";
+			parameters._ResourceIdentifier = "Sponza_Fabric_C_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_C.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_D_Model";
+			parameters._ResourceIdentifier = "Sponza_Fabric_D_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_D.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_E_Model";
+			parameters._ResourceIdentifier = "Sponza_Fabric_E_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_E.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_F_Model";
+			parameters._ResourceIdentifier = "Sponza_Fabric_F_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_F.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_G_Model";
+			parameters._ResourceIdentifier = "Sponza_Fabric_G_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_G.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Flagpole_Model";
+			parameters._ResourceIdentifier = "Sponza_Flagpole_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Flagpole.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Floor_Model";
+			parameters._ResourceIdentifier = "Sponza_Floor_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Floor.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Leaf_Model";
+			parameters._ResourceIdentifier = "Sponza_Leaf_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Leaf.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Material_25_Model";
+			parameters._ResourceIdentifier = "Sponza_Material_25_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Material_25.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Material_47_Model";
+			parameters._ResourceIdentifier = "Sponza_Material_47_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Material_47.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Material_57_Model";
+			parameters._ResourceIdentifier = "Sponza_Material_57_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Material_57.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Material_298_Model";
+			parameters._ResourceIdentifier = "Sponza_Material_298_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Material_298.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Roof_Model";
+			parameters._ResourceIdentifier = "Sponza_Roof_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Roof.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Vase_Model";
+			parameters._ResourceIdentifier = "Sponza_Vase_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Vase.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Vase_Hanging_Model";
+			parameters._ResourceIdentifier = "Sponza_Vase_Hanging_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Vase_Hanging.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the model.
+			ModelBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Vase_Round_Model";
+			parameters._ResourceIdentifier = "Sponza_Vase_Round_Model";
+			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Vase_Round.fbx");
+			parameters._Transformation = Matrix4x4();
+			parameters._TextureCoordinateMultiplier = 1.0f;
+			parameters._TexturCoordinateRotation = 0.0f;
+			parameters._ProceduralFunction = nullptr;
+			parameters._CollisionModelFilePath = nullptr;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+#endif
+
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_TEXTURES
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the texture 2D.
+			Texture2DBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Arch_AlbedoThickness_Texture2D";
+			parameters._ID = "Sponza_Arch_AlbedoThickness_Texture2D";
+			parameters._DefaultWidth = 0;
+			parameters._DefaultHeight = 0;
+			parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Sponza\\sponza_arch_diff.png";
+			parameters._File2 = nullptr;
+			parameters._File3 = nullptr;
+			parameters._File4 = nullptr;
+			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+			parameters._ApplyGammaCorrection = true;
+			parameters._TransformFunction = nullptr;
+			parameters._BaseMipmapLevel = 0;
+			parameters._MipmapLevels = 9;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the texture 2D.
+			Texture2DBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Bricks_AlbedoThickness_Texture2D";
+			parameters._ID = "Sponza_Bricks_AlbedoThickness_Texture2D";
+			parameters._DefaultWidth = 0;
+			parameters._DefaultHeight = 0;
+			parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Sponza\\spnza_bricks_a_diff.png";
+			parameters._File2 = nullptr;
+			parameters._File3 = nullptr;
+			parameters._File4 = nullptr;
+			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+			parameters._ApplyGammaCorrection = true;
+			parameters._TransformFunction = nullptr;
+			parameters._BaseMipmapLevel = 0;
+			parameters._MipmapLevels = 9;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the texture 2D.
+			Texture2DBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Bricks_NormalMapDisplacement_Texture2D";
+			parameters._ID = "Sponza_Bricks_NormalMapDisplacement_Texture2D";
+			parameters._DefaultWidth = 0;
+			parameters._DefaultHeight = 0;
+			parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Sponza\\spnza_bricks_a_bump.png";
+			parameters._File2 = nullptr;
+			parameters._File3 = nullptr;
+			parameters._File4 = nullptr;
+			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
+			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+			parameters._ApplyGammaCorrection = false;
+			parameters._TransformFunction = [](const Texture2D<Vector4<float32>> &input_texture, Texture2D<Vector4<float32>> *const RESTRICT output_texture)
+			{
+				for (uint32 Y{ 0 }; Y < input_texture.GetHeight(); ++Y)
+				{
+					for (uint32 X{ 0 }; X < input_texture.GetWidth(); ++X)
+					{
+						Vector2<uint32> left;
+
+						{
+							if (X == 0
+								|| X == (input_texture.GetWidth() - 1))
+							{
+								left._X = X;
+							}
+
+							else
+							{
+								left._X = X - 1;
+							}
+
+							left._Y = Y;
+						}
+
+						Vector2<uint32> right;
+
+						{
+							if (X == 0
+								|| X == (input_texture.GetWidth() - 1))
+							{
+								right._X = X;
+							}
+
+							else
+							{
+								right._X = X + 1;
+							}
+
+							right._Y = Y;
+						}
+
+						Vector2<uint32> down;
+
+						{
+							if (Y == 0
+								|| Y == (input_texture.GetHeight() - 1))
+							{
+								down._Y = Y;
+							}
+
+							else
+							{
+								down._Y = Y - 1;
+							}
+
+							down._X = X;
+						}
+
+						Vector2<uint32> up;
+
+						{
+							if (Y == 0
+								|| Y == (input_texture.GetHeight() - 1))
+							{
+								up._Y = Y;
+							}
+
+							else
+							{
+								up._Y = Y + 1;
+							}
+
+							up._X = X;
+						}
+
+						const float32 left_height{ input_texture.At(left._X, left._Y)._X };
+						const float32 right_height{ input_texture.At(right._X, right._Y)._X };
+						const float32 down_height{ input_texture.At(down._X, down._Y)._X };
+						const float32 up_height{ input_texture.At(up._X, up._Y)._X };
+
+						Vector3<float32> normal{ Vector3<float32>::Normalize(Vector3<float32>(left_height - right_height, down_height - up_height, 2.0f)) };
+
+						normal._X = normal._X * 0.5f + 0.5f;
+						normal._Y = normal._Y * 0.5f + 0.5f;
+						normal._Z = normal._Z * 0.5f + 0.5f;
+
+						output_texture->At(X, Y) = Vector4<float32>(normal, 0.5f);
+					}
+				}
+			};
+			parameters._BaseMipmapLevel = 0;
+			parameters._MipmapLevels = 9;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 		};
 		task._Arguments = nullptr;
 		task._ExecutableOnSameThread = false;
@@ -2019,7 +2928,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		MemorySystem::Instance->TypeFree<Task>(task);
 	}
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_MISCELLANEOUS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTION
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_TEXTURES || BUILD_ENGINE_MISCELLANEOUS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTION
 	{
 		ResourceCollectionBuildParameters parameters;
 
