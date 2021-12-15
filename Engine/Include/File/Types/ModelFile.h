@@ -105,6 +105,13 @@ public:
 					continue;
 				}
 
+				if (Vector3<float32>::DotProduct(mesh._Vertices[vertex_index]._Normal, mesh._Vertices[vertex_index]._Tangent) == -1.0f)
+				{
+					invalid_indices.Emplace(vertex_index);
+
+					continue;
+				}
+
 				if (CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[0])
 					|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[1])
 					|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[2]))

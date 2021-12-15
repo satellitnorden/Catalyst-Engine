@@ -2111,6 +2111,11 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 				{
 					File::Delete(output_buffer);
 				}
+
+				else
+				{
+					ResourceSystem::Instance->LoadResource(output_buffer);
+				}
 			}
 		}
 
@@ -2180,6 +2185,13 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					texture_parameters._MipmapLevels = 9;
 
 					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
+					
+					{
+						char load_buffer[MAXIMUM_FILE_PATH_LENGTH];
+						sprintf_s(load_buffer, "%s.cr", texture_parameters._Output);
+
+						ResourceSystem::Instance->LoadResource(load_buffer);
+					}
 				}
 
 				//Set the material properties.
@@ -2255,6 +2267,13 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					texture_parameters._MipmapLevels = 9;
 
 					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
+
+					{
+						char load_buffer[MAXIMUM_FILE_PATH_LENGTH];
+						sprintf_s(load_buffer, "%s.cr", texture_parameters._Output);
+
+						ResourceSystem::Instance->LoadResource(load_buffer);
+					}
 				}
 
 				//Set the material properties.
@@ -2309,6 +2328,13 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					texture_parameters._MipmapLevels = 9;
 
 					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
+
+					{
+						char load_buffer[MAXIMUM_FILE_PATH_LENGTH];
+						sprintf_s(load_buffer, "%s.cr", texture_parameters._Output);
+
+						ResourceSystem::Instance->LoadResource(load_buffer);
+					}
 				}
 
 				//Set the material properties.
@@ -2324,6 +2350,13 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 			parameters._DoubleSided = material.doubleSided;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
+
+			{
+				char load_buffer[MAXIMUM_FILE_PATH_LENGTH];
+				sprintf_s(load_buffer, "%s.cr", parameters._Output);
+
+				ResourceSystem::Instance->LoadResource(load_buffer);
+			}
 		}
 
 		//Finally, create the level!
@@ -2372,6 +2405,13 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 			}
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildLevel(parameters);
+
+			{
+				char load_buffer[MAXIMUM_FILE_PATH_LENGTH];
+				sprintf_s(load_buffer, "%s.cr", parameters._OutputFilePath);
+
+				ResourceSystem::Instance->LoadResource(load_buffer);
+			}
 		}
 	}
 
