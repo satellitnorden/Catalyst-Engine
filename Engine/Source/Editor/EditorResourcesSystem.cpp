@@ -18,6 +18,7 @@
 
 //Third party.
 #include <ThirdParty/imgui.h>
+#include <ThirdParty/tiny_gltf.h>
 
 /*
 *	Updates the editor resources system.
@@ -91,15 +92,15 @@ void EditorResourcesSystem::Update() NOEXCEPT
 		_CurrentCreateResourceMode = CreateResourceMode::QUIXEL_MODEL;
 	}
 
-	//Add the button for creating a level from .obj and .mtl files resource.
-	if (ImGui::Button("Create Level From .obj And .mtl Files Resource"))
+	//Add the button for creating a level resource from .gltf.
+	if (ImGui::Button("Create Level Resource From .gltf"))
 	{
-		//Reset the create model resource data.
-		_CreateLevelResourceFromObjAndMtlData.~CreateLevelResourceFromObjAndMtlData();
-		new (&_CreateLevelResourceFromObjAndMtlData) CreateLevelResourceFromObjAndMtlData();
+		//Reset the data.
+		_CreateLevelResourceFromGLTFData.~CreateLevelResourceFromGLTFData();
+		new (&_CreateLevelResourceFromGLTFData) CreateLevelResourceFromGLTFData();
 
 		//Set the current create resource mode.
-		_CurrentCreateResourceMode = CreateResourceMode::LEVEL_FROM_OBJ_AND_MTL_FILES;
+		_CurrentCreateResourceMode = CreateResourceMode::LEVEL_FROM_GLTF;
 	}
 
 	switch (_CurrentCreateResourceMode)
@@ -146,9 +147,9 @@ void EditorResourcesSystem::Update() NOEXCEPT
 			break;
 		}
 
-		case CreateResourceMode::LEVEL_FROM_OBJ_AND_MTL_FILES:
+		case CreateResourceMode::LEVEL_FROM_GLTF:
 		{
-			AddCreateLevelResourceFromObjAndMtlFilesWindow();
+			AddCreateLevelResourceFromGLTFWindow();
 
 			break;
 		}
@@ -1626,43 +1627,30 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 }
 
 /*
-*	Adds the create level resource from .obj and .mtl files window.
+*	Adds the create level resource from .gltf window.
 */
-void EditorResourcesSystem::AddCreateLevelResourceFromObjAndMtlFilesWindow() NOEXCEPT
+void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 {
-	/*
-	*	Create level resource from .obj and .mtl files temporary data class definition.
-	*/
-	class CreateLevelResourceFomrObjAndMtlTemporaryData final
-	{
-
-	public:
-
-		//The .obj file path..
-		DynamicString _ObjFilePath;
-
-		//The .mtl file path..
-		DynamicString _MtlFilePath;
-
-	};
-
-	//Add the "Create Level From .obj And .mtl Files Resource" window.
-	ImGui::Begin("Create Level From .obj And .mtl Files Resource", nullptr, EditorConstants::WINDOW_FLAGS);
+	//Add the "Create Level Resource From .gltf" window.
+	ImGui::Begin("Create Level Resource From .gltf", nullptr, EditorConstants::WINDOW_FLAGS);
 	ImGui::SetWindowPos(ImVec2(256.0f, 256.0f));
 	ImGui::SetWindowSize(ImVec2(512.0f, 512.0f));
 
-	//If the user has already selected a directory path, display it.
-	if (_CreateLevelResourceFromObjAndMtlData._DirectoryPath.Data())
+	//If the user has already selected a file path, display it.
+	if (_CreateLevelResourceFromGLTFData._FilePath.Data())
 	{
-		ImGui::Text("Directory Path:");
-		ImGui::Text(_CreateLevelResourceFromObjAndMtlData._DirectoryPath.Data());
+		ImGui::Text("File Path:");
+		ImGui::Text(_CreateLevelResourceFromGLTFData._FilePath.Data());
 	}
 
-	//Add the button to set the directory path.
-	if (ImGui::Button("Select Directory Path"))
+	//Add the button to set the file path.
+	if (ImGui::Button("Select File Path"))
 	{
-		File::BrowseForFolder(&_CreateLevelResourceFromObjAndMtlData._DirectoryPath);
+		File::BrowseForFile(false, &_CreateLevelResourceFromGLTFData._FilePath);
 	}
+
+	//Add a slider for the scale.
+	ImGui::DragFloat("Scale", &_CreateLevelResourceFromGLTFData._Scale, 0.01f);
 
 	//Add some padding before the "Create Level Resource" button.
 	ImGui::Text("");
@@ -1670,84 +1658,670 @@ void EditorResourcesSystem::AddCreateLevelResourceFromObjAndMtlFilesWindow() NOE
 	//Add the button to create the level resource.
 	if (ImGui::Button("Create Level Resource"))
 	{
-		//Fill in the temporary data.
-		CreateLevelResourceFomrObjAndMtlTemporaryData temporary_data;
+		tinygltf::Model model;
+		tinygltf::TinyGLTF loader;
+		std::string error;
+		std::string warning;
 
-		//Iterate over all the files in the directory and process them.
-		for (const auto &entry : std::filesystem::directory_iterator(std::string(_CreateLevelResourceFromObjAndMtlData._DirectoryPath.Data())))
+		const bool succeeded{ loader.LoadASCIIFromFile(&model, &error, &warning, _CreateLevelResourceFromGLTFData._FilePath.Data()) };
+	
+		if (!error.empty())
 		{
-			//Cache the file path.
-			const DynamicString entry_file_path{ entry.path().generic_u8string().c_str() };
+			PRINT_TO_OUTPUT("Tiny GLTF Error: " << error);
+		}
 
-			//Cache the file extension.
-			const File::Extension file_extension{ File::GetExtension(entry_file_path.Data()) };
+		if (!warning.empty())
+		{
+			PRINT_TO_OUTPUT("Tiny GLTF Warning: " << warning);
+		}
 
-			//Is this a .jpg file?
-			if (file_extension == File::Extension::JPG)
+		if (!succeeded)
+		{
+			ASSERT(false, "Tiny GLTF Failed!");
+		}
+
+		//Figure out the base file path.
+		DynamicString base_file_path;
+
+		{
+			char base_file_path_buffer[MAXIMUM_FILE_PATH_LENGTH];
+			sprintf_s(base_file_path_buffer, _CreateLevelResourceFromGLTFData._FilePath.Data());
+
+			for (int64 i{ MAXIMUM_FILE_PATH_LENGTH - 1 }; i >= 0; --i)
 			{
-				//Extract the identifier.
-				DynamicString identifier;
-
-				for (int64 i{ static_cast<int64>(entry_file_path.Length()) - 1 }; i >= 0; --i)
+				if (base_file_path_buffer[i] == '\\')
 				{
-					if (entry_file_path[i] == '\\' || entry_file_path[i] == '/')
-					{
-						identifier = &entry_file_path.Data()[i + 1];
-						identifier[identifier.Length() - 4] = '\0';
+					base_file_path_buffer[i + 1] = '\0';
 
-						break;
+					break;
+				}
+			}
+
+			base_file_path = base_file_path_buffer;
+		}
+
+		//Figure out the base file name.
+		DynamicString base_file_name;
+
+		{
+			char base_file_name_buffer[MAXIMUM_FILE_PATH_LENGTH];
+			sprintf_s(base_file_name_buffer, _CreateLevelResourceFromGLTFData._FilePath.FindLastOfCharacter('\\') + 1);
+
+			for (uint64 i{ 0 }; i < MAXIMUM_FILE_PATH_LENGTH; ++i)
+			{
+				if (base_file_name_buffer[i] == '.')
+				{
+					base_file_name_buffer[i] = '\0';
+
+					break;
+				}
+			}
+
+			base_file_name = base_file_name_buffer;
+		}
+
+		//Create all the models.
+		{
+			//Sort primitives based on the material they have.
+			DynamicArray<DynamicArray<tinygltf::Primitive>> primitives;
+			primitives.Upsize<true>(model.materials.size());
+
+			for (const tinygltf::Mesh &mesh : model.meshes)
+			{
+				for (const tinygltf::Primitive &primitive : mesh.primitives)
+				{
+					primitives[primitive.material].Emplace(primitive);
+				}
+			}
+
+			//Now create all the models.
+			for (uint64 model_index{ 0 }; model_index < primitives.Size(); ++model_index)
+			{
+				//Determine the output.
+				char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+				sprintf_s(output_buffer, "..\\..\\..\\Resources\\Intermediate\\%s_%llu_Model.cr", base_file_name.Data(), model_index);
+
+				//Determine the resoure identifier.
+				char resource_identifier_buffer[MAXIMUM_FILE_PATH_LENGTH];
+				sprintf_s(resource_identifier_buffer, "%s_%llu_Model", base_file_name.Data(), model_index);
+
+				//Open the output file to be written to.
+				BinaryFile<BinaryFileMode::OUT> output_file{ output_buffer };
+
+				//Write the resource header to the file.
+				const ResourceHeader header{ ResourceConstants::MODEL_TYPE_IDENTIFIER, HashString(resource_identifier_buffer), resource_identifier_buffer };
+				output_file.Write(&header, sizeof(ResourceHeader));
+
+				//Start filling in the vertices and indices.
+				DynamicArray<Vertex> vertices;
+				DynamicArray<uint32> indices;
+
+				uint64 current_vertex_offset{ 0 };
+
+				for (const tinygltf::Primitive &primitive : primitives[model_index])
+				{
+					ASSERT(primitive.mode == TINYGLTF_MODE_TRIANGLES, "Mode of primitive is not triangles!");
+
+					//Go through the attributes.
+					uint64 vertices_count{ 0 };
+
+					for (const std::pair<std::string, int> &attribute : primitive.attributes)
+					{
+						if (attribute.first == "POSITION")
+						{
+							//Cache the accessor.
+							const tinygltf::Accessor &accessor{ model.accessors[attribute.second] };
+
+							ASSERT(accessor.bufferView >= 0, "Accessor has no buffer view!");
+							ASSERT(accessor.type == TINYGLTF_TYPE_VEC3, "Type of POSITION accessor is not TINYGLTF_TYPE_VEC3!");
+
+							//Cache the buffer view.
+							const tinygltf::BufferView &buffer_view{ model.bufferViews[accessor.bufferView] };
+
+							ASSERT(buffer_view.buffer >= 0, "Buffer view has no buffer!");
+
+							//Cache the buffer.
+							const tinygltf::Buffer &buffer{ model.buffers[buffer_view.buffer] };
+
+							//Add the positions.
+							for (uint64 i{ 0 }; i < accessor.count; ++i)
+							{
+								//Calculate the byte offset.
+								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(Vector3<float32>) * i };
+
+								//Retrieve the position.
+								const Vector3<float32> position{ *reinterpret_cast<const Vector3<float32> *const RESTRICT>(&buffer.data[byte_offset]) };
+
+								//Calculate the vertex index.
+								const uint64 vertex_index{ current_vertex_offset + i };
+
+								//Retrieve the vertex.
+								Vertex *RESTRICT vertex{ nullptr };
+
+								if (vertex_index >= vertices.Size())
+								{
+									vertices.Emplace();
+									vertex = &vertices.Back();
+								}
+
+								else
+								{
+									vertex = &vertices[vertex_index];
+								}
+
+								//Set the position.
+								vertex->_Position = position;
+							}
+
+							//Set the vertices count.
+							if (vertices_count == 0)
+							{
+								vertices_count = accessor.count;
+							}
+
+							else
+							{
+								ASSERT(vertices_count == accessor.count, "Mismatch!");
+							}
+						}
+
+						else if (attribute.first == "NORMAL")
+						{
+							//Cache the accessor.
+							const tinygltf::Accessor &accessor{ model.accessors[attribute.second] };
+
+							ASSERT(accessor.bufferView >= 0, "Accessor has no buffer view!");
+							ASSERT(accessor.type == TINYGLTF_TYPE_VEC3, "Type of NORMAL accessor is not TINYGLTF_TYPE_VEC3!");
+
+							//Cache the buffer view.
+							const tinygltf::BufferView &buffer_view{ model.bufferViews[accessor.bufferView] };
+
+							ASSERT(buffer_view.buffer >= 0, "Buffer view has no buffer!");
+
+							//Cache the buffer.
+							const tinygltf::Buffer &buffer{ model.buffers[buffer_view.buffer] };
+
+							//Add the normals.
+							for (uint64 i{ 0 }; i < accessor.count; ++i)
+							{
+								//Calculate the byte offset.
+								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(Vector3<float32>) * i };
+							
+								//Retrieve the normal.
+								const Vector3<float32> normal{ *reinterpret_cast<const Vector3<float32> *const RESTRICT>(&buffer.data[byte_offset]) };
+							
+								//Calculate the vertex index.
+								const uint64 vertex_index{ current_vertex_offset + i };
+
+								//Retrieve the vertex.
+								Vertex *RESTRICT vertex{ nullptr };
+
+								if (vertex_index >= vertices.Size())
+								{
+									vertices.Emplace();
+									vertex = &vertices.Back();
+								}
+
+								else
+								{
+									vertex = &vertices[vertex_index];
+								}
+
+								//Set the normal.
+								vertex->_Normal = normal;
+							}
+
+							//Set the vertices count.
+							if (vertices_count == 0)
+							{
+								vertices_count = accessor.count;
+							}
+
+							else
+							{
+								ASSERT(vertices_count == accessor.count, "Mismatch!");
+							}
+						}
+
+						else if (attribute.first == "TANGENT")
+						{
+							//Cache the accessor.
+							const tinygltf::Accessor &accessor{ model.accessors[attribute.second] };
+
+							ASSERT(accessor.bufferView >= 0, "Accessor has no buffer view!");
+							ASSERT(accessor.type == TINYGLTF_TYPE_VEC4, "Type of TANGENT accessor is not TINYGLTF_TYPE_VEC4!");
+
+							//Cache the buffer view.
+							const tinygltf::BufferView &buffer_view{ model.bufferViews[accessor.bufferView] };
+
+							ASSERT(buffer_view.buffer >= 0, "Buffer view has no buffer!");
+
+							//Cache the buffer.
+							const tinygltf::Buffer &buffer{ model.buffers[buffer_view.buffer] };
+
+							//Add the tangents.
+							for (uint64 i{ 0 }; i < accessor.count; ++i)
+							{
+								//Calculate the byte offset.
+								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(Vector4<float32>) * i };
+
+								//Retrieve the tangent.
+								const Vector4<float32> tangent{ *reinterpret_cast<const Vector4<float32> *const RESTRICT>(&buffer.data[byte_offset]) };
+
+								//Calculate the vertex index.
+								const uint64 vertex_index{ current_vertex_offset + i };
+
+								//Retrieve the vertex.
+								Vertex *RESTRICT vertex{ nullptr };
+
+								if (vertex_index >= vertices.Size())
+								{
+									vertices.Emplace();
+									vertex = &vertices.Back();
+								}
+
+								else
+								{
+									vertex = &vertices[vertex_index];
+								}
+
+								//Set the tangent.
+								vertex->_Tangent = Vector3<float32>(tangent._X, tangent._Y, tangent._Z);
+							}
+
+							//Set the vertices count.
+							if (vertices_count == 0)
+							{
+								vertices_count = accessor.count;
+							}
+
+							else
+							{
+								ASSERT(vertices_count == accessor.count, "Mismatch!");
+							}
+						}
+
+						else if (attribute.first == "TEXCOORD_0")
+						{
+							//Cache the accessor.
+							const tinygltf::Accessor& accessor{ model.accessors[attribute.second] };
+
+							ASSERT(accessor.bufferView >= 0, "Accessor has no buffer view!");
+							ASSERT(accessor.type == TINYGLTF_TYPE_VEC2, "Type of TEXCOORD_0 accessor is not TINYGLTF_TYPE_VEC2!");
+
+							//Cache the buffer view.
+							const tinygltf::BufferView& buffer_view{ model.bufferViews[accessor.bufferView] };
+
+							ASSERT(buffer_view.buffer >= 0, "Buffer view has no buffer!");
+
+							//Cache the buffer.
+							const tinygltf::Buffer& buffer{ model.buffers[buffer_view.buffer] };
+
+							//Add the texture coordinates.
+							for (uint64 i{ 0 }; i < accessor.count; ++i)
+							{
+								//Calculate the byte offset.
+								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(Vector2<float32>) * i };
+
+								//Retrieve the texture coordinate.
+								const Vector2<float32> texture_coordinate{ *reinterpret_cast<const Vector2<float32> *const RESTRICT>(&buffer.data[byte_offset]) };
+
+								//Calculate the vertex index.
+								const uint64 vertex_index{ current_vertex_offset + i };
+
+								//Retrieve the vertex.
+								Vertex* RESTRICT vertex{ nullptr };
+
+								if (vertex_index >= vertices.Size())
+								{
+									vertices.Emplace();
+									vertex = &vertices.Back();
+								}
+
+								else
+								{
+									vertex = &vertices[vertex_index];
+								}
+
+								//Set the texture coordinate.
+								vertex->_TextureCoordinate = texture_coordinate;
+							}
+
+							//Set the vertices count.
+							if (vertices_count == 0)
+							{
+								vertices_count = accessor.count;
+							}
+
+							else
+							{
+								ASSERT(vertices_count == accessor.count, "Mismatch!");
+							}
+						}
+					}
+
+					//Add the indices.
+					{
+						//Cache the accessor.
+						const tinygltf::Accessor& accessor{ model.accessors[primitive.indices] };
+
+						ASSERT(accessor.bufferView >= 0, "Accessor has no buffer view!");
+						ASSERT(accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT, "Component Type of INDICES accessor is not TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT!");
+						ASSERT(accessor.type == TINYGLTF_TYPE_SCALAR, "Type of INDICES accessor is not TINYGLTF_TYPE_SCALAR!");
+
+						//Cache the buffer view.
+						const tinygltf::BufferView& buffer_view{ model.bufferViews[accessor.bufferView] };
+
+						ASSERT(buffer_view.buffer >= 0, "Buffer view has no buffer!");
+
+						//Cache the buffer.
+						const tinygltf::Buffer& buffer{ model.buffers[buffer_view.buffer] };
+
+						//Add the texture coordinates.
+						for (uint64 i{ 0 }; i < accessor.count; ++i)
+						{
+							//Calculate the byte offset.
+							const uint64 byte_offset{ buffer_view.byteOffset + sizeof(uint16) * i };
+
+							//Retrieve the index
+							const uint16 index{ *reinterpret_cast<const uint16* const RESTRICT>(&buffer.data[byte_offset]) };
+
+							//Add the index.
+							indices.Emplace(static_cast<uint32>(current_vertex_offset) + static_cast<uint32>(index));
+						}
+					}
+
+					//Update the current vertex offset.
+					current_vertex_offset += vertices_count;
+				}
+
+				//Do some sanity-checking.
+				{
+					for (const uint32 index : indices)
+					{
+						ASSERT(index < vertices.Size(), "Oh no...");
 					}
 				}
 
-				//Build the texture 2D.
+				//Scale the vertices.
+				for (Vertex &vertex : vertices)
 				{
-					Texture2DBuildParameters parameters;
+					vertex._Position *= _CreateLevelResourceFromGLTFData._Scale;
+				}
 
-					char output_file_path_buffer[128];
-					sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s_Texture2D", identifier.Data());
-					parameters._Output = output_file_path_buffer;
+				//Determine the model space axis aligned bounding box.
+				{
+					//Iterate over all vertices in all meshes and expand the bounding box.
+					AxisAlignedBoundingBox3D axis_aligned_bounding_box;
 
-					char identifier_buffer[128];
-					sprintf_s(identifier_buffer, "%s_Texture2D", identifier.Data());
+					for (const Vertex &vertex : vertices)
+					{
+						axis_aligned_bounding_box.Expand(vertex._Position);
+					}
 
-					parameters._ID = identifier_buffer;
-					parameters._DefaultWidth = 0;
-					parameters._DefaultHeight = 0;
-					parameters._File1 = entry_file_path.Data();
-					parameters._File2 = nullptr;
-					parameters._File3 = nullptr;
-					parameters._File4 = nullptr;
-					parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.5f);
-					parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
-					parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
-					parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
-					parameters._ChannelMappings[3] =  Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
-					parameters._ApplyGammaCorrection = false;
-					parameters._TransformFunction = nullptr;
-					parameters._BaseMipmapLevel = 0;
-					parameters._MipmapLevels = 1;
+					//Write the axis-aligned bounding box to the file.
+					output_file.Write(&axis_aligned_bounding_box, sizeof(AxisAlignedBoundingBox3D));
+				}
 
-					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+				//Write the number of meshes.
+				constexpr uint64 NUMBER_OF_MESHES{ 1 };
+				output_file.Write(&NUMBER_OF_MESHES, sizeof(uint64));
 
-					//Now load the texture 2D.
-					sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\%s_Texture2D.cr", identifier.Data());
-					ResourceSystem::Instance->LoadResource(output_file_path_buffer);
+				//Write the number of level of details.
+				constexpr uint64 NUMBER_OF_LEVEL_OF_DETAILS{ 1 };
+				output_file.Write(&NUMBER_OF_LEVEL_OF_DETAILS, sizeof(uint64));
+
+				//Write the number of vertices to the file.
+				const uint64 number_of_vertices{ vertices.Size() };
+				output_file.Write(&number_of_vertices, sizeof(uint64));
+
+				//Write the vertices to the file.
+				output_file.Write(vertices.Data(), sizeof(Vertex) * number_of_vertices);
+
+				//Write the number of indices to the file.
+				const uint64 number_of_indices{ indices.Size() };
+				output_file.Write(&number_of_indices, sizeof(uint64));
+
+				//Write the vertices to the file.
+				output_file.Write(indices.Data(), sizeof(uint32) * number_of_indices);
+
+				//Write that there doesn't exist a collision model.
+				bool collision_model_exists{ false };
+				output_file.Write(&collision_model_exists, sizeof(bool));
+
+				//Close the output file.
+				output_file.Close();
+			}
+		}
+
+		//Create all the materials.
+		for (uint64 material_index{ 0 }; material_index < model.materials.size(); ++material_index)
+		{
+			//Cache the material.
+			tinygltf::Material &material{ model.materials[material_index] };
+
+			//Start creating the material.
+			MaterialBuildParameters parameters;
+
+			char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+			sprintf_s(output_buffer, "..\\..\\..\\Resources\\Intermediate\\%s_%llu_Material", base_file_name.Data(), material_index);
+			parameters._Output = output_buffer;
+
+			char ID_buffer[MAXIMUM_FILE_PATH_LENGTH];
+			sprintf_s(ID_buffer, "%s_%llu_Material", base_file_name.Data(), material_index);
+			parameters._ID = ID_buffer;
+
+			parameters._Type = MaterialResource::Type::OPAQUE;
+
+			//Does this material have an albedo texture?
+			if (material.pbrMetallicRoughness.baseColorTexture.index == -1)
+			{
+				parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+				parameters._AlbedoThicknessComponent._Color = Color(Vector4<float32>(static_cast<float32>(material.pbrMetallicRoughness.baseColorFactor[0]), static_cast<float32>(material.pbrMetallicRoughness.baseColorFactor[1]), static_cast<float32>(material.pbrMetallicRoughness.baseColorFactor[2]), 1.0f));
+			}
+
+			else
+			{
+				//Cache the image.
+				tinygltf::Image &image{ model.images[material.pbrMetallicRoughness.baseColorTexture.index] };
+
+				//Create the texture.
+				char texture_ID_buffer[MAXIMUM_FILE_PATH_LENGTH];
+				
+				{
+					//Build the texture 2D.
+					Texture2DBuildParameters texture_parameters;
+
+					char texture_output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+					sprintf_s(texture_output_buffer, "..\\..\\..\\Resources\\Intermediate\\%s_%llu_Material_AlbedoThickness_Texture2D", base_file_name.Data(), material_index);
+					texture_parameters._Output = texture_output_buffer;
+
+					sprintf_s(texture_ID_buffer, "%s_%llu_Material_AlbedoThickness_Texture2D", base_file_name.Data(), material_index);
+					texture_parameters._ID = texture_ID_buffer;
+
+					texture_parameters._DefaultWidth = 0;
+					texture_parameters._DefaultHeight = 0;
+
+					char file_1_buffer[MAXIMUM_FILE_PATH_LENGTH];
+					sprintf_s(file_1_buffer, "%s%s", base_file_path.Data(), image.uri.c_str());
+					texture_parameters._File1 = file_1_buffer;
+
+					texture_parameters._File2 = nullptr;
+					texture_parameters._File3 = nullptr;
+					texture_parameters._File4 = nullptr;
+					texture_parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+					texture_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+					texture_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+					texture_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+					texture_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+					texture_parameters._ApplyGammaCorrection = true;
+					texture_parameters._TransformFunction = nullptr;
+					texture_parameters._BaseMipmapLevel = 0;
+					texture_parameters._MipmapLevels = 9;
+
+					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
+				}
+
+				//Set the material properties.
+				parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+				parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString(texture_ID_buffer);
+			}
+
+			//Does this material have a normal map texture?
+			if (material.normalTexture.index == -1)
+			{
+				parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+				parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
+			}
+
+			else
+			{
+				//Cache the image.
+				tinygltf::Image &image{ model.images[material.normalTexture.index] };
+
+				//Create the texture.
+				char texture_ID_buffer[MAXIMUM_FILE_PATH_LENGTH];
+
+				{
+					//Build the texture 2D.
+					Texture2DBuildParameters texture_parameters;
+
+char texture_output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+sprintf_s(texture_output_buffer, "..\\..\\..\\Resources\\Intermediate\\%s_%llu_Material_NormalMapDisplacement_Texture2D", base_file_name.Data(), material_index);
+texture_parameters._Output = texture_output_buffer;
+
+sprintf_s(texture_ID_buffer, "%s_%llu_Material_NormalMapDisplacement_Texture2D", base_file_name.Data(), material_index);
+texture_parameters._ID = texture_ID_buffer;
+
+texture_parameters._DefaultWidth = 0;
+texture_parameters._DefaultHeight = 0;
+
+char file_1_buffer[MAXIMUM_FILE_PATH_LENGTH];
+sprintf_s(file_1_buffer, "%s%s", base_file_path.Data(), image.uri.c_str());
+texture_parameters._File1 = file_1_buffer;
+
+texture_parameters._File2 = nullptr;
+texture_parameters._File3 = nullptr;
+texture_parameters._File4 = nullptr;
+texture_parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.5f);
+texture_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+texture_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+texture_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+texture_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+texture_parameters._ApplyGammaCorrection = false;
+texture_parameters._TransformFunction = nullptr;
+texture_parameters._BaseMipmapLevel = 0;
+texture_parameters._MipmapLevels = 9;
+
+ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
+				}
+
+				//Set the material properties.
+				parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+				parameters._NormalMapDisplacementComponent._TextureResourceIdentifier = HashString(texture_ID_buffer);
+			}
+
+			//Does this material have a roughness/metallic texture?
+			if (material.pbrMetallicRoughness.metallicRoughnessTexture.index == -1)
+			{
+				parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+				parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(static_cast<float32>(material.pbrMetallicRoughness.roughnessFactor), static_cast<float32>(material.pbrMetallicRoughness.metallicFactor), 1.0f, 0.0f));
+			}
+
+			else
+			{
+				//Cache the image.
+				tinygltf::Image& image{ model.images[material.pbrMetallicRoughness.metallicRoughnessTexture.index] };
+
+				//Create the texture.
+				char texture_ID_buffer[MAXIMUM_FILE_PATH_LENGTH];
+
+				{
+					//Build the texture 2D.
+					Texture2DBuildParameters texture_parameters;
+
+					char texture_output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+					sprintf_s(texture_output_buffer, "..\\..\\..\\Resources\\Intermediate\\%s_%llu_Material_MaterialProperties_Texture2D", base_file_name.Data(), material_index);
+					texture_parameters._Output = texture_output_buffer;
+
+					sprintf_s(texture_ID_buffer, "%s_%llu_Material_MaterialProperties_Texture2D", base_file_name.Data(), material_index);
+					texture_parameters._ID = texture_ID_buffer;
+
+					texture_parameters._DefaultWidth = 0;
+					texture_parameters._DefaultHeight = 0;
+
+					char file_1_buffer[MAXIMUM_FILE_PATH_LENGTH];
+					sprintf_s(file_1_buffer, "%s%s", base_file_path.Data(), image.uri.c_str());
+					texture_parameters._File1 = file_1_buffer;
+
+					texture_parameters._File2 = nullptr;
+					texture_parameters._File3 = nullptr;
+					texture_parameters._File4 = nullptr;
+					texture_parameters._Default = Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f);
+					texture_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+					texture_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+					texture_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
+					texture_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+					texture_parameters._ApplyGammaCorrection = false;
+					texture_parameters._TransformFunction = nullptr;
+					texture_parameters._BaseMipmapLevel = 0;
+					texture_parameters._MipmapLevels = 9;
+
+					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
+				}
+
+				//Set the material properties.
+				parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+				parameters._MaterialPropertiesComponent._TextureResourceIdentifier = HashString(texture_ID_buffer);
+			}
+
+			//TODO.
+			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+
+			parameters._EmissiveMultiplier = 0.0f;
+			parameters._DoubleSided = material.doubleSided;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
+		}
+
+		//Finally, create the level!
+		{
+			//Build the level.
+			LevelBuildParameters parameters;
+
+			char output_file_path_buffer[MAXIMUM_FILE_PATH_LENGTH];
+			sprintf_s(output_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\%s_Level", base_file_name.Data());
+			parameters._OutputFilePath = output_file_path_buffer;
+
+			char identifier_buffer[MAXIMUM_FILE_PATH_LENGTH];
+			sprintf_s(identifier_buffer, "%s_Level", base_file_name.Data());
+			parameters._Identifier = identifier_buffer;
+
+			for (uint64 model_index{ 0 }; model_index < model.materials.size(); ++model_index)
+			{
+				parameters._LevelEntries.Emplace();
+				LevelEntry &level_entry{ parameters._LevelEntries.Back() };
+
+				level_entry._Type = LevelEntry::Type::STATIC_MODEL;
+				level_entry._Version = LevelEntry::StaticModelData::CURRENT_VERSION;
+
+				{
+					level_entry._StaticModelData._WorldTransform = WorldTransform();
+
+					char model_resource_identifier_buffer[MAXIMUM_FILE_PATH_LENGTH];
+					sprintf_s(model_resource_identifier_buffer, "%s_%llu_Model", base_file_name.Data(), model_index);
+					level_entry._StaticModelData._ModelResourceIdentifier = HashString(model_resource_identifier_buffer);
+
+					char material_resource_identifier_buffer[MAXIMUM_FILE_PATH_LENGTH];
+					sprintf_s(material_resource_identifier_buffer, "%s_%llu_Material", base_file_name.Data(), model_index);
+					level_entry._StaticModelData._MaterialResourceIdentifiers.Emplace(HashString(material_resource_identifier_buffer));
+				
+					level_entry._StaticModelData._ModelCollisionConfiguration._Type = ModelCollisionType::NONE;
 				}
 			}
 
-			//Is this a .mtl file?
-			if (file_extension == File::Extension::MTL)
-			{
-				//Remember the file path for later.
-				temporary_data._MtlFilePath = entry_file_path;
-			}
-
-			//Is this a .obj file?
-			if (file_extension == File::Extension::OBJ)
-			{
-				//Remember the file path for later.
-				temporary_data._ObjFilePath = entry_file_path;
-			}
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildLevel(parameters);
 		}
 	}
 

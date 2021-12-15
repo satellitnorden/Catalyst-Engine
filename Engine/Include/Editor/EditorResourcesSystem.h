@@ -36,7 +36,7 @@ private:
 		TEXTURE_2D,
 		QUIXEL_MATERIAL,
 		QUIXEL_MODEL,
-		LEVEL_FROM_OBJ_AND_MTL_FILES
+		LEVEL_FROM_GLTF
 	};
 
 	/*
@@ -192,15 +192,18 @@ private:
 	};
 
 	/*
-	*	Create level resource from .obj and .mtl data class definition.
+	*	Create level resource from .gltf data class definition.
 	*/
-	class CreateLevelResourceFromObjAndMtlData final
+	class CreateLevelResourceFromGLTFData final
 	{
 
 	public:
 
-		//The directory path.
-		DynamicString _DirectoryPath;
+		//The file path.
+		DynamicString _FilePath;
+
+		//The scale.
+		float32 _Scale{ 1.0f };
 
 	};
 
@@ -222,8 +225,8 @@ private:
 	//The create quixel model resource data.
 	CreateQuixelModelResourceData _CreateQuixelModelResourceData;
 
-	//The create level resource from obj. and .mtl files data.
-	CreateLevelResourceFromObjAndMtlData _CreateLevelResourceFromObjAndMtlData;
+	//The create level resource from .gltf data.
+	CreateLevelResourceFromGLTFData _CreateLevelResourceFromGLTFData;
 
 	/*
 	*	Adds the create material resource window.
@@ -251,9 +254,9 @@ private:
 	void AddCreateQuixelModelResourceWindow() NOEXCEPT;
 
 	/*
-	*	Adds the create level resource from .obj and .mtl files window.
+	*	Adds the create level resource from .gltf window.
 	*/
-	void AddCreateLevelResourceFromObjAndMtlFilesWindow() NOEXCEPT;
+	void AddCreateLevelResourceFromGLTFWindow() NOEXCEPT;
 
 };
 #endif

@@ -392,6 +392,22 @@ public:
 		return nullptr;
 	}
 
+	/*
+	*	Tries to find the last of the given character. If it exists, a pointer to the beginning of the character is returned, otherwise nullptr. Non-const version.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD char *const RESTRICT FindLastOfCharacter(const char character) NOEXCEPT
+	{
+		for (int64 i{ static_cast<int64>(_Length) - 1 }; i >= 0; --i)
+		{
+			if (_String[i] == character)
+			{
+				return &_String[i];
+			}
+		}
+
+		return nullptr;
+	}
+
 private:
 
 	//The underlying C string.

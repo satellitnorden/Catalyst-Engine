@@ -577,7 +577,7 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 	//Determine the model space axis aligned bounding box.
 	{
 		//Iterate over all vertices in all meshes and expand the bounding box.
-		AxisAlignedBoundingBox3D aixs_aligned_bounding_box;
+		AxisAlignedBoundingBox3D axis_aligned_bounding_box;
 
 		for (ModelFile &model_file : model_files)
 		{
@@ -585,18 +585,18 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 			{
 				for (Vertex &vertex : mesh._Vertices)
 				{
-					aixs_aligned_bounding_box.Expand(vertex._Position);
+					axis_aligned_bounding_box.Expand(vertex._Position);
 				}
 			}
 		}
 
 		//Write the axis-aligned bounding box to the file.
-		output_file.Write(&aixs_aligned_bounding_box, sizeof(AxisAlignedBoundingBox3D));
+		output_file.Write(&axis_aligned_bounding_box, sizeof(AxisAlignedBoundingBox3D));
 	}
 
 	//Write the number of meshes.
 	const uint64 number_of_meshes{ model_files[0]._Meshes.Size() };
-	ASSERT(number_of_meshes <= RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL, "This model has more then the maximum number of meshes, either increase the maximum number of meshes or decrease the number of meshes on this model!");
+	ASSERT(number_of_meshes <= RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL, "This model has more than the maximum number of meshes, either increase the maximum number of meshes or decrease the number of meshes on this model!");
 	output_file.Write(&number_of_meshes, sizeof(uint64));
 
 	//Write the number of level of details.
