@@ -1753,13 +1753,24 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 				output_file.Write(&header, sizeof(ResourceHeader));
 
 				//Start filling in the vertices and indices.
-				DynamicArray<Vertex> vertices;
-				DynamicArray<uint32> indices;
+				ModelFile model_file;
+				model_file._Meshes.Emplace();
 
 				uint64 current_vertex_offset{ 0 };
 
 				for (const tinygltf::Primitive &primitive : primitives[model_index])
 				{
+					//Cache some values.
+					const bool has_position{ primitive.attributes.find("POSITION") != primitive.attributes.end() };
+					const bool has_normal{ primitive.attributes.find("NORMAL") != primitive.attributes.end() };
+					const bool has_tangent{ primitive.attributes.find("TANGENT") != primitive.attributes.end() };
+					const bool has_texture_coordinate{ primitive.attributes.find("TEXCOORD_0") != primitive.attributes.end() };
+
+					//Do some sanity checking.
+					ASSERT(has_position, "POSITION is not in attributes!");
+					ASSERT(has_normal, "NORMAL is not in attributes!");
+					ASSERT(has_tangent, "TANGENT is not in attributes!");
+					ASSERT(has_texture_coordinate, "TEXCOORD_0 is not in attributes!");
 					ASSERT(primitive.mode == TINYGLTF_MODE_TRIANGLES, "Mode of primitive is not triangles!");
 
 					//Go through the attributes.
@@ -1798,15 +1809,15 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 								//Retrieve the vertex.
 								Vertex *RESTRICT vertex{ nullptr };
 
-								if (vertex_index >= vertices.Size())
+								if (vertex_index >= model_file._Meshes[0]._Vertices.Size())
 								{
-									vertices.Emplace();
-									vertex = &vertices.Back();
+									model_file._Meshes[0]._Vertices.Emplace();
+									vertex = &model_file._Meshes[0]._Vertices.Back();
 								}
 
 								else
 								{
-									vertex = &vertices[vertex_index];
+									vertex = &model_file._Meshes[0]._Vertices[vertex_index];
 								}
 
 								//Set the position.
@@ -1856,15 +1867,15 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 								//Retrieve the vertex.
 								Vertex *RESTRICT vertex{ nullptr };
 
-								if (vertex_index >= vertices.Size())
+								if (vertex_index >= model_file._Meshes[0]._Vertices.Size())
 								{
-									vertices.Emplace();
-									vertex = &vertices.Back();
+									model_file._Meshes[0]._Vertices.Emplace();
+									vertex = &model_file._Meshes[0]._Vertices.Back();
 								}
 
 								else
 								{
-									vertex = &vertices[vertex_index];
+									vertex = &model_file._Meshes[0]._Vertices[vertex_index];
 								}
 
 								//Set the normal.
@@ -1914,15 +1925,15 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 								//Retrieve the vertex.
 								Vertex *RESTRICT vertex{ nullptr };
 
-								if (vertex_index >= vertices.Size())
+								if (vertex_index >= model_file._Meshes[0]._Vertices.Size())
 								{
-									vertices.Emplace();
-									vertex = &vertices.Back();
+									model_file._Meshes[0]._Vertices.Emplace();
+									vertex = &model_file._Meshes[0]._Vertices.Back();
 								}
 
 								else
 								{
-									vertex = &vertices[vertex_index];
+									vertex = &model_file._Meshes[0]._Vertices[vertex_index];
 								}
 
 								//Set the tangent.
@@ -1972,15 +1983,15 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 								//Retrieve the vertex.
 								Vertex* RESTRICT vertex{ nullptr };
 
-								if (vertex_index >= vertices.Size())
+								if (vertex_index >= model_file._Meshes[0]._Vertices.Size())
 								{
-									vertices.Emplace();
-									vertex = &vertices.Back();
+									model_file._Meshes[0]._Vertices.Emplace();
+									vertex = &model_file._Meshes[0]._Vertices.Back();
 								}
 
 								else
 								{
-									vertex = &vertices[vertex_index];
+									vertex = &model_file._Meshes[0]._Vertices[vertex_index];
 								}
 
 								//Set the texture coordinate.
@@ -2027,7 +2038,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 							const uint16 index{ *reinterpret_cast<const uint16* const RESTRICT>(&buffer.data[byte_offset]) };
 
 							//Add the index.
-							indices.Emplace(static_cast<uint32>(current_vertex_offset) + static_cast<uint32>(index));
+							model_file._Meshes[0]._Indices.Emplace(static_cast<uint32>(current_vertex_offset) + static_cast<uint32>(index));
 						}
 					}
 
@@ -2037,24 +2048,27 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 
 				//Do some sanity-checking.
 				{
-					for (const uint32 index : indices)
+					for (const uint32 index : model_file._Meshes[0]._Indices)
 					{
-						ASSERT(index < vertices.Size(), "Oh no...");
+						ASSERT(index < model_file._Meshes[0]._Vertices.Size(), "Oh no...");
 					}
 				}
 
 				//Scale the vertices.
-				for (Vertex &vertex : vertices)
+				for (Vertex &vertex : model_file._Meshes[0]._Vertices)
 				{
 					vertex._Position *= _CreateLevelResourceFromGLTFData._Scale;
 				}
+
+				//Post process the model file.
+				model_file.PostProcess();
 
 				//Determine the model space axis aligned bounding box.
 				{
 					//Iterate over all vertices in all meshes and expand the bounding box.
 					AxisAlignedBoundingBox3D axis_aligned_bounding_box;
 
-					for (const Vertex &vertex : vertices)
+					for (const Vertex &vertex : model_file._Meshes[0]._Vertices)
 					{
 						axis_aligned_bounding_box.Expand(vertex._Position);
 					}
@@ -2072,18 +2086,18 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 				output_file.Write(&NUMBER_OF_LEVEL_OF_DETAILS, sizeof(uint64));
 
 				//Write the number of vertices to the file.
-				const uint64 number_of_vertices{ vertices.Size() };
+				const uint64 number_of_vertices{ model_file._Meshes[0]._Vertices.Size() };
 				output_file.Write(&number_of_vertices, sizeof(uint64));
 
 				//Write the vertices to the file.
-				output_file.Write(vertices.Data(), sizeof(Vertex) * number_of_vertices);
+				output_file.Write(model_file._Meshes[0]._Vertices.Data(), sizeof(Vertex) * number_of_vertices);
 
 				//Write the number of indices to the file.
-				const uint64 number_of_indices{ indices.Size() };
+				const uint64 number_of_indices{ model_file._Meshes[0]._Indices.Size() };
 				output_file.Write(&number_of_indices, sizeof(uint64));
 
 				//Write the vertices to the file.
-				output_file.Write(indices.Data(), sizeof(uint32) * number_of_indices);
+				output_file.Write(model_file._Meshes[0]._Indices.Data(), sizeof(uint32) * number_of_indices);
 
 				//Write that there doesn't exist a collision model.
 				bool collision_model_exists{ false };
@@ -2091,6 +2105,12 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 
 				//Close the output file.
 				output_file.Close();
+
+				//Was the model file even valid?
+				if (!model_file.IsValid())
+				{
+					File::Delete(output_buffer);
+				}
 			}
 		}
 
@@ -2186,34 +2206,55 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					//Build the texture 2D.
 					Texture2DBuildParameters texture_parameters;
 
-char texture_output_buffer[MAXIMUM_FILE_PATH_LENGTH];
-sprintf_s(texture_output_buffer, "..\\..\\..\\Resources\\Intermediate\\%s_%llu_Material_NormalMapDisplacement_Texture2D", base_file_name.Data(), material_index);
-texture_parameters._Output = texture_output_buffer;
+					char texture_output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+					sprintf_s(texture_output_buffer, "..\\..\\..\\Resources\\Intermediate\\%s_%llu_Material_NormalMapDisplacement_Texture2D", base_file_name.Data(), material_index);
+					texture_parameters._Output = texture_output_buffer;
 
-sprintf_s(texture_ID_buffer, "%s_%llu_Material_NormalMapDisplacement_Texture2D", base_file_name.Data(), material_index);
-texture_parameters._ID = texture_ID_buffer;
+					sprintf_s(texture_ID_buffer, "%s_%llu_Material_NormalMapDisplacement_Texture2D", base_file_name.Data(), material_index);
+					texture_parameters._ID = texture_ID_buffer;
 
-texture_parameters._DefaultWidth = 0;
-texture_parameters._DefaultHeight = 0;
+					texture_parameters._DefaultWidth = 0;
+					texture_parameters._DefaultHeight = 0;
 
-char file_1_buffer[MAXIMUM_FILE_PATH_LENGTH];
-sprintf_s(file_1_buffer, "%s%s", base_file_path.Data(), image.uri.c_str());
-texture_parameters._File1 = file_1_buffer;
+					char file_1_buffer[MAXIMUM_FILE_PATH_LENGTH];
+					sprintf_s(file_1_buffer, "%s%s", base_file_path.Data(), image.uri.c_str());
+					texture_parameters._File1 = file_1_buffer;
 
-texture_parameters._File2 = nullptr;
-texture_parameters._File3 = nullptr;
-texture_parameters._File4 = nullptr;
-texture_parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.5f);
-texture_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
-texture_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
-texture_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
-texture_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
-texture_parameters._ApplyGammaCorrection = false;
-texture_parameters._TransformFunction = nullptr;
-texture_parameters._BaseMipmapLevel = 0;
-texture_parameters._MipmapLevels = 9;
+					texture_parameters._File2 = nullptr;
+					texture_parameters._File3 = nullptr;
+					texture_parameters._File4 = nullptr;
+					texture_parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.5f);
+					texture_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+					texture_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+					texture_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+					texture_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+					texture_parameters._ApplyGammaCorrection = false;
+					texture_parameters._TransformFunction = [](const Texture2D<Vector4<float32>> &input_texture, Texture2D<Vector4<float32>> *const RESTRICT output_texture)
+					{
+						for (uint32 Y{ 0 }; Y < input_texture.GetHeight(); ++Y)
+						{
+							for (uint32 X{ 0 }; X < input_texture.GetWidth(); ++X)
+							{
+								const Vector4<float32> &input_texel{ input_texture.At(X, Y) };
 
-ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
+								if (input_texel._X == 0.0f
+									&& input_texel._Y == 0.0f
+									&& input_texel._Z == 0.0f)
+								{
+									output_texture->At(X, Y) = Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f);
+								}
+
+								else
+								{
+									output_texture->At(X, Y) = input_texel;
+								}
+							}
+						}
+					};
+					texture_parameters._BaseMipmapLevel = 0;
+					texture_parameters._MipmapLevels = 9;
+
+					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
 				}
 
 				//Set the material properties.
@@ -2300,6 +2341,15 @@ ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_pa
 
 			for (uint64 model_index{ 0 }; model_index < model.materials.size(); ++model_index)
 			{
+				//First of all, does this model exist?
+				char model_file_path_buffer[MAXIMUM_FILE_PATH_LENGTH];
+				sprintf_s(model_file_path_buffer, "..\\..\\..\\Resources\\Intermediate\\%s_%llu_Model.cr", base_file_name.Data(), model_index);
+
+				if (!File::Exists(model_file_path_buffer))
+				{
+					continue;
+				}
+
 				parameters._LevelEntries.Emplace();
 				LevelEntry &level_entry{ parameters._LevelEntries.Back() };
 

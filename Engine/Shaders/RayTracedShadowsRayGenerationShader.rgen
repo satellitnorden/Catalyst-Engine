@@ -43,7 +43,7 @@ void CatalystShaderMain()
 		{
 			case LIGHT_TYPE_DIRECTIONAL:
 			{
-				//Alter the direction a bit to simulare soft shadows.
+				//Alter the direction a bit to simulate soft shadows.
 				vec3 light_direction = normalize(light.position_or_direction + vec3(random_noise.xyz * 2.0f - 1.0f) * 0.0001f);
 
 				//Determine the visibility.
@@ -73,7 +73,41 @@ void CatalystShaderMain()
 
 			case LIGHT_TYPE_POINT:
 			{
+				//Determine the visibility.
+				if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT))
+				{
+					//Calculate the light direction.
+					vec3 light_direction = light.position_or_direction - world_position;
 
+					//Determine the distance to the light.
+					float distance_to_light = LengthSquared3(light_direction);
+
+					//Only calculate shadows if the the world position is within the light's radius.
+					if (distance_to_light < light.radius * light.radius)
+					{
+						//Normalize.
+						distance_to_light = sqrt(distance_to_light);
+						light_direction /= distance_to_light;
+
+						visibility = 0.0f;
+
+						traceNV(
+								TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
+								gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+								0xff, 																						//cullMask
+								0, 																							//sbtRecordOffset
+								0, 																							//sbtRecordStride
+								0, 																							//missIndex
+								world_position, 																			//origin
+								CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+								light_direction,																			//direction
+								distance_to_light,																			//Tmax
+								1 																							//payload
+								);
+
+						shadows[current_shadow_index++] = visibility;
+					}
+				}
 
 				break;
 			}
