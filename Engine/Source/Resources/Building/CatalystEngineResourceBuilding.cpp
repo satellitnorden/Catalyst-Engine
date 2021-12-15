@@ -1994,6 +1994,37 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		TaskSystem::Instance->ExecuteTask(&task);
 	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the material.
+			MaterialBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Ceiling_Material";
+			parameters._ID = "Sponza_Ceiling_Material";
+			parameters._Type = MaterialResource::Type::OPAQUE;
+			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+			parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString("Sponza_Ceiling_AlbedoThickness_Texture2D");
+			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
+			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.895f, 0.0f, 1.0f, 0.0f));
+			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+			parameters._EmissiveMultiplier = 0.0f;
+			parameters._DoubleSided = false;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
 #endif
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_MODELS
@@ -2857,6 +2888,41 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 					}
 				}
 			};
+			parameters._BaseMipmapLevel = 0;
+			parameters._MipmapLevels = 9;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Build the texture 2D.
+			Texture2DBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Ceiling_AlbedoThickness_Texture2D";
+			parameters._ID = "Sponza_Ceiling_AlbedoThickness_Texture2D";
+			parameters._DefaultWidth = 0;
+			parameters._DefaultHeight = 0;
+			parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Sponza\\sponza_ceiling_a_diff.png";
+			parameters._File2 = nullptr;
+			parameters._File3 = nullptr;
+			parameters._File4 = nullptr;
+			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+			parameters._ApplyGammaCorrection = true;
+			parameters._TransformFunction = nullptr;
 			parameters._BaseMipmapLevel = 0;
 			parameters._MipmapLevels = 9;
 
