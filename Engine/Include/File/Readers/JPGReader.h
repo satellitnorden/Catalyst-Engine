@@ -21,6 +21,11 @@ namespace JPGReader
 		int32 width, height, number_of_channels;
 		uint8 *RESTRICT data{ stbi_load(file, &width, &height, &number_of_channels, STBI_rgb_alpha) };
 
+		if (!data)
+		{
+			return false;
+		}
+
 		//Load the texture data into the texture.
 		texture->Initialize(static_cast<uint32>(width), static_cast<uint32>(height));
 

@@ -35,13 +35,13 @@ void EditorWorldSystem::Update() NOEXCEPT
 	ImGui::Begin("World", nullptr, EditorConstants::WINDOW_FLAGS);
 	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
-	//Add the time of day slider.
+	//Add the sky intensity slider.
 	{
-		float32 current_time_of_day{ WorldSystem::Instance->GetTimeOfDaySystem()->GetCurrentTimeOfDay() };
+		float32 current_sky_intensity{ WorldSystem::Instance->GetSkySystem()->GetSkyIntensity() };
 
-		if (ImGui::DragFloat("Time Of Day", &current_time_of_day, 0.25f))
+		if (ImGui::DragFloat("Sky Intensity", &current_sky_intensity, 0.1f))
 		{
-			WorldSystem::Instance->GetTimeOfDaySystem()->SetCurrentTimeOfDay(current_time_of_day);
+			WorldSystem::Instance->GetSkySystem()->SetSkyIntensity(current_sky_intensity);
 		}
 	}
 
@@ -83,6 +83,16 @@ void EditorWorldSystem::Update() NOEXCEPT
 			{
 				WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness = current_volumetric_lighting_thickness;
 			}
+		}
+	}
+
+	//Add the time of day slider.
+	{
+		float32 current_time_of_day{ WorldSystem::Instance->GetTimeOfDaySystem()->GetCurrentTimeOfDay() };
+
+		if (ImGui::DragFloat("Time Of Day", &current_time_of_day, 0.25f))
+		{
+			WorldSystem::Instance->GetTimeOfDaySystem()->SetCurrentTimeOfDay(current_time_of_day);
 		}
 	}
 

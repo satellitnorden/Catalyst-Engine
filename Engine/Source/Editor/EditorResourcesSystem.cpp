@@ -1668,11 +1668,13 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 		if (!error.empty())
 		{
 			PRINT_TO_OUTPUT("Tiny GLTF Error: " << error);
+			ASSERT(false, "Tiny GLTF Failed!");
 		}
 
 		if (!warning.empty())
 		{
 			PRINT_TO_OUTPUT("Tiny GLTF Warning: " << warning);
+			ASSERT(false, "Tiny GLTF Failed!");
 		}
 
 		if (!succeeded)
@@ -1730,6 +1732,13 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 			{
 				for (const tinygltf::Primitive &primitive : mesh.primitives)
 				{
+					ASSERT(primitive.material < model.materials.size(), "Oh no...");
+
+					if (primitive.material == -1)
+					{
+						continue;
+					}
+
 					primitives[primitive.material].Emplace(primitive);
 				}
 			}
@@ -2017,7 +2026,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 						const tinygltf::Accessor& accessor{ model.accessors[primitive.indices] };
 
 						ASSERT(accessor.bufferView >= 0, "Accessor has no buffer view!");
-						ASSERT(accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT, "Component Type of INDICES accessor is not TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT!");
+						ASSERT(accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT || accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT, "Component Type of INDICES accessor is not TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT!");
 						ASSERT(accessor.type == TINYGLTF_TYPE_SCALAR, "Type of INDICES accessor is not TINYGLTF_TYPE_SCALAR!");
 
 						//Cache the buffer view.
@@ -2031,14 +2040,34 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 						//Add the texture coordinates.
 						for (uint64 i{ 0 }; i < accessor.count; ++i)
 						{
-							//Calculate the byte offset.
-							const uint64 byte_offset{ buffer_view.byteOffset + sizeof(uint16) * i };
+							if (accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
+							{
+								//Calculate the byte offset.
+								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(uint16) * i };
 
-							//Retrieve the index
-							const uint16 index{ *reinterpret_cast<const uint16* const RESTRICT>(&buffer.data[byte_offset]) };
+								//Retrieve the index
+								const uint16 index{ *reinterpret_cast<const uint16* const RESTRICT>(&buffer.data[byte_offset]) };
 
-							//Add the index.
-							model_file._Meshes[0]._Indices.Emplace(static_cast<uint32>(current_vertex_offset) + static_cast<uint32>(index));
+								//Add the index.
+								model_file._Meshes[0]._Indices.Emplace(static_cast<uint32>(current_vertex_offset) + static_cast<uint32>(index));
+							}
+
+							else if (accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
+							{
+								//Calculate the byte offset.
+								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(uint32) * i };
+
+								//Retrieve the index
+								const uint32 index{ *reinterpret_cast<const uint32* const RESTRICT>(&buffer.data[byte_offset]) };
+
+								//Add the index.
+								model_file._Meshes[0]._Indices.Emplace(static_cast<uint32>(current_vertex_offset) + static_cast<uint32>(index));
+							}
+
+							else
+							{
+								ASSERT(false, "Something went horribly wrong!");
+							}
 						}
 					}
 
@@ -2059,6 +2088,9 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 				{
 					vertex._Position *= _CreateLevelResourceFromGLTFData._Scale;
 				}
+
+				//Fix tangents.
+				model_file.FixTangents();
 
 				//Post process the model file.
 				model_file.PostProcess();

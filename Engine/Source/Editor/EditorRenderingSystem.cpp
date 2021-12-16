@@ -327,6 +327,23 @@ void EditorRenderingSystem::Update() NOEXCEPT
 		}
 	}
 
+	//Add the start/stop taking screenshot button.
+	if (RenderingSystem::Instance->GetRenderingReferenceSystem()->IsRenderingReferenceInProgress())
+	{
+		if (ImGui::Button("Stop Rendering Reference"))
+		{
+			RenderingSystem::Instance->GetRenderingReferenceSystem()->StopRenderingReference("Rendering Reference.png");
+		}
+	}
+
+	else
+	{
+		if (ImGui::Button("Start Rendering Reference"))
+		{
+			RenderingSystem::Instance->GetRenderingReferenceSystem()->StartRenderingReference();
+		}
+	}
+
 	ImGui::End();
 }
 #endif

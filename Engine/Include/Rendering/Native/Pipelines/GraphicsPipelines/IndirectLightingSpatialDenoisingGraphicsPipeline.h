@@ -17,10 +17,11 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const uint32 source_render_target_index,
-					const uint32 scene_features_2_render_target_index,
-					const uint32 scene_features_3_render_target_index,
-					const int32 stride,
+	void Initialize(const int32 stride,
+					const int32 direction,
+					const RenderTargetHandle source_render_target,
+					const RenderTargetHandle scene_features_2_render_target,
+					const RenderTargetHandle scene_features_3_render_target,
 					const RenderTargetHandle target,
 					const Resolution render_resolution) NOEXCEPT;
 
@@ -36,17 +37,17 @@ public:
 
 private:
 
-	//The source render target index.
-	uint32 _SourceRenderTargetIndex;
-
-	//The scene features 2 render target index.
-	uint32 _SceneFeatures2RenderTargetIndex;
-
-	//The scene features 3 render target index.
-	uint32 _SceneFeatures3RenderTargetIndex;
-
 	//The stride.
 	int32 _Stride;
+
+	//The direction.
+	int32 _Direction;
+
+	//The render data table layout.
+	RenderDataTableLayoutHandle _RenderDataTableLayout;
+
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
 
 	/*
 	*	Creates the render data table layout.
@@ -56,6 +57,8 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT;
+	void CreateRenderDataTable(	const RenderTargetHandle source_render_target,
+								const RenderTargetHandle scene_features_2_render_target,
+								const RenderTargetHandle scene_features_3_render_target) NOEXCEPT;
 
 };

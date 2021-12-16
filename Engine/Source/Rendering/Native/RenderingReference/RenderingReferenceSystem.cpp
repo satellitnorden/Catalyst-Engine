@@ -69,6 +69,9 @@ public:
 	*/
 	FORCE_INLINE void OnDeactivated() NOEXCEPT override
 	{
+		//Call parent function.
+		UserInterfaceScene::OnDeactivated();
+
 		//Reset the progress bar.
 		_ProgressBar = nullptr;
 	}

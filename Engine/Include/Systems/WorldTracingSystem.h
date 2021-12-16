@@ -46,7 +46,7 @@ public:
 	/*
 	*	Casts a ray into the world and returns if there was occlusion.
 	*/
-	NO_DISCARD bool OcclusionRay(const Ray &ray) NOEXCEPT;
+	NO_DISCARD bool OcclusionRay(const Ray &ray, const float32 length) NOEXCEPT;
 
 private:
 
@@ -103,7 +103,7 @@ private:
 	/*
 	*	Casts an occlusion ray against models.
 	*/
-	NO_DISCARD bool OcclusionRayModels(const Ray &ray) NOEXCEPT;
+	NO_DISCARD bool OcclusionRayModels(const Ray &ray, const float32 length) NOEXCEPT;
 
 	/*
 	*	Casts a ray against the sky.

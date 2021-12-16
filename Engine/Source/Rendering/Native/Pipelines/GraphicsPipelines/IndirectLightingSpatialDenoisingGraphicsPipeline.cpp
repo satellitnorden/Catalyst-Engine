@@ -22,44 +22,39 @@ public:
 	//The inverse resolution.
 	Vector2<float32> _InverseResolution;
 
-	//The source render target index.
-	uint32 _SourceRenderTargetIndex;
-
-	//The scene features 2 render target index.
-	uint32 _SceneFeatures2RenderTargetIndex;
-
-	//The scene features 3 render target index.
-	uint32 _SceneFeatures3RenderTargetIndex;
-
 	//The stride.
 	int32 _Stride;
+
+	//The direction.
+	int32 _Direction;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(	const uint32 source_render_target_index,
-																	const uint32 scene_features_2_render_target_index,
-																	const uint32 scene_features_3_render_target_index,
-																	const int32 stride,
+void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(	const int32 stride,
+																	const int32 direction,
+																	const RenderTargetHandle source_render_target,
+																	const RenderTargetHandle scene_features_2_render_target,
+																	const RenderTargetHandle scene_features_3_render_target,
 																	const RenderTargetHandle target,
 																	const Resolution render_resolution) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
 
-	//Set the source render target index.
-	_SourceRenderTargetIndex = source_render_target_index;
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
 
-	//Set the scene features 2 render target index.
-	_SceneFeatures2RenderTargetIndex = scene_features_2_render_target_index;
-
-	//Set the scene features 3 render target index.
-	_SceneFeatures3RenderTargetIndex = scene_features_3_render_target_index;
+	//Create the render data table.
+	CreateRenderDataTable(source_render_target, scene_features_2_render_target, scene_features_3_render_target);
 
 	//Set the stride.
 	_Stride = stride;
+
+	//Set the direction.
+	_Direction = direction;
 
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -73,8 +68,9 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Initialize(	const uint32 
 	AddOutputRenderTarget(target);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -125,15 +121,14 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Push constants.
 	IndirectLightingSpatialDenoisingPushConstantData data;
 
 	data._InverseResolution = Vector2<float32>(1.0f / static_cast<float>(GetRenderResolution()._Width), 1.0f / static_cast<float32>(GetRenderResolution()._Height));
-	data._SourceRenderTargetIndex = _SourceRenderTargetIndex;
-	data._SceneFeatures2RenderTargetIndex = _SceneFeatures2RenderTargetIndex;
-	data._SceneFeatures3RenderTargetIndex = _SceneFeatures3RenderTargetIndex;
 	data._Stride = _Stride;
+	data._Direction = _Direction;
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingSpatialDenoisingPushConstantData), &data);
 
@@ -152,5 +147,38 @@ void IndirectLightingSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 */
 void IndirectLightingSpatialDenoisingGraphicsPipeline::Terminate() NOEXCEPT
 {
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
 
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void IndirectLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 3> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void IndirectLightingSpatialDenoisingGraphicsPipeline::CreateRenderDataTable(	const RenderTargetHandle source_render_target,
+																				const RenderTargetHandle scene_features_2_render_target,
+																				const RenderTargetHandle scene_features_3_render_target) NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, source_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, scene_features_2_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, scene_features_3_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

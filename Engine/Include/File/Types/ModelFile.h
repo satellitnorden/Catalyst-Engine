@@ -72,6 +72,91 @@ public:
 	}
 
 	/*
+	*	Fixes (invalid) tangents.
+	*/
+	FORCE_INLINE void FixTangents() NOEXCEPT
+	{
+		//Go over all triangles and try to fix the tangents on them. (:
+		for (Mesh& mesh : _Meshes)
+		{
+			for (Vertex &vertex : mesh._Vertices)
+			{
+				if (CatalystBaseMath::IsNaN(vertex._Tangent[0])
+					|| CatalystBaseMath::IsNaN(vertex._Tangent[1])
+					|| CatalystBaseMath::IsNaN(vertex._Tangent[2])
+					|| vertex._Tangent.IsZero()
+					|| vertex._Normal == vertex._Tangent
+					|| Vector3<float32>::DotProduct(vertex._Normal, vertex._Tangent) == -1.0f)
+				{
+					uint8 most_aligned_axis{ 0 };
+					float32 most_aligned_axis_value{ 0.0f };
+
+					{
+						const float32 axis_value{ CatalystBaseMath::Absolute(Vector3<float32>::DotProduct(vertex._Normal, Vector3<float32>(1.0f, 0.0f, 0.0f))) };
+
+						if (most_aligned_axis_value < axis_value)
+						{
+							most_aligned_axis = 0;
+							most_aligned_axis_value = axis_value;
+						}
+					}
+
+					{
+						const float32 axis_value{ CatalystBaseMath::Absolute(Vector3<float32>::DotProduct(vertex._Normal, Vector3<float32>(0.0f, 1.0f, 0.0f))) };
+
+						if (most_aligned_axis_value < axis_value)
+						{
+							most_aligned_axis = 1;
+							most_aligned_axis_value = axis_value;
+						}
+					}
+
+					{
+						const float32 axis_value{ CatalystBaseMath::Absolute(Vector3<float32>::DotProduct(vertex._Normal, Vector3<float32>(0.0f, 0.0f, 1.0f))) };
+
+						if (most_aligned_axis_value < axis_value)
+						{
+							most_aligned_axis = 2;
+							most_aligned_axis_value = axis_value;
+						}
+					}
+
+					switch (most_aligned_axis)
+					{
+						case 0:
+						{
+							vertex._Tangent = Vector3<float32>::CrossProduct(vertex._Normal, Vector3<float32>(0.0f, 1.0f, 0.0f));
+
+							break;
+						}
+
+						case 1:
+						{
+							vertex._Tangent = Vector3<float32>::CrossProduct(vertex._Normal, Vector3<float32>(0.0f, 0.0f, 1.0f));
+
+							break;
+						}
+
+						case 2:
+						{
+							vertex._Tangent = Vector3<float32>::CrossProduct(vertex._Normal, Vector3<float32>(1.0f, 0.0f, 0.0f));
+
+							break;
+						}
+
+						default:
+						{
+							ASSERT(false, "Invalid case!");
+
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/*
 	*	Post processes this model file.
 	*/
 	void PostProcess() NOEXCEPT
@@ -206,10 +291,9 @@ public:
 			for (uint32 master_index{ 0 }; master_index < static_cast<uint32>(mesh._Vertices.Size()); ++master_index)
 			{
 				//Iterate over all the other vertices see if there's a duplicate.
-				for (uint32 sub_index{ 0 }; sub_index < static_cast<uint32>(mesh._Vertices.Size());)
+				for (uint32 sub_index{ master_index + 1 }; sub_index < static_cast<uint32>(mesh._Vertices.Size());)
 				{
-					if (master_index != sub_index
-						&& mesh._Vertices[master_index] == mesh._Vertices[sub_index])
+					if (mesh._Vertices[master_index] == mesh._Vertices[sub_index])
 					{
 						//Find the indices that points to the sub index, and redirect it to the master index.
 						for (uint32 &index : mesh._Indices)

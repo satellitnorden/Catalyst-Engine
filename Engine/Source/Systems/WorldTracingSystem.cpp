@@ -23,7 +23,7 @@ DEFINE_SINGLETON(WorldTracingSystem);
 namespace WorldTracingSystemConstants
 {
 	constexpr float32 DIRECTIONAL_LIGHT_SOFTNESS{ 0.01f };
-	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 64.0f };
+	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 128.0f };
 	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 2 };
 }
 
@@ -47,9 +47,9 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRay(const Ray &ray) NOEX
 /*
 *	Casts a ray into the world and returns if there was occlusion.
 */
-NO_DISCARD bool WorldTracingSystem::OcclusionRay(const Ray &ray) NOEXCEPT
+NO_DISCARD bool WorldTracingSystem::OcclusionRay(const Ray &ray, const float32 length) NOEXCEPT
 {
-	return OcclusionRayModels(ray);
+	return OcclusionRayModels(ray, length);
 }
 
 /*
@@ -199,7 +199,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 							occlusion_ray.SetOrigin(hit_position + direction_to_light * WorldTracingSystemConstants::SELF_INTERSECTION_OFFSET);
 							occlusion_ray.SetDirection(direction_to_light);
 
-							if (OcclusionRay(occlusion_ray))
+							if (OcclusionRay(occlusion_ray, FLOAT32_MAXIMUM))
 							{
 								continue;
 							}
@@ -221,7 +221,35 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 
 					case LightType::POINT:
 					{
+						//Calculate the direction to the light.
+						Vector3<float32> direction_to_light{ component->_WorldPosition.GetAbsolutePosition() - hit_position };
+						const float32 distance_to_light{ Vector3<float32>::Length(direction_to_light) };
+						const float32 distance_to_light_reciprocal{ 1.0f / distance_to_light };
+						direction_to_light *= distance_to_light_reciprocal;
 
+						//Determine if there is occlusion.
+						{
+							Ray occlusion_ray;
+
+							occlusion_ray.SetOrigin(hit_position + direction_to_light * WorldTracingSystemConstants::SELF_INTERSECTION_OFFSET);
+							occlusion_ray.SetDirection(direction_to_light);
+
+							if (OcclusionRay(occlusion_ray, distance_to_light))
+							{
+								continue;
+							}
+						}
+
+						//Calculate the lighting.
+						final_radiance += CatalystLighting::CalculateLighting(	-ray._Direction,
+																				surface_description._Albedo,
+																				surface_description._Normal,
+																				surface_description._Roughness,
+																				surface_description._Metallic,
+																				surface_description._AmbientOcclusion,
+																				1.0f,
+																				-direction_to_light,
+																				component->_Color * component->_Intensity);
 
 						break;
 					}
@@ -498,13 +526,20 @@ NO_DISCARD bool WorldTracingSystem::SurfaceRayModels(const Ray &ray, float32 *cl
 /*
 *	Casts an occlusion ray against models.
 */
-NO_DISCARD bool WorldTracingSystem::OcclusionRayModels(const Ray &ray) NOEXCEPT
+NO_DISCARD bool WorldTracingSystem::OcclusionRayModels(const Ray &ray, const float32 length) NOEXCEPT
 {
 	//Iterate over all cached models and cast rays against them.
 	for (const CachedModelState &cached_model_state : _CachedModelState)
 	{
 		//First of all, intersect the bounding box, and reject the model completely if it doesn't hit.
-		if (!CatalystGeometryMath::RayBoxIntersection(ray, cached_model_state._WorldSpaceAxisAlignedBoundingBox, nullptr))
+		float32 box_intersection_distance;
+
+		if (!CatalystGeometryMath::RayBoxIntersection(ray, cached_model_state._WorldSpaceAxisAlignedBoundingBox, &box_intersection_distance))
+		{
+			continue;
+		}
+
+		else if (box_intersection_distance > length)
 		{
 			continue;
 		}
@@ -519,9 +554,10 @@ NO_DISCARD bool WorldTracingSystem::OcclusionRayModels(const Ray &ray) NOEXCEPT
 				triangle._Vertices[i] = cached_model_triangle._Vertices[i]._Position;
 			}
 
-			float32 intersection_distance;
+			float32 triangle_intersection_distance;
 
-			if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &intersection_distance))
+			if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &triangle_intersection_distance)
+				&& triangle_intersection_distance <= length)
 			{
 				return true;
 			}
@@ -560,19 +596,19 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray &ray) NOEXCEPT
 				}
 			}
 
-			return CatalystAtmosphericScattering::CalculateAtmosphericScattering(ray._Origin, ray._Direction, sky_light_radiance, sky_light_direction);
+			return CatalystAtmosphericScattering::CalculateAtmosphericScattering(ray._Origin, ray._Direction, sky_light_radiance, sky_light_direction) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
 		}
 
 		case SkySystem::SkyMode::GRADIENT:
 		{
-			return Vector3<float32>(0.0f, 0.0f, 0.0f);
+			return Vector3<float32>(0.0f, 0.0f, 0.0f) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
 		}
 
 		case SkySystem::SkyMode::TEXTURE:
 		{
 			const Vector4<float32> sky_color{ WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCube.Sample(ray._Direction) };
 
-			return Vector3<float32>(sky_color._R, sky_color._G, sky_color._B);
+			return Vector3<float32>(sky_color._R, sky_color._G, sky_color._B) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
 		}
 
 		default:
