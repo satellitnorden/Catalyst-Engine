@@ -144,6 +144,9 @@ enum class KeyboardButton : uint8
 	PreviousTrack,
 	StopMedia,
 	PlayPause,
+	
+	COMMA,
+	PERIOD,
 
 	NumberOfKeyboardButtons
 };

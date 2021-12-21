@@ -195,7 +195,7 @@ void CatalystEditorSystem::UpdateIO() NOEXCEPT
 	};
 
 	//Define constants.
-	constexpr StaticArray<KeyboardButtonInputCharacterMapping, 52> KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS
+	constexpr StaticArray<KeyboardButtonInputCharacterMapping, 54> KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS
 	{
 		KeyboardButtonInputCharacterMapping(KeyboardButton::A, 'A', 'a'),
 		KeyboardButtonInputCharacterMapping(KeyboardButton::B, 'B', 'b'),
@@ -248,7 +248,9 @@ void CatalystEditorSystem::UpdateIO() NOEXCEPT
 		KeyboardButtonInputCharacterMapping(KeyboardButton::SIX, '6', '6'),
 		KeyboardButtonInputCharacterMapping(KeyboardButton::SEVEN, '7', '7'),
 		KeyboardButtonInputCharacterMapping(KeyboardButton::EIGHT, '8', '8'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NINE, '9', '9')
+		KeyboardButtonInputCharacterMapping(KeyboardButton::NINE, '9', '9'),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::COMMA, ',', ','),
+		KeyboardButtonInputCharacterMapping(KeyboardButton::PERIOD, '.', '.')
 	};
 
 	//Fill in ImGui's IO struct.

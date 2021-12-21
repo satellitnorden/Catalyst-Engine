@@ -55,6 +55,9 @@ void CatalystShaderMain()
 	//Calculate the random hemisphere sample start index.
 	uint random_hemisphere_sample_start_index = uint(noise_texture_sample.w * 64.0f);
 
+	//Calculate the hemisphere index stride.
+	uint hemisphere_index_stride = 64 / AMBIENT_OCCLUSION_NUMBER_OF_SAMPLES;
+
 	//Keep track of the total weight.
 	float total_weight = 0.0f;
 
@@ -67,7 +70,7 @@ void CatalystShaderMain()
 		vec3 pre_rotation_hemisphere_direction;
 		float random_length;
 
-		SampleHammersleyHemisphereSample(random_hemisphere_sample_start_index + i + uint(gl_FragCoord.x) + uint(gl_FragCoord.y), pre_rotation_hemisphere_direction, random_length);
+		SampleHammersleyHemisphereSample(random_hemisphere_sample_start_index + (i * hemisphere_index_stride) + uint(gl_FragCoord.x) + uint(gl_FragCoord.y), pre_rotation_hemisphere_direction, random_length);
 
 		//Rotate the random direction.
 		vec3 random_direction = random_rotation * pre_rotation_hemisphere_direction;
@@ -76,7 +79,7 @@ void CatalystShaderMain()
 		random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
 
 		//Calculate the sample position.
-		vec3 sample_position = world_position + random_direction * random_length * AMBIENT_OCCLUSION_RADIUS;
+		vec3 sample_position = world_position + random_direction * noise_texture_sample.w * AMBIENT_OCCLUSION_RADIUS;
 
 		//Calculate the sample screen coordinate.
 		vec4 sample_view_space_position = WORLD_TO_CLIP_MATRIX * vec4(sample_position, 1.0f);
@@ -89,7 +92,7 @@ void CatalystShaderMain()
 		float sample_view_distance = CalculateViewSpacePosition(fragment_texture_coordinate, sample_scene_features.w).z - bias;
 
 		//Calculate the distance falloff.
-		float distance_falloff = SmoothStep(1.0f - min(abs(expected_view_distance - sample_view_distance), 1.0f));
+		float distance_falloff = SmoothStep(1.0f - (min(abs(expected_view_distance - sample_view_distance), AMBIENT_OCCLUSION_RADIUS) / AMBIENT_OCCLUSION_RADIUS));
 
 		//Calculate the sample weight.
 		float sample_weight = ProbabilityDensityFunction(pre_rotation_hemisphere_direction, sample_screen_coordinate);

@@ -341,6 +341,9 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_MEDIA_PREV_TRACK, &(*state)[KeyboardButton::PreviousTrack]);
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_MEDIA_STOP, &(*state)[KeyboardButton::StopMedia]);
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_MEDIA_PLAY_PAUSE, &(*state)[KeyboardButton::PlayPause]);
+
+	WindowsInputSystemLogic::UpdateWindowsButton(VK_OEM_COMMA, &(*state)[KeyboardButton::COMMA]);
+	WindowsInputSystemLogic::UpdateWindowsButton(VK_OEM_PERIOD, &(*state)[KeyboardButton::PERIOD]);
 }
 
 /*

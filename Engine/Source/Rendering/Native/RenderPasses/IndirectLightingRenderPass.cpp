@@ -13,8 +13,8 @@ DEFINE_SINGLETON(IndirectLightingRenderPass);
 //TEMP
 #include <Systems/InputSystem.h>
 
-bool USE_INDIRECT_LIGHTING_SPATIAL_DENOISING{ false };
-bool USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING{ false };
+bool USE_INDIRECT_LIGHTING_SPATIAL_DENOISING{ true };
+bool USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING{ true };
 
 void TempIndirectLighting()
 {
