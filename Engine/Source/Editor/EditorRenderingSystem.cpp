@@ -94,6 +94,47 @@ void EditorRenderingSystem::Update() NOEXCEPT
 		}
 	}
 
+	//Add button for toggling ambient occlusion quality.
+	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionQuality())
+	{
+		case RenderingConfiguration::AmbientOcclusionQuality::LOW:
+		{
+			if (ImGui::Button("Ambient Occlusion Quality: Low"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionQuality(RenderingConfiguration::AmbientOcclusionQuality::MEDIUM);
+			}
+
+			break;
+		}
+
+		case RenderingConfiguration::AmbientOcclusionQuality::MEDIUM:
+		{
+			if (ImGui::Button("Ambient Occlusion Quality: Medium"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionQuality(RenderingConfiguration::AmbientOcclusionQuality::HIGH);
+			}
+
+			break;
+		}
+
+		case RenderingConfiguration::AmbientOcclusionQuality::HIGH:
+		{
+			if (ImGui::Button("Ambient Occlusion Quality: High"))
+			{
+				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionQuality(RenderingConfiguration::AmbientOcclusionQuality::LOW);
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
 	//Add button for toggling indirect lighting mode.
 	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode())
 	{
