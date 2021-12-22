@@ -1,4 +1,5 @@
 //Includes.
+#include "CatalystGeometryMath.glsl"
 #include "CatalystPackingUtilities.glsl"
 #include "CatalystRayTracingCore.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
@@ -7,7 +8,7 @@
 //Constants.
 #define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (1)
 #define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES (16)
-#define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_STEP (1.0f / SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES)
+#define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES_RECIPROCAL (1.0f / float(SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES))
 #define SCREEN_SPACE_INDIRECT_LIGHTING_REFINE_STEPS (4)
 
 #define CELL_STEP_OFFSET (0.05f)
@@ -229,13 +230,19 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 		screen_space_direction = normalize(screen_space_direction - screen_space_origin);
 	}
 
-	//Perform the raycast.
-	float current_step = SCREEN_SPACE_INDIRECT_LIGHTING_RAY_STEP * start_offset;
+	//Retrieve the screen space end position.
+	Ray ray;
 
+	ray._Origin = screen_space_origin;
+	ray._Direction = screen_space_direction;
+
+	vec3 screen_space_end_position = RayViewportIntersection(ray);
+
+	//Perform the raycast.
 	for (uint i = 0; i < SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES; ++i)
 	{
 		//Calculate the sample position.
-		vec3 screen_space_sample_position = screen_space_origin + screen_space_direction * current_step;
+		vec3 screen_space_sample_position = mix(screen_space_origin, screen_space_end_position, (SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES_RECIPROCAL * start_offset) + (float(i) / float(SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES)));
 
 		//Terminate the ray if outside the screen.
 		if (!ValidCoordinate(screen_space_sample_position.xy))
@@ -306,8 +313,6 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 				}
 			}
 		}
-
-		current_step += SCREEN_SPACE_INDIRECT_LIGHTING_RAY_STEP;
 	}
 
 	//There was no hit.

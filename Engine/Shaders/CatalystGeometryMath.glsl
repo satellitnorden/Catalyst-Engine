@@ -188,4 +188,59 @@ RaySphereIntersectionResult RaySphereIntersection(Ray ray, Sphere sphere)
     return result;
 }
 
+////////////
+// VIEWPORT //
+////////////
+
+/*
+*   Performs a ray/viewport intersection.
+*/
+vec3 RayViewportIntersection(Ray ray)
+{
+    //Calculate the dots.
+    float horizontal_dot = dot(ray._Direction, vec3(1.0f, 0.0f, 0.0f));
+    float vertical_dot = dot(ray._Direction, vec3(0.0f, 1.0f, 0.0f));
+
+    //Perform the horizontal intersection.
+    float horizontal_intersection_distance = FLOAT32_MAXIMUM;
+
+    if (horizontal_dot > 0.0f)
+    {   
+        vec3 plane_position = vec3(1.0f, 0.0f, 0.0f);
+        vec3 plane_normal = vec3(-1.0f, 0.0f, 0.0f);
+
+        horizontal_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    else if (horizontal_dot < 0.0f)
+    {
+        vec3 plane_position = vec3(0.0f, 0.0f, 0.0f);
+        vec3 plane_normal = vec3(1.0f, 0.0f, 0.0f);
+
+        horizontal_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    //Perform the vertical intersection.
+    float vertical_intersection_distance = FLOAT32_MAXIMUM;
+
+    if (vertical_dot > 0.0f)
+    {   
+        vec3 plane_position = vec3(0.0f, 1.0f, 0.0f);
+        vec3 plane_normal = vec3(0.0f, -1.0f, 0.0f);
+
+        vertical_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    else if (vertical_dot < 0.0f)
+    {
+        vec3 plane_position = vec3(0.0f, 0.0f, 0.0f);
+        vec3 plane_normal = vec3(0.0f, 1.0f, 0.0f);
+
+        vertical_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    //Return the intersection point.
+    return ray._Origin + ray._Direction * min(horizontal_intersection_distance, vertical_intersection_distance);
+}
+
 #endif
