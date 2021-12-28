@@ -9,6 +9,7 @@
 #define DITHER_STRENGTH (0.1f)
 #define INDIRECT_LIGHTING_QUALITY_LOW (0)
 #define INDIRECT_LIGHTING_QUALITY_HIGH (1)
+#define INDIRECT_LIGHTING_DIFFUSE_WEIGHT (0.750f) //0.025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -112,7 +113,8 @@ void CatalystShaderMain()
 	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 	vec4 scene_features_3 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 
-	vec3 view_direction = normalize(CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w) - PERCEIVER_WORLD_POSITION);
+	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w);
+	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
 	vec3 specular_direction = reflect(view_direction, scene_features_2.xyz);
 	vec3 diffuse_direction = scene_features_2.xyz;
 
@@ -120,7 +122,13 @@ void CatalystShaderMain()
 
 	vec3 indirect_lighting_direction = normalize(mix(specular_direction, diffuse_direction, diffuse_weight));
 
-	indirect_lighting.rgb = mix(SampleSky(indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight), indirect_lighting.rgb, indirect_lighting.a * (1.0f - (diffuse_weight * 0.5f)));
+	vec3 sky_lighting;
+
+	{
+		sky_lighting = SampleSky(indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight);
+	}
+
+	indirect_lighting.rgb = mix(sky_lighting, indirect_lighting.rgb, indirect_lighting.a * (1.0f - (diffuse_weight * INDIRECT_LIGHTING_DIFFUSE_WEIGHT)));
 	indirect_lighting.rgb *= mix(0.125f, 8.0f, diffuse_weight);
 
 	vec3 calculated_lighting = CalculateLighting(	-view_direction,
