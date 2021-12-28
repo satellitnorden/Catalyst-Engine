@@ -6,6 +6,9 @@
 #include <Editor/EditorCore.h>
 #include <Editor/EditorUtilities.h>
 
+//Rendering.
+#include <Rendering/Native/RenderPasses/DebugRenderPass.h>
+
 //Systems.
 #include <Systems/CatalystEditorSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -383,6 +386,52 @@ void EditorRenderingSystem::Update() NOEXCEPT
 		{
 			RenderingSystem::Instance->GetRenderingReferenceSystem()->StartRenderingReference();
 		}
+	}
+
+	//Add buttons for debug rendering.
+	if (ImGui::Button("Debug NONE"))
+	{
+		DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NONE);
+	}
+
+	if (ImGui::Button("Debug ALBEDO"))
+	{
+		DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::ALBEDO);
+	}
+
+	if (ImGui::Button("Debug THICKNESS"))
+	{
+		DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::THICKNESS);
+	}
+
+	if (ImGui::Button("Debug NORMAL"))
+	{
+		DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NORMAL);
+	}
+
+	if (ImGui::Button("Debug DEPTH"))
+	{
+		DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::DEPTH);
+	}
+
+	if (ImGui::Button("Debug ROUGHNESS"))
+	{
+		DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::ROUGHNESS);
+	}
+
+	if (ImGui::Button("Debug METALLIC"))
+	{
+		DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::METALLIC);
+	}
+
+	if (ImGui::Button("Debug AMBIENT_OCCLUSION"))
+	{
+		DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::AMBIENT_OCCLUSION);
+	}
+
+	if (ImGui::Button("Debug EMISSIVE"))
+	{
+		DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::EMISSIVE);
 	}
 
 	ImGui::End();

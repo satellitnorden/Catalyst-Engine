@@ -5,7 +5,7 @@
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
 //Constants.
-#define DEPTH_WEIGHT (2.0f)
+#define DEPTH_WEIGHT (4.0f)
 #define DITHER_STRENGTH (0.1f)
 #define INDIRECT_LIGHTING_QUALITY_LOW (0)
 #define INDIRECT_LIGHTING_QUALITY_HIGH (1)
