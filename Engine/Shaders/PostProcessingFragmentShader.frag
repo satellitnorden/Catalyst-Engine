@@ -9,6 +9,7 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 8) float CONTRAST;
 	layout (offset = 12) float FILM_GRAIN_INTENSITY;
 	layout (offset = 16) float HORIZONTAL_BORDER;
+	layout (offset = 20) float SATURATION;
 };
 
 //Layout specification.
@@ -75,6 +76,14 @@ vec3 ApplyContrast(vec3 fragment)
 }
 
 /*
+*	Applies saturation.
+*/
+vec3 ApplySaturation(vec3 fragment)
+{
+	return mix(vec3(CalculateAverage(fragment)), fragment, SATURATION);
+}
+
+/*
 *	Applies film grain.
 */
 vec3 ApplyFilmGrain(vec3 fragment)
@@ -124,6 +133,9 @@ void CatalystShaderMain()
 
 	//Apply contrast.
 	post_processed_fragment = ApplyContrast(post_processed_fragment);
+
+	//Apply saturation.
+	post_processed_fragment = ApplySaturation(post_processed_fragment);
 
 	//Apply film grain.
 	post_processed_fragment = ApplyFilmGrain(post_processed_fragment);

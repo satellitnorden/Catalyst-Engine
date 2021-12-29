@@ -158,6 +158,22 @@ public:
 	}
 
 	/*
+	*	Returns the saturation.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetSaturation() const NOEXCEPT
+	{
+		return _Saturation;
+	}
+
+	/*
+	*	Sets the saturation.
+	*/
+	FORCE_INLINE void SetSaturation(const float32 value) NOEXCEPT
+	{
+		_Saturation = value;
+	}
+
+	/*
 	*	Returns the color grading texture resource.
 	*/
 	FORCE_INLINE NO_DISCARD ResourcePointer<Texture2DResource> GetColorGradingTextureResource() const NOEXCEPT
@@ -217,6 +233,9 @@ private:
 
 	//The motion blur intensity.
 	float32 _MotionBlurIntensity{ 1.0f };
+
+	//The saturation.
+	float32 _Saturation{ 1.0f };
 
 	//The color grading texture resource.
 	ResourcePointer<Texture2DResource> _ColorGradingTextureResource;

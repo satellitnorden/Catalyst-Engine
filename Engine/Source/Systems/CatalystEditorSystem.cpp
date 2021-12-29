@@ -378,6 +378,9 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 	//Update the editor Perceiver system.
 	_EditorPerceiverSystem.Update();
 
+	//Update the editor post-processing system.
+	_EditorPostProcessingSystem.Update();
+
 	//Update the editor rendering system.
 	_EditorRenderingSystem.Update();
 
@@ -454,6 +457,23 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 		if (ImGui::Button("Perceiver"))
 		{
 			_CurrentContextualWindow = ContextualWindow::PERCEIVER;
+		}
+	}
+
+	//Opens the post-processing window.
+	if (_CurrentContextualWindow == ContextualWindow::POST_PROCESSING)
+	{
+		if (ImGui::Button("Post-Processing"))
+		{
+			_CurrentContextualWindow = ContextualWindow::NONE;
+		}
+	}
+
+	else
+	{
+		if (ImGui::Button("Post-Processing"))
+		{
+			_CurrentContextualWindow = ContextualWindow::POST_PROCESSING;
 		}
 	}
 

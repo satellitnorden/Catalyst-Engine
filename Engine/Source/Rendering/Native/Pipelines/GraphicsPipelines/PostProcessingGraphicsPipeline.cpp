@@ -31,6 +31,9 @@ public:
 	//The horizontal border.
 	float32 _HorizontalBorder;
 
+	//The saturation.
+	float32 _Saturation;
+
 };
 
 /*
@@ -122,6 +125,7 @@ void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
 	data._Contrast = RenderingSystem::Instance->GetPostProcessingSystem()->GetContrast();
 	data._FilmGrainIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetFilmGrainIntensity();
 	data._HorizontalBorder = RenderingSystem::Instance->GetPostProcessingSystem()->GetHorizontalBorder();
+	data._Saturation = RenderingSystem::Instance->GetPostProcessingSystem()->GetSaturation();
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(PostProcessingFragmentPushConstantData), &data);
 
