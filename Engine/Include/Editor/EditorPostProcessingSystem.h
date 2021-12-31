@@ -4,6 +4,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <Math/General/Vector.h>
+
 class EditorPostProcessingSystem final
 {
 
@@ -19,6 +22,12 @@ private:
 	//Post-processing enabled.
 	bool _PostProcessingEnabled{ true };
 
+	//The tint color.
+	Vector3<float32> _TintColor{ 1.0f, 1.0f, 1.0f };
+
+	//The tint intensity.
+	float32 _TintIntensity{ 0.0f };
+
 	//The brightness.
 	float32 _Brightness{ 1.0f };
 
@@ -33,6 +42,12 @@ private:
 
 	//The saturation.
 	float32 _Saturation{ 1.0f };
+
+	//The depth of field focus distance.
+	float32 _DepthOfFieldFocusDistance{ 1'024.0f };
+
+	//The depth of field size.
+	float32 _DepthOfFieldSize{ 0.0f };
 
 };
 

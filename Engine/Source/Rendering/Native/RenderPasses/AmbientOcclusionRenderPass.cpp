@@ -16,7 +16,7 @@ DEFINE_SINGLETON(AmbientOcclusionRenderPass);
 bool USE_SPATIAL_DENOISING{ true };
 bool USE_TEMPORAL_DENOISING{ true };
 
-void TEMP()
+void TempAmbientOcclusion()
 {
 	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F1) == ButtonState::PRESSED)
 	{
@@ -183,6 +183,8 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 */
 void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 {	
+	TempAmbientOcclusion();
+
 	//Nothing to do here if ambient occlusion isn't enabled.
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::NONE)
 	{
@@ -211,27 +213,49 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 
 	if (!RenderingSystem::Instance->IsTakingScreenshot())
 	{
-		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+		if (USE_SPATIAL_DENOISING)
 		{
-			pipeline.Execute();
-		}
-
-		//Execute the current buffer, don't include the rest.
-		for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
-		{
-			if (i == _CurrentTemporalBufferIndex)
+			for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 			{
-				_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].Execute();
-			}
-
-			else
-			{
-				_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+				pipeline.Execute();
 			}
 		}
 
-		//Update the current buffer index.
-		_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
+		else
+		{
+			for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+			{
+				pipeline.SetIncludeInRender(false);
+			}
+		}
+
+		if (USE_TEMPORAL_DENOISING)
+		{
+			//Execute the current buffer, don't include the rest.
+			for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
+			{
+				if (i == _CurrentTemporalBufferIndex)
+				{
+					_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].Execute();
+				}
+
+				else
+				{
+					_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+				}
+			}
+
+			//Update the current buffer index.
+			_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
+		}
+
+		else
+		{
+			for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
+			{
+				pipeline.SetIncludeInRender(false);
+			}
+		}
 	}
 	
 	else
@@ -246,54 +270,6 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 			pipeline.SetIncludeInRender(false);
 		}
 	}
-
-	/*
-	TEMP();
-
-	if (USE_SPATIAL_DENOISING)
-	{
-		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
-		{
-			pipeline.Execute();
-		}
-	}
-
-	else
-	{
-		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
-		{
-			pipeline.SetIncludeInRender(false);
-		}
-	}
-
-	if (USE_TEMPORAL_DENOISING)
-	{
-		//Execute the current buffer, don't include the rest.
-		for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
-		{
-			if (i == _CurrentTemporalBufferIndex)
-			{
-				_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].Execute();
-			}
-
-			else
-			{
-				_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
-			}
-		}
-
-		//Update the current buffer index.
-		_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
-	}
-
-	else
-	{
-		for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
-		{
-			pipeline.SetIncludeInRender(false);
-		}
-	}
-	*/
 
 	_AmbientOcclusionApplicationGraphicsPipeline.Execute();
 

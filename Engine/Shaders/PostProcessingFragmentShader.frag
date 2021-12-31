@@ -4,12 +4,14 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) float CHROMATIC_ABERRATION_INTENSITY;
-	layout (offset = 4) float BRIGHTNESS;
-	layout (offset = 8) float CONTRAST;
-	layout (offset = 12) float FILM_GRAIN_INTENSITY;
-	layout (offset = 16) float HORIZONTAL_BORDER;
-	layout (offset = 20) float SATURATION;
+	layout (offset = 0) vec3 TINT_COLOR;
+	layout (offset = 16) float TINT_INTENSITY;
+	layout (offset = 20) float CHROMATIC_ABERRATION_INTENSITY;
+	layout (offset = 24) float BRIGHTNESS;
+	layout (offset = 28) float CONTRAST;
+	layout (offset = 32) float FILM_GRAIN_INTENSITY;
+	layout (offset = 36) float HORIZONTAL_BORDER;
+	layout (offset = 40) float SATURATION;
 };
 
 //Layout specification.
@@ -76,6 +78,14 @@ vec3 ApplyContrast(vec3 fragment)
 }
 
 /*
+*	Applies tint.
+*/
+vec3 ApplyTint(vec3 fragment)
+{
+	return mix(fragment, fragment * TINT_COLOR, TINT_INTENSITY);
+}
+
+/*
 *	Applies saturation.
 */
 vec3 ApplySaturation(vec3 fragment)
@@ -126,13 +136,16 @@ void CatalystShaderMain()
 	float edge_factor = max(dot(PERCEIVER_FORWARD_VECTOR, fragment_direction), 0.0f);
 
 	//Sample with chromatic aberration.
-	vec3 post_processed_fragment = SampleWithSharpen(edge_factor);
+	vec3 post_processed_fragment = SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate);
 
 	//Apply brightness.
 	post_processed_fragment = ApplyBrightness(post_processed_fragment);
 
 	//Apply contrast.
 	post_processed_fragment = ApplyContrast(post_processed_fragment);
+
+	//Apply tint.
+	post_processed_fragment = ApplyTint(post_processed_fragment);
 
 	//Apply saturation.
 	post_processed_fragment = ApplySaturation(post_processed_fragment);

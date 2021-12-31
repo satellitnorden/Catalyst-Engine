@@ -192,7 +192,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
-	TempIndirectLighting();
+	//TempIndirectLighting();
 
 	//Execute all pipelines.
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() == RenderingConfiguration::IndirectLightingMode::NONE)

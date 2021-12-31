@@ -16,6 +16,15 @@ class PostProcessingFragmentPushConstantData final
 
 public:
 
+	//The tint color.
+	Vector3<float32> _TintColor;
+
+	//Padding.
+	Padding<4> _Padding;
+
+	//The tint intensity.
+	float32 _TintIntensity;
+
 	//The chromatic aberration intensity.
 	float32 _ChromaticAberrationIntensity;
 
@@ -120,6 +129,8 @@ void PostProcessingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	PostProcessingFragmentPushConstantData data;
 
+	data._TintColor = RenderingSystem::Instance->GetPostProcessingSystem()->GetTintColor();
+	data._TintIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetTintIntensity();
 	data._ChromaticAberrationIntensity = RenderingSystem::Instance->GetPostProcessingSystem()->GetChromaticAberrationIntensity();
 	data._Brightness = RenderingSystem::Instance->GetPostProcessingSystem()->GetBrightness();
 	data._Contrast = RenderingSystem::Instance->GetPostProcessingSystem()->GetContrast();

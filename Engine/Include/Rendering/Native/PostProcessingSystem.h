@@ -14,6 +14,38 @@ class PostProcessingSystem final
 public:
 
 	/*
+	*	Returns the tint color.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float32> GetTintColor() const NOEXCEPT
+	{
+		return _TintColor;
+	}
+
+	/*
+	*	Sets the tint color.
+	*/
+	FORCE_INLINE void SetTintColor(const Vector3<float32> value) NOEXCEPT
+	{
+		_TintColor = value;
+	}
+
+	/*
+	*	Returns the tint intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetTintIntensity() const NOEXCEPT
+	{
+		return _TintIntensity;
+	}
+
+	/*
+	*	Sets the tint intensity.
+	*/
+	FORCE_INLINE void SetTintIntensity(const float32 value) NOEXCEPT
+	{
+		_TintIntensity = value;
+	}
+
+	/*
 	*	Returns the brightness.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetBrightness() const NOEXCEPT
@@ -207,6 +239,12 @@ public:
 
 private:
 
+	//The tint color.
+	Vector3<float32> _TintColor{ 1.0f, 1.0f, 1.0f };
+
+	//The tint intensity.
+	float32 _TintIntensity{ 0.0f };
+
 	//The brightness.
 	float32 _Brightness{ 1.0f };
 
@@ -220,7 +258,7 @@ private:
 	float32 _DepthOfFieldFocusDistance{ 1'024.0f };
 
 	//The depth of field size.
-	float32 _DepthOfFieldSize{ 0.001f };
+	float32 _DepthOfFieldSize{ 0.0f };
 
 	//The exposure.
 	float32 _Exposure{ 1.0f };
