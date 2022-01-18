@@ -690,6 +690,13 @@ NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi
 			midi_message->_NoteOnVelocity = message[2];
 		}
 
+		//Is this an aftertouch?
+		else if (message.size() == 3 && ((message[0] & 0xf0) == 0xA0))
+		{
+			midi_message->_Type = MIDIMessage::Type::AFTERTOUCH;
+			midi_message->_AftertouchNote = message[1];
+		}
+
 		//The MIDI message wasn't a valid type.
 		else
 		{

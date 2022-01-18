@@ -5,7 +5,7 @@
 
 //Type aliases.
 using SoundInstanceHandle = uint64;
-using SoundStoppedCallback = void(*)();
+using SoundStoppedCallback = void(*)(const SoundInstanceHandle sound_instance);
 
 /*
 *	Definition of an empty sound instance handle.

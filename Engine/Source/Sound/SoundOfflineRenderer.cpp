@@ -80,7 +80,7 @@ NO_DISCARD float32 SoundOfflineRenderer::Update() NOEXCEPT
 		{
 			if (_PlayingSounds[i]._SoundStoppedCallback)
 			{
-				_PlayingSounds[i]._SoundStoppedCallback();
+				_PlayingSounds[i]._SoundStoppedCallback(_PlayingSounds[i]._SoundInstanceHandle);
 			}
 
 			_PlayingSounds.EraseAt<false>(i);

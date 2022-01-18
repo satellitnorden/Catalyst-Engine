@@ -584,7 +584,7 @@ void SoundSystem::Mix() NOEXCEPT
 			{
 				if (SoundSystemData::_PlayingSounds[i]._SoundStoppedCallback)
 				{
-					SoundSystemData::_PlayingSounds[i]._SoundStoppedCallback();
+					SoundSystemData::_PlayingSounds[i]._SoundStoppedCallback(SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle);
 				}
 
 				SoundSystemData::_PlayingSounds.EraseAt<false>(i);

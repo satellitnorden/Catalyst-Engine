@@ -11,7 +11,8 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
-		NOTE_ON
+		NOTE_ON,
+		AFTERTOUCH
 	};
 
 	//The type.
@@ -24,6 +25,12 @@ public:
 		{
 			uint8 _NoteOnNote;
 			uint8 _NoteOnVelocity;
+		};
+
+		//AFTERTOUCH data.
+		struct
+		{
+			uint8 _AftertouchNote;
 		};
 	};
 
