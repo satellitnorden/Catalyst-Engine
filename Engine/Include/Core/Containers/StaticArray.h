@@ -150,6 +150,14 @@ public:
 		return SIZE;
 	}
 
+	/*
+	*	Returns the last index if this dynamic array.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD uint64 LastIndex() const NOEXCEPT
+	{
+		return SIZE - 1;
+	}
+
 private:
 
 	//The underlying array.
