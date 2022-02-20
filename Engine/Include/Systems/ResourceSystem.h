@@ -98,7 +98,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<AnimatedModelResource>(*resource);
+		return resource ? ResourcePointer<AnimatedModelResource>(*resource) : ResourcePointer<AnimatedModelResource>();
 	}
 
 	/*
@@ -124,7 +124,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<AnimationResource>(*resource);
+		return resource ? ResourcePointer<AnimationResource>(*resource) : ResourcePointer<AnimationResource>();
 	}
 
 	/*
@@ -150,7 +150,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<FontResource>(*resource);
+		return resource ? ResourcePointer<FontResource>(*resource) : ResourcePointer<FontResource>();
 	}
 
 	/*
@@ -176,7 +176,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<LevelResource>(*resource);
+		return resource ? ResourcePointer<LevelResource>(*resource) : ResourcePointer<LevelResource>();
 	}
 
 	/*
@@ -202,7 +202,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<MaterialResource>(*resource);
+		return resource ? ResourcePointer<MaterialResource>(*resource) : ResourcePointer<MaterialResource>();
 	}
 
 	/*
@@ -228,7 +228,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<ModelResource>(*resource);
+		return resource ? ResourcePointer<ModelResource>(*resource) : ResourcePointer<ModelResource>();
 	}
 
 	/*
@@ -246,7 +246,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<RawDataResource>(*resource);
+		return resource ? ResourcePointer<RawDataResource>(*resource) : ResourcePointer<RawDataResource>();
 	}
 
 	/*
@@ -272,7 +272,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<ShaderResource>(*resource);
+		return resource ? ResourcePointer<ShaderResource>(*resource) : ResourcePointer<ShaderResource>();
 	}
 
 	/*
@@ -298,7 +298,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<SoundResource>(*resource);
+		return resource ? ResourcePointer<SoundResource>(*resource) : ResourcePointer<SoundResource>();
 	}
 
 	/*
@@ -324,7 +324,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<TextureCubeResource>(*resource);
+		return resource ? ResourcePointer<TextureCubeResource>(*resource) : ResourcePointer<TextureCubeResource>();
 	}
 
 	/*
@@ -350,7 +350,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<VideoResource>(*resource);
+		return resource ? ResourcePointer<VideoResource>(*resource) : ResourcePointer<VideoResource>();
 	}
 
 	/*
@@ -376,7 +376,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<Texture2DResource>(*resource);
+		return resource ? ResourcePointer<Texture2DResource>(*resource) : ResourcePointer<Texture2DResource>();
 	}
 
 	/*
@@ -402,7 +402,7 @@ public:
 
 		ASSERT(resource, "Couldn't find resource!");
 
-		return ResourcePointer<Texture3DResource>(*resource);
+		return resource ? ResourcePointer<Texture3DResource>(*resource) : ResourcePointer<Texture3DResource>();
 	}
 
 	/*

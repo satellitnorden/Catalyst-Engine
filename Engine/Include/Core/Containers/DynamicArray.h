@@ -128,6 +128,8 @@ public:
 	*/
 	FORCE_INLINE const TYPE &operator[](const uint64 index) const NOEXCEPT
 	{
+		ASSERT(index < _Size, "Index is out of bounds!");
+
 		return _Array[index];
 	}
 
@@ -136,6 +138,8 @@ public:
 	*/
 	FORCE_INLINE TYPE &operator[](const uint64 index) NOEXCEPT
 	{
+		ASSERT(index < _Size, "Index is out of bounds!");
+
 		return _Array[index];
 	}
 
@@ -208,6 +212,8 @@ public:
 	*/
 	FORCE_INLINE const TYPE &At(const uint64 index) const NOEXCEPT
 	{
+		ASSERT(index < _Size, "Index is out of bounds!");
+
 		return _Array[index];
 	}
 
@@ -216,6 +222,8 @@ public:
 	*/
 	FORCE_INLINE TYPE &At(const uint64 index) NOEXCEPT
 	{
+		ASSERT(index < _Size, "Index is out of bounds!");
+
 		return _Array[index];
 	}
 
@@ -264,6 +272,8 @@ public:
 	*/
 	FORCE_INLINE const TYPE &Back() const NOEXCEPT
 	{
+		ASSERT(_Size > 0, "Trying to retrieve last element without valid size!");
+
 		return _Array[LastIndex()];
 	}
 
@@ -272,6 +282,8 @@ public:
 	*/
 	FORCE_INLINE TYPE &Back() NOEXCEPT
 	{
+		ASSERT(_Size > 0, "Trying to retrieve last element without valid size!");
+
 		return _Array[LastIndex()];
 	}
 
@@ -475,6 +487,8 @@ public:
 	*/
 	FORCE_INLINE uint64 LastIndex() const NOEXCEPT
 	{
+		ASSERT(_Size > 0, "Trying to retrieve last index without valid size!");
+
 		return _Size - 1;
 	}
 

@@ -35,6 +35,8 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD const TYPE& operator[](const uint64 index) const NOEXCEPT
 	{
+		ASSERT(index < SIZE, "Index is out of bounds!");
+
 		return _Array[index];
 	}
 
@@ -43,6 +45,8 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD TYPE& operator[](const uint64 index) NOEXCEPT
 	{
+		ASSERT(index < SIZE, "Index is out of bounds!");
+
 		return _Array[index];
 	}
 
@@ -115,6 +119,8 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD const TYPE& At(const uint64 index) const NOEXCEPT
 	{
+		ASSERT(index < SIZE, "Index is out of bounds!");
+
 		return _Array[index];
 	}
 
@@ -123,6 +129,8 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD TYPE& At(const uint64 index) NOEXCEPT
 	{
+		ASSERT(index < SIZE, "Index is out of bounds!");
+
 		return _Array[index];
 	}
 
