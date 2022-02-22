@@ -84,6 +84,8 @@ void EntitySystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCEPT
 */
 void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
+	ASSERT(!entity->_Initialized, "Destroying an initialized entity, this is bad!");
+
 	//The entity should already be terminated, so just deallocate the entity.
 	_AllocatorLock.Lock();
 	_Allocator.Free(entity);

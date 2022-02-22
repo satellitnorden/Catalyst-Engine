@@ -364,7 +364,7 @@ void ResourceLoadingSystem::LoadTexture2D(BinaryFile<BinaryFileMode::IN> *const 
 	{
 		const uint64 textureSize{ (data->_Width >> i) * (data->_Height >> i) * 4 };
 
-		data->_Data[i].Reserve(textureSize);
+		data->_Data[i].Upsize<false>(textureSize);
 
 		file->Read(data->_Data[i].Data(), textureSize);
 	}
