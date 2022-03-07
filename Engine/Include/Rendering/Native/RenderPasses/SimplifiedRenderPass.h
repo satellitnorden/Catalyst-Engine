@@ -9,7 +9,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class SimplifiedRenderPass final : public RenderPass
+class ALIGN(8) SimplifiedRenderPass final : public RenderPass
 {
 	
 public:

@@ -12,7 +12,7 @@
 #include <Rendering/Native/Pipelines/RayTracingPipelines/VolumetricLightingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class VolumetricLightingRenderPass final : public RenderPass
+class ALIGN(8) VolumetricLightingRenderPass final : public RenderPass
 {
 	
 public:

@@ -16,42 +16,47 @@ void CommandLine::Initialize() NOEXCEPT
 	}
 
 	//Retrieve the command line.
+#if defined(CATALYST_PLATFORM_WINDOWS)
 	_CommandLine = GetCommandLine();
+#endif
 
 	//Fill up the keys and values.
-	const char *RESTRICT current_argument{ &_CommandLine[0] }; 
-
-	for (uint64 i{ 0 }; i < _CommandLine.Length(); ++i)
+	if (_CommandLine.Data())
 	{
-		if (_CommandLine[i] == ' '
-			|| i == _CommandLine.Length() - 1)
+		const char *RESTRICT current_argument{ &_CommandLine[0] }; 
+
+		for (uint64 i{ 0 }; i < _CommandLine.Length(); ++i)
 		{
-			if (current_argument[0] == '-')
+			if (_CommandLine[i] == ' '
+				|| i == _CommandLine.Length() - 1)
 			{
-				if (i != _CommandLine.Length() - 1)
+				if (current_argument[0] == '-')
 				{
-					_CommandLine[i] = '\0';
+					if (i != _CommandLine.Length() - 1)
+					{
+						_CommandLine[i] = '\0';
+					}
+
+					if (_Keys.Size() > _Values.Size())
+					{
+						_Values.Emplace(nullptr);
+					}
+
+					_Keys.Emplace(current_argument + 1);
 				}
 
-				if (_Keys.Size() > _Values.Size())
+				else if (_Keys.Size() > _Values.Size())
 				{
-					_Values.Emplace(nullptr);
+					if (i != _CommandLine.Length() - 1)
+					{
+						_CommandLine[i] = '\0';
+					}
+
+					_Keys.Emplace(current_argument);
 				}
 
-				_Keys.Emplace(current_argument + 1);
+				current_argument = &_CommandLine[i + 1];
 			}
-
-			else if (_Keys.Size() > _Values.Size())
-			{
-				if (i != _CommandLine.Length() - 1)
-				{
-					_CommandLine[i] = '\0';
-				}
-
-				_Keys.Emplace(current_argument);
-			}
-
-			current_argument = &_CommandLine[i + 1];
 		}
 	}
 

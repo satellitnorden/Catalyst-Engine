@@ -12,7 +12,7 @@
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracedIndirectLightingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class IndirectLightingRenderPass final : public RenderPass
+class ALIGN(8) IndirectLightingRenderPass final : public RenderPass
 {
 	
 public:

@@ -16,7 +16,7 @@ void VulkanSurface::Initialize() NOEXCEPT
 	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
 	surfaceCreateInfo.pNext = nullptr;
 	surfaceCreateInfo.flags = 0;
-	surfaceCreateInfo.window = CatalystPlatform::_NativeWindow;
+	surfaceCreateInfo.window = CatalystPlatform::_Window;
 
 	VULKAN_ERROR_CHECK(vkCreateAndroidSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
 #endif

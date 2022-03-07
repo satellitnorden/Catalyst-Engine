@@ -26,7 +26,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VelocityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class SceneFeaturesRenderPass final : public RenderPass
+class ALIGN(8) SceneFeaturesRenderPass final : public RenderPass
 {
 	
 public:

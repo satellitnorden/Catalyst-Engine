@@ -18,7 +18,7 @@ namespace PNGWriter
 	/*
 	*	Writes the given image to the given file as a .tga file.
 	*/
-	FORCE_INLINE void Write(const Texture2D<Vector4<float32>> &image, const char *const RESTRICT file_path) NOEXCEPT
+	FORCE_INLINE static void Write(const Texture2D<Vector4<float32>> &image, const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Create the png buffer.
 		std::vector<uint8> png_buffer;

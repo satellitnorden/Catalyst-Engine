@@ -42,7 +42,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanSurface.h>
 #include <Rendering/Abstraction/Vulkan/VulkanSwapChain.h>
 
-class VulkanInterface final
+class ALIGN(8) VulkanInterface final
 {
 
 public:

@@ -210,7 +210,14 @@ void LogSystem::Log(const LogLevel log_level,
 	//Print the line.
 	va_list variadic_arguments;
 	va_start(variadic_arguments, format);
+
+#if defined(CATALYST_PLATFORM_ANDROID)
+	vsprintf(LogSystemData::_TemporaryMessageBuffer, format, variadic_arguments);
+#endif
+
+#if defined(CATALYST_PLATFORM_WINDOWS)
 	vsprintf_s(LogSystemData::_TemporaryMessageBuffer, format, variadic_arguments);
+#endif
 	va_end(variadic_arguments);
 	sprintf_s(LogSystemData::_TemporaryLineBuffer, "[%s - %s - %s - Line %i] - %s", LogSystemLogic::GetLogLevelString(log_level), file, function, line, LogSystemData::_TemporaryMessageBuffer);
 	

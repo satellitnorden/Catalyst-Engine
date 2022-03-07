@@ -9,7 +9,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DepthOfFieldBokehBlurGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class DepthOfFieldRenderPass final : public RenderPass
+class ALIGN(8) DepthOfFieldRenderPass final : public RenderPass
 {
 	
 public:

@@ -10,7 +10,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class BloomRenderPass final : public RenderPass
+class ALIGN(8) BloomRenderPass final : public RenderPass
 {
 	
 public:

@@ -8,7 +8,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TemporalAntiAliasingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class TemporalAntiAliasingRenderPass final : public RenderPass
+class ALIGN(8) TemporalAntiAliasingRenderPass final : public RenderPass
 {
 	
 public:

@@ -8,7 +8,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/PassthroughGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class OceanRenderPass final : public RenderPass
+class ALIGN(8) OceanRenderPass final : public RenderPass
 {
 	
 public:
