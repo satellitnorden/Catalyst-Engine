@@ -14,7 +14,7 @@
 #include <Rendering/Native/Pipelines/RayTracingPipelines/ShadowsRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ShadowsRenderPass final : public RenderPass
+class ALIGN(8) ShadowsRenderPass final : public RenderPass
 {
 	
 public:
