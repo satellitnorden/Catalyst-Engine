@@ -41,7 +41,7 @@ void CommandBuffer::Begin(const Pipeline *const RESTRICT pipeline) NOEXCEPT
 			const VulkanGraphicsPipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
 
 			//Begin the command buffer.
-			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipeline_data->_RenderPass->Get(), 0, static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetOutputRenderTargets().Empty() ? pipeline_data->_FrameBuffers[0]->Get() : static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->IsRenderingDirectlyToScreen() ? pipeline_data->_FrameBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]->Get() : pipeline_data->_FrameBuffers[0]->Get());
+			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipeline_data->_RenderPass->Get(), 0, static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->IsRenderingDirectlyToScreen() ? pipeline_data->_FrameBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]->Get() : pipeline_data->_FrameBuffers[0]->Get());
 		}
 
 		else if (pipeline->GetType() == Pipeline::Type::RayTracing)
@@ -222,9 +222,10 @@ void CommandBuffer::ExecuteCommands(const Pipeline *const RESTRICT pipeline, con
 			clear_color,
 			depth_value,
 			pipeline_data->_RenderPass->Get(),
-			pipeline_data->_FrameBuffers[0]->Get(),
-			pipeline_data->_Extent,
-			VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, pipeline_data->_NumberOfAttachments
+			pipeline_data->_FrameBuffers[pipeline_data->_RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+			pipeline_data->_RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : pipeline_data->_Extent,
+			VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS,
+			pipeline_data->_NumberOfAttachments
 			);
 		}
 
