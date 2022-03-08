@@ -35,6 +35,11 @@ SimplifiedRenderPass::SimplifiedRenderPass() NOEXCEPT
 	{
 		SimplifiedRenderPass::Instance->Terminate();
 	});
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Simplified");
+#endif
 }
 
 /*

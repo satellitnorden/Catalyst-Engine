@@ -140,6 +140,16 @@ protected:
 	*/
 	void AddPushConstantRange(const ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { _PushConstantRanges.Emplace(shaderStage, offset, size); }
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Sets the name.
+	*/
+	FORCE_INLINE void SetName(const char *const RESTRICT value) NOEXCEPT
+	{
+		_Name = value;
+	}
+#endif
+
 private:
 
 	//The pipeline type.
@@ -159,5 +169,10 @@ private:
 
 	//Denotes whether or not this pipeline should be included in the final render.
 	bool _IncludeInRender;
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//The name.
+	const char *RESTRICT _Name{ nullptr };
+#endif
 
 };

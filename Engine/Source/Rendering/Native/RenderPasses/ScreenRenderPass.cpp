@@ -37,6 +37,11 @@ ScreenRenderPass::ScreenRenderPass() NOEXCEPT
 	{
 		ScreenRenderPass::Instance->Terminate();
 	});
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Screen");
+#endif
 }
 
 /*

@@ -67,6 +67,12 @@ void SimplifiedSkyGraphicsPipeline::Initialize(const DepthBufferHandle depth_buf
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetTopology(Topology::TriangleFan);
+	SetTopology(Topology::TriangleList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Simplified Sky Graphics");
+#endif
 }
 
 /*

@@ -140,6 +140,16 @@ protected:
 		_Pipelines.Emplace(pipeline);
 	}
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Sets the name.
+	*/
+	FORCE_INLINE void SetName(const char *const RESTRICT value) NOEXCEPT
+	{
+		_Name = value;
+	}
+#endif
+
 private:
 
 	//Denotes if this render pass is enabled or not.
@@ -162,5 +172,10 @@ private:
 
 	//The pipelines.
 	DynamicArray<Pipeline *RESTRICT> _Pipelines;
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//The name.
+	const char *RESTRICT _Name{ nullptr };
+#endif
 
 };
