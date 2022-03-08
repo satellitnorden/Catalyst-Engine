@@ -51,16 +51,16 @@ public:
 			material.SetPrimaryColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
 			material.SetBorderOffset(0.0f);
 
-			_Image = AddImage(	Vector2<float32>(0.0f, 0.0f),
-								Vector2<float32>(1.0f, 1.0f),
-								material);
+			_Image = AddImageByNormalizedCoordinate(Vector2<float32>(0.0f, 0.0f),
+													Vector2<float32>(1.0f, 1.0f),
+													material);
 		}
 
 		//Add the progress bar.
 		{
-			_ProgressBar = AddProgressBar(	Vector2<float32>(0.0f, 0.95f),
-											Vector2<float32>(1.0f, 1.0f),
-											"Current Number Of Samples: 0");
+			_ProgressBar = AddProgressBarByNormalizedCoordinate(Vector2<float32>(0.0f, 0.95f),
+																Vector2<float32>(1.0f, 1.0f),
+																"Current Number Of Samples: 0");
 		}
 	}
 

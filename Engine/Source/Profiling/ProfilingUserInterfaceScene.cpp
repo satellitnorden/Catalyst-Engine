@@ -80,9 +80,9 @@ void ProfilingUserInterfaceScene::UpdateProfilingEntries() NOEXCEPT
 		//Does a progress bar exist for this entry?
 		if (_ProfilingEntryProgressBars.Empty() || _ProfilingEntryProgressBars.Size() - 1 < i)
 		{
-			_ProfilingEntryProgressBars.Emplace(AddProgressBar(	Vector2<uint32>(0, ProfilingUserInterfaceSceneConstants::MAXIMUM_NUMBER_OF_ENTRIES - 1 - static_cast<uint32>(i)),
-																Vector2<uint32>(0, ProfilingUserInterfaceSceneConstants::MAXIMUM_NUMBER_OF_ENTRIES - 1 - static_cast<uint32>(i)),
-																buffer));
+			_ProfilingEntryProgressBars.Emplace(AddProgressBarByCell(	Vector2<uint32>(0, ProfilingUserInterfaceSceneConstants::MAXIMUM_NUMBER_OF_ENTRIES - 1 - static_cast<uint32>(i)),
+																		Vector2<uint32>(0, ProfilingUserInterfaceSceneConstants::MAXIMUM_NUMBER_OF_ENTRIES - 1 - static_cast<uint32>(i)),
+																		buffer));
 			_ProfilingEntryProgressBars[i]->SetCurrentProgress(current_profiling_entry._Duration / maximum_duration);
 		}
 
