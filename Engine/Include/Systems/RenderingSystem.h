@@ -131,11 +131,27 @@ public:
 	}
 
 	/*
+	*	Returns the full aspect ratio.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetFullAspectRatio() const NOEXCEPT
+	{
+		return static_cast<float32>(_FullResolution._Width) / static_cast<float32>(_FullResolution._Height);
+	}
+
+	/*
 	*	Returns the scaled resolution.
 	*/
 	FORCE_INLINE NO_DISCARD Resolution GetScaledResolution(const uint8 mip_level) const NOEXCEPT
 	{
 		return _ScaledResolutions[mip_level];
+	}
+
+	/*
+	*	Returns the scaled aspect ratio.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetScaledAspectRatio() const NOEXCEPT
+	{
+		return static_cast<float32>(_ScaledResolutions[0]._Width) / static_cast<float32>(_ScaledResolutions[0]._Height);
 	}
 	
 	/*

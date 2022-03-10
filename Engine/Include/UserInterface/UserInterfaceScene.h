@@ -274,6 +274,11 @@ protected:
 																				const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::CENTER,
 																				const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER) NOEXCEPT;
 
+	/*
+	*	Returns the normalized coordinate center of the given cell.
+	*/
+	NO_DISCARD Vector2<float32> GetNormalizedCoordinateCenterOfCell(const Vector2<uint32> &cell) NOEXCEPT;
+
 private:
 
 	/*

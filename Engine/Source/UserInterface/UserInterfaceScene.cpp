@@ -496,6 +496,20 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddTextByNormal
 }
 
 /*
+*	Returns the normalized coordinate center of the given cell.
+*/
+NO_DISCARD Vector2<float32> UserInterfaceScene::GetNormalizedCoordinateCenterOfCell(const Vector2<uint32> &cell) NOEXCEPT
+{
+	const Vector2<float32> minimum{ static_cast<float32>(cell._X) * _HorizontalSubdivisionReciprocal,
+									static_cast<float32>(cell._Y) * _VerticalSubdivisionReciprocal };
+
+	const Vector2<float32> maximum{ static_cast<float32>(cell._X + 1) * _HorizontalSubdivisionReciprocal,
+									static_cast<float32>(cell._Y + 1) * _VerticalSubdivisionReciprocal };
+
+	return CatalystBaseMath::LinearlyInterpolate(minimum, maximum, 0.5f);
+}
+
+/*
 *	Calculates the bounding box for the given minimum/maximum cell.
 */
 void UserInterfaceScene::CalculateBoundingBox(	const Vector2<uint32>& minimum_cell,
