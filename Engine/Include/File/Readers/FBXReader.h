@@ -404,6 +404,8 @@ public:
 	*/
 	FORCE_INLINE static NO_DISCARD bool Read(const char* const RESTRICT file_path, ModelFile *const RESTRICT model_file) NOEXCEPT
 	{
+		ASSERT(File::Exists(file_path), "File path: " << file_path << " doesn't exist!");
+
 		//Open the binary file.
 		BinaryFile<BinaryFileMode::IN> binary_file{ file_path };
 
