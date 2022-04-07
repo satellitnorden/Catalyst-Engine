@@ -1208,7 +1208,9 @@ void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, Collisio
 		triangle_mesh_description.triangles.stride = sizeof(physx::PxU32) * 3;
 		triangle_mesh_description.triangles.data = indices.Data();
 
-		triangle_mesh_description.flags = physx::PxMeshFlag::eFLIPNORMALS;
+		triangle_mesh_description.flags = static_cast<physx::PxMeshFlag::Enum>(0);
+
+		ASSERT(triangle_mesh_description.isValid(), "Triangle mesh description isn't valid!");
 
 		//Build the convex mesh.
 		physx::PxDefaultMemoryOutputStream output_stream_buffer;
@@ -1216,7 +1218,7 @@ void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, Collisio
 
 		PhysXPhysicsSystemData::_Cooking->cookTriangleMesh(triangle_mesh_description, output_stream_buffer, &result);
 
-		ASSERT(result == physx::PxTriangleMeshCookingResult::eSUCCESS, "Convex mesh building failed!");
+		ASSERT(result == physx::PxTriangleMeshCookingResult::eSUCCESS, "Concave mesh building failed!");
 
 		//Set the type.
 		collision_model_data->_Type = CollisionModelData::Type::CONCAVE;
