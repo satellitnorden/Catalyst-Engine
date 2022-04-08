@@ -265,12 +265,13 @@ public:
 			case ModelFile::Creator::BLENDER:
 			{
 				const Matrix4x4 TRANSFORMATION{ VectorConstants::ZERO, EulerAngles(CatalystBaseMath::DegreesToRadians(90.0f), CatalystBaseMath::DegreesToRadians(180.0f), 0.0f), VectorConstants::ONE };
+				constexpr float32 TEXTURE_COORDINATE_ROTATION{ CatalystBaseMath::DegreesToRadians(180.0f) };
 
 				for (ModelFile::Mesh &mesh : _Meshes)
 				{
 					for (Vertex &vertex : mesh._Vertices)
 					{
-						vertex.Transform(TRANSFORMATION, 0.0f);
+						vertex.Transform(TRANSFORMATION, TEXTURE_COORDINATE_ROTATION);
 					}
 				}
 
