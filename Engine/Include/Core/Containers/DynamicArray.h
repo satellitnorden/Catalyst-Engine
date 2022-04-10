@@ -404,7 +404,7 @@ public:
 	/*
 	*	Returns whether or not the given element exists in this container.
 	*/
-	FORCE_INLINE NO_DISCARD bool Exists(const TYPE &element) NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool Exists(const TYPE &element) const NOEXCEPT
 	{
 		for (uint64 i{ 0 }; i < _Size; ++i)
 		{
