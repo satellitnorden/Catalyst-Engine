@@ -157,6 +157,9 @@ namespace PhysXPhysicsSystemData
 	//The physics.
 	physx::PxPhysics *RESTRICT _Physics{ nullptr };
 	
+	//The cooking lock.
+	Spinlock _CookingLock;
+
 	//The cooking.
 	physx::PxCooking *RESTRICT _Cooking{ nullptr };
 
@@ -290,8 +293,14 @@ namespace PhysXPhysicsSystemLogic
 		height_field_description.samples.data = height_field_samples.Data();
 		height_field_description.samples.stride = sizeof(physx::PxHeightFieldSample);
 
-		physx::PxHeightField *const RESTRICT height_field{ PhysXPhysicsSystemData::_Cooking->createHeightField(height_field_description, PhysXPhysicsSystemData::_Physics->getPhysicsInsertionCallback()) };
-	
+		physx::PxHeightField *RESTRICT height_field;
+
+		{
+			SCOPED_LOCK(PhysXPhysicsSystemData::_CookingLock);
+
+			height_field = PhysXPhysicsSystemData::_Cooking->createHeightField(height_field_description, PhysXPhysicsSystemData::_Physics->getPhysicsInsertionCallback());
+		}
+
 		//Create the height field geometry.
 		const physx::PxHeightFieldGeometry height_field_geometry{ height_field, physx::PxMeshGeometryFlags(), height_scale, 1.0f, 1.0f };
 
@@ -378,7 +387,11 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 	{
 		physx::PxCookingParams cooking_paramters{ physx::PxTolerancesScale() };
 
-		PhysXPhysicsSystemData::_Cooking = PxCreateCooking(PX_PHYSICS_VERSION, *PhysXPhysicsSystemData::_Foundation, cooking_paramters);
+		{
+			SCOPED_LOCK(PhysXPhysicsSystemData::_CookingLock);
+
+			PhysXPhysicsSystemData::_Cooking = PxCreateCooking(PX_PHYSICS_VERSION, *PhysXPhysicsSystemData::_Foundation, cooking_paramters);
+		}
 	}
 
 	//Create the dispatcher.
@@ -1153,7 +1166,11 @@ void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, Collisio
 		physx::PxDefaultMemoryOutputStream output_stream_buffer;
 		physx::PxConvexMeshCookingResult::Enum result;
 
-		PhysXPhysicsSystemData::_Cooking->cookConvexMesh(convex_mesh_description, output_stream_buffer, &result);
+		{
+			SCOPED_LOCK(PhysXPhysicsSystemData::_CookingLock);
+
+			PhysXPhysicsSystemData::_Cooking->cookConvexMesh(convex_mesh_description, output_stream_buffer, &result);
+		}
 
 		ASSERT(result == physx::PxConvexMeshCookingResult::eSUCCESS, "Convex mesh building failed!");
 
@@ -1216,7 +1233,11 @@ void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, Collisio
 		physx::PxDefaultMemoryOutputStream output_stream_buffer;
 		physx::PxTriangleMeshCookingResult::Enum result;
 
-		PhysXPhysicsSystemData::_Cooking->cookTriangleMesh(triangle_mesh_description, output_stream_buffer, &result);
+		{
+			SCOPED_LOCK(PhysXPhysicsSystemData::_CookingLock);
+
+			PhysXPhysicsSystemData::_Cooking->cookTriangleMesh(triangle_mesh_description, output_stream_buffer, &result);
+		}
 
 		ASSERT(result == physx::PxTriangleMeshCookingResult::eSUCCESS, "Concave mesh building failed!");
 
