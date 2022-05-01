@@ -147,7 +147,7 @@ void EntitySystem::RequestTermination(Entity* const RESTRICT entity) NOEXCEPT
 	else
 	{
 		//Lock the queue.
-		SCOPED_LOCK(_TerminationQueueLock);
+		SCOPED_LOCK(_TerminationDestructionQueueLock);
 
 		//Add the data.
 		_TerminationQueue.Emplace(entity);
@@ -161,7 +161,7 @@ void EntitySystem::RequestTermination(Entity* const RESTRICT entity) NOEXCEPT
 void EntitySystem::RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Lock the queue.
-	SCOPED_LOCK(_DestructionQueueLock);
+	SCOPED_LOCK(_TerminationDestructionQueueLock);
 
 	//Add the data.
 	_DestructionQueue.Emplace(entity);
@@ -243,11 +243,15 @@ void EntitySystem::EntityUpdate() NOEXCEPT
 	//Process the initialization queue.
 	ProcessInitializationQueue();
 
-	//Process the termination queue.
-	ProcessTerminationQueue();
+	{
+		SCOPED_LOCK(_TerminationDestructionQueueLock);
 
-	//Process the destruction queue.
-	ProcessDestructionQueue();
+		//Process the termination queue.
+		ProcessTerminationQueue();
+
+		//Process the destruction queue.
+		ProcessDestructionQueue();
+	}
 
 	//Process the automatic termination queue.
 	ProcessAutomaticTerminationQueue();
@@ -317,9 +321,6 @@ void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 */
 void EntitySystem::ProcessTerminationQueue() NOEXCEPT
 {
-	//Lock the termination queue.
-	SCOPED_LOCK(_TerminationQueueLock);
-
 	//Terminate all entities.
 	for (Entity *const RESTRICT entity : _TerminationQueue)
 	{
@@ -335,9 +336,6 @@ void EntitySystem::ProcessTerminationQueue() NOEXCEPT
 */
 void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 {
-	//Lock the destruction queue.
-	SCOPED_LOCK(_DestructionQueueLock);
-
 	//Destroy all entities.
 	for (Entity *const RESTRICT entity : _DestructionQueue)
 	{

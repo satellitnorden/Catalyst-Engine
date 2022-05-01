@@ -193,14 +193,11 @@ private:
 	//Container for all entities that have requested initialization.
 	DynamicArray<InitializationData> _InitializationQueue;
 
-	//Lock for the termination queue.
-	Spinlock _TerminationQueueLock;
+	//Lock for the termination and destruction queue.
+	Spinlock _TerminationDestructionQueueLock;
 
 	//Container for all entities that have requested termination.
 	DynamicArray<Entity *RESTRICT> _TerminationQueue;
-
-	//Lock for the destruction queue.
-	Spinlock _DestructionQueueLock;
 
 	//Container for all entities that have requested destruction.
 	DynamicArray<Entity *RESTRICT> _DestructionQueue;
