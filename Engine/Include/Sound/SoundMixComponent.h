@@ -17,6 +17,7 @@
 //List of all available sound mix components.
 #define SOUND_MIX_COMPONENTS	SOUND_MIX_COMPONENT(None)						\
 								SOUND_MIX_COMPONENT(AutomaticGainCorrection)	\
+								SOUND_MIX_COMPONENT(ExponentiallyMovingAverage)	\
 								SOUND_MIX_COMPONENT(Gain)						\
 								SOUND_MIX_COMPONENT(Limiter)					\
 								SOUND_MIX_COMPONENT(Reverb)						\
@@ -113,6 +114,60 @@ public:
 	FORCE_INLINE static void Destruct(State *const RESTRICT state) NOEXCEPT
 	{
 		
+	}
+
+};
+
+/*
+*	This sound mix component will apply an exponentially moving average filter.
+*/
+class ExponentiallyMovingAverageSoundMixComponent final
+{
+
+public:
+
+	/*
+	*	State class definition.
+	*/
+	class State final
+	{
+
+	public:
+
+		//The mix.
+		float32 _Mix;
+
+		//The current value.
+		float32 _CurrentValue{ 0.0f };
+
+	};
+
+	/*
+	*	The construct function.
+	*/
+	FORCE_INLINE static void Construct() NOEXCEPT
+	{
+		
+	}
+
+	/*
+	*	The process function.
+	*/
+	FORCE_INLINE static void Process(State *const RESTRICT state, float32 *const RESTRICT sample) NOEXCEPT
+	{
+		//Update the current value.
+		state->_CurrentValue = CatalystBaseMath::LinearlyInterpolate(*sample, state->_CurrentValue, state->_Mix);
+
+		//Process the sample.
+		*sample = state->_CurrentValue;
+	}
+
+	/*
+	*	The destruct function.
+	*/
+	FORCE_INLINE static void Destruct(State *const RESTRICT state) NOEXCEPT
+	{
+
 	}
 
 };
@@ -386,6 +441,18 @@ public:
 		SoundMixComponent new_component{ Type::AutomaticGainCorrection };
 
 		new_component._AutomaticGainCorrectionState._Gain = initial_gain;
+
+		return new_component;
+	}
+
+	/*
+	*	Creates an exponentially moving average sound mix component.
+	*/
+	FORCE_INLINE static NO_DISCARD SoundMixComponent CreateExponentiallyMovingAverage(const float32 initial_mix) NOEXCEPT
+	{
+		SoundMixComponent new_component{ Type::ExponentiallyMovingAverage };
+
+		new_component._ExponentiallyMovingAverageState._Mix = initial_mix;
 
 		return new_component;
 	}
