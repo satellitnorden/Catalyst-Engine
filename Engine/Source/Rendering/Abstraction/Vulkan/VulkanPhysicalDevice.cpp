@@ -20,8 +20,8 @@ namespace VulkanPhysicalDeviceLogic
 		multiview_features->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES;
 		multiview_features->pNext = nullptr;
 
-		VkPhysicalDeviceFeatures2 properties;
-		properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		VkPhysicalDeviceFeatures2 properties{ };
+		properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
 		properties.pNext = multiview_features;
 
 		vkGetPhysicalDeviceFeatures2(physical_device, &properties);
