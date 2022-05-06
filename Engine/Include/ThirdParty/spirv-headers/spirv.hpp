@@ -542,6 +542,8 @@ enum Decoration {
     DecorationPrefetchINTEL = 5902,
     DecorationStallEnableINTEL = 5905,
     DecorationFuseLoopsInFunctionINTEL = 5907,
+    DecorationAliasScopeINTEL = 5914,
+    DecorationNoAliasINTEL = 5915,
     DecorationBufferLocationINTEL = 5921,
     DecorationIOPipeStorageINTEL = 5944,
     DecorationFunctionFloatingPointModeINTEL = 6080,
@@ -800,6 +802,8 @@ enum MemoryAccessShift {
     MemoryAccessMakePointerVisibleKHRShift = 4,
     MemoryAccessNonPrivatePointerShift = 5,
     MemoryAccessNonPrivatePointerKHRShift = 5,
+    MemoryAccessAliasScopeINTELMaskShift = 16,
+    MemoryAccessNoAliasINTELMaskShift = 17,
     MemoryAccessMax = 0x7fffffff,
 };
 
@@ -814,6 +818,8 @@ enum MemoryAccessMask {
     MemoryAccessMakePointerVisibleKHRMask = 0x00000010,
     MemoryAccessNonPrivatePointerMask = 0x00000020,
     MemoryAccessNonPrivatePointerKHRMask = 0x00000020,
+    MemoryAccessAliasScopeINTELMaskMask = 0x00010000,
+    MemoryAccessNoAliasINTELMaskMask = 0x00020000,
 };
 
 enum Scope {
@@ -1055,6 +1061,7 @@ enum Capability {
     CapabilityFPGAMemoryAccessesINTEL = 5898,
     CapabilityFPGAClusterAttributesINTEL = 5904,
     CapabilityLoopFuseINTEL = 5906,
+    CapabilityMemoryAccessAliasingINTEL = 5910,
     CapabilityFPGABufferLocationINTEL = 5920,
     CapabilityArbitraryPrecisionFixedPointINTEL = 5922,
     CapabilityUSMStorageClassesINTEL = 5935,
@@ -1076,6 +1083,8 @@ enum Capability {
     CapabilityOptNoneINTEL = 6094,
     CapabilityAtomicFloat16AddEXT = 6095,
     CapabilityDebugInfoModuleINTEL = 6114,
+    CapabilitySplitBarrierINTEL = 6141,
+    CapabilityGroupUniformArithmeticKHR = 6400,
     CapabilityMax = 0x7fffffff,
 };
 
@@ -1797,6 +1806,9 @@ enum Op {
     OpArbitraryFloatPowRINTEL = 5881,
     OpArbitraryFloatPowNINTEL = 5882,
     OpLoopControlINTEL = 5887,
+    OpAliasDomainDeclINTEL = 5911,
+    OpAliasScopeDeclINTEL = 5912,
+    OpAliasScopeListDeclINTEL = 5913,
     OpFixedSqrtINTEL = 5923,
     OpFixedRecipINTEL = 5924,
     OpFixedRsqrtINTEL = 5925,
@@ -1835,10 +1847,23 @@ enum Op {
     OpTypeStructContinuedINTEL = 6090,
     OpConstantCompositeContinuedINTEL = 6091,
     OpSpecConstantCompositeContinuedINTEL = 6092,
+    OpControlBarrierArriveINTEL = 6142,
+    OpControlBarrierWaitINTEL = 6143,
+    OpGroupIMulKHR = 6401,
+    OpGroupFMulKHR = 6402,
+    OpGroupBitwiseAndKHR = 6403,
+    OpGroupBitwiseOrKHR = 6404,
+    OpGroupBitwiseXorKHR = 6405,
+    OpGroupLogicalAndKHR = 6406,
+    OpGroupLogicalOrKHR = 6407,
+    OpGroupLogicalXorKHR = 6408,
     OpMax = 0x7fffffff,
 };
 
 #ifdef SPV_ENABLE_UTILITY_CODE
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
 inline void HasResultAndType(Op opcode, bool *hasResult, bool *hasResultType) {
     *hasResult = *hasResultType = false;
     switch (opcode) {
@@ -2448,6 +2473,9 @@ inline void HasResultAndType(Op opcode, bool *hasResult, bool *hasResultType) {
     case OpArbitraryFloatPowRINTEL: *hasResult = true; *hasResultType = true; break;
     case OpArbitraryFloatPowNINTEL: *hasResult = true; *hasResultType = true; break;
     case OpLoopControlINTEL: *hasResult = false; *hasResultType = false; break;
+    case OpAliasDomainDeclINTEL: *hasResult = true; *hasResultType = false; break;
+    case OpAliasScopeDeclINTEL: *hasResult = true; *hasResultType = false; break;
+    case OpAliasScopeListDeclINTEL: *hasResult = true; *hasResultType = false; break;
     case OpFixedSqrtINTEL: *hasResult = true; *hasResultType = true; break;
     case OpFixedRecipINTEL: *hasResult = true; *hasResultType = true; break;
     case OpFixedRsqrtINTEL: *hasResult = true; *hasResultType = true; break;
@@ -2486,6 +2514,16 @@ inline void HasResultAndType(Op opcode, bool *hasResult, bool *hasResultType) {
     case OpTypeStructContinuedINTEL: *hasResult = false; *hasResultType = false; break;
     case OpConstantCompositeContinuedINTEL: *hasResult = false; *hasResultType = false; break;
     case OpSpecConstantCompositeContinuedINTEL: *hasResult = false; *hasResultType = false; break;
+    case OpControlBarrierArriveINTEL: *hasResult = false; *hasResultType = false; break;
+    case OpControlBarrierWaitINTEL: *hasResult = false; *hasResultType = false; break;
+    case OpGroupIMulKHR: *hasResult = true; *hasResultType = true; break;
+    case OpGroupFMulKHR: *hasResult = true; *hasResultType = true; break;
+    case OpGroupBitwiseAndKHR: *hasResult = true; *hasResultType = true; break;
+    case OpGroupBitwiseOrKHR: *hasResult = true; *hasResultType = true; break;
+    case OpGroupBitwiseXorKHR: *hasResult = true; *hasResultType = true; break;
+    case OpGroupLogicalAndKHR: *hasResult = true; *hasResultType = true; break;
+    case OpGroupLogicalOrKHR: *hasResult = true; *hasResultType = true; break;
+    case OpGroupLogicalXorKHR: *hasResult = true; *hasResultType = true; break;
     }
 }
 #endif /* SPV_ENABLE_UTILITY_CODE */

@@ -546,6 +546,8 @@ typedef enum SpvDecoration_ {
     SpvDecorationPrefetchINTEL = 5902,
     SpvDecorationStallEnableINTEL = 5905,
     SpvDecorationFuseLoopsInFunctionINTEL = 5907,
+    SpvDecorationAliasScopeINTEL = 5914,
+    SpvDecorationNoAliasINTEL = 5915,
     SpvDecorationBufferLocationINTEL = 5921,
     SpvDecorationIOPipeStorageINTEL = 5944,
     SpvDecorationFunctionFloatingPointModeINTEL = 6080,
@@ -804,6 +806,8 @@ typedef enum SpvMemoryAccessShift_ {
     SpvMemoryAccessMakePointerVisibleKHRShift = 4,
     SpvMemoryAccessNonPrivatePointerShift = 5,
     SpvMemoryAccessNonPrivatePointerKHRShift = 5,
+    SpvMemoryAccessAliasScopeINTELMaskShift = 16,
+    SpvMemoryAccessNoAliasINTELMaskShift = 17,
     SpvMemoryAccessMax = 0x7fffffff,
 } SpvMemoryAccessShift;
 
@@ -818,6 +822,8 @@ typedef enum SpvMemoryAccessMask_ {
     SpvMemoryAccessMakePointerVisibleKHRMask = 0x00000010,
     SpvMemoryAccessNonPrivatePointerMask = 0x00000020,
     SpvMemoryAccessNonPrivatePointerKHRMask = 0x00000020,
+    SpvMemoryAccessAliasScopeINTELMaskMask = 0x00010000,
+    SpvMemoryAccessNoAliasINTELMaskMask = 0x00020000,
 } SpvMemoryAccessMask;
 
 typedef enum SpvScope_ {
@@ -1059,6 +1065,7 @@ typedef enum SpvCapability_ {
     SpvCapabilityFPGAMemoryAccessesINTEL = 5898,
     SpvCapabilityFPGAClusterAttributesINTEL = 5904,
     SpvCapabilityLoopFuseINTEL = 5906,
+    SpvCapabilityMemoryAccessAliasingINTEL = 5910,
     SpvCapabilityFPGABufferLocationINTEL = 5920,
     SpvCapabilityArbitraryPrecisionFixedPointINTEL = 5922,
     SpvCapabilityUSMStorageClassesINTEL = 5935,
@@ -1080,6 +1087,8 @@ typedef enum SpvCapability_ {
     SpvCapabilityOptNoneINTEL = 6094,
     SpvCapabilityAtomicFloat16AddEXT = 6095,
     SpvCapabilityDebugInfoModuleINTEL = 6114,
+    SpvCapabilitySplitBarrierINTEL = 6141,
+    SpvCapabilityGroupUniformArithmeticKHR = 6400,
     SpvCapabilityMax = 0x7fffffff,
 } SpvCapability;
 
@@ -1801,6 +1810,9 @@ typedef enum SpvOp_ {
     SpvOpArbitraryFloatPowRINTEL = 5881,
     SpvOpArbitraryFloatPowNINTEL = 5882,
     SpvOpLoopControlINTEL = 5887,
+    SpvOpAliasDomainDeclINTEL = 5911,
+    SpvOpAliasScopeDeclINTEL = 5912,
+    SpvOpAliasScopeListDeclINTEL = 5913,
     SpvOpFixedSqrtINTEL = 5923,
     SpvOpFixedRecipINTEL = 5924,
     SpvOpFixedRsqrtINTEL = 5925,
@@ -1839,10 +1851,23 @@ typedef enum SpvOp_ {
     SpvOpTypeStructContinuedINTEL = 6090,
     SpvOpConstantCompositeContinuedINTEL = 6091,
     SpvOpSpecConstantCompositeContinuedINTEL = 6092,
+    SpvOpControlBarrierArriveINTEL = 6142,
+    SpvOpControlBarrierWaitINTEL = 6143,
+    SpvOpGroupIMulKHR = 6401,
+    SpvOpGroupFMulKHR = 6402,
+    SpvOpGroupBitwiseAndKHR = 6403,
+    SpvOpGroupBitwiseOrKHR = 6404,
+    SpvOpGroupBitwiseXorKHR = 6405,
+    SpvOpGroupLogicalAndKHR = 6406,
+    SpvOpGroupLogicalOrKHR = 6407,
+    SpvOpGroupLogicalXorKHR = 6408,
     SpvOpMax = 0x7fffffff,
 } SpvOp;
 
 #ifdef SPV_ENABLE_UTILITY_CODE
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
 inline void SpvHasResultAndType(SpvOp opcode, bool *hasResult, bool *hasResultType) {
     *hasResult = *hasResultType = false;
     switch (opcode) {
@@ -2452,6 +2477,9 @@ inline void SpvHasResultAndType(SpvOp opcode, bool *hasResult, bool *hasResultTy
     case SpvOpArbitraryFloatPowRINTEL: *hasResult = true; *hasResultType = true; break;
     case SpvOpArbitraryFloatPowNINTEL: *hasResult = true; *hasResultType = true; break;
     case SpvOpLoopControlINTEL: *hasResult = false; *hasResultType = false; break;
+    case SpvOpAliasDomainDeclINTEL: *hasResult = true; *hasResultType = false; break;
+    case SpvOpAliasScopeDeclINTEL: *hasResult = true; *hasResultType = false; break;
+    case SpvOpAliasScopeListDeclINTEL: *hasResult = true; *hasResultType = false; break;
     case SpvOpFixedSqrtINTEL: *hasResult = true; *hasResultType = true; break;
     case SpvOpFixedRecipINTEL: *hasResult = true; *hasResultType = true; break;
     case SpvOpFixedRsqrtINTEL: *hasResult = true; *hasResultType = true; break;
@@ -2490,6 +2518,16 @@ inline void SpvHasResultAndType(SpvOp opcode, bool *hasResult, bool *hasResultTy
     case SpvOpTypeStructContinuedINTEL: *hasResult = false; *hasResultType = false; break;
     case SpvOpConstantCompositeContinuedINTEL: *hasResult = false; *hasResultType = false; break;
     case SpvOpSpecConstantCompositeContinuedINTEL: *hasResult = false; *hasResultType = false; break;
+    case SpvOpControlBarrierArriveINTEL: *hasResult = false; *hasResultType = false; break;
+    case SpvOpControlBarrierWaitINTEL: *hasResult = false; *hasResultType = false; break;
+    case SpvOpGroupIMulKHR: *hasResult = true; *hasResultType = true; break;
+    case SpvOpGroupFMulKHR: *hasResult = true; *hasResultType = true; break;
+    case SpvOpGroupBitwiseAndKHR: *hasResult = true; *hasResultType = true; break;
+    case SpvOpGroupBitwiseOrKHR: *hasResult = true; *hasResultType = true; break;
+    case SpvOpGroupBitwiseXorKHR: *hasResult = true; *hasResultType = true; break;
+    case SpvOpGroupLogicalAndKHR: *hasResult = true; *hasResultType = true; break;
+    case SpvOpGroupLogicalOrKHR: *hasResult = true; *hasResultType = true; break;
+    case SpvOpGroupLogicalXorKHR: *hasResult = true; *hasResultType = true; break;
     }
 }
 #endif /* SPV_ENABLE_UTILITY_CODE */
