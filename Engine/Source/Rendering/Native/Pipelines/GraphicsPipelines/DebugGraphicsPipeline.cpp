@@ -85,6 +85,11 @@ void DebugGraphicsPipeline::Initialize(const uint32 mode, const RenderTargetHand
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleFan);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Debug");
+#endif
 }
 
 /*

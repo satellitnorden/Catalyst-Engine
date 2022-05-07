@@ -108,6 +108,11 @@ void EditorSelectedModelGraphicsPipeline::Initialize(const DepthBufferHandle dep
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Editor Selected Model");
+#endif
 }
 
 /*

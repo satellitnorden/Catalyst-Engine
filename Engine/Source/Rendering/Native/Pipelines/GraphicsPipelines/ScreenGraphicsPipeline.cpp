@@ -66,7 +66,7 @@ void ScreenGraphicsPipeline::Initialize() NOEXCEPT
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set the name.
-	SetName("Screen Graphics");
+	SetName("Screen");
 #endif
 }
 

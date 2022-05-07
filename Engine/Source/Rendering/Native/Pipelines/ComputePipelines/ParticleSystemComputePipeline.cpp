@@ -63,6 +63,11 @@ void ParticleSystemComputePipeline::Initialize() NOEXCEPT
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
 	AddPushConstantRange(ShaderStage::COMPUTE, 0, sizeof(ParticleSystemComputePushConstantData));
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Particle System");
+#endif
 }
 
 /*

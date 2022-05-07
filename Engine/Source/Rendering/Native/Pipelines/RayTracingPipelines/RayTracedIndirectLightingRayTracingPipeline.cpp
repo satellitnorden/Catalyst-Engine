@@ -74,6 +74,11 @@ void RayTracedIndirectLightingRayTracingPipeline::Initialize(const RenderingConf
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
 	AddPushConstantRange(ShaderStage::RAY_GENERATION, 0, sizeof(PathTracingPushConstantData));
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Ray Traced Indirect Lighting");
+#endif
 }
 
 /*

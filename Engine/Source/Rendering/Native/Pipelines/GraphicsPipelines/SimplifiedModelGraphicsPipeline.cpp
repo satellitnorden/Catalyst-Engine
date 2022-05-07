@@ -120,7 +120,7 @@ void SimplifiedModelGraphicsPipeline::Initialize(const DepthBufferHandle depth_b
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set the name.
-	SetName("Simplified Model Graphics");
+	SetName("Simplified Model");
 #endif
 }
 

@@ -150,6 +150,11 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetTopology(Topology::TriangleList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Terrain Scene Features");
+#endif
 }
 
 /*

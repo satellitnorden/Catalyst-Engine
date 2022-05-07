@@ -141,6 +141,11 @@ void MaskedModelColorSceneFeaturesGraphicsPipeline::Initialize(const DepthBuffer
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Masked Model Color Scene Features");
+#endif
 }
 
 /*

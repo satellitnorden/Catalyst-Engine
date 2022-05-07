@@ -71,7 +71,7 @@ void SimplifiedSkyGraphicsPipeline::Initialize(const DepthBufferHandle depth_buf
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set the name.
-	SetName("Simplified Sky Graphics");
+	SetName("Simplified Sky");
 #endif
 }
 

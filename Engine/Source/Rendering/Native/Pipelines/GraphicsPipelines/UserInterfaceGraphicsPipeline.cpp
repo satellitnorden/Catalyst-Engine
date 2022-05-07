@@ -111,7 +111,7 @@ void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set the name.
-	SetName("User Interface Graphics");
+	SetName("User Interface");
 #endif
 }
 

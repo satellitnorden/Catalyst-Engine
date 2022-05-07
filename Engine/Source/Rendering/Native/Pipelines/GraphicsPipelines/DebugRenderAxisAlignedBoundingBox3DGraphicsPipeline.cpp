@@ -144,6 +144,11 @@ void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize(const Depth
 	{
 		SetTopology(Topology::TriangleList);
 	}
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Debug Render Axis Aligned Bounding Box 3D");
+#endif
 }
 
 /*

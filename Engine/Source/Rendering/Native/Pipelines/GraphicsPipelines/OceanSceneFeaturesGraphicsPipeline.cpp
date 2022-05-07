@@ -123,6 +123,11 @@ void OceanSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetTopology(Topology::TriangleList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Ocean Scene Features");
+#endif
 }
 
 /*

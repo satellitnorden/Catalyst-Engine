@@ -146,6 +146,11 @@ void InstancedOpaqueModelShadowsGraphicsPipeline::Initialize(const bool double_s
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Instanced Opaque Model Shadows");
+#endif
 }
 
 /*

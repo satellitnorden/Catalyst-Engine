@@ -96,6 +96,11 @@ void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const RenderTa
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleFan);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Ambient Occlusion Spatial Denoising");
+#endif
 }
 
 /*

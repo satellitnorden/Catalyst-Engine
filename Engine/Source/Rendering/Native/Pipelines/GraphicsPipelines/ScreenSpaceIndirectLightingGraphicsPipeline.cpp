@@ -110,6 +110,11 @@ void ScreenSpaceIndirectLightingGraphicsPipeline::Initialize(const RenderingConf
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleFan);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Screen Space Indirect Lighting");
+#endif
 }
 
 /*

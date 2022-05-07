@@ -124,6 +124,11 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const De
 	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetTopology(Topology::PointList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Particle System Masked Depth Scene Features");
+#endif
 }
 
 /*

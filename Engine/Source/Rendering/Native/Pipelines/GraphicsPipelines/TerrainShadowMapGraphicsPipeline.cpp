@@ -139,6 +139,11 @@ void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Terrain Shadow Map");
+#endif
 }
 
 /*

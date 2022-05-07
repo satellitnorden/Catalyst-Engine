@@ -38,6 +38,11 @@ void VolumetricLightingRayTracingPipeline::Initialize() NOEXCEPT
 	//Add the miss shaders.
 	SetNumberOfMissShaders(1);
 	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("VisibilityRayMissShader")));
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Volumetric Lighting");
+#endif
 }
 
 /*

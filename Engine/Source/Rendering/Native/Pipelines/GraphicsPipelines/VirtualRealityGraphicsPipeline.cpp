@@ -82,6 +82,11 @@ void VirtualRealityGraphicsPipeline::Initialize() NOEXCEPT
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
 	SetMultiviewEnabled(true);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Virtual Reality");
+#endif
 }
 
 /*

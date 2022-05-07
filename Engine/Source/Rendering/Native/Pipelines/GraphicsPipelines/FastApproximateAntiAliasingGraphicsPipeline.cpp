@@ -61,6 +61,11 @@ void FastApproximateAntiAliasingGraphicsPipeline::Initialize() NOEXCEPT
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleFan);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Fast Approximate Anti Aliasing");
+#endif
 }
 
 /*

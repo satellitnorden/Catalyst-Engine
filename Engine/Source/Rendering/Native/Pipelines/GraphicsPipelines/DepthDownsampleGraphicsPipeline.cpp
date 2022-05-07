@@ -92,6 +92,11 @@ void DepthDownsampleGraphicsPipeline::Initialize(	const uint8 mip_index,
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleFan);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Depth Downsample");
+#endif
 }
 
 /*

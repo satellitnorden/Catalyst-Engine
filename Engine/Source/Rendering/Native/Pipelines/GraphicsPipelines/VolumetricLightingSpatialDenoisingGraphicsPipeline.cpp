@@ -90,6 +90,11 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleFan);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Volumetric Lighting Spatial Denoising");
+#endif
 }
 
 /*

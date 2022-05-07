@@ -93,6 +93,11 @@ void ProceduralGrassSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferH
 	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetTopology(Topology::PointList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Procedural Grass Scene Features");
+#endif
 }
 
 /*

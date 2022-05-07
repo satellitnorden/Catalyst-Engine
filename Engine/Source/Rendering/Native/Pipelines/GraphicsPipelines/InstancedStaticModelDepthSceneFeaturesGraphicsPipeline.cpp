@@ -147,6 +147,11 @@ void InstancedStaticModelDepthSceneFeaturesGraphicsPipeline::Initialize(const bo
 	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetTopology(Topology::TriangleList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Instanced Static Model Depth Scene Features");
+#endif
 }
 
 /*

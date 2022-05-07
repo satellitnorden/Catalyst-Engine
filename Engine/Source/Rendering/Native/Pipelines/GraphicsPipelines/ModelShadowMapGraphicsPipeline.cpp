@@ -108,6 +108,11 @@ void ModelShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_bu
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Model Shadow Map");
+#endif
 }
 
 /*

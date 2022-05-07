@@ -60,6 +60,11 @@ void VelocityGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) N
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetTopology(Topology::TriangleFan);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Velocity");
+#endif
 }
 
 /*

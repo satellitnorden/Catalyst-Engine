@@ -58,6 +58,11 @@ void AmbientOcclusionRayTracingPipeline::Initialize(const RenderTargetHandle amb
 	//Add the miss shaders.
 	SetNumberOfMissShaders(1);
 	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("VisibilityRayMissShader")));
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Ambient Occlusion");
+#endif
 }
 
 /*

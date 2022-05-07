@@ -113,6 +113,11 @@ void InstancedImpostorColorSceneFeaturesGraphicsPipeline::Initialize(const Depth
 	SetStencilWriteMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetStencilReferenceMask(RenderingConstants::SCENE_BUFFER_STENCIL_BIT);
 	SetTopology(Topology::TriangleFan);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Instanced Impostor Color Scene Features");
+#endif
 }
 
 /*

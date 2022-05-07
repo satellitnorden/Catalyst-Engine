@@ -126,6 +126,11 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Initialize(const De
 	SetStencilWriteMask(0);
 	SetStencilReferenceMask(0);
 	SetTopology(Topology::PointList);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName("Particle System Masked Color Scene Features");
+#endif
 }
 
 /*
