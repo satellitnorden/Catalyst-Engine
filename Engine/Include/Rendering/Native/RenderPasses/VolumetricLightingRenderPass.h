@@ -27,6 +27,15 @@ public:
 
 private:
 
+	//The volumetric lighting render target.
+	RenderTargetHandle _VolumetricLightingRenderTarget;
+
+	//The intermediate volumetric lighting render target.
+	RenderTargetHandle _IntermediateVolumetricLightingRenderTarget;
+
+	//The volumetric lighting temporal buffer render targets.
+	StaticArray<RenderTargetHandle, 2> _VolumetricLightingTemporalBufferRenderTargets;
+
 	//The volumetric lighting graphics pipeline.
 	VolumetricLightingGraphicsPipeline _VolumetricLightingGraphicsPipeline;
 

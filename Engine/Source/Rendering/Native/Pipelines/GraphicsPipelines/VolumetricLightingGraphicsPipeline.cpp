@@ -28,7 +28,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void VolumetricLightingGraphicsPipeline::Initialize() NOEXCEPT
+void VolumetricLightingGraphicsPipeline::Initialize(const RenderTargetHandle target) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -48,7 +48,7 @@ void VolumetricLightingGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the orender targets.
 	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+	AddOutputRenderTarget(target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(3);

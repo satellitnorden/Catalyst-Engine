@@ -14,8 +14,10 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const RenderTargetHandle source,
-					const RenderTargetHandle target) NOEXCEPT;
+	void Initialize(const RenderTargetHandle previous_temporal_render_target,
+					const RenderTargetHandle current_temporal_render_target,
+					const RenderTargetHandle volumetric_lighting_render_target,
+					const RenderTargetHandle intermediate_volumetric_lighting_render_target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -43,6 +45,7 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT;
+	void CreateRenderDataTable(	const RenderTargetHandle previous_temporal_render_target,
+								const RenderTargetHandle volumetric_lighting_render_target) NOEXCEPT;
 
 };

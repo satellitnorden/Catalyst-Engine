@@ -14,7 +14,7 @@
 /*
 *	Initializes this ray tracing pipeline.
 */
-void VolumetricLightingRayTracingPipeline::Initialize() NOEXCEPT
+void VolumetricLightingRayTracingPipeline::Initialize(const RenderTargetHandle target) NOEXCEPT
 {
 	//Reset this ray tracing pipeline.
 	ResetRayTracingPipeline();
@@ -23,7 +23,7 @@ void VolumetricLightingRayTracingPipeline::Initialize() NOEXCEPT
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable();
+	CreateRenderDataTable(target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(4);
@@ -113,10 +113,10 @@ void VolumetricLightingRayTracingPipeline::CreateRenderDataTableLayout() NOEXCEP
 /*
 *	Creates the render data table.
 */
-void VolumetricLightingRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
+void VolumetricLightingRayTracingPipeline::CreateRenderDataTable(const RenderTargetHandle target) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, target);
 }

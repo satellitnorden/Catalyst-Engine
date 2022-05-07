@@ -376,16 +376,6 @@ enum class RenderTarget : uint8
 	TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_2,
 
 	/*
-	*	Contains the first temporal volumetric lighting buffer.
-	*/
-	TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_1,
-
-	/*
-	*	Contains the second temporal volumetric lighting buffer.
-	*/
-	TEMPORAL_VOLUMETRIC_LIGHTING_BUFFER_2,
-
-	/*
 	*	Intermediate render target.
 	*/
 	INTERMEDIATE_RGBA_UINT8,

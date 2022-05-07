@@ -14,8 +14,10 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void VolumetricLightingTemporalDenoisingGraphicsPipeline::Initialize(	const RenderTargetHandle source,
-																		const RenderTargetHandle target) NOEXCEPT
+void VolumetricLightingTemporalDenoisingGraphicsPipeline::Initialize(	const RenderTargetHandle previous_temporal_render_target,
+																		const RenderTargetHandle current_temporal_render_target,
+																		const RenderTargetHandle volumetric_lighting_render_target,
+																		const RenderTargetHandle intermediate_volumetric_lighting_render_target) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -24,7 +26,7 @@ void VolumetricLightingTemporalDenoisingGraphicsPipeline::Initialize(	const Rend
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable(source);
+	CreateRenderDataTable(previous_temporal_render_target, volumetric_lighting_render_target);
 
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -35,8 +37,8 @@ void VolumetricLightingTemporalDenoisingGraphicsPipeline::Initialize(	const Rend
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(2);
-	AddOutputRenderTarget(target);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+	AddOutputRenderTarget(current_temporal_render_target);
+	AddOutputRenderTarget(intermediate_volumetric_lighting_render_target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -135,11 +137,12 @@ void VolumetricLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTableL
 /*
 *	Creates the render data table.
 */
-void VolumetricLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
+void VolumetricLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle previous_temporal_render_target,
+																				const RenderTargetHandle volumetric_lighting_render_target) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4_HALF), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, previous_temporal_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, volumetric_lighting_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }
