@@ -2,6 +2,9 @@
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanErrorReporting.h>
 
+//Core.
+#include <Core/General/DynamicString.h>
+
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 
@@ -50,6 +53,15 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanErrorReporting::ErrorCallback(	VkDebugUtils
 																	void* pUserData)
 {
 	PRINT_TO_OUTPUT(pCallbackData->pMessage);
+
+#if 0
+	{
+		DynamicString message{ pCallbackData->pMessage };
+
+		ASSERT(!message.Find("Validation Error:"), "Validation error detected!");
+		ASSERT(!message.Find("Validation Performance Warning:"), "Validation performance warning detected!");
+	}
+#endif 
 
 	return VK_FALSE;
 }

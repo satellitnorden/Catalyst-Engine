@@ -17,7 +17,7 @@ void ClearGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOE
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ClearVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
 	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
 	SetGeometryShader(ResourcePointer<ShaderResource>());
