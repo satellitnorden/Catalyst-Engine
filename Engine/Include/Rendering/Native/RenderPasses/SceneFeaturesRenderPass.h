@@ -20,7 +20,6 @@
 #include <Rendering/Native/Pipelines/ComputePipelines/ParticleSystemComputePipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ProceduralGrassSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TerrainSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VelocityGraphicsPipeline.h>
@@ -90,9 +89,6 @@ private:
 
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;
-
-	//The procedural grass graphics pipeline.
-	ProceduralGrassSceneFeaturesGraphicsPipeline _ProceduralGrassSceneFeaturesGraphicsPipeline;
 
 	//The user interface scene features graphics pipeline.
 	UserInterfaceSceneFeaturesGraphicsPipeline _UserInterfaceSceneFeaturesGraphicsPipeline;
