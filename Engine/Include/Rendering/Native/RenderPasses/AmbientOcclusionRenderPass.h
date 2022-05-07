@@ -30,6 +30,9 @@ private:
 	//The ambient occlusion render target.
 	RenderTargetHandle _AmbientOcclusionRenderTarget;
 
+	//The intermediate ambient occlusion render target.
+	RenderTargetHandle _IntermediateAmbientOcclusionRenderTarget;
+
 	//The ambient occlusion temporal buffer render targets.
 	StaticArray<RenderTargetHandle, 2> _AmbientOcclusionTemporalBufferRenderTargets;
 

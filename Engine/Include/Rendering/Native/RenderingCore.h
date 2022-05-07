@@ -403,11 +403,6 @@ enum class RenderTarget : uint8
 	/*
 	*	Intermediate render target at half resolution.
 	*/
-	INTERMEDIATE_R_UINT8_HALF,
-
-	/*
-	*	Intermediate render target at half resolution.
-	*/
 	INTERMEDIATE_RGBA_FLOAT32_HALF_1,
 
 	/*

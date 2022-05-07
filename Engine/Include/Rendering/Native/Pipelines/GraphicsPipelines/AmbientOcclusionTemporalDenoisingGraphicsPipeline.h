@@ -16,7 +16,8 @@ public:
 	*/
 	void Initialize(const RenderTargetHandle previous_temporal_buffer_render_target,
 					const RenderTargetHandle current_temporal_buffer_render_target,
-					const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT;
+					const RenderTargetHandle ambient_occlusion_render_target,
+					const RenderTargetHandle intermediate_ambient_occlusion_render_target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.

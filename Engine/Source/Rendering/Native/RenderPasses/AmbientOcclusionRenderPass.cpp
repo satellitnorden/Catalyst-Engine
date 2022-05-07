@@ -129,6 +129,9 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	//Create the ambient occlusion render target.
 	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, &_AmbientOcclusionRenderTarget);
 
+	//Create the intermediate ambient occlusion render target.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, &_IntermediateAmbientOcclusionRenderTarget);
+
 	//Create the ambient occlusion temporal buffer render targets.
 	for (RenderTargetHandle &render_target : _AmbientOcclusionTemporalBufferRenderTargets)
 	{
@@ -161,8 +164,8 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 0].Initialize(	_AmbientOcclusionRenderTarget,
 																				static_cast<int32>(i / 2 + 1),
 																				0,
-																				RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF));
-		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_R_UINT8_HALF),
+																				_IntermediateAmbientOcclusionRenderTarget);
+		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 1].Initialize(	_IntermediateAmbientOcclusionRenderTarget,
 																				static_cast<int32>(i / 2 + 1),
 																				1,
 																				_AmbientOcclusionRenderTarget);
@@ -170,12 +173,14 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[0],
 																		_AmbientOcclusionTemporalBufferRenderTargets[1],
-																		_AmbientOcclusionRenderTarget);
+																		_AmbientOcclusionRenderTarget,
+																		_IntermediateAmbientOcclusionRenderTarget);
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[1],
 																		_AmbientOcclusionTemporalBufferRenderTargets[0],
-																		_AmbientOcclusionRenderTarget);
+																		_AmbientOcclusionRenderTarget,
+																		_IntermediateAmbientOcclusionRenderTarget);
 
-	_AmbientOcclusionApplicationGraphicsPipeline.Initialize(_AmbientOcclusionRenderTarget);
+	_AmbientOcclusionApplicationGraphicsPipeline.Initialize(_IntermediateAmbientOcclusionRenderTarget);
 }
 
 /*

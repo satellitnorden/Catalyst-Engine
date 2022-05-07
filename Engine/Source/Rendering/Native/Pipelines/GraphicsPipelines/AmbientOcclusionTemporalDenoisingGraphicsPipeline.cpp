@@ -16,7 +16,8 @@
 */
 void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Initialize(	const RenderTargetHandle previous_temporal_buffer_render_target,
 																	const RenderTargetHandle current_temporal_buffer_render_target,
-																	const RenderTargetHandle ambient_occlusion_render_target) NOEXCEPT
+																	const RenderTargetHandle ambient_occlusion_render_target,
+																	const RenderTargetHandle intermediate_ambient_occlusion_render_target) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -37,7 +38,7 @@ void AmbientOcclusionTemporalDenoisingGraphicsPipeline::Initialize(	const Render
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(2);
 	AddOutputRenderTarget(current_temporal_buffer_render_target);
-	AddOutputRenderTarget(ambient_occlusion_render_target);
+	AddOutputRenderTarget(intermediate_ambient_occlusion_render_target);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
