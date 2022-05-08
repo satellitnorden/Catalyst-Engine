@@ -36,6 +36,9 @@ public:
 	//The maximum quad tree depth.
 	uint8 _MaximumQuadTreeDepth;
 
+	//The terrain maximum height.
+	float32 _TerrainMaximumHeight;
+
 	//The terrain height function.
 	TerrainHeightFunction _TerrainHeightFunction;
 

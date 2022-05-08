@@ -35,6 +35,17 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 	_Properties._PatchResolution = configuration._PatchResolution;
 	_Properties._MaximumMaterialMapsResolution = configuration._MaximumMaterialMapsResolution;
 	_Properties._MaximumQuadTreeDepth = configuration._MaximumQuadTreeDepth;
+
+	if (configuration._TerrainMaximumHeightFunction)
+	{
+		_Properties._TerrainMaximumHeight = configuration._TerrainMaximumHeightFunction();
+	}
+
+	else
+	{
+		_Properties._TerrainMaximumHeight = FLOAT32_MAXIMUM;
+	}
+
 	_Properties._TerrainHeightFunction = configuration._TerrainHeightFunction;
 	_Properties._TerrainMaterialFunction = configuration._TerrainMaterialFunction;
 	_Properties._TerrainDataSaveFolder = configuration._TerrainDataSaveFolder;
@@ -141,7 +152,7 @@ void TerrainSystem::SequentialUpdate() NOEXCEPT
 NO_DISCARD bool TerrainSystem::CanTerrainBeGenerated() const NOEXCEPT
 {
 	//Need the functions.
-	return _Properties._TerrainHeightFunction && _Properties._TerrainMaterialFunction;
+	return _Properties._TerrainMaximumHeight != FLOAT32_MAXIMUM && _Properties._TerrainHeightFunction && _Properties._TerrainMaterialFunction;
 }
 
 /*
@@ -150,6 +161,32 @@ NO_DISCARD bool TerrainSystem::CanTerrainBeGenerated() const NOEXCEPT
 void TerrainSystem::SetMaximumQuadTreeDepth(const uint8 value) NOEXCEPT
 {
 	_Properties._MaximumQuadTreeDepth = value;
+}
+
+/*
+*	Returns the maximum height.
+*/
+NO_DISCARD bool TerrainSystem::GetMaximumHeight(float32 *const RESTRICT maximum_height) const NOEXCEPT
+{
+	if (_Properties._TerrainMaximumHeight != FLOAT32_MAXIMUM)
+	{
+		if (maximum_height)
+		{
+			*maximum_height = _Properties._TerrainMaximumHeight;
+		}
+
+		return true;
+	}
+	
+	else
+	{
+		if (maximum_height)
+		{
+			*maximum_height = 0.0f;
+		}
+
+		return false;
+	}
 }
 
 /*

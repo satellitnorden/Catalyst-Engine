@@ -189,6 +189,7 @@ class CatalystProjectTerrainConfiguration final
 public:
 
 	//Type aliases.
+	using TerrainMaximumHeightFunction = float32(*)();
 	using TerrainHeightFunction = float32(*)(const WorldPosition &world_position);
 	using TerrainMaterialFunction = void(*)(const WorldPosition &world_position, Vector4<uint8> *const RESTRICT indices, Vector4<uint8> *const RESTRICT weights);
 
@@ -224,6 +225,13 @@ public:
 	*	Recommended: 8.
 	*/
 	uint8 _MaximumQuadTreeDepth;
+
+	/*
+	*	The terrain maximum height function.
+	*	Responsible for reporting the maximum height of the terrain height function.
+	*	Recommended: A valid pointer to a function reporting maximum height.
+	*/
+	TerrainMaximumHeightFunction _TerrainMaximumHeightFunction;
 
 	/*
 	*	The terrain height function.

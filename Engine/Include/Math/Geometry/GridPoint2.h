@@ -79,7 +79,7 @@ public:
 	*/
 	constexpr static NO_DISCARD Vector3<float> GridPointToWorldPosition(const GridPoint2 &gridPoint, const float gridSize) NOEXCEPT
 	{
-		return Vector3<float>(	gridPoint._X * gridSize , 0.0f,
+		return Vector3<float>(	gridPoint._X * gridSize, 0.0f,
 								gridPoint._Y * gridSize);
 	}
 

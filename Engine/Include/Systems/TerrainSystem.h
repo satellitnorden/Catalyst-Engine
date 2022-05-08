@@ -88,6 +88,11 @@ public:
 	}
 
 	/*
+	*	Returns the maximum height.
+	*/
+	bool GetMaximumHeight(float32 *const RESTRICT maximum_height) const NOEXCEPT;
+
+	/*
 	*	Returns the terrain height at the given position.
 	*/
 	bool GetTerrainHeightAtPosition(const Vector3<float32> &position, float32 *const RESTRICT height, const void *const RESTRICT context = nullptr) const NOEXCEPT;
