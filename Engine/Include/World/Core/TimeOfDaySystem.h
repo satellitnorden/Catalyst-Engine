@@ -64,4 +64,9 @@ private:
 	*/
 	void UpdateSkyLight() NOEXCEPT;
 
+	/*
+	*	Updates the sky.
+	*/
+	void UpdateSky() NOEXCEPT;
+
 };

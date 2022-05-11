@@ -110,6 +110,22 @@ public:
 	}
 
 	/*
+	*	Returns the star intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetStarIntensity() const NOEXCEPT
+	{
+		return _StarIntensity;
+	}
+
+	/*
+	*	Sets the star intensity.
+	*/
+	FORCE_INLINE void SetStarIntensity(const float32 value) NOEXCEPT
+	{
+		_StarIntensity = value;
+	}
+
+	/*
 	*	Returns the cloud thickness.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetCloudThickness() const NOEXCEPT
@@ -141,6 +157,9 @@ private:
 
 	//The sky intensity.
 	float32 _SkyIntensity{ 1.0f };
+
+	//The star intensity.
+	float32 _StarIntensity{ 0.0f };
 
 	//The cloud thickness.
 	float32 _CloudThickness{ 0.0f };

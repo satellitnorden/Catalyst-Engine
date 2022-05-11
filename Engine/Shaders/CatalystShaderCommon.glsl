@@ -110,18 +110,16 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 596) float FAR_PLANE;
 
     layout (offset = 600) float PERCEIVER_ABSOLUTE_HEIGHT;
-    layout (offset = 604) uint UNUSED_1;
-    layout (offset = 608) uint UNUSED_2;
-    layout (offset = 612) float UNUSED_3;
 
-    layout (offset = 616) uint SKY_MODE;
-    layout (offset = 620) float SKY_INTENSITY;
+    layout (offset = 604) uint SKY_MODE;
+    layout (offset = 608) float SKY_INTENSITY;
+    layout (offset = 612) float STAR_INTENSITY;
 
-    layout (offset = 624) float VOLUMETRIC_LIGHTING_DISTANCE;
-    layout (offset = 628) float VOLUMETRIC_LIGHTING_HEIGHT;
-    layout (offset = 632) float VOLUMETRIC_LIGHTING_THICKNESS;
+    layout (offset = 616) float VOLUMETRIC_LIGHTING_DISTANCE;
+    layout (offset = 620) float VOLUMETRIC_LIGHTING_HEIGHT;
+    layout (offset = 624) float VOLUMETRIC_LIGHTING_THICKNESS;
 
-    layout (offset = 636) float WORLD_GRID_SIZE;
+    layout (offset = 628) float WORLD_GRID_SIZE;
 
     //Total size; 640
 };
@@ -147,8 +145,11 @@ layout (set = 0, binding = 5) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BL
 //The sky texture.
 layout (set = 0, binding = 6) uniform samplerCube SKY_TEXTURE;
 
+//The star texture.
+layout (set = 0, binding = 7) uniform samplerCube STAR_TEXTURE;
+
 //Hammersley hemisphere uniform buffer
-layout (std140, set = 0, binding = 7) uniform HammersleyHemisphereSamples
+layout (std140, set = 0, binding = 8) uniform HammersleyHemisphereSamples
 {
     layout (offset = 0) vec4 HAMMERSLEY_HEMISPHERE_SAMPLES[64];
 };
@@ -200,26 +201,43 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
 */
 vec3 SampleSky(vec3 direction, float mip_level)
 {
+	vec3 color;
+
 	switch (SKY_MODE)
 	{
         //Atmospheric scattering.
         case 0:
         {
-            return CalculateAtmosphericScattering(vec3(0.0f, PERCEIVER_ABSOLUTE_HEIGHT, 0.0f), direction, SKY_LIGHT_RADIANCE, SKY_LIGHT_DIRECTION) * SKY_INTENSITY;
+            color = CalculateAtmosphericScattering(vec3(0.0f, PERCEIVER_ABSOLUTE_HEIGHT, 0.0f), direction, SKY_LIGHT_RADIANCE, SKY_LIGHT_DIRECTION) * SKY_INTENSITY;
+
+            break;
         }
 
 		//Gradient.
 		case 1:
 		{
-			return mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f) * SKY_INTENSITY;
+			color = mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f) * SKY_INTENSITY;
+
+            break;
 		}
 
 		//Texture.
 		case 2:
 		{
-			return textureLod(SKY_TEXTURE, direction, mip_level).rgb * SKY_INTENSITY;
+			color = textureLod(SKY_TEXTURE, direction, mip_level).rgb * SKY_INTENSITY;
+
+            break;
 		}
 	}
+
+	if (STAR_INTENSITY > 0.0f)
+	{
+		vec4 star_color = textureLod(STAR_TEXTURE, direction, mip_level);
+
+		color = mix(color, star_color.rgb, STAR_INTENSITY * star_color.a);
+	}
+
+	return color;
 }
 
 /*

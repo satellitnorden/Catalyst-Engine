@@ -60,12 +60,10 @@ public:
 	float32 _FarPlane;
 
 	float32 _PerceiverAbsoluteHeight;
-	uint32 _Unused1;
-	uint32 _Unused2;
-	uint32 _Unused3;
 
 	uint32 _SkyMode;
 	float32 _SkyIntensity;
+	float32 _StarIntensity;
 
 	float32 _VolumetricLightingDistance;
 	float32 _VolumetricLightingHeight;
@@ -75,4 +73,4 @@ public:
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 640, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 632, "Size of dynamic uniform data is wrong!");

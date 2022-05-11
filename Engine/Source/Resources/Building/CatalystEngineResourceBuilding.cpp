@@ -15,7 +15,9 @@
 #include <File/Writers/PNGWriter.h>
 
 //Math.
+#include <Math/Core/CatalystGeometryMath.h>
 #include <Math/Core/CatalystRandomMath.h>
+#include <Math/Geometry/Sphere.h>
 
 //Rendering.
 #include <Rendering/Native/Texture2D.h>
@@ -39,6 +41,7 @@
 #define BUILD_ENGINE_MATERIALS (0)
 #define BUILD_ENGINE_MODELS (0)
 #define BUILD_ENGINE_TEXTURES (0)
+#define BUILD_ENGINE_STAR_TEXTURE (0)
 #define BUILD_ENGINE_MISCELLANEOUS (0)
 
 #define BUILD_ENGINE_RESOURCE_COLLECTION (0)
@@ -2974,6 +2977,10 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	}
 #endif
 
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_STAR_TEXTURE
+	BuildStarTexture();
+#endif
+
 	//Wait for all tasks to finish.
 	TaskSystem::Instance->WaitForAllTasksToFinish();
 
@@ -2983,7 +2990,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		MemorySystem::Instance->TypeFree<Task>(task);
 	}
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_TEXTURES || BUILD_ENGINE_MISCELLANEOUS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTION
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_TEXTURES || BUILD_ENGINE_STAR_TEXTURE || BUILD_ENGINE_MISCELLANEOUS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTION
 	{
 		ResourceCollectionBuildParameters parameters;
 
@@ -2999,7 +3006,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 /*
 *	Builds the cloud texture.
 */
-void CatalystEngineResourceBuilding::BuildCloudTexture()
+void CatalystEngineResourceBuilding::BuildCloudTexture() NOEXCEPT
 {
 	//Defone constants.
 	constexpr uint32 CLOUD_TEXTURE_RESOLUTION{ 64 };
@@ -3128,7 +3135,7 @@ void CatalystEngineResourceBuilding::BuildCloudTexture()
 /*
 *	Builds the ocean texture.
 */
-void CatalystEngineResourceBuilding::BuildOceanTexture()
+void CatalystEngineResourceBuilding::BuildOceanTexture() NOEXCEPT
 {
 	//Defone constants.
 	constexpr uint32 OCEAN_TEXTURE_RESOLUTION{ 64 };
@@ -3257,7 +3264,7 @@ void CatalystEngineResourceBuilding::BuildOceanTexture()
 /*
 *	Builds the default sky texture.
 */
-void CatalystEngineResourceBuilding::BuildDefaultSkyTexture()
+void CatalystEngineResourceBuilding::BuildDefaultSkyTexture() NOEXCEPT
 {
 	//What should the resource be called?
 	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Default_Sky_TextureCube.cr" };
@@ -3286,5 +3293,122 @@ void CatalystEngineResourceBuilding::BuildDefaultSkyTexture()
 
 	//Close the file.
 	file.Close();
+}
+
+/*
+*	Builds the star texture.
+*/
+void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
+{
+	//Define constants.
+	constexpr uint64 NUMBER_OF_STARS{ 1'024 * 16 };
+	constexpr float32 MINIMUM_DISTANCE_FROM_CENTER{ 2'048.0f };
+	constexpr float32 MINIMUM_DISTANCE_FROM_CENTER_SQUARED{ MINIMUM_DISTANCE_FROM_CENTER * MINIMUM_DISTANCE_FROM_CENTER };
+	constexpr float32 MAXIMUM_DISTANCE_FROM_CENTER{ 8'192.0f };
+	constexpr float32 MAXIMUM_DISTANCE_FROM_CENTER_SQUARED{ MAXIMUM_DISTANCE_FROM_CENTER * MAXIMUM_DISTANCE_FROM_CENTER };
+	constexpr float32 MINIMUM_RADIUS{ 1.0f };
+	constexpr float32 MAXIMUM_RADIUS{ 2.0f };
+	constexpr float32 MINIMUM_INTENSITY{ 1.0f };
+	constexpr float32 MAXIMUM_INTENSITY{ 2.0f };
+
+	/*
+	*	Star class definition.
+	*/
+	class Star final
+	{
+
+	public:
+
+		//The sphere.
+		Sphere _Sphere;
+
+		//The intensity.
+		float32 _Intensity;
+
+	};
+
+	//Scatter some stars. (:
+	DynamicArray<Star> stars;
+
+	for (uint64 i{ 0 }; i < NUMBER_OF_STARS; ++i)
+	{
+		//Generate a random position.
+		const Vector3<float32> position{ CatalystRandomMath::RandomVector3InRange(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER) };
+
+		//Calculate the squared distance from the center.
+		const float32 squared_distance_from_center{ Vector3<float32>::LengthSquared(position) };
+
+		//Discard if too close.
+		if (squared_distance_from_center < MINIMUM_DISTANCE_FROM_CENTER_SQUARED)
+		{
+			continue;
+		}
+
+		//Discard if too far away.
+		/*
+		if (squared_distance_from_center > MAXIMUM_DISTANCE_FROM_CENTER_SQUARED)
+		{
+			continue;
+		}
+		*/
+
+		//Construct the star!
+		stars.Emplace();
+		Star &new_star{ stars.Back() };
+
+		new_star._Sphere._Position = position;
+		new_star._Sphere._Radius = CatalystRandomMath::RandomFloatInRange(MINIMUM_RADIUS, MAXIMUM_RADIUS);
+		new_star._Intensity = CatalystRandomMath::RandomFloatInRange(MINIMUM_INTENSITY, MAXIMUM_INTENSITY);
+	}
+
+	//Build the texture cube.
+	TextureCubeBuildParameters parameters;
+
+	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Star_TextureCube";
+	parameters._ID = "Catalyst_Engine_Star_TextureCube";
+	parameters._File = nullptr;
+	parameters._DefaultResolution = 1'024 / 2;
+	parameters._ProceduralFunction = [](const Vector3<float32> &direction, void *const RESTRICT user_data)
+	{
+		//Cache the stars.
+		const DynamicArray<Star> &stars{ *static_cast<const DynamicArray<Star> *const RESTRICT>(user_data) };
+
+		//Construct the ray.
+		Ray ray;
+
+		ray.SetOrigin(Vector3<float32>(0.0f, 0.0f, 0.0f));
+		ray.SetDirection(direction);
+
+		//Iterate over all the stars and see if any hit.
+		float32 closest_intersection_distance{ FLOAT32_MAXIMUM };
+		float32 closest_intensity;
+
+		for (const Star &star : stars)
+		{
+			float32 intersection_distance;
+			const bool hit{ CatalystGeometryMath::RaySphereIntersection(ray, star._Sphere, &intersection_distance) };
+
+			if (hit
+				&& closest_intersection_distance > intersection_distance)
+			{
+				closest_intersection_distance = intersection_distance;
+				closest_intensity = star._Intensity;
+			}
+		}
+
+		if (closest_intersection_distance != FLOAT32_MAXIMUM)
+		{
+			return Vector4<float32>(closest_intensity, closest_intensity, closest_intensity, 1.0f);
+		}
+		
+		else
+		{
+			return Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+		}
+	};
+	parameters._ProceduralFunctionUserData = &stars;
+	parameters._ProceduralFunctionSuperSample = true;
+
+	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTextureCube(parameters);
 }
 #endif

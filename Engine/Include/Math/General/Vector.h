@@ -120,6 +120,17 @@ public:
 	}
 
 	/*
+	*	Constructor taking an initial value for both X and Y.
+	*/
+	FORCE_INLINE constexpr Vector2(const TYPE initial_value) NOEXCEPT
+		:
+		_X(initial_value),
+		_Y(initial_value)
+	{
+
+	}
+
+	/*
 	*	Constructor taking X and Y arguments.
 	*/
 	FORCE_INLINE constexpr Vector2(const TYPE initialX, const TYPE initialY) NOEXCEPT

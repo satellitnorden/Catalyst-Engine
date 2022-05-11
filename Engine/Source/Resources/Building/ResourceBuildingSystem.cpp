@@ -1360,8 +1360,15 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint8 MIPMAP_LEVELS{ 7 };
+	constexpr uint8 MIPMAP_LEVELS{ 2 };
 	constexpr uint32 BASE_RESOLUTION{ 512 };
+	constexpr StaticArray<Vector2<float32>, 4> SUPER_SAMPLE_OFFSETS
+	{
+		Vector2<float32>(-0.25f, -0.25f),
+		Vector2<float32>(-0.25f, 0.25f),
+		Vector2<float32>(0.25f, -0.25f),
+		Vector2<float32>(0.25f, 0.25f)
+	};
 
 	//What should the resource be called?
 	DynamicString file_name{ parameters._Output };
@@ -1374,57 +1381,107 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
-	//Load the HDR texture.
-	int32 width, height, number_of_channels;
-	float32 *const RESTRICT data{ stbi_loadf(parameters._File, &width, &height, &number_of_channels, STBI_rgb_alpha) };
-
-	//Wrap the data into a texture 2D for easier manipulation.
-	Texture2D<Vector4<float32>> hdr_texture{ static_cast<uint32>(width), static_cast<uint32>(height) };
-
-	//Copy the data into the cpu texture.
-	Memory::Copy(hdr_texture.Data(), data, width * height * 4 * sizeof(float32));
-
-	//Free the data, not needed anymore.
-	stbi_image_free(data);
-
-	//Create the base texture.
+	//Set up the base texture.
 	TextureCube base_texture;
-	base_texture.Initialize(BASE_RESOLUTION);
 
-	for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
+	if (parameters._ProceduralFunction)
 	{
-		for (uint32 Y{ 0 }; Y < BASE_RESOLUTION; ++Y)
+		base_texture.Initialize(parameters._DefaultResolution);
+
+		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
-			for (uint32 X{ 0 }; X < BASE_RESOLUTION; ++X)
+			for (uint32 Y{ 0 }; Y < parameters._DefaultResolution; ++Y)
 			{
-				//Define constants.
-				constexpr Vector2<float32> INVERSE_ATAN{ 0.1591f, 0.3183f };
-
-				//Calculate the direction
-				Vector3<float32> direction;
-
-				const float32 x_weight{ static_cast<float32>(X) / static_cast<float32>(BASE_RESOLUTION) };
-				const float32 y_weight{ static_cast<float32>(Y) / static_cast<float32>(BASE_RESOLUTION) };
-
-				switch (face_index)
+				for (uint32 X{ 0 }; X < parameters._DefaultResolution; ++X)
 				{
-					default: CRASH(); break;
-					case 0: direction = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
-					case 1: direction = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
-					case 2: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
-					case 3: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
-					case 4: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
-					case 5: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
+					//Calculate the direction
+					const Vector2<float32> normalized_coordinate{	(static_cast<float32>(X) + 0.5f) / static_cast<float32>(parameters._DefaultResolution),
+																	(static_cast<float32>(Y) + 0.5f) / static_cast<float32>(parameters._DefaultResolution) };
+
+					//Retrieve the color.
+					Vector4<float32> color;
+
+					if (parameters._ProceduralFunctionSuperSample)
+					{
+						Vector4<float32> average_color{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+						for (uint8 i{ 0 }; i < 4; ++i)
+						{
+							const Vector3<float32> direction{ base_texture.GetDirection(face_index, normalized_coordinate + (SUPER_SAMPLE_OFFSETS[i] * (1.0f / static_cast<float32>(parameters._DefaultResolution)))) };
+
+							average_color += parameters._ProceduralFunction(direction, parameters._ProceduralFunctionUserData);
+						}
+
+						color = average_color * 0.25f;
+					}
+					
+					else
+					{
+						const Vector3<float32> direction{ base_texture.GetDirection(face_index, normalized_coordinate) };
+
+						color = parameters._ProceduralFunction(direction, parameters._ProceduralFunctionUserData);
+					}
+
+					//Write the color.
+					base_texture.At(face_index, X, Y) = color;
 				}
+			}
+		}
+	}
+	
+	else
+	{
+		//Load the HDR texture.
+		int32 width, height, number_of_channels;
+		float32 *const RESTRICT data{ stbi_loadf(parameters._File, &width, &height, &number_of_channels, STBI_rgb_alpha) };
 
-				direction.Normalize();
+		//Wrap the data into a texture 2D for easier manipulation.
+		Texture2D<Vector4<float32>> hdr_texture{ static_cast<uint32>(width), static_cast<uint32>(height) };
 
-				//Sample the HDR texture.
-				Vector2<float> texture_coordinate{ CatalystBaseMath::ArcTangent(direction._Z, direction._X), CatalystBaseMath::ArcSine(direction._Y) };
-				texture_coordinate *= INVERSE_ATAN;
-				texture_coordinate += 0.5f;
+		//Copy the data into the cpu texture.
+		Memory::Copy(hdr_texture.Data(), data, width * height * 4 * sizeof(float32));
 
-				base_texture.At(face_index, X, Y) = hdr_texture.Sample(texture_coordinate, AddressMode::CLAMP_TO_EDGE);
+		//Free the data, not needed anymore.
+		stbi_image_free(data);
+
+		//Create the base texture.
+		base_texture.Initialize(BASE_RESOLUTION);
+
+		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
+		{
+			for (uint32 Y{ 0 }; Y < BASE_RESOLUTION; ++Y)
+			{
+				for (uint32 X{ 0 }; X < BASE_RESOLUTION; ++X)
+				{
+					//Define constants.
+					constexpr Vector2<float32> INVERSE_ATAN{ 0.1591f, 0.3183f };
+
+					//Calculate the direction
+					Vector3<float32> direction;
+
+					const float32 x_weight{ static_cast<float32>(X) / static_cast<float32>(BASE_RESOLUTION) };
+					const float32 y_weight{ static_cast<float32>(Y) / static_cast<float32>(BASE_RESOLUTION) };
+
+					switch (face_index)
+					{
+						default: CRASH(); break;
+						case 0: direction = Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
+						case 1: direction = Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
+						case 2: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
+						case 3: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
+						case 4: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
+						case 5: direction = Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
+					}
+
+					direction.Normalize();
+
+					//Sample the HDR texture.
+					Vector2<float> texture_coordinate{ CatalystBaseMath::ArcTangent(direction._Z, direction._X), CatalystBaseMath::ArcSine(direction._Y) };
+					texture_coordinate *= INVERSE_ATAN;
+					texture_coordinate += 0.5f;
+
+					base_texture.At(face_index, X, Y) = hdr_texture.Sample(texture_coordinate, AddressMode::CLAMP_TO_EDGE);
+				}
 			}
 		}
 	}
@@ -1435,13 +1492,13 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	for (uint8 mipmap_level{ 0 }; mipmap_level < MIPMAP_LEVELS - 1; ++mipmap_level)
 	{
 		//Calculate the mip resolution.
-		const uint32 mip_resolution{ BASE_RESOLUTION >> (mipmap_level + 1) };
+		const uint32 mip_resolution{ (parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION) >> (mipmap_level + 1) };
 
 		//Initialize the mip texture.
 		mip_chain[mipmap_level].Initialize(mip_resolution);
 
 		//Calculate the sample delta.
-		const Vector2<float32> sample_delta{ 1.0f / static_cast<float32>(BASE_RESOLUTION), 1.0f / static_cast<float32>(BASE_RESOLUTION) };
+		const Vector2<float32> sample_delta{ 1.0f / static_cast<float32>((parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION)), 1.0f / static_cast<float32>((parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION)) };
 
 		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
@@ -1471,7 +1528,15 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	}
 
 	//Write the resolution to the file.
-	file.Write(&BASE_RESOLUTION, sizeof(uint32));
+	if (parameters._ProceduralFunction)
+	{
+		file.Write(&parameters._DefaultResolution, sizeof(uint32));
+	}
+
+	else
+	{
+		file.Write(&BASE_RESOLUTION, sizeof(uint32));
+	}
 
 	//Write the number of mipmap levels to the file.
 	file.Write(&MIPMAP_LEVELS, sizeof(uint8));
@@ -1479,14 +1544,14 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	//Write the data to the file.
 	for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 	{
-		file.Write(base_texture.Face(face_index).Data(), BASE_RESOLUTION * BASE_RESOLUTION * sizeof(Vector4<float32>));
+		file.Write(base_texture.Face(face_index).Data(), (parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION) * (parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION) * sizeof(Vector4<float32>));
 	}
 
 	for (uint8 mipmap_level{ 0 }; mipmap_level < MIPMAP_LEVELS - 1; ++mipmap_level)
 	{
 		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
-			file.Write(mip_chain[mipmap_level].Face(face_index).Data(), (BASE_RESOLUTION >> (mipmap_level + 1)) * (BASE_RESOLUTION >> (mipmap_level + 1)) * sizeof(Vector4<float32>));
+			file.Write(mip_chain[mipmap_level].Face(face_index).Data(), ((parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION) >> (mipmap_level + 1)) * ((parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION) >> (mipmap_level + 1)) * sizeof(Vector4<float32>));
 		}
 	}
 

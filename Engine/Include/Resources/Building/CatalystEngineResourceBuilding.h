@@ -22,17 +22,22 @@ namespace CatalystEngineResourceBuilding
 	/*
 	*	Builds the cloud texture.
 	*/
-	void BuildCloudTexture();
+	void BuildCloudTexture() NOEXCEPT;
 
 	/*
 	*	Builds the ocean texture.
 	*/
-	void BuildOceanTexture();
+	void BuildOceanTexture() NOEXCEPT;
 
 	/*
 	*	Builds the default sky texture.
 	*/
-	void BuildDefaultSkyTexture();
+	void BuildDefaultSkyTexture() NOEXCEPT;
+
+	/*
+	*	Builds the star texture.
+	*/
+	void BuildStarTexture() NOEXCEPT;
 #endif
 
 }

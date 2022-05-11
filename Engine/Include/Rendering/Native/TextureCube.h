@@ -108,17 +108,65 @@ public:
 		return _Faces[faceIndex].Sample(textureCoordinate, AddressMode::CLAMP_TO_EDGE);
 	}
 
+	/*
+	*	Returns the direction from the given face index and normalized coordinate.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float32> GetDirection(const uint8 face_index, const Vector2<float32> normalized_coordinate) NOEXCEPT
+	{
+		const Vector2<float32> converted_coordinate{ normalized_coordinate * Vector2<float32>(2.0f) - Vector2<float32>(1.0f) };
+
+		switch (face_index)
+		{
+			case 0:
+			{
+				return Vector3<float32>::Normalize(Vector3<float32>(1.0f, -converted_coordinate._Y, -converted_coordinate._X));
+			}
+
+			case 1:
+			{
+				return Vector3<float32>::Normalize(Vector3<float32>(-1.0f, -converted_coordinate._Y, converted_coordinate._X));
+			}
+
+			case 2:
+			{
+				return Vector3<float32>::Normalize(Vector3<float32>(converted_coordinate._X, 1.0f, converted_coordinate._Y));
+			}
+
+			case 3:
+			{
+				return Vector3<float32>::Normalize(Vector3<float32>(converted_coordinate._X, -1.0f, -converted_coordinate._Y));
+			}
+
+			case 4:
+			{
+				return Vector3<float32>::Normalize(Vector3<float32>(converted_coordinate._X, -converted_coordinate._Y, 1.0f));
+			}
+
+			case 5:
+			{
+				return Vector3<float32>::Normalize(Vector3<float32>(-converted_coordinate._X, -converted_coordinate._Y, -1.0f));
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return Vector3<float32>();
+			}
+		}
+	}
+
 private:
 
 	/*
 	*	The underlying faces.
 	*
-	*	Face 0: Front.
-	*	Face 1: Back.
+	*	Face 0: Right.
+	*	Face 1: Left.
 	*	Face 2: Up.
 	*	Face 3: Down.
-	*	Face 4: Right.
-	*	Face 5: Left;
+	*	Face 4: Forward.
+	*	Face 5: Backward;
 	*/
 	StaticArray<Texture2D<Vector4<float32>>, 6> _Faces;
 
