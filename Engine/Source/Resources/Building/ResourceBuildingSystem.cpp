@@ -1360,7 +1360,7 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint8 MIPMAP_LEVELS{ 2 };
+	constexpr uint8 MIPMAP_LEVELS{ 3 };
 	constexpr uint32 BASE_RESOLUTION{ 512 };
 	constexpr StaticArray<Vector2<float32>, 4> SUPER_SAMPLE_OFFSETS
 	{
@@ -1381,22 +1381,37 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
+	//Cache the resolution.
+	uint32 resolution;
+
+	if (parameters._ProceduralFunction)
+	{
+		resolution = parameters._DefaultResolution;
+	}
+
+	else
+	{
+		resolution = BASE_RESOLUTION;
+	}
+
 	//Set up the base texture.
 	TextureCube base_texture;
 
 	if (parameters._ProceduralFunction)
 	{
-		base_texture.Initialize(parameters._DefaultResolution);
+		base_texture.Initialize(resolution);
 
 		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
-			for (uint32 Y{ 0 }; Y < parameters._DefaultResolution; ++Y)
+			for (uint32 Y{ 0 }; Y < resolution; ++Y)
 			{
-				for (uint32 X{ 0 }; X < parameters._DefaultResolution; ++X)
+				PRINT_TO_OUTPUT("Processing face #" << static_cast<uint32>(face_index + 1) << " and Y: " << Y);
+
+				for (uint32 X{ 0 }; X < resolution; ++X)
 				{
 					//Calculate the direction
-					const Vector2<float32> normalized_coordinate{	(static_cast<float32>(X) + 0.5f) / static_cast<float32>(parameters._DefaultResolution),
-																	(static_cast<float32>(Y) + 0.5f) / static_cast<float32>(parameters._DefaultResolution) };
+					const Vector2<float32> normalized_coordinate{	(static_cast<float32>(X) + 0.5f) / static_cast<float32>(resolution),
+																	(static_cast<float32>(Y) + 0.5f) / static_cast<float32>(resolution) };
 
 					//Retrieve the color.
 					Vector4<float32> color;
@@ -1407,7 +1422,7 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 
 						for (uint8 i{ 0 }; i < 4; ++i)
 						{
-							const Vector3<float32> direction{ base_texture.GetDirection(face_index, normalized_coordinate + (SUPER_SAMPLE_OFFSETS[i] * (1.0f / static_cast<float32>(parameters._DefaultResolution)))) };
+							const Vector3<float32> direction{ base_texture.GetDirection(face_index, normalized_coordinate + (SUPER_SAMPLE_OFFSETS[i] * (1.0f / static_cast<float32>(resolution)))) };
 
 							average_color += parameters._ProceduralFunction(direction, parameters._ProceduralFunctionUserData);
 						}
@@ -1445,13 +1460,13 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 		stbi_image_free(data);
 
 		//Create the base texture.
-		base_texture.Initialize(BASE_RESOLUTION);
+		base_texture.Initialize(resolution);
 
 		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
-			for (uint32 Y{ 0 }; Y < BASE_RESOLUTION; ++Y)
+			for (uint32 Y{ 0 }; Y < resolution; ++Y)
 			{
-				for (uint32 X{ 0 }; X < BASE_RESOLUTION; ++X)
+				for (uint32 X{ 0 }; X < resolution; ++X)
 				{
 					//Define constants.
 					constexpr Vector2<float32> INVERSE_ATAN{ 0.1591f, 0.3183f };
@@ -1459,8 +1474,8 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 					//Calculate the direction
 					Vector3<float32> direction;
 
-					const float32 x_weight{ static_cast<float32>(X) / static_cast<float32>(BASE_RESOLUTION) };
-					const float32 y_weight{ static_cast<float32>(Y) / static_cast<float32>(BASE_RESOLUTION) };
+					const float32 x_weight{ static_cast<float32>(X) / static_cast<float32>(resolution) };
+					const float32 y_weight{ static_cast<float32>(Y) / static_cast<float32>(resolution) };
 
 					switch (face_index)
 					{
@@ -1492,13 +1507,13 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	for (uint8 mipmap_level{ 0 }; mipmap_level < MIPMAP_LEVELS - 1; ++mipmap_level)
 	{
 		//Calculate the mip resolution.
-		const uint32 mip_resolution{ (parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION) >> (mipmap_level + 1) };
+		const uint32 mip_resolution{ resolution >> (mipmap_level + 1) };
 
 		//Initialize the mip texture.
 		mip_chain[mipmap_level].Initialize(mip_resolution);
 
 		//Calculate the sample delta.
-		const Vector2<float32> sample_delta{ 1.0f / static_cast<float32>((parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION)), 1.0f / static_cast<float32>((parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION)) };
+		const Vector2<float32> sample_delta{ 1.0f / static_cast<float32>(resolution), 1.0f / static_cast<float32>(resolution) };
 
 		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
@@ -1528,15 +1543,7 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	}
 
 	//Write the resolution to the file.
-	if (parameters._ProceduralFunction)
-	{
-		file.Write(&parameters._DefaultResolution, sizeof(uint32));
-	}
-
-	else
-	{
-		file.Write(&BASE_RESOLUTION, sizeof(uint32));
-	}
+	file.Write(&resolution, sizeof(uint32));
 
 	//Write the number of mipmap levels to the file.
 	file.Write(&MIPMAP_LEVELS, sizeof(uint8));
@@ -1544,14 +1551,14 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 	//Write the data to the file.
 	for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 	{
-		file.Write(base_texture.Face(face_index).Data(), (parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION) * (parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION) * sizeof(Vector4<float32>));
+		file.Write(base_texture.Face(face_index).Data(), resolution * resolution * sizeof(Vector4<float32>));
 	}
 
 	for (uint8 mipmap_level{ 0 }; mipmap_level < MIPMAP_LEVELS - 1; ++mipmap_level)
 	{
 		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
-			file.Write(mip_chain[mipmap_level].Face(face_index).Data(), ((parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION) >> (mipmap_level + 1)) * ((parameters._ProceduralFunction ? parameters._DefaultResolution : BASE_RESOLUTION) >> (mipmap_level + 1)) * sizeof(Vector4<float32>));
+			file.Write(mip_chain[mipmap_level].Face(face_index).Data(), (resolution >> (mipmap_level + 1)) * (resolution >> (mipmap_level + 1)) * sizeof(Vector4<float32>));
 		}
 	}
 

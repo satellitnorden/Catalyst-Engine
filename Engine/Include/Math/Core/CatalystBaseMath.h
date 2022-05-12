@@ -140,6 +140,14 @@ public:
 	}
 
 	/*
+	*	Returns the cube root of the given number.
+	*/
+	FORCE_INLINE static NO_DISCARD float32 CubeRoot(const float32 number) NOEXCEPT
+	{
+		return std::cbrtf(number);
+	}
+
+	/*
 	*	Given a number in degrees, return it in radians.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float32 DegreesToRadians(const float32 number) NOEXCEPT

@@ -103,6 +103,32 @@ public:
 	}
 
 	/*
+	*	Returns a random point in a sphere with the given radius.
+	*/
+	FORCE_INLINE static NO_DISCARD Vector3<float32> RandomPointInSphere(const float32 radius = 1.0f) NOEXCEPT
+	{
+		const float32 u{ RandomFloat() };
+		const float32 v{ RandomFloat() };
+
+		const float32 theta{ u * 2.0f * CatalystBaseMathConstants::PI };
+		const float32 phi{ CatalystBaseMath::ArcCosine(2.0f * v - 1.0f) };
+
+		const float32 r{ CatalystBaseMath::CubeRoot(RandomFloat()) };
+
+		const float32 sin_theta{ CatalystBaseMath::Sine(theta) };
+		const float32 cos_theta{ CatalystBaseMath::Cosine(theta) };
+
+		const float32 sin_phi{ CatalystBaseMath::Sine(phi) };
+		const float32 cos_phi{ CatalystBaseMath::Cosine(phi) };
+
+		const float32 X{ r * sin_phi * cos_theta };
+		const float32 Y{ r * sin_phi * sin_theta };
+		const float32 Z{ r * cos_phi };
+
+		return Vector3<float32>(X, Y, Z) * radius;
+	}
+
+	/*
 	*	Randomly shuffles an array.
 	*/
 	template <typename TYPE>

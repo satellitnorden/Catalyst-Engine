@@ -3301,15 +3301,15 @@ void CatalystEngineResourceBuilding::BuildDefaultSkyTexture() NOEXCEPT
 void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
 {
 	//Define constants.
-	constexpr uint64 NUMBER_OF_STARS{ 1'024 * 16 };
+	constexpr uint64 NUMBER_OF_STARS{ 1'024 * 128 };
 	constexpr float32 MINIMUM_DISTANCE_FROM_CENTER{ 2'048.0f };
 	constexpr float32 MINIMUM_DISTANCE_FROM_CENTER_SQUARED{ MINIMUM_DISTANCE_FROM_CENTER * MINIMUM_DISTANCE_FROM_CENTER };
 	constexpr float32 MAXIMUM_DISTANCE_FROM_CENTER{ 8'192.0f };
 	constexpr float32 MAXIMUM_DISTANCE_FROM_CENTER_SQUARED{ MAXIMUM_DISTANCE_FROM_CENTER * MAXIMUM_DISTANCE_FROM_CENTER };
-	constexpr float32 MINIMUM_RADIUS{ 1.0f };
-	constexpr float32 MAXIMUM_RADIUS{ 2.0f };
-	constexpr float32 MINIMUM_INTENSITY{ 1.0f };
-	constexpr float32 MAXIMUM_INTENSITY{ 2.0f };
+	constexpr float32 MINIMUM_RADIUS{ 1.0f * 2.0f };
+	constexpr float32 MAXIMUM_RADIUS{ 2.0f * 2.0f };
+	constexpr float32 MINIMUM_INTENSITY{ 2.0f };
+	constexpr float32 MAXIMUM_INTENSITY{ 4.0f };
 
 	/*
 	*	Star class definition.
@@ -3333,24 +3333,16 @@ void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
 	for (uint64 i{ 0 }; i < NUMBER_OF_STARS; ++i)
 	{
 		//Generate a random position.
-		const Vector3<float32> position{ CatalystRandomMath::RandomVector3InRange(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER) };
+		const Vector3<float32> position{ CatalystRandomMath::RandomPointInSphere(MAXIMUM_DISTANCE_FROM_CENTER) };
 
 		//Calculate the squared distance from the center.
-		const float32 squared_distance_from_center{ Vector3<float32>::LengthSquared(position) };
+		const float32 distance_from_center{ Vector3<float32>::Length(position) };
 
 		//Discard if too close.
-		if (squared_distance_from_center < MINIMUM_DISTANCE_FROM_CENTER_SQUARED)
+		if (distance_from_center < MINIMUM_DISTANCE_FROM_CENTER)
 		{
 			continue;
 		}
-
-		//Discard if too far away.
-		/*
-		if (squared_distance_from_center > MAXIMUM_DISTANCE_FROM_CENTER_SQUARED)
-		{
-			continue;
-		}
-		*/
 
 		//Construct the star!
 		stars.Emplace();
@@ -3367,9 +3359,34 @@ void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
 	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Star_TextureCube";
 	parameters._ID = "Catalyst_Engine_Star_TextureCube";
 	parameters._File = nullptr;
-	parameters._DefaultResolution = 1'024 / 2;
+	parameters._DefaultResolution = 1'024 / 8;
 	parameters._ProceduralFunction = [](const Vector3<float32> &direction, void *const RESTRICT user_data)
 	{
+		/*
+		const float32 left_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(-1.0f, 0.0f, 0.0f), direction), 0.0f) };
+		const float32 right_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(1.0f, 0.0f, 0.0f), direction), 0.0f) };
+		const float32 down_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(0.0f, -1.0f, 0.0f), direction), 0.0f) };
+		const float32 up_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(0.0f, 1.0f, 0.0f), direction), 0.0f) };
+		const float32 backward_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(0.0f, 0.0f, -1.0f), direction), 0.0f) };
+		const float32 forward_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(0.0f, 0.0f, -1.0f), direction), 0.0f) };
+
+		Vector3<float32> final_color
+		{
+			Vector3<float32>(1.0f, 0.0f, 0.0f) * left_weight
+			+ Vector3<float32>(0.0f, 1.0f, 1.0f) * right_weight
+			+ Vector3<float32>(0.0f, 1.0f, 0.0f) * down_weight
+			+ Vector3<float32>(1.0f, 0.0f, 1.0f) * up_weight
+			+ Vector3<float32>(0.0f, 0.0f, 1.0f) * backward_weight
+			+ Vector3<float32>(1.0f, 1.0f, 0.0f) * forward_weight
+		};
+
+		final_color.Normalize();
+
+		return Vector4<float32>(final_color, 1.0f);
+		*/
+
+		//return Vector4<float32>(direction._X * 0.5f + 0.5f, direction._Y * 0.5f + 0.5f, direction._Z * 0.5f + 0.5f, 1.0f);
+
 		//Cache the stars.
 		const DynamicArray<Star> &stars{ *static_cast<const DynamicArray<Star> *const RESTRICT>(user_data) };
 
@@ -3385,7 +3402,7 @@ void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
 
 		for (const Star &star : stars)
 		{
-			float32 intersection_distance;
+			float32 intersection_distance{ FLOAT32_MAXIMUM };
 			const bool hit{ CatalystGeometryMath::RaySphereIntersection(ray, star._Sphere, &intersection_distance) };
 
 			if (hit
@@ -3407,8 +3424,10 @@ void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
 		}
 	};
 	parameters._ProceduralFunctionUserData = &stars;
-	parameters._ProceduralFunctionSuperSample = true;
+	parameters._ProceduralFunctionSuperSample = false;
 
 	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTextureCube(parameters);
+
+	BREAKPOINT();
 }
 #endif
