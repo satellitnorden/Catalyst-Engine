@@ -3301,13 +3301,13 @@ void CatalystEngineResourceBuilding::BuildDefaultSkyTexture() NOEXCEPT
 void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
 {
 	//Define constants.
-	constexpr uint64 NUMBER_OF_STARS{ 1'024 * 128 };
+	constexpr uint64 NUMBER_OF_STARS{ 1'024 * 256 };
 	constexpr float32 MINIMUM_DISTANCE_FROM_CENTER{ 2'048.0f };
 	constexpr float32 MINIMUM_DISTANCE_FROM_CENTER_SQUARED{ MINIMUM_DISTANCE_FROM_CENTER * MINIMUM_DISTANCE_FROM_CENTER };
 	constexpr float32 MAXIMUM_DISTANCE_FROM_CENTER{ 8'192.0f };
 	constexpr float32 MAXIMUM_DISTANCE_FROM_CENTER_SQUARED{ MAXIMUM_DISTANCE_FROM_CENTER * MAXIMUM_DISTANCE_FROM_CENTER };
-	constexpr float32 MINIMUM_RADIUS{ 1.0f * 2.0f };
-	constexpr float32 MAXIMUM_RADIUS{ 2.0f * 2.0f };
+	constexpr float32 MINIMUM_RADIUS{ 1.0f };
+	constexpr float32 MAXIMUM_RADIUS{ 2.0f };
 	constexpr float32 MINIMUM_INTENSITY{ 2.0f };
 	constexpr float32 MAXIMUM_INTENSITY{ 4.0f };
 
@@ -3353,13 +3353,169 @@ void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
 		new_star._Intensity = CatalystRandomMath::RandomFloatInRange(MINIMUM_INTENSITY, MAXIMUM_INTENSITY);
 	}
 
+#if 0 //Debug the stars.
+	{
+		//Define constants.
+		constexpr uint32 TEXTURE_RESOLUTION{ 1'024 };
+
+		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
+		{
+			Vector3<float32> ray_direction;
+			Vector3<float32> ray_opposite_direction;
+
+			switch (face_index)
+			{
+				//Left.
+				case 0:
+				{
+					ray_direction = Vector3<float32>(1.0f, 0.0f, 0.0f);
+					ray_opposite_direction = -ray_direction;
+
+					break;
+				}
+
+				//Right.
+				case 1:
+				{
+					ray_direction = Vector3<float32>(-1.0f, 0.0f, 0.0f);
+					ray_opposite_direction = -ray_direction;
+
+					break;
+				}
+
+				//Down.
+				case 2:
+				{
+					ray_direction = Vector3<float32>(0.0f, 1.0f, 0.0f);
+					ray_opposite_direction = -ray_direction;
+
+					break;
+				}
+
+				//Up.
+				case 3:
+				{
+					ray_direction = Vector3<float32>(0.0f, -1.0f, 0.0f);
+					ray_opposite_direction = -ray_direction;
+
+					break;
+				}
+
+				//Backward.
+				case 4:
+				{
+					ray_direction = Vector3<float32>(0.0f, 0.0f, 1.0f);
+					ray_opposite_direction = -ray_direction;
+
+					break;
+				}
+
+				//Forward.
+				case 5:
+				{
+					ray_direction = Vector3<float32>(0.0f, 0.0f, -1.0f);
+					ray_opposite_direction = -ray_direction;
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			//Set up the ray.
+			Ray ray;
+
+			ray.SetDirection(ray_direction);
+
+			//Set up the texture.
+			Texture2D<Vector4<float32>> texture;
+			texture.Initialize(TEXTURE_RESOLUTION);
+
+			for (uint32 Y{ 0 }; Y < TEXTURE_RESOLUTION; ++Y)
+			{
+				for (uint32 X{ 0 }; X < TEXTURE_RESOLUTION; ++X)
+				{
+					//Calculate the normalized coordinate.
+					const Vector2<float32> normalized_coordinate{	(static_cast<float32>(X) + 0.5f) / static_cast<float32>(TEXTURE_RESOLUTION),
+																	(static_cast<float32>(Y) + 0.5f) / static_cast<float32>(TEXTURE_RESOLUTION) };
+
+					//Calculate the ray offset.
+					Vector3<float32> ray_offset;
+
+					if (ray_direction._X != 0.0f)
+					{
+						ray_offset._X = 0.0f;
+						ray_offset._Y = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._X);
+						ray_offset._Z = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._Y);
+					}
+
+					else if (ray_direction._Y != 0.0f)
+					{
+						ray_offset._X = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._X);
+						ray_offset._Y = 0.0f;
+						ray_offset._Z = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._Y);
+					}
+
+					else
+					{
+						ray_offset._X = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._X);
+						ray_offset._Y = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._Y);
+						ray_offset._Z = 0.0f;
+					}
+
+					//Set the ray origin.
+					ray.SetOrigin(ray_opposite_direction * MAXIMUM_DISTANCE_FROM_CENTER + ray_offset);
+
+					//Raycast the stars. (:
+					bool hit{ false };
+
+					for (const Star &star : stars)
+					{
+						if (CatalystGeometryMath::RaySphereIntersection(ray, star._Sphere, nullptr))
+						{
+							hit = true;
+
+							break;
+						}
+					}
+
+					if (hit)
+					{
+						texture.At(X, Y) = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
+					}
+
+					else
+					{
+						texture.At(X, Y) = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+					}
+				}
+			}
+
+			//Write the texture.
+			char buffer[MAXIMUM_FILE_PATH_LENGTH];
+			sprintf_s(buffer, "Star_Texture_Debug_%u.png", static_cast<uint32>(face_index + 1));
+
+			PNGWriter::Write(texture, buffer);
+
+			PRINT_TO_OUTPUT("Wrote " << buffer);
+		}
+
+		BREAKPOINT();
+	}
+#endif
+
 	//Build the texture cube.
 	TextureCubeBuildParameters parameters;
 
 	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Star_TextureCube";
 	parameters._ID = "Catalyst_Engine_Star_TextureCube";
 	parameters._File = nullptr;
-	parameters._DefaultResolution = 1'024 / 8;
+	parameters._DefaultResolution = 1'024 / 4;
 	parameters._ProceduralFunction = [](const Vector3<float32> &direction, void *const RESTRICT user_data)
 	{
 		/*
@@ -3424,7 +3580,7 @@ void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
 		}
 	};
 	parameters._ProceduralFunctionUserData = &stars;
-	parameters._ProceduralFunctionSuperSample = false;
+	parameters._ProceduralFunctionSuperSample = true;
 
 	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTextureCube(parameters);
 
