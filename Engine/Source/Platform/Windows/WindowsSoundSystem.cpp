@@ -671,7 +671,9 @@ void SoundSystem::OpenMIDIDevice(MIDIDevice *const RESTRICT midi_device) NOEXCEP
 NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message) NOEXCEPT
 {
 	//Get the message.
-	std::vector<uint8> message;
+	static thread_local std::vector<uint8> message;
+	message.clear();
+
 	static_cast<RtMidiIn *const RESTRICT>(midi_device->_Handle)->getMessage(&message);
 
 	//Was a message received?

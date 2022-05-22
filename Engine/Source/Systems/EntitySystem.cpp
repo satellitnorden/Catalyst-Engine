@@ -27,6 +27,20 @@ DEFINE_SINGLETON(EntitySystem);
 */
 void EntitySystem::Initialize() NOEXCEPT
 {
+	//Reserve an appropriate size for the various containers.
+	_EntitiesLock.Lock();
+	_Entities.Reserve(1'024);
+	_EntitiesLock.Unlock();
+
+	_InitializationQueueLock.Lock();
+	_InitializationQueue.Reserve(1'024);
+	_InitializationQueueLock.Unlock();
+
+	_TerminationDestructionQueueLock.Lock();
+	_TerminationQueue.Reserve(1'024);
+	_DestructionQueue.Reserve(1'024);
+	_TerminationDestructionQueueLock.Unlock();
+
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{
