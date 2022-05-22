@@ -20,6 +20,8 @@ public:
 	FORCE_INLINE static void RegisterDefaultRenderPass(const DefaultNativeRenderPassStage stage, RenderPass *const RESTRICT render_pass) NOEXCEPT
 	{
 		GetDefaultRenderPasses()->At(UNDERLYING(stage)) = render_pass;
+
+		render_pass->SetDefaultNativeStage(stage);
 	}
 
 	/*

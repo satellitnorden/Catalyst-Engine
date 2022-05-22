@@ -69,6 +69,22 @@ public:
 		return _Pipelines;
 	}
 
+	/*
+	*	Returns the default native stage.
+	*/
+	FORCE_INLINE NO_DISCARD DefaultNativeRenderPassStage GetDefaultNativeStage() const NOEXCEPT
+	{
+		return _DefaultNativeStage;
+	}
+
+	/*
+	*	Sets the default native stage.
+	*/
+	FORCE_INLINE void SetDefaultNativeStage(const DefaultNativeRenderPassStage value) NOEXCEPT
+	{
+		_DefaultNativeStage = value;
+	}
+
 protected:
 
 	/*
@@ -172,6 +188,9 @@ private:
 
 	//The pipelines.
 	DynamicArray<Pipeline *RESTRICT> _Pipelines;
+
+	//The default native stage.
+	DefaultNativeRenderPassStage _DefaultNativeStage;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//The name.

@@ -1138,6 +1138,24 @@ void RenderingSystem::StopTakingScreenshot(const char *const RESTRICT file_path)
 }
 
 /*
+*	Adds a custom render pass to the default rendering path.
+*/
+void RenderingSystem::AddCustomDefaultRenderPass(const DefaultNativeRenderPassStage stage, RenderPass *const RESTRICT render_pass) NOEXCEPT
+{
+	for (uint64 i{ 0 }; i < _RenderPasses.Size(); ++i)
+	{
+		if (_RenderPasses[i]->GetDefaultNativeStage() == stage)
+		{
+			_RenderPasses.Insert(render_pass, i);
+
+			render_pass->Initialize();
+
+			break;
+		}
+	}
+}
+
+/*
 *	Pre-initializes the global render data.
 */
 void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
@@ -1372,7 +1390,7 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		}
 
 		//Bind the Hammersley hemisphere samples uniform buffer.
-		BindUniformBufferToRenderDataTable(7, 0, &_GlobalRenderData._RenderDataTables[i], _HammersleyHemisphereSamplesUniformBuffer);
+		BindUniformBufferToRenderDataTable(8, 0, &_GlobalRenderData._RenderDataTables[i], _HammersleyHemisphereSamplesUniformBuffer);
 	}
 
 	//Bind all the blue noise textures to the global render data tables.

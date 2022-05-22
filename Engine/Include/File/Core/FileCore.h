@@ -20,6 +20,7 @@ namespace File
 		MID,
 		MTL,
 		OBJ,
+		OGG,
 		PNG,
 		TGA,
 		WAV,
@@ -116,6 +117,11 @@ namespace File
 		if (strcmp(dot_position, ".obj") == 0)
 		{
 			return Extension::OBJ;
+		}
+
+		if (strcmp(dot_position, ".ogg") == 0)
+		{
+			return Extension::OGG;
 		}
 
 		if (strcmp(dot_position, ".png") == 0)

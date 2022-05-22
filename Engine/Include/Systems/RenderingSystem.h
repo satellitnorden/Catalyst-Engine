@@ -520,6 +520,11 @@ public:
 	*/
 	void StopTakingScreenshot(const char *const RESTRICT file_path) NOEXCEPT;
 
+	/*
+	*	Adds a custom render pass to the default rendering path.
+	*/
+	void AddCustomDefaultRenderPass(const DefaultNativeRenderPassStage stage, RenderPass *const RESTRICT render_pass) NOEXCEPT;
+
 private:
 
 	//The rendering configuration.

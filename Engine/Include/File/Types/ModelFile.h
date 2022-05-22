@@ -264,14 +264,19 @@ public:
 
 			case ModelFile::Creator::BLENDER:
 			{
-				const Matrix4x4 TRANSFORMATION{ VectorConstants::ZERO, EulerAngles(CatalystBaseMath::DegreesToRadians(90.0f), CatalystBaseMath::DegreesToRadians(180.0f), 0.0f), VectorConstants::ONE };
-				constexpr float32 TEXTURE_COORDINATE_ROTATION{ CatalystBaseMath::DegreesToRadians(180.0f) };
-
+				//Swap the Y and Z axis.
 				for (ModelFile::Mesh &mesh : _Meshes)
 				{
 					for (Vertex &vertex : mesh._Vertices)
 					{
-						vertex.Transform(TRANSFORMATION, TEXTURE_COORDINATE_ROTATION);
+						Swap(&vertex._Position._Y, &vertex._Position._Z);
+						Swap(&vertex._Normal._Y, &vertex._Normal._Z);
+						Swap(&vertex._Tangent._Y, &vertex._Tangent._Z);
+					}
+
+					for (uint64 i{ 0 }; i < mesh._Indices.Size(); i += 3)
+					{
+						Swap(&mesh._Indices[i], &mesh._Indices[i + 1]);
 					}
 				}
 

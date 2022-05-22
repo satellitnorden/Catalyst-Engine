@@ -2,6 +2,8 @@
 #include <Sound/SoundOfflineRenderer.h>
 
 //File.
+#include <File/Core/FileCore.h>
+#include <File/Writers/OGGWriter.h>
 #include <File/Writers/WAVWriter.h>
 
 //Sound offline renderer constants.
@@ -102,7 +104,30 @@ NO_DISCARD float32 SoundOfflineRenderer::Update() NOEXCEPT
 void SoundOfflineRenderer::Terminate() NOEXCEPT
 {
 	//Write the .wav file.
-	WAVWriter::Write(_OutputFilePath.Data(), _SoundResource);
+	switch (File::GetExtension(_OutputFilePath.Data()))
+	{
+
+		case File::Extension::OGG:
+		{
+			OGGWriter::Write(_OutputFilePath.Data(), _SoundResource);
+
+			break;
+		}
+
+		case File::Extension::WAV:
+		{
+			WAVWriter::Write(_OutputFilePath.Data(), _SoundResource);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Unsupported file extension!");
+
+			break;
+		}
+	}
 }
 
 /*
