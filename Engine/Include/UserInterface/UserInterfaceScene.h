@@ -145,6 +145,30 @@ protected:
 	}
 
 	/*
+	*	Sets the button idle material.
+	*/
+	FORCE_INLINE void SetButtonIdleMaterial(const UserInterfaceMaterial &value) NOEXCEPT
+	{
+		_ButtonIdleMaterial = value;
+	}
+
+	/*
+	*	Sets the button hovered material.
+	*/
+	FORCE_INLINE void SetButtonHoveredMaterial(const UserInterfaceMaterial &value) NOEXCEPT
+	{
+		_ButtonHoveredMaterial = value;
+	}
+
+	/*
+	*	Sets the button pressed material.
+	*/
+	FORCE_INLINE void SetButtonPressedMaterial(const UserInterfaceMaterial &value) NOEXCEPT
+	{
+		_ButtonPressedMaterial = value;
+	}
+
+	/*
 	*	Sets the progress bar bottom material.
 	*/
 	FORCE_INLINE void SetProgressBarBottomMaterial(const UserInterfaceMaterial &value) NOEXCEPT
