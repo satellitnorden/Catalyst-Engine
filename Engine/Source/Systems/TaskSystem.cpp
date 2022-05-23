@@ -21,6 +21,12 @@ void TaskSystem::Initialize() NOEXCEPT
 		//Set the number of task executors.
 		_NumberOfTaskExecutors = number_of_hardware_threads;
 
+		//Subtract the sound thread.
+		if (_NumberOfTaskExecutors > 1)
+		{
+			--_NumberOfTaskExecutors;
+		}
+
 		//Kick off all task executor threads.
 		_TaskExecutorThreads.Upsize<true>(_NumberOfTaskExecutors);
 
@@ -38,7 +44,7 @@ void TaskSystem::Initialize() NOEXCEPT
 			});
 
 			//Set the priority.
-			task_executor_thread.SetPriority(Thread::Priority::NORMAL);
+			task_executor_thread.SetPriority(Thread::Priority::ABOVE_NORMAL);
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 			//Set the name.
