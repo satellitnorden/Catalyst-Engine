@@ -2,6 +2,7 @@
 #define CATALYST_LIGHTING_DATA_SET_INDEX (1)
 #include "CatalystLightingData.glsl"
 #include "CatalystMaterialCore.glsl"
+#include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 #include "..\Include\Rendering\Native\Shader\CatalystToneMapping.h"
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
@@ -108,7 +109,24 @@ void CatalystShaderMain()
 
 				case LIGHT_TYPE_POINT:
 				{
-					//To do.
+					//Calculate the light direction.
+					vec3 light_direction = fragment_world_position - light.position_or_direction;
+
+					//Determine the distance to the light.
+					float distance_to_light = LengthSquared3(light_direction);
+
+					//Only calculate lighting if the the world position is within the light's radius.
+					if (distance_to_light < light.radius * light.radius)
+					{
+						//Normalize.
+						distance_to_light = sqrt(distance_to_light);
+						light_direction /= distance_to_light;
+
+						//Calculate the attenuation.
+						float attenuation = CalculateAttenuation(distance_to_light, light.radius);
+
+						final_lighting += albedo_thickness.rgb * light.color * light.intensity * max(dot(fragment_normal, -light_direction), 0.0f) * attenuation;
+					}
 
 					break;
 				}
