@@ -103,9 +103,6 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	_ScaledResolutions[8] = _ScaledResolutions[7] / 2;
 	_ScaledResolutions[8].RoundUpToNearestMultipleOfTwo();
 
-	_ScaledResolutions[9] = _ScaledResolutions[8] / 2;
-	_ScaledResolutions[9].RoundUpToNearestMultipleOfTwo();
-
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Initialize the debug rendering system.
 	_DebugRenderingSystem.Initialize();
@@ -609,13 +606,6 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH:
 			{
 				CreateRenderTarget(GetScaledResolution(7), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH)]);
-
-				break;
-			}
-
-			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH:
-			{
-				CreateRenderTarget(GetScaledResolution(8), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH)]);
 
 				break;
 			}
@@ -1219,7 +1209,6 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(5), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND)]);
 	CreateRenderTarget(GetScaledResolution(6), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH)]);
 	CreateRenderTarget(GetScaledResolution(7), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH)]);
-	CreateRenderTarget(GetScaledResolution(8), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH)]);
 }
 
 /*

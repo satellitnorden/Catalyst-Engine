@@ -9,6 +9,19 @@
 #include <Systems/ResourceSystem.h>
 
 /*
+*	Bloom isolation push constant data definition.
+*/
+class BloomIsolationPushConstantData final
+{
+
+public:
+
+	//The bloom threshold.
+	float32 _BloomThreshold;
+
+};
+
+/*
 *	Initializes this graphics pipeline.
 */
 void BloomIsolationGraphicsPipeline::Initialize() NOEXCEPT
@@ -30,6 +43,10 @@ void BloomIsolationGraphicsPipeline::Initialize() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(BloomIsolationPushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
@@ -81,6 +98,13 @@ void BloomIsolationGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+
+	//Push constants.
+	BloomIsolationPushConstantData data;
+
+	data._BloomThreshold = RenderingSystem::Instance->GetRenderingConfiguration()->GetBloomThreshold();
+
+	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(BloomIsolationPushConstantData), &data);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);

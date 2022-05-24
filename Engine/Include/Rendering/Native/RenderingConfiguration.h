@@ -159,6 +159,22 @@ public:
 	}
 
 	/*
+	*	Returns the bloom threshold.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetBloomThreshold() const NOEXCEPT
+	{
+		return _BloomThreshold;
+	}
+
+	/*
+	*	Sets the bloom threshold.
+	*/
+	FORCE_INLINE void SetBloomThreshold(const float32 value) NOEXCEPT
+	{
+		_BloomThreshold = value;
+	}
+
+	/*
 	*	Returns the bloom intensity.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetBloomIntensity() const NOEXCEPT
@@ -169,9 +185,9 @@ public:
 	/*
 	*	Sets the bloom intensity.
 	*/
-	FORCE_INLINE void SetBloomIntensity(const float32 intensity) NOEXCEPT
+	FORCE_INLINE void SetBloomIntensity(const float32 value) NOEXCEPT
 	{
-		_BloomIntensity = intensity;
+		_BloomIntensity = value;
 	}
 
 private:
@@ -194,7 +210,10 @@ private:
 	//The volumetric shadows mode.
 	VolumetricShadowsMode _VolumetricShadowsMode{ VolumetricShadowsMode::SCREEN_SPACE };
 
+	//The bloom threshold.
+	float32 _BloomThreshold{ 1.0f };
+
 	//The bloom intensity.
-	float32 _BloomIntensity{ 0.05f };
+	float32 _BloomIntensity{ 1.0f };
 
 };

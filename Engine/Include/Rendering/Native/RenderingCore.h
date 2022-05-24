@@ -430,11 +430,6 @@ enum class RenderTarget : uint8
 	*/
 	INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH,
 
-	/*
-	*	Intermediate render target at twohundredfiftysixth resolution.
-	*/
-	INTERMEDIATE_RGBA_FLOAT32_TWOHUNDREDFIFTYSIXTH,
-
 	NUMBER_OF_RENDER_TARGETS
 };
 

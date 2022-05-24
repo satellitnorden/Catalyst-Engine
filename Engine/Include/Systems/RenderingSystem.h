@@ -540,7 +540,7 @@ private:
 	Resolution _FullResolution;
 
 	//The scaled resolutions.
-	StaticArray<Resolution, 10> _ScaledResolutions;
+	StaticArray<Resolution, 9> _ScaledResolutions;
 
 	//The global render data.
 	GlobalRenderData _GlobalRenderData;
