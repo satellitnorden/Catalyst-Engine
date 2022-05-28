@@ -10,87 +10,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(AmbientOcclusionRenderPass);
 
-//TEMP
-#include <Systems/InputSystem.h>
-
-bool USE_SPATIAL_DENOISING{ true };
-bool USE_TEMPORAL_DENOISING{ true };
-
-void TempAmbientOcclusion()
-{
-	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F1) == ButtonState::PRESSED)
-	{
-		USE_SPATIAL_DENOISING = !USE_SPATIAL_DENOISING;
-	}
-
-	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F2) == ButtonState::PRESSED)
-	{
-		USE_TEMPORAL_DENOISING = !USE_TEMPORAL_DENOISING;
-	}
-
-	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F3) == ButtonState::PRESSED)
-	{
-		switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionQuality())
-		{
-			case RenderingConfiguration::AmbientOcclusionQuality::LOW:
-			{
-				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionQuality(RenderingConfiguration::AmbientOcclusionQuality::MEDIUM);
-
-				break;
-			}
-
-			case RenderingConfiguration::AmbientOcclusionQuality::MEDIUM:
-			{
-				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionQuality(RenderingConfiguration::AmbientOcclusionQuality::HIGH);
-
-				break;
-			}
-
-			case RenderingConfiguration::AmbientOcclusionQuality::HIGH:
-			{
-				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionQuality(RenderingConfiguration::AmbientOcclusionQuality::LOW);
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
-		}
-	}
-
-	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F4) == ButtonState::PRESSED)
-	{
-		switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode())
-		{
-			case RenderingConfiguration::AmbientOcclusionMode::SCREEN_SPACE:
-			{
-				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionMode(RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED);
-
-				break;
-			}
-
-			case RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED:
-			{
-				RenderingSystem::Instance->GetRenderingConfiguration()->SetAmbientOcclusionMode(RenderingConfiguration::AmbientOcclusionMode::SCREEN_SPACE);
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
-		}
-	}
-}
-//TEMP
-
 /*
 *	Default constructor.
 */
@@ -102,7 +21,7 @@ AmbientOcclusionRenderPass::AmbientOcclusionRenderPass() NOEXCEPT
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		AmbientOcclusionRenderPass::Instance->Initialize();
+		
 	});
 
 	//Set the execution function.
@@ -114,7 +33,7 @@ AmbientOcclusionRenderPass::AmbientOcclusionRenderPass() NOEXCEPT
 	//Set the termination function function.
 	SetTerminationFunction([]()
 	{
-		AmbientOcclusionRenderPass::Instance->Terminate();
+		
 	});
 }
 
@@ -188,10 +107,30 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 */
 void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 {	
-	TempAmbientOcclusion();
+	//Check the ambient occlusion mode.
+	{
+		const RenderingConfiguration::AmbientOcclusionMode previous_ambient_occlusion_mode{ _AmbientOcclusionMode };
+	
+		_AmbientOcclusionMode = RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode();
+	
+		//Should this render pass be initialized?
+		if (previous_ambient_occlusion_mode == RenderingConfiguration::AmbientOcclusionMode::NONE
+			&& _AmbientOcclusionMode != RenderingConfiguration::AmbientOcclusionMode::NONE)
+		{
+			Initialize();
+			RenderingSystem::Instance->InitializeRenderPass(this);
+		}
+
+		else if (previous_ambient_occlusion_mode != RenderingConfiguration::AmbientOcclusionMode::NONE
+			&& _AmbientOcclusionMode == RenderingConfiguration::AmbientOcclusionMode::NONE)
+		{
+			Terminate();
+			RenderingSystem::Instance->TerminateRenderPass(this);
+		}
+	}
 
 	//Nothing to do here if ambient occlusion isn't enabled.
-	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::NONE)
+	if (_AmbientOcclusionMode == RenderingConfiguration::AmbientOcclusionMode::NONE)
 	{
 		SetEnabled(false);
 
@@ -218,49 +157,27 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 
 	if (!RenderingSystem::Instance->IsTakingScreenshot())
 	{
-		if (USE_SPATIAL_DENOISING)
+		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 		{
-			for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+			pipeline.Execute();
+		}
+
+		//Execute the current buffer, don't include the rest.
+		for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
+		{
+			if (i == _CurrentTemporalBufferIndex)
 			{
-				pipeline.Execute();
+				_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].Execute();
+			}
+
+			else
+			{
+				_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
 			}
 		}
 
-		else
-		{
-			for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
-			{
-				pipeline.SetIncludeInRender(false);
-			}
-		}
-
-		if (USE_TEMPORAL_DENOISING)
-		{
-			//Execute the current buffer, don't include the rest.
-			for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
-			{
-				if (i == _CurrentTemporalBufferIndex)
-				{
-					_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].Execute();
-				}
-
-				else
-				{
-					_AmbientOcclusionTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
-				}
-			}
-
-			//Update the current buffer index.
-			_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
-		}
-
-		else
-		{
-			for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
-			{
-				pipeline.SetIncludeInRender(false);
-			}
-		}
+		//Update the current buffer index.
+		_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
 	}
 	
 	else
@@ -277,9 +194,6 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	}
 
 	_AmbientOcclusionApplicationGraphicsPipeline.Execute();
-
-	//Enable this render pass.
-	SetEnabled(true);
 }
 
 /*

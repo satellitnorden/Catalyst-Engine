@@ -11,6 +11,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceAmbientOcclusionGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/AmbientOcclusionRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
+#include <Rendering/Native/RenderingConfiguration.h>
 
 class AmbientOcclusionRenderPass final : public RenderPass
 {
@@ -26,6 +27,9 @@ public:
 	AmbientOcclusionRenderPass() NOEXCEPT;
 
 private:
+
+	//The current ambient occlusion mode.
+	RenderingConfiguration::AmbientOcclusionMode _AmbientOcclusionMode{ RenderingConfiguration::AmbientOcclusionMode::NONE };
 
 	//The ambient occlusion render target.
 	RenderTargetHandle _AmbientOcclusionRenderTarget;
