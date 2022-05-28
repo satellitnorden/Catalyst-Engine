@@ -64,7 +64,7 @@ public:
 			{
 				for (uint8 channel_index{ 0 }; channel_index < resource->_NumberOfChannels; ++channel_index)
 				{
-					for (uint32 sample_index{ 0 }; sample_index < number_of_samples_read; ++sample_index)
+					for (long sample_index{ 0 }; sample_index < number_of_samples_read; ++sample_index)
 					{
 						resource->_Samples[channel_index].Emplace(static_cast<int16>(buffer[channel_index][sample_index] * static_cast<float32>(INT16_MAXIMUM)));
 					}

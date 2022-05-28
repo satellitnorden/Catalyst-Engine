@@ -431,6 +431,24 @@ public:
 		//Close the binary file.
 		binary_file.Close();
 
+		//Sort the meshes based on the material names.
+		//ASSERT(model_file->_Meshes.Size() == temporary_data._MaterialNames.Size(), "Mismatch detected!");
+
+		if (model_file->_Meshes.Size() == temporary_data._MaterialNames.Size())
+		{
+			for (uint64 iterator{ 1 }; iterator != model_file->_Meshes.Size(); ++iterator)
+			{
+				uint64 reverse_iterator{ iterator };
+
+				while (reverse_iterator != 0 && (temporary_data._MaterialNames[reverse_iterator][0] < temporary_data._MaterialNames[reverse_iterator - 1][0]))
+				{
+					Swap(&model_file->_Meshes[reverse_iterator], &model_file->_Meshes[reverse_iterator - 1]);
+
+					--reverse_iterator;
+				}
+			}
+		}
+
 		//Post process the model file.
 		model_file->PostProcess();
 
@@ -482,6 +500,9 @@ private:
 
 		//The texture coordinate lookup.
 		DynamicArray<Vector2<float32>> _TextureCoordinateLookup;
+
+		//The material names.
+		DynamicArray<DynamicString> _MaterialNames;
 
 	};
 
@@ -640,6 +661,15 @@ private:
 						if (value == "IndexToDirect")
 						{
 							temporary_data->_ReferenceInformationType = TemporaryData::ReferenceInformationType::INDEX_TO_DIRECT;
+						}
+					}
+
+					//Is this the name of the material?
+					if (name == "Material")
+					{
+						if (value != "")
+						{
+							temporary_data->_MaterialNames.Emplace(value);
 						}
 					}
 

@@ -230,6 +230,14 @@ public:
 	}
 
 	/*
+	*	Inequality operator overload taking a C string.
+	*/
+	FORCE_INLINE NO_DISCARD bool operator!=(const char *const RESTRICT string) const NOEXCEPT
+	{
+		return !StringUtilities::IsEqual(_String, string);
+	}
+
+	/*
 	*	Subscript operator overload, const.
 	*/
 	FORCE_INLINE NO_DISCARD char operator[](const uint64 index) const NOEXCEPT
