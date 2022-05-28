@@ -440,7 +440,7 @@ public:
 			{
 				uint64 reverse_iterator{ iterator };
 
-				while (reverse_iterator != 0 && (temporary_data._MaterialNames[reverse_iterator][0] < temporary_data._MaterialNames[reverse_iterator - 1][0]))
+				while (reverse_iterator != 0 && strcmp(temporary_data._MaterialNames[reverse_iterator].Data(), temporary_data._MaterialNames[reverse_iterator - 1].Data()) < 0)
 				{
 					Swap(&model_file->_Meshes[reverse_iterator], &model_file->_Meshes[reverse_iterator - 1]);
 
