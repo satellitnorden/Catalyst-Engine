@@ -280,6 +280,15 @@ public:
 					}
 				}
 
+				//Rotate the texture coordinates.
+				for (ModelFile::Mesh &mesh : _Meshes)
+				{
+					for (Vertex &vertex : mesh._Vertices)
+					{
+						vertex._TextureCoordinate.Rotate(CatalystBaseMath::DegreesToRadians(180.0f));
+					}
+				}
+
 				break;
 			}
 
