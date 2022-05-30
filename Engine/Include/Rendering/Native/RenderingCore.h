@@ -25,7 +25,7 @@
 //Rendering constants.
 namespace RenderingConstants
 {
-	constexpr uint8 MAXIMUM_NUMBER_OF_MESHES_PER_MODEL{ 4 };
+	constexpr uint8 MAXIMUM_NUMBER_OF_MESHES_PER_MODEL{ 8 };
 
 	constexpr uint32 SCENE_BUFFER_STENCIL_BIT{ BIT(0) };
 
