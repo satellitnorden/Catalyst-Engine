@@ -235,6 +235,13 @@ void SoundSystem::QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT au
 		//Get the device info.
 		const RtAudio::DeviceInfo device_info{ WindowsSoundSystemData::_QueryRtAudio->getDeviceInfo(i) };
 
+		//Skip if the device isn't valid.
+		if (device_info.nativeFormats == 0
+			|| device_info.sampleRates.empty())
+		{
+			continue;
+		}
+
 		//Fill in the audio device.
 		audio_devices->Emplace();
 		AudioDevice &audio_device{ audio_devices->Back() };
