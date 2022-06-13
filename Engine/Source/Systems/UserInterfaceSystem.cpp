@@ -120,7 +120,7 @@ void UserInterfaceSystem::DestroyUserInterfacePrimitive(UserInterfacePrimitive *
 		}
 	}
 
-	_UserInterfacePrimitives.Erase<false>(primitive);
+	_UserInterfacePrimitives.Erase<true>(primitive);
 }
 
 /*

@@ -217,6 +217,11 @@ protected:
 																					const float32 *const RESTRICT text_scale_override = nullptr) NOEXCEPT;
 
 	/*
+	*	Removes a button.
+	*/
+	void RemoveButton(UserInterfaceButton *const RESTRICT button) NOEXCEPT;
+
+	/*
 	*	Adds a checkbox, using cells.
 	*/
 	RESTRICTED UserInterfaceCheckbox *const RESTRICT AddCheckboxByCell(	const Vector2<uint32> &minimum_cell,
@@ -352,6 +357,14 @@ private:
 		FORCE_INLINE operator bool() const NOEXCEPT
 		{
 			return _State != State::NONE;
+		}
+
+		/*
+		*	Equality operator overload.
+		*/
+		FORCE_INLINE bool operator==(const ButtonInterface &other) const NOEXCEPT
+		{
+			return _Element == other._Element;
 		}
 
 		/*
@@ -803,22 +816,22 @@ private:
 	float32 _TextScale;
 
 	//Container for all the elements.
-	DynamicArray<UserInterfaceElement *const RESTRICT> _Elements;
+	DynamicArray<UserInterfaceElement *RESTRICT> _Elements;
 
 	//The buttons.
-	DynamicArray<UserInterfaceButton *const RESTRICT> _Buttons;
+	DynamicArray<UserInterfaceButton *RESTRICT> _Buttons;
 
 	//The checkboxes.
-	DynamicArray<UserInterfaceCheckbox *const RESTRICT> _Checkboxes;
+	DynamicArray<UserInterfaceCheckbox *RESTRICT> _Checkboxes;
 
 	//The images.
-	DynamicArray<UserInterfaceImage *const RESTRICT> _Images;
+	DynamicArray<UserInterfaceImage *RESTRICT> _Images;
 
 	//The progress bars.
-	DynamicArray<UserInterfaceProgressBar *const RESTRICT> _ProgressBars;
+	DynamicArray<UserInterfaceProgressBar *RESTRICT> _ProgressBars;
 
 	//The texts.
-	DynamicArray<UserInterfaceText *const RESTRICT> _Texts;
+	DynamicArray<UserInterfaceText *RESTRICT> _Texts;
 
 	//The button interfaces.
 	DynamicArray<ButtonInterface> _ButtonInterfaces;

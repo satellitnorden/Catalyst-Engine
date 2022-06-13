@@ -251,6 +251,19 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButtonByNo
 }
 
 /*
+*	Removes a button.
+*/
+void UserInterfaceScene::RemoveButton(UserInterfaceButton *const RESTRICT button) NOEXCEPT
+{
+	_Buttons.Erase<false>(button);
+	_ButtonInterfaces.Erase<false>(button);
+	_Elements.Erase<true>(button);
+
+	button->~UserInterfaceButton();
+	MemorySystem::Instance->TypeFree<UserInterfaceButton>(button);
+}
+
+/*
 *	Adds a checkbox, using cells.
 */
 RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckboxByCell(	const Vector2<uint32> &minimum_cell,
