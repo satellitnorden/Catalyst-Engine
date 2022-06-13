@@ -135,12 +135,12 @@ namespace UserInterfaceUtilities
 	{
 		float32 biased_scale{ scale };
 
-		for (uint8 i{ 0 }; i < 8; ++i)
+		for (uint8 i{ 0 }; i < 5; ++i)
 		{
 			biased_scale = CatalystBaseMath::InverseSquare(biased_scale);
 		}
 
-		return CatalystBaseMath::LinearlyInterpolate(0.0f, 0.5f, biased_scale);
+		return CatalystBaseMath::LinearlyInterpolate(0.0'25f, 0.5f, biased_scale);
 	}
 
 }
