@@ -11,10 +11,6 @@
 //                for the MidiFile class.
 //
 
-#include <Core/Essential/CatalystEssential.h>
-
-DISABLE_WARNING(4530); //Disable warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc.
-
 #include <ThirdParty/midifile/MidiEvent.h>
 
 #include <stdlib.h>
@@ -46,6 +42,7 @@ MidiEvent::MidiEvent(int command, int p1, int p2)
 		: MidiMessage(command, p1, p2) {
 	clearVariables();
 }
+
 
 MidiEvent::MidiEvent(int aTime, int aTrack, vector<uchar>& message)
 		: MidiMessage(message) {
@@ -100,14 +97,6 @@ void MidiEvent::clearVariables(void) {
 	m_eventlink = NULL;
 }
 
-/*
-*	Makes a note on message.
-*/
-void MidiEvent::MakeNoteOn(const int32 channel, const int32 note_number, const int32 velocity)
-{
-	this->~MidiEvent();
-	new (this) MidiEvent(channel | (9 << 4), note_number, velocity);
-}
 
 //////////////////////////////
 //

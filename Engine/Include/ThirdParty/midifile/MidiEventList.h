@@ -13,10 +13,6 @@
 #ifndef _MIDIEVENTLIST_H_INCLUDED
 #define _MIDIEVENTLIST_H_INCLUDED
 
-#include <Core/Essential/CatalystEssential.h>
-
-DISABLE_WARNING(4530); //Disable warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc.
-
 #include "MidiEvent.h"
 #include <vector>
 
@@ -51,7 +47,6 @@ class MidiEventList {
 		void             clearLinks         (void);
 		void             clearSequence      (void);
 		int              markSequence       (int sequence = 1);
-		void			 FixOverlappingNotes();
 
 		int              push               (MidiEvent& event);
 		int              push_back          (MidiEvent& event);

@@ -1,7 +1,7 @@
 //
 // Programmer:    Craig Stuart Sapp <craig@ccrma.stanford.edu>
 // Creation Date: Fri Nov 26 14:12:01 PST 1999
-// Last Modified: Sat Apr 21 10:52:19 PDT 2018 Removed using namespace std;
+// Last Modified: Thu Jun 24 18:35:30 PDT 2021 Added base64 encoding read/write
 // Filename:      midifile/src/MidiFile.cpp
 // Website:       http://midifile.sapp.org
 // Syntax:        C++11
@@ -11,10 +11,6 @@
 //                MIDI data is stored by track in an array.  This
 //                class is used for example in the MidiPerform class.
 //
-
-#include <Core/Essential/CatalystEssential.h>
-
-DISABLE_WARNING(4530); //Disable warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc.
 
 #include <ThirdParty/midifile/MidiFile.h>
 #include <ThirdParty/midifile/Binasc.h>
@@ -31,22 +27,64 @@ DISABLE_WARNING(4530); //Disable warning C4530: C++ exception handler used, but 
 
 namespace smf {
 
+
+const std::string MidiFile::encodeLookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+const std::vector<int> MidiFile::decodeLookup {
+		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,62,-1,-1,-1,63,52,53,54,55,56,57,58,59,60,61,-1,-1,-1,-1,-1,-1,
+		-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,
+		-1,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,-1,-1,-1,-1,-1,
+		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+};
+
+
+const char* MidiFile::GMinstrument[128] = {
+   	"acoustic grand piano",   "bright acoustic piano",  "electric grand piano",  "honky-tonk piano", "rhodes piano",   "chorused piano",
+   	"harpsichord",  "clavinet",  "celeste",   "glockenspiel",   "music box",  "vibraphone",
+   	"marimba",   "xylophone",  "tubular bells",  "dulcimer",    "hammond organ",   "percussive organ",
+   	"rock organ",   "church organ", "reed organ",   "accordion",   "harmonica", "tango accordion",
+   	"nylon guitar",  "steel guitar",  "jazz guitar",   "clean guitar",  "muted guitar",   "overdriven guitar",
+   	"distortion guitar",   "guitar harmonics",   "acoustic bass",    "fingered electric bass",  "picked electric bass",  "fretless bass",
+   	"slap bass 1",  "slap bass 2",  "synth bass 1",  "synth bass 2",  "violin",    "viola",
+   	"cello",     "contrabass",  "tremolo strings",   "pizzcato strings",  "orchestral harp",      "timpani",
+   	"string ensemble 1",   "string ensemble 2",   "synth strings 1",   "synth strings 1",   "choir aahs",     "voice oohs",
+   	"synth voices",    "orchestra hit",   "trumpet",   "trombone",  "tuba",      "muted trumpet",
+   	"frenc horn", "brass section",  "syn brass 1",  "synth brass 2",  "soprano sax",  "alto sax",
+   	"tenor sax",  "baritone sax",   "oboe",      "english horn",  "bassoon",   "clarinet",
+   	"piccolo",   "flute",     "recorder",  "pan flute",  "bottle blow",    "shakuhachi",
+   	"whistle",   "ocarina",   "square wave",   "saw wave",   "calliope lead",  "chiffer lead",
+   	"charang lead",   "voice lead",   "fifths lead",   "brass lead",  "newage pad",  "warm pad",
+   	"polysyn pad",   "choir pad",   "bowed pad",  "metallic pad",  "halo pad",   "sweep pad",
+   	"rain",    "soundtrack",  "crystal",   "atmosphere",  "brightness",  "goblins",
+   	"echoes",   "sci-fi",  "sitar",     "banjo",     "shamisen",  "koto",
+   	"kalimba",   "bagpipes",  "fiddle",    "shanai",   "tinkle bell",  "agogo",
+   	"steel drums", "woodblock", "taiko drum",     "melodoc tom",      "synth drum",    "reverse cymbal",
+   	"guitar fret noise",   "breath noise",   "seashore",  "bird tweet",    "telephone ring", "helicopter",
+   	"applause",  "gunshot"
+};
+
+
+
 //////////////////////////////
 //
 // MidiFile::MidiFile -- Constuctor.
 //
 
 MidiFile::MidiFile(void) {
-	m_events.resize(m_trackCount);
-	for (int i=0; i<m_trackCount; i++) {
+	m_events.resize(1);
+	for (int i=0; i<(int)m_events.size(); i++) {
 		m_events[i] = new MidiEventList;
 	}
 }
 
 
 MidiFile::MidiFile(const std::string& filename) {
-	m_events.resize(m_trackCount);
-	for (int i=0; i<m_trackCount; i++) {
+	m_events.resize(1);
+	for (int i=0; i<(int)m_events.size(); i++) {
 		m_events[i] = new MidiEventList;
 	}
 	read(filename);
@@ -54,8 +92,8 @@ MidiFile::MidiFile(const std::string& filename) {
 
 
 MidiFile::MidiFile(std::istream& input) {
-	m_events.resize(m_trackCount);
-	for (int i=0; i<m_trackCount; i++) {
+	m_events.resize(1);
+	for (int i=0; i<(int)m_events.size(); i++) {
 		m_events[i] = new MidiEventList;
 	}
 	read(input);
@@ -112,7 +150,6 @@ MidiFile& MidiFile::operator=(const MidiFile& other) {
 		}
 	);
 	m_ticksPerQuarterNote = other.m_ticksPerQuarterNote;
-	m_trackCount          = other.m_trackCount;
 	m_theTrackState       = other.m_theTrackState;
 	m_theTimeState        = other.m_theTimeState;
 	m_readFileName        = other.m_readFileName;
@@ -133,7 +170,6 @@ MidiFile& MidiFile::operator=(MidiFile&& other) {
 	other.m_events.clear();
 	other.m_events.emplace_back(new MidiEventList);
 	m_ticksPerQuarterNote = other.m_ticksPerQuarterNote;
-	m_trackCount          = other.m_trackCount;
 	m_theTrackState       = other.m_theTrackState;
 	m_theTimeState        = other.m_theTimeState;
 	m_readFileName        = other.m_readFileName;
@@ -149,10 +185,11 @@ MidiFile& MidiFile::operator=(MidiFile&& other) {
 // reading/writing functions --
 //
 
+
 //////////////////////////////
 //
-// MidiFile::read -- Parse a Standard MIDI File and store its contents
-//      in the object.
+// MidiFile::read -- Parse a Standard MIDI File or ASCII-encoded Standard MIDI
+//      File and store its contents in the object.
 //
 
 bool MidiFile::read(const std::string& filename) {
@@ -192,10 +229,71 @@ bool MidiFile::read(std::istream& input) {
 			m_rwstatus = false;
 			return m_rwstatus;
 		} else {
-			m_rwstatus = read(binarydata);
+			m_rwstatus = readSmf(binarydata);
 			return m_rwstatus;
 		}
+	} else {
+		m_rwstatus = readSmf(input);
+		return m_rwstatus;
 	}
+}
+
+
+
+//////////////////////////////
+//
+// MidiFile::readBase64 -- First decode base64 string and then parse as either a
+//      Standard MIDI File or binasc-encoded Standard MIDI File.
+//
+
+bool MidiFile::readBase64(const std::string& base64data) {
+	std::stringstream stream;
+	stream << MidiFile::base64Decode(base64data);
+	return MidiFile::read(stream);
+}
+
+bool MidiFile::readBase64(std::istream& instream) {
+	std::string base64data((std::istreambuf_iterator<char>(instream)),
+			std::istreambuf_iterator<char>());
+	std::stringstream stream;
+	stream << MidiFile::base64Decode(base64data);
+	return MidiFile::read(stream);
+}
+
+
+
+//////////////////////////////
+//
+// MidiFile::readSmf -- Parse a Standard MIDI File and store its contents
+//      in the object.
+//
+
+bool MidiFile::readSmf(const std::string& filename) {
+	m_timemapvalid = 0;
+	setFilename(filename);
+	m_rwstatus = true;
+
+	std::fstream input;
+	input.open(filename.c_str(), std::ios::binary | std::ios::in);
+
+	if (!input.is_open()) {
+		m_rwstatus = false;
+		return m_rwstatus;
+	}
+
+	m_rwstatus = readSmf(input);
+	return m_rwstatus;
+}
+
+
+
+//////////////////////////////
+//
+// MidiFile::readSmf -- Parse a Standard MIDI File and store its contents in the object.
+//
+
+bool MidiFile::readSmf(std::istream& input) {
+	m_rwstatus = true;
 
 	std::string filename = getFilename();
 
@@ -203,7 +301,6 @@ bool MidiFile::read(std::istream& input) {
 	// uchar  buffer[123456] = {0};
 	ulong  longdata;
 	ushort shortdata;
-
 
 	// Read the MIDI header (4 bytes of ID, 4 byte data size,
 	// anticipated 6 bytes of data.
@@ -338,7 +435,6 @@ bool MidiFile::read(std::istream& input) {
 	MidiEvent event;
 	std::vector<uchar> bytes;
 	int xstatus;
-	// int barline;
 
 	for (int i=0; i<tracks; i++) {
 		runningCommand = 0;
@@ -405,59 +501,47 @@ bool MidiFile::read(std::istream& input) {
 		// do not correctly give the track size.
 		longdata = readLittleEndian4Bytes(input);
 
-		// set the size of the track allocation so that it might
+		// Set the size of the track allocation so that it might
 		// approximately fit the data.
 		m_events[i]->reserve((int)longdata/2);
 		m_events[i]->clear();
 
-		// process the track
+		// Read MIDI events in the track, which are pairs of VLV values
+		// and then the bytes for the MIDI message.  Running status messags
+		// will be filled in with their implicit command byte.
+		// The timestamps are converted from delta ticks to absolute ticks,
+		// with the absticks variable accumulating the VLV tick values.
 		int absticks = 0;
-		// barline = 1;
 		while (!input.eof()) {
 			longdata = readVLValue(input);
-			//std::cout << "ticks = " << longdata << std::endl;
 			absticks += longdata;
 			xstatus = extractMidiData(input, bytes, runningCommand);
 			if (xstatus == 0) {
-				m_rwstatus = false;  return m_rwstatus;
+				m_rwstatus = false; return m_rwstatus;
 			}
 			event.setMessage(bytes);
-			//std::cout << "command = " << std::hex << (int)event.data[0] << std::dec << std::endl;
-			if (bytes[0] == 0xff && (bytes[1] == 1 ||
-					bytes[1] == 2 || bytes[1] == 3 || bytes[1] == 4)) {
-				// mididata.push_back('\0');
-				// std::cout << '\t';
-				// for (int m=0; m<event.data[2]; m++) {
-				//    std::cout << event.data[m+3];
-				// }
-				// std::cout.flush();
-			} else if (bytes[0] == 0xff && bytes[1] == 0x2f) {
-				// end of track message
-				// uncomment out the following three lines if you don't want
-				// to see the end of track message (which is always required,
-				// and added automatically when a MIDI is written.
-				event.tick = absticks;
-				event.track = i;
+			event.tick = absticks;
+			event.track = i;
+
+			if (bytes[0] == 0xff && bytes[1] == 0x2f) {
+				// end-of-track message
+				// comment out the following line if you don't want to see the
+				// end of track message (which is always required, and will added
+				// automatically when a MIDI is written, so it is not necessary.
 				m_events[i]->push_back(event);
 				break;
 			}
-
-			if (bytes[0] != 0xff && bytes[0] != 0xf0) {
-				event.tick = absticks;
-				event.track = i;
-				m_events[i]->push_back(event);
-			} else {
-				event.tick = absticks;
-				event.track = i;
-				m_events[i]->push_back(event);
-			}
-
+			m_events[i]->push_back(event);
 		}
-
 	}
 
 	m_theTimeState = TIME_STATE_ABSOLUTE;
+
+	// The original order of the MIDI events is marked with an enumeration which
+	// allows for reconstruction of the order when merging/splitting tracks to/from
+	// a type-0 configuration.
 	markSequence();
+
 	return m_rwstatus;
 }
 
@@ -506,15 +590,15 @@ bool MidiFile::write(std::ostream& out) {
 
 	// 3. MIDI file format, type 0, 1, or 2
 	ushort shortdata;
-	shortdata = (getNumTracks() == 1) ? 0 : 1;
+	shortdata = static_cast<ushort>(getNumTracks() == 1 ? 0 : 1);
 	writeBigEndianUShort(out,shortdata);
 
 	// 4. write out the number of tracks.
-	shortdata = getNumTracks();
+	shortdata = static_cast<ushort>(getNumTracks());
 	writeBigEndianUShort(out, shortdata);
 
 	// 5. write out the number of ticks per quarternote. (avoiding SMTPE for now)
-	shortdata = getTicksPerQuarterNote();
+	shortdata = static_cast<ushort>(getTicksPerQuarterNote());
 	writeBigEndianUShort(out, shortdata);
 
 	// now write each track.
@@ -589,6 +673,71 @@ bool MidiFile::write(std::ostream& out) {
 	}
 
 	return true;
+}
+
+
+
+//////////////////////////////
+//
+// MidiFile::writeBase64 -- Write Standard MIDI file with base64 encoding.
+//    The width parameter can be used to add line breaks.  Zero or negative
+//    width will prevent linebreaks from being added to the data.
+//    Default value: width = 0
+//
+
+bool MidiFile::writeBase64(const std::string& filename, int width) {
+	std::fstream output(filename.c_str(), std::ios::binary | std::ios::out);
+
+	if (!output.is_open()) {
+		std::cerr << "Error: could not write: " << filename << std::endl;
+		return false;
+	}
+	m_rwstatus = writeBase64(output, width);
+	output.close();
+	return m_rwstatus;
+}
+
+
+bool MidiFile::writeBase64(std::ostream& out, int width) {
+	std::stringstream raw;
+	bool status = MidiFile::write(raw);
+	if (!status) {
+		return status;
+	}
+	std::string encoded = MidiFile::base64Encode(raw.str());
+	if (width <= 0) {
+		out << encoded;
+		return status;
+	}
+	int length = (int)encoded.size();
+	for (int i=0; i<length; i++) {
+		out << encoded[i];
+		if ((i + 1) % width == 0) {
+			out << "\n";
+		}
+	}
+	if ((length + 1) % width != 0) {
+		out << "\n";
+	}
+	return status;
+}
+
+
+
+//////////////////////////////
+//
+// MidiFile::getBase64 -- Convert the MIDI contents to a base-64 string.
+//     Default value: width = 0
+//
+
+std::string MidiFile::getBase64(int width) {
+	std::stringstream output;
+	bool status = MidiFile::writeBase64(output, width);
+	if (!status) {
+		return "";
+	} else {
+		return output.str();
+	}
 }
 
 
@@ -855,13 +1004,6 @@ void MidiFile::clearSequence(int track) {
 }
 
 
-void MidiFile::FixOverlappingNotes()
-{
-	for (int i=0; i<getTrackCount(); i++) {
-		operator[](i).FixOverlappingNotes();
-	}
-}
-
 
 //////////////////////////////
 //
@@ -942,16 +1084,16 @@ void MidiFile::splitTracks(void) {
 			maxTrack = (*m_events[0])[i].track;
 		}
 	}
-	int m_trackCount = maxTrack + 1;
+	int trackCount = maxTrack + 1;
 
-	if (m_trackCount <= 1) {
+	if (trackCount <= 1) {
 		return;
 	}
 
 	MidiEventList* olddata = m_events[0];
 	m_events[0] = NULL;
-	m_events.resize(m_trackCount);
-	for (i=0; i<m_trackCount; i++) {
+	m_events.resize(trackCount);
+	for (i=0; i<trackCount; i++) {
 		m_events[i] = new MidiEventList;
 	}
 
@@ -1006,16 +1148,16 @@ void MidiFile::splitTracksByChannel(void) {
 			maxTrack = eventlist[i][0] & 0x0f;
 		}
 	}
-	int m_trackCount = maxTrack + 2; // + 1 for expression track
+	int trackCount = maxTrack + 2; // + 1 for expression track
 
-	if (m_trackCount <= 1) {
+	if (trackCount <= 1) {
 		// only one channel, so don't do anything (leave as Type-0 file).
 		return;
 	}
 
 	m_events[0] = NULL;
-	m_events.resize(m_trackCount);
-	for (i=0; i<m_trackCount; i++) {
+	m_events.resize(trackCount);
+	for (i=0; i<trackCount; i++) {
 		m_events[i] = new MidiEventList;
 	}
 
@@ -1395,9 +1537,7 @@ double MidiFile::getAbsoluteTickTime(double starttime) {
 	if (m_timemapvalid == 0) {
 		buildTimeMap();
 		if (m_timemapvalid == 0) {
-			if (m_timemapvalid == 0) {
-				return -1.0;    // something went wrong
-			}
+			return -1.0;    // something went wrong
 		}
 	}
 
@@ -1539,51 +1679,17 @@ MidiEvent* MidiFile::addEvent(int aTrack, MidiEvent& mfevent) {
 	}
 }
 
-void MidiFile::addEvent(const int32 track,
-						const int32 tick,
-						const int32 channel,
-						const int32 duration,
-						const int32 note_number,
-						const int32 velocity)
+void MidiFile::addEvent(const int track,
+						const int tick,
+						const int channel,
+						const int duration,
+						const int note_number,
+						const int velocity)
 {
-	m_timemapvalid = false;
-
-	MidiEvent* note_on_event = new MidiEvent;
-	MidiEvent* note_off_event = new MidiEvent;
+	MidiEvent* note_on_event = addNoteOn(track, tick, channel, note_number, velocity);
+	MidiEvent* note_off_event = addNoteOff(track, tick + duration, channel, note_number, 0);
 
 	note_on_event->linkEvent(note_off_event);
-
-	{
-		note_on_event->tick = tick;
-		note_on_event->track = track;
-
-		std::vector<uchar> message;
-
-		message.reserve(3);
-
-		message.push_back(channel | (9 << 4));
-		message.push_back(note_number);
-		message.push_back(velocity);
-
-		note_on_event->setMessage(message);
-		m_events[track]->push_back_no_copy(note_on_event);
-	}
-
-	{
-		note_off_event->tick = tick + duration;
-		note_off_event->track = track;
-
-		std::vector<uchar> message;
-
-		message.reserve(3);
-
-		message.push_back(channel | (8 << 4));
-		message.push_back(note_number);
-		message.push_back(0);
-
-		note_off_event->setMessage(message);
-		m_events[track]->push_back_no_copy(note_off_event);
-	}
 }
 
 ///////////////////////////////
@@ -3244,9 +3350,86 @@ std::ostream& MidiFile::writeLittleEndianDouble(std::ostream& out, double value)
 }
 
 
+
+////////////////////
+//
+// MidiFile::getGMInstrumentName -- return the General MIDI instrument name
+//    for the given patch change index (in the range from 0 to 127).
+//
+
+std::string MidiFile::getGMInstrumentName(int patchIndex) {
+	if (patchIndex < 0) {
+		return "";
+	}
+	if (patchIndex > 127) {
+		return "";
+	}
+	return GMinstrument[patchIndex];
+}
+
+
+
+//////////////////////////////
+//
+// MidiFile::base64Encode -- Encode a string as base64.
+//
+
+std::string MidiFile::base64Encode(const std::string& input) {
+	std::string output;
+	output.reserve(((input.size()/3) + (input.size() % 3 > 0)) * 4);
+	int vala = 0;
+	int valb = -6;
+	for (unsigned char c : input) {
+		vala = (vala << 8) + c;
+		valb += 8;
+		while (valb >=0) {
+			output.push_back(MidiFile::encodeLookup[(vala >> valb) & 0x3F]);
+			valb -= 6;
+		}
+	}
+	if (valb > -6) {
+		output.push_back(MidiFile::encodeLookup[((vala << 8) >> (valb + 8)) & 0x3F]);
+	}
+	while (output.size() % 4) {
+		output.push_back(MidiFile::encodeLookup.back());
+	}
+	return output;
+}
+
+
+
+//////////////////////////////
+//
+// MidiFile::base64Decode -- Decode a base64 string.
+//
+
+std::string MidiFile::base64Decode(const std::string& input) {
+	// vector<int> decodeLookup(256,-1);
+	// for (int i=0; i<64; i++) decodeLookup[encodeLookup[i]] = i;
+
+	std::string output;
+	int vala = 0;
+	int valb = -8;
+	for (unsigned char c : input) {
+		if (c == '=') {
+			break;
+		} else if (MidiFile::decodeLookup[c] == -1) {
+         // Ignore whitespace, for example.
+			continue;
+		}
+		vala = (vala << 6) + MidiFile::decodeLookup[c];
+		valb += 6;
+		if (valb >= 0) {
+			output.push_back(char((vala >> valb) & 0xFF));
+			valb -= 8;
+		}
+	}
+	return output;
+}
+
+
+
 } // end namespace smf
-
-
 
 ///////////////////////////////////////////////////////////////////////////
 //

@@ -10,7 +10,6 @@
 // Description:   A class which stores a MidiEvents for a MidiFile track.
 //
 
-
 #include <ThirdParty/midifile/MidiEventList.h>
 
 #include <vector>
@@ -18,7 +17,7 @@
 #include <iterator>
 #include <utility>
 
-#include "stdlib.h"
+#include <stdlib.h>
 
 namespace smf {
 
@@ -292,8 +291,7 @@ int MidiEventList::linkNotePairs(void) {
 	// dimension 3: List of active note-ons or note-offs.
 	std::vector<std::vector<std::vector<MidiEvent*>>> noteons;
 	noteons.resize(16);
-	int i;
-	for (i=0; i<(int)noteons.size(); i++) {
+	for (int i=0; i<(int)noteons.size(); i++) {
 		noteons[i].resize(128);
 	}
 
@@ -368,7 +366,7 @@ int MidiEventList::linkNotePairs(void) {
 	int counter = 0;
 	MidiEvent* mev;
 	MidiEvent* noteon;
-	for (i=0; i<getSize(); i++) {
+	for (int i=0; i<getSize(); i++) {
 		mev = &getEvent(i);
 		mev->unlinkEvent();
 		if (mev->isNoteOn()) {
@@ -470,50 +468,6 @@ int MidiEventList::markSequence(int sequence) {
 	return sequence;
 }
 
-OPTIMIZATIONS_OFF;
-
-void MidiEventList::FixOverlappingNotes()
-{
-	for (int32 i{ 0 }; i < getEventCount(); ++i)
-	{
-		MidiEvent &note_on_event{ getEvent(i) };
-
-		if (note_on_event.isNoteOn())
-		{
-			if (MidiEvent *const RESTRICT note_off_event{ note_on_event.getLinkedEvent() })
-			{
-				ASSERT(note_on_event.getKeyNumber() == note_off_event->getKeyNumber(), "Oh no...");
-
-				if (note_off_event->isNoteOff())
-				{
-					for (int32 j{ 0 }; j < getEventCount(); ++j)
-					{
-						MidiEvent &other_event{ getEvent(j) };
-
-						if (note_on_event != other_event
-							&& other_event.isNoteOn()
-							&& note_on_event.getKeyNumber() == other_event.getKeyNumber()
-							&& note_on_event.tick < other_event.tick
-							&& note_off_event->tick >= other_event.tick)
-						{
-							note_off_event->tick = other_event.tick - 1;
-						}
-					}
-				}
-
-				else
-				{
-					ASSERT(false, "Oh no...");
-				}
-			}
-
-			else
-			{
-				ASSERT(false, "Oh no...");
-			}
-		}
-	}
-}
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -599,35 +553,13 @@ int eventcompare(const void* a, const void* b) {
 	MidiEvent& aevent = **((MidiEvent**)a);
 	MidiEvent& bevent = **((MidiEvent**)b);
 
-	if (aevent.tick > bevent.tick)
-	{
+	if (aevent.tick > bevent.tick) {
 		// aevent occurs after bevent
 		return +1;
-	}
-	
-	else if (aevent.tick < bevent.tick) {
+	} else if (aevent.tick < bevent.tick) {
 		// aevent occurs before bevent
 		return -1;
-	}
-	
-	//If both events are note-ons/note-offs, and they have the same tick, sort by note value.
-	if ((aevent.isNoteOn() || aevent.isNoteOff()) && (bevent.isNoteOn() || bevent.isNoteOff()))
-	{
-		if (aevent.tick == bevent.tick)
-		{
-			if (aevent[1] > bevent[1])
-			{
-				return +1;
-			}
-
-			else if (aevent[1] < bevent[1])
-			{
-				return -1;
-			}
-		}
-	}
-	
-	if ((aevent.seq != 0) && (bevent.seq != 0) && (aevent.seq > bevent.seq)) {
+	} else if ((aevent.seq != 0) && (bevent.seq != 0) && (aevent.seq > bevent.seq)) {
 		// aevent sequencing state occurs after bevent
 		// see MidiEventList::markSequence()
 		return +1;

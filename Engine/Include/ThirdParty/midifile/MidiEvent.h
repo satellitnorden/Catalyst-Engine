@@ -40,11 +40,6 @@ class MidiEvent : public MidiMessage {
 
 		void       clearVariables        (void);
 
-		/*
-		*	Makes a note on message.
-		*/
-		void MakeNoteOn(const int32 channel, const int32 note_number, const int32 velocity);
-
 		// functions related to event linking (note-ons to note-offs).
 		void       unlinkEvent           (void);
 		void       unlinkEvents          (void);
