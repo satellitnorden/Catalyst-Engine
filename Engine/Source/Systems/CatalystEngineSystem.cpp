@@ -219,9 +219,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	//Update the total time.
 	_TotalTime += _DeltaTime;
 
-	//Update the delta time.
-	_DeltaTime = CatalystBaseMath::Minimum(CatalystEngineSystemData::_DeltaTimer.Update(), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
-
 	//Retrieve the preferred frame time.
 	float32 preferred_frame_time;
 
@@ -238,14 +235,29 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	//If the preferred frame time has been set, sleep for the appropriate amount of time to keep that frame time.
 	if (preferred_frame_time > 0.0f)
 	{
-		const float64 seconds_to_sleep{ static_cast<float64>(preferred_frame_time) - static_cast<float64>(_DeltaTime) };
+		static std::chrono::system_clock::time_point A{ std::chrono::system_clock::now() };
+		static std::chrono::system_clock::time_point B{ std::chrono::system_clock::now() };
 
-		if (seconds_to_sleep > 0.0)
+		A = std::chrono::system_clock::now();
+		std::chrono::duration<float32, std::milli> work_time{ A - B };
+
+		if (work_time.count() < (preferred_frame_time * 1'000.0f))
 		{
-			Concurrency::CurrentThread::SleepFor(static_cast<uint64>(seconds_to_sleep * 1'000'000'000.0));
-
-			_DeltaTime = CatalystBaseMath::Minimum(_DeltaTime + CatalystEngineSystemData::_DeltaTimer.Update(), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
+			std::chrono::duration<float32, std::milli> delta_milliseconds((preferred_frame_time * 1'000.0f) - work_time.count());
+			auto delta_milliseeconds_duration{ std::chrono::duration_cast<std::chrono::milliseconds>(delta_milliseconds) };
+			std::this_thread::sleep_for(std::chrono::milliseconds(delta_milliseeconds_duration.count()));
 		}
+
+		B = std::chrono::system_clock::now();
+
+		//Set the delta time.
+		_DeltaTime = preferred_frame_time;
+	}
+
+	else
+	{
+		//Update the delta time.
+		_DeltaTime = CatalystBaseMath::Minimum(CatalystEngineSystemData::_DeltaTimer.Update(), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
 	}
 
 	/*
