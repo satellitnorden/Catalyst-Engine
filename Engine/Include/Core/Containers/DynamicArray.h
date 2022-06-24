@@ -22,6 +22,18 @@ public:
 	}
 
 	/*
+	*	Constructor taking a single element.
+	*/
+	FORCE_INLINE DynamicArray(const TYPE &element) NOEXCEPT
+		:
+		_Size(0)
+	{
+		ReserveConstruct(1);
+
+		Emplace(element);
+	}
+
+	/*
 	*	Constructor taking an initializer list.
 	*/
 	FORCE_INLINE DynamicArray(const std::initializer_list<TYPE> &initializer_list) NOEXCEPT
