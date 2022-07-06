@@ -37,6 +37,9 @@ public:
 		//The sample rate.
 		float32 _SampleRate;
 
+		//The number of channels.
+		uint8 _NumberOfChannels;
+
 		//The callback.
 		Callback _Callback;
 
@@ -104,6 +107,9 @@ private:
 
 	//The sample rate.
 	float32 _SampleRate;
+
+	//The number of channels.
+	uint8 _NumberOfChannels;
 
 	//The callback.
 	Callback _Callback;

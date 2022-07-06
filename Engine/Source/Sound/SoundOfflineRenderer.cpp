@@ -6,12 +6,6 @@
 #include <File/Writers/OGGWriter.h>
 #include <File/Writers/WAVWriter.h>
 
-//Sound offline renderer constants.
-namespace SoundOfflineRendererConstants
-{
-	constexpr uint8 NUMBER_OF_CHANNELS{ 2 };
-}
-
 /*
 *	Initializes this sound offline renderer.
 */
@@ -23,6 +17,9 @@ void SoundOfflineRenderer::Initialize(const Parameters &parameters) NOEXCEPT
 	//Set the sample rate.
 	_SampleRate = parameters._SampleRate;
 
+	//Set the number of channels.
+	_NumberOfChannels = parameters._NumberOfChannels;
+
 	//Set the callback.
 	_Callback = parameters._Callback;
 
@@ -31,8 +28,8 @@ void SoundOfflineRenderer::Initialize(const Parameters &parameters) NOEXCEPT
 
 	//Set up the sound resource.
 	_SoundResource._SampleRate = _SampleRate;
-	_SoundResource._NumberOfChannels = SoundOfflineRendererConstants::NUMBER_OF_CHANNELS;
-	_SoundResource._Samples.Upsize<true>(SoundOfflineRendererConstants::NUMBER_OF_CHANNELS);
+	_SoundResource._NumberOfChannels = _NumberOfChannels;
+	_SoundResource._Samples.Upsize<true>(_NumberOfChannels);
 
 	for (DynamicArray<int16> &samples : _SoundResource._Samples)
 	{
@@ -49,7 +46,7 @@ NO_DISCARD float32 SoundOfflineRenderer::Update() NOEXCEPT
 	_Callback(this);
 
 	//Write the sample.
-	for (uint8 channel_index{ 0 }; channel_index < SoundOfflineRendererConstants::NUMBER_OF_CHANNELS; ++channel_index)
+	for (uint8 channel_index{ 0 }; channel_index < _NumberOfChannels; ++channel_index)
 	{
 		//Calculate the current sample.
 		float32 current_sample{ 0.0f };
