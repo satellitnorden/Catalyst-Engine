@@ -184,6 +184,9 @@ void UserInterfaceScene::RetrieveUserInterfacePrimitives(DynamicArray<const User
 RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButtonByCell(	const Vector2<uint32> &minimum_cell,
 																					const Vector2<uint32> &maximum_cell,
 																					const UserInterfaceButton::Callback start_pressed_callback,
+																					const UserInterfaceButton::Callback stop_pressed_callback,
+																					const UserInterfaceButton::Callback start_hovered_callback,
+																					const UserInterfaceButton::Callback stop_hovered_callback,
 																					UserInterfaceMaterial *const RESTRICT idle_material_override,
 																					UserInterfaceMaterial *const RESTRICT hovered_material_override,
 																					UserInterfaceMaterial *const RESTRICT pressed_material_override,
@@ -200,6 +203,9 @@ RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButtonByCe
 	return AddButtonByNormalizedCoordinate(	minimum,
 											maximum,
 											start_pressed_callback,
+											stop_pressed_callback,
+											start_hovered_callback,
+											stop_hovered_callback,
 											idle_material_override,
 											hovered_material_override,
 											pressed_material_override,
@@ -213,6 +219,9 @@ RESTRICTED UserInterfaceButton *const RESTRICT UserInterfaceScene::AddButtonByCe
 RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButtonByNormalizedCoordinate(	const Vector2<float32> &minimum,
 																									const Vector2<float32> &maximum,
 																									const UserInterfaceButton::Callback start_pressed_callback,
+																									const UserInterfaceButton::Callback stop_pressed_callback,
+																									const UserInterfaceButton::Callback start_hovered_callback,
+																									const UserInterfaceButton::Callback stop_hovered_callback,
 																									UserInterfaceMaterial *const RESTRICT idle_material_override,
 																									UserInterfaceMaterial *const RESTRICT hovered_material_override,
 																									UserInterfaceMaterial *const RESTRICT pressed_material_override,
@@ -222,10 +231,10 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButtonByNo
 	//Allocate the button.
 	UserInterfaceButton *const RESTRICT new_button{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceButton>()) UserInterfaceButton(minimum,
 																			maximum,
-																			nullptr,
-																			nullptr,
 																			start_pressed_callback,
-																			nullptr,
+																			stop_pressed_callback,
+																			start_hovered_callback,
+																			stop_hovered_callback,
 																			idle_material_override ? *idle_material_override : _ButtonIdleMaterial,
 																			hovered_material_override ? *hovered_material_override : _ButtonHoveredMaterial,
 																			pressed_material_override ? *pressed_material_override : _ButtonPressedMaterial,
@@ -397,6 +406,18 @@ RESTRICTED UserInterfaceImage* const RESTRICT UserInterfaceScene::AddImageByNorm
 }
 
 /*
+*	Removes an image.
+*/
+void UserInterfaceScene::RemoveImage(UserInterfaceImage *const RESTRICT image) NOEXCEPT
+{
+	_Images.Erase<false>(image);
+	_Elements.Erase<true>(image);
+
+	image->~UserInterfaceImage();
+	MemorySystem::Instance->TypeFree<UserInterfaceImage>(image);
+}
+
+/*
 *	Adds a progress bar, using cells.
 */
 RESTRICTED UserInterfaceProgressBar *const RESTRICT UserInterfaceScene::AddProgressBarByCell(	const Vector2<uint32> &minimum_cell,
@@ -506,6 +527,18 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddTextByNormal
 
 	//Return the text.
 	return new_text;
+}
+
+/*
+*	Removes a text.
+*/
+void UserInterfaceScene::RemoveText(UserInterfaceText *const RESTRICT text) NOEXCEPT
+{
+	_Texts.Erase<false>(text);
+	_Elements.Erase<true>(text);
+
+	text->~UserInterfaceText();
+	MemorySystem::Instance->TypeFree<UserInterfaceText>(text);
 }
 
 /*

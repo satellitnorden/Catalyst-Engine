@@ -198,6 +198,9 @@ protected:
 	RESTRICTED UserInterfaceButton *const RESTRICT AddButtonByCell(	const Vector2<uint32> &minimum_cell,
 																	const Vector2<uint32> &maximum_cell,
 																	const UserInterfaceButton::Callback start_pressed_callback,
+																	const UserInterfaceButton::Callback stop_pressed_callback,
+																	const UserInterfaceButton::Callback start_hovered_callback,
+																	const UserInterfaceButton::Callback stop_hovered_callback,
 																	UserInterfaceMaterial *const RESTRICT idle_material_override = nullptr,
 																	UserInterfaceMaterial *const RESTRICT hovered_material_override = nullptr,
 																	UserInterfaceMaterial *const RESTRICT pressed_material_override = nullptr,
@@ -210,6 +213,9 @@ protected:
 	RESTRICTED UserInterfaceButton *const RESTRICT AddButtonByNormalizedCoordinate(	const Vector2<float32> &minimum,
 																					const Vector2<float32> &maximum,
 																					const UserInterfaceButton::Callback start_pressed_callback,
+																					const UserInterfaceButton::Callback stop_pressed_callback,
+																					const UserInterfaceButton::Callback start_hovered_callback,
+																					const UserInterfaceButton::Callback stop_hovered_callback,
 																					UserInterfaceMaterial *const RESTRICT idle_material_override = nullptr,
 																					UserInterfaceMaterial *const RESTRICT hovered_material_override = nullptr,
 																					UserInterfaceMaterial *const RESTRICT pressed_material_override = nullptr,
@@ -266,6 +272,11 @@ protected:
 																					const float32 opacity = 1.0f) NOEXCEPT;
 
 	/*
+	*	Removes an image.
+	*/
+	void RemoveImage(UserInterfaceImage *const RESTRICT image) NOEXCEPT;
+
+	/*
 	*	Adds a progress bar, using cells.
 	*/
 	RESTRICTED UserInterfaceProgressBar *const RESTRICT AddProgressBarByCell(	const Vector2<uint32> &minimum_cell,
@@ -302,6 +313,11 @@ protected:
 																				const float32 *const RESTRICT scale_override = nullptr,
 																				const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::CENTER,
 																				const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER) NOEXCEPT;
+
+	/*
+	*	Removes a text.
+	*/
+	void RemoveText(UserInterfaceText *const RESTRICT text) NOEXCEPT;
 
 	/*
 	*	Returns the normalized coordinate center of the given cell.

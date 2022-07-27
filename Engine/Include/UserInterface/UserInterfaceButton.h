@@ -25,10 +25,10 @@ public:
 	*/
 	UserInterfaceButton(const Vector2<float32> initial_minimum,
 						const Vector2<float32> initial_maximum,
-						const Callback initial_start_hovered_callback,
-						const Callback initial_stop_hovered_callback,
 						const Callback initial_start_pressed_callback,
 						const Callback initial_stop_pressed_callback,
+						const Callback initial_start_hovered_callback,
+						const Callback initial_stop_hovered_callback,
 						const UserInterfaceMaterial &initial_idle_material,
 						const UserInterfaceMaterial &initial_hovered_material,
 						const UserInterfaceMaterial &initial_pressed_material,
@@ -72,28 +72,6 @@ public:
 	void SetCurrentState(const UserInterfaceButtonState value) NOEXCEPT;
 
 	/*
-	*	On start hovered callback.
-	*/
-	FORCE_INLINE void OnStartHovered() NOEXCEPT
-	{
-		if (_StartHoveredCallback)
-		{
-			_StartHoveredCallback(this);
-		}
-	}
-
-	/*
-	*	On stop hovered callback.
-	*/
-	FORCE_INLINE void OnStopHovered() NOEXCEPT
-	{
-		if (_StopHoveredCallback)
-		{
-			_StopHoveredCallback(this);
-		}
-	}
-
-	/*
 	*	On start pressed callback.
 	*/
 	FORCE_INLINE void OnStartPressed() NOEXCEPT
@@ -112,6 +90,28 @@ public:
 		if (_StopPressedCallback)
 		{
 			_StopPressedCallback(this);
+		}
+	}
+
+	/*
+	*	On start hovered callback.
+	*/
+	FORCE_INLINE void OnStartHovered() NOEXCEPT
+	{
+		if (_StartHoveredCallback)
+		{
+			_StartHoveredCallback(this);
+		}
+	}
+
+	/*
+	*	On stop hovered callback.
+	*/
+	FORCE_INLINE void OnStopHovered() NOEXCEPT
+	{
+		if (_StopHoveredCallback)
+		{
+			_StopHoveredCallback(this);
 		}
 	}
 
@@ -152,17 +152,17 @@ private:
 	//The current state.
 	UserInterfaceButtonState _CurrentState;
 
-	//The start hovered callback.
-	Callback _StartHoveredCallback;
-
-	//The stop hovered callback.
-	Callback _StopHoveredCallback;
-
 	//The start pressed callback.
 	Callback _StartPressedCallback;
 
 	//The stop pressed callback.
 	Callback _StopPressedCallback;
+
+	//The start hovered callback.
+	Callback _StartHoveredCallback;
+
+	//The stop hovered callback.
+	Callback _StopHoveredCallback;
 
 	//The idle material.
 	UserInterfaceMaterial _IdleMaterial;

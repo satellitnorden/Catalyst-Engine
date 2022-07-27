@@ -14,10 +14,10 @@
 */
 UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum,
 											const Vector2<float32> initial_maximum,
-											const Callback initial_start_hovered_callback,
-											const Callback initial_stop_hovered_callback,
 											const Callback initial_start_pressed_callback,
 											const Callback initial_stop_pressed_callback,
+											const Callback initial_start_hovered_callback,
+											const Callback initial_stop_hovered_callback,
 											const UserInterfaceMaterial &initial_idle_material,
 											const UserInterfaceMaterial &initial_hovered_material,
 											const UserInterfaceMaterial &initial_pressed_material,
@@ -34,10 +34,10 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 	_CurrentState = UserInterfaceButtonState::IDLE;
 	
 	//Set the callbacks.
-	_StartHoveredCallback = initial_start_hovered_callback;
-	_StopHoveredCallback = initial_stop_hovered_callback;
 	_StartPressedCallback = initial_start_pressed_callback;
 	_StopPressedCallback = initial_stop_pressed_callback;
+	_StartHoveredCallback = initial_start_hovered_callback;
+	_StopHoveredCallback = initial_stop_hovered_callback;
 
 	//Set the materials.
 	_IdleMaterial = initial_idle_material;
