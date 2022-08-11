@@ -237,6 +237,89 @@ public:
 		}
 	}
 
+	FORCE_INLINE static NO_DISCARD float64 AudioLength(const char *const RESTRICT file_path) NOEXCEPT
+	{
+		//WAV header definition.
+		class WAVHeader final
+		{
+
+		public:
+
+			//The chunk ID.
+			char _ChunkID[4];
+
+			//The chunk size.
+			uint32 _ChunkSize;
+
+			//The format.
+			char _Format[4];
+
+			//The sub chunk 1 ID.
+			char _SubChunk1ID[4];
+
+			//The sub chunk 1 size.
+			uint32 _SubChunk1Size;
+
+			//The audio format. PCM == 1, other values indicate some form of compression.
+			uint16 _AudioFormat;
+
+			//The number of channels. 1 == Mono, 2 == Stereo etc.
+			uint16 _NumberOfChannels;
+
+			//The sample rate.
+			uint32 _SampleRate;
+
+			//The byte rate. Should equal _SampleRate * _NumberOfChannels * _BitsPerSample / 8.
+			uint32 _ByteRate;
+
+			//The block align. Should equal _NumberOfChannels * _BitsPerSample / 8.
+			uint16 _BlockAlign;
+
+			//The bits per sample.
+			uint16 _BitsPerSample;
+
+			//The sub chunk 2 ID.
+			char _SubChunk2ID[4];
+
+			//The sub chunk 2 size.
+			uint32 _SubChunk2Size;
+
+		};
+
+		//Open the file.
+		BinaryFile<BinaryFileMode::IN> file{ file_path };
+
+		if (!file)
+		{
+			ASSERT(false, "Couldn't read file" << file_path << "!");
+
+			return false;
+		}
+
+		//Read the header.
+		WAVHeader header;
+
+		file.Read(&header._ChunkID, sizeof(char) * 4);
+		file.Read(&header._ChunkSize, sizeof(uint32));
+		file.Read(&header._Format, sizeof(char) * 4);
+		file.Read(&header._SubChunk1ID, sizeof(char) * 4);
+		file.Read(&header._SubChunk1Size, sizeof(uint32));
+		file.Read(&header._AudioFormat, sizeof(uint16));
+		file.Read(&header._NumberOfChannels, sizeof(uint16));
+		file.Read(&header._SampleRate, sizeof(uint32));
+		file.Read(&header._ByteRate, sizeof(uint32));
+		file.Read(&header._BlockAlign, sizeof(uint16));
+		file.Read(&header._BitsPerSample, sizeof(uint16));
+		file.Read(&header._SubChunk2ID, sizeof(char) * 4);
+		file.Read(&header._SubChunk2Size, sizeof(uint32));
+
+		//Close the file.
+		file.Close();
+
+		//Return the audio length.
+		return static_cast<float64>(header._SubChunk2Size) / (static_cast<float64>(header._NumberOfChannels) * (static_cast<float64>(header._BitsPerSample / 8)));
+	}
+
 };
 
 #endif
