@@ -113,6 +113,27 @@ public:
 	}
 
 	/*
+	*	Calculates the tangent from the given triangle.
+	*/
+	FORCE_INLINE static Vector3<float32> CalculateTangent(const StaticArray<Vector3<float32>, 3> &positions, const StaticArray<Vector2<float32>, 3> &texture_coordinates) NOEXCEPT
+	{
+		const Vector3<float32> edge_1{ positions[1] - positions[0] };
+		const Vector3<float32> edge_2{ positions[2] - positions[0] };
+
+		const Vector2<float32> delta_uv_1{ texture_coordinates[1] - texture_coordinates[0] };
+		const Vector2<float32> delta_uv_2{ texture_coordinates[2] - texture_coordinates[0] };
+
+		const float32 f{ 1.0f / (delta_uv_1._X * delta_uv_2._Y - delta_uv_2._X * delta_uv_1._Y) };
+
+		return Vector3<float32>
+		(
+			f * (delta_uv_2._Y * edge_1._X - delta_uv_1._Y * edge_2._X),
+			f * (delta_uv_2._Y * edge_1._Y - delta_uv_1._Y * edge_2._Y),
+			f * (delta_uv_2._Y * edge_1._Z - delta_uv_1._Y * edge_2._Z)
+		);
+	}
+
+	/*
 	*	Calculates a world position from a screen coordinate.
 	*/
 	FORCE_INLINE static Vector3<float> CalculateWorldPositionFromScreenCoordinate(const Vector2<float>& screen_coordinate, const float depth) NOEXCEPT

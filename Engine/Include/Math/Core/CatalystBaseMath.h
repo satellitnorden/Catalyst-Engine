@@ -193,7 +193,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float32 Fractional(const float32 number) NOEXCEPT
 	{
-		return number - static_cast<float32>(static_cast<int32>(number));
+		return number >= 0.0f ? number - static_cast<float32>(static_cast<int32>(number)) : number + static_cast<float32>(static_cast<int32>(number));
 	}
 
 	/*
