@@ -1422,7 +1422,11 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 void RenderingSystem::PostInitializeCommonRenderDataTables() NOEXCEPT
 {
 	//Bind the clouds texture to the CLOUDS common render data table.
+#if defined(CATALYST_INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION)
 	BindCombinedImageSamplerToRenderDataTable(0, 0, &_CommonRenderDataTables[UNDERLYING(CommonRenderDataTable::CLOUDS)], ResourceSystem::Instance->GetTexture3DResource(HashString("Cloud_Texture3D"))->_Texture3DHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+#else
+	BindCombinedImageSamplerToRenderDataTable(0, 0, &_CommonRenderDataTables[UNDERLYING(CommonRenderDataTable::CLOUDS)], ResourceSystem::Instance->GetTexture3DResource(HashString("Catalyst_Engine_Default_Texture_3D"))->_Texture3DHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+#endif
 }
 
 /*
@@ -1451,7 +1455,11 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 		BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 	}
 
+#if defined(CATALYST_INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION)
 	BindCombinedImageSamplerToRenderDataTable(7, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], ResourceSystem::Instance->GetTextureCubeResource(HashString("Catalyst_Engine_Star_TextureCube"))->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+#else
+	BindCombinedImageSamplerToRenderDataTable(7, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], ResourceSystem::Instance->GetTextureCubeResource(HashString("Catalyst_Engine_Default_TextureCube"))->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+#endif
 }
 
 /*

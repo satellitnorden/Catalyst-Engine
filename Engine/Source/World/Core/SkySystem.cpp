@@ -17,7 +17,6 @@ void SkySystem::PostInitialize() NOEXCEPT
 	//Retrieve the default sky texture.
 	if (!_SkyTexture)
 	{
-		_SkyTexture = ResourceSystem::Instance->GetTextureCubeResource(HashString("Default_Sky_TextureCube"));
-		//_SkyTexture = ResourceSystem::Instance->GetTextureCubeResource(HashString("Catalyst_Engine_Star_TextureCube"));
+		_SkyTexture = ResourceSystem::Instance->GetTextureCubeResource(HashString("Catalyst_Engine_Default_TextureCube"));
 	}
 }

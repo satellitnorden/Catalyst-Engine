@@ -48,7 +48,11 @@ void OceanSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 	ResetGraphicsPipeline();
 
 	//Cache the ocean texture index.
+#if defined(CATALYST_INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION)
 	_OceanTextureIndex = ResourceSystem::Instance->GetTexture2DResource(HashString("Ocean_Texture2D"))->_Index;
+#else
+	_OceanTextureIndex = ResourceSystem::Instance->GetTexture2DResource(HashString("Catalyst_Engine_Default_Texture_2D"))->_Index;
+#endif
 
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();

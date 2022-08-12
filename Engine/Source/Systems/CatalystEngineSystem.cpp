@@ -170,15 +170,41 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 	//Register the Catalyst Engine resource collection. 
 #if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
-	ResourceSystem::Instance->LoadResourceCollection("CatalystEngineResourceCollection_0.crc");
+	ResourceSystem::Instance->LoadResourceCollection("CatalystEngineBaseResourceCollection_0.crc");
+
+	#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
+		ResourceSystem::Instance->LoadResourceCollection("CatalystEngineEnvironmentResourceCollection_0.crc");
+	#endif
+
+	#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
+		ResourceSystem::Instance->LoadResourceCollection("CatalystEngineExtraResourceCollection_0.crc");
+	#endif
+
 #endif
 
 #if defined(CATALYST_PLATFORM_WINDOWS)
 	#if defined(CATALYST_CONFIGURATION_FINAL)
-	ResourceSystem::Instance->LoadResourceCollection("EngineResources\\CatalystEngineResourceCollection_0.crc");
+		ResourceSystem::Instance->LoadResourceCollection("EngineResources\\CatalystEngineBaseResourceCollection_0.crc");
+
+		#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
+			ResourceSystem::Instance->LoadResourceCollection("EngineResources\\CatalystEngineEnvironmentResourceCollection_0.crc");
+		#endif
+
+		#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
+			ResourceSystem::Instance->LoadResourceCollection("EngineResources\\CatalystEngineExtraResourceCollection_0.crc");
+		#endif
 	#else
-	ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate");
+		ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineBaseResourceCollection_0.crc");
+
+		#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
+			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineEnvironmentResourceCollection_0.crc");
+		#endif
+
+		#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
+			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineExtraResourceCollection_0.crc");
+		#endif
 	#endif
+		
 #endif
 
 	//Post-initialize all systems.

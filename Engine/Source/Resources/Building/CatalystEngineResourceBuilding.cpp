@@ -38,13 +38,14 @@
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES (0)
 #define BUILD_ENGINE_SHADERS (0)
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE (0)
+#define BUILD_ENGINE_DEFAULT_TEXTURE_2D (0)
+#define BUILD_ENGINE_DEFAULT_TEXTURE_3D (0)
 #define BUILD_ENGINE_MATERIALS (0)
 #define BUILD_ENGINE_MODELS (0)
-#define BUILD_ENGINE_TEXTURES (0)
 #define BUILD_ENGINE_STAR_TEXTURE (0)
 #define BUILD_ENGINE_MISCELLANEOUS (0)
 
-#define BUILD_ENGINE_RESOURCE_COLLECTION (0)
+#define BUILD_ENGINE_RESOURCE_COLLECTIONS (0)
 
 /*
 *	Builds resources for the Catalyst Engine.
@@ -65,7 +66,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		FontBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Font";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Base\\Catalyst_Engine_Default_Font";
 		parameters._ID = "Catalyst_Engine_Default_Font";
 		parameters._File = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Fonts\\OpenSans-Regular.ttf";
 
@@ -81,11 +82,19 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	BuildDefaultSkyTexture();
 #endif
 
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_DEFAULT_TEXTURE_2D
+	BuildDefaultTexture2D();
+#endif
+
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_DEFAULT_TEXTURE_3D
+	BuildDefaultTexture3D();
+#endif
+
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_BLUE_NOISE_TEXTURES
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_0_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Base\\Blue_Noise_0_Texture2D";
 		parameters._ID = "Blue_Noise_0_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -110,7 +119,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_1_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Base\\Blue_Noise_1_Texture2D";
 		parameters._ID = "Blue_Noise_1_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -134,7 +143,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_2_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Base\\Blue_Noise_2_Texture2D";
 		parameters._ID = "Blue_Noise_2_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -158,7 +167,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_3_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_3_Texture2D";
 		parameters._ID = "Blue_Noise_3_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -182,7 +191,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_4_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_4_Texture2D";
 		parameters._ID = "Blue_Noise_4_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -206,7 +215,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_5_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_5_Texture2D";
 		parameters._ID = "Blue_Noise_5_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -230,7 +239,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_6_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_6_Texture2D";
 		parameters._ID = "Blue_Noise_6_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -254,7 +263,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_7_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_7_Texture2D";
 		parameters._ID = "Blue_Noise_7_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -278,7 +287,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_8_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_8_Texture2D";
 		parameters._ID = "Blue_Noise_8_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -302,7 +311,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_9_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_9_Texture2D";
 		parameters._ID = "Blue_Noise_9_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -326,7 +335,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_10_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_10_Texture2D";
 		parameters._ID = "Blue_Noise_10_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -350,7 +359,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_11_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_11_Texture2D";
 		parameters._ID = "Blue_Noise_11_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -374,7 +383,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_12_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_12_Texture2D";
 		parameters._ID = "Blue_Noise_12_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -398,7 +407,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_13_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_13_Texture2D";
 		parameters._ID = "Blue_Noise_13_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -422,7 +431,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_14_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_14_Texture2D";
 		parameters._ID = "Blue_Noise_14_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -446,7 +455,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_15_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_15_Texture2D";
 		parameters._ID = "Blue_Noise_15_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -470,7 +479,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_16_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_16_Texture2D";
 		parameters._ID = "Blue_Noise_16_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -494,7 +503,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_17_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_17_Texture2D";
 		parameters._ID = "Blue_Noise_17_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -518,7 +527,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_18_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_18_Texture2D";
 		parameters._ID = "Blue_Noise_18_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -542,7 +551,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_19_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_19_Texture2D";
 		parameters._ID = "Blue_Noise_19_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -566,7 +575,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_20_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_20_Texture2D";
 		parameters._ID = "Blue_Noise_20_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -590,7 +599,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_21_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_21_Texture2D";
 		parameters._ID = "Blue_Noise_21_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -614,7 +623,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_22_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_22_Texture2D";
 		parameters._ID = "Blue_Noise_22_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -638,7 +647,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_23_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_23_Texture2D";
 		parameters._ID = "Blue_Noise_23_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -662,7 +671,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_24_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_24_Texture2D";
 		parameters._ID = "Blue_Noise_24_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -686,7 +695,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_25_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_25_Texture2D";
 		parameters._ID = "Blue_Noise_25_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -710,7 +719,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_26_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_26_Texture2D";
 		parameters._ID = "Blue_Noise_26_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -734,7 +743,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_27_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_27_Texture2D";
 		parameters._ID = "Blue_Noise_27_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -758,7 +767,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_28_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_28_Texture2D";
 		parameters._ID = "Blue_Noise_28_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -782,7 +791,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_29_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_29_Texture2D";
 		parameters._ID = "Blue_Noise_29_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -806,7 +815,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_30_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_30_Texture2D";
 		parameters._ID = "Blue_Noise_30_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -830,7 +839,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		Texture2DBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Blue_Noise_31_Texture2D";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Blue_Noise_31_Texture2D";
 		parameters._ID = "Blue_Noise_31_Texture2D";
 		parameters._DefaultWidth = 0;
 		parameters._DefaultHeight = 0;
@@ -856,7 +865,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionApplicationFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\AmbientOcclusionApplicationFragmentShader";
 		parameters._ID = "AmbientOcclusionApplicationFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionApplicationFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -867,7 +876,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionSpatialDenoisingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\AmbientOcclusionSpatialDenoisingFragmentShader";
 		parameters._ID = "AmbientOcclusionSpatialDenoisingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionSpatialDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -878,7 +887,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AmbientOcclusionTemporalDenoisingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\AmbientOcclusionTemporalDenoisingFragmentShader";
 		parameters._ID = "AmbientOcclusionTemporalDenoisingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AmbientOcclusionTemporalDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -889,7 +898,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AnimatedModelSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\AnimatedModelSceneFeaturesFragmentShader";
 		parameters._ID = "AnimatedModelSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AnimatedModelSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -900,7 +909,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AnimatedModelSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\AnimatedModelSceneFeaturesVertexShader";
 		parameters._ID = "AnimatedModelSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AnimatedModelSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -911,7 +920,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\AxisAlignedBoundingBox3DVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\AxisAlignedBoundingBox3DVertexShader";
 		parameters._ID = "AxisAlignedBoundingBox3DVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\AxisAlignedBoundingBox3DVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -922,7 +931,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\BloomIsolationFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\BloomIsolationFragmentShader";
 		parameters._ID = "BloomIsolationFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\BloomIsolationFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -933,7 +942,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ClearVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ClearVertexShader";
 		parameters._ID = "ClearVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ClearVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -944,7 +953,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ClearFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ClearFragmentShader";
 		parameters._ID = "ClearFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ClearFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -955,7 +964,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DebugFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DebugFragmentShader";
 		parameters._ID = "DebugFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DebugFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -966,7 +975,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DebugRenderFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DebugRenderFragmentShader";
 		parameters._ID = "DebugRenderFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DebugRenderFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -977,7 +986,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthDownsampleFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DepthDownsampleFragmentShader";
 		parameters._ID = "DepthDownsampleFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthDownsampleFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -988,7 +997,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthOfFieldApplicationFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DepthOfFieldApplicationFragmentShader";
 		parameters._ID = "DepthOfFieldApplicationFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldApplicationFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -999,7 +1008,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DepthOfFieldBokehBlurFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DepthOfFieldBokehBlurFragmentShader";
 		parameters._ID = "DepthOfFieldBokehBlurFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldBokehBlurFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1010,7 +1019,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DirectLightingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DirectLightingFragmentShader";
 		parameters._ID = "DirectLightingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DirectLightingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1021,7 +1030,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\DynamicModelRayClosestHitShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DynamicModelRayClosestHitShader";
 		parameters._ID = "DynamicModelRayClosestHitShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelRayClosestHitShader.rchit";
 		parameters._Defines.Emplace("DYNAMIC_MODELS");
@@ -1033,7 +1042,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorSelectedModelFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\EditorSelectedModelFragmentShader";
 		parameters._ID = "EditorSelectedModelFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorSelectedModelFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1044,7 +1053,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorSelectedModelVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\EditorSelectedModelVertexShader";
 		parameters._ID = "EditorSelectedModelVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorSelectedModelVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1055,7 +1064,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorUserInterfaceFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\EditorUserInterfaceFragmentShader";
 		parameters._ID = "EditorUserInterfaceFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorUserInterfaceFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1066,7 +1075,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\EditorUserInterfaceVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\EditorUserInterfaceVertexShader";
 		parameters._ID = "EditorUserInterfaceVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorUserInterfaceVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1077,7 +1086,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\FastApproximateAntiAliasingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\FastApproximateAntiAliasingFragmentShader";
 		parameters._ID = "FastApproximateAntiAliasingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\FastApproximateAntiAliasingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1088,7 +1097,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingApplicationFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\IndirectLightingApplicationFragmentShader";
 		parameters._ID = "IndirectLightingApplicationFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingApplicationFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1099,7 +1108,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingSpatialDenoisingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\IndirectLightingSpatialDenoisingFragmentShader";
 		parameters._ID = "IndirectLightingSpatialDenoisingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingSpatialDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1110,7 +1119,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\IndirectLightingTemporalDenoisingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\IndirectLightingTemporalDenoisingFragmentShader";
 		parameters._ID = "IndirectLightingTemporalDenoisingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\IndirectLightingTemporalDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1121,7 +1130,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedImpostorColorSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedImpostorColorSceneFeaturesFragmentShader";
 		parameters._ID = "InstancedImpostorColorSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedImpostorColorSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1132,7 +1141,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedImpostorColorSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedImpostorColorSceneFeaturesVertexShader";
 		parameters._ID = "InstancedImpostorColorSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedImpostorColorSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1143,7 +1152,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedImpostorDepthSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedImpostorDepthSceneFeaturesFragmentShader";
 		parameters._ID = "InstancedImpostorDepthSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedImpostorDepthSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1154,7 +1163,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedImpostorDepthSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedImpostorDepthSceneFeaturesVertexShader";
 		parameters._ID = "InstancedImpostorDepthSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedImpostorDepthSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1165,7 +1174,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelShadowsFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedOpaqueModelShadowsFragmentShader";
 		parameters._ID = "InstancedOpaqueModelShadowsFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1176,7 +1185,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedOpaqueModelShadowsVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedOpaqueModelShadowsVertexShader";
 		parameters._ID = "InstancedOpaqueModelShadowsVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1187,7 +1196,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedStaticModelColorSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedStaticModelColorSceneFeaturesFragmentShader";
 		parameters._ID = "InstancedStaticModelColorSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedStaticModelColorSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1198,7 +1207,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedStaticModelColorSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedStaticModelColorSceneFeaturesVertexShader";
 		parameters._ID = "InstancedStaticModelColorSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedStaticModelColorSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1209,7 +1218,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedStaticModelDepthSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedStaticModelDepthSceneFeaturesFragmentShader";
 		parameters._ID = "InstancedStaticModelDepthSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedStaticModelDepthSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1220,7 +1229,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\InstancedStaticModelDepthSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedStaticModelDepthSceneFeaturesVertexShader";
 		parameters._ID = "InstancedStaticModelDepthSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedStaticModelDepthSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1231,7 +1240,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelColorSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\MaskedModelColorSceneFeaturesFragmentShader";
 		parameters._ID = "MaskedModelColorSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelColorSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1242,7 +1251,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelColorSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\MaskedModelColorSceneFeaturesVertexShader";
 		parameters._ID = "MaskedModelColorSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelColorSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1253,7 +1262,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelDepthSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\MaskedModelDepthSceneFeaturesFragmentShader";
 		parameters._ID = "MaskedModelDepthSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelDepthSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1264,7 +1273,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MaskedModelDepthSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\MaskedModelDepthSceneFeaturesVertexShader";
 		parameters._ID = "MaskedModelDepthSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MaskedModelDepthSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1275,7 +1284,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelShadowMapFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ModelShadowMapFragmentShader";
 		parameters._ID = "ModelShadowMapFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelShadowMapFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1286,7 +1295,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ModelShadowMapVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ModelShadowMapVertexShader";
 		parameters._ID = "ModelShadowMapVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelShadowMapVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1297,7 +1306,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\MotionBlurFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\MotionBlurFragmentShader";
 		parameters._ID = "MotionBlurFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MotionBlurFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1308,7 +1317,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OpaqueModelSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\OpaqueModelSceneFeaturesFragmentShader";
 		parameters._ID = "OpaqueModelSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OpaqueModelSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1319,7 +1328,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OpaqueModelSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\OpaqueModelSceneFeaturesVertexShader";
 		parameters._ID = "OpaqueModelSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OpaqueModelSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1330,7 +1339,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OceanSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\OceanSceneFeaturesFragmentShader";
 		parameters._ID = "OceanSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OceanSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1341,7 +1350,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\OceanSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\OceanSceneFeaturesVertexShader";
 		parameters._ID = "OceanSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OceanSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1352,7 +1361,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemComputeShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemComputeShader";
 		parameters._ID = "ParticleSystemComputeShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemComputeShader.comp";
 		parameters._Stage = ShaderStage::COMPUTE;
@@ -1363,7 +1372,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedColorSceneFeaturesFragmentShader";
 		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1374,7 +1383,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesGeometryShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedColorSceneFeaturesGeometryShader";
 		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesGeometryShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesGeometryShader.geom";
 		parameters._Stage = ShaderStage::GEOMETRY;
@@ -1385,7 +1394,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedColorSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedColorSceneFeaturesVertexShader";
 		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1396,7 +1405,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
 		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1407,7 +1416,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
 		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader.geom";
 		parameters._Stage = ShaderStage::GEOMETRY;
@@ -1418,7 +1427,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ParticleSystemMaskedDepthSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedDepthSceneFeaturesVertexShader";
 		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1429,7 +1438,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PassthroughFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\PassthroughFragmentShader";
 		parameters._ID = "PassthroughFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PassthroughFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1440,7 +1449,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingRayGenerationShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\PathTracingRayGenerationShader";
 		parameters._ID = "PathTracingRayGenerationShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
@@ -1451,7 +1460,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PathTracingRayMissShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\PathTracingRayMissShader";
 		parameters._ID = "PathTracingRayMissShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayMissShader.rmiss";
 		parameters._Stage = ShaderStage::RAY_MISS;
@@ -1462,7 +1471,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PostProcessingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\PostProcessingFragmentShader";
 		parameters._ID = "PostProcessingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PostProcessingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1473,7 +1482,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RasterizedShadowsFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RasterizedShadowsFragmentShader";
 		parameters._ID = "RasterizedShadowsFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RasterizedShadowsFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1484,7 +1493,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedAmbientOcclusionRayGenerationShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RayTracedAmbientOcclusionRayGenerationShader";
 		parameters._ID = "RayTracedAmbientOcclusionRayGenerationShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedAmbientOcclusionRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
@@ -1495,7 +1504,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedIndirectLightingRayGenerationShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RayTracedIndirectLightingRayGenerationShader";
 		parameters._ID = "RayTracedIndirectLightingRayGenerationShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedIndirectLightingRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
@@ -1506,7 +1515,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedShadowsRayGenerationShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RayTracedShadowsRayGenerationShader";
 		parameters._ID = "RayTracedShadowsRayGenerationShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedShadowsRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
@@ -1517,7 +1526,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RayTracedVolumetricLightingRayGenerationShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RayTracedVolumetricLightingRayGenerationShader";
 		parameters._ID = "RayTracedVolumetricLightingRayGenerationShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedVolumetricLightingRayGenerationShader.rgen";
 		parameters._Stage = ShaderStage::RAY_GENERATION;
@@ -1528,7 +1537,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\RenderingReferenceFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RenderingReferenceFragmentShader";
 		parameters._ID = "RenderingReferenceFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RenderingReferenceFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1539,7 +1548,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ResampleFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ResampleFragmentShader";
 		parameters._ID = "ResampleFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ResampleFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1550,7 +1559,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SceneFeaturesDownsampleFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\SceneFeaturesDownsampleFragmentShader";
 		parameters._ID = "SceneFeaturesDownsampleFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SceneFeaturesDownsampleFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1561,7 +1570,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ScreenFragmentShader";
 		parameters._ID = "ScreenFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1572,7 +1581,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceAmbientOcclusionFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ScreenSpaceAmbientOcclusionFragmentShader";
 		parameters._ID = "ScreenSpaceAmbientOcclusionFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceAmbientOcclusionFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1583,7 +1592,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ScreenSpaceIndirectLightingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ScreenSpaceIndirectLightingFragmentShader";
 		parameters._ID = "ScreenSpaceIndirectLightingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenSpaceIndirectLightingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1594,7 +1603,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ShadowsSpatialDenoisingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ShadowsSpatialDenoisingFragmentShader";
 		parameters._ID = "ShadowsSpatialDenoisingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ShadowsSpatialDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1605,7 +1614,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SimplifiedModelFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\SimplifiedModelFragmentShader";
 		parameters._ID = "SimplifiedModelFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SimplifiedModelFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1616,7 +1625,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SimplifiedModelVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\SimplifiedModelVertexShader";
 		parameters._ID = "SimplifiedModelVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SimplifiedModelVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1627,7 +1636,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SimplifiedSkyFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\SimplifiedSkyFragmentShader";
 		parameters._ID = "SimplifiedSkyFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SimplifiedSkyFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1638,7 +1647,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SkyFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\SkyFragmentShader";
 		parameters._ID = "SkyFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1649,7 +1658,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\SphereVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\SphereVertexShader";
 		parameters._ID = "SphereVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SphereVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1660,7 +1669,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\StaticModelRayClosestHitShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\StaticModelRayClosestHitShader";
 		parameters._ID = "StaticModelRayClosestHitShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelRayClosestHitShader.rchit";
 		parameters._Defines.Emplace("STATIC_MODELS");
@@ -1672,7 +1681,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TemporalAntiAliasingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\TemporalAntiAliasingFragmentShader";
 		parameters._ID = "TemporalAntiAliasingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TemporalAntiAliasingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1683,7 +1692,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainRayClosestHitShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\TerrainRayClosestHitShader";
 		parameters._ID = "TerrainRayClosestHitShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainRayClosestHitShader.rchit";
 		parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
@@ -1694,7 +1703,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainSceneFeaturesFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\TerrainSceneFeaturesFragmentShader";
 		parameters._ID = "TerrainSceneFeaturesFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainSceneFeaturesFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1705,7 +1714,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainSceneFeaturesVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\TerrainSceneFeaturesVertexShader";
 		parameters._ID = "TerrainSceneFeaturesVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1716,7 +1725,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainShadowFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\TerrainShadowFragmentShader";
 		parameters._ID = "TerrainShadowFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainShadowFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1727,7 +1736,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\TerrainShadowVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\TerrainShadowVertexShader";
 		parameters._ID = "TerrainShadowVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainShadowVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1738,7 +1747,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ThreeDimensionalUserInterfaceFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ThreeDimensionalUserInterfaceFragmentShader";
 		parameters._ID = "ThreeDimensionalUserInterfaceFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceFragmentShader.frag";
 		parameters._Defines.Emplace("THREE_DIMENSIONAL_USER_INTERFACE");
@@ -1750,7 +1759,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ThreeDimensionalUserInterfaceVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ThreeDimensionalUserInterfaceVertexShader";
 		parameters._ID = "ThreeDimensionalUserInterfaceVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceVertexShader.vert";
 		parameters._Defines.Emplace("THREE_DIMENSIONAL_USER_INTERFACE");
@@ -1762,7 +1771,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ToneMappingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ToneMappingFragmentShader";
 		parameters._ID = "ToneMappingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ToneMappingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1773,7 +1782,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\UserInterfaceFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\UserInterfaceFragmentShader";
 		parameters._ID = "UserInterfaceFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1784,7 +1793,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\UserInterfaceVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\UserInterfaceVertexShader";
 		parameters._ID = "UserInterfaceVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1795,7 +1804,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VelocityFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\VelocityFragmentShader";
 		parameters._ID = "VelocityFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VelocityFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1806,7 +1815,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\ViewportVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ViewportVertexShader";
 		parameters._ID = "ViewportVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ViewportVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1817,7 +1826,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VirtualRealityFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\VirtualRealityFragmentShader";
 		parameters._ID = "VirtualRealityFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VirtualRealityFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1828,7 +1837,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VirtualRealityVertexShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\VirtualRealityVertexShader";
 		parameters._ID = "VirtualRealityVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VirtualRealityVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
@@ -1839,7 +1848,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VisibilityRayMissShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\VisibilityRayMissShader";
 		parameters._ID = "VisibilityRayMissShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VisibilityRayMissShader.rmiss";
 		parameters._Stage = ShaderStage::RAY_MISS;
@@ -1850,7 +1859,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingApplicationFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\VolumetricLightingApplicationFragmentShader";
 		parameters._ID = "VolumetricLightingApplicationFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingApplicationFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1861,7 +1870,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\VolumetricLightingFragmentShader";
 		parameters._ID = "VolumetricLightingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1872,7 +1881,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingSpatialDenoisingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\VolumetricLightingSpatialDenoisingFragmentShader";
 		parameters._ID = "VolumetricLightingSpatialDenoisingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingSpatialDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1883,7 +1892,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\VolumetricLightingTemporalDenoisingFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\VolumetricLightingTemporalDenoisingFragmentShader";
 		parameters._ID = "VolumetricLightingTemporalDenoisingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VolumetricLightingTemporalDenoisingFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
@@ -1902,7 +1911,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the material.
 			MaterialBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Material";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Catalyst_Engine_Default_Material";
 			parameters._ID = "Catalyst_Engine_Default_Material";
 			parameters._Type = MaterialResource::Type::OPAQUE;
 			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
@@ -1934,7 +1943,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the material.
 			MaterialBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Arch_Material";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Arch_Material";
 			parameters._ID = "Sponza_Arch_Material";
 			parameters._Type = MaterialResource::Type::OPAQUE;
 			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
@@ -1965,7 +1974,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the material.
 			MaterialBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Bricks_Material";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Bricks_Material";
 			parameters._ID = "Sponza_Bricks_Material";
 			parameters._Type = MaterialResource::Type::OPAQUE;
 			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
@@ -1996,7 +2005,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the material.
 			MaterialBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Ceiling_Material";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Ceiling_Material";
 			parameters._ID = "Sponza_Ceiling_Material";
 			parameters._Type = MaterialResource::Type::OPAQUE;
 			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
@@ -2029,7 +2038,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Default_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Catalyst_Engine_Default_Model";
 			parameters._ResourceIdentifier = "Catalyst_Engine_Default_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Catalyst_Engine_Default_Model.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2055,7 +2064,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Arch_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Arch_Model";
 			parameters._ResourceIdentifier = "Sponza_Arch_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Arch.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2081,7 +2090,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Bricks_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Bricks_Model";
 			parameters._ResourceIdentifier = "Sponza_Bricks_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Bricks.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2107,7 +2116,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Ceiling_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Ceiling_Model";
 			parameters._ResourceIdentifier = "Sponza_Ceiling_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Ceiling.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2133,7 +2142,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Chain_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Chain_Model";
 			parameters._ResourceIdentifier = "Sponza_Chain_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Chain.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2159,7 +2168,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Column_A_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Column_A_Model";
 			parameters._ResourceIdentifier = "Sponza_Column_A_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Column_A.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2185,7 +2194,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Column_B_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Column_B_Model";
 			parameters._ResourceIdentifier = "Sponza_Column_B_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Column_B.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2211,7 +2220,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Column_C_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Column_C_Model";
 			parameters._ResourceIdentifier = "Sponza_Column_C_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Column_C.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2237,7 +2246,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Details_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Details_Model";
 			parameters._ResourceIdentifier = "Sponza_Details_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Details.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2263,7 +2272,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_A_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Fabric_A_Model";
 			parameters._ResourceIdentifier = "Sponza_Fabric_A_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_A.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2289,7 +2298,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_C_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Fabric_C_Model";
 			parameters._ResourceIdentifier = "Sponza_Fabric_C_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_C.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2315,7 +2324,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_D_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Fabric_D_Model";
 			parameters._ResourceIdentifier = "Sponza_Fabric_D_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_D.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2341,7 +2350,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_E_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Fabric_E_Model";
 			parameters._ResourceIdentifier = "Sponza_Fabric_E_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_E.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2367,7 +2376,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_F_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Fabric_F_Model";
 			parameters._ResourceIdentifier = "Sponza_Fabric_F_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_F.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2393,7 +2402,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Fabric_G_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Fabric_G_Model";
 			parameters._ResourceIdentifier = "Sponza_Fabric_G_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Fabric_G.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2419,7 +2428,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Flagpole_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Flagpole_Model";
 			parameters._ResourceIdentifier = "Sponza_Flagpole_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Flagpole.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2445,7 +2454,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Floor_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Floor_Model";
 			parameters._ResourceIdentifier = "Sponza_Floor_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Floor.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2471,7 +2480,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Leaf_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Leaf_Model";
 			parameters._ResourceIdentifier = "Sponza_Leaf_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Leaf.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2497,7 +2506,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Material_25_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Material_25_Model";
 			parameters._ResourceIdentifier = "Sponza_Material_25_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Material_25.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2523,7 +2532,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Material_47_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Material_47_Model";
 			parameters._ResourceIdentifier = "Sponza_Material_47_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Material_47.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2549,7 +2558,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Material_57_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Material_57_Model";
 			parameters._ResourceIdentifier = "Sponza_Material_57_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Material_57.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2575,7 +2584,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Material_298_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Material_298_Model";
 			parameters._ResourceIdentifier = "Sponza_Material_298_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Material_298.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2601,7 +2610,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Roof_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Roof_Model";
 			parameters._ResourceIdentifier = "Sponza_Roof_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Roof.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2627,7 +2636,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Vase_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Vase_Model";
 			parameters._ResourceIdentifier = "Sponza_Vase_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Vase.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2653,7 +2662,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Vase_Hanging_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Vase_Hanging_Model";
 			parameters._ResourceIdentifier = "Sponza_Vase_Hanging_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Vase_Hanging.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2679,7 +2688,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the model.
 			ModelBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Vase_Round_Model";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Vase_Round_Model";
 			parameters._ResourceIdentifier = "Sponza_Vase_Round_Model";
 			parameters._LevelOfDetails.Emplace("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Models\\Sponza_Vase_Round.fbx");
 			parameters._Transformation = Matrix4x4();
@@ -2689,236 +2698,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			parameters._CollisionModelFilePath = nullptr;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-#endif
-
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_TEXTURES
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			//Build the texture 2D.
-			Texture2DBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Arch_AlbedoThickness_Texture2D";
-			parameters._ID = "Sponza_Arch_AlbedoThickness_Texture2D";
-			parameters._DefaultWidth = 0;
-			parameters._DefaultHeight = 0;
-			parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Sponza\\sponza_arch_diff.png";
-			parameters._File2 = nullptr;
-			parameters._File3 = nullptr;
-			parameters._File4 = nullptr;
-			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
-			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
-			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
-			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
-			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
-			parameters._ApplyGammaCorrection = true;
-			parameters._TransformFunction = nullptr;
-			parameters._BaseMipmapLevel = 0;
-			parameters._MipmapLevels = 9;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			//Build the texture 2D.
-			Texture2DBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Bricks_AlbedoThickness_Texture2D";
-			parameters._ID = "Sponza_Bricks_AlbedoThickness_Texture2D";
-			parameters._DefaultWidth = 0;
-			parameters._DefaultHeight = 0;
-			parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Sponza\\spnza_bricks_a_diff.png";
-			parameters._File2 = nullptr;
-			parameters._File3 = nullptr;
-			parameters._File4 = nullptr;
-			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
-			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
-			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
-			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
-			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
-			parameters._ApplyGammaCorrection = true;
-			parameters._TransformFunction = nullptr;
-			parameters._BaseMipmapLevel = 0;
-			parameters._MipmapLevels = 9;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			//Build the texture 2D.
-			Texture2DBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Bricks_NormalMapDisplacement_Texture2D";
-			parameters._ID = "Sponza_Bricks_NormalMapDisplacement_Texture2D";
-			parameters._DefaultWidth = 0;
-			parameters._DefaultHeight = 0;
-			parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Sponza\\spnza_bricks_a_bump.png";
-			parameters._File2 = nullptr;
-			parameters._File3 = nullptr;
-			parameters._File4 = nullptr;
-			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
-			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
-			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
-			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
-			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
-			parameters._ApplyGammaCorrection = false;
-			parameters._TransformFunction = [](const Texture2D<Vector4<float32>> &input_texture, Texture2D<Vector4<float32>> *const RESTRICT output_texture)
-			{
-				for (uint32 Y{ 0 }; Y < input_texture.GetHeight(); ++Y)
-				{
-					for (uint32 X{ 0 }; X < input_texture.GetWidth(); ++X)
-					{
-						Vector2<uint32> left;
-
-						{
-							if (X == 0
-								|| X == (input_texture.GetWidth() - 1))
-							{
-								left._X = X;
-							}
-
-							else
-							{
-								left._X = X - 1;
-							}
-
-							left._Y = Y;
-						}
-
-						Vector2<uint32> right;
-
-						{
-							if (X == 0
-								|| X == (input_texture.GetWidth() - 1))
-							{
-								right._X = X;
-							}
-
-							else
-							{
-								right._X = X + 1;
-							}
-
-							right._Y = Y;
-						}
-
-						Vector2<uint32> down;
-
-						{
-							if (Y == 0
-								|| Y == (input_texture.GetHeight() - 1))
-							{
-								down._Y = Y;
-							}
-
-							else
-							{
-								down._Y = Y - 1;
-							}
-
-							down._X = X;
-						}
-
-						Vector2<uint32> up;
-
-						{
-							if (Y == 0
-								|| Y == (input_texture.GetHeight() - 1))
-							{
-								up._Y = Y;
-							}
-
-							else
-							{
-								up._Y = Y + 1;
-							}
-
-							up._X = X;
-						}
-
-						const float32 left_height{ input_texture.At(left._X, left._Y)._X };
-						const float32 right_height{ input_texture.At(right._X, right._Y)._X };
-						const float32 down_height{ input_texture.At(down._X, down._Y)._X };
-						const float32 up_height{ input_texture.At(up._X, up._Y)._X };
-
-						Vector3<float32> normal{ Vector3<float32>::Normalize(Vector3<float32>(left_height - right_height, down_height - up_height, 2.0f)) };
-
-						normal._X = normal._X * 0.5f + 0.5f;
-						normal._Y = normal._Y * 0.5f + 0.5f;
-						normal._Z = normal._Z * 0.5f + 0.5f;
-
-						output_texture->At(X, Y) = Vector4<float32>(normal, 0.5f);
-					}
-				}
-			};
-			parameters._BaseMipmapLevel = 0;
-			parameters._MipmapLevels = 9;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			//Build the texture 2D.
-			Texture2DBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Sponza_Ceiling_AlbedoThickness_Texture2D";
-			parameters._ID = "Sponza_Ceiling_AlbedoThickness_Texture2D";
-			parameters._DefaultWidth = 0;
-			parameters._DefaultHeight = 0;
-			parameters._File1 = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Textures\\Sponza\\sponza_ceiling_a_diff.png";
-			parameters._File2 = nullptr;
-			parameters._File3 = nullptr;
-			parameters._File4 = nullptr;
-			parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
-			parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
-			parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
-			parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
-			parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
-			parameters._ApplyGammaCorrection = true;
-			parameters._TransformFunction = nullptr;
-			parameters._BaseMipmapLevel = 0;
-			parameters._MipmapLevels = 9;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 		};
 		task._Arguments = nullptr;
 		task._ExecutableOnSameThread = false;
@@ -2964,7 +2743,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Build the raw data.
 			RawDataBuildParameters parameters;
 
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\PI_Decimal_Lookup";
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Extra\\PI_Decimal_Lookup";
 			parameters._ResourceIdentifier = "PI_Decimal_Lookup";
 			parameters._Data = &data;
 
@@ -2990,12 +2769,36 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		MemorySystem::Instance->TypeFree<Task>(task);
 	}
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_FONTS || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_MODELS || BUILD_ENGINE_TEXTURES || BUILD_ENGINE_STAR_TEXTURE || BUILD_ENGINE_MISCELLANEOUS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTION
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_FONTS || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_DEFAULT_TEXTURE_2D || BUILD_ENGINE_DEFAULT_TEXTURE_3D || BUILD_ENGINE_MODELS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTIONS
 	{
 		ResourceCollectionBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection";
-		parameters._Folder = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineBaseResourceCollection";
+		parameters._Folder = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base";
+		parameters._MaximumFileSize = 1'000'000'000;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(parameters);
+	}
+#endif
+
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_STAR_TEXTURE || BUILD_ENGINE_RESOURCE_COLLECTIONS
+	{
+		ResourceCollectionBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineEnvironmentResourceCollection";
+		parameters._Folder = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Environment";
+		parameters._MaximumFileSize = 1'000'000'000;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(parameters);
+	}
+#endif
+
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_MISCELLANEOUS || BUILD_ENGINE_RESOURCE_COLLECTIONS
+	{
+		ResourceCollectionBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineExtraResourceCollection";
+		parameters._Folder = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Extra";
 		parameters._MaximumFileSize = 1'000'000'000;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(parameters);
@@ -3125,7 +2928,7 @@ void CatalystEngineResourceBuilding::BuildCloudTexture() NOEXCEPT
 
 	Texture3DBuildParameters parameters;
 
-	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Cloud_Texture3D";
+	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Environment\\Cloud_Texture3D";
 	parameters._ID = "Cloud_Texture3D";
 	parameters._Texture = &final_texture;
 
@@ -3236,7 +3039,7 @@ void CatalystEngineResourceBuilding::BuildOceanTexture() NOEXCEPT
 	}
 
 	//What should the file be called?
-	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Ocean_Texture2D" };
+	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Environment\\Ocean_Texture2D" };
 	file_name += ".cr";
 
 	//Open the file to be written to.
@@ -3267,13 +3070,13 @@ void CatalystEngineResourceBuilding::BuildOceanTexture() NOEXCEPT
 void CatalystEngineResourceBuilding::BuildDefaultSkyTexture() NOEXCEPT
 {
 	//What should the resource be called?
-	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Default_Sky_TextureCube.cr" };
+	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Catalyst_Engine_Default_TextureCube.cr" };
 
 	//Open the file to be written to.
 	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
 
 	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString("Default_Sky_TextureCube"), "Default_Sky_TextureCube" };
+	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString("Catalyst_Engine_Default_TextureCube"), "Catalyst_Engine_Default_TextureCube" };
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the resolution to the file.
@@ -3293,6 +3096,64 @@ void CatalystEngineResourceBuilding::BuildDefaultSkyTexture() NOEXCEPT
 
 	//Close the file.
 	file.Close();
+}
+
+/*
+*	Builds the default texture 3D.
+*/
+void CatalystEngineResourceBuilding::BuildDefaultTexture2D() NOEXCEPT
+{
+	//Create the texture.
+	Texture2DBuildParameters parameters;
+
+	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Catalyst_Engine_Default_Texture_2D";
+	parameters._ID = "Catalyst_Engine_Default_Texture_2D";
+	parameters._DefaultWidth = 1;
+	parameters._DefaultHeight = 1;
+	parameters._File1 = nullptr;
+	parameters._File2 = nullptr;
+	parameters._File3 = nullptr;
+	parameters._File4 = nullptr;
+	parameters._Default = Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f);
+	parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::RED);
+	parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
+	parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
+	parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+	parameters._ApplyGammaCorrection = false;
+	parameters._TransformFunction = nullptr;
+	parameters._BaseMipmapLevel = 0;
+	parameters._MipmapLevels = 1;
+
+	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+}
+
+/*
+*	Builds the default texture 3D.
+*/
+void CatalystEngineResourceBuilding::BuildDefaultTexture3D() NOEXCEPT
+{
+	//Create the texture.
+	Texture3D<Vector4<byte>> texture{ 1 };
+
+	for (uint32 X{ 0 }; X < 1; ++X)
+	{
+		for (uint32 Y{ 0 }; Y < 1; ++Y)
+		{
+			for (uint32 Z{ 0 }; Z < 1; ++Z)
+			{
+				//Write to the texture.
+				texture.At(X, Y, Z) = Vector4<byte>(BYTE_MAXIMUM / 2, BYTE_MAXIMUM / 2, BYTE_MAXIMUM / 2, BYTE_MAXIMUM / 2);
+			}
+		}
+	}
+
+	Texture3DBuildParameters parameters;
+
+	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Catalyst_Engine_Default_Texture_3D";
+	parameters._ID = "Catalyst_Engine_Default_Texture_3D";
+	parameters._Texture = &texture;
+
+	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture3D(parameters);
 }
 
 /*
@@ -3512,7 +3373,7 @@ void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
 	//Build the texture cube.
 	TextureCubeBuildParameters parameters;
 
-	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Catalyst_Engine_Star_TextureCube";
+	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Environment\\Catalyst_Engine_Star_TextureCube";
 	parameters._ID = "Catalyst_Engine_Star_TextureCube";
 	parameters._File = nullptr;
 	parameters._DefaultResolution = 1'024 / 4;

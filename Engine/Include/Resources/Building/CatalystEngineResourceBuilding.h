@@ -35,6 +35,16 @@ namespace CatalystEngineResourceBuilding
 	void BuildDefaultSkyTexture() NOEXCEPT;
 
 	/*
+	*	Builds the default texture 2D.
+	*/
+	void BuildDefaultTexture2D() NOEXCEPT;
+
+	/*
+	*	Builds the default texture 3D.
+	*/
+	void BuildDefaultTexture3D() NOEXCEPT;
+
+	/*
 	*	Builds the star texture.
 	*/
 	void BuildStarTexture() NOEXCEPT;

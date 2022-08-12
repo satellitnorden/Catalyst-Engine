@@ -43,6 +43,12 @@ public:
 	//The physics.
 	Physics _Physics{ Physics::NULL };
 
+	//Denotes whether or not to include environment resource collection.
+	bool _IncludeEnvironmentResourceCollection{ false };
+
+	//Denotes whether or not to include extra resource collection.
+	bool _IncludeExtraResourceCollection{ false };
+
 };
 
 /*
@@ -91,6 +97,8 @@ void PrintOptions()
 	std::cout << "\tSecond argument to this program is always the project name." << std::endl;
 	std::cout << std::endl;
 	std::cout << "\tOptional options:" << std::endl;
+	std::cout << "\t\tINCLUDE_ENVIRONMENT_RESOURCE_COLLECTION: Defines that the project should include the environment resource collection." << std::endl;
+	std::cout << "\t\tINCLUDE_EXTRA_RESOURCE_COLLECTION: Defines that the project should include the extra resource collection." << std::endl;
 	std::cout << "\t\tDISTRIBUTION_STEAM: Defines that the project should use STEAM as it's distribution system." << std::endl;
 	std::cout << "\t\tPHYSICS_PHYSX: Defines that the project should use PHYSX as it's physics system." << std::endl;
 	std::cout << "\t\tANDROID_FORCE_LANDSCAPE_MODE: Defines that the Android build of this project should force landscape mode." << std::endl;
@@ -219,6 +227,22 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 			output_file << input_line << std::endl;
 		}
 
+		//Add the CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION define.
+		if (general_parameters._IncludeEnvironmentResourceCollection)
+		{
+			output_file << std::endl;
+			output_file << "#Include the enviroment resource collection." << std::endl;
+			output_file << "add_compile_definitions(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)" << std::endl;
+		}
+
+		//Add the CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION define.
+		if (general_parameters._IncludeExtraResourceCollection)
+		{
+			output_file << std::endl;
+			output_file << "#Include the extra resource collection." << std::endl;
+			output_file << "add_compile_definitions(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)" << std::endl;
+		}
+
 		//Close the files.
 		input_file.close();
 		output_file.close();
@@ -334,8 +358,18 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 	{
 		std::filesystem::create_directory("Android\\app\\src\\main\\assets");
 		
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection_0.crc", "Android\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineBaseResourceCollection_0.crc", "Android\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
 	
+		if (general_parameters._IncludeEnvironmentResourceCollection)
+		{
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineEnvironmentResourceCollection_0.crc", "Android\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+		}
+
+		if (general_parameters._IncludeExtraResourceCollection)
+		{
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineExtraResourceCollection_0.crc", "Android\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+		}
+
 		if (error_code)
 		{
 			std::cout << error_code.message() << std::endl;
@@ -391,6 +425,22 @@ void GenerateOculusQuest(const GeneralParameters &general_parameters, const Ocul
 		}
 
 		cmake_lists_output_file << cmake_lists_line << std::endl;
+	}
+
+	//Add the CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION define.
+	if (general_parameters._IncludeEnvironmentResourceCollection)
+	{
+		cmake_lists_output_file << std::endl;
+		cmake_lists_output_file << "#Include the enviroment resource collection." << std::endl;
+		cmake_lists_output_file << "add_compile_definitions(CATALYST_INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION)" << std::endl;
+	}
+
+	//Add the CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION define.
+	if (general_parameters._IncludeExtraResourceCollection)
+	{
+		cmake_lists_output_file << std::endl;
+		cmake_lists_output_file << "#Include the extra resource collection." << std::endl;
+		cmake_lists_output_file << "add_compile_definitions(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)" << std::endl;
 	}
 
 	//Close the files.
@@ -578,7 +628,17 @@ void GenerateOculusQuest(const GeneralParameters &general_parameters, const Ocul
 	{
 		std::filesystem::create_directory("Oculus_Quest\\app\\src\\main\\assets");
 
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineResourceCollection_0.crc", "Oculus_Quest\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineBaseResourceCollection_0.crc", "Oculus_Quest\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+
+		if (general_parameters._IncludeEnvironmentResourceCollection)
+		{
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineEnvironmentResourceCollection_0.crc", "Android\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+		}
+
+		if (general_parameters._IncludeExtraResourceCollection)
+		{
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineExtraResourceCollection_0.crc", "Android\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+		}
 
 		if (error_code)
 		{
@@ -726,6 +786,22 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 		cmake_lists_output_file << cmake_lists_line << std::endl;
 	}
 
+	//Add the CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION define.
+	if (general_parameters._IncludeEnvironmentResourceCollection)
+	{
+		cmake_lists_output_file << std::endl;
+		cmake_lists_output_file << "#Include the enviroment resource collection." << std::endl;
+		cmake_lists_output_file << "add_compile_definitions(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)" << std::endl;
+	}
+
+	//Add the CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION define.
+	if (general_parameters._IncludeExtraResourceCollection)
+	{
+		cmake_lists_output_file << std::endl;
+		cmake_lists_output_file << "#Include the extra resource collection." << std::endl;
+		cmake_lists_output_file << "add_compile_definitions(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)" << std::endl;
+	}
+
 	//Close the files.
 	cmake_lists_input_file.close();
 	cmake_lists_output_file.close();
@@ -819,6 +895,16 @@ int main(int argc, char *argv[])
 	//Process remaining arguments.
 	for (int i{ 3 }; i < argc; ++i)
 	{
+		if (strcmp(argv[i], "INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION") == 0)
+		{
+			general_parameters._IncludeEnvironmentResourceCollection = true;
+		}
+
+		if (strcmp(argv[i], "INCLUDE_EXTRA_RESOURCE_COLLECTION") == 0)
+		{
+			general_parameters._IncludeExtraResourceCollection = true;
+		}
+
 		if (strcmp(argv[i], "DISTRIBUTION_STEAM") == 0)
 		{
 			general_parameters._Distribution = Distribution::STEAM;

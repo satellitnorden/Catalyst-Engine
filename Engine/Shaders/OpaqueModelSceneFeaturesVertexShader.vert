@@ -24,8 +24,8 @@ void CatalystShaderMain()
 	vec3 normal = normalize(vec3(currentModelMatrix * vec4(vertexNormal, 0.0f)));
 
 	fragmentTangentSpaceMatrix = mat3(tangent, bitangent, normal);
-	fragmentPreviousWorldPosition = vec3(previousModelMatrix * vec4(vertexPosition, 1.0));
-	fragmentCurrentWorldPosition = vec3(currentModelMatrix * vec4(vertexPosition, 1.0));
+	fragmentPreviousWorldPosition = vec3(previousModelMatrix * vec4(vertexPosition, 1.0f));
+	fragmentCurrentWorldPosition = vec3(currentModelMatrix * vec4(vertexPosition, 1.0f));
 	fragmentTextureCoordinate = vertexTextureCoordinate;
 
 	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragmentCurrentWorldPosition, 1.0f);
