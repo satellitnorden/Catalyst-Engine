@@ -690,5 +690,46 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		return CalculateIndirectFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
 	}
 
+	/*
+	*	Calculates simplified lighting, based on the Blinn-Phong model. Returns the radiance transmitted from the surface in the outgoing direction.
+	*
+	*	Arguments;
+	*	
+	*	- outgoing_direction: A direction vector from the point on the surface being shaded in the outgoing direction.
+	*	- albedo: The albedo of the surface point being shaded.
+	*	- normal: The normal of the surface point being shaded.
+	*	- roughness: The roughness of the surface point being shaded.
+	*	- metallic: THe metallic of the surface point being shaded.
+	*	- ambient_occlusion: The ambient occlusion of the surface point being shaded.
+	*	- thickness: The thickness of the surface point being shaded.
+	*	- irradiance_direction: A direction vector going from the entity emitting irradiance toward the surface point being shaded.
+	*	- irradiance: The incoming irradiance towards the surface point being shaded.
+	*/
+	CATALYST_SHADER_FUNCTION_RETURN_NINE_ARGUMENTS(	vec3,
+													CalculateSimplifiedLighting,
+													vec3 outgoing_direction,
+													vec3 albedo,
+													vec3 normal,
+													float roughness,
+													float metallic,
+													float ambient_occlusion,
+													float thickness,
+													vec3 irradiance_direction,
+													vec3 irradiance)
+	{
+		//Calculate diffuse.
+		float diffuse_factor = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, -irradiance_direction), 0.0f);
+		vec3 diffuse = diffuse_factor * irradiance * (albedo * (0.01f + 0.99f * (1.0f - metallic)));
+
+		//Calculate specular.
+		vec3 reflection_direction = CATALYST_SHADER_FUNCTION_REFLECT(irradiance_direction, normal);
+		float specular_power = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(256.0f, 1.0f, roughness * (1.0f - metallic));
+		float specular_factor = CATALYST_SHADER_FUNCTION_POWER(CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(-outgoing_direction, reflection_direction), 0.0f), specular_power);
+		vec3 specular = specular_factor * irradiance * albedo;
+
+		//Add them together!
+		return (diffuse + specular) * ambient_occlusion;
+	}
+
 CATALYST_SHADER_NAMESPACE_END()
 #endif

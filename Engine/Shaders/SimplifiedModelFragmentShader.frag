@@ -107,15 +107,15 @@ void CatalystShaderMain()
 			{
 				case LIGHT_TYPE_DIRECTIONAL:
 				{
-					final_lighting += CalculateLighting(-view_direction,
-														albedo_thickness.rgb,
-														shading_normal,
-														material_properties[0],
-														material_properties[1],
-														material_properties[2],
-														albedo_thickness.a,
-														light.position_or_direction,
-														light.color * light.intensity);
+					final_lighting += CalculateSimplifiedLighting(	-view_direction,
+																	albedo_thickness.rgb,
+																	shading_normal,
+																	material_properties[0],
+																	material_properties[1],
+																	material_properties[2],
+																	albedo_thickness.a,
+																	light.position_or_direction,
+																	light.color * light.intensity);
 
 					break;
 				}

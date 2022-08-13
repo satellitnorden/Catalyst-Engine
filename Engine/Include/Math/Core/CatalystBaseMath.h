@@ -320,7 +320,7 @@ public:
 
 	/*
 	*	Given a number and an exponent, returns the power of the exponent.
-	*	 Builds on the assumption that the exponent will always be non-zero.
+	*	Builds on the assumption that the exponent will always be non-zero.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float32 PowerOf(const float32 number, const uint8 exponent) NOEXCEPT
 	{

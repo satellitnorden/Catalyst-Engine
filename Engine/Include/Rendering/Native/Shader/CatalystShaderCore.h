@@ -75,6 +75,15 @@
 	}
 
 	/*
+	*	Reflect helper function.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD TYPE ReflectHelper(const TYPE value_1, const TYPE value_2) NOEXCEPT
+	{
+		return TYPE::Reflect(value_1, value_2);
+	}
+
+	/*
 	*	Defines a constant value of the given type. with the given name and value.
 	*/
 	#define CATALYST_SHADER_CONSTANT(TYPE, NAME, VALUE)	\
@@ -139,6 +148,18 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_NORMALIZE(ARGUMENT_1) \
 	NormalizeHelper(ARGUMENT_1)
+
+	/*
+	*	Calls the power function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_POWER(ARGUMENT_1, ARGUMENT_2) \
+	powf(ARGUMENT_1, ARGUMENT_2)
+
+	/*
+	*	Calls the reflect function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_REFLECT(ARGUMENT_1, ARGUMENT_2) \
+	ReflectHelper(ARGUMENT_1, ARGUMENT_2)
 
 	/*
 	*	Calls the sine function.
@@ -316,6 +337,18 @@
 	*/
 	#define CATALYST_SHADER_FUNCTION_NORMALIZE(ARGUMENT_1) \
 	normalize(ARGUMENT_1)
+
+	/*
+	*	Calls the power function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_POWER(ARGUMENT_1, ARGUMENT_2) \
+	pow(ARGUMENT_1, ARGUMENT_2)
+
+	/*
+	*	Calls the reflect function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_REFLECT(ARGUMENT_1, ARGUMENT_2) \
+	reflect(ARGUMENT_1, ARGUMENT_2)
 
 	/*
 	*	Calls the sine function.
