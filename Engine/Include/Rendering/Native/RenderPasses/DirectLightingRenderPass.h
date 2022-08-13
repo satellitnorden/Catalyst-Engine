@@ -11,7 +11,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DirectLightingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class DirectLightingRenderPass final : public RenderPass
+class ALIGN(8) DirectLightingRenderPass final : public RenderPass
 {
 	
 public:

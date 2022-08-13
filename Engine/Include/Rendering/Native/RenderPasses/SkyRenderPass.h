@@ -8,7 +8,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SkyGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class SkyRenderPass final : public RenderPass
+class ALIGN(8) SkyRenderPass final : public RenderPass
 {
 	
 public:

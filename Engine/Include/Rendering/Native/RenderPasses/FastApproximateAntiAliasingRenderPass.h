@@ -7,7 +7,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/FastApproximateAntiAliasingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class FastApproximateAntiAliasingRenderPass final : public RenderPass
+class ALIGN(8) FastApproximateAntiAliasingRenderPass final : public RenderPass
 {
 	
 public:

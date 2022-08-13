@@ -9,7 +9,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SceneFeaturesDownsampleGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class PostSceneFeaturesRenderPass final : public RenderPass
+class ALIGN(8) PostSceneFeaturesRenderPass final : public RenderPass
 {
 	
 public:

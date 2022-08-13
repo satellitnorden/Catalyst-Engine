@@ -8,7 +8,7 @@
 #include <Rendering/Native/Pipelines/RayTracingPipelines/PathTracingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class PathTracingRenderPass final : public RenderPass
+class ALIGN(8) PathTracingRenderPass final : public RenderPass
 {
 	
 public:

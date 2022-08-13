@@ -10,7 +10,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DebugRenderSphereGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class DebugRenderingRenderPass final : public RenderPass
+class ALIGN(8) DebugRenderingRenderPass final : public RenderPass
 {
 	
 public:

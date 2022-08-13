@@ -7,7 +7,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ScreenRenderPass final : public RenderPass
+class ALIGN(8) ScreenRenderPass final : public RenderPass
 {
 	
 public:

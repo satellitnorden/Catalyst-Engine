@@ -7,7 +7,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/PostProcessingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class PostProcessingRenderPass final : public RenderPass
+class ALIGN(8) PostProcessingRenderPass final : public RenderPass
 {
 	
 public:

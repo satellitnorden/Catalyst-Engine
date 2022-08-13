@@ -36,9 +36,11 @@
  function: Define a consistent set of types on each platform.
 
  ********************************************************************/
+#if defined(CATALYST_MSVC)
 __pragma(warning(disable : 4244))
 __pragma(warning(disable : 4996))
 __pragma(warning(disable : 4267))
+#endif
 
 #ifndef _OS_TYPES_H
 #define _OS_TYPES_H

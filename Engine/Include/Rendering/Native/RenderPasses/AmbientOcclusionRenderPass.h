@@ -13,7 +13,7 @@
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/RenderingConfiguration.h>
 
-class AmbientOcclusionRenderPass final : public RenderPass
+class ALIGN(8) AmbientOcclusionRenderPass final : public RenderPass
 {
 	
 public:

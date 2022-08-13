@@ -8,7 +8,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DebugGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class DebugRenderPass final : public RenderPass
+class ALIGN(8) DebugRenderPass final : public RenderPass
 {
 	
 public:

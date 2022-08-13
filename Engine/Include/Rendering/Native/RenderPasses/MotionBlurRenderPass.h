@@ -7,7 +7,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/MotionBlurGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class MotionBlurRenderPass final : public RenderPass
+class ALIGN(8) MotionBlurRenderPass final : public RenderPass
 {
 	
 public:

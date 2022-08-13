@@ -7,7 +7,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ToneMappingRenderPass final : public RenderPass
+class ALIGN(8) ToneMappingRenderPass final : public RenderPass
 {
 	
 public:

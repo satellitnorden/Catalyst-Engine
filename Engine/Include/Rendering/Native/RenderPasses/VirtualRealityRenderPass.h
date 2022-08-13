@@ -7,7 +7,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VirtualRealityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class VirtualRealityRenderPass final : public RenderPass
+class ALIGN(8) VirtualRealityRenderPass final : public RenderPass
 {
 	
 public:
