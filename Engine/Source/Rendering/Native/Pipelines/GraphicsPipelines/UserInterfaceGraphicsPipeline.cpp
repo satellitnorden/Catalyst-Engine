@@ -58,7 +58,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
+void UserInterfaceGraphicsPipeline::Initialize(const bool render_to_screen) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -70,9 +70,17 @@ void UserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 	SetGeometryShader(ResourcePointer<ShaderResource>());
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("UserInterfaceFragmentShader")));
 
-	//Add the output render targets.
-	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+	//Set render targets.
+	if (render_to_screen)
+	{
+		SetIsRenderingDirectlyToScreen(true);
+	}
+
+	else
+	{
+		SetNumberOfOutputRenderTargets(1);
+		AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+	}
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

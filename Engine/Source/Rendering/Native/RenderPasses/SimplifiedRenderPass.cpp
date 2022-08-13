@@ -62,7 +62,7 @@ void SimplifiedRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_SimplifiedModelGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_SimplifiedSkyGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_UserInterfaceGraphicsPipeline.Initialize();
+	_UserInterfaceGraphicsPipeline.Initialize(true);
 }
 
 /*

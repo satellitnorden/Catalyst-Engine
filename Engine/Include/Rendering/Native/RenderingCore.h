@@ -152,7 +152,6 @@ enum class SimplifiedNativeRenderPassStage : uint8
 #if defined(CATALYST_EDITOR)
 	EDITOR_USER_INTERFACE,
 #endif
-	SCREEN,
 
 	NUMBER_OF_STAGES
 };

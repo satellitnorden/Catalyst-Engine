@@ -55,9 +55,8 @@ void SimplifiedModelGraphicsPipeline::Initialize(const DepthBufferHandle depth_b
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);
 
-	//Add the output render targets.
-	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+	//Set whether or not this graphics pipeline is rendering directly to the screen.
+	SetIsRenderingDirectlyToScreen(true);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

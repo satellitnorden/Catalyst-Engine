@@ -17,9 +17,9 @@ layout (push_constant) uniform PushConstantData
 };
 
 //In parameters.
-layout (location = 0) in vec3 fragment_world_position;
-layout (location = 1) in vec3 fragment_normal;
-layout (location = 2) in vec2 fragment_texture_coordinate;
+layout (location = 0) in mat3 fragment_tangent_space_matrix;
+layout (location = 3) in vec3 fragment_world_position;
+layout (location = 4) in vec2 fragment_texture_coordinate;
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
@@ -37,6 +37,11 @@ void CatalystShaderMain()
 
 	EvaluateMaterial(material, fragment_texture_coordinate, albedo_thickness, normal_map_displacement, material_properties, opacity);
 
+	//Calculate the shading normal.
+	vec3 shading_normal = normal_map_displacement.xyz * 2.0f - 1.0f;
+	shading_normal = fragment_tangent_space_matrix * shading_normal;
+	shading_normal = shading_normal;
+
 	//Calculate the hit distance.
 	float hit_distance = length(fragment_world_position - PERCEIVER_WORLD_POSITION);
 
@@ -53,8 +58,8 @@ void CatalystShaderMain()
 	vec3 indirect_lighting_direction;
 
 	{
-		vec3 diffuse_indirect_lighting_direction = fragment_normal;
-		vec3 specular_indirect_lighting_direction = reflect(view_direction, fragment_normal);
+		vec3 diffuse_indirect_lighting_direction = shading_normal;
+		vec3 specular_indirect_lighting_direction = reflect(view_direction, shading_normal);
 
 		indirect_lighting_direction = normalize(mix(specular_indirect_lighting_direction, diffuse_indirect_lighting_direction, diffuse_component));
 	}
@@ -102,7 +107,15 @@ void CatalystShaderMain()
 			{
 				case LIGHT_TYPE_DIRECTIONAL:
 				{
-					final_lighting += albedo_thickness.rgb * light.color * light.intensity * max(dot(fragment_normal, -light.position_or_direction), 0.0f);
+					final_lighting += CalculateLighting(-view_direction,
+														albedo_thickness.rgb,
+														shading_normal,
+														material_properties[0],
+														material_properties[1],
+														material_properties[2],
+														albedo_thickness.a,
+														light.position_or_direction,
+														light.color * light.intensity);
 
 					break;
 				}
@@ -125,7 +138,7 @@ void CatalystShaderMain()
 						//Calculate the attenuation.
 						float attenuation = CalculateAttenuation(distance_to_light, light.radius);
 
-						final_lighting += albedo_thickness.rgb * light.color * light.intensity * max(dot(fragment_normal, -light_direction), 0.0f) * attenuation;
+						final_lighting += albedo_thickness.rgb * light.color * light.intensity * max(dot(shading_normal, -light_direction), 0.0f) * attenuation;
 					}
 
 					break;
