@@ -45,8 +45,18 @@ void EditorUserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorUserInterfaceFragmentShader")));
 
 	//Add the output render targets.
-	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+	if (RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::SIMPLIFIED)
+	{
+		SetIsRenderingDirectlyToScreen(true);
+	}
+	
+	else
+	{
+		SetIsRenderingDirectlyToScreen(false);
+
+		SetNumberOfOutputRenderTargets(1);
+		AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+	}
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
