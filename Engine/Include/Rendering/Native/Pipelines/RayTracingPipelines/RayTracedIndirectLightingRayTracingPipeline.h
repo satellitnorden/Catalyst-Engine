@@ -34,10 +34,10 @@ private:
 	RenderingConfiguration::IndirectLightingQuality _IndirectLightingQuality;
 
 	//The render data table layout.
-	RenderDataTableLayoutHandle _RenderDataTableLayout;
+	RenderDataTableLayoutHandle _RenderDataTableLayout{ EMPTY_HANDLE };
 
 	//The render data table.
-	RenderDataTableHandle _RenderDataTable;
+	RenderDataTableHandle _RenderDataTable{ EMPTY_HANDLE };
 
 	/*
 	*	Creates the render data table layout.

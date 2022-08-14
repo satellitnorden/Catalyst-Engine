@@ -155,10 +155,18 @@ void RayTracedIndirectLightingRayTracingPipeline::Execute() NOEXCEPT
 void RayTracedIndirectLightingRayTracingPipeline::Terminate() NOEXCEPT
 {
 	//Destroy the render data table.
-	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+	if (_RenderDataTable)
+	{
+		RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+		_RenderDataTable = EMPTY_HANDLE;
+	}
 
 	//Destroy the render data table layout.
-	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
+	if (_RenderDataTableLayout)
+	{
+		RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
+		_RenderDataTableLayout = EMPTY_HANDLE;
+	}
 }
 
 /*

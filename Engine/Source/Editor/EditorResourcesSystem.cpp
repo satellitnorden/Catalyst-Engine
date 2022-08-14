@@ -2090,7 +2090,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 				}
 
 				//Fix tangents.
-				model_file.FixTangents();
+				//model_file.FixTangents();
 
 				//Post process the model file.
 				model_file.PostProcess();

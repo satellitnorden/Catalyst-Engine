@@ -355,26 +355,6 @@ enum class RenderTarget : uint8
 	SCENE,
 
 	/*
-	*	Contains the first half resolution temporal indirect lighting buffer.
-	*/
-	TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_1,
-
-	/*
-	*	Contains the second half resolution temporal indirect lighting buffer.
-	*/
-	TEMPORAL_INDIRECT_LIGHTING_BUFFER_HALF_2,
-
-	/*
-	*	Contains the first full resolution temporal indirect lighting buffer.
-	*/
-	TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_1,
-
-	/*
-	*	Contains the second full resolution temporal indirect lighting buffer.
-	*/
-	TEMPORAL_INDIRECT_LIGHTING_BUFFER_FULL_2,
-
-	/*
 	*	Intermediate render target.
 	*/
 	INTERMEDIATE_RGBA_UINT8,

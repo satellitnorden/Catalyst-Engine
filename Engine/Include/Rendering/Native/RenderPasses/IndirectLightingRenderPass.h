@@ -27,17 +27,32 @@ public:
 
 private:
 
-	//The screen space indirect lighting graphics pipelines.
-	StaticArray<ScreenSpaceIndirectLightingGraphicsPipeline, 2> _ScreenSpaceIndirectLightingGraphicsPipelines;
+	//The previous indirect lighting mode.
+	RenderingConfiguration::IndirectLightingMode _PreviousIndirectLightingMode{ RenderingConfiguration::IndirectLightingMode::NONE };
 
-	//The ray tracedindirect lighting ray tracing pipelines.
-	StaticArray<RayTracedIndirectLightingRayTracingPipeline, 2> _RayTracedIndirectLightingRayTracingPipelines;
+	//The current indirect lighting mode.
+	RenderingConfiguration::IndirectLightingMode _CurrentIndirectLightingMode{ RenderingConfiguration::IndirectLightingMode::NONE };
+
+	//The previous indirect lighting quality.
+	RenderingConfiguration::IndirectLightingQuality _PreviousIndirectLightingQuality{ RenderingConfiguration::IndirectLightingQuality::LOW };
+
+	//The current indirect lighting quality.
+	RenderingConfiguration::IndirectLightingQuality _CurrentIndirectLightingQuality{ RenderingConfiguration::IndirectLightingQuality::LOW };
+
+	//The temporal indirect lighting buffers.
+	StaticArray<RenderTargetHandle, 2> _TemporalIndirectLightingBuffers;
+
+	//The screen space indirect lighting graphics pipeline.
+	ScreenSpaceIndirectLightingGraphicsPipeline _ScreenSpaceIndirectLightingGraphicsPipeline;
+
+	//The ray traced indirect lighting ray tracing pipeline.
+	RayTracedIndirectLightingRayTracingPipeline _RayTracedIndirectLightingRayTracingPipeline;
 
 	//The indirect lighting spatial denoising graphics pipelines.
-	StaticArray<IndirectLightingSpatialDenoisingGraphicsPipeline, 4> _IndirectLightingSpatialDenoisingGraphicsPipelines;
+	StaticArray<IndirectLightingSpatialDenoisingGraphicsPipeline, 2> _IndirectLightingSpatialDenoisingGraphicsPipelines;
 
 	//The indirect lighting temporal denoising graphics pipelines.
-	StaticArray<IndirectLightingTemporalDenoisingGraphicsPipeline, 4> _IndirectLightingTemporalDenoisingGraphicsPipelines;
+	StaticArray<IndirectLightingTemporalDenoisingGraphicsPipeline, 2> _IndirectLightingTemporalDenoisingGraphicsPipelines;
 
 	//The current temporal buffer index.
 	uint8 _CurrentTemporalBufferIndex{ 0 };

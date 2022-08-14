@@ -11,10 +11,12 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 DELTA;
-	layout (offset = 8) uint SOURCE_RENDER_TARGET_INDEX_1;
-	layout (offset = 12) uint SOURCE_RENDER_TARGET_INDEX_2;
-	layout (offset = 16) uint SCENE_FEATURES_4_TARGET_INDEX;
+	layout (offset = 8) uint SOURCE_RENDER_TARGET_INDEX;
+	layout (offset = 12) uint SCENE_FEATURES_4_TARGET_INDEX;
 };
+
+//Texture samplers.
+layout (set = 1, binding = 0) uniform sampler2D PREVIOUS_TEMPORAL_BUFFER;
 
 //Out parameters.
 layout (location = 0) out vec4 current_indirect_lighting;
@@ -45,7 +47,7 @@ float NeighborhoodWeight(vec3 previous, vec3 minimum, vec3 maximum)
 void CatalystShaderMain()
 {
 	//Sample the current indirect lighting texture.
-	vec4 current_indirect_lighting_texture_sampler = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX_1], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	vec4 current_indirect_lighting_texture_sampler = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 
 	//Calculate the minimum/maximum color values in the neighborhood of the current frame.
 	vec3 minimum = current_indirect_lighting_texture_sampler.rgb;
@@ -57,7 +59,7 @@ void CatalystShaderMain()
 		{
 			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(X), float(Y)) * DELTA;
 		
-			vec4 neighbordhood_sample = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX_1], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate);
+			vec4 neighbordhood_sample = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate);
 
 			minimum = min(minimum, neighbordhood_sample.rgb);
 			maximum = max(maximum, neighbordhood_sample.rgb);
@@ -68,14 +70,14 @@ void CatalystShaderMain()
 	vec2 previous_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER - PREVIOUS_FRAME_JITTER - texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).xy;
 
 	//Sample the previous indirect lighting texture.
-	vec4 previous_indirect_lighting_texture_sampler = texture(sampler2D(RENDER_TARGETS[SOURCE_RENDER_TARGET_INDEX_2], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), previous_screen_coordinate);
+	vec4 previous_indirect_lighting_texture_sampler = texture(PREVIOUS_TEMPORAL_BUFFER, previous_screen_coordinate);
 
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
 	*
 	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
 	*	2. How closely are the previous sample in the neighborhood of the current sample?
-	*	3. What is the hit percent of the previous sample=
+	*	3. What is the hit percent of the previous sample?
 	*/
 	float previous_sample_weight = 1.0f;
 

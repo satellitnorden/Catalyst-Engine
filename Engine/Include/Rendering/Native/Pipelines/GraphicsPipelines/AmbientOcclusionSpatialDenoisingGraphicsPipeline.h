@@ -22,7 +22,7 @@ public:
 	void Execute() NOEXCEPT;
 
 	/*
-	*	Terminates this graphics pipeline-
+	*	Terminates this graphics pipeline.
 	*/
 	void Terminate() NOEXCEPT;
 
