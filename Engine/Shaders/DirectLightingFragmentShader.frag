@@ -22,15 +22,21 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
+//Texture samplers.
+layout (set = 4, binding = 0) uniform sampler2D SCENE_FEATURES_1_TEXTURE;
+layout (set = 4, binding = 1) uniform sampler2D SCENE_FEATURES_2_TEXTURE;
+layout (set = 4, binding = 2) uniform sampler2D SCENE_FEATURES_3_TEXTURE;
+layout (set = 4, binding = 3) uniform sampler2D SHADOWS_TEXTURE;
+
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
 void CatalystShaderMain()
 {
 	//Retrieve the scene features.
-	vec4 scene_features_1 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
-	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
-	vec4 scene_features_3 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	vec4 scene_features_1 = texture(SCENE_FEATURES_1_TEXTURE, fragment_texture_coordinate);
+	vec4 scene_features_2 = texture(SCENE_FEATURES_2_TEXTURE, fragment_texture_coordinate);
+	vec4 scene_features_3 = texture(SCENE_FEATURES_3_TEXTURE, fragment_texture_coordinate);
 	vec4 shadows;
 
 	if (SURFACE_SHADOWS_MODE == SURFACE_SHADOWS_MODE_NONE)
@@ -40,7 +46,7 @@ void CatalystShaderMain()
 
 	else
 	{
-		shadows = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+		shadows = texture(SHADOWS_TEXTURE, fragment_texture_coordinate);
 	}
 
 	//Retrieve all properties.
