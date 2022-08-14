@@ -719,12 +719,12 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 	{
 		//Calculate diffuse.
 		float diffuse_factor = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, -irradiance_direction), 0.0f);
-		vec3 diffuse = diffuse_factor * irradiance * (albedo * (0.01f + 0.99f * (1.0f - metallic)));
+		vec3 diffuse = diffuse_factor * irradiance * (albedo * (1.0f - metallic));
 
 		//Calculate specular.
-		vec3 reflection_direction = CATALYST_SHADER_FUNCTION_REFLECT(irradiance_direction, normal);
+		vec3 halfway_direction = CATALYST_SHADER_FUNCTION_NORMALIZE((-irradiance_direction) + outgoing_direction);
 		float specular_power = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(256.0f, 1.0f, roughness * (1.0f - metallic));
-		float specular_factor = CATALYST_SHADER_FUNCTION_POWER(CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(-outgoing_direction, reflection_direction), 0.0f), specular_power);
+		float specular_factor = CATALYST_SHADER_FUNCTION_POWER(CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, halfway_direction), 0.0f), specular_power);
 		vec3 specular = specular_factor * irradiance * albedo;
 
 		//Add them together!

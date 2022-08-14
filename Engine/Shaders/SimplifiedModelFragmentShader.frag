@@ -81,16 +81,19 @@ void CatalystShaderMain()
 	//Add indirect lighting.
 	{
 		//Calculate the indirect lighting.
-		vec3 indirect_lighting = SampleSky(indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_component) * material_properties[2];
+		vec3 indirect_lighting = SampleSky(indirect_lighting_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_component);
 
-		//Blend the indirect lighting with volumetric lighting.
-		{
-			//Calculate the volumetric lighting opacity.
-			float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(VIEW_DISTANCE, VOLUMETRIC_LIGHTING_DISTANCE, vec3(fragment_world_position + indirect_lighting_direction * VIEW_DISTANCE).y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, fragment_world_position.y);
+		indirect_lighting *= mix(0.125f, 8.0f, diffuse_component);
 
-			//Blend the volumetric lighting with the indirect lighting.
-			indirect_lighting = mix(indirect_lighting, volumetric_lighting * 0.125f, volumetric_lighting_opacity * 0.5f);
-		}
+		final_lighting += CalculateSimplifiedLighting(	-view_direction,
+														albedo_thickness.rgb,
+														shading_normal,
+														material_properties[0],
+														material_properties[1],
+														mix(1.0f, material_properties[2], diffuse_component),
+														1.0f,
+														-indirect_lighting_direction,
+														indirect_lighting);
 
 		//Add the indirect lighting to the final lighting.
 		final_lighting += indirect_lighting;
