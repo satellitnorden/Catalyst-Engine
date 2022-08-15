@@ -310,11 +310,6 @@ enum class PipelineStageFlags : uint8
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the albedo in the RGB channels and the material index in the A channel.
-	*/
-	SCENE_FEATURES_1,
-
-	/*
 	*	Contains the shading normal in the RGB channels and the depth in the A channel.
 	*/
 	SCENE_FEATURES_2,

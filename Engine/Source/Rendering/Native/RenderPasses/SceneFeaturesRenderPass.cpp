@@ -45,6 +45,9 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
+	//Create the scene features 1 render target.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_SceneFeatures1RenderTarget);
+
 	//Create the scene depth buffer.
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(0), &_SceneDepthBuffer);
 
@@ -222,6 +225,9 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 	_EditorSelectedModelGraphicsPipeline.Terminate();
 #endif
 	_VelocityGraphicsPipeline.Terminate();
+
+	//Destroy the scene features 1 render target.
+	RenderingSystem::Instance->DestroyRenderTarget(&_SceneFeatures1RenderTarget);
 
 	//Destroy the scene depth buffer.
 	RenderingSystem::Instance->DestroyDepthBuffer(&_SceneDepthBuffer);

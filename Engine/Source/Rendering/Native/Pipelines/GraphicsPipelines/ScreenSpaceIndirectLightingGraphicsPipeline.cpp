@@ -4,6 +4,7 @@
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 #include <Rendering/Native/RenderPasses/PostSceneFeaturesRenderPass.h>
+#include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -190,7 +191,7 @@ void ScreenSpaceIndirectLightingGraphicsPipeline::CreateRenderDataTable(const Re
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget(), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	
 	switch (quality)
 	{

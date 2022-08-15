@@ -4,6 +4,7 @@
 
 //Rendering.
 #include <Rendering/Native/NativeRenderPassManager.h>
+#include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -51,7 +52,7 @@ void DebugRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_DebugGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_DebugGraphicsPipeline.Initialize(static_cast<uint32>(Mode::NONE), RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
+	_DebugGraphicsPipeline.Initialize(static_cast<uint32>(Mode::NONE), SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
 }
 
 /*
@@ -78,7 +79,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
 
 				break;
 			}
@@ -90,7 +91,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_1));
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
 
 				break;
 			}

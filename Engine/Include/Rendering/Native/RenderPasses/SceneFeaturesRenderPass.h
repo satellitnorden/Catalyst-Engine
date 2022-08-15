@@ -39,6 +39,14 @@ public:
 	SceneFeaturesRenderPass() NOEXCEPT;
 
 	/*
+	*	Returns the scene features 1 render target.
+	*/
+	FORCE_INLINE NO_DISCARD RenderTargetHandle GetSceneFeatures1RenderTarget() NOEXCEPT
+	{
+		return _SceneFeatures1RenderTarget;
+	}
+
+	/*
 	*	Returns the scene depth buffer.
 	*/
 	FORCE_INLINE NO_DISCARD DepthBufferHandle GetSceneDepthBuffer() NOEXCEPT
@@ -47,6 +55,11 @@ public:
 	}
 
 private:
+
+	/*
+	*	Contains the albedo in the RGB channels and the material index in the A channel.
+	*/
+	RenderTargetHandle _SceneFeatures1RenderTarget;
 
 	//The scene depth buffer.
 	DepthBufferHandle _SceneDepthBuffer{ EMPTY_HANDLE };
