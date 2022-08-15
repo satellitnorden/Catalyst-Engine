@@ -68,7 +68,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Base\\Catalyst_Engine_Default_Font";
 		parameters._ID = "Catalyst_Engine_Default_Font";
-		parameters._File = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Fonts\\OpenSans-Regular.ttf";
+		parameters._File = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Fonts\\Kiona-Regular.ttf";
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildFont(parameters);
 	}
