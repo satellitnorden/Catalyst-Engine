@@ -46,7 +46,6 @@ UserInterfaceScene::~UserInterfaceScene()
 void UserInterfaceScene::OnActivated() NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 BUTTON_BORDER_OFFSET{ 0.002'25f };
 	constexpr float32 CHECKBOX_BORDER_OFFSET{ 0.016'50f };
 
 	//Set up default values.
@@ -55,35 +54,32 @@ void UserInterfaceScene::OnActivated() NOEXCEPT
 
 	_FontResource = ResourceSystem::Instance->GetFontResource(HashString("Catalyst_Engine_Default_Font"));
 
-	_ButtonIdleMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.01f));
-	_ButtonIdleMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_ButtonIdleMaterial.SetBorderOffset(BUTTON_BORDER_OFFSET);
+	_ButtonIdleMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 0.5f));
+	_ButtonIdleMaterial.SetBorderOffset(0.0f);
 
-	_ButtonHoveredMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.25f));
-	_ButtonHoveredMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_ButtonHoveredMaterial.SetBorderOffset(BUTTON_BORDER_OFFSET);
+	_ButtonHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.75f));
+	_ButtonHoveredMaterial.SetBorderOffset(0.0f);
 
-	_ButtonPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_ButtonPressedMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_ButtonPressedMaterial.SetBorderOffset(BUTTON_BORDER_OFFSET);
+	_ButtonPressedMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
+	_ButtonPressedMaterial.SetBorderOffset(0.0f);
 
-	_CheckboxUncheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.01f));
+	_CheckboxUncheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 0.5f));
 	_CheckboxUncheckedIdleMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxUncheckedIdleMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
 
-	_CheckboxUncheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.25f));
+	_CheckboxUncheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.75f));
 	_CheckboxUncheckedHoveredMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxUncheckedHoveredMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
 
-	_CheckboxUncheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxUncheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
 	_CheckboxUncheckedPressedMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxUncheckedPressedMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
 
-	_CheckboxCheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.25f));
+	_CheckboxCheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.75f));
 	_CheckboxCheckedIdleMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxCheckedIdleMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
 
-	_CheckboxCheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 0.5f));
+	_CheckboxCheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
 	_CheckboxCheckedHoveredMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxCheckedHoveredMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
 
@@ -91,11 +87,9 @@ void UserInterfaceScene::OnActivated() NOEXCEPT
 	_CheckboxCheckedPressedMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxCheckedPressedMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
 
-	_ProgressBarBottomMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 1.0f));
-	_ProgressBarBottomMaterial.SetSecondaryColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
+	_ProgressBarBottomMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 0.5f));
 
 	_ProgressBarTopMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
-	_ProgressBarTopMaterial.SetSecondaryColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
 
 	_TextScale = 0.015f;
 }
