@@ -4,34 +4,30 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SimplifiedModelGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SimplifiedSkyGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/MobileGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) SimplifiedRenderPass final : public RenderPass
+class ALIGN(8) MobileRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(SimplifiedRenderPass);
+	DECLARE_SINGLETON(MobileRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	SimplifiedRenderPass() NOEXCEPT;
+	MobileRenderPass() NOEXCEPT;
 
 private:
 
 	//The scene depth buffer.
 	DepthBufferHandle _SceneDepthBuffer;
 
-	//The simplified model graphics pipeline.
-	SimplifiedModelGraphicsPipeline _SimplifiedModelGraphicsPipeline;
-
-	//The simplified sky graphics pipeline.
-	SimplifiedSkyGraphicsPipeline _SimplifiedSkyGraphicsPipeline;
+	//The mobile graphics pipeline.
+	MobileGraphicsPipeline _MobileGraphicsPipeline;
 
 	//The user interface graphics pipeline.
 	UserInterfaceGraphicsPipeline _UserInterfaceGraphicsPipeline;

@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/SimplifiedRenderPass.h>
+#include <Rendering/Native/RenderPasses/MobileRenderPass.h>
 
 //Rendering.
 #include <Rendering/Native/NativeRenderPassManager.h>
@@ -8,44 +8,44 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(SimplifiedRenderPass);
+DEFINE_SINGLETON(MobileRenderPass);
 
 /*
 *	Default constructor.
 */
-SimplifiedRenderPass::SimplifiedRenderPass() NOEXCEPT
+MobileRenderPass::MobileRenderPass() NOEXCEPT
 {
 	//Register this render pass.
-	NativeRenderPassManager::RegisterSimplifiedRenderPass(SimplifiedNativeRenderPassStage::SIMPLIFIED, this);
+	NativeRenderPassManager::RegisterMobileRenderPass(MobileNativeRenderPassStage::MOBILE, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		SimplifiedRenderPass::Instance->Initialize();
+		MobileRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		SimplifiedRenderPass::Instance->Execute();
+		MobileRenderPass::Instance->Execute();
 	});
 
 	//Set the termination function function.
 	SetTerminationFunction([]()
 	{
-		SimplifiedRenderPass::Instance->Terminate();
+		MobileRenderPass::Instance->Terminate();
 	});
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set the name.
-	SetName("Simplified");
+	SetName("Mobile");
 #endif
 }
 
 /*
 *	Initializes this render pass.
 */
-void SimplifiedRenderPass::Initialize() NOEXCEPT
+void MobileRenderPass::Initialize() NOEXCEPT
 {
 	//Reset this render pass.
 	ResetRenderPass();
@@ -54,25 +54,22 @@ void SimplifiedRenderPass::Initialize() NOEXCEPT
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(0), &_SceneDepthBuffer);
 
 	//Add the pipelines.
-	SetNumberOfPipelines(3);
-	AddPipeline(&_SimplifiedModelGraphicsPipeline);
-	AddPipeline(&_SimplifiedSkyGraphicsPipeline);
+	SetNumberOfPipelines(2);
+	AddPipeline(&_MobileGraphicsPipeline);
 	AddPipeline(&_UserInterfaceGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_SimplifiedModelGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_SimplifiedSkyGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_MobileGraphicsPipeline.Initialize(_SceneDepthBuffer);
 	_UserInterfaceGraphicsPipeline.Initialize(true);
 }
 
 /*
 *	Executes this render pass.
 */
-void SimplifiedRenderPass::Execute() NOEXCEPT
+void MobileRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	_SimplifiedModelGraphicsPipeline.Execute();
-	_SimplifiedSkyGraphicsPipeline.Execute();
+	_MobileGraphicsPipeline.Execute();
 	_UserInterfaceGraphicsPipeline.Execute();
 
 	//Enable this render pass.
@@ -82,10 +79,9 @@ void SimplifiedRenderPass::Execute() NOEXCEPT
 /*
 *	Terminates this render pass.
 */
-void SimplifiedRenderPass::Terminate() NOEXCEPT
+void MobileRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	_SimplifiedModelGraphicsPipeline.Terminate();
-	_SimplifiedSkyGraphicsPipeline.Terminate();
+	_MobileGraphicsPipeline.Terminate();
 	_UserInterfaceGraphicsPipeline.Terminate();
 }

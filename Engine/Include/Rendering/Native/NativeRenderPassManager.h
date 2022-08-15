@@ -33,11 +33,11 @@ public:
 	}
 
 	/*
-	*	Registers a render pass for the SIMPLIFIED rendering path.
+	*	Registers a render pass for the MOBILE rendering path.
 	*/
-	FORCE_INLINE static void RegisterSimplifiedRenderPass(const SimplifiedNativeRenderPassStage stage, RenderPass *const RESTRICT render_pass) NOEXCEPT
+	FORCE_INLINE static void RegisterMobileRenderPass(const MobileNativeRenderPassStage stage, RenderPass *const RESTRICT render_pass) NOEXCEPT
 	{
-		GetSimplifiedRenderPasses()->At(UNDERLYING(stage)) = render_pass;
+		GetMobileRenderPasses()->At(UNDERLYING(stage)) = render_pass;
 	}
 
 	/*
@@ -81,11 +81,11 @@ public:
 				break;
 			}
 
-			case RenderingPath::SIMPLIFIED:
+			case RenderingPath::MOBILE:
 			{
-				render_passes->Reserve(UNDERLYING(SimplifiedNativeRenderPassStage::NUMBER_OF_STAGES));
+				render_passes->Reserve(UNDERLYING(MobileNativeRenderPassStage::NUMBER_OF_STAGES));
 
-				for (RenderPass *const RESTRICT render_pass : *GetSimplifiedRenderPasses())
+				for (RenderPass *const RESTRICT render_pass : *GetMobileRenderPasses())
 				{
 					render_passes->Emplace(render_pass);
 				}
@@ -137,14 +137,15 @@ private:
 	}
 
 	/*
-	*	Returns the render passes for the SIMPLIFIED rendering path.
+	*	Returns the render passes for the MOBILE rendering path.
 	*/
-	FORCE_INLINE NO_DISCARD static StaticArray<RenderPass *RESTRICT, UNDERLYING(SimplifiedNativeRenderPassStage::NUMBER_OF_STAGES)> *const RESTRICT GetSimplifiedRenderPasses() NOEXCEPT
+	FORCE_INLINE NO_DISCARD static StaticArray<RenderPass *RESTRICT, UNDERLYING(MobileNativeRenderPassStage::NUMBER_OF_STAGES)> *const RESTRICT GetMobileRenderPasses() NOEXCEPT
 	{
-		static StaticArray<RenderPass *RESTRICT, UNDERLYING(SimplifiedNativeRenderPassStage::NUMBER_OF_STAGES)> render_passes;
+		static StaticArray<RenderPass *RESTRICT, UNDERLYING(MobileNativeRenderPassStage::NUMBER_OF_STAGES)> render_passes;
 
 		return &render_passes;
 	}
+
 
 	/*
 	*	Returns the render passes for the VIRTUAL_REALITY rendering path.

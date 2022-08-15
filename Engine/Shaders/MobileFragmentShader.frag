@@ -6,6 +6,11 @@
 #include "..\Include\Rendering\Native\Shader\CatalystToneMapping.h"
 #include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
 
+//Constants.
+#define MOBILE_PASS_MODEL (0)
+#define MOBILE_PASS_SKY (1)
+
+//Layout declaration.
 layout (early_fragment_tests) in;
 
 //Push constant data.
@@ -14,6 +19,7 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 0) mat4 MODEL_MATRIX;
     layout (offset = 64) vec3 SKY_LIGHT_LUMINANCE;
     layout (offset = 80) uint MATERIAL_INDEX;
+    layout (offset = 84) uint MOBILE_PASS;
 };
 
 //In parameters.
@@ -24,9 +30,12 @@ layout (location = 4) in vec2 fragment_texture_coordinate;
 //Out parameters.
 layout (location = 0) out vec4 scene;
 
-void CatalystShaderMain()
+/*
+*	Calculates model radiance.
+*/
+vec3 CalculateModelRadiance()
 {
-   	//Retrieve the material.
+	//Retrieve the material.
 	Material material = GLOBAL_MATERIALS[MATERIAL_INDEX];
 
 	//Evaluate the material.
@@ -162,9 +171,75 @@ void CatalystShaderMain()
 		final_lighting = mix(final_lighting, volumetric_lighting, volumetric_lighting_opacity);
 	}
 
-	//Apply tone mapping.
-	final_lighting = ApplyToneMapping(final_lighting);
+	///Return the final lighting.
+	return final_lighting;
+}
 
-	//Write the fragment.
-	scene = vec4(final_lighting, 1.0f);
+/*
+*	Calculates sky radiance.
+*/
+vec3 CalculateSkyRadiance()
+{
+	//Calculate the hit distance.
+	float hit_distance = length(fragment_world_position - PERCEIVER_WORLD_POSITION);
+
+	//Calculate the hit distance reciprocal.
+	float hit_distance_reciprocal = 1.0f / hit_distance;
+
+	//Calculate the view direction.
+	vec3 view_direction = (fragment_world_position - PERCEIVER_WORLD_POSITION) * hit_distance_reciprocal;
+
+	//Calculate the final sky.
+   	vec3 final_sky = SampleSky(view_direction, 0.0f);
+
+    //Add volumetric lighting.
+   	{
+    	//Calculate the volumetric lighting.
+    	vec3 volumetric_lighting = vec3(0.0f);
+
+    	//Add the volumetric ambient lighting.
+    	volumetric_lighting += CalculateVolumetricAmbientLighting();
+
+    	//Add the sky lighting.
+    	volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_RADIANCE.rgb * SKY_LIGHT_RADIANCE.a * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
+
+    	//Calculate the volumetric lighting opacity.
+    	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(VIEW_DISTANCE, VOLUMETRIC_LIGHTING_DISTANCE, fragment_world_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_WORLD_POSITION.y);
+
+    	//Blend the volumetric lighting with the final sky.
+    	final_sky = mix(final_sky, volumetric_lighting, volumetric_lighting_opacity);
+   }
+
+   //Return the final sky.
+   return final_sky;
+}
+
+
+void CatalystShaderMain()
+{
+	//Calculate the final radiance.
+	vec3 final_radiance = vec3(0.0f);
+
+   	switch (MOBILE_PASS)
+	{
+		case MOBILE_PASS_MODEL:
+		{
+			final_radiance = CalculateModelRadiance();
+
+			break;
+		}
+
+		case MOBILE_PASS_SKY:
+		{
+			final_radiance = CalculateSkyRadiance();
+
+			break;
+		}
+	}
+
+	//Apply tone mapping.
+	final_radiance = ApplyToneMapping(final_radiance);
+
+	//Write the fragment!
+	scene = vec4(final_radiance, 1.0f);
 }

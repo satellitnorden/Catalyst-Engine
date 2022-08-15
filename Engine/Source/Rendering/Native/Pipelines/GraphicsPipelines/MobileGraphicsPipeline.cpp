@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SimplifiedModelGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/MobileGraphicsPipeline.h>
 
 //Components.
 #include <Components/Core/ComponentManager.h>
@@ -16,9 +16,9 @@
 #include <Systems/WorldSystem.h>
 
 /*
-*	Simplified model push constant data class definition.
+*	Mobile push constant data class definition.
 */
-class SimplifiedModelPushConstantData final
+class MobilePushConstantData final
 {
 
 public:
@@ -35,22 +35,30 @@ public:
 	//The material index.
 	uint32 _MaterialIndex;
 
+	//The mobile index.
+	uint32 _MobilePass;
+
 };
+
+static_assert(offsetof(MobilePushConstantData, _ModelMatrix) == 0, "Oh no!");
+static_assert(offsetof(MobilePushConstantData, _SkyLightLuminance) == 64, "Oh no!");
+static_assert(offsetof(MobilePushConstantData, _MaterialIndex) == 80, "Oh no!");
+static_assert(offsetof(MobilePushConstantData, _MobilePass) == 84, "Oh no!");
 
 /*
 *	Initializes this graphics pipeline.
 */
-void SimplifiedModelGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
+void MobileGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("SimplifiedModelVertexShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("MobileVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
 	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
 	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("SimplifiedModelFragmentShader")));
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("MobileFragmentShader")));
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);
@@ -65,7 +73,7 @@ void SimplifiedModelGraphicsPipeline::Initialize(const DepthBufferHandle depth_b
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(SimplifiedModelPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(MobilePushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -95,7 +103,7 @@ void SimplifiedModelGraphicsPipeline::Initialize(const DepthBufferHandle depth_b
 
 	//Set the properties of the render pass.
 	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::CLEAR);
-	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::STORE);
+	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
 	SetColorAttachmentLoadOperator(AttachmentLoadOperator::CLEAR);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
@@ -119,14 +127,14 @@ void SimplifiedModelGraphicsPipeline::Initialize(const DepthBufferHandle depth_b
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set the name.
-	SetName("Simplified Model");
+	SetName("Mobile");
 #endif
 }
 
 /*
 *	Executes this graphics pipeline.
 */
-void SimplifiedModelGraphicsPipeline::Execute() NOEXCEPT
+void MobileGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
@@ -196,13 +204,14 @@ void SimplifiedModelGraphicsPipeline::Execute() NOEXCEPT
 				const Mesh& mesh{ component->_ModelResource->_Meshes[mesh_index] };
 
 				//Push constants.
-				SimplifiedModelPushConstantData data;
+				MobilePushConstantData data;
 
 				data._ModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 				data._SkyLightLuminance = sky_light_luminance;
 				data._MaterialIndex = component->_MaterialResources[mesh_index]->_Index;
+				data._MobilePass = UNDERLYING(MobilePass::MODEL);
 
-				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(SimplifiedModelPushConstantData), &data);
+				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(MobilePushConstantData), &data);
 
 				//Bind the vertex/inder buffer.
 				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._VertexBuffer, &OFFSET);
@@ -247,13 +256,14 @@ void SimplifiedModelGraphicsPipeline::Execute() NOEXCEPT
 				const Mesh& mesh{ component->_ModelResource->_Meshes[mesh_index] };
 
 				//Push constants.
-				SimplifiedModelPushConstantData data;
+				MobilePushConstantData data;
 
 				data._ModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 				data._SkyLightLuminance = sky_light_luminance;
 				data._MaterialIndex = component->_MaterialResources[mesh_index]->_Index;
+				data._MobilePass = UNDERLYING(MobilePass::MODEL);
 
-				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(SimplifiedModelPushConstantData), &data);
+				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(MobilePushConstantData), &data);
 
 				//Bind the vertex/inder buffer.
 				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._VertexBuffer, &OFFSET);
@@ -263,6 +273,22 @@ void SimplifiedModelGraphicsPipeline::Execute() NOEXCEPT
 				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexCount, 1);
 			}
 		}
+	}
+
+	//Draw the sky.
+	{
+		//Push constants.
+		MobilePushConstantData data;
+
+		data._ModelMatrix = Matrix4x4();
+		data._SkyLightLuminance = sky_light_luminance;
+		data._MaterialIndex = 0;
+		data._MobilePass = UNDERLYING(MobilePass::SKY);
+
+		command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(MobilePushConstantData), &data);
+
+		//Draw!
+		command_buffer->DrawIndexed(this, 3, 1);
 	}
 
 	//End the command buffer.
@@ -275,7 +301,7 @@ void SimplifiedModelGraphicsPipeline::Execute() NOEXCEPT
 /*
 *	Terminates this graphics pipeline.
 */
-void SimplifiedModelGraphicsPipeline::Terminate() NOEXCEPT
+void MobileGraphicsPipeline::Terminate() NOEXCEPT
 {
 
 }

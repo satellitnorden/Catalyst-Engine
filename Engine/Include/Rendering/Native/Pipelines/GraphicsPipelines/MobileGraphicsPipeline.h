@@ -6,7 +6,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class SimplifiedModelGraphicsPipeline final : public GraphicsPipeline
+class MobileGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:
@@ -25,5 +25,14 @@ public:
 	*	Terminates this graphics pipeline.
 	*/
 	void Terminate() NOEXCEPT;
+
+private:
+
+	//Enumeration covering all mobile passes.
+	enum class MobilePass : uint8
+	{
+		MODEL,
+		SKY
+	};
 
 };

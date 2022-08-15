@@ -73,7 +73,7 @@ enum class RenderingPath : uint8
 {
 	DEFAULT,
 	PATH_TRACING,
-	SIMPLIFIED,
+	MOBILE,
 	VIRTUAL_REALITY,
 
 	NUMBER_OF_RENDERING_PATHS
@@ -143,12 +143,12 @@ enum class PathTracingNativeRenderPassStage : uint8
 };
 
 /*
-*	Enumeration covering all simplified native render pass stages.
+*	Enumeration covering all mobile native render pass stages.
 *	The order of the stages define in what order they will execute in.
 */
-enum class SimplifiedNativeRenderPassStage : uint8
+enum class MobileNativeRenderPassStage : uint8
 {
-	SIMPLIFIED,
+	MOBILE,
 #if defined(CATALYST_EDITOR)
 	EDITOR_USER_INTERFACE,
 #endif
