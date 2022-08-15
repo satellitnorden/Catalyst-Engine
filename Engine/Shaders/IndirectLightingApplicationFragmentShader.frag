@@ -24,6 +24,11 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
+//Texture samplers.
+layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_1_TEXTURE;
+layout (set = 1, binding = 1) uniform sampler2D SCENE_FEATURES_2_TEXTURE;
+layout (set = 1, binding = 2) uniform sampler2D SCENE_FEATURES_3_TEXTURE;
+
 //Out parameters.
 layout (location = 0) out vec4 scene;
 
@@ -109,9 +114,9 @@ void CatalystShaderMain()
 	indirect_lighting = vec4(max(indirect_lighting.rgb, vec3(0.0f, 0.0f, 0.0f)), clamp(indirect_lighting.a, 0.0f, 1.0f));
 
 	//Blend in the sky a bit to account for misses.
-	vec4 scene_features_1 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
-	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
-	vec4 scene_features_3 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_3_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	vec4 scene_features_1 = texture(SCENE_FEATURES_1_TEXTURE, fragment_texture_coordinate);
+	vec4 scene_features_2 = texture(SCENE_FEATURES_2_TEXTURE, fragment_texture_coordinate);
+	vec4 scene_features_3 = texture(SCENE_FEATURES_3_TEXTURE, fragment_texture_coordinate);
 
 	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w);
 	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
