@@ -45,7 +45,7 @@ void EditorUserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorUserInterfaceFragmentShader")));
 
 	//Add the output render targets.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::SIMPLIFIED)
+	if (RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::MOBILE)
 	{
 		SetIsRenderingDirectlyToScreen(true);
 	}

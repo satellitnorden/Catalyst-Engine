@@ -336,15 +336,15 @@ void EditorRenderingSystem::Update() NOEXCEPT
 			{
 				if (ImGui::Button("Rendering Path: Path Tracing"))
 				{
-					RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::SIMPLIFIED);
+					RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::MOBILE);
 				}
 
 				break;
 			}
 
-			case RenderingPath::SIMPLIFIED:
+			case RenderingPath::MOBILE:
 			{
-				if (ImGui::Button("Rendering Path: Simplified"))
+				if (ImGui::Button("Rendering Path: Mobile"))
 				{
 					RenderingSystem::Instance->SetCurrentRenderingPath(RenderingPath::DEFAULT);
 				}

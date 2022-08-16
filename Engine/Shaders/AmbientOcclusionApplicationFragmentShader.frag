@@ -9,7 +9,8 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D AMBIENT_OCCLUSION_TEXTURE;
+layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_2_TEXTURE;
+layout (set = 1, binding = 1) uniform sampler2D AMBIENT_OCCLUSION_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 scene_features_3;
@@ -20,7 +21,7 @@ layout (location = 0) out vec4 scene_features_3;
 float SampleAmbientOcclusion(vec2 coordinate)
 {
 	//Sample the current depth.
-	float current_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate).w);
+	float current_depth = LinearizeDepth(texture(SCENE_FEATURES_2_TEXTURE, coordinate).w);
 
 	//Sample the four neighbor samples along with their depth.
 	float sample_1_color = texture(AMBIENT_OCCLUSION_TEXTURE, coordinate + vec2(0.0f, 0.0f)).r;
