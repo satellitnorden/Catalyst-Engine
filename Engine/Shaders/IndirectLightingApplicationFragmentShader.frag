@@ -52,7 +52,7 @@ vec4 SampleIndirectLighting(vec2 coordinate)
 		else
 		{
 			//Sample the current depth.
-			float current_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate).w);
+			float current_depth = LinearizeDepth(texture(SCENE_FEATURES_2_TEXTURE, coordinate).w);
 
 			//Sample the four neighbor samples along with their depth.
 			vec4 sample_1_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, 0.0f));
