@@ -48,6 +48,9 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	//Create the scene features 1 render target.
 	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_SceneFeatures1RenderTarget);
 
+	//Create the scene features 2 render target.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_SceneFeatures2RenderTarget);
+
 	//Create the scene depth buffer.
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(0), &_SceneDepthBuffer);
 
@@ -228,6 +231,9 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 
 	//Destroy the scene features 1 render target.
 	RenderingSystem::Instance->DestroyRenderTarget(&_SceneFeatures1RenderTarget);
+
+	//Destroy the scene features 2 render target.
+	RenderingSystem::Instance->DestroyRenderTarget(&_SceneFeatures2RenderTarget);
 
 	//Destroy the scene depth buffer.
 	RenderingSystem::Instance->DestroyDepthBuffer(&_SceneDepthBuffer);

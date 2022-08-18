@@ -47,6 +47,14 @@ public:
 	}
 
 	/*
+	*	Returns the scene features 2 render target.
+	*/
+	FORCE_INLINE NO_DISCARD RenderTargetHandle GetSceneFeatures2RenderTarget() NOEXCEPT
+	{
+		return _SceneFeatures2RenderTarget;
+	}
+
+	/*
 	*	Returns the scene depth buffer.
 	*/
 	FORCE_INLINE NO_DISCARD DepthBufferHandle GetSceneDepthBuffer() NOEXCEPT
@@ -60,6 +68,11 @@ private:
 	*	Contains the albedo in the RGB channels and the material index in the A channel.
 	*/
 	RenderTargetHandle _SceneFeatures1RenderTarget;
+
+	/*
+	*	Contains the shading normal in the RGB channels and the depth in the A channel.
+	*/
+	RenderTargetHandle _SceneFeatures2RenderTarget;
 
 	//The scene depth buffer.
 	DepthBufferHandle _SceneDepthBuffer{ EMPTY_HANDLE };

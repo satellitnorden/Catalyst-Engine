@@ -3,6 +3,7 @@
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -133,6 +134,6 @@ void AmbientOcclusionApplicationGraphicsPipeline::CreateRenderDataTable(const Re
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget(), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, ambient_occlusion_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

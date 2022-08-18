@@ -57,7 +57,7 @@ void OceanRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_SceneFeatures1CopyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget(), RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_UINT8));
-	_SceneFeatures2CopyGraphicsPipeline.Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
+	_SceneFeatures2CopyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget(), RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
 	_OceanSceneFeaturesGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
 }
 

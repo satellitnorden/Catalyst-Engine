@@ -94,7 +94,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(4);
 	AddOutputRenderTarget(SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2));
+	AddOutputRenderTarget(SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget());
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4));
 

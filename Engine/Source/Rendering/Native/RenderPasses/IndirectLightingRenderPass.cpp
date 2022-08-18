@@ -3,6 +3,7 @@
 
 //Rendering.
 #include <Rendering/Native/NativeRenderPassManager.h>
+#include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -166,7 +167,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 					1,
 					0,
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
-					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2),
+					SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget(),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2),
 					resolution
@@ -177,7 +178,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 					1,
 					1,
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2),
-					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2),
+					SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget(),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
 					resolution

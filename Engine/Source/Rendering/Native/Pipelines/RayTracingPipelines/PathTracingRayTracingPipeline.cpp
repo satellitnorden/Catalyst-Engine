@@ -163,7 +163,7 @@ void PathTracingRayTracingPipeline::CreateRenderDataTable() NOEXCEPT
 
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &_RenderDataTable, SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget());
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(4, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4));
 }
