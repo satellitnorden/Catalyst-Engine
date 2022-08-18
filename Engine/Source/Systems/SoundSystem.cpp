@@ -363,7 +363,7 @@ void SoundSystem::Mix() NOEXCEPT
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
 		//Need the platform to have been initialized before the mixing buffers has been initialized. And no mixing is done when paused.
-		if (!PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused())
+		if (!PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused() || CatalystEngineSystem::Instance->IsEnginePaused())
 		{
 			continue;
 		}
@@ -620,7 +620,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 								void *const RESTRICT buffer_data) NOEXCEPT
 {
 	//If the sound system is currently muted or paused, just fill the buffer with zeroes.
-	if (IsCurrentlyMuted() || IsCurrentlyPaused())
+	if (IsCurrentlyMuted() || IsCurrentlyPaused() || CatalystEngineSystem::Instance->IsEnginePaused())
 	{
 		Memory::Set(buffer_data, 0, (bits_per_sample / 8) * number_of_channels * number_of_samples);
 	}

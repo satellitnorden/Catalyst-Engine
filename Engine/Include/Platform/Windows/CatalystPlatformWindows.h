@@ -60,8 +60,6 @@ __pragma(warning(disable : 4530)) //Disable warning C4530: C++ exception handler
 															_In_opt_ LPSTR lpCmdLine,		\
 															_In_ int32 nCmdShow)			\
 {																							\
-	CatalystPlatform::PreInitialize();														\
-																							\
 	CatalystPlatform::_Instance = hInstance;												\
 	CatalystPlatform::_ShowCommand = nCmdShow;												\
 																							\
@@ -88,14 +86,14 @@ public:
 	static HWND _Window;
 
 	/*
-	*	Pre-initializes the platform.
-	*/
-	static void PreInitialize() NOEXCEPT;
-
-	/*
 	*	Initializes the platform.
 	*/
 	static void Initialize() NOEXCEPT;
+
+	/*
+	*	Updates the platform before everything else.
+	*/
+	static void PlatformPreUpdate() NOEXCEPT;
 
 	/*
 	*	Terminates the platform.

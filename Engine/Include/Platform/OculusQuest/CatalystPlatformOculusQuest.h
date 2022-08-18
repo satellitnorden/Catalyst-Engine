@@ -50,6 +50,11 @@ public:
 	static void Initialize() NOEXCEPT;
 
 	/*
+	*	Updates the platform before everything else.
+	*/
+	static void PlatformPreUpdate() NOEXCEPT;
+
+	/*
 	*	Terminates the platform.
 	*/
 	static void Terminate() NOEXCEPT;

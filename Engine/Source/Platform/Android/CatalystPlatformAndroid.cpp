@@ -38,6 +38,13 @@ void HandleCommand(android_app *RESTRICT app, int32 command) NOEXCEPT
 {
 	switch (command)
 	{
+		case APP_CMD_INPUT_CHANGED:
+		{
+			//Do nothing. Right now. (:
+
+			break;
+		}
+
 		case APP_CMD_INIT_WINDOW:
 		{
 			CatalystPlatform::_Window = app->window;
@@ -53,6 +60,110 @@ void HandleCommand(android_app *RESTRICT app, int32 command) NOEXCEPT
 
 			break;
 		}
+
+		case APP_CMD_WINDOW_RESIZED:
+		{
+			//Do nothing. Right now. (:
+
+			break;
+		}
+
+		case APP_CMD_WINDOW_REDRAW_NEEDED:
+		{
+			//Do nothing. Right now. (:
+
+			break;
+		}
+
+		case APP_CMD_CONTENT_RECT_CHANGED:
+		{
+			//Do nothing. Right now. (:
+
+			break;
+		}
+
+		case APP_CMD_GAINED_FOCUS:
+		{
+			//Unpause the engine.
+			CatalystEngineSystem::Instance->UnpauseEngine();
+
+			break;
+		}
+
+		case APP_CMD_LOST_FOCUS:
+		{
+			//Pause the engine.
+			CatalystEngineSystem::Instance->PauseEngine();
+
+			break;
+		}
+
+		case APP_CMD_CONFIG_CHANGED:
+		{
+			//Do nothing. Right now. (:
+
+			break;
+		}
+
+		case APP_CMD_LOW_MEMORY:
+		{
+			PRINT_TO_OUTPUT("Warning! Low memory!");
+
+			break;
+		}
+
+		case APP_CMD_START:
+		{
+			//Unpause the engine.
+			CatalystEngineSystem::Instance->UnpauseEngine();
+
+			break;
+		}
+
+		case APP_CMD_RESUME:
+		{
+			//Unpause the engine.
+			CatalystEngineSystem::Instance->UnpauseEngine();
+
+			break;
+		}
+
+		case APP_CMD_SAVE_STATE:
+		{
+			//Do nothing. Right now. (:
+
+			break;
+		}
+
+		case APP_CMD_PAUSE:
+		{
+			//Pause the engine.
+			CatalystEngineSystem::Instance->PauseEngine();
+
+			break;
+		}
+
+		case APP_CMD_STOP:
+		{
+			//Pause the engine.
+			CatalystEngineSystem::Instance->PauseEngine();
+
+			break;
+		}
+
+		case APP_CMD_DESTROY:
+		{
+			CatalystEngineSystem::Instance->SetShouldTerminate();
+
+			break;
+		}
+
+        default:
+        {
+            ASSERT(false, "Invalid case!");
+
+            break;
+        }
 	}
 }
 
@@ -93,7 +204,7 @@ void PollEvents() NOEXCEPT
 	int32 events;
 	android_poll_source *RESTRICT source;
 
-	if (ALooper_pollAll(0, nullptr, &events, (void**) &source) >= 0)
+	while (ALooper_pollAll(CatalystEngineSystem::Instance->IsEnginePaused() ? -1 : 0, nullptr, &events, (void**) &source) >= 0)
 	{
 		if (source &&
 			(source->id == LOOPER_ID_MAIN
@@ -101,21 +212,6 @@ void PollEvents() NOEXCEPT
 		{
 			source->process(CatalystPlatform::_App, source);
 		}
-	}
-}
-
-/*
-*	Updates the Catalyst Platform Android during the POST update phase.
-*/
-void PostUpdate() NOEXCEPT
-{
-	//Poll events.
-	PollEvents();
-
-	//If the app has received a destroy request, oblige.
-	if (CatalystPlatform::_App->destroyRequested != 0)
-	{
-		//CatalystEngineSystem::Instance->SetShouldTerminate();
 	}
 }
 
@@ -133,17 +229,21 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	{
 		PollEvents();
 	}
+}
 
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT)
-	{
-	    PostUpdate();
-	},
-	nullptr,
-	UpdatePhase::POST,
-	UpdatePhase::PRE,
-	true,
-	false);
+/*
+*	Updates the platform before everything else.
+*/
+void CatalystPlatform::PlatformPreUpdate() NOEXCEPT
+{
+    //Poll events.
+    PollEvents();
+
+    //If the app has received a destroy request, oblige.
+    if (CatalystPlatform::_App->destroyRequested != 0)
+    {
+        //CatalystEngineSystem::Instance->SetShouldTerminate();
+    }
 }
 
 /*

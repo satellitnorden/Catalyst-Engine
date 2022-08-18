@@ -216,6 +216,14 @@ void CatalystPlatform::Initialize() NOEXCEPT
 }
 
 /*
+*	Updates the platform before everything else.
+*/
+void CatalystPlatform::PlatformPreUpdate() NOEXCEPT
+{
+
+}
+
+/*
 *	Terminates the platform.
 */
 void CatalystPlatform::Terminate() NOEXCEPT

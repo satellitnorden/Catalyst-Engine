@@ -116,6 +116,30 @@ public:
 		_UpdateSpeed = update_speed;
 	}
 
+	/*
+	*	Returns whether or not the engine is paused.
+	*/
+	FORCE_INLINE NO_DISCARD bool IsEnginePaused() const NOEXCEPT
+	{
+		return _EnginePaused;
+	}
+
+	/*
+	*	Pauses the engine.
+	*/
+	FORCE_INLINE void PauseEngine() NOEXCEPT
+	{
+		_EnginePaused = true;
+	}
+
+	/*
+	*	Un-pauses the engine.
+	*/
+	FORCE_INLINE void UnpauseEngine() NOEXCEPT
+	{
+		_EnginePaused = false;
+	}
+
 private:
 
 	/*
@@ -178,6 +202,9 @@ private:
 
 	//Container for all end updata data.
 	StaticArray<DynamicArray<UpdateData *RESTRICT>, UNDERLYING(UpdatePhase::NUMBER_OF_UPDATES_PHASES)> _EndUpdateData;
+
+	//Denotes if the engine is paused.
+	bool _EnginePaused{ false };
 
 	/*
 	*	Updates an individual phase.

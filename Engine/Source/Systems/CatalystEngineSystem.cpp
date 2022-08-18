@@ -236,6 +236,17 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	//Define constants.
 	constexpr float32 MAXIMUM_DELTA_TIME{ 0.1f };
 
+	//Pre-update the platform.
+	CatalystPlatform::PlatformPreUpdate();
+
+	//Is the engine paused?
+	if (_EnginePaused)
+	{
+		Concurrency::CurrentThread::SleepFor(1'000'000'000);
+
+		return true;
+	}
+
 	//Start the profiling scope.
 	PROFILING_SCOPE("Catalyst Engine Update");
 
