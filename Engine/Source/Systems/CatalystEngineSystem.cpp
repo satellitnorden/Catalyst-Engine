@@ -242,7 +242,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	//Is the engine paused?
 	if (_EnginePaused)
 	{
-		Concurrency::CurrentThread::SleepFor(1'000'000'000);
+		Concurrency::CurrentThread::SleepFor(500'000'000);
 
 		return true;
 	}
@@ -288,7 +288,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 		B = std::chrono::system_clock::now();
 
 		//Set the delta time.
-		_DeltaTime = preferred_frame_time;
+		_DeltaTime = CatalystBaseMath::Minimum(CatalystBaseMath::Maximum(preferred_frame_time, CatalystEngineSystemData::_DeltaTimer.Update()), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
 	}
 
 	else
