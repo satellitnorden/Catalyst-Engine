@@ -74,7 +74,7 @@ void OceanSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle dept
 	SetNumberOfOutputRenderTargets(4);
 	AddOutputRenderTarget(SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
 	AddOutputRenderTarget(SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget());
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
+	AddOutputRenderTarget(SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4));
 
 	//Add the render data table layouts.

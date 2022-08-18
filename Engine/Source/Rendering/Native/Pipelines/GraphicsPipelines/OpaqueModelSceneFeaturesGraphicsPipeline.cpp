@@ -66,7 +66,7 @@ void OpaqueModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandl
 	SetNumberOfOutputRenderTargets(5);
 	AddOutputRenderTarget(SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
 	AddOutputRenderTarget(SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget());
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
+	AddOutputRenderTarget(SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4));
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
 

@@ -310,11 +310,6 @@ enum class PipelineStageFlags : uint8
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the roughness in the R channel, metallic in the G channel, ambient occlusion in the B channel and the luminance in the A channel.
-	*/
-	SCENE_FEATURES_3,
-
-	/*
 	*	Contains the velocity in the RG channels.
 	*/
 	SCENE_FEATURES_4,

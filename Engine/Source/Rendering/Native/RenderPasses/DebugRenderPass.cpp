@@ -127,7 +127,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
 
 				break;
 			}
@@ -139,7 +139,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
 
 				break;
 			}
@@ -151,7 +151,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
 
 				break;
 			}
@@ -163,7 +163,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3));
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
 
 				break;
 			}

@@ -168,7 +168,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 					0,
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
 					SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget(),
-					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3),
+					SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget(),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2),
 					resolution
 				);
@@ -179,7 +179,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 					1,
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2),
 					SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget(),
-					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3),
+					SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget(),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
 					resolution
 				);

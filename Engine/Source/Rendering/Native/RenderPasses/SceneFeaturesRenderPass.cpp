@@ -51,6 +51,9 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	//Create the scene features 2 render target.
 	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_SceneFeatures2RenderTarget);
 
+	//Create the scene features 3 render target.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_UINT8, &_SceneFeatures3RenderTarget);
+
 	//Create the scene depth buffer.
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(0), &_SceneDepthBuffer);
 
