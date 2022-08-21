@@ -129,6 +129,45 @@ void MobileGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NO
 	//Set the name.
 	SetName("Mobile");
 #endif
+
+	//Create the sky vertex/index buffer.
+	{
+		constexpr StaticArray<Vector3<float32>, 3> VERTEX_POSITIONS
+		{
+			Vector3<float32>(-1.0f, -1.0f, FLOAT32_EPSILON),
+			Vector3<float32>(-1.0f, 3.0f, 0.0f),
+			Vector3<float32>(3.0f, -1.0f, 0.0f)
+		};
+
+		StaticArray<Vertex, 3> vertices;
+
+		for (int32 i{ 0 }; i < 3; ++i)
+		{
+			vertices[i]._Position = VERTEX_POSITIONS[i];
+			vertices[i]._Normal = Vector3<float32>(0.0f, 1.0f, 0.0f);
+			vertices[i]._Tangent = Vector3<float32>(0.0f, 0.0f, 1.0f);
+			vertices[i]._TextureCoordinate = Vector2<float32>((vertices[i]._Position._X + 1.0f) * 0.5f, (vertices[i]._Position._Y + 1.0f) * 0.5f);
+		}
+
+		const void *const RESTRICT data_chunks[]{ vertices.Data() };
+		const uint64 data_sizes[]{ sizeof(Vertex) * vertices.Size() };
+		RenderingSystem::Instance->CreateBuffer(data_sizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &_SkyVertexBuffer);
+		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_SkyVertexBuffer);
+	}
+
+	{
+		constexpr StaticArray<uint32, 3> INDICES
+		{
+			static_cast<uint32>(0),
+			static_cast<uint32>(1),
+			static_cast<uint32>(2)
+		};
+
+		const void* const RESTRICT data_chunks[]{ INDICES.Data() };
+		const uint64 data_sizes[]{ sizeof(uint32) * INDICES.Size() };
+		RenderingSystem::Instance->CreateBuffer(data_sizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_SkyIndexBuffer);
+		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_SkyIndexBuffer);
+	}
 }
 
 /*
@@ -138,6 +177,10 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 {
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
+
+	//Cache the number of components.
+	const uint64 number_of_static_model_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+	const uint64 number_of_dynamic_model_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
 
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
@@ -174,7 +217,6 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 	//Draw static models.
 	{
 		//Cache relevant data.
-		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
 		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
 
 		//Wait for static models culling to finish.
@@ -183,7 +225,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 		//Wait for static models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
 
-		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		for (uint64 component_index{ 0 }; component_index < number_of_static_model_components; ++component_index, ++component)
 		{
 			//Skip this model depending on visibility.
 			if (!component->_Visibility)
@@ -226,7 +268,6 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 	//Draw dynamic models.
 	{
 		//Cache relevant data.
-		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
 		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
 
 		//Wait for dynamic models culling to finish.
@@ -235,7 +276,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 		//Wait for dynamic models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForDynamicModelsLevelOfDetail();
 
-		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		for (uint64 i = 0; i < number_of_dynamic_model_components; ++i, ++component)
 		{
 			//Skip this model depending on visibility.
 			if (!component->_Visibility)
@@ -286,6 +327,10 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 		data._MobilePass = UNDERLYING(MobilePass::SKY);
 
 		command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(MobilePushConstantData), &data);
+
+		//Bind the vertex/inder buffer.
+		command_buffer->BindVertexBuffer(this, 0, _SkyVertexBuffer, &OFFSET);
+		command_buffer->BindIndexBuffer(this, _SkyIndexBuffer, OFFSET);
 
 		//Draw!
 		command_buffer->DrawIndexed(this, 3, 1);

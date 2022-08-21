@@ -46,22 +46,14 @@ void CatalystShaderMain()
 
 		case MOBILE_PASS_SKY:
 		{
-			//Set the fragment tangent space matrix.
-			fragment_tangent_space_matrix = mat3(vec3(0.0f), vec3(0.0f), vec3(0.0f));
-
-			//Calculate the viewport coordinates.
-			float x = -1.0f + float((gl_VertexIndex & 2) << 1);
-		    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
-
 		    //Calculate the texture coordinate.
-		    fragment_texture_coordinate.x = (x + 1.0f) * 0.5f;
-		    fragment_texture_coordinate.y = (y + 1.0f) * 0.5f;
+		    fragment_texture_coordinate = vertex_texture_coordinate;
 		    
 		    //Calculate the world position.
-		    fragment_world_position = CalculateWorldPosition(vec2(x, y), FLOAT32_EPSILON);
+		    fragment_world_position = CalculateWorldPosition(vec2(vertex_position.x, vertex_position.y), vertex_position.z);
 
 		    //Set the position.
-		    gl_Position = vec4(x, y, FLOAT32_EPSILON, 1.0f);
+		    gl_Position = vec4(vertex_position, 1.0f);
 
 			break;
 		}

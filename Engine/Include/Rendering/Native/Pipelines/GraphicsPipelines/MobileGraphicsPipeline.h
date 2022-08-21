@@ -35,4 +35,10 @@ private:
 		SKY
 	};
 
+	//The sky vertex buffer.
+	BufferHandle _SkyVertexBuffer;
+
+	//The sky index buffer.
+	BufferHandle _SkyIndexBuffer;
+
 };
