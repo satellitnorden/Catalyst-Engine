@@ -18,7 +18,7 @@
 //Static variable definitions.
 android_app *RESTRICT CatalystPlatform::_App = nullptr;
 ANativeWindow *RESTRICT CatalystPlatform::_Window = nullptr;
-AndroidTouchState CatalystPlatform::_CurrentAndroidTouchState;
+StaticArray<AndroidTouchState, InputConstants::MAXIMUM_NUMBER_OF_TOUCH_FINGERS> CatalystPlatform::_CurrentAndroidTouchStates;
 
 //Catalyst platform Android data.
 namespace CatalystPlatformAndroidData
@@ -174,18 +174,28 @@ int32 HandleInput(android_app *RESTRICT app, AInputEvent *RESTRICT event) NOEXCE
 {
 	if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION)
 	{
+        //Retrieve the pointer index.
+        const int32 pointer_index{ (AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT };
+
+        if (pointer_index >= InputConstants::MAXIMUM_NUMBER_OF_TOUCH_FINGERS)
+        {
+            ASSERT(false, "This was unexpected!");
+
+            return 0;
+        }
+
 		if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN)
 		{
-			CatalystPlatform::_CurrentAndroidTouchState._IsCurrentlyTouched = true;
+			CatalystPlatform::_CurrentAndroidTouchStates[pointer_index]._IsCurrentlyTouched = true;
 		}
 
 		else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_UP)
 		{
-			CatalystPlatform::_CurrentAndroidTouchState._IsCurrentlyTouched = false;
+			CatalystPlatform::_CurrentAndroidTouchStates[pointer_index]._IsCurrentlyTouched = false;
 		}
 
-		CatalystPlatform::_CurrentAndroidTouchState._CurrentX = AMotionEvent_getX(event, 0) / CatalystPlatformAndroidData::_ScreenWidth;
-		CatalystPlatform::_CurrentAndroidTouchState._CurrentY = 1.0f - (AMotionEvent_getY(event, 0) / CatalystPlatformAndroidData::_ScreenHeight);
+		CatalystPlatform::_CurrentAndroidTouchStates[pointer_index]._CurrentX = AMotionEvent_getX(event, pointer_index) / CatalystPlatformAndroidData::_ScreenWidth;
+		CatalystPlatform::_CurrentAndroidTouchStates[pointer_index]._CurrentY = 1.0f - (AMotionEvent_getY(event, pointer_index) / CatalystPlatformAndroidData::_ScreenHeight);
 
 		return 1;
 	}

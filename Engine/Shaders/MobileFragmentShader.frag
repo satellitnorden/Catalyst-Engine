@@ -99,8 +99,8 @@ vec3 CalculateModelRadiance()
 														shading_normal,
 														material_properties[0],
 														material_properties[1],
-														mix(1.0f, material_properties[2], diffuse_component),
-														1.0f,
+														material_properties[2],
+														albedo_thickness.a,
 														-indirect_lighting_direction,
 														indirect_lighting);
 

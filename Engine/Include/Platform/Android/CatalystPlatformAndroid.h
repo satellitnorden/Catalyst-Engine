@@ -3,6 +3,10 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
+
+//Input.
+#include <Input/InputCore.h>
 
 //Rendering.
 #include <Rendering/Native/Resolution.h>
@@ -51,8 +55,8 @@ public:
 	//Handle to the window.
 	static ANativeWindow *RESTRICT _Window;
 
-	//The current Android touch state.
-	static AndroidTouchState _CurrentAndroidTouchState;
+	//The current Android touch states.
+	static StaticArray<AndroidTouchState, InputConstants::MAXIMUM_NUMBER_OF_TOUCH_FINGERS> _CurrentAndroidTouchStates;
 
 	/*
 	*	Initializes the platform.

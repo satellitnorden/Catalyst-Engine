@@ -921,7 +921,7 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 
 				case InputDeviceType::TOUCH:
 				{
-					output._Pressed = InputSystem::Instance->GetTouchState()->_ButtonState == ButtonState::PRESSED;
+					output._Pressed = InputSystem::Instance->GetTouchState()->_FingerStates[0]._ButtonState == ButtonState::PRESSED;
 
 					break;
 				}
@@ -944,8 +944,8 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 
 			case InputDeviceType::TOUCH:
 			{
-				output._Position = Vector2<float32>(InputSystem::Instance->GetTouchState()->_CurrentX, InputSystem::Instance->GetTouchState()->_CurrentY);
-				output._Pressed = InputSystem::Instance->GetTouchState()->_ButtonState == ButtonState::PRESSED;
+				output._Position = Vector2<float32>(InputSystem::Instance->GetTouchState()->_FingerStates[0]._CurrentX, InputSystem::Instance->GetTouchState()->_FingerStates[0]._CurrentY);
+				output._Pressed = InputSystem::Instance->GetTouchState()->_FingerStates[0]._ButtonState == ButtonState::PRESSED;
 
 				break;
 			}

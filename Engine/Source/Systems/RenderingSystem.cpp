@@ -1442,7 +1442,19 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	const Matrix4x4 current_perceiver_matrix{ Matrix4x4::LookAt(_CurrentPerceiverWorldTransform.GetLocalPosition(), _CurrentPerceiverWorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_CurrentPerceiverWorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_CurrentPerceiverWorldTransform.GetRotation())) };
 
 	//Jitter the projection matrix a bit.
-	Vector2<float> current_frame_jitter{ JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution };
+	Vector2<float32> current_frame_jitter;
+
+	if (_CurrentRenderingPath == RenderingPath::DEFAULT
+		|| _CurrentRenderingPath == RenderingPath::PATH_TRACING)
+	{
+		current_frame_jitter = JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution;
+	}
+
+	else
+	{
+		current_frame_jitter = Vector2<float32>(0.0f, 0.0f);
+	}
+
 	Perceiver::Instance->SetProjectionMatrixJitter(current_frame_jitter);
 
 	//Update matrices.

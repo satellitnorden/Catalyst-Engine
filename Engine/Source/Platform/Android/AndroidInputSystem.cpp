@@ -32,98 +32,101 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 void InputSystem::UpdateTouchState() NOEXCEPT
 {
     //Update the button state.
-    if (CatalystPlatform::_CurrentAndroidTouchState._IsCurrentlyTouched)
+    for (uint8 finger_index{ 0 }; finger_index < InputConstants::MAXIMUM_NUMBER_OF_TOUCH_FINGERS; ++finger_index)
     {
-        switch (_InputState._TouchState._ButtonState)
+        if (CatalystPlatform::_CurrentAndroidTouchStates[finger_index]._IsCurrentlyTouched)
         {
-            case ButtonState::PRESSED:
+            switch (_InputState._TouchState._FingerStates[finger_index]._ButtonState)
             {
-                _InputState._TouchState._ButtonState = ButtonState::PRESSED_HELD;
+                case ButtonState::PRESSED:
+                {
+                    _InputState._TouchState._FingerStates[finger_index]._ButtonState = ButtonState::PRESSED_HELD;
 
-                break;
-            }
+                    break;
+                }
 
-            case ButtonState::PRESSED_HELD:
-            {
-                //Do nothing.
+                case ButtonState::PRESSED_HELD:
+                {
+                    //Do nothing.
 
-                break;
-            }
+                    break;
+                }
 
-            case ButtonState::RELEASED:
-            {
-                _InputState._TouchState._ButtonState = ButtonState::PRESSED;
+                case ButtonState::RELEASED:
+                {
+                    _InputState._TouchState._FingerStates[finger_index]._ButtonState = ButtonState::PRESSED;
 
-                break;
-            }
+                    break;
+                }
 
-            case ButtonState::RELEASED_HELD:
-            {
-                _InputState._TouchState._ButtonState = ButtonState::PRESSED;
+                case ButtonState::RELEASED_HELD:
+                {
+                    _InputState._TouchState._FingerStates[finger_index]._ButtonState = ButtonState::PRESSED;
 
-                break;
-            }
+                    break;
+                }
 
-            default:
-            {
-                ASSERT(false, "Invalid case!");
+                default:
+                {
+                    ASSERT(false, "Invalid case!");
 
-                break;
+                    break;
+                }
             }
         }
-    }
 
-    else
-    {
-        switch (_InputState._TouchState._ButtonState)
+        else
         {
-            case ButtonState::PRESSED:
+            switch (_InputState._TouchState._FingerStates[finger_index]._ButtonState)
             {
-                _InputState._TouchState._ButtonState = ButtonState::RELEASED;
+                case ButtonState::PRESSED:
+                {
+                    _InputState._TouchState._FingerStates[finger_index]._ButtonState = ButtonState::RELEASED;
 
-                break;
-            }
+                    break;
+                }
 
-            case ButtonState::PRESSED_HELD:
-            {
-                _InputState._TouchState._ButtonState = ButtonState::RELEASED;
+                case ButtonState::PRESSED_HELD:
+                {
+                    _InputState._TouchState._FingerStates[finger_index]._ButtonState = ButtonState::RELEASED;
 
-                break;
-            }
+                    break;
+                }
 
-            case ButtonState::RELEASED:
-            {
-                _InputState._TouchState._ButtonState = ButtonState::RELEASED_HELD;
+                case ButtonState::RELEASED:
+                {
+                    _InputState._TouchState._FingerStates[finger_index]._ButtonState = ButtonState::RELEASED_HELD;
 
-                break;
-            }
+                    break;
+                }
 
-            case ButtonState::RELEASED_HELD:
-            {
-                //Do nothing.
+                case ButtonState::RELEASED_HELD:
+                {
+                    //Do nothing.
 
-                break;
-            }
+                    break;
+                }
 
-            default:
-            {
-                ASSERT(false, "Invalid case!");
+                default:
+                {
+                    ASSERT(false, "Invalid case!");
 
-                break;
+                    break;
+                }
             }
         }
+
+        //Copy the previous X/Y coordinates.
+        _InputState._TouchState._FingerStates[finger_index]._PreviousX = _InputState._TouchState._FingerStates[finger_index]._CurrentX;
+        _InputState._TouchState._FingerStates[finger_index]._PreviousY = _InputState._TouchState._FingerStates[finger_index]._CurrentY;
+
+        //Update the current X/Y coordinates.
+        _InputState._TouchState._FingerStates[finger_index]._CurrentX = CatalystPlatform::_CurrentAndroidTouchStates[finger_index]._CurrentX;
+        _InputState._TouchState._FingerStates[finger_index]._CurrentY = CatalystPlatform::_CurrentAndroidTouchStates[finger_index]._CurrentY;
+
+        //Calculate the delta X/Y coordinates.
+        _InputState._TouchState._FingerStates[finger_index]._DeltaX = _InputState._TouchState._FingerStates[finger_index]._CurrentX - _InputState._TouchState._FingerStates[finger_index]._PreviousX;
+        _InputState._TouchState._FingerStates[finger_index]._DeltaY = _InputState._TouchState._FingerStates[finger_index]._CurrentY - _InputState._TouchState._FingerStates[finger_index]._PreviousY;
     }
-
-	//Copy the previous X/Y coordinates.
-    _InputState._TouchState._PreviousX = _InputState._TouchState._CurrentX;
-    _InputState._TouchState._PreviousY = _InputState._TouchState._CurrentY;
-
-    //Update the current X/Y coordinates.
-    _InputState._TouchState._CurrentX = CatalystPlatform::_CurrentAndroidTouchState._CurrentX;
-    _InputState._TouchState._CurrentY = CatalystPlatform::_CurrentAndroidTouchState._CurrentY;
-
-    //Calculate the delta X/Y coordinates.
-    _InputState._TouchState._DeltaX = _InputState._TouchState._CurrentX - _InputState._TouchState._PreviousX;
-    _InputState._TouchState._DeltaY = _InputState._TouchState._CurrentY - _InputState._TouchState._PreviousY;
 }
 #endif
