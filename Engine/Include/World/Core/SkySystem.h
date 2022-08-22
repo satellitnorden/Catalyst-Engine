@@ -35,6 +35,22 @@ public:
 	void PostInitialize() NOEXCEPT;
 
 	/*
+	*	Returns whether or not sky is enabled.
+	*/
+	FORCE_INLINE NO_DISCARD bool GetSkyEnabled() const NOEXCEPT
+	{
+		return _SkyEnabled;
+	}
+
+	/*
+	*	Sets whether or not sky is enabled.
+	*/
+	FORCE_INLINE void SetSkyEnabled(const bool value) NOEXCEPT
+	{
+		_SkyEnabled = value;
+	}
+
+	/*
 	*	Returns the sky mode.
 	*/
 	FORCE_INLINE NO_DISCARD SkyMode GetSkyMode() const NOEXCEPT
@@ -142,6 +158,9 @@ public:
 	}
 
 private:
+
+	//Denotes whether or not sky is enabled.
+	bool _SkyEnabled{ true };
 
 	//The sky mode.
 	SkyMode _SkyMode{ SkyMode::TEXTURE };

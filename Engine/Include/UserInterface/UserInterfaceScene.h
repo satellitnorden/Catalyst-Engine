@@ -324,6 +324,14 @@ protected:
 	*/
 	NO_DISCARD Vector2<float32> GetNormalizedCoordinateCenterOfCell(const Vector2<uint32> &cell) NOEXCEPT;
 
+	/*
+	*	Calculates the bounding box for the given minimum/maximum cell.
+	*/
+	void CalculateBoundingBox(	const Vector2<uint32> &minimum_cell,
+								const Vector2<uint32> &maximum_cell,
+								Vector2<float32> *const RESTRICT minimum,
+								Vector2<float32> *const RESTRICT maximum) NOEXCEPT;
+
 private:
 
 	/*
@@ -854,14 +862,6 @@ private:
 
 	//The entity.
 	UserInterfaceEntity *RESTRICT _Entity{ nullptr };
-
-	/*
-	*	Calculates the bounding box for the given minimum/maximum cell.
-	*/
-	void CalculateBoundingBox(	const Vector2<uint32> &minimum_cell,
-								const Vector2<uint32> &maximum_cell,
-								Vector2<float32> *const RESTRICT minimum,
-								Vector2<float32> *const RESTRICT maximum) NOEXCEPT;
 
 	/*
 	*	Updates buttons.

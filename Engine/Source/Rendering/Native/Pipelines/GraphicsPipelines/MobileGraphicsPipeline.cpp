@@ -215,6 +215,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 	}
 
 	//Draw static models.
+	if (number_of_static_model_components > 0)
 	{
 		//Cache relevant data.
 		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
@@ -266,6 +267,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 	}
 
 	//Draw dynamic models.
+	if (number_of_dynamic_model_components > 0)
 	{
 		//Cache relevant data.
 		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
@@ -317,6 +319,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 	}
 
 	//Draw the sky.
+	if (WorldSystem::Instance->GetSkySystem()->GetSkyEnabled())
 	{
 		//Push constants.
 		MobilePushConstantData data;
