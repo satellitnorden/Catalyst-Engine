@@ -6,6 +6,7 @@ android {
 
     defaultConfig {
         applicationId = 'com.[DEVELOPER_NAME].[PROJECT_NAME]'
+        //AAudio library requires SDK version 26.
         minSdkVersion 26
         targetSdkVersion 30
         externalNativeBuild {
