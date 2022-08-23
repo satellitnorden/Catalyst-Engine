@@ -124,6 +124,45 @@ void UserInterfaceButton::SetCurrentState(const UserInterfaceButtonState value) 
 }
 
 /*
+*	Sets the idle material.
+*/
+void UserInterfaceButton::SetIdleMaterial(const UserInterfaceMaterial &value) NOEXCEPT
+{
+	_IdleMaterial = value;
+
+	if (_CurrentState == UserInterfaceButtonState::IDLE)
+	{
+		_ImagePrimitive->_Material = _IdleMaterial;
+	}
+}
+
+/*
+*	Sets the hovered material.
+*/
+void UserInterfaceButton::SetHoveredMaterial(const UserInterfaceMaterial &value) NOEXCEPT
+{
+	_HoveredMaterial = value;
+
+	if (_CurrentState == UserInterfaceButtonState::HOVERED)
+	{
+		_ImagePrimitive->_Material = _HoveredMaterial;
+	}
+}
+
+/*
+*	Sets the pressed material.
+*/
+void UserInterfaceButton::SetPressedMaterial(const UserInterfaceMaterial &value) NOEXCEPT
+{
+	_PressedMaterial = value;
+
+	if (_CurrentState == UserInterfaceButtonState::PRESSED)
+	{
+		_ImagePrimitive->_Material = _PressedMaterial;
+	}
+}
+
+/*
 *	Sets the text.
 */
 void UserInterfaceButton::SetText(const char *const RESTRICT text) NOEXCEPT

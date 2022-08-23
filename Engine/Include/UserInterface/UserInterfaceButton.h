@@ -116,6 +116,45 @@ public:
 	}
 
 	/*
+	*	Returns the idle material.
+	*/
+	FORCE_INLINE NO_DISCARD const UserInterfaceMaterial &GetIdleMaterial() const NOEXCEPT
+	{
+		return _IdleMaterial;
+	}
+
+	/*
+	*	Sets the idle material.
+	*/
+	void SetIdleMaterial(const UserInterfaceMaterial& value) NOEXCEPT;
+
+	/*
+	*	Returns the hovered material.
+	*/
+	FORCE_INLINE NO_DISCARD const UserInterfaceMaterial &GetHoveredMaterial() const NOEXCEPT
+	{
+		return _HoveredMaterial;
+	}
+
+	/*
+	*	Sets the hovered material.
+	*/
+	void SetHoveredMaterial(const UserInterfaceMaterial& value) NOEXCEPT;
+
+	/*
+	*	Returns the pressed material.
+	*/
+	FORCE_INLINE NO_DISCARD const UserInterfaceMaterial &GetPressedMaterial() const NOEXCEPT
+	{
+		return _PressedMaterial;
+	}
+
+	/*
+	*	Sets the pressed material.
+	*/
+	void SetPressedMaterial(const UserInterfaceMaterial& value) NOEXCEPT;
+
+	/*
 	*	Returns whether or not this button is gamepad selected.
 	*/
 	FORCE_INLINE NO_DISCARD bool GetGamepadSelected() const NOEXCEPT
