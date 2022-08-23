@@ -1,4 +1,0 @@
-C:/Users/Denni/Desktop/ndk-samples-main/ndk-samples-main/native-activity/app/.cxx/cmake/debug/x86/CMakeFiles/native_app_glue.dir
-C:/Users/Denni/Desktop/ndk-samples-main/ndk-samples-main/native-activity/app/.cxx/cmake/debug/x86/CMakeFiles/native-activity.dir
-C:/Users/Denni/Desktop/ndk-samples-main/ndk-samples-main/native-activity/app/.cxx/cmake/debug/x86/CMakeFiles/edit_cache.dir
-C:/Users/Denni/Desktop/ndk-samples-main/ndk-samples-main/native-activity/app/.cxx/cmake/debug/x86/CMakeFiles/rebuild_cache.dir
