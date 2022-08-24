@@ -1,14 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    //AdMob library requires compileSdkVersion 28 or higher.
+    compileSdkVersion 28
     ndkVersion '22.1.7171670'
 
     defaultConfig {
         applicationId = 'com.[DEVELOPER_NAME].[PROJECT_NAME]'
         //AAudio library requires SDK version 26.
         minSdkVersion 26
-        targetSdkVersion 30
+        targetSdkVersion 28
         externalNativeBuild {
             cmake {
                 arguments '-DANDROID_STL=c++_static'
