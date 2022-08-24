@@ -239,6 +239,9 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	{
 		PollEvents();
 	}
+
+	//Show a banner ad. (:
+	ShowBannerAd();
 }
 
 /*
@@ -333,5 +336,42 @@ void CatalystPlatform::PrintToOutput(const char *const RESTRICT message) NOEXCEP
 {
 	__android_log_print(ANDROID_LOG_DEBUG, "Catalyst Engine:", "%s", message);
 }
+
+void CatalystPlatform::ShowBannerAd() NOEXCEPT
+{
+	//Retrieve the native activity.
+	ANativeActivity *native_activity{ _App->activity };
+
+	//Retrieve the Java VM.
+	JavaVM *JVM{ native_activity->vm };
+
+	//Retrieve the environment.
+	JNIEnv *environment{ nullptr };
+
+	JVM->GetEnv((void**)&environment, JNI_VERSION_1_6);
+
+	//Attach the current thread.
+	const jint result{ JVM->AttachCurrentThread(&environment, nullptr) };
+
+	if (result == JNI_ERR)
+	{
+		PRINT_TO_OUTPUT("Failed to do JNI stuff!");
+
+		return;
+	}
+
+	//Retrieve the Java class.
+	jclass java_class{ environment->GetObjectClass(native_activity->clazz) };
+
+	//Retrieve the Java method ID.
+	jmethodID java_method_id{ environment->GetMethodID(java_class, "ShowBannerAd", "()V") };
+
+	//Call the method!
+	environment->CallVoidMethod(native_activity->clazz, java_method_id);
+
+	//Detach the current thread.
+	JVM->DetachCurrentThread();
+}
+
 #endif
 #endif

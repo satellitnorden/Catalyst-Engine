@@ -110,6 +110,11 @@ public:
 	static void PrintToOutput(const char *const RESTRICT message) NOEXCEPT;
 #endif
 
+	/*
+	*	Shows a banner ad.
+	*/
+	static void ShowBannerAd() NOEXCEPT;
+
 };
 
 #endif
