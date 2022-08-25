@@ -178,6 +178,9 @@ private:
 	//The mixing buffers.
 	DynamicArray<void *RESTRICT> _MixingBuffers;
 
+	//The intermediate mixing buffer.
+	float32 *RESTRICT _IntermediateMixingBuffer;
+
 	//The current mixing buffer write index.
 	uint8 _CurrentMixingBufferWriteIndex{ 0 };
 

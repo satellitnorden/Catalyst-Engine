@@ -55,6 +55,7 @@ NO_DISCARD float32 SoundOfflineRenderer::Update() NOEXCEPT
 		for (PlayingSound &playing_sound : _PlayingSounds)
 		{
 			current_sample += playing_sound._SoundResourcePlayer.NextSample(channel_index);
+			playing_sound._SoundResourcePlayer.Advance(channel_index);
 		}
 
 		for (SoundMixComponent &component : _SoundMixComponents)
@@ -64,12 +65,6 @@ NO_DISCARD float32 SoundOfflineRenderer::Update() NOEXCEPT
 
 		//Write the current value.
 		_SoundResource._Samples[channel_index].Emplace(static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)));
-	}
-
-	//Advance all playing sounds.
-	for (PlayingSound &playing_sound : _PlayingSounds)
-	{
-		playing_sound._SoundResourcePlayer.Advance();
 	}
 
 	//Remove any inactive sounds.
@@ -143,12 +138,17 @@ void SoundOfflineRenderer::PlaySound(const PlaySoundRequest &request) NOEXCEPT
 	new_playing_sound._SoundResourcePlayer.SetPan(request._Pan);
 	new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(request._SoundResource->_SampleRate / _SampleRate * request._PlaybackRate);
 	new_playing_sound._SoundResourcePlayer.SetIsLooping(request._IsLooping);
-	new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetSampleRate(_SampleRate);
-	new_playing_sound._SoundResourcePlayer.GetADSREnvelope().SetStageValues(request._AttackTime,
-																			request._DecayTime,
-																			request._SustainGain,
-																			request._ReleaseTime);
-	new_playing_sound._SoundResourcePlayer.GetADSREnvelope().EnterAttackStage();
+
+	for (uint8 channel_index{ 0 }; channel_index < _NumberOfChannels; ++channel_index)
+	{
+		new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).SetSampleRate(_SampleRate);
+		new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).SetStageValues(	request._AttackTime,
+																								request._DecayTime,
+																								request._SustainGain,
+																								request._ReleaseTime);
+		new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).EnterAttackStage();
+	}
+	
 	new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(request._StartTime * request._SoundResource->_SampleRate));
 	new_playing_sound._SoundInstanceHandle = sound_instance_handle;
 	new_playing_sound._SoundStoppedCallback = request._SoundStoppedCallback;

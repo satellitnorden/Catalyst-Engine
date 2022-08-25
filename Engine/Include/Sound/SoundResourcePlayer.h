@@ -20,7 +20,17 @@ public:
     */
     FORCE_INLINE SoundResourcePlayer() NOEXCEPT
     {
-        
+        //Set up the current samples.
+        for (int64 &current_sample : _CurrentSamples)
+        {
+            current_sample = 0;
+        }
+
+        //Set up the current sample fractions.
+        for (float32 &current_sample_fraction : _CurrentSampleFractions)
+        {
+            current_sample_fraction = 0.0f;
+        }
     }
 
     /*
@@ -72,73 +82,80 @@ public:
     /*
     *   Sets the current sample.
     */
-    FORCE_INLINE void SetCurrentSample(const int64 sample) NOEXCEPT
+    FORCE_INLINE void SetCurrentSample(const int64 sample, const float32 sample_fraction = 0.0f) NOEXCEPT
     {
-        _CurrentSample = sample;
-        _CurrentSampleFraction = 0.0f;
+        for (int64 &current_sample : _CurrentSamples)
+        {
+            current_sample = sample;
+        }
+
+        for (float32 &current_sample_fraction : _CurrentSampleFractions)
+        {
+            current_sample_fraction = sample_fraction;
+        }
     }
 
     /*
     *   Returns the ADSR envelope, const.
     */
-    FORCE_INLINE NO_DISCARD const ADSREnvelope &GetADSREnvelope() const NOEXCEPT
+    FORCE_INLINE NO_DISCARD const ADSREnvelope &GetADSREnvelope(const uint8 channel_index) const NOEXCEPT
     {
-        return _ADSREnvelope;
+        return _ADSREnvelopes[channel_index];
     }
 
     /*
     *   Returns the ADSR envelope, non-const.
     */
-    FORCE_INLINE NO_DISCARD ADSREnvelope &GetADSREnvelope() NOEXCEPT
+    FORCE_INLINE NO_DISCARD ADSREnvelope &GetADSREnvelope(const uint8 channel_index) NOEXCEPT
     {
-        return _ADSREnvelope;
+        return _ADSREnvelopes[channel_index];
     }
 
     /*
     *   Advances this sound player.
     */
-    FORCE_INLINE void Advance() NOEXCEPT
+    FORCE_INLINE void Advance(const uint8 channel_index) NOEXCEPT
     {
-        _CurrentSampleFraction += _PlaybackSpeed;
+        _CurrentSampleFractions[channel_index] += _PlaybackSpeed;
 
-        while (_CurrentSampleFraction >= 1.0f)
+        while (_CurrentSampleFractions[channel_index] >= 1.0f)
         {
-            ++_CurrentSample;
-            _CurrentSampleFraction -= 1.0f;
+            ++_CurrentSamples[channel_index];
+            _CurrentSampleFractions[channel_index] -= 1.0f;
         }
 
-        if (_IsLooping && _CurrentSample >= static_cast<int64>(_SoundResource->_Samples[0].Size()))
+        if (_IsLooping && _CurrentSamples[channel_index] >= static_cast<int64>(_SoundResource->_Samples[0].Size()))
         {
-            _CurrentSample = 0;
+            _CurrentSamples[channel_index] = 0;
         }
 
-        _ADSREnvelope.Advance();
+        _ADSREnvelopes[channel_index].Advance();
     }
 
     /*
     *   Returns the next sample.
     */
-    FORCE_INLINE float32 NextSample(const uint64 channel_index) NOEXCEPT
+    FORCE_INLINE float32 NextSample(const uint8 channel_index) NOEXCEPT
     {
         //If the playback position is before the beginning of the sound resource, just return.
-        if (_CurrentSample < 0)
+        if (_CurrentSamples[channel_index] < 0)
         {
             return 0.0f;
         }
 
-        const uint64 actual_channel_index{ channel_index < _SoundResource->_Samples.Size() ? channel_index : 0 };
+        const uint8 actual_channel_index{ static_cast<uint8>(channel_index < _SoundResource->_Samples.Size() ? channel_index : 0) };
 
-        if (_CurrentSample < static_cast<int64>(_SoundResource->_Samples[actual_channel_index].Size()))
+        if (_CurrentSamples[channel_index] < static_cast<int64>(_SoundResource->_Samples[actual_channel_index].Size()))
         {
-            const int16 first_sample{ _SoundResource->_Samples[actual_channel_index][_CurrentSample] };
-            const int16 second_sample{ _SoundResource->_Samples[actual_channel_index][_CurrentSample < static_cast<int64>(_SoundResource->_Samples[actual_channel_index].Size() - 1) ? _CurrentSample + 1 : _CurrentSample] };
+            const int16 first_sample{ _SoundResource->_Samples[actual_channel_index][_CurrentSamples[channel_index]] };
+            const int16 second_sample{ _SoundResource->_Samples[actual_channel_index][_CurrentSamples[channel_index] < static_cast<int64>(_SoundResource->_Samples[actual_channel_index].Size() - 1) ? _CurrentSamples[channel_index] + 1 : _CurrentSamples[channel_index]] };
 
-            float32 interpolated_sample{ CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), _CurrentSampleFraction) / static_cast<float32>(INT16_MAXIMUM) };
+            float32 interpolated_sample{ CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), _CurrentSampleFractions[channel_index]) / static_cast<float32>(INT16_MAXIMUM) };
 
             //Apply the pan.
             interpolated_sample *= channel_index == 0 ? _LeftPanCoefficient : _RightPanCoefficient;
 
-            return interpolated_sample * _Gain * _ADSREnvelope.NextSample();
+            return interpolated_sample * _Gain * _ADSREnvelopes[channel_index].NextSample();
         }
 
         else
@@ -162,7 +179,10 @@ public:
     */
     FORCE_INLINE void Stop() NOEXCEPT
     {
-        _ADSREnvelope.EnterReleaseStage();
+        for (ADSREnvelope &envelope : _ADSREnvelopes)
+        {
+            envelope.EnterReleaseStage();
+        }
     }
 
     /*
@@ -170,7 +190,7 @@ public:
     */
     FORCE_INLINE NO_DISCARD bool IsActive() const NOEXCEPT
     {
-        return _CurrentSample < 0 || (_IsActive && _ADSREnvelope.IsActive());
+        return _CurrentSamples[0] < 0 || (_IsActive && _ADSREnvelopes[0].IsActive());
     }
 
 private:
@@ -190,11 +210,11 @@ private:
     //The playback speed.
     float32 _PlaybackSpeed{ 1.0f };
 
-    //The current sample.
-    int64 _CurrentSample{ 0 };
+    //The current samples.
+    StaticArray<int64, 2> _CurrentSamples;
 
-    //The current sample fraction.
-    float32 _CurrentSampleFraction{ 0.0f };
+    //The current sample fractions.
+    StaticArray<float32, 2> _CurrentSampleFractions;
 
     //Denotes if the sound resource is looping.
     bool _IsLooping{ false };
@@ -202,7 +222,7 @@ private:
     //Denotes if this sound resource player is active.
     bool _IsActive{ true };
 
-    //The ADSR envelope.
-    ADSREnvelope _ADSREnvelope;
+    //The ADSR envelopes.
+    StaticArray<ADSREnvelope, 2> _ADSREnvelopes;
 
 };
