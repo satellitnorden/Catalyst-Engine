@@ -135,8 +135,8 @@ void MobileGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NO
 		constexpr StaticArray<Vector3<float32>, 3> VERTEX_POSITIONS
 		{
 			Vector3<float32>(-1.0f, -1.0f, FLOAT32_EPSILON),
-			Vector3<float32>(-1.0f, 3.0f, 0.0f),
-			Vector3<float32>(3.0f, -1.0f, 0.0f)
+			Vector3<float32>(3.0f, -1.0f, FLOAT32_EPSILON),
+			Vector3<float32>(-1.0f, 3.0f, FLOAT32_EPSILON)
 		};
 
 		StaticArray<Vertex, 3> vertices;
@@ -144,8 +144,8 @@ void MobileGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NO
 		for (int32 i{ 0 }; i < 3; ++i)
 		{
 			vertices[i]._Position = VERTEX_POSITIONS[i];
-			vertices[i]._Normal = Vector3<float32>(0.0f, 1.0f, 0.0f);
-			vertices[i]._Tangent = Vector3<float32>(0.0f, 0.0f, 1.0f);
+			vertices[i]._Normal = Vector3<float32>(1.0f, 0.0f, 0.0f);
+			vertices[i]._Tangent = Vector3<float32>(0.0f, 1.0f, 0.0f);
 			vertices[i]._TextureCoordinate = Vector2<float32>((vertices[i]._Position._X + 1.0f) * 0.5f, (vertices[i]._Position._Y + 1.0f) * 0.5f);
 		}
 
