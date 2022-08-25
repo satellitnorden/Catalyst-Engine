@@ -31,6 +31,51 @@ namespace CatalystPlatformAndroidData
 	uint32 _ScreenHeight;
 }
 
+//Catalyst platform Android logic.
+namespace CatalystPlatformAndroidLogic
+{
+
+    /*
+    *   Calls a void JNI method.
+    */
+    FORCE_INLINE void CallVoidJNIMethod(const char *const RESTRICT method_name) NOEXCEPT
+    {
+        //Retrieve the native activity.
+        ANativeActivity *native_activity{ CatalystPlatform::_App->activity };
+
+        //Retrieve the Java VM.
+        JavaVM *JVM{ native_activity->vm };
+
+        //Retrieve the environment.
+        JNIEnv *environment{ nullptr };
+
+        JVM->GetEnv((void**)&environment, JNI_VERSION_1_6);
+
+        //Attach the current thread.
+        const jint result{ JVM->AttachCurrentThread(&environment, nullptr) };
+
+        if (result == JNI_ERR)
+        {
+            PRINT_TO_OUTPUT("Failed to do JNI stuff!");
+
+            return;
+        }
+
+        //Retrieve the Java class.
+        jclass java_class{ environment->GetObjectClass(native_activity->clazz) };
+
+        //Retrieve the Java method ID.
+        jmethodID java_method_id{ environment->GetMethodID(java_class, method_name, "()V") };
+
+        //Call the method!
+        environment->CallVoidMethod(native_activity->clazz, java_method_id);
+
+        //Detach the current thread.
+        JVM->DetachCurrentThread();
+    }
+
+}
+
 /*
 *	Handles android commands.
 */
@@ -339,38 +384,17 @@ void CatalystPlatform::PrintToOutput(const char *const RESTRICT message) NOEXCEP
 
 void CatalystPlatform::ShowBannerAd() NOEXCEPT
 {
-	//Retrieve the native activity.
-	ANativeActivity *native_activity{ _App->activity };
+    //Call the method.
+    CatalystPlatformAndroidLogic::CallVoidJNIMethod("ShowBannerAd");
+}
 
-	//Retrieve the Java VM.
-	JavaVM *JVM{ native_activity->vm };
-
-	//Retrieve the environment.
-	JNIEnv *environment{ nullptr };
-
-	JVM->GetEnv((void**)&environment, JNI_VERSION_1_6);
-
-	//Attach the current thread.
-	const jint result{ JVM->AttachCurrentThread(&environment, nullptr) };
-
-	if (result == JNI_ERR)
-	{
-		PRINT_TO_OUTPUT("Failed to do JNI stuff!");
-
-		return;
-	}
-
-	//Retrieve the Java class.
-	jclass java_class{ environment->GetObjectClass(native_activity->clazz) };
-
-	//Retrieve the Java method ID.
-	jmethodID java_method_id{ environment->GetMethodID(java_class, "ShowBannerAd", "()V") };
-
-	//Call the method!
-	environment->CallVoidMethod(native_activity->clazz, java_method_id);
-
-	//Detach the current thread.
-	JVM->DetachCurrentThread();
+/*
+*	Shows an interstitial ad.
+*/
+void CatalystPlatform::ShowInterstitialAd() NOEXCEPT
+{
+    //Call the method.
+    CatalystPlatformAndroidLogic::CallVoidJNIMethod("ShowInterstitialAd");
 }
 
 #endif

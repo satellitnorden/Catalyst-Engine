@@ -115,6 +115,11 @@ public:
 	*/
 	static void ShowBannerAd() NOEXCEPT;
 
+    /*
+    *	Shows an interstitial ad.
+    */
+    static void ShowInterstitialAd() NOEXCEPT;
+
 };
 
 #endif
