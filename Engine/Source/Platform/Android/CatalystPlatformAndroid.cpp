@@ -284,9 +284,6 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	{
 		PollEvents();
 	}
-
-	//Show a banner ad. (:
-	ShowBannerAd();
 }
 
 /*

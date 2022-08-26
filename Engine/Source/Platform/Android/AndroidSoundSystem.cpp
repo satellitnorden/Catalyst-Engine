@@ -48,10 +48,24 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	//Create the audio stream builder.
 	AAudioStreamBuilder *RESTRICT audio_stream_builder{ nullptr };
 	result = AAudio_createStreamBuilder(&audio_stream_builder);
+
 	ASSERT(result == AAUDIO_OK, AAudio_convertResultToText(result));
+
+	if (result != AAUDIO_OK)
+	{
+        PRINT_TO_OUTPUT("Couldn't initialize AAudio because:" << AAudio_convertResultToText(result));
+
+		return;
+	}
 
 	//Set the format.
 	AAudioStreamBuilder_setFormat(audio_stream_builder, AAUDIO_FORMAT_PCM_I16);
+
+	//Set the sharing mode.
+	AAudioStreamBuilder_setSharingMode(audio_stream_builder, AAUDIO_SHARING_MODE_EXCLUSIVE);
+
+	//Set the direction.
+	AAudioStreamBuilder_setDirection(audio_stream_builder, AAUDIO_DIRECTION_OUTPUT);
 
 	//Set the performance mode.
 	switch (configuration._SoundSystemMode)
@@ -81,41 +95,42 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	//Set the data callback.
 	AAudioStreamBuilder_setDataCallback
 	(
-	audio_stream_builder,
-	[](AAudioStream *stream, void *user_data, void *audio_data, int32_t number_of_samples) -> aaudio_data_callback_result_t
-	{
-	    const int32 xrun_count = AAudioStream_getXRunCount(stream);
+		audio_stream_builder,
+		[](AAudioStream *stream, void *user_data, void *audio_data, int32_t number_of_samples) -> aaudio_data_callback_result_t
+		{
+			static_cast<SoundSystem *const RESTRICT>(user_data)->SoundCallback(	AndroidSoundSystemData::_SampleRate,
+																	  			16,
+																	  			AndroidSoundSystemData::_NumberOfChannels,
+																	  			number_of_samples,
+																	  			audio_data);
 
-	    if (xrun_count != 0)
-        {
-	        int x = 0;
-        }
-#if 1
-		static_cast<SoundSystem* const RESTRICT>(user_data)->SoundCallback(	AndroidSoundSystemData::_SampleRate,
-																	  		16,
-																	  		AndroidSoundSystemData::_NumberOfChannels,
-																	  		number_of_samples,
-																	  		audio_data);
-#endif
-		return AAUDIO_CALLBACK_RESULT_CONTINUE;
-	},
-	this
+			return AAUDIO_CALLBACK_RESULT_CONTINUE;
+		},
+		this
 	);
 
 	//Set the error callback.
 	AAudioStreamBuilder_setErrorCallback
 	(
-	audio_stream_builder,
-	[](AAudioStream *stream, void *user_data, aaudio_result_t error)
-	{
-		ASSERT(false, AAudio_convertResultToText(error));
-	},
-	nullptr
+		audio_stream_builder,
+		[](AAudioStream *stream, void *user_data, aaudio_result_t error)
+		{
+			ASSERT(false, AAudio_convertResultToText(error));
+		},
+		nullptr
 	);
 
 	//Open the stream.
 	result = AAudioStreamBuilder_openStream(audio_stream_builder, &AndroidSoundSystemData::_AudioStream);
+	
 	ASSERT(result == AAUDIO_OK, AAudio_convertResultToText(result));
+
+	if (result != AAUDIO_OK)
+	{
+        PRINT_TO_OUTPUT("Couldn't initialize AAudio because:" << AAudio_convertResultToText(result));
+
+		return;
+	}
 
 	//Retrieve the number of channels.
 	AndroidSoundSystemData::_NumberOfChannels = AAudioStream_getChannelCount(AndroidSoundSystemData::_AudioStream);
@@ -124,15 +139,31 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	AndroidSoundSystemData::_SampleRate = static_cast<float32>(AAudioStream_getSampleRate(AndroidSoundSystemData::_AudioStream));
 
 	//Set the buffer size.
-	AAudioStream_setBufferSizeInFrames(AndroidSoundSystemData::_AudioStream, AAudioStream_getFramesPerBurst(AndroidSoundSystemData::_AudioStream) * 4);
+	AAudioStream_setBufferSizeInFrames(AndroidSoundSystemData::_AudioStream, AAudioStream_getFramesPerBurst(AndroidSoundSystemData::_AudioStream) * 2);
 
 	//Start the stream.
 	result = AAudioStream_requestStart(AndroidSoundSystemData::_AudioStream);
+	
 	ASSERT(result == AAUDIO_OK, AAudio_convertResultToText(result));
+
+	if (result != AAUDIO_OK)
+	{
+        PRINT_TO_OUTPUT("Couldn't initialize AAudio because:" << AAudio_convertResultToText(result));
+
+		return;
+	}
 
 	//Delete the audio stream builder.
 	result = AAudioStreamBuilder_delete(audio_stream_builder);
+	
 	ASSERT(result == AAUDIO_OK, AAudio_convertResultToText(result));
+
+	if (result != AAUDIO_OK)
+	{
+        PRINT_TO_OUTPUT("Couldn't initialize AAudio because:" << AAudio_convertResultToText(result));
+
+		return;
+	}
 
 	//The Android sound system is successfully initialized!
 	AndroidSoundSystemData::_Initialized = true;
