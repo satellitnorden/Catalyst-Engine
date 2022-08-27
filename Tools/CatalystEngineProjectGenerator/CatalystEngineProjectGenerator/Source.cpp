@@ -9,8 +9,8 @@
 //Macros.
 #define CHECK_ERROR_CODE() if (error_code) { std::cout << "Error at " << __LINE__ << ": " << error_code.message() << std::endl; }
 
-//Enumeration covering all distributions.
-enum class Distribution
+//Enumeration covering all Win64 distributions.
+enum class Win64Distribution
 {
 	NULL,
 	STEAM
@@ -32,13 +32,16 @@ class GeneralParameters final
 public:
 
 	//The developer name.
-	const char *_DeveloperName{ nullptr };
+	std::string _DeveloperName;
+
+	//The developer name, with no spaces.
+	std::string _DeveloperNameNoSpaces;
 
 	//The projet name.
-	const char *_ProjectName{ nullptr };
+	std::string _ProjectName;
 
-	//The distribution.
-	Distribution _Distribution{ Distribution::NULL };
+	//The projet name, with no spaces.
+	std::string _ProjectNameNoSpaces;
 
 	//The physics.
 	Physics _Physics{ Physics::NULL };
@@ -62,6 +65,9 @@ public:
 	//Denotes whether or not to force landscape mode.
 	bool _ForceLandscapeMode{ false };
 
+	//The included resource collections.
+	std::vector<std::string> _IncludedResourceCollections;
+
 };
 
 /*
@@ -82,6 +88,9 @@ class Win64Parameters final
 
 public:
 
+
+	//The distribution.
+	Win64Distribution _Distribution{ Win64Distribution::NULL };
 
 };
 
@@ -111,10 +120,10 @@ void PrintOptions()
 void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidParameters &platform_parameters)
 {
 	//Cache the lower case versions of developer_name and project_name.
-	std::string lower_developer_name{ general_parameters._DeveloperName };
+	std::string lower_developer_name{ general_parameters._DeveloperNameNoSpaces };
 	std::transform(lower_developer_name.begin(), lower_developer_name.end(), lower_developer_name.begin(), [](unsigned char character) { return std::tolower(character); });
 
-	std::string lower_project_name{ general_parameters._ProjectName };
+	std::string lower_project_name{ general_parameters._ProjectNameNoSpaces };
 	std::transform(lower_project_name.begin(), lower_project_name.end(), lower_project_name.begin(), [](unsigned char character) { return std::tolower(character); });
 
 	//Remember the error code for filesystem functions.
@@ -133,7 +142,7 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 
 			if (project_name_position != std::string::npos)
 			{
-				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), general_parameters._ProjectName);
+				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), general_parameters._ProjectNameNoSpaces);
 			}
 		}
 
@@ -201,7 +210,7 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 				if (library_name_position != std::string::npos)
 				{
 					char buffer[128];
-					sprintf_s(buffer, "%s_Android-lib", general_parameters._ProjectName);
+					sprintf_s(buffer, "%s_Android-lib", general_parameters._ProjectNameNoSpaces.c_str());
 
 					input_line.replace(library_name_position, strlen("[LIBRARY_NAME]"), buffer);
 				}
@@ -375,18 +384,16 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 			std::cout << error_code.message() << std::endl;
 		}
 
-		for (const auto &entry : std::filesystem::directory_iterator(std::string("..\\Resources\\Final")))
+		for (const std::string& included_resource_collection : platform_parameters._IncludedResourceCollections)
 		{
-			const std::string file_path{ entry.path().string() };
+			char buffer[256];
+			sprintf_s(buffer, "..\\Resources\\Final\\%s", included_resource_collection.c_str());
 
-			if (file_path != ".gitignore")
+			std::filesystem::copy(buffer, "Android\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+
+			if (error_code)
 			{
-				std::filesystem::copy(file_path, "Android\\app\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
-
-				if (error_code)
-				{
-					std::cout << error_code.message() << std::endl;
-				}
+				std::cout << error_code.message() << std::endl;
 			}
 		}
 	}
@@ -398,10 +405,10 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 void GenerateOculusQuest(const GeneralParameters &general_parameters, const OculusQuestParameters &platform_parameters)
 {
 	//Cache the lower case versions of developer_name and project_name.
-	std::string lower_developer_name{ general_parameters._DeveloperName };
+	std::string lower_developer_name{ general_parameters._DeveloperNameNoSpaces };
 	std::transform(lower_developer_name.begin(), lower_developer_name.end(), lower_developer_name.begin(), [](unsigned char character) { return std::tolower(character); });
 
-	std::string lower_project_name{ general_parameters._ProjectName };
+	std::string lower_project_name{ general_parameters._ProjectNameNoSpaces };
 	std::transform(lower_project_name.begin(), lower_project_name.end(), lower_project_name.begin(), [](unsigned char character) { return std::tolower(character); });
 
 	//Remember the error code for filesystem functions.
@@ -420,7 +427,7 @@ void GenerateOculusQuest(const GeneralParameters &general_parameters, const Ocul
 
 			if (project_name_position != std::string::npos)
 			{
-				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), general_parameters._ProjectName);
+				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), general_parameters._ProjectNameNoSpaces);
 			}
 		}
 
@@ -504,7 +511,7 @@ void GenerateOculusQuest(const GeneralParameters &general_parameters, const Ocul
 				if (library_name_position != std::string::npos)
 				{
 					char buffer[128];
-					sprintf_s(buffer, "%s_Oculus_Quest-lib", general_parameters._ProjectName);
+					sprintf_s(buffer, "%s_Oculus_Quest-lib", general_parameters._ProjectNameNoSpaces.c_str());
 
 					input_line.replace(library_name_position, strlen("[LIBRARY_NAME]"), buffer);
 				}
@@ -683,7 +690,7 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 
 			if (project_name_position != std::string::npos)
 			{
-				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), general_parameters._ProjectName);
+				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), general_parameters._ProjectNameNoSpaces);
 			}
 		}
 
@@ -694,9 +701,9 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 			{
 				const char* distribution_string{ "CATALYST_DISTRIBUTION_NULL" };
 
-				switch (general_parameters._Distribution)
+				switch (platform_parameters._Distribution)
 				{
-					case Distribution::STEAM:
+					case Win64Distribution::STEAM:
 					{
 						distribution_string = "CATALYST_DISTRIBUTION_STEAM";
 
@@ -764,16 +771,16 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 
 			if (position != std::string::npos)
 			{
-				switch (general_parameters._Distribution)
+				switch (platform_parameters._Distribution)
 				{
-					case Distribution::NULL:
+					case Win64Distribution::NULL:
 					{
 						cmake_lists_line.replace(position, strlen("[LINK_STEAM_LIBRARIES]"), "");
 
 						break;
 					}
 
-					case Distribution::STEAM:
+					case Win64Distribution::STEAM:
 					{
 						cmake_lists_line.replace(position, strlen("[LINK_STEAM_LIBRARIES]"), "target_link_libraries(${PROJECT_NAME} steam_api64)");
 
@@ -831,7 +838,7 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\assimp.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 		//Copy steam_api64.dll.
-		if (general_parameters._Distribution == Distribution::STEAM)
+		if (platform_parameters._Distribution == Win64Distribution::STEAM)
 		{
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\steam_api64.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\steam_api64.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
@@ -886,40 +893,126 @@ int main(int argc, char *argv[])
 	OculusQuestParameters oculus_quest_parameters;
 	Win64Parameters win64_parameters;
 
-	//Retrieve the developer name.
-	general_parameters._DeveloperName = argv[1];
-
-	//Retrieve the project name.
-	general_parameters._ProjectName = argv[2];
-
-	//Process remaining arguments.
-	for (int i{ 3 }; i < argc; ++i)
+	//Read the parameters.
 	{
-		if (strcmp(argv[i], "INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION") == 0)
+		//Open the config file.
+		std::ifstream config_file{ "Project_Generation.ini" };
+
+		//Cache some commonly used variables.
+		std::string current_line;
+		std::string identifier;
+		std::string argument;
+
+		//Go over all the lines.
+		while (std::getline(config_file, current_line))
 		{
-			general_parameters._IncludeEnvironmentResourceCollection = true;
+			//Ignore comments.
+			if (current_line[0] == '#')
+			{
+				continue;
+			}
+
+			//Ignore empty lines.
+			if (current_line.empty())
+			{
+				continue;
+			}
+
+			//Split the current line into identifier and argument.
+			const size_t space_position{ current_line.find_first_of(" ") };
+
+			if (space_position != std::string::npos)
+			{
+				identifier = current_line.substr(0, space_position);
+				argument = current_line.substr(space_position + 1, std::string::npos);
+			}
+
+			else
+			{
+				identifier = current_line;
+			}
+
+			//Is this the developer name?
+			if (identifier == "DEVELOPER_NAME")
+			{
+				general_parameters._DeveloperName = argument;
+			}
+
+			//Is this the project name?
+			else if (identifier == "PROJECT_NAME")
+			{
+				general_parameters._ProjectName = argument;
+			}
+
+			//Should the environment resource collection be included?
+			else if (identifier == "INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION")
+			{
+				general_parameters._IncludeEnvironmentResourceCollection = true;
+			}
+
+			//Should the extra resource collection be included?
+			else if (identifier == "INCLUDE_EXTRA_RESOURCE_COLLECTION")
+			{
+				general_parameters._IncludeExtraResourceCollection = true;
+			}
+
+			//Is this the physics?
+			else if (identifier == "PHYSICS")
+			{
+				if (argument == "PHYSX")
+				{
+					general_parameters._Physics = Physics::PHYSX;
+				}
+			}
+
+			//Should android force landscape mode?
+			else if (identifier == "ANDROID_FORCE_LANDSCAPE_MODE")
+			{
+				android_parameters._ForceLandscapeMode = true;
+			}
+
+			//Should a resource collection be included for Android?
+			else if (identifier == "ANDROID_INCLUDE_RESOURCE_COLLECTION")
+			{
+				android_parameters._IncludedResourceCollections.emplace_back(argument);
+			}
+
+			//Is this the Win64 distribution?
+			else if (identifier == "WIN64_DISTRIBUTION")
+			{
+				if (argument == "STEAM")
+				{
+					win64_parameters._Distribution = Win64Distribution::STEAM;
+				}
+			}
 		}
 
-		if (strcmp(argv[i], "INCLUDE_EXTRA_RESOURCE_COLLECTION") == 0)
-		{
-			general_parameters._IncludeExtraResourceCollection = true;
-		}
-
-		if (strcmp(argv[i], "DISTRIBUTION_STEAM") == 0)
-		{
-			general_parameters._Distribution = Distribution::STEAM;
-		}
-
-		if (strcmp(argv[i], "PHYSICS_PHYSX") == 0)
-		{
-			general_parameters._Physics = Physics::PHYSX;
-		}
-
-		if (strcmp(argv[i], "ANDROID_FORCE_LANDSCAPE_MODE") == 0)
-		{
-			android_parameters._ForceLandscapeMode = true;
-		}
+		//Close the config file.
+		config_file.close();
 	}
+
+	//Ensure that the proper parameters has been set.
+	if (general_parameters._DeveloperName.empty())
+	{
+		std::cout << "Need to set developer name!" << std::endl;
+
+		return 0;
+	}
+
+	if (general_parameters._ProjectName.empty())
+	{
+		std::cout << "Need to set project name!" << std::endl;
+
+		return 0;
+	}
+
+	//Calculate the developer name with no spaces.
+	general_parameters._DeveloperNameNoSpaces = general_parameters._DeveloperName;
+	general_parameters._DeveloperNameNoSpaces.erase(std::remove_if(general_parameters._DeveloperNameNoSpaces.begin(), general_parameters._DeveloperNameNoSpaces.end(), [](unsigned char x) { return std::isspace(x); }), general_parameters._DeveloperNameNoSpaces.end());
+
+	//Calculate the project name with no spaces.
+	general_parameters._ProjectNameNoSpaces = general_parameters._ProjectName;
+	general_parameters._ProjectNameNoSpaces.erase(std::remove_if(general_parameters._ProjectNameNoSpaces.begin(), general_parameters._ProjectNameNoSpaces.end(), [](unsigned char x) { return std::isspace(x); }), general_parameters._ProjectNameNoSpaces.end());
 
 	//Generate Android.
 	GenerateAndroid(general_parameters, android_parameters);

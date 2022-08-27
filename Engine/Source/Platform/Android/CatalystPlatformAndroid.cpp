@@ -297,7 +297,7 @@ void CatalystPlatform::PlatformPreUpdate() NOEXCEPT
     //If the app has received a destroy request, oblige.
     if (CatalystPlatform::_App->destroyRequested != 0)
     {
-        //CatalystEngineSystem::Instance->SetShouldTerminate();
+        CatalystEngineSystem::Instance->SetShouldTerminate();
     }
 }
 

@@ -61,11 +61,11 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	//Set the format.
 	AAudioStreamBuilder_setFormat(audio_stream_builder, AAUDIO_FORMAT_PCM_I16);
 
+    //Set the number of channels.
+    AAudioStreamBuilder_setChannelCount(audio_stream_builder, 2);
+
 	//Set the sharing mode.
 	AAudioStreamBuilder_setSharingMode(audio_stream_builder, AAUDIO_SHARING_MODE_EXCLUSIVE);
-
-	//Set the direction.
-	AAudioStreamBuilder_setDirection(audio_stream_builder, AAUDIO_DIRECTION_OUTPUT);
 
 	//Set the performance mode.
 	switch (configuration._SoundSystemMode)
@@ -132,12 +132,6 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 		return;
 	}
 
-	//Retrieve the number of channels.
-	AndroidSoundSystemData::_NumberOfChannels = AAudioStream_getChannelCount(AndroidSoundSystemData::_AudioStream);
-
-	//Retrieve the sample rate.
-	AndroidSoundSystemData::_SampleRate = static_cast<float32>(AAudioStream_getSampleRate(AndroidSoundSystemData::_AudioStream));
-
 	//Set the buffer size.
 	AAudioStream_setBufferSizeInFrames(AndroidSoundSystemData::_AudioStream, AAudioStream_getFramesPerBurst(AndroidSoundSystemData::_AudioStream) * 2);
 
@@ -152,6 +146,12 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 		return;
 	}
+
+	//Retrieve the number of channels.
+	AndroidSoundSystemData::_NumberOfChannels = AAudioStream_getChannelCount(AndroidSoundSystemData::_AudioStream);
+
+	//Retrieve the sample rate.
+	AndroidSoundSystemData::_SampleRate = static_cast<float32>(AAudioStream_getSampleRate(AndroidSoundSystemData::_AudioStream));
 
 	//Delete the audio stream builder.
 	result = AAudioStreamBuilder_delete(audio_stream_builder);
@@ -185,7 +185,11 @@ NO_DISCARD bool SoundSystem::PlatformInitialized() const NOEXCEPT
 */
 void SoundSystem::PlatformTerminate() NOEXCEPT
 {
-	//Do nothing.
+    //Stop the stream.
+    AAudioStream_requestStop(AndroidSoundSystemData::_AudioStream);
+
+	//Close the stream.
+	AAudioStream_close(AndroidSoundSystemData::_AudioStream);
 }
 
 /*
