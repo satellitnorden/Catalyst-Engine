@@ -163,9 +163,6 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 		return;
 	}
 
-	//The Android sound system is successfully initialized!
-	AndroidSoundSystemData::_Initialized = true;
-
     //Initialize the mixing buffers.
     {
 		//Calculate the number of samples per buffer.
@@ -189,11 +186,12 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 			number_of_samples_per_buffer = CatalystBaseMath::Minimum<uint32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER, number_of_samples_required_for_data_callbacks);
 		}
 
-        PRINT_TO_OUTPUT("Number of samples per buffer: " << number_of_samples_per_buffer);
-
         //Initialize the mixing buffers.
         InitializeMixingBuffers(DEFAULT_NUMBER_OF_MIXING_BUFFERS, number_of_samples_per_buffer);
     }
+
+	//The Android sound system is successfully initialized!
+	AndroidSoundSystemData::_Initialized = true;
 }
 
 /*

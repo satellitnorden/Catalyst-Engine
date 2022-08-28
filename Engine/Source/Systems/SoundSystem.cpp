@@ -616,7 +616,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 								void *const RESTRICT buffer_data) NOEXCEPT
 {
 	//If the sound system is currently muted or paused, just fill the buffer with zeroes.
-	if (IsCurrentlyMuted() || IsCurrentlyPaused() || CatalystEngineSystem::Instance->IsEnginePaused())
+	if (!PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyMuted() || IsCurrentlyPaused() || CatalystEngineSystem::Instance->IsEnginePaused())
 	{
 		Memory::Set(buffer_data, 0, (bits_per_sample / 8) * number_of_channels * number_of_samples);
 	}
@@ -630,7 +630,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 			int32 local_mixing_buffers_ready{ _MixingBuffersReady };
 			uint32 local_sample_read_index{ _CurrentSampleReadIndex };
 
-			//Read all samples.
+            //Read all samples.
 			uint32 samples_read{ 0 };
 			uint32 samples_left_to_read{ number_of_samples };
 
@@ -639,7 +639,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 				//Calculate the number of samples to read.
 				const uint32 number_of_samples_to_read{ CatalystBaseMath::Minimum<uint32>(_NumberOfSamplesPerMixingBuffer - local_sample_read_index, samples_left_to_read) };
 
-				if (local_mixing_buffers_ready > 0)
+                if (local_mixing_buffers_ready > 0)
 				{
 					switch (bits_per_sample)
 					{
