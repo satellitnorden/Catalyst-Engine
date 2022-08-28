@@ -685,6 +685,49 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 					}
 				}
 
+                else
+                {
+                    switch (bits_per_sample)
+                    {
+                        case 8:
+                        {
+                            void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 1 * number_of_channels };
+                            const uint64 bytes_to_read{ number_of_samples_to_read * 1 * number_of_channels };
+
+                            Memory::Set(destination, 0, bytes_to_read);
+
+                            break;
+                        }
+
+                        case 16:
+                        {
+                            void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 2 * number_of_channels };
+                            const uint64 bytes_to_read{ number_of_samples_to_read * 2 * number_of_channels };
+
+                            Memory::Set(destination, 0, bytes_to_read);
+
+                            break;
+                        }
+
+                        case 32:
+                        {
+                            void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 4 * number_of_channels };
+                            const uint64 bytes_to_read{ number_of_samples_to_read * 4 * number_of_channels };
+
+                            Memory::Set(destination, 0, bytes_to_read);
+
+                            break;
+                        }
+
+                        default:
+                        {
+                            ASSERT(false, "Invalid case!");
+
+                            break;
+                        }
+                    }
+                }
+
 				samples_read += number_of_samples_to_read;
 				samples_left_to_read -= number_of_samples_to_read;
 

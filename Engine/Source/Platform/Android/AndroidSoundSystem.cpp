@@ -61,12 +61,6 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	//Set the format.
 	AAudioStreamBuilder_setFormat(audio_stream_builder, AAUDIO_FORMAT_PCM_I16);
 
-    //Set the number of channels.
-    AAudioStreamBuilder_setChannelCount(audio_stream_builder, 2);
-
-	//Set the sharing mode.
-	AAudioStreamBuilder_setSharingMode(audio_stream_builder, AAUDIO_SHARING_MODE_EXCLUSIVE);
-
 	//Set the performance mode.
 	switch (configuration._SoundSystemMode)
 	{
@@ -150,8 +144,12 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	//Retrieve the number of channels.
 	AndroidSoundSystemData::_NumberOfChannels = AAudioStream_getChannelCount(AndroidSoundSystemData::_AudioStream);
 
+    ASSERT(AndroidSoundSystemData::_NumberOfChannels > 0, "Number of channels is invalid!");
+
 	//Retrieve the sample rate.
 	AndroidSoundSystemData::_SampleRate = static_cast<float32>(AAudioStream_getSampleRate(AndroidSoundSystemData::_AudioStream));
+
+    ASSERT(AndroidSoundSystemData::_SampleRate > 0, "Sample rate is invalid!");
 
 	//Delete the audio stream builder.
 	result = AAudioStreamBuilder_delete(audio_stream_builder);
@@ -168,8 +166,34 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	//The Android sound system is successfully initialized!
 	AndroidSoundSystemData::_Initialized = true;
 
-	//Initialize the mixing buffers.
-	InitializeMixingBuffers(DEFAULT_NUMBER_OF_MIXING_BUFFERS, AAudioStream_getFramesPerBurst(AndroidSoundSystemData::_AudioStream));
+    //Initialize the mixing buffers.
+    {
+		//Calculate the number of samples per buffer.
+		uint32 number_of_samples_per_buffer;
+
+        //Retrieve the number of frames per data callback.
+        const uint32 frames_per_data_callback{ static_cast<uint32>(AAudioStream_getFramesPerDataCallback(AndroidSoundSystemData::_AudioStream)) };
+
+		if (frames_per_data_callback == AAUDIO_UNSPECIFIED)
+		{
+            //Set the number of samples per buffer.
+			number_of_samples_per_buffer = DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER;
+		}
+
+		else
+		{
+			//Calculate the number of samples required to fill two data callbacks.
+			const uint32 number_of_samples_required_for_data_callbacks{ (frames_per_data_callback * 2) / DEFAULT_NUMBER_OF_MIXING_BUFFERS };
+
+            //Set the number of samples per buffer.
+			number_of_samples_per_buffer = CatalystBaseMath::Minimum<uint32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER, number_of_samples_required_for_data_callbacks);
+		}
+
+        PRINT_TO_OUTPUT("Number of samples per buffer: " << number_of_samples_per_buffer);
+
+        //Initialize the mixing buffers.
+        InitializeMixingBuffers(DEFAULT_NUMBER_OF_MIXING_BUFFERS, number_of_samples_per_buffer);
+    }
 }
 
 /*
