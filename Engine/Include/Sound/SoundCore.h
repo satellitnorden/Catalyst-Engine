@@ -42,6 +42,17 @@ enum class AudioDevicePickingMode : uint8
 	WAIT_FOR_SELECTION
 };
 
+//Enumeration covering all sound formats.
+enum class SoundFormat : uint8
+{
+	SIGNED_INTEGER_8_BIT,
+	SIGNED_INTEGER_16_BIT,
+	SIGNED_INTEGER_32_BIT,
+	FLOAT_32_BIT,
+
+	UNKNOWN
+};
+
 //Enumeration covering all note durations.
 enum class NoteDuration : uint8
 {
@@ -61,3 +72,39 @@ enum class NoteType : uint8
 	DOTTED,
 	TRIPLET
 };
+
+/*
+*	Returns the number of bits per sample for the given sound format.
+*/
+static NO_DISCARD uint8 GetNumberOfBitsPerSample(const SoundFormat sound_format) NOEXCEPT
+{
+	switch (sound_format)
+	{
+		case SoundFormat::SIGNED_INTEGER_8_BIT:
+		{
+			return 8;
+		}
+
+		case SoundFormat::SIGNED_INTEGER_16_BIT:
+		{
+			return 16;
+		}
+
+		case SoundFormat::SIGNED_INTEGER_32_BIT:
+		{
+			return 32;
+		}
+
+		case SoundFormat::FLOAT_32_BIT:
+		{
+			return 32;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			return 0;
+		}
+	}
+}

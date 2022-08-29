@@ -70,9 +70,9 @@ public:
 	float32 GetSampleRate() const NOEXCEPT;
 
 	/*
-	*	Returns the number of bits per sample.
+	*	Returns the sound format.
 	*/
-	uint8 GetNumberOfBitsPerSample() const NOEXCEPT;
+	SoundFormat GetSoundFormat() const NOEXCEPT;
 
 	/*
 	*	Adds a mix component to the master mix channel. Returns the unique identifier for that sound mix component.
@@ -242,7 +242,7 @@ private:
 	*	The sound callback.
 	*/
 	void SoundCallback(	const float32 sample_rate,
-						const uint8 bits_per_sample,
+						const SoundFormat sound_format,
 						const uint8 number_of_channels,
 						const uint32 number_of_samples,
 						void *const RESTRICT buffer_data) NOEXCEPT;

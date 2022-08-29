@@ -339,15 +339,15 @@ void SoundSystem::InitializeMixingBuffers(const uint8 number_of_mixing_buffers, 
 	//Cache the number of channels.
 	const uint8 number_of_channels{ GetNumberOfChannels() };
 
-	//Cache the number of bits per sample.
-	const uint8 number_of_bits_per_sample{ GetNumberOfBitsPerSample() };
+	//Cache the sound format.
+	const SoundFormat sound_format{ GetSoundFormat() };
 
 	//Initialize all mixing buffers.
 	_MixingBuffers.Upsize<false>(number_of_mixing_buffers);
 
 	for (uint8 i{ 0 }; i < number_of_mixing_buffers; ++i)
 	{
-		_MixingBuffers[i] = Memory::Allocate(_NumberOfSamplesPerMixingBuffer * number_of_channels * (number_of_bits_per_sample / 8));
+		_MixingBuffers[i] = Memory::Allocate(_NumberOfSamplesPerMixingBuffer * number_of_channels * (GetNumberOfBitsPerSample(sound_format) / 8));
 	}
 
 	//Allocate the intermediate mixing buffer.
@@ -374,8 +374,8 @@ void SoundSystem::Mix() NOEXCEPT
 		//Cache the number of channels.
 		const uint8 number_of_channels{ GetNumberOfChannels() };
 
-		//Cache the number of bits per sample.
-		const uint8 number_of_bits_per_sample{ GetNumberOfBitsPerSample() };
+		//Cache the sound format.
+		const SoundFormat sound_format{ GetSoundFormat() };
 
 		//Remove all queued master channel sound mix components.
 		while (uint64 *const RESTRICT identifier{ SoundSystemData::_QueuedRemoveMasterChannelSoundMixComponents.Pop() })
@@ -478,9 +478,9 @@ void SoundSystem::Mix() NOEXCEPT
 				}
 			}
 
-			switch (number_of_bits_per_sample)
+			switch (sound_format)
 			{
-				case 8:
+				case SoundFormat::SIGNED_INTEGER_8_BIT:
 				{
 					for (uint32 sample_index{ 0 }; sample_index < _NumberOfSamplesPerMixingBuffer * number_of_channels; ++sample_index)
 					{
@@ -490,7 +490,7 @@ void SoundSystem::Mix() NOEXCEPT
 					break;
 				}
 
-				case 16:
+				case SoundFormat::SIGNED_INTEGER_16_BIT:
 				{
 					for (uint32 sample_index{ 0 }; sample_index < _NumberOfSamplesPerMixingBuffer * number_of_channels; ++sample_index)
 					{
@@ -500,12 +500,19 @@ void SoundSystem::Mix() NOEXCEPT
 					break;
 				}
 
-				case 32:
+				case SoundFormat::SIGNED_INTEGER_32_BIT:
 				{
 					for (uint32 sample_index{ 0 }; sample_index < _NumberOfSamplesPerMixingBuffer * number_of_channels; ++sample_index)
 					{
 						static_cast<int32 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[sample_index] = static_cast<int32>(_IntermediateMixingBuffer[sample_index] * static_cast<float32>(INT32_MAXIMUM));
 					}
+
+					break;
+				}
+
+				case SoundFormat::FLOAT_32_BIT:
+				{
+					Memory::Copy(_MixingBuffers[_CurrentMixingBufferWriteIndex], _IntermediateMixingBuffer, _NumberOfSamplesPerMixingBuffer* number_of_channels * sizeof(float32));
 
 					break;
 				}
@@ -533,23 +540,30 @@ void SoundSystem::Mix() NOEXCEPT
 					for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 					{
 						//Write the current value into the recording sound resource.
-						switch (number_of_bits_per_sample)
+						switch (sound_format)
 						{
-							case 8:
+							case SoundFormat::SIGNED_INTEGER_8_BIT:
 							{
 								ASSERT(false, "Implement this plz!");
 
 								break;
 							}
 
-							case 16:
+							case SoundFormat::SIGNED_INTEGER_16_BIT:
 							{
 								_RecordingSoundResource->_Samples[channel_index].Emplace(static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++]);
 
 								break;
 							}
 
-							case 32:
+							case SoundFormat::SIGNED_INTEGER_32_BIT:
+							{
+								ASSERT(false, "Implement this plz!");
+
+								break;
+							}
+
+							case SoundFormat::FLOAT_32_BIT:
 							{
 								ASSERT(false, "Implement this plz!");
 
@@ -610,7 +624,7 @@ void SoundSystem::Mix() NOEXCEPT
 *	The sound callback.
 */
 void SoundSystem::SoundCallback(const float32 sample_rate,
-								const uint8 bits_per_sample,
+								const SoundFormat sound_format,
 								const uint8 number_of_channels,
 								const uint32 number_of_samples,
 								void *const RESTRICT buffer_data) NOEXCEPT
@@ -618,7 +632,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 	//If the sound system is currently muted or paused, just fill the buffer with zeroes.
 	if (!PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyMuted() || IsCurrentlyPaused() || CatalystEngineSystem::Instance->IsEnginePaused())
 	{
-		Memory::Set(buffer_data, 0, (bits_per_sample / 8) * number_of_channels * number_of_samples);
+		Memory::Set(buffer_data, 0, (GetNumberOfBitsPerSample(sound_format) / 8) * number_of_channels * number_of_samples);
 	}
 
 	else
@@ -641,9 +655,9 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 
                 if (local_mixing_buffers_ready > 0)
 				{
-					switch (bits_per_sample)
+					switch (sound_format)
 					{
-						case 8:
+						case SoundFormat::SIGNED_INTEGER_8_BIT:
 						{
 							void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 1 * number_of_channels };
 							const void *const RESTRICT source{ &static_cast<uint8* const RESTRICT>(_MixingBuffers[local_mixing_buffer_read_index])[local_sample_read_index * number_of_channels] };
@@ -654,7 +668,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 							break;
 						}
 
-						case 16:
+						case SoundFormat::SIGNED_INTEGER_16_BIT:
 						{
 							void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 2 * number_of_channels };
 							const void *const RESTRICT source{ &static_cast<int16* const RESTRICT>(_MixingBuffers[local_mixing_buffer_read_index])[local_sample_read_index * number_of_channels]  };
@@ -665,13 +679,22 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 							break;
 						}
 
-						case 32:
+						case SoundFormat::SIGNED_INTEGER_32_BIT:
 						{
 							void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 4 * number_of_channels };
 							const void *const RESTRICT source{ &static_cast<int32* const RESTRICT>(_MixingBuffers[local_mixing_buffer_read_index])[local_sample_read_index * number_of_channels]  };
 							const uint64 bytes_to_read{ number_of_samples_to_read * 4 * number_of_channels };
 
 							Memory::Copy(destination, source, bytes_to_read);
+
+							break;
+						}
+
+						case SoundFormat::FLOAT_32_BIT:
+						{
+							void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 4 * number_of_channels };
+
+							Memory::Copy(destination, &static_cast<float32 *const RESTRICT>(_MixingBuffers[local_mixing_buffer_read_index])[local_sample_read_index * number_of_channels], number_of_samples_to_read * sizeof(float32) * number_of_channels);
 
 							break;
 						}
@@ -687,9 +710,9 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 
                 else
                 {
-                    switch (bits_per_sample)
+                    switch (sound_format)
                     {
-                        case 8:
+						case SoundFormat::SIGNED_INTEGER_8_BIT:
                         {
                             void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 1 * number_of_channels };
                             const uint64 bytes_to_read{ number_of_samples_to_read * 1 * number_of_channels };
@@ -699,7 +722,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
                             break;
                         }
 
-                        case 16:
+						case SoundFormat::SIGNED_INTEGER_16_BIT:
                         {
                             void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 2 * number_of_channels };
                             const uint64 bytes_to_read{ number_of_samples_to_read * 2 * number_of_channels };
@@ -709,7 +732,8 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
                             break;
                         }
 
-                        case 32:
+						case SoundFormat::SIGNED_INTEGER_32_BIT:
+						case SoundFormat::FLOAT_32_BIT:
                         {
                             void *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(buffer_data) + samples_read * 4 * number_of_channels };
                             const uint64 bytes_to_read{ number_of_samples_to_read * 4 * number_of_channels };

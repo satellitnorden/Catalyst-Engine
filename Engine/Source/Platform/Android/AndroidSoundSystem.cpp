@@ -17,6 +17,9 @@ namespace AndroidSoundSystemData
 	//The sample rate.
 	float32 _SampleRate;
 
+    //The sound format.
+    SoundFormat _SoundFormat{ SoundFormat::UNKNOWN };
+
 	//Denotes if the Android sound system is initialized.
 	Atomic<bool> _Initialized{ false };
 }
@@ -58,9 +61,6 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 		return;
 	}
 
-	//Set the format.
-	AAudioStreamBuilder_setFormat(audio_stream_builder, AAUDIO_FORMAT_PCM_I16);
-
 	//Set the performance mode.
 	switch (configuration._SoundSystemMode)
 	{
@@ -93,7 +93,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 		[](AAudioStream *stream, void *user_data, void *audio_data, int32_t number_of_samples) -> aaudio_data_callback_result_t
 		{
 			static_cast<SoundSystem *const RESTRICT>(user_data)->SoundCallback(	AndroidSoundSystemData::_SampleRate,
-																	  			16,
+																				AndroidSoundSystemData::_SoundFormat,
 																	  			AndroidSoundSystemData::_NumberOfChannels,
 																	  			number_of_samples,
 																	  			audio_data);
@@ -129,6 +129,43 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	//Set the buffer size.
 	AAudioStream_setBufferSizeInFrames(AndroidSoundSystemData::_AudioStream, AAudioStream_getFramesPerBurst(AndroidSoundSystemData::_AudioStream) * 2);
 
+    //Retrieve the number of channels.
+    AndroidSoundSystemData::_NumberOfChannels = AAudioStream_getChannelCount(AndroidSoundSystemData::_AudioStream);
+
+    ASSERT(AndroidSoundSystemData::_NumberOfChannels > 0, "Number of channels is invalid!");
+
+    //Retrieve the sample rate.
+    AndroidSoundSystemData::_SampleRate = static_cast<float32>(AAudioStream_getSampleRate(AndroidSoundSystemData::_AudioStream));
+
+    ASSERT(AndroidSoundSystemData::_SampleRate > 0, "Sample rate is invalid!");
+
+    //Retrieve the sound format.
+    switch (AAudioStream_getFormat(AndroidSoundSystemData::_AudioStream))
+    {
+        case AAUDIO_FORMAT_PCM_I16:
+        {
+            AndroidSoundSystemData::_SoundFormat = SoundFormat::SIGNED_INTEGER_16_BIT;
+
+            break;
+        }
+
+		case AAUDIO_FORMAT_PCM_FLOAT:
+		{
+			AndroidSoundSystemData::_SoundFormat = SoundFormat::FLOAT_32_BIT;
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+    }
+
+	ASSERT(AndroidSoundSystemData::_SoundFormat != SoundFormat::UNKNOWN, "Couldn't retrieve sound format!");
+
 	//Start the stream.
 	result = AAudioStream_requestStart(AndroidSoundSystemData::_AudioStream);
 	
@@ -140,16 +177,6 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 		return;
 	}
-
-	//Retrieve the number of channels.
-	AndroidSoundSystemData::_NumberOfChannels = AAudioStream_getChannelCount(AndroidSoundSystemData::_AudioStream);
-
-    ASSERT(AndroidSoundSystemData::_NumberOfChannels > 0, "Number of channels is invalid!");
-
-	//Retrieve the sample rate.
-	AndroidSoundSystemData::_SampleRate = static_cast<float32>(AAudioStream_getSampleRate(AndroidSoundSystemData::_AudioStream));
-
-    ASSERT(AndroidSoundSystemData::_SampleRate > 0, "Sample rate is invalid!");
 
 	//Delete the audio stream builder.
 	result = AAudioStreamBuilder_delete(audio_stream_builder);
@@ -231,11 +258,11 @@ float32 SoundSystem::GetSampleRate() const NOEXCEPT
 }
 
 /*
-*	Returns the number of bits per sample.
-*/
-uint8 SoundSystem::GetNumberOfBitsPerSample() const NOEXCEPT
+	*	Returns the sound format.
+	*/
+SoundFormat SoundSystem::GetSoundFormat() const NOEXCEPT
 {
-	return 16;
+	return AndroidSoundSystemData::_SoundFormat;
 }
 
 /*

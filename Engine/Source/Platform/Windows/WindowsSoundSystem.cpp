@@ -28,8 +28,8 @@ namespace WindowsSoundSystemConstants
 	constexpr uint8 DESIRED_BIT_DEPTHS[]
 	{
 		16,
-		24,
-		32
+		32,
+		8
 	};
 
 	//List of desired sample rates.
@@ -126,8 +126,8 @@ namespace WindowsSoundSystemData
 	//The sample rate.
 	float32 _SampleRate;
 
-	//The number of bits per sample.
-	uint8 _NumberOfBitsPerSample;
+	//The sound format.
+	SoundFormat _SoundFormat{ SoundFormat::UNKNOWN };
 
 	//The query MIDI in.
 	RtMidiIn *RESTRICT _QueryMIDIIn{ nullptr };
@@ -323,7 +323,37 @@ void SoundSystem::OpenAudioDevice(AudioDevice *const RESTRICT audio_device) NOEX
 
 	ASSERT(bit_depth != 0, "Couldn't find a proper bit depth!");
 
-	WindowsSoundSystemData::_NumberOfBitsPerSample = bit_depth;
+	//Set the sound format.
+	switch (bit_depth)
+	{
+		case 8:
+		{
+			WindowsSoundSystemData::_SoundFormat = SoundFormat::SIGNED_INTEGER_8_BIT;
+
+			break;
+		}
+
+		case 16:
+		{
+			WindowsSoundSystemData::_SoundFormat = SoundFormat::SIGNED_INTEGER_16_BIT;
+
+			break;
+		}
+
+		case 32:
+		{
+			WindowsSoundSystemData::_SoundFormat = SoundFormat::SIGNED_INTEGER_32_BIT;
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
 
 	//Determine the sample rate.
 	float32 sample_rate{ 0.0f };
@@ -361,7 +391,7 @@ void SoundSystem::OpenAudioDevice(AudioDevice *const RESTRICT audio_device) NOEX
 							void *userData)
 	{
 		static_cast<SoundSystem* const RESTRICT>(userData)->SoundCallback(	WindowsSoundSystemData::_SampleRate,
-																			WindowsSoundSystemData::_NumberOfBitsPerSample,
+																			WindowsSoundSystemData::_SoundFormat,
 																			WindowsSoundSystemData::_NumberOfChannels,
 																			nFrames,
 																			outputBuffer);
@@ -473,7 +503,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 			QueryAudioDevices(&audio_devices);
 
 #if 1
-			//Open the defaul audio device.
+			//Open the default audio device.
 			for (AudioDevice &audio_device : audio_devices)
 			{
 				if (audio_device._IsDefault)
@@ -611,19 +641,19 @@ float32 SoundSystem::GetSampleRate() const NOEXCEPT
 }
 
 /*
-*	Returns the number of bits per sample.
+*	Returns the sound format.
 */
-uint8 SoundSystem::GetNumberOfBitsPerSample() const NOEXCEPT
+SoundFormat SoundSystem::GetSoundFormat() const NOEXCEPT
 {
 	//Don't do anything if the Windows sound system isn't initialized.
 	if (!WindowsSoundSystemData::_Initialized)
 	{
-		return 0;
+		return SoundFormat::UNKNOWN;
 	}
 
-	ASSERT(WindowsSoundSystemData::_NumberOfBitsPerSample != 0, "Oh no!");
+	ASSERT(WindowsSoundSystemData::_SoundFormat != SoundFormat::UNKNOWN, "Oh no!");
 
-	return WindowsSoundSystemData::_NumberOfBitsPerSample;
+	return WindowsSoundSystemData::_SoundFormat;
 }
 
 /*
@@ -825,8 +855,37 @@ void SoundSystem::DefaultAsynchronousUpdate() NOEXCEPT
 	//Set the sample rate.
 	WindowsSoundSystemData::_SampleRate = static_cast<float32>(chosen_mix_format->nSamplesPerSec);
 
-	//Set the number of bits per sample.
-	WindowsSoundSystemData::_NumberOfBitsPerSample = static_cast<uint8>(chosen_mix_format->wBitsPerSample);
+	//Set the sound format.
+	switch (chosen_mix_format->wBitsPerSample)
+	{
+		case 8:
+		{
+			WindowsSoundSystemData::_SoundFormat = SoundFormat::SIGNED_INTEGER_8_BIT;
+
+			break;
+		}
+
+		case 16:
+		{
+			WindowsSoundSystemData::_SoundFormat = SoundFormat::SIGNED_INTEGER_16_BIT;
+
+			break;
+		}
+
+		case 32:
+		{
+			WindowsSoundSystemData::_SoundFormat = SoundFormat::SIGNED_INTEGER_32_BIT;
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
 
 	//The Windows sound system is successfully initialized!
 	WindowsSoundSystemData::_Initialized = true;
@@ -856,7 +915,7 @@ void SoundSystem::DefaultAsynchronousUpdate() NOEXCEPT
 
 			//Do the update.
 			SoundCallback(	static_cast<float32>(chosen_mix_format->nSamplesPerSec),
-							static_cast<uint8>(chosen_mix_format->wBitsPerSample),
+							WindowsSoundSystemData::_SoundFormat,
 							static_cast<uint8>(chosen_mix_format->nChannels),
 							number_of_samples_available,
 							buffer_data);
