@@ -5,9 +5,18 @@
 //Android.
 #include <aaudio/AAudio.h>
 
+//Systems.
+#include <Systems/CatalystEngineSystem.h>
+
 //Android sound system data.
 namespace AndroidSoundSystemData
 {
+    //Denotes if it's the first time initializing.
+    bool _FirstTimeInitializing{ true };
+
+    //The configuration.
+    CatalystProjectSoundConfiguration _Configuration;
+
 	//The audio stream.
 	AAudioStream *RESTRICT _AudioStream{ nullptr };
 
@@ -22,6 +31,9 @@ namespace AndroidSoundSystemData
 
 	//Denotes if the Android sound system is initialized.
 	Atomic<bool> _Initialized{ false };
+
+	//Denotes if the stream needs a restart.
+	bool _StreamNeedsRestart{ false };
 }
 
 /*
@@ -45,6 +57,13 @@ void SoundSystem::OpenAudioDevice(AudioDevice *const RESTRICT audio_device) NOEX
 */
 void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT
 {
+    //Is this the first time initializing?
+    if (AndroidSoundSystemData::_FirstTimeInitializing)
+    {
+        //Set the configuration.
+        AndroidSoundSystemData::_Configuration = configuration;
+    }
+
 	//Remember the result.
 	aaudio_result_t result;
 
@@ -109,14 +128,22 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 		audio_stream_builder,
 		[](AAudioStream *stream, void *user_data, aaudio_result_t error)
 		{
-			ASSERT(false, AAudio_convertResultToText(error));
+			if (error == AAUDIO_ERROR_DISCONNECTED)
+			{
+				AndroidSoundSystemData::_StreamNeedsRestart = true;
+			}
+
+			else
+			{
+				ASSERT(false, AAudio_convertResultToText(error));
+			}
 		},
 		nullptr
 	);
 
 	//Open the stream.
 	result = AAudioStreamBuilder_openStream(audio_stream_builder, &AndroidSoundSystemData::_AudioStream);
-	
+
 	ASSERT(result == AAUDIO_OK, AAudio_convertResultToText(result));
 
 	if (result != AAUDIO_OK)
@@ -168,7 +195,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 	//Start the stream.
 	result = AAudioStream_requestStart(AndroidSoundSystemData::_AudioStream);
-	
+
 	ASSERT(result == AAUDIO_OK, AAudio_convertResultToText(result));
 
 	if (result != AAUDIO_OK)
@@ -180,7 +207,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 	//Delete the audio stream builder.
 	result = AAudioStreamBuilder_delete(audio_stream_builder);
-	
+
 	ASSERT(result == AAUDIO_OK, AAudio_convertResultToText(result));
 
 	if (result != AAUDIO_OK)
@@ -191,14 +218,15 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	}
 
     //Initialize the mixing buffers.
+    if (!_MixingBuffersInitialized)
     {
 		//Calculate the number of samples per buffer.
 		uint32 number_of_samples_per_buffer;
 
-        //Retrieve the number of frames per data callback.
-        const uint32 frames_per_data_callback{ static_cast<uint32>(AAudioStream_getFramesPerDataCallback(AndroidSoundSystemData::_AudioStream)) };
+        //Retrieve the number of frames per burst.
+        const uint32 frames_per_burst{ static_cast<uint32>(AAudioStream_getFramesPerBurst(AndroidSoundSystemData::_AudioStream)) };
 
-		if (frames_per_data_callback == AAUDIO_UNSPECIFIED)
+		if (frames_per_burst == AAUDIO_UNSPECIFIED)
 		{
             //Set the number of samples per buffer.
 			number_of_samples_per_buffer = DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER;
@@ -207,7 +235,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 		else
 		{
 			//Calculate the number of samples required to fill two data callbacks.
-			const uint32 number_of_samples_required_for_data_callbacks{ (frames_per_data_callback * 2) / DEFAULT_NUMBER_OF_MIXING_BUFFERS };
+			const uint32 number_of_samples_required_for_data_callbacks{ (frames_per_burst * 2) / DEFAULT_NUMBER_OF_MIXING_BUFFERS };
 
             //Set the number of samples per buffer.
 			number_of_samples_per_buffer = CatalystBaseMath::Minimum<uint32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER, number_of_samples_required_for_data_callbacks);
@@ -219,6 +247,27 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 	//The Android sound system is successfully initialized!
 	AndroidSoundSystemData::_Initialized = true;
+
+    //Is this the first time initializing?
+    if (AndroidSoundSystemData::_FirstTimeInitializing)
+    {
+        //Register the update.
+        CatalystEngineSystem::Instance->RegisterUpdate
+        (
+                [](void *const RESTRICT arguments)
+                {
+                    static_cast<SoundSystem *const RESTRICT>(arguments)->PlatformUpdate();
+                },
+                this,
+                UpdatePhase::PRE,
+                UpdatePhase::POST,
+                false,
+                false
+        );
+    }
+
+    //It's no longer the first time initializing.
+    AndroidSoundSystemData::_FirstTimeInitializing = false;
 }
 
 /*
@@ -230,15 +279,43 @@ NO_DISCARD bool SoundSystem::PlatformInitialized() const NOEXCEPT
 }
 
 /*
+*	Updates the platform.
+*/
+void SoundSystem::PlatformUpdate() NOEXCEPT
+{
+	//Does the stream need a restart?
+	if (AndroidSoundSystemData::_StreamNeedsRestart)
+	{
+		PlatformTerminate();
+		PlatformInitialize(AndroidSoundSystemData::_Configuration);
+
+		AndroidSoundSystemData::_StreamNeedsRestart = false;
+	}
+}
+
+/*
 *	Terminates the platform.
 */
 void SoundSystem::PlatformTerminate() NOEXCEPT
 {
-    //Stop the stream.
-    AAudioStream_requestStop(AndroidSoundSystemData::_AudioStream);
+    //Shut down the audio stream.
+    if (AndroidSoundSystemData::_AudioStream)
+    {
+        //Stop the stream.
+        AAudioStream_requestStop(AndroidSoundSystemData::_AudioStream);
 
-	//Close the stream.
-	AAudioStream_close(AndroidSoundSystemData::_AudioStream);
+        //Close the stream.
+        AAudioStream_close(AndroidSoundSystemData::_AudioStream);
+
+		//Reset the audio stream.
+		AndroidSoundSystemData::_AudioStream = nullptr;
+    }
+
+	//Terminate the mixing buffers.
+    if (_MixingBuffersInitialized)
+    {
+        TerminateMixingBuffers();
+    }
 }
 
 /*
@@ -285,14 +362,6 @@ void SoundSystem::OpenMIDIDevice(MIDIDevice *const RESTRICT midi_device) NOEXCEP
 *	Retrieves a MIDI message from the queue of the specified MIDI device. Returns whether or not a message was retrieved from the queue.
 */
 NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message) NOEXCEPT
-{
-	//Do nothing.
-}
-
-/*
-*	The default asynchronous update function.
-*/
-void SoundSystem::DefaultAsynchronousUpdate() NOEXCEPT
 {
 	//Do nothing.
 }

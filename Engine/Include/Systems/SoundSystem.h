@@ -193,6 +193,12 @@ private:
 	//The current sample read index.
 	uint32 _CurrentSampleReadIndex{ 0 };
 
+	//Denotes whether or not the sound system should currently mix.
+	AtomicFlag _ShouldMix;
+
+	//Denotes whether or not the sound system is currently mixing.
+	AtomicFlag _IsMixing;
+
 	//Denotes whetehr or not the sound system is currently muted.
 	AtomicFlag _IsMuted;
 
@@ -219,6 +225,11 @@ private:
 	NO_DISCARD bool PlatformInitialized() const NOEXCEPT;
 
 	/*
+	*	Updates the platform.
+	*/
+	void PlatformUpdate() NOEXCEPT;
+
+	/*
 	*	Terminates the platform.
 	*/
 	void PlatformTerminate() NOEXCEPT;
@@ -229,14 +240,14 @@ private:
 	void InitializeMixingBuffers(const uint8 number_of_mixing_buffers, const uint32 number_of_samples_per_mixing_buffer) NOEXCEPT;
 
 	/*
+	*	Terminates the mixing buffers.
+	*/
+	void TerminateMixingBuffers() NOEXCEPT;
+
+	/*
 	*	Performs mixing.
 	*/
 	void Mix() NOEXCEPT;
-
-	/*
-	*	The default asynchronous update function.
-	*/
-	void DefaultAsynchronousUpdate() NOEXCEPT;
 
 	/*
 	*	The sound callback.

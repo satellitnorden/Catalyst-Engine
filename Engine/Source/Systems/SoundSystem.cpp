@@ -355,6 +355,45 @@ void SoundSystem::InitializeMixingBuffers(const uint8 number_of_mixing_buffers, 
 
 	//The mixing buffers are now initialized!
 	_MixingBuffersInitialized = true;
+
+	//The sound system can mix now.
+	_ShouldMix.Set();
+}
+
+/*
+*	Terminates the mixing buffers.
+*/
+void SoundSystem::TerminateMixingBuffers() NOEXCEPT
+{
+	//The sound system should no longer mix.
+	_ShouldMix.Clear();
+
+	//Wait for the sound system to smixing.
+	_IsMixing.Wait<WaitMode::YIELD>();
+
+	//Free the mixing buffers.
+	for (void *const RESTRICT mixing_buffer : _MixingBuffers)
+	{
+		Memory::Free(mixing_buffer);
+	}
+
+	//Free the intermediate mixing buffer.
+	Memory::Free(_IntermediateMixingBuffer);
+
+	//Reset the current mixing buffer write index.
+	_CurrentMixingBufferWriteIndex = 0;
+
+	//Reset the current mixing buffer read index.
+	_CurrentMixingBufferReadIndex = 0;
+
+	//Reset the number of mixing buffers ready.
+	_MixingBuffersReady = 0;
+
+	//Reset the current sample read index.
+	_CurrentSampleReadIndex = 0;
+
+	//The mixing buffers are no longer initialized.
+	_MixingBuffersInitialized = false;
 }
 
 /*
@@ -366,10 +405,16 @@ void SoundSystem::Mix() NOEXCEPT
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
 		//Need the platform to have been initialized before the mixing buffers has been initialized. And no mixing is done when paused.
-		if (!PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused() || CatalystEngineSystem::Instance->IsEnginePaused())
+		if (!_ShouldMix.IsSet() || !PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused() || CatalystEngineSystem::Instance->IsEnginePaused())
 		{
+			//The sound system is not mixing.
+			_IsMixing.Clear();
+
 			continue;
 		}
+
+		//The sound system is mixing.
+		_IsMixing.Set();
 
 		//Cache the number of channels.
 		const uint8 number_of_channels{ GetNumberOfChannels() };

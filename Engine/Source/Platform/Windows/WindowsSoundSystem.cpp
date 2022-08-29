@@ -481,7 +481,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 		//Set up the thread.
 		WindowsSoundSystemData::_Thread.SetFunction([]()
 		{
-			SoundSystem::Instance->DefaultAsynchronousUpdate();
+			SoundSystem::Instance->PlatformUpdate();
 		});
 		WindowsSoundSystemData::_Thread.SetPriority(Thread::Priority::HIGHEST);
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -748,9 +748,9 @@ NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi
 }
 
 /*
-*	The default asynchronous update function.
+*	Updates the platform.
 */
-void SoundSystem::DefaultAsynchronousUpdate() NOEXCEPT
+void SoundSystem::PlatformUpdate() NOEXCEPT
 {
 	//Define macros.
 #define HANDLE_ERROR(FUNCTION) if (FAILED(FUNCTION)) { LOG_ERROR("Sound system failted to initialize!, %s failed!", #FUNCTION); goto CLEANUP; }
