@@ -31,6 +31,9 @@ public class CatalystEngineNativeActivity extends NativeActivity
         //Call parent function.
         super.onCreate(savedInstanceState);
 
+        //Make completely fullscreen.
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         //Make the custom initialization.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
