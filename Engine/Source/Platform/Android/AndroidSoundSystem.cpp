@@ -81,29 +81,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	}
 
 	//Set the performance mode.
-	switch (configuration._SoundSystemMode)
-	{
-		case SoundSystemMode::DEFAULT:
-		{
-			AAudioStreamBuilder_setPerformanceMode(audio_stream_builder, AAUDIO_PERFORMANCE_MODE_NONE);
-
-			break;
-		}
-
-		case SoundSystemMode::LOW_LATENCY:
-		{
-			AAudioStreamBuilder_setPerformanceMode(audio_stream_builder, AAUDIO_PERFORMANCE_MODE_LOW_LATENCY);
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
+    AAudioStreamBuilder_setPerformanceMode(audio_stream_builder, AAUDIO_PERFORMANCE_MODE_LOW_LATENCY);
 
 	//Set the data callback.
 	AAudioStreamBuilder_setDataCallback
@@ -234,11 +212,11 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 		else
 		{
-			//Calculate the number of samples required to fill two data callbacks.
-			const uint32 number_of_samples_required_for_data_callbacks{ (frames_per_burst * 2) / DEFAULT_NUMBER_OF_MIXING_BUFFERS };
+			//Calculate the number of samples required to fill two bursts.
+			const uint32 number_of_samples_required_for_bursts{ (frames_per_burst * 2) / DEFAULT_NUMBER_OF_MIXING_BUFFERS };
 
             //Set the number of samples per buffer.
-			number_of_samples_per_buffer = CatalystBaseMath::Minimum<uint32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER, number_of_samples_required_for_data_callbacks);
+			number_of_samples_per_buffer = CatalystBaseMath::Maximum<uint32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER, number_of_samples_required_for_bursts);
 		}
 
         //Initialize the mixing buffers.
