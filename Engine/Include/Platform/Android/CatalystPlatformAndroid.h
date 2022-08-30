@@ -44,6 +44,9 @@ void android_main(android_app *app)																			\
 	implementation;																							\
 }																											\
 
+//Forward declarations.
+class DynamicString;
+
 class CatalystPlatform final
 {
 
@@ -102,6 +105,11 @@ public:
 	*	Returns the scroll wheel step and resets it.
 	*/
 	static int8 GetAndResetScrollWheelStep() NOEXCEPT;
+
+	/*
+	*	Retrieves the user name.
+	*/
+	static bool RetrieveUserName(DynamicString *const RESTRICT output) NOEXCEPT;
 
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	/*

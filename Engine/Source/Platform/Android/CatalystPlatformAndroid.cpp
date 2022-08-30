@@ -370,6 +370,14 @@ int8 CatalystPlatform::GetAndResetScrollWheelStep() NOEXCEPT
 	return 0;
 }
 
+/*
+*	Retrieves the user name.
+*/
+bool CatalystPlatform::RetrieveUserName(DynamicString *const RESTRICT output) NOEXCEPT
+{
+	return false;
+}
+
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 /*
 *	Prints a string to output.

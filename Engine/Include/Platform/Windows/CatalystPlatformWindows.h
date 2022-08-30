@@ -20,7 +20,7 @@ __pragma(warning(disable : 4530)) //Disable warning C4530: C++ exception handler
 //Windows.
 #include <Windows.h>
 #if !defined(INITGUID)
-	#define INITGUID
+#define INITGUID
 #endif
 #include <ShlObj_core.h>
 #include <tchar.h>
@@ -69,6 +69,7 @@ __pragma(warning(disable : 4530)) //Disable warning C4530: C++ exception handler
 }																							\
 
 //Forward declarations.
+class DynamicString;
 class MouseState;
 
 class CatalystPlatform final
@@ -129,6 +130,11 @@ public:
 	*	Returns the scroll wheel step and resets it.
 	*/
 	static int8 GetAndResetScrollWheelStep() NOEXCEPT;
+
+	/*
+	*	Retrieves the user name.
+	*/
+	static bool RetrieveUserName(DynamicString *const RESTRICT output) NOEXCEPT;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*

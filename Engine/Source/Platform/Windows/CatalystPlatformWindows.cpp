@@ -18,6 +18,7 @@
 #include <Systems/CatalystEngineSystem.h>
 
 //Windows.
+#include <Lmcons.h>
 #include <Xinput.h>
 
 //Static variable definitions.
@@ -318,6 +319,32 @@ int8 CatalystPlatform::GetAndResetScrollWheelStep() NOEXCEPT
 	CatalystWindowsData::_ScrollWheelStep = 0;
 
 	return old;
+}
+
+/*
+*	Retrieves the user name.
+*/
+bool CatalystPlatform::RetrieveUserName(DynamicString *const RESTRICT output) NOEXCEPT
+{
+	char username[UNLEN + 1];
+	DWORD username_length{ UNLEN + 1 };
+
+	if (GetUserNameA(username, &username_length))
+	{
+		output->SetLength(username_length);
+
+		for (uint64 i{ 0 }; i < username_length; ++i)
+		{
+			(*output)[i] = username[i];
+		}
+
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
 }
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
