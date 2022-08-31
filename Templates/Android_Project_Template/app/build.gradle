@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    [SIGNING_CONFIGS]
     //AdMob library requires compileSdkVersion 28 or higher.
     compileSdkVersion 32
     ndkVersion '22.1.7171670'
@@ -15,6 +16,7 @@ android {
                 arguments '-DANDROID_STL=c++_static'
             }
         }
+        [DEFAULT_SIGNING_CONFIG]
     }
     buildTypes {
         release {

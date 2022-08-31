@@ -9,6 +9,16 @@
 //Macros.
 #define CHECK_ERROR_CODE() if (error_code) { std::cout << "Error at " << __LINE__ << ": " << error_code.message() << std::endl; }
 
+//Enumeration covering all projet types.
+enum class ProjectType
+{
+	ANDROID,
+	OCULUS_QUEST,
+	WIN64,
+
+	UNKNOWN
+};
+
 //Enumeration covering all Win64 distributions.
 enum class Win64Distribution
 {
@@ -70,6 +80,15 @@ public:
 
 	//The included resource collections.
 	std::vector<std::string> _IncludedResourceCollections;
+
+	//The keystore file path.
+	std::string _KeystoreFilePath;
+
+	//The keystore password.
+	std::string _KeystorePassword;
+
+	//The keystore alias.
+	std::string _KeystoreAlias;
 
 };
 
@@ -330,6 +349,47 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 
 		while (std::getline(input_file, input_line))
 		{
+			bool include_line{ true };
+
+			{
+				const size_t position{ input_line.find("[SIGNING_CONFIGS]") };
+
+				if (position != std::string::npos)
+				{
+					if (!platform_parameters._KeystoreFilePath.empty()
+						&& !platform_parameters._KeystorePassword.empty()
+						&& !platform_parameters._KeystoreAlias.empty())
+					{
+						input_line.replace(position, strlen("[SIGNING_CONFIGS]"), "signingConfigs {\n");
+						input_line += "\t\trelease {\n";
+
+						input_line += "\t\t\tstoreFile file('";
+						input_line += platform_parameters._KeystoreFilePath;
+						input_line += "')\n";
+
+						input_line += "\t\t\tstorePassword '";
+						input_line += platform_parameters._KeystorePassword;
+						input_line += "'\n";
+
+						input_line += "\t\t\tkeyPassword '";
+						input_line += platform_parameters._KeystorePassword;
+						input_line += "'\n";
+
+						input_line += "\t\t\tkeyAlias '";
+						input_line += platform_parameters._KeystoreAlias;
+						input_line += "'\n";
+
+						input_line += "\t\t}\n";
+						input_line += "\t}\n";
+					}
+
+					else
+					{
+						include_line = false;
+					}
+				}
+			}
+
 			{
 				const size_t position{ input_line.find("[DEVELOPER_NAME]") };
 
@@ -348,7 +408,29 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 				}
 			}
 
-			output_file << input_line << std::endl;
+			{
+				const size_t position{ input_line.find("[DEFAULT_SIGNING_CONFIG]") };
+
+				if (position != std::string::npos)
+				{
+					if (!platform_parameters._KeystoreFilePath.empty()
+						&& !platform_parameters._KeystorePassword.empty()
+						&& !platform_parameters._KeystoreAlias.empty())
+					{
+						input_line.replace(position, strlen("[DEFAULT_SIGNING_CONFIG]"), "signingConfig signingConfigs.release");
+					}
+
+					else
+					{
+						include_line = false;
+					}
+				}
+			}
+
+			if (include_line)
+			{
+				output_file << input_line << std::endl;
+			}
 		}
 
 		//Close the files.
@@ -890,7 +972,7 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 	std::filesystem::remove("CMakeLists.txt", error_code); CHECK_ERROR_CODE();
 }
 
-int main(int argc, char *argv[])
+int main(int argument_count, char *arguments[])
 {
 	//Print the options.
 	PrintOptions();
@@ -900,6 +982,24 @@ int main(int argc, char *argv[])
 	AndroidParameters android_parameters;
 	OculusQuestParameters oculus_quest_parameters;
 	Win64Parameters win64_parameters;
+
+	//Figure out which project type to generate.
+	ProjectType project_type_to_generate{ ProjectType::UNKNOWN };
+
+	if (strcmp(arguments[1], "ANDROID") == 0)
+	{
+		project_type_to_generate = ProjectType::ANDROID;
+	}
+
+	else if (strcmp(arguments[1], "OCULUS_QUEST") == 0)
+	{
+		project_type_to_generate = ProjectType::OCULUS_QUEST;
+	}
+
+	else if (strcmp(arguments[1], "WIN64") == 0)
+	{
+		project_type_to_generate = ProjectType::WIN64;
+	}
 
 	//Read the parameters.
 	{
@@ -991,6 +1091,24 @@ int main(int argc, char *argv[])
 				android_parameters._IncludedResourceCollections.emplace_back(argument);
 			}
 
+			//Is this the Android keystore file path?
+			else if (identifier == "ANDROID_KEYSTORE_FILE_PATH")
+			{
+				android_parameters._KeystoreFilePath = argument;
+			}
+
+			//Is this the Android keystore password?
+			else if (identifier == "ANDROID_KEYSTORE_PASSWORD")
+			{
+				android_parameters._KeystorePassword = argument;
+			}
+
+			//Is this the Android keystore alias?
+			else if (identifier == "ANDROID_KEYSTORE_ALIAS")
+			{
+				android_parameters._KeystoreAlias = argument;
+			}
+
 			//Is this the Win64 distribution?
 			else if (identifier == "WIN64_DISTRIBUTION")
 			{
@@ -1029,13 +1147,25 @@ int main(int argc, char *argv[])
 	general_parameters._ProjectNameNoSpaces.erase(std::remove_if(general_parameters._ProjectNameNoSpaces.begin(), general_parameters._ProjectNameNoSpaces.end(), [](unsigned char x) { return std::isspace(x); }), general_parameters._ProjectNameNoSpaces.end());
 
 	//Generate Android.
-	GenerateAndroid(general_parameters, android_parameters);
+	if (project_type_to_generate == ProjectType::ANDROID
+		|| project_type_to_generate == ProjectType::UNKNOWN)
+	{
+		GenerateAndroid(general_parameters, android_parameters);
+	}
 
 	//Generate Oculus Quest.
-	GenerateOculusQuest(general_parameters, oculus_quest_parameters);
+	if (project_type_to_generate == ProjectType::OCULUS_QUEST
+		|| project_type_to_generate == ProjectType::UNKNOWN)
+	{
+		GenerateOculusQuest(general_parameters, oculus_quest_parameters);
+	}
 
 	//Generate Win64.
-	GenerateWin64(general_parameters, win64_parameters);
+	if (project_type_to_generate == ProjectType::WIN64
+		|| project_type_to_generate == ProjectType::UNKNOWN)
+	{
+		GenerateWin64(general_parameters, win64_parameters);
+	}
 
 	return 0;
 }
