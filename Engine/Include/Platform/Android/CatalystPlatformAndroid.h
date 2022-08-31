@@ -111,22 +111,22 @@ public:
 	*/
 	static bool RetrieveUserName(DynamicString *const RESTRICT output) NOEXCEPT;
 
+	/*
+	*	Shows a banner ad.
+	*/
+	static void ShowBannerAd() NOEXCEPT;
+
+	/*
+	*	Shows an interstitial ad.
+	*/
+	static void ShowInterstitialAd() NOEXCEPT;
+
 #if defined(CATALYST_CONFIGURATION_DEBUG)
 	/*
 	*	Prints a string to output.
 	*/
 	static void PrintToOutput(const char *const RESTRICT message) NOEXCEPT;
 #endif
-
-	/*
-	*	Shows a banner ad.
-	*/
-	static void ShowBannerAd() NOEXCEPT;
-
-    /*
-    *	Shows an interstitial ad.
-    */
-    static void ShowInterstitialAd() NOEXCEPT;
 
 };
 

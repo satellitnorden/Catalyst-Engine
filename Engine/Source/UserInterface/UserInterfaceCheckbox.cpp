@@ -2,6 +2,7 @@
 #include <UserInterface/UserInterfaceCheckbox.h>
 
 //Systems.
+#include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
@@ -26,16 +27,26 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 												const UserInterfaceMaterial &initial_checked_hovered_material,
 												const UserInterfaceMaterial &initial_checked_pressed_material,
 												const char *const RESTRICT text,
+												const float32 text_scale,
 												const ResourcePointer<FontResource> font_resource,
 												const bool is_three_dimensional) NOEXCEPT
 {
-	//Calculate the extent.
-	const Vector2<float32> extent{ initial_maximum - initial_minimum };
+	//Calculate the initial extent.
+	const Vector2<float32> initial_extent{ initial_maximum - initial_minimum };
 
 	//Calculate the button minimum/maximum.
 	_ButtonMinimum = initial_minimum;
-	_ButtonMaximum = initial_minimum + Vector2<float32>(extent._Y, extent._Y);
+	_ButtonMaximum = initial_minimum + Vector2<float32>(initial_extent._Y, initial_extent._Y);
 
+	//Calculate the button width.
+	const float32 button_width{ _ButtonMaximum._X - _ButtonMinimum._X };
+
+	//Cache the aspect ratio.
+	const float32 aspect_ratio{ RenderingSystem::Instance->GetFullAspectRatio() };
+
+	//Apply the aspect ratio.
+	_ButtonMaximum._X = _ButtonMinimum._X + (button_width / aspect_ratio);
+	 
 	//Calculate the text minimum/maximum.
 	_TextMinimum = Vector2<float32>(_ButtonMaximum._X, _ButtonMinimum._Y);
 	_TextMaximum = initial_maximum;
@@ -59,6 +70,9 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 	_CheckedIdleMaterial = initial_checked_idle_material;
 	_CheckedHoveredMaterial = initial_checked_hovered_material;
 	_CheckedPressedMaterial = initial_checked_pressed_material;
+
+	//Set the text scale.
+	_TextScale = text_scale;
 
 	//Set the font resource.
 	_FontResource = font_resource;
@@ -136,7 +150,7 @@ void UserInterfaceCheckbox::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Maximum = _TextMaximum;
 			description._Opacity = 1.0f;
 			description._FontResource = _FontResource;
-			description._Scale = 0.015f;
+			description._Scale = _TextScale;
 			description._HorizontalAlignment = TextHorizontalAlignment::LEFT;
 			description._VerticalAlignment = TextVerticalAlignment::CENTER;
 			description._Text = text;

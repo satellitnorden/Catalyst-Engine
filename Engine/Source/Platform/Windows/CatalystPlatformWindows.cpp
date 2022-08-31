@@ -347,6 +347,19 @@ bool CatalystPlatform::RetrieveUserName(DynamicString *const RESTRICT output) NO
 	}
 }
 
+void CatalystPlatform::ShowBannerAd() NOEXCEPT
+{
+	//Do nothing. (:
+}
+
+/*
+*	Shows an interstitial ad.
+*/
+void CatalystPlatform::ShowInterstitialAd() NOEXCEPT
+{
+	//Do nothing. (:
+}
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 /*
 *	Prints a string to output.

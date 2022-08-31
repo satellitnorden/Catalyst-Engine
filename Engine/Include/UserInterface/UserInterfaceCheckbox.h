@@ -37,6 +37,7 @@ public:
 							const UserInterfaceMaterial &initial_checked_hovered_material,
 							const UserInterfaceMaterial &initial_checked_pressed_material,
 							const char *const RESTRICT text,
+							const float32 text_scale,
 							const ResourcePointer<FontResource> font_resource,
 							const bool is_three_dimensional) NOEXCEPT;
 
@@ -227,6 +228,9 @@ private:
 
 	//The font resource.
 	ResourcePointer<FontResource> _FontResource;
+
+	//The text scale.
+	float32 _TextScale;
 
 	//Denotes whether or not this button is gamepad selected.
 	bool _GamepadSelected{ false };

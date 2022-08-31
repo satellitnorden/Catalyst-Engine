@@ -45,9 +45,6 @@ UserInterfaceScene::~UserInterfaceScene()
 */
 void UserInterfaceScene::OnActivated() NOEXCEPT
 {
-	//Define constants.
-	constexpr float32 CHECKBOX_BORDER_OFFSET{ 0.016'50f };
-
 	//Set up default values.
 	SetHorizontalSubdivision(33);
 	SetVerticalSubdivision(33);
@@ -65,27 +62,27 @@ void UserInterfaceScene::OnActivated() NOEXCEPT
 
 	_CheckboxUncheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 0.5f));
 	_CheckboxUncheckedIdleMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_CheckboxUncheckedIdleMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+	_CheckboxUncheckedIdleMaterial.SetBorderOffset(0.0f);
 
 	_CheckboxUncheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.75f));
 	_CheckboxUncheckedHoveredMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_CheckboxUncheckedHoveredMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+	_CheckboxUncheckedHoveredMaterial.SetBorderOffset(0.0f);
 
 	_CheckboxUncheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
 	_CheckboxUncheckedPressedMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_CheckboxUncheckedPressedMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+	_CheckboxUncheckedPressedMaterial.SetBorderOffset(0.0f);
 
-	_CheckboxCheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.75f));
+	_CheckboxCheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(0.75f, 0.75f, 0.75f, 0.75f));
 	_CheckboxCheckedIdleMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_CheckboxCheckedIdleMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+	_CheckboxCheckedIdleMaterial.SetBorderOffset(0.0f);
 
-	_CheckboxCheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
+	_CheckboxCheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.875f, 0.875f, 0.875f, 0.875f));
 	_CheckboxCheckedHoveredMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_CheckboxCheckedHoveredMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+	_CheckboxCheckedHoveredMaterial.SetBorderOffset(0.0f);
 
 	_CheckboxCheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxCheckedPressedMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_CheckboxCheckedPressedMaterial.SetBorderOffset(CHECKBOX_BORDER_OFFSET);
+	_CheckboxCheckedPressedMaterial.SetBorderOffset(0.0f);
 
 	_ProgressBarBottomMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 0.5f));
 
@@ -279,7 +276,8 @@ RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox
 																						UserInterfaceMaterial *const RESTRICT checked_idle_material_override,
 																						UserInterfaceMaterial *const RESTRICT checked_hovered_material_override,
 																						UserInterfaceMaterial *const RESTRICT checked_pressed_material_override,
-																						const char *const RESTRICT text) NOEXCEPT
+																						const char *const RESTRICT text,
+																						const float32 *const RESTRICT scale_override) NOEXCEPT
 {
 	//Calculate the bounding box.
 	Vector2<float32> minimum;
@@ -298,7 +296,8 @@ RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox
 												checked_idle_material_override,
 												checked_hovered_material_override,
 												checked_pressed_material_override,
-												text);
+												text,
+												scale_override);
 }
 
 
@@ -315,7 +314,8 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 																										UserInterfaceMaterial *const RESTRICT checked_idle_material_override,
 																										UserInterfaceMaterial *const RESTRICT checked_hovered_material_override,
 																										UserInterfaceMaterial *const RESTRICT checked_pressed_material_override,
-																										const char *const RESTRICT text) NOEXCEPT
+																										const char *const RESTRICT text,
+																										const float32 *const RESTRICT scale_override) NOEXCEPT
 {
 	//Allocate the checkbox.
 	UserInterfaceCheckbox *const RESTRICT new_checkbox{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceCheckbox>()) UserInterfaceCheckbox(	minimum,
@@ -332,6 +332,7 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 																					checked_hovered_material_override ? *checked_hovered_material_override : _CheckboxCheckedHoveredMaterial,
 																					checked_pressed_material_override ? *checked_pressed_material_override : _CheckboxCheckedPressedMaterial,
 																					text,
+																					scale_override ? *scale_override : _TextScale,
 																					_FontResource,
 																					_Entity != nullptr) };
 

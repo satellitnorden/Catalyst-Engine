@@ -18,7 +18,7 @@
               android:label="@string/app_name"
               android:configChanges="orientation|keyboardHidden"
               android:exported="true"
-              [ANDROID_FORCE_LANDSCAPE_MODE] >
+              [ANDROID_FORCE_ORIENTATION_MODE] >
 
       <meta-data  android:name="android.app.lib_name"
                   android:value="[LIBRARY_NAME]" />

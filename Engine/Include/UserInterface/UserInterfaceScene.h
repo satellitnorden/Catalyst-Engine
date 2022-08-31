@@ -240,7 +240,8 @@ protected:
 																		UserInterfaceMaterial *const RESTRICT checked_idle_material_overrid = nullptr,
 																		UserInterfaceMaterial *const RESTRICT checked_hovered_material_override = nullptr,
 																		UserInterfaceMaterial *const RESTRICT checked_pressed_material_override = nullptr,
-																		const char *const RESTRICT text = "") NOEXCEPT;
+																		const char *const RESTRICT text = "",
+																		const float32 *const RESTRICT scale_override = nullptr) NOEXCEPT;
 
 	/*
 	*	Adds a checkbox, using raw coordinates.
@@ -255,7 +256,8 @@ protected:
 																						UserInterfaceMaterial *const RESTRICT checked_idle_material_overrid = nullptr,
 																						UserInterfaceMaterial *const RESTRICT checked_hovered_material_override = nullptr,
 																						UserInterfaceMaterial *const RESTRICT checked_pressed_material_override = nullptr,
-																						const char *const RESTRICT text = "") NOEXCEPT;
+																						const char *const RESTRICT text = "",
+																						const float32 *const RESTRICT scale_override = nullptr) NOEXCEPT;
 	/*
 	*	Adds an image, using cells.
 	*/

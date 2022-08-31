@@ -65,6 +65,9 @@ public:
 	//Denotes whether or not to force landscape mode.
 	bool _ForceLandscapeMode{ false };
 
+	//Denotes whether or not to force portrait mode.
+	bool _ForcePortraitMode{ false };
+
 	//The included resource collections.
 	std::vector<std::string> _IncludedResourceCollections;
 
@@ -217,18 +220,23 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 			}
 
 			{
-				const size_t position{ input_line.find("[ANDROID_FORCE_LANDSCAPE_MODE]") };
+				const size_t position{ input_line.find("[ANDROID_FORCE_ORIENTATION_MODE]") };
 
 				if (position != std::string::npos)
 				{
 					if (platform_parameters._ForceLandscapeMode)
 					{
-						input_line.replace(position, strlen("[ANDROID_FORCE_LANDSCAPE_MODE]"), "android:screenOrientation=\"landscape\"");
+						input_line.replace(position, strlen("[ANDROID_FORCE_ORIENTATION_MODE]"), "android:screenOrientation=\"landscape\"");
+					}
+
+					if (platform_parameters._ForcePortraitMode)
+					{
+						input_line.replace(position, strlen("[ANDROID_FORCE_ORIENTATION_MODE]"), "android:screenOrientation=\"portrait\"");
 					}
 
 					else
 					{
-						input_line.replace(position, strlen("[ANDROID_FORCE_LANDSCAPE_MODE]"), "");
+						input_line.replace(position, strlen("[ANDROID_FORCE_ORIENTATION_MODE]"), "");
 					}
 				}
 			}
@@ -969,6 +977,12 @@ int main(int argc, char *argv[])
 			else if (identifier == "ANDROID_FORCE_LANDSCAPE_MODE")
 			{
 				android_parameters._ForceLandscapeMode = true;
+			}
+
+			//Should android force portrait mode?
+			else if (identifier == "ANDROID_FORCE_PORTRAIT_MODE")
+			{
+				android_parameters._ForcePortraitMode = true;
 			}
 
 			//Should a resource collection be included for Android?

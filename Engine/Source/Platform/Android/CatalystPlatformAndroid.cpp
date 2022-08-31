@@ -378,19 +378,10 @@ bool CatalystPlatform::RetrieveUserName(DynamicString *const RESTRICT output) NO
 	return false;
 }
 
-#if defined(CATALYST_CONFIGURATION_DEBUG)
-/*
-*	Prints a string to output.
-*/
-void CatalystPlatform::PrintToOutput(const char *const RESTRICT message) NOEXCEPT
-{
-	__android_log_print(ANDROID_LOG_DEBUG, "Catalyst Engine:", "%s", message);
-}
-
 void CatalystPlatform::ShowBannerAd() NOEXCEPT
 {
-    //Call the method.
-    CatalystPlatformAndroidLogic::CallVoidJNIMethod("ShowBannerAd");
+	//Call the method.
+	CatalystPlatformAndroidLogic::CallVoidJNIMethod("ShowBannerAd");
 }
 
 /*
@@ -398,8 +389,17 @@ void CatalystPlatform::ShowBannerAd() NOEXCEPT
 */
 void CatalystPlatform::ShowInterstitialAd() NOEXCEPT
 {
-    //Call the method.
-    CatalystPlatformAndroidLogic::CallVoidJNIMethod("ShowInterstitialAd");
+	//Call the method.
+	CatalystPlatformAndroidLogic::CallVoidJNIMethod("ShowInterstitialAd");
+}
+
+#if defined(CATALYST_CONFIGURATION_DEBUG)
+/*
+*	Prints a string to output.
+*/
+void CatalystPlatform::PrintToOutput(const char *const RESTRICT message) NOEXCEPT
+{
+	__android_log_print(ANDROID_LOG_DEBUG, "Catalyst Engine:", "%s", message);
 }
 
 #endif
