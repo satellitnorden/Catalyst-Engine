@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.ads.AdRequest;
@@ -22,6 +23,7 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
+@Keep
 public class CatalystEngineNativeActivity extends NativeActivity
 {
 
