@@ -27,7 +27,7 @@ public:
 		AAssetManager *const RESTRICT asset_manager{ CatalystPlatform::_App->activity->assetManager };
 
 		//Open the asset.
-		_Asset = AAssetManager_open(asset_manager, file_path, AASSET_MODE_STREAMING);
+		_Asset = AAssetManager_open(asset_manager, file_path, AASSET_MODE_BUFFER);
 
 		//Remember the size.
 		_Size = AAsset_getLength(_Asset);
