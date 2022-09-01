@@ -90,6 +90,9 @@ public:
 	//The keystore alias.
 	std::string _KeystoreAlias;
 
+	//Denotes whether or not to use asset pack.
+	bool _UseAssetPack{ false };
+
 };
 
 /*
@@ -427,6 +430,23 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 				}
 			}
 
+			{
+				const size_t position{ input_line.find("[ASSET_PACKS]") };
+
+				if (position != std::string::npos)
+				{
+					if (platform_parameters._UseAssetPack)
+					{
+						input_line.replace(position, strlen("[ASSET_PACKS]"), "assetPacks = [\":asset_pack\"]");
+					}
+
+					else
+					{
+						include_line = false;
+					}
+				}
+			}
+
 			if (include_line)
 			{
 				output_file << input_line << std::endl;
@@ -453,7 +473,83 @@ void GenerateAndroid(const GeneralParameters &general_parameters, const AndroidP
 		}
 	}
 
+	//Add the settings.gradle file.
+	{
+		std::ofstream file{ "Android\\settings.gradle" };
+
+		file << "include 'app'";
+
+		if (platform_parameters._UseAssetPack)
+		{
+			file << std::endl;
+			file << "include ':asset_pack'";
+		}
+
+		file.close();
+	}
+
 	//Copy over the relevant resource collections.
+	if (platform_parameters._UseAssetPack)
+	{
+		//Create the directory.
+		std::filesystem::create_directory("Android\\asset_pack");
+
+		//Create the build.gradle file.
+		{
+			std::ofstream file{ "Android\\asset_pack\\build.gradle" };
+
+			file << "plugins {" << std::endl;
+			file << "\tid 'com.android.asset-pack'" << std::endl;
+			file << "}" << std::endl;
+
+			file << std::endl;
+
+			file << "assetPack {" << std::endl;
+			file << "\tpackName = \"asset_pack\"" << std::endl;
+			file << "\tdynamicDelivery {" << std::endl;
+			file << "\t\tdeliveryType = \"install-time\"" << std::endl;
+			file << "\t}" << std::endl;
+			file << "}";
+
+			file.close();
+		}
+
+		//Create the asset_pack/src/main/assets directory.
+		std::filesystem::create_directories("Android\\asset_pack\\src\\main\\assets");
+
+		//Copy over the resource collections.
+		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineBaseResourceCollection_0.crc", "Android\\asset_pack\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+
+		if (general_parameters._IncludeEnvironmentResourceCollection)
+		{
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineEnvironmentResourceCollection_0.crc", "Android\\asset_pack\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+		}
+
+		if (general_parameters._IncludeExtraResourceCollection)
+		{
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineExtraResourceCollection_0.crc", "Android\\asset_pack\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+		}
+
+		if (error_code)
+		{
+			std::cout << error_code.message() << std::endl;
+		}
+
+		for (const std::string& included_resource_collection : platform_parameters._IncludedResourceCollections)
+		{
+			char buffer[256];
+			sprintf_s(buffer, "..\\Resources\\Final\\%s", included_resource_collection.c_str());
+
+			std::filesystem::copy(buffer, "Android\\asset_pack\\src\\main\\assets\\", std::filesystem::copy_options::overwrite_existing, error_code);
+
+			if (error_code)
+			{
+				std::cout << error_code.message() << std::endl;
+			}
+		}
+	}
+
+	else
 	{
 		std::filesystem::create_directory("Android\\app\\src\\main\\assets");
 		
@@ -1107,6 +1203,12 @@ int main(int argument_count, char *arguments[])
 			else if (identifier == "ANDROID_KEYSTORE_ALIAS")
 			{
 				android_parameters._KeystoreAlias = argument;
+			}
+
+			//Should Android use asset pack?
+			else if (identifier == "ANDROID_USE_ASSET_PACK")
+			{
+				android_parameters._UseAssetPack = true;
 			}
 
 			//Is this the Win64 distribution?
