@@ -51,37 +51,31 @@ void UserInterfaceScene::OnActivated() NOEXCEPT
 
 	_FontResource = ResourceSystem::Instance->GetFontResource(HashString("Catalyst_Engine_Default_Font"));
 
-	_ButtonIdleMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 0.5f));
+	_ButtonIdleMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f));
 	_ButtonIdleMaterial.SetBorderOffset(0.0f);
 
-	_ButtonHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.75f));
+	_ButtonHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 0.75f));
 	_ButtonHoveredMaterial.SetBorderOffset(0.0f);
 
-	_ButtonPressedMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
+	_ButtonPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_ButtonPressedMaterial.SetBorderOffset(0.0f);
 
-	_CheckboxUncheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 0.5f));
-	_CheckboxUncheckedIdleMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxUncheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f));
 	_CheckboxUncheckedIdleMaterial.SetBorderOffset(0.0f);
 
-	_CheckboxUncheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.75f));
-	_CheckboxUncheckedHoveredMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxUncheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 0.75f));
 	_CheckboxUncheckedHoveredMaterial.SetBorderOffset(0.0f);
 
-	_CheckboxUncheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
-	_CheckboxUncheckedPressedMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+	_CheckboxUncheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxUncheckedPressedMaterial.SetBorderOffset(0.0f);
 
 	_CheckboxCheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(0.75f, 0.75f, 0.75f, 0.75f));
-	_CheckboxCheckedIdleMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxCheckedIdleMaterial.SetBorderOffset(0.0f);
 
 	_CheckboxCheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.875f, 0.875f, 0.875f, 0.875f));
-	_CheckboxCheckedHoveredMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxCheckedHoveredMaterial.SetBorderOffset(0.0f);
 
 	_CheckboxCheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_CheckboxCheckedPressedMaterial.SetSecondaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 	_CheckboxCheckedPressedMaterial.SetBorderOffset(0.0f);
 
 	_ProgressBarBottomMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 0.5f));
@@ -590,7 +584,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 	const CursorState cursor_state{ RetrieveCursorState() };
 
 	//Update which button is gamepad selected.
-	if (InputSystem::Instance->GetLastUpdatedInputDeviceType() == InputDeviceType::GAMEPAD)
+	if (cursor_state._InputDeviceType == InputDeviceType::GAMEPAD)
 	{
 		//First of all, find the first and the currently gamepad selected button.
 		ButtonInterface first_button;
@@ -711,7 +705,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 	for (ButtonInterface &button : _ButtonInterfaces)
 	{
 		//Apply different logic based on which input device type was updated last.
-		switch (InputSystem::Instance->GetLastUpdatedInputDeviceType())
+		switch (cursor_state._InputDeviceType)
 		{
 			case InputDeviceType::GAMEPAD:
 			{
@@ -803,7 +797,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 									button.SetCurrentState(UserInterfaceButtonState::PRESSED);
 								}
 
-								else
+								else if (cursor_state._InputDeviceType != InputDeviceType::TOUCH)
 								{
 									button.OnStartHovered();
 									button.SetCurrentState(UserInterfaceButtonState::HOVERED);
@@ -840,7 +834,16 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 								if (!cursor_state._Pressed)
 								{
 									button.OnStopPressed();
-									button.SetCurrentState(UserInterfaceButtonState::HOVERED);
+
+									if (cursor_state._InputDeviceType != InputDeviceType::TOUCH)
+									{
+										button.SetCurrentState(UserInterfaceButtonState::HOVERED);
+									}
+
+									else
+									{
+										button.SetCurrentState(UserInterfaceButtonState::IDLE);
+									}
 								}
 							}
 
@@ -867,6 +870,7 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 {
 	CursorState output;
 
+	output._InputDeviceType = InputSystem::Instance->GetLastUpdatedInputDeviceType();
 	output._Position = Vector2<float32>(0.0f, 0.0f);
 	output._Pressed = false;
 
@@ -910,7 +914,7 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 			output._Position = Vector2<float32>(world_position._X, world_position._Y);
 
 			//Determine if the cursor is pressed.
-			switch (InputSystem::Instance->GetLastUpdatedInputDeviceType())
+			switch (output._InputDeviceType)
 			{
 				case InputDeviceType::KEYBOARD:
 				case InputDeviceType::MOUSE:
@@ -932,7 +936,7 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 
 	else
 	{
-		switch (InputSystem::Instance->GetLastUpdatedInputDeviceType())
+		switch (output._InputDeviceType)
 		{
 			case InputDeviceType::KEYBOARD:
 			case InputDeviceType::MOUSE:

@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Input.
+#include <Input/InputCore.h>
+
 //User interface.
 #include <UserInterface/UserInterfaceButton.h>
 #include <UserInterface/UserInterfaceCheckbox.h>
@@ -772,6 +775,9 @@ private:
 	{
 
 	public:
+
+		//The input device type.
+		InputDeviceType _InputDeviceType;
 
 		//The position.
 		Vector2<float32> _Position;
