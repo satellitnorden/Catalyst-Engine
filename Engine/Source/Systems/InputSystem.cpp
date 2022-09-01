@@ -15,6 +15,15 @@ void InputSystem::Initialize(const CatalystProjectInputConfiguration &configurat
 	//Set the number of supported gamepads.
 	_NumberOfSupportedGamepads = configuration._NumberOfSupportedGamepads;
 
+	//Guess the last updated input device type based on the platform.
+#if defined(CATALYST_PLATFORM_ANDROID)
+	_LastUpdatedInputDeviceType = InputDeviceType::TOUCH;
+#elif defined(CATALYST_PLATFORM_WINDOWS)
+	_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
+#else
+	_LastUpdatedInputDeviceType = InputDeviceType::UNKNOWN;
+#endif
+
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{
