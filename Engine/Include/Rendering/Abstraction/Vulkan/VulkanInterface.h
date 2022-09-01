@@ -86,7 +86,7 @@ public:
 	/*
 	*	Returns the surface.
 	*/
-	const VulkanSurface& GetSurface() const NOEXCEPT { return _VulkanSurface; }
+	VulkanSurface& GetSurface() NOEXCEPT { return _VulkanSurface; }
 
 	/*
 	*	Returns the physical device.
@@ -101,7 +101,7 @@ public:
 	/*
 	*	Returns the swapchain.
 	*/
-	const VulkanSwapchain& GetSwapchain() const NOEXCEPT { return _VulkanSwapchain; }
+	VulkanSwapchain& GetSwapchain() NOEXCEPT { return _VulkanSwapchain; }
 
 	/*
 	*	Returns the compute queue.

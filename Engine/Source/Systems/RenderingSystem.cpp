@@ -188,6 +188,12 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 */
 void RenderingSystem::RenderUpdate() NOEXCEPT
 {
+	//Can the sub rendering system render?
+	if (!_SubRenderingSystem->CanRender())
+	{
+		return;
+	}
+
 	//Tell the sub rendering to begin the frame.
 	{
 		PROFILING_SCOPE("_SubRenderingSystem->BeginFrame()");
@@ -299,6 +305,41 @@ void RenderingSystem::Terminate() NOEXCEPT
 
 	//Destroy the sub rendering system.
 	delete _SubRenderingSystem;
+}
+
+/*
+*	Notifies the rendering system that a rendering platform event has occured.
+*/
+void RenderingSystem::OnRenderingPlatformEvent(const RenderingPlatformEvent rendering_platform_event) NOEXCEPT
+{
+	//Was the surface lost?
+	if (TEST_BIT(UNDERLYING(rendering_platform_event), UNDERLYING(RenderingPlatformEvent::SURFACE_LOST)))
+	{
+		//Set the rendering path to NONE.
+		_RestoreRenderingPath = _CurrentRenderingPath;
+		SetCurrentRenderingPath(RenderingPath::NONE);
+
+		//Tell the sub rendering system.
+		_SubRenderingSystem->OnRenderingPlatformEvent(rendering_platform_event);
+	}
+
+	//Was the surface gained?
+	else if (TEST_BIT(UNDERLYING(rendering_platform_event), UNDERLYING(RenderingPlatformEvent::SURFACE_GAINED)))
+	{
+		//The application will receive one of these messages in the beginning... Just ignore it. (:
+		static bool first_time{ true };
+
+		if (!first_time)
+		{
+			//Tell the sub rendering system.
+			_SubRenderingSystem->OnRenderingPlatformEvent(rendering_platform_event);
+
+			//Restore the rendering path.
+			SetCurrentRenderingPath(_RestoreRenderingPath);
+		}
+
+		first_time = false;
+	}
 }
 
 /*

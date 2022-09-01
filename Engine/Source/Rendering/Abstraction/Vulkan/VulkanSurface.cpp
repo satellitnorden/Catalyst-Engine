@@ -10,6 +10,11 @@
 */
 void VulkanSurface::Initialize() NOEXCEPT
 {
+	if (_VulkanSurface != VK_NULL_HANDLE)
+	{
+		return;
+	}
+
 #if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo;
 
@@ -39,7 +44,15 @@ void VulkanSurface::Initialize() NOEXCEPT
 */
 void VulkanSurface::Release() NOEXCEPT
 {
+	if (_VulkanSurface == VK_NULL_HANDLE)
+	{
+		return;
+	}
+
 	//Destroy the Vulkan surface.
 	vkDestroySurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), _VulkanSurface, nullptr);
+
+	//Reset the Vulkan surface.
+	_VulkanSurface = VK_NULL_HANDLE;
 }
 #endif

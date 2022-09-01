@@ -60,6 +60,15 @@ using TextureCubeHandle = void *RESTRICT;
 constexpr OpaqueHandle EMPTY_HANDLE{ nullptr };
 
 /*
+*	Enumeration covering all rendering platform events.
+*/
+enum class RenderingPlatformEvent : uint8
+{
+	SURFACE_GAINED = BIT(0),
+	SURFACE_LOST = BIT(1)
+};
+
+/*
 *	Enumeration covering all sub rendering systems.
 */
 enum class SubRenderingSystem : uint8
@@ -71,6 +80,8 @@ enum class SubRenderingSystem : uint8
 //Enumeration covering all rendering paths.
 enum class RenderingPath : uint8
 {
+	NONE,
+
 	DEFAULT,
 	PATH_TRACING,
 	MOBILE,

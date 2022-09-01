@@ -10,6 +10,7 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/RenderingSystem.h>
 
 //Android.
 #include <android/input.h>
@@ -96,12 +97,14 @@ void HandleCommand(android_app *RESTRICT app, int32 command) NOEXCEPT
 			CatalystPlatformAndroidData::_ScreenWidth = ANativeWindow_getWidth(CatalystPlatform::_Window);
 			CatalystPlatformAndroidData::_ScreenHeight = ANativeWindow_getHeight(CatalystPlatform::_Window);
 
+			RenderingSystem::Instance->OnRenderingPlatformEvent(RenderingPlatformEvent::SURFACE_GAINED);
+
 			break;
 		}
 
 		case APP_CMD_TERM_WINDOW:
 		{
-			//CatalystEngineSystem::Instance->SetShouldTerminate();
+			RenderingSystem::Instance->OnRenderingPlatformEvent(RenderingPlatformEvent::SURFACE_LOST);
 
 			break;
 		}

@@ -30,7 +30,7 @@ public:
 private:
 
 	//The underlying Vulkan surface.
-	VkSurfaceKHR _VulkanSurface;
+	VkSurfaceKHR _VulkanSurface{ VK_NULL_HANDLE };
 
 };
 #endif

@@ -813,6 +813,41 @@ void VulkanSubRenderingSystem::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns whether or not this sub rendering system can render.
+*/
+NO_DISCARD bool VulkanSubRenderingSystem::CanRender() const NOEXCEPT
+{
+	return	VulkanInterface::Instance->GetSurface().Get() != VK_NULL_HANDLE
+			&& VulkanInterface::Instance->GetSwapchain().Get() != VK_NULL_HANDLE;
+}
+
+/*
+*	Notifies this sub rendering system that a rendering platform event has occured.
+*/
+void VulkanSubRenderingSystem::OnRenderingPlatformEvent(const RenderingPlatformEvent rendering_platform_event) NOEXCEPT
+{
+	//Was the surface lost?
+	if (TEST_BIT(UNDERLYING(rendering_platform_event), UNDERLYING(RenderingPlatformEvent::SURFACE_LOST)))
+	{
+		//Release the swapchain.
+		VulkanInterface::Instance->GetSwapchain().Release();
+
+		//Release the surface.
+		VulkanInterface::Instance->GetSurface().Release();
+	}
+
+	//Was the surface gained?
+	else if (TEST_BIT(UNDERLYING(rendering_platform_event), UNDERLYING(RenderingPlatformEvent::SURFACE_GAINED)))
+	{
+		//Initialize the surface.
+		VulkanInterface::Instance->GetSurface().Initialize();
+
+		//Initialize the swapchain.
+		VulkanInterface::Instance->GetSwapchain().Initialize();
+	}
+}
+
+/*
 *	Returns whether or not multiview is supported.
 */
 NO_DISCARD bool VulkanSubRenderingSystem::IsMultiviewSupported() const NOEXCEPT

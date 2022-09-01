@@ -127,7 +127,7 @@ public:
 private:
 
 	//The underlying Vulkan swapchain.
-	VkSwapchainKHR _VulkanSwapchain;
+	VkSwapchainKHR _VulkanSwapchain{ VK_NULL_HANDLE };
 
 	//The number of swapchain images.
 	uint32 _NumberOfSwapchainImages;

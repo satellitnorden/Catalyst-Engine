@@ -57,6 +57,13 @@ public:
 
 		switch (rendering_path)
 		{
+			case RenderingPath::NONE:
+			{
+				//Do nothing. (:
+
+				break;
+			}
+
 			case RenderingPath::DEFAULT:
 			{
 				render_passes->Reserve(UNDERLYING(DefaultNativeRenderPassStage::NUMBER_OF_STAGES));

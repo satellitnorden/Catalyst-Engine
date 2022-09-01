@@ -34,6 +34,16 @@ public:
 	void Terminate() NOEXCEPT override;
 
 	/*
+	*	Returns whether or not this sub rendering system can render.
+	*/
+	NO_DISCARD bool CanRender() const NOEXCEPT override;
+
+	/*
+	*	Notifies this sub rendering system that a rendering platform event has occured.
+	*/
+	void OnRenderingPlatformEvent(const RenderingPlatformEvent rendering_platform_event) NOEXCEPT override;
+
+	/*
 	*	Returns whether or not multiview is supported.
 	*/
 	NO_DISCARD bool IsMultiviewSupported() const NOEXCEPT override;

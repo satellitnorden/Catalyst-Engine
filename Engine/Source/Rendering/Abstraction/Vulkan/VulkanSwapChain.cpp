@@ -22,6 +22,11 @@
 */
 void VulkanSwapchain::Initialize() NOEXCEPT
 {
+	if (_VulkanSwapchain != VK_NULL_HANDLE)
+	{
+		return;
+	}
+
 #if VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 	VulkanPlatform::InitializeSwapchain(this);
 #else
@@ -62,6 +67,11 @@ void VulkanSwapchain::Initialize() NOEXCEPT
 */
 void VulkanSwapchain::Release() NOEXCEPT
 {
+	if (_VulkanSwapchain == VK_NULL_HANDLE)
+	{
+		return;
+	}
+
 #if VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 	VulkanPlatform::ReleaseSwapchain(this);
 #else
@@ -73,6 +83,9 @@ void VulkanSwapchain::Release() NOEXCEPT
 
 	//Destroy the Vulkan swap chain.
 	vkDestroySwapchainKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapchain, nullptr);
+
+	//Reset the Vulkan swap chain.
+	_VulkanSwapchain = VK_NULL_HANDLE;
 #endif
 }
 

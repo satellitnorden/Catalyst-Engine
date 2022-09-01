@@ -113,7 +113,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 			else
 			{
-				ASSERT(false, AAudio_convertResultToText(error));
+				PRINT_TO_OUTPUT(AAudio_convertResultToText(error));
 			}
 		},
 		nullptr

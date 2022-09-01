@@ -82,6 +82,11 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Notifies the rendering system that a rendering platform event has occured.
+	*/
+	void OnRenderingPlatformEvent(const RenderingPlatformEvent rendering_platform_event) NOEXCEPT;
+
+	/*
 	*	Returns the current rendering path.
 	*/
 	FORCE_INLINE NO_DISCARD RenderingPath GetCurrentRenderingPath() const NOEXCEPT
@@ -535,6 +540,13 @@ private:
 
 	//The current rendering path.
 	RenderingPath _CurrentRenderingPath;
+
+	/*
+	*	The restore rendering path,
+	*	in case something happens that hinders the rendering system's ability to render
+	*	this is what the rendering path will be restored to in that event.
+	*/
+	RenderingPath _RestoreRenderingPath;
 
 	//The full resolution.
 	Resolution _FullResolution;

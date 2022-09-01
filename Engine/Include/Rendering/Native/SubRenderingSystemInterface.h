@@ -50,6 +50,22 @@ public:
 	virtual void Terminate() NOEXCEPT = 0;
 
 	/*
+	*	Returns whether or not this sub rendering system can render.
+	*/
+	FORCE_INLINE virtual NO_DISCARD bool CanRender() const NOEXCEPT
+	{
+		return true;
+	}
+
+	/*
+	*	Notifies this sub rendering system that a rendering platform event has occured.
+	*/
+	FORCE_INLINE virtual void OnRenderingPlatformEvent(const RenderingPlatformEvent rendering_platform_event) NOEXCEPT
+	{
+
+	}
+
+	/*
 	*	Returns whether or not multiview is supported.
 	*/
 	virtual NO_DISCARD bool IsMultiviewSupported() const NOEXCEPT = 0;
