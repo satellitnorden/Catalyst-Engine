@@ -372,6 +372,14 @@ void RenderingSystem::SetCurrentRenderingPath(const RenderingPath value) NOEXCEP
 }
 
 /*
+*	Returns whether or not geometry shaders is supported.
+*/
+NO_DISCARD bool RenderingSystem::IsGeometryShadersSupported() const NOEXCEPT
+{
+	return _SubRenderingSystem->IsGeometryShadersSupported();
+}
+
+/*
 *	Returns whether or not multiview is supported.
 */
 NO_DISCARD bool RenderingSystem::IsMultiviewSupported() const NOEXCEPT

@@ -66,6 +66,11 @@ public:
 	}
 
 	/*
+	*	Returns whether or not geometry shaders is supported.
+	*/
+	virtual NO_DISCARD bool IsGeometryShadersSupported() const NOEXCEPT = 0;
+
+	/*
 	*	Returns whether or not multiview is supported.
 	*/
 	virtual NO_DISCARD bool IsMultiviewSupported() const NOEXCEPT = 0;

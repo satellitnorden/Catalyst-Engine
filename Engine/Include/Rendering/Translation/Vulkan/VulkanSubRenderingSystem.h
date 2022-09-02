@@ -44,6 +44,11 @@ public:
 	void OnRenderingPlatformEvent(const RenderingPlatformEvent rendering_platform_event) NOEXCEPT override;
 
 	/*
+	*	Returns whether or not geometry shaders is supported.
+	*/
+	NO_DISCARD bool IsGeometryShadersSupported() const NOEXCEPT override;
+
+	/*
 	*	Returns whether or not multiview is supported.
 	*/
 	NO_DISCARD bool IsMultiviewSupported() const NOEXCEPT override;

@@ -848,6 +848,15 @@ void VulkanSubRenderingSystem::OnRenderingPlatformEvent(const RenderingPlatformE
 }
 
 /*
+*	Returns whether or not geometry shaders is supported.
+*/
+NO_DISCARD bool VulkanSubRenderingSystem::IsGeometryShadersSupported() const NOEXCEPT
+{
+	//Just check if the physical device has multview support.
+	return VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().geometryShader == VK_TRUE;
+}
+
+/*
 *	Returns whether or not multiview is supported.
 */
 NO_DISCARD bool VulkanSubRenderingSystem::IsMultiviewSupported() const NOEXCEPT

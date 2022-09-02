@@ -164,10 +164,8 @@ bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulk
 */
 bool VulkanPhysicalDevice::HasRequiredFeatures(const VkPhysicalDevice vulkanPhysicalDevice) const NOEXCEPT
 {
-	VkPhysicalDeviceFeatures features;
-	vkGetPhysicalDeviceFeatures(vulkanPhysicalDevice, &features);
-
-	return	features.geometryShader == VK_TRUE;
+	//Yes. (:
+	return true;
 }
 
 /*

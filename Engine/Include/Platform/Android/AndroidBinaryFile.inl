@@ -23,14 +23,42 @@ public:
 	*/
 	BinaryFile(const char *const RESTRICT file_path) NOEXCEPT
 	{
+		//Define constants.
+		constexpr uint64 CHUNK_SIZE{ 1'000'000 };
+
 		//Cache the asset manager.
 		AAssetManager *const RESTRICT asset_manager{ CatalystPlatform::_App->activity->assetManager };
 
 		//Open the asset.
-		_Asset = AAssetManager_open(asset_manager, file_path, AASSET_MODE_BUFFER);
+		AAsset *RESTRICT asset{ AAssetManager_open(asset_manager, file_path, AASSET_MODE_BUFFER) };
 
-		//Remember the size.
-		_Size = AAsset_getLength(_Asset);
+		if (asset)
+		{
+			//Remember the size.
+			_Size = AAsset_getLength(asset);
+
+			//Allocate the buffer.
+			_Buffer = Memory::Allocate(_Size);
+
+			//Read into the buffer.
+			{
+				uint64 bytes_left_to_read{ _Size };
+				uint64 bytes_read{ 0 };
+
+				while (bytes_left_to_read > 0)
+				{
+                    uint64 bytes_to_read{ CatalystBaseMath::Minimum<uint64>(CHUNK_SIZE, bytes_left_to_read) };
+
+					AAsset_read(asset, static_cast<void *const RESTRICT>(static_cast<byte *const RESTRICT>(_Buffer) + bytes_read), bytes_to_read);
+
+					bytes_left_to_read -= bytes_to_read;
+					bytes_read += bytes_to_read;
+				}
+			}
+
+			//Close the asset.
+			AAsset_close(asset);
+		}
 	}
 
 	/*
@@ -38,7 +66,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD operator bool() NOEXCEPT
 	{
-		return _Asset != nullptr;
+		return _Buffer != nullptr;
 	}
 
 	/*
@@ -54,7 +82,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD uint64 GetCurrentPosition() NOEXCEPT
 	{
-		return _Size - AAsset_getRemainingLength64(_Asset);
+		return _CurrentPosition;
 	}
 
 	/*
@@ -62,7 +90,7 @@ public:
 	*/
 	FORCE_INLINE void SetCurrentPosition(const uint64 position) NOEXCEPT
 	{
-		AAsset_seek64(_Asset, position, SEEK_SET);
+		_CurrentPosition = position;
 	}
 
 	/*
@@ -71,7 +99,8 @@ public:
 	template <bool FLIP_ENDIAN = false>
 	FORCE_INLINE void Read(void *const RESTRICT output, const uint64 size) NOEXCEPT
 	{
-		AAsset_read(_Asset, output, size);
+		Memory::Copy(output, static_cast<const void *const RESTRICT>(static_cast<const byte *const RESTRICT>(_Buffer) + _CurrentPosition), size);
+		_CurrentPosition += size;
 	}
 
 	/*
@@ -105,16 +134,20 @@ public:
 	*/
 	FORCE_INLINE void Close() NOEXCEPT
 	{
-		if (_Asset)
+		if (_Buffer)
 		{
-			AAsset_close(_Asset);
+			Memory::Free(_Buffer);
+			_Buffer = nullptr;
 		}
 	}
 
 private:
 
-	//The underlying asset
-	AAsset *RESTRICT _Asset;
+	//The buffer.
+	void *RESTRICT _Buffer{ nullptr };
+
+	//The current position.
+	uint64 _CurrentPosition{ 0 };
 
 	//The size of the file stream.
 	uint64 _Size;

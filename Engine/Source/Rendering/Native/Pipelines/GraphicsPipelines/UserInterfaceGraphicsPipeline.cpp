@@ -216,7 +216,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 					//Cache the chartacter.
 					const char character{ type_primitive->_Text[i] };
 
-					//Only draw if it´s a valid character.
+					//Only draw if it's a valid character.
 					if (character != '\n')
 					{
 						//Push constants.
