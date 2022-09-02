@@ -155,6 +155,22 @@ public:
 	*/
 	NO_DISCARD bool RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message) NOEXCEPT;
 
+	/*
+	*	Returns whether or not the sound system should continue while the engine is paused.
+	*/
+	FORCE_INLINE NO_DISCARD bool GetContinueWhileEnginePaused() const NOEXCEPT
+	{
+		return _ContinueWhileEnginePaused;
+	}
+
+	/*
+	*	Returns whether or not the sound system should continue while the engine is paused.
+	*/
+	FORCE_INLINE void SetContinueWhileEnginePaused(const bool value) NOEXCEPT
+	{
+		_ContinueWhileEnginePaused = value;
+	}
+
 private:
 
 	//The sound instance counter.
@@ -213,6 +229,9 @@ private:
 
 	//The recording sound resource.
 	SoundResource *RESTRICT _RecordingSoundResource;
+
+	//Denotes whether or not the sound system should continue while the engine is paused.
+	bool _ContinueWhileEnginePaused{ false };
 
 	/*
 	*	Initializes the platform.

@@ -405,7 +405,7 @@ void SoundSystem::Mix() NOEXCEPT
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
 		//Need the platform to have been initialized before the mixing buffers has been initialized. And no mixing is done when paused.
-		if (!_ShouldMix.IsSet() || !PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused() || CatalystEngineSystem::Instance->IsEnginePaused())
+		if (!_ShouldMix.IsSet() || !PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused() || (_ContinueWhileEnginePaused ? false : CatalystEngineSystem::Instance->IsEnginePaused()))
 		{
 			//The sound system is not mixing.
 			_IsMixing.Clear();
@@ -675,7 +675,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 								void *const RESTRICT buffer_data) NOEXCEPT
 {
 	//If the sound system is currently muted or paused, just fill the buffer with zeroes.
-	if (!PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyMuted() || IsCurrentlyPaused() || CatalystEngineSystem::Instance->IsEnginePaused())
+	if (!PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyMuted() || IsCurrentlyPaused() || (_ContinueWhileEnginePaused ? false : CatalystEngineSystem::Instance->IsEnginePaused()))
 	{
 		Memory::Set(buffer_data, 0, (GetNumberOfBitsPerSample(sound_format) / 8) * number_of_channels * number_of_samples);
 	}
