@@ -37,6 +37,14 @@ void OpenGLSubRenderingSystem::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns whether or not geometry shaders is supported.
+*/
+NO_DISCARD bool OpenGLSubRenderingSystem::IsGeometryShadersSupported() const NOEXCEPT
+{
+	return false;
+}
+
+/*
 *	Returns whether or not multiview is supported.
 */
 NO_DISCARD bool OpenGLSubRenderingSystem::IsMultiviewSupported() const NOEXCEPT
