@@ -8,6 +8,9 @@
 //Input.
 #include <Input/TouchState.h>
 
+//Platform.
+#include <Platform/Android/AndroidUtilities.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -30,51 +33,6 @@ namespace CatalystPlatformAndroidData
 
 	//The screen height.
 	uint32 _ScreenHeight;
-}
-
-//Catalyst platform Android logic.
-namespace CatalystPlatformAndroidLogic
-{
-
-    /*
-    *   Calls a void JNI method.
-    */
-    FORCE_INLINE void CallVoidJNIMethod(const char *const RESTRICT method_name) NOEXCEPT
-    {
-        //Retrieve the native activity.
-        ANativeActivity *native_activity{ CatalystPlatform::_App->activity };
-
-        //Retrieve the Java VM.
-        JavaVM *JVM{ native_activity->vm };
-
-        //Retrieve the environment.
-        JNIEnv *environment{ nullptr };
-
-        JVM->GetEnv((void**)&environment, JNI_VERSION_1_6);
-
-        //Attach the current thread.
-        const jint result{ JVM->AttachCurrentThread(&environment, nullptr) };
-
-        if (result == JNI_ERR)
-        {
-            PRINT_TO_OUTPUT("Failed to do JNI stuff!");
-
-            return;
-        }
-
-        //Retrieve the Java class.
-        jclass java_class{ environment->GetObjectClass(native_activity->clazz) };
-
-        //Retrieve the Java method ID.
-        jmethodID java_method_id{ environment->GetMethodID(java_class, method_name, "()V") };
-
-        //Call the method!
-        environment->CallVoidMethod(native_activity->clazz, java_method_id);
-
-        //Detach the current thread.
-        JVM->DetachCurrentThread();
-    }
-
 }
 
 /*
@@ -384,7 +342,7 @@ bool CatalystPlatform::RetrieveUserName(DynamicString *const RESTRICT output) NO
 void CatalystPlatform::ShowBannerAd() NOEXCEPT
 {
 	//Call the method.
-	CatalystPlatformAndroidLogic::CallVoidJNIMethod("ShowBannerAd");
+	AndroidUtilities::CallVoidJNIMethod("ShowBannerAd");
 }
 
 /*
@@ -393,7 +351,7 @@ void CatalystPlatform::ShowBannerAd() NOEXCEPT
 void CatalystPlatform::ShowInterstitialAd() NOEXCEPT
 {
 	//Call the method.
-	CatalystPlatformAndroidLogic::CallVoidJNIMethod("ShowInterstitialAd");
+	AndroidUtilities::CallVoidJNIMethod("ShowInterstitialAd");
 }
 
 #if defined(CATALYST_CONFIGURATION_DEBUG)
