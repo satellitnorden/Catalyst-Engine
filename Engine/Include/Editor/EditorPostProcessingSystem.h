@@ -43,12 +43,6 @@ private:
 	//The saturation.
 	float32 _Saturation{ 1.0f };
 
-	//The depth of field focus distance.
-	float32 _DepthOfFieldFocusDistance{ 1'024.0f };
-
-	//The depth of field size.
-	float32 _DepthOfFieldSize{ 0.0f };
-
 };
 
 #endif

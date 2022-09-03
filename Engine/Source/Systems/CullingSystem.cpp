@@ -62,9 +62,9 @@ void CullingSystem::RenderUpdate() NOEXCEPT
 void CullingSystem::CullDynamicModels() const NOEXCEPT
 {
 	//Cache data that will be used.
-	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetCell() };
+	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
 	const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCurrentCamera()->GetFrustumPlanes() };
+	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
 
 	//Iterate over all patches and determine their visibility.
 	const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
@@ -82,9 +82,9 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 void CullingSystem::CullStaticModels() const NOEXCEPT
 {
 	//Cache data that will be used.
-	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetCell() };
+	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
 	const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCurrentCamera()->GetFrustumPlanes() };
+	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
 
 	//Iterate over all patches and determine their visibility.
 	const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
@@ -102,7 +102,7 @@ void CullingSystem::CullStaticModels() const NOEXCEPT
 void CullingSystem::CullTerrain() const NOEXCEPT
 {
 	//Cache the frustum planes.
-	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCurrentCamera()->GetFrustumPlanes() };
+	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
 
 	//Iterate over all patches and determine their visibility.
 	const DynamicArray<TerrainPatchInformation> *const RESTRICT patch_informations{ TerrainSystem::Instance->GetTerrainPatchInformations() };

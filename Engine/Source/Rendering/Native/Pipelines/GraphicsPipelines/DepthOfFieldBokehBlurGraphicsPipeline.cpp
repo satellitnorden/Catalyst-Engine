@@ -3,6 +3,7 @@
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -105,8 +106,8 @@ void DepthOfFieldBokehBlurGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	DepthOfFieldBokehBlurFragmentPushConstantData data;
 
-	data._DepthOfFieldFocusDistance = RenderingSystem::Instance->GetPostProcessingSystem()->GetDepthOfFieldFocusDistance();
-	data._DepthOfFieldSize = RenderingSystem::Instance->GetPostProcessingSystem()->GetDepthOfFieldSize();
+	data._DepthOfFieldFocusDistance = RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFocalDistance();
+	data._DepthOfFieldSize = RenderingUtilities::CalculateDepthOfFieldSize(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetAperture());
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(DepthOfFieldBokehBlurFragmentPushConstantData), &data);
 

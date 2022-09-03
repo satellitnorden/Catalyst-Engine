@@ -23,7 +23,7 @@ ShaderLightComponent::ShaderLightComponent(const LightComponent& light_component
 
 		case LightType::POINT:
 		{
-			_WorldPosition = light_component._WorldPosition.GetRelativePosition(RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetCell());
+			_WorldPosition = light_component._WorldPosition.GetRelativePosition(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell());
 
 			break;
 		}

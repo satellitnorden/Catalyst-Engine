@@ -30,7 +30,7 @@ public:
 	/*
 	*	Returns the world transform.
 	*/
-	FORCE_INLINE NO_DISCARD const WorldTransform &GetWorldTransform() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const WorldTransform& GetWorldTransform() const NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -40,7 +40,7 @@ public:
 	/*
 	*	Sets the world transform.
 	*/
-	FORCE_INLINE void SetWorldTransform(const WorldTransform &value) NOEXCEPT
+	FORCE_INLINE void SetWorldTransform(const WorldTransform& value) NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -151,7 +151,7 @@ public:
 	/*
 	*	Sets the jitter of the projection matrix.
 	*/
-	FORCE_INLINE void SetProjectionMatrixJitter(const Vector2<float32> &new_projection_matrix_jitter) NOEXCEPT
+	FORCE_INLINE void SetProjectionMatrixJitter(const Vector2<float32>& new_projection_matrix_jitter) NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -163,7 +163,7 @@ public:
 	/*
 	*	Returns the projection matrix.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4* const RESTRICT GetProjectionMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -175,7 +175,7 @@ public:
 	/*
 	*	Returns the inverse projection matrix.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetInverseProjectionMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4* const RESTRICT GetInverseProjectionMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -187,7 +187,7 @@ public:
 	/*
 	*	Returns the camera matrix.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetCameraMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4* const RESTRICT GetCameraMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -199,7 +199,7 @@ public:
 	/*
 	*	Returns the inverse camera matrix.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetInverseCameraMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4* const RESTRICT GetInverseCameraMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -211,7 +211,7 @@ public:
 	/*
 	*	Returns the view matrix.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetViewMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4* const RESTRICT GetViewMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -223,13 +223,61 @@ public:
 	/*
 	*	Returns the frustum planes.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const StaticArray<Vector4<float32>, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const StaticArray<Vector4<float32>, 6>* const RESTRICT GetFrustumPlanes() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
 		CheckUpdates();
 
 		return &_FrustumPlanes;
+	}
+
+	/*
+	*	Returns the aperture.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetAperture() const NOEXCEPT
+	{
+		return _Aperture;
+	}
+
+	/*
+	*	Sets the aperture.
+	*/
+	FORCE_INLINE void SetAperture(const float32 value) NOEXCEPT
+	{
+		_Aperture = value;
+	}
+
+	/*
+	*	Returns the focal distance.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetFocalDistance() const NOEXCEPT
+	{
+		return _FocalDistance;
+	}
+
+	/*
+	*	Sets the focal distance.
+	*/
+	FORCE_INLINE void SetFocalDistance(const float32 value) NOEXCEPT
+	{
+		_FocalDistance = value;
+	}
+
+	/*
+	*	Returns whether or not to this camera should use automatic focal distance.
+	*/
+	FORCE_INLINE NO_DISCARD bool GetAutomaticFocalDistance() const NOEXCEPT
+	{
+		return _AutomaticFocalDistance;
+	}
+
+	/*
+	*	Sets whether or not to this camera should use automatic focal distance.
+	*/
+	FORCE_INLINE void SetAutomaticFocalDistance(const bool value) NOEXCEPT
+	{
+		_AutomaticFocalDistance = value;
 	}
 
 private:
@@ -278,6 +326,20 @@ private:
 
 	//The frustum planes.
 	StaticArray<Vector4<float32>, 6> _FrustumPlanes;
+
+	/*
+	*	The aperture.
+	*	Controls the size of depth of field,
+	*	with lower values creating larger depth of field and higher values creating less depth of field.
+	*	Expressed in the range [0.0f, 1.0f].
+	*/
+	float32 _Aperture{ 1.0f };
+
+	//The focal distance.
+	float32 _FocalDistance{ 1.0f };
+
+	//Denotes whether or not to this camera should use automatic focal distance.
+	bool _AutomaticFocalDistance{ false };
 
 	/*
 	*	Checks for updates.

@@ -105,9 +105,6 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	_ScaledResolutions[8] = _ScaledResolutions[7] / 2;
 	_ScaledResolutions[8].RoundUpToNearestMultipleOfTwo();
 
-	//Create the default camera.
-	SetCurrentCamera(CreateCamera());
-
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Initialize the debug rendering system.
 	_DebugRenderingSystem.Initialize();
@@ -155,6 +152,9 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 	//Post-initialize the common render data tables.
 	PostInitializeCommonRenderDataTables();
 
+	//Initialize the camera system.
+	_CameraSystem.Initialize();
+
 	//Post-initialize the lighting system.
 	_LightingSystem.PostInitialize();
 
@@ -190,12 +190,6 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 */
 void RenderingSystem::RenderUpdate() NOEXCEPT
 {
-	//Can the sub rendering system render?
-	if (_CurrentCamera && !_SubRenderingSystem->CanRender())
-	{
-		return;
-	}
-
 	//Tell the sub rendering to begin the frame.
 	{
 		PROFILING_SCOPE("_SubRenderingSystem->BeginFrame()");
@@ -208,6 +202,13 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		PROFILING_SCOPE("UpdateGlobalRenderData()");
 
 		UpdateGlobalRenderData();
+	}
+
+	//Update the camera system.
+	{
+		PROFILING_SCOPE("_CameraSystem.RenderUpdate()");
+
+		_CameraSystem.RenderUpdate();
 	}
 
 	//Update the lighting system.
@@ -623,31 +624,6 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 	}
 
 	return _RenderTargets[UNDERLYING(render_target)];
-}
-
-/*
-*	Creates a new camera.
-*/
-RESTRICTED NO_DISCARD Camera *const RESTRICT RenderingSystem::CreateCamera() NOEXCEPT
-{
-	Camera *const RESTRICT new_camera{ new (Memory::Allocate(sizeof(Camera))) Camera() };
-
-	new_camera->SetFarPlane(_Configuration._ViewDistance * 2.0f);
-
-	return new_camera;
-}
-
-/*
-*	Destroys a camera.
-*/
-void RenderingSystem::DestroyCamera(Camera *const RESTRICT camera) NOEXCEPT
-{
-	if (camera == _CurrentCamera)
-	{
-		_CurrentCamera = nullptr;
-	}
-
-	Memory::Free(camera);
 }
 
 /*
@@ -1511,7 +1487,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 
 	//Update the previous camera world transform.
 	_PreviousCameraWorldTransform = _CurrentCameraWorldTransform;
-	_CurrentCameraWorldTransform = _CurrentCamera->GetWorldTransform();
+	_CurrentCameraWorldTransform = _CameraSystem.GetCurrentCamera()->GetWorldTransform();
 
 	//Calculate the previous and current camera matrices, as well as their inverses.
 	const Matrix4x4 previous_camera_matrix{ Matrix4x4::LookAt(_PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()), _PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousCameraWorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousCameraWorldTransform.GetRotation())) };
@@ -1531,14 +1507,14 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		current_frame_jitter = Vector2<float32>(0.0f, 0.0f);
 	}
 
-	_CurrentCamera->SetProjectionMatrixJitter(current_frame_jitter);
+	_CameraSystem.GetCurrentCamera()->SetProjectionMatrixJitter(current_frame_jitter);
 
 	//Update matrices.
-	_DynamicUniformData._PreviousWorldToClipMatrix = *_CurrentCamera->GetProjectionMatrix() * previous_camera_matrix;
-	_DynamicUniformData._InverseWorldToCameraMatrix = *_CurrentCamera->GetInverseCameraMatrix();
-	_DynamicUniformData._InverseCameraToClipMatrix = *_CurrentCamera->GetInverseProjectionMatrix();
-	_DynamicUniformData._WorldToCameraMatrix = *_CurrentCamera->GetCameraMatrix();
-	_DynamicUniformData._WorldToClipMatrix = *_CurrentCamera->GetProjectionMatrix() * current_camera_matrix;
+	_DynamicUniformData._PreviousWorldToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetProjectionMatrix() * previous_camera_matrix;
+	_DynamicUniformData._InverseWorldToCameraMatrix = *_CameraSystem.GetCurrentCamera()->GetInverseCameraMatrix();
+	_DynamicUniformData._InverseCameraToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetInverseProjectionMatrix();
+	_DynamicUniformData._WorldToCameraMatrix = *_CameraSystem.GetCurrentCamera()->GetCameraMatrix();
+	_DynamicUniformData._WorldToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetProjectionMatrix() * current_camera_matrix;
 	
 	//Rotate the relevant matrices to fit the surface transform.
 	{
@@ -1569,8 +1545,8 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		}
 	}
 
-	_DynamicUniformData._CameraForwardVector = _CurrentCamera->GetForwardVector();
-	_DynamicUniformData._CameraWorldPosition = _CurrentCamera->GetWorldTransform().GetLocalPosition();
+	_DynamicUniformData._CameraForwardVector = _CameraSystem.GetCurrentCamera()->GetForwardVector();
+	_DynamicUniformData._CameraWorldPosition = _CameraSystem.GetCurrentCamera()->GetWorldTransform().GetLocalPosition();
 
 	_DynamicUniformData._UpperSkyColor = WorldSystem::Instance->GetSkySystem()->GetSkyGradient()._UpperSkyColor;
 	_DynamicUniformData._LowerSkyColor = WorldSystem::Instance->GetSkySystem()->GetSkyGradient()._LowerSkyColor;
@@ -1603,8 +1579,8 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._ViewDistance = _Configuration._ViewDistance;
 	_DynamicUniformData._MaximumSkyTextureMipmapLevel = WorldSystem::Instance->GetSkySystem()->GetSkyTexture() ? static_cast<float32>(WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_MipmapLevels) : 1.0f;
 	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
-	_DynamicUniformData._NearPlane = _CurrentCamera->GetNearPlane();
-	_DynamicUniformData._FarPlane = _CurrentCamera->GetFarPlane();
+	_DynamicUniformData._NearPlane = _CameraSystem.GetCurrentCamera()->GetNearPlane();
+	_DynamicUniformData._FarPlane = _CameraSystem.GetCurrentCamera()->GetFarPlane();
 	_DynamicUniformData._CameraAbsoluteHeight = _CurrentCameraWorldTransform.GetAbsolutePosition()._Y;
 
 	_DynamicUniformData._SkyMode = static_cast<uint32>(WorldSystem::Instance->GetSkySystem()->GetSkyMode());

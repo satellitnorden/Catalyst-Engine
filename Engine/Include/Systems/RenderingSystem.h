@@ -12,7 +12,7 @@
 #include <Math/General/Matrix.h>
 
 //Rendering.
-#include <Rendering/Native/Camera.h>
+#include <Rendering/Native/CameraSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Rendering/Native/DebugRenderingSystem.h>
 #endif
@@ -197,32 +197,14 @@ public:
 	{
 		return _Samplers[UNDERLYING(sampler)];
 	}
-	
-	/*
-	*	Creates a new camera.
-	*/
-	RESTRICTED NO_DISCARD Camera *const RESTRICT CreateCamera() NOEXCEPT;
 
 	/*
-	*	Returns the current camera.
+	*	Returns the camera system.
 	*/
-	FORCE_INLINE NO_DISCARD Camera *const RESTRICT GetCurrentCamera() NOEXCEPT
+	RESTRICTED NO_DISCARD CameraSystem *const RESTRICT GetCameraSystem() NOEXCEPT
 	{
-		return _CurrentCamera;
+		return &_CameraSystem;
 	}
-
-	/*
-	*	Sets the current camera.
-	*/
-	FORCE_INLINE void SetCurrentCamera(Camera *const RESTRICT value) NOEXCEPT
-	{
-		_CurrentCamera = value;
-	}
-
-	/*
-	*	Destroys a camera.
-	*/
-	void DestroyCamera(Camera *const RESTRICT camera) NOEXCEPT;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
@@ -613,8 +595,8 @@ private:
 	//The current jitter index.
 	uint8 _CurrentJitterIndex{ 0 };
 
-	//The current camera.
-	Camera *RESTRICT _CurrentCamera{ nullptr };
+	//The camera system.
+	CameraSystem _CameraSystem;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//The debug rendering system.

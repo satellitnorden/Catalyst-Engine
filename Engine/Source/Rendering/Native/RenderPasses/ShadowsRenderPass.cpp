@@ -35,7 +35,7 @@ namespace ShadowRenderPassConstants
 FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_index, const Vector3<float32> &light_direction, const float32 cascade_start, const float32 cascade_end) NOEXCEPT
 {
 	//Cache the camera local_position.
-	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
+	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
 
 	//Set up the furstom corners.
 	const Vector3<float32> lower_left_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(0.0f, 0.0f)) };
@@ -271,7 +271,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 			{
 				for (uint8 i{ 0 }; i < 4; ++i)
 				{
-					current_shadow_uniform_data._WorldToLightMatrices[i] = CalculateCascadeMatrix(i, CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? RenderingSystem::Instance->GetCurrentCamera()->GetNearPlane() : shadow_map_distances[i - 1], shadow_map_distances[i]);
+					current_shadow_uniform_data._WorldToLightMatrices[i] = CalculateCascadeMatrix(i, CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetNearPlane() : shadow_map_distances[i - 1], shadow_map_distances[i]);
 				}
 
 				break;

@@ -360,7 +360,7 @@ public:
 				//Calculate the ray.
 				Ray ray;
 
-				ray.SetOrigin(RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
+				ray.SetOrigin(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
 				ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(normalized_coordinate));
 
 				//Retrieve the radiance.

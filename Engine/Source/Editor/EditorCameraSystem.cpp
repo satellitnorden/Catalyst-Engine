@@ -86,7 +86,7 @@ void EditorCameraSystem::Update() NOEXCEPT
 	//Set the world transform for the camera.
 	{
 		WorldTransform world_transform{ _Position, _Rotation, 1.0f };
-		RenderingSystem::Instance->GetCurrentCamera()->SetWorldTransform(world_transform);
+		RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->SetWorldTransform(world_transform);
 	}
 }
 #endif

@@ -877,8 +877,8 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 		//Construct the ray.
 		Ray ray;
 
-		ray.SetOrigin(RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetLocalPosition());
-		ray.SetDirection(RenderingSystem::Instance->GetCurrentCamera()->GetForwardVector());
+		ray.SetOrigin(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition());
+		ray.SetDirection(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetForwardVector());
 
 		//Construct the plane.
 		Plane plane;

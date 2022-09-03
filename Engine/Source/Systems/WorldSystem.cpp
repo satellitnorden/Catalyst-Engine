@@ -77,7 +77,7 @@ void WorldSystem::Terminate() NOEXCEPT
 NO_DISCARD const Vector3<int32> &WorldSystem::GetCurrentWorldGridCell() const NOEXCEPT
 {
 	//This should probably be cached somehow, but let's just ask the current camera for now. (:
-	return RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetCell();
+	return RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell();
 }
 
 /*
@@ -148,7 +148,7 @@ void WorldSystem::UpdateParticleSystems() NOEXCEPT
 void WorldSystem::UpdateDistanceTriggers() NOEXCEPT
 {
 	//Cache the camera position.
-	const Vector3<float> camera_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
+	const Vector3<float> camera_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
 
 	//Update all distance triggers.
 	const uint64 number_of_distance_trigger_components{ ComponentManager::GetNumberOfDistanceTriggerComponents() };

@@ -247,7 +247,7 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float>& position, V
 void TerrainSystem::UpdateGenerateUpdatesStage() NOEXCEPT
 {
 	//Cache the current camera position.
-	const Vector3<float32> current_camera_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
+	const Vector3<float32> current_camera_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
 
 	//Calculate the camera grid point.
 	const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(current_camera_position, _Properties._PatchSize) };

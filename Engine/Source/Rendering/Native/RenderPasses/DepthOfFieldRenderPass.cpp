@@ -63,7 +63,7 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 void DepthOfFieldRenderPass::Execute() NOEXCEPT
 {
 	//No need to execute if depth of field size is zero.
-	if (RenderingSystem::Instance->GetPostProcessingSystem()->GetDepthOfFieldSize() == 0.0f)
+	if (RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetAperture() >= 1.0f)
 	{
 		SetEnabled(false);
 

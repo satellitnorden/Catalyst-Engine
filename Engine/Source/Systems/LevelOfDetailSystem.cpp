@@ -51,10 +51,10 @@ void LevelOfDetailSystem::RenderUpdate() NOEXCEPT
 void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 {
 	//Cache the camera world transform.
-	const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform() };
+	const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform() };
 
 	//Cache the camera world to clip matrix.
-	const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCurrentCamera()->GetViewMatrix() };
+	const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetViewMatrix() };
 
 	//Iterate over all static model components and calculate their level of detail.
 	const uint64 number_of_static_model_components{ ComponentManager::GetNumberOfStaticModelComponents() };
@@ -124,10 +124,10 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 {
 	//Cache the camera world transform.
-	const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform() };
+	const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform() };
 
 	//Cache the camera world to clip matrix.
-	const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCurrentCamera()->GetViewMatrix() };
+	const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetViewMatrix() };
 
 	//Iterate over all dynamic model components and calculate their level of detail.
 	const uint64 number_of_dynamic_model_components{ ComponentManager::GetNumberOfDynamicModelComponents() };

@@ -92,22 +92,6 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 			}
 		}
 
-		//Add the depth of field focus distance slider.
-		{
-			if (ImGui::DragFloat("Depth Of Field Focus Distance", &_DepthOfFieldFocusDistance, 0.01f))
-			{
-				_DepthOfFieldFocusDistance = CatalystBaseMath::Maximum<float32>(_DepthOfFieldFocusDistance, 0.0f);
-			}
-		}
-
-		//Add the depth of field size slider.
-		{
-			if (ImGui::DragFloat("Depth Of Field Size", &_DepthOfFieldSize, 0.01f))
-			{
-				_DepthOfFieldSize = CatalystBaseMath::Maximum<float32>(_DepthOfFieldSize, 0.0f);
-			}
-		}
-
 		//Set the values.
 		RenderingSystem::Instance->GetPostProcessingSystem()->SetTintColor(_TintColor);
 		RenderingSystem::Instance->GetPostProcessingSystem()->SetTintIntensity(_TintIntensity);
@@ -116,8 +100,6 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 		RenderingSystem::Instance->GetPostProcessingSystem()->SetChromaticAberrationIntensity(_ChromaticAberrationIntensity);
 		RenderingSystem::Instance->GetPostProcessingSystem()->SetExposure(_Exposure);
 		RenderingSystem::Instance->GetPostProcessingSystem()->SetSaturation(_Saturation);
-		RenderingSystem::Instance->GetPostProcessingSystem()->SetDepthOfFieldFocusDistance(_DepthOfFieldFocusDistance);
-		RenderingSystem::Instance->GetPostProcessingSystem()->SetDepthOfFieldSize(_DepthOfFieldSize);
 	}
 
 	else
@@ -130,8 +112,6 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 		RenderingSystem::Instance->GetPostProcessingSystem()->SetChromaticAberrationIntensity(0.0025f);
 		RenderingSystem::Instance->GetPostProcessingSystem()->SetExposure(1.0f);
 		RenderingSystem::Instance->GetPostProcessingSystem()->SetSaturation(1.0f);
-		RenderingSystem::Instance->GetPostProcessingSystem()->SetDepthOfFieldFocusDistance(1'024.0f);
-		RenderingSystem::Instance->GetPostProcessingSystem()->SetDepthOfFieldSize(0.0f);
 	}
 
 	//End the window.

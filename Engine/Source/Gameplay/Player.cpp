@@ -84,7 +84,7 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 
 		const WorldTransform world_transform{ character_controller_position + Vector3<float32>(0.0f, _CurrentHeight, 0.0f), _Rotation, 1.0f };
 
-		RenderingSystem::Instance->GetCurrentCamera()->SetWorldTransform(world_transform);
+		RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->SetWorldTransform(world_transform);
 	}
 }
 

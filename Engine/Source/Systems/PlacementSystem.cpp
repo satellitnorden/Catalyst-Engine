@@ -73,7 +73,7 @@ void PlacementSystem::AsynchronousUpdate(PlacementData *const RESTRICT placement
 	}
 
 	//Calculate the current grid point based on the camera's position.
-	const Vector3<float32> camera_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
+	const Vector3<float32> camera_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
 	const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(camera_position, placement_data->_GridSize) };
 
 	//Calculate the wanted grid points.
@@ -99,7 +99,7 @@ void PlacementSystem::AsynchronousUpdate(PlacementData *const RESTRICT placement
 	{
 		const PlacementData *const RESTRICT data{ static_cast<const PlacementData *const RESTRICT>(user_data) };
 
-		const Vector3<float32> camera_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
+		const Vector3<float32> camera_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
 
 		const Vector3<float32> first_position{ GridPoint2::GridPointToWorldPosition(*first, data->_GridSize) };
 		const Vector3<float32> second_position{ GridPoint2::GridPointToWorldPosition(*second, data->_GridSize) };

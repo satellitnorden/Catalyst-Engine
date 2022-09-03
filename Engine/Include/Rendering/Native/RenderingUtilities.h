@@ -71,13 +71,21 @@ public:
 	}
 
 	/*
+	*	Calculates the depth of field size of the given aperture.
+	*/
+	FORCE_INLINE static NO_DISCARD float32 CalculateDepthOfFieldSize(const float32 aperture) NOEXCEPT
+	{
+		return CatalystBaseMath::LinearlyInterpolate(0.01f, 0.0f, aperture);
+	}
+
+	/*
 	*	Calculates a directional light matrix from the given parameters.
 	*/
 	FORCE_INLINE static Matrix4x4 CalculateDirectionalLightMatrix(	const float32 coverage,
 																	const float32 depth,
 																	const Vector3<float32> &light_direction) NOEXCEPT
 	{
-		const Matrix4x4 light_matrix{ Matrix4x4::LookAt(RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() + -light_direction * depth * 0.5f + RenderingSystem::Instance->GetCurrentCamera()->GetForwardVector() * coverage * 0.5f, RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() + light_direction * depth * 0.5f + RenderingSystem::Instance->GetCurrentCamera()->GetForwardVector() * coverage * 0.5f, CatalystWorldCoordinateSpace::UP) };
+		const Matrix4x4 light_matrix{ Matrix4x4::LookAt(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() + -light_direction * depth * 0.5f + RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetForwardVector() * coverage * 0.5f, RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() + light_direction * depth * 0.5f + RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetForwardVector() * coverage * 0.5f, CatalystWorldCoordinateSpace::UP) };
 		const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(-coverage * 0.5f, coverage * 0.5f, -coverage * 0.5f, coverage * 0.5f, 0.0f, depth) };
 
 		return projection_matrix * light_matrix;
@@ -90,7 +98,7 @@ public:
 	{
 		const Vector3<float> world_position{ CalculateWorldPositionFromScreenCoordinate(screen_coordinate, 1.0f - std::numeric_limits<float>::epsilon()) };
 
-		return Vector3<float>::Normalize(world_position - RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetLocalPosition());
+		return Vector3<float>::Normalize(world_position - RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition());
 	}
 
 	/*
@@ -138,10 +146,10 @@ public:
 	FORCE_INLINE static Vector3<float> CalculateWorldPositionFromScreenCoordinate(const Vector2<float>& screen_coordinate, const float depth) NOEXCEPT
 	{
 		const Vector2<float> near_plane_coordinate{ screen_coordinate._X * 2.0f - 1.0f, (1.0f - screen_coordinate._Y) * 2.0f - 1.0f };
-		Vector4<float> view_space_position{ *RenderingSystem::Instance->GetCurrentCamera()->GetInverseProjectionMatrix() * Vector4<float>(Vector3<float>(near_plane_coordinate, depth), 1.0f) };
+		Vector4<float> view_space_position{ *RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetInverseProjectionMatrix() * Vector4<float>(Vector3<float>(near_plane_coordinate, depth), 1.0f) };
 		const float inverse_view_space_position_denominator{ 1.0f / view_space_position._W };
 		view_space_position *= inverse_view_space_position_denominator;
-		const Vector4<float> world_space_position{ *RenderingSystem::Instance->GetCurrentCamera()->GetInverseCameraMatrix() * view_space_position };
+		const Vector4<float> world_space_position{ *RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetInverseCameraMatrix() * view_space_position };
 
 		return Vector3<float>(world_space_position._X, world_space_position._Y, world_space_position._Z);
 	}

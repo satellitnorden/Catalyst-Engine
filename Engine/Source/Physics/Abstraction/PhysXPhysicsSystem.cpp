@@ -229,7 +229,7 @@ namespace PhysXPhysicsSystemLogic
 	FORCE_INLINE void UpdateTerrainHeightField() NOEXCEPT
 	{
 		//Cache the current camera world position.
-		const Vector3<float32> current_camera_world_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetWorldPosition().GetAbsolutePosition() };
+		const Vector3<float32> current_camera_world_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetWorldPosition().GetAbsolutePosition() };
 
 		//Calculate the camera grid point.
 		GridPoint2 camera_grid_point{ GridPoint2::WorldPositionToGridPoint(current_camera_world_position, static_cast<float32>(PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE)) };
