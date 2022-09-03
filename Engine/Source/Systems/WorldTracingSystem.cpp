@@ -53,6 +53,17 @@ NO_DISCARD bool WorldTracingSystem::OcclusionRay(const Ray &ray, const float32 l
 }
 
 /*
+*	Casts a ray into the world and checks for the hit distance. Returns if there was a hit.
+*/
+NO_DISCARD bool WorldTracingSystem::DistanceRay(const Ray &ray, const float32 maximum_distance, float32 *const RESTRICT hit_distance, const bool use_cached_world_state) NOEXCEPT
+{
+	//Set the hit distance to maximum distance, to early rejection.
+	*hit_distance = maximum_distance;
+
+	return DistanceRayModels(ray, maximum_distance, hit_distance, use_cached_world_state);
+}
+
+/*
 *	Caches the world model state.
 */
 void WorldTracingSystem::CacheWorldModelState() NOEXCEPT
@@ -566,6 +577,186 @@ NO_DISCARD bool WorldTracingSystem::OcclusionRayModels(const Ray &ray, const flo
 
 	//Nothing was hit.
 	return false;
+}
+
+/*
+*	Casts an distance ray against models.
+*/
+NO_DISCARD bool WorldTracingSystem::DistanceRayModels(const Ray &ray, const float32 maximum_distance, float32 *const RESTRICT hit_distance, const bool use_cached_world_state) NOEXCEPT
+{
+	if (use_cached_world_state)
+	{
+		//Remember if there was a hit.
+		bool hit{ false };
+
+		//Iterate over all cached models and cast rays against them.
+		for (const CachedModelState &cached_model_state : _CachedModelState)
+		{
+			//First of all, intersect the bounding box, and reject the model completely if it doesn't hit.
+			float32 box_intersection_distance;
+
+			if (!CatalystGeometryMath::RayBoxIntersection(ray, cached_model_state._WorldSpaceAxisAlignedBoundingBox, &box_intersection_distance))
+			{
+				continue;
+			}
+
+			else if (box_intersection_distance >= *hit_distance)
+			{
+				continue;
+			}
+
+			//Intersect all triangles.
+			for (const CachedModelState::Triangle &cached_model_triangle : cached_model_state._Triangles)
+			{
+				Triangle triangle;
+
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					triangle._Vertices[i] = cached_model_triangle._Vertices[i]._Position;
+				}
+
+				float32 triangle_intersection_distance;
+
+				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &triangle_intersection_distance)
+					&& *hit_distance > triangle_intersection_distance)
+				{
+					*hit_distance = triangle_intersection_distance;
+
+					hit = true;
+				}
+			}
+		}
+
+		//Return if there was a hit.
+		return hit;
+	}
+
+	else
+	{
+		//Remember if there was a hit.
+		bool hit{ false };
+
+		//Go through dynamic models.
+		{
+			const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+			DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+			for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+			{
+				//Cache the world space axis aligned bounding box.
+				const AxisAlignedBoundingBox3D axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox() };
+
+				//Intersect the bounding box, and reject the model completely if it doesn't hit.
+				float32 box_intersection_distance;
+
+				if (!CatalystGeometryMath::RayBoxIntersection(ray, axis_aligned_bounding_box, &box_intersection_distance))
+				{
+					continue;
+				}
+
+				else if (box_intersection_distance >= *hit_distance)
+				{
+					continue;
+				}
+
+				//Intersect all triangles.
+				const Matrix4x4 model_transform{ component->_CurrentWorldTransform.ToAbsoluteMatrix4x4() };
+
+				for (uint64 mesh_index{ 0 }; mesh_index < component->_ModelResource->_Meshes.Size(); ++mesh_index)
+				{
+					const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Vertices };
+					const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Indices };
+
+					for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
+					{
+						Triangle triangle;
+
+						for (uint8 i{ 0 }; i < 3; ++i)
+						{
+							const Vector4<float32> transformed_triangle{ model_transform * Vector4<float32>(vertices[indices[triangle_index + i]]._Position._X, vertices[indices[triangle_index + i]]._Position._Y, vertices[indices[triangle_index + i]]._Position._Z, 1.0f) };
+
+							for (uint8 j{ 0 }; j < 3; ++j)
+							{
+								triangle._Vertices[i][j] = transformed_triangle[j];
+							}
+						}
+
+						float32 triangle_intersection_distance;
+
+						if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &triangle_intersection_distance)
+							&& *hit_distance > triangle_intersection_distance)
+						{
+							*hit_distance = triangle_intersection_distance;
+
+							hit = true;
+						}
+					}
+				}
+			}
+		}
+
+		//Go through static models.
+		{
+			const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+			StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+			for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+			{
+				//Cache the world space axis aligned bounding box.
+				const AxisAlignedBoundingBox3D axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox() };
+
+				//Intersect the bounding box, and reject the model completely if it doesn't hit.
+				float32 box_intersection_distance;
+
+				if (!CatalystGeometryMath::RayBoxIntersection(ray, axis_aligned_bounding_box, &box_intersection_distance))
+				{
+					continue;
+				}
+
+				else if (box_intersection_distance >= *hit_distance)
+				{
+					continue;
+				}
+
+				//Intersect all triangles.
+				const Matrix4x4 model_transform{ component->_WorldTransform.ToAbsoluteMatrix4x4() };
+
+				for (uint64 mesh_index{ 0 }; mesh_index < component->_ModelResource->_Meshes.Size(); ++mesh_index)
+				{
+					const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Vertices };
+					const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Indices };
+
+					for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
+					{
+						Triangle triangle;
+
+						for (uint8 i{ 0 }; i < 3; ++i)
+						{
+							const Vector4<float32> transformed_triangle{ model_transform * Vector4<float32>(vertices[indices[triangle_index + i]]._Position._X, vertices[indices[triangle_index + i]]._Position._Y, vertices[indices[triangle_index + i]]._Position._Z, 1.0f) };
+
+							for (uint8 j{ 0 }; j < 3; ++j)
+							{
+								triangle._Vertices[i][j] = transformed_triangle[j];
+							}
+						}
+
+						float32 triangle_intersection_distance;
+
+						if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &triangle_intersection_distance)
+							&& *hit_distance > triangle_intersection_distance)
+						{
+							*hit_distance = triangle_intersection_distance;
+
+							hit = true;
+						}
+					}
+				}
+			}
+		}
+
+		//Return if there was a hit.
+		return hit;
+	}
 }
 
 /*

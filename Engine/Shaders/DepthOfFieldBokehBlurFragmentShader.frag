@@ -3,7 +3,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_SAMPLES (1024)
+#define MAXIMUM_NUMBER_OF_SAMPLES (16)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -17,6 +17,9 @@ layout (push_constant) uniform PushConstantData
 
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
+
+//Texture samplers.
+layout (set = 1, binding = 0) uniform sampler2D DEPTH_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -66,24 +69,24 @@ vec2 UnitSquareToUnitDiskCoordinates(float x, float y)
 void CatalystShaderMain()
 {
 	//Calculate the current view distance.
-	float current_view_distance = -(CalculateViewSpacePosition(fragment_texture_coordinate, texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).w).z);
+	float current_view_distance = -(CalculateViewSpacePosition(fragment_texture_coordinate, texture(DEPTH_TEXTURE, fragment_texture_coordinate)[0]).z);
 
 	//Calculate the depth of field weight for this pixel.
-	float depth_of_field_weight = min(current_view_distance / DEPTH_OF_FIELD_FOCUS_DISTANCE, 1.0f);
+	float depth_of_field_weight = min(abs(current_view_distance - DEPTH_OF_FIELD_FOCUS_DISTANCE) / DEPTH_OF_FIELD_FOCUS_DISTANCE, 1.0f);
 
 	//Perform all the samples.
 	vec3 blurred_scene = vec3(0.0f);
 	float total_weight = 0.0f;
 
 	//Calculate the number of samples.
-	int number_of_samples = int(mix(1.0f, MAXIMUM_NUMBER_OF_SAMPLES, DEPTH_OF_FIELD_SIZE * depth_of_field_weight));
+	int number_of_samples = int(mix(1.0f, MAXIMUM_NUMBER_OF_SAMPLES, smoothstep(0.1f, 0.2f, depth_of_field_weight))) / 8;
 
 	for (int Y = -number_of_samples; Y <= number_of_samples; ++Y)
 	{
 		for (int X = -number_of_samples; X <= number_of_samples; ++X)
 		{
 			//Calculate the unit square coordinates.
-			vec2 unit_disk_coordinate = UnitSquareToUnitDiskCoordinates(float(X) / float(number_of_samples), float(Y) / float(number_of_samples));
+			vec2 unit_disk_coordinate = UnitSquareToUnitDiskCoordinates(float(X) / float(max(number_of_samples, 1)), float(Y) / float(max(number_of_samples, 1)));
 
 			//Scale the unit disk coordinate depending on the depth of field weight/size.
 			unit_disk_coordinate *= depth_of_field_weight;

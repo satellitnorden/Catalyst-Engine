@@ -7,7 +7,7 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/MemorySystem.h>
-#include <Systems/PhysicsSystem.h>
+#include <Systems/WorldTracingSystem.h>
 
 /*
 *	Initializes the camera system.
@@ -16,12 +16,6 @@ void CameraSystem::Initialize() NOEXCEPT
 {
 	//Create the default camera.
 	_DefaultCamera = CreateCamera();
-
-	//Set the aperture.
-	_DefaultCamera->SetAperture(0.5f);
-
-	//Set automatic focal distance.
-	_DefaultCamera->SetAutomaticFocalDistance(true);
 }
 
 /*
@@ -38,21 +32,13 @@ void CameraSystem::RenderUpdate() NOEXCEPT
 		ray.SetOrigin(GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
 		ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(0.5f, 0.5f)));
 
-		//Construct the configuration.
-		RaycastConfiguration configuration;
-
-		configuration._PhysicsChannels = PhysicsChannel::ALL;
-		configuration._MaximumHitDistance = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance;
-		configuration._TerrainRayMarchStep = 1.0f;
-
 		//Cast the ray!
-		RaycastResult result;
-		PhysicsSystem::Instance->CastRay(ray, configuration, &result);
+		float32 hit_distance;
 
 		//Did it hit?
-		if (result._HasHit)
+		if (WorldTracingSystem::Instance->DistanceRay(ray, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance, &hit_distance, false))
 		{
-			GetCurrentCamera()->SetFocalDistance(result._HitDistance);
+			GetCurrentCamera()->SetFocalDistance(hit_distance);
 		}
 	}
 }

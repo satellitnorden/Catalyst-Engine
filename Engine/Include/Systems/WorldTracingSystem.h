@@ -46,7 +46,12 @@ public:
 	/*
 	*	Casts a ray into the world and returns if there was occlusion.
 	*/
-	NO_DISCARD bool OcclusionRay(const Ray &ray, const float32 length) NOEXCEPT;
+	NO_DISCARD bool OcclusionRay(const Ray &ray, const float32 maximum_length) NOEXCEPT;
+
+	/*
+	*	Casts a ray into the world and checks for the hit distance. Returns if there was a hit.
+	*/
+	NO_DISCARD bool DistanceRay(const Ray &ray, const float32 maximum_distance, float32 *const RESTRICT hit_distance, const bool use_cached_world_state = true) NOEXCEPT;
 
 private:
 
@@ -103,7 +108,12 @@ private:
 	/*
 	*	Casts an occlusion ray against models.
 	*/
-	NO_DISCARD bool OcclusionRayModels(const Ray &ray, const float32 length) NOEXCEPT;
+	NO_DISCARD bool OcclusionRayModels(const Ray &ray, const float32 maximum_length) NOEXCEPT;
+
+	/*
+	*	Casts an distance ray against models.
+	*/
+	NO_DISCARD bool DistanceRayModels(const Ray &ray, const float32 maximum_distance, float32 *const RESTRICT hit_distance, const bool use_cached_world_state) NOEXCEPT;
 
 	/*
 	*	Casts a ray against the sky.

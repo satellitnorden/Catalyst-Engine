@@ -29,4 +29,21 @@ public:
 	*/
 	void Terminate() NOEXCEPT;
 
+private:
+
+	//The render data table layout.
+	RenderDataTableLayoutHandle _RenderDataTableLayout;
+
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
+	/*
+	*	Creates the render data table layout.
+	*/
+	void CreateRenderDataTableLayout() NOEXCEPT;
+
+	/*
+	*	Creates the render data table.
+	*/
+	void CreateRenderDataTable() NOEXCEPT;
 };
