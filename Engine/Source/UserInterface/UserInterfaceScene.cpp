@@ -1,9 +1,6 @@
 ﻿//Header file.
 #include <UserInterface/UserInterfaceScene.h>
 
-//Core.
-#include <Core/General/Perceiver.h>
-
 //Entities.
 #include <Entities/Types/UserInterfaceEntity.h>
 
@@ -18,6 +15,7 @@
 #include <Systems/ResourceSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/MemorySystem.h>
+#include <Systems/RenderingSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 #include <Systems/WorldSystem.h>
 
@@ -879,8 +877,8 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 		//Construct the ray.
 		Ray ray;
 
-		ray.SetOrigin(Perceiver::Instance->GetWorldTransform().GetLocalPosition());
-		ray.SetDirection(Perceiver::Instance->GetForwardVector());
+		ray.SetOrigin(RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetLocalPosition());
+		ray.SetDirection(RenderingSystem::Instance->GetCurrentCamera()->GetForwardVector());
 
 		//Construct the plane.
 		Plane plane;

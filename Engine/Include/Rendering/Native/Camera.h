@@ -2,40 +2,33 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StaticArray.h>
 
 //Concurrency.
 #include <Concurrency/Spinlock.h>
 #include <Concurrency/ScopedLock.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
 #include <Math/Core/CatalystCoordinateSpaces.h>
-#include <Math/General/Vector.h>
-
-//Systems.
-#include <Systems/RenderingSystem.h>
 
 //World.
 #include <World/Core/WorldTransform.h>
 
-class ALIGN(8) Perceiver final
+class Camera final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(Perceiver);
-
 	/*
 	*	Default constructor.
 	*/
-	Perceiver() NOEXCEPT
+	Camera() NOEXCEPT
 	{
 
 	}
 
 	/*
-	*	Returns the world transform of the perceiver.
+	*	Returns the world transform.
 	*/
 	FORCE_INLINE NO_DISCARD const WorldTransform &GetWorldTransform() const NOEXCEPT
 	{
@@ -45,7 +38,7 @@ public:
 	}
 
 	/*
-	*	Sets the world transform of the perceiver.
+	*	Sets the world transform.
 	*/
 	FORCE_INLINE void SetWorldTransform(const WorldTransform &value) NOEXCEPT
 	{
@@ -53,12 +46,12 @@ public:
 
 		_WorldTransform = value;
 
-		_PerceiverMatrixDirty = true;
+		_CameraMatrixDirty = true;
 		_FrustumPlanesDirty = true;
 	}
 
 	/*
-	*	Returns the right vector of the perceiver.
+	*	Returns the right vector.
 	*/
 	FORCE_INLINE NO_DISCARD Vector3<float32> GetRightVector() const NOEXCEPT
 	{
@@ -68,7 +61,7 @@ public:
 	}
 
 	/*
-	*	Returns the up vector of the perceiver.
+	*	Returns the up vector.
 	*/
 	FORCE_INLINE NO_DISCARD Vector3<float32> GetUpVector() const NOEXCEPT
 	{
@@ -78,7 +71,7 @@ public:
 	}
 
 	/*
-	*	Returns the forward vector of the perceiver.
+	*	Returns the forward vector.
 	*/
 	FORCE_INLINE NO_DISCARD Vector3<float32> GetForwardVector() const NOEXCEPT
 	{
@@ -88,7 +81,7 @@ public:
 	}
 
 	/*
-	*	Returns the field of view in radians.
+	*	Returns the field of view, in degrees.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetFieldOfView() const NOEXCEPT
 	{
@@ -98,7 +91,7 @@ public:
 	}
 
 	/*
-	*	Sets the field of view in radians.
+	*	Sets the field of view, in degrees.
 	*/
 	FORCE_INLINE void SetFieldOfView(const float32 new_field_of_view) NOEXCEPT
 	{
@@ -107,7 +100,7 @@ public:
 		_FieldOfView = new_field_of_view;
 
 		_ProjectionMatrixDirty = true;
-		_PerceiverMatrixDirty = true;
+		_CameraMatrixDirty = true;
 		_FrustumPlanesDirty = true;
 	}
 
@@ -192,27 +185,27 @@ public:
 	}
 
 	/*
-	*	Returns the perceiver matrix.
+	*	Returns the camera matrix.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetPerceiverMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetCameraMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
 		CheckUpdates();
 
-		return &_PerceiverMatrix;
+		return &_CameraMatrix;
 	}
 
 	/*
-	*	Returns the inverse perceiver matrix.
+	*	Returns the inverse camera matrix.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetInversePerceiverMatrix() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Matrix4x4 *const RESTRICT GetInverseCameraMatrix() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
 		CheckUpdates();
 
-		return &_InversePerceiverMatrix;
+		return &_InverseCameraMatrix;
 	}
 
 	/*
@@ -241,13 +234,13 @@ public:
 
 private:
 
-	//The lock for the perceiver.
+	//The lock.
 	mutable Spinlock _Lock;
 
 	//The world transform.
 	WorldTransform _WorldTransform;
 
-	//The field of view.
+	//The field of view, in degrees.
 	float32 _FieldOfView{ 60.0f };
 
 	//The near plane.
@@ -262,8 +255,8 @@ private:
 	//Denotes whether or not the projection matrix is dirty.
 	bool _ProjectionMatrixDirty{ true };
 
-	//Denotes whether or not the perceiver matrix is dirty.
-	bool _PerceiverMatrixDirty{ true };
+	//Denotes whether or not the camera matrix is dirty.
+	bool _CameraMatrixDirty{ true };
 
 	//Denotes whether or not the frustum planes is dirty.
 	bool _FrustumPlanesDirty{ true };
@@ -274,11 +267,11 @@ private:
 	//The inverse projection matrix.
 	Matrix4x4 _InverseProjectionMatrix;
 
-	//The perceiver matrix.
-	Matrix4x4 _PerceiverMatrix;
+	//The camera matrix.
+	Matrix4x4 _CameraMatrix;
 
-	//The inverse perceiver matrix.
-	Matrix4x4 _InversePerceiverMatrix;
+	//The inverse camera matrix.
+	Matrix4x4 _InverseCameraMatrix;
 
 	//The view matrix.
 	Matrix4x4 _ViewMatrix;
@@ -297,9 +290,9 @@ private:
 	void UpdateProjectionMatrix() NOEXCEPT;
 
 	/*
-	*	Updates the perceiver matrix.
+	*	Updates the camera matrix.
 	*/
-	void UpdatePerceiverMatrix() NOEXCEPT;
+	void UpdateCameraMatrix() NOEXCEPT;
 
 	/*
 	*	Updates the frustum planes.

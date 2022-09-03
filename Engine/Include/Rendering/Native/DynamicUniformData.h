@@ -12,19 +12,19 @@ class DynamicUniformData final
 
 public:
 
-	Matrix4x4 _InversePerceiverToClipMatrix;
-	Matrix4x4 _InverseWorldToPerceiverMatrix;
+	Matrix4x4 _InverseCameraToClipMatrix;
+	Matrix4x4 _InverseWorldToCameraMatrix;
 	Matrix4x4 _PreviousWorldToClipMatrix;
 	Matrix4x4 _UserInterfaceMatrix;
 	Matrix4x4 _WorldToClipMatrix;
-	Matrix4x4 _WorldToPerceiverMatrix;
+	Matrix4x4 _WorldToCameraMatrix;
 
 	Vector4<float32> _SkyLightRadiance;
 
 	Vector4<float32> _SkyLightDirection;
 
-	Vector4<float32> _PerceiverForwardVector;
-	Vector4<float32> _PerceiverWorldPosition;
+	Vector4<float32> _CameraForwardVector;
+	Vector4<float32> _CameraWorldPosition;
 
 	Vector4<float32> _UpperSkyColor;
 	Vector4<float32> _LowerSkyColor;
@@ -59,7 +59,7 @@ public:
 	float32 _NearPlane;
 	float32 _FarPlane;
 
-	float32 _PerceiverAbsoluteHeight;
+	float32 _CameraAbsoluteHeight;
 
 	uint32 _SkyMode;
 	float32 _SkyIntensity;

@@ -1,9 +1,6 @@
 //Header file.
 #include <Gameplay/Player.h>
 
-//Core.
-#include <Core/General/Perceiver.h>
-
 //Math.
 #include <Math/Core/CatalystCoordinateSpaces.h>
 
@@ -13,6 +10,7 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
+#include <Systems/RenderingSystem.h>
 #if USE_TEMPORARY_TERRAIN_SOLUTION
 #include <Systems/TerrainSystem.h>
 #endif
@@ -81,12 +79,12 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 
 	if (_Enabled)
 	{
-		//Set the perceiver position/rotation.
+		//Set the camera position/rotation.
 		const Vector3<float32> character_controller_position{ _CharacterController->GetWorldPosition().GetAbsolutePosition() };
 
 		const WorldTransform world_transform{ character_controller_position + Vector3<float32>(0.0f, _CurrentHeight, 0.0f), _Rotation, 1.0f };
 
-		Perceiver::Instance->SetWorldTransform(world_transform);
+		RenderingSystem::Instance->GetCurrentCamera()->SetWorldTransform(world_transform);
 	}
 }
 

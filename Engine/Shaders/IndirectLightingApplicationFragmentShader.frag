@@ -119,7 +119,7 @@ void CatalystShaderMain()
 	vec4 scene_features_3 = texture(SCENE_FEATURES_3_TEXTURE, fragment_texture_coordinate);
 
 	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w);
-	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
+	vec3 view_direction = normalize(world_position - CAMERA_WORLD_POSITION);
 	vec3 specular_direction = reflect(view_direction, scene_features_2.xyz);
 	vec3 diffuse_direction = scene_features_2.xyz;
 

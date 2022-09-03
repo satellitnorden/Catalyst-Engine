@@ -5,7 +5,6 @@
 #include <Core/Algorithms/SortingAlgorithms.h>
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/CatalystProjectConfiguration.h>
-#include <Core/General/Perceiver.h>
 
 //File.
 #include <File/Core/FileCore.h>
@@ -247,11 +246,11 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float>& position, V
 */
 void TerrainSystem::UpdateGenerateUpdatesStage() NOEXCEPT
 {
-	//Cache the current perceiver position.
-	const Vector3<float32> current_perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
+	//Cache the current camera position.
+	const Vector3<float32> current_camera_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
 
-	//Calculate the perceiver grid point.
-	const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(current_perceiver_position, _Properties._PatchSize) };
+	//Calculate the camera grid point.
+	const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(current_camera_position, _Properties._PatchSize) };
 
 	//Calculate the valid grid points.
 	const StaticArray<GridPoint2, 9> valid_grid_points
@@ -346,7 +345,7 @@ void TerrainSystem::UpdateGenerateUpdatesStage() NOEXCEPT
 			continue;
 		}
 
-		CheckCombination(current_perceiver_position, &_QuadTree._RootNodes[i]);
+		CheckCombination(current_camera_position, &_QuadTree._RootNodes[i]);
 	}
 
 	//Check if a node should be subdivided.
@@ -357,7 +356,7 @@ void TerrainSystem::UpdateGenerateUpdatesStage() NOEXCEPT
 			continue;
 		}
 
-		CheckSubdivision(current_perceiver_position, &_QuadTree._RootNodes[i]);
+		CheckSubdivision(current_camera_position, &_QuadTree._RootNodes[i]);
 	}
 
 	//Update the current update stage.
@@ -442,12 +441,12 @@ void TerrainSystem::RemoveNode(TerrainQuadTreeNode* const RESTRICT node) NOEXCEP
 /*
 *	Checks combination of a node.
 */
-void TerrainSystem::CheckCombination(const Vector3<float>& perceiverPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+void TerrainSystem::CheckCombination(const Vector3<float32> &camera_position, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->IsSubdivided())
 	{
-		if (TerrainQuadTreeUtilities::ShouldBeCombined(_Properties, *node, perceiverPosition))
+		if (TerrainQuadTreeUtilities::ShouldBeCombined(_Properties, *node, camera_position))
 		{
 			if (_CurrentNumberOfUpdatesInFlight < _MaximumNumberOfUpdatesInFlight)
 			{
@@ -474,7 +473,7 @@ void TerrainSystem::CheckCombination(const Vector3<float>& perceiverPosition, Te
 		{
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				CheckCombination(perceiverPosition, &node->_ChildNodes[i]);
+				CheckCombination(camera_position, &node->_ChildNodes[i]);
 			}
 		}
 	}
@@ -483,14 +482,14 @@ void TerrainSystem::CheckCombination(const Vector3<float>& perceiverPosition, Te
 /*
 *	Checks subdivisions of a node.
 */
-void TerrainSystem::CheckSubdivision(const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
+void TerrainSystem::CheckSubdivision(const Vector3<float32> &camera_position, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->IsSubdivided())
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			CheckSubdivision(perceiverPosition, &node->_ChildNodes[i]);
+			CheckSubdivision(camera_position, &node->_ChildNodes[i]);
 		}
 	}
 
@@ -499,7 +498,7 @@ void TerrainSystem::CheckSubdivision(const Vector3<float>& perceiverPosition, Te
 	{
 		if (_CurrentNumberOfUpdatesInFlight < _MaximumNumberOfUpdatesInFlight)
 		{
-			if (TerrainQuadTreeUtilities::ShouldBeSubdivided(_Properties, *node, perceiverPosition))
+			if (TerrainQuadTreeUtilities::ShouldBeSubdivided(_Properties, *node, camera_position))
 			{
 				//Create the new update.
 				TerrainQuadTreeNodeUpdate *const RESTRICT new_update{ new (MemorySystem::Instance->TypeAllocate<TerrainQuadTreeNodeUpdate>()) TerrainQuadTreeNodeUpdate(TerrainQuadTreeNodeUpdate::Type::SUBDIVIDE) };

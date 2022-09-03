@@ -1,9 +1,6 @@
 //Header file.
 #include <Systems/LevelOfDetailSystem.h>
 
-//Core.
-#include <Core/General/Perceiver.h>
-
 //Components.
 #include <Components/Core/ComponentManager.h>
 
@@ -53,11 +50,11 @@ void LevelOfDetailSystem::RenderUpdate() NOEXCEPT
 */
 void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 {
-	//Cache the perceiver world transform.
-	const WorldTransform &perceiver_world_transform{ Perceiver::Instance->GetWorldTransform() };
+	//Cache the camera world transform.
+	const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform() };
 
-	//Cache the perceiver world to clip matrix.
-	const Matrix4x4 *const RESTRICT perceiver_world_to_clip_matrix{ Perceiver::Instance->GetViewMatrix() };
+	//Cache the camera world to clip matrix.
+	const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCurrentCamera()->GetViewMatrix() };
 
 	//Iterate over all static model components and calculate their level of detail.
 	const uint64 number_of_static_model_components{ ComponentManager::GetNumberOfStaticModelComponents() };
@@ -76,7 +73,7 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 			}
 
 			//Retrieve the relative axis aligned bounding box.
-			const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(perceiver_world_transform.GetCell()) };
+			const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_world_transform.GetCell()) };
 
 			//Calculate the minimum/maximum screen coordinates from the corners of the relative axis aligned bounding box.
 			Vector2<float32> minimum_screen_coordinate{ FLOAT32_MAXIMUM, FLOAT32_MAXIMUM };
@@ -97,7 +94,7 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 
 			for (uint8 corner_index{ 0 }; corner_index < 8; ++corner_index)
 			{
-				Vector4<float32> screen_space_position{ *perceiver_world_to_clip_matrix * Vector4<float32>(corners[corner_index], 1.0f) };
+				Vector4<float32> screen_space_position{ *camera_world_to_clip_matrix * Vector4<float32>(corners[corner_index], 1.0f) };
 				const float32 screen_space_position_reciprocal{ 1.0f / screen_space_position._W };
 
 				Vector2<float32> screen_coordinate{ screen_space_position._X * screen_space_position_reciprocal, screen_space_position._Y * screen_space_position_reciprocal };
@@ -126,11 +123,11 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 */
 void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 {
-	//Cache the perceiver world transform.
-	const WorldTransform &perceiver_world_transform{ Perceiver::Instance->GetWorldTransform() };
+	//Cache the camera world transform.
+	const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform() };
 
-	//Cache the perceiver world to clip matrix.
-	const Matrix4x4 *const RESTRICT perceiver_world_to_clip_matrix{ Perceiver::Instance->GetViewMatrix() };
+	//Cache the camera world to clip matrix.
+	const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCurrentCamera()->GetViewMatrix() };
 
 	//Iterate over all dynamic model components and calculate their level of detail.
 	const uint64 number_of_dynamic_model_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
@@ -149,7 +146,7 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 			}
 
 			//Retrieve the relative axis aligned bounding box.
-			const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(perceiver_world_transform.GetCell()) };
+			const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_world_transform.GetCell()) };
 
 			//Calculate the minimum/maximum screen coordinates from the corners of the relative axis aligned bounding box.
 			Vector2<float32> minimum_screen_coordinate{ FLOAT32_MAXIMUM, FLOAT32_MAXIMUM };
@@ -170,7 +167,7 @@ void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 
 			for (uint8 corner_index{ 0 }; corner_index < 8; ++corner_index)
 			{
-				Vector4<float32> screen_space_position{ *perceiver_world_to_clip_matrix * Vector4<float32>(corners[corner_index], 1.0f) };
+				Vector4<float32> screen_space_position{ *camera_world_to_clip_matrix * Vector4<float32>(corners[corner_index], 1.0f) };
 				const float32 screen_space_position_reciprocal{ 1.0f / screen_space_position._W };
 
 				Vector2<float32> screen_coordinate{ screen_space_position._X * screen_space_position_reciprocal, screen_space_position._Y * screen_space_position_reciprocal };

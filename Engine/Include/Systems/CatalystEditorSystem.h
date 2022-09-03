@@ -5,9 +5,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Editor.
+#include <Editor/EditorCameraSystem.h>
 #include <Editor/EditorEntitySystem.h>
 #include <Editor/EditorLevelSystem.h>
-#include <Editor/EditorPerceiverSystem.h>
 #include <Editor/EditorPostProcessingSystem.h>
 #include <Editor/EditorRenderingSystem.h>
 #include <Editor/EditorResourcesSystem.h>
@@ -26,9 +26,9 @@ public:
 	enum class ContextualWindow : uint8
 	{
 		NONE,
+		CAMERA,
 		ENTITIES,
 		LEVEL,
-		PERCEIVER,
 		POST_PROCESSING,
 		RENDERING,
 		RESOURCES,
@@ -70,19 +70,19 @@ public:
 	}
 
 	/*
+	*	Returns the editor camera system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD EditorCameraSystem *const RESTRICT GetEditorCameraSystem() NOEXCEPT
+	{
+		return &_EditorCameraSystem;
+	}
+
+	/*
 	*	Returns the editor entity system.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD EditorEntitySystem *const RESTRICT GetEditorEntitySystem() NOEXCEPT
 	{
 		return &_EditorEntitySystem;
-	}
-
-	/*
-	*	Returns the editor perceiver system.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD EditorPerceiverSystem *const RESTRICT GetEditorPerceiverSystem() NOEXCEPT
-	{
-		return &_EditorPerceiverSystem;
 	}
 
 	/*
@@ -109,14 +109,14 @@ private:
 	//The current contextual window.
 	ContextualWindow _CurrentContextualWindow{ ContextualWindow::NONE };
 
+	//The editor camera system.
+	EditorCameraSystem _EditorCameraSystem;
+
 	//The editor entity system.
 	EditorEntitySystem _EditorEntitySystem;
 
 	//The editor level system.
 	EditorLevelSystem _EditorLevelSystem;
-
-	//The editor perceiver system.
-	EditorPerceiverSystem _EditorPerceiverSystem;
 
 	//The editor post-processing system.
 	EditorPostProcessingSystem _EditorPostProcessingSystem;

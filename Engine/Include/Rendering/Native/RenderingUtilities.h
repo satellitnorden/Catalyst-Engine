@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/Perceiver.h>
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
@@ -78,7 +77,7 @@ public:
 																	const float32 depth,
 																	const Vector3<float32> &light_direction) NOEXCEPT
 	{
-		const Matrix4x4 light_matrix{ Matrix4x4::LookAt(Perceiver::Instance->GetWorldTransform().GetLocalPosition() + -light_direction * depth * 0.5f + Perceiver::Instance->GetForwardVector() * coverage * 0.5f, Perceiver::Instance->GetWorldTransform().GetLocalPosition() + light_direction * depth * 0.5f + Perceiver::Instance->GetForwardVector() * coverage * 0.5f, CatalystWorldCoordinateSpace::UP) };
+		const Matrix4x4 light_matrix{ Matrix4x4::LookAt(RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() + -light_direction * depth * 0.5f + RenderingSystem::Instance->GetCurrentCamera()->GetForwardVector() * coverage * 0.5f, RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() + light_direction * depth * 0.5f + RenderingSystem::Instance->GetCurrentCamera()->GetForwardVector() * coverage * 0.5f, CatalystWorldCoordinateSpace::UP) };
 		const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(-coverage * 0.5f, coverage * 0.5f, -coverage * 0.5f, coverage * 0.5f, 0.0f, depth) };
 
 		return projection_matrix * light_matrix;
@@ -91,7 +90,7 @@ public:
 	{
 		const Vector3<float> world_position{ CalculateWorldPositionFromScreenCoordinate(screen_coordinate, 1.0f - std::numeric_limits<float>::epsilon()) };
 
-		return Vector3<float>::Normalize(world_position - Perceiver::Instance->GetWorldTransform().GetLocalPosition());
+		return Vector3<float>::Normalize(world_position - RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetLocalPosition());
 	}
 
 	/*
@@ -139,10 +138,10 @@ public:
 	FORCE_INLINE static Vector3<float> CalculateWorldPositionFromScreenCoordinate(const Vector2<float>& screen_coordinate, const float depth) NOEXCEPT
 	{
 		const Vector2<float> near_plane_coordinate{ screen_coordinate._X * 2.0f - 1.0f, (1.0f - screen_coordinate._Y) * 2.0f - 1.0f };
-		Vector4<float> view_space_position{ *Perceiver::Instance->GetInverseProjectionMatrix() * Vector4<float>(Vector3<float>(near_plane_coordinate, depth), 1.0f) };
+		Vector4<float> view_space_position{ *RenderingSystem::Instance->GetCurrentCamera()->GetInverseProjectionMatrix() * Vector4<float>(Vector3<float>(near_plane_coordinate, depth), 1.0f) };
 		const float inverse_view_space_position_denominator{ 1.0f / view_space_position._W };
 		view_space_position *= inverse_view_space_position_denominator;
-		const Vector4<float> world_space_position{ *Perceiver::Instance->GetInversePerceiverMatrix() * view_space_position };
+		const Vector4<float> world_space_position{ *RenderingSystem::Instance->GetCurrentCamera()->GetInverseCameraMatrix() * view_space_position };
 
 		return Vector3<float>(world_space_position._X, world_space_position._Y, world_space_position._Z);
 	}

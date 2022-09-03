@@ -7,13 +7,13 @@
 //Math.
 #include <Math/General/Vector.h>
 
-class EditorPerceiverSystem final
+class EditorCameraSystem final
 {
 
 public:
 
 	/*
-	*	Updates the editor perceiver system.
+	*	Updates the editor camera system.
 	*/
 	void Update() NOEXCEPT;
 

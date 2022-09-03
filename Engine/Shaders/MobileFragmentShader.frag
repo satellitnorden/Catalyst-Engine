@@ -52,13 +52,13 @@ vec3 CalculateModelRadiance()
 	shading_normal = shading_normal;
 
 	//Calculate the hit distance.
-	float hit_distance = length(fragment_world_position - PERCEIVER_WORLD_POSITION);
+	float hit_distance = length(fragment_world_position - CAMERA_WORLD_POSITION);
 
 	//Calculate the hit distance reciprocal.
 	float hit_distance_reciprocal = 1.0f / hit_distance;
 
 	//Calculate the view direction.
-	vec3 view_direction = (fragment_world_position - PERCEIVER_WORLD_POSITION) * hit_distance_reciprocal;
+	vec3 view_direction = (fragment_world_position - CAMERA_WORLD_POSITION) * hit_distance_reciprocal;
 
 	//Calculate the diffuse component.
 	float diffuse_component = material_properties[0] * (1.0f - material_properties[1]);
@@ -165,7 +165,7 @@ vec3 CalculateModelRadiance()
 	//Add volumetric lighting.
 	{
 		//Calculate the volumetric lighting opacity.
-		float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, fragment_world_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_WORLD_POSITION.y);
+		float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, fragment_world_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, CAMERA_WORLD_POSITION.y);
 
 		//Blend the volumetric lighting with the final lighting.
 		final_lighting = mix(final_lighting, volumetric_lighting, volumetric_lighting_opacity);
@@ -181,13 +181,13 @@ vec3 CalculateModelRadiance()
 vec3 CalculateSkyRadiance()
 {
 	//Calculate the hit distance.
-	float hit_distance = length(fragment_world_position - PERCEIVER_WORLD_POSITION);
+	float hit_distance = length(fragment_world_position - CAMERA_WORLD_POSITION);
 
 	//Calculate the hit distance reciprocal.
 	float hit_distance_reciprocal = 1.0f / hit_distance;
 
 	//Calculate the view direction.
-	vec3 view_direction = (fragment_world_position - PERCEIVER_WORLD_POSITION) * hit_distance_reciprocal;
+	vec3 view_direction = (fragment_world_position - CAMERA_WORLD_POSITION) * hit_distance_reciprocal;
 
 	//Calculate the final sky.
    	vec3 final_sky = SampleSky(view_direction, 0.0f);
@@ -204,7 +204,7 @@ vec3 CalculateSkyRadiance()
     	volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * SKY_LIGHT_RADIANCE.rgb * SKY_LIGHT_RADIANCE.a * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER;
 
     	//Calculate the volumetric lighting opacity.
-    	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(VIEW_DISTANCE, VOLUMETRIC_LIGHTING_DISTANCE, fragment_world_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_WORLD_POSITION.y);
+    	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(VIEW_DISTANCE, VOLUMETRIC_LIGHTING_DISTANCE, fragment_world_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, CAMERA_WORLD_POSITION.y);
 
     	//Blend the volumetric lighting with the final sky.
     	final_sky = mix(final_sky, volumetric_lighting, volumetric_lighting_opacity);

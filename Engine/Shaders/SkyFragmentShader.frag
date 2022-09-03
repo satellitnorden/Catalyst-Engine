@@ -31,7 +31,7 @@ void CatalystShaderMain()
    vec3 bare_sky_color = mix(sky_sample, max((SKY_LIGHT_RADIANCE.rgb * SKY_LIGHT_RADIANCE.a) * 4.0f, sky_sample), sky_light_influence);
 
    //Calculate the cloud color/alpha.
-   //vec4 cloud_color = GetCloudColorInDirection(PERCEIVER_WORLD_POSITION, view_direction, uvec2(gl_FragCoord.xy), -SKY_LIGHT_DIRECTION, SKY_LIGHT_RADIANCE.rgb * SKY_LIGHT_RADIANCE.a);
+   //vec4 cloud_color = GetCloudColorInDirection(CAMERA_WORLD_POSITION, view_direction, uvec2(gl_FragCoord.xy), -SKY_LIGHT_DIRECTION, SKY_LIGHT_RADIANCE.rgb * SKY_LIGHT_RADIANCE.a);
    vec4 cloud_color = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
    //Write the fragment.

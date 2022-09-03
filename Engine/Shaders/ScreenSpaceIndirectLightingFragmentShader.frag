@@ -331,7 +331,7 @@ void CatalystShaderMain()
 	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w);
 
 	//Calculate the view direction.
-	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
+	vec3 view_direction = normalize(world_position - CAMERA_WORLD_POSITION);
 
 	//Fire all rays.
 	vec3 indirect_lighting = vec3(0.0f);

@@ -1,9 +1,6 @@
 //Header file.
 #include <Systems/WorldSystem.h>
 
-//Core.
-#include <Core/General/Perceiver.h>
-
 //Components.
 #include <Components/Core/ComponentManager.h>
 
@@ -20,6 +17,7 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/EntitySystem.h>
+#include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 
 //Singleton definition.
@@ -78,8 +76,8 @@ void WorldSystem::Terminate() NOEXCEPT
 */
 NO_DISCARD const Vector3<int32> &WorldSystem::GetCurrentWorldGridCell() const NOEXCEPT
 {
-	//This should probably be cached somehow, but let's just ask the Perceiver for now. (:
-	return Perceiver::Instance->GetWorldTransform().GetCell();
+	//This should probably be cached somehow, but let's just ask the current camera for now. (:
+	return RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetCell();
 }
 
 /*
@@ -149,8 +147,8 @@ void WorldSystem::UpdateParticleSystems() NOEXCEPT
 */
 void WorldSystem::UpdateDistanceTriggers() NOEXCEPT
 {
-	//Cache the perceiver position.
-	const Vector3<float> perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
+	//Cache the camera position.
+	const Vector3<float> camera_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
 
 	//Update all distance triggers.
 	const uint64 number_of_distance_trigger_components{ ComponentManager::GetNumberOfDistanceTriggerComponents() };
@@ -158,8 +156,8 @@ void WorldSystem::UpdateDistanceTriggers() NOEXCEPT
 
 	for (uint64 i{ 0 }; i < number_of_distance_trigger_components; ++i, ++distance_trigger_component)
 	{
-		//Calculate the distance, squared, to the perceiver.
-		const float distance_squared{ Vector3<float>::LengthSquared(perceiver_position - distance_trigger_component->_Position) };
+		//Calculate the distance, squared, to the camera.
+		const float distance_squared{ Vector3<float>::LengthSquared(camera_position - distance_trigger_component->_Position) };
 
 		//Modify the state as needed.
 		switch (distance_trigger_component->_CurrentState)

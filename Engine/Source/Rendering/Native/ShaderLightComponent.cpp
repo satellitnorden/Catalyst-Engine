@@ -1,8 +1,11 @@
 //Header file.
 #include <Rendering/Native/ShaderLightComponent.h>
 
-//Core.
-#include <Core/General/Perceiver.h>
+//Math.
+#include <Math/Core/CatalystCoordinateSpaces.h>
+
+//Systems.
+#include <Systems/RenderingSystem.h>
 
 /*
 *	Copy by LightComponent constructor.
@@ -20,7 +23,7 @@ ShaderLightComponent::ShaderLightComponent(const LightComponent& light_component
 
 		case LightType::POINT:
 		{
-			_WorldPosition = light_component._WorldPosition.GetRelativePosition(Perceiver::Instance->GetWorldTransform().GetCell());
+			_WorldPosition = light_component._WorldPosition.GetRelativePosition(RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetCell());
 
 			break;
 		}

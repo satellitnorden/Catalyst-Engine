@@ -2,7 +2,6 @@
 #include <Systems/RenderingSystem.h>
 
 //Core.
-#include <Core/General/Perceiver.h>
 #include <Core/General/CatalystProjectConfiguration.h>
 
 //Components.
@@ -44,8 +43,11 @@ DEFINE_SINGLETON(RenderingSystem);
 */
 void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT
 {
+	//Set the configuration.
+	_Configuration = configuration;
+
 	//Create the sub rendering system.
-	switch (configuration._SubRenderingSystem)
+	switch (_Configuration._SubRenderingSystem)
 	{
 		case SubRenderingSystem::OPEN_GL:
 		{
@@ -70,13 +72,13 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	}
 
 	//Set the initial rendering path.
-	_CurrentRenderingPath = configuration._InitialRenderingPath;
+	_CurrentRenderingPath = _Configuration._InitialRenderingPath;
 
 	//Set the full resolution.
-	_FullResolution = configuration._Resolution;
+	_FullResolution = _Configuration._Resolution;
 
 	//Set the scaled resolutions.
-	_ScaledResolutions[0] = Resolution(static_cast<uint32>(static_cast<float32>(_FullResolution._Width) * configuration._ResolutionScale), static_cast<uint32>(static_cast<float32>(_FullResolution._Height) * configuration._ResolutionScale));
+	_ScaledResolutions[0] = Resolution(static_cast<uint32>(static_cast<float32>(_FullResolution._Width) * _Configuration._ResolutionScale), static_cast<uint32>(static_cast<float32>(_FullResolution._Height) * _Configuration._ResolutionScale));
 	_ScaledResolutions[0].RoundUpToNearestMultipleOfTwo();
 
 	_ScaledResolutions[1] = _ScaledResolutions[0] / 2;
@@ -103,6 +105,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	_ScaledResolutions[8] = _ScaledResolutions[7] / 2;
 	_ScaledResolutions[8].RoundUpToNearestMultipleOfTwo();
 
+	//Create the default camera.
+	SetCurrentCamera(CreateCamera());
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Initialize the debug rendering system.
 	_DebugRenderingSystem.Initialize();
@@ -110,9 +115,6 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 	//Initialize the model system.
 	_ModelSystem.Initialize();
-
-	//Set the far plane of the perceiver.
-	Perceiver::Instance->SetFarPlane(configuration._ViewDistance * 2.0f);
 
 	//Pre-initialize the sub rendering system.
 	_SubRenderingSystem->PreInitialize();
@@ -189,7 +191,7 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 void RenderingSystem::RenderUpdate() NOEXCEPT
 {
 	//Can the sub rendering system render?
-	if (!_SubRenderingSystem->CanRender())
+	if (_CurrentCamera && !_SubRenderingSystem->CanRender())
 	{
 		return;
 	}
@@ -621,6 +623,31 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 	}
 
 	return _RenderTargets[UNDERLYING(render_target)];
+}
+
+/*
+*	Creates a new camera.
+*/
+RESTRICTED NO_DISCARD Camera *const RESTRICT RenderingSystem::CreateCamera() NOEXCEPT
+{
+	Camera *const RESTRICT new_camera{ new (Memory::Allocate(sizeof(Camera))) Camera() };
+
+	new_camera->SetFarPlane(_Configuration._ViewDistance * 2.0f);
+
+	return new_camera;
+}
+
+/*
+*	Destroys a camera.
+*/
+void RenderingSystem::DestroyCamera(Camera *const RESTRICT camera) NOEXCEPT
+{
+	if (camera == _CurrentCamera)
+	{
+		_CurrentCamera = nullptr;
+	}
+
+	Memory::Free(camera);
 }
 
 /*
@@ -1482,13 +1509,13 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		(Vector2<float>(HaltonSequence::Generate(30, 3), HaltonSequence::Generate(31, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER
 	};
 
-	//Update the previous Perceiver world transform.
-	_PreviousPerceiverWorldTransform = _CurrentPerceiverWorldTransform;
-	_CurrentPerceiverWorldTransform = Perceiver::Instance->GetWorldTransform();
+	//Update the previous camera world transform.
+	_PreviousCameraWorldTransform = _CurrentCameraWorldTransform;
+	_CurrentCameraWorldTransform = _CurrentCamera->GetWorldTransform();
 
-	//Calculate the previous and current Perceiver matrices, as well as their inverses.
-	const Matrix4x4 previous_perceiver_matrix{ Matrix4x4::LookAt(_PreviousPerceiverWorldTransform.GetRelativePosition(_CurrentPerceiverWorldTransform.GetCell()), _PreviousPerceiverWorldTransform.GetRelativePosition(_CurrentPerceiverWorldTransform.GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousPerceiverWorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousPerceiverWorldTransform.GetRotation())) };
-	const Matrix4x4 current_perceiver_matrix{ Matrix4x4::LookAt(_CurrentPerceiverWorldTransform.GetLocalPosition(), _CurrentPerceiverWorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_CurrentPerceiverWorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_CurrentPerceiverWorldTransform.GetRotation())) };
+	//Calculate the previous and current camera matrices, as well as their inverses.
+	const Matrix4x4 previous_camera_matrix{ Matrix4x4::LookAt(_PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()), _PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousCameraWorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousCameraWorldTransform.GetRotation())) };
+	const Matrix4x4 current_camera_matrix{ Matrix4x4::LookAt(_CurrentCameraWorldTransform.GetLocalPosition(), _CurrentCameraWorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_CurrentCameraWorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_CurrentCameraWorldTransform.GetRotation())) };
 
 	//Jitter the projection matrix a bit.
 	Vector2<float32> current_frame_jitter;
@@ -1504,14 +1531,14 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		current_frame_jitter = Vector2<float32>(0.0f, 0.0f);
 	}
 
-	Perceiver::Instance->SetProjectionMatrixJitter(current_frame_jitter);
+	_CurrentCamera->SetProjectionMatrixJitter(current_frame_jitter);
 
 	//Update matrices.
-	_DynamicUniformData._PreviousWorldToClipMatrix = *Perceiver::Instance->GetProjectionMatrix() * previous_perceiver_matrix;
-	_DynamicUniformData._InverseWorldToPerceiverMatrix = *Perceiver::Instance->GetInversePerceiverMatrix();
-	_DynamicUniformData._InversePerceiverToClipMatrix = *Perceiver::Instance->GetInverseProjectionMatrix();
-	_DynamicUniformData._WorldToPerceiverMatrix = *Perceiver::Instance->GetPerceiverMatrix();
-	_DynamicUniformData._WorldToClipMatrix = *Perceiver::Instance->GetProjectionMatrix() * current_perceiver_matrix;
+	_DynamicUniformData._PreviousWorldToClipMatrix = *_CurrentCamera->GetProjectionMatrix() * previous_camera_matrix;
+	_DynamicUniformData._InverseWorldToCameraMatrix = *_CurrentCamera->GetInverseCameraMatrix();
+	_DynamicUniformData._InverseCameraToClipMatrix = *_CurrentCamera->GetInverseProjectionMatrix();
+	_DynamicUniformData._WorldToCameraMatrix = *_CurrentCamera->GetCameraMatrix();
+	_DynamicUniformData._WorldToClipMatrix = *_CurrentCamera->GetProjectionMatrix() * current_camera_matrix;
 	
 	//Rotate the relevant matrices to fit the surface transform.
 	{
@@ -1542,8 +1569,8 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 		}
 	}
 
-	_DynamicUniformData._PerceiverForwardVector = Perceiver::Instance->GetForwardVector();
-	_DynamicUniformData._PerceiverWorldPosition = Perceiver::Instance->GetWorldTransform().GetLocalPosition();
+	_DynamicUniformData._CameraForwardVector = _CurrentCamera->GetForwardVector();
+	_DynamicUniformData._CameraWorldPosition = _CurrentCamera->GetWorldTransform().GetLocalPosition();
 
 	_DynamicUniformData._UpperSkyColor = WorldSystem::Instance->GetSkySystem()->GetSkyGradient()._UpperSkyColor;
 	_DynamicUniformData._LowerSkyColor = WorldSystem::Instance->GetSkySystem()->GetSkyGradient()._LowerSkyColor;
@@ -1573,12 +1600,12 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._CurrentBlueNoiseTextureIndex = _CurrentBlueNoiseTextureIndex;
 	_DynamicUniformData._CurrentBlueNoiseTextureOffsetX = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._CurrentBlueNoiseTextureOffsetY = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	_DynamicUniformData._ViewDistance = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance;
+	_DynamicUniformData._ViewDistance = _Configuration._ViewDistance;
 	_DynamicUniformData._MaximumSkyTextureMipmapLevel = WorldSystem::Instance->GetSkySystem()->GetSkyTexture() ? static_cast<float32>(WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_MipmapLevels) : 1.0f;
 	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
-	_DynamicUniformData._NearPlane = Perceiver::Instance->GetNearPlane();
-	_DynamicUniformData._FarPlane = Perceiver::Instance->GetFarPlane();
-	_DynamicUniformData._PerceiverAbsoluteHeight = _CurrentPerceiverWorldTransform.GetAbsolutePosition()._Y;
+	_DynamicUniformData._NearPlane = _CurrentCamera->GetNearPlane();
+	_DynamicUniformData._FarPlane = _CurrentCamera->GetFarPlane();
+	_DynamicUniformData._CameraAbsoluteHeight = _CurrentCameraWorldTransform.GetAbsolutePosition()._Y;
 
 	_DynamicUniformData._SkyMode = static_cast<uint32>(WorldSystem::Instance->GetSkySystem()->GetSkyMode());
 	_DynamicUniformData._SkyIntensity = WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();

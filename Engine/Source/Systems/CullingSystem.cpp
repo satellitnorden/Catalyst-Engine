@@ -1,9 +1,6 @@
 //Header file.
 #include <Systems/CullingSystem.h>
 
-//Core.
-#include <Core/General/Perceiver.h>
-
 //Components.
 #include <Components/Core/ComponentManager.h>
 
@@ -65,9 +62,9 @@ void CullingSystem::RenderUpdate() NOEXCEPT
 void CullingSystem::CullDynamicModels() const NOEXCEPT
 {
 	//Cache data that will be used.
-	const Vector3<int32> perceiver_cell{ Perceiver::Instance->GetWorldTransform().GetCell() };
+	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetCell() };
 	const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ Perceiver::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCurrentCamera()->GetFrustumPlanes() };
 
 	//Iterate over all patches and determine their visibility.
 	const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
@@ -75,7 +72,7 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 
 	for (uint64 i = 0; i < number_of_components; ++i, ++component)
 	{
-		component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(perceiver_cell));
+		component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell));
 	}
 }
 
@@ -85,9 +82,9 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 void CullingSystem::CullStaticModels() const NOEXCEPT
 {
 	//Cache data that will be used.
-	const Vector3<int32> perceiver_cell{ Perceiver::Instance->GetWorldTransform().GetCell() };
+	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetCell() };
 	const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
-	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ Perceiver::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCurrentCamera()->GetFrustumPlanes() };
 
 	//Iterate over all patches and determine their visibility.
 	const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
@@ -95,7 +92,7 @@ void CullingSystem::CullStaticModels() const NOEXCEPT
 
 	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 	{
-		component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(perceiver_cell));
+		component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell));
 	}
 }
 
@@ -105,7 +102,7 @@ void CullingSystem::CullStaticModels() const NOEXCEPT
 void CullingSystem::CullTerrain() const NOEXCEPT
 {
 	//Cache the frustum planes.
-	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ Perceiver::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCurrentCamera()->GetFrustumPlanes() };
 
 	//Iterate over all patches and determine their visibility.
 	const DynamicArray<TerrainPatchInformation> *const RESTRICT patch_informations{ TerrainSystem::Instance->GetTerrainPatchInformations() };

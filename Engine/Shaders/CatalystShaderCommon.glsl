@@ -58,12 +58,12 @@ struct Material
 layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 {
     //Matrices.
-    layout (offset = 0) mat4 INVERSE_PERCEIVER_TO_CLIP_MATRIX;
-    layout (offset = 64) mat4 INVERSE_WORLD_TO_PERCEIVER_MATRIX;
+    layout (offset = 0) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;
+    layout (offset = 64) mat4 INVERSE_WORLD_TO_CAMERA_MATRIX;
     layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
     layout (offset = 192) mat4 USER_INTERFACE_MATRIX;
     layout (offset = 256) mat4 WORLD_TO_CLIP_MATRIX;
-    layout (offset = 320) mat4 WORLD_TO_PERCEIVER_MATRIX;
+    layout (offset = 320) mat4 WORLD_TO_CAMERA_MATRIX;
 
     //vec4's.
     layout (offset = 384) vec4 SKY_LIGHT_RADIANCE;
@@ -71,8 +71,8 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //vec3's.
     layout (offset = 400) vec3 SKY_LIGHT_DIRECTION;
 
-    layout (offset = 416) vec3 PERCEIVER_FORWARD_VECTOR;
-    layout (offset = 432) vec3 PERCEIVER_WORLD_POSITION;
+    layout (offset = 416) vec3 CAMERA_FORWARD_VECTOR;
+    layout (offset = 432) vec3 CAMERA_WORLD_POSITION;
 
     layout (offset = 448) vec3 UPPER_SKY_COLOR;
     layout (offset = 464) vec3 LOWER_SKY_COLOR;
@@ -109,7 +109,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 592) float NEAR_PLANE;
     layout (offset = 596) float FAR_PLANE;
 
-    layout (offset = 600) float PERCEIVER_ABSOLUTE_HEIGHT;
+    layout (offset = 600) float CAMERA_ABSOLUTE_HEIGHT;
 
     layout (offset = 604) uint SKY_MODE;
     layout (offset = 608) float SKY_INTENSITY;
@@ -189,7 +189,7 @@ mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
 vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
 {
     vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_PERCEIVER_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
     float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
     view_space_position.xyz *= inverse_view_space_position_denominator;
 
@@ -208,7 +208,7 @@ vec3 SampleSky(vec3 direction, float mip_level)
         //Atmospheric scattering.
         case 0:
         {
-            color = CalculateAtmosphericScattering(vec3(0.0f, PERCEIVER_ABSOLUTE_HEIGHT, 0.0f), direction, SKY_LIGHT_RADIANCE, SKY_LIGHT_DIRECTION) * SKY_INTENSITY;
+            color = CalculateAtmosphericScattering(vec3(0.0f, CAMERA_ABSOLUTE_HEIGHT, 0.0f), direction, SKY_LIGHT_RADIANCE, SKY_LIGHT_DIRECTION) * SKY_INTENSITY;
 
             break;
         }
@@ -274,10 +274,10 @@ vec3 CalculateVolumetricAmbientLighting()
 vec3 CalculateWorldPosition(vec2 texture_coordinate, float depth)
 {
     vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_PERCEIVER_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
     float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
     view_space_position *= inverse_view_space_position_denominator;
-    vec4 world_space_position = INVERSE_WORLD_TO_PERCEIVER_MATRIX * view_space_position;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
 
     return world_space_position.xyz;
 }

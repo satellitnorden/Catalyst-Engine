@@ -1,25 +1,22 @@
 //Header file.
-#include <Core/General/Perceiver.h>
+#include <Rendering/Native/Camera.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(Perceiver);
-
 /*
 *	Checks for updates.
 */
-void Perceiver::CheckUpdates() NOEXCEPT
+void Camera::CheckUpdates() NOEXCEPT
 {
 	if (_ProjectionMatrixDirty)
 	{
 		UpdateProjectionMatrix();
 	}
 
-	if (_PerceiverMatrixDirty)
+	if (_CameraMatrixDirty)
 	{
-		UpdatePerceiverMatrix();
+		UpdateCameraMatrix();
 	}
 
 	if (_FrustumPlanesDirty)
@@ -31,10 +28,10 @@ void Perceiver::CheckUpdates() NOEXCEPT
 /*
 *	Updates the projection matrix.
 */
-void Perceiver::UpdateProjectionMatrix() NOEXCEPT
+void Camera::UpdateProjectionMatrix() NOEXCEPT
 {
 	//Update the projection matrix.
-	_ProjectionMatrix = Matrix4x4::ReversePerspective(CatalystBaseMath::DegreesToRadians(_FieldOfView), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Width) / static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Height), _NearPlane, _FarPlane);
+	_ProjectionMatrix = Matrix4x4::ReversePerspective(CatalystBaseMath::DegreesToRadians(_FieldOfView), RenderingSystem::Instance->GetFullAspectRatio(), _NearPlane, _FarPlane);
 
 	//Apply the jitter.
 	_ProjectionMatrix._Matrix[2]._X += _ProjectionMatrixJitter._X;
@@ -45,35 +42,35 @@ void Perceiver::UpdateProjectionMatrix() NOEXCEPT
 	_InverseProjectionMatrix.Inverse();
 
 	//Update the view matrix.
-	_ViewMatrix = _ProjectionMatrix * _PerceiverMatrix;
+	_ViewMatrix = _ProjectionMatrix * _CameraMatrix;
 
 	//Reset the dirtyness of the projection matrix.
 	_ProjectionMatrixDirty = false;
 }
 
 /*
-*	Updates the perceiver matrix.
+*	Updates the camera matrix.
 */
-void Perceiver::UpdatePerceiverMatrix() NOEXCEPT
+void Camera::UpdateCameraMatrix() NOEXCEPT
 {
-	//Update the perceiver matrix.
-	_PerceiverMatrix = Matrix4x4::LookAt(_WorldTransform.GetLocalPosition(), _WorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_WorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_WorldTransform.GetRotation()));
+	//Update the camera matrix.
+	_CameraMatrix = Matrix4x4::LookAt(_WorldTransform.GetLocalPosition(), _WorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_WorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_WorldTransform.GetRotation()));
 
-	//Update the inverse perceiver matrix.
-	_InversePerceiverMatrix = _PerceiverMatrix;
-	_InversePerceiverMatrix.Inverse();
+	//Update the inverse camera matrix.
+	_InverseCameraMatrix = _CameraMatrix;
+	_InverseCameraMatrix.Inverse();
 
 	//Update the view matrix.
-	_ViewMatrix = _ProjectionMatrix * _PerceiverMatrix;
+	_ViewMatrix = _ProjectionMatrix * _CameraMatrix;
 
-	//Reset the dirtyness of the perceiver matrix.
-	_PerceiverMatrixDirty = false;
+	//Reset the dirtyness of the camera matrix.
+	_CameraMatrixDirty = false;
 }
 
 /*
 *	Updates the frustum planes.
 */
-void Perceiver::UpdateFrustumPlanes() NOEXCEPT
+void Camera::UpdateFrustumPlanes() NOEXCEPT
 {
 	//Construct the frustum planes.
 	for (uint8 i{ 4 }; i--;) _FrustumPlanes[0][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][0]; //Left.
@@ -83,7 +80,7 @@ void Perceiver::UpdateFrustumPlanes() NOEXCEPT
 	for (uint8 i{ 4 }; i--;) _FrustumPlanes[4][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][2]; //Near.
 	for (uint8 i{ 4 }; i--;) _FrustumPlanes[5][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][2]; //Far.
 
-	//Normalize the frustum planes.
+																										   //Normalize the frustum planes.
 	for (uint8 i{ 0 }; i < 6; ++i)
 	{
 		const float32 length{ CatalystBaseMath::SquareRoot(_FrustumPlanes[i]._X * _FrustumPlanes[i]._X + _FrustumPlanes[i]._Y * _FrustumPlanes[i]._Y + _FrustumPlanes[i]._Z * _FrustumPlanes[i]._Z) };

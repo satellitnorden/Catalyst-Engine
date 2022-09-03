@@ -369,14 +369,14 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 	//Add the main window.
 	AddMainWindow();
 
+	//Update the editor camera system.
+	_EditorCameraSystem.Update();
+
 	//Update the editor entity system.
 	_EditorEntitySystem.Update();
 
 	//Update the editor level system.
 	_EditorLevelSystem.Update();
-
-	//Update the editor Perceiver system.
-	_EditorPerceiverSystem.Update();
 
 	//Update the editor post-processing system.
 	_EditorPostProcessingSystem.Update();
@@ -407,6 +407,23 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 	if (ImGui::Button("Enter Game"))
 	{
 		SetIsInGame(true);
+	}
+
+	//Opens the camera window.
+	if (_CurrentContextualWindow == ContextualWindow::CAMERA)
+	{
+		if (ImGui::Button("Camera"))
+		{
+			_CurrentContextualWindow = ContextualWindow::NONE;
+		}
+	}
+
+	else
+	{
+		if (ImGui::Button("Camera"))
+		{
+			_CurrentContextualWindow = ContextualWindow::CAMERA;
+		}
 	}
 
 	//Opens the entities window.
@@ -440,23 +457,6 @@ void CatalystEditorSystem::AddMainWindow() NOEXCEPT
 		if (ImGui::Button("Level"))
 		{
 			_CurrentContextualWindow = ContextualWindow::LEVEL;
-		}
-	}
-
-	//Opens the perceiver window.
-	if (_CurrentContextualWindow == ContextualWindow::PERCEIVER)
-	{
-		if (ImGui::Button("Perceiver"))
-		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
-		}
-	}
-
-	else
-	{
-		if (ImGui::Button("Perceiver"))
-		{
-			_CurrentContextualWindow = ContextualWindow::PERCEIVER;
 		}
 	}
 

@@ -33,13 +33,13 @@ void CatalystShaderMain()
     vec3 world_position = vertex_position + WORLD_GRID_DELTA;
 
     //Calculate the forward vector.
-    vec3 forward_vector = PERCEIVER_WORLD_POSITION - world_position;
+    vec3 forward_vector = CAMERA_WORLD_POSITION - world_position;
 
-	//Calculate the distance to perceiver and normalize the forward vector.
+	//Calculate the distance to canera and normalize the forward vector.
     forward_vector.y = 0.0f;
-    float distance_to_perceiver = length(forward_vector);
-    float distance_to_perceiver_reciprocal = 1.0f / distance_to_perceiver;
-    forward_vector *= distance_to_perceiver_reciprocal;
+    float distance_to_camera = length(forward_vector);
+    float distance_to_camera_reciprocal = 1.0f / distance_to_camera;
+    forward_vector *= distance_to_camera_reciprocal;
 
     //Calculate the right vector.
     vec3 right_vector = cross(forward_vector, vec3(0.0f, 1.0f, 0.0f));
@@ -50,9 +50,9 @@ void CatalystShaderMain()
 
     //Calculate the fragment fade opacity.
     float fade_in_range = END_FADE_IN_DISTANCE - START_FADE_IN_DISTANCE;
-    float fade_in = clamp(distance_to_perceiver - START_FADE_IN_DISTANCE, 0.0f, fade_in_range) / fade_in_range;
+    float fade_in = clamp(distance_to_camera - START_FADE_IN_DISTANCE, 0.0f, fade_in_range) / fade_in_range;
     float fade_out_range = END_FADE_OUT_DISTANCE - START_FADE_OUT_DISTANCE;
-    float fade_out = 1.0f - (clamp(distance_to_perceiver - START_FADE_OUT_DISTANCE, 0.0f, fade_out_range) / fade_out_range);
+    float fade_out = 1.0f - (clamp(distance_to_camera - START_FADE_OUT_DISTANCE, 0.0f, fade_out_range) / fade_out_range);
 
     fragment_fade_opacity = min(fade_in, fade_out);
 

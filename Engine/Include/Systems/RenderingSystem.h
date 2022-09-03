@@ -6,11 +6,13 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/Map.h>
 #include <Core/Containers/StaticArray.h>
+#include <Core/General/CatalystProjectConfiguration.h>
 
 //Math.
 #include <Math/General/Matrix.h>
 
 //Rendering.
+#include <Rendering/Native/Camera.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Rendering/Native/DebugRenderingSystem.h>
 #endif
@@ -40,7 +42,6 @@
 #include <World/Core/WorldTransform.h>
 
 //Forward declarations.
-class CatalystProjectRenderingConfiguration;
 class Entity;
 class Resolution;
 class TextureCubeData;
@@ -197,6 +198,32 @@ public:
 		return _Samplers[UNDERLYING(sampler)];
 	}
 	
+	/*
+	*	Creates a new camera.
+	*/
+	RESTRICTED NO_DISCARD Camera *const RESTRICT CreateCamera() NOEXCEPT;
+
+	/*
+	*	Returns the current camera.
+	*/
+	FORCE_INLINE NO_DISCARD Camera *const RESTRICT GetCurrentCamera() NOEXCEPT
+	{
+		return _CurrentCamera;
+	}
+
+	/*
+	*	Sets the current camera.
+	*/
+	FORCE_INLINE void SetCurrentCamera(Camera *const RESTRICT value) NOEXCEPT
+	{
+		_CurrentCamera = value;
+	}
+
+	/*
+	*	Destroys a camera.
+	*/
+	void DestroyCamera(Camera *const RESTRICT camera) NOEXCEPT;
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
 	*	Returns the debug rendering system.
@@ -537,6 +564,9 @@ public:
 
 private:
 
+	//The configuration.
+	CatalystProjectRenderingConfiguration _Configuration;
+
 	//The rendering configuration.
 	RenderingConfiguration _RenderingConfiguration;
 
@@ -583,6 +613,9 @@ private:
 	//The current jitter index.
 	uint8 _CurrentJitterIndex{ 0 };
 
+	//The current camera.
+	Camera *RESTRICT _CurrentCamera{ nullptr };
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//The debug rendering system.
 	DebugRenderingSystem _DebugRenderingSystem;
@@ -618,11 +651,11 @@ private:
 	//The Hammersley hemisphere samples uniform buffer.
 	BufferHandle _HammersleyHemisphereSamplesUniformBuffer;
 
-	//The previous Perceiver world transform.
-	WorldTransform _PreviousPerceiverWorldTransform;
+	//The previous camera world transform.
+	WorldTransform _PreviousCameraWorldTransform;
 
-	//The current Perceiver world transform
-	WorldTransform _CurrentPerceiverWorldTransform;
+	//The current camera world transform
+	WorldTransform _CurrentCameraWorldTransform;
 
 	//Denotes if the rendering system is currently taking a screenshot.
 	bool _IsTakingScreenshot{ false };

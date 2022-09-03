@@ -62,7 +62,7 @@ void CatalystShaderMain()
 	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, depth);
 
 	//Generate the view direction.
-	vec3 view_direction = normalize(world_position - PERCEIVER_WORLD_POSITION);
+	vec3 view_direction = normalize(world_position - CAMERA_WORLD_POSITION);
 
 	//Calculate the direct lighting.
 	vec3 direct_lighting = vec3(0.0f);

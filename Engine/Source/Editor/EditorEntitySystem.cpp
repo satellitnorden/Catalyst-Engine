@@ -2,9 +2,6 @@
 //Header file.
 #include <Editor/EditorEntitySystem.h>
 
-//Core.
-#include <Core/General/Perceiver.h>
-
 //Editor.
 #include <Editor/EditorCore.h>
 #include <Editor/EditorUtilities.h>
@@ -119,11 +116,11 @@ void EditorEntitySystem::Update() NOEXCEPT
 		{
 			/*
 			*	Cast a ray to get the position to place the new entity.
-			*	If there was no hit, just spawn the new entity N meters in front of the perceiver.
+			*	If there was no hit, just spawn the new entity N meters in front of the camera.
 			*/
 			Ray ray;
 
-			ray.SetOrigin(Perceiver::Instance->GetWorldTransform().GetAbsolutePosition());
+			ray.SetOrigin(RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
 			ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY)));
 
 			RaycastConfiguration configuration;

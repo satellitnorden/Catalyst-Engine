@@ -114,11 +114,11 @@ void CatalystShaderMain()
 
 	//Retrieve all properties.
 	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w);
-	float hit_distance = length(world_position - PERCEIVER_WORLD_POSITION);
+	float hit_distance = length(world_position - CAMERA_WORLD_POSITION);
 	float hit_distance_reciprocal = 1.0f / hit_distance;
 
 	//Generate the ray direction.
-	vec3 ray_direction = (world_position - PERCEIVER_WORLD_POSITION) * hit_distance_reciprocal;
+	vec3 ray_direction = (world_position - CAMERA_WORLD_POSITION) * hit_distance_reciprocal;
 
 	//Calculate the volumetric lighting.
 	vec3 volumetric_lighting = vec3(0.0f);
@@ -147,7 +147,7 @@ void CatalystShaderMain()
 				case LIGHT_TYPE_DIRECTIONAL:
 				{
 					//Calculate the light world position.
-					vec3 light_world_position = PERCEIVER_WORLD_POSITION + light.position_or_direction * VIEW_DISTANCE;
+					vec3 light_world_position = CAMERA_WORLD_POSITION + light.position_or_direction * VIEW_DISTANCE;
 
 					//Calculate the light screen space position.
 					vec3 light_screen_space_position;
@@ -165,7 +165,7 @@ void CatalystShaderMain()
 					float screen_factor = min(abs(light_screen_space_position.x - 0.5f) * abs(light_screen_space_position.y - 0.5f), 1.0f);
 					screen_factor *= screen_factor;
 					screen_factor = 1.0f - screen_factor;
-					screen_factor = dot(light.position_or_direction, PERCEIVER_FORWARD_VECTOR) <= 0.0f ? screen_factor : 0.0f;
+					screen_factor = dot(light.position_or_direction, CAMERA_FORWARD_VECTOR) <= 0.0f ? screen_factor : 0.0f;
 
 					for (uint sample_index = 0; sample_index < NUMBER_OF_DIRECTIONAL_LIGHT_SAMPLES; ++sample_index)
 					{
@@ -173,7 +173,7 @@ void CatalystShaderMain()
 						float volumetric_particle_hit_distance = min(hit_distance, VOLUMETRIC_LIGHTING_DISTANCE) * GetDitheredSampleOffset(sample_offsets, current_sample_offset_index++);
 
 						//Calculate the volumetric particle hit position.
-						vec3 volumetric_particle_hit_position = PERCEIVER_WORLD_POSITION + ray_direction * volumetric_particle_hit_distance;
+						vec3 volumetric_particle_hit_position = CAMERA_WORLD_POSITION + ray_direction * volumetric_particle_hit_distance;
 
 						//Calculate the volumetric particle screen space position.
 						vec3 volumetric_particle_screen_space_position;
@@ -208,7 +208,7 @@ void CatalystShaderMain()
 					//Do a ray/sphere intersection to determine the volumetric particle hit distance.
 					Ray ray;
 
-					ray._Origin = PERCEIVER_WORLD_POSITION;
+					ray._Origin = CAMERA_WORLD_POSITION;
 					ray._Direction = ray_direction;
 
 					Sphere sphere;
@@ -293,11 +293,11 @@ void CatalystShaderMain()
 							//Calculate the light to volumetric particle opacity.
 							float light_to_volumetric_particle_opacity = CalculateVolumetricLightingOpacity(distance_to_light, VOLUMETRIC_LIGHTING_DISTANCE, light.position_or_direction.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, volumetric_particle_hit_position.y);
 
-							//Calculate the volumetric particle to perceiver opacity.
-							float volumetric_particle_to_perceiver_opacity = CalculateVolumetricLightingOpacity(volumetric_particle_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, volumetric_particle_hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_ABSOLUTE_HEIGHT);
+							//Calculate the volumetric particle to camera opacity.
+							float volumetric_particle_to_camera_opacity = CalculateVolumetricLightingOpacity(volumetric_particle_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, volumetric_particle_hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, CAMERA_ABSOLUTE_HEIGHT);
 
 							//Add to the volumetric lighting.
-							volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * attenuation * (1.0f - light_to_volumetric_particle_opacity) * (1.0f - volumetric_particle_to_perceiver_opacity) * hit_factor / float(NUMBER_OF_POINT_LIGHT_SAMPLES);
+							volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * attenuation * (1.0f - light_to_volumetric_particle_opacity) * (1.0f - volumetric_particle_to_camera_opacity) * hit_factor / float(NUMBER_OF_POINT_LIGHT_SAMPLES);
 						}
 					}
 

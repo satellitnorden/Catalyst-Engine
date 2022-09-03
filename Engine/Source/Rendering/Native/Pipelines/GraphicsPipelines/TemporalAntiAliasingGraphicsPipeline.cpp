@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TemporalAntiAliasingGraphicsPipeline.h>
 
-//Core.
-#include <Core/General/Perceiver.h>
-
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 #include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>

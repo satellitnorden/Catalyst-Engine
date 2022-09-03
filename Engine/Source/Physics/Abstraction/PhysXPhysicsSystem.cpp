@@ -228,29 +228,29 @@ namespace PhysXPhysicsSystemLogic
 	*/
 	FORCE_INLINE void UpdateTerrainHeightField() NOEXCEPT
 	{
-		//Cache the perceiver current world position.
-		const Vector3<float32> perceiver_world_position{ Perceiver::Instance->GetWorldTransform().GetWorldPosition().GetAbsolutePosition() };
+		//Cache the current camera world position.
+		const Vector3<float32> current_camera_world_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetWorldPosition().GetAbsolutePosition() };
 
-		//Calculate the perceiver grid point.
-		GridPoint2 perceiver_grid_point{ GridPoint2::WorldPositionToGridPoint(perceiver_world_position, static_cast<float32>(PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE)) };
+		//Calculate the camera grid point.
+		GridPoint2 camera_grid_point{ GridPoint2::WorldPositionToGridPoint(current_camera_world_position, static_cast<float32>(PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE)) };
 
-		perceiver_grid_point._X = -perceiver_grid_point._X;
-		//perceiver_grid_point._Y = -perceiver_grid_point._Y;
+		camera_grid_point._X = -camera_grid_point._X;
+		//camera_grid_point._Y = -camera_grid_point._Y;
 
 		//Cache the valid grid points.
 		const StaticArray<GridPoint2, 9> valid_grid_points
 		{
-			perceiver_grid_point + GridPoint2(0, 0),
+			camera_grid_point + GridPoint2(0, 0),
 
-			perceiver_grid_point + GridPoint2(-1, 0),
-			perceiver_grid_point + GridPoint2(1, 0),
-			perceiver_grid_point + GridPoint2(0, -1),
-			perceiver_grid_point + GridPoint2(0, 1),
+			camera_grid_point + GridPoint2(-1, 0),
+			camera_grid_point + GridPoint2(1, 0),
+			camera_grid_point + GridPoint2(0, -1),
+			camera_grid_point + GridPoint2(0, 1),
 
-			perceiver_grid_point + GridPoint2(-1, -1),
-			perceiver_grid_point + GridPoint2(-1, 1),
-			perceiver_grid_point + GridPoint2(1, -1),
-			perceiver_grid_point + GridPoint2(1, 1)
+			camera_grid_point + GridPoint2(-1, -1),
+			camera_grid_point + GridPoint2(-1, 1),
+			camera_grid_point + GridPoint2(1, -1),
+			camera_grid_point + GridPoint2(1, 1)
 		};
 
 		//Remove terrain data with grid points that aren't valid.

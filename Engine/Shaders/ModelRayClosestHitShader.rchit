@@ -379,7 +379,7 @@ void CatalystShaderMain()
 		volumetric_lighting += CalculateVolumetricAmbientLighting();
 
 		//Calculate the volumetric lighting opacity.
-		volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(volumetric_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_WORLD_POSITION.y);
+		volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(volumetric_hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, CAMERA_WORLD_POSITION.y);
 	}
 
 	//Write to the ray payload.

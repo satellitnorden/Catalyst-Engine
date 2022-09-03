@@ -169,12 +169,12 @@ private:
 	/*
 	*	Checks combination of a node.
 	*/
-	void CheckCombination(const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
+	void CheckCombination(const Vector3<float32> &camera_position, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Checks subdivisions of a node.
 	*/
-	void CheckSubdivision(const Vector3<float>& perceiverPosition, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT;
+	void CheckSubdivision(const Vector3<float32> &camera_position, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Traverses the quad tree, calculates new borders for all nodes and fills in the update.

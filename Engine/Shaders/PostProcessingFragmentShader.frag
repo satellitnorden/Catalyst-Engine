@@ -133,7 +133,7 @@ void CatalystShaderMain()
 	vec3 fragment_direction = CalculateRayDirection(fragment_texture_coordinate);
 
 	//Calculate the edge factor.
-	float edge_factor = max(dot(PERCEIVER_FORWARD_VECTOR, fragment_direction), 0.0f);
+	float edge_factor = max(dot(CAMERA_FORWARD_VECTOR, fragment_direction), 0.0f);
 
 	//Sample with chromatic aberration.
 	vec3 post_processed_fragment = SampleWithChromaticAberration(edge_factor, fragment_texture_coordinate);

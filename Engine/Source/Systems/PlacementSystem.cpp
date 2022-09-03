@@ -3,7 +3,6 @@
 
 //Core.
 #include <Core/Algorithms/SortingAlgorithms.h>
-#include <Core/General/Perceiver.h>
 
 //Math.
 #include <Math/Geometry/GridPoint2.h>
@@ -12,6 +11,7 @@
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/MemorySystem.h>
+#include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 
 //Singleton definition.
@@ -72,9 +72,9 @@ void PlacementSystem::AsynchronousUpdate(PlacementData *const RESTRICT placement
 		return;
 	}
 
-	//Calculate the current grid point based on the perceiver's position.
-	const Vector3<float32> perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
-	const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(perceiver_position, placement_data->_GridSize) };
+	//Calculate the current grid point based on the camera's position.
+	const Vector3<float32> camera_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
+	const GridPoint2 current_grid_point{ GridPoint2::WorldPositionToGridPoint(camera_position, placement_data->_GridSize) };
 
 	//Calculate the wanted grid points.
 	DynamicArray<GridPoint2> wanted_grid_points;
@@ -90,7 +90,7 @@ void PlacementSystem::AsynchronousUpdate(PlacementData *const RESTRICT placement
 		}
 	}
 
-	//Sort the wanted grid points so that the one's nearest the perceiver appears first.
+	//Sort the wanted grid points so that the one's nearest the camera appears first.
 	SortingAlgorithms::InsertionSort<GridPoint2>(
 	wanted_grid_points.Begin(),
 	wanted_grid_points.End(),
@@ -99,12 +99,12 @@ void PlacementSystem::AsynchronousUpdate(PlacementData *const RESTRICT placement
 	{
 		const PlacementData *const RESTRICT data{ static_cast<const PlacementData *const RESTRICT>(user_data) };
 
-		const Vector3<float32> perceiver_position{ Perceiver::Instance->GetWorldTransform().GetAbsolutePosition() };
+		const Vector3<float32> camera_position{ RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
 
 		const Vector3<float32> first_position{ GridPoint2::GridPointToWorldPosition(*first, data->_GridSize) };
 		const Vector3<float32> second_position{ GridPoint2::GridPointToWorldPosition(*second, data->_GridSize) };
 
-		return Vector3<float32>::LengthSquaredXZ(first_position - perceiver_position) < Vector3<float>::LengthSquaredXZ(second_position - perceiver_position);
+		return Vector3<float32>::LengthSquaredXZ(first_position - camera_position) < Vector3<float>::LengthSquaredXZ(second_position - camera_position);
 	});
 
 	//Compare the grid points in the placement data to the wanted grid points and destroy entities if they shouldn't exist.

@@ -1,9 +1,6 @@
 #if defined(CATALYST_EDITOR)
 //Header file.
-#include <Editor/EditorPerceiverSystem.h>
-
-//Core.
-#include <Core/General/Perceiver.h>
+#include <Editor/EditorCameraSystem.h>
 
 //Editor.
 #include <Editor/EditorCore.h>
@@ -18,19 +15,19 @@
 #include <ThirdParty/imgui.h>
 
 /*
-*	Updates the editor perceiver systen .
+*	Updates the editor camera systen.
 */
-void EditorPerceiverSystem::Update() NOEXCEPT
+void EditorCameraSystem::Update() NOEXCEPT
 {
 	//Define constants.
 	constexpr float32 MOUSE_ROTATION_SPEED{ CatalystBaseMath::DegreesToRadians(90.0f) };
 	constexpr float32 GAMEPAD_ROTATION_SPEED{ CatalystBaseMath::DegreesToRadians(45.0f) };
 	
-	//Is the current contextual window PERCEIVER?
-	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() == CatalystEditorSystem::ContextualWindow::PERCEIVER)
+	//Is the current contextual window CAMERA?
+	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() == CatalystEditorSystem::ContextualWindow::CAMERA)
 	{
 		//Add the entities window.
-		ImGui::Begin("Perceiver", nullptr, EditorConstants::WINDOW_FLAGS);
+		ImGui::Begin("Camera", nullptr, EditorConstants::WINDOW_FLAGS);
 		EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
 		ImGui::DragFloat("Movement Speed", &_MovementSpeed);
@@ -86,10 +83,10 @@ void EditorPerceiverSystem::Update() NOEXCEPT
 	_Position += right_vector * gamepad_state->_LeftThumbstickX * _MovementSpeed * delta_time;
 #endif
 
-	//Set the world transform for the Perceiver.
+	//Set the world transform for the camera.
 	{
 		WorldTransform world_transform{ _Position, _Rotation, 1.0f };
-		Perceiver::Instance->SetWorldTransform(world_transform);
+		RenderingSystem::Instance->GetCurrentCamera()->SetWorldTransform(world_transform);
 	}
 }
 #endif

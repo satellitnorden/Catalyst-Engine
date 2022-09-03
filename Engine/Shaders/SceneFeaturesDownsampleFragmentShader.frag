@@ -21,7 +21,7 @@ void CatalystShaderMain()
 	//Calculate the texel offset.
 	vec2 texel_offset = vec2(INVERSE_SCALED_RESOLUTION.x * 0.5f, INVERSE_SCALED_RESOLUTION.y * 0.5f);
 
-	//Compare the depths in the scene features 2 texture. Choose the texel for the downsample with the depth closest to the perceiver.
+	//Compare the depths in the scene features 2 texture. Choose the texel for the downsample with the depth closest to the camera.
 	vec4 scene_features_2_sample_1 = texture(SCENE_FEATURES_2_TEXTURE, fragment_texture_coordinate + vec2(-texel_offset.x, -texel_offset.y));
 	vec4 scene_features_2_sample_2 = texture(SCENE_FEATURES_2_TEXTURE, fragment_texture_coordinate + vec2(-texel_offset.x, texel_offset.y));
 	vec4 scene_features_2_sample_3 = texture(SCENE_FEATURES_2_TEXTURE, fragment_texture_coordinate + vec2(texel_offset.x, -texel_offset.y));

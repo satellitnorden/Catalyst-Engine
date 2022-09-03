@@ -2,9 +2,6 @@
 //Header file.
 #include <Editor/EditorSelectionSystem.h>
 
-//Core.
-#include <Core/General/Perceiver.h>
-
 //Componens.
 #include <Components/Core/ComponentManager.h>
 
@@ -60,7 +57,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 	//Calculate the ray.
 	Ray ray;
 
-	ray.SetOrigin(Perceiver::Instance->GetWorldTransform().GetAbsolutePosition());
+	ray.SetOrigin(RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
 	ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY)));
 
 	if (_CurrentlySelectedEntityOverride)
@@ -80,7 +77,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 		{
 			Ray ray;
 
-			ray.SetOrigin(Perceiver::Instance->GetWorldTransform().GetAbsolutePosition());
+			ray.SetOrigin(RenderingSystem::Instance->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
 			ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY)));
 
 			RaycastConfiguration configuration;

@@ -45,7 +45,7 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 	else
 	{
 		features.hit_position = CalculateWorldPosition(fragment_texture_coordinate, sceneFeatures2.w);
-		features.hit_distance = length(features.hit_position - PERCEIVER_WORLD_POSITION);
+		features.hit_distance = length(features.hit_position - CAMERA_WORLD_POSITION);
 	}
 
 	return features;
@@ -112,7 +112,7 @@ void CatalystShaderMain()
 	vec3 current_volumetric_lighting = SampleVolumetricLighting(fragment_texture_coordinate);
 
 	//Calculate the volumetric lighting opacity.
-	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(current_features.hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, current_features.hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, PERCEIVER_WORLD_POSITION.y);
+	float volumetric_lighting_opacity = CalculateVolumetricLightingOpacity(current_features.hit_distance, VOLUMETRIC_LIGHTING_DISTANCE, current_features.hit_position.y, VOLUMETRIC_LIGHTING_HEIGHT, VOLUMETRIC_LIGHTING_THICKNESS, CAMERA_WORLD_POSITION.y);
 
 	//Write the fragment.
 	fragment = vec4(current_volumetric_lighting.rgb, volumetric_lighting_opacity);
