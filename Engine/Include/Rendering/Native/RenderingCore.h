@@ -321,11 +321,6 @@ enum class PipelineStageFlags : uint8
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the velocity in the RG channels.
-	*/
-	SCENE_FEATURES_4,
-
-	/*
 	*	Contains the albedo in the RGB channels and the material index in the A channel at half resolution.
 	*/
 	SCENE_FEATURES_1_HALF,
@@ -406,6 +401,32 @@ enum class RenderTarget : uint8
 	INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH,
 
 	NUMBER_OF_RENDER_TARGETS
+};
+
+//Enumeration covering all shared render targets.
+enum class SharedRenderTarget : uint8
+{
+	/*
+	*	Contains the albedo in the RGB channels and the material index in the A channel.
+	*/
+	SCENE_FEATURES_1,
+
+	/*
+	*	Contains the shading normal in the RGB channels and the depth in the A channel.
+	*/
+	SCENE_FEATURES_2,
+
+	/*
+	*	Contains the roughness in the R channel, metallic in the G channel, ambient occlusion in the B channel and the luminance in the A channel.
+	*/
+	SCENE_FEATURES_3,
+
+	/*
+	*	Contains the velocity in the RG channels.
+	*/
+	SCENE_FEATURES_4,
+
+	NUMBER_OF_SHARED_RENDER_TARGETS
 };
 
 //Enumeration covering all samplers.

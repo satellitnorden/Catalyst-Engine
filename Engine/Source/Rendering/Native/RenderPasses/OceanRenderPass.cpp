@@ -6,7 +6,6 @@
 
 //Rendering.
 #include <Rendering/Native/NativeRenderPassManager.h>
-#include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -56,8 +55,8 @@ void OceanRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_OceanSceneFeaturesGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_SceneFeatures1CopyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget(), RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_UINT8));
-	_SceneFeatures2CopyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget(), RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
+	_SceneFeatures1CopyGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1), RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_UINT8));
+	_SceneFeatures2CopyGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
 	_OceanSceneFeaturesGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
 }
 

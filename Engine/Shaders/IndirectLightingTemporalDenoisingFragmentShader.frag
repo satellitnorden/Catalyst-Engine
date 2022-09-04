@@ -12,11 +12,11 @@ layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 DELTA;
 	layout (offset = 8) uint SOURCE_RENDER_TARGET_INDEX;
-	layout (offset = 12) uint SCENE_FEATURES_4_TARGET_INDEX;
 };
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D PREVIOUS_TEMPORAL_BUFFER;
+layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_4;
+layout (set = 1, binding = 1) uniform sampler2D PREVIOUS_TEMPORAL_BUFFER;
 
 //Out parameters.
 layout (location = 0) out vec4 current_indirect_lighting;
@@ -67,7 +67,7 @@ void CatalystShaderMain()
 	}
 
 	//Calculate the previous screen coordinate.
-	vec2 previous_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER - PREVIOUS_FRAME_JITTER - texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).xy;
+	vec2 previous_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER - PREVIOUS_FRAME_JITTER - texture(SCENE_FEATURES_4, fragment_texture_coordinate).xy;
 
 	//Sample the previous indirect lighting texture.
 	vec4 previous_indirect_lighting_texture_sampler = texture(PREVIOUS_TEMPORAL_BUFFER, previous_screen_coordinate);

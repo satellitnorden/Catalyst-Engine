@@ -22,16 +22,13 @@ public:
 	//The source render target index.
 	uint32 _SourceRenderTargetIndex;
 
-	//The scene features 4 render target index.
-	uint32 _SceneFeatures4RenderTargetIndex;
-
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
 void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32 source_render_target_index,
-																	const uint32 scene_features_4_render_target_index,
+																	const RenderTargetHandle scene_features_4_render_target,
 																	const RenderTargetHandle previous_temporal_buffer,
 																	const RenderTargetHandle target_1,
 																	const RenderTargetHandle target_2,
@@ -44,13 +41,10 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable(previous_temporal_buffer);
+	CreateRenderDataTable(scene_features_4_render_target, previous_temporal_buffer);
 
 	//Set the source render target index.
 	_SourceRenderTargetIndex = source_render_target_index;
-
-	//Set the scene features 4 render target index.
-	_SceneFeatures4RenderTargetIndex = scene_features_4_render_target_index;
 
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -130,7 +124,6 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Execute() NOEXCEPT
 
 	data._Delta = Vector2<float32>(1.0f / static_cast<float32>(GetRenderResolution()._Width), 1.0f / static_cast<float32>(GetRenderResolution()._Height));
 	data._SourceRenderTargetIndex = _SourceRenderTargetIndex;
-	data._SceneFeatures4RenderTargetIndex = _SceneFeatures4RenderTargetIndex;
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingTemporalDenoisingPushConstantData), &data);
 
@@ -169,9 +162,10 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Terminate() NOEXCEPT
 */
 void IndirectLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -180,9 +174,10 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTableLay
 /*
 *	Creates the render data table.
 */
-void IndirectLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle previous_temporal_buffer) NOEXCEPT
+void IndirectLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle scene_features_4_render_target, const RenderTargetHandle previous_temporal_buffer) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, previous_temporal_buffer, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, scene_features_4_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, previous_temporal_buffer, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 }

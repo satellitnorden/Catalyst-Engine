@@ -3,7 +3,6 @@
 
 //Rendering.
 #include <Rendering/Native/NativeRenderPassManager.h>
-#include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -68,7 +67,7 @@ void PostSceneFeaturesRenderPass::Initialize() NOEXCEPT
 		if (i == 0)
 		{
 			_DepthDownsampleGraphicsPipelines[i].Initialize(i,
-															SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget(),
+															RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2),
 															_DepthMipChain[i]);
 		}
 

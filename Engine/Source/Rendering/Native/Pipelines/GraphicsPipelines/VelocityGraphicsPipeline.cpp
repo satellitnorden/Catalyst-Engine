@@ -28,7 +28,7 @@ void VelocityGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) N
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_4));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

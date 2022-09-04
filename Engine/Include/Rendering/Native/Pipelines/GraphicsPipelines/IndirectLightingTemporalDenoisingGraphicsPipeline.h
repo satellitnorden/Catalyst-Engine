@@ -19,7 +19,7 @@ public:
 	*	Initializes this graphics pipeline.
 	*/
 	void Initialize(const uint32 source_render_target_index,
-					const uint32 scene_features_4_render_target_index,
+					const RenderTargetHandle scene_features_4_render_target,
 					const RenderTargetHandle previous_temporal_buffer,
 					const RenderTargetHandle target_1,
 					const RenderTargetHandle target_2,
@@ -46,9 +46,6 @@ private:
 	//The source render target index.
 	uint32 _SourceRenderTargetIndex;
 
-	//The scene features 4 render target index.
-	uint32 _SceneFeatures4RenderTargetIndex;
-
 	/*
 	*	Creates the render data table layout.
 	*/
@@ -57,6 +54,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable(const RenderTargetHandle previous_temporal_buffer) NOEXCEPT;
+	void CreateRenderDataTable(const RenderTargetHandle scene_features_4_render_target, const RenderTargetHandle previous_temporal_buffer) NOEXCEPT;
 
 };

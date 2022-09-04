@@ -14,6 +14,9 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
+//Texture samplers.
+layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_4_TEXTURE;
+
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
@@ -22,7 +25,7 @@ layout (location = 0) out vec4 fragment;
 */
 vec2 GetVelocity()
 {
-	return texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).xy;
+	return texture(SCENE_FEATURES_4_TEXTURE, fragment_texture_coordinate).xy;
 }
 
 void CatalystShaderMain()

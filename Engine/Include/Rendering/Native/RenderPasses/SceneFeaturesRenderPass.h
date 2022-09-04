@@ -39,30 +39,6 @@ public:
 	SceneFeaturesRenderPass() NOEXCEPT;
 
 	/*
-	*	Returns the scene features 1 render target.
-	*/
-	FORCE_INLINE NO_DISCARD RenderTargetHandle GetSceneFeatures1RenderTarget() NOEXCEPT
-	{
-		return _SceneFeatures1RenderTarget;
-	}
-
-	/*
-	*	Returns the scene features 2 render target.
-	*/
-	FORCE_INLINE NO_DISCARD RenderTargetHandle GetSceneFeatures2RenderTarget() NOEXCEPT
-	{
-		return _SceneFeatures2RenderTarget;
-	}
-
-	/*
-	*	Returns the scene features 3 render target.
-	*/
-	FORCE_INLINE NO_DISCARD RenderTargetHandle GetSceneFeatures3RenderTarget() NOEXCEPT
-	{
-		return _SceneFeatures3RenderTarget;
-	}
-
-	/*
 	*	Returns the scene depth buffer.
 	*/
 	FORCE_INLINE NO_DISCARD DepthBufferHandle GetSceneDepthBuffer() NOEXCEPT
@@ -71,21 +47,6 @@ public:
 	}
 
 private:
-
-	/*
-	*	Contains the albedo in the RGB channels and the material index in the A channel.
-	*/
-	RenderTargetHandle _SceneFeatures1RenderTarget;
-
-	/*
-	*	Contains the shading normal in the RGB channels and the depth in the A channel.
-	*/
-	RenderTargetHandle _SceneFeatures2RenderTarget;
-
-	/*
-	*	Contains the roughness in the R channel, metallic in the G channel, ambient occlusion in the B channel and the luminance in the A channel.
-	*/
-	RenderTargetHandle _SceneFeatures3RenderTarget;
 
 	//The scene depth buffer.
 	DepthBufferHandle _SceneDepthBuffer{ EMPTY_HANDLE };

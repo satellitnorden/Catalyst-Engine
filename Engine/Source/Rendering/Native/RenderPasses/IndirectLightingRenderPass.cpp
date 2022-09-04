@@ -3,7 +3,6 @@
 
 //Rendering.
 #include <Rendering/Native/NativeRenderPassManager.h>
-#include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -167,8 +166,8 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 					1,
 					0,
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
-					SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget(),
-					SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget(),
+					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2),
+					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2),
 					resolution
 				);
@@ -178,8 +177,8 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 					1,
 					1,
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2),
-					SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget(),
-					SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget(),
+					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2),
+					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
 					resolution
 				);
@@ -201,13 +200,13 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 			case RenderingConfiguration::IndirectLightingQuality::LOW:
 			{
 				_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX,
-																					CatalystShaderConstants::SCENE_FEATURES_4_HALF_RENDER_TARGET_INDEX,
+																					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4_HALF),
 																					_TemporalIndirectLightingBuffers[1],
 																					_TemporalIndirectLightingBuffers[0],
 																					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
 																					resolution);
 				_IndirectLightingTemporalDenoisingGraphicsPipelines[1].Initialize(	CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX,
-																					CatalystShaderConstants::SCENE_FEATURES_4_HALF_RENDER_TARGET_INDEX,
+																					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_4_HALF),
 																					_TemporalIndirectLightingBuffers[0],
 																					_TemporalIndirectLightingBuffers[1],
 																					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
@@ -219,13 +218,13 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 			case RenderingConfiguration::IndirectLightingQuality::HIGH:
 			{
 				_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX,
-																					CatalystShaderConstants::SCENE_FEATURES_4_RENDER_TARGET_INDEX,
+																					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_4),
 																					_TemporalIndirectLightingBuffers[1],
 																					_TemporalIndirectLightingBuffers[0],
 																					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
 																					resolution);
 				_IndirectLightingTemporalDenoisingGraphicsPipelines[1].Initialize(	CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX,
-																					CatalystShaderConstants::SCENE_FEATURES_4_RENDER_TARGET_INDEX,
+																					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_4),
 																					_TemporalIndirectLightingBuffers[0],
 																					_TemporalIndirectLightingBuffers[1],
 																					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),

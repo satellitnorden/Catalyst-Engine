@@ -27,6 +27,7 @@
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/SamplerProperties.h>
+#include <Rendering/Native/SharedRenderTargetManager.h>
 #include <Rendering/Native/SubRenderingSystemInterface.h>
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
@@ -196,6 +197,14 @@ public:
 	SamplerHandle GetSampler(const Sampler sampler) const NOEXCEPT
 	{
 		return _Samplers[UNDERLYING(sampler)];
+	}
+
+	/*
+	*	Returns the shared render target manager.
+	*/
+	RESTRICTED NO_DISCARD SharedRenderTargetManager *const RESTRICT GetSharedRenderTargetManager() NOEXCEPT
+	{
+		return &_SharedRenderTargetManager;
 	}
 
 	/*
@@ -594,6 +603,9 @@ private:
 
 	//The current jitter index.
 	uint8 _CurrentJitterIndex{ 0 };
+
+	//The shared render target manager.
+	SharedRenderTargetManager _SharedRenderTargetManager;
 
 	//The camera system.
 	CameraSystem _CameraSystem;

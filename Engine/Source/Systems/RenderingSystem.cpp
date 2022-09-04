@@ -116,6 +116,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	//Pre-initialize the sub rendering system.
 	_SubRenderingSystem->PreInitialize();
 
+	//Initialize the shared render target manager.
+	_SharedRenderTargetManager.Initialize(_CurrentRenderingPath);
+
 	//Initialize all render targets.
 	InitializeRenderTargets();
 
@@ -364,6 +367,9 @@ void RenderingSystem::SetCurrentRenderingPath(const RenderingPath value) NOEXCEP
 	//Set the current rendering path.
 	_CurrentRenderingPath = value;
 
+	//Alert the shared render target manager.
+	_SharedRenderTargetManager.OnSwitchRenderingPath(_CurrentRenderingPath);
+
 	//Re-retrieve the render passes.
 	NativeRenderPassManager::GetRenderPasses(_CurrentRenderingPath, &_RenderPasses);
 
@@ -495,13 +501,6 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 	{
 		switch (render_target)
 		{
-			case RenderTarget::SCENE_FEATURES_4:
-			{
-				CreateRenderTarget(GetScaledResolution(0), TextureFormat::RG_FLOAT16, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4)]);
-
-				break;
-			}
-
 			case RenderTarget::SCENE_FEATURES_1_HALF:
 			{
 				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_1_HALF)]);
@@ -1189,7 +1188,6 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all render targets.
-	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RG_FLOAT16, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_1_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_2_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3_HALF)]);

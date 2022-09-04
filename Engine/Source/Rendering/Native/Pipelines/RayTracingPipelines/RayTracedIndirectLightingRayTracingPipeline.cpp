@@ -9,7 +9,6 @@
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
-#include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -208,9 +207,9 @@ void RayTracedIndirectLightingRayTracingPipeline::CreateRenderDataTable() NOEXCE
 		case RenderingConfiguration::IndirectLightingQuality::HIGH:
 		{
 			RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
-			RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
-			RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &_RenderDataTable, SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget());
-			RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &_RenderDataTable, SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
+			RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
+			RenderingSystem::Instance->BindStorageImageToRenderDataTable(2, 0, &_RenderDataTable, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2));
+			RenderingSystem::Instance->BindStorageImageToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
 
 			break;
 		}

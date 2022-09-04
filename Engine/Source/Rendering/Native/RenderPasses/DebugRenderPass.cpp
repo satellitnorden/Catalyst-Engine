@@ -4,7 +4,6 @@
 
 //Rendering.
 #include <Rendering/Native/NativeRenderPassManager.h>
-#include <Rendering/Native/RenderPasses/SceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -52,7 +51,7 @@ void DebugRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_DebugGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_DebugGraphicsPipeline.Initialize(static_cast<uint32>(Mode::NONE), SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
+	_DebugGraphicsPipeline.Initialize(static_cast<uint32>(Mode::NONE), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
 }
 
 /*
@@ -79,7 +78,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
 
 				break;
 			}
@@ -91,7 +90,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures1RenderTarget());
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2));
 
 				break;
 			}
@@ -103,7 +102,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget());
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2));
 
 				break;
 			}
@@ -115,7 +114,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures2RenderTarget());
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2));
 
 				break;
 			}
@@ -127,7 +126,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
 
 				break;
 			}
@@ -139,7 +138,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
 
 				break;
 			}
@@ -151,7 +150,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
 
 				break;
 			}
@@ -163,7 +162,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), SceneFeaturesRenderPass::Instance->GetSceneFeatures3RenderTarget());
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
 
 				break;
 			}
