@@ -15,6 +15,12 @@ public:
 	//The header.
 	ResourceHeader _Header;
 
+	//The file path from which this resource was loaded from.
+	const char *RESTRICT _FilePath;
+
+	//The file offset from which this resource was loaded from.
+	uint64 _FileOffset;
+
 	//The reference count.
 	uint32 _ReferenceCount{ 0 };
 

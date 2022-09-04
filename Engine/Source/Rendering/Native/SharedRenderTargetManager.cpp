@@ -44,6 +44,13 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = false;
 
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_1_HALF)]._Resolution = RenderingSystem::Instance->GetScaledResolution(1);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_1_HALF)]._TextureFormat = TextureFormat::RGBA_UINT8;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_1_HALF)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_1_HALF)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_1_HALF)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_1_HALF)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = false;
+
 	//Create the required shared render targets.
 	for (uint8 i{ 0 }; i < UNDERLYING(SharedRenderTarget::NUMBER_OF_SHARED_RENDER_TARGETS); ++i)
 	{

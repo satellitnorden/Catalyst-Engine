@@ -19,6 +19,7 @@ public:
 	*/
 	BinaryFile(const char *const RESTRICT file_path) NOEXCEPT
 		:
+		_FilePath(file_path),
 		_FileStream(file_path, std::ios::in | std::ios::binary | std::ios::ate)
 	{
 		//Save the size.
@@ -32,6 +33,14 @@ public:
 	FORCE_INLINE NO_DISCARD operator bool() NOEXCEPT
 	{
 		return static_cast<bool>(_FileStream);
+	}
+
+	/*
+	*	Returns the file path.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT GetFilePath() const NOEXCEPT
+	{
+		return _FilePath;
 	}
 
 	/*
@@ -103,6 +112,9 @@ public:
 
 private:
 
+	//The file path.
+	const char *RESTRICT _FilePath;
+
 	//The underlying file stream.
 	std::ifstream _FileStream;
 
@@ -130,9 +142,18 @@ public:
 	*/
 	BinaryFile(const char *const RESTRICT file_path) NOEXCEPT
 		:
+		_FilePath(file_path),
 		_FileStream(file_path, std::ios::out | std::ios::binary)
 	{
 
+	}
+
+	/*
+	*	Returns the file path.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT GetFilePath() const NOEXCEPT
+	{
+		return _FilePath;
 	}
 
 	/*
@@ -152,6 +173,9 @@ public:
 	}
 
 private:
+
+	//The file path.
+	const char *RESTRICT _FilePath;
 
 	//The underlying file stream.
 	std::ofstream _FileStream;
