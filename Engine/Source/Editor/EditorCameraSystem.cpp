@@ -30,7 +30,38 @@ void EditorCameraSystem::Update() NOEXCEPT
 		ImGui::Begin("Camera", nullptr, EditorConstants::WINDOW_FLAGS);
 		EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
+		//Add a slider for the movement speed.
 		ImGui::DragFloat("Movement Speed", &_MovementSpeed);
+
+		//Add a slider for the aperture.
+		{
+			float32 aperture{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetAperture() };
+
+			if (ImGui::DragFloat("Aperture", &aperture, 0.01f, 0.0f, 1.0f))
+			{
+				RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->SetAperture(aperture);
+			}
+		}
+
+		//Add a checkbox for automatic focal distance.
+		{
+			bool automatic_focal_distance{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetAutomaticFocalDistance() };
+
+			if (ImGui::Checkbox("Automatic Focal Distance", &automatic_focal_distance))
+			{
+				RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->SetAutomaticFocalDistance(automatic_focal_distance);
+			}
+		}
+
+		//Add a slider for the focal distance.
+		{
+			float32 focal_distance{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFocalDistance() };
+
+			if (ImGui::DragFloat("Focal Distance", &focal_distance, 0.01f))
+			{
+				RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->SetFocalDistance(focal_distance);
+			}
+		}
 
 		ImGui::End();
 	}

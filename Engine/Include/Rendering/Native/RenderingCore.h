@@ -134,6 +134,7 @@ enum class DefaultNativeRenderPassStage : uint8
 enum class PathTracingNativeRenderPassStage : uint8
 {
 	PATH_TRACING,
+	POST_SCENE_FEATURES,
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DEBUG_RENDERING,
 #endif
