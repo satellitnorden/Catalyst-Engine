@@ -3,7 +3,7 @@
 #include "CatalystRayTracingCore.glsl"
 
 //Constants.
-#define MAXIMUM_NUMBER_OF_SAMPLES (16)
+#define MAXIMUM_NUMBER_OF_SAMPLES (32)
 
 //Layout specification.
 layout (early_fragment_tests) in;

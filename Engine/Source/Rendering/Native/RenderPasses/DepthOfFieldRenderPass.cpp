@@ -47,13 +47,33 @@ void DepthOfFieldRenderPass::Initialize() NOEXCEPT
 	ResetRenderPass();
 
 	//Add the pipelines.
-	SetNumberOfPipelines(2);
+	SetNumberOfPipelines(1 + _DepthOfFieldFloodfillBlurGraphicsPipelines.Size() + 1);
 
 	AddPipeline(&_DepthOfFieldBokehBlurGraphicsPipeline);
+
+	for (DepthOfFieldFloodfillBlurGraphicsPipeline &pipeline : _DepthOfFieldFloodfillBlurGraphicsPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
 	AddPipeline(&_DepthOfFieldApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_DepthOfFieldBokehBlurGraphicsPipeline.Initialize();
+
+	_DepthOfFieldFloodfillBlurGraphicsPipelines[0].Initialize
+	(
+		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1),
+		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_2),
+		0
+	);
+	_DepthOfFieldFloodfillBlurGraphicsPipelines[1].Initialize
+	(
+		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_2),
+		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1),
+		1
+	);
+
 	_DepthOfFieldApplicationGraphicsPipeline.Initialize();
 }
 

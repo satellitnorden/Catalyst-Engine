@@ -15,7 +15,8 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_2_TEXTURE;
+layout (set = 1, binding = 0) uniform sampler2D DEPTH_OF_FIELD_TEXTURE;
+layout (set = 1, binding = 1) uniform sampler2D SCENE_FEATURES_2_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -23,7 +24,7 @@ layout (location = 0) out vec4 fragment;
 void CatalystShaderMain()
 {
 	//Sample the depth of field.
-	vec3 depth_of_field = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_QUARTER_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
+	vec3 depth_of_field = texture(DEPTH_OF_FIELD_TEXTURE, fragment_texture_coordinate).rgb;
 
 	//Calculate the view distance.
 	float view_distance = -(CalculateViewSpacePosition(fragment_texture_coordinate, texture(SCENE_FEATURES_2_TEXTURE, fragment_texture_coordinate).w).z);

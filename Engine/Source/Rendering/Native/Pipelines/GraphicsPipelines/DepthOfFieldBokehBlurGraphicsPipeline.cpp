@@ -49,7 +49,7 @@ void DepthOfFieldBokehBlurGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

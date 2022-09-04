@@ -1019,6 +1019,17 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 	{
 		ShaderBuildParameters parameters;
 
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DepthOfFieldFloodfillBlurFragmentShader";
+		parameters._ID = "DepthOfFieldFloodfillBlurFragmentShader";
+		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldFloodfillBlurFragmentShader.frag";
+		parameters._Stage = ShaderStage::FRAGMENT;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
+	}
+
+	{
+		ShaderBuildParameters parameters;
+
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DirectLightingFragmentShader";
 		parameters._ID = "DirectLightingFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DirectLightingFragmentShader.frag";

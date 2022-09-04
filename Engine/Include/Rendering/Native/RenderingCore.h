@@ -367,11 +367,6 @@ enum class RenderTarget : uint8
 	INTERMEDIATE_RGBA_FLOAT32_HALF_2,
 
 	/*
-	*	Intermediate render target at quarter resolution.
-	*/
-	INTERMEDIATE_RGBA_FLOAT32_QUARTER,
-
-	/*
 	*	Intermediate render target at eighth resolution.
 	*/
 	INTERMEDIATE_RGBA_FLOAT32_EIGHTH,
@@ -426,6 +421,16 @@ enum class SharedRenderTarget : uint8
 	*	Contains the albedo in the RGB channels and the material index in the A channel at half resolution.
 	*/
 	SCENE_FEATURES_1_HALF,
+
+	/*
+	*	Intermediate render target at quarter resolution.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_QUARTER_1,
+
+	/*
+	*	Intermediate render target at quarter resolution.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_QUARTER_2,
 
 	NUMBER_OF_SHARED_RENDER_TARGETS
 };

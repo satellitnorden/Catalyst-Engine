@@ -564,13 +564,6 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 				break;
 			}
 
-			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER:
-			{
-				CreateRenderTarget(GetScaledResolution(2), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER)]);
-
-				break;
-			}
-
 			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH:
 			{
 				CreateRenderTarget(GetScaledResolution(3), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH)]);
@@ -1190,7 +1183,6 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]);
-	CreateRenderTarget(GetScaledResolution(2), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER)]);
 	CreateRenderTarget(GetScaledResolution(3), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH)]);
 	CreateRenderTarget(GetScaledResolution(4), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH)]);
 	CreateRenderTarget(GetScaledResolution(5), TextureFormat::RGBA_FLOAT32, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND)]);
