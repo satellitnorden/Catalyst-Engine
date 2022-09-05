@@ -281,16 +281,16 @@ private:
 		{
 			case AddressMode::CLAMP_TO_EDGE:
 			{
-				coordinate->_X = CatalystBaseMath::Clamp<float>(coordinate->_X, 0.0f, 1.0f - 1.0f / static_cast<float>(_Width));
-				coordinate->_Y = CatalystBaseMath::Clamp<float>(coordinate->_Y, 0.0f, 1.0f - 1.0f / static_cast<float>(_Height));
+				coordinate->_X = CatalystBaseMath::Clamp<float32>(coordinate->_X, 0.0f, 1.0f - 1.0f / static_cast<float32>(_Width));
+				coordinate->_Y = CatalystBaseMath::Clamp<float32>(coordinate->_Y, 0.0f, 1.0f - 1.0f / static_cast<float32>(_Height));
 
 				break;
 			}
 
 			case AddressMode::REPEAT:
 			{
-				coordinate->_X = coordinate->_X >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_X) : CatalystBaseMath::Fractional(1.0f + CatalystBaseMath::Fractional(coordinate->_X));
-				coordinate->_Y = coordinate->_Y >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_Y) : CatalystBaseMath::Fractional(1.0f + CatalystBaseMath::Fractional(coordinate->_Y));
+				coordinate->_X = CatalystBaseMath::Clamp<float32>(CatalystBaseMath::Fractional(coordinate->_X), 0.0f, 1.0f - 1.0f / static_cast<float32>(_Width));
+				coordinate->_Y = CatalystBaseMath::Clamp<float32>(CatalystBaseMath::Fractional(coordinate->_Y), 0.0f, 1.0f - 1.0f / static_cast<float32>(_Height));
 
 				break;
 			}

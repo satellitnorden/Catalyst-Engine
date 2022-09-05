@@ -27,6 +27,12 @@ void TaskSystem::Initialize() NOEXCEPT
 			--_NumberOfTaskExecutors;
 		}
 
+		//Leave one thread for the OS. (:
+		if (_NumberOfTaskExecutors > 1)
+		{
+			--_NumberOfTaskExecutors;
+		}
+
 		//Kick off all task executor threads.
 		_TaskExecutorThreads.Upsize<true>(_NumberOfTaskExecutors);
 

@@ -50,6 +50,16 @@ public:
 
 		}
 
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		FORCE_INLINE TriangleData(const uint32 index_0, uint32 index_1, uint32 index_2) NOEXCEPT
+			:
+			_Indices(index_0, index_1, index_2)
+		{
+
+		}
+
 	};
 
 	/*

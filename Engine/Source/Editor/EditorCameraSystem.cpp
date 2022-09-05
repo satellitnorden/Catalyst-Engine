@@ -81,8 +81,8 @@ void EditorCameraSystem::Update() NOEXCEPT
 #if 1 //Use keyboard/mouse controls.
 	if (update_keyboard_mouse_rotation)
 	{
-		_Rotation._Roll -= mouse_state->_DeltaY * MOUSE_ROTATION_SPEED;
-		_Rotation._Yaw += mouse_state->_DeltaX * MOUSE_ROTATION_SPEED;
+		_Rotation._Roll -= mouse_state->_DeltaY * MOUSE_ROTATION_SPEED * CatalystEngineSystem::Instance->GetUpdateSpeed();
+		_Rotation._Yaw += mouse_state->_DeltaX * MOUSE_ROTATION_SPEED * CatalystEngineSystem::Instance->GetUpdateSpeed();
 	}
 #endif
 #if 1 //Use gamepad controls.

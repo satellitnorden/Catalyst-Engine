@@ -109,6 +109,14 @@ public:
 	}
 
 	/*
+	*	Returns the update speed.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetUpdateSpeed() const NOEXCEPT
+	{
+		return _UpdateSpeed;
+	}
+
+	/*
 	*	Sets the update speed.
 	*/
 	FORCE_INLINE void SetUpdateSpeed(const float32 update_speed) NOEXCEPT

@@ -23,8 +23,8 @@ DEFINE_SINGLETON(WorldTracingSystem);
 namespace WorldTracingSystemConstants
 {
 	constexpr float32 DIRECTIONAL_LIGHT_SOFTNESS{ 0.01f };
-	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 128.0f };
-	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 2 };
+	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 256.0f };
+	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 3 };
 }
 
 /*
@@ -32,8 +32,103 @@ namespace WorldTracingSystemConstants
 */
 void WorldTracingSystem::CacheWorldState() NOEXCEPT
 {
-	//Cache the world model state.
-	CacheWorldModelState();
+	//Rememder the index offset.
+	uint32 index_offset{ 0 };
+
+	//Add dynamic model triangle and vertex data.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+		DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		{
+			//Cache all triangles.
+			const Matrix4x4 model_transform{ component->_CurrentWorldTransform.ToAbsoluteMatrix4x4() };
+
+			for (uint64 mesh_index{ 0 }; mesh_index < component->_ModelResource->_Meshes.Size(); ++mesh_index)
+			{
+				const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Vertices };
+				const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Indices };
+
+				//Add the triangle data.
+				for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
+				{
+					_AccelerationStructure.AddTriangleData(AccelerationStructure<VertexData>::TriangleData(index_offset + indices[triangle_index + 0], index_offset + indices[triangle_index + 1], index_offset + indices[triangle_index + 2]));
+				}
+
+				//Add the vertex data.
+				for (Vertex vertex : vertices)
+				{
+					//Transform the vertex.
+					vertex.Transform(model_transform, 0.0f);
+
+					//Construct the vertex data.
+					VertexData vertex_data;
+
+					vertex_data._MaterialResource = component->_MaterialResources[mesh_index];
+					vertex_data._Normal = vertex._Normal;
+					vertex_data._Tangent = vertex._Tangent;
+					vertex_data._TextureCoordinate = vertex._TextureCoordinate;
+					vertex_data._Type = VertexData::Type::DYNAMIC_MODEL;
+
+					//Add the vertex data!
+					_AccelerationStructure.AddVertexData(AccelerationStructure<VertexData>::VertexData(vertex._Position, vertex_data));
+				}
+
+				//Update the index offset.
+				index_offset += static_cast<uint32>(vertices.Size());
+			}
+		}
+	}
+
+	//Add static model triangle and vertex data.
+	{
+		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+		StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		{
+			//Cache all triangles.
+			const Matrix4x4 model_transform{ component->_WorldTransform.ToAbsoluteMatrix4x4() };
+
+			for (uint64 mesh_index{ 0 }; mesh_index < component->_ModelResource->_Meshes.Size(); ++mesh_index)
+			{
+				const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Vertices };
+				const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Indices };
+
+				//Add the triangle data.
+				for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
+				{
+					_AccelerationStructure.AddTriangleData(AccelerationStructure<VertexData>::TriangleData(index_offset + indices[triangle_index + 0], index_offset + indices[triangle_index + 1], index_offset + indices[triangle_index + 2]));
+				}
+
+				//Add the vertex data.
+				for (Vertex vertex : vertices)
+				{
+					//Transform the vertex.
+					vertex.Transform(model_transform, 0.0f);
+
+					//Construct the vertex data.
+					VertexData vertex_data;
+
+					vertex_data._MaterialResource = component->_MaterialResources[mesh_index];
+					vertex_data._Normal = vertex._Normal;
+					vertex_data._Tangent = vertex._Tangent;
+					vertex_data._TextureCoordinate = vertex._TextureCoordinate;
+					vertex_data._Type = VertexData::Type::STATIC_MODEL;
+
+					//Add the vertex data!
+					_AccelerationStructure.AddVertexData(AccelerationStructure<VertexData>::VertexData(vertex._Position, vertex_data));
+				}
+
+				//Update the index offset.
+				index_offset += static_cast<uint32>(vertices.Size());
+			}
+		}
+	}
+
+	//Build the acceleration structure.
+	_AccelerationStructure.Build(8);
 }
 
 /*
@@ -49,7 +144,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRay(const Ray &ray) NOEX
 */
 NO_DISCARD bool WorldTracingSystem::OcclusionRay(const Ray &ray, const float32 length) NOEXCEPT
 {
-	return OcclusionRayModels(ray, length);
+	return _AccelerationStructure.TraceShadow(ray);
 }
 
 /*
@@ -64,98 +159,9 @@ NO_DISCARD bool WorldTracingSystem::DistanceRay(const Ray &ray, const float32 ma
 }
 
 /*
-*	Caches the world model state.
-*/
-void WorldTracingSystem::CacheWorldModelState() NOEXCEPT
-{
-	//Clear the cached model state.
-	_CachedModelState.Clear();
-
-	//Cache dynamic models.
-	{
-		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
-		DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
-		{
-			//Add the new cached model state.
-			_CachedModelState.Emplace();
-			CachedModelState &cached_model_state{ _CachedModelState.Back() };
-
-			//Cache the world space axis aligned bounding box.
-			cached_model_state._WorldSpaceAxisAlignedBoundingBox = component->_WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox();
-
-			//Cache all triangles.
-			const Matrix4x4 model_transform{ component->_CurrentWorldTransform.ToAbsoluteMatrix4x4() };
-
-			for (uint64 mesh_index{ 0 }; mesh_index < component->_ModelResource->_Meshes.Size(); ++mesh_index)
-			{
-				const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Vertices };
-				const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Indices };
-
-				for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
-				{
-					cached_model_state._Triangles.Emplace();
-					CachedModelState::Triangle &triangle{ cached_model_state._Triangles.Back() };
-
-					triangle._MaterialResource = component->_MaterialResources[mesh_index];
-
-					for (uint8 i{ 0 }; i < 3; ++i)
-					{
-						triangle._Vertices[i] = vertices[indices[triangle_index + i]];
-
-						triangle._Vertices[i].Transform(model_transform, 0.0f);
-					}
-				}
-			}
-		}
-	}
-
-	//Cache static models.
-	{
-		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-		StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
-		{
-			//Add the new cached model state.
-			_CachedModelState.Emplace();
-			CachedModelState &cached_model_state{ _CachedModelState.Back() };
-
-			//Cache the world space axis aligned bounding box.
-			cached_model_state._WorldSpaceAxisAlignedBoundingBox = component->_WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox();
-
-			//Cache all triangles.
-			const Matrix4x4 model_transform{ component->_WorldTransform.ToAbsoluteMatrix4x4() };
-
-			for (uint64 mesh_index{ 0 }; mesh_index < component->_ModelResource->_Meshes.Size(); ++mesh_index)
-			{
-				const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Vertices };
-				const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Indices };
-
-				for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
-				{
-					cached_model_state._Triangles.Emplace();
-					CachedModelState::Triangle &triangle{ cached_model_state._Triangles.Back() };
-
-					triangle._MaterialResource = component->_MaterialResources[mesh_index];
-
-					for (uint8 i{ 0 }; i < 3; ++i)
-					{
-						triangle._Vertices[i] = vertices[indices[triangle_index + i]];
-
-						triangle._Vertices[i].Transform(model_transform, 0.0f);
-					}
-				}
-			}
-		}
-	}
-}
-
-/*
 *	Casts a ray into the world and returns the radiance internally.
 */
-NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &ray, const uint8 depth) NOEXCEPT
+NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& ray, const uint8 depth) NOEXCEPT
 {
 	//Don't go over the maximum depth.
 	if (depth > WorldTracingSystemConstants::MAXIMUM_RADIANCE_DEPTH)
@@ -166,20 +172,178 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 	//Remember the closest intersection distance.
 	float32 closest_intersection_distance{ FLOAT32_MAXIMUM };
 
-	//Remember the surface description.
-	SurfaceDescription surface_description;
-
-	//Remember if anything was hit.
-	bool hit_anything{ false };
-
-	//Cast the ray against the surfaces of the world.
-	hit_anything |= SurfaceRayModels(ray, &closest_intersection_distance, &surface_description);
+	//Cast a ray into the acceleration structure.
+	const AccelerationStructure<VertexData>::TriangleData *const RESTRICT triangle_data{ _AccelerationStructure.TraceSurface(ray, &closest_intersection_distance) };
 
 	//Did the ray hit anything?
-	if (hit_anything)
+	if (triangle_data)
 	{
 		//Calculate the hit position.
 		const Vector3<float32> hit_position{ ray._Origin + ray._Direction * closest_intersection_distance };
+
+		//Construct the surface description.
+		SurfaceDescription surface_description;
+
+		{
+			//Retrieve the vertex data.
+			StaticArray<AccelerationStructure<VertexData>::VertexData, 3> vertex_data
+			{
+				_AccelerationStructure.GetVertexData(triangle_data->_Indices[0]),
+				_AccelerationStructure.GetVertexData(triangle_data->_Indices[1]),
+				_AccelerationStructure.GetVertexData(triangle_data->_Indices[2])
+			};
+
+			//Calculate the barycentric coordinates.
+			Vector3<float32> barycentric_coordinates;
+
+			{
+				Triangle triangle;
+
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					triangle._Vertices[i] = vertex_data[i]._Position;
+				}
+
+				barycentric_coordinates = CatalystGeometryMath::CalculateBarycentricCoordinates(triangle, hit_position);
+			}
+
+			//Calculate the texture coordinate.
+			Vector2<float32> texture_coordinate{ 0.0f, 0.0f };
+
+			for (uint8 i{ 0 }; i < 3; ++i)
+			{
+				texture_coordinate += vertex_data[i]._UserData._TextureCoordinate * barycentric_coordinates[i];
+			}
+
+			//Fill in the albedo.
+			switch (vertex_data[0]._UserData._MaterialResource->_AlbedoThicknessComponent._Type)
+			{
+				case MaterialResource::MaterialResourceComponent::Type::COLOR:
+				{
+					const Vector4<float32> color{ vertex_data[0]._UserData._MaterialResource->_AlbedoThicknessComponent._Color.Get() };
+
+					for (uint8 i{ 0 }; i < 3; ++i)
+					{
+						surface_description._Albedo[i] = color[i];
+					}
+
+					break;
+				}
+
+				case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+				{
+					const Vector4<float32> color{ vertex_data[0]._UserData._MaterialResource->_AlbedoThicknessComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::REPEAT) };
+
+					for (uint8 i{ 0 }; i < 3; ++i)
+					{
+						surface_description._Albedo[i] = color[i];
+					}
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			//Fill in the normal.
+			{
+				//Calculate the tangent space matrix.
+				Matrix3x3 tangent_space_matrix;
+
+				{
+					Vector3<float32> normal{ 0.0f, 0.0f, 0.0f };
+
+					for (uint8 i{ 0 }; i < 3; ++i)
+					{
+						normal += vertex_data[0]._UserData._Normal * barycentric_coordinates[i];
+					}
+
+					Vector3<float32> tangent{ 0.0f, 0.0f, 0.0f };
+
+					for (uint8 i{ 0 }; i < 3; ++i)
+					{
+						tangent += vertex_data[0]._UserData._Tangent * barycentric_coordinates[i];
+					}
+
+					const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(surface_description._Normal, tangent) };
+
+					tangent_space_matrix = Matrix3x3(tangent, bitangent, surface_description._Normal);
+				}
+
+				//Retrieve the normal map.
+				Vector3<float32> normal_map;
+
+				{
+					Vector4<float32> normal_map_displacement;
+
+					switch (vertex_data[0]._UserData._MaterialResource->_NormalMapDisplacementComponent._Type)
+					{
+						case MaterialResource::MaterialResourceComponent::Type::COLOR:
+						{
+							normal_map_displacement = vertex_data[0]._UserData._MaterialResource->_NormalMapDisplacementComponent._Color.Get();
+
+							break;
+						}
+
+						case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+						{
+							normal_map_displacement = vertex_data[0]._UserData._MaterialResource->_NormalMapDisplacementComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::REPEAT);
+
+							break;
+						}
+
+						default:
+						{
+							ASSERT(false, "Invalid case!");
+
+							break;
+						}
+					}
+
+					normal_map = Vector3<float32>(normal_map_displacement._X * 2.0f - 1.0f, normal_map_displacement._Y * 2.0f - 1.0f, normal_map_displacement._Z * 2.0f - 1.0f);
+				}
+
+				//Fill in the normal.
+				surface_description._Normal = tangent_space_matrix * normal_map;
+			}
+
+			//Fill in the material properties.
+			Vector4<float32> material_properties;
+
+			switch (vertex_data[0]._UserData._MaterialResource->_MaterialPropertiesComponent._Type)
+			{
+				case MaterialResource::MaterialResourceComponent::Type::COLOR:
+				{
+					material_properties = vertex_data[0]._UserData._MaterialResource->_MaterialPropertiesComponent._Color.Get();
+
+					break;
+				}
+
+				case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+				{
+					material_properties = vertex_data[0]._UserData._MaterialResource->_MaterialPropertiesComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::REPEAT);
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			surface_description._Roughness = material_properties[0];
+			surface_description._Metallic = material_properties[1];
+			surface_description._AmbientOcclusion = material_properties[2];
+			surface_description._Emissive = material_properties[3] * vertex_data[0]._UserData._MaterialResource->_EmissiveMultiplier;
+		}
 
 		//Calculate the final radiance.
 		Vector3<float32> final_radiance{ 0.0f, 0.0f, 0.0f };
@@ -322,313 +486,16 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 }
 
 /*
-*	Casts a surface ray against models.
-*/
-NO_DISCARD bool WorldTracingSystem::SurfaceRayModels(const Ray &ray, float32 *closest_intersection_distance, SurfaceDescription *const RESTRICT surface_description) NOEXCEPT
-{
-	//Remember if the ray hit anything.
-	bool hit_anything{ false };
-
-	//Remember the hit triangle.
-	const CachedModelState::Triangle *RESTRICT hit_triangle{ nullptr };
-
-	//Iterate over all cached models and cast rays against them.
-	for (const CachedModelState &cached_model_state : _CachedModelState)
-	{
-		//First of all, intersect the bounding box, and reject the model completely if it doesn hit.
-		{
-			float32 intersection_distance;
-
-			if (!CatalystGeometryMath::RayBoxIntersection(ray, cached_model_state._WorldSpaceAxisAlignedBoundingBox, &intersection_distance)
-				|| intersection_distance > *closest_intersection_distance)
-			{
-				continue;
-			}
-		}
-
-		//Intersect all triangles.
-		for (const CachedModelState::Triangle &cached_model_triangle : cached_model_state._Triangles)
-		{
-			Triangle triangle;
-
-			for (uint8 i{ 0 }; i < 3; ++i)
-			{
-				triangle._Vertices[i] = cached_model_triangle._Vertices[i]._Position;
-			}
-
-			float32 intersection_distance;
-
-			if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &intersection_distance))
-			{
-				if (*closest_intersection_distance > intersection_distance)
-				{
-					hit_anything = true;
-
-					*closest_intersection_distance = intersection_distance;
-
-					hit_triangle = &cached_model_triangle;
-				}
-			}
-		}
-	}
-
-	//If a triangle was hit, fill in the surface description.
-	if (hit_triangle)
-	{
-		//Calculate the hit point.
-		const Vector3<float32> hit_point{ ray._Origin + ray._Direction * *closest_intersection_distance };
-
-		//Calculate the barycentric coordinates.
-		Vector3<float32> barycentric_coordinates;
-
-		{
-			Triangle triangle;
-
-			for (uint8 i{ 0 }; i < 3; ++i)
-			{
-				triangle._Vertices[i] = hit_triangle->_Vertices[i]._Position;
-			}
-
-			barycentric_coordinates = CatalystGeometryMath::CalculateBarycentricCoordinates(triangle, hit_point);
-		}
-
-		//Calculate the texture coordinate.
-		Vector2<float32> texture_coordinate{ 0.0f, 0.0f };
-
-		for (uint8 i{ 0 }; i < 3; ++i)
-		{
-			texture_coordinate += hit_triangle->_Vertices[i]._TextureCoordinate * barycentric_coordinates[i];
-		}
-		
-		//Fill in the albedo.
-		switch (hit_triangle->_MaterialResource->_AlbedoThicknessComponent._Type)
-		{
-			case MaterialResource::MaterialResourceComponent::Type::COLOR:
-			{
-				const Vector4<float32> color{ hit_triangle->_MaterialResource->_AlbedoThicknessComponent._Color.Get() };
-
-				for (uint8 i{ 0 }; i < 3; ++i)
-				{
-					surface_description->_Albedo[i] = color[i];
-				}
-
-				break;
-			}
-
-			case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
-			{
-				const Vector4<float32> color{ hit_triangle->_MaterialResource->_AlbedoThicknessComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::CLAMP_TO_EDGE) };
-
-				for (uint8 i{ 0 }; i < 3; ++i)
-				{
-					surface_description->_Albedo[i] = color[i];
-				}
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
-		}
-
-		//Fill in the normal.
-		{
-			//Calculate the tangent space matrix.
-			Matrix3x3 tangent_space_matrix;
-
-			{
-				Vector3<float32> normal{ 0.0f, 0.0f, 0.0f };
-
-				for (uint8 i{ 0 }; i < 3; ++i)
-				{
-					normal += hit_triangle->_Vertices[i]._Normal * barycentric_coordinates[i];
-				}
-
-				Vector3<float32> tangent{ 0.0f, 0.0f, 0.0f };
-
-				for (uint8 i{ 0 }; i < 3; ++i)
-				{
-					tangent += hit_triangle->_Vertices[i]._Tangent * barycentric_coordinates[i];
-				}
-
-				const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(surface_description->_Normal, tangent) };
-
-				tangent_space_matrix = Matrix3x3(tangent, bitangent, surface_description->_Normal);
-			}
-
-			//Retrieve the normal map.
-			Vector3<float32> normal_map;
-
-			{
-				Vector4<float32> normal_map_displacement;
-
-				switch (hit_triangle->_MaterialResource->_NormalMapDisplacementComponent._Type)
-				{
-					case MaterialResource::MaterialResourceComponent::Type::COLOR:
-					{
-						normal_map_displacement = hit_triangle->_MaterialResource->_NormalMapDisplacementComponent._Color.Get();
-
-						break;
-					}
-
-					case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
-					{
-						normal_map_displacement = hit_triangle->_MaterialResource->_NormalMapDisplacementComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::CLAMP_TO_EDGE);
-
-						break;
-					}
-
-					default:
-					{
-						ASSERT(false, "Invalid case!");
-
-						break;
-					}
-				}
-
-				normal_map = Vector3<float32>(normal_map_displacement._X * 2.0f - 1.0f, normal_map_displacement._Y * 2.0f - 1.0f, normal_map_displacement._Z * 2.0f - 1.0f);
-			}
-
-			//Fill in the normal.
-			surface_description->_Normal = tangent_space_matrix * normal_map;
-		}
-
-		//Fill in the material properties.
-		Vector4<float32> material_properties;
-
-		switch (hit_triangle->_MaterialResource->_MaterialPropertiesComponent._Type)
-		{
-			case MaterialResource::MaterialResourceComponent::Type::COLOR:
-			{
-				material_properties = hit_triangle->_MaterialResource->_MaterialPropertiesComponent._Color.Get();
-
-				break;
-			}
-
-			case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
-			{
-				material_properties = hit_triangle->_MaterialResource->_MaterialPropertiesComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::CLAMP_TO_EDGE);
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
-		}
-
-		surface_description->_Roughness = material_properties[0];
-		surface_description->_Metallic = material_properties[1];
-		surface_description->_AmbientOcclusion = material_properties[2];
-		surface_description->_Emissive = material_properties[3] * hit_triangle->_MaterialResource->_EmissiveMultiplier;
-	}
-
-	//Return if the ray hit anything.
-	return hit_anything;
-}
-
-/*
-*	Casts an occlusion ray against models.
-*/
-NO_DISCARD bool WorldTracingSystem::OcclusionRayModels(const Ray &ray, const float32 length) NOEXCEPT
-{
-	//Iterate over all cached models and cast rays against them.
-	for (const CachedModelState &cached_model_state : _CachedModelState)
-	{
-		//First of all, intersect the bounding box, and reject the model completely if it doesn't hit.
-		float32 box_intersection_distance;
-
-		if (!CatalystGeometryMath::RayBoxIntersection(ray, cached_model_state._WorldSpaceAxisAlignedBoundingBox, &box_intersection_distance))
-		{
-			continue;
-		}
-
-		else if (box_intersection_distance > length)
-		{
-			continue;
-		}
-
-		//Intersect all triangles.
-		for (const CachedModelState::Triangle &cached_model_triangle : cached_model_state._Triangles)
-		{
-			Triangle triangle;
-
-			for (uint8 i{ 0 }; i < 3; ++i)
-			{
-				triangle._Vertices[i] = cached_model_triangle._Vertices[i]._Position;
-			}
-
-			float32 triangle_intersection_distance;
-
-			if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &triangle_intersection_distance)
-				&& triangle_intersection_distance <= length)
-			{
-				return true;
-			}
-		}
-	}
-
-	//Nothing was hit.
-	return false;
-}
-
-/*
 *	Casts an distance ray against models.
 */
 NO_DISCARD bool WorldTracingSystem::DistanceRayModels(const Ray &ray, const float32 maximum_distance, float32 *const RESTRICT hit_distance, const bool use_cached_world_state) NOEXCEPT
 {
 	if (use_cached_world_state)
 	{
-		//Remember if there was a hit.
-		bool hit{ false };
+		//Cast a ray into the acceleration structure.
+		const AccelerationStructure<VertexData>::TriangleData *const RESTRICT triangle_data{ _AccelerationStructure.TraceSurface(ray, hit_distance) };
 
-		//Iterate over all cached models and cast rays against them.
-		for (const CachedModelState &cached_model_state : _CachedModelState)
-		{
-			//First of all, intersect the bounding box, and reject the model completely if it doesn't hit.
-			float32 box_intersection_distance;
-
-			if (!CatalystGeometryMath::RayBoxIntersection(ray, cached_model_state._WorldSpaceAxisAlignedBoundingBox, &box_intersection_distance))
-			{
-				continue;
-			}
-
-			else if (box_intersection_distance >= *hit_distance)
-			{
-				continue;
-			}
-
-			//Intersect all triangles.
-			for (const CachedModelState::Triangle &cached_model_triangle : cached_model_state._Triangles)
-			{
-				Triangle triangle;
-
-				for (uint8 i{ 0 }; i < 3; ++i)
-				{
-					triangle._Vertices[i] = cached_model_triangle._Vertices[i]._Position;
-				}
-
-				float32 triangle_intersection_distance;
-
-				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &triangle_intersection_distance)
-					&& *hit_distance > triangle_intersection_distance)
-				{
-					*hit_distance = triangle_intersection_distance;
-
-					hit = true;
-				}
-			}
-		}
-
-		//Return if there was a hit.
-		return hit;
+		return triangle_data != nullptr;
 	}
 
 	else
