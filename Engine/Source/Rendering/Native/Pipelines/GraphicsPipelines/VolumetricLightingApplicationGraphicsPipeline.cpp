@@ -3,6 +3,7 @@
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/RenderPasses/PostSceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -118,10 +119,11 @@ void VolumetricLightingApplicationGraphicsPipeline::Terminate() NOEXCEPT
 */
 void VolumetricLightingApplicationGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	StaticArray<RenderDataTableLayoutBinding, 3> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -136,4 +138,5 @@ void VolumetricLightingApplicationGraphicsPipeline::CreateRenderDataTable(const 
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, PostSceneFeaturesRenderPass::Instance->GetDepthMip(0), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

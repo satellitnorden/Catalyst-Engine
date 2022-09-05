@@ -28,6 +28,7 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_1_TEXTURE;
 layout (set = 1, binding = 1) uniform sampler2D SCENE_FEATURES_2_TEXTURE;
 layout (set = 1, binding = 2) uniform sampler2D SCENE_FEATURES_3_TEXTURE;
+layout (set = 1, binding = 3) uniform sampler2D DEPTH_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
@@ -56,13 +57,13 @@ vec4 SampleIndirectLighting(vec2 coordinate)
 
 			//Sample the four neighbor samples along with their depth.
 			vec4 sample_1_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, 0.0f));
-			float sample_1_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, 0.0f)).w);
+			float sample_1_depth = LinearizeDepth(texture(DEPTH_TEXTURE, coordinate + vec2(0.0f, 0.0f))[0]);
 			vec4 sample_2_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f));
-			float sample_2_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(0.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).w);
+			float sample_2_depth = LinearizeDepth(texture(DEPTH_TEXTURE, coordinate + vec2(0.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f))[0]);
 			vec4 sample_3_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, 0.0f));
-			float sample_3_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, 0.0f)).w);
+			float sample_3_depth = LinearizeDepth(texture(DEPTH_TEXTURE, coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, 0.0f))[0]);
 			vec4 sample_4_color = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_HALF_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f));
-			float sample_4_depth = LinearizeDepth(texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f)).w);
+			float sample_4_depth = LinearizeDepth(texture(DEPTH_TEXTURE, coordinate + vec2(INVERSE_SCALED_RESOLUTION.x * 2.0f, INVERSE_SCALED_RESOLUTION.y * 2.0f))[0]);
 
 			//Calculate the horizontal and vertical weights.
 			float horizontal_weight = fract(coordinate.x * (SCALED_RESOLUTION.x * 0.5f));

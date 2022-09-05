@@ -28,10 +28,26 @@ public:
 
 private:
 
+	//The render data table layout.
+	RenderDataTableLayoutHandle _RenderDataTableLayout;
+
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
 	//The source render target index.
 	uint32 _SourceRenderTargetIndex;
 
 	//The stride.
 	int32 _Stride;
+
+	/*
+	*	Creates the render data table layout.
+	*/
+	void CreateRenderDataTableLayout() NOEXCEPT;
+
+	/*
+	*	Creates the render data table.
+	*/
+	void CreateRenderDataTable() NOEXCEPT;
 
 };

@@ -139,7 +139,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 					1,
 					0,
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF),
+					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2_HALF),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3_HALF),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2),
 					resolution
@@ -150,7 +150,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 					1,
 					1,
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2),
-					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF),
+					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2_HALF),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_3_HALF),
 					RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
 					resolution

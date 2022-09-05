@@ -30,6 +30,7 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D SOURCE_TEXTURE;
+layout (set = 1, binding = 1) uniform sampler2D SCENE_FEATURES_2_HALF_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -39,7 +40,7 @@ layout (location = 0) out vec4 fragment;
 */
 SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
-	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate);
+	vec4 scene_features_2 = texture(SCENE_FEATURES_2_HALF_TEXTURE, coordinate);
 
 	SceneFeatures features;
 

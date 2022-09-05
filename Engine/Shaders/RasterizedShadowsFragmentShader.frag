@@ -1,7 +1,7 @@
 //Constants.
 #define SHADOW_MAP_SAMPLES (4)
 #define SHADOW_MAP_OFFSET (0.001000f) //0.000025f step.
-#define SHADOW_MAP_BIASES (vec4(0.0001800f, 0.0003150f, 0.0003900f, 0.0003900f)) //0.0000025f step.
+#define SHADOW_MAP_BIASES (vec4(0.0001825f, 0.0003175f, 0.0003925f, 0.0003925f)) //0.0000025f step.
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -17,16 +17,19 @@ layout (std140, set = 1, binding = 0) uniform ShadowUniformData
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
+//Texture samplers.
+layout (set = 2, binding = 0) uniform sampler2D DEPTH_TEXTURE;
+
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
 void CatalystShaderMain()
 {
-	//Sample the scene features 2.
-	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+	//Sample the depth.
+	float depth = texture(DEPTH_TEXTURE, fragment_texture_coordinate)[0];
 
 	//Calculate the world position.
-	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, scene_features_2.w);
+	vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, depth);
 
 	//Calculate the shadow map index.
 	uint shadow_map_index = 0;

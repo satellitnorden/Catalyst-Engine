@@ -173,6 +173,6 @@ void AmbientOcclusionRayTracingPipeline::CreateRenderDataTable(const RenderTarge
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE_FEATURES_2_HALF));
+	RenderingSystem::Instance->BindStorageImageToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2_HALF));
 	RenderingSystem::Instance->BindStorageImageToRenderDataTable(1, 0, &_RenderDataTable, ambient_occlusion_render_target);
 }

@@ -3,6 +3,7 @@
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/RenderPasses/PostSceneFeaturesRenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -16,6 +17,12 @@ void RasterizedShadowsGraphicsPipeline::Initialize() NOEXCEPT
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
 
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
 	SetTessellationControlShader(ResourcePointer<ShaderResource>());
@@ -28,9 +35,10 @@ void RasterizedShadowsGraphicsPipeline::Initialize() NOEXCEPT
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::SHADOW));
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
@@ -83,6 +91,7 @@ void RasterizedShadowsGraphicsPipeline::Execute(const RenderDataTableHandle curr
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 1, current_render_data_table);
+	command_buffer->BindRenderDataTable(this, 2, _RenderDataTable);
 
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
@@ -99,5 +108,32 @@ void RasterizedShadowsGraphicsPipeline::Execute(const RenderDataTableHandle curr
 */
 void RasterizedShadowsGraphicsPipeline::Terminate() NOEXCEPT
 {
+	//Destroy the render data table.
+	RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
 
+	//Destroy the render data table layout.
+	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void RasterizedShadowsGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void RasterizedShadowsGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, PostSceneFeaturesRenderPass::Instance->GetDepthMip(0), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

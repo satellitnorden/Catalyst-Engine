@@ -23,6 +23,9 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
+//Texture samplers.
+layout (set = 1, binding = 0) uniform sampler2D DEPTH_TEXTURE;
+
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
@@ -31,11 +34,11 @@ layout (location = 0) out vec4 fragment;
 */
 SceneFeatures SampleSceneFeatures(vec2 coordinate)
 {
-	vec4 scene_features_2 = texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_2_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate);
+	float depth = texture(DEPTH_TEXTURE, coordinate)[0];
 
 	SceneFeatures features;
 
-	features.view_distance = CalculateViewSpacePosition(fragment_texture_coordinate, scene_features_2.w).z;
+	features.view_distance = CalculateViewSpacePosition(fragment_texture_coordinate, depth).z;
 
 	return features;
 }
