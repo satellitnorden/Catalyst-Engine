@@ -440,6 +440,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 			//Set the resource header.
 			new_resource->_Header = header;
 
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
+
 			//Load the resource.
 			AnimatedModelData data;
 			_ResourceLoadingSystem.LoadAnimatedModel(file, &data);
@@ -474,6 +478,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 			//Set the resource header.
 			new_resource->_Header = header;
+
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
 
 			//Load the resource.
 			AnimationData data;
@@ -510,6 +518,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 			//Set the resource header.
 			new_resource->_Header = header;
 
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
+
 			//Load the resource.
 			FontData data;
 			_ResourceLoadingSystem.LoadFont(file, &data);
@@ -544,6 +556,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 			//Set the resource header.
 			new_resource->_Header = header;
+
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
 
 			//Load the resource.
 			LevelData data;
@@ -580,6 +596,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 			//Set the resource header.
 			new_resource->_Header = header;
 
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
+
 			//Load the resource.
 			MaterialData data;
 			_ResourceLoadingSystem.LoadMaterial(file, &data);
@@ -614,6 +634,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 			//Set the resource header.
 			new_resource->_Header = header;
+
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
 
 			//Load the resource.
 			ModelData data;
@@ -650,6 +674,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 			//Set the resource header.
 			new_resource->_Header = header;
 
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
+
 			//Load the resource.
 			RawDataData data;
 			_ResourceLoadingSystem.LoadRawData(file, &data);
@@ -684,6 +712,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 			//Set the resource header.
 			new_resource->_Header = header;
+
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
 
 			//Load the resource.
 			ShaderData data;
@@ -720,6 +752,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 			//Set the resource header.
 			new_resource->_Header = header;
 
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
+
 			//Load the resource.
 			SoundData data;
 			_ResourceLoadingSystem.LoadSound(file, &data);
@@ -754,6 +790,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 			//Set the resource header.
 			new_resource->_Header = header;
+
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
 
 			//Load the resource.
 			TextureCubeData data;
@@ -790,6 +830,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 			//Set the resource header.
 			new_resource->_Header = header;
 
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
+
 			//Load the resource.
 			Texture2DData data;
 			_ResourceLoadingSystem.LoadTexture2D(file, &data);
@@ -825,6 +869,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 			//Set the resource header.
 			new_resource->_Header = header;
 
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
+
 			//Load the resource.
 			Texture3DData data;
 			_ResourceLoadingSystem.LoadTexture3D(file, &data);
@@ -859,6 +907,10 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 			//Set the resource header.
 			new_resource->_Header = header;
+
+			//Set the file path and file offset.
+			new_resource->_FilePath = file->GetFilePath();
+			new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
 
 			//Load the resource.
 			VideoData data;

@@ -220,18 +220,8 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 	//Flip the direction, if needed.
 	indirect_lighting_direction = dot(indirect_lighting_direction, surface_properties.shading_normal) >= 0.0f ? indirect_lighting_direction : -indirect_lighting_direction;
 
-	//Calculate the reflection direction.
-	vec3 reflection_direction = reflect(gl_WorldRayDirectionNV, surface_properties.shading_normal);
-
-	//Blend the random hemisphere direction and the reflection direction based on the material properties.
-	indirect_lighting_direction = normalize(mix(reflection_direction, indirect_lighting_direction, surface_properties.material_properties[0] * (1.0f - surface_properties.material_properties[1])));
-
-	if (current_recursion_depth < 1)
+	if (current_recursion_depth < 2)
 	{
-		//Fire the ray(s)!
-		bool has_hit = false;
-		float closest_hit_distance = VIEW_DISTANCE;
-
 		//Reset the payload.
 		path_tracing_ray_payload.current_recursion_depth = current_recursion_depth + 1;
 		path_tracing_ray_payload.hit_distance = VIEW_DISTANCE;
@@ -247,48 +237,10 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 				hit_position, 								//origin
 				CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
 				indirect_lighting_direction, 				//direction
-				closest_hit_distance, 						//Tmax
+				VIEW_DISTANCE, 								//Tmax
 				0 											//payload
 				);
 
-		closest_hit_distance = min(closest_hit_distance, path_tracing_ray_payload.hit_distance);
-
-		//Keep track of whether or not there was a hit.
-		if (path_tracing_ray_payload.hit_distance < VIEW_DISTANCE)
-		{
-			has_hit = true;
-		}
-
-		//Was there a hit?
-		if (has_hit)
-		{
-			return CalculateLighting(	-gl_WorldRayDirectionNV,
-										surface_properties.albedo,
-										surface_properties.shading_normal,
-										surface_properties.material_properties[0],
-										surface_properties.material_properties[1],
-										surface_properties.material_properties[2],
-										1.0f,
-										-indirect_lighting_direction,
-										path_tracing_ray_payload.radiance);
-		}
-
-		else
-		{
-			return CalculateLighting(	-gl_WorldRayDirectionNV,
-										surface_properties.albedo,
-										surface_properties.shading_normal,
-										surface_properties.material_properties[0],
-										surface_properties.material_properties[1],
-										surface_properties.material_properties[2],
-										1.0f,
-										-indirect_lighting_direction,
-										SampleSky(indirect_lighting_direction, 0.0f));
-		}
-	}
-	
-	else
-	{
 		return CalculateLighting(	-gl_WorldRayDirectionNV,
 									surface_properties.albedo,
 									surface_properties.shading_normal,
@@ -297,7 +249,12 @@ vec3 CalculateIndirectLighting(uint current_recursion_depth, vec3 hit_position, 
 									surface_properties.material_properties[2],
 									1.0f,
 									-indirect_lighting_direction,
-									SampleSky(indirect_lighting_direction, 0.0f));
+									path_tracing_ray_payload.radiance);
+	}
+	
+	else
+	{
+		return vec3(0.0f);
 	}
 }
 

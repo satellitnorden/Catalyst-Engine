@@ -27,16 +27,17 @@ public:
 
 private:
 
-	//Enumeration covering all create resource modes.
-	enum class CreateResourceMode : uint8
+	//Enumeration covering all resource modes.
+	enum class ResourceMode : uint8
 	{
 		NONE,
-		MATERIAL,
-		MODEL,
-		TEXTURE_2D,
-		QUIXEL_MATERIAL,
-		QUIXEL_MODEL,
-		LEVEL_FROM_GLTF
+		CREATE_MATERIAL,
+		MODIFY_MATERIAL,
+		CREATE_MODEL,
+		CREATE_TEXTURE_2D,
+		CREATE_QUIXEL_MATERIAL,
+		CREATE_QUIXEL_MODEL,
+		CREATE_LEVEL_FROM_GLTF
 	};
 
 	/*
@@ -94,6 +95,19 @@ private:
 
 		//Denotes whether or not the material is double-sided.
 		bool _DoubleSided;
+
+	};
+
+	/*
+	*	Modify material resource data class definition.
+	*/
+	class ModifyMaterialResourceData final
+	{
+
+	public:
+
+		//The material resource.
+		ResourcePointer<MaterialResource> _MaterialResource;
 
 	};
 
@@ -207,11 +221,14 @@ private:
 
 	};
 
-	//The current create resource mode.
-	CreateResourceMode _CurrentCreateResourceMode{ CreateResourceMode::NONE };
+	//The current resource mode.
+	ResourceMode _CurrentResourceMode{ ResourceMode::NONE };
 
 	//The create material resource data.
 	CreateMaterialResourceData _CreateMaterialResourceData;
+
+	//The modify material resource data.
+	ModifyMaterialResourceData _ModifyMaterialResourceData;
 
 	//The create model resource data.
 	CreateModelResourceData _CreateModelResourceData;
@@ -232,6 +249,11 @@ private:
 	*	Adds the create material resource window.
 	*/
 	void AddCreateMaterialResourceWindow() NOEXCEPT;
+
+	/*
+	*	Adds the modify material resource window.
+	*/
+	void AddModifyMaterialResourceWindow() NOEXCEPT;
 
 	/*
 	*	Adds the create model resource window.
