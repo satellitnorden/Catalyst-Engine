@@ -100,16 +100,6 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													vec3 irradiance);
 
 	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectBidirectionalReflectanceDistribution,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance);
-
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
 													CalculateIndirectSpecularComponent,
 													vec3 outgoing_direction,
 													vec3 albedo,
@@ -139,15 +129,14 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													float ambient_occlusion,
 													vec3 irradiance);
 
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+	CATALYST_SHADER_FUNCTION_RETURN_SIX_ARGUMENTS(	vec3,
 													CalculateIndirectFresnel,
 													vec3 outgoing_direction,
 													vec3 albedo,
 													vec3 normal,
 													float roughness,
 													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance);
+													float ambient_occlusion);
 
 	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
 													CalculateIndirectDiffuseComponent,
@@ -274,8 +263,8 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		vec3 numerator = normal_distribution * geometry * fresnel;
 
 		//Calculate the denominator.
-		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
-		float irradiance_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, -irradiance_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
+		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), 0.0f);
+		float irradiance_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, -irradiance_direction), 0.0f);
 
 		float denominator = CATALYST_SHADER_FUNCTION_MAXIMUM(4.0f * outgoing_direction_coefficient * irradiance_direction_coefficient, CATALYST_LIGHTING_FLOAT_EPSILON);
 
@@ -314,7 +303,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		float numerator = roughness_squared;
 
 		//Calculate the denominator.
-		float halfway_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, halfway_vector), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
+		float halfway_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, halfway_vector), 0.0f);
 		float halfway_vector_coefficient_squared = halfway_vector_coefficient * halfway_vector_coefficient;
 		float denominator_coefficient = halfway_vector_coefficient_squared * (roughness_squared - 1.0f) + 1.0f;
 
@@ -341,14 +330,11 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													vec3 irradiance_direction,
 													vec3 irradiance)
 	{
-		//Define constants.
-		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_FLOAT_EPSILON, 1.192092896e-07F);
-
 		//Calculate the outgoing direction coefficient.
-		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
+		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), 0.0f);
 
 		//Calculate the irradiance direction coefficient.
-		float irradiance_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, -irradiance_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
+		float irradiance_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, -irradiance_direction), 0.0f);
 
 		//Calculate the roughness coefficient.
 		float roughness_coefficient = ((roughness + 1.0f) * (roughness + 1.0f)) / 8.0f;
@@ -361,7 +347,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 			float numerator = outgoing_direction_coefficient;
 
 			//Calculate the denominator.
-			float denominator = CATALYST_SHADER_FUNCTION_MAXIMUM(outgoing_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient, CATALYST_LIGHTING_FLOAT_EPSILON);
+			float denominator = outgoing_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient;
 
 			first_coefficient = numerator / denominator;
 		}
@@ -374,7 +360,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 			float numerator = irradiance_direction_coefficient;
 
 			//Calculate the denominator.
-			float denominator = CATALYST_SHADER_FUNCTION_MAXIMUM(irradiance_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient, CATALYST_LIGHTING_FLOAT_EPSILON);
+			float denominator = irradiance_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient;
 
 			second_coefficient = numerator / denominator;
 		}
@@ -407,10 +393,11 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		vec3 halfway_vector = CATALYST_SHADER_FUNCTION_NORMALIZE(outgoing_direction + -irradiance_direction);
 
 		//Calculate the halfway vector coefficient.
-		float halfway_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(halfway_vector, outgoing_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
+		float halfway_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(halfway_vector, outgoing_direction), 0.0f);
+		float halfway_vector_minus_one = 1.0f - halfway_vector_coefficient;
 
 		//Calculate the fresnel coefficient.
-		float fresnel_coefficient = (1.0f - halfway_vector_coefficient) * (1.0f - halfway_vector_coefficient) * (1.0f - halfway_vector_coefficient) * (1.0f - halfway_vector_coefficient) * (1.0f - halfway_vector_coefficient);
+		float fresnel_coefficient = halfway_vector_minus_one * halfway_vector_minus_one * halfway_vector_minus_one * halfway_vector_minus_one * halfway_vector_minus_one;
 
 		//Calculate the fresnel.
 		return surface_color + (vec3(1.0f, 1.0f, 1.0f) - surface_color) * fresnel_coefficient;
@@ -470,9 +457,10 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 	*	- roughness: The roughness of the surface point being shaded.
 	*	- metallic: THe metallic of the surface point being shaded.
 	*	- ambient_occlusion: The ambient occlusion of the surface point being shaded.
-	*	- irradiance: The incoming irradiance towards the surface point being shaded.
+	*	- diffuse_irradiance: The incoming diffuse irradiance towards the surface point being shaded.
+	*	- specular_irradiance: The incoming specular irradiance towards the surface point being shaded.
 	*/
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+	CATALYST_SHADER_FUNCTION_RETURN_NINE_ARGUMENTS(	vec3,
 													CalculateIndirectLighting,
 													vec3 outgoing_direction,
 													vec3 albedo,
@@ -480,42 +468,24 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													float roughness,
 													float metallic,
 													float ambient_occlusion,
-													vec3 irradiance)
+													vec3 diffuse_irradiance,
+													vec3 specular_irradiance,
+													vec2 specular_bias)
 	{
-		//Calculate the bidirectional reflectance distribution.
-		vec3 bidirectional_reflectance_distribution = CalculateIndirectBidirectionalReflectanceDistribution(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
-
-		//Calculate the lighting.
-		return bidirectional_reflectance_distribution * irradiance * ambient_occlusion;
-	}
-
-	/*
-	*	Calculates the indirect bidirectional reflectance distribution.
-	*/
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectBidirectionalReflectanceDistribution,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance)
-	{
-		//Calculate the specular component.
-		vec3 specular_component = CalculateIndirectSpecularComponent(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
-
-		//Calculate the diffse component.
-		vec3 diffuse_component = CalculateIndirectDiffuseComponent(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
-
-		//Calculate the specular weight	
-		vec3 specular_weight = CalculateIndirectSpecularWeight(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
+		//Calculate the specular weight.
+		vec3 specular_weight = CalculateIndirectFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion);
 
 		//Calculate the diffuse weight.
-		vec3 diffuse_weight = (vec3(1.0f, 1.0f, 1.0f) - specular_weight) * (1.0f - metallic);
+		vec3 diffuse_weight = vec3(1.0f, 1.0f, 1.0f) - specular_weight * (1.0f - metallic);
 
-		//Calculate the bidirectional reflective distribution.
-		return specular_component * specular_weight + diffuse_component * diffuse_weight;
+		//Calculate the diffuse component.
+		vec3 diffuse_component = diffuse_irradiance * albedo;
+
+		//Calculate the specular component 
+		vec3 specular_component = specular_irradiance * (specular_weight * specular_bias.x + specular_bias.y);
+
+		//Calculate the lighting.
+		return (diffuse_component * diffuse_weight + specular_component) * ambient_occlusion;
 	}
 
 	/*
@@ -539,7 +509,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		//Calculate the numerator.
 		vec3 normal_distribution = CalculateIndirectNormalDistribution(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
 		vec3 geometry = CalculateIndirectGeometry(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
-		vec3 fresnel = CalculateIndirectFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
+		vec3 fresnel = CalculateIndirectFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion);
 
 		vec3 numerator = normal_distribution * geometry * fresnel;
 
@@ -633,21 +603,23 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 	*	
 	*	Calculated using the cook-torrance algorithm.
 	*/
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
+	CATALYST_SHADER_FUNCTION_RETURN_SIX_ARGUMENTS(	vec3,
 													CalculateIndirectFresnel,
 													vec3 outgoing_direction,
 													vec3 albedo,
 													vec3 normal,
 													float roughness,
 													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance)
+													float ambient_occlusion)
 	{
 		//Calculate the surface color.
 		vec3 surface_color = CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(vec3(0.04f, 0.04f, 0.04f), albedo, metallic);
 
+		//Calculate cos theta.
+		float cos_theta = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), 0.0f);
+
 		//Calculate the fresnel.
-		return surface_color/* + CATALYST_SHADER_FUNCTION_MAXIMUM(vec3(1.0f, 1.0f, 1.0f) - surface_color, surface_color) * pow(1.0f - CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT), 5.0f)*/;
+		return surface_color + (CATALYST_SHADER_FUNCTION_MAXIMUM(vec3(1.0f - roughness), surface_color) - surface_color) * CATALYST_SHADER_FUNCTION_POWER(CATALYST_SHADER_FUNCTION_CLAMP(1.0f - cos_theta, 0.0f, 1.0f), 5.0f);
 	}
 
 	/*
@@ -667,10 +639,9 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 	{
 		//Define constants.
 		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_INVERSE_PI, 0.318309f);
-		CATALYST_SHADER_CONSTANT(float, CATALIST_LIGHTING_INDIRECT_DIFFUSE_BOOST, 1.0f);
 
 		//Calculate the diffuse component.
-		return albedo * CATALYST_LIGHTING_INVERSE_PI * CATALIST_LIGHTING_INDIRECT_DIFFUSE_BOOST;
+		return albedo * CATALYST_LIGHTING_INVERSE_PI;
 	}
 
 	/*
@@ -687,7 +658,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													vec3 irradiance)
 	{
 		//The fresnel is directly related to the specular weight, so use that.
-		return CalculateIndirectFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
+		return CalculateIndirectFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion);
 	}
 
 	/*

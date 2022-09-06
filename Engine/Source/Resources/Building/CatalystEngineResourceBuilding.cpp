@@ -32,6 +32,7 @@
 
 #define BUILD_ENGINE_ALL (0)
 
+#define BUILD_ENGINE_BASE (0)
 #define BUILD_ENGINE_CLOUD_TEXTURE (0)
 #define BUILD_ENGINE_FONTS (0)
 #define BUILD_ENGINE_OCEAN_TEXTURE (0)
@@ -57,6 +58,52 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 
 	//Keep track of all tasks so that they can be deallocated.
 	DynamicArray<Task* RESTRICT> tasks;
+
+#if BUILD_ENGINE_BASE || BUILD_ENGINE_ALL
+	{
+		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
+		Task &task{ *tasks.Back() };
+
+		task._Function = [](void* const RESTRICT)
+		{
+			//Gather the data.
+			DynamicArray<byte> data;
+
+			std::ifstream data_file{ "..\\..\\..\\..\\Catalyst-Engine\\Tools\\Specular Bias Lookup Texture Generator\\Visual Studio Solution\\Specular Bias Lookup Texture Generator\\Specular Bias Lookup Texture Generator\\SpecularBiasLookupTextureData" };
+
+			if (data_file.is_open())
+			{
+				char next_byte;
+
+				while (!data_file.eof())
+				{
+					data_file.read(&next_byte, sizeof(byte));
+					data.Emplace(static_cast<byte>(next_byte));
+				}
+
+				data_file.close();
+			}
+
+			else
+			{
+				ASSERT(false, "Couldn't open the specular bias lookup texture data file!");
+			}
+
+			//Build the raw data.
+			RawDataBuildParameters parameters;
+
+			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Specular_Bias_Lookup_Texture_Raw_Data";
+			parameters._ResourceIdentifier = "Specular_Bias_Lookup_Texture_Raw_Data";
+			parameters._Data = &data;
+
+			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildRawData(parameters);
+		};
+		task._Arguments = nullptr;
+		task._ExecutableOnSameThread = false;
+
+		TaskSystem::Instance->ExecuteTask(&task);
+	}
+#endif
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE
 	BuildCloudTexture();
@@ -2769,7 +2816,7 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		MemorySystem::Instance->TypeFree<Task>(task);
 	}
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_FONTS || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_DEFAULT_TEXTURE_2D || BUILD_ENGINE_DEFAULT_TEXTURE_3D || BUILD_ENGINE_MODELS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTIONS
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_BASE || BUILD_ENGINE_FONTS || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_DEFAULT_TEXTURE_2D || BUILD_ENGINE_DEFAULT_TEXTURE_3D || BUILD_ENGINE_MODELS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTIONS
 	{
 		ResourceCollectionBuildParameters parameters;
 

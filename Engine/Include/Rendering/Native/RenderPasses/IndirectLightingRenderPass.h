@@ -25,6 +25,14 @@ public:
 	*/
 	IndirectLightingRenderPass() NOEXCEPT;
 
+	/*
+	*	Returns the specular bias lookup texture index.
+	*/
+	FORCE_INLINE NO_DISCARD uint32 GetSpecularBiasLookupTextureIndex() const NOEXCEPT
+	{
+		return _SpecularBiasLookupTextureIndex;
+	}
+
 private:
 
 	//The previous indirect lighting mode.
@@ -41,6 +49,12 @@ private:
 
 	//The temporal indirect lighting buffers.
 	StaticArray<RenderTargetHandle, 2> _TemporalIndirectLightingBuffers;
+
+	//The specular bias lookup texture.
+	Texture2DHandle _SpecularBiasLookupTexture{ EMPTY_HANDLE };
+
+	//The specular bias lookup texture index.
+	uint32 _SpecularBiasLookupTextureIndex{ UINT32_MAXIMUM };
 
 	//The screen space indirect lighting graphics pipeline.
 	ScreenSpaceIndirectLightingGraphicsPipeline _ScreenSpaceIndirectLightingGraphicsPipeline;

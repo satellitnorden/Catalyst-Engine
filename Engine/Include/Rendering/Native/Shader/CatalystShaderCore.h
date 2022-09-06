@@ -66,6 +66,24 @@
 	}
 
 	/*
+	*	Maximum helper function.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD TYPE MaximumHelper(const TYPE value_1, const TYPE value_2) NOEXCEPT
+	{
+		return CatalystBaseMath::Maximum(value_1, value_2);
+	}
+
+	/*
+	*	Maximum helper function specialization for Vector3<float32>.
+	*/
+	template <>
+	FORCE_INLINE static NO_DISCARD Vector3<float32> MaximumHelper<Vector3<float32>>(const Vector3<float32> value_1, const Vector3<float32> value_2) NOEXCEPT
+	{
+		return Vector3<float32>::Maximum(value_1, value_2);
+	}
+
+	/*
 	*	Normalize helper function.
 	*/
 	template <typename TYPE>
@@ -141,7 +159,7 @@
 	*	Calls the maximum function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_MAXIMUM(ARGUMENT_1, ARGUMENT_2) \
-	CatalystBaseMath::Maximum(ARGUMENT_1, ARGUMENT_2)
+	MaximumHelper(ARGUMENT_1, ARGUMENT_2)
 
 	/*
 	*	Calls the normalize function.
@@ -476,6 +494,36 @@ CATALYST_SHADER_FUNCTION_PREFIX uint CatalystShaderFloatBitsToUint(float value)
 #if defined(CATALYST_SHADER_LANGUAGE_GLSL)
 	return floatBitsToUint(value);
 #endif
+}
+
+/*
+*	Generats a specular lobe direction vector.
+*/
+CATALYST_SHADER_FUNCTION_PREFIX vec3 CatalystShaderGenerateSpecularLobeDirectionVector(vec2 hammersley_sequence_sample, vec3 orientation_vector, float roughness)
+{
+	//Define constants.
+	CATALYST_SHADER_CONSTANT(float, PI_VALUE, 3.141592f);
+
+	float a = roughness*roughness;
+
+	float phi = 2.0f * PI_VALUE * hammersley_sequence_sample.x;
+	float cosTheta = sqrt((1.0f - hammersley_sequence_sample.y) / (1.0f + (a*a - 1.0f) * hammersley_sequence_sample.y));
+	float sinTheta = sqrt(1.0f - cosTheta*cosTheta);
+
+	// from spherical coordinates to cartesian coordinates
+	vec3 H;
+	H.x = cos(phi) * sinTheta;
+	H.y = sin(phi) * sinTheta;
+	H.z = cosTheta;
+
+	// from tangent-space vector to world-space sample vector
+	vec3 up        = abs(orientation_vector.z) < 0.999f ? vec3(0.0f, 0.0f, 1.0f) : vec3(1.0f, 0.0f, 0.0f);
+	vec3 tangent   = CATALYST_SHADER_FUNCTION_NORMALIZE(CATALYST_SHADER_FUNCTION_CROSS_PRODUCT(up, orientation_vector));
+	vec3 bitangent = CATALYST_SHADER_FUNCTION_CROSS_PRODUCT(orientation_vector, tangent);
+
+	vec3 sampleVec = tangent * H.x + bitangent * H.y + orientation_vector * H.z;
+
+	return CATALYST_SHADER_FUNCTION_NORMALIZE(sampleVec);
 }
 
 /*

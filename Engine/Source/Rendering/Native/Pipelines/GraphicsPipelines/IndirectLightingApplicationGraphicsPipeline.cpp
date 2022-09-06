@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/RenderPasses/IndirectLightingRenderPass.h>
 #include <Rendering/Native/RenderPasses/PostSceneFeaturesRenderPass.h>
 
 //Systems.
@@ -25,6 +26,9 @@ public:
 
 	//The indirect lighting quality.
 	uint32 _IndirectLightingQuality;
+
+	//The specular bias lookup texture index.
+	uint32 _SpecularBiasLookupTextureIndex;
 
 };
 
@@ -119,6 +123,7 @@ void IndirectLightingApplicationGraphicsPipeline::Execute() NOEXCEPT
 
 	data._IndirectLightingEnabled = RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode() != RenderingConfiguration::IndirectLightingMode::NONE ? 1 : 0;
 	data._IndirectLightingQuality = static_cast<uint32>(RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality());
+	data._SpecularBiasLookupTextureIndex = IndirectLightingRenderPass::Instance->GetSpecularBiasLookupTextureIndex();
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingApplicationPushConstantData), &data);
 

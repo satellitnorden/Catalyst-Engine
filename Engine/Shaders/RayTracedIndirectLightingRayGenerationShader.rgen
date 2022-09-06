@@ -73,14 +73,14 @@ void CatalystShaderMain()
 		//Rotate the random direction.
 		random_hemisphere_direction = random_rotation * random_hemisphere_direction;
 
-		//Flip the direction, if needed.
-		random_hemisphere_direction = dot(random_hemisphere_direction, shading_normal) >= 0.0f ? random_hemisphere_direction : -random_hemisphere_direction;
+		//Generate the ray direction.
+		vec3 ray_direction = CatalystShaderGenerateSpecularLobeDirectionVector(vec2(path_tracing_ray_payload.random_noise[0], path_tracing_ray_payload.random_noise[1]), reflect(view_direction, shading_normal), roughness);
 
-		//Calculate the reflection direction.
-		vec3 reflection_direction = reflect(view_direction, shading_normal);
-
-		//Blend the random hemisphere direction and the reflection direction based on the material properties.
-		vec3 indirect_lighting_direction = normalize(mix(reflection_direction, random_hemisphere_direction, diffuse_weight));
+		//Is the ray pointing downward?
+		if (dot(ray_direction, shading_normal) <= 0.0f)
+		{
+			continue;
+		}
 
 		//Reset the payload.
 		path_tracing_ray_payload.current_recursion_depth = UINT32_MAXIMUM; //Force the closest hit shaders to never fire any more rays.
@@ -95,7 +95,7 @@ void CatalystShaderMain()
 				0, 											//missIndex
 				world_position, 							//origin
 				CATALYST_RAY_TRACING_T_MINIMUM, 			//Tmin
-				indirect_lighting_direction, 				//direction
+				ray_direction, 								//direction
 				VIEW_DISTANCE, 								//Tmax
 				0 											//payload
 				);

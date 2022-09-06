@@ -32,37 +32,16 @@ layout (location = 0) out vec4 fragment;
 /*
 *	Calculates the indirect lighting ray direction and start offset.
 */
-void CalculateIndirectLightingRayDirectionAndStartOffset(uint index, vec3 view_direction, vec3 normal, float roughness, float metallic, out vec3 ray_direction, out float start_offset)
+void CalculateIndirectLightingRayDirectionAndStartOffset(uint index, vec3 view_direction, vec3 normal, float roughness, out vec3 ray_direction, out float start_offset)
 {
 	//Sample the noise texture.
 	vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), index);
 
-	//Calculate the random rotation matrix.
-	mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
-
-	//Calculate the random hemisphere sample start index.
-	uint random_hemisphere_sample_start_index = uint(noise_texture_sample.w * 64.0f);
-
-	//Sample the random direction and length.
-	vec3 random_hemisphere_direction;
-	float random_length;
-
-	SampleHammersleyHemisphereSample(index + random_hemisphere_sample_start_index + uint(gl_FragCoord.x) + uint(gl_FragCoord.y), random_hemisphere_direction, random_length);
-
-	//Rotate the random direction.
-	random_hemisphere_direction = random_rotation * random_hemisphere_direction;
-
-	//Flip the direction, if needed.
-	random_hemisphere_direction = dot(random_hemisphere_direction, normal) >= 0.0f ? random_hemisphere_direction : -random_hemisphere_direction;
-
-	//Calculate the reflection direction.
-	vec3 reflection_direction = reflect(view_direction, normal);
-
-	//Blend the random hemisphere direction and the reflection direction based on the material properties.
-	ray_direction = normalize(mix(reflection_direction, random_hemisphere_direction, roughness * (1.0f - metallic)));
+	//Generate the ray direction.
+	ray_direction = CatalystShaderGenerateSpecularLobeDirectionVector(vec2(noise_texture_sample[0], noise_texture_sample[1]), reflect(view_direction, normal), roughness);
 
 	//Write the start offset.
-	start_offset = random_length;
+	start_offset = noise_texture_sample[2];
 }
 
 /*
@@ -278,35 +257,7 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 				if (dot(ray_direction, direction_to_hit_position) > 0.0f)
 				{
 					//Sample the scene radiance at the sample screen coordinate.
-					vec3 scene_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
-
-					//The scene radiance at this point has only received direct lighting, so add some indirect lighting from the sky texture to simulate multiple bounces.
-					{
-						vec4 sample_scene_features_1 = texture(scene_features_1_texture, screen_space_sample_position.xy);
-						vec4 sample_scene_features_3 = texture(scene_features_3_texture, screen_space_sample_position.xy);
-
-						vec3 sample_specular_direction = reflect(ray_direction, sample_scene_features_2.xyz);
-						vec3 sample_diffuse_direction = sample_scene_features_2.xyz;
-
-						float diffuse_weight = sample_scene_features_3[0] * (1.0f - sample_scene_features_3[1]);
-
-						vec3 sample_ray_direction = normalize(mix(sample_specular_direction, sample_diffuse_direction, diffuse_weight));
-
-						scene_radiance += CalculateLighting(-ray_direction,
-															sample_scene_features_1.rgb,
-															sample_scene_features_2.xyz,
-															sample_scene_features_3[0],
-															sample_scene_features_3[1],
-															sample_scene_features_3[2],
-															1.0f,
-															-sample_ray_direction,
-															SampleSky(sample_ray_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * diffuse_weight));
-					}
-
-					//Calculate the hit radiance.
-					{
-						hit_radiance = scene_radiance;
-					}
+					hit_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
 
 					//Return that there was a hit.
 					return 1.0f;
@@ -343,7 +294,13 @@ void CatalystShaderMain()
 		vec3 ray_direction;
 		float start_offset;
 
-		CalculateIndirectLightingRayDirectionAndStartOffset(i, view_direction, scene_features_2.xyz, scene_features_3[0], scene_features_3[1], ray_direction, start_offset);
+		CalculateIndirectLightingRayDirectionAndStartOffset(i, view_direction, scene_features_2.xyz, scene_features_3[0], ray_direction, start_offset);
+
+		//Is the ray pointing downward?
+		if (dot(ray_direction, scene_features_2.xyz) <= 0.0f)
+		{
+			continue;
+		}
 
 		//Calculate the indirect lighting.
 		vec3 sample_indirect_lighting;

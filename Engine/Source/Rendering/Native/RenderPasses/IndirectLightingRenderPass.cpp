@@ -6,9 +6,34 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(IndirectLightingRenderPass);
+
+//TEMP
+#include <Systems/InputSystem.h>
+
+bool USE_INDIRECT_LIGHTING_SPATIAL_DENOISING{ true };
+bool USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING{ true };
+
+void UpdateIndirectLightingOptions()
+{
+	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F1) == ButtonState::PRESSED)
+	{
+		USE_INDIRECT_LIGHTING_SPATIAL_DENOISING = !USE_INDIRECT_LIGHTING_SPATIAL_DENOISING;
+
+		PRINT_TO_OUTPUT("Indirect lighting spatial denoising is now " << (USE_INDIRECT_LIGHTING_SPATIAL_DENOISING ? "on." : "off"));
+	}
+
+	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F2) == ButtonState::PRESSED)
+	{
+		USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING = !USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING;
+
+		PRINT_TO_OUTPUT("Indirect lighting temporal denoising is now " << (USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING ? "on." : "off"));
+	}
+}
+//TEMP
 
 /*
 *	Default constructor.
@@ -86,6 +111,18 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 		{
 			RenderingSystem::Instance->CreateRenderTarget(resolution, TextureFormat::RGBA_FLOAT32, &_TemporalIndirectLightingBuffers[i]);
 		}
+	}
+
+	//Create the specular bias lookup texture.
+	{
+		//Retrieve the data.
+		ResourcePointer<RawDataResource> data{ ResourceSystem::Instance->GetRawDataResource(HashString("Specular_Bias_Lookup_Texture_Raw_Data")) };
+
+		//Create the texture.
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(static_cast<float32 *const RESTRICT>(static_cast<void *const RESTRICT>(data->_Data.Data())), 512, 512, 1, 2), TextureFormat::RG_FLOAT32, TextureUsage::NONE), &_SpecularBiasLookupTexture);
+
+		//Add the texture to the global render data.
+		_SpecularBiasLookupTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_SpecularBiasLookupTexture);
 	}
 
 	//Add the pipelines.
@@ -250,6 +287,8 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
+	UpdateIndirectLightingOptions();
+
 	//Check the indirect lighting mode/quality.
 	{
 		_PreviousIndirectLightingMode = _CurrentIndirectLightingMode;
@@ -281,7 +320,8 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 		_RayTracedIndirectLightingRayTracingPipeline.Execute();
 	}
 
-	if (!RenderingSystem::Instance->IsTakingScreenshot()
+	if (USE_INDIRECT_LIGHTING_SPATIAL_DENOISING
+		&& !RenderingSystem::Instance->IsTakingScreenshot()
 		&& _CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
 	{
 		for (uint8 i{ 0 }; i < 2; ++i)
@@ -290,7 +330,16 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 		}
 	}
 
-	if (_CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
+	else
+	{
+		for (uint8 i{ 0 }; i < 2; ++i)
+		{
+			_IndirectLightingSpatialDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
+		}
+	}
+
+	if (USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING
+		&& _CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
 	{
 		for (uint8 i{ 0 }; i < 2; ++i)
 		{
@@ -303,6 +352,14 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 			{
 				_IndirectLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
 			}
+		}
+	}
+
+	else
+	{
+		for (uint8 i{ 0 }; i < 2; ++i)
+		{
+			_IndirectLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
 		}
 	}
 
@@ -342,4 +399,8 @@ void IndirectLightingRenderPass::Terminate() NOEXCEPT
 			_TemporalIndirectLightingBuffers[i] = EMPTY_HANDLE;
 		}
 	}
+
+	//Destroy the specular bias lookup texture.
+	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_SpecularBiasLookupTextureIndex);
+	RenderingSystem::Instance->DestroyTexture2D(&_SpecularBiasLookupTexture);
 }
