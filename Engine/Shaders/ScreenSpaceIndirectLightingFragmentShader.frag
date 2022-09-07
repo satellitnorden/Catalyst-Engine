@@ -1,12 +1,8 @@
 //Includes.
 #include "CatalystGeometryMath.glsl"
-#include "CatalystPackingUtilities.glsl"
-#include "CatalystRayTracingCore.glsl"
-#include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
-#include "..\Include\Rendering\Native\Shader\CatalystVolumetricLighting.h"
+#include "CatalystIndirectLightingCore.glsl"
 
 //Constants.
-#define SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES (1)
 #define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES (16)
 #define SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES_RECIPROCAL (1.0f / float(SCREEN_SPACE_INDIRECT_LIGHTING_RAY_MAXIMUM_SAMPLES))
 #define SCREEN_SPACE_INDIRECT_LIGHTING_REFINE_STEPS (4)
@@ -23,8 +19,7 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 layout (set = 1, binding = 0) uniform sampler2D scene_features_1_texture;
 layout (set = 1, binding = 1) uniform sampler2D scene_features_2_texture;
 layout (set = 1, binding = 2) uniform sampler2D scene_features_3_texture;
-layout (set = 1, binding = 3) uniform sampler2D scene_texture;
-layout (set = 1, binding = 4) uniform sampler2D depth_mip_chain[8];
+layout (set = 1, binding = 3) uniform sampler2D depth_mip_chain[8];
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -81,7 +76,7 @@ vec3 StepThroughCell(vec3 screen_space_position, vec3 screen_space_direction, in
 /*
 *	Casts a ray against the scene. Returns if there was a hit.	
 */
-float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_features_3, vec3 view_direction, vec3 ray_origin, vec3 ray_direction, float start_offset, out vec3 hit_radiance)
+float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_features_3, vec3 view_direction, vec3 ray_origin, vec3 ray_direction, float start_offset, out ScreenSpaceIndirectLightingData output_data)
 {
 #if 0
 	//Calculate the screen space origin.
@@ -256,11 +251,19 @@ float CastRayScene(vec4 scene_features_1, vec4 scene_features_2, vec4 scene_feat
 
 				if (dot(ray_direction, direction_to_hit_position) > 0.0f)
 				{
-					//Sample the scene radiance at the sample screen coordinate.
-					hit_radiance = texture(scene_texture, screen_space_sample_position.xy).rgb;
+					//Fill out the output_data.
+					output_data._HitPosition = hit_position;
 
-					//Return that there was a hit.
-					return 1.0f;
+					//Return the hit percentage.
+					float hit_percentage_x = abs(0.5f - screen_space_sample_position.x) * 2.0f;
+					hit_percentage_x *= hit_percentage_x;
+					hit_percentage_x = 1.0f - hit_percentage_x;
+
+					float hit_percentage_y = abs(0.5f - screen_space_sample_position.y) * 2.0f;
+					hit_percentage_y *= hit_percentage_y;
+					hit_percentage_y = 1.0f - hit_percentage_y;
+
+					return hit_percentage_x * hit_percentage_y;
 				}
 			}
 		}
@@ -284,37 +287,27 @@ void CatalystShaderMain()
 	//Calculate the view direction.
 	vec3 view_direction = normalize(world_position - CAMERA_WORLD_POSITION);
 
-	//Fire all rays.
-	vec3 indirect_lighting = vec3(0.0f);
-	float total_weight = 0.0f;
+	//Calculate the ray direction and start offset.
+	vec3 ray_direction;
+	float start_offset;
 
-	for (uint i = 0; i < SCREEN_SPACE_INDIRECT_LIGHTING_SAMPLES; ++i)
+	CalculateIndirectLightingRayDirectionAndStartOffset(0, view_direction, scene_features_2.xyz, scene_features_3[0], ray_direction, start_offset);
+
+	//Calculate the screen space indirect lighting data.
+	ScreenSpaceIndirectLightingData screen_space_indirect_lighting_data;
+
+	screen_space_indirect_lighting_data._HitPosition = vec3(0.0f);
+	screen_space_indirect_lighting_data._HitPercentage = 0.0f;
+
+	//Is the ray pointing in the right direction?
+	if (dot(ray_direction, scene_features_2.xyz) > 0.0f)
 	{
-		//Calculate the ray direction and start offset.
-		vec3 ray_direction;
-		float start_offset;
-
-		CalculateIndirectLightingRayDirectionAndStartOffset(i, view_direction, scene_features_2.xyz, scene_features_3[0], ray_direction, start_offset);
-
-		//Is the ray pointing downward?
-		if (dot(ray_direction, scene_features_2.xyz) <= 0.0f)
-		{
-			continue;
-		}
-
-		//Calculate the indirect lighting.
-		vec3 sample_indirect_lighting;
-
-		float hit = CastRayScene(scene_features_1, scene_features_2, scene_features_3, view_direction, world_position, ray_direction, start_offset, sample_indirect_lighting);
-
-		//Accumulate.
-		indirect_lighting += hit > 0.0f ? sample_indirect_lighting * hit : vec3(0.0f);
-		total_weight += hit;
+		screen_space_indirect_lighting_data._HitPercentage = CastRayScene(scene_features_1, scene_features_2, scene_features_3, view_direction, world_position, ray_direction, start_offset, screen_space_indirect_lighting_data);
 	}
 
-	//Normalize the indirect lighting.
-	indirect_lighting = total_weight != 0.0f ? indirect_lighting / total_weight : vec3(0.0f);
+	//Pack the screen space indirect lighting data.
+	vec4 packed_screen_space_indirect_lighting_data = PackScreenSpaceIndirectLightingData(screen_space_indirect_lighting_data);
 
     //Write the fragment
-    fragment = vec4(indirect_lighting, min(total_weight, 1.0f));
+    fragment = packed_screen_space_indirect_lighting_data;
 }

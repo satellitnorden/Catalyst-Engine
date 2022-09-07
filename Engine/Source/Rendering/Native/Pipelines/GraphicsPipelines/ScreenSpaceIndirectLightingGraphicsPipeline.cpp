@@ -171,13 +171,12 @@ void ScreenSpaceIndirectLightingGraphicsPipeline::Terminate() NOEXCEPT
 */
 void ScreenSpaceIndirectLightingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 5> bindings
+	StaticArray<RenderDataTableLayoutBinding, 4> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
 		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, PostSceneFeaturesRenderPass::DEPTH_MIP_CHAIN_DEPTH, ShaderStage::FRAGMENT)
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, PostSceneFeaturesRenderPass::DEPTH_MIP_CHAIN_DEPTH, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -217,11 +216,9 @@ void ScreenSpaceIndirectLightingGraphicsPipeline::CreateRenderDataTable(const Re
 			break;
 		}
 	}
-	
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE), RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 
 	for (uint8 i{ 0 }; i < PostSceneFeaturesRenderPass::DEPTH_MIP_CHAIN_DEPTH; ++i)
 	{
-		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(4, i, &_RenderDataTable, PostSceneFeaturesRenderPass::Instance->GetDepthMip(i), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, i, &_RenderDataTable, PostSceneFeaturesRenderPass::Instance->GetDepthMip(i), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	}
 }
