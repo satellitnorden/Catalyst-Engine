@@ -99,36 +99,6 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													vec3 irradiance_direction,
 													vec3 irradiance);
 
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectSpecularComponent,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance);
-
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectNormalDistribution,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance);
-
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectGeometry,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance);
-
 	CATALYST_SHADER_FUNCTION_RETURN_SIX_ARGUMENTS(	vec3,
 													CalculateIndirectFresnel,
 													vec3 outgoing_direction,
@@ -137,26 +107,6 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 													float roughness,
 													float metallic,
 													float ambient_occlusion);
-
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectDiffuseComponent,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance);
-
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectSpecularWeight,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance);
 
 	/*
 	*	Calculates the attenuation based on the distance to a light source and it's radius.
@@ -489,116 +439,6 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 	}
 
 	/*
-	*	Calculates and returns the indirect specular component.
-	*
-	*	Calculated using the Cook-Torrance algorithm.
-	*/
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectSpecularComponent,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance)
-	{
-		//Define constants.
-		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_FLOAT_EPSILON, 1.192092896e-07F);
-
-		//Calculate the numerator.
-		vec3 normal_distribution = CalculateIndirectNormalDistribution(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
-		vec3 geometry = CalculateIndirectGeometry(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion, irradiance);
-		vec3 fresnel = CalculateIndirectFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion);
-
-		vec3 numerator = normal_distribution * geometry * fresnel;
-
-		//Calculate the denominator.
-		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(outgoing_direction, normal), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
-		float denominator = CATALYST_SHADER_FUNCTION_MAXIMUM(4.0f * outgoing_direction_coefficient, CATALYST_LIGHTING_FLOAT_EPSILON);
-
-		//Calculate the specular component.
-		return vec3(numerator / denominator);
-	}
-
-	/*
-	*	Calculates and returns the indirect normal distribution.
-	*
-	*	Calculated using the Trowbridge-Reitz GGX algorithm.
-	*/
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectNormalDistribution,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance)
-	{
-		//Define constants.
-		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_FLOAT_EPSILON, 1.192092896e-07F);
-		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_PI, 3.141592f);
-
-		//Calculate the roughness squared.
-		float roughness_squared = roughness * roughness;
-
-		//Calculate the numerator.
-		float numerator = roughness_squared;
-
-		//Calculate the denominator.
-		float view_vector_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
-		float view_vector_coefficient_squared = view_vector_coefficient * view_vector_coefficient;
-		float denominator_coefficient = view_vector_coefficient_squared * (roughness_squared - 1.0f) + 1.0f;
-
-		float denominator = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_LIGHTING_PI * denominator_coefficient * denominator_coefficient, CATALYST_LIGHTING_FLOAT_EPSILON);
-
-		//Calculate the normal distribution.
-		return vec3(numerator / denominator);
-	}
-
-	/*
-	*	Calculates and returns the indirect geometry.
-	*
-	*	Calculated using the Schlick-GGX and Smith algorithm.
-	*/
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectGeometry,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance)
-	{
-		//Define constants.
-		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_FLOAT_EPSILON, 1.192092896e-07F);
-
-		//Calculate the outgoing direction coefficient.
-		float outgoing_direction_coefficient = CATALYST_SHADER_FUNCTION_MAXIMUM(CATALYST_SHADER_FUNCTION_DOT_PRODUCT(normal, outgoing_direction), CATALYST_LIGHTING_MINIMUM_DOT_PRODUCT);
-
-		//Calculate the roughness coefficient.
-		float roughness_coefficient = (roughness * roughness) * 0.5f;
-
-		//Calculate the first coefficient.
-		float first_coefficient;
-
-		{
-			//Calculate the numerator.
-			float numerator = outgoing_direction_coefficient;
-
-			//Calculate the denominator.
-			float denominator = CATALYST_SHADER_FUNCTION_MAXIMUM(outgoing_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient, CATALYST_LIGHTING_FLOAT_EPSILON);
-
-			first_coefficient = numerator / denominator;
-		}
-
-		//Calculate the geometry.
-		return vec3(first_coefficient);
-	}
-
-	/*
 	*	Calculates and returns the indirect fresnel.
 	*	
 	*	Calculated using the cook-torrance algorithm.
@@ -620,45 +460,6 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 
 		//Calculate the fresnel.
 		return surface_color + (CATALYST_SHADER_FUNCTION_MAXIMUM(vec3(1.0f - roughness), surface_color) - surface_color) * CATALYST_SHADER_FUNCTION_POWER(CATALYST_SHADER_FUNCTION_CLAMP(1.0f - cos_theta, 0.0f, 1.0f), 5.0f);
-	}
-
-	/*
-	*	Calculates and returns the indirect diffuse component.
-	*
-	*	Calculated using the Lambertian Diffuse algorithm.
-	*/
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectDiffuseComponent,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance)
-	{
-		//Define constants.
-		CATALYST_SHADER_CONSTANT(float, CATALYST_LIGHTING_INVERSE_PI, 0.318309f);
-
-		//Calculate the diffuse component.
-		return albedo * CATALYST_LIGHTING_INVERSE_PI;
-	}
-
-	/*
-	*	Calculates and returns the indirect specular weight.
-	*/
-	CATALYST_SHADER_FUNCTION_RETURN_SEVEN_ARGUMENTS(vec3,
-													CalculateIndirectSpecularWeight,
-													vec3 outgoing_direction,
-													vec3 albedo,
-													vec3 normal,
-													float roughness,
-													float metallic,
-													float ambient_occlusion,
-													vec3 irradiance)
-	{
-		//The fresnel is directly related to the specular weight, so use that.
-		return CalculateIndirectFresnel(outgoing_direction, albedo, normal, roughness, metallic, ambient_occlusion);
 	}
 
 	/*
