@@ -53,6 +53,9 @@ IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 		IndirectLightingRenderPass::Instance->Terminate();
 	});
 
+	//Reset the temporal reprojection buffer.
+	_TemporalReprojectionBuffer = EMPTY_HANDLE;
+
 	//Reset the temporal indirect lighting buffers.
 	for (uint8 i{ 0 }; i < 2; ++i)
 	{
@@ -68,19 +71,6 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
-	//Determine the resolution.
-	const Resolution resolution{ RenderingSystem::Instance->GetScaledResolution(0) };
-
-	//Create the temporal indirect lighting buffers.
-	if (_CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
-	{
-		//Create the temporal indirect lighting buffers.
-		for (uint8 i{ 0 }; i < 2; ++i)
-		{
-			RenderingSystem::Instance->CreateRenderTarget(resolution, TextureFormat::RGBA_FLOAT32, &_TemporalIndirectLightingBuffers[i]);
-		}
-	}
-
 	//Create the specular bias lookup texture.
 	{
 		//Retrieve the data.
@@ -91,6 +81,19 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 
 		//Add the texture to the global render data.
 		_SpecularBiasLookupTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_SpecularBiasLookupTexture);
+	}
+
+	//Create the appropriate render targets.
+	if (_CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
+	{
+		//Create the temporal reprojection buffer.
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RG_FLOAT16, &_TemporalReprojectionBuffer);
+
+		//Create the temporal indirect lighting buffers.
+		for (uint8 i{ 0 }; i < 2; ++i)
+		{
+			RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_TemporalIndirectLightingBuffers[i]);
+		}
 	}
 
 	//Add the pipelines.
@@ -131,7 +134,8 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 					_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Initialize
 					(
 						RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-						RenderingSystem::Instance->GetScaledResolution(1)
+						RenderingSystem::Instance->GetScaledResolution(1),
+						_TemporalReprojectionBuffer
 					);
 
 					break;
@@ -142,7 +146,8 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 					_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Initialize
 					(
 						RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
-						RenderingSystem::Instance->GetScaledResolution(0)
+						RenderingSystem::Instance->GetScaledResolution(0),
+						_TemporalReprojectionBuffer
 					);
 
 					break;
@@ -163,18 +168,12 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 		}
 
 		//Initialize the temporal denoising graphics pipelines.
-		_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_2_RENDER_TARGET_INDEX,
-																			RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_4),
-																			_TemporalIndirectLightingBuffers[1],
+		_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	_TemporalReprojectionBuffer,
 																			_TemporalIndirectLightingBuffers[0],
-																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2),
-																			resolution);
-		_IndirectLightingTemporalDenoisingGraphicsPipelines[1].Initialize(	CatalystShaderConstants::INTERMEDIATE_RGBA_FLOAT32_2_RENDER_TARGET_INDEX,
-																			RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_4),
-																			_TemporalIndirectLightingBuffers[0],
+																			_TemporalIndirectLightingBuffers[1]);
+		_IndirectLightingTemporalDenoisingGraphicsPipelines[1].Initialize(	_TemporalReprojectionBuffer,
 																			_TemporalIndirectLightingBuffers[1],
-																			RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2),
-																			resolution);
+																			_TemporalIndirectLightingBuffers[0]);
 	}
 
 	_IndirectLightingApplicationGraphicsPipeline.Initialize();

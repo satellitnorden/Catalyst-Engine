@@ -18,12 +18,9 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const uint32 source_render_target_index,
-					const RenderTargetHandle scene_features_4_render_target,
+	void Initialize(const RenderTargetHandle temporal_reprojection_buffer,
 					const RenderTargetHandle previous_temporal_buffer,
-					const RenderTargetHandle target_1,
-					const RenderTargetHandle target_2,
-					const Resolution render_resolution) NOEXCEPT;
+					const RenderTargetHandle current_temporal_buffer) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -43,9 +40,6 @@ private:
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable{ EMPTY_HANDLE };
 
-	//The source render target index.
-	uint32 _SourceRenderTargetIndex;
-
 	/*
 	*	Creates the render data table layout.
 	*/
@@ -54,6 +48,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable(const RenderTargetHandle scene_features_4_render_target, const RenderTargetHandle previous_temporal_buffer) NOEXCEPT;
+	void CreateRenderDataTable(const RenderTargetHandle temporal_reprojection_buffer, const RenderTargetHandle previous_temporal_buffer) NOEXCEPT;
 
 };

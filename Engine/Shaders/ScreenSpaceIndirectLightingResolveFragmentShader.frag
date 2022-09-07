@@ -21,7 +21,8 @@ layout (set = 1, binding = 2) uniform sampler2D SCREEN_SPACE_INDIRECT_LIGHTING_T
 layout (set = 1, binding = 3) uniform sampler2D SCENE_TEXTURE;
 
 //Out parameters.
-layout (location = 0) out vec4 fragment;
+layout (location = 0) out vec4 indirect_lighting;
+layout (location = 1) out vec4 temporal_reprojection_buffer;
 
 void CatalystShaderMain()
 {
@@ -44,6 +45,7 @@ void CatalystShaderMain()
 
 	//Accumulate the radiance.
 	vec3 radiance = vec3(0.0f);
+	vec3 hit_position = vec3(0.0f);
 	float total_weight = 0.0f;
 
 	for (int Y = -1; Y <= 1; ++Y)
@@ -94,6 +96,7 @@ void CatalystShaderMain()
 
 			//Accumulate.
 			radiance += sample_radiance * weight;
+			hit_position += data._HitPosition * weight;
 			total_weight += weight;
 		}
 	}
@@ -101,6 +104,10 @@ void CatalystShaderMain()
 	//Normalize the radiance.
 	radiance = total_weight != 0.0f ? radiance / total_weight : vec3(0.0f);
 
+	//Normalize the hit position.
+	hit_position = total_weight != 0.0f ? hit_position / total_weight : vec3(0.0f);
+
     //Write the fragment
-    fragment = vec4(radiance, float(total_weight > 0.0f));
+    indirect_lighting = vec4(radiance, float(total_weight > 0.0f));
+    temporal_reprojection_buffer = vec4(CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, hit_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, hit_position), 0.0f, 0.0f);
 }

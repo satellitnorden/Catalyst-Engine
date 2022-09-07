@@ -9,30 +9,11 @@
 #include <Systems/ResourceSystem.h>
 
 /*
-*	Indirect lighting temporal denoising push constant data definition.
-*/
-class IndirectLightingTemporalDenoisingPushConstantData final
-{
-
-public:
-
-	//The delta.
-	Vector2<float32> _Delta;
-
-	//The source render target index.
-	uint32 _SourceRenderTargetIndex;
-
-};
-
-/*
 *	Initializes this graphics pipeline.
 */
-void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32 source_render_target_index,
-																	const RenderTargetHandle scene_features_4_render_target,
+void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const RenderTargetHandle temporal_reprojection_buffer,
 																	const RenderTargetHandle previous_temporal_buffer,
-																	const RenderTargetHandle target_1,
-																	const RenderTargetHandle target_2,
-																	const Resolution render_resolution) NOEXCEPT
+																	const RenderTargetHandle current_temporal_buffer) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -41,10 +22,7 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable(scene_features_4_render_target, previous_temporal_buffer);
-
-	//Set the source render target index.
-	_SourceRenderTargetIndex = source_render_target_index;
+	CreateRenderDataTable(temporal_reprojection_buffer, previous_temporal_buffer);
 
 	//Set the shaders.
 	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
@@ -55,20 +33,16 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const uint32
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(2);
-	AddOutputRenderTarget(target_1);
-	AddOutputRenderTarget(target_2);
+	AddOutputRenderTarget(current_temporal_buffer);
+	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingTemporalDenoisingPushConstantData));
-
 	//Set the render resolution.
-	SetRenderResolution(render_resolution);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 
 	//Set the properties of the render pass.
 	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
@@ -119,14 +93,6 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	command_buffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
-	//Push constants.
-	IndirectLightingTemporalDenoisingPushConstantData data;
-
-	data._Delta = Vector2<float32>(1.0f / static_cast<float32>(GetRenderResolution()._Width), 1.0f / static_cast<float32>(GetRenderResolution()._Height));
-	data._SourceRenderTargetIndex = _SourceRenderTargetIndex;
-
-	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(IndirectLightingTemporalDenoisingPushConstantData), &data);
-
 	//Draw!
 	command_buffer->Draw(this, 3, 1);
 
@@ -162,10 +128,12 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Terminate() NOEXCEPT
 */
 void IndirectLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	StaticArray<RenderDataTableLayoutBinding, 4> bindings
 	{
 		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -174,10 +142,12 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTableLay
 /*
 *	Creates the render data table.
 */
-void IndirectLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle scene_features_4_render_target, const RenderTargetHandle previous_temporal_buffer) NOEXCEPT
+void IndirectLightingTemporalDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle temporal_reprojection_buffer, const RenderTargetHandle previous_temporal_buffer) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, scene_features_4_render_target, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, previous_temporal_buffer, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_4), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, &_RenderDataTable, temporal_reprojection_buffer, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(3, 0, &_RenderDataTable, previous_temporal_buffer, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }

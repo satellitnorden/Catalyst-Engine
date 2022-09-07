@@ -18,7 +18,8 @@ public:
 	*	Initializes this graphics pipeline.
 	*/
 	void Initialize(const RenderTargetHandle source_render_target,
-					const Resolution source_render_resolution) NOEXCEPT;
+					const Resolution source_render_resolution,
+					const RenderTargetHandle temporal_reprojection_buffer) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.

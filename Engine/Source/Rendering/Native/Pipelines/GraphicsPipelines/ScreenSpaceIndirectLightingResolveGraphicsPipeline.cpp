@@ -28,7 +28,8 @@ public:
 *	Initializes this graphics pipeline.
 */
 void ScreenSpaceIndirectLightingResolveGraphicsPipeline::Initialize(const RenderTargetHandle source_render_target,
-																	const Resolution source_render_resolution) NOEXCEPT
+																	const Resolution source_render_resolution,
+																	const RenderTargetHandle temporal_reprojection_buffer) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -50,8 +51,9 @@ void ScreenSpaceIndirectLightingResolveGraphicsPipeline::Initialize(const Render
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ScreenSpaceIndirectLightingResolveFragmentShader")));
 
 	//Add the output render targets.
-	SetNumberOfOutputRenderTargets(1);
+	SetNumberOfOutputRenderTargets(2);
 	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2));
+	AddOutputRenderTarget(temporal_reprojection_buffer);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

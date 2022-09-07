@@ -47,6 +47,9 @@ private:
 	//The current indirect lighting quality.
 	RenderingConfiguration::IndirectLightingQuality _CurrentIndirectLightingQuality{ RenderingConfiguration::IndirectLightingQuality::LOW };
 
+	//The temporal reprojection buffer.
+	RenderTargetHandle _TemporalReprojectionBuffer;
+
 	//The temporal indirect lighting buffers.
 	StaticArray<RenderTargetHandle, 2> _TemporalIndirectLightingBuffers;
 
