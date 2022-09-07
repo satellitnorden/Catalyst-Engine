@@ -2124,8 +2124,6 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					ASSERT(primitive.mode == TINYGLTF_MODE_TRIANGLES, "Mode of primitive is not triangles!");
 
 					//Go through the attributes.
-					uint64 vertices_count{ 0 };
-
 					for (const std::pair<std::string, int> &attribute : primitive.attributes)
 					{
 						if (attribute.first == "POSITION")
@@ -2172,17 +2170,6 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 
 								//Set the position.
 								vertex->_Position = position;
-							}
-
-							//Set the vertices count.
-							if (vertices_count == 0)
-							{
-								vertices_count = accessor.count;
-							}
-
-							else
-							{
-								ASSERT(vertices_count == accessor.count, "Mismatch!");
 							}
 						}
 
@@ -2231,17 +2218,6 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 								//Set the normal.
 								vertex->_Normal = normal;
 							}
-
-							//Set the vertices count.
-							if (vertices_count == 0)
-							{
-								vertices_count = accessor.count;
-							}
-
-							else
-							{
-								ASSERT(vertices_count == accessor.count, "Mismatch!");
-							}
 						}
 
 						else if (attribute.first == "TANGENT")
@@ -2288,17 +2264,6 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 
 								//Set the tangent.
 								vertex->_Tangent = Vector3<float32>(tangent._X, tangent._Y, tangent._Z);
-							}
-
-							//Set the vertices count.
-							if (vertices_count == 0)
-							{
-								vertices_count = accessor.count;
-							}
-
-							else
-							{
-								ASSERT(vertices_count == accessor.count, "Mismatch!");
 							}
 						}
 
@@ -2347,17 +2312,11 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 								//Set the texture coordinate.
 								vertex->_TextureCoordinate = texture_coordinate;
 							}
+						}
 
-							//Set the vertices count.
-							if (vertices_count == 0)
-							{
-								vertices_count = accessor.count;
-							}
-
-							else
-							{
-								ASSERT(vertices_count == accessor.count, "Mismatch!");
-							}
+						else
+						{
+							ASSERT(false, "What is this?");
 						}
 					}
 
@@ -2413,14 +2372,15 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					}
 
 					//Update the current vertex offset.
-					current_vertex_offset += vertices_count;
+					current_vertex_offset += static_cast<uint32>(model_file._Meshes[0]._Vertices.Size());
 				}
 
 				//Do some sanity-checking.
 				{
-					for (const uint32 index : model_file._Meshes[0]._Indices)
+					for (uint32 &index : model_file._Meshes[0]._Indices)
 					{
-						ASSERT(index < model_file._Meshes[0]._Vertices.Size(), "Oh no...");
+						//ASSERT(index < model_file._Meshes[0]._Vertices.Size(), "Oh no...");
+						index = CatalystBaseMath::Minimum<uint32>(index, static_cast<uint32>(model_file._Meshes[0]._Vertices.LastIndex()));
 					}
 				}
 
@@ -2555,7 +2515,21 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					texture_parameters._ApplyGammaCorrection = true;
 					texture_parameters._TransformFunction = nullptr;
 					texture_parameters._BaseMipmapLevel = 0;
-					texture_parameters._MipmapLevels = 9;
+
+					{
+						uint8 mipmap_levels{ 1 };
+						uint32 width{ static_cast<uint32>(image.width) };
+						uint32 height{ static_cast<uint32>(image.height) };
+
+						while (width > 4 && height > 4)
+						{
+							++mipmap_levels;
+							width >>= 1;
+							height >>= 1;
+						}
+
+						texture_parameters._MipmapLevels = mipmap_levels;
+					}
 
 					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
 					
@@ -2637,7 +2611,21 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 						}
 					};
 					texture_parameters._BaseMipmapLevel = 0;
-					texture_parameters._MipmapLevels = 9;
+
+					{
+						uint8 mipmap_levels{ 1 };
+						uint32 width{ static_cast<uint32>(image.width) };
+						uint32 height{ static_cast<uint32>(image.height) };
+
+						while (width > 4 && height > 4)
+						{
+							++mipmap_levels;
+							width >>= 1;
+							height >>= 1;
+						}
+
+						texture_parameters._MipmapLevels = mipmap_levels;
+					}
 
 					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
 
@@ -2698,7 +2686,21 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					texture_parameters._ApplyGammaCorrection = false;
 					texture_parameters._TransformFunction = nullptr;
 					texture_parameters._BaseMipmapLevel = 0;
-					texture_parameters._MipmapLevels = 9;
+					
+					{
+						uint8 mipmap_levels{ 1 };
+						uint32 width{ static_cast<uint32>(image.width) };
+						uint32 height{ static_cast<uint32>(image.height) };
+
+						while (width > 4 && height > 4)
+						{
+							++mipmap_levels;
+							width >>= 1;
+							height >>= 1;
+						}
+
+						texture_parameters._MipmapLevels = mipmap_levels;
+					}
 
 					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
 

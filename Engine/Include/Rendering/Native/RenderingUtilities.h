@@ -181,7 +181,7 @@ public:
 		for (uint8 i{ 1 }; i < levels; ++i)
 		{
 			//Initialize this mip level.
-			output_textures->At(i).Initialize(output_textures->At(i - 1).GetWidth() >> 1, output_textures->At(i - 1).GetHeight() >> 1);
+			output_textures->At(i).Initialize(CatalystBaseMath::Maximum<uint32>(output_textures->At(i - 1).GetWidth() >> 1, 1), CatalystBaseMath::Maximum<uint32>(output_textures->At(i - 1).GetHeight() >> 1, 1));
 
 			for (uint32 Y{ 0 }; Y < output_textures->At(i).GetHeight(); ++Y)
 			{

@@ -69,19 +69,14 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 			//Gather the data.
 			DynamicArray<byte> data;
 
-			std::ifstream data_file{ "..\\..\\..\\..\\Catalyst-Engine\\Tools\\Specular Bias Lookup Texture Generator\\Visual Studio Solution\\Specular Bias Lookup Texture Generator\\Specular Bias Lookup Texture Generator\\SpecularBiasLookupTextureData" };
+			BinaryFile<BinaryFileMode::IN> data_file{ "..\\..\\..\\..\\Catalyst-Engine\\Tools\\Specular Bias Lookup Texture Generator\\Visual Studio Solution\\Specular Bias Lookup Texture Generator\\Specular Bias Lookup Texture Generator\\SpecularBiasLookupTextureData" };
 
-			if (data_file.is_open())
+			if (data_file)
 			{
-				char next_byte;
+				data.Upsize<false>(data_file.Size());
+				data_file.Read(data.Data(), data_file.Size());
 
-				while (!data_file.eof())
-				{
-					data_file.read(&next_byte, sizeof(byte));
-					data.Emplace(static_cast<byte>(next_byte));
-				}
-
-				data_file.close();
+				data_file.Close();
 			}
 
 			else

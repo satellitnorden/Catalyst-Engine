@@ -141,8 +141,7 @@ void CatalystShaderMain()
 															scene_features_3[2],
 															mix(SampleSky(scene_features_2.xyz, MAX_SKY_TEXTURE_MIPMAP_LEVEL), indirect_lighting.rgb, indirect_lighting.a),
 															mix(SampleSky(reflection_direction, MAX_SKY_TEXTURE_MIPMAP_LEVEL * scene_features_3[0]), indirect_lighting.rgb, indirect_lighting.a),
-															//specular_bias);
-															vec2(1.0f, 0.0f));
+															specular_bias);
 
 	//Write the fragment.
 	scene = vec4(calculated_lighting, 1.0f);
