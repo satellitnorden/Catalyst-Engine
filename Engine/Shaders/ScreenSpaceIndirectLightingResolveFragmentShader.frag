@@ -17,8 +17,9 @@ layout (push_constant) uniform PushConstantData
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_2_TEXTURE;
 layout (set = 1, binding = 1) uniform sampler2D SCENE_FEATURES_3_TEXTURE;
-layout (set = 1, binding = 2) uniform sampler2D SCREEN_SPACE_INDIRECT_LIGHTING_TEXTURE;
-layout (set = 1, binding = 3) uniform sampler2D SCENE_TEXTURE;
+layout (set = 1, binding = 2) uniform sampler2D SCENE_FEATURES_4_TEXTURE;
+layout (set = 1, binding = 3) uniform sampler2D SCREEN_SPACE_INDIRECT_LIGHTING_TEXTURE;
+layout (set = 1, binding = 4) uniform sampler2D SCENE_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 indirect_lighting;
@@ -77,8 +78,11 @@ void CatalystShaderMain()
 			//Calculate the irradiance direction.
 			vec3 irradiance_direction = normalize(world_position - data._HitPosition);
 
+			//Retrieve the velocity.
+			vec2 velocity = texture(SCENE_FEATURES_4_TEXTURE, screen_coordinate).xy;
+
 			//Retrieve the sample radiance.
-			vec3 sample_radiance = texture(SCENE_TEXTURE, screen_coordinate).rgb;
+			vec3 sample_radiance = texture(SCENE_TEXTURE, screen_coordinate - velocity).rgb;
 
 			//Sample the BRDF.
 			float weight = SampleBidirectionalReflectanceDistribution

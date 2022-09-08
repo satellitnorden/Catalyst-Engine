@@ -421,6 +421,11 @@ enum class SharedRenderTarget : uint8
 	SCENE,
 
 	/*
+	*	Contains the final color for the previous scene.
+	*/
+	PREVIOUS_SCENE,
+
+	/*
 	*	Intermediate render target at quarter resolution.
 	*/
 	INTERMEDIATE_RGBA_FLOAT32_QUARTER_1,

@@ -40,8 +40,9 @@ void ToneMappingGraphicsPipeline::Initialize() NOEXCEPT
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ToneMappingFragmentShader")));
 
 	//Add the output render targets.
-	SetNumberOfOutputRenderTargets(1);
+	SetNumberOfOutputRenderTargets(2);
 	AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::PREVIOUS_SCENE));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

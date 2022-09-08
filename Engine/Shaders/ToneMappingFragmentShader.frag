@@ -21,7 +21,8 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Out parameters.
-layout (location = 0) out vec4 fragment;
+layout (location = 0) out vec4 scene;
+layout (location = 1) out vec4 previous_scene;
 
 /*
 *   Applies color grading.
@@ -50,18 +51,19 @@ vec3 ApplyColorGrading(vec3 fragment)
 void CatalystShaderMain()
 {
     //Sample the scene texture.
-    vec3 scene_texture_sampler = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
+    vec3 scene_sample = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
 
     //Apply tone mapping.
-    scene_texture_sampler = ApplyToneMapping(scene_texture_sampler * EXPOSURE);
+    vec3 tonemapped_scene_sample = ApplyToneMapping(scene_sample * EXPOSURE);
 
     //Apply color grading.
     if (COLOR_GRADING_TEXTURE_INDEX < UINT32_MAXIMUM)
     {
-        scene_texture_sampler = ApplyColorGrading(scene_texture_sampler);
+        tonemapped_scene_sample = ApplyColorGrading(tonemapped_scene_sample);
     }
 
     //Write the fragment
-    if (isnan(scene_texture_sampler.r) || isnan(scene_texture_sampler.g) || isnan(scene_texture_sampler.b)) fragment = vec4(vec3(1.0f, 0.0f, 0.0f), 1.0f);
-    else fragment = vec4(scene_texture_sampler, 1.0f);
+    if (isnan(tonemapped_scene_sample.r) || isnan(tonemapped_scene_sample.g) || isnan(tonemapped_scene_sample.b)) scene = vec4(vec3(1.0f, 0.0f, 0.0f), 1.0f);
+    else scene = vec4(tonemapped_scene_sample, 1.0f);
+    previous_scene = vec4(scene_sample, 1.0f);
 }
