@@ -16,6 +16,7 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_4_TEXTURE;
+layout (set = 1, binding = 1) uniform texture2D SCENE_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -34,7 +35,7 @@ void CatalystShaderMain()
 	if (MOTION_BLUR_INTENSITY == 0.0f)
 	{
 		//Write the fragment.
-    	fragment = texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
+    	fragment = texture(sampler2D(SCENE_TEXTURE, GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 	}
 	
 	else
@@ -173,7 +174,7 @@ void CatalystShaderMain()
 
 		for (uint i = 0; i < MOTION_BLUR_SAMPLES; ++i)
 		{
-			blurred_scene += texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + blur_direction * offsets[i]).rgb;
+			blurred_scene += texture(sampler2D(SCENE_TEXTURE, GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + blur_direction * offsets[i]).rgb;
 		}
 
 		blurred_scene /= MOTION_BLUR_SAMPLES;

@@ -55,7 +55,7 @@ void EditorUserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 		SetIsRenderingDirectlyToScreen(false);
 
 		SetNumberOfOutputRenderTargets(1);
-		AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+		AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
 	}
 
 	//Add the render data table layouts.

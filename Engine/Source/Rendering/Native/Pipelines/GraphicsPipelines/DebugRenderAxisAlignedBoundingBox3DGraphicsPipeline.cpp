@@ -76,7 +76,7 @@ void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize(const Depth
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);

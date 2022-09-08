@@ -79,7 +79,7 @@ void UserInterfaceGraphicsPipeline::Initialize(const bool render_to_screen) NOEX
 	else
 	{
 		SetNumberOfOutputRenderTargets(1);
-		AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE));
+		AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
 	}
 
 	//Add the render data table layouts.

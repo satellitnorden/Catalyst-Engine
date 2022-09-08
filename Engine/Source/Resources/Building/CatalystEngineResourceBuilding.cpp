@@ -37,7 +37,7 @@
 #define BUILD_ENGINE_FONTS (0)
 #define BUILD_ENGINE_OCEAN_TEXTURE (0)
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES (0)
-#define BUILD_ENGINE_SHADERS (1)
+#define BUILD_ENGINE_SHADERS (0)
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE (0)
 #define BUILD_ENGINE_DEFAULT_TEXTURE_2D (0)
 #define BUILD_ENGINE_DEFAULT_TEXTURE_3D (0)
@@ -1132,17 +1132,6 @@ void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
 		parameters._ID = "EditorUserInterfaceVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorUserInterfaceVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\FastApproximateAntiAliasingFragmentShader";
-		parameters._ID = "FastApproximateAntiAliasingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\FastApproximateAntiAliasingFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}

@@ -20,6 +20,7 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D DEPTH_TEXTURE;
+layout (set = 1, binding = 1) uniform sampler2D SCENE_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -107,7 +108,7 @@ void CatalystShaderMain()
 
 			sample_weight *= float(ValidCoordinate(sample_coordinate));
 
-			blurred_scene += texture(sampler2D(RENDER_TARGETS[SCENE_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), sample_coordinate).rgb * sample_weight;
+			blurred_scene += texture(SCENE_TEXTURE, sample_coordinate).rgb * sample_weight;
 			total_weight += sample_weight;
 		}
 	}

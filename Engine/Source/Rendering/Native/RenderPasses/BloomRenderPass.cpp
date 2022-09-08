@@ -65,7 +65,7 @@ void BloomRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_BloomIsolationGraphicsPipeline.Initialize();
 
-	_BloomDownsampleGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE),
+	_BloomDownsampleGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE),
 													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
 													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Height)),
 													RenderingSystem::Instance->GetScaledResolution(1),
@@ -144,7 +144,7 @@ void BloomRenderPass::Initialize() NOEXCEPT
 													true);
 
 	_BloomUpsampleGraphicsPipelines[6].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-													RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE),
+													RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE),
 													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height)) * 0.5f,
 													RenderingSystem::Instance->GetScaledResolution(0),
 													true);

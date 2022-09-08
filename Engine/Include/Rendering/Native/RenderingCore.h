@@ -112,7 +112,6 @@ enum class DefaultNativeRenderPassStage : uint8
 	MOTION_BLUR,
 	BLOOM,
 	TONE_MAPPING,
-	FAST_APPROXIMATE_ANTI_ALIASING,
 	TEMPORAL_ANTI_ALIASING,
 	POST_PROCESSING,
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -142,7 +141,6 @@ enum class PathTracingNativeRenderPassStage : uint8
 	MOTION_BLUR,
 	BLOOM,
 	TONE_MAPPING,
-	FAST_APPROXIMATE_ANTI_ALIASING,
 	TEMPORAL_ANTI_ALIASING,
 	POST_PROCESSING,
 	USER_INTERFACE,
@@ -332,11 +330,6 @@ enum class RenderTarget : uint8
 	SCENE_FEATURES_4_HALF,
 
 	/*
-	*	Contains the final color for the scene.
-	*/
-	SCENE,
-
-	/*
 	*	Intermediate render target.
 	*/
 	INTERMEDIATE_RGBA_UINT8,
@@ -421,6 +414,11 @@ enum class SharedRenderTarget : uint8
 	*	Contains the shading normal in the RGB channels and the depth in the A channel at half resolution.
 	*/
 	SCENE_FEATURES_2_HALF,
+
+	/*
+	*	Contains the final color for the scene.
+	*/
+	SCENE,
 
 	/*
 	*	Intermediate render target at quarter resolution.

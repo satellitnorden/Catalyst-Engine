@@ -1759,7 +1759,7 @@ void VulkanSubRenderingSystem::TakeImmediateScreenshot(const char *const RESTRIC
 	VulkanInterface::Instance->GetTransferQueue()->WaitIdle();
 
 	//Cache the Vulkan render target.
-	VulkanRenderTarget *const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SCENE)) };
+	VulkanRenderTarget *const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE)) };
 
 	//Calculate the image size.
 	VkDeviceSize image_size{ RenderingSystem::Instance->GetFullResolution()._Width * RenderingSystem::Instance->GetFullResolution()._Height * sizeof(Vector4<float32>) };
