@@ -53,6 +53,12 @@ IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 		IndirectLightingRenderPass::Instance->Terminate();
 	});
 
+	//Reset the previous scene mip chain.
+	for (uint64 i{ 0 }; i < _PreviousSceneMipChain.Size(); ++i)
+	{
+		_PreviousSceneMipChain[i] = EMPTY_HANDLE;
+	}
+
 	//Reset the temporal reprojection buffer.
 	_TemporalReprojectionBuffer = EMPTY_HANDLE;
 
@@ -86,6 +92,17 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	//Create the appropriate render targets.
 	if (_CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
 	{
+		//Create the previous scene mip chain.
+		if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
+		{
+			_PreviousSceneMipChain[0] = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::PREVIOUS_SCENE);
+
+			for (uint8 i{ 1 }; i < _PreviousSceneMipChain.Size(); ++i)
+			{
+				RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(i), TextureFormat::RGBA_FLOAT32, &_PreviousSceneMipChain[i]);
+			}
+		}
+
 		//Create the temporal reprojection buffer.
 		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RG_FLOAT16, &_TemporalReprojectionBuffer);
 
@@ -97,13 +114,19 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + 1 + 1 + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(1 + _PreviousSceneResampleGraphicsPipelines.Size() + 1 + 1 + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
 
 	if (_CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
 	{
 		if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
 		{
 			AddPipeline(&_ScreenSpaceIndirectLightingGraphicsPipeline);
+
+			for (ResampleGraphicsPipeline &pipeline : _PreviousSceneResampleGraphicsPipelines)
+			{
+				AddPipeline(&pipeline);
+			}
+
 			AddPipeline(&_ScreenSpaceIndirectLightingResolveGraphicsPipeline);
 		}
 		
@@ -126,6 +149,18 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 		if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
 		{
 			_ScreenSpaceIndirectLightingGraphicsPipeline.Initialize(_CurrentIndirectLightingQuality);
+
+			for (uint8 i{ 0 }; i < PREVIOUS_SCENE_MIP_CHAIN_SIZE - 1; ++i)
+			{
+				_PreviousSceneResampleGraphicsPipelines[i].Initialize
+				(
+					_PreviousSceneMipChain[i],
+					_PreviousSceneMipChain[i + 1],
+					Vector2<float32>(1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(i)._Width), 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(i)._Height)),
+					RenderingSystem::Instance->GetScaledResolution(i + 1),
+					false
+				);
+			}
 
 			switch (_CurrentIndirectLightingQuality)
 			{
@@ -210,6 +245,12 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 	if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
 	{
 		_ScreenSpaceIndirectLightingGraphicsPipeline.Execute();
+
+		for (ResampleGraphicsPipeline &pipeline : _PreviousSceneResampleGraphicsPipelines)
+		{
+			pipeline.Execute();
+		}
+
 		_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Execute();
 	}
 
@@ -255,16 +296,48 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 void IndirectLightingRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines
-	_ScreenSpaceIndirectLightingGraphicsPipeline.Terminate();
-	_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Terminate();
-	_RayTracedIndirectLightingRayTracingPipeline.Terminate();
-
-	for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
+	if (_PreviousIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
 	{
-		pipeline.Terminate();
+		_ScreenSpaceIndirectLightingGraphicsPipeline.Terminate();
+
+		for (ResampleGraphicsPipeline &pipeline : _PreviousSceneResampleGraphicsPipelines)
+		{
+			pipeline.Terminate();
+		}
+
+		_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Terminate();
+	}
+
+	if (_PreviousIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::RAY_TRACED)
+	{
+		_RayTracedIndirectLightingRayTracingPipeline.Terminate();
+	}
+
+	if (_PreviousIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
+	{
+		for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
+		{
+			pipeline.Terminate();
+		}
 	}
 
 	_IndirectLightingApplicationGraphicsPipeline.Terminate();
+
+	//Destroy the previous scene mip chain.
+	for (uint64 i{ 1 }; i < _PreviousSceneMipChain.Size(); ++i)
+	{
+		if (_PreviousSceneMipChain[i])
+		{
+			RenderingSystem::Instance->DestroyRenderTarget(&_PreviousSceneMipChain[i]);
+			_PreviousSceneMipChain[i] = EMPTY_HANDLE;
+		}
+	}
+
+	//Destroy the temporal reprojection buffer.
+	if (_TemporalReprojectionBuffer)
+	{
+		RenderingSystem::Instance->DestroyRenderTarget(&_TemporalReprojectionBuffer);
+	}
 
 	//Destroy the temporal indirect lighting buffers.
 	for (uint8 i{ 0 }; i < 2; ++i)

@@ -2,6 +2,10 @@
 #include "CatalystIndirectLightingCore.glsl"
 #include "..\Include\Rendering\Native\Shader\CatalystLighting.h"
 
+//Constants.
+#define PREVIOUS_SCENE_MIP_CHAIN_SIZE (8)
+#define HIT_DISTANCE_FACTOR (0.1f)
+
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -19,7 +23,7 @@ layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_2_TEXTURE;
 layout (set = 1, binding = 1) uniform sampler2D SCENE_FEATURES_3_TEXTURE;
 layout (set = 1, binding = 2) uniform sampler2D SCENE_FEATURES_4_TEXTURE;
 layout (set = 1, binding = 3) uniform sampler2D SCREEN_SPACE_INDIRECT_LIGHTING_TEXTURE;
-layout (set = 1, binding = 4) uniform sampler2D SCENE_TEXTURE;
+layout (set = 1, binding = 4) uniform sampler2D PREVIOUS_SCENE_MIP_CHAIN[PREVIOUS_SCENE_MIP_CHAIN_SIZE];
 
 //Out parameters.
 layout (location = 0) out vec4 indirect_lighting;
@@ -75,15 +79,31 @@ void CatalystShaderMain()
 			//Calculate the screen coordinate.
 			vec2 screen_coordinate = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, data._HitPosition);
 
+			//Calculate the hit distance.
+			float hit_distance = length(world_position - data._HitPosition);
+
+			//Calculate the hit distance reciprocal.
+			float hit_distance_reciprocal = 1.0f / hit_distance;
+
 			//Calculate the irradiance direction.
-			vec3 irradiance_direction = normalize(world_position - data._HitPosition);
+			vec3 irradiance_direction = (world_position - data._HitPosition) * hit_distance_reciprocal;
 
 			//Retrieve the velocity.
 			vec2 velocity = texture(SCENE_FEATURES_4_TEXTURE, screen_coordinate).xy;
 
-			//Retrieve the sample radiance.
-			vec3 sample_radiance = texture(SCENE_TEXTURE, screen_coordinate - velocity).rgb;
+			//Calculate the sample radiance.
+			vec3 sample_radiance;
 
+			{
+				float factor = (roughness * (hit_distance * HIT_DISTANCE_FACTOR)) * float(PREVIOUS_SCENE_MIP_CHAIN_SIZE - 1);
+
+				uint first_index = min(uint(factor), PREVIOUS_SCENE_MIP_CHAIN_SIZE - 1);
+				uint second_index = min(first_index + 1, PREVIOUS_SCENE_MIP_CHAIN_SIZE - 1);
+				float alpha = fract(factor);
+
+				sample_radiance = mix(texture(PREVIOUS_SCENE_MIP_CHAIN[first_index], screen_coordinate - velocity).rgb, texture(PREVIOUS_SCENE_MIP_CHAIN[second_index], screen_coordinate - velocity).rgb, alpha);
+			}
+			
 			//Sample the BRDF.
 			float weight = SampleBidirectionalReflectanceDistribution
 			(

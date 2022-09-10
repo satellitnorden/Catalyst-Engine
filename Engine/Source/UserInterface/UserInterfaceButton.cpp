@@ -204,6 +204,19 @@ void UserInterfaceButton::SetText(const char *const RESTRICT text) NOEXCEPT
 }
 
 /*
+*	Sets the opacity.
+*/
+void UserInterfaceButton::SetOpacity(const float32 value) NOEXCEPT
+{
+	_ImagePrimitive->_Opacity = value;
+
+	if (_TextPrimitive)
+	{
+		_TextPrimitive->_Opacity = value;
+	}
+}
+
+/*
 *	Returns the user interface primitives.
 */
 void UserInterfaceButton::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT

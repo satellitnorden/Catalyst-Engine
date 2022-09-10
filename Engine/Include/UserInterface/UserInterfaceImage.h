@@ -36,6 +36,11 @@ public:
 	void SetMaterial(const UserInterfaceMaterial &value) NOEXCEPT;
 
 	/*
+	*	Sets the opacity.
+	*/
+	void SetOpacity(const float32 value) NOEXCEPT;
+
+	/*
 	*	Returns the user interface primitives.
 	*/
 	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;

@@ -2,7 +2,7 @@
 #include "CatalystIndirectLightingCore.glsl"
 
 //Constants.
-#define INDIRECT_LIGHTING_TEMPORAL_DENOISING_BASE_FEEDBACK_FACTOR (0.5f)
+#define ROUGHNESS_BIAS (0.5f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -12,9 +12,10 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D SOURCE_TEXTURE;
-layout (set = 1, binding = 1) uniform sampler2D SCENE_FEATURES_4_TEXTURE;
-layout (set = 1, binding = 2) uniform sampler2D TEMPORAL_REPROJECTION_BUFFER_TEXTURE;
-layout (set = 1, binding = 3) uniform sampler2D PREVIOUS_TEMPORAL_BUFFER;
+layout (set = 1, binding = 1) uniform sampler2D SCENE_FEATURES_3_TEXTURE;
+layout (set = 1, binding = 2) uniform sampler2D SCENE_FEATURES_4_TEXTURE;
+layout (set = 1, binding = 3) uniform sampler2D TEMPORAL_REPROJECTION_BUFFER_TEXTURE;
+layout (set = 1, binding = 4) uniform sampler2D PREVIOUS_TEMPORAL_BUFFER;
 
 //Out parameters.
 layout (location = 0) out vec4 current_temporal_buffer;
@@ -56,6 +57,10 @@ vec3 Constrain(vec3 previous, vec3 minimum, vec3 maximum)
 
 void CatalystShaderMain()
 {
+	//Sample the roughness.
+	float roughness = texture(SCENE_FEATURES_3_TEXTURE, fragment_texture_coordinate)[0];
+	float biased_roughness = roughness * ROUGHNESS_BIAS;
+
 	//Calculate the minimum/maximum color values in the neighborhood of the current frame.
 	vec3 minimum = vec3(1.0f);
 	vec3 maximum = vec3(0.0f);
@@ -72,6 +77,10 @@ void CatalystShaderMain()
 			maximum = max(maximum, neighbordhood_sample.rgb);
 		}
 	}
+
+	//Bias the bounding box a bit based on roughness.
+	minimum = mix(minimum, vec3(Square(minimum.x), Square(minimum.y), Square(minimum.z)), biased_roughness);
+	maximum = mix(maximum, vec3(InverseSquare(maximum.x), InverseSquare(maximum.y), InverseSquare(maximum.z)), biased_roughness);
 
 	//Calculate the unjittered screen coordinate.
 	vec2 unjittered_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER;
@@ -97,7 +106,7 @@ void CatalystShaderMain()
 	float previous_sample_weight = 1.0f;
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
-	previous_sample_weight *= previous_indirect_lighting_texture_sampler.a;
+	previous_sample_weight *= mix(previous_indirect_lighting_texture_sampler.a, 1.0f, biased_roughness);
 
 	//Blend the previous and the current indirect lighting.
 	vec4 blended_indirect_lighting = mix(current_indirect_lighting_texture_sampler, previous_indirect_lighting_texture_sampler, previous_sample_weight * 0.999f);

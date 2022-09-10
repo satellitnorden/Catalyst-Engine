@@ -52,6 +52,14 @@ void UserInterfaceImage::SetMaterial(const UserInterfaceMaterial &value) NOEXCEP
 }
 
 /*
+*	Sets the opacity.
+*/
+void UserInterfaceImage::SetOpacity(const float32 value) NOEXCEPT
+{
+	_Primitive->_Opacity = value;
+}
+
+/*
 *	Returns the user interface primitives.
 */
 void UserInterfaceImage::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
