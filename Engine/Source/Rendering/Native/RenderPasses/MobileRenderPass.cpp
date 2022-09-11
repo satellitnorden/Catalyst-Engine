@@ -60,7 +60,7 @@ void MobileRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_MobileGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_UserInterfaceGraphicsPipeline.Initialize(true);
+	_UserInterfaceGraphicsPipeline.Initialize(EMPTY_HANDLE);
 }
 
 /*

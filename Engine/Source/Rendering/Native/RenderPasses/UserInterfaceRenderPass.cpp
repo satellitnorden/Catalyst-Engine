@@ -51,7 +51,7 @@ void UserInterfaceRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_UserInterfaceGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_UserInterfaceGraphicsPipeline.Initialize(false);
+	_UserInterfaceGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
 }
 
 /*

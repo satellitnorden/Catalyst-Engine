@@ -174,7 +174,15 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 	_VirtualRealitySystem.PostInitialize();
 
 	//Retrieve the render passes.
-	NativeRenderPassManager::GetRenderPasses(_CurrentRenderingPath, &_RenderPasses);
+	if (_CurrentRenderingPath == RenderingPath::CUSTOM)
+	{
+		_Configuration._CustomRenderingPathCallback(&_RenderPasses);
+	}
+
+	else
+	{
+		NativeRenderPassManager::GetRenderPasses(_CurrentRenderingPath, &_RenderPasses);
+	}
 
 	//Initialize all render passes.
 	for (RenderPass *const RESTRICT render_pass : _RenderPasses)
@@ -371,7 +379,15 @@ void RenderingSystem::SetCurrentRenderingPath(const RenderingPath value) NOEXCEP
 	_SharedRenderTargetManager.OnSwitchRenderingPath(_CurrentRenderingPath);
 
 	//Re-retrieve the render passes.
-	NativeRenderPassManager::GetRenderPasses(_CurrentRenderingPath, &_RenderPasses);
+	if (_CurrentRenderingPath == RenderingPath::CUSTOM)
+	{
+		_Configuration._CustomRenderingPathCallback(&_RenderPasses);
+	}
+
+	else
+	{
+		NativeRenderPassManager::GetRenderPasses(_CurrentRenderingPath, &_RenderPasses);
+	}
 
 	//Initialize all new render passes.
 	for (RenderPass *const RESTRICT render_pass : _RenderPasses)

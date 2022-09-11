@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const bool render_to_screen) NOEXCEPT;
+	void Initialize(const RenderTargetHandle render_target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.

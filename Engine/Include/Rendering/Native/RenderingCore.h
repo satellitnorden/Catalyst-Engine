@@ -14,6 +14,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Math.
 #include <Math/General/Vector.h>
@@ -21,6 +22,9 @@
 //Rendering.
 #define CATALYST_SHADER_LANGUAGE_CXX
 #include <Rendering/Native/Shader/CatalystShaderConstants.h>
+
+//Forward declarations.
+class RenderPass;
 
 //Rendering constants.
 namespace RenderingConstants
@@ -54,6 +58,8 @@ using Texture2DHandle = void* RESTRICT;
 using Texture3DHandle = void* RESTRICT;
 using TextureCubeHandle = void *RESTRICT;
 
+using CustomRenderingPathCallback = void(*)(DynamicArray<RenderPass *RESTRICT> *const RESTRICT render_passes);
+
 /*
 *	Definition of an empty handle.
 */
@@ -86,6 +92,8 @@ enum class RenderingPath : uint8
 	PATH_TRACING,
 	MOBILE,
 	VIRTUAL_REALITY,
+
+	CUSTOM,
 
 	NUMBER_OF_RENDERING_PATHS
 };

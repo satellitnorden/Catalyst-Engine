@@ -105,6 +105,11 @@ public:
 	RenderingPath _InitialRenderingPath;
 
 	/*
+	*	The custom rendering path callback.
+	*/
+	CustomRenderingPathCallback _CustomRenderingPathCallback;
+
+	/*
 	*	Denotes the focused frame time, denoted in seconds. Set to <= 0.0f if it doesn't matter.
 	*	Recommended: 0.016f
 	*/
