@@ -47,15 +47,15 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	ResetRenderPass();
 
 	//Create the volumetric lighting render target.
-	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_VolumetricLightingRenderTarget);
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_VolumetricLightingRenderTarget);
 
 	//Create the intermediate volumetric lighting render target.
-	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &_IntermediateVolumetricLightingRenderTarget);
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_IntermediateVolumetricLightingRenderTarget);
 
 	//Create the volumetric lighting temporal buffer render targets.
 	for (RenderTargetHandle &render_target : _VolumetricLightingTemporalBufferRenderTargets)
 	{
-		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, &render_target);
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &render_target);
 	}
 
 	//Add the pipelines.

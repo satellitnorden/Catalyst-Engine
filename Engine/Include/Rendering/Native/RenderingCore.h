@@ -446,6 +446,18 @@ enum class SharedRenderTarget : uint8
 	NUMBER_OF_SHARED_RENDER_TARGETS
 };
 
+//Enumeration covering all sample counts.
+enum class SampleCount : uint8
+{
+	SAMPLE_COUNT_1,
+	SAMPLE_COUNT_2,
+	SAMPLE_COUNT_4,
+	SAMPLE_COUNT_8,
+	SAMPLE_COUNT_16,
+	SAMPLE_COUNT_32,
+	SAMPLE_COUNT_64
+};
+
 //Enumeration covering all samplers.
 enum class Sampler : uint8
 {

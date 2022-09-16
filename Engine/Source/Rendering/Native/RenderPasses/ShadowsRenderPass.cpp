@@ -125,13 +125,13 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	//Create the shadow map depth buffers.
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
-		RenderingSystem::Instance->CreateDepthBuffer(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), &_ShadowMapDepthBuffers[i]);
+		RenderingSystem::Instance->CreateDepthBuffer(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), SampleCount::SAMPLE_COUNT_1, &_ShadowMapDepthBuffers[i]);
 	}
 
 	//Create the shadow map render targets.
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
-		RenderingSystem::Instance->CreateRenderTarget(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), TextureFormat::R_FLOAT32, &_ShadowMapRenderTargets[i]);
+		RenderingSystem::Instance->CreateRenderTarget(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), TextureFormat::R_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_ShadowMapRenderTargets[i]);
 	}
 
 	//Add the shadow map render targets to the global render data.

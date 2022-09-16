@@ -375,6 +375,31 @@ public:
 	}
 
 	/*
+	*	Given a sample count, return the corresponding Vulkan sample count.
+	*/
+	static VkSampleCountFlagBits GetVulkanSampleCount(const SampleCount sample_count) NOEXCEPT
+	{
+		switch (sample_count)
+		{
+			case SampleCount::SAMPLE_COUNT_1: return VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+			case SampleCount::SAMPLE_COUNT_2: return VkSampleCountFlagBits::VK_SAMPLE_COUNT_2_BIT;
+			case SampleCount::SAMPLE_COUNT_4: return VkSampleCountFlagBits::VK_SAMPLE_COUNT_4_BIT;
+			case SampleCount::SAMPLE_COUNT_8: return VkSampleCountFlagBits::VK_SAMPLE_COUNT_8_BIT;
+			case SampleCount::SAMPLE_COUNT_16: return VkSampleCountFlagBits::VK_SAMPLE_COUNT_16_BIT;
+			case SampleCount::SAMPLE_COUNT_32: return VkSampleCountFlagBits::VK_SAMPLE_COUNT_32_BIT;
+			case SampleCount::SAMPLE_COUNT_64: return VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
+
+			default:
+			{
+#if defined(CATALYST_CONFIGURATION_DEBUG)
+				ASSERT(false, "Unknown sample count.");
+#endif
+				return VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+			}
+		}
+	}
+
+	/*
 	*	Given a shader stage, returns the corresponding Vulkan shader stage.
 	*/
 	static VkShaderStageFlags GetVulkanShaderStages(const ShaderStage shaderStage) NOEXCEPT

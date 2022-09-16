@@ -99,17 +99,17 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 
 			for (uint8 i{ 1 }; i < _PreviousSceneMipChain.Size(); ++i)
 			{
-				RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(i), TextureFormat::RGBA_FLOAT32, &_PreviousSceneMipChain[i]);
+				RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(i), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_PreviousSceneMipChain[i]);
 			}
 		}
 
 		//Create the temporal reprojection buffer.
-		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RG_FLOAT16, &_TemporalReprojectionBuffer);
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RG_FLOAT16, SampleCount::SAMPLE_COUNT_1, &_TemporalReprojectionBuffer);
 
 		//Create the temporal indirect lighting buffers.
 		for (uint8 i{ 0 }; i < 2; ++i)
 		{
-			RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &_TemporalIndirectLightingBuffers[i]);
+			RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_TemporalIndirectLightingBuffers[i]);
 		}
 	}
 

@@ -364,6 +364,7 @@ public:
 	*	Creates an attachment description.
 	*/
 	static constexpr VkAttachmentDescription CreateAttachmentDescription(	const VkFormat format,
+																			const VkSampleCountFlagBits samples,
 																			const VkAttachmentLoadOp loadOp,
 																			const VkAttachmentStoreOp storeOp,
 																			const VkAttachmentLoadOp stencilLoadOp,
@@ -375,7 +376,7 @@ public:
 		{
 			0, //flags
 			format,
-			VK_SAMPLE_COUNT_1_BIT, //samples
+			samples,
 			loadOp,
 			storeOp,
 			stencilLoadOp,
@@ -435,6 +436,7 @@ public:
 																	const VkAttachmentReference *RESTRICT const inputAttachments,
 																	const uint32 colorAttachmentCount,
 																	const VkAttachmentReference *RESTRICT const colorAttachments,
+																	const VkAttachmentReference *RESTRICT const resolve_attachments,
 																	const VkAttachmentReference *RESTRICT const depthStencilAttachment,
 																	const uint32 preserveAttachmentCount,
 																	const uint32* const preserveAttachments) NOEXCEPT
@@ -447,7 +449,7 @@ public:
 			inputAttachments,
 			colorAttachmentCount,
 			colorAttachments,
-			nullptr, //pResolveAttachments
+			resolve_attachments,
 			depthStencilAttachment,
 			preserveAttachmentCount,
 			preserveAttachments
@@ -511,7 +513,7 @@ public:
 	/*
 	*	Creates a Vulkan image.
 	*/
-	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkImageType image_type, const VkFormat format, const uint32 width, const uint32 height, const uint32 depth, const uint32 mipLevels, const uint32 arrayLayers, const VkImageTiling tiling, const VkImageUsageFlags usage, const VkMemoryPropertyFlags memoryPropertyFlags, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
+	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkImageType image_type, const VkFormat format, const uint32 width, const uint32 height, const uint32 depth, const uint32 mipLevels, const uint32 arrayLayers, const VkSampleCountFlagBits sample_count, const VkImageTiling tiling, const VkImageUsageFlags usage, const VkMemoryPropertyFlags memoryPropertyFlags, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
 	{
 		//Create the image create info.
 		VkImageCreateInfo imageCreateInfo;
@@ -526,7 +528,7 @@ public:
 		imageCreateInfo.extent.depth = depth;
 		imageCreateInfo.mipLevels = mipLevels;
 		imageCreateInfo.arrayLayers = arrayLayers;
-		imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+		imageCreateInfo.samples = sample_count;
 		imageCreateInfo.tiling = tiling;
 		imageCreateInfo.usage = usage;
 		imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;

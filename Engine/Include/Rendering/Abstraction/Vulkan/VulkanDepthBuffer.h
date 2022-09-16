@@ -15,7 +15,7 @@ public:
 	/*
 	*	Initializes this Vulkan depth buffer.
 	*/
-	void Initialize(const VkExtent2D imageExtent) NOEXCEPT;
+	void Initialize(const VkExtent2D extent, const VkSampleCountFlagBits sample_count) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan depth buffer.
@@ -32,6 +32,11 @@ public:
 	*/
 	const VkFormat& GetFormat() const NOEXCEPT { return _Format; }
 
+	/*
+	*	Returns the sample count of this Vulkan depth buffer.
+	*/
+	const VkSampleCountFlagBits& GetSampleCount() const NOEXCEPT { return _SampleCount; }
+
 private:
 
 	//The Vulkan image.
@@ -45,6 +50,9 @@ private:
 
 	//The format of this depth buffer.
 	VkFormat _Format;
+
+	//The sample count.
+	VkSampleCountFlagBits _SampleCount;
 
 	/*
 	*	Finds and returns the most desirable format for the depth buffer.

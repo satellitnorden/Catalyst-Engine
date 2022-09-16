@@ -76,7 +76,7 @@ private:
 	/*
 	*	Creates a pipeline multisample state create info.
 	*/
-	void CreatePipelineMultisampleStateCreateInfo(VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo) const NOEXCEPT;
+	void CreatePipelineMultisampleStateCreateInfo(VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo, const VulkanGraphicsPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
 
 	/*
 	*	Creates a pipeline depth stencil state create info.

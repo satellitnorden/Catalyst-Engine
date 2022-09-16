@@ -35,6 +35,9 @@ public:
 	//The cull mode.
 	VkCullModeFlagBits _CullMode;
 
+	//The sample count.
+	VkSampleCountFlagBits _SampleCount;
+
 	//The depth compare operator.
 	VkCompareOp _DepthCompareOp;
 

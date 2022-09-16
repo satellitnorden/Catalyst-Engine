@@ -171,7 +171,7 @@ void OpenGLSubRenderingSystem::SubmitCommandBuffer(const CommandBuffer *const RE
 /*
 *	Creates a depth buffer.
 */
-void OpenGLSubRenderingSystem::CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
+void OpenGLSubRenderingSystem::CreateDepthBuffer(const Resolution resolution, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 
 }
@@ -326,7 +326,7 @@ void OpenGLSubRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *con
 /*
 *	Creates a render target.
 */
-void OpenGLSubRenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+void OpenGLSubRenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, const SampleCount sample_count, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
 {
 	
 }

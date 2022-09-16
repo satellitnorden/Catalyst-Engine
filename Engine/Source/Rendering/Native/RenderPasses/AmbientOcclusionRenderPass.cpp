@@ -46,15 +46,15 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	ResetRenderPass();
 
 	//Create the ambient occlusion render target.
-	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, &_AmbientOcclusionRenderTarget);
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, SampleCount::SAMPLE_COUNT_1, &_AmbientOcclusionRenderTarget);
 
 	//Create the intermediate ambient occlusion render target.
-	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, &_IntermediateAmbientOcclusionRenderTarget);
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, SampleCount::SAMPLE_COUNT_1, &_IntermediateAmbientOcclusionRenderTarget);
 
 	//Create the ambient occlusion temporal buffer render targets.
 	for (RenderTargetHandle &render_target : _AmbientOcclusionTemporalBufferRenderTargets)
 	{
-		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, &render_target);
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, SampleCount::SAMPLE_COUNT_1, &render_target);
 	}
 
 	//Add the pipelines.

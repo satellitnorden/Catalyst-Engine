@@ -49,7 +49,7 @@ void PostSceneFeaturesRenderPass::Initialize() NOEXCEPT
 	//Create the depth mip chain.
 	for (uint8 i{ 0 }; i < _DepthMipChain.Size(); ++i)
 	{
-		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(i), TextureFormat::R_FLOAT32, &_DepthMipChain[i]);
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(i), TextureFormat::R_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_DepthMipChain[i]);
 	}
 
 	//Add the pipelines.

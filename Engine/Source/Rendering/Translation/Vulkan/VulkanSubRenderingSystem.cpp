@@ -213,6 +213,7 @@ namespace VulkanSubRenderingSystemLogic
 			if (depthBuffer)
 			{
 				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(depthBuffer->GetFormat(),
+																							depthBuffer->GetSampleCount(),
 																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetDepthStencilAttachmentLoadOperator()),
 																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetDepthStencilAttachmentStoreOperator()),
 																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetDepthStencilAttachmentLoadOperator()),
@@ -223,9 +224,12 @@ namespace VulkanSubRenderingSystemLogic
 				depthStencilAttachmentReference = VkAttachmentReference{ counter++, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 			}
 
+			DynamicArray<VkAttachmentReference> resolve_attachment_references;
+
 			for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
 			{
 				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
+																							static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetSampleCount(),
 																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetColorAttachmentLoadOperator()),
 																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetColorAttachmentStoreOperator()),
 																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -234,11 +238,17 @@ namespace VulkanSubRenderingSystemLogic
 																							VK_IMAGE_LAYOUT_GENERAL));
 
 				colorAttachmentReferences.Emplace(VkAttachmentReference{ counter++, VK_IMAGE_LAYOUT_GENERAL });
+
+				if (static_cast<VulkanRenderTarget* const RESTRICT>(uniqueAttachment._First)->GetSampleCount() > VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT)
+				{
+					resolve_attachment_references.Emplace(VkAttachmentReference{ counter - 1, VK_IMAGE_LAYOUT_GENERAL });
+				}
 			}
 
 			if (pipeline->IsRenderingDirectlyToScreen())
 			{
 				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format,
+																							VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT,
 																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetColorAttachmentLoadOperator()),
 																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetColorAttachmentStoreOperator()),
 																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -257,6 +267,7 @@ namespace VulkanSubRenderingSystemLogic
 																								nullptr,
 																								static_cast<uint32>(colorAttachmentReferences.Size()),
 																								colorAttachmentReferences.Data(),
+																								resolve_attachment_references.Empty() ? nullptr : resolve_attachment_references.Data(),
 																								depthBuffer ? &depthStencilAttachmentReference : nullptr,
 																								0,
 																								nullptr) };
@@ -379,6 +390,33 @@ namespace VulkanSubRenderingSystemLogic
 			parameters._BlendFactorDestinationAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationAlpha());
 			parameters._ColorAttachmentCount = static_cast<uint32>(pipeline->GetOutputRenderTargets().Size()) + static_cast<uint32>(pipeline->IsRenderingDirectlyToScreen());
 			parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(pipeline->GetCullMode());
+			
+			{
+				parameters._SampleCount = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+
+				if (pipeline->GetDepthBuffer())
+				{
+					parameters._SampleCount = CatalystBaseMath::Maximum(parameters._SampleCount, static_cast<VulkanDepthBuffer* const RESTRICT>(pipeline->GetDepthBuffer())->GetSampleCount());
+				}
+
+				for (const RenderTargetHandle output_render_target : pipeline->GetOutputRenderTargets())
+				{
+					parameters._SampleCount = CatalystBaseMath::Maximum(parameters._SampleCount, static_cast<VulkanRenderTarget *const RESTRICT>(output_render_target)->GetSampleCount());
+				}
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+				if (pipeline->GetDepthBuffer())
+				{
+					ASSERT(parameters._SampleCount == static_cast<VulkanDepthBuffer* const RESTRICT>(pipeline->GetDepthBuffer())->GetSampleCount(), "Sample count doesn't match!");
+				}
+
+				for (const RenderTargetHandle output_render_target : pipeline->GetOutputRenderTargets())
+				{
+					ASSERT(parameters._SampleCount == static_cast<VulkanRenderTarget *const RESTRICT>(output_render_target)->GetSampleCount(), "Sample count doesn't match!");
+				}
+#endif
+			}
+			
 			parameters._DepthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(pipeline->GetDepthCompareOperator());
 			parameters._DepthTestEnable = pipeline->IsDepthTestEnabled();
 			parameters._DepthWriteEnable = pipeline->IsDepthWriteEnabled();
@@ -1134,10 +1172,11 @@ void VulkanSubRenderingSystem::SubmitCommandBuffer(const CommandBuffer *const RE
 /*
 *	Creates a depth buffer.
 */
-void VulkanSubRenderingSystem::CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateDepthBuffer(const Resolution resolution, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the depth buffer.
-	*handle = static_cast<DepthBufferHandle>(VulkanInterface::Instance->CreateDepthBuffer(VkExtent2D{ resolution._Width, resolution._Height }));
+	*handle = static_cast<DepthBufferHandle>(VulkanInterface::Instance->CreateDepthBuffer(	VkExtent2D{ resolution._Width, resolution._Height },
+																							VulkanTranslationUtilities::GetVulkanSampleCount(sample_count)));
 }
 
 /*
@@ -1591,11 +1630,12 @@ void VulkanSubRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *con
 /*
 *	Creates a render target.
 */
-void VulkanSubRenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, const SampleCount sample_count, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the render target.
 	*handle = static_cast<RenderTargetHandle>(VulkanInterface::Instance->CreateRenderTarget(VulkanTranslationUtilities::GetVulkanExtent(resolution),
-																							VulkanTranslationUtilities::GetVulkanFormat(format)));
+																							VulkanTranslationUtilities::GetVulkanFormat(format),
+																							VulkanTranslationUtilities::GetVulkanSampleCount(sample_count)));
 }
 
 /*

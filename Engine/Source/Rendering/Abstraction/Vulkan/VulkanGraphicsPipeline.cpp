@@ -51,7 +51,7 @@ void VulkanGraphicsPipeline::Initialize(const VulkanGraphicsPipelineCreationPara
 
 	//Create the pipeline multisample state create info.
 	VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo;
-	CreatePipelineMultisampleStateCreateInfo(pipelineMultisampleStateCreateInfo);
+	CreatePipelineMultisampleStateCreateInfo(pipelineMultisampleStateCreateInfo, parameters);
 
 	//Create the pipeline depth stencil state create info.
 	VkPipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo;
@@ -190,12 +190,12 @@ void VulkanGraphicsPipeline::CreatePipelineRasterizationStateCreateInfo(VkPipeli
 /*
 *	Creates a pipeline multisample state create info.
 */
-void VulkanGraphicsPipeline::CreatePipelineMultisampleStateCreateInfo(VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo) const NOEXCEPT
+void VulkanGraphicsPipeline::CreatePipelineMultisampleStateCreateInfo(VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo, const VulkanGraphicsPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
 	pipelineMultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	pipelineMultisampleStateCreateInfo.pNext = nullptr;
 	pipelineMultisampleStateCreateInfo.flags = 0;
-	pipelineMultisampleStateCreateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	pipelineMultisampleStateCreateInfo.rasterizationSamples = vulkanPipelineCreationParameters._SampleCount;
 	pipelineMultisampleStateCreateInfo.sampleShadingEnable = VK_FALSE;
 	pipelineMultisampleStateCreateInfo.minSampleShading = 1.0f;
 	pipelineMultisampleStateCreateInfo.pSampleMask = nullptr;

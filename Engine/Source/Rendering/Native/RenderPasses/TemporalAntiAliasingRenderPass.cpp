@@ -49,7 +49,7 @@ void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
 	//Create the render targets.
 	for (RenderTargetHandle &render_target : _RenderTargets)
 	{
-		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, &render_target);
+		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &render_target);
 	}
 
 	//Initialize and add the pipelines.

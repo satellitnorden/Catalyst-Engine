@@ -152,7 +152,7 @@ public:
 	/*
 	*	Creates a depth buffer.
 	*/
-	virtual void CreateDepthBuffer(const Resolution resolution, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT = 0;
+	virtual void CreateDepthBuffer(const Resolution resolution, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT = 0;
 
 	/*
 	*	Destroys a depth buffer.
@@ -250,7 +250,7 @@ public:
 	/*
 	*	Creates a render target.
 	*/
-	virtual void CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT = 0;
+	virtual void CreateRenderTarget(const Resolution resolution, const TextureFormat format, const SampleCount sample_count, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT = 0;
 
 	/*
 	*	Destroys a render target.

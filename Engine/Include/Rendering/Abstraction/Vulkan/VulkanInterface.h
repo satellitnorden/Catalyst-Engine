@@ -201,7 +201,7 @@ public:
 	/*
 	*	Creates and returns a depth buffer.
 	*/
-	RESTRICTED VulkanDepthBuffer *const RESTRICT CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT;
+	RESTRICTED VulkanDepthBuffer *const RESTRICT CreateDepthBuffer(const VkExtent2D &extent, const VkSampleCountFlagBits sample_count) NOEXCEPT;
 
 	/*
 	*	Destroys a depth buffer.
@@ -296,7 +296,7 @@ public:
 	/*
 	*	Creates and returns a render target.
 	*/
-	RESTRICTED VulkanRenderTarget *const RESTRICT CreateRenderTarget(const VkExtent2D extent, const VkFormat format) NOEXCEPT;
+	RESTRICTED VulkanRenderTarget *const RESTRICT CreateRenderTarget(const VkExtent2D extent, const VkFormat format, const VkSampleCountFlagBits sample_count) NOEXCEPT;
 
 	/*
 	*	Destroys a render target.

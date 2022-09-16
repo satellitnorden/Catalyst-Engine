@@ -461,10 +461,10 @@ RESTRICTED VulkanCubeMapTexture *const RESTRICT VulkanInterface::CreateCubeMapTe
 /*
 *	Creates and returns a depth buffer.
 */
-RESTRICTED VulkanDepthBuffer *const RESTRICT VulkanInterface::CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT
+RESTRICTED VulkanDepthBuffer *const RESTRICT VulkanInterface::CreateDepthBuffer(const VkExtent2D &extent, const VkSampleCountFlagBits sample_count) NOEXCEPT
 {
 	VulkanDepthBuffer *const RESTRICT new_depth_buffer{ new (MemorySystem::Instance->TypeAllocate<VulkanDepthBuffer>()) VulkanDepthBuffer() };
-	new_depth_buffer->Initialize(depthBufferExtent);
+	new_depth_buffer->Initialize(extent, sample_count);
 
 	{
 		SCOPED_LOCK(_VulkanDepthBuffersLock);
@@ -776,10 +776,10 @@ void VulkanInterface::DestroyRenderPass(VulkanRenderPass *const RESTRICT render_
 /*
 *	Creates and returns a render target.
 */
-RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarget(const VkExtent2D extent, const VkFormat format) NOEXCEPT
+RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarget(const VkExtent2D extent, const VkFormat format, const VkSampleCountFlagBits sample_count) NOEXCEPT
 {
 	VulkanRenderTarget *const RESTRICT new_render_target{ new (MemorySystem::Instance->TypeAllocate<VulkanRenderTarget>()) VulkanRenderTarget() };
-	new_render_target->Initialize(extent, format);
+	new_render_target->Initialize(extent, format, sample_count);
 
 	{
 		SCOPED_LOCK(_VulkanRenderTargetsLock);

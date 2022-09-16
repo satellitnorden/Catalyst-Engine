@@ -105,6 +105,7 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 			(
 				_SharedRenderTargetInformations[i]._Resolution,
 				_SharedRenderTargetInformations[i]._TextureFormat,
+				SampleCount::SAMPLE_COUNT_1,
 				&_SharedRenderTargets[i]
 			);
 		}
@@ -136,6 +137,7 @@ void SharedRenderTargetManager::OnSwitchRenderingPath(const RenderingPath new_re
 			(
 				_SharedRenderTargetInformations[i]._Resolution,
 				_SharedRenderTargetInformations[i]._TextureFormat,
+				SampleCount::SAMPLE_COUNT_1,
 				&_SharedRenderTargets[i]
 			);
 		}
