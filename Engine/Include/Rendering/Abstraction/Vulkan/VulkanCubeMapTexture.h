@@ -17,6 +17,15 @@ class VulkanCubeMapTexture final : public VulkanImage
 public:
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE VulkanCubeMapTexture() NOEXCEPT
+	{
+		//Set the type.
+		_Type = Type::VULKAN_CUBE_MAP_TEXTURE;
+	}
+
+	/*
 	*	Returns the underlying Vulkan image.
 	*/
 	const VkImage& Get() const NOEXCEPT { return _VulkanImage; }

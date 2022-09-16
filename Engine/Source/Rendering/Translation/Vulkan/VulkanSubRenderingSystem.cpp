@@ -183,23 +183,37 @@ namespace VulkanSubRenderingSystemLogic
 			VulkanRenderPassCreationParameters parameters;
 
 			//Determine the attachments that will be used by the pipelines in this render pass.
-			Map<RenderTargetHandle, uint32> uniqueAttachments;
+			Map<VulkanRenderTarget *RESTRICT, uint32> uniqueAttachments;
+			Map<VulkanRenderTarget *RESTRICT, uint32> resolve_attachments;
 			uint32 attachmentCounter{ 0 };
 
-			for (const RenderTargetHandle renderTarget : pipeline->GetOutputRenderTargets())
+			for (const RenderTargetHandle output_render_target : pipeline->GetOutputRenderTargets())
 			{
-				if (!uniqueAttachments.Find(renderTarget))
+				VulkanRenderTarget* const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget *const RESTRICT>(output_render_target) };
+
+				if (!uniqueAttachments.Find(vulkan_render_target))
 				{
-					uniqueAttachments.Emplace(renderTarget, attachmentCounter++);
+					uniqueAttachments.Emplace(vulkan_render_target, attachmentCounter++);
+				}
+			}
+
+			for (const RenderTargetHandle output_render_target : pipeline->GetOutputRenderTargets())
+			{
+				VulkanRenderTarget* const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget *const RESTRICT>(output_render_target) };
+
+				if (vulkan_render_target->GetSampleCount() > VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT
+					&& !resolve_attachments.Find(vulkan_render_target))
+				{
+					resolve_attachments.Emplace(vulkan_render_target, attachmentCounter++);
 				}
 			}
 
 			//Cache the depth buffer.
-			VulkanDepthBuffer *const RESTRICT depthBuffer{ static_cast<VulkanDepthBuffer *const RESTRICT>(pipeline->GetDepthBuffer()) };
+			VulkanDepthBuffer *const RESTRICT depth_buffer{ static_cast<VulkanDepthBuffer *const RESTRICT>(pipeline->GetDepthBuffer()) };
 
 			//Create the attachment descriptions.
 			DynamicArray<VkAttachmentDescription> attachmentDescriptions;
-			attachmentDescriptions.Reserve(uniqueAttachments.Size() + (depthBuffer ? 1 : 0));
+			attachmentDescriptions.Reserve(uniqueAttachments.Size() + resolve_attachments.Size() + (depth_buffer ? 1 : 0));
 
 			DynamicArray<VkAttachmentReference> colorAttachmentReferences;
 			colorAttachmentReferences.Reserve(uniqueAttachments.Size());
@@ -210,10 +224,10 @@ namespace VulkanSubRenderingSystemLogic
 
 			const bool pipeline_should_clear{ pipeline->GetDepthStencilAttachmentLoadOperator() == AttachmentLoadOperator::CLEAR };
 
-			if (depthBuffer)
+			if (depth_buffer)
 			{
-				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(depthBuffer->GetFormat(),
-																							depthBuffer->GetSampleCount(),
+				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(depth_buffer->GetFormat(),
+																							depth_buffer->GetSampleCount(),
 																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetDepthStencilAttachmentLoadOperator()),
 																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetDepthStencilAttachmentStoreOperator()),
 																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetDepthStencilAttachmentLoadOperator()),
@@ -224,12 +238,10 @@ namespace VulkanSubRenderingSystemLogic
 				depthStencilAttachmentReference = VkAttachmentReference{ counter++, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 			}
 
-			DynamicArray<VkAttachmentReference> resolve_attachment_references;
-
-			for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
+			for (const Pair<VulkanRenderTarget *RESTRICT, uint32> uniqueAttachment : uniqueAttachments)
 			{
-				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetFormat(),
-																							static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetSampleCount(),
+				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(uniqueAttachment._First->GetFormat(),
+																							uniqueAttachment._First->GetSampleCount(),
 																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetColorAttachmentLoadOperator()),
 																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetColorAttachmentStoreOperator()),
 																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -238,11 +250,22 @@ namespace VulkanSubRenderingSystemLogic
 																							VK_IMAGE_LAYOUT_GENERAL));
 
 				colorAttachmentReferences.Emplace(VkAttachmentReference{ counter++, VK_IMAGE_LAYOUT_GENERAL });
+			}
 
-				if (static_cast<VulkanRenderTarget* const RESTRICT>(uniqueAttachment._First)->GetSampleCount() > VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT)
-				{
-					resolve_attachment_references.Emplace(VkAttachmentReference{ counter - 1, VK_IMAGE_LAYOUT_GENERAL });
-				}
+			DynamicArray<VkAttachmentReference> resolve_attachment_references;
+
+			for (const Pair<VulkanRenderTarget *RESTRICT, uint32> resolve_attachment : resolve_attachments)
+			{
+				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(resolve_attachment._First->GetFormat(),
+																							VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT,
+																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																							VK_ATTACHMENT_STORE_OP_DONT_CARE,
+																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+																							VK_ATTACHMENT_STORE_OP_DONT_CARE,
+																							VK_IMAGE_LAYOUT_GENERAL,
+																							VK_IMAGE_LAYOUT_GENERAL));
+
+				resolve_attachment_references.Emplace(VkAttachmentReference{ counter++, VK_IMAGE_LAYOUT_GENERAL });
 			}
 
 			if (pipeline->IsRenderingDirectlyToScreen())
@@ -268,7 +291,7 @@ namespace VulkanSubRenderingSystemLogic
 																								static_cast<uint32>(colorAttachmentReferences.Size()),
 																								colorAttachmentReferences.Data(),
 																								resolve_attachment_references.Empty() ? nullptr : resolve_attachment_references.Data(),
-																								depthBuffer ? &depthStencilAttachmentReference : nullptr,
+																								depth_buffer ? &depthStencilAttachmentReference : nullptr,
 																								0,
 																								nullptr) };
 
@@ -321,11 +344,11 @@ namespace VulkanSubRenderingSystemLogic
 					framebufferParameters._RenderPass = data->_RenderPass->Get();
 
 					DynamicArray<VkImageView> attachments;
-					attachments.Reserve(1 + (depthBuffer ? 1 : 0));
+					attachments.Reserve(1 + (depth_buffer ? 1 : 0));
 
-					if (depthBuffer)
+					if (depth_buffer)
 					{
-						attachments.Emplace(depthBuffer->GetImageView());
+						attachments.Emplace(depth_buffer->GetImageView());
 					}
 
 					attachments.Emplace(swapchainImage);
@@ -343,7 +366,7 @@ namespace VulkanSubRenderingSystemLogic
 				}
 
 				data->_Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-				data->_NumberOfAttachments = static_cast<uint32>(1 + (depthBuffer ? 1 : 0));
+				data->_NumberOfAttachments = static_cast<uint32>(1 + (depth_buffer ? 1 : 0));
 				data->_RenderToScreeen = true;
 			}
 
@@ -354,16 +377,21 @@ namespace VulkanSubRenderingSystemLogic
 				framebufferParameters._RenderPass = data->_RenderPass->Get();
 
 				DynamicArray<VkImageView> attachments;
-				attachments.Reserve(uniqueAttachments.Size() + (depthBuffer ? 1 : 0));
+				attachments.Reserve(uniqueAttachments.Size() + resolve_attachments.Size() + (depth_buffer ? 1 : 0));
 
-				if (depthBuffer)
+				if (depth_buffer)
 				{
-					attachments.Emplace(depthBuffer->GetImageView());
+					attachments.Emplace(depth_buffer->GetImageView());
 				}
 
-				for (const Pair<RenderTargetHandle, uint32> uniqueAttachment : uniqueAttachments)
+				for (const Pair<VulkanRenderTarget *RESTRICT, uint32> uniqueAttachment : uniqueAttachments)
 				{
 					attachments.Emplace(static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetImageView());
+				}
+
+				for (const Pair<VulkanRenderTarget *RESTRICT, uint32> resolve_attachment : resolve_attachments)
+				{
+					attachments.Emplace(static_cast<VulkanRenderTarget *const RESTRICT>(resolve_attachment._First)->GetResolveImageView());
 				}
 
 				framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -1424,7 +1452,42 @@ void VulkanSubRenderingSystem::BindCombinedImageSamplerToRenderDataTable(const u
 	VkDescriptorImageInfo descriptorImageInfo;
 
 	descriptorImageInfo.sampler = vulkanSampler->Get();
-	descriptorImageInfo.imageView = vulkanImage->GetImageView();
+
+	switch (vulkanImage->GetType())
+	{
+		case VulkanImage::Type::VULKAN_2D_TEXTURE:
+		case VulkanImage::Type::VULKAN_3D_TEXTURE:
+		case VulkanImage::Type::VULKAN_CUBE_MAP_TEXTURE:
+		{
+			descriptorImageInfo.imageView = vulkanImage->GetImageView();
+
+			break;
+		}
+
+		case VulkanImage::Type::VULKAN_RENDER_TARGET:
+		{
+			if (static_cast<VulkanRenderTarget *const RESTRICT>(vulkanImage)->GetSampleCount() > VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT)
+			{
+				descriptorImageInfo.imageView = static_cast<VulkanRenderTarget *const RESTRICT>(vulkanImage)->GetResolveImageView();
+			}
+
+			else
+			{
+				descriptorImageInfo.imageView = vulkanImage->GetImageView();
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	
 	descriptorImageInfo.imageLayout = vulkanImage->GetImageLayout();
 
 	//Create the write descriptor set.

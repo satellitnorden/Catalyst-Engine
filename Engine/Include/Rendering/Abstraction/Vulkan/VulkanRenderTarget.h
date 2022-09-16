@@ -16,6 +16,15 @@ class VulkanRenderTarget final : public VulkanImage
 public:
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE VulkanRenderTarget() NOEXCEPT
+	{
+		//Set the type.
+		_Type = Type::VULKAN_RENDER_TARGET;
+	}
+
+	/*
 	*	Initializes this Vulkan render target.
 	*/
 	void Initialize(const VkExtent2D extent, const VkFormat format, const VkSampleCountFlagBits sample_count) NOEXCEPT;
@@ -35,6 +44,16 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD VkSampleCountFlagBits GetSampleCount() const NOEXCEPT { return _SampleCount; }
 
+	/*
+	*	Returns the Vulkan resolve image.
+	*/
+	const VkImage GetResolveImage() const NOEXCEPT { return _VulkanResolveImage; }
+
+	/*
+	*	Returns the Vulkan resolve image view.
+	*/
+	const VkImageView GetResolveImageView() const NOEXCEPT { return _VulkanResolveImageView; }
+
 private:
 
 	//The extent of the image.
@@ -42,6 +61,15 @@ private:
 
 	//The sample count.
 	VkSampleCountFlagBits _SampleCount;
+
+	//The Vulkan resolove image.
+	VkImage _VulkanResolveImage;
+
+	//The Vulkan resolove device memory.
+	VkDeviceMemory _VulkanResolveDeviceMemory;
+
+	//The Vulkan resolove image view.
+	VkImageView _VulkanResolveImageView;
 
 };
 #endif

@@ -12,6 +12,23 @@ class VulkanImage
 
 public:
 
+	//Enumeration covering all types.
+	enum class Type : uint8
+	{
+		VULKAN_2D_TEXTURE,
+		VULKAN_3D_TEXTURE,
+		VULKAN_CUBE_MAP_TEXTURE,
+		VULKAN_RENDER_TARGET
+	};
+
+	/*
+	*	Returns the type.
+	*/
+	FORCE_INLINE NO_DISCARD Type GetType() const NOEXCEPT
+	{
+		return _Type;
+	}
+
 	/*
 	*	Returns the Vulkan image.
 	*/
@@ -33,6 +50,9 @@ public:
 	const VkImageLayout GetImageLayout() const NOEXCEPT { return _VulkanImageLayout; }
 
 protected:
+
+	//The type.
+	Type _Type;
 
 	//The Vulkan image.
 	VkImage _VulkanImage;
