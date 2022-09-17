@@ -227,6 +227,16 @@ enum class BlendFactor : uint8
 	OneMinusDestinationAlpha,
 };
 
+//Enumeration covering all blender operators.
+enum class BlendOperator : uint8
+{
+	ADD,
+	SUBTRACT,
+	REVERSE_SUBTRACT,
+	MIN,
+	MAX
+};
+
 //Enumeration covering all buffer usages.
 enum class BufferUsage : uint8
 {

@@ -23,11 +23,17 @@ public:
 	//The blend factor for the destination color.
 	VkBlendFactor _BlendFactorDestinationColor;
 
+	//The color blend operator.
+	VkBlendOp _ColorBlendOperator;
+
 	//The blend factor for the source alpha.
 	VkBlendFactor _BlendFactorSourceAlpha;
 
 	//The blend factor for the destination alpha.
 	VkBlendFactor _BlendFactorDestinationAlpha;
+
+	//The alpha blend operator.
+	VkBlendOp _AlphaBlendOperator;
 
 	//The number of color attachments.
 	uint32 _ColorAttachmentCount;

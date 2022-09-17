@@ -242,10 +242,10 @@ void VulkanGraphicsPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArr
 		newPipelineColorBlendAttachmentState.blendEnable = parameters._BlendEnable ? VK_TRUE : VK_FALSE;
 		newPipelineColorBlendAttachmentState.srcColorBlendFactor = parameters._BlendFactorSourceColor;
 		newPipelineColorBlendAttachmentState.dstColorBlendFactor = parameters._BlendFactorDestinationColor;
-		newPipelineColorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
+		newPipelineColorBlendAttachmentState.colorBlendOp = parameters._ColorBlendOperator;
 		newPipelineColorBlendAttachmentState.srcAlphaBlendFactor = parameters._BlendFactorSourceAlpha;
 		newPipelineColorBlendAttachmentState.dstAlphaBlendFactor = parameters._BlendFactorDestinationAlpha;
-		newPipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
+		newPipelineColorBlendAttachmentState.alphaBlendOp = parameters._AlphaBlendOperator;
 		newPipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	
 		pipelineColorBlendAttachmentStates.Emplace(newPipelineColorBlendAttachmentState);

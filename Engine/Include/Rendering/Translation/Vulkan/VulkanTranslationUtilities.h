@@ -137,6 +137,29 @@ public:
 	}
 
 	/*
+	*	Given a blend operator, return the corresponding Vulkan blend operator.
+	*/
+	static VkBlendOp GetVulkanBlendOperator(const BlendOperator blend_operator) NOEXCEPT
+	{
+		switch (blend_operator)
+		{
+			case BlendOperator::ADD: return VkBlendOp::VK_BLEND_OP_ADD;
+			case BlendOperator::SUBTRACT: return VkBlendOp::VK_BLEND_OP_SUBTRACT;
+			case BlendOperator::REVERSE_SUBTRACT: return VkBlendOp::VK_BLEND_OP_REVERSE_SUBTRACT;
+			case BlendOperator::MIN: return VkBlendOp::VK_BLEND_OP_MIN;
+			case BlendOperator::MAX: return VkBlendOp::VK_BLEND_OP_MAX;
+
+			default:
+			{
+#if defined(CATALYST_CONFIGURATION_DEBUG)
+				ASSERT(false, "Unknown blend operator.");
+#endif
+				return VkBlendOp::VK_BLEND_OP_ADD;
+			}
+		}
+	}
+
+	/*
 	*	Given a buffer usage, returns the corresponding Vulkan buffer usage.
 	*/
 	static VkBufferUsageFlags GetVulkanBufferUsage(const BufferUsage usage) NOEXCEPT

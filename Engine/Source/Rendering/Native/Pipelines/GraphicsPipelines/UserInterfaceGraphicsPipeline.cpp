@@ -101,8 +101,10 @@ void UserInterfaceGraphicsPipeline::Initialize(const RenderTargetHandle render_t
 	SetBlendEnabled(true);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
+	SetColorBlendOperator(BlendOperator::ADD);
 	SetBlendFactorSourceAlpha(BlendFactor::One);
-	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
+	SetBlendFactorDestinationAlpha(BlendFactor::One);
+	SetAlphaBlendOperator(BlendOperator::MAX);
 	SetCullMode(CullMode::None);
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);

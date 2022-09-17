@@ -97,6 +97,11 @@ public:
 	BlendFactor GetBlendFactorDestinationColor() const NOEXCEPT { return _BlendFactorDestinationColor; }
 
 	/*
+	*	Returns the color blend operator.
+	*/
+	FORCE_INLINE NO_DISCARD BlendOperator GetColorBlendOperator() const NOEXCEPT { return _ColorBlendOperator; }
+
+	/*
 	*	Returns the blend factor for the source alpha.
 	*/
 	BlendFactor GetBlendFactorSourceAlpha() const NOEXCEPT { return _BlendFactorSourceAlpha; }
@@ -105,6 +110,11 @@ public:
 	*	Returns the blend factor for the destination alpha.
 	*/
 	BlendFactor GetBlendFactorDestinationAlpha() const NOEXCEPT { return _BlendFactorDestinationAlpha; }
+
+	/*
+	*	Returns the alpha blend operator.
+	*/
+	FORCE_INLINE NO_DISCARD BlendOperator GetAlphaBlendOperator() const NOEXCEPT { return _AlphaBlendOperator; }
 
 	/*
 	*	Returns the cull mode.
@@ -334,6 +344,11 @@ protected:
 	void SetBlendFactorDestinationColor(const BlendFactor newBlendFactor) NOEXCEPT { _BlendFactorDestinationColor = newBlendFactor; }
 
 	/*
+	*	Sets the color blend operator.
+	*/
+	FORCE_INLINE void SetColorBlendOperator(const BlendOperator value) { _ColorBlendOperator = value; }
+
+	/*
 	*	Sets the blend factor for the source alpha.
 	*/
 	void SetBlendFactorSourceAlpha(const BlendFactor newBlendFactor) NOEXCEPT { _BlendFactorSourceAlpha = newBlendFactor; }
@@ -342,6 +357,11 @@ protected:
 	*	Sets the blend factor for the destination alpha.
 	*/
 	void SetBlendFactorDestinationAlpha(const BlendFactor newBlendFactor) NOEXCEPT { _BlendFactorDestinationAlpha = newBlendFactor; }
+
+	/*
+	*	Sets the alpha blend operator.
+	*/
+	FORCE_INLINE void SetAlphaBlendOperator(const BlendOperator value) { _AlphaBlendOperator = value; }
 
 	/*
 	*	Sets the cull mode.
@@ -477,11 +497,17 @@ private:
 	//The blend factor for the destination color.
 	BlendFactor _BlendFactorDestinationColor;
 
+	//The color blend operator.
+	BlendOperator _ColorBlendOperator{ BlendOperator::ADD };
+
 	//The blend factor for the source alpha.
 	BlendFactor _BlendFactorSourceAlpha;
 
 	//The blend factor for the destination alpha.
 	BlendFactor _BlendFactorDestinationAlpha;
+
+	//The alpha blend operator.
+	BlendOperator _AlphaBlendOperator{ BlendOperator::ADD };
 
 	//The cull mode.
 	CullMode _CullMode;

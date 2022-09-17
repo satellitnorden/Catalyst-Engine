@@ -259,7 +259,7 @@ namespace VulkanSubRenderingSystemLogic
 				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(resolve_attachment._First->GetFormat(),
 																							VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT,
 																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-																							VK_ATTACHMENT_STORE_OP_DONT_CARE,
+																							VK_ATTACHMENT_STORE_OP_STORE,
 																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 																							VK_ATTACHMENT_STORE_OP_DONT_CARE,
 																							VK_IMAGE_LAYOUT_GENERAL,
@@ -414,8 +414,10 @@ namespace VulkanSubRenderingSystemLogic
 			parameters._BlendEnable = pipeline->IsBlendEnabled();
 			parameters._BlendFactorSourceColor = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorSourceColor());
 			parameters._BlendFactorDestinationColor = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationColor());
+			parameters._ColorBlendOperator = VulkanTranslationUtilities::GetVulkanBlendOperator(pipeline->GetColorBlendOperator());
 			parameters._BlendFactorSourceAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorSourceAlpha());
 			parameters._BlendFactorDestinationAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationAlpha());
+			parameters._AlphaBlendOperator = VulkanTranslationUtilities::GetVulkanBlendOperator(pipeline->GetAlphaBlendOperator());
 			parameters._ColorAttachmentCount = static_cast<uint32>(pipeline->GetOutputRenderTargets().Size()) + static_cast<uint32>(pipeline->IsRenderingDirectlyToScreen());
 			parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(pipeline->GetCullMode());
 			
