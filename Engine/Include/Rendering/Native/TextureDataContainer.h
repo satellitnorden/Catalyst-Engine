@@ -70,7 +70,6 @@ public:
 		_TextureTexelSize = sizeof(byte);
 	}
 
-
 	/*
 	*	Constructor taking a float pointer along with the width, height and number of channels of the texture.
 	*/
