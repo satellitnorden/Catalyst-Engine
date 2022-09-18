@@ -1725,15 +1725,6 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 					texel[i] = parameters._Default[UNDERLYING(parameters._ChannelMappings[i]._Channel)];
 				}
 			}
-
-			//Apply gamma correction, if desired.
-			if (parameters._ApplyGammaCorrection)
-			{
-				for (uint8 i{ 0 }; i < 3; ++i)
-				{
-					texel[i] = powf(texel[i], 2.2f);
-				}
-			}
 		}
 	}
 
@@ -1743,6 +1734,23 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 		Texture2D<Vector4<float32>> temporary_composite_texture{ composite_texture };
 
 		parameters._TransformFunction(temporary_composite_texture, &composite_texture);
+	}
+
+	//Apply gamma correction, if desired.
+	if (parameters._ApplyGammaCorrection)
+	{
+		for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
+		{
+			for (uint32 X{ 0 }; X < composite_texture.GetWidth(); ++X)
+			{
+				Vector4<float32> &texel{ composite_texture.At(X, Y) };
+
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					texel[i] = powf(texel[i], 2.2f);
+				}
+			}
+		}
 	}
 
 	//Generate the mip chain.
