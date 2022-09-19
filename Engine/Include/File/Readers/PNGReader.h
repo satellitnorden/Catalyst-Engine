@@ -44,4 +44,24 @@ namespace PNGReader
 		return true;
 	}
 
+	/*
+	*	Reads the image at the given file path. Returns if the read was succesful.
+	*/
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, Texture2D<Vector4<byte>> *const RESTRICT texture) NOEXCEPT
+	{
+		//Load the texture data.
+		int32 width, height, number_of_channels;
+		uint8 *RESTRICT data{ stbi_load(file, &width, &height, &number_of_channels, STBI_rgb_alpha) };
+
+		//Load the texture data into the texture.
+		texture->Initialize(static_cast<uint32>(width), static_cast<uint32>(height));
+
+		Memory::Copy(texture->Data(), data, sizeof(byte) * 4 * width * height);
+
+		//Free the texture data.
+		stbi_image_free(data);
+
+		return true;
+	}
+
 }
