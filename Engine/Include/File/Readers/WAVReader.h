@@ -237,6 +237,9 @@ public:
 		}
 	}
 
+	/*
+	*	Returns the length of the given audio file.
+	*/
 	FORCE_INLINE static NO_DISCARD float64 AudioLength(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//WAV header definition.
