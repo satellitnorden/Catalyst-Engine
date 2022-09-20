@@ -21,6 +21,7 @@ namespace File
 		MTL,
 		OBJ,
 		OGG,
+		OPUS,
 		PNG,
 		TGA,
 		WAV,
@@ -122,6 +123,11 @@ namespace File
 		if (strcmp(dot_position, ".ogg") == 0)
 		{
 			return Extension::OGG;
+		}
+
+		if (strcmp(dot_position, ".opus") == 0)
+		{
+			return Extension::OPUS;
 		}
 
 		if (strcmp(dot_position, ".png") == 0)

@@ -88,6 +88,12 @@ target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/zlibstaticd>
 										$<$<CONFIG:ProfileEditor>:Profile/zlibstatic>
 										$<$<CONFIG:Final>:final/zlibstatic>
 										)
+target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/libsoundwave>
+										$<$<CONFIG:DebugEditor>:Debug/libsoundwave>
+										$<$<CONFIG:Profile>:Profile/libsoundwave>
+										$<$<CONFIG:ProfileEditor>:Profile/libsoundwave>
+										$<$<CONFIG:Final>:final/libsoundwave>
+										)
 
 #Set the startup project.
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
