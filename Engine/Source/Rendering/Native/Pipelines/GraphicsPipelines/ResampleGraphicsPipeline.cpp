@@ -69,7 +69,7 @@ void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const
 	SetBlendEnabled(blend_enabled);
 	SetBlendFactorSourceColor(BlendFactor::One);
 	SetBlendFactorDestinationColor(BlendFactor::One);
-	SetBlendFactorSourceAlpha(BlendFactor::Zero);
+	SetBlendFactorSourceAlpha(BlendFactor::One);
 	SetBlendFactorDestinationAlpha(BlendFactor::One);
 	SetCullMode(CullMode::None);
 	SetDepthCompareOperator(CompareOperator::Always);
