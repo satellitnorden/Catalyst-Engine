@@ -66,7 +66,7 @@ public:
 				{
 					for (long sample_index{ 0 }; sample_index < number_of_samples_read; ++sample_index)
 					{
-						resource->_Samples[channel_index].Emplace(static_cast<int16>(buffer[channel_index][sample_index] * static_cast<float32>(INT16_MAXIMUM)));
+						resource->_Samples[channel_index].Emplace(static_cast<int16>(CatalystBaseMath::Clamp(buffer[channel_index][sample_index], -1.0f, 1.0f) * static_cast<float32>(INT16_MAXIMUM)));
 					}
 				}
 			}
@@ -130,7 +130,7 @@ public:
 		fclose(sound_file);
 
 		//Return the audio length.
-		return static_cast<float64>(total_samples_read) / static_cast<float64>(info->channels) / static_cast<float64>(info->rate);
+		return static_cast<float64>(total_samples_read) / static_cast<float64>(info->rate);
 	}
 
 };
