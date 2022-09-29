@@ -23,7 +23,7 @@ public:
 	*/
 	BinaryFile(const char *const RESTRICT file_path) NOEXCEPT
 		:
-		_FilePath(file_path),
+		_FilePath(file_path)
 	{
 		//Define constants.
 		constexpr uint64 CHUNK_SIZE{ 1'000'000 };

@@ -55,7 +55,7 @@ void VirtualRealitySystem::RenderUpdate() NOEXCEPT
 		VirtualRealityUniformData virtual_reality_uniform_data;
 
 #if defined(CATALYST_PLATFORM_ANDROID)
-		virtual_reality_uniform_data._EyeWorldToClipMatrices[0] = virtual_reality_uniform_data._EyeWorldToClipMatrices[1] = *RenderingSystem::Instance->GetCurrentCamera()->GetViewMatrix();
+		virtual_reality_uniform_data._EyeWorldToClipMatrices[0] = virtual_reality_uniform_data._EyeWorldToClipMatrices[1] = *RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetViewMatrix();
 #elif defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	//Retrieve the predicted display time.
     const float64 predicted_display_time{ vrapi_GetPredictedDisplayTime(CatalystPlatform::_ovrMobile, static_cast<uint32>(CatalystEngineSystem::Instance->GetTotalFrames())) };
