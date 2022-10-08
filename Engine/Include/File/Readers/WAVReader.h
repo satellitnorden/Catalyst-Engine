@@ -193,6 +193,9 @@ private:
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//File.
+#include <File/Core/BinaryFile.h>
+
 //Resources.
 #include <Resources/Core/SoundResource.h>
 

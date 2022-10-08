@@ -113,7 +113,17 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 	physicalDeviceFeatures.fullDrawIndexUint32 = VK_FALSE;
 	physicalDeviceFeatures.imageCubeArray = VK_FALSE;
 	physicalDeviceFeatures.independentBlend = VK_FALSE;
-	physicalDeviceFeatures.geometryShader = VK_TRUE;
+
+	if (VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().geometryShader == VK_TRUE)
+	{
+		physicalDeviceFeatures.geometryShader = VK_TRUE;
+	}
+
+	else
+	{
+		physicalDeviceFeatures.geometryShader = VK_FALSE;
+	}
+
 	physicalDeviceFeatures.tessellationShader = VK_FALSE;
 	physicalDeviceFeatures.sampleRateShading = VK_FALSE;
 	physicalDeviceFeatures.dualSrcBlend = VK_FALSE;
@@ -145,10 +155,30 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 	physicalDeviceFeatures.occlusionQueryPrecise = VK_FALSE;
 	physicalDeviceFeatures.pipelineStatisticsQuery = VK_FALSE;
 	physicalDeviceFeatures.vertexPipelineStoresAndAtomics = VK_FALSE;
-	physicalDeviceFeatures.fragmentStoresAndAtomics = VK_TRUE;
+
+    if (VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().fragmentStoresAndAtomics == VK_TRUE)
+    {
+        physicalDeviceFeatures.fragmentStoresAndAtomics = VK_TRUE;
+    }
+
+    else
+    {
+        physicalDeviceFeatures.fragmentStoresAndAtomics = VK_FALSE;
+    }
+
 	physicalDeviceFeatures.shaderTessellationAndGeometryPointSize = VK_FALSE;
 	physicalDeviceFeatures.shaderImageGatherExtended = VK_FALSE;
-	physicalDeviceFeatures.shaderStorageImageExtendedFormats = VK_TRUE;
+
+    if (VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().shaderStorageImageExtendedFormats == VK_TRUE)
+    {
+        physicalDeviceFeatures.shaderStorageImageExtendedFormats = VK_TRUE;
+    }
+
+    else
+    {
+        physicalDeviceFeatures.shaderStorageImageExtendedFormats = VK_FALSE;
+    }
+
 	physicalDeviceFeatures.shaderStorageImageMultisample = VK_FALSE;
 	physicalDeviceFeatures.shaderStorageImageReadWithoutFormat = VK_FALSE;
 	physicalDeviceFeatures.shaderStorageImageWriteWithoutFormat = VK_FALSE;
