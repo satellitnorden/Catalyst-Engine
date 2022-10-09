@@ -20,9 +20,6 @@ class Neuron final
 
 public:
 
-	//Type aliases.
-	using ActivationFunction = float32(*)(const float32 X);
-
 	//The neuron index.
 	uint64 _NeuronIndex;
 
@@ -63,7 +60,7 @@ public:
 	/*
 	*	Feeds forward.
 	*/
-	FORCE_INLINE void FeedForward(const DynamicArray<Neuron> &previous_layer_neurons, const ActivationFunction activation_function) NOEXCEPT
+	FORCE_INLINE void FeedForward(const DynamicArray<Neuron> &previous_layer_neurons, const NeuralNetworkActivationFunction activation_function) NOEXCEPT
 	{
 		//Calculate the sum.
 		float32 sum{ 0.0f };
@@ -166,10 +163,10 @@ public:
 		uint32 _NumberOfOutputs{ 1 };
 
 		//The hidden layers activation function.
-		Neuron::ActivationFunction _HiddenLayersActivationFunction{ ActivationFunctions::HyperbolicTangent };
+		NeuralNetworkActivationFunction _HiddenLayersActivationFunction{ ActivationFunctions::HyperbolicTangent };
 
 		//The output layer activation function.
-		Neuron::ActivationFunction _OutputLayerActivationFunction{ ActivationFunctions::HyperbolicTangent };
+		NeuralNetworkActivationFunction _OutputLayerActivationFunction{ ActivationFunctions::HyperbolicTangent };
 
 	};
 
@@ -226,7 +223,7 @@ public:
 		//Prepare the input layer.
 		for (Neuron &neuron : _InputLayer._Neurons)
 		{
-			neuron.SetNumberOfOutputs(_HiddenLayers[0]._Neurons.Size());
+			neuron.SetNumberOfOutputs(_HiddenLayers.Empty() ? _OutputLayer._Neurons.Size() : _HiddenLayers[0]._Neurons.Size());
 		}
 
 		//Prepare the hidden layers.
@@ -281,7 +278,7 @@ public:
 		//Feed forward into the output layer.
 		{
 			//Cache the previous layer neurons.
-			const DynamicArray<Neuron> &previous_layer_neurons{ _HiddenLayers.Back()._Neurons };
+			const DynamicArray<Neuron> &previous_layer_neurons{ _HiddenLayers.Empty() ? _InputLayer._Neurons : _HiddenLayers.Back()._Neurons };
 
 			for (Neuron &neuron : _OutputLayer._Neurons)
 			{
@@ -315,21 +312,24 @@ public:
 		}
 
 		//Calculate the output gradients for the hidden layers.
-		for (int64 i{ static_cast<int64>(_HiddenLayers.LastIndex()) }; i >= 0; --i)
+		if (!_HiddenLayers.Empty())
 		{
-			//Cache the next layer neurons.
-			const DynamicArray<Neuron> &next_layer_neurons{ i == _HiddenLayers.LastIndex() ? _OutputLayer._Neurons : _HiddenLayers[i + 1]._Neurons };
-
-			for (Neuron &neuron : _HiddenLayers[i]._Neurons)
+			for (int64 i{ static_cast<int64>(_HiddenLayers.LastIndex()) }; i >= 0; --i)
 			{
-				neuron.CalculateHiddenGradient(next_layer_neurons);
+				//Cache the next layer neurons.
+				const DynamicArray<Neuron> &next_layer_neurons{ i == _HiddenLayers.LastIndex() ? _OutputLayer._Neurons : _HiddenLayers[i + 1]._Neurons };
+
+				for (Neuron &neuron : _HiddenLayers[i]._Neurons)
+				{
+					neuron.CalculateHiddenGradient(next_layer_neurons);
+				}
 			}
 		}
 
 		//Update the input weights for the output layer.
 		{
 			//Cache the previous layer neurons.
-			DynamicArray<Neuron> &previous_layer_neurons{ _HiddenLayers.Back()._Neurons };
+			DynamicArray<Neuron> &previous_layer_neurons{ _HiddenLayers.Empty() ? _InputLayer._Neurons : _HiddenLayers.Back()._Neurons };
 
 			for (Neuron &neuron : _OutputLayer._Neurons)
 			{
@@ -338,14 +338,17 @@ public:
 		}
 
 		//Update the input weights for all hidden layers.
-		for (int64 i{ static_cast<int64>(_HiddenLayers.LastIndex()) }; i >= 0; --i)
+		if (!_HiddenLayers.Empty())
 		{
-			//Cache the previous layer neurons.
-			DynamicArray<Neuron> &previous_layer_neurons{ i == 0 ? _InputLayer._Neurons : _HiddenLayers[i - 1]._Neurons };
-
-			for (Neuron &neuron : _HiddenLayers[i]._Neurons)
+			for (int64 i{ static_cast<int64>(_HiddenLayers.LastIndex()) }; i >= 0; --i)
 			{
-				neuron.UpdateInputWeights(_LearningRate, _Momentum, previous_layer_neurons);
+				//Cache the previous layer neurons.
+				DynamicArray<Neuron> &previous_layer_neurons{ i == 0 ? _InputLayer._Neurons : _HiddenLayers[i - 1]._Neurons };
+
+				for (Neuron &neuron : _HiddenLayers[i]._Neurons)
+				{
+					neuron.UpdateInputWeights(_LearningRate, _Momentum, previous_layer_neurons);
+				}
 			}
 		}
 	}
@@ -485,9 +488,9 @@ private:
 	float32 _Error;
 
 	//The hidden layers activation function.
-	Neuron::ActivationFunction _HiddenLayersActivationFunction{ ActivationFunctions::HyperbolicTangent };
+	NeuralNetworkActivationFunction _HiddenLayersActivationFunction{ ActivationFunctions::HyperbolicTangent };
 
 	//The output layer activation function.
-	Neuron::ActivationFunction _OutputLayerActivationFunction{ ActivationFunctions::HyperbolicTangent };
+	NeuralNetworkActivationFunction _OutputLayerActivationFunction{ ActivationFunctions::HyperbolicTangent };
 
 };

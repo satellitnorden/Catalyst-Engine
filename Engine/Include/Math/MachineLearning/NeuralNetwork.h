@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/ArrayProxy.h>
 
+//Type aliases.
+using NeuralNetworkActivationFunction = float32(*)(const float32 X);
+
 /*
 *	Base class for a neural network.
 */
