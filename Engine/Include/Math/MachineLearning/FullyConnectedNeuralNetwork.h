@@ -10,6 +10,7 @@
 
 //Math.
 #include <Math/MachineLearning/ActivationFunctions.h>
+#include <Math/MachineLearning/NeuralNetwork.h>
 
 /*
 *	Class representing a single neuron.
@@ -133,84 +134,94 @@ public:
 *	Class representing a fully connected (or dense) neural network, with as many input/intermediate/output neurons as the user specifies.
 *	Can also load/save training data to disk, to be able to load this data in when needed.
 */
-class FullyConnectedNeuralNetwork final
+class FullyConnectedNeuralNetwork final : public NeuralNetwork
 {
 
 public:
 
 	/*
-	*	Sets the activation function.
+	*	Initialization parameters class definition.
 	*/
-	FORCE_INLINE void SetActivationFunction(const Neuron::ActivationFunction activation_function) NOEXCEPT
+	class InitializationParameters final
 	{
-		_ActivationFunction = activation_function;
-	}
+
+	public:
+
+		//The learning rate.
+		float32 _LearningRate{ 0.01f };
+
+		//The momentum.
+		float32 _Momentum{ 0.01f };
+
+		//The number of inputs.
+		uint32 _NumberOfInputs{ 1 };
+
+		//The number of hidden layers.
+		uint32 _NumberOfHiddenLayers{ 1 };
+
+		//The number of elements per hidden layer.
+		uint32 _NumberOfNeuronsPerHiddenLayer{ 1 };
+
+		//The number of outputs.
+		uint32 _NumberOfOutputs{ 1 };
+
+		//The hidden layers activation function.
+		Neuron::ActivationFunction _HiddenLayersActivationFunction{ ActivationFunctions::HyperbolicTangent };
+
+		//The output layer activation function.
+		Neuron::ActivationFunction _OutputLayerActivationFunction{ ActivationFunctions::HyperbolicTangent };
+
+	};
 
 	/*
-	*	Sets the learning rate.
+	*	Initializes this neural network.
 	*/
-	FORCE_INLINE void SetLearningRate(const float32 value) NOEXCEPT
+	FORCE_INLINE void Initialize(const InitializationParameters &parameters) NOEXCEPT
 	{
-		_LearningRate = value;
-	}
+		//Set the learning rate.
+		_LearningRate = parameters._LearningRate;
 
-	/*
-	*	Sets the momentum.
-	*/
-	FORCE_INLINE void SetMomentum(const float32 value) NOEXCEPT
-	{
-		_Momentum = value;
-	}
+		//Set the momentum.
+		_Momentum = parameters._Momentum;
 
-	/*
-	*	Adds an input neuron.
-	*/
-	FORCE_INLINE void AddInputNeuron() NOEXCEPT
-	{
-		_InputLayer._Neurons.Emplace();
-		Neuron &neuron{ _InputLayer._Neurons.Back() };
-
-		neuron._NeuronIndex = _InputLayer._Neurons.LastIndex();
-	}
-
-	/*
-	*	Adds a hidden layer.
-	*/
-	FORCE_INLINE void AddHiddenLayer(const uint64 number_of_neurons) NOEXCEPT
-	{
-		_HiddenLayers.Emplace();
-		Layer &hidden_layer{ _HiddenLayers.Back() };
-
-		for (uint64 i{ 0 }; i < number_of_neurons; ++i)
+		//Add the input neurons.
+		for (uint32 i{ 0 }; i < parameters._NumberOfInputs; ++i)
 		{
-			hidden_layer._Neurons.Emplace();
-			Neuron &neuron{ hidden_layer._Neurons.Back() };
+			_InputLayer._Neurons.Emplace();
+			Neuron &neuron{ _InputLayer._Neurons.Back() };
 
-			neuron._NeuronIndex = hidden_layer._Neurons.LastIndex();
+			neuron._NeuronIndex = _InputLayer._Neurons.LastIndex();
 		}
-	}
 
-	/*
-	*	Adds an output neuron.
-	*/
-	FORCE_INLINE void AddOutputNeuron() NOEXCEPT
-	{
-		_OutputLayer._Neurons.Emplace();
-		Neuron &neuron{ _OutputLayer._Neurons.Back() };
-
-		neuron._NeuronIndex = _OutputLayer._Neurons.LastIndex();
-	}
-
-	/*
-	*	Prepares the neural network.
-	*/
-	FORCE_INLINE void Prepare() NOEXCEPT
-	{
-		//If the activation function isn't set, just use the default.
-		if (!_ActivationFunction)
+		//Add the hidden layers.
+		for (uint32 i{ 0 }; i < parameters._NumberOfHiddenLayers; ++i)
 		{
-			SetActivationFunction(ActivationFunctions::HyperbolicTangent);
+			_HiddenLayers.Emplace();
+			Layer &hidden_layer{ _HiddenLayers.Back() };
+
+			for (uint32 j{ 0 }; j < parameters._NumberOfNeuronsPerHiddenLayer; ++j)
+			{
+				hidden_layer._Neurons.Emplace();
+				Neuron &neuron{ hidden_layer._Neurons.Back() };
+
+				neuron._NeuronIndex = hidden_layer._Neurons.LastIndex();
+			}
 		}
+
+		//Add the output neurons.
+		for (uint32 i{ 0 }; i < parameters._NumberOfOutputs; ++i)
+		{
+			_OutputLayer._Neurons.Emplace();
+			Neuron &neuron{ _OutputLayer._Neurons.Back() };
+
+			neuron._NeuronIndex = _OutputLayer._Neurons.LastIndex();
+		}
+
+		//Set the hidden layers activation function.
+		_HiddenLayersActivationFunction = parameters._HiddenLayersActivationFunction;
+
+		//Set the output layer activation function.
+		_OutputLayerActivationFunction = parameters._OutputLayerActivationFunction;
 
 		//Prepare the input layer.
 		for (Neuron &neuron : _InputLayer._Neurons)
@@ -229,9 +240,25 @@ public:
 	}
 
 	/*
+	*	Returns the number of inputs.
+	*/
+	FORCE_INLINE NO_DISCARD uint32 GetNumberOfInputs() const NOEXCEPT override
+	{
+		return static_cast<uint32>(_InputLayer._Neurons.Size());
+	}
+
+	/*
+	*	Returns the number of outputs.
+	*/
+	FORCE_INLINE NO_DISCARD uint32 GetNumberOfOutputs() const NOEXCEPT override
+	{
+		return static_cast<uint32>(_InputLayer._Neurons.Size());
+	}
+
+	/*
 	*	Runs the neural network with the given input values.
 	*/
-	FORCE_INLINE void Run(const ArrayProxy<float32> &input_values) NOEXCEPT
+	FORCE_INLINE void Run(const ArrayProxy<float32> &input_values) NOEXCEPT override
 	{
 		//Set the output value on all neurons in the input layer.
 		for (uint64 i{ 0 }, size{ _InputLayer._Neurons.Size() }; i < size; ++i)
@@ -247,7 +274,7 @@ public:
 
 			for (Neuron &neuron : _HiddenLayers[i]._Neurons)
 			{
-				neuron.FeedForward(previous_layer_neurons, _ActivationFunction);
+				neuron.FeedForward(previous_layer_neurons, _HiddenLayersActivationFunction);
 			}
 		}
 
@@ -258,7 +285,7 @@ public:
 
 			for (Neuron &neuron : _OutputLayer._Neurons)
 			{
-				neuron.FeedForward(previous_layer_neurons, _ActivationFunction);
+				neuron.FeedForward(previous_layer_neurons, _OutputLayerActivationFunction);
 			}
 		}
 	}
@@ -266,7 +293,7 @@ public:
 	/*
 	*	Corrects the results of the neural network by providing the expected output values.
 	*/
-	FORCE_INLINE void Correct(const ArrayProxy<float32> &expected_output_values) NOEXCEPT
+	FORCE_INLINE void Correct(const ArrayProxy<float32> &expected_output_values) NOEXCEPT override
 	{
 		//Calculate the error.
 		_Error = 0.0f;
@@ -280,9 +307,6 @@ public:
 
 		_Error /= static_cast<float32>(_OutputLayer._Neurons.Size());
 		_Error = sqrt(_Error);
-
-		//Update the average error.
-		_AverageError = CatalystBaseMath::LinearlyInterpolate(_Error, _AverageError, 0.9f);
 
 		//Calculate the output gradients for the output layer.
 		for (uint64 i{ 0 }, size{ _OutputLayer._Neurons.Size() }; i < size; ++i)
@@ -327,17 +351,9 @@ public:
 	}
 
 	/*
-	*	Returns the average error.
-	*/
-	FORCE_INLINE NO_DISCARD float32 AverageError() const NOEXCEPT
-	{
-		return _AverageError;
-	}
-
-	/*
 	*	Retrieves the outputs from the neural network.
 	*/
-	FORCE_INLINE void Retrieve(ArrayProxy<float32> *const RESTRICT outputs) NOEXCEPT
+	FORCE_INLINE void Retrieve(ArrayProxy<float32>* const RESTRICT outputs) NOEXCEPT override
 	{
 		//Retrieve the output values.
 		for (uint64 i{ 0 }, size{ outputs->Size() }; i < size; ++i)
@@ -468,10 +484,10 @@ private:
 	//The error.
 	float32 _Error;
 
-	//The average error.
-	float32 _AverageError{ 0.0f };
+	//The hidden layers activation function.
+	Neuron::ActivationFunction _HiddenLayersActivationFunction{ ActivationFunctions::HyperbolicTangent };
 
-	//The activation function.
-	Neuron::ActivationFunction _ActivationFunction{ nullptr };
+	//The output layer activation function.
+	Neuron::ActivationFunction _OutputLayerActivationFunction{ ActivationFunctions::HyperbolicTangent };
 
 };
