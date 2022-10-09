@@ -8,6 +8,9 @@
 //File.
 #include <File/Core/BinaryFile.h>
 
+//Math.
+#include <Math/MachineLearning/ActivationFunctions.h>
+
 /*
 *	Class representing a single neuron.
 */
@@ -206,10 +209,7 @@ public:
 		//If the activation function isn't set, just use the default.
 		if (!_ActivationFunction)
 		{
-			SetActivationFunction([](const float32 X)
-			{
-				return 1.0f / (1.0f + exp(-X));
-			});
+			SetActivationFunction(ActivationFunctions::HyperbolicTangent);
 		}
 
 		//Prepare the input layer.
