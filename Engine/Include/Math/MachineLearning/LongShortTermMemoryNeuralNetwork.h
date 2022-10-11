@@ -24,6 +24,12 @@ public:
 
 	public:
 
+		//The number of inputs.
+		uint32 _NumberOfInputs;
+
+		//The hidden size.
+		uint32 _HiddenSize;
+
 	};
 
 	/*
