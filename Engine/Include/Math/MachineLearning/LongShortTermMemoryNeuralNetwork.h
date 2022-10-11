@@ -9,148 +9,6 @@
 #include <Math/MachineLearning/NeuralNetwork.h>
 
 /*
-*	Class representing a long short term memory cell.
-*/
-class LongShortTermMemoryCell final
-{
-
-public:
-
-	//The index.
-	uint64 _Index;
-
-	//The weights.
-	DynamicArray<float32> _Weights;
-
-	//The deltas.
-	DynamicArray<float32> _Deltas;
-
-	//The output value.
-	float32 _OutputValue;
-
-	//The gradient.
-	float32 _Gradient;
-
-	//The cell state.
-	float32 _CellState;
-
-	//The hidden state.
-	float32 _HiddenState;
-
-	/*
-	*	Sets the number of outputs.
-	*/
-	FORCE_INLINE void SetNumberOfOutputs(const uint64 number_of_outputs) NOEXCEPT
-	{
-		//Initialize the weights.
-		_Weights.Upsize<false>(number_of_outputs);
-
-		for (float32 &weight : _Weights)
-		{
-			weight = 0.5f;
-		}
-
-		//Initialize the deltas.
-		_Deltas.Upsize<false>(number_of_outputs);
-
-		for (float32 &delta : _Deltas)
-		{
-			delta = 0.0f;
-		}
-	}
-
-	/*
-	*	Feeds forward.
-	*/
-	FORCE_INLINE void FeedForward(const DynamicArray<LongShortTermMemoryCell> &previous_layer_cells) NOEXCEPT
-	{
-		//Calculate the input.
-		float32 summed_input{ 0.0f };
-
-		for (const LongShortTermMemoryCell &cell : previous_layer_cells)
-		{
-			summed_input += cell._OutputValue * cell._Weights[_Index];
-		}
-
-		//Combine the input with the hidden state.
-		const float32 combine{ summed_input + _HiddenState };
-
-		//Run the combined input and hidden state through the forget gate.
-		const float32 forget{ ActivationFunctions::Sigmoid(combine) };
-
-		//Run the combined input and hidden state through the input gate.
-		const float32 input{ ActivationFunctions::Sigmoid(combine) };
-
-		//Run the combined input and hidden state through the candidate gate.
-		const float32 candidate{ ActivationFunctions::HyperbolicTangent(combine) };
-
-		//Run the combined input and hidden state through the output gate.
-		const float32 output{ ActivationFunctions::Sigmoid(combine) };
-
-		//Update the cell state.
-		_CellState = _CellState * forget + candidate * input;
-
-		//Update the hidden state.
-		_HiddenState = output * ActivationFunctions::HyperbolicTangent(_CellState);
-
-		//Calculate the output value.
-		_OutputValue = _HiddenState;
-	}
-
-	/*
-	*	Calculates the output gradient.
-	*/
-	FORCE_INLINE void CalculateOutputGradient(const float32 target_value) NOEXCEPT
-	{
-		//Calculate the gradient.
-		_Gradient = (target_value - _OutputValue) * Derivative(_OutputValue);
-	}
-
-	/*
-	*	Calculates the hidden gradient.
-	*/
-	FORCE_INLINE void CalculateHiddenGradient(const DynamicArray<LongShortTermMemoryCell> &next_layer_cells) NOEXCEPT
-	{
-		//Calculate the DOW.
-		float32 DOW{ 0.0f };
-
-		for (uint64 i{ 0 }, size{ next_layer_cells.Size() }; i < size; ++i)
-		{
-			DOW += _Weights[i] * next_layer_cells[i]._Gradient;
-		}
-
-		//Calculate the gradient.
-		_Gradient = DOW * Derivative(_OutputValue);
-	}
-
-	/*
-	*	Updates the input weights.
-	*/
-	FORCE_INLINE void UpdateInputWeights(const float32 learning_rate, const float32 momentum, DynamicArray<LongShortTermMemoryCell> &previous_layer_cells) NOEXCEPT
-	{
-		for (uint64 i{ 0 }, size{ previous_layer_cells.Size() }; i < size; ++i)
-		{
-			LongShortTermMemoryCell &cell{ previous_layer_cells[i] };
-
-			const float32 old_delta{ cell._Deltas[_Index] };
-			const float32 new_delta{ learning_rate * cell._OutputValue * _Gradient + momentum * old_delta };
-
-			cell._Deltas[_Index] = new_delta;
-			cell._Weights[_Index] += new_delta;
-		}
-	}
-
-	/*
-	*	Calculates the derivative.
-	*/
-	FORCE_INLINE NO_DISCARD float32 Derivative(const float32 value) NOEXCEPT
-	{
-		return 1.0f - (value * value);
-	}
-
-};
-
-/*
 *	Class representing a long shot term memory.
 */
 class LongShortTermMemoryNeuralNetwork final : public NeuralNetwork
@@ -166,24 +24,6 @@ public:
 
 	public:
 
-		//The learning rate.
-		float32 _LearningRate{ 0.01f };
-
-		//The momentum.
-		float32 _Momentum{ 0.01f };
-
-		//The number of inputs.
-		uint32 _NumberOfInputs{ 1 };
-
-		//The number of hidden layers.
-		uint32 _NumberOfHiddenLayers{ 1 };
-
-		//The number of cells per hidden layer.
-		uint32 _NumberOfCellsPerHiddenLayer{ 1 };
-
-		//The number of outputs.
-		uint32 _NumberOfOutputs{ 1 };
-
 	};
 
 	/*
@@ -191,65 +31,35 @@ public:
 	*/
 	FORCE_INLINE void Initialize(const InitializationParameters &parameters) NOEXCEPT
 	{
-		//Set the learning rate.
-		_LearningRate = parameters._LearningRate;
+		//Set the initial cell state.
+		_PreviousCellState = _CurrentCellState = 0.0f;
 
-		//Set the momentum.
-		_Momentum = parameters._Momentum;
+		//Set the initial hidden state.
+		_PreviousHiddenState = _CurrentHiddenState = 0.0f;
 
-		//Add the input cells.
-		for (uint32 i{ 0 }; i < parameters._NumberOfInputs; ++i)
-		{
-			_InputLayer._Cells.Emplace();
-			LongShortTermMemoryCell &cell{ _InputLayer._Cells.Back() };
+		//Initialize the forget input weight.
+		_ForgetInputWeight = 0.5f;
 
-			cell._Index = _InputLayer._Cells.LastIndex();
-			cell._CellState = 0.5f;
-			cell._HiddenState = 0.5f;
-		}
+		//Initialize the forget hidden weight.
+		_ForgetHiddenWeight = 0.5f;
 
-		//Add the hidden layers.
-		for (uint32 i{ 0 }; i < parameters._NumberOfHiddenLayers; ++i)
-		{
-			_HiddenLayers.Emplace();
-			Layer &hidden_layer{ _HiddenLayers.Back() };
+		//Initialize the input input weight.
+		_InputInputWeight = 0.5f;
 
-			for (uint32 j{ 0 }; j < parameters._NumberOfCellsPerHiddenLayer; ++j)
-			{
-				hidden_layer._Cells.Emplace();
-				LongShortTermMemoryCell &cell{ hidden_layer._Cells.Back() };
+		//Initialize the input hidden weight.
+		_InputHiddenWeight = 0.5f;
 
-				cell._Index = hidden_layer._Cells.LastIndex();
-				cell._CellState = 0.5f;
-				cell._HiddenState = 0.5f;
-			}
-		}
+		//Initialize the candidate input weight.
+		_CandidateInputWeight = 0.5f;
 
-		//Add the output cells.
-		for (uint32 i{ 0 }; i < parameters._NumberOfOutputs; ++i)
-		{
-			_OutputLayer._Cells.Emplace();
-			LongShortTermMemoryCell &cell{ _OutputLayer._Cells.Back() };
+		//Initialize the candidate hidden weight.
+		_CandidateHiddenWeight = 0.5f;
 
-			cell._Index = _OutputLayer._Cells.LastIndex();
-			cell._CellState = 0.5f;
-			cell._HiddenState = 0.5f;
-		}
+		//Initialize the output input weight.
+		_OutputInputWeight = 0.5f;
 
-		//Prepare the input layer.
-		for (LongShortTermMemoryCell &cell : _InputLayer._Cells)
-		{
-			cell.SetNumberOfOutputs(_HiddenLayers.Empty() ? _OutputLayer._Cells.Size() : _HiddenLayers[0]._Cells.Size());
-		}
-
-		//Prepare the hidden layers.
-		for (uint64 i{ 0 }, size{ _HiddenLayers.Size() }; i < size; ++i)
-		{
-			for (LongShortTermMemoryCell &cell : _HiddenLayers[i]._Cells)
-			{
-				cell.SetNumberOfOutputs(i == size - 1 ? _OutputLayer._Cells.Size() : _HiddenLayers[i + 1]._Cells.Size());
-			}
-		}
+		//Initialize the output hidden weight.
+		_OutputHiddenWeight = 0.5f;
 	}
 
 	/*
@@ -257,7 +67,8 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD uint32 GetNumberOfInputs() const NOEXCEPT override
 	{
-		return static_cast<uint32>(_InputLayer._Cells.Size());
+		//Only one for now.
+		return 1;
 	}
 
 	/*
@@ -265,7 +76,8 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD uint32 GetNumberOfOutputs() const NOEXCEPT override
 	{
-		return static_cast<uint32>(_InputLayer._Cells.Size());
+		//Only one for now.
+		return 1;
 	}
 
 	/*
@@ -273,34 +85,38 @@ public:
 	*/
 	FORCE_INLINE void Run(const ArrayProxy<float32> &input_values) NOEXCEPT override
 	{
-		//Set the output value on all cells in the input layer.
-		for (uint64 i{ 0 }, size{ _InputLayer._Cells.Size() }; i < size; ++i)
+		//Set the previous cell/hidden states.
+		_PreviousCellState = _CurrentCellState;
+		_PreviousHiddenState = _CurrentHiddenState;
+
+		//Set the input sample.
+		_InputSample = input_values[0];
+
+		//Calculate the forget value.
 		{
-			_InputLayer._Cells[i]._OutputValue = input_values[i];
+			_ForgetValue = ActivationFunctions::Sigmoid(_ForgetInputWeight * _InputSample + _ForgetHiddenWeight * _PreviousHiddenState);
 		}
 
-		//Feed forward into all hidden layers.
-		for (uint64 i{ 0 }, size{ _HiddenLayers.Size() }; i < size; ++i)
-		{
-			//Cache the previous layer cells.
-			const DynamicArray<LongShortTermMemoryCell> &previous_layer_cells{ i == 0 ? _InputLayer._Cells : _HiddenLayers[i - 1]._Cells };
+		//Calculate the input value.
+		float32 input_value;
 
-			for (LongShortTermMemoryCell &cell : _HiddenLayers[i]._Cells)
-			{
-				cell.FeedForward(previous_layer_cells);
-			}
+		{
+			_InputValue = ActivationFunctions::Sigmoid(_InputInputWeight * _InputSample + _InputHiddenWeight * _PreviousHiddenState);
+			_CandidateValue = ActivationFunctions::HyperbolicTangent(_CandidateInputWeight * _InputSample + _CandidateHiddenWeight * _PreviousHiddenState);
+		
+			input_value = _InputValue * _CandidateValue;
 		}
 
-		//Feed forward into the output layer.
+		//Calculate the output value.
 		{
-			//Cache the previous layer cells.
-			const DynamicArray<LongShortTermMemoryCell> &previous_layer_cells{ _HiddenLayers.Empty() ? _InputLayer._Cells : _HiddenLayers.Back()._Cells };
-
-			for (LongShortTermMemoryCell &cell : _OutputLayer._Cells)
-			{
-				cell.FeedForward(previous_layer_cells);
-			}
+			_OutputValue = ActivationFunctions::Sigmoid(_OutputInputWeight * _InputSample + _OutputHiddenWeight * _PreviousHiddenState);
 		}
+
+		//Update the cell state.
+		_CurrentCellState = (_PreviousCellState * _ForgetValue) + input_value;
+
+		//Update the hidden state.
+		_CurrentHiddenState = _OutputValue * ActivationFunctions::HyperbolicTangent(_PreviousCellState);
 	}
 
 	/*
@@ -308,52 +124,28 @@ public:
 	*/
 	FORCE_INLINE void Correct(const ArrayProxy<float32> &expected_output_values) NOEXCEPT override
 	{
-		//Calculate the output gradients for the output layer.
-		for (uint64 i{ 0 }, size{ _OutputLayer._Cells.Size() }; i < size; ++i)
-		{
-			_OutputLayer._Cells[i].CalculateOutputGradient(expected_output_values[i]);
-		}
 
-		//Calculate the output gradients for the hidden layers.
-		if (!_HiddenLayers.Empty())
-		{
-			for (int64 i{ static_cast<int64>(_HiddenLayers.LastIndex()) }; i >= 0; --i)
-			{
-				//Cache the next layer cells.
-				const DynamicArray<LongShortTermMemoryCell> &next_layer_cells{ i == _HiddenLayers.LastIndex() ? _OutputLayer._Cells : _HiddenLayers[i + 1]._Cells };
+		//Calculate the delta value.
+		const float32 delta_value{ expected_output_values[0] - _CurrentHiddenState };
 
-				for (LongShortTermMemoryCell &cell : _HiddenLayers[i]._Cells)
-				{
-					cell.CalculateHiddenGradient(next_layer_cells);
-				}
-			}
-		}
+		//Calculate the hyperbolic tangent of the current cell state.
+		const float32 current_cell_state_hyperbolic_tangent{ ActivationFunctions::HyperbolicTangent(_CurrentCellState) };
 
-		//Update the input weights for the output layer.
-		{
-			//Cache the previous layer cells.
-			DynamicArray<LongShortTermMemoryCell> &previous_layer_cells{ _HiddenLayers.Empty() ? _InputLayer._Cells : _HiddenLayers.Back()._Cells };
+		//Update the output weights.
+		_OutputInputWeight += delta_value * current_cell_state_hyperbolic_tangent * _OutputValue * (1.0f - _OutputValue) * _InputSample;
+		_OutputHiddenWeight += delta_value * current_cell_state_hyperbolic_tangent * _OutputValue * (1.0f - _OutputValue) * _PreviousHiddenState;
 
-			for (LongShortTermMemoryCell &cell : _OutputLayer._Cells)
-			{
-				cell.UpdateInputWeights(_LearningRate, _Momentum, previous_layer_cells);
-			}
-		}
+		//Update the forget weights.
+		_ForgetInputWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _PreviousCellState * _ForgetValue * (1.0f - _ForgetValue) * _InputSample;
+		_ForgetHiddenWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _PreviousCellState * _ForgetValue * (1.0f - _ForgetValue) * _PreviousHiddenState;
+	
+		//Update the input weights.
+		_InputInputWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _CandidateValue * _InputValue * (1.0f - _InputValue) * _InputSample;
+		_InputHiddenWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _CandidateValue * _InputValue * (1.0f - _InputValue) * _PreviousHiddenState;
 
-		//Update the input weights for all hidden layers.
-		if (!_HiddenLayers.Empty())
-		{
-			for (int64 i{ static_cast<int64>(_HiddenLayers.LastIndex()) }; i >= 0; --i)
-			{
-				//Cache the previous layer cells.
-				DynamicArray<LongShortTermMemoryCell> &previous_layer_cells{ i == 0 ? _InputLayer._Cells : _HiddenLayers[i - 1]._Cells };
-
-				for (LongShortTermMemoryCell &cell : _HiddenLayers[i]._Cells)
-				{
-					cell.UpdateInputWeights(_LearningRate, _Momentum, previous_layer_cells);
-				}
-			}
-		}
+		//Update the candidate weights.
+		_CandidateInputWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _InputValue * (1.0f - (_CandidateValue * _CandidateValue)) * _InputSample;
+		_CandidateHiddenWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _InputValue * (1.0f - (_CandidateValue * _CandidateValue)) * _PreviousHiddenState;
 	}
 
 	/*
@@ -361,41 +153,64 @@ public:
 	*/
 	FORCE_INLINE void Retrieve(ArrayProxy<float32>* const RESTRICT outputs) NOEXCEPT override
 	{
-		//Retrieve the output values.
-		for (uint64 i{ 0 }, size{ outputs->Size() }; i < size; ++i)
+		//The output values is the hidden state.
+		for (uint64 i{ 0 }; i < outputs->Size(); ++i)
 		{
-			outputs->At(i) = _OutputLayer._Cells[i]._OutputValue;
+			outputs->At(i) = _CurrentHiddenState;
 		}
 	}
 
 private:
 
-	/*
-	*	Layer class definition.
-	*/
-	class Layer final
-	{
+	//The previous cell state.
+	float32 _PreviousCellState;
 
-	public:
+	//The current cell state.
+	float32 _CurrentCellState;
 
-		//The cells.
-		DynamicArray<LongShortTermMemoryCell> _Cells;
+	//The previous hidden state.
+	float32 _PreviousHiddenState;
 
-	};
+	//The current hidden state.
+	float32 _CurrentHiddenState;
 
-	//The learning rate.
-	float32 _LearningRate{ 0.5f };
+	//The input sample.
+	float32 _InputSample;
 
-	//The momentum.
-	float32 _Momentum{ 0.5f };
+	//The forget input weight.
+	float32 _ForgetInputWeight;
 
-	//The input layer.
-	Layer _InputLayer;
+	//The forget hidden weight.
+	float32 _ForgetHiddenWeight;
 
-	//The hidden layers.
-	DynamicArray<Layer> _HiddenLayers;
+	//The input input weight.
+	float32 _InputInputWeight;
 
-	//The output layer.
-	Layer _OutputLayer;
+	//The input hidden weight.
+	float32 _InputHiddenWeight;
+
+	//The candidate input weight.
+	float32 _CandidateInputWeight;
+
+	//The candidate hidden weight.
+	float32 _CandidateHiddenWeight;
+
+	//The output input weight.
+	float32 _OutputInputWeight;
+
+	//The output hidden weight.
+	float32 _OutputHiddenWeight;
+
+	//The forget value.
+	float32 _ForgetValue;
+
+	//The input value.
+	float32 _InputValue;
+
+	//The candidate value.
+	float32 _CandidateValue;
+
+	//The output value.
+	float32 _OutputValue;
 
 };
