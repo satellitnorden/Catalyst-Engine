@@ -25,11 +25,14 @@ public:
 
 	public:
 
+		//The learning rate.
+		float32 _LearningRate{ 0.01f };
+
 		//The number of inputs.
-		uint32 _NumberOfInputs;
+		uint32 _NumberOfInputs{ 1 };
 
 		//The hidden size.
-		uint32 _HiddenSize;
+		uint32 _HiddenSize{ 1 };
 
 	};
 
@@ -38,6 +41,9 @@ public:
 	*/
 	FORCE_INLINE void Initialize(const InitializationParameters &parameters) NOEXCEPT
 	{
+		//Set the learning rate.
+		_LearningRate = parameters._LearningRate;
+
 		//Set the initial cell states.
 		_PreviousCellStates.Upsize<false>(parameters._HiddenSize);
 		_CurrentCellStates.Upsize<false>(parameters._HiddenSize);
@@ -310,7 +316,9 @@ public:
 		{
 			for (uint64 j{ 0 }; j < _OutputInputWeights[i].Size(); ++j)
 			{
-				_OutputInputWeights[i][j] += _DeltaValues[j] * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * _OutputValues[j] * (1.0f - _OutputValues[j]) * _InputSamples[i];
+				const float32 gradient{ _DeltaValues[j] * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * _OutputValues[j] * (1.0f - _OutputValues[j]) * _InputSamples[i] };
+				
+				_OutputInputWeights[i][j] += gradient * _LearningRate;
 			}
 		}
 
@@ -318,7 +326,9 @@ public:
 		{
 			for (uint64 j{ 0 }; j < _OutputHiddenWeights[i].Size(); ++j)
 			{
-				_OutputHiddenWeights[i][j] += _DeltaValues[j] * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * _OutputValues[j] * (1.0f - _OutputValues[j]) * _PreviousHiddenStates[j];
+				const float32 gradient{ _DeltaValues[j] * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * _OutputValues[j] * (1.0f - _OutputValues[j]) * _PreviousHiddenStates[j] };
+
+				_OutputHiddenWeights[i][j] += gradient * _LearningRate;
 			}
 		}
 		
@@ -327,7 +337,9 @@ public:
 		{
 			for (uint64 j{ 0 }; j < _ForgetInputWeights[i].Size(); ++j)
 			{
-				_ForgetInputWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _PreviousCellStates[j] * _ForgetValues[j] * (1.0f - _ForgetValues[j]) * _InputSamples[i];
+				const float32 gradient{ _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _PreviousCellStates[j] * _ForgetValues[j] * (1.0f - _ForgetValues[j]) * _InputSamples[i] };
+				
+				_ForgetInputWeights[i][j] += gradient * _LearningRate;
 			}
 		}
 
@@ -335,7 +347,9 @@ public:
 		{
 			for (uint64 j{ 0 }; j < _ForgetHiddenWeights[i].Size(); ++j)
 			{
-				_ForgetHiddenWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _PreviousCellStates[j] * _ForgetValues[j] * (1.0f - _ForgetValues[j]) * _PreviousHiddenStates[j];
+				const float32 gradient{ _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _PreviousCellStates[j] * _ForgetValues[j] * (1.0f - _ForgetValues[j]) * _PreviousHiddenStates[j] };
+
+				_ForgetHiddenWeights[i][j] += gradient * _LearningRate;
 			}
 		}
 	
@@ -344,7 +358,9 @@ public:
 		{
 			for (uint64 j{ 0 }; j < _InputInputWeights[i].Size(); ++j)
 			{
-				_InputInputWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _CandidateValues[j] * _InputValues[j] * (1.0f - _InputValues[j]) * _InputSamples[i];
+				const float32 gradient{ _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _CandidateValues[j] * _InputValues[j] * (1.0f - _InputValues[j]) * _InputSamples[i] };
+				
+				_InputInputWeights[i][j] += gradient * _LearningRate;
 			}
 		}
 
@@ -352,7 +368,9 @@ public:
 		{
 			for (uint64 j{ 0 }; j < _InputHiddenWeights[i].Size(); ++j)
 			{
-				_InputHiddenWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _CandidateValues[j] * _InputValues[j] * (1.0f - _InputValues[j]) * _PreviousHiddenStates[j];
+				const float32 gradient{ _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _CandidateValues[j] * _InputValues[j] * (1.0f - _InputValues[j]) * _PreviousHiddenStates[j] };
+				
+				_InputHiddenWeights[i][j] += gradient * _LearningRate;
 			}
 		}
 
@@ -361,7 +379,9 @@ public:
 		{
 			for (uint64 j{ 0 }; j < _CandidateInputWeights[i].Size(); ++j)
 			{
-				_CandidateInputWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _InputValues[j] * (1.0f - (_CandidateValues[j] * _CandidateValues[j])) * _InputSamples[i];
+				const float32 gradient{ _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _InputValues[j] * (1.0f - (_CandidateValues[j] * _CandidateValues[j])) * _InputSamples[i] };
+				
+				_CandidateInputWeights[i][j] += gradient * _LearningRate;
 			}
 		}
 
@@ -369,7 +389,9 @@ public:
 		{
 			for (uint64 j{ 0 }; j < _CandidateHiddenWeights[i].Size(); ++j)
 			{
-				_CandidateHiddenWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _InputValues[j] * (1.0f - (_CandidateValues[j] * _CandidateValues[j])) * _PreviousHiddenStates[j];
+				const float32 gradient{ _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _InputValues[j] * (1.0f - (_CandidateValues[j] * _CandidateValues[j])) * _PreviousHiddenStates[j] };
+				
+				_CandidateHiddenWeights[i][j] += gradient * _LearningRate;
 			}
 		}
 	}
@@ -387,6 +409,9 @@ public:
 	}
 
 private:
+
+	//The learning rate.
+	float32 _LearningRate{ 0.01f };
 
 	//The previous cell states.
 	DynamicArray<float32> _PreviousCellStates;
