@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/ArrayProxy.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Math.
 #include <Math/MachineLearning/ActivationFunctions.h>
@@ -37,35 +38,137 @@ public:
 	*/
 	FORCE_INLINE void Initialize(const InitializationParameters &parameters) NOEXCEPT
 	{
-		//Set the initial cell state.
-		_PreviousCellState = _CurrentCellState = 0.0f;
+		//Set the initial cell states.
+		_PreviousCellStates.Upsize<false>(parameters._HiddenSize);
+		_CurrentCellStates.Upsize<false>(parameters._HiddenSize);
+		
+		for (uint32 i{ 0 }; i < parameters._HiddenSize; ++i)
+		{
+			_PreviousCellStates[i] = _CurrentCellStates[i] = 0.0f;
+		}
 
-		//Set the initial hidden state.
-		_PreviousHiddenState = _CurrentHiddenState = 0.0f;
+		//Set the initial hidden states.
+		_PreviousHiddenStates.Upsize<false>(parameters._HiddenSize);
+		_CurrentHiddenStates.Upsize<false>(parameters._HiddenSize);
 
-		//Initialize the forget input weight.
-		_ForgetInputWeight = 0.5f;
+		for (uint32 i{ 0 }; i < parameters._HiddenSize; ++i)
+		{
+			_PreviousHiddenStates[i] = _CurrentHiddenStates[i] = 0.0f;
+		}
 
-		//Initialize the forget hidden weight.
-		_ForgetHiddenWeight = 0.5f;
+		//Initialize the input samples.
+		_InputSamples.Upsize<false>(parameters._NumberOfInputs);
 
-		//Initialize the input input weight.
-		_InputInputWeight = 0.5f;
+		//Initialize the forget input weights.
+		_ForgetInputWeights.Upsize<true>(parameters._HiddenSize);
 
-		//Initialize the input hidden weight.
-		_InputHiddenWeight = 0.5f;
+		for (DynamicArray<float32> &weights : _ForgetInputWeights)
+		{
+			weights.Upsize<false>(parameters._NumberOfInputs);
 
-		//Initialize the candidate input weight.
-		_CandidateInputWeight = 0.5f;
+			for (float32 &value : weights)
+			{
+				value = 0.5f;
+			}
+		}
 
-		//Initialize the candidate hidden weight.
-		_CandidateHiddenWeight = 0.5f;
+		//Initialize the forget hidden weights.
+		_ForgetHiddenWeights.Upsize<true>(parameters._HiddenSize);
 
-		//Initialize the output input weight.
-		_OutputInputWeight = 0.5f;
+		for (DynamicArray<float32> &weights : _ForgetHiddenWeights)
+		{
+			weights.Upsize<false>(parameters._HiddenSize);
 
-		//Initialize the output hidden weight.
-		_OutputHiddenWeight = 0.5f;
+			for (float32 &value : weights)
+			{
+				value = 0.5f;
+			}
+		}
+
+		//Initialize the input input weights.
+		_InputInputWeights.Upsize<true>(parameters._HiddenSize);
+
+		for (DynamicArray<float32> &weights : _InputInputWeights)
+		{
+			weights.Upsize<false>(parameters._NumberOfInputs);
+
+			for (float32 &value : weights)
+			{
+				value = 0.5f;
+			}
+		}
+
+		//Initialize the input hidden weights.
+		_InputHiddenWeights.Upsize<true>(parameters._HiddenSize);
+
+		for (DynamicArray<float32> &weights : _InputHiddenWeights)
+		{
+			weights.Upsize<false>(parameters._HiddenSize);
+
+			for (float32 &value : weights)
+			{
+				value = 0.5f;
+			}
+		}
+
+		//Initialize the candidate input weights.
+		_CandidateInputWeights.Upsize<true>(parameters._HiddenSize);
+
+		for (DynamicArray<float32> &weights : _CandidateInputWeights)
+		{
+			weights.Upsize<false>(parameters._NumberOfInputs);
+
+			for (float32 &value : weights)
+			{
+				value = 0.5f;
+			}
+		}
+
+		//Initialize the candidate hidden weights.
+		_CandidateHiddenWeights.Upsize<true>(parameters._HiddenSize);
+
+		for (DynamicArray<float32> &weights : _CandidateHiddenWeights)
+		{
+			weights.Upsize<false>(parameters._HiddenSize);
+
+			for (float32 &value : weights)
+			{
+				value = 0.5f;
+			}
+		}
+
+		//Initialize the output input weights.
+		_OutputInputWeights.Upsize<true>(parameters._HiddenSize);
+
+		for (DynamicArray<float32> &weights : _OutputInputWeights)
+		{
+			weights.Upsize<false>(parameters._NumberOfInputs);
+
+			for (float32 &value : weights)
+			{
+				value = 0.5f;
+			}
+		}
+
+		//Initialize the output hidden weights.
+		_OutputHiddenWeights.Upsize<true>(parameters._HiddenSize);
+
+		for (DynamicArray<float32> &weights : _OutputHiddenWeights)
+		{
+			weights.Upsize<false>(parameters._HiddenSize);
+
+			for (float32 &value : weights)
+			{
+				value = 0.5f;
+			}
+		}
+
+		//Initialize the values.
+		_ForgetValues.Upsize<false>(parameters._HiddenSize);
+		_InputValues.Upsize<false>(parameters._HiddenSize);
+		_CandidateValues.Upsize<false>(parameters._HiddenSize);
+		_OutputValues.Upsize<false>(parameters._HiddenSize);
+		_DeltaValues.Upsize<false>(parameters._HiddenSize);
 	}
 
 	/*
@@ -73,8 +176,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD uint32 GetNumberOfInputs() const NOEXCEPT override
 	{
-		//Only one for now.
-		return 1;
+		return static_cast<uint32>(_ForgetInputWeights.Size());
 	}
 
 	/*
@@ -82,8 +184,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD uint32 GetNumberOfOutputs() const NOEXCEPT override
 	{
-		//Only one for now.
-		return 1;
+		return static_cast<uint32>(_ForgetHiddenWeights.Size());
 	}
 
 	/*
@@ -92,37 +193,105 @@ public:
 	FORCE_INLINE void Run(const ArrayProxy<float32> &input_values) NOEXCEPT override
 	{
 		//Set the previous cell/hidden states.
-		_PreviousCellState = _CurrentCellState;
-		_PreviousHiddenState = _CurrentHiddenState;
+		for (uint64 i{ 0 }; i < _PreviousCellStates.Size(); ++i)
+		{
+			_PreviousCellStates[i] = _CurrentCellStates[i];
+		}
 
-		//Set the input sample.
-		_InputSample = input_values[0];
+		for (uint64 i{ 0 }; i < _PreviousHiddenStates.Size(); ++i)
+		{
+			_PreviousHiddenStates[i] = _CurrentHiddenStates[i];
+		}
+
+		//Set the input samples.
+		for (uint64 i{ 0 }; i < _InputSamples.Size(); ++i)
+		{
+			_InputSamples[i] = input_values[i];
+		}
 
 		//Calculate the forget value.
+		for (uint64 i{ 0 }; i < _ForgetValues.Size(); ++i)
 		{
-			_ForgetValue = ActivationFunctions::Sigmoid(_ForgetInputWeight * _InputSample + _ForgetHiddenWeight * _PreviousHiddenState);
+			float32 sum{ 0.0f };
+
+			for (uint64 j{ 0 }; j < _ForgetInputWeights.Size(); ++j)
+			{
+				sum += _ForgetInputWeights[i][j] * _InputSamples[j];
+			}
+
+			for (uint64 j{ 0 }; j < _ForgetHiddenWeights.Size(); ++j)
+			{
+				sum += _ForgetHiddenWeights[i][j] * _PreviousHiddenStates[j];
+			}
+
+			_ForgetValues[i] = ActivationFunctions::Sigmoid(sum);
 		}
 
-		//Calculate the input value.
-		float32 input_value;
-
+		//Calculate the input values.
+		for (uint64 i{ 0 }; i < _InputValues.Size(); ++i)
 		{
-			_InputValue = ActivationFunctions::Sigmoid(_InputInputWeight * _InputSample + _InputHiddenWeight * _PreviousHiddenState);
-			_CandidateValue = ActivationFunctions::HyperbolicTangent(_CandidateInputWeight * _InputSample + _CandidateHiddenWeight * _PreviousHiddenState);
+			float32 sum{ 0.0f };
+
+			for (uint64 j{ 0 }; j < _InputInputWeights.Size(); ++j)
+			{
+				sum += _InputInputWeights[i][j] * _InputSamples[j];
+			}
+
+			for (uint64 j{ 0 }; j < _InputHiddenWeights.Size(); ++j)
+			{
+				sum += _InputHiddenWeights[i][j] * _PreviousHiddenStates[j];
+			}
+
+			_InputValues[i] = ActivationFunctions::Sigmoid(sum);
+		}
+
+		//Calculate the candidate values.
+		for (uint64 i{ 0 }; i < _CandidateValues.Size(); ++i)
+		{
+			float32 sum{ 0.0f };
+
+			for (uint64 j{ 0 }; j < _CandidateInputWeights.Size(); ++j)
+			{
+				sum += _CandidateInputWeights[i][j] * _InputSamples[j];
+			}
+
+			for (uint64 j{ 0 }; j < _CandidateHiddenWeights.Size(); ++j)
+			{
+				sum += _CandidateHiddenWeights[i][j] * _PreviousHiddenStates[j];
+			}
+
+			_CandidateValues[i] = ActivationFunctions::HyperbolicTangent(sum);
+		}
+
+		//Calculate the output values.
+		for (uint64 i{ 0 }; i < _OutputValues.Size(); ++i)
+		{
+			float32 sum{ 0.0f };
+
+			for (uint64 j{ 0 }; j < _OutputInputWeights.Size(); ++j)
+			{
+				sum += _OutputInputWeights[i][j] * _InputSamples[j];
+			}
+
+			for (uint64 j{ 0 }; j < _OutputHiddenWeights.Size(); ++j)
+			{
+				sum += _OutputHiddenWeights[i][j] * _PreviousHiddenStates[j];
+			}
+
+			_OutputValues[i] = ActivationFunctions::Sigmoid(sum);
+		}
+
+		//Update the current cell states.
+		for (uint64 i{ 0 }; i < _CurrentCellStates.Size(); ++i)
+		{
+			_CurrentCellStates[i] = (_PreviousCellStates[i] * _ForgetValues[i]) + (_InputValues[i] * _CandidateValues[i]);
+		}
 		
-			input_value = _InputValue * _CandidateValue;
-		}
-
-		//Calculate the output value.
+		//Update the current hidden states.
+		for (uint64 i{ 0 }; i < _CurrentHiddenStates.Size(); ++i)
 		{
-			_OutputValue = ActivationFunctions::Sigmoid(_OutputInputWeight * _InputSample + _OutputHiddenWeight * _PreviousHiddenState);
+			_CurrentHiddenStates[i] = _OutputValues[i] * ActivationFunctions::HyperbolicTangent(_PreviousCellStates[i]);
 		}
-
-		//Update the cell state.
-		_CurrentCellState = (_PreviousCellState * _ForgetValue) + input_value;
-
-		//Update the hidden state.
-		_CurrentHiddenState = _OutputValue * ActivationFunctions::HyperbolicTangent(_PreviousCellState);
 	}
 
 	/*
@@ -130,28 +299,79 @@ public:
 	*/
 	FORCE_INLINE void Correct(const ArrayProxy<float32> &expected_output_values) NOEXCEPT override
 	{
-
-		//Calculate the delta value.
-		const float32 delta_value{ expected_output_values[0] - _CurrentHiddenState };
-
-		//Calculate the hyperbolic tangent of the current cell state.
-		const float32 current_cell_state_hyperbolic_tangent{ ActivationFunctions::HyperbolicTangent(_CurrentCellState) };
+		//Calculate the delta values.
+		for (uint64 i{ 0 }; i < _DeltaValues.Size(); ++i)
+		{
+			_DeltaValues[i] = expected_output_values[i] - _CurrentHiddenStates[i];
+		}
 
 		//Update the output weights.
-		_OutputInputWeight += delta_value * current_cell_state_hyperbolic_tangent * _OutputValue * (1.0f - _OutputValue) * _InputSample;
-		_OutputHiddenWeight += delta_value * current_cell_state_hyperbolic_tangent * _OutputValue * (1.0f - _OutputValue) * _PreviousHiddenState;
+		for (uint64 i{ 0 }; i < _OutputInputWeights.Size(); ++i)
+		{
+			for (uint64 j{ 0 }; j < _OutputInputWeights[i].Size(); ++j)
+			{
+				_OutputInputWeights[i][j] += _DeltaValues[j] * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * _OutputValues[j] * (1.0f - _OutputValues[j]) * _InputSamples[i];
+			}
+		}
 
+		for (uint64 i{ 0 }; i < _OutputHiddenWeights.Size(); ++i)
+		{
+			for (uint64 j{ 0 }; j < _OutputHiddenWeights[i].Size(); ++j)
+			{
+				_OutputHiddenWeights[i][j] += _DeltaValues[j] * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * _OutputValues[j] * (1.0f - _OutputValues[j]) * _PreviousHiddenStates[j];
+			}
+		}
+		
 		//Update the forget weights.
-		_ForgetInputWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _PreviousCellState * _ForgetValue * (1.0f - _ForgetValue) * _InputSample;
-		_ForgetHiddenWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _PreviousCellState * _ForgetValue * (1.0f - _ForgetValue) * _PreviousHiddenState;
+		for (uint64 i{ 0 }; i < _ForgetInputWeights.Size(); ++i)
+		{
+			for (uint64 j{ 0 }; j < _ForgetInputWeights[i].Size(); ++j)
+			{
+				_ForgetInputWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _PreviousCellStates[j] * _ForgetValues[j] * (1.0f - _ForgetValues[j]) * _InputSamples[i];
+			}
+		}
+
+		for (uint64 i{ 0 }; i < _ForgetHiddenWeights.Size(); ++i)
+		{
+			for (uint64 j{ 0 }; j < _ForgetHiddenWeights[i].Size(); ++j)
+			{
+				_ForgetHiddenWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _PreviousCellStates[j] * _ForgetValues[j] * (1.0f - _ForgetValues[j]) * _PreviousHiddenStates[j];
+			}
+		}
 	
 		//Update the input weights.
-		_InputInputWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _CandidateValue * _InputValue * (1.0f - _InputValue) * _InputSample;
-		_InputHiddenWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _CandidateValue * _InputValue * (1.0f - _InputValue) * _PreviousHiddenState;
+		for (uint64 i{ 0 }; i < _InputInputWeights.Size(); ++i)
+		{
+			for (uint64 j{ 0 }; j < _InputInputWeights[i].Size(); ++j)
+			{
+				_InputInputWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _CandidateValues[j] * _InputValues[j] * (1.0f - _InputValues[j]) * _InputSamples[i];
+			}
+		}
+
+		for (uint64 i{ 0 }; i < _InputHiddenWeights.Size(); ++i)
+		{
+			for (uint64 j{ 0 }; j < _InputHiddenWeights[i].Size(); ++j)
+			{
+				_InputHiddenWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _CandidateValues[j] * _InputValues[j] * (1.0f - _InputValues[j]) * _PreviousHiddenStates[j];
+			}
+		}
 
 		//Update the candidate weights.
-		_CandidateInputWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _InputValue * (1.0f - (_CandidateValue * _CandidateValue)) * _InputSample;
-		_CandidateHiddenWeight += delta_value * _OutputValue * (1.0f - (current_cell_state_hyperbolic_tangent * current_cell_state_hyperbolic_tangent)) * _InputValue * (1.0f - (_CandidateValue * _CandidateValue)) * _PreviousHiddenState;
+		for (uint64 i{ 0 }; i < _CandidateInputWeights.Size(); ++i)
+		{
+			for (uint64 j{ 0 }; j < _CandidateInputWeights[i].Size(); ++j)
+			{
+				_CandidateInputWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _InputValues[j] * (1.0f - (_CandidateValues[j] * _CandidateValues[j])) * _InputSamples[i];
+			}
+		}
+
+		for (uint64 i{ 0 }; i < _CandidateHiddenWeights.Size(); ++i)
+		{
+			for (uint64 j{ 0 }; j < _CandidateHiddenWeights[i].Size(); ++j)
+			{
+				_CandidateHiddenWeights[i][j] += _DeltaValues[j] * _OutputValues[j] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[j]))) * _InputValues[j] * (1.0f - (_CandidateValues[j] * _CandidateValues[j])) * _PreviousHiddenStates[j];
+			}
+		}
 	}
 
 	/*
@@ -162,61 +382,64 @@ public:
 		//The output values is the hidden state.
 		for (uint64 i{ 0 }; i < outputs->Size(); ++i)
 		{
-			outputs->At(i) = _CurrentHiddenState;
+			outputs->At(i) = _CurrentHiddenStates[i];
 		}
 	}
 
 private:
 
-	//The previous cell state.
-	float32 _PreviousCellState;
+	//The previous cell states.
+	DynamicArray<float32> _PreviousCellStates;
 
-	//The current cell state.
-	float32 _CurrentCellState;
+	//The current cell states.
+	DynamicArray<float32> _CurrentCellStates;
 
-	//The previous hidden state.
-	float32 _PreviousHiddenState;
+	//The previous hidden states.
+	DynamicArray<float32> _PreviousHiddenStates;
 
-	//The current hidden state.
-	float32 _CurrentHiddenState;
+	//The current hidden states.
+	DynamicArray<float32> _CurrentHiddenStates;
 
-	//The input sample.
-	float32 _InputSample;
+	//The input samples.
+	DynamicArray<float32> _InputSamples;
 
-	//The forget input weight.
-	float32 _ForgetInputWeight;
+	//The forget input weights.
+	DynamicArray<DynamicArray<float32>> _ForgetInputWeights;
 
-	//The forget hidden weight.
-	float32 _ForgetHiddenWeight;
+	//The forget hidden weights.
+	DynamicArray<DynamicArray<float32>> _ForgetHiddenWeights;
 
-	//The input input weight.
-	float32 _InputInputWeight;
+	//The input input weights.
+	DynamicArray<DynamicArray<float32>> _InputInputWeights;
 
-	//The input hidden weight.
-	float32 _InputHiddenWeight;
+	//The input hidden weights.
+	DynamicArray<DynamicArray<float32>> _InputHiddenWeights;
 
-	//The candidate input weight.
-	float32 _CandidateInputWeight;
+	//The candidate input weights.
+	DynamicArray<DynamicArray<float32>> _CandidateInputWeights;
 
-	//The candidate hidden weight.
-	float32 _CandidateHiddenWeight;
+	//The candidate hidden weights.
+	DynamicArray<DynamicArray<float32>> _CandidateHiddenWeights;
 
-	//The output input weight.
-	float32 _OutputInputWeight;
+	//The output input weights.
+	DynamicArray<DynamicArray<float32>> _OutputInputWeights;
 
-	//The output hidden weight.
-	float32 _OutputHiddenWeight;
+	//The output hidden weights.
+	DynamicArray<DynamicArray<float32>> _OutputHiddenWeights;
 
-	//The forget value.
-	float32 _ForgetValue;
+	//The forget values.
+	DynamicArray<float32> _ForgetValues;
 
-	//The input value.
-	float32 _InputValue;
+	//The input values.
+	DynamicArray<float32> _InputValues;
 
-	//The candidate value.
-	float32 _CandidateValue;
+	//The candidate values.
+	DynamicArray<float32> _CandidateValues;
 
-	//The output value.
-	float32 _OutputValue;
+	//The output values.
+	DynamicArray<float32> _OutputValues;
+
+	//The delta values.
+	DynamicArray<float32> _DeltaValues;
 
 };
