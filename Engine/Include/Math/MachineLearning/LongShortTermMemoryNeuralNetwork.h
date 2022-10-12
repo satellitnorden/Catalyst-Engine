@@ -9,6 +9,8 @@
 #include <Math/MachineLearning/ActivationFunctions.h>
 #include <Math/MachineLearning/NeuralNetwork.h>
 
+#define LSTM_USE_FINAL_LAYER (0)
+
 /*
 *	Class representing a long shot term memory.
 */
@@ -28,11 +30,17 @@ public:
 		//The learning rate.
 		float32 _LearningRate{ 0.01f };
 
+		//The momentum.
+		float32 _Momentum{ 0.01f };
+
 		//The number of inputs.
 		uint32 _NumberOfInputs{ 1 };
 
 		//The hidden size.
 		uint32 _HiddenSize{ 1 };
+
+		//The number of outputs.
+		uint32 _NumberOfOutputs{ 1 };
 
 	};
 
@@ -43,6 +51,9 @@ public:
 	{
 		//Set the learning rate.
 		_LearningRate = parameters._LearningRate;
+
+		//Set the momentum.
+		_Momentum = parameters._Momentum;
 
 		//Set the initial cell states.
 		_PreviousCellStates.Upsize<false>(parameters._HiddenSize);
@@ -74,7 +85,7 @@ public:
 
 			for (float32 &value : weights)
 			{
-				value = 0.5f;
+				value = 0.0f;
 			}
 		}
 
@@ -87,7 +98,7 @@ public:
 
 			for (float32 &value : weights)
 			{
-				value = 0.5f;
+				value = 0.0f;
 			}
 		}
 
@@ -100,7 +111,7 @@ public:
 
 			for (float32 &value : weights)
 			{
-				value = 0.5f;
+				value = 0.0f;
 			}
 		}
 
@@ -113,7 +124,7 @@ public:
 
 			for (float32 &value : weights)
 			{
-				value = 0.5f;
+				value = 0.0f;
 			}
 		}
 
@@ -126,7 +137,7 @@ public:
 
 			for (float32 &value : weights)
 			{
-				value = 0.5f;
+				value = 0.0f;
 			}
 		}
 
@@ -139,7 +150,7 @@ public:
 
 			for (float32 &value : weights)
 			{
-				value = 0.5f;
+				value = 0.0f;
 			}
 		}
 
@@ -152,7 +163,7 @@ public:
 
 			for (float32 &value : weights)
 			{
-				value = 0.5f;
+				value = 0.0f;
 			}
 		}
 
@@ -165,9 +176,24 @@ public:
 
 			for (float32 &value : weights)
 			{
-				value = 0.5f;
+				value = 0.0f;
 			}
 		}
+
+#if LSTM_USE_FINAL_LAYER
+		//Initialize the final weights.
+		_FinalWeights.Upsize<true>(parameters._NumberOfOutputs);
+
+		for (DynamicArray<float32> &weights : _FinalWeights)
+		{
+			weights.Upsize<false>(parameters._HiddenSize);
+
+			for (float32 &value : weights)
+			{
+				value = 0.0f;
+			}
+		}
+#endif
 
 		//Initialize the values.
 		_ForgetValues.Upsize<false>(parameters._HiddenSize);
@@ -175,6 +201,17 @@ public:
 		_CandidateValues.Upsize<false>(parameters._HiddenSize);
 		_OutputValues.Upsize<false>(parameters._HiddenSize);
 		_DeltaValues.Upsize<false>(parameters._HiddenSize);
+
+		for (float32 &value : _DeltaValues)
+		{
+			value = 0.0f;
+		}
+
+#if LSTM_USE_FINAL_LAYER
+		//Initialize the final stuff.
+		_FinalOutputs.Upsize<false>(parameters._NumberOfOutputs);
+		_FinalGradients.Upsize<false>(parameters._NumberOfOutputs);
+#endif
 	}
 
 	/*
@@ -298,6 +335,19 @@ public:
 		{
 			_CurrentHiddenStates[i] = _OutputValues[i] * ActivationFunctions::HyperbolicTangent(_PreviousCellStates[i]);
 		}
+
+#if LSTM_USE_FINAL_LAYER
+		//Calculate the final outputs.
+		for (uint64 i{ 0 }; i < _FinalOutputs.Size(); ++i)
+		{
+			_FinalOutputs[i] = 0.0f;
+
+			for (uint64 j{ 0 }; j < _FinalWeights[i].Size(); ++j)
+			{
+				_FinalOutputs[i] += _CurrentHiddenStates[j] * _FinalWeights[i][j];
+			}
+		}
+#endif
 	}
 
 	/*
@@ -305,11 +355,67 @@ public:
 	*/
 	FORCE_INLINE void Correct(const ArrayProxy<float32> &expected_output_values) NOEXCEPT override
 	{
+#if LSTM_USE_FINAL_LAYER
+		/*
+		//Calculate the final gradients and weights.
+		for (uint64 i{ 0 }; i < _FinalGradients.Size(); ++i)
+		{
+			_FinalGradients[i] = (expected_output_values[i] - _FinalOutputs[i]) * Derivative(_FinalOutputs[i]);
+		
+			for (uint64 j{ 0 }; j < _FinalWeights[i].Size(); ++j)
+			{
+				_FinalWeights[i][j] += _LearningRate * _FinalWeights[i][j] * _CurrentHiddenStates[j];
+			}
+		}
+
+		for (uint64 i{ 0 }; i < _DeltaValues.Size(); ++i)
+		{
+			_DeltaValues[i] = 0.0f;
+
+			for (uint64 j{ 0 }; j < _FinalWeights.Size(); ++j)
+			{
+				_DeltaValues[i] += _FinalWeights[j][i] == 0.0f ? 0.0f : ((_CurrentHiddenStates[i] / _FinalWeights[j][i]) - _CurrentHiddenStates[i]);
+			}
+		}
+		*/
+
+		//Calculate the final gradients.
+		for (uint64 i{ 0 }; i < _FinalGradients.Size(); ++i)
+		{
+			_FinalGradients[i] = (expected_output_values[i] - _FinalOutputs[i]) * Derivative(_FinalOutputs[i]);
+		
+		}
+
+		for (uint64 i{ 0 }; i < _DeltaValues.Size(); ++i)
+		{
+			for (uint64 j{ 0 }; j < _FinalGradients.Size(); ++j)
+			{
+				const float32 old_delta{ _DeltaValues[i] };
+				const float32 new_delta{ _LearningRate * _CurrentHiddenStates[i] * _FinalGradients[j] + _Momentum * old_delta };
+
+				_DeltaValues[i] = new_delta;
+				_FinalWeights[j][i] += new_delta;
+			}
+		}
+
 		//Calculate the delta values.
 		for (uint64 i{ 0 }; i < _DeltaValues.Size(); ++i)
 		{
-			_DeltaValues[i] = expected_output_values[i] - _CurrentHiddenStates[i];
+			for (uint64 j{ 0 }; j < _FinalGradients.Size(); ++j)
+			{
+				const float32 old_delta{ _DeltaValues[i] };
+				const float32 new_delta{ _LearningRate * _CurrentHiddenStates[i] * _FinalGradients[j] + _Momentum * old_delta };
+
+				_DeltaValues[i] = new_delta;
+				_FinalWeights[j][i] += new_delta;
+			}
 		}
+#else
+		for (uint64 i{ 0 }; i < _DeltaValues.Size(); ++i)
+		{
+			_DeltaValues[i] = _LearningRate * (expected_output_values[i] - _CurrentHiddenStates[i]);
+		}
+#endif
 
 		//Update the output weights.
 		for (uint64 i{ 0 }; i < _OutputInputWeights.Size(); ++i)
@@ -318,7 +424,7 @@ public:
 			{
 				const float32 gradient{ _DeltaValues[i] * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]) * _OutputValues[i] * (1.0f - _OutputValues[i]) * _InputSamples[j] };
 				
-				_OutputInputWeights[i][j] += gradient * _LearningRate;
+				_OutputInputWeights[i][j] += gradient;
 			}
 		}
 
@@ -328,7 +434,7 @@ public:
 			{
 				const float32 gradient{ _DeltaValues[j] * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]) * _OutputValues[i] * (1.0f - _OutputValues[i]) * _PreviousHiddenStates[i] };
 
-				_OutputHiddenWeights[i][j] += gradient * _LearningRate;
+				_OutputHiddenWeights[i][j] += gradient;
 			}
 		}
 		
@@ -339,7 +445,7 @@ public:
 			{
 				const float32 gradient{ _DeltaValues[i] * _OutputValues[i] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]))) * _PreviousCellStates[i] * _ForgetValues[i] * (1.0f - _ForgetValues[i]) * _InputSamples[j] };
 				
-				_ForgetInputWeights[i][j] += gradient * _LearningRate;
+				_ForgetInputWeights[i][j] += gradient;
 			}
 		}
 
@@ -349,7 +455,7 @@ public:
 			{
 				const float32 gradient{ _DeltaValues[i] * _OutputValues[i] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]))) * _PreviousCellStates[i] * _ForgetValues[i] * (1.0f - _ForgetValues[i]) * _PreviousHiddenStates[i] };
 
-				_ForgetHiddenWeights[i][j] += gradient * _LearningRate;
+				_ForgetHiddenWeights[i][j] += gradient;
 			}
 		}
 	
@@ -360,7 +466,7 @@ public:
 			{
 				const float32 gradient{ _DeltaValues[i] * _OutputValues[i] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]))) * _CandidateValues[i] * _InputValues[i] * (1.0f - _InputValues[i]) * _InputSamples[j] };
 				
-				_InputInputWeights[i][j] += gradient * _LearningRate;
+				_InputInputWeights[i][j] += gradient;
 			}
 		}
 
@@ -370,7 +476,7 @@ public:
 			{
 				const float32 gradient{ _DeltaValues[i] * _OutputValues[i] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]))) * _CandidateValues[i] * _InputValues[i] * (1.0f - _InputValues[i]) * _PreviousHiddenStates[i] };
 				
-				_InputHiddenWeights[i][j] += gradient * _LearningRate;
+				_InputHiddenWeights[i][j] += gradient;
 			}
 		}
 
@@ -381,7 +487,7 @@ public:
 			{
 				const float32 gradient{ _DeltaValues[i] * _OutputValues[i] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]))) * _InputValues[i] * (1.0f - (_CandidateValues[i] * _CandidateValues[i])) * _InputSamples[j] };
 				
-				_CandidateInputWeights[i][j] += gradient * _LearningRate;
+				_CandidateInputWeights[i][j] += gradient;
 			}
 		}
 
@@ -391,7 +497,7 @@ public:
 			{
 				const float32 gradient{ _DeltaValues[i] * _OutputValues[i] * (1.0f - (ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]) * ActivationFunctions::HyperbolicTangent(_CurrentCellStates[i]))) * _InputValues[i] * (1.0f - (_CandidateValues[i] * _CandidateValues[i])) * _PreviousHiddenStates[i] };
 				
-				_CandidateHiddenWeights[i][j] += gradient * _LearningRate;
+				_CandidateHiddenWeights[i][j] += gradient;
 			}
 		}
 	}
@@ -401,17 +507,27 @@ public:
 	*/
 	FORCE_INLINE void Retrieve(ArrayProxy<float32>* const RESTRICT outputs) NOEXCEPT override
 	{
+#if LSTM_USE_FINAL_LAYER
+		for (uint64 i{ 0 }; i < outputs->Size(); ++i)
+		{
+			outputs->At(i) = _FinalOutputs[i];
+		}
+#else
 		//The output values is the hidden state.
 		for (uint64 i{ 0 }; i < outputs->Size(); ++i)
 		{
 			outputs->At(i) = _CurrentHiddenStates[i];
 		}
+#endif
 	}
 
 private:
 
 	//The learning rate.
 	float32 _LearningRate{ 0.01f };
+
+	//The momentum.
+	float32 _Momentum{ 0.01f };
 
 	//The previous cell states.
 	DynamicArray<float32> _PreviousCellStates;
@@ -464,7 +580,26 @@ private:
 	//The output values.
 	DynamicArray<float32> _OutputValues;
 
+#if LSTM_USE_FINAL_LAYER
+	//The final weights.
+	DynamicArray<DynamicArray<float32>> _FinalWeights;
+
+	//The final outputs.
+	DynamicArray<float32> _FinalOutputs;
+
+	//The final gradients.
+	DynamicArray<float32> _FinalGradients;
+#endif
+
 	//The delta values.
 	DynamicArray<float32> _DeltaValues;
+
+	/*
+	*	Calculates the derivative for the given value.
+	*/
+	FORCE_INLINE NO_DISCARD float32 Derivative(const float32 X) NOEXCEPT
+	{
+		return 1.0f - (X * X);
+	}
 
 };
