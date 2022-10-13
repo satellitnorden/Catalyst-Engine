@@ -356,46 +356,11 @@ public:
 	FORCE_INLINE void Correct(const ArrayProxy<float32> &expected_output_values) NOEXCEPT override
 	{
 #if LSTM_USE_FINAL_LAYER
-		/*
-		//Calculate the final gradients and weights.
-		for (uint64 i{ 0 }; i < _FinalGradients.Size(); ++i)
-		{
-			_FinalGradients[i] = (expected_output_values[i] - _FinalOutputs[i]) * Derivative(_FinalOutputs[i]);
-		
-			for (uint64 j{ 0 }; j < _FinalWeights[i].Size(); ++j)
-			{
-				_FinalWeights[i][j] += _LearningRate * _FinalWeights[i][j] * _CurrentHiddenStates[j];
-			}
-		}
-
-		for (uint64 i{ 0 }; i < _DeltaValues.Size(); ++i)
-		{
-			_DeltaValues[i] = 0.0f;
-
-			for (uint64 j{ 0 }; j < _FinalWeights.Size(); ++j)
-			{
-				_DeltaValues[i] += _FinalWeights[j][i] == 0.0f ? 0.0f : ((_CurrentHiddenStates[i] / _FinalWeights[j][i]) - _CurrentHiddenStates[i]);
-			}
-		}
-		*/
-
 		//Calculate the final gradients.
 		for (uint64 i{ 0 }; i < _FinalGradients.Size(); ++i)
 		{
 			_FinalGradients[i] = (expected_output_values[i] - _FinalOutputs[i]) * Derivative(_FinalOutputs[i]);
 		
-		}
-
-		for (uint64 i{ 0 }; i < _DeltaValues.Size(); ++i)
-		{
-			for (uint64 j{ 0 }; j < _FinalGradients.Size(); ++j)
-			{
-				const float32 old_delta{ _DeltaValues[i] };
-				const float32 new_delta{ _LearningRate * _CurrentHiddenStates[i] * _FinalGradients[j] + _Momentum * old_delta };
-
-				_DeltaValues[i] = new_delta;
-				_FinalWeights[j][i] += new_delta;
-			}
 		}
 
 		//Calculate the delta values.
