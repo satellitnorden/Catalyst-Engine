@@ -32,6 +32,17 @@ public:
 		return static_cast<TYPE *const RESTRICT>(static_cast<void *const RESTRICT>(_Data.Data()));
 	}
 
+	/*
+	*	Sets the data as the given type, non-const
+	*/
+	template <typename TYPE>
+	FORCE_INLINE void Set(const TYPE &value) NOEXCEPT
+	{
+		static_assert(sizeof(TYPE) <= SIZE, "Size of TYPE is greater than the allocated size, this is not allowed!");
+
+		*static_cast<TYPE *const RESTRICT>(static_cast<void *const RESTRICT>(_Data.Data())) = value;
+	}
+
 private:
 	
 	//The data.

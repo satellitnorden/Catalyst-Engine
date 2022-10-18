@@ -136,6 +136,9 @@ class FullyConnectedNeuralNetwork final : public NeuralNetwork
 
 public:
 
+	//Constants.
+	constexpr static float32 BIAS_VALUE{ 1.0f };
+
 	/*
 	*	Initialization parameters class definition.
 	*/
@@ -182,7 +185,7 @@ public:
 		_Momentum = parameters._Momentum;
 
 		//Add the input neurons.
-		for (uint32 i{ 0 }; i < parameters._NumberOfInputs; ++i)
+		for (uint32 i{ 0 }; i <= parameters._NumberOfInputs; ++i)
 		{
 			_InputLayer._Neurons.Emplace();
 			Neuron &neuron{ _InputLayer._Neurons.Back() };
@@ -196,7 +199,7 @@ public:
 			_HiddenLayers.Emplace();
 			Layer &hidden_layer{ _HiddenLayers.Back() };
 
-			for (uint32 j{ 0 }; j < parameters._NumberOfNeuronsPerHiddenLayer; ++j)
+			for (uint32 j{ 0 }; j <= parameters._NumberOfNeuronsPerHiddenLayer; ++j)
 			{
 				hidden_layer._Neurons.Emplace();
 				Neuron &neuron{ hidden_layer._Neurons.Back() };
@@ -260,18 +263,26 @@ public:
 		//Set the output value on all neurons in the input layer.
 		for (uint64 i{ 0 }, size{ _InputLayer._Neurons.Size() }; i < size; ++i)
 		{
-			_InputLayer._Neurons[i]._OutputValue = input_values[i];
+			_InputLayer._Neurons[i]._OutputValue = i < _InputLayer._Neurons.LastIndex() ? input_values[i] : BIAS_VALUE;
 		}
 
 		//Feed forward into all hidden layers.
-		for (uint64 i{ 0 }, size{ _HiddenLayers.Size() }; i < size; ++i)
+		for (uint64 layer_index{ 0 }, size{ _HiddenLayers.Size() }; layer_index < size; ++layer_index)
 		{
 			//Cache the previous layer neurons.
-			const DynamicArray<Neuron> &previous_layer_neurons{ i == 0 ? _InputLayer._Neurons : _HiddenLayers[i - 1]._Neurons };
+			const DynamicArray<Neuron> &previous_layer_neurons{ layer_index == 0 ? _InputLayer._Neurons : _HiddenLayers[layer_index - 1]._Neurons };
 
-			for (Neuron &neuron : _HiddenLayers[i]._Neurons)
+			for (uint64 neuron_index{ 0 }; neuron_index < _HiddenLayers[layer_index]._Neurons.Size(); ++neuron_index)
 			{
-				neuron.FeedForward(previous_layer_neurons, _HiddenLayersActivationFunction);
+				if (neuron_index == _HiddenLayers[layer_index]._Neurons.LastIndex())
+				{
+					_HiddenLayers[layer_index]._Neurons[neuron_index]._OutputValue = BIAS_VALUE;
+				}
+				
+				else
+				{
+					_HiddenLayers[layer_index]._Neurons[neuron_index].FeedForward(previous_layer_neurons, _HiddenLayersActivationFunction);
+				}
 			}
 		}
 
