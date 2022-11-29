@@ -24,6 +24,7 @@ namespace File
 		OPUS,
 		PNG,
 		TGA,
+		TXT,
 		WAV,
 
 		UNKNOWN
@@ -138,6 +139,11 @@ namespace File
 		if (strcmp(dot_position, ".tga") == 0)
 		{
 			return Extension::TGA;
+		}
+
+		if (strcmp(dot_position, ".txt") == 0)
+		{
+			return Extension::TXT;
 		}
 
 		if (strcmp(dot_position, ".wav") == 0)

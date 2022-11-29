@@ -2481,7 +2481,23 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 			else
 			{
 				//Cache the image.
-				tinygltf::Image &image{ model.images[material.pbrMetallicRoughness.baseColorTexture.index] };
+				tinygltf::Image &image{ model.images[model.textures[material.pbrMetallicRoughness.baseColorTexture.index].source] };
+
+				//Replace "%20" with spaces.
+				{
+					size_t position{ 0 };
+
+					do
+					{
+						position = image.uri.find("%20");
+
+						if (position != std::string::npos)
+						{
+							image.uri.replace(position, 3, " ");
+						}
+
+					} while (position != std::string::npos);
+				}
 
 				//Create the texture.
 				char texture_ID_buffer[MAXIMUM_FILE_PATH_LENGTH];
@@ -2556,7 +2572,23 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 			else
 			{
 				//Cache the image.
-				tinygltf::Image &image{ model.images[material.normalTexture.index] };
+				tinygltf::Image &image{ model.images[model.textures[material.normalTexture.index].source] };
+
+				//Replace "%20" with spaces.
+				{
+					size_t position{ 0 };
+
+					do
+					{
+						position = image.uri.find("%20");
+
+						if (position != std::string::npos)
+						{
+							image.uri.replace(position, 3, " ");
+						}
+
+					} while (position != std::string::npos);
+				}
 
 				//Create the texture.
 				char texture_ID_buffer[MAXIMUM_FILE_PATH_LENGTH];
@@ -2652,7 +2684,23 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 			else
 			{
 				//Cache the image.
-				tinygltf::Image& image{ model.images[material.pbrMetallicRoughness.metallicRoughnessTexture.index] };
+				tinygltf::Image& image{ model.images[model.textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index].source] };
+
+				//Replace "%20" with spaces.
+				{
+					size_t position{ 0 };
+
+					do
+					{
+						position = image.uri.find("%20");
+
+						if (position != std::string::npos)
+						{
+							image.uri.replace(position, 3, " ");
+						}
+
+					} while (position != std::string::npos);
+				}
 
 				//Create the texture.
 				char texture_ID_buffer[MAXIMUM_FILE_PATH_LENGTH];
