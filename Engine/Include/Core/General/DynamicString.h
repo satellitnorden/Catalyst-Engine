@@ -222,11 +222,27 @@ public:
 	}
 
 	/*
+	*	Equality operator overload taking another dynamic string.
+	*/
+	FORCE_INLINE NO_DISCARD bool operator==(const DynamicString &other) const NOEXCEPT
+	{
+		return StringUtilities::IsEqual(_String, other._String);
+	}
+
+	/*
 	*	Equality operator overload taking a C string.
 	*/
 	FORCE_INLINE NO_DISCARD bool operator==(const char *const RESTRICT string) const NOEXCEPT
 	{
 		return StringUtilities::IsEqual(_String, string);
+	}
+
+	/*
+	*	Inequality operator overload taking another dynamic string.
+	*/
+	FORCE_INLINE NO_DISCARD bool operator!=(const DynamicString &other) const NOEXCEPT
+	{
+		return !StringUtilities::IsEqual(_String, other._String);
 	}
 
 	/*

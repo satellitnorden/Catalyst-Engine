@@ -43,7 +43,7 @@ namespace ActivationFunctions
 	*
 	*	Similar to Sigmoid as in that it has the same "S" shape, but the output range differs.
 	*
-	*	Output range: [-0.0f, 1.0f].
+	*	Output range: [-1.0f, 1.0f].
 	*/
 	FORCE_INLINE NO_DISCARD float32 HyperbolicTangent(const float32 X) NOEXCEPT
 	{
