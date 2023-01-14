@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/General/CatalystProjectConfiguration.h>
 
 //Concurrency.
 #include <Concurrency/Atomic.h>
@@ -30,7 +31,7 @@ public:
 	/*
 	*	Initializes the task system.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const CatalystProjectConcurrencyConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Terminates the task system.

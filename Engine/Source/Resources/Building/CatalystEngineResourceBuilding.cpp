@@ -51,10 +51,10 @@
 /*
 *	Builds resources for the Catalyst Engine.
 */
-void CatalystEngineResourceBuilding::BuildResources() NOEXCEPT
+void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfiguration &configuration) NOEXCEPT
 {
 	//Initialize the task system as it will be used to build resources.
-	TaskSystem::Instance->Initialize();
+	TaskSystem::Instance->Initialize(configuration._ConcurrencyConfiguration);
 
 	//Keep track of all tasks so that they can be deallocated.
 	DynamicArray<Task* RESTRICT> tasks;

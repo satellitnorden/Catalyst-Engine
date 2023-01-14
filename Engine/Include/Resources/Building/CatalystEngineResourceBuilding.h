@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/CatalystProjectConfiguration.h>
 
 namespace CatalystEngineResourceBuilding
 {
@@ -9,7 +10,7 @@ namespace CatalystEngineResourceBuilding
 	/*
 	*	Builds resources for the Catalyst Engine.
 	*/
-	void BuildResources() NOEXCEPT
+	void BuildResources(const CatalystProjectConfiguration &configuration) NOEXCEPT
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 		;
 #else

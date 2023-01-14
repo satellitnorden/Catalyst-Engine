@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
+#include <Core/General/Optional.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -61,6 +62,30 @@ public:
 	*	Default constructor.
 	*/
 	CatalystProjectGeneralConfiguration() NOEXCEPT
+	{
+
+	}
+
+};
+
+class CatalystProjectConcurrencyConfiguration final
+{
+
+public:
+
+	/*
+	*	The estimed number of task executors.
+	*	The number of task executors needed for this project.
+	*	If your project is mostly single-threaded, set this to some low number
+	*	to open up resources for other stuff.
+	*	Recommended: Low number of unset.
+	*/
+	Optional<uint32> _EstimatedNumberOfTaskExecutors;
+
+	/*
+	*	Default constructor.
+	*/
+	CatalystProjectConcurrencyConfiguration() NOEXCEPT
 	{
 
 	}
@@ -299,6 +324,9 @@ public:
 
 	//The project general configuration.
 	CatalystProjectGeneralConfiguration _GeneralConfiguration;
+
+	//The project concurrency configuration.
+	CatalystProjectConcurrencyConfiguration _ConcurrencyConfiguration;
 
 	//The project input configuration.
 	CatalystProjectInputConfiguration _InputConfiguration;

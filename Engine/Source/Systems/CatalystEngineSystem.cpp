@@ -129,13 +129,13 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Set the main thread's index to the current thread's index.
 	Concurrency::MainThreadIndex() = Concurrency::CurrentThread::Index();
 
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	//Build the Catalyst Engine resources.
-	CatalystEngineResourceBuilding::BuildResources();
-#endif
-
 	//Set the project configuration.
 	_ProjectConfiguration = initial_project_configuration;
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Build the Catalyst Engine resources.
+	CatalystEngineResourceBuilding::BuildResources(_ProjectConfiguration);
+#endif
 
 	//Initialize the platform.
 	CatalystPlatform::Initialize();
@@ -160,7 +160,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	ScriptSystem::Instance->Initialize();
 	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
-	TaskSystem::Instance->Initialize();
+	TaskSystem::Instance->Initialize(_ProjectConfiguration._ConcurrencyConfiguration);
 	TerrainSystem::Instance->Initialize(_ProjectConfiguration._TerrainConfiguration);
 	UserInterfaceSystem::Instance->Initialize();
 	WorldSystem::Instance->Initialize(_ProjectConfiguration._WorldConfiguration);

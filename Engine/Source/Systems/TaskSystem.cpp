@@ -11,26 +11,41 @@ DEFINE_SINGLETON(TaskSystem);
 /*
 *	Initializes the task system.
 */
-void TaskSystem::Initialize() NOEXCEPT
+void TaskSystem::Initialize(const CatalystProjectConcurrencyConfiguration &configuration) NOEXCEPT
 {
 	if (!_IsInitialized)
 	{
-		//Retrieve the number of hardware threads.
-		const uint32 number_of_hardware_threads{ Concurrency::NumberOfHardwareThreads() };
-
-		//Set the number of task executors.
-		_NumberOfTaskExecutors = number_of_hardware_threads;
-
-		//Subtract the sound thread.
-		if (_NumberOfTaskExecutors > 1)
+		if (configuration._EstimatedNumberOfTaskExecutors)
 		{
-			--_NumberOfTaskExecutors;
+			//Start at zero.
+			_NumberOfTaskExecutors = 0;
+
+			//Add two engine threads. Should be enough.
+			_NumberOfTaskExecutors += 2;
+
+			//Add the project threads.
+			_NumberOfTaskExecutors += configuration._EstimatedNumberOfTaskExecutors.Get();
 		}
 
-		//Leave one thread for the OS. (:
-		if (_NumberOfTaskExecutors > 1)
+		else
 		{
-			--_NumberOfTaskExecutors;
+			//Retrieve the number of hardware threads.
+			const uint32 number_of_hardware_threads{ Concurrency::NumberOfHardwareThreads() };
+
+			//Set the number of task executors.
+			_NumberOfTaskExecutors = number_of_hardware_threads;
+
+			//Subtract the sound thread.
+			if (_NumberOfTaskExecutors > 1)
+			{
+				--_NumberOfTaskExecutors;
+			}
+
+			//Leave one thread for the OS. (:
+			if (_NumberOfTaskExecutors > 1)
+			{
+				--_NumberOfTaskExecutors;
+			}
 		}
 
 		//Kick off all task executor threads.
