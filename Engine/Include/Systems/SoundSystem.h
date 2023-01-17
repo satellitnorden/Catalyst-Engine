@@ -11,8 +11,9 @@
 
 //Sound.
 #include <Sound/AudioDevice.h>
-#include <Sound/MIDIDevice.h>
+#include <Sound/InputMIDIDevice.h>
 #include <Sound/MIDIMessage.h>
+#include <Sound/OutputMIDIDevice.h>
 #include <Sound/PlaySoundRequest.h>
 #include <Sound/SoundCore.h>
 #include <Sound/SoundMixComponent.h>
@@ -141,19 +142,44 @@ public:
 	void StopRecording() NOEXCEPT;
 
 	/*
-	*	Queries for MIDI devices.
+	*	Queries for input MIDI devices.
 	*/
-	void QueryMIDIDevices(DynamicArray<MIDIDevice> *const RESTRICT midi_devices) NOEXCEPT;
+	void QueryMIDIDevices(DynamicArray<InputMIDIDevice> *const RESTRICT midi_devices) NOEXCEPT;
 
 	/*
-	*	Opens a MIDI device.
+	*	Queries for output MIDI devices.
 	*/
-	void OpenMIDIDevice(MIDIDevice *const RESTRICT midi_device) NOEXCEPT;
+	void QueryMIDIDevices(DynamicArray<OutputMIDIDevice> *const RESTRICT midi_devices) NOEXCEPT;
 
 	/*
-	*	Retrieves a MIDI message from the queue of the specified MIDI device. Returns whether or not a message was retrieved from the queue.
+	*	Opens an input MIDI device.
 	*/
-	NO_DISCARD bool RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message) NOEXCEPT;
+	void OpenMIDIDevice(InputMIDIDevice *const RESTRICT midi_device) NOEXCEPT;
+
+	/*
+	*	Opens an output MIDI device.
+	*/
+	void OpenMIDIDevice(OutputMIDIDevice *const RESTRICT midi_device) NOEXCEPT;
+
+	/*
+	*	Retrieves a MIDI message from the queue of the specified input MIDI device. Returns whether or not a message was retrieved from the queue.
+	*/
+	NO_DISCARD bool RetrieveMIDIMessage(InputMIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message) NOEXCEPT;
+
+	/*
+	*	Sends a MIDI message to the specified output MIDI device.
+	*/
+	void SendMIDIMessage(OutputMIDIDevice *const RESTRICT midi_device, const MIDIMessage &midi_message) NOEXCEPT;
+
+	/*
+	*	Closes an input MIDI device.
+	*/
+	void CloseMIDIDevice(InputMIDIDevice *const RESTRICT midi_device) NOEXCEPT;
+
+	/*
+	*	Closes an output MIDI device.
+	*/
+	void CloseMIDIDevice(OutputMIDIDevice *const RESTRICT midi_device) NOEXCEPT;
 
 	/*
 	*	Returns whether or not the sound system should continue while the engine is paused.

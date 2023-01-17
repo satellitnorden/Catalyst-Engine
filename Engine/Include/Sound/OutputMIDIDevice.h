@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/DynamicString.h>
 
-class MIDIDevice final
+class OutputMIDIDevice final
 {
 
 public:

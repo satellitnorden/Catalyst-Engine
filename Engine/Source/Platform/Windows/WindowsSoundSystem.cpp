@@ -132,8 +132,14 @@ namespace WindowsSoundSystemData
 	//The query MIDI in.
 	RtMidiIn *RESTRICT _QueryMIDIIn{ nullptr };
 
+	//The query MIDI out.
+	RtMidiOut *RESTRICT _QueryMIDIOut{ nullptr };
+
 	//The opened MIDI ins.
 	DynamicArray<RtMidiIn *RESTRICT> _OpenedMIDIIns;
+
+	//The opened MIDI outs.
+	DynamicArray<RtMidiOut *RESTRICT> _OpenedMIDIOuts;
 
 	//The thread.
 	Thread _Thread;
@@ -561,6 +567,13 @@ void SoundSystem::PlatformTerminate() NOEXCEPT
 		opened_midi_in->~RtMidiIn(); //The MemorySystem will take care of actually freeing the memory. (:
 	}
 
+	//Destroy the opened MIDI outs.
+	for (RtMidiOut *const RESTRICT opened_midi_out : WindowsSoundSystemData::_OpenedMIDIOuts)
+	{
+		opened_midi_out->closePort();
+		opened_midi_out->~RtMidiOut(); //The MemorySystem will take care of actually freeing the memory. (:
+	}
+
 	switch (WindowsSoundSystemData::_RtAudioAPI)
 	{
 		case RtAudio::Api::WINDOWS_ASIO:
@@ -657,9 +670,9 @@ SoundFormat SoundSystem::GetSoundFormat() const NOEXCEPT
 }
 
 /*
-*	Queries for MIDI devices.
+*	Queries for input MIDI devices.
 */
-void SoundSystem::QueryMIDIDevices(DynamicArray<MIDIDevice> *const RESTRICT midi_devices) NOEXCEPT
+void SoundSystem::QueryMIDIDevices(DynamicArray<InputMIDIDevice> *const RESTRICT midi_devices) NOEXCEPT
 {
 	//Create the query MIDI in, if necessary.
 	if (!WindowsSoundSystemData::_QueryMIDIIn)
@@ -679,7 +692,7 @@ void SoundSystem::QueryMIDIDevices(DynamicArray<MIDIDevice> *const RESTRICT midi
 	for (uint32 i{ 0 }; i < port_count; ++i)
 	{
 		midi_devices->Emplace();
-		MIDIDevice &midi_device{ midi_devices->Back() };
+		InputMIDIDevice &midi_device{ midi_devices->Back() };
 
 		midi_device._Handle = nullptr;
 		midi_device._Index = i;
@@ -688,9 +701,40 @@ void SoundSystem::QueryMIDIDevices(DynamicArray<MIDIDevice> *const RESTRICT midi
 }
 
 /*
-*	Opens a MIDI device.
+*	Queries for output MIDI devices.
 */
-void SoundSystem::OpenMIDIDevice(MIDIDevice *const RESTRICT midi_device) NOEXCEPT
+void SoundSystem::QueryMIDIDevices(DynamicArray<OutputMIDIDevice> *const RESTRICT midi_devices) NOEXCEPT
+{
+	//Create the query MIDI out, if necessary.
+	if (!WindowsSoundSystemData::_QueryMIDIOut)
+	{
+		WindowsSoundSystemData::_QueryMIDIOut = new (MemorySystem::Instance->TypeAllocate<RtMidiOut>()) RtMidiOut();
+
+		ASSERT(WindowsSoundSystemData::_QueryMIDIOut, "Couldn't create MIDI out!");
+	}
+
+	//Query the port count.
+	const uint32 port_count{ WindowsSoundSystemData::_QueryMIDIOut->getPortCount() };
+
+	//Reserve the appropriate amount.
+	midi_devices->Reserve(port_count);
+
+	//Fill in the midi devices.
+	for (uint32 i{ 0 }; i < port_count; ++i)
+	{
+		midi_devices->Emplace();
+		OutputMIDIDevice &midi_device{ midi_devices->Back() };
+
+		midi_device._Handle = nullptr;
+		midi_device._Index = i;
+		midi_device._Name = WindowsSoundSystemData::_QueryMIDIOut->getPortName(i).c_str();
+	}
+}
+
+/*
+*	Opens an input MIDI device.
+*/
+void SoundSystem::OpenMIDIDevice(InputMIDIDevice *const RESTRICT midi_device) NOEXCEPT
 {
 	//Create the MIDI in.
 	midi_device->_Handle = new (MemorySystem::Instance->TypeAllocate<RtMidiIn>()) RtMidiIn();
@@ -703,9 +747,24 @@ void SoundSystem::OpenMIDIDevice(MIDIDevice *const RESTRICT midi_device) NOEXCEP
 }
 
 /*
-*	Retrieves a MIDI message from the queue of the specified MIDI device. Returns whether or not a message was retrieved from the queue.
+*	Opens an output MIDI device.
 */
-NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message) NOEXCEPT
+void SoundSystem::OpenMIDIDevice(OutputMIDIDevice *const RESTRICT midi_device) NOEXCEPT
+{
+	//Create the MIDI out.
+	midi_device->_Handle = new (MemorySystem::Instance->TypeAllocate<RtMidiOut>()) RtMidiOut();
+
+	//Open the port.
+	static_cast<RtMidiOut *const RESTRICT>(midi_device->_Handle)->openPort(midi_device->_Index);
+
+	//Add to the opened MIDI outs.
+	WindowsSoundSystemData::_OpenedMIDIOuts.Emplace(static_cast<RtMidiOut *const RESTRICT>(midi_device->_Handle));
+}
+
+/*
+*	Retrieves a MIDI message from the queue of the specified input MIDI device. Returns whether or not a message was retrieved from the queue.
+*/
+NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(InputMIDIDevice *const RESTRICT midi_device, MIDIMessage *const RESTRICT midi_message) NOEXCEPT
 {
 	//Get the message.
 	static thread_local std::vector<uint8> message;
@@ -745,6 +804,76 @@ NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(MIDIDevice *const RESTRICT midi
 		//Return that the retrieval succeeded.
 		return true;
 	}
+}
+
+/*
+*	Sends a MIDI message to the specified output MIDI device.
+*/
+void SoundSystem::SendMIDIMessage(OutputMIDIDevice *const RESTRICT midi_device, const MIDIMessage &midi_message) NOEXCEPT
+{
+	//Construct the message.
+	static thread_local DynamicArray<uint8> message;
+	message.Clear();
+
+	switch (midi_message._Type)
+	{
+		case MIDIMessage::Type::NOTE_ON:
+		{
+			message.Emplace(0x90);
+			message.Emplace(midi_message._NoteOnNote & 0x7f);
+			message.Emplace(midi_message._NoteOnVelocity & 0x7f);
+
+			break;
+		}
+
+		case MIDIMessage::Type::AFTERTOUCH:
+		{
+			message.Emplace(0xf0);
+			message.Emplace(midi_message._AftertouchNote & 0x7f);
+			message.Emplace(0);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	static_cast<RtMidiOut *const RESTRICT>(midi_device->_Handle)->sendMessage(message.Data(), message.Size());
+}
+
+/*
+*	Closes an input MIDI device.
+*/
+void SoundSystem::CloseMIDIDevice(InputMIDIDevice *const RESTRICT midi_device) NOEXCEPT
+{
+	//Close the port.
+	static_cast<RtMidiIn *const RESTRICT>(midi_device->_Handle)->closePort();
+
+	//Destroy the MIDI in.
+	MemorySystem::Instance->TypeFree<RtMidiIn>(static_cast<RtMidiIn *const RESTRICT>(midi_device->_Handle));
+
+	//Remove from the opened MIDI ins.
+	WindowsSoundSystemData::_OpenedMIDIIns.Erase<false>(static_cast<RtMidiIn *const RESTRICT>(midi_device->_Handle));
+}
+
+/*
+*	Closes an output MIDI device.
+*/
+void SoundSystem::CloseMIDIDevice(OutputMIDIDevice *const RESTRICT midi_device) NOEXCEPT
+{
+	//Close the port.
+	static_cast<RtMidiOut *const RESTRICT>(midi_device->_Handle)->closePort();
+
+	//Destroy the MIDI out.
+	MemorySystem::Instance->TypeFree<RtMidiOut>(static_cast<RtMidiOut *const RESTRICT>(midi_device->_Handle));
+
+	//Remove from the opened MIDI outs.
+	WindowsSoundSystemData::_OpenedMIDIOuts.Erase<false>(static_cast<RtMidiOut *const RESTRICT>(midi_device->_Handle));
 }
 
 /*
