@@ -696,7 +696,10 @@ void SoundSystem::QueryMIDIDevices(DynamicArray<InputMIDIDevice> *const RESTRICT
 
 		midi_device._Handle = nullptr;
 		midi_device._Index = i;
-		midi_device._Name = WindowsSoundSystemData::_QueryMIDIIn->getPortName(i).c_str();
+
+		std::string port_name{ WindowsSoundSystemData::_QueryMIDIIn->getPortName(i) };
+
+		midi_device._Name = port_name.substr(0, port_name.find_last_of(' ')).c_str();
 	}
 }
 
@@ -727,7 +730,10 @@ void SoundSystem::QueryMIDIDevices(DynamicArray<OutputMIDIDevice> *const RESTRIC
 
 		midi_device._Handle = nullptr;
 		midi_device._Index = i;
-		midi_device._Name = WindowsSoundSystemData::_QueryMIDIOut->getPortName(i).c_str();
+
+		std::string port_name{ WindowsSoundSystemData::_QueryMIDIOut->getPortName(i) };
+
+		midi_device._Name = port_name.substr(0, port_name.find_last_of(' ')).c_str();
 	}
 }
 

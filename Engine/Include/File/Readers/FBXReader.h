@@ -822,7 +822,7 @@ private:
 											//Set the tangent.
 											vertex._Tangent = Vector3<float32>(static_cast<float32>(values[i + 0]), static_cast<float32>(values[i + 1]), static_cast<float32>(values[i + 2]));
 										
-											ASSERT(vertex._Normal != vertex._Tangent, "Normal and tangent are the same, this is bad. /: Maybe the model isn't UV-wrapped properly?");
+											ASSERT(vertex._Normal != vertex._Tangent, "Normal and tangent are the same for " << binary_file->GetFilePath() << ", this is bad. / : Maybe the model isn't UV-wrapped properly?");
 										}
 
 										break;
