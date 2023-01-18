@@ -87,7 +87,7 @@ void CatalystShaderMain()
 			float distance = texture(sampler2D(GLOBAL_TEXTURES[MATERIAL._PrimaryColorTextureIndex], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_LINEAR_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), texture_coordinate).r;
 
 			//Calculate the opacity.
-			float opacity = smoothstep(0.5f - TEXT_SMOOTHING_FACTOR, 0.5f + TEXT_SMOOTHING_FACTOR, distance) * COLOR.a;
+			float opacity = smoothstep(0.5f - TEXT_SMOOTHING_FACTOR, 0.5f, distance) * COLOR.a;
 
 			//Write the fragment(s).
 #if defined(THREE_DIMENSIONAL_USER_INTERFACE)
