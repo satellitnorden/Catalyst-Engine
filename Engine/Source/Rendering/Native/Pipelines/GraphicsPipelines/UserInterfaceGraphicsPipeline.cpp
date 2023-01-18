@@ -211,7 +211,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 				//Draw all characters.
 				float32 current_offset_X{ 0.0f };
-				float32 current_offset_Y{ aligned_maximum._Y - aligned_minimum._Y - type_primitive->_Scale };
+				float32 current_offset_Y{ 0.0f };
 
 				for (uint64 i{ 0 }, length{ type_primitive->_Text.Length() }; i < length; ++i)
 				{
@@ -229,7 +229,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						data._Minimum._X = aligned_minimum._X + current_offset_X + type_primitive->_FontResource->_CharacterDescriptions[character]._Bearing._X * type_primitive->_Scale;
 						data._Minimum._Y = aligned_minimum._Y + current_offset_Y - (type_primitive->_FontResource->_CharacterDescriptions[character]._Size._Y - type_primitive->_FontResource->_CharacterDescriptions[character]._Bearing._Y) * type_primitive->_Scale;
 						data._Maximum._X = data._Minimum._X + type_primitive->_FontResource->_CharacterDescriptions[character]._Size._X * type_primitive->_Scale;
-						data._Maximum._Y = data._Minimum._Y + type_primitive->_FontResource->_CharacterDescriptions[character]._Size._Y * type_primitive->_Scale;
+						data._Maximum._Y = data._Minimum._Y + type_primitive->_FontResource->_CharacterDescriptions[character]._Size._Y * RenderingSystem::Instance->GetFullAspectRatio() * type_primitive->_Scale;
 						data._Type = static_cast<uint32>(UserInterfacePrimitiveType::TEXT);
 						data._WidthRangeStart = type_primitive->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetStart;
 						data._WidthRangeEnd = type_primitive->_FontResource->_CharacterDescriptions[character]._TextureWidthOffsetEnd;

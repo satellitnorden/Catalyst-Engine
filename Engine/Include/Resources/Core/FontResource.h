@@ -49,4 +49,7 @@ public:
 	//The master texture index.
 	uint32 _MasterTextureIndex;
 
+	//The default height.
+	float32 _DefaultHeight;
+
 };

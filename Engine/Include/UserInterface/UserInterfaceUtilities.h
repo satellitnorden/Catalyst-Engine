@@ -14,6 +14,9 @@
 #include <Resources/Core/FontResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 namespace UserInterfaceUtilities
 {
 
@@ -63,6 +66,9 @@ namespace UserInterfaceUtilities
 			current_offset_X += font_resource->_CharacterDescriptions[character]._Advance * scale;
 		}
 
+		//Augment the maximum.
+		text_maximum._Y = text_minimum._Y + (font_resource->_DefaultHeight * RenderingSystem::Instance->GetFullAspectRatio() * scale);
+
 		//Calculate the text horizontal/vertical extent.
 		const float32 text_horizontal_extent{ text_maximum._X - text_minimum._X };
 		const float32 text_vertical_extent{ text_maximum._Y - text_minimum._Y };
@@ -75,7 +81,7 @@ namespace UserInterfaceUtilities
 		{
 			case TextHorizontalAlignment::LEFT:
 			{
-				//Nothin to do here.
+				//Nothing to do here.
 
 				break;
 			}
@@ -99,14 +105,15 @@ namespace UserInterfaceUtilities
 		{
 			case TextVerticalAlignment::TOP:
 			{
-				//Nothin to do here.
+				//Nothing to do here.
 
 				break;
 			}
 
 			case TextVerticalAlignment::CENTER:
 			{
-				new_maximum->_Y = new_maximum->_Y - ((vertical_extent - text_vertical_extent) * 0.5f);
+				new_minimum->_Y = original_minimum._Y + ((vertical_extent - text_vertical_extent) * 0.5f);
+				new_maximum->_Y = new_minimum->_Y + text_vertical_extent;
 
 				break;
 			}
@@ -133,14 +140,7 @@ namespace UserInterfaceUtilities
 	*/
 	FORCE_INLINE static NO_DISCARD float32 CalculateOptimalTextSmoothingFactor(ResourcePointer<FontResource> font_resource, const float32 scale) NOEXCEPT
 	{
-		float32 biased_scale{ scale };
-
-		for (uint8 i{ 0 }; i < 5; ++i)
-		{
-			biased_scale = CatalystBaseMath::InverseSquare(biased_scale);
-		}
-
-		return CatalystBaseMath::LinearlyInterpolate(0.0'25f, 0.5f, biased_scale);
+		return 0.5f;
 	}
 
 }
