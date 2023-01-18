@@ -209,6 +209,10 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 																	&aligned_minimum,
 																	&aligned_maximum);
 
+				//Augment the bounding box a bit.
+				aligned_minimum._Y += 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
+				aligned_maximum._Y += 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
+
 				//Draw all characters.
 				float32 current_offset_X{ 0.0f };
 				float32 current_offset_Y{ 0.0f };
