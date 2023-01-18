@@ -140,7 +140,7 @@ namespace UserInterfaceUtilities
 	*/
 	FORCE_INLINE static NO_DISCARD float32 CalculateOptimalTextSmoothingFactor(ResourcePointer<FontResource> font_resource, const float32 scale) NOEXCEPT
 	{
-		return 0.5f;
+		return 1.0f / 8.0f;
 	}
 
 }
