@@ -841,6 +841,23 @@ void SoundSystem::SendMIDIMessage(OutputMIDIDevice *const RESTRICT midi_device, 
 			break;
 		}
 
+		case MIDIMessage::Type::CONTROL_CHANGE:
+		{
+			message.Emplace(0xb0);
+			message.Emplace(midi_message._ControlChangeNote & 0x7f);
+			message.Emplace(midi_message._ControlChangeValue & 0x7f);
+
+			break;
+		}
+
+		case MIDIMessage::Type::PROGRAM_CHANGE:
+		{
+			message.Emplace(0xc0 | (0x0f & midi_message._ProgramChangeChannel));
+			message.Emplace(midi_message._ProgramChangeValue & 0x7f);
+
+			break;
+		}
+
 		default:
 		{
 			ASSERT(false, "Invalid case!");

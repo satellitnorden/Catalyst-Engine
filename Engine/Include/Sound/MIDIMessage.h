@@ -12,7 +12,9 @@ public:
 	enum class Type : uint8
 	{
 		NOTE_ON,
-		AFTERTOUCH
+		AFTERTOUCH,
+		CONTROL_CHANGE,
+		PROGRAM_CHANGE
 	};
 
 	//The type.
@@ -31,6 +33,20 @@ public:
 		struct
 		{
 			uint8 _AftertouchNote;
+		};
+
+		//CONTROL_CHANGE data.
+		struct
+		{
+			uint8 _ControlChangeNote;
+			uint8 _ControlChangeValue;
+		};
+
+		//PROGRAM_CHANGE data.
+		struct
+		{
+			uint8 _ProgramChangeChannel;
+			uint8 _ProgramChangeValue;
 		};
 	};
 
