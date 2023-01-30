@@ -112,6 +112,11 @@ public:
 	static Resolution GetDefaultResolution() NOEXCEPT;
 
 	/*
+	*	Returns the default refresh rate.
+	*/
+	static float32 GetDefaultRefreshRate() NOEXCEPT;
+
+	/*
 	*	Hides the cursor.
 	*/
 	static void HideCursor() NOEXCEPT;

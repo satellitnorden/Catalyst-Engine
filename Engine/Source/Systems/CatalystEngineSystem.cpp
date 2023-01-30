@@ -259,23 +259,23 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	//Update the total time.
 	_TotalTime += _DeltaTime;
 
-	//Retrieve the preferred frame time.
-	float32 preferred_frame_time;
+	//Retrieve the preferred refresh rate.
+	float32 preferred_refresh_rate;
 
 	if (CatalystPlatform::IsWindowInFocus())
 	{
-		preferred_frame_time = _ProjectConfiguration._RenderingConfiguration._FocusedFrameTime;
+		preferred_refresh_rate = _ProjectConfiguration._RenderingConfiguration._FocusedRefreshRate;
 	}
 
 	else
 	{
-		preferred_frame_time = _ProjectConfiguration._RenderingConfiguration._UnfocusedFrameTime;
+		preferred_refresh_rate = _ProjectConfiguration._RenderingConfiguration._UnfocusedRefreshRate;
 	}
 
 	//Set the delta time.
-	if (preferred_frame_time > 0.0f)
+	if (preferred_refresh_rate > 0.0f)
 	{
-		_DeltaTime = CatalystBaseMath::Minimum(CatalystBaseMath::Maximum(preferred_frame_time, CatalystEngineSystemData::_DeltaTimer.Update()), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
+		_DeltaTime = CatalystBaseMath::Minimum(1.0f / preferred_refresh_rate, MAXIMUM_DELTA_TIME) * _UpdateSpeed;
 	}
 
 	else
@@ -369,7 +369,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	}
 
 	//Post-update the frame pacer.
-	_FramePacer.PostUpdate(preferred_frame_time);
+	_FramePacer.PostUpdate(preferred_refresh_rate);
 
 	//Return if the game should be terminated.
 	return !_ShouldTerminate;

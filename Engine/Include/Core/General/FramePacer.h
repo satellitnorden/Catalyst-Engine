@@ -20,12 +20,12 @@ public:
 	/*
 	*	Post-updates the frame pacer.
 	*/
-	FORCE_INLINE void PostUpdate(const float32 desired_frame_time) NOEXCEPT
+	FORCE_INLINE void PostUpdate(const float32 desired_refresh_rate) NOEXCEPT
 	{
-		if (desired_frame_time > 0.0f)
+		if (desired_refresh_rate > 0.0f)
 		{
 			//Update the next frame value.
-			_NextFrame += std::chrono::nanoseconds(static_cast<uint64>(static_cast<float64>(desired_frame_time) * 1'000'000'000.0));
+			_NextFrame += std::chrono::milliseconds(static_cast<uint64>(1.0f / static_cast<float64>(desired_refresh_rate) * 1'000));
 
 			//Sleep until the next frame.
 			std::this_thread::sleep_until(_NextFrame);

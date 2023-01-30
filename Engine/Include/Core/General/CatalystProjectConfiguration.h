@@ -135,16 +135,16 @@ public:
 	CustomRenderingPathCallback _CustomRenderingPathCallback;
 
 	/*
-	*	Denotes the focused frame time, denoted in seconds. Set to <= 0.0f if it doesn't matter.
-	*	Recommended: 0.016f
+	*	Denotes the focused refresh rate, denoted in milliseconds. Set to <= 0.0f if it doesn't matter.
+	*	Recommended: 60.0f
 	*/
-	float32 _FocusedFrameTime;
+	float32 _FocusedRefreshRate;
 
 	/*
-	*	Denotes the unfocused frame time, denoted in seconds. Set to <= 0.0f if it doesn't matter.
-	*	Recommended: 0.1f
+	*	Denotes the unfocused refresh rate, denoted in milliseconds. Set to <= 0.0f if it doesn't matter.
+	*	Recommended: 30.0f
 	*/
-	float32 _UnfocusedFrameTime;
+	float32 _UnfocusedRefreshRate;
 
 	/*
 	*	Denotes if the game should start in fullscreen initially.

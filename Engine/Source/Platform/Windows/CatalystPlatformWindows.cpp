@@ -286,6 +286,18 @@ Resolution CatalystPlatform::GetDefaultResolution() NOEXCEPT
 }
 
 /*
+*	Returns the default refresh rate.
+*/
+float32 CatalystPlatform::GetDefaultRefreshRate() NOEXCEPT
+{
+	DEVMODE dev_mode;
+
+	EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &dev_mode);
+
+	return static_cast<float32>(dev_mode.dmDisplayFrequency);
+}
+
+/*
 *	Hides the cursor.
 */
 void CatalystPlatform::HideCursor() NOEXCEPT
