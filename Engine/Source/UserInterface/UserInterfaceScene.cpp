@@ -269,7 +269,9 @@ RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox
 																						UserInterfaceMaterial *const RESTRICT checked_hovered_material_override,
 																						UserInterfaceMaterial *const RESTRICT checked_pressed_material_override,
 																						const char *const RESTRICT text,
-																						const float32 *const RESTRICT scale_override) NOEXCEPT
+																						const float32 *const RESTRICT scale_override,
+																						const TextHorizontalAlignment horizontal_alignment,
+																						const TextVerticalAlignment vertical_alignment) NOEXCEPT
 {
 	//Calculate the bounding box.
 	Vector2<float32> minimum;
@@ -289,7 +291,9 @@ RESTRICTED UserInterfaceCheckbox *const RESTRICT UserInterfaceScene::AddCheckbox
 												checked_hovered_material_override,
 												checked_pressed_material_override,
 												text,
-												scale_override);
+												scale_override,
+												horizontal_alignment,
+												vertical_alignment);
 }
 
 
@@ -307,26 +311,36 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 																										UserInterfaceMaterial *const RESTRICT checked_hovered_material_override,
 																										UserInterfaceMaterial *const RESTRICT checked_pressed_material_override,
 																										const char *const RESTRICT text,
-																										const float32 *const RESTRICT scale_override) NOEXCEPT
+																										const float32 *const RESTRICT scale_override,
+																										const TextHorizontalAlignment horizontal_alignment,
+																										const TextVerticalAlignment vertical_alignment) NOEXCEPT
 {
 	//Allocate the checkbox.
-	UserInterfaceCheckbox *const RESTRICT new_checkbox{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceCheckbox>()) UserInterfaceCheckbox(	minimum,
-																					maximum,
-																					initially_checked,
-																					nullptr,
-																					nullptr,
-																					start_pressed_callback,
-																					nullptr,
-																					unchecked_idle_material_override ? *unchecked_idle_material_override : _CheckboxUncheckedIdleMaterial,
-																					unchecked_hovered_material_override ? *unchecked_hovered_material_override : _CheckboxUncheckedHoveredMaterial,
-																					unchecked_pressed_material_override ? *unchecked_pressed_material_override : _CheckboxUncheckedPressedMaterial,
-																					checked_idle_material_override ? *checked_idle_material_override : _CheckboxCheckedIdleMaterial,
-																					checked_hovered_material_override ? *checked_hovered_material_override : _CheckboxCheckedHoveredMaterial,
-																					checked_pressed_material_override ? *checked_pressed_material_override : _CheckboxCheckedPressedMaterial,
-																					text,
-																					scale_override ? *scale_override : _TextScale,
-																					_FontResource,
-																					_Entity != nullptr) };
+	UserInterfaceCheckbox *const RESTRICT new_checkbox
+	{ 
+		new (MemorySystem::Instance->TypeAllocate<UserInterfaceCheckbox>()) UserInterfaceCheckbox
+		(
+			minimum,
+			maximum,
+			initially_checked,
+			nullptr,
+			nullptr,
+			start_pressed_callback,
+			nullptr,
+			unchecked_idle_material_override ? *unchecked_idle_material_override : _CheckboxUncheckedIdleMaterial,
+			unchecked_hovered_material_override ? *unchecked_hovered_material_override : _CheckboxUncheckedHoveredMaterial,
+			unchecked_pressed_material_override ? *unchecked_pressed_material_override : _CheckboxUncheckedPressedMaterial,
+			checked_idle_material_override ? *checked_idle_material_override : _CheckboxCheckedIdleMaterial,
+			checked_hovered_material_override ? *checked_hovered_material_override : _CheckboxCheckedHoveredMaterial,
+			checked_pressed_material_override ? *checked_pressed_material_override : _CheckboxCheckedPressedMaterial,
+			text,
+			scale_override ? *scale_override : _TextScale,
+			horizontal_alignment,
+			vertical_alignment,
+			_FontResource,
+			_Entity != nullptr
+		) 
+	};
 
 	//Add the checkbox to the container.
 	_Checkboxes.Emplace(new_checkbox);

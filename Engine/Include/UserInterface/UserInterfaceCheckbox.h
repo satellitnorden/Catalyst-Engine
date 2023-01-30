@@ -38,6 +38,8 @@ public:
 							const UserInterfaceMaterial &initial_checked_pressed_material,
 							const char *const RESTRICT text,
 							const float32 text_scale,
+							const TextHorizontalAlignment horizontal_alignment,
+							const TextVerticalAlignment vertical_alignment,
 							const ResourcePointer<FontResource> font_resource,
 							const bool is_three_dimensional) NOEXCEPT;
 
@@ -231,6 +233,12 @@ private:
 
 	//The text scale.
 	float32 _TextScale;
+
+	//The horizontal alignment.
+	TextHorizontalAlignment _HorizontalAlignment;
+
+	//The vertical alignment.
+	TextVerticalAlignment _VerticalAlignment;
 
 	//Denotes whether or not this button is gamepad selected.
 	bool _GamepadSelected{ false };

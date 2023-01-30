@@ -244,7 +244,9 @@ protected:
 																		UserInterfaceMaterial *const RESTRICT checked_hovered_material_override = nullptr,
 																		UserInterfaceMaterial *const RESTRICT checked_pressed_material_override = nullptr,
 																		const char *const RESTRICT text = "",
-																		const float32 *const RESTRICT scale_override = nullptr) NOEXCEPT;
+																		const float32 *const RESTRICT scale_override = nullptr,
+																		const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::LEFT,
+																		const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER) NOEXCEPT;
 
 	/*
 	*	Adds a checkbox, using raw coordinates.
@@ -260,7 +262,9 @@ protected:
 																						UserInterfaceMaterial *const RESTRICT checked_hovered_material_override = nullptr,
 																						UserInterfaceMaterial *const RESTRICT checked_pressed_material_override = nullptr,
 																						const char *const RESTRICT text = "",
-																						const float32 *const RESTRICT scale_override = nullptr) NOEXCEPT;
+																						const float32 *const RESTRICT scale_override = nullptr,
+																						const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::LEFT,
+																						const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER) NOEXCEPT;
 	/*
 	*	Adds an image, using cells.
 	*/

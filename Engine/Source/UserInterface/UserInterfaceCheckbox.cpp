@@ -28,6 +28,8 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 												const UserInterfaceMaterial &initial_checked_pressed_material,
 												const char *const RESTRICT text,
 												const float32 text_scale,
+												const TextHorizontalAlignment horizontal_alignment,
+												const TextVerticalAlignment vertical_alignment,
 												const ResourcePointer<FontResource> font_resource,
 												const bool is_three_dimensional) NOEXCEPT
 {
@@ -73,6 +75,10 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 
 	//Set the text scale.
 	_TextScale = text_scale;
+
+	//Set the horizontal/vertical alignment.
+	_HorizontalAlignment = horizontal_alignment;
+	_VerticalAlignment = vertical_alignment;
 
 	//Set the font resource.
 	_FontResource = font_resource;
@@ -151,8 +157,8 @@ void UserInterfaceCheckbox::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Opacity = 1.0f;
 			description._FontResource = _FontResource;
 			description._Scale = _TextScale;
-			description._HorizontalAlignment = TextHorizontalAlignment::LEFT;
-			description._VerticalAlignment = TextVerticalAlignment::CENTER;
+			description._HorizontalAlignment = _HorizontalAlignment;
+			description._VerticalAlignment = _VerticalAlignment;
 			description._Text = text;
 
 			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));

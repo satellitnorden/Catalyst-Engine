@@ -183,4 +183,41 @@ public:
 		return elements.Back();
 	}
 
+	/*
+	*	Returns a random index in the given array based on the given weights.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD uint64 WeightedRandomIndex(ArrayProxy<TYPE> &elements, ArrayProxy<float32> &weights) NOEXCEPT
+	{
+		ASSERT(elements.Size() == weights.Size(), "Both elements and weights needs to be of the same size!");
+
+		//Calculate the sum.
+		float32 sum{ 0.0f };
+
+		for (const float32 weight : weights)
+		{
+			sum += weight;
+		}
+
+		//Randomize the value.
+		float32 random_value{ RandomFloatInRange(0.0f, sum) };
+
+		//Calculate the random element.
+		for (uint64 i{ 0 }, size{ elements.Size() }; i < size; ++i)
+		{
+			if (random_value < weights[i])
+			{
+				return i;
+			}
+
+			else
+			{
+				random_value -= weights[i];
+			}
+		}
+
+		//Should never get here, but might due to floating point rounding error. If so, the last element is most likely the correct one.
+		return elements.LastIndex();
+	}
+
 };

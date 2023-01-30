@@ -224,6 +224,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Flush the logs after initialization.
 	LogSystem::Instance->Flush();
 
+	//Initialize the frame pacer.
+	_FramePacer.Initialize();
+
 	//Reset the delta timer right before entering the game loop, so that the first update doesn't get messed up delta times.
 	CatalystEngineSystemData::_DeltaTimer.Reset();
 }
@@ -269,31 +272,14 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 		preferred_frame_time = _ProjectConfiguration._RenderingConfiguration._UnfocusedFrameTime;
 	}
 
-	//If the preferred frame time has been set, sleep for the appropriate amount of time to keep that frame time.
+	//Set the delta time.
 	if (preferred_frame_time > 0.0f)
 	{
-		static std::chrono::system_clock::time_point A{ std::chrono::system_clock::now() };
-		static std::chrono::system_clock::time_point B{ std::chrono::system_clock::now() };
-
-		A = std::chrono::system_clock::now();
-		std::chrono::duration<float32, std::milli> work_time{ A - B };
-
-		if (work_time.count() < (preferred_frame_time * 1'000.0f))
-		{
-			std::chrono::duration<float32, std::milli> delta_milliseconds((preferred_frame_time * 1'000.0f) - work_time.count());
-			auto delta_milliseeconds_duration{ std::chrono::duration_cast<std::chrono::milliseconds>(delta_milliseconds) };
-			std::this_thread::sleep_for(std::chrono::milliseconds(delta_milliseeconds_duration.count()));
-		}
-
-		B = std::chrono::system_clock::now();
-
-		//Set the delta time.
 		_DeltaTime = CatalystBaseMath::Minimum(CatalystBaseMath::Maximum(preferred_frame_time, CatalystEngineSystemData::_DeltaTimer.Update()), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
 	}
 
 	else
 	{
-		//Update the delta time.
 		_DeltaTime = CatalystBaseMath::Minimum(CatalystEngineSystemData::_DeltaTimer.Update(), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
 	}
 
@@ -381,6 +367,9 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 		CatalystEngineSystemLogic::ExecuteSequentialUpdate();
 	}
+
+	//Post-update the frame pacer.
+	_FramePacer.PostUpdate(preferred_frame_time);
 
 	//Return if the game should be terminated.
 	return !_ShouldTerminate;

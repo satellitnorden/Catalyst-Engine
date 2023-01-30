@@ -5,6 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/CatalystProjectConfiguration.h>
+#include <Core/General/FramePacer.h>
 
 //Concurrency.
 #include <Concurrency/Task.h>
@@ -213,6 +214,9 @@ private:
 
 	//Denotes if the engine is paused.
 	bool _EnginePaused{ false };
+
+	//The frame pacer.
+	FramePacer _FramePacer;
 
 	/*
 	*	Updates an individual phase.
