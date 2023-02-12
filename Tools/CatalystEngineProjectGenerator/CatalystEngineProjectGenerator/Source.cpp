@@ -246,7 +246,7 @@ int main(int argument_count, char *arguments[])
 					file << "/*" << std::endl;
 					file << "*\tInitializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "*/" << std::endl;
-					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Initialize() NOEXCEPT" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Initialize() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -256,7 +256,7 @@ int main(int argument_count, char *arguments[])
 					file << "/*" << std::endl;
 					file << "*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "*/" << std::endl;
-					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::PostInitialize() NOEXCEPT" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::PostInitialize() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -266,7 +266,7 @@ int main(int argument_count, char *arguments[])
 					file << "/*" << std::endl;
 					file << "*\tStarts the " << parameters._ProjectName.c_str() << " game." << std::endl;
 					file << "*/" << std::endl;
-					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::StartGame() NOEXCEPT" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::StartGame() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -276,7 +276,7 @@ int main(int argument_count, char *arguments[])
 					file << "/*" << std::endl;
 					file << "*\tEnds the " << parameters._ProjectName.c_str() << " game." << std::endl;
 					file << "*/" << std::endl;
-					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::EndGame() NOEXCEPT" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::EndGame() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -286,7 +286,7 @@ int main(int argument_count, char *arguments[])
 					file << "/*" << std::endl;
 					file << "*\tTerminates the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "*/" << std::endl;
-					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::" << "Terminate() NOEXCEPT" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::" << "Terminate() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}";
@@ -350,7 +350,7 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "MAIN_FUNCTION" << std::endl;
-					file << "{" << std::endl;
+					file << "(" << std::endl;
 					file << "\t//Create the Catalyst project configuration." << std::endl;
 					file << "\tCatalystProjectConfiguration configuration;" << std::endl;
 					file << "\tCreateCatalystProjectConfiguration(&configuration);" << std::endl;
@@ -363,7 +363,7 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 					file << "\t//Terminate the engine system." << std::endl;
 					file << "\tCatalystEngineSystem::Instance->Terminate();" << std::endl;
-					file << "}";
+					file << ")";
 
 					file.close();
 				}
