@@ -204,9 +204,52 @@ int main(int argument_count, char *arguments[])
 
 					file.close();
 				}
+
+				//Create the resource building header file.
+				{
+					char resource_building_header_file_buffer[260];
+					sprintf_s(resource_building_header_file_buffer, "Code\\Include\\Main\\%sResourceBuilding.h", parameters._ProjectNameNoSpaces.c_str());
+
+					std::ofstream file{ resource_building_header_file_buffer };
+
+					file << "#pragma once" << std::endl;
+
+					file << std::endl;
+
+					file << "//Core." << std::endl;
+					file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
+
+					file << std::endl;
+
+					file << "class " << parameters._ProjectNameNoSpaces.c_str() << "ResourceBuilding final" << std::endl;
+					file << "{" << std::endl;
+
+					file << std::endl;
+
+					file << "public:" << std::endl;
+
+					file << std::endl;
+
+					file << "\t/*" << std::endl;
+					file << "\t*\tBuilds resources for the " << parameters._ProjectName.c_str() << " game." << std::endl;
+					file << "\t*/" << std::endl;
+					file << "\tstatic void BuildResources() NOEXCEPT" << std::endl;
+					file << "#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)" << std::endl;
+					file << "\t\t;" << std::endl;
+					file << "#else" << std::endl;
+					file << "\t{" << std::endl;
+					file << std::endl;
+					file << "\t}" << std::endl;
+					file << "#endif" << std::endl;
+
+					file << std::endl;
+
+					file << "};";
+
+					file.close();
+				}
 			}
 		}
-
 
 		//Create the "Code/Source" directory.
 		{
@@ -294,6 +337,32 @@ int main(int argument_count, char *arguments[])
 					file.close();
 				}
 
+				//Create the resource building source file.
+				{
+					char resource_building_source_file_buffer[260];
+					sprintf_s(resource_building_source_file_buffer, "Code\\Source\\Main\\%sResourceBuilding.cpp", parameters._ProjectNameNoSpaces.c_str());
+
+					std::ofstream file{ resource_building_source_file_buffer };
+
+					file << "#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)" << std::endl;
+
+					file << "//Header file." << std::endl;
+					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "ResourceBuilding.h>" << std::endl;
+
+					file << std::endl;
+
+					file << "/*" << std::endl;
+					file << "*\tBuilds resources for the " << parameters._ProjectName.c_str() << " game." << std::endl;
+					file << "*/" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "ResourceBuilding::BuildResources() NOEXCEPT" << std::endl;
+					file << "{" << std::endl;
+					file << std::endl;
+					file << "}" << std::endl;
+					file << "#endif" << std::endl;
+
+					file.close();
+				}
+
 				//Create the main source file.
 				{
 					std::ofstream file{ "Code\\Source\\Main\\Main.cpp" };
@@ -368,6 +437,36 @@ int main(int argument_count, char *arguments[])
 					file.close();
 				}
 			}
+		}
+	}
+
+	//Create the "Content" directory.
+	{
+		std::filesystem::create_directory("Content");
+
+		//Create the "Content/Final" directory.
+		{
+			std::filesystem::create_directory("Content\\Final");
+
+			//Create the "Conntent/Final/.gitignore" file.
+			{
+				std::ofstream file{ "Content\\Final\\.gitignore" };
+
+				file << "#Ignore the final resource collection(s)" << std::endl;
+				file << "*.crc";
+
+				file.close();
+			}
+		}
+
+		//Create the "Content/Intermediate" directory.
+		{
+			std::filesystem::create_directory("Content\\Intermediate");
+		}
+
+		//Create the "Content/Raw" directory.
+		{
+			std::filesystem::create_directory("Content\\Raw");
 		}
 	}
 
