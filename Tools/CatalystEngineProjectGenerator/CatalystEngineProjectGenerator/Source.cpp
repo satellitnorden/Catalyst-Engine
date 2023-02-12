@@ -2,42 +2,108 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 //Macros.
 #define ASSERT(CONDITION, MESSAGE) if (!(CONDITION)) { std::cout << MESSAGE << std::endl; }
 #define ASSERT_RETURN(CONDITION, MESSAGE) if (!(CONDITION)) { std::cout << MESSAGE << std::endl; return 0; }
 
+/*
+*	Parameters class definition.
+*/
+class Parameters final
+{
+
+public:
+
+	//The developer name.
+	std::string _DeveloperName;
+
+	//The developer name, with no spaces.
+	std::string _DeveloperNameNoSpaces;
+
+	//The projet name.
+	std::string _ProjectName;
+
+	//The projet name, with no spaces.
+	std::string _ProjectNameNoSpaces;
+
+};
+
 int main(int argument_count, char *arguments[])
 {
-	ASSERT_RETURN(argument_count > 1, "Needs to pass project name as the first argument!");
-	
-	//Set up the project names buffers.
-	char project_name_with_spaces_buffer[260];
-	unsigned with_spaces_index{ 0 };
-	char project_name_without_spaces_buffer[260];
-	unsigned without_spaces_index{ 0 };
+	//Read the parameters.
+	Parameters parameters;
 
-	for (int i{ 1 }; i < argument_count; ++i)
 	{
-		if (i != 1)
+		//Open the config file.
+		std::ifstream config_file{ "Project_Generation.ini" };
+
+		//Cache some commonly used variables.
+		std::string current_line;
+		std::string identifier;
+		std::string argument;
+
+		//Go over all the lines.
+		while (std::getline(config_file, current_line))
 		{
-			project_name_with_spaces_buffer[with_spaces_index++] = ' ';
+			//Ignore comments.
+			if (current_line[0] == '#')
+			{
+				continue;
+			}
+
+			//Ignore empty lines.
+			if (current_line.empty())
+			{
+				continue;
+			}
+
+			//Split the current line into identifier and argument.
+			const size_t space_position{ current_line.find_first_of(" ") };
+
+			if (space_position != std::string::npos)
+			{
+				identifier = current_line.substr(0, space_position);
+				argument = current_line.substr(space_position + 1, std::string::npos);
+			}
+
+			else
+			{
+				identifier = current_line;
+			}
+
+			//Is this the developer name?
+			if (identifier == "DEVELOPER_NAME")
+			{
+				parameters._DeveloperName = argument;
+
+				parameters._DeveloperNameNoSpaces = parameters._DeveloperName;
+				parameters._DeveloperNameNoSpaces.erase(std::remove_if(parameters._DeveloperNameNoSpaces.begin(), parameters._DeveloperNameNoSpaces.end(), [](unsigned char x) { return std::isspace(x); }), parameters._DeveloperNameNoSpaces.end());
+
+			}
+
+			//Is this the project name?
+			else if (identifier == "PROJECT_NAME")
+			{
+				parameters._ProjectName = argument;
+
+				parameters._ProjectNameNoSpaces = parameters._ProjectName;
+				parameters._ProjectNameNoSpaces.erase(std::remove_if(parameters._ProjectNameNoSpaces.begin(), parameters._ProjectNameNoSpaces.end(), [](unsigned char x) { return std::isspace(x); }), parameters._ProjectNameNoSpaces.end());
+			}
 		}
 
-		with_spaces_index += sprintf_s(&(project_name_with_spaces_buffer[with_spaces_index]), 260 - with_spaces_index, "%s", arguments[i]);
-		without_spaces_index += sprintf_s(&project_name_without_spaces_buffer[without_spaces_index], 260 - with_spaces_index, "%s", arguments[i]);
+		//Close the config file.
+		config_file.close();
 	}
 
-	//Cache the directory buffer.
-	char directory_buffer[260];
-	sprintf_s(directory_buffer, "..\\..\\..\\..\\%s", project_name_without_spaces_buffer);
 
+	ASSERT_RETURN(!parameters._DeveloperName.empty(), "Needs to set deveoloper name!");
+	ASSERT_RETURN(!parameters._ProjectName.empty(), "Needs to set project name!");
+	
 	//Create the ".gitignore" file.
 	{
-		char file_buffer[260];
-		sprintf_s(file_buffer, "%s\\.gitignore", directory_buffer);
-
-		std::ofstream file{ file_buffer };
+		std::ofstream file{ ".gitignore" };
 
 		file << "*.crc" << std::endl;
 		file << "*.exe" << std::endl;
@@ -53,29 +119,20 @@ int main(int argument_count, char *arguments[])
 
 	//Create the "Code" directory.
 	{
-		char code_directory_buffer[260];
-		sprintf_s(code_directory_buffer, "%s\\Code", directory_buffer);
-
-		std::filesystem::create_directory(code_directory_buffer);
+		std::filesystem::create_directory("Code");
 
 		//Create the "Code/Include" directory.
 		{
-			char code_include_directory_buffer[260];
-			sprintf_s(code_include_directory_buffer, "%s\\Include", code_directory_buffer);
-
-			std::filesystem::create_directory(code_include_directory_buffer);
+			std::filesystem::create_directory("Code\\Include");
 
 			//Create the Code/Include/Main directory.
 			{
-				char code_include_main_directory_buffer[260];
-				sprintf_s(code_include_main_directory_buffer, "%s\\Main", code_include_directory_buffer);
-
-				std::filesystem::create_directory(code_include_main_directory_buffer);
+				std::filesystem::create_directory("Code\\Include\\Main");
 
 				//Create the game system header file.
 				{
 					char game_system_header_file_buffer[260];
-					sprintf_s(game_system_header_file_buffer, "%s\\%sGameSystem.h", code_include_main_directory_buffer, project_name_without_spaces_buffer);
+					sprintf_s(game_system_header_file_buffer, "Code\\Include\\Main\\%sGameSystem.h", parameters._ProjectNameNoSpaces.c_str());
 
 					std::ofstream file{ game_system_header_file_buffer };
 
@@ -88,7 +145,7 @@ int main(int argument_count, char *arguments[])
 
 					file << std::endl;
 
-					file << "class " << project_name_without_spaces_buffer << "GameSystem final" << std::endl;
+					file << "class ALIGN(8) " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem final" << std::endl;
 					file << "{" << std::endl;
 
 					file << std::endl;
@@ -98,46 +155,46 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "\t//Singleton declaration." << std::endl;
-					file << "\tDECLARE_SINGLETON(" << project_name_without_spaces_buffer << "GameSystem); " << std::endl;
+					file << "\tDECLARE_SINGLETON(" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem); " << std::endl;
 
 					file << std::endl;
 
 					file << "\t/*" << std::endl;
 					file << "\t*\tDefault constructor." << std::endl;
 					file << "\t*/" << std::endl;
-					file << "\t" << project_name_without_spaces_buffer << "GameSystem() NOEXCEPT;" << std::endl;
+					file << "\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem() NOEXCEPT;" << std::endl;
 
 					file << std::endl;
 
 					file << "\t/*" << std::endl;
-					file << "\t*\tInitializes the " << project_name_with_spaces_buffer << " game system." << std::endl;
+					file << "\t*\tInitializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "\t*/" << std::endl;
 					file << "\tvoid Initialize() NOEXCEPT;" << std::endl;
 
 					file << std::endl;
 
 					file << "\t/*" << std::endl;
-					file << "\t*\tPost-initializes the " << project_name_with_spaces_buffer << " game system." << std::endl;
+					file << "\t*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "\t*/" << std::endl;
 					file << "\tvoid PostInitialize() NOEXCEPT;" << std::endl;
 
 					file << std::endl;
 
 					file << "\t/*" << std::endl;
-					file << "\t*\tStarts the " << project_name_with_spaces_buffer << " game." << std::endl;
+					file << "\t*\tStarts the " << parameters._ProjectName.c_str() << " game." << std::endl;
 					file << "\t*/" << std::endl;
 					file << "\tvoid StartGame() NOEXCEPT;" << std::endl;
 
 					file << std::endl;
 					file << "\t/*" << std::endl;
-					file << "\t*\tEnds the " << project_name_with_spaces_buffer << " game." << std::endl;
+					file << "\t*\tEnds the " << parameters._ProjectName.c_str() << " game." << std::endl;
 					file << "\t*/" << std::endl;
-					file << "\tvoid StartGame() NOEXCEPT;" << std::endl;
+					file << "\tvoid EndGame() NOEXCEPT;" << std::endl;
 
 					file << std::endl;
 
 					file << "\t/*" << std::endl;
-					file << "\t*\tTerminates the " << project_name_with_spaces_buffer << " game system." << std::endl;
+					file << "\t*\tTerminates the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "\t*/" << std::endl;
 					file << "\tvoid Terminate() NOEXCEPT;" << std::endl;
 
@@ -150,41 +207,36 @@ int main(int argument_count, char *arguments[])
 			}
 		}
 
+
 		//Create the "Code/Source" directory.
 		{
-			char code_source_directory_buffer[260];
-			sprintf_s(code_source_directory_buffer, "%s\\Source", code_directory_buffer);
-
-			std::filesystem::create_directory(code_source_directory_buffer);
+			std::filesystem::create_directory("Code\\Source");
 
 			//Create the Code/Source/Main directory.
 			{
-				char code_source_main_directory_buffer[260];
-				sprintf_s(code_source_main_directory_buffer, "%s\\Main", code_source_directory_buffer);
-
-				std::filesystem::create_directory(code_source_main_directory_buffer);
+				std::filesystem::create_directory("Code\\Source\\Main");
 
 				//Create the game system source file.
 				{
 					char game_system_source_file_buffer[260];
-					sprintf_s(game_system_source_file_buffer, "%s\\%sGameSystem.cpp", code_source_main_directory_buffer, project_name_without_spaces_buffer);
+					sprintf_s(game_system_source_file_buffer, "Code\\Source\\Main\\%sGameSystem.cpp", parameters._ProjectNameNoSpaces.c_str());
 
 					std::ofstream file{ game_system_source_file_buffer };
 
 					file << "//Header file." << std::endl;
-					file << "#include <Main/" << project_name_without_spaces_buffer << ".h>" << std::endl;
+					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem.h>" << std::endl;
 
 					file << std::endl;
 
 					file << "//Singleton definition." << std::endl;
-					file << "DEFINE_SINGLETON(" << project_name_without_spaces_buffer << "GameSystem); " << std::endl;
+					file << "DEFINE_SINGLETON(" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem); " << std::endl;
 
 					file << std::endl;
 
 					file << "/*" << std::endl;
 					file << "*\tDefault constructor." << std::endl;
 					file << "*/" << std::endl;
-					file << project_name_without_spaces_buffer << "GameSystem::" << project_name_without_spaces_buffer << "GameSystem() NOEXCEPT" << std::endl;
+					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -192,9 +244,9 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "/*" << std::endl;
-					file << "*\tInitializes the " << project_name_with_spaces_buffer << " game system." << std::endl;
+					file << "*\tInitializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "*/" << std::endl;
-					file << project_name_without_spaces_buffer << "GameSystem::Initialize() NOEXCEPT" << std::endl;
+					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Initialize() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -202,9 +254,9 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "/*" << std::endl;
-					file << "*\tPost-initializes the " << project_name_with_spaces_buffer << " game system." << std::endl;
+					file << "*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "*/" << std::endl;
-					file << project_name_without_spaces_buffer << "GameSystem::PostInitialize() NOEXCEPT" << std::endl;
+					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::PostInitialize() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -212,9 +264,9 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "/*" << std::endl;
-					file << "*\tStarts the " << project_name_with_spaces_buffer << " game." << std::endl;
+					file << "*\tStarts the " << parameters._ProjectName.c_str() << " game." << std::endl;
 					file << "*/" << std::endl;
-					file << project_name_without_spaces_buffer << "GameSystem::StartGame() NOEXCEPT" << std::endl;
+					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::StartGame() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -222,9 +274,9 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "/*" << std::endl;
-					file << "*\tEnds the " << project_name_with_spaces_buffer << " game." << std::endl;
+					file << "*\tEnds the " << parameters._ProjectName.c_str() << " game." << std::endl;
 					file << "*/" << std::endl;
-					file << project_name_without_spaces_buffer << "GameSystem::EndGame() NOEXCEPT" << std::endl;
+					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::EndGame() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -232,9 +284,9 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "/*" << std::endl;
-					file << "*\tTerminates the " << project_name_with_spaces_buffer << " game system." << std::endl;
+					file << "*\tTerminates the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "*/" << std::endl;
-					file << project_name_without_spaces_buffer << "GameSystem::" << "Terminate() NOEXCEPT" << std::endl;
+					file << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::" << "Terminate() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}";
@@ -244,13 +296,15 @@ int main(int argument_count, char *arguments[])
 
 				//Create the main source file.
 				{
-					char main_source_file_buffer[260];
-					sprintf_s(main_source_file_buffer, "%s\\Main.cpp", code_source_main_directory_buffer);
-
-					std::ofstream file{ main_source_file_buffer };
+					std::ofstream file{ "Code\\Source\\Main\\Main.cpp" };
 
 					file << "//Core." << std::endl;
 					file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
+
+					file << std::endl;
+
+					file << "//Main." << std::endl;
+					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem.h>" << std::endl;
 
 					file << std::endl;
 
@@ -264,31 +318,31 @@ int main(int argument_count, char *arguments[])
 					file << "*/" << std::endl;
 					file << "void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const RESTRICT configuration) NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
-					file << "\tconfiguration->_GeneratlConfiguration._ProjectName = \"" << project_name_with_spaces_buffer << "\"" << std::endl;
+					file << "\tconfiguration->_GeneralConfiguration._ProjectName = \"" << parameters._ProjectName.c_str() << "\";" << std::endl;
 
-					file << "\tconfiguration->_GeneratlConfiguration._InitializationFunction = []()" << std::endl;
+					file << "\tconfiguration->_GeneralConfiguration._InitializationFunction = []()" << std::endl;
 					file << "\t{" << std::endl;
-					file << "\t\t" << project_name_without_spaces_buffer << "GameSystem::Instance->Initialize();" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->Initialize();" << std::endl;
 					file << "\t};" << std::endl;
 
-					file << "\tconfiguration->_GeneratlConfiguration._PostInitializationFunction = []()" << std::endl;
+					file << "\tconfiguration->_GeneralConfiguration._PostInitializationFunction = []()" << std::endl;
 					file << "\t{" << std::endl;
-					file << "\t\t" << project_name_without_spaces_buffer << "GameSystem::Instance->PostInitialize();" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->PostInitialize();" << std::endl;
 					file << "\t};" << std::endl;
 
-					file << "\tconfiguration->_GeneratlConfiguration._StartGameFunction = []()" << std::endl;
+					file << "\tconfiguration->_GeneralConfiguration._StartGameFunction = []()" << std::endl;
 					file << "\t{" << std::endl;
-					file << "\t\t" << project_name_without_spaces_buffer << "GameSystem::Instance->StartGame();" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->StartGame();" << std::endl;
 					file << "\t};" << std::endl;
 
-					file << "\tconfiguration->_GeneratlConfiguration._EndGameFunction = []()" << std::endl;
+					file << "\tconfiguration->_GeneralConfiguration._EndGameFunction = []()" << std::endl;
 					file << "\t{" << std::endl;
-					file << "\t\t" << project_name_without_spaces_buffer << "GameSystem::Instance->EndGame();" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->EndGame();" << std::endl;
 					file << "\t};" << std::endl;
 
-					file << "\tconfiguration->_GeneratlConfiguration._TerminationFunction = []()" << std::endl;
+					file << "\tconfiguration->_GeneralConfiguration._TerminationFunction = []()" << std::endl;
 					file << "\t{" << std::endl;
-					file << "\t\t" << project_name_without_spaces_buffer << "GameSystem::Instance->Terminate();" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->Terminate();" << std::endl;
 					file << "\t};" << std::endl;
 
 					file << "}" << std::endl;
@@ -314,6 +368,98 @@ int main(int argument_count, char *arguments[])
 					file.close();
 				}
 			}
+		}
+	}
+
+	//Create the "Solutions" directory.
+	{
+		std::filesystem::create_directory("Solutions");
+
+		//Create the ".gitignore" file.
+		{
+			std::ofstream file{ "Solutions\\.gitignore" };
+
+			file << "#Ignore everything in this directory." << std::endl;
+			file << "*" << std::endl;
+
+			file << std::endl;
+
+			file << "#Except this file!" << std::endl;
+			file << "!.gitignore" << std::endl;
+
+			file << std::endl;
+
+			file << "#And the project generation files!" << std::endl;
+			file << "!Generate_All_Projects.bat" << std::endl;
+			file << "!Generate_Android_Project.bat" << std::endl;
+			file << "!Generate_Oculus_Quest_Project.bat" << std::endl;
+			file << "!Generate_Win64_Project.bat" << std::endl;
+			file << "!Project_Generation.ini";
+
+			file.close();
+		}
+
+		//Create the "Generate_All_Solutions.bat" file.
+		{
+			std::ofstream file{ "Solutions\\Generate_All_Solutions.bat" };
+
+			file << "..\\..\\Catalyst-Engine\\Tools\\Binaries\\CatalystEngineSolutionGenerator.exe" << std::endl;
+			file << std::endl;
+
+			file << "pause" << std::endl;
+
+			file.close();
+		}
+
+		//Create the "Generate_Android_Solution.bat" file.
+		{
+			std::ofstream file{ "Solutions\\Generate_Android_Solution.bat" };
+
+			file << "..\\..\\Catalyst-Engine\\Tools\\Binaries\\CatalystEngineSolutionGenerator.exe ANDROID" << std::endl;
+			file << std::endl;
+
+			file << "pause" << std::endl;
+
+			file.close();
+		}
+
+		//Create the "Generate_Oculus_Quest_Solution.bat" file.
+		{
+			std::ofstream file{ "Solutions\\Generate_Oculus_Quest_Solution.bat" };
+
+			file << "..\\..\\Catalyst-Engine\\Tools\\Binaries\\CatalystEngineSolutionGenerator.exe OCULUS_QUEST" << std::endl;
+			file << std::endl;
+
+			file << "pause" << std::endl;
+
+			file.close();
+		}
+
+		//Create the "Generate_Win64_Solution.bat" file.
+		{
+			std::ofstream file{ "Solutions\\Generate_Win64_Solution.bat" };
+
+			file << "..\\..\\Catalyst-Engine\\Tools\\Binaries\\CatalystEngineSolutionGenerator.exe WIN64" << std::endl;
+			file << std::endl;
+
+			file << "pause" << std::endl;
+
+			file.close();
+		}
+
+		//Create the "Solution_Generation.ini" file.
+		{
+			std::ofstream file{ "Solutions\\Solution_Generation.ini" };
+
+			file << "#The developer namee." << std::endl;
+			file << "DEVELOPER_NAME " << parameters._DeveloperName << std::endl;
+
+			file << std::endl;
+
+			file << "#The project namee." << std::endl;
+			file << "PROJECT_NAME " << parameters._ProjectName << std::endl;
+
+			file.close();
 		}
 	}
 
