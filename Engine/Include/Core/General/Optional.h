@@ -80,3 +80,51 @@ private:
 	bool _Valid{ false };
 
 };
+
+template <typename TYPE>
+class OptionalWithDefault final
+{
+
+public:
+
+
+	/*
+	*	Constructor taking the default value as an argument.
+	*/
+	FORCE_INLINE constexpr OptionalWithDefault(const TYPE& initial_value) NOEXCEPT
+		:
+		_DefaultValue(initial_value),
+		_Valid(false)
+	{
+
+	}
+
+	/*
+	*	Assignment operator overload.
+	*/
+	FORCE_INLINE constexpr void operator=(const TYPE& new_value) NOEXCEPT
+	{
+		_ActualValue = new_value;
+		_Valid = true;
+	}
+
+	/*
+	*	Type conversion operator overload.
+	*/
+	FORCE_INLINE constexpr operator TYPE() const NOEXCEPT
+	{
+		return _Valid ? _ActualValue : _DefaultValue;
+	}
+
+private:
+
+	//The default value.
+	TYPE _DefaultValue;
+
+	//The actual value.
+	TYPE _ActualValue;
+
+	//Denotes whether or not this optional holds a value.
+	bool _Valid{ false };
+
+};

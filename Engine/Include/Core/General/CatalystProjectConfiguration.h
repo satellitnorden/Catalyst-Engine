@@ -24,37 +24,31 @@ public:
 	/*
 	*	The project name.
 	*	Will be the name of the window.
-	*	Recommended: "Catalyst Engine Project".
 	*/
 	DynamicString _ProjectName;
 
 	/*
 	*	The initialization function.
-	*	Recommended: A non-nullptr function pointer to a game system function.
 	*/
 	void(*_InitializationFunction)();
 
 	/*
 	*	The post-initialization function.
-	*	Recommended: A non-nullptr function pointer to a game system function.
 	*/
 	void(*_PostInitializationFunction)();
 
 	/*
 	*	The start game function.
-	*	Recommended: A non-nullptr function pointer to a game system function.
 	*/
 	void(*_StartGameFunction)();
 
 	/*
 	*	The end game function.
-	*	Recommended: A non-nullptr function pointer to a game system function.
 	*/
 	void(*_EndGameFunction)();
 
 	/*
 	*	The post update function.
-	*	Recommended: A non-nullptr function pointer to a game system function.
 	*/
 	void(*_TerminationFunction)();
 
@@ -78,7 +72,6 @@ public:
 	*	The number of task executors needed for this project.
 	*	If your project is mostly single-threaded, set this to some low number
 	*	to open up resources for other stuff.
-	*	Recommended: Low number of unset.
 	*/
 	Optional<uint32> _EstimatedNumberOfTaskExecutors;
 
@@ -99,9 +92,8 @@ public:
 
 	/*
 	*	The number of supported gamepads.
-	*	Recommended: 1 for singeleplayer games, 1-4 for multiplayer games.
 	*/
-	uint8 _NumberOfSupportedGamepads;
+	OptionalWithDefault<uint8> _NumberOfSupportedGamepads{ 1 };
 
 	/*
 	*	Default constructor.
@@ -120,61 +112,64 @@ public:
 
 	/*
 	*	Determines the sub rendering system.
-	*	Recommended: SubRenderingSystem::VULKAN.
 	*/
-	SubRenderingSystem _SubRenderingSystem;
+	OptionalWithDefault<SubRenderingSystem> _SubRenderingSystem{ SubRenderingSystem::VULKAN };
 
 	/*
 	*	The initial rendering path.
 	*/
-	RenderingPath _InitialRenderingPath;
+#if defined(CATALYST_PLATFORM_ANDROID)
+	OptionalWithDefault<RenderingPath> _InitialRenderingPath{ RenderingPath::MOBILE };
+#elif defined(CATALYST_PLATFORM_OCULUS_QUEST)
+	OptionalWithDefault<RenderingPath> _InitialRenderingPath{ RenderingPath::VIRTUAL_REALITY };
+#elif defined(CATALYST_PLATFORM_WINDOWS)
+	OptionalWithDefault<RenderingPath> _InitialRenderingPath{ RenderingPath::DEFAULT };
+#endif
 
 	/*
 	*	The custom rendering path callback.
 	*/
-	CustomRenderingPathCallback _CustomRenderingPathCallback;
+	OptionalWithDefault<CustomRenderingPathCallback> _CustomRenderingPathCallback{ nullptr };
 
 	/*
 	*	Denotes the focused refresh rate, denoted in milliseconds. Set to <= 0.0f if it doesn't matter.
-	*	Recommended: 60.0f
 	*/
-	float32 _FocusedRefreshRate;
+	OptionalWithDefault<float32> _FocusedRefreshRate{ 120.0f };
 
 	/*
 	*	Denotes the unfocused refresh rate, denoted in milliseconds. Set to <= 0.0f if it doesn't matter.
-	*	Recommended: 30.0f
 	*/
-	float32 _UnfocusedRefreshRate;
+	OptionalWithDefault<float32> _UnfocusedRefreshRate{ 60.0f };
 
 	/*
 	*	Denotes if the game should start in fullscreen initially.
 	*	Recommended: true/false.
 	*/
-	bool _InitialFullScreen;
+#if defined(CATALYST_EDITOR)
+	OptionalWithDefault<bool> _InitialFullScreen{ false };
+#else
+	OptionalWithDefault<bool> _InitialFullScreen{ true };
+#endif
 
 	/*
 	*	The resolution.
-	*	Recommended: 1'920, 1'080.
 	*/
-	Resolution _Resolution;
+	Optional<Resolution> _Resolution;
 
 	/*
 	*	The resolution scale.
-	*	Recommended: 1.0f.
 	*/
-	float32 _ResolutionScale;
+	OptionalWithDefault<float32> _ResolutionScale{ 1.0f };
 
 	/*
 	*	The view distance.
-	*	Recommended: 1'024.0f.
 	*/
-	float32 _ViewDistance;
+	OptionalWithDefault<float32> _ViewDistance{ 1'024.0f };
 
 	/*
 	*	The shadow map resolution.
-	*	Recommended: 1'024.
 	*/
-	uint32 _ShadowMapResolution;
+	OptionalWithDefault<uint32> _ShadowMapResolution{ 1'024 };
 
 	/*
 	*	Default constructor.
@@ -193,15 +188,13 @@ public:
 
 	/*
 	*	The sound system mode.
-	*	Recommended: SoundSystemMode::DEFAULT.
 	*/
-	SoundSystemMode _SoundSystemMode;
+	OptionalWithDefault<SoundSystemMode> _SoundSystemMode{ SoundSystemMode::DEFAULT };
 
 	/*
 	*	The audio device picking mode.
-	*	Recommended: AudioDevicePickingMode::PICK_DEFAULT.
 	*/
-	AudioDevicePickingMode _AudioDevicePickingMode;
+	OptionalWithDefault<AudioDevicePickingMode> _AudioDevicePickingMode{ AudioDevicePickingMode::PICK_DEFAULT };
 
 	/*
 	*	Default constructor.
@@ -226,61 +219,53 @@ public:
 	/*
 	*	The patch size.
 	*	Defines the size of each root node patch.
-	*	Recommended: 1'024.0f.
 	*/
-	float32 _PatchSize;
+	OptionalWithDefault<float32> _PatchSize{ 1'024.0f };
 
 	/*
 	*	The patch resolution.
 	*	Defines the resolution of the terrain plane.
 	*	Higher resolutions means better quality for displacement, but worse performance.
 	*	MUST be a power of two plus one.
-	*	Recommended: 65.
 	*/
-	uint32 _PatchResolution;
+	OptionalWithDefault<uint32> _PatchResolution{ 65 };
 
 	/*
 	*	The maximum material maps resolution.
 	*	Defines the texture resolution of the material maps.
 	*	Higher resolutions means better quality for the terrain, but worse performance.
 	*	MUST be a power of two.
-	*	Recommended: 256.
 	*/
-	uint32 _MaximumMaterialMapsResolution;
+	OptionalWithDefault<uint32> _MaximumMaterialMapsResolution{ 256 };
 
 	/*
 	*	The maximum quad tree depth.
 	*	Defines the maximum number of times each quad tree node can be subdivided.
 	*	Higher depths means better quality for displacement, but worse performance.
-	*	Recommended: 8.
 	*/
-	uint8 _MaximumQuadTreeDepth;
+	OptionalWithDefault<uint8> _MaximumQuadTreeDepth{ 8 };
 
 	/*
 	*	The terrain maximum height function.
 	*	Responsible for reporting the maximum height of the terrain height function.
-	*	Recommended: A valid pointer to a function reporting maximum height.
 	*/
-	TerrainMaximumHeightFunction _TerrainMaximumHeightFunction;
+	TerrainMaximumHeightFunction _TerrainMaximumHeightFunction{ nullptr };
 
 	/*
 	*	The terrain height function.
 	*	Responsible for calculating the height at a given world position.
-	*	Recommended: A valid pointer to a function generating height.
 	*/
-	TerrainHeightFunction _TerrainHeightFunction;
+	TerrainHeightFunction _TerrainHeightFunction{ nullptr };
 
 	/*
 	*	The terrain material function.
 	*	Responsible for calculating the material at a given world position.
-	*	Recommended: A valid pointer to a function generating material.
 	*/
-	TerrainMaterialFunction _TerrainMaterialFunction;
+	TerrainMaterialFunction _TerrainMaterialFunction{ nullptr };
 
 	/*
 	*	The terrain data save folder.
 	*	This is where terrain data will be saved to disk between sessions, for faster loading when the height/material functions don't change.
-	*	Recommended: A valid string containing a file path to a folder where the terrain data will be saved.
 	*/
 	DynamicString _TerrainDataSaveFolder;
 
@@ -303,9 +288,8 @@ public:
 	*	The world grid size.
 	*	The world is divided into a three-dimensional grid in the Catalyst Engine™ to enable infinite worlds. 
 	*	This is the size of each grid cell.
-	*	Recommended: 1'024.0f.
 	*/
-	float32 _WorldGridSize;
+	OptionalWithDefault<float32> _WorldGridSize{ 1'024.0f };
 
 	/*
 	*	Default constructor.

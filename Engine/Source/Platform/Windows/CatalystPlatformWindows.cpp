@@ -174,13 +174,25 @@ void CatalystPlatform::Initialize() NOEXCEPT
 #if !defined(CATALYST_EDITOR)
 	if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._InitialFullScreen)
 	{
+		Resolution resolution;
+
+		if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution)
+		{
+			resolution = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution;
+		}
+
+		else
+		{
+			resolution = CatalystPlatform::GetDefaultResolution();
+		}
+
 		_Window = CreateWindow(	windowInfo.lpszClassName,
 								_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
 								WS_POPUP | WS_VISIBLE,
 								CW_USEDEFAULT,
 								CW_USEDEFAULT,
-								CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Width,
-								CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Height,
+								resolution._Width,
+								resolution._Height,
 								nullptr,
 								nullptr,
 								_Instance,
@@ -198,13 +210,25 @@ void CatalystPlatform::Initialize() NOEXCEPT
 		sprintf_s(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
 #endif
 
+		Resolution resolution;
+
+		if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution)
+		{
+			resolution = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution;
+		}
+
+		else
+		{
+			resolution = CatalystPlatform::GetDefaultResolution();
+		}
+
 		_Window = CreateWindow(	windowInfo.lpszClassName,
 								_T(window_name_buffer),
 								WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
 								CW_USEDEFAULT,
 								CW_USEDEFAULT,
-								CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Width,
-								CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution._Height,
+								resolution._Width,
+								resolution._Height,
 								nullptr,
 								nullptr,
 								_Instance,
