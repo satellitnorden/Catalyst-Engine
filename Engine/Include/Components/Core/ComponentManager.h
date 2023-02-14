@@ -15,6 +15,8 @@
 #include <Components/Transient/ParticleSystemRenderComponent.h>
 #include <Components/Transient/SoundComponent.h>
 #include <Components/Transient/StaticModelComponent.h>
+#include <Components/Transient/TerrainGeneralComponent.h>
+#include <Components/Transient/TerrainRenderComponent.h>
 #include <Components/Transient/UserInterfaceComponent.h>
 
 /*
@@ -58,6 +60,7 @@ public:
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(StaticModel, StaticModelComponent);
+	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(Terrain, TerrainGeneralComponent, TerrainRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(UserInterface, UserInterfaceComponent);
 
 };

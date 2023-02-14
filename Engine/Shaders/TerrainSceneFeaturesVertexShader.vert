@@ -1,22 +1,17 @@
 //Includes.
-#include "CatalystTerrainUtilities.glsl"
+//#include "CatalystTerrainUtilities.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-    layout (offset = 16) vec2 WORLD_POSITION;
-    layout (offset = 24) float PATCH_SIZE;
-    layout (offset = 28) int BORDERS;
-    layout (offset = 32) float VERTEX_BORDER_OFFSET_FIRST;
-    layout (offset = 36) float VERTEX_BORDER_OFFSET_SECOND;
-    layout (offset = 40) uint HEIGHT_MAP_TEXTURE_INDEX;
-    layout (offset = 44) uint NORMAL_MAP_TEXTURE_INDEX;
-    layout (offset = 48) uint INDEX_MAP_TEXTURE_INDEX;
-    layout (offset = 52) uint BLEND_MAP_TEXTURE_INDEX;
-    layout (offset = 56) float HEIGHT_MAP_RESOLOLUTION_RECIPROCAL;
-    layout (offset = 60) float METER_PER_HEIGHT_MAP_TEXEL;
-    layout (offset = 64) float MATERIAL_MAPS_RESOLOLUTION;
+	layout (offset = 0) vec3 WORLD_POSITION;
+    layout (offset = 16) float PATCH_SIZE;
+    layout (offset = 20) uint BORDERS;
+    layout (offset = 24) float VERTEX_BORDER_OFFSET_FIRST;
+    layout (offset = 28) float VERTEX_BORDER_OFFSET_SECOND;
+    layout (offset = 32) uint HEIGHT_MAP_TEXTURE_INDEX;
+    layout (offset = 36) uint NORMAL_MAP_TEXTURE_INDEX;
+    layout (offset = 40) float HEIGHT_MAP_RESOLUTION_RECIPROCAL;
 };
 
 //In parameters.
@@ -31,6 +26,7 @@ layout (location = 1) out vec2 fragment_height_map_texture_coordinate;
 /*
 *	Calculates the displacement.
 */
+/*
 float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_texture_coordinate)
 {
 	//Retrieve the 4 materials to blend between.
@@ -90,6 +86,7 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 			+ displacement_3 * blend_map[2]
 			+ displacement_4 * blend_map[3];
 }
+*/
 
 void CatalystShaderMain()
 {
@@ -123,34 +120,34 @@ void CatalystShaderMain()
 	position.y -= VERTEX_BORDER_OFFSET_SECOND * verticalBorderOffsetWeight;
 
 	//Calculate the fragment world position.
-	fragment_world_position = vec3(WORLD_POSITION.x, 0.0f, WORLD_POSITION.y) + vec3(position.x, 0.0f, position.y) * PATCH_SIZE;
+	fragment_world_position = WORLD_POSITION + vec3(position.x, 0.0f, position.y) * PATCH_SIZE;
 
 	//Calculate the fragment height map texture coordinate.
 	fragment_height_map_texture_coordinate = position.xy + 0.5f;
+
+	fragment_height_map_texture_coordinate.x *= 1.0f - HEIGHT_MAP_RESOLUTION_RECIPROCAL * 0.5f;
+	fragment_height_map_texture_coordinate.y *= 1.0f - HEIGHT_MAP_RESOLUTION_RECIPROCAL * 0.5f;
 
 	//Apply the height.
 	fragment_world_position.y += texture(sampler2D(GLOBAL_TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;
 
 	//Calculate the material texture coordinate.
-	vec2 material_texture_coordinate = fragment_world_position.xz * 0.25f;
+	//vec2 material_texture_coordinate = fragment_world_position.xz * 0.25f;
 
 	//Calculate the displacement.
-	float first_displacement 	= CalculateDisplacement(fragment_height_map_texture_coordinate, material_texture_coordinate);
-	float second_displacement	= CalculateDisplacement(fragment_height_map_texture_coordinate + vec2(0.0f, 1.0f) / MATERIAL_MAPS_RESOLOLUTION, material_texture_coordinate);
-	float third_displacement 	= CalculateDisplacement(fragment_height_map_texture_coordinate + vec2(1.0f, 0.0f) / MATERIAL_MAPS_RESOLOLUTION, material_texture_coordinate);
-	float fourth_displacement 	= CalculateDisplacement(fragment_height_map_texture_coordinate + vec2(1.0f, 1.0f) / MATERIAL_MAPS_RESOLOLUTION, material_texture_coordinate);
+	//float first_displacement 	= CalculateDisplacement(fragment_height_map_texture_coordinate, material_texture_coordinate);
+	//float second_displacement	= CalculateDisplacement(fragment_height_map_texture_coordinate + vec2(0.0f, 1.0f) / MATERIAL_MAPS_RESOLOLUTION, material_texture_coordinate);
+	//float third_displacement 	= CalculateDisplacement(fragment_height_map_texture_coordinate + vec2(1.0f, 0.0f) / MATERIAL_MAPS_RESOLOLUTION, material_texture_coordinate);
+	//float fourth_displacement 	= CalculateDisplacement(fragment_height_map_texture_coordinate + vec2(1.0f, 1.0f) / MATERIAL_MAPS_RESOLOLUTION, material_texture_coordinate);
 
-	float blend_1 = mix(first_displacement, second_displacement, fract(fragment_height_map_texture_coordinate.y * MATERIAL_MAPS_RESOLOLUTION));
-	float blend_2 = mix(third_displacement, fourth_displacement, fract(fragment_height_map_texture_coordinate.y * MATERIAL_MAPS_RESOLOLUTION));
+	//float blend_1 = mix(first_displacement, second_displacement, fract(fragment_height_map_texture_coordinate.y * MATERIAL_MAPS_RESOLOLUTION));
+	//float blend_2 = mix(third_displacement, fourth_displacement, fract(fragment_height_map_texture_coordinate.y * MATERIAL_MAPS_RESOLOLUTION));
 
-	float final_displacement = mix(blend_1, blend_2, fract(fragment_height_map_texture_coordinate.x * MATERIAL_MAPS_RESOLOLUTION));
+	//float final_displacement = mix(blend_1, blend_2, fract(fragment_height_map_texture_coordinate.x * MATERIAL_MAPS_RESOLOLUTION));
 
 	//Apply the displacement.
-	fragment_world_position.y += mix(-0.5f, 0.5f, final_displacement);
+	//fragment_world_position.y += mix(-0.5f, 0.5f, final_displacement);
 
 	//Write the position.
-	vec4 clip_position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position + WORLD_GRID_DELTA, 1.0f);
-	clip_position.z = max(clip_position.z, 0.0f);
-	gl_Position = clip_position;
-	
+	gl_Position = WORLD_TO_CLIP_MATRIX * vec4(fragment_world_position, 1.0f);
 }

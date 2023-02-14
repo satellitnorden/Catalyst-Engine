@@ -53,8 +53,7 @@ void TerrainSystem::Initialize(const CatalystProjectTerrainConfiguration &config
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
 
-	TerrainGeneralUtilities::GenerateTerrainPlane(	_Properties,
-													_Properties._PatchResolution,
+	TerrainGeneralUtilities::GenerateTerrainPlane(	_Properties._PatchResolution,
 													&vertices,
 													&indices);
 
@@ -709,8 +708,7 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
 
-	TerrainGeneralUtilities::GenerateTerrainPlane(	_Properties,
-													_Properties._PatchResolution,
+	TerrainGeneralUtilities::GenerateTerrainPlane(	_Properties._PatchResolution,
 													&vertices,
 													&indices);
 

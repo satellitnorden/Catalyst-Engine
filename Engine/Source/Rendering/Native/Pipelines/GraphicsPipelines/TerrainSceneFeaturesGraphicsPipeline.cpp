@@ -23,25 +23,22 @@
 /*
 *	Terrain push constant data definition.
 */
-class TerrainPushConstantData final
+class TerrainSceneFeaturesPushConstantData final
 {
 
 public:
 	
-	//The world grid delta.
-	Vector3<float32> _WorldGridDelta;
+	//The world position.
+	Vector3<float32> _WorldPosition;
 
 	//Some padding.
 	Padding<4> _Padding;
-
-	//The world position.
-	Vector2<float32> _WorldPosition;
 
 	//The patch size.
 	float32 _PatchSize;
 
 	//The borders
-	int32 _Borders;
+	uint32 _Borders;
 
 	//The vertex border offset first.
 	float32 _VertexBorderOffsetFirst;
@@ -55,27 +52,15 @@ public:
 	//The normal map texture index.
 	uint32 _NormalMapTextureIndex;
 
-	//The index map texture index.
-	uint32 _IndexMapTextureIndex;
-
-	//The blend map texture index.
-	uint32 _BlendMapTextureIndex;
-
 	//The height map resolution reciprocal.
 	float32 _HeightMapResolutionReciprocal;
-
-	//The meter per height map texel.
-	float32 _MeterPerHgithMapTexel;
-
-	//The material maps resolution
-	float32 _MaterialMapsResolution;
 
 };
 
 /*
 *	Initializes this graphics pipeline.
 */
-void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCEPT
+void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -88,7 +73,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("TerrainSceneFeaturesFragmentShader")));
 
 	//Set the depth buffer.
-	SetDepthBuffer(depthBuffer);
+	SetDepthBuffer(depth_buffer);
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(4);
@@ -103,7 +88,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(TerrainPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(TerrainSceneFeaturesPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(3);
@@ -165,15 +150,6 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
 
-	//Is everything that is needed to render terrain available?
-	if (!TerrainSystem::Instance->GetTerrainProperties()->_TerrainHeightFunction
-		|| !TerrainSystem::Instance->GetTerrainProperties()->_TerrainMaterialFunction)
-	{
-		SetIncludeInRender(false);
-
-		return;
-	}
-
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
 	SetCommandBuffer(command_buffer);
@@ -187,47 +163,38 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Bind the vertex/index buffer.
-	command_buffer->BindVertexBuffer(this, 0, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, &OFFSET);
-	command_buffer->BindIndexBuffer(this, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, TerrainSystem::Instance->GetTerrainProperties()->_IndexOffset);
-
-	//Wait for terrain culling to finish.
-	CullingSystem::Instance->WaitForTerrainCulling();
-
-	//Iterate over all terrain patches and render them.
-	for (const TerrainPatchRenderInformation &information : *TerrainSystem::Instance->GetTerrainPatchRenderInformations())
+	//Draw static models.
 	{
-		//Check the visibility of this patch.
-		if (!information._Visibility)
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfTerrainComponents() };
+		const TerrainGeneralComponent *RESTRICT general_component{ ComponentManager::GetTerrainTerrainGeneralComponents() };
+		const TerrainRenderComponent *RESTRICT render_component{ ComponentManager::GetTerrainTerrainRenderComponents() };
+
+		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++general_component, ++render_component)
 		{
-			continue;
+			//Push constants.
+			TerrainSceneFeaturesPushConstantData data;
+
+			const Vector3<int32> grid_delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
+
+			data._WorldPosition = general_component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
+			data._PatchSize = static_cast<float32>(general_component->_HeightMap.GetResolution());
+			data._Borders = 0;
+			data._VertexBorderOffsetFirst = 1.0f / static_cast<float32>(general_component->_HeightMap.GetResolution());
+			data._VertexBorderOffsetSecond = 1.0f / static_cast<float32>((general_component->_HeightMap.GetResolution()) / 2);
+			data._HeightMapTextureIndex = render_component->_HeightMapTextureIndex;
+			data._NormalMapTextureIndex = render_component->_NormalMapTextureIndex;
+			data._HeightMapResolutionReciprocal = 1.0f / static_cast<float32>(general_component->_HeightMap.GetResolution());
+
+			command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(TerrainSceneFeaturesPushConstantData), &data);
+
+			//Bind the vertex/index buffer.
+			command_buffer->BindVertexBuffer(this, 0, render_component->_Buffer, &OFFSET);
+			command_buffer->BindIndexBuffer(this, render_component->_Buffer, render_component->_IndexOffset);
+
+			//Draw!
+			command_buffer->DrawIndexed(this, render_component->_IndexCount, 1);
 		}
-
-		//Push constants.
-		TerrainPushConstantData data;
-
-		const Vector3<int32> grid_delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
-
-		data._WorldGridDelta._X = static_cast<float32>(grid_delta._X) * WorldSystem::Instance->GetWorldGridSize();
-		data._WorldGridDelta._Y = static_cast<float32>(grid_delta._Y) * WorldSystem::Instance->GetWorldGridSize();
-		data._WorldGridDelta._Z = static_cast<float32>(grid_delta._Z) * WorldSystem::Instance->GetWorldGridSize();
-		data._WorldPosition = information._WorldPosition;
-		data._PatchSize = information._PatchSize;
-		data._Borders = information._Borders;
-		data._VertexBorderOffsetFirst = 1.0f / static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution);
-		data._VertexBorderOffsetSecond = 1.0f / static_cast<float32>((TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution) / 2);
-		data._NormalMapTextureIndex = information._NormalMapTextureIndex;
-		data._HeightMapTextureIndex = information._HeightMapTextureIndex;
-		data._IndexMapTextureIndex = information._IndexMapTextureIndex;
-		data._BlendMapTextureIndex = information._BlendMapTextureIndex;
-		data._HeightMapResolutionReciprocal = 1.0f / static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution);
-		data._MeterPerHgithMapTexel = information._PatchSize * data._HeightMapResolutionReciprocal;
-		data._MaterialMapsResolution = static_cast<float32>(information._MaterialMapsResolution);
-
-		command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(TerrainPushConstantData), &data);
-
-		//Draw the patch!
-		command_buffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
 	}
 
 	//End the command buffer.

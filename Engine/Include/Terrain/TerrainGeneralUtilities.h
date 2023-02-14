@@ -22,7 +22,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	FORCE_INLINE static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, DynamicArray<TerrainVertex>* const RESTRICT vertices, DynamicArray<uint32>* const RESTRICT indices) NOEXCEPT
+	FORCE_INLINE static void GenerateTerrainPlane(const uint32 resolution, DynamicArray<TerrainVertex>* const RESTRICT vertices, DynamicArray<uint32>* const RESTRICT indices) NOEXCEPT
 	{
 		vertices->Reserve(resolution * resolution);
 		indices->Reserve((resolution - 1) * (resolution - 1) * 6);

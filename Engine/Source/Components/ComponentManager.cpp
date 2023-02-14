@@ -86,4 +86,5 @@ DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(StaticModel, StaticModelComponent);
+DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(Terrain, TerrainGeneralComponent, TerrainRenderComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(UserInterface, UserInterfaceComponent);

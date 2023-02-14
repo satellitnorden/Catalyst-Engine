@@ -1,7 +1,7 @@
 //Includes.
-#include "CatalystPackingUtilities.glsl"
-#include "CatalystTerrainUtilities.glsl"
-#include "..\Include\Rendering\Native\Shader\CatalystTerrain.h"
+//#include "CatalystPackingUtilities.glsl"
+//#include "CatalystTerrainUtilities.glsl"
+//#include "..\Include\Rendering\Native\Shader\CatalystTerrain.h"
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -9,19 +9,14 @@ layout (early_fragment_tests) in;
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-    layout (offset = 16) vec2 WORLD_POSITION;
-    layout (offset = 24) float PATCH_SIZE;
-    layout (offset = 28) int BORDERS;
-    layout (offset = 32) float VERTEX_BORDER_OFFSET_FIRST;
-    layout (offset = 36) float VERTEX_BORDER_OFFSET_SECOND;
-    layout (offset = 40) uint HEIGHT_MAP_TEXTURE_INDEX;
-    layout (offset = 44) uint NORMAL_MAP_TEXTURE_INDEX;
-    layout (offset = 48) uint INDEX_MAP_TEXTURE_INDEX;
-    layout (offset = 52) uint BLEND_MAP_TEXTURE_INDEX;
-    layout (offset = 56) float HEIGHT_MAP_RESOLOLUTION_RECIPROCAL;
-    layout (offset = 60) float METER_PER_HEIGHT_MAP_TEXEL;
-    layout (offset = 64) float MATERIAL_MAPS_RESOLOLUTION;
+	layout (offset = 0) vec3 WORLD_POSITION;
+    layout (offset = 16) float PATCH_SIZE;
+    layout (offset = 20) uint BORDERS;
+    layout (offset = 24) float VERTEX_BORDER_OFFSET_FIRST;
+    layout (offset = 28) float VERTEX_BORDER_OFFSET_SECOND;
+    layout (offset = 32) uint HEIGHT_MAP_TEXTURE_INDEX;
+    layout (offset = 36) uint NORMAL_MAP_TEXTURE_INDEX;
+    layout (offset = 40) float HEIGHT_MAP_RESOLUTION_RECIPROCAL;
 };
 
 //In parameters.
@@ -36,6 +31,7 @@ layout (location = 3) out vec4 scene_features_4;
 
 void CatalystShaderMain()
 {
+	/*
 	//Retrieve the normal.
 	vec3 normal = texture(sampler2D(GLOBAL_TEXTURES[NORMAL_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).xyz;
 	normal = normal * 2.0f - 1.0f;
@@ -64,13 +60,17 @@ void CatalystShaderMain()
 
 	//Calculate the shading normal.
 	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map);
+	*/
+
+	//Calculate the shading normal.
+	vec3 shading_normal = texture(sampler2D(GLOBAL_TEXTURES[NORMAL_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).xyz;
 
     //Calculate the velocity.
-    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position + WORLD_GRID_DELTA) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position + WORLD_GRID_DELTA);
+    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position);
 
     //Write the fragments.
-    scene_features_1 = vec4(final_material.albedo, float(final_material.material_index) / float(UINT8_MAXIMUM));
+    scene_features_1 = vec4(0.0f, 1.0f, 0.0f, 1.0f);
     scene_features_2 = vec4(shading_normal, gl_FragCoord.z);
-    scene_features_3 = final_material.material_properties;
+    scene_features_3 = vec4(1.0f, 0.0f, 1.0f, 0.0f);
     scene_features_4 = vec4(velocity, 0.0f, 0.0f);
 }
