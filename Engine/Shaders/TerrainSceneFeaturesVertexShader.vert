@@ -11,7 +11,10 @@ layout (push_constant) uniform PushConstantData
     layout (offset = 28) float VERTEX_BORDER_OFFSET_SECOND;
     layout (offset = 32) uint HEIGHT_MAP_TEXTURE_INDEX;
     layout (offset = 36) uint NORMAL_MAP_TEXTURE_INDEX;
-    layout (offset = 40) float HEIGHT_MAP_RESOLUTION_RECIPROCAL;
+    layout (offset = 40) uint INDEX_MAP_TEXTURE_INDEX;
+    layout (offset = 44) uint BLEND_MAP_TEXTURE_INDEX;
+    layout (offset = 48) float MAP_RESOLUTION;
+    layout (offset = 52) float MAP_RESOLUTION_RECIPROCAL;
 };
 
 //In parameters.
@@ -125,8 +128,8 @@ void CatalystShaderMain()
 	//Calculate the fragment height map texture coordinate.
 	fragment_height_map_texture_coordinate = position.xy + 0.5f;
 
-	fragment_height_map_texture_coordinate.x *= 1.0f - HEIGHT_MAP_RESOLUTION_RECIPROCAL * 0.5f;
-	fragment_height_map_texture_coordinate.y *= 1.0f - HEIGHT_MAP_RESOLUTION_RECIPROCAL * 0.5f;
+	fragment_height_map_texture_coordinate.x *= 1.0f - MAP_RESOLUTION_RECIPROCAL * 0.5f;
+	fragment_height_map_texture_coordinate.y *= 1.0f - MAP_RESOLUTION_RECIPROCAL * 0.5f;
 
 	//Apply the height.
 	fragment_world_position.y += texture(sampler2D(GLOBAL_TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;

@@ -23,4 +23,10 @@ public:
 	//The normal map.
 	Texture2D<Vector3<float32>> _NormalMap;
 
+	//The index map.
+	Texture2D<Vector4<uint8>> _IndexMap;
+
+	//The blend map.
+	Texture2D<Vector4<float32>> _BlendMap;
+
 };

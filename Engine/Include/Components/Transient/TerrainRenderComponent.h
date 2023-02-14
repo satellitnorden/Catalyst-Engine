@@ -32,4 +32,16 @@ public:
 	//The normal map texture index.
 	uint32 _NormalMapTextureIndex;
 
+	//The index map texture.
+	Texture2DHandle _IndexMapTexture;
+
+	//The index map texture index.
+	uint32 _IndexMapTextureIndex;
+
+	//The blend map texture.
+	Texture2DHandle _BlendMapTexture;
+
+	//The blend map texture index.
+	uint32 _BlendMapTextureIndex;
+
 };

@@ -31,7 +31,7 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 	_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(this);
 
 	//Copy the data.
-	const TerrainInitializationData *const RESTRICT terrain_initialization_data{ static_cast<const TerrainInitializationData* const RESTRICT>(data) };
+	TerrainInitializationData *const RESTRICT terrain_initialization_data{ static_cast<TerrainInitializationData* const RESTRICT>(data) };
 	TerrainGeneralComponent &general_component{ ComponentManager::GetTerrainTerrainGeneralComponents()[_ComponentsIndex] };
 	TerrainRenderComponent &render_component{ ComponentManager::GetTerrainTerrainRenderComponents()[_ComponentsIndex] };
 
@@ -40,6 +40,8 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 	general_component._WorldPosition = terrain_initialization_data->_WorldPosition;
 	general_component._HeightMap = std::move(terrain_initialization_data->_HeightMap);
 	general_component._NormalMap = std::move(terrain_initialization_data->_NormalMap);
+	general_component._IndexMap = std::move(terrain_initialization_data->_IndexMap);
+	general_component._BlendMap = std::move(terrain_initialization_data->_BlendMap);
 
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
@@ -66,7 +68,6 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(general_component._HeightMap), TextureFormat::R_FLOAT32, TextureUsage::NONE), &render_component._HeightMapTexture);
 
 	render_component._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(render_component._HeightMapTexture);
-
 	Texture2D<Vector4<uint8>> converted_normal_map{ general_component._NormalMap.GetResolution() };
 
 	for (uint32 Y{ 0 }; Y < converted_normal_map.GetResolution(); ++Y)
@@ -83,8 +84,26 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 	}
 
 	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_normal_map), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &render_component._NormalMapTexture);
-
 	render_component._NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(render_component._NormalMapTexture);
+
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(general_component._IndexMap), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &render_component._IndexMapTexture);
+	render_component._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(render_component._IndexMapTexture);
+
+	Texture2D<Vector4<uint8>> converted_blend_map{ general_component._BlendMap.GetResolution() };
+
+	for (uint32 Y{ 0 }; Y < converted_blend_map.GetResolution(); ++Y)
+	{
+		for (uint32 X{ 0 }; X < converted_blend_map.GetResolution(); ++X)
+		{
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				converted_blend_map.At(X, Y)[i] = static_cast<uint8>(general_component._BlendMap.At(X, Y)[i] * static_cast<float32>(UINT8_MAXIMUM));
+			}
+		}
+	}
+
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &render_component._BlendMapTexture);
+	render_component._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(render_component._BlendMapTexture);
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<TerrainInitializationData>(data);
@@ -97,6 +116,10 @@ void TerrainEntity::Terminate() NOEXCEPT
 {
 	TerrainRenderComponent& render_component{ ComponentManager::GetTerrainTerrainRenderComponents()[_ComponentsIndex] };
 
+	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(render_component._BlendMapTextureIndex);
+	RenderingSystem::Instance->DestroyTexture2D(&render_component._BlendMapTexture);
+	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(render_component._IndexMapTextureIndex);
+	RenderingSystem::Instance->DestroyTexture2D(&render_component._IndexMapTexture);
 	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(render_component._NormalMapTextureIndex);
 	RenderingSystem::Instance->DestroyTexture2D(&render_component._NormalMapTexture);
 	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(render_component._HeightMapTextureIndex);

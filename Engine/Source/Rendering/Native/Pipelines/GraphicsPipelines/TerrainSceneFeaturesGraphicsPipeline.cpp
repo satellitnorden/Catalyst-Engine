@@ -52,8 +52,17 @@ public:
 	//The normal map texture index.
 	uint32 _NormalMapTextureIndex;
 
-	//The height map resolution reciprocal.
-	float32 _HeightMapResolutionReciprocal;
+	//The index map texture index.
+	uint32 _IndexMapTextureIndex;
+
+	//The blend map texture index.
+	uint32 _BlendMapTextureIndex;
+
+	//The map resolution.
+	float32 _MapResolution;
+
+	//The map resolution reciprocal.
+	float32 _MapResolutionReciprocal;
 
 };
 
@@ -184,7 +193,10 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			data._VertexBorderOffsetSecond = 1.0f / static_cast<float32>((general_component->_HeightMap.GetResolution()) / 2);
 			data._HeightMapTextureIndex = render_component->_HeightMapTextureIndex;
 			data._NormalMapTextureIndex = render_component->_NormalMapTextureIndex;
-			data._HeightMapResolutionReciprocal = 1.0f / static_cast<float32>(general_component->_HeightMap.GetResolution());
+			data._IndexMapTextureIndex = render_component->_IndexMapTextureIndex;
+			data._BlendMapTextureIndex = render_component->_BlendMapTextureIndex;
+			data._MapResolution = static_cast<float32>(general_component->_HeightMap.GetResolution());
+			data._MapResolutionReciprocal = 1.0f / data._MapResolution;
 
 			command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(TerrainSceneFeaturesPushConstantData), &data);
 
