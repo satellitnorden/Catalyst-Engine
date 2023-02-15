@@ -11,6 +11,7 @@
 //Entities.
 #include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/StaticModelEntity.h>
+#include <Entities/Types/TerrainEntity.h>
 
 //Physics.
 #include <Physics/Abstraction/PhysXCharacterControllerAbstractionData.h>
@@ -86,25 +87,6 @@ private:
 };
 
 /*
-*	Terrain data class definition.
-*/
-class TerrainData final
-{
-
-public:
-
-	//The grid point.
-	GridPoint2 _GridPoint;
-
-	//The actor.
-	physx::PxRigidStatic *RESTRICT _Actor{ nullptr };
-
-	//The shape.
-	physx::PxShape *RESTRICT _Shape{ nullptr };
-
-};
-
-/*
 *	Dynamic model entity data class definition.
 */
 class DynamicModelEntityData final
@@ -139,18 +121,31 @@ public:
 
 };
 
+/*
+*	Terrain entity data class definition.
+*/
+class TerrainEntityData final
+{
+
+public:
+
+	//The entity.
+	TerrainEntity *RESTRICT _Entity;
+
+	//The actor.
+	physx::PxRigidStatic* RESTRICT _Actor{ nullptr };
+
+	//The shape.
+	physx::PxShape* RESTRICT _Shape{ nullptr };
+
+};
+
 //PhysX physics system constants.
 namespace PhysXPhysicsSystemConstants
 {
 
 	//The update frequency.
 	constexpr float32 UPDATE_FREQUENCY{ 1.0f / 60.0f };
-
-	//The terrain height field size.
-	constexpr uint32 TERRAIN_HEIGHT_FIELD_SIZE{ 256 }; //Must be a power of two. (:
-
-	//The terrain height field half size.
-	constexpr float32 TERRAIN_HEIGHT_FIELD_HALF_SIZE{ static_cast<float32>(TERRAIN_HEIGHT_FIELD_SIZE) * 0.5f };
 
 }
 
@@ -205,229 +200,14 @@ namespace PhysXPhysicsSystemData
 	//The static model entity data.
 	DynamicArray<StaticModelEntityData> _StaticModelEntityData;
 
+	//The terrain entity data.
+	DynamicArray<TerrainEntityData> _TerrainEntityData;
+
 	//The time since last update.
 	float32 _TimeSinceLastUpdate{ 0.0f };
 
 	//Denotes if physics is being updated.
 	bool _PhysicsIsUpdating{ false };
-
-	//The terrain generation task.
-	Task _TerrainGenerationTask;
-
-	//The terrain data.
-	StaticArray<TerrainData, 9> _TerrainData;
-
-}
-
-//PhysX physics system logic.
-namespace PhysXPhysicsSystemLogic
-{
-
-	/*
-	*	Updates the terrain height field.
-	*/
-	FORCE_INLINE void UpdateTerrainHeightField() NOEXCEPT
-	{
-		//Cache the current camera world position.
-		const Vector3<float32> current_camera_world_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetWorldPosition().GetAbsolutePosition() };
-
-		//Calculate the camera grid point.
-		GridPoint2 camera_grid_point{ GridPoint2::WorldPositionToGridPoint(current_camera_world_position, static_cast<float32>(PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE)) };
-
-		camera_grid_point._X = -camera_grid_point._X;
-		//camera_grid_point._Y = -camera_grid_point._Y;
-
-		//Cache the valid grid points.
-		const StaticArray<GridPoint2, 9> valid_grid_points
-		{
-			camera_grid_point + GridPoint2(0, 0),
-
-			camera_grid_point + GridPoint2(-1, 0),
-			camera_grid_point + GridPoint2(1, 0),
-			camera_grid_point + GridPoint2(0, -1),
-			camera_grid_point + GridPoint2(0, 1),
-
-			camera_grid_point + GridPoint2(-1, -1),
-			camera_grid_point + GridPoint2(-1, 1),
-			camera_grid_point + GridPoint2(1, -1),
-			camera_grid_point + GridPoint2(1, 1)
-		};
-
-		//Remove terrain data with grid points that aren't valid.
-		for (TerrainData &terrain_data : PhysXPhysicsSystemData::_TerrainData)
-		{
-			if (terrain_data._Actor
-				&& terrain_data._Shape)
-			{
-				bool grid_point_is_valid{ false };
-
-				for (const GridPoint2 valid_grid_point : valid_grid_points)
-				{
-					if (terrain_data._GridPoint == valid_grid_point)
-					{
-						grid_point_is_valid = true;
-
-						break;
-					}
-				}
-
-				if (!grid_point_is_valid)
-				{
-					terrain_data._Actor->detachShape(*terrain_data._Shape);
-
-					terrain_data._Shape->release();
-					terrain_data._Shape = nullptr;
-				}
-			}
-		}
-
-		//Add terrain data with grid points that are valid.
-		for (const GridPoint2 valid_grid_point : valid_grid_points)
-		{
-			bool found_grid_point{ false };
-
-			for (TerrainData &terrain_data : PhysXPhysicsSystemData::_TerrainData)
-			{
-				if (terrain_data._Actor
-					&& terrain_data._Shape
-					&& valid_grid_point == terrain_data._GridPoint)
-				{
-					found_grid_point = true;
-
-					break;
-				}
-			}
-
-			if (!found_grid_point)
-			{
-				for (TerrainData &terrain_data : PhysXPhysicsSystemData::_TerrainData)
-				{
-					if (!terrain_data._Shape)
-					{
-						//Calculate the terrain patch position.
-						const Vector3<float32> terrain_patch_position{ GridPoint2::GridPointToWorldPosition(GridPoint2(-valid_grid_point._X, valid_grid_point._Y), static_cast<float32>(PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE)) };
-
-						//Update the grid point.
-						terrain_data._GridPoint = valid_grid_point;
-
-						//Update the actor.
-						{
-							const physx::PxTransform terrain_transform{ physx::PxVec3(terrain_patch_position._X - PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_HALF_SIZE, 0.0f, terrain_patch_position._Z - static_cast<float32>(PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_HALF_SIZE)) };
-
-							if (!terrain_data._Actor)
-							{
-
-								{
-									SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
-									terrain_data._Actor = PhysXPhysicsSystemData::_Physics->createRigidStatic(terrain_transform);
-								}
-
-								{
-									SCOPED_LOCK(PhysXPhysicsSystemData::_SceneLock);
-									PhysXPhysicsSystemData::_Scene->addActor(*terrain_data._Actor);
-								}
-							}
-
-							else
-							{
-								terrain_data._Actor->setGlobalPose(terrain_transform);
-							}
-						}
-
-						//Update the shape.
-						{
-							//Construct the height map, whilst remembering the highest height.
-							Texture2D<float32> height_map{ PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE };
-
-							for (uint32 Y{ 0 }; Y < PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE; ++Y)
-							{
-								for (uint32 X{ 0 }; X < PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE; ++X)
-								{
-									//Calculate the sample position scalar.
-									const Vector2<float32> sample_position_scalar{	static_cast<float32>(X) / static_cast<float32>(PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE - 1),
-																					static_cast<float32>(Y) / static_cast<float32>(PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE - 1) };
-
-									//Calculate the sample world position.
-									const Vector3<float32> sample_world_position{	terrain_patch_position._X + CatalystBaseMath::LinearlyInterpolate(-PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_HALF_SIZE, PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_HALF_SIZE, sample_position_scalar._X),
-																					0.0f,
-																					terrain_patch_position._Z + CatalystBaseMath::LinearlyInterpolate(-PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_HALF_SIZE, PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_HALF_SIZE, sample_position_scalar._Y) };
-
-									//Retrieve the terrain height.
-									float32 terrain_height;
-									TerrainSystem::Instance->GetTerrainHeightAtPosition(sample_world_position, &terrain_height);
-
-									//Write the terrain height.
-									height_map.At(X, Y) = terrain_height;
-								}
-							}
-
-							//Calculate the height scale.
-							float32 maximum_height{ 0.0f };
-							TerrainSystem::Instance->GetMaximumHeight(&maximum_height);
-
-							const float32 height_scale{ maximum_height / static_cast<float32>(INT16_MAXIMUM) };
-
-							//Construct the height field samples.
-							Texture2D<physx::PxHeightFieldSample> height_field_samples{ PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE };
-							Memory::Set(height_field_samples.Data(), 0, sizeof(physx::PxHeightFieldSample) * PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE * PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE);
-
-							for (uint32 Y{ 0 }; Y < PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE; ++Y)
-							{
-								for (uint32 X{ 0 }; X < PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE; ++X)
-								{
-									height_field_samples.At(Y, X).height = static_cast<int16>(height_map.At(X, Y) / height_scale);
-								}
-							}
-
-							//Create the height field.
-							physx::PxHeightFieldDesc height_field_description;
-
-							height_field_description.setToDefault();
-
-							height_field_description.nbRows = PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE;
-							height_field_description.nbColumns = PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE;
-							height_field_description.format = physx::PxHeightFieldFormat::eS16_TM;
-							height_field_description.samples.data = height_field_samples.Data();
-							height_field_description.samples.stride = sizeof(physx::PxHeightFieldSample);
-							height_field_description.flags = physx::PxHeightFieldFlag::eNO_BOUNDARY_EDGES;
-
-							physx::PxHeightField *RESTRICT height_field;
-
-							physx::PxPhysicsInsertionCallback *RESTRICT physics_insertion_callback;
-
-							{
-								SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
-								physics_insertion_callback = &PhysXPhysicsSystemData::_Physics->getPhysicsInsertionCallback();
-							}
-
-							{
-								SCOPED_LOCK(PhysXPhysicsSystemData::_CookingLock);
-
-								height_field = PhysXPhysicsSystemData::_Cooking->createHeightField(height_field_description, *physics_insertion_callback);
-							}
-
-							//Create the height field geometry.
-							const physx::PxHeightFieldGeometry height_field_geometry{ height_field, physx::PxMeshGeometryFlags(), height_scale, 1.0f + (1.0f / static_cast<float32>(PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE)), 1.0f + (1.0f / static_cast<float32>(PhysXPhysicsSystemConstants::TERRAIN_HEIGHT_FIELD_SIZE)) };
-
-							//Create the new terrain shape.
-							{
-								SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
-								terrain_data._Shape = PhysXPhysicsSystemData::_Physics->createShape(height_field_geometry, *PhysXPhysicsSystemData::_DefaultMaterial, true);
-							}
-
-							//Decrement the reference count of the height field, so that it gets automatically release with the shape later.
-							height_field->release();
-
-							//Attach the new shape.
-							terrain_data._Actor->attachShape(*terrain_data._Shape);
-						}
-
-						break;
-					}
-				}
-			}
-		}
-	}
 
 }
 
@@ -480,14 +260,6 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 
 	//Create the controller manager.
 	PhysXPhysicsSystemData::_ControllerManager = PxCreateControllerManager(*PhysXPhysicsSystemData::_Scene);
-
-	//Set up the terrain generation task.
-	PhysXPhysicsSystemData::_TerrainGenerationTask._Function = [](void *const RESTRICT)
-	{
-		PhysXPhysicsSystemLogic::UpdateTerrainHeightField();
-	};
-	PhysXPhysicsSystemData::_TerrainGenerationTask._Arguments = nullptr;
-	PhysXPhysicsSystemData::_TerrainGenerationTask._ExecutableOnSameThread = false;
 }
 
 /*
@@ -596,14 +368,6 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 			//Set the world transform of the entity.
 			data._Entity->SetWorldTransform(new_world_transform);
 		}
-	}
-
-	//See if the terrain generation task is done.
-	if (TerrainSystem::Instance->CanTerrainBeGenerated()
-		&& PhysXPhysicsSystemData::_TerrainGenerationTask.IsExecuted())
-	{
-		//Fire off the task again.
-		TaskSystem::Instance->ExecuteTask(&PhysXPhysicsSystemData::_TerrainGenerationTask);
 	}
 
 	//Physics is no longer updating.
@@ -910,6 +674,115 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 			break;
 		}
 
+		case EntityType::Terrain:
+		{
+			//Cache the component.
+			const TerrainGeneralComponent &component{ ComponentManager::GetTerrainTerrainGeneralComponents()[entity->_ComponentsIndex] };
+
+			//Cache some properties.
+			const float32 patch_size{ static_cast<float32>(component._HeightMap.GetResolution()) };
+			const float32 half_patch_size{ patch_size * 0.5f };
+
+			//Set up the terrain entity data.
+			TerrainEntityData data;
+
+			//Set the entity.
+			data._Entity = static_cast<TerrainEntity *RESTRICT>(entity);
+
+			//Calculate the terrain patch position.
+			const Vector3<float32> terrain_patch_position{ component._WorldPosition.GetAbsolutePosition() };
+
+			//Create the actor.
+			{
+				const physx::PxTransform terrain_transform{ physx::PxVec3(terrain_patch_position._X - half_patch_size, 0.0f, terrain_patch_position._Z - half_patch_size) };
+
+				{
+					SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
+					data._Actor = PhysXPhysicsSystemData::_Physics->createRigidStatic(terrain_transform);
+				}
+
+				{
+					SCOPED_LOCK(PhysXPhysicsSystemData::_SceneLock);
+					PhysXPhysicsSystemData::_Scene->addActor(*data._Actor);
+				}
+			}
+
+			//Create the shape.
+			{
+				//Calculate the height scale.
+				float32 maximum_height{ -FLOAT32_MAXIMUM };
+
+				for (uint32 Y{ 0 }; Y < component._HeightMap.GetResolution(); ++Y)
+				{
+					for (uint32 X{ 0 }; X < component._HeightMap.GetResolution(); ++X)
+					{
+						maximum_height = CatalystBaseMath::Maximum<float32>(maximum_height, component._HeightMap.At(X, Y));
+					}
+				}
+
+				const float32 height_scale{ maximum_height / static_cast<float32>(INT16_MAXIMUM) };
+
+				//Construct the height field samples.
+				Texture2D<physx::PxHeightFieldSample> height_field_samples{ component._HeightMap.GetResolution() };
+				Memory::Set(height_field_samples.Data(), 0, sizeof(physx::PxHeightFieldSample) * component._HeightMap.GetResolution() * component._HeightMap.GetResolution());
+
+				for (uint32 Y{ 0 }; Y < component._HeightMap.GetResolution(); ++Y)
+				{
+					for (uint32 X{ 0 }; X < component._HeightMap.GetResolution(); ++X)
+					{
+						height_field_samples.At(Y, X).height = static_cast<int16>(component._HeightMap.At(X, Y) / height_scale);
+					}
+				}
+
+				//Create the height field.
+				physx::PxHeightFieldDesc height_field_description;
+
+				height_field_description.setToDefault();
+
+				height_field_description.nbRows = component._HeightMap.GetResolution();
+				height_field_description.nbColumns = component._HeightMap.GetResolution();
+				height_field_description.format = physx::PxHeightFieldFormat::eS16_TM;
+				height_field_description.samples.data = height_field_samples.Data();
+				height_field_description.samples.stride = sizeof(physx::PxHeightFieldSample);
+				height_field_description.flags = physx::PxHeightFieldFlag::eNO_BOUNDARY_EDGES;
+
+				physx::PxHeightField* RESTRICT height_field;
+
+				physx::PxPhysicsInsertionCallback* RESTRICT physics_insertion_callback;
+
+				{
+					SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
+					physics_insertion_callback = &PhysXPhysicsSystemData::_Physics->getPhysicsInsertionCallback();
+				}
+
+				{
+					SCOPED_LOCK(PhysXPhysicsSystemData::_CookingLock);
+
+					height_field = PhysXPhysicsSystemData::_Cooking->createHeightField(height_field_description, *physics_insertion_callback);
+				}
+
+				//Create the height field geometry.
+				const physx::PxHeightFieldGeometry height_field_geometry{ height_field, physx::PxMeshGeometryFlags(), height_scale, 1.0f + (1.0f / static_cast<float32>(component._HeightMap.GetResolution())), 1.0f + (1.0f / static_cast<float32>(component._HeightMap.GetResolution())) };
+
+				//Create the new terrain shape.
+				{
+					SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
+					data._Shape = PhysXPhysicsSystemData::_Physics->createShape(height_field_geometry, *PhysXPhysicsSystemData::_DefaultMaterial, true);
+				}
+
+				//Decrement the reference count of the height field, so that it gets automatically release with the shape later.
+				height_field->release();
+
+				//Attach the new shape.
+				data._Actor->attachShape(*data._Shape);
+			}
+
+			//Add the terrain entity data.
+			PhysXPhysicsSystemData::_TerrainEntityData.Emplace(data);
+
+			break;
+		}
+
 		default:
 		{
 			ASSERT(false, "Invalid case!");
@@ -1070,6 +943,35 @@ void PhysicsSystem::SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOE
 			break;
 		}
 
+		case EntityType::Terrain:
+		{
+			//Cast to the type.
+			TerrainEntity *const RESTRICT terrain_entity{ static_cast<TerrainEntity* const RESTRICT>(entity) };
+
+			//Find the dynamic model entity data.
+			for (uint64 i{ 0 }, size{ PhysXPhysicsSystemData::_TerrainEntityData.Size() }; i < size; ++i)
+			{
+				if (PhysXPhysicsSystemData::_TerrainEntityData[i]._Entity == entity)
+				{
+					//Remove the actor from the scene.
+					{
+						SCOPED_LOCK(PhysXPhysicsSystemData::_SceneLock);
+						PhysXPhysicsSystemData::_Scene->removeActor(*PhysXPhysicsSystemData::_TerrainEntityData[i]._Actor);
+					}
+
+					//Release the actor.
+					PhysXPhysicsSystemData::_TerrainEntityData[i]._Actor->release();
+
+					//Remove the terrain entity data.
+					PhysXPhysicsSystemData::_TerrainEntityData.EraseAt<false>(i);
+
+					break;
+				}
+			}
+
+			break;
+		}
+
 		default:
 		{
 			ASSERT(false, "Invalid case!");
@@ -1128,6 +1030,14 @@ void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &confi
 				case EntityType::StaticModel:
 				{
 					result->_Type = RaycastResult::Type::STATIC_MODEL;
+					result->_StaticModelRaycastResult._Entity = entity;
+
+					break;
+				}
+
+				case EntityType::Terrain:
+				{
+					result->_Type = RaycastResult::Type::TERRAIN;
 					result->_StaticModelRaycastResult._Entity = entity;
 
 					break;

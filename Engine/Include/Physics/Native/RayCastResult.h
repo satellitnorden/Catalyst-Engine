@@ -31,7 +31,8 @@ class TerrainRaycastResult final
 
 public:
 
-	//Empty. (:
+	//The entity.
+	Entity* RESTRICT _Entity;
 
 };
 

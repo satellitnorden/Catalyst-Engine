@@ -9,6 +9,7 @@
 
 //Systems.
 #include <Systems/EntitySystem.h>
+#include <Systems/PhysicsSystem.h>
 
 //Terrain.
 #include <Terrain/TerrainGeneralUtilities.h>
@@ -107,6 +108,9 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<TerrainInitializationData>(data);
+
+	//Initialize the entity physics.
+	PhysicsSystem::Instance->InitializeEntityPhysics(this);
 }
 
 /*
@@ -114,6 +118,9 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 */
 void TerrainEntity::Terminate() NOEXCEPT
 {
+	//Terminate the entity physics.
+	PhysicsSystem::Instance->TerminateEntityPhysics(this);
+
 	TerrainRenderComponent& render_component{ ComponentManager::GetTerrainTerrainRenderComponents()[_ComponentsIndex] };
 
 	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(render_component._BlendMapTextureIndex);
