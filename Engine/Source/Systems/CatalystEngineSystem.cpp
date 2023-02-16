@@ -1,4 +1,4 @@
-//Header file.
+﻿//Header file.
 #include <Systems/CatalystEngineSystem.h>
 
 //Core.
@@ -53,68 +53,8 @@ DEFINE_SINGLETON(CatalystEngineSystem);
 namespace CatalystEngineSystemData
 {
 
-	//Enumeration covering all sequential updates.
-	enum class SequentialUpdate : uint8
-	{
-		PLACEMENT_SYSTEM,
-		SAVE_SYSTEM,
-		TERRAIN_SYSTEM,
-
-		NUMBER_OF_SEQUENTIAL_UPDATES
-	};
-
 	//The delta timer.
 	DeltaTimer<float32> _DeltaTimer;
-
-	//The current sequential update.
-	SequentialUpdate _CurrentSequentialUpdate{ static_cast<SequentialUpdate>(0) };
-
-}
-
-//Catalyst engine system logic.
-namespace CatalystEngineSystemLogic
-{
-
-	/*
-	*	Executes a sequential update.
-	*/
-	FORCE_INLINE void ExecuteSequentialUpdate() NOEXCEPT
-	{
-		//Execute the sequential update.
-		switch (CatalystEngineSystemData::_CurrentSequentialUpdate)
-		{
-			case CatalystEngineSystemData::SequentialUpdate::PLACEMENT_SYSTEM:
-			{
-				PlacementSystem::Instance->SequentialUpdate();
-
-				break;
-			}
-
-			case CatalystEngineSystemData::SequentialUpdate::SAVE_SYSTEM:
-			{
-				SaveSystem::Instance->SequentialUpdate();
-
-				break;
-			}
-
-			case CatalystEngineSystemData::SequentialUpdate::TERRAIN_SYSTEM:
-			{
-				TerrainSystem::Instance->SequentialUpdate();
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Unhandled case!");
-
-				break;
-			}
-		}
-
-		//Update the current sequential update.
-		CatalystEngineSystemData::_CurrentSequentialUpdate = CatalystEngineSystemData::_CurrentSequentialUpdate == static_cast<CatalystEngineSystemData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemData::SequentialUpdate::NUMBER_OF_SEQUENTIAL_UPDATES) - 1) ? static_cast<CatalystEngineSystemData::SequentialUpdate>(0) : static_cast<CatalystEngineSystemData::SequentialUpdate>(UNDERLYING(CatalystEngineSystemData::_CurrentSequentialUpdate) + 1);
-	}
 
 }
 
@@ -365,7 +305,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	{
 		PROFILING_SCOPE("Sequential Update Phase");
 
-		CatalystEngineSystemLogic::ExecuteSequentialUpdate();
+		UpdateSequentially();
 	}
 
 	//Post-update the frame pacer.
@@ -450,6 +390,29 @@ uint64 CatalystEngineSystem::RegisterUpdate(const UpdateFunction update_function
 }
 
 /*
+*	Registers a  sequential update.
+*	Returns a unique identifier for this sequential update,
+*	which can later be used to query information about the update and deregister the update.
+*	Sequential updates are run sequentially at the end of the frame,
+*	e.g. if multiple are registered, it will run once ever few frames or so.
+*	Useful for systems that just needs to check a few things, kick off a few tasks or so,
+*	but doesn't need to get updated every frame.
+*/
+uint64 CatalystEngineSystem::RegisterSequentialUpdate(const UpdateFunction update_function, void* const RESTRICT update_arguments) NOEXCEPT
+{
+	//Construct the new sequential update.
+	_SequentialUpdateData.Emplace();
+	SequentialUpdateData &new_update{ _SequentialUpdateData.Back() };
+
+	new_update._Identifier = _SequentialUpdateDataCounter++;
+	new_update._UpdateFunction = update_function;
+	new_update._UpdateArguments = update_arguments;
+
+	//Return the identifier.
+	return new_update._Identifier;
+}
+
+/*
 *	Deregisters an update.
 */
 void CatalystEngineSystem::DeregisterUpdate(const uint64 identifier) NOEXCEPT
@@ -523,4 +486,22 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 			update_data->_Task.Execute();
 		}
 	}
+}
+
+/*
+*	Updates sequentially.
+*/
+void CatalystEngineSystem::UpdateSequentially() NOEXCEPT
+{
+	//If there's no updates to run, then... Don't. ¯\_(ツ)_/¯
+	if (_SequentialUpdateData.Empty())
+	{
+		return;
+	}
+
+	//Update the current sequential update index.
+	_CurrentSequentialUpdateIndex = (_CurrentSequentialUpdateIndex + 1) % _SequentialUpdateData.Size();
+
+	//Run the update.
+	_SequentialUpdateData[_CurrentSequentialUpdateIndex]._UpdateFunction(_SequentialUpdateData[_CurrentSequentialUpdateIndex]._UpdateArguments);
 }

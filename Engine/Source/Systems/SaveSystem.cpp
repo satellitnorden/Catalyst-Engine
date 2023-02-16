@@ -9,6 +9,7 @@
 #include <Save/SaveHeader.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
 
 //Singleton definition.
@@ -26,10 +27,20 @@ void SaveSystem::Initialize() NOEXCEPT
 	};
 	_ProcessSavesTask._Arguments = nullptr;
 	_ProcessSavesTask._ExecutableOnSameThread = false;
+
+	//Register the update.
+	CatalystEngineSystem::Instance->RegisterSequentialUpdate
+	(
+		[](void* const RESTRICT arguments)
+		{
+			static_cast<SaveSystem *const RESTRICT>(arguments)->SequentialUpdate();
+		},
+		this
+	);
 }
 
 /*
-*	Updates the save system during the sequential update phase.
+*	Updates the save system sequentially.
 */
 void SaveSystem::SequentialUpdate() NOEXCEPT
 {

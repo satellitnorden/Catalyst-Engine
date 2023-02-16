@@ -33,7 +33,7 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Updates the save system during the sequential update phase.
+	*	Updates the save system sequentially.
 	*/
 	void SequentialUpdate() NOEXCEPT;
 

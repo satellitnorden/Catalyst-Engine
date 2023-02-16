@@ -57,6 +57,17 @@ public:
 							const bool only_update_in_game) NOEXCEPT;
 
 	/*
+	*	Registers a  sequential update.
+	*	Returns a unique identifier for this sequential update,
+	*	which can later be used to query information about the update and deregister the update.
+	*	Sequential updates are run sequentially at the end of the frame,
+	*	e.g. if multiple are registered, it will run once ever few frames or so.
+	*	Useful for systems that just needs to check a few things, kick off a few tasks or so,
+	*	but doesn't need to get updated every frame.
+	*/
+	uint64 RegisterSequentialUpdate(const UpdateFunction update_function, void* const RESTRICT update_arguments) NOEXCEPT;
+
+	/*
 	*	Deregisters an update.
 	*/
 	void DeregisterUpdate(const uint64 identifier) NOEXCEPT;
@@ -185,6 +196,25 @@ private:
 
 	};
 
+	/*
+	*	Sequential update data class definition.
+	*/
+	class SequentialUpdateData final
+	{
+
+	public:
+
+		//The identifier.
+		uint64 _Identifier;
+
+		//The update function.
+		UpdateFunction _UpdateFunction;
+
+		//The update arguments.
+		void* RESTRICT _UpdateArguments;
+
+	};
+
 	//The project configuration.
 	CatalystProjectConfiguration _ProjectConfiguration;
 
@@ -212,6 +242,15 @@ private:
 	//Container for all end updata data.
 	StaticArray<DynamicArray<UpdateData *RESTRICT>, UNDERLYING(UpdatePhase::NUMBER_OF_UPDATES_PHASES)> _EndUpdateData;
 
+	//The sequential update data counter.
+	uint64 _SequentialUpdateDataCounter{ 0 };
+
+	//The current sequential update index.
+	uint64 _CurrentSequentialUpdateIndex{ 0 };
+
+	//The sequential update data.
+	DynamicArray<SequentialUpdateData> _SequentialUpdateData;
+
 	//Denotes if the engine is paused.
 	bool _EnginePaused{ false };
 
@@ -222,5 +261,10 @@ private:
 	*	Updates an individual phase.
 	*/
 	void UpdateIndividualPhase(const UpdatePhase phase) NOEXCEPT;
+
+	/*
+	*	Updates sequentially.
+	*/
+	void UpdateSequentially() NOEXCEPT;
 
 };
