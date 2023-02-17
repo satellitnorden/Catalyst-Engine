@@ -59,6 +59,18 @@ public:
 	}
 
 	/*
+	*	Vector3 addition assignment operator overload.
+	*/
+	FORCE_INLINE void operator+=(const Vector3<float32> &vector) NOEXCEPT
+	{
+		//Add to the local position.
+		_LocalPosition += vector;
+
+		//Update the cell.
+		UpdateCell();
+	}
+
+	/*
 	*	Returns the cell.
 	*/
 	FORCE_INLINE NO_DISCARD const Vector3<int32> &GetCell() const NOEXCEPT

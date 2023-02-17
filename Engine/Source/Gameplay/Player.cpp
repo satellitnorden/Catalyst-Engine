@@ -11,9 +11,6 @@
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
-#if USE_TEMPORARY_TERRAIN_SOLUTION
-#include <Systems/TerrainSystem.h>
-#endif
 
 /*
 *	Initialize this player.

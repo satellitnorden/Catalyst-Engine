@@ -91,6 +91,14 @@ public:
 	}
 
 	/*
+	*	Sets the world position.
+	*/
+	FORCE_INLINE void SetWorldPosition(const WorldPosition &value) NOEXCEPT
+	{
+		_WorldPosition = value;
+	}
+
+	/*
 	*	Returns the cell.
 	*/
 	FORCE_INLINE NO_DISCARD const Vector3<int32> &GetCell() const NOEXCEPT
