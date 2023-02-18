@@ -137,30 +137,6 @@ void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, EntityIn
 */
 void EntitySystem::RequestTermination(Entity* const RESTRICT entity) NOEXCEPT
 {
-	/*
-	*	If this entity is not initialized, it doesn't need termination.
-	*	But it might have been queued for initialization, so remove it from the initialization queue if that's the case.
-	*/
-	if (!entity->_Initialized)
-	{
-		//Lock the queue.
-		SCOPED_LOCK(_InitializationQueueLock);
-
-		for (uint64 i{ 0 }; i < _InitializationQueue.Size();)
-		{
-			if (entity == _InitializationQueue[i]._Entity)
-			{
-				_InitializationQueue.EraseAt<false>(i);
-			}
-
-			else
-			{
-				++i;
-			}
-		}
-	}
-	
-	else
 	{
 		//Lock the queue.
 		SCOPED_LOCK(_TerminationDestructionQueueLock);
@@ -387,13 +363,20 @@ void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 void EntitySystem::ProcessTerminationQueue() NOEXCEPT
 {
 	//Terminate all entities.
-	for (Entity *const RESTRICT entity : _TerminationQueue)
+	for (uint64 i{ 0 }; i < _TerminationQueue.Size();)
 	{
-		TerminateEntity(entity);
-	}
+		if (_TerminationQueue[i]->_Initialized)
+		{
+			TerminateEntity(_TerminationQueue[i]);
 
-	//Clear the termination queue.
-	_TerminationQueue.Clear();
+			_TerminationQueue.EraseAt<false>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
 }
 
 /*
@@ -402,13 +385,20 @@ void EntitySystem::ProcessTerminationQueue() NOEXCEPT
 void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 {
 	//Destroy all entities.
-	for (Entity *const RESTRICT entity : _DestructionQueue)
+	for (uint64 i{ 0 }; i < _DestructionQueue.Size();)
 	{
-		DestroyEntity(entity);
-	}
+		if (!_DestructionQueue[i]->_Initialized)
+		{
+			DestroyEntity(_DestructionQueue[i]);
 
-	//Clear the destruction queue.
-	_DestructionQueue.Clear();
+			_DestructionQueue.EraseAt<false>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
 }
 
 /*

@@ -520,6 +520,9 @@ void PhysicsSystem::SubPreprocessEntityPhysics(Entity *const RESTRICT entity, En
 
 				//Attach the new shape.
 				data._Actor->attachShape(*data._Shape);
+
+				//Decrement the reference count of the shape, so that it gets automatically release with the actor later.
+				data._Shape->release();
 			}
 
 			//Add the terrain entity data.
