@@ -36,7 +36,7 @@ public:
 	/*
 	*	Adds a profiling entry.
 	*/
-	void AddProfilingEntry(const char *const RESTRICT name, const float32 duration) NOEXCEPT;
+	void AddProfilingEntry(const char *const RESTRICT name, const float32 frame_duration, const float32 average_duration, const float32 maximum_duration) NOEXCEPT;
 
 	/*
 	*	Returns and clears the profiling entries.

@@ -191,7 +191,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	}
 
 	//Start the profiling scope.
-	PROFILING_SCOPE("Catalyst Engine Update");
+	PROFILING_SCOPE(CatalystEngineUpdate);
 
 	//Update the total frames.
 	++_TotalFrames;
@@ -227,7 +227,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Pre update phase.
 	*/
 	{
-		PROFILING_SCOPE("Pre Update Phase");
+		PROFILING_SCOPE(UpdatePhase_Pre);
 
 		UpdateIndividualPhase(UpdatePhase::PRE);
 	}
@@ -236,7 +236,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Entity update phase.
 	*/
 	{
-		PROFILING_SCOPE("Entity Update Phase");
+		PROFILING_SCOPE(UpdatePhase_Entity);
 
 		UpdateIndividualPhase(UpdatePhase::ENTITY);
 	}
@@ -245,7 +245,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Input update phase.
 	*/
 	{
-		PROFILING_SCOPE("Input Update Phase");
+		PROFILING_SCOPE(UpdatePhase_Input);
 
 		UpdateIndividualPhase(UpdatePhase::INPUT);
 	}
@@ -254,7 +254,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	User interface update phase.
 	*/
 	{
-		PROFILING_SCOPE("User Interface Update Phase");
+		PROFILING_SCOPE(UpdatePhase_UserInterface);
 
 		UpdateIndividualPhase(UpdatePhase::USER_INTERFACE);
 	}
@@ -263,7 +263,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Logic update phase.
 	*/
 	{
-		PROFILING_SCOPE("Logic Update Phase");
+		PROFILING_SCOPE(UpdatePhase_Logic);
 
 		UpdateIndividualPhase(UpdatePhase::LOGIC);
 	}
@@ -272,7 +272,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Physics update phase.
 	*/
 	{
-		PROFILING_SCOPE("Physics Update Phase");
+		PROFILING_SCOPE(UpdatePhase_Physics);
 
 		UpdateIndividualPhase(UpdatePhase::PHYSICS);
 	}
@@ -281,7 +281,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Render update phase.
 	*/
 	{
-		PROFILING_SCOPE("Render Update Phase");
+		PROFILING_SCOPE(UpdatePhase_Render);
 
 		UpdateIndividualPhase(UpdatePhase::RENDER);
 
@@ -294,7 +294,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Post update phase.
 	*/
 	{
-		PROFILING_SCOPE("Post Update Phase");
+		PROFILING_SCOPE(UpdatePhase_Post);
 
 		UpdateIndividualPhase(UpdatePhase::POST);
 	}
@@ -303,7 +303,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Sequential update phase.
 	*/
 	{
-		PROFILING_SCOPE("Sequential Update Phase");
+		PROFILING_SCOPE(UpdatePhase_Sequential);
 
 		UpdateSequentially();
 	}

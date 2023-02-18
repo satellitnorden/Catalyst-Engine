@@ -64,7 +64,7 @@ void ProfilingUserInterfaceScene::UpdateProfilingEntries() NOEXCEPT
 
 	for (const ProfilingEntry &current_profiling_entry : _CurrentProfilingEntries)
 	{
-		maximum_duration = CatalystBaseMath::Maximum<float32>(maximum_duration, current_profiling_entry._Duration);
+		maximum_duration = CatalystBaseMath::Maximum<float32>(maximum_duration, current_profiling_entry._AverageDuration);
 	}
 
 	//Add the UI for all profiling entries.
@@ -75,7 +75,7 @@ void ProfilingUserInterfaceScene::UpdateProfilingEntries() NOEXCEPT
 
 		//Calculate the text.
 		char buffer[256];
-		sprintf_s(buffer, "%s: %.2f milliseconds", current_profiling_entry._Name, current_profiling_entry._Duration);
+		sprintf_s(buffer, "%s: %.2f milliseconds", current_profiling_entry._Name, current_profiling_entry._AverageDuration);
 
 		//Does a progress bar exist for this entry?
 		if (_ProfilingEntryProgressBars.Empty() || _ProfilingEntryProgressBars.Size() - 1 < i)
@@ -83,13 +83,13 @@ void ProfilingUserInterfaceScene::UpdateProfilingEntries() NOEXCEPT
 			_ProfilingEntryProgressBars.Emplace(AddProgressBarByCell(	Vector2<uint32>(0, ProfilingUserInterfaceSceneConstants::MAXIMUM_NUMBER_OF_ENTRIES - 1 - static_cast<uint32>(i)),
 																		Vector2<uint32>(0, ProfilingUserInterfaceSceneConstants::MAXIMUM_NUMBER_OF_ENTRIES - 1 - static_cast<uint32>(i)),
 																		buffer));
-			_ProfilingEntryProgressBars[i]->SetCurrentProgress(current_profiling_entry._Duration / maximum_duration);
+			_ProfilingEntryProgressBars[i]->SetCurrentProgress(current_profiling_entry._AverageDuration / maximum_duration);
 		}
 
 		else
 		{
 			_ProfilingEntryProgressBars[i]->SetText(buffer);
-			_ProfilingEntryProgressBars[i]->SetCurrentProgress(current_profiling_entry._Duration / maximum_duration);
+			_ProfilingEntryProgressBars[i]->SetCurrentProgress(current_profiling_entry._AverageDuration / maximum_duration);
 		}
 	}
 }

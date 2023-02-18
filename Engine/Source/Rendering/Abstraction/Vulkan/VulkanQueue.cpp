@@ -50,7 +50,7 @@ void VulkanQueue::Present(const VulkanSemaphore *const RESTRICT renderFinishedSe
 
 	//Present!
 	{
-		PROFILING_SCOPE("Vulkan Swapchain Present");
+		PROFILING_SCOPE(VulkanSwapchainPresent);
 
 		VULKAN_ERROR_CHECK(vkQueuePresentKHR(_VulkanQueue, &presentInfo));
 	}

@@ -87,6 +87,30 @@
 #endif
 
 /*
+*	Tracks the maximum execution time of a given section of code and prints the maximum execution time in non-final builds.
+*/
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#define CATALYST_BENCHMARK_MAXIMUM_SECTION_START()																			\
+	static uint64 maximum_duration{ 0 };																					\
+	std::chrono::time_point<std::chrono::steady_clock> time_before_function{ std::chrono::high_resolution_clock::now() };
+#else
+	#define CATALYST_BENCHMARK_MAXIMUM_SECTION_START()
+#endif
+
+/*
+*	Tracks the maximum execution time of a given section of code and prints the maximum execution time in non-final builds.
+*/
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#define CATALYST_BENCHMARK_MAXIMUM_SECTION_END(NAME)																																	\
+	const uint64 execution_time{ static_cast<uint64>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - time_before_function).count()) };	\
+	if (maximum_duration < execution_time) { maximum_duration = execution_time; }																										\
+	const float32 duration{ static_cast<float32>(maximum_duration) / 1'000'000.0f };																									\
+	PRINT_TO_OUTPUT(NAME << " - " << duration << " milliseconds.");
+#else
+	#define CATALYST_BENCHMARK_MAXIMUM_SECTION_END(NAME)
+#endif
+
+/*
 *	Clears the bit at the specified index.
 */
 #define CLEAR_BIT(BIT_FIELD, BIT) (BIT_FIELD = BIT_FIELD & ~(BIT))

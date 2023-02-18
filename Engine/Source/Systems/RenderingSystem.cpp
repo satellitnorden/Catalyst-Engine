@@ -203,63 +203,63 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 {
 	//Tell the sub rendering to begin the frame.
 	{
-		PROFILING_SCOPE("_SubRenderingSystem->BeginFrame()");
+		PROFILING_SCOPE(RenderingSystem_BeginFrame);
 
 		_SubRenderingSystem->BeginFrame();
 	}
 	
 	//Update the global render data.
 	{
-		PROFILING_SCOPE("UpdateGlobalRenderData()");
+		PROFILING_SCOPE(RenderingSystem_UpdateGlobalRenderData);
 
 		UpdateGlobalRenderData();
 	}
 
 	//Update the camera system.
 	{
-		PROFILING_SCOPE("_CameraSystem.RenderUpdate()");
+		PROFILING_SCOPE(RenderingSystem_CameraSystem_RenderUpdate);
 
 		_CameraSystem.RenderUpdate();
 	}
 
 	//Update the lighting system.
 	{
-		PROFILING_SCOPE("_LightingSystem.RenderUpdate()");
+		PROFILING_SCOPE(RenderingSystem_LightingSystem_RenderUpdate);
 
 		_LightingSystem.RenderUpdate();
 	}
 
 	//Update the material system.
 	{
-		PROFILING_SCOPE("_MaterialSystem.RenderUpdate()");
+		PROFILING_SCOPE(RenderingSystem_MaterialSystem_RenderUpdate);
 
 		_MaterialSystem.RenderUpdate();
 	}
 
 	//Update the ray tracing system.
 	{
-		PROFILING_SCOPE("_RayTracingSystem.RenderUpdate()");
+		PROFILING_SCOPE(RenderingSystem_RayTracingSystem_RenderUpdate);
 
 		_RayTracingSystem.RenderUpdate();
 	}
 
 	//Update the virtual reality system.
 	{
-		PROFILING_SCOPE("_VirtualRealitySystem.RenderUpdate()");
+		PROFILING_SCOPE(RenderingSystem_VirtualRealitySystem_RenderUpdate);
 
 		_VirtualRealitySystem.RenderUpdate();
 	}
 
 	//This shouldn't really be here, but let's have it here for now...
 	{
-		PROFILING_SCOPE("AnimationSystem::Instance->RenderUpdate()");
+		PROFILING_SCOPE(RenderingSystem_AnimationSystem_RenderUpdate);
 
 		AnimationSystem::Instance->RenderUpdate();
 	}
 
 	//Execute all render passes.
 	{
-		PROFILING_SCOPE("Execute All Render Passes");
+		PROFILING_SCOPE(RenderingSystem_ExecuteAllRenderPasses);
 
 		for (RenderPass *const RESTRICT render_pass : _RenderPasses)
 		{
@@ -303,7 +303,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 
 	//Tell the sub rendering system to end the frame.
 	{
-		PROFILING_SCOPE("_SubRenderingSystem->EndFrame()");
+		PROFILING_SCOPE(RenderingSystem_SubRenderingSystem_EndFrame);
 
 		_SubRenderingSystem->EndFrame(frame_command_buffer);
 	}

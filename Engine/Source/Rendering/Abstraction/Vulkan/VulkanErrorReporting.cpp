@@ -54,7 +54,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanErrorReporting::ErrorCallback(	VkDebugUtils
 {
 	PRINT_TO_OUTPUT(pCallbackData->pMessage);
 
-#if 0
+#if 1
 	{
 		DynamicString message{ pCallbackData->pMessage };
 

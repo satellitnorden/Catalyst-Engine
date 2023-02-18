@@ -17,10 +17,12 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE ProfilingEntry(const char *const RESTRICT initial_name, const float32 initial_duration) NOEXCEPT
+	FORCE_INLINE ProfilingEntry(const char *const RESTRICT initial_name, const float32 initial_frame_duration, const float32 initial_average_duration, const float32 inifial_maximum_duration) NOEXCEPT
 		:
 		_Name(initial_name),
-		_Duration(initial_duration)
+		_FrameDuration(initial_frame_duration),
+		_AverageDuration(initial_average_duration),
+		_MaximumDuration(inifial_maximum_duration)
 	{
 
 	}
@@ -28,7 +30,13 @@ public:
 	//The name.
 	const char *RESTRICT _Name;
 
-	//The duration.
-	float32 _Duration;
+	//The frame duration.
+	float32 _FrameDuration;
+
+	//The average duration.
+	float32 _AverageDuration;
+
+	//The maximum duration.
+	float32 _MaximumDuration;
 
 };

@@ -33,11 +33,11 @@ void ProfilingSystem::Initialize() NOEXCEPT
 /*
 *	Adds a profiling entry.
 */
-void ProfilingSystem::AddProfilingEntry(const char *const RESTRICT name, const float32 duration) NOEXCEPT
+void ProfilingSystem::AddProfilingEntry(const char* const RESTRICT name, const float32 frame_duration, const float32 average_duration, const float32 maximum_duration) NOEXCEPT
 {
 	SCOPED_LOCK(_ProfilingEntriesLock);
 
-	_ProfilingEntries.Emplace(name, duration);
+	_ProfilingEntries.Emplace(name, frame_duration, average_duration, maximum_duration);
 }
 
 /*

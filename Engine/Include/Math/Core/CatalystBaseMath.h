@@ -285,8 +285,8 @@ public:
 	/*
 	*	Linearly interpolate between two values.
 	*/
-	template <typename TYPE>
-	FORCE_INLINE constexpr static NO_DISCARD TYPE LinearlyInterpolate(const TYPE A, const TYPE B, const float32 alpha) NOEXCEPT
+	template <typename TYPE_TYPE, typename ALPHA_TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE_TYPE LinearlyInterpolate(const TYPE_TYPE A, const TYPE_TYPE B, const ALPHA_TYPE alpha) NOEXCEPT
 	{
 		return (A * (1.0f - alpha)) + (B * alpha);
 	}
