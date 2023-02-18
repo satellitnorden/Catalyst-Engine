@@ -121,51 +121,39 @@ void TerrainEntity::Preprocess(EntityInitializationData* const RESTRICT data) NO
 */
 void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT
 {
-	{
-		CATALYST_BENCHMARK_AVERAGE_SECTION_START();
+	//Retrieve a new components index for this sound entity.
+	_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(this);
 
-		//Retrieve a new components index for this sound entity.
-		_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(this);
+	//Copy the data.
+	TerrainInitializationData* const RESTRICT terrain_initialization_data{ static_cast<TerrainInitializationData* const RESTRICT>(data) };
+	TerrainGeneralComponent& general_component{ ComponentManager::GetTerrainTerrainGeneralComponents()[_ComponentsIndex] };
+	TerrainRenderComponent& render_component{ ComponentManager::GetTerrainTerrainRenderComponents()[_ComponentsIndex] };
 
-		//Copy the data.
-		TerrainInitializationData* const RESTRICT terrain_initialization_data{ static_cast<TerrainInitializationData* const RESTRICT>(data) };
-		TerrainGeneralComponent& general_component{ ComponentManager::GetTerrainTerrainGeneralComponents()[_ComponentsIndex] };
-		TerrainRenderComponent& render_component{ ComponentManager::GetTerrainTerrainRenderComponents()[_ComponentsIndex] };
+	ASSERT(general_component._HeightMap.GetWidth() == general_component._HeightMap.GetHeight(), "Terrain height map width and height doesn't match - This isn't okay.");
 
-		ASSERT(general_component._HeightMap.GetWidth() == general_component._HeightMap.GetHeight(), "Terrain height map width and height doesn't match - This isn't okay.");
+	general_component._WorldPosition = terrain_initialization_data->_WorldPosition;
+	general_component._HeightMap = std::move(terrain_initialization_data->_HeightMap);
+	general_component._NormalMap = std::move(terrain_initialization_data->_NormalMap);
+	general_component._IndexMap = std::move(terrain_initialization_data->_IndexMap);
+	general_component._BlendMap = std::move(terrain_initialization_data->_BlendMap);
 
-		general_component._WorldPosition = terrain_initialization_data->_WorldPosition;
-		general_component._HeightMap = std::move(terrain_initialization_data->_HeightMap);
-		general_component._NormalMap = std::move(terrain_initialization_data->_NormalMap);
-		general_component._IndexMap = std::move(terrain_initialization_data->_IndexMap);
-		general_component._BlendMap = std::move(terrain_initialization_data->_BlendMap);
+	render_component._Buffer = terrain_initialization_data->_PreprocessedData._Buffer;
+	render_component._IndexOffset = terrain_initialization_data->_PreprocessedData._IndexOffset;
+	render_component._IndexCount = terrain_initialization_data->_PreprocessedData._IndexCount;
+	render_component._HeightMapTexture = terrain_initialization_data->_PreprocessedData._HeightMapTexture;
+	render_component._HeightMapTextureIndex = terrain_initialization_data->_PreprocessedData._HeightMapTextureIndex;
+	render_component._NormalMapTexture = terrain_initialization_data->_PreprocessedData._NormalMapTexture;
+	render_component._NormalMapTextureIndex = terrain_initialization_data->_PreprocessedData._NormalMapTextureIndex;
+	render_component._IndexMapTexture = terrain_initialization_data->_PreprocessedData._IndexMapTexture;
+	render_component._IndexMapTextureIndex = terrain_initialization_data->_PreprocessedData._IndexMapTextureIndex;
+	render_component._BlendMapTexture = terrain_initialization_data->_PreprocessedData._BlendMapTexture;
+	render_component._BlendMapTextureIndex = terrain_initialization_data->_PreprocessedData._BlendMapTextureIndex;
 
-		render_component._Buffer = terrain_initialization_data->_PreprocessedData._Buffer;
-		render_component._IndexOffset = terrain_initialization_data->_PreprocessedData._IndexOffset;
-		render_component._IndexCount = terrain_initialization_data->_PreprocessedData._IndexCount;
-		render_component._HeightMapTexture = terrain_initialization_data->_PreprocessedData._HeightMapTexture;
-		render_component._HeightMapTextureIndex = terrain_initialization_data->_PreprocessedData._HeightMapTextureIndex;
-		render_component._NormalMapTexture = terrain_initialization_data->_PreprocessedData._NormalMapTexture;
-		render_component._NormalMapTextureIndex = terrain_initialization_data->_PreprocessedData._NormalMapTextureIndex;
-		render_component._IndexMapTexture = terrain_initialization_data->_PreprocessedData._IndexMapTexture;
-		render_component._IndexMapTextureIndex = terrain_initialization_data->_PreprocessedData._IndexMapTextureIndex;
-		render_component._BlendMapTexture = terrain_initialization_data->_PreprocessedData._BlendMapTexture;
-		render_component._BlendMapTextureIndex = terrain_initialization_data->_PreprocessedData._BlendMapTextureIndex;
+	//Destroy the initialization data.
+	EntitySystem::Instance->DestroyInitializationData<TerrainInitializationData>(data);
 
-		//Destroy the initialization data.
-		EntitySystem::Instance->DestroyInitializationData<TerrainInitializationData>(data);
-
-		CATALYST_BENCHMARK_AVERAGE_SECTION_END("TerrainEntity::Initialize()");
-	}
-
-	{
-		CATALYST_BENCHMARK_AVERAGE_SECTION_START();
-
-		//Initialize the entity physics.
-		PhysicsSystem::Instance->InitializeEntityPhysics(this);
-
-		CATALYST_BENCHMARK_AVERAGE_SECTION_END("TerrainEntity::Initialize - InitializeEntityPhysics()");
-	}
+	//Initialize the entity physics.
+	PhysicsSystem::Instance->InitializeEntityPhysics(this);
 }
 
 /*
