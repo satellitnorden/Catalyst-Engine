@@ -39,9 +39,6 @@ namespace TerrainGeneralUtilities
 				vertex._Position._X = static_cast<float32>(i) / static_cast<float32>(resolution - 1) - 0.5f;
 				vertex._Position._Y = static_cast<float32>(j) / static_cast<float32>(resolution - 1) - 0.5f;
 
-				vertex._TextureCoordinate._X = static_cast<float32>(i) / static_cast<float32>(resolution - 1);
-				vertex._TextureCoordinate._Y = static_cast<float32>(j) / static_cast<float32>(resolution - 1);
-
 				vertex._Borders = 0;
 
 				//Left.

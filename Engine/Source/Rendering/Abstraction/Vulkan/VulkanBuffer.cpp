@@ -44,11 +44,7 @@ void VulkanBuffer::Initialize(const VkDeviceSize size, const VkBufferUsageFlags 
 void VulkanBuffer::Release() NOEXCEPT
 {
 	//Destroy this Vulkan buffer.
-	{
-		CATALYST_BENCHMARK_AVERAGE_SECTION_START();
-		vmaDestroyBuffer(VULKAN_MEMORY_ALLOCATOR, _VulkanBuffer, _Allocation);
-		CATALYST_BENCHMARK_AVERAGE_SECTION_END("vmaDestroyBuffer(VULKAN_MEMORY_ALLOCATOR, _VulkanBuffer, _Allocation);");
-	}
+	vmaDestroyBuffer(VULKAN_MEMORY_ALLOCATOR, _VulkanBuffer, _Allocation);
 }
 
 /*

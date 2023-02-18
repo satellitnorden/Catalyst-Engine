@@ -107,10 +107,6 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 										offsetof(TerrainVertex, _Position));
 	AddVertexInputAttributeDescription(	1,
 										0,
-										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-										offsetof(TerrainVertex, _TextureCoordinate));
-	AddVertexInputAttributeDescription(	2,
-										0,
 										VertexInputAttributeDescription::Format::X32SignedInt,
 										offsetof(TerrainVertex, _Borders));
 
