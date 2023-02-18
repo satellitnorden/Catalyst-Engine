@@ -28,6 +28,22 @@ public:
 	DistanceTriggerEntity() NOEXCEPT;
 
 	/*
+	*	Returns the preprocessing parameters.
+	*/
+	FORCE_INLINE void GetPreprocessingParameters(EntityPreprocessingParameters* const RESTRICT parameters) NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Preprocesses this entity.
+	*/
+	FORCE_INLINE void Preprocess(EntityInitializationData* const RESTRICT data) NOEXCEPT
+	{
+
+	}
+
+	/*
 	*	Initializes this entity.
 	*/
 	void Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT;

@@ -19,6 +19,7 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/TaskSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(EntitySystem);
@@ -293,40 +294,89 @@ void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 	}
 
 	//Iterate through all initialization request and check for the force flag.
-	uint64 forceInitialized{ 0 };
-	uint64 counter{ _InitializationQueue.Size() - 1 };
+	uint64 force_initialized{ 0 };
 
-	for (uint64 i = 0, size = _InitializationQueue.Size(); i < size; ++i)
+	for (int64 i{ static_cast<int64>(_InitializationQueue.LastIndex()) }; i >= 0; --i)
 	{
-		InitializationData& data{ _InitializationQueue[counter] };
+		InitializationData &data{ _InitializationQueue[i] };
 
 		if (data._Force)
 		{
+#if !defined(CATALYST_CONFIGURATION)
+			{
+				EntityPreprocessingParameters parameters;
+
+				data._Entity->GetPreprocessingParameters(&parameters);
+
+				ASSERT(!parameters._ShouldPreprocess, "Can't force entities that require preprocessing!");
+			}
+#endif
+
 			InitializeEntity(data._Entity, data._Data);
 
-			++forceInitialized;
+			++force_initialized;
 
-			_InitializationQueue.EraseAt<false>(counter);
+			_InitializationQueue.EraseAt<false>(i);
 		}
-
-		--counter;
 	}
 
 	//If none were force-initialized, just initialize one.
-	if (forceInitialized == 0)
+
+	for (uint64 i{ 0 }, size{ _InitializationQueue.Size() }; i < size; ++i)
 	{
-		InitializationData *RESTRICT dataToInitialize = &_InitializationQueue.Back();
+		InitializationData &data{ _InitializationQueue[i] };
 
-		InitializeEntity(dataToInitialize->_Entity, dataToInitialize->_Data);
+		EntityPreprocessingParameters parameters;
 
-		if (dataToInitialize == &_InitializationQueue.Back())
+		data._Entity->GetPreprocessingParameters(&parameters);
+
+		if (parameters._ShouldPreprocess)
 		{
-			_InitializationQueue.Pop();
+			if (data._PreprocessingData)
+			{
+				if (data._PreprocessingData->_Task.IsExecuted())
+				{
+					InitializeEntity(data._Entity, data._Data);
+
+					MemorySystem::Instance->TypeFree<InitializationData::PreprocessingData>(data._PreprocessingData);
+
+					_InitializationQueue.EraseAt<false>(i);
+
+					break;
+				}
+
+				else
+				{
+					continue;
+				}
+			}
+
+			else
+			{
+				data._PreprocessingData = MemorySystem::Instance->TypeAllocate<InitializationData::PreprocessingData>();
+
+				data._PreprocessingData->_Task._Function = [](void *const RESTRICT arguments)
+				{
+					InitializationData::PreprocessingData *const RESTRICT preprocessing_data{ static_cast<InitializationData::PreprocessingData*const RESTRICT>(arguments) };
+
+					preprocessing_data->_Entity->Preprocess(preprocessing_data->_Data);
+				};
+				data._PreprocessingData->_Task._Arguments = data._PreprocessingData;
+				data._PreprocessingData->_Task._ExecutableOnSameThread = parameters._CanPreprocessOnMainThread;
+				data._PreprocessingData->_Entity = data._Entity;
+				data._PreprocessingData->_Data = data._Data;
+
+				TaskSystem::Instance->ExecuteTask(&data._PreprocessingData->_Task);
+			}
 		}
 
 		else
 		{
-			_InitializationQueue.Erase<false>(*dataToInitialize);
+			InitializeEntity(data._Entity, data._Data);
+
+			_InitializationQueue.EraseAt<false>(i);
+
+			break;
 		}
 	}
 }

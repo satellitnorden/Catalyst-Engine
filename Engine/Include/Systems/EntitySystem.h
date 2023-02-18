@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Concurrency.
+#include <Concurrency/Task.h>
 #include <Concurrency/Spinlock.h>
 
 //Entities.
@@ -112,6 +113,24 @@ private:
 
 	public:
 
+		/*
+		*	Preprocessing data class definition.
+		*/
+		class PreprocessingData final
+		{
+
+		public:
+
+			//The task.
+			Task _Task;
+
+			//The entity to initialize.
+			Entity* RESTRICT _Entity;
+
+			//The initialization data.
+			EntityInitializationData* RESTRICT _Data;
+		};
+
 		//The entity to initialize.
 		Entity *RESTRICT _Entity;
 
@@ -120,6 +139,9 @@ private:
 
 		//Denotes whether or not to force this initialization.
 		bool _Force;
+
+		//The preprocessing data.
+		PreprocessingData *RESTRICT _PreprocessingData{ nullptr };
 
 		/*
 		*	Default constructor, prohibited - must be constructed with the proper arguments.

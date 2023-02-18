@@ -7,6 +7,7 @@
 //Entities.
 #include <Entities/Core/EntityCore.h>
 #include <Entities/Creation/EntityInitializationData.h>
+#include <Entities/Creation/EntityPreprocessingParameters.h>
 
 //Math.
 #include <Math/General/Matrix.h>
@@ -24,6 +25,16 @@ public:
 
 	//The components index for this entity.
 	uint64 _ComponentsIndex;
+
+	/*
+	*	Returns the preprocessing parameters.	
+	*/
+	void GetPreprocessingParameters(EntityPreprocessingParameters *const RESTRICT parameters) NOEXCEPT;
+
+	/*
+	*	Preprocesses this entity.
+	*/
+	void Preprocess(EntityInitializationData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Initializes this entity.

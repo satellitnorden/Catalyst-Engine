@@ -71,6 +71,15 @@ void PhysicsSystem::CreateCollisionModel(const CollisionModelData &collision_mod
 }
 
 /*
+*	Preprocesses the physics for the given entity.
+*/
+void PhysicsSystem::PreprocessEntityPhysics(Entity *const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
+{
+	//Preprocess the sub-system physics for this entity.
+	SubPreprocessEntityPhysics(entity, data);
+}
+
+/*
 *	Initializes the physics for the given entity.
 */
 void PhysicsSystem::InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT

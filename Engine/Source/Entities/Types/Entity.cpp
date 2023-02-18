@@ -18,6 +18,42 @@
 #include <Entities/Types/UserInterfaceEntity.h>
 
 /*
+*	Returns the preprocessing parameters.
+*/
+void Entity::GetPreprocessingParameters(EntityPreprocessingParameters *const RESTRICT parameters) NOEXCEPT
+{
+	switch (_Type)
+	{
+#define ENTITY_TYPE(VALUE) case EntityType::VALUE:														\
+		{																								\
+			static_cast<VALUE##Entity *const RESTRICT>(this)->GetPreprocessingParameters(parameters);	\
+																										\
+			break;																						\
+		}
+		ENTITY_TYPES
+#undef ENTITY_TYPE
+	}
+}
+
+/*
+*	Preprocesses this entity.
+*/
+void Entity::Preprocess(EntityInitializationData *const RESTRICT data) NOEXCEPT
+{
+	switch (_Type)
+	{
+#define ENTITY_TYPE(VALUE) case EntityType::VALUE:								\
+		{																		\
+			static_cast<VALUE##Entity *const RESTRICT>(this)->Preprocess(data);	\
+																				\
+			break;																\
+		}
+		ENTITY_TYPES
+#undef ENTITY_TYPE
+	}
+}
+
+/*
 *	Initializes this entity.
 */
 void Entity::Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT

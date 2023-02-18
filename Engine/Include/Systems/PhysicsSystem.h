@@ -55,6 +55,11 @@ public:
 	void CreateCollisionModel(const CollisionModelData &collision_model_data, CollisionModelHandle *const RESTRICT collision_model) NOEXCEPT;
 
 	/*
+	*	Preprocesses the physics for the given entity.
+	*/
+	void PreprocessEntityPhysics(Entity *const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
+
+	/*
 	*	Initializes the physics for the given entity.
 	*/
 	void InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
@@ -121,6 +126,11 @@ private:
 	*	Terminates the physics sub-system.
 	*/
 	void SubTerminate() NOEXCEPT;
+
+	/*
+	*	Preprocesses the sub-system physics for the given entity.
+	*/
+	void SubPreprocessEntityPhysics(Entity *const RESTRICT entity, EntityInitializationData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Initializes the sub-system physics for the given entity.

@@ -24,30 +24,27 @@ TerrainEntity::TerrainEntity() NOEXCEPT
 }
 
 /*
-*	Initializes this entity.
+*	Returns the preprocessing parameters.
 */
-void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT
+void TerrainEntity::GetPreprocessingParameters(EntityPreprocessingParameters *const RESTRICT parameters) NOEXCEPT
 {
-	//Retrieve a new components index for this sound entity.
-	_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(this);
+	parameters->_ShouldPreprocess = true;
+	parameters->_CanPreprocessOnMainThread = false;
+}
 
-	//Copy the data.
+/*
+*	Preprocesses this entity.
+*/
+void TerrainEntity::Preprocess(EntityInitializationData* const RESTRICT data) NOEXCEPT
+{
+	//Cast to terrain initialization data.
 	TerrainInitializationData *const RESTRICT terrain_initialization_data{ static_cast<TerrainInitializationData* const RESTRICT>(data) };
-	TerrainGeneralComponent &general_component{ ComponentManager::GetTerrainTerrainGeneralComponents()[_ComponentsIndex] };
-	TerrainRenderComponent &render_component{ ComponentManager::GetTerrainTerrainRenderComponents()[_ComponentsIndex] };
 
-	ASSERT(general_component._HeightMap.GetWidth() == general_component._HeightMap.GetHeight(), "Terrain height map width and height doesn't match - This isn't okay.");
-
-	general_component._WorldPosition = terrain_initialization_data->_WorldPosition;
-	general_component._HeightMap = std::move(terrain_initialization_data->_HeightMap);
-	general_component._NormalMap = std::move(terrain_initialization_data->_NormalMap);
-	general_component._IndexMap = std::move(terrain_initialization_data->_IndexMap);
-	general_component._BlendMap = std::move(terrain_initialization_data->_BlendMap);
-
+	//Construct the plane.
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
 
-	TerrainGeneralUtilities::GenerateTerrainPlane(	general_component._HeightMap.GetWidth(),
+	TerrainGeneralUtilities::GenerateTerrainPlane(	terrain_initialization_data->_HeightMap.GetResolution(),
 													&vertices,
 													&indices);
 	StaticArray<void* RESTRICT, 2> buffer_data;
@@ -60,57 +57,115 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 	buffer_data_sizes[0] = sizeof(TerrainVertex) * vertices.Size();
 	buffer_data_sizes[1] = sizeof(uint32) * indices.Size();
 
-	RenderingSystem::Instance->CreateBuffer(buffer_data_sizes[0] + buffer_data_sizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &render_component._Buffer);
-	RenderingSystem::Instance->UploadDataToBuffer(buffer_data.Data(), buffer_data_sizes.Data(), 2, &render_component._Buffer);
+	RenderingSystem::Instance->CreateBuffer(buffer_data_sizes[0] + buffer_data_sizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &terrain_initialization_data->_PreprocessedData._Buffer);
+	RenderingSystem::Instance->UploadDataToBuffer(buffer_data.Data(), buffer_data_sizes.Data(), 2, &terrain_initialization_data->_PreprocessedData._Buffer);
 
-	render_component._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
-	render_component._IndexCount = static_cast<uint32>(indices.Size());
+	terrain_initialization_data->_PreprocessedData._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
+	terrain_initialization_data->_PreprocessedData._IndexCount = static_cast<uint32>(indices.Size());
 
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(general_component._HeightMap), TextureFormat::R_FLOAT32, TextureUsage::NONE), &render_component._HeightMapTexture);
+	//Create the height map texture.
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(terrain_initialization_data->_HeightMap), TextureFormat::R_FLOAT32, TextureUsage::NONE), &terrain_initialization_data->_PreprocessedData._HeightMapTexture);
 
-	render_component._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(render_component._HeightMapTexture);
-	Texture2D<Vector4<uint8>> converted_normal_map{ general_component._NormalMap.GetResolution() };
+	terrain_initialization_data->_PreprocessedData._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(terrain_initialization_data->_PreprocessedData._HeightMapTexture);
 
-	for (uint32 Y{ 0 }; Y < converted_normal_map.GetResolution(); ++Y)
+	//Create the normal map texture.
 	{
-		for (uint32 X{ 0 }; X < converted_normal_map.GetResolution(); ++X)
-		{
-			const Vector3<float32> &actual_normal{ general_component._NormalMap.At(X, Y) };
+		Texture2D<Vector4<uint8>> converted_normal_map_texture{ terrain_initialization_data->_NormalMap.GetResolution() };
 
-			for (uint8 i{ 0 }; i < 3; ++i)
+		for (uint32 Y{ 0 }; Y < converted_normal_map_texture.GetResolution(); ++Y)
+		{
+			for (uint32 X{ 0 }; X < converted_normal_map_texture.GetResolution(); ++X)
 			{
-				converted_normal_map.At(X, Y)[i] = static_cast<uint8>((actual_normal[i] * 0.5f + 0.5f) * static_cast<float32>(UINT8_MAXIMUM));
+				const Vector3<float32>& actual_normal{ terrain_initialization_data->_NormalMap.At(X, Y) };
+
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					converted_normal_map_texture.At(X, Y)[i] = static_cast<uint8>((actual_normal[i] * 0.5f + 0.5f) * static_cast<float32>(UINT8_MAXIMUM));
+				}
 			}
 		}
+
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_normal_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &terrain_initialization_data->_PreprocessedData._NormalMapTexture);
+		terrain_initialization_data->_PreprocessedData._NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(terrain_initialization_data->_PreprocessedData._NormalMapTexture);
 	}
 
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_normal_map), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &render_component._NormalMapTexture);
-	render_component._NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(render_component._NormalMapTexture);
+	//Create the index map texture.
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(terrain_initialization_data->_IndexMap), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &terrain_initialization_data->_PreprocessedData._IndexMapTexture);
+	terrain_initialization_data->_PreprocessedData._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(terrain_initialization_data->_PreprocessedData._IndexMapTexture);
 
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(general_component._IndexMap), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &render_component._IndexMapTexture);
-	render_component._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(render_component._IndexMapTexture);
-
-	Texture2D<Vector4<uint8>> converted_blend_map{ general_component._BlendMap.GetResolution() };
-
-	for (uint32 Y{ 0 }; Y < converted_blend_map.GetResolution(); ++Y)
+	//Create the blend map texture.
 	{
-		for (uint32 X{ 0 }; X < converted_blend_map.GetResolution(); ++X)
+		Texture2D<Vector4<uint8>> converted_blend_map_texture{ terrain_initialization_data->_NormalMap.GetResolution() };
+
+		for (uint32 Y{ 0 }; Y < converted_blend_map_texture.GetResolution(); ++Y)
 		{
-			for (uint8 i{ 0 }; i < 4; ++i)
+			for (uint32 X{ 0 }; X < converted_blend_map_texture.GetResolution(); ++X)
 			{
-				converted_blend_map.At(X, Y)[i] = static_cast<uint8>(general_component._BlendMap.At(X, Y)[i] * static_cast<float32>(UINT8_MAXIMUM));
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					converted_blend_map_texture.At(X, Y)[i] = static_cast<uint8>(terrain_initialization_data->_BlendMap.At(X, Y)[i] * static_cast<float32>(UINT8_MAXIMUM));
+				}
 			}
 		}
+
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &terrain_initialization_data->_PreprocessedData._BlendMapTexture);
+		terrain_initialization_data->_PreprocessedData._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(terrain_initialization_data->_PreprocessedData._BlendMapTexture);
 	}
 
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &render_component._BlendMapTexture);
-	render_component._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(render_component._BlendMapTexture);
+	//Preprocess the entity physics.
+	PhysicsSystem::Instance->PreprocessEntityPhysics(this, data);
+}
 
-	//Destroy the initialization data.
-	EntitySystem::Instance->DestroyInitializationData<TerrainInitializationData>(data);
+/*
+*	Initializes this entity.
+*/
+void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT
+{
+	{
+		CATALYST_BENCHMARK_AVERAGE_SECTION_START();
 
-	//Initialize the entity physics.
-	PhysicsSystem::Instance->InitializeEntityPhysics(this);
+		//Retrieve a new components index for this sound entity.
+		_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(this);
+
+		//Copy the data.
+		TerrainInitializationData* const RESTRICT terrain_initialization_data{ static_cast<TerrainInitializationData* const RESTRICT>(data) };
+		TerrainGeneralComponent& general_component{ ComponentManager::GetTerrainTerrainGeneralComponents()[_ComponentsIndex] };
+		TerrainRenderComponent& render_component{ ComponentManager::GetTerrainTerrainRenderComponents()[_ComponentsIndex] };
+
+		ASSERT(general_component._HeightMap.GetWidth() == general_component._HeightMap.GetHeight(), "Terrain height map width and height doesn't match - This isn't okay.");
+
+		general_component._WorldPosition = terrain_initialization_data->_WorldPosition;
+		general_component._HeightMap = std::move(terrain_initialization_data->_HeightMap);
+		general_component._NormalMap = std::move(terrain_initialization_data->_NormalMap);
+		general_component._IndexMap = std::move(terrain_initialization_data->_IndexMap);
+		general_component._BlendMap = std::move(terrain_initialization_data->_BlendMap);
+
+		render_component._Buffer = terrain_initialization_data->_PreprocessedData._Buffer;
+		render_component._IndexOffset = terrain_initialization_data->_PreprocessedData._IndexOffset;
+		render_component._IndexCount = terrain_initialization_data->_PreprocessedData._IndexCount;
+		render_component._HeightMapTexture = terrain_initialization_data->_PreprocessedData._HeightMapTexture;
+		render_component._HeightMapTextureIndex = terrain_initialization_data->_PreprocessedData._HeightMapTextureIndex;
+		render_component._NormalMapTexture = terrain_initialization_data->_PreprocessedData._NormalMapTexture;
+		render_component._NormalMapTextureIndex = terrain_initialization_data->_PreprocessedData._NormalMapTextureIndex;
+		render_component._IndexMapTexture = terrain_initialization_data->_PreprocessedData._IndexMapTexture;
+		render_component._IndexMapTextureIndex = terrain_initialization_data->_PreprocessedData._IndexMapTextureIndex;
+		render_component._BlendMapTexture = terrain_initialization_data->_PreprocessedData._BlendMapTexture;
+		render_component._BlendMapTextureIndex = terrain_initialization_data->_PreprocessedData._BlendMapTextureIndex;
+
+		//Destroy the initialization data.
+		EntitySystem::Instance->DestroyInitializationData<TerrainInitializationData>(data);
+
+		CATALYST_BENCHMARK_AVERAGE_SECTION_END("TerrainEntity::Initialize()");
+	}
+
+	{
+		CATALYST_BENCHMARK_AVERAGE_SECTION_START();
+
+		//Initialize the entity physics.
+		PhysicsSystem::Instance->InitializeEntityPhysics(this);
+
+		CATALYST_BENCHMARK_AVERAGE_SECTION_END("TerrainEntity::Initialize - InitializeEntityPhysics()");
+	}
 }
 
 /*

@@ -17,6 +17,49 @@ class TerrainInitializationData final : public EntityInitializationData
 
 public:
 
+	/*
+	*	Preprocessed data class definition.
+	*/
+	class PreprocessedData final
+	{
+
+	public:
+
+		//The buffer.
+		BufferHandle _Buffer;
+
+		//The index offset.
+		uint32 _IndexOffset;
+
+		//The index count.
+		uint32 _IndexCount;
+
+		//The height map texture.
+		Texture2DHandle _HeightMapTexture;
+
+		//The height map texture index.
+		uint32 _HeightMapTextureIndex;
+
+		//The normal map texture.
+		Texture2DHandle _NormalMapTexture;
+
+		//The normal map texture index.
+		uint32 _NormalMapTextureIndex;
+
+		//The index map texture.
+		Texture2DHandle _IndexMapTexture;
+
+		//The index map texture index.
+		uint32 _IndexMapTextureIndex;
+
+		//The blend map texture.
+		Texture2DHandle _BlendMapTexture;
+
+		//The blend map texture index.
+		uint32 _BlendMapTextureIndex;
+
+	};
+
 	//The world position.
 	WorldPosition _WorldPosition;
 
@@ -31,5 +74,8 @@ public:
 
 	//The blend map.
 	Texture2D<Vector4<float32>> _BlendMap;
+
+	//The preprocessed data.
+	PreprocessedData _PreprocessedData;
 
 };

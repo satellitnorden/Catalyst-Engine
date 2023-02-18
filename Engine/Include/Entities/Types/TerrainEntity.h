@@ -17,6 +17,16 @@ public:
 	TerrainEntity() NOEXCEPT;
 
 	/*
+	*	Returns the preprocessing parameters.
+	*/
+	void GetPreprocessingParameters(EntityPreprocessingParameters *const RESTRICT parameters) NOEXCEPT;
+
+	/*
+	*	Preprocesses this entity.
+	*/
+	void Preprocess(EntityInitializationData *const RESTRICT data) NOEXCEPT;
+
+	/*
 	*	Initializes this entity.
 	*/
 	void Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT;
