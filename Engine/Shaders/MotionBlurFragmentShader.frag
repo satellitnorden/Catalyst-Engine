@@ -174,7 +174,7 @@ void CatalystShaderMain()
 
 		for (uint i = 0; i < MOTION_BLUR_SAMPLES; ++i)
 		{
-			blurred_scene += texture(sampler2D(SCENE_TEXTURE, GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + blur_direction * offsets[i]).rgb;
+			blurred_scene += texture(sampler2D(SCENE_TEXTURE, GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate + blur_direction * offsets[i]).rgb;
 		}
 
 		blurred_scene /= MOTION_BLUR_SAMPLES;

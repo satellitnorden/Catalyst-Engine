@@ -7,6 +7,7 @@
 #include <Concurrency/Spinlock.h>
 
 //Rendering.
+#include <Rendering/Abstraction/Vulkan/VulkanMemoryAllocator.h>
 #include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
 
 //Systems.
@@ -46,6 +47,9 @@ void VulkanInterface::Initialize() NOEXCEPT
 
 	//Tell the platform that the logical device has been created.
 	VulkanPlatform::OnLogicalDeviceCreated();
+
+	//Create the Vulkan memory allocator.
+	CreateVulkanMemoryAllocator();
 
 	//Initialize the Vulkan swap chain.
 	_VulkanSwapchain.Initialize();
@@ -258,6 +262,9 @@ void VulkanInterface::Release() NOEXCEPT
 
 	//Release the Vulkan swap chain.
 	_VulkanSwapchain.Release();
+
+	//Destroy the Vulkan memory allocator.
+	DestroyVulkanMemoryAllocator();
 
 	//Release the Vulkan logical device.
 	_VulkanLogicalDevice.Release();
@@ -855,5 +862,43 @@ RESTRICTED VulkanShaderModule *const RESTRICT VulkanInterface::CreateShaderModul
 	}
 
 	return new_shader_module;
+}
+
+/*
+*	Create the Vulkan memory allocator.
+*/
+void VulkanInterface::CreateVulkanMemoryAllocator() NOEXCEPT
+{
+	VmaAllocatorCreateInfo info;
+
+	info.flags = 0;
+	info.physicalDevice = _VulkanPhysicalDevice.Get();
+	info.device = _VulkanLogicalDevice.Get();
+	info.preferredLargeHeapBlockSize = 0;
+	info.pAllocationCallbacks = nullptr;
+	info.pDeviceMemoryCallbacks = nullptr;
+	info.pHeapSizeLimit = nullptr;
+	info.pVulkanFunctions = nullptr;
+	info.instance = _VulkanInstance.Get();
+
+#if defined(CATALYST_PLATFORM_ANDROID)
+	info.vulkanApiVersion = VK_API_VERSION_1_0;
+#endif
+
+#if defined(CATALYST_PLATFORM_WINDOWS)
+	info.vulkanApiVersion = VK_API_VERSION_1_1;
+#endif
+
+	info.pTypeExternalMemoryHandleTypes = nullptr;
+
+	vmaCreateAllocator(&info, &VULKAN_MEMORY_ALLOCATOR);
+}
+
+/*
+*	Destroys the Vulkan memory allocator.
+*/
+void VulkanInterface::DestroyVulkanMemoryAllocator() NOEXCEPT
+{
+	vmaDestroyAllocator(VULKAN_MEMORY_ALLOCATOR);
 }
 #endif

@@ -464,5 +464,16 @@ private:
 	//The Vulkan shader modules lock.
 	Spinlock _VulkanShaderModulesLock;
 
+	/*
+	*	Create the Vulkan memory allocator.
+	*/
+	void CreateVulkanMemoryAllocator() NOEXCEPT;
+
+	/*
+	*	Destroys the Vulkan memory allocator.
+	*/
+	void DestroyVulkanMemoryAllocator() NOEXCEPT;
+
+
 };
 #endif

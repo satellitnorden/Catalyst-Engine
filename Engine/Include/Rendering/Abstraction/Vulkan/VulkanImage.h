@@ -6,6 +6,7 @@
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
+#include <Rendering/Abstraction/Vulkan/VulkanMemoryAllocator.h>
 
 class VulkanImage
 {
@@ -56,6 +57,9 @@ protected:
 
 	//The Vulkan image.
 	VkImage _VulkanImage;
+
+	//The allocation.
+	VmaAllocation _Allocation;
 
 	//The Vulkan device memory.
 	VkDeviceMemory _VulkanDeviceMemory;

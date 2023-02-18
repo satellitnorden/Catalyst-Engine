@@ -37,6 +37,14 @@ void PhysicsSystem::SubTerminate() NOEXCEPT
 /*
 *	Initializes the sub-system physics for the given entity.
 */
+void PhysicsSystem::SubPreprocessEntityPhysics(Entity *const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
+{
+
+}
+
+/*
+*	Initializes the sub-system physics for the given entity.
+*/
 void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
 {
 	
