@@ -50,6 +50,7 @@
 #include <Systems/MemorySystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/TaskSystem.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanUtilities.h>
@@ -113,6 +114,13 @@ namespace VulkanSubRenderingSystemData
 
 	//The destruction queue lock.
 	AssertLock _DestructionQueueLock;
+
+	//The async destruction task.
+	Task _AsycnDestructionTask;
+
+	//The async destruction queue.
+	DynamicArray<VulkanDestructionData> _AsyncDestructionQueue;
+
 }
 
 //Vulkan rendering system logic.
@@ -712,79 +720,105 @@ namespace VulkanSubRenderingSystemLogic
 	{
 		SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
 
-		for (uint64 i = 0; i < VulkanSubRenderingSystemData::_DestructionQueue.Size();)
+		//Update the frames of all destruction data.
+		for (uint64 i{ 0 }; i < VulkanSubRenderingSystemData::_DestructionQueue.Size(); ++i)
 		{
 			++VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames;
+		}
 
-			if (VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages() + 1)
+		//Is the async destruction task ready?
+		if (VulkanSubRenderingSystemData::_AsycnDestructionTask.IsExecuted())
+		{
+			//Check if any destruction data should be added to the async destruction queue.
+			for (uint64 i{ 0 }; i < VulkanSubRenderingSystemData::_DestructionQueue.Size();)
 			{
-				switch (VulkanSubRenderingSystemData::_DestructionQueue[i]._Type)
+				if (VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages() + 1)
 				{
-					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE:
-					{
-						VulkanInterface::Instance->DestroyAccelerationStructure(static_cast<VulkanAccelerationStructure *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
-
-						break;
-					}
-
-					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::BUFFER:
-					{
-						VulkanInterface::Instance->DestroyBuffer(static_cast<VulkanBuffer *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
-
-						break;
-					}
-
-					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::DEPTH_BUFFER:
-					{
-						VulkanInterface::Instance->DestroyDepthBuffer(static_cast<VulkanDepthBuffer *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
-
-						break;
-					}
-
-					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE:
-					{
-						VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
-
-						break;
-					}
-
-					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE_LAYOUT:
-					{
-						VulkanInterface::Instance->DestroyDescriptorSetLayout(static_cast<VulkanDescriptorSetLayout *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
-
-						break;
-					}
-
-					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_TARGET:
-					{
-						VulkanInterface::Instance->DestroyRenderTarget(static_cast<VulkanRenderTarget *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
-
-						break;
-					}
-
-					case VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D:
-					{
-						VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(VulkanSubRenderingSystemData::_DestructionQueue[i]._Handle));
-
-						break;
-					}
-
-					default:
-					{
-						ASSERT(false, "Unhandled case!");
-
-						break;
-					}
+					VulkanSubRenderingSystemData::_AsyncDestructionQueue.Emplace(VulkanSubRenderingSystemData::_DestructionQueue[i]);
+					VulkanSubRenderingSystemData::_DestructionQueue.EraseAt<false>(i);
 				}
 
-				VulkanSubRenderingSystemData::_DestructionQueue.EraseAt<false>(i);
+				else
+				{
+					++i;
+				}
 			}
 
-			else
+			if (!VulkanSubRenderingSystemData::_AsyncDestructionQueue.Empty())
 			{
-				++i;
+				TaskSystem::Instance->ExecuteTask(&VulkanSubRenderingSystemData::_AsycnDestructionTask);
 			}
 		}
+	}
+
+	/*
+	*	Processes the destruction queue asynchrounously.
+	*/
+	void ProcessDestructionQueueAsynchronous() NOEXCEPT
+	{
+		for (uint64 i{ 0 }; i < VulkanSubRenderingSystemData::_AsyncDestructionQueue.Size(); ++i)
+		{
+			switch (VulkanSubRenderingSystemData::_AsyncDestructionQueue[i]._Type)
+			{
+				case VulkanSubRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE:
+				{
+					VulkanInterface::Instance->DestroyAccelerationStructure(static_cast<VulkanAccelerationStructure* const RESTRICT>(VulkanSubRenderingSystemData::_AsyncDestructionQueue[i]._Handle));
+
+					break;
+				}
+
+				case VulkanSubRenderingSystemData::VulkanDestructionData::Type::BUFFER:
+				{
+					VulkanInterface::Instance->DestroyBuffer(static_cast<VulkanBuffer* const RESTRICT>(VulkanSubRenderingSystemData::_AsyncDestructionQueue[i]._Handle));
+
+					break;
+				}
+
+				case VulkanSubRenderingSystemData::VulkanDestructionData::Type::DEPTH_BUFFER:
+				{
+					VulkanInterface::Instance->DestroyDepthBuffer(static_cast<VulkanDepthBuffer* const RESTRICT>(VulkanSubRenderingSystemData::_AsyncDestructionQueue[i]._Handle));
+
+					break;
+				}
+
+				case VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE:
+				{
+					VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet* const RESTRICT>(VulkanSubRenderingSystemData::_AsyncDestructionQueue[i]._Handle));
+
+					break;
+				}
+
+				case VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE_LAYOUT:
+				{
+					VulkanInterface::Instance->DestroyDescriptorSetLayout(static_cast<VulkanDescriptorSetLayout* const RESTRICT>(VulkanSubRenderingSystemData::_AsyncDestructionQueue[i]._Handle));
+
+					break;
+				}
+
+				case VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_TARGET:
+				{
+					VulkanInterface::Instance->DestroyRenderTarget(static_cast<VulkanRenderTarget* const RESTRICT>(VulkanSubRenderingSystemData::_AsyncDestructionQueue[i]._Handle));
+
+					break;
+				}
+
+				case VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D:
+				{
+					VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture* const RESTRICT>(VulkanSubRenderingSystemData::_AsyncDestructionQueue[i]._Handle));
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Unhandled case!");
+
+					break;
+				}
+			}
+		}
+
+		VulkanSubRenderingSystemData::_AsyncDestructionQueue.Clear();
 	}
 
 }
@@ -806,7 +840,13 @@ void VulkanSubRenderingSystem::PreInitialize() NOEXCEPT
 */
 void VulkanSubRenderingSystem::Initialize() NOEXCEPT
 {
-
+	//Set up the async destruction task.
+	VulkanSubRenderingSystemData::_AsycnDestructionTask._Function = [](void *const RESTRICT)
+	{
+		VulkanSubRenderingSystemLogic::ProcessDestructionQueueAsynchronous();
+	};
+	VulkanSubRenderingSystemData::_AsycnDestructionTask._Arguments = nullptr;
+	VulkanSubRenderingSystemData::_AsycnDestructionTask._ExecutableOnSameThread = false;
 }
 
 #if defined(CATALYST_EDITOR)
