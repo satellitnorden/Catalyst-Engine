@@ -176,6 +176,40 @@ public:
 	}
 
 	/*
+	*	Copies a Vulkan buffer to a Vulkan image.
+	*/
+	static void CopyBufferToImage(VulkanCommandBuffer* const RESTRICT command_buffer, const VkBuffer& vulkanBuffer, VkImage& vulkanImage, const uint32 mipLevels, const uint32 layerCount, const uint32 width, const uint32 height, const uint32 depth, const uint32 texture_channels, const VkDeviceSize texel_size) NOEXCEPT
+	{
+		//Create the buffer image copy.
+		DynamicArray<VkBufferImageCopy> bufferImageCopies;
+		bufferImageCopies.Reserve(mipLevels);
+
+		VkDeviceSize currentOffset{ 0 };
+
+		for (uint32 i = 0; i < mipLevels; ++i)
+		{
+			VkBufferImageCopy bufferImageCopy;
+
+			bufferImageCopy.bufferOffset = currentOffset;
+			bufferImageCopy.bufferRowLength = 0;
+			bufferImageCopy.bufferImageHeight = 0;
+			bufferImageCopy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			bufferImageCopy.imageSubresource.mipLevel = i;
+			bufferImageCopy.imageSubresource.baseArrayLayer = 0;
+			bufferImageCopy.imageSubresource.layerCount = layerCount;
+			bufferImageCopy.imageOffset = { 0, 0, 0 };
+			bufferImageCopy.imageExtent = { width >> i, height >> i, CatalystBaseMath::Maximum<uint32>(depth >> i, 1) };
+
+			bufferImageCopies.Emplace(bufferImageCopy);
+
+			currentOffset += (width >> i) * (height >> i) * CatalystBaseMath::Maximum<uint32>(depth >> i, 1) * texture_channels * texel_size * layerCount;
+		}
+
+		//Record the copy command to the transfer command buffer.
+		vkCmdCopyBufferToImage(command_buffer->Get(), vulkanBuffer, vulkanImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32>(bufferImageCopies.Size()), bufferImageCopies.Data());
+	}
+
+	/*
 	*	Copies a Vulkan image to a Vulkan buffer.
 	*/
 	static void CopyImageToBuffer(const uint32 imageWidth, const uint32 imageHeight, const VkImage vulkanImage, const VkBuffer vulkanBuffer) NOEXCEPT
@@ -673,6 +707,35 @@ public:
 
 		//Free the transition command buffer.
 		commandPool->FreeCommandBuffer(transitionCommandBuffer);
+	}
+
+	/*
+	*	Transitions a Vulkan image to a layout.
+	*/
+	static void TransitionImageToLayout(VulkanCommandBuffer *const RESTRICT command_buffer, const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageAspectFlags aspectMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, const uint32 mipLevels, const uint32 layerCount, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, VkImage& vulkanImage) NOEXCEPT
+	{
+		//Create the image memory barrier.
+		VkImageMemoryBarrier imageMemoryBarrier;
+
+		imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		imageMemoryBarrier.pNext = nullptr;
+		imageMemoryBarrier.srcAccessMask = sourceAccessMask;
+		imageMemoryBarrier.dstAccessMask = destinationAccessMask;
+		imageMemoryBarrier.subresourceRange.aspectMask = aspectMask;
+
+		imageMemoryBarrier.oldLayout = oldLayout;
+		imageMemoryBarrier.newLayout = newLayout;
+		imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		imageMemoryBarrier.image = vulkanImage;
+
+		imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
+		imageMemoryBarrier.subresourceRange.levelCount = mipLevels;
+		imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
+		imageMemoryBarrier.subresourceRange.layerCount = layerCount;
+
+		//Record the pipeline barrier command.
+		vkCmdPipelineBarrier(command_buffer->Get(), sourceStageMask, destinationStageMask, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 	}
 
 };

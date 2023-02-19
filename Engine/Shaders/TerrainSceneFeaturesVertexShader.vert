@@ -19,8 +19,7 @@ layout (push_constant) uniform PushConstantData
 
 //In parameters.
 layout (location = 0) in vec2 vertex_position;
-layout (location = 1) in vec2 vertex_texture_coordinate;
-layout (location = 2) in int vertex_borders;
+layout (location = 1) in int vertex_borders;
 
 //Out parameters.
 layout (location = 0) out vec3 fragment_world_position;

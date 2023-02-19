@@ -95,7 +95,7 @@ void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_
 	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(TerrainShadowPushConstantData));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(3);
+	SetNumberOfVertexInputAttributeDescriptions(2);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
