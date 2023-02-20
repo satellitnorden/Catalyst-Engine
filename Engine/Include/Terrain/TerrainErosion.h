@@ -23,46 +23,77 @@ public:
 
 	public:
 
-		//The number of iterations.
+		/*
+		*	The minimum bounds.
+		*	Useful if you only want a specific area of the height map to be affected.
+		*/
+		Vector2<uint32> _MinimumBounds{ 0, 0 };
+
+		/*
+		*	The maximum bounds.
+		*	Useful if you only want a specific area of the height map to be affected.
+		*	Will be set to resolution - 1 if UINT32_MAXIMUM.
+		*/
+		Vector2<uint32> _MaximumBounds{ UINT32_MAXIMUM, UINT32_MAXIMUM };
+
+		/*
+		*	The number of iterations,
+		*	or the number of particles that will be spawned.
+		*/
 		uint64 _Iterations{ 1'024 };
 
-		//The maximum lifetime of a particle.
+		/*
+		*	The maximum particle lifetime.
+		*	The longer the lifetime, the longer a particle can travel.
+		*/
 		uint64 _MaximumParticleLifetime{ 32 };
 
 		//The inertia.
-		float _Intertia{ 0.5f };
+		float32 _Intertia{ 0.5f };
 
 		//The capacity.
-		float _Capacity{ 10.0f };
+		float32 _Capacity{ 10.0f };
 
 		//The gravity.
-		float _Gravity{ 4.0f };
+		float32 _Gravity{ 4.0f };
 
 		//The evaporation.
-		float _Evaporation{ 0.1f };
+		float32 _Evaporation{ 0.1f };
 
 		//The erosion.
-		float _Erosion{ 0.25f };
+		float32 _Erosion{ 0.25f };
 
 		//The erosion.
-		float _Deposition{ 0.25f };
+		float32 _Deposition{ 0.25f };
 
 		//The minimum slope.
-		float _MinimumSlope{ 0.0001f };
+		float32 _MinimumSlope{ 0.0001f };
 
 	};
 
 	/*
 	*	Performs an erosion simulation on the given height map.
 	*/
-	FORCE_INLINE static void SimulateErosion(const SimulationParameters &parameters, const uint32 resolution, float* const RESTRICT height_map) NOEXCEPT
+	FORCE_INLINE static void SimulateErosion(const SimulationParameters &input_parameters, const uint32 resolution, float* const RESTRICT height_map) NOEXCEPT
 	{
+		//Copy the parameters.
+		SimulationParameters parameters{ input_parameters };
+
+		//If the maximum bounds are set to the default UINT32 value, set it to a proper value.
+		for (uint8 i{ 0 }; i < 2; ++i)
+		{
+			if (parameters._MaximumBounds[i] == UINT32_MAXIMUM)
+			{
+				parameters._MaximumBounds[i] = resolution - 1;
+			}
+		}
+
 		for (uint64 i{ 0 }; i < parameters._Iterations; ++i)
 		{
 			Particle particle;
 
-			particle._Position._X = CatalystRandomMath::RandomFloatInRange(0.0f, static_cast<float>(resolution));
-			particle._Position._Y = CatalystRandomMath::RandomFloatInRange(0.0f, static_cast<float>(resolution));
+			particle._Position._X = CatalystRandomMath::RandomFloatInRange(static_cast<float32>(parameters._MinimumBounds._X), static_cast<float32>(parameters._MaximumBounds._X));
+			particle._Position._Y = CatalystRandomMath::RandomFloatInRange(static_cast<float32>(parameters._MinimumBounds._Y), static_cast<float32>(parameters._MaximumBounds._Y));
 			particle._Direction._X = 0.0f;
 			particle._Direction._Y = 0.0f;
 			particle._Velocity = 0.0f;
@@ -71,8 +102,11 @@ public:
 
 			for (uint64 j{ 0 }; j < parameters._MaximumParticleLifetime; ++j)
 			{
-				Vector2<float> pos_old = particle._Position;
-				GradientHeight hg = height_gradient_at(resolution, height_map, pos_old);
+				//Cache the old position.
+				const Vector2<float32> old_position{ particle._Position };
+
+				//Calculate the gradient.
+				GradientHeight hg = CalculateGradientHeight(parameters, resolution, height_map, old_position);
 				Vector2<float> g = hg._Gradient;
 				float h_old = hg._Height;
 
@@ -82,15 +116,15 @@ public:
 
 				particle._Position += particle._Direction;
 
-				Vector2<float> pos_new = particle._Position;
-
-				if (pos_new._X > (resolution - 1) || pos_new._X < 0
-					|| pos_new._Y >(resolution - 1) || pos_new._Y < 0)
+				if (particle._Position._X < static_cast<float32>(parameters._MinimumBounds._X)
+					|| particle._Position._X > static_cast<float32>(parameters._MaximumBounds._X)
+					|| particle._Position._Y < static_cast<float32>(parameters._MinimumBounds._Y)
+					|| particle._Position._Y > static_cast<float32>(parameters._MaximumBounds._Y))
 				{
 					break;
 				}
 
-				float h_new = bil_interpolate_map_double(resolution, height_map, pos_new);
+				float h_new = BilinearInterpolate(parameters, resolution, height_map, particle._Position);
 				float h_diff = h_new - h_old;
 
 				// sediment capacity
@@ -103,18 +137,20 @@ public:
 						fmin(particle._Sediment, h_diff) :
 						(particle._Sediment - c) * parameters._Deposition;
 					particle._Sediment -= to_deposit;
-					deposit(resolution, height_map, pos_old, to_deposit);
+					deposit(parameters, resolution, height_map, old_position, to_deposit);
 				}
 
 				else
 				{
 					float to_erode = fmin((c - particle._Sediment) * parameters._Erosion, -h_diff);
 					particle._Sediment += to_erode;
-					erode(resolution, height_map, pos_old, to_erode);
+					erode(parameters, resolution, height_map, old_position, to_erode);
 				}
 
-				// update `vel` and `water`
+				//Update the particle's velocity.
 				particle._Velocity = sqrt(particle._Velocity * particle._Velocity + h_diff * parameters._Gravity);
+
+				//Update the particle's water.
 				particle._Water *= (1.0f - parameters._Evaporation);
 			}
 		}
@@ -131,10 +167,10 @@ private:
 	public:
 
 		//The gradient.
-		Vector2<float> _Gradient;
+		Vector2<float32> _Gradient;
 
 		//The height.
-		float _Height;
+		float32 _Height;
 
 	};
 
@@ -147,26 +183,65 @@ private:
 	public:
 
 		//The position.
-		Vector2<float> _Position;
+		Vector2<float32> _Position;
 
 		//The direction.
-		Vector2<float> _Direction;
+		Vector2<float32> _Direction;
 
 		//The velocity.
-		float _Velocity;
+		float32 _Velocity;
 
 		//The sediment.
-		float _Sediment;
+		float32 _Sediment;
 
 		//The water.
-		float _Water;
+		float32 _Water;
 
 	};
 
 	/*
-	*	Bilinearly interpolate float value at (x, y) in map.
+	*	Calculates the gradient height at the given position on the height map.
 	*/
-	FORCE_INLINE static float bil_interpolate_map_double(const uint32 resolution, const float *const RESTRICT height_map, const Vector2<float> position)
+	FORCE_INLINE static GradientHeight CalculateGradientHeight(const SimulationParameters &parameters, const uint32 resolution, float* const RESTRICT height_map, const Vector2<float> position)
+	{
+		GradientHeight output;
+		Vector2<float> ul, ur, ll, lr, ipl_l, ipl_r;
+		int32 x_i = (int32)position._X;
+		int32 y_i = (int32)position._Y;
+		float u = position._X - x_i;
+		float v = position._Y - y_i;
+		ul = CalculateGradient(parameters, resolution, height_map, x_i, y_i);
+		ur = CalculateGradient(parameters, resolution, height_map, CatalystBaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X), y_i);
+		ll = CalculateGradient(parameters, resolution, height_map, x_i, CatalystBaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y));
+		lr = CalculateGradient(parameters, resolution, height_map, CatalystBaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X), CatalystBaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y));
+		ipl_l = (ul * (1.0f - v)) + (ll * v);
+		ipl_r = (ur * (1.0f - v)) + (lr * v);
+		output._Gradient = (ipl_l * (1.0f - u)) + (ipl_r * u);
+		output._Height = BilinearInterpolate(parameters, resolution, height_map, position);
+
+		//Return the output.
+		return output;
+	}
+
+	/*
+	*	Calculate the gradient at the given coordinates on the height map.
+	*/
+	FORCE_INLINE static Vector2<float> CalculateGradient(const SimulationParameters &parameters, const uint32 resolution, float* const RESTRICT height_map, int32 x, int32 y)
+	{
+		int32 idx = x + y * resolution;
+		int32 right = idx + ((x > static_cast<int32>(resolution) - 2) ? 0 : 1);
+		int32 above = idx + ((y > static_cast<int32>(resolution) - 2) ? 0 : resolution);
+		Vector2<float> g;
+		g._X = height_map[right] - height_map[idx];
+		g._Y = height_map[above] - height_map[idx];
+
+		return g;
+	}
+
+	/*
+	*	Bilinearly interpolates the given position on the height map.
+	*/
+	FORCE_INLINE static float BilinearInterpolate(const SimulationParameters &parameters, const uint32 resolution, const float *const RESTRICT height_map, const Vector2<float> position)
 	{
 		float u, v, ul, ur, ll, lr, ipl_l, ipl_r;
 		int32 x_i = (int32)position._X;
@@ -174,9 +249,9 @@ private:
 		u = position._X - x_i;
 		v = position._Y - y_i;
 		ul = height_map[y_i * resolution + x_i];
-		ur = height_map[y_i * resolution + x_i + 1];
-		ll = height_map[(y_i + 1) * resolution + x_i];
-		lr = height_map[(y_i + 1) * resolution + x_i + 1];
+		ur = height_map[y_i * resolution + CatalystBaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X)];
+		ll = height_map[CatalystBaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y) * resolution + x_i];
+		lr = height_map[CatalystBaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y) * resolution + CatalystBaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X)];
 		ipl_l = (1.0f - v) * ul + v * ll;
 		ipl_r = (1.0f - v) * ur + v * lr;
 
@@ -188,7 +263,7 @@ private:
 	*	Deposition only affect immediate neighbouring gridpoints
 	*	to `pos`.
 	*/
-	FORCE_INLINE static void deposit(const uint32 resolution, float *const RESTRICT height_map, const Vector2<float> position, const float amount)
+	FORCE_INLINE static void deposit(const SimulationParameters &parameters, const uint32 resolution, float *const RESTRICT height_map, const Vector2<float> position, const float amount)
 	{
 		int32 x_i = (int)position._X;
 		int32 y_i = (int)position._Y;
@@ -204,14 +279,14 @@ private:
 	*	Erodes heighmap `hmap` at position `pos` by amount `amount`.
 	*	Erosion is distributed over an area defined through p_radius.
 	*/
-	FORCE_INLINE static void erode(const uint32 resolution, float *const RESTRICT height_map, const Vector2<float> position, const float amount)
+	FORCE_INLINE static void erode(const SimulationParameters &parameters, const uint32 resolution, float *const RESTRICT height_map, const Vector2<float> position, const float amount)
 	{
 		int32 x0 = (int32)position._X - 2;
 		int32 y0 = (int32)position._Y - 2;
-		int32 x_start = CatalystBaseMath::Maximum<int32>(0, x0);
-		int32 y_start = CatalystBaseMath::Maximum<int32>(0, y0);
-		int32 x_end = CatalystBaseMath::Minimum<int32>(resolution, x0 + 2 * 3 + 1);
-		int32 y_end = CatalystBaseMath::Minimum<int32>(resolution, y0 + 2 * 3 + 1);
+		int32 x_start = CatalystBaseMath::Maximum<int32>(parameters._MinimumBounds._X, x0);
+		int32 y_start = CatalystBaseMath::Maximum<int32>(parameters._MinimumBounds._Y, y0);
+		int32 x_end = CatalystBaseMath::Minimum<int32>(parameters._MaximumBounds._X, x0 + 2 * 3 + 1);
+		int32 y_end = CatalystBaseMath::Minimum<int32>(parameters._MaximumBounds._Y, y0 + 2 * 3 + 1);
 
 		// construct erosion/deposition kernel.
 		float kernel[2 * 3 + 1][2 * 3 + 1];
@@ -238,44 +313,6 @@ private:
 				height_map[y * resolution + x] -= amount * kernel[y - y0][x - x0];
 			}
 		}
-	}
-
-	/*
-	*	Returns gradient at (int x, int y) on heightmap `hmap`.
-	*/
-	FORCE_INLINE static Vector2<float> gradient_at(const uint32 resolution, float *const RESTRICT height_map, int32 x, int32 y)
-	{
-		int32 idx = y * resolution + x;
-		int32 right = idx + ((x > static_cast<int32>(resolution) - 2) ? 0 : 1);
-		int32 below = idx + ((y > static_cast<int32>(resolution) - 2) ? 0 : resolution);
-		Vector2<float> g;
-		g._X = height_map[right] - height_map[idx];
-		g._Y = height_map[below] - height_map[idx];
-
-		return g;
-	}
-
-	/*
-	*	Returns interpolated gradient and height at (double x, double y) on
-	*	heightmap `hmap`.
-	*/
-	FORCE_INLINE static GradientHeight height_gradient_at(const uint32 resolution, float *const RESTRICT height_map, const Vector2<float> position)
-	{
-		GradientHeight ret;
-		Vector2<float> ul, ur, ll, lr, ipl_l, ipl_r;
-		int32 x_i = (int32)position._X;
-		int32 y_i = (int32)position._Y;
-		float u = position._X - x_i;
-		float v = position._Y - y_i;
-		ul = gradient_at(resolution, height_map, x_i, y_i);
-		ur = gradient_at(resolution, height_map, x_i + 1, y_i);
-		ll = gradient_at(resolution, height_map, x_i, y_i + 1);
-		lr = gradient_at(resolution, height_map, x_i + 1, y_i + 1);
-		ipl_l = (ul * (1.0f - v)) + (ll * v);
-		ipl_r = (ur * (1.0f - v)) + (lr * v);
-		ret._Gradient = (ipl_l * (1.0f - u)) + (ipl_r * u);
-		ret._Height = bil_interpolate_map_double(resolution, height_map, position);
-		return ret;
 	}
 
 };
