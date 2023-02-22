@@ -48,7 +48,7 @@ void VulkanDepthBuffer::Release() NOEXCEPT
 VkFormat VulkanDepthBuffer::FindMostDesirableDepthBufferFormat() const NOEXCEPT
 {
 	//Create a list of desirable formats, ranked from most desirable to least desirable.
-	const DynamicArray<VkFormat> desirableFormats{ VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT, VK_FORMAT_D16_UNORM_S8_UINT };
+	const DynamicArray<VkFormat> desirableFormats{ VK_FORMAT_D24_UNORM_S8_UINT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D16_UNORM_S8_UINT };
 
 	for (auto desirableFormat : desirableFormats)
 	{

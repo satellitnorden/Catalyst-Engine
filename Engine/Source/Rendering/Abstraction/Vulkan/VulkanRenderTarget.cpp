@@ -102,22 +102,25 @@ void VulkanRenderTarget::Release() NOEXCEPT
 		_VulkanImage = VK_NULL_HANDLE;
 	}
 
-	//Destroy the Vulkan resolve image view.
-	ASSERT(_VulkanResolveImageView, "Double deletion detected!");
-
-	if (_VulkanResolveImageView)
+	if (_SampleCount >= VK_SAMPLE_COUNT_1_BIT)
 	{
-		vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanResolveImageView, nullptr);
-		_VulkanResolveImageView = VK_NULL_HANDLE;
-	}
+		//Destroy the Vulkan resolve image view.
+		ASSERT(_VulkanResolveImageView, "Double deletion detected!");
 
-	//Destroy the Vulkan resolve image.
-	ASSERT(_VulkanResolveImage, "Double deletion detected!");
+		if (_VulkanResolveImageView)
+		{
+			vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanResolveImageView, nullptr);
+			_VulkanResolveImageView = VK_NULL_HANDLE;
+		}
 
-	if (_VulkanResolveImage)
-	{
-		vmaDestroyImage(VULKAN_MEMORY_ALLOCATOR, _VulkanResolveImage, _ResolveAllocation);
-		_VulkanResolveImage = VK_NULL_HANDLE;
+		//Destroy the Vulkan resolve image.
+		ASSERT(_VulkanResolveImage, "Double deletion detected!");
+
+		if (_VulkanResolveImage)
+		{
+			vmaDestroyImage(VULKAN_MEMORY_ALLOCATOR, _VulkanResolveImage, _ResolveAllocation);
+			_VulkanResolveImage = VK_NULL_HANDLE;
+		}
 	}
 }
 #endif
