@@ -14,10 +14,10 @@
 /*
 *	Initializes this Vulkan queue.
 */
-void VulkanQueue::Initialize(const uint32 queueFamilyIndex) NOEXCEPT
+void VulkanQueue::Initialize(const uint32 queue_family_index, const uint32 queue_index) NOEXCEPT
 {
 	//Get the Vulkan queue.
-	vkGetDeviceQueue(VulkanInterface::Instance->GetLogicalDevice().Get(), queueFamilyIndex, 0, &_VulkanQueue);
+	vkGetDeviceQueue(VulkanInterface::Instance->GetLogicalDevice().Get(), queue_family_index, queue_index, &_VulkanQueue);
 }
 
 /*

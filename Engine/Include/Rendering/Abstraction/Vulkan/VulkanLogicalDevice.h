@@ -18,10 +18,21 @@ public:
 	//Enumeration covering all queue types.
 	enum class QueueType : uint8
 	{
-		COMPUTE,
-		GRAPHICS,
-		PRESENT,
-		TRANSFER,
+		/*
+		*	This is the "main" queue, where all primary rendering happens.
+		*	This queue will also have present functionality.
+		*/
+		MAIN,
+
+		/*
+		*	This is the "async compute" queue, where compute shaders can happen in the background.
+		*/
+		ASYNC_COMPUTE,
+
+		/*
+		*	This is the "async transfer" queue, where transferring resources to/from the GPU can happen in the background.
+		*/
+		ASYNC_TRANSFER,
 
 		NUMBER_OF_QUEUE_TYPES
 	};
@@ -63,6 +74,9 @@ private:
 
 	//The queue family indices.
 	StaticArray<uint32, UNDERLYING(QueueType::NUMBER_OF_QUEUE_TYPES)> _QueueFamilyIndices;
+
+	//The queue indices.
+	StaticArray<uint32, UNDERLYING(QueueType::NUMBER_OF_QUEUE_TYPES)> _QueueIndices;
 
 	//The queue family properties.
 	StaticArray<VkQueueFamilyProperties, UNDERLYING(QueueType::NUMBER_OF_QUEUE_TYPES)> _QueueFamilyProperties;

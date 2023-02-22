@@ -104,35 +104,27 @@ public:
 	VulkanSwapchain& GetSwapchain() NOEXCEPT { return _VulkanSwapchain; }
 
 	/*
-	*	Returns the compute queue.
+	*	Returns the "main" queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetComputeQueue() NOEXCEPT
+	RESTRICTED VulkanQueue *const RESTRICT GetMainQueue() NOEXCEPT
 	{
-		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::COMPUTE);
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::MAIN);
 	}
 
 	/*
-	*	Returns the graphics queue.
+	*	Returns the "async compute" queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT
+	RESTRICTED VulkanQueue *const RESTRICT GetAsyncComputeQueue() NOEXCEPT
 	{
-		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::GRAPHICS);
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::ASYNC_COMPUTE);
 	}
 
 	/*
-	*	Returns the present queue.
+	*	Returns the "async transfer" queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT
+	RESTRICTED VulkanQueue *const RESTRICT GetAsyncTransferQueue() NOEXCEPT
 	{
-		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::PRESENT);
-	}
-
-	/*
-	*	Returns the transfer queue.
-	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetTransferQueue() NOEXCEPT
-	{
-		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::TRANSFER);
+		return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::ASYNC_TRANSFER);
 	}
 
 	/*
@@ -179,19 +171,19 @@ public:
 	void DestroyBuffer(VulkanBuffer *const RESTRICT buffer) NOEXCEPT;
 
 	/*
-	*	Creates and returns a compute command pool.
+	*	Creates and returns a command pool from the "main" queue.
 	*/
-	RESTRICTED VulkanCommandPool *const RESTRICT CreateComputeCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
+	RESTRICTED VulkanCommandPool *const RESTRICT CreateMainCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
 
 	/*
-	*	Creates and returns a graphics command pool.
+	*	Creates and returns a command pool from the "async compute" queue.
 	*/
-	RESTRICTED VulkanCommandPool *const RESTRICT CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
+	RESTRICTED VulkanCommandPool *const RESTRICT CreateAsyncComputeCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
 
 	/*
-	*	Creates and returns a transfer command pool.
+	*	Creates and returns a command pool from the "async transfer" queue.
 	*/
-	RESTRICTED VulkanCommandPool *const RESTRICT CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
+	RESTRICTED VulkanCommandPool* const RESTRICT CreateAsyncTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.

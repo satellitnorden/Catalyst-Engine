@@ -17,6 +17,9 @@ public:
 	//The world position.
 	WorldPosition _WorldPosition;
 
+	//The patch size.
+	uint32 _PatchSize;
+
 	//The height map.
 	Texture2D<float32> _HeightMap;
 

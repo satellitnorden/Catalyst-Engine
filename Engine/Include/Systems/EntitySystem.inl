@@ -10,6 +10,8 @@ RESTRICTED CLASS* const RESTRICT EntitySystem::CreateEntity(ARGUMENTS&&... argum
 	void *const RESTRICT memory{ _Allocator.Allocate() };
 	_AllocatorLock.Unlock();
 
+	Memory::Set(memory, 0, sizeof(Entity));
+
 	CLASS *const RESTRICT newEntity{ new (memory) CLASS(std::forward<ARGUMENTS>(arguments)...) };
 
 	_EntitiesLock.Lock();

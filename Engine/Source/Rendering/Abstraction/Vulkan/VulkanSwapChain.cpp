@@ -33,15 +33,9 @@ void VulkanSwapchain::Initialize() NOEXCEPT
 	//Find the most optimal swap extent.
 	FindMostOptimalSwapExtent();
 
-	//Set up the queue family indices.
-	const uint32 graphicsQueueFamilyIndex = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::GRAPHICS);
-	const uint32 presentQueueFamilyIndex = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::PRESENT);
-
-	uint32 queueFamilyIndices[] = { graphicsQueueFamilyIndex, presentQueueFamilyIndex };
-
 	//Create the swapchain create info.
 	VkSwapchainCreateInfoKHR swapChainCreateInfo;
-	CreateSwapChainCreateInfo(swapChainCreateInfo, queueFamilyIndices, graphicsQueueFamilyIndex, presentQueueFamilyIndex);
+	CreateSwapChainCreateInfo(swapChainCreateInfo);
 
 	//Create the swapchain!
 	VULKAN_ERROR_CHECK(vkCreateSwapchainKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), &swapChainCreateInfo, nullptr, &_VulkanSwapchain));
@@ -110,7 +104,7 @@ void VulkanSwapchain::Present(const VulkanSemaphore *const RESTRICT renderFinish
 	VulkanPlatform::PresentSwapchain(this);
 #else
 	//Present on the present queue!
-	VulkanInterface::Instance->GetPresentQueue()->Present(renderFinishedSemaphore, &_VulkanSwapchain, &_CurrentImageIndex);
+	VulkanInterface::Instance->GetMainQueue()->Present(renderFinishedSemaphore, &_VulkanSwapchain, &_CurrentImageIndex);
 #endif
 }
 
@@ -141,7 +135,7 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 /*
 *	Creates the swap chain create info.
 */
-void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapChainCreateInfo, uint32 *RESTRICT queueFamilyIndices, const uint32 graphicsQueueFamilyIndex, const uint32 presentQueueFamilyIndex) const NOEXCEPT
+void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapChainCreateInfo) const NOEXCEPT
 {
 	swapChainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	swapChainCreateInfo.pNext = nullptr;
@@ -163,21 +157,9 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapCh
 	swapChainCreateInfo.imageExtent = _SwapExtent;
 	swapChainCreateInfo.imageArrayLayers = 1;
 	swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-	if (graphicsQueueFamilyIndex != presentQueueFamilyIndex)
-	{
-		swapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		swapChainCreateInfo.queueFamilyIndexCount = 2;
-		swapChainCreateInfo.pQueueFamilyIndices = queueFamilyIndices;
-	}
-
-	else
-	{
-		swapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		swapChainCreateInfo.queueFamilyIndexCount = 1;
-		swapChainCreateInfo.pQueueFamilyIndices = queueFamilyIndices;
-	}
-
+	swapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	swapChainCreateInfo.queueFamilyIndexCount = 0;
+	swapChainCreateInfo.pQueueFamilyIndices = nullptr;
 	swapChainCreateInfo.preTransform = surface_capabilities.currentTransform;
 	swapChainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	swapChainCreateInfo.presentMode = present_mode;

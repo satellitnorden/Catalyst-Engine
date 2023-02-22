@@ -73,9 +73,8 @@ void VulkanLogicalDevice::Release() NOEXCEPT
 void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos) const NOEXCEPT
 {
 	//Define constants.
-	constexpr static StaticArray<float32, 4> QUEUE_PRIORITIES
+	constexpr static StaticArray<float32, 3> QUEUE_PRIORITIES
 	{
-		1.0f,
 		1.0f,
 		1.0f,
 		1.0f
@@ -84,10 +83,9 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 	//Gather all unique indices and how many queues will be created from them.
 	Map<uint32, uint8> queue_family_indices;
 
-	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::COMPUTE)];
-	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::GRAPHICS)];
-	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::PRESENT)];
-	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::TRANSFER)];
+	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::MAIN)];
+	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::ASYNC_COMPUTE)];
+	++queue_family_indices[GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::ASYNC_TRANSFER)];
 
 	for (const Pair<uint32, uint8> &unique_queue_family_index : queue_family_indices)
 	{
@@ -97,7 +95,7 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 		newDeviceQueueCreateInfo.pNext = nullptr;
 		newDeviceQueueCreateInfo.flags = 0;
 		newDeviceQueueCreateInfo.queueFamilyIndex = unique_queue_family_index._First;
-		newDeviceQueueCreateInfo.queueCount = 1;
+		newDeviceQueueCreateInfo.queueCount = unique_queue_family_index._Second;
 		newDeviceQueueCreateInfo.pQueuePriorities = QUEUE_PRIORITIES.Data();
 
 		deviceQueueCreateInfos.Emplace(newDeviceQueueCreateInfo);
@@ -258,6 +256,11 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 	{
 		queue_family_index = UINT32_MAXIMUM;
 	}
+	//Reset all queue indices.
+	for (uint32 &queue_index : _QueueIndices)
+	{
+		queue_index = UINT32_MAXIMUM;
+	}
 
 	//Retrieve the queue family properties.
 	uint32 queue_family_count{ 0 };
@@ -267,15 +270,60 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 	queue_family_properties.Upsize<false>(queue_family_count);
 	vkGetPhysicalDeviceQueueFamilyProperties(VulkanInterface::Instance->GetPhysicalDevice().Get(), &queue_family_count, queue_family_properties.Data());
 
+	//Remember how many queues has been allocated from each family.
+	DynamicArray<uint32> number_of_allocated_queues;
+	number_of_allocated_queues.Upsize<false>(queue_family_count);
+	Memory::Set(number_of_allocated_queues.Data(), 0, sizeof(uint32) * number_of_allocated_queues.Size());
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	{
+		PRINT_TO_OUTPUT("VULKAN QUEUE INFORMATION:");
+
+		uint32 temp_counter{ 0 };
+
+		for (VkQueueFamilyProperties& queue_family_property : queue_family_properties)
+		{
+			//We want the graphics and present queue to come from the same family.
+			VkBool32 has_present_support{ false };
+			VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), temp_counter, VulkanInterface::Instance->GetSurface().Get(), &has_present_support));
+
+			PRINT_TO_OUTPUT("\tQueue family #" << (temp_counter + 1) << ":");
+
+			PRINT_TO_OUTPUT("\t\t- Number of queues: " << queue_family_property.queueCount);
+
+			if (queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT)
+			{
+				PRINT_TO_OUTPUT("\t\t- Has graphics support");
+			}
+
+			if (queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT)
+			{
+				PRINT_TO_OUTPUT("\t\t- Has compute support");
+			}
+
+			if (queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT)
+			{
+				PRINT_TO_OUTPUT("\t\t- Has transfer support");
+			}
+
+			if (has_present_support)
+			{
+				PRINT_TO_OUTPUT("\t\t- Has present support");
+			}
+
+			++temp_counter;
+		}
+	}
+#endif
+
 	/*
-	*	Find the queue family index that supports all possible operations.
-	*	According to the Vulkan specification, implementations must expose at least one queue family that has both graphics and compute functionality.
+	*	First off, find the queue family index for the "main" queue.
+	* 	According to the Vulkan specification, implementations must expose at least one queue family that has both graphics and compute functionality.
 	*	Furthermore, any queue that reports graphics or compute functionality also implicitly supports transfer functionality.
 	*/
 	uint32 queue_family_counter{ 0 };
 
-	//First run, try to find optimal indices; All queues coming from the same family.
-	for (VkQueueFamilyProperties &queue_family_property : queue_family_properties)
+	for (VkQueueFamilyProperties& queue_family_property : queue_family_properties)
 	{
 #if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 		//We want the graphics and present queue to come from the same family.
@@ -291,15 +339,11 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 #endif
 			/*Transfer functionality is implicit.*/)
 		{
-			_QueueFamilyIndices[UNDERLYING(QueueType::COMPUTE)] = queue_family_counter;
-			_QueueFamilyIndices[UNDERLYING(QueueType::GRAPHICS)] = queue_family_counter;
-			_QueueFamilyIndices[UNDERLYING(QueueType::PRESENT)] = queue_family_counter;
-			_QueueFamilyIndices[UNDERLYING(QueueType::TRANSFER)] = queue_family_counter;
+			_QueueFamilyIndices[UNDERLYING(QueueType::MAIN)] = queue_family_counter;
+			_QueueIndices[UNDERLYING(QueueType::MAIN)] = number_of_allocated_queues[queue_family_counter];
+			_QueueFamilyProperties[UNDERLYING(QueueType::MAIN)] = queue_family_property;
 
-			_QueueFamilyProperties[UNDERLYING(QueueType::COMPUTE)] = queue_family_property;
-			_QueueFamilyProperties[UNDERLYING(QueueType::GRAPHICS)] = queue_family_property;
-			_QueueFamilyProperties[UNDERLYING(QueueType::PRESENT)] = queue_family_property;
-			_QueueFamilyProperties[UNDERLYING(QueueType::TRANSFER)] = queue_family_property;
+			++number_of_allocated_queues[queue_family_counter];
 
 			break;
 		}
@@ -307,10 +351,92 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 		++queue_family_counter;
 	}
 
-	//Check if any queue family index has not been set yet.
-	for (const uint32 queue_family_index : _QueueFamilyIndices)
+	/*
+	*	Secondly, find the queue family index for the "async compute" queue.
+	*/
+	queue_family_counter = 0;
+
+	for (VkQueueFamilyProperties &queue_family_property : queue_family_properties)
 	{
-		ASSERT(queue_family_index != UINT32_MAXIMUM, "Queue family index not set!");
+		if (queue_family_property.queueCount >= 1
+			&& number_of_allocated_queues[queue_family_counter] < queue_family_property.queueCount
+			&& queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT)
+		{
+			_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_COMPUTE)] = queue_family_counter;
+			_QueueIndices[UNDERLYING(QueueType::ASYNC_COMPUTE)] = number_of_allocated_queues[queue_family_counter];
+			_QueueFamilyProperties[UNDERLYING(QueueType::ASYNC_COMPUTE)] = queue_family_property;
+
+			++number_of_allocated_queues[queue_family_counter];
+
+			break;
+		}
+
+		++queue_family_counter;
+	}
+
+	//If a queue family index couldn't be found for the async compute queue, hijack the main queue instead.
+	if (_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_COMPUTE)] == UINT32_MAXIMUM)
+	{
+		_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_COMPUTE)] = _QueueFamilyIndices[UNDERLYING(QueueType::MAIN)];
+		_QueueIndices[UNDERLYING(QueueType::ASYNC_COMPUTE)] = _QueueIndices[UNDERLYING(QueueType::MAIN)];
+		_QueueFamilyProperties[UNDERLYING(QueueType::ASYNC_COMPUTE)] = _QueueFamilyProperties[UNDERLYING(QueueType::MAIN)];
+	}
+
+	/*
+	*	Thirdly, find the queue family index for the "async transfer" queue.
+	*	Try to prefer queues that ONLY support transfer first.
+	*/
+	queue_family_counter = 0;
+
+	for (VkQueueFamilyProperties& queue_family_property : queue_family_properties)
+	{
+		if (queue_family_property.queueCount >= 1
+			&& number_of_allocated_queues[queue_family_counter] < queue_family_property.queueCount
+			&& queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT
+			&& !(queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT)
+			&& !(queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT))
+		{
+			_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)] = queue_family_counter;
+			_QueueIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)] = number_of_allocated_queues[queue_family_counter];
+			_QueueFamilyProperties[UNDERLYING(QueueType::ASYNC_TRANSFER)] = queue_family_property;
+
+			++number_of_allocated_queues[queue_family_counter];
+
+			break;
+		}
+
+		++queue_family_counter;
+	}
+
+	if (_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)] == UINT32_MAXIMUM)
+	{
+		queue_family_counter = 0;
+
+		for (VkQueueFamilyProperties& queue_family_property : queue_family_properties)
+		{
+			if (queue_family_property.queueCount >= 1
+				&& number_of_allocated_queues[queue_family_counter] < queue_family_property.queueCount
+				&& queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT)
+			{
+				_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)] = queue_family_counter;
+				_QueueIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)] = number_of_allocated_queues[queue_family_counter];
+				_QueueFamilyProperties[UNDERLYING(QueueType::ASYNC_TRANSFER)] = queue_family_property;
+
+				++number_of_allocated_queues[queue_family_counter];
+
+				break;
+			}
+
+			++queue_family_counter;
+		}
+	}
+
+	//If a queue family index couldn't be found for the "async transfer" queue, hijack the main queue instead.
+	if (_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)] == UINT32_MAXIMUM)
+	{
+		_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)] = _QueueFamilyIndices[UNDERLYING(QueueType::MAIN)];
+		_QueueIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)] = _QueueIndices[UNDERLYING(QueueType::MAIN)];
+		_QueueFamilyProperties[UNDERLYING(QueueType::ASYNC_TRANSFER)] = _QueueFamilyProperties[UNDERLYING(QueueType::MAIN)];
 	}
 }
 
@@ -319,50 +445,34 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 */
 void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 {
-	//Store the queue family indices.
-	const uint32 compute_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::COMPUTE)] };
-	const uint32 graphics_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::GRAPHICS)] };
-	const uint32 present_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::PRESENT)] };
-	const uint32 transfer_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::TRANSFER)] };
+	//Retrieve the "main" queue.
+	_Queues[UNDERLYING(QueueType::MAIN)] = new (Memory::Allocate(sizeof(VulkanQueue))) VulkanQueue;
+	_Queues[UNDERLYING(QueueType::MAIN)]->Initialize(_QueueFamilyIndices[UNDERLYING(QueueType::MAIN)], _QueueIndices[UNDERLYING(QueueType::MAIN)]);
 
-	//Retrieve the compute queue.
-	_Queues[UNDERLYING(QueueType::COMPUTE)] = new (Memory::Allocate(sizeof(VulkanQueue))) VulkanQueue;
-	_Queues[UNDERLYING(QueueType::COMPUTE)]->Initialize(compute_queue_family_index);
-
-	//Retrieve the graphics queue. Prefer if the graphics queue and the compute queue are the same.
-	if (graphics_queue_family_index == compute_queue_family_index)
+	//Retrieve the "async compute" queue.
+	if (_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_COMPUTE)] == _QueueFamilyIndices[UNDERLYING(QueueType::MAIN)]
+		&& _QueueFamilyProperties[UNDERLYING(QueueType::MAIN)].queueCount < 2)
 	{
-		_Queues[UNDERLYING(QueueType::GRAPHICS)] = _Queues[UNDERLYING(QueueType::COMPUTE)];
+		_Queues[UNDERLYING(QueueType::ASYNC_COMPUTE)] = _Queues[UNDERLYING(QueueType::MAIN)];
 	}
 
 	else
 	{
-		_Queues[UNDERLYING(QueueType::GRAPHICS)] = new (Memory::Allocate(sizeof(VulkanQueue))) VulkanQueue;
-		_Queues[UNDERLYING(QueueType::GRAPHICS)]->Initialize(graphics_queue_family_index);
+		_Queues[UNDERLYING(QueueType::ASYNC_COMPUTE)] = new (Memory::Allocate(sizeof(VulkanQueue))) VulkanQueue;
+		_Queues[UNDERLYING(QueueType::ASYNC_COMPUTE)]->Initialize(_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_COMPUTE)], _QueueIndices[UNDERLYING(QueueType::ASYNC_COMPUTE)]);
 	}
 
-	//Retrieve the present queue. Prefer if the present queue and the compute queue are the same.
-	if (present_queue_family_index == compute_queue_family_index)
+	//Retrieve the "async transfer" queue.
+	if (_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)] == _QueueFamilyIndices[UNDERLYING(QueueType::MAIN)]
+		&& _QueueFamilyProperties[UNDERLYING(QueueType::MAIN)].queueCount < 3)
 	{
-		_Queues[UNDERLYING(QueueType::PRESENT)] = _Queues[UNDERLYING(QueueType::GRAPHICS)];
-	}
-	
-	else
-	{
-		_Queues[UNDERLYING(QueueType::PRESENT)] = new (Memory::Allocate(sizeof(VulkanQueue))) VulkanQueue;
-		_Queues[UNDERLYING(QueueType::PRESENT)]->Initialize(present_queue_family_index);
-	}
-
-	//Retrieve the transfer queue. Prefer if the transer queue and the compute queue are the same.
-	if (transfer_queue_family_index == compute_queue_family_index)
-	{
-		_Queues[UNDERLYING(QueueType::TRANSFER)] = _Queues[UNDERLYING(QueueType::GRAPHICS)];
+		_Queues[UNDERLYING(QueueType::ASYNC_TRANSFER)] = _Queues[UNDERLYING(QueueType::MAIN)];
 	}
 
 	else
 	{
-		_Queues[UNDERLYING(QueueType::TRANSFER)] = new (Memory::Allocate(sizeof(VulkanQueue))) VulkanQueue;
-		_Queues[UNDERLYING(QueueType::TRANSFER)]->Initialize(transfer_queue_family_index);
+		_Queues[UNDERLYING(QueueType::ASYNC_TRANSFER)] = new (Memory::Allocate(sizeof(VulkanQueue))) VulkanQueue;
+		_Queues[UNDERLYING(QueueType::ASYNC_TRANSFER)]->Initialize(_QueueFamilyIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)], _QueueIndices[UNDERLYING(QueueType::ASYNC_TRANSFER)]);
 	}
 }
 
@@ -371,34 +481,19 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 */
 void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
 {
-	//Store the queue family indices.
-	const uint32 compute_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::COMPUTE)] };
-	const uint32 graphics_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::GRAPHICS)] };
-	const uint32 present_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::PRESENT)] };
-	const uint32 transfer_queue_family_index{ _QueueFamilyIndices[UNDERLYING(QueueType::TRANSFER)] };
+	//Free the "main" queue.
+	Memory::Free(_Queues[UNDERLYING(QueueType::MAIN)]);
 
-	//Destroy the compute queue.
-	Memory::Free(_Queues[UNDERLYING(QueueType::COMPUTE)]);
-
-	//Destroy the graphics queue.
-	if (graphics_queue_family_index != compute_queue_family_index)
+	//Free the "async compute" queue.
+	if (_Queues[UNDERLYING(QueueType::ASYNC_COMPUTE)] != _Queues[UNDERLYING(QueueType::MAIN)])
 	{
-		Memory::Free(_Queues[UNDERLYING(QueueType::GRAPHICS)]);
+		Memory::Free(_Queues[UNDERLYING(QueueType::ASYNC_COMPUTE)]);
 	}
 
-	//Destroy the present queue.
-	if (present_queue_family_index != compute_queue_family_index &&
-		present_queue_family_index != graphics_queue_family_index)
+	//Free the "async transfer" queue.
+	if (_Queues[UNDERLYING(QueueType::ASYNC_TRANSFER)] != _Queues[UNDERLYING(QueueType::MAIN)])
 	{
-		Memory::Free(_Queues[UNDERLYING(QueueType::PRESENT)]);
-	}
-
-	//Destroy the transfer queue.
-	if (transfer_queue_family_index != compute_queue_family_index &&
-		transfer_queue_family_index != graphics_queue_family_index &&
-		transfer_queue_family_index != present_queue_family_index)
-	{
-		Memory::Free(_Queues[UNDERLYING(QueueType::TRANSFER)]);
+		Memory::Free(_Queues[UNDERLYING(QueueType::ASYNC_TRANSFER)]);
 	}
 }
 #endif

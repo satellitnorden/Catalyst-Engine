@@ -82,10 +82,9 @@ void VulkanInterface::PostUpdate(const VulkanSemaphore *const RESTRICT renderFin
 void VulkanInterface::Release() NOEXCEPT
 {
 	//Wait for all queues to finish.
-	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::COMPUTE)->WaitIdle();
-	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::GRAPHICS)->WaitIdle();
-	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::PRESENT)->WaitIdle();
-	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::TRANSFER)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::MAIN)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::ASYNC_COMPUTE)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::ASYNC_TRANSFER)->WaitIdle();
 
 	//Tell the platform to terminate
 	VulkanPlatform::Terminate();
@@ -398,12 +397,12 @@ void VulkanInterface::DestroyBuffer(VulkanBuffer *const RESTRICT buffer) NOEXCEP
 }
 
 /*
-*	Creates and returns a compute command pool.
+*	Creates and returns a command pool from the "main" queue.
 */
-RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateComputeCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
+RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateMainCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT new_commad_pool{ new (MemorySystem::Instance->TypeAllocate<VulkanCommandPool>()) VulkanCommandPool() };
-	new_commad_pool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::COMPUTE));
+	new_commad_pool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::MAIN));
 
 	{
 		SCOPED_LOCK(_VulkanCommandPoolsLock);
@@ -415,37 +414,37 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateComputeComma
 }
 
 /*
-*	Creates and returns a graphics command pool.
+*	Creates and returns a command pool from the "async compute" queue.
 */
-RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
+RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateAsyncComputeCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
-	VulkanCommandPool *const RESTRICT new_command_pool{ new (MemorySystem::Instance->TypeAllocate<VulkanCommandPool>()) VulkanCommandPool() };
-	new_command_pool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::GRAPHICS));
+	VulkanCommandPool *const RESTRICT new_commad_pool{ new (MemorySystem::Instance->TypeAllocate<VulkanCommandPool>()) VulkanCommandPool() };
+	new_commad_pool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::ASYNC_COMPUTE));
 
 	{
 		SCOPED_LOCK(_VulkanCommandPoolsLock);
 
-		_VulkanCommandPools.Emplace(new_command_pool);
+		_VulkanCommandPools.Emplace(new_commad_pool);
 	}
 
-	return new_command_pool;
+	return new_commad_pool;
 }
 
 /*
-*	Creates and returns a transfer command pool.
+*	Creates and returns a command pool from the "async transfer" queue.
 */
-RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
+RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateAsyncTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
-	VulkanCommandPool *const RESTRICT new_command_pool{ new (MemorySystem::Instance->TypeAllocate<VulkanCommandPool>()) VulkanCommandPool() };
-	new_command_pool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::TRANSFER));
+	VulkanCommandPool* const RESTRICT new_commad_pool{ new (MemorySystem::Instance->TypeAllocate<VulkanCommandPool>()) VulkanCommandPool() };
+	new_commad_pool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::ASYNC_TRANSFER));
 
 	{
 		SCOPED_LOCK(_VulkanCommandPoolsLock);
 
-		_VulkanCommandPools.Emplace(new_command_pool);
+		_VulkanCommandPools.Emplace(new_commad_pool);
 	}
 
-	return new_command_pool;
+	return new_commad_pool;
 }
 
 /*

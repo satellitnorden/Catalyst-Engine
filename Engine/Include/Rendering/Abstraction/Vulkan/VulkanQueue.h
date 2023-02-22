@@ -27,7 +27,7 @@ public:
 	/*
 	*	Initializes this Vulkan queue.
 	*/
-	void Initialize(const uint32 queueFamilyIndex) NOEXCEPT;
+	void Initialize(const uint32 queue_family_index, const uint32 queue_index) NOEXCEPT;
 
 	/*
 	*	Submits a command buffer to this Vulkan queue.

@@ -132,6 +132,7 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 	ASSERT(general_component._HeightMap.GetWidth() == general_component._HeightMap.GetHeight(), "Terrain height map width and height doesn't match - This isn't okay.");
 
 	general_component._WorldPosition = terrain_initialization_data->_WorldPosition;
+	general_component._PatchSize = terrain_initialization_data->_PatchSize;
 	general_component._HeightMap = std::move(terrain_initialization_data->_HeightMap);
 	general_component._NormalMap = std::move(terrain_initialization_data->_NormalMap);
 	general_component._IndexMap = std::move(terrain_initialization_data->_IndexMap);

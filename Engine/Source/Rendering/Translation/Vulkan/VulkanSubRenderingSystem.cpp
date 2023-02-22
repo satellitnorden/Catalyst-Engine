@@ -906,10 +906,9 @@ void VulkanSubRenderingSystem::EditorPostInitialize() NOEXCEPT
 void VulkanSubRenderingSystem::Terminate() NOEXCEPT
 {
 	//First of all, wait for all queues to finish their tasks.
-	VulkanInterface::Instance->GetComputeQueue()->WaitIdle();
-	VulkanInterface::Instance->GetGraphicsQueue()->WaitIdle();
-	VulkanInterface::Instance->GetPresentQueue()->WaitIdle();
-	VulkanInterface::Instance->GetTransferQueue()->WaitIdle();
+	VulkanInterface::Instance->GetMainQueue()->WaitIdle();
+	VulkanInterface::Instance->GetAsyncComputeQueue()->WaitIdle();
+	VulkanInterface::Instance->GetAsyncTransferQueue()->WaitIdle();
 
 #if defined(CATALYST_EDITOR)
 	//Shut down ImGui.
@@ -1154,14 +1153,14 @@ void VulkanSubRenderingSystem::CreateCommandPool(const Pipeline::Type type, Comm
 		case Pipeline::Type::Compute:
 		case Pipeline::Type::RayTracing:
 		{
-			*handle = VulkanInterface::Instance->CreateComputeCommandPool(0);
+			*handle = VulkanInterface::Instance->CreateMainCommandPool(0);
 
 			break;
 		}
 
 		case Pipeline::Type::Graphics:
 		{
-			*handle = VulkanInterface::Instance->CreateGraphicsCommandPool(0);
+			*handle = VulkanInterface::Instance->CreateMainCommandPool(0);
 
 			break;
 		}
@@ -1230,13 +1229,13 @@ RESTRICTED NO_DISCARD CommandBuffer *const RESTRICT VulkanSubRenderingSystem::Al
 */
 void VulkanSubRenderingSystem::SubmitCommandBuffer(const CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
 {
-	VulkanInterface::Instance->GetComputeQueue()->Submit(	*static_cast<VulkanCommandBuffer *const RESTRICT>(command_buffer->GetCommandBufferData()),
-															0,
-															nullptr,
-															0,
-															0,
-															nullptr,
-															VK_NULL_HANDLE);
+	VulkanInterface::Instance->GetMainQueue()->Submit(	*static_cast<VulkanCommandBuffer *const RESTRICT>(command_buffer->GetCommandBufferData()),
+														0,
+														nullptr,
+														0,
+														0,
+														nullptr,
+														VK_NULL_HANDLE);
 }
 
 /*
@@ -1303,7 +1302,7 @@ NO_DISCARD uint32 VulkanSubRenderingSystem::GetExecutionTime(const QueryPoolHand
 	VULKAN_ERROR_CHECK(vkGetQueryPoolResults(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<const VulkanQueryPool* const RESTRICT>(query_pool)->Get(), 0, 2, sizeof(uint32) * 2, query_pool_results.Data(), 0, VkQueryResultFlagBits::VK_QUERY_RESULT_WAIT_BIT));
 
 	//Cache the timestamp valids bits/timestamp period.
-	const uint32 timestamp_valid_bits{ VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyProperties(VulkanLogicalDevice::QueueType::COMPUTE).timestampValidBits };
+	const uint32 timestamp_valid_bits{ VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyProperties(VulkanLogicalDevice::QueueType::MAIN).timestampValidBits };
 	const float32 timestamp_period{ VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceProperties().limits.timestampPeriod };
 
 	return CatalystBaseMath::Round<uint32>(static_cast<float32>((query_pool_results[1] & timestamp_valid_bits) - (query_pool_results[0] & timestamp_valid_bits)) * timestamp_period);
@@ -1898,10 +1897,9 @@ void VulkanSubRenderingSystem::TerminatePipeline(Pipeline *const RESTRICT pipeli
 void VulkanSubRenderingSystem::TakeImmediateScreenshot(const char *const RESTRICT file_path) NOEXCEPT
 {
 	//First of all, wait for all queues to finish their tasks.
-	VulkanInterface::Instance->GetComputeQueue()->WaitIdle();
-	VulkanInterface::Instance->GetGraphicsQueue()->WaitIdle();
-	VulkanInterface::Instance->GetPresentQueue()->WaitIdle();
-	VulkanInterface::Instance->GetTransferQueue()->WaitIdle();
+	VulkanInterface::Instance->GetMainQueue()->WaitIdle();
+	VulkanInterface::Instance->GetAsyncComputeQueue()->WaitIdle();
+	VulkanInterface::Instance->GetAsyncTransferQueue()->WaitIdle();
 
 	//Cache the Vulkan render target.
 	VulkanRenderTarget *const RESTRICT vulkan_render_target{ static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE)) };
@@ -2032,18 +2030,18 @@ void VulkanSubRenderingSystem::BeginFrame() NOEXCEPT
 void VulkanSubRenderingSystem::EndFrame(const CommandBuffer *const RESTRICT frame_command_buffer) NOEXCEPT
 {
 	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue()->Submit(	*static_cast<const VulkanCommandBuffer *const RESTRICT>(frame_command_buffer->GetCommandBufferData()),
+	VulkanInterface::Instance->GetMainQueue()->Submit(	*static_cast<const VulkanCommandBuffer *const RESTRICT>(frame_command_buffer->GetCommandBufferData()),
 #if VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
-															0,
-															nullptr,
+														0,
+														nullptr,
 #else
-															1,
-															VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore(),
+														1,
+														VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore(),
 #endif
-															VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-															1,
-															VulkanSubRenderingSystemData::_FrameData.GetRenderFinishedSemaphore(),
-															VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->Get());
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														1,
+														VulkanSubRenderingSystemData::_FrameData.GetRenderFinishedSemaphore(),
+														VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->Get());
 
 	//Post-update the Vulkan interface.
 	VulkanInterface::Instance->PostUpdate(VulkanSubRenderingSystemData::_FrameData.GetRenderFinishedSemaphore());

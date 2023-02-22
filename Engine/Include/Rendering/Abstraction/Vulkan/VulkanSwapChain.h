@@ -152,7 +152,7 @@ private:
 	/*
 	*	Creates the swap chain create info.
 	*/
-	void CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapChainCreateInfo, uint32 *RESTRICT queueFamilyIndices, const uint32 graphicsQueueFamilyIndex, const uint32 presentQueueFamilyIndex) const NOEXCEPT;
+	void CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapChainCreateInfo) const NOEXCEPT;
 
 };
 #endif

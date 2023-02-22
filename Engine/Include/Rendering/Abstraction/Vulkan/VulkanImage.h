@@ -56,7 +56,7 @@ protected:
 	Type _Type;
 
 	//The Vulkan image.
-	VkImage _VulkanImage;
+	VkImage _VulkanImage{ VK_NULL_HANDLE };
 
 	//The allocation.
 	VmaAllocation _Allocation;
@@ -65,7 +65,7 @@ protected:
 	VkDeviceMemory _VulkanDeviceMemory;
 
 	//The Vulkan image view.
-	VkImageView _VulkanImageView;
+	VkImageView _VulkanImageView{ VK_NULL_HANDLE };
 
 	//The underlying Vulkan format.
 	VkFormat _VulkanFormat;

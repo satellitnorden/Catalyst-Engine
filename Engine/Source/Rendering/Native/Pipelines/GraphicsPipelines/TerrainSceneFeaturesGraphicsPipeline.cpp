@@ -183,7 +183,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			const Vector3<int32> grid_delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
 
 			data._WorldPosition = general_component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
-			data._PatchSize = static_cast<float32>(general_component->_HeightMap.GetResolution());
+			data._PatchSize = static_cast<float32>(general_component->_PatchSize);
 			data._Borders = 0;
 			data._VertexBorderOffsetFirst = 1.0f / static_cast<float32>(general_component->_HeightMap.GetResolution());
 			data._VertexBorderOffsetSecond = 1.0f / static_cast<float32>((general_component->_HeightMap.GetResolution()) / 2);

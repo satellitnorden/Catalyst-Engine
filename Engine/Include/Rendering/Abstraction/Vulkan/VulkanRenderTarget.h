@@ -63,13 +63,13 @@ private:
 	VkSampleCountFlagBits _SampleCount;
 
 	//The Vulkan resolove image.
-	VkImage _VulkanResolveImage;
+	VkImage _VulkanResolveImage{ VK_NULL_HANDLE };
 
-	//The Vulkan resolove device memory.
-	VkDeviceMemory _VulkanResolveDeviceMemory;
+	//The resolove allocation
+	VmaAllocation _ResolveAllocation;
 
 	//The Vulkan resolove image view.
-	VkImageView _VulkanResolveImageView;
+	VkImageView _VulkanResolveImageView{ VK_NULL_HANDLE };
 
 };
 #endif
