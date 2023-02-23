@@ -102,7 +102,7 @@ void VulkanRenderTarget::Release() NOEXCEPT
 		_VulkanImage = VK_NULL_HANDLE;
 	}
 
-	if (_SampleCount >= VK_SAMPLE_COUNT_1_BIT)
+	if (_SampleCount > VK_SAMPLE_COUNT_1_BIT)
 	{
 		//Destroy the Vulkan resolve image view.
 		ASSERT(_VulkanResolveImageView, "Double deletion detected!");
