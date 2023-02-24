@@ -44,4 +44,7 @@ public:
 	//The blend map texture index.
 	uint32 _BlendMapTextureIndex;
 
+	//Denotes whether or not this terrain is visible.
+	bool _Visibility;
+
 };

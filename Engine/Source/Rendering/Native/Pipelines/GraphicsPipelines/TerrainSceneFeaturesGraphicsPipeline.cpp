@@ -175,8 +175,44 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		const TerrainGeneralComponent *RESTRICT general_component{ ComponentManager::GetTerrainTerrainGeneralComponents() };
 		const TerrainRenderComponent *RESTRICT render_component{ ComponentManager::GetTerrainTerrainRenderComponents() };
 
+		//Wait for terrain culling.
+		CullingSystem::Instance->WaitForTerrainCulling();
+
 		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++general_component, ++render_component)
 		{
+#if !defined(CATALYST_CONFIGURATION_FINAL) && 0
+			//Debug draw. (:
+			{
+				StaticArray<Vector4<float32>, 7> COLORS
+				{
+					Vector4<float32>(1.0f, 0.0f, 0.0f, 0.25f),
+					Vector4<float32>(0.0f, 1.0f, 0.0f, 0.25f),
+					Vector4<float32>(0.0f, 0.0f, 1.0f, 0.25f),
+
+					Vector4<float32>(1.0f, 1.0f, 0.0f, 0.25f),
+					Vector4<float32>(1.0f, 0.0f, 1.0f, 0.25f),
+					Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f),
+
+					Vector4<float32>(1.0f, 1.0f, 1.0f, 0.25f),
+				};
+
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D
+				(
+					COLORS[component_index % COLORS.Size()],
+					false,
+					false,
+					general_component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(WorldSystem::Instance->GetCurrentWorldGridCell()),
+					0.0f
+				);
+			}
+#endif
+
+			//Is this terrain visible?
+			if (!render_component->_Visibility)
+			{
+				continue;
+			}
+
 			//Push constants.
 			TerrainSceneFeaturesPushConstantData data;
 

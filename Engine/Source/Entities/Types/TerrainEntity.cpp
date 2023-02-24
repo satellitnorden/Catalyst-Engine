@@ -40,6 +40,29 @@ void TerrainEntity::Preprocess(EntityInitializationData* const RESTRICT data) NO
 	//Cast to terrain initialization data.
 	TerrainInitializationData *const RESTRICT terrain_initialization_data{ static_cast<TerrainInitializationData* const RESTRICT>(data) };
 
+	//Calculate the world space axis aligned bounding box.
+	AxisAlignedBoundingBox3D axis_aligned_bounding_box;
+
+	axis_aligned_bounding_box._Minimum._X = -(static_cast<float32>(terrain_initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Minimum._Z = -(static_cast<float32>(terrain_initialization_data->_PatchSize) * 0.5f);
+
+	axis_aligned_bounding_box._Maximum._X = (static_cast<float32>(terrain_initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Maximum._Z = (static_cast<float32>(terrain_initialization_data->_PatchSize) * 0.5f);
+
+	for (uint32 Y{ 0 }; Y < terrain_initialization_data->_HeightMap.GetResolution(); ++Y)
+	{
+		for (uint32 X{ 0 }; X < terrain_initialization_data->_HeightMap.GetResolution(); ++X)
+		{
+			const float32 height{ terrain_initialization_data->_HeightMap.At(X, Y) };
+
+			axis_aligned_bounding_box._Minimum._Y = CatalystBaseMath::Minimum<float32>(axis_aligned_bounding_box._Minimum._Y, height);
+			axis_aligned_bounding_box._Maximum._Y = CatalystBaseMath::Maximum<float32>(axis_aligned_bounding_box._Maximum._Y, height);
+		}
+	}
+
+	terrain_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(terrain_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Minimum);
+	terrain_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(terrain_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Maximum);
+
 	//Construct the plane.
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
@@ -132,6 +155,7 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 	ASSERT(general_component._HeightMap.GetWidth() == general_component._HeightMap.GetHeight(), "Terrain height map width and height doesn't match - This isn't okay.");
 
 	general_component._WorldPosition = terrain_initialization_data->_WorldPosition;
+	general_component._WorldSpaceAxisAlignedBoundingBox = terrain_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
 	general_component._PatchSize = terrain_initialization_data->_PatchSize;
 	general_component._HeightMap = std::move(terrain_initialization_data->_HeightMap);
 	general_component._NormalMap = std::move(terrain_initialization_data->_NormalMap);

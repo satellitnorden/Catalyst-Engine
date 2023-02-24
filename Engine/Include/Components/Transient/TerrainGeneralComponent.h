@@ -8,6 +8,7 @@
 
 //World.
 #include <World/Core/WorldPosition.h>
+#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
 class TerrainGeneralComponent final
 {
@@ -16,6 +17,9 @@ public:
 
 	//The world position.
 	WorldPosition _WorldPosition;
+
+	//The world space axis aligned bounding box.
+	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
 
 	//The patch size.
 	uint32 _PatchSize;

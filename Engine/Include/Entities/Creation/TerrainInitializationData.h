@@ -11,6 +11,7 @@
 
 //World.
 #include <World/Core/WorldPosition.h>
+#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
 class TerrainInitializationData final : public EntityInitializationData
 {
@@ -24,6 +25,9 @@ public:
 	{
 
 	public:
+
+		//The world space axis aligned bounding box.
+		WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
 
 		//The buffer.
 		BufferHandle _Buffer;

@@ -63,7 +63,6 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 {
 	//Cache data that will be used.
 	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
-	const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
 	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
 
 	//Iterate over all patches and determine their visibility.
@@ -83,7 +82,6 @@ void CullingSystem::CullStaticModels() const NOEXCEPT
 {
 	//Cache data that will be used.
 	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
-	const float32 world_grid_size{ WorldSystem::Instance->GetWorldGridSize() };
 	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
 
 	//Iterate over all patches and determine their visibility.
@@ -101,16 +99,17 @@ void CullingSystem::CullStaticModels() const NOEXCEPT
 */
 void CullingSystem::CullTerrain() const NOEXCEPT
 {
-	//Cache the frustum planes.
+	//Cache data that will be used.
+	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
 	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
 
 	//Iterate over all patches and determine their visibility.
-	const DynamicArray<TerrainPatchInformation> *const RESTRICT patch_informations{ TerrainSystem::Instance->GetTerrainPatchInformations() };
-	DynamicArray<TerrainPatchRenderInformation> *const RESTRICT patch_render_informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
-	const uint64 number_of_patch_informations{ patch_informations->Size() };
+	const uint64 number_of_components{ ComponentManager::GetNumberOfTerrainComponents() };
+	TerrainGeneralComponent *RESTRICT general_component{ ComponentManager::GetTerrainTerrainGeneralComponents() };
+	TerrainRenderComponent *RESTRICT render_component{ ComponentManager::GetTerrainTerrainRenderComponents() };
 
-	for (uint64 i{ 0 }; i < number_of_patch_informations; ++i)
+	for (uint64 i{ 0 }; i < number_of_components; ++i, ++general_component, ++render_component)
 	{
-		patch_render_informations->At(i)._Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, patch_informations->At(i)._AxisAlignedBoundingBox);
+		render_component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, general_component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell));
 	}
 }
