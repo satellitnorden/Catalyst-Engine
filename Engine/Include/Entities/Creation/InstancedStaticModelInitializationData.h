@@ -16,12 +16,35 @@
 #include <Rendering/Native/ModelFadeData.h>
 
 //World.
+#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 #include <World/Core/WorldTransform.h>
 
 class InstancedStaticModelInitializationData final : public EntityInitializationData
 {
 
 public:
+
+	/*
+	*	Preprocessed data class definition.
+	*/
+	class PreprocessedData final
+	{
+
+	public:
+
+		//The world space axis aligned bounding box.
+		WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
+		
+		//The cell.
+		Vector3<int32> _Cell;
+
+		//The transformations buffer.
+		BufferHandle _TransformationsBuffer;
+
+		//The number of transformations.
+		uint32 _NumberOfTransformations;
+
+	};
 
 	//The world transforms.
 	DynamicArray<WorldTransform> _WorldTransforms;
@@ -37,5 +60,8 @@ public:
 
 	//The model fade data.
 	Optional<ModelFadeData> _ModelFadeData;
+
+	//The preprocessed data.
+	PreprocessedData _PreprocessedData;
 
 };

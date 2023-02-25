@@ -24,18 +24,12 @@ public:
 	/*
 	*	Returns the preprocessing parameters.
 	*/
-	FORCE_INLINE void GetPreprocessingParameters(EntityPreprocessingParameters* const RESTRICT parameters) NOEXCEPT
-	{
-
-	}
+	void GetPreprocessingParameters(EntityPreprocessingParameters *const RESTRICT parameters) NOEXCEPT;
 
 	/*
 	*	Preprocesses this entity.
 	*/
-	FORCE_INLINE void Preprocess(EntityInitializationData* const RESTRICT data) NOEXCEPT
-	{
-
-	}
+	void Preprocess(EntityInitializationData* const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Initializes this entity.

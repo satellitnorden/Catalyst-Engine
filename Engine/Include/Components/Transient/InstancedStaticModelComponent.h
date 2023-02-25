@@ -18,6 +18,9 @@ class InstancedStaticModelComponent final
 
 public:
 
+	//The world space axis aligned bounding box.
+	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
+
 	//The model resource.
 	ResourcePointer<ModelResource> _ModelResource;
 

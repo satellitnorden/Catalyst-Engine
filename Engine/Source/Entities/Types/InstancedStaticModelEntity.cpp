@@ -24,6 +24,58 @@ InstancedStaticModelEntity::InstancedStaticModelEntity() NOEXCEPT
 }
 
 /*
+*	Returns the preprocessing parameters.
+*/
+void InstancedStaticModelEntity::GetPreprocessingParameters(EntityPreprocessingParameters *const RESTRICT parameters) NOEXCEPT
+{
+	parameters->_ShouldPreprocess = true;
+	parameters->_CanPreprocessOnMainThread = false;
+}
+
+/*
+*	Preprocesses this entity.
+*/
+void InstancedStaticModelEntity::Preprocess(EntityInitializationData *const RESTRICT data) NOEXCEPT
+{
+	//Cast to instanced static model initialization data.
+	InstancedStaticModelInitializationData *const RESTRICT instanced_static_model_initialization_data{ static_cast<InstancedStaticModelInitializationData* const RESTRICT>(data) };
+
+	ASSERT(!instanced_static_model_initialization_data->_WorldTransforms.Empty(), "Trying to add instanced static model entity without any transforms!");
+
+	//Calculate the average cell for all transforms.
+	Vector3<float32> average_cell{ 0.0f, 0.0f, 0.0f };
+
+	for (const WorldTransform& world_transform : instanced_static_model_initialization_data->_WorldTransforms)
+	{
+		for (uint8 i{ 0 }; i < 3; ++i)
+		{
+			average_cell[i] += static_cast<float32>(world_transform.GetCell()[i]);
+		}
+	}
+
+	average_cell /= static_cast<float32>(instanced_static_model_initialization_data->_WorldTransforms.Size());
+
+	for (uint8 i{ 0 }; i < 3; ++i)
+	{
+		instanced_static_model_initialization_data->_PreprocessedData._Cell[i] = CatalystBaseMath::Round<int32>(average_cell[i]);
+	}
+
+	//Create the transoformations buffer.
+	DynamicArray<Matrix4x4> transformations;
+	transformations.Reserve(instanced_static_model_initialization_data->_WorldTransforms.Size());
+
+	for (const WorldTransform& world_transform : instanced_static_model_initialization_data->_WorldTransforms)
+	{
+		transformations.Emplace(world_transform.ToRelativeMatrix4x4(instanced_static_model_initialization_data->_PreprocessedData._Cell));
+	}
+
+	RenderingUtilities::CreateTransformationsBuffer(transformations, &instanced_static_model_initialization_data->_PreprocessedData._TransformationsBuffer);
+
+	//Set the number of transformations.
+	instanced_static_model_initialization_data->_PreprocessedData._NumberOfTransformations = static_cast<uint32>(transformations.Size());
+}
+
+/*
 *	Initializes this entity.
 */
 void InstancedStaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEXCEPT
@@ -32,44 +84,17 @@ void InstancedStaticModelEntity::Initialize(EntityInitializationData *const REST
 	_ComponentsIndex = ComponentManager::GetNewInstancedStaticModelComponentsIndex(this);
 
 	//Copy the data.
-	const InstancedStaticModelInitializationData *const RESTRICT model_initialization_data{ static_cast<const InstancedStaticModelInitializationData *const RESTRICT>(data) };
+	const InstancedStaticModelInitializationData *const RESTRICT instanced_static_model_initialization_data{ static_cast<const InstancedStaticModelInitializationData *const RESTRICT>(data) };
 	InstancedStaticModelComponent &component{ ComponentManager::GetInstancedStaticModelInstancedStaticModelComponents()[_ComponentsIndex] };
 
-	ASSERT(!model_initialization_data->_WorldTransforms.Empty(), "Trying to add instanced static model entity without any transforms!");
-
-	component._ModelResource = model_initialization_data->_ModelResource;
-	component._MaterialResources = model_initialization_data->_MaterialResources;
-
-	Vector3<float32> average_cell{ 0.0f, 0.0f, 0.0f };
-
-	for (const WorldTransform &world_transform : model_initialization_data->_WorldTransforms)
-	{
-		for (uint8 i{ 0 }; i < 3; ++i)
-		{
-			average_cell[i] += static_cast<float32>(world_transform.GetCell()[i]);
-		}
-	}
-
-	average_cell /= static_cast<float32>(model_initialization_data->_WorldTransforms.Size());
-
-	for (uint8 i{ 0 }; i < 3; ++i)
-	{
-		component._Cell[i] = CatalystBaseMath::Round<int32>(average_cell[i]);
-	}
-
-	DynamicArray<Matrix4x4> transformations;
-	transformations.Reserve(model_initialization_data->_WorldTransforms.Size());
-
-	for (const WorldTransform &world_transform : model_initialization_data->_WorldTransforms)
-	{
-		transformations.Emplace(world_transform.ToRelativeMatrix4x4(component._Cell));
-	}
-
-	RenderingUtilities::CreateTransformationsBuffer(transformations, &component._TransformationsBuffer);
-
-	component._NumberOfTransformations = static_cast<uint32>(transformations.Size());
-	component._ModelFlags = model_initialization_data->_ModelFlags;
-	component._ModelFadeData = model_initialization_data->_ModelFadeData;
+	component._WorldSpaceAxisAlignedBoundingBox = instanced_static_model_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
+	component._ModelResource = instanced_static_model_initialization_data->_ModelResource;
+	component._MaterialResources = instanced_static_model_initialization_data->_MaterialResources;
+	component._Cell = instanced_static_model_initialization_data->_PreprocessedData._Cell;
+	component._TransformationsBuffer = instanced_static_model_initialization_data->_PreprocessedData._TransformationsBuffer;
+	component._NumberOfTransformations = instanced_static_model_initialization_data->_PreprocessedData._NumberOfTransformations;
+	component._ModelFlags = instanced_static_model_initialization_data->_ModelFlags;
+	component._ModelFadeData = instanced_static_model_initialization_data->_ModelFadeData;
 
 	//Destroy the initialization data.
 	EntitySystem::Instance->DestroyInitializationData<InstancedStaticModelInitializationData>(data);
