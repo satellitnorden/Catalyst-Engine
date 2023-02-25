@@ -148,12 +148,12 @@ void ModelFile::PostProcess() NOEXCEPT
 				}
 			}
 
-			//Rotate the texture coordinates.
+			//Modify the texture coordinates.
 			for (ModelFile::Mesh &mesh : _Meshes)
 			{
 				for (Vertex &vertex : mesh._Vertices)
 				{
-					vertex._TextureCoordinate.Rotate(CatalystBaseMath::DegreesToRadians(180.0f));
+					vertex._TextureCoordinate._Y = 1.0f - vertex._TextureCoordinate._Y;
 				}
 			}
 

@@ -219,7 +219,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
-	UpdateIndirectLightingOptions();
+	//UpdateIndirectLightingOptions();
 
 	//Check the indirect lighting mode/quality.
 	{
