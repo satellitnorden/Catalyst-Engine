@@ -1472,8 +1472,8 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_CurrentCameraWorldTransform = _CameraSystem.GetCurrentCamera()->GetWorldTransform();
 
 	//Calculate the previous and current camera matrices, as well as their inverses.
-	const Matrix4x4 previous_camera_matrix{ Matrix4x4::LookAt(_PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()), _PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousCameraWorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousCameraWorldTransform.GetRotation())) };
-	const Matrix4x4 current_camera_matrix{ Matrix4x4::LookAt(_CurrentCameraWorldTransform.GetLocalPosition(), _CurrentCameraWorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_CurrentCameraWorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_CurrentCameraWorldTransform.GetRotation())) };
+	const Matrix4x4 previous_camera_matrix{ Matrix4x4::LookAt(_PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()), _PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles())) };
+	const Matrix4x4 current_camera_matrix{ Matrix4x4::LookAt(_CurrentCameraWorldTransform.GetLocalPosition(), _CurrentCameraWorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_CurrentCameraWorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_CurrentCameraWorldTransform.GetRotation().ToEulerAngles())) };
 
 	//Jitter the projection matrix a bit.
 	Vector2<float32> current_frame_jitter;

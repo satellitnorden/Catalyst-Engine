@@ -386,14 +386,14 @@ public:
 	/*
 	*	Constructor taking position and a rotation quaternion as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix4x4(const Vector3<float32> &position, const Quaternion &rotation) NOEXCEPT
+	FORCE_INLINE constexpr Matrix4x4(const Vector3<float32> &position, const Quaternion &rotation, const Vector3<float32> scale = VectorConstants::ONE) NOEXCEPT
 		:
 		_Matrix{ { 1.0f - 2.0f * (rotation._Y * rotation._Y) - 2.0f * (rotation._Z * rotation._Z), 2.0f * rotation._X * rotation._Y + 2.0f * rotation._W * rotation._Z, 2.0f * rotation._X * rotation._Z - 2.0f * rotation._W * rotation._Y, 0.0f },
 				 { 2.0f * rotation._X * rotation._Y - 2.0f * rotation._W * rotation._Z, 1.0f - 2.0f * (rotation._X * rotation._X) - 2.0f * (rotation._Z * rotation._Z), 2.0f * rotation._Y * rotation._Z - 2.0f * rotation._W * rotation._X, 0.0f },
 				 { 2.0f * rotation._X * rotation._Z + 2.0f * rotation._W * rotation._Y, 2.0f * rotation._Y * rotation._Z + 2.0f * rotation._W * rotation._X, 1.0f - 2.0f * (rotation._X * rotation._X) - 2.0f * (rotation._Y * rotation._Y), 0.0f },
 				 { position._X, position._Y, position._Z, 1.0f } }
 	{
-
+		Scale(scale);
 	}
 
 	/*

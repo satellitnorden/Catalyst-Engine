@@ -21,14 +21,28 @@ public:
 	FORCE_INLINE explicit WorldTransform() NOEXCEPT
 		:
 		_WorldPosition(),
-		_Rotation(0.0f, 0.0f, 0.0f),
+		_Rotation(0.0f, 0.0f, 0.0f, 1.0f),
 		_Scale(1.0f)
 	{
 
 	}
 
 	/*
-	*	Constructor taking all values as arguments.
+	*	Constructor taking world position, quaternion and scale.
+	*/
+	FORCE_INLINE explicit WorldTransform(	const WorldPosition &initial_world_position,
+											const Quaternion &initial_rotation,
+											const float32 initial_scale) NOEXCEPT
+		:
+		_WorldPosition(initial_world_position),
+		_Rotation(initial_rotation),
+		_Scale(initial_scale)
+	{
+
+	}
+
+	/*
+	*	Constructor taking world position, euler angles and scale.
 	*/
 	FORCE_INLINE explicit WorldTransform(	const WorldPosition &initial_world_position,
 											const EulerAngles &initial_rotation,
@@ -42,7 +56,22 @@ public:
 	}
 
 	/*
-	*	Constructor taking the cell, local position, rotation and scale.
+	*	Constructor taking cell, local position, euler angles and scale.
+	*/
+	FORCE_INLINE explicit WorldTransform(	const Vector3<int32>& initial_cell,
+											const Vector3<float32>& initial_local_position,
+											const Quaternion& initial_rotation,
+											const float32 initial_scale) NOEXCEPT
+		:
+		_WorldPosition(initial_cell, initial_local_position),
+		_Rotation(initial_rotation),
+		_Scale(initial_scale)
+	{
+
+	}
+
+	/*
+	*	Constructor taking cell, local position, euler angles and scale.
 	*/
 	FORCE_INLINE explicit WorldTransform(	const Vector3<int32> &initial_cell,
 											const Vector3<float32> &initial_local_position,
@@ -57,7 +86,21 @@ public:
 	}
 
 	/*
-	*	Constructor taking the local position, rotation and scale.
+	*	Constructor taking local position, quaternion and scale.
+	*/
+	FORCE_INLINE explicit WorldTransform(	const Vector3<float32> &initial_local_position,
+											const Quaternion &initial_rotation,
+											const float32 initial_scale) NOEXCEPT
+		:
+		_WorldPosition(initial_local_position),
+		_Rotation(initial_rotation),
+		_Scale(initial_scale)
+	{
+
+	}
+
+	/*
+	*	Constructor taking local position, euler angles and scale.
 	*/
 	FORCE_INLINE explicit WorldTransform(	const Vector3<float32> &initial_local_position,
 											const EulerAngles &initial_rotation,
@@ -165,9 +208,17 @@ public:
 	/*
 	*	Returns the rotation.
 	*/
-	FORCE_INLINE NO_DISCARD const EulerAngles &GetRotation() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const Quaternion &GetRotation() const NOEXCEPT
 	{
 		return _Rotation;
+	}
+
+	/*
+	*	Sets the rotation.
+	*/
+	FORCE_INLINE void SetRotation(const Quaternion &value) NOEXCEPT
+	{
+		_Rotation = value;
 	}
 
 	/*
@@ -218,7 +269,7 @@ private:
 	WorldPosition _WorldPosition;
 
 	//The rotation.
-	EulerAngles _Rotation;
+	Quaternion _Rotation;
 
 	//The scale.
 	float32 _Scale;

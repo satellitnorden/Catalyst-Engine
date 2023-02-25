@@ -64,6 +64,14 @@ public:
 	}
 
 	/*
+	*	Constructor taking a euler angles.
+	*/
+	FORCE_INLINE Quaternion(const EulerAngles &rotation) NOEXCEPT
+	{
+		FromEulerAngles(rotation);
+	}
+
+	/*
 	*	Constructor taking an axis and an angle.
 	*/
 	FORCE_INLINE constexpr Quaternion(const Vector3<float32> &axis, const float32 angle) NOEXCEPT

@@ -634,8 +634,7 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 				//Set up the transform.
 				const Vector3<float32> absolute_world_position{ component._CurrentWorldTransform.GetAbsolutePosition() };
 				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
-				Quaternion rotation;
-				rotation.FromEulerAngles(component._CurrentWorldTransform.GetRotation());
+				const Quaternion rotation{ component._CurrentWorldTransform.GetRotation() };
 				physx::PxQuat physx_rotation;
 				physx_rotation.x = rotation._X;
 				physx_rotation.y = rotation._Y;
@@ -764,9 +763,7 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 				//Set up the transform.
 				const Vector3<float32> absolute_world_position{ component._WorldTransform.GetAbsolutePosition() };
 				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
-				Quaternion rotation;
-
-				rotation.FromEulerAngles(component._WorldTransform.GetRotation());
+				const Quaternion rotation{ component._WorldTransform.GetRotation() };
 
 				const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, rotation._Z, rotation._W };
 				const physx::PxTransform transform{ position, physx_rotation };
@@ -872,8 +869,7 @@ void PhysicsSystem::SubUpdateEntityWorldTransform(Entity *const RESTRICT entity,
 			//Set up the PhysX transform.
 			const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
 			const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
-			Quaternion rotation;
-			rotation.FromEulerAngles(world_transform.GetRotation());
+			const Quaternion rotation{ world_transform.GetRotation() };
 			const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, rotation._Z, rotation._W };
 			const physx::PxTransform physx_transform{ physx_position, physx_rotation };
 
@@ -903,8 +899,7 @@ void PhysicsSystem::SubUpdateEntityWorldTransform(Entity *const RESTRICT entity,
 			//Set up the PhysX transform.
 			const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
 			const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
-			Quaternion rotation;
-			rotation.FromEulerAngles(world_transform.GetRotation());
+			const Quaternion rotation{ world_transform.GetRotation() };
 			const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, rotation._Z, rotation._W };
 			const physx::PxTransform physx_transform{ physx_position, physx_rotation };
 

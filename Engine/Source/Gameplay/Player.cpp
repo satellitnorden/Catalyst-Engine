@@ -79,7 +79,10 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 		//Set the camera position/rotation.
 		const Vector3<float32> character_controller_position{ _CharacterController->GetWorldPosition().GetAbsolutePosition() };
 
-		const WorldTransform world_transform{ character_controller_position + Vector3<float32>(0.0f, _CurrentHeight, 0.0f), _Rotation, 1.0f };
+		const Quaternion roll_rotation{ CatalystCoordinateSpacesUtilities::RotatedWorldRightVector(_Rotation), _Rotation._Roll };
+		const Quaternion yaw_rotation{ CatalystWorldCoordinateSpace::UP, _Rotation._Yaw };
+
+		const WorldTransform world_transform{ character_controller_position + Vector3<float32>(0.0f, _CurrentHeight, 0.0f), roll_rotation * yaw_rotation, 1.0f };
 
 		RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->SetWorldTransform(world_transform);
 	}

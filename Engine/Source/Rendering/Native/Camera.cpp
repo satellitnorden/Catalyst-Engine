@@ -54,7 +54,7 @@ void Camera::UpdateProjectionMatrix() NOEXCEPT
 void Camera::UpdateCameraMatrix() NOEXCEPT
 {
 	//Update the camera matrix.
-	_CameraMatrix = Matrix4x4::LookAt(_WorldTransform.GetLocalPosition(), _WorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_WorldTransform.GetRotation()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_WorldTransform.GetRotation()));
+	_CameraMatrix = Matrix4x4::LookAt(_WorldTransform.GetLocalPosition(), _WorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_WorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_WorldTransform.GetRotation().ToEulerAngles()));
 
 	//Update the inverse camera matrix.
 	_InverseCameraMatrix = _CameraMatrix;
@@ -80,7 +80,7 @@ void Camera::UpdateFrustumPlanes() NOEXCEPT
 	for (uint8 i{ 4 }; i--;) _FrustumPlanes[4][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][2]; //Near.
 	for (uint8 i{ 4 }; i--;) _FrustumPlanes[5][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][2]; //Far.
 
-																										   //Normalize the frustum planes.
+	//Normalize the frustum planes.
 	for (uint8 i{ 0 }; i < 6; ++i)
 	{
 		const float32 length{ CatalystBaseMath::SquareRoot(_FrustumPlanes[i]._X * _FrustumPlanes[i]._X + _FrustumPlanes[i]._Y * _FrustumPlanes[i]._Y + _FrustumPlanes[i]._Z * _FrustumPlanes[i]._Z) };

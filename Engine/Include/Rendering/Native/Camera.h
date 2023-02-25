@@ -57,7 +57,7 @@ public:
 	{
 		SCOPED_LOCK(_Lock);
 
-		return CatalystCoordinateSpacesUtilities::RotatedWorldRightVector(_WorldTransform.GetRotation());
+		return CatalystCoordinateSpacesUtilities::RotatedWorldRightVector(_WorldTransform.GetRotation().ToEulerAngles());
 	}
 
 	/*
@@ -67,7 +67,7 @@ public:
 	{
 		SCOPED_LOCK(_Lock);
 
-		return CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_WorldTransform.GetRotation());
+		return CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_WorldTransform.GetRotation().ToEulerAngles());
 	}
 
 	/*
@@ -77,7 +77,7 @@ public:
 	{
 		SCOPED_LOCK(_Lock);
 
-		return CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_WorldTransform.GetRotation());
+		return CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_WorldTransform.GetRotation().ToEulerAngles());
 	}
 
 	/*
