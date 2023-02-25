@@ -41,6 +41,14 @@ public:
 	}
 
 	/*
+	*	Waits for instanced static models culling to finish executing.
+	*/
+	FORCE_INLINE void WaitForInstancedStaticModelsCulling() const NOEXCEPT
+	{
+		_InstancedStaticModelsCullingTask.Wait<WaitMode::YIELD>();
+	}
+
+	/*
 	*	Waits for static models culling to finish executing.
 	*/
 	FORCE_INLINE void WaitForStaticModelsCulling() const NOEXCEPT
@@ -61,6 +69,9 @@ private:
 	//The dynamic models culling task.
 	Task _DynamicModelsCullingTask;
 
+	//The instanced static models culling task.
+	Task _InstancedStaticModelsCullingTask;
+
 	//The static models culling task.
 	Task _StaticModelsCullingTask;
 
@@ -71,6 +82,11 @@ private:
 	*	Culls dynamic models.
 	*/
 	void CullDynamicModels() const NOEXCEPT;
+
+	/*
+	*	Culls instanced static models.
+	*/
+	void CullInstancedStaticModels() const NOEXCEPT;
 
 	/*
 	*	Culls static models.

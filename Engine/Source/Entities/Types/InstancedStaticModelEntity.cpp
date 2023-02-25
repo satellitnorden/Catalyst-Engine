@@ -60,16 +60,32 @@ void InstancedStaticModelEntity::Preprocess(EntityInitializationData *const REST
 		instanced_static_model_initialization_data->_PreprocessedData._Cell[i] = CatalystBaseMath::Round<int32>(average_cell[i]);
 	}
 
-	//Create the transoformations buffer.
+	//Create the transoformations buffer. Calculate the world space axis aligned bounding box in the process.
 	DynamicArray<Matrix4x4> transformations;
 	transformations.Reserve(instanced_static_model_initialization_data->_WorldTransforms.Size());
 
+	AxisAlignedBoundingBox3D axis_aligned_bounding_box;
+
 	for (const WorldTransform& world_transform : instanced_static_model_initialization_data->_WorldTransforms)
 	{
-		transformations.Emplace(world_transform.ToRelativeMatrix4x4(instanced_static_model_initialization_data->_PreprocessedData._Cell));
+		const Matrix4x4 transformation{ world_transform.ToRelativeMatrix4x4(instanced_static_model_initialization_data->_PreprocessedData._Cell) };
+
+		transformations.Emplace(transformation);
+
+		AxisAlignedBoundingBox3D transformation_axis_aligned_bounding_box;
+		RenderingUtilities::TransformAxisAlignedBoundingBox(instanced_static_model_initialization_data->_ModelResource->_ModelSpaceAxisAlignedBoundingBox, transformation, &transformation_axis_aligned_bounding_box);
+	
+		axis_aligned_bounding_box.Expand(transformation_axis_aligned_bounding_box);
 	}
 
 	RenderingUtilities::CreateTransformationsBuffer(transformations, &instanced_static_model_initialization_data->_PreprocessedData._TransformationsBuffer);
+
+	//Set up the world space axis aligned bounding box.
+	instanced_static_model_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox = WorldSpaceAxisAlignedBoundingBox3D
+	(
+		WorldPosition(instanced_static_model_initialization_data->_PreprocessedData._Cell, axis_aligned_bounding_box._Minimum),
+		WorldPosition(instanced_static_model_initialization_data->_PreprocessedData._Cell, axis_aligned_bounding_box._Maximum)
+	);
 
 	//Set the number of transformations.
 	instanced_static_model_initialization_data->_PreprocessedData._NumberOfTransformations = static_cast<uint32>(transformations.Size());

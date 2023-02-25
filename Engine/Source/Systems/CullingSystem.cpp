@@ -28,6 +28,14 @@ void CullingSystem::Initialize() NOEXCEPT
 	_DynamicModelsCullingTask._Arguments = nullptr;
 	_DynamicModelsCullingTask._ExecutableOnSameThread = true;
 
+	//Initialize the instanced static models culling task.
+	_InstancedStaticModelsCullingTask._Function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullInstancedStaticModels();
+	};
+	_InstancedStaticModelsCullingTask._Arguments = nullptr;
+	_InstancedStaticModelsCullingTask._ExecutableOnSameThread = true;
+
 	//Initialize the static models culling task.
 	_StaticModelsCullingTask._Function = [](void *const RESTRICT)
 	{
@@ -52,6 +60,7 @@ void CullingSystem::RenderUpdate() NOEXCEPT
 {
 	//Execute all tasks.
 	TaskSystem::Instance->ExecuteTask(&_DynamicModelsCullingTask);
+	TaskSystem::Instance->ExecuteTask(&_InstancedStaticModelsCullingTask);
 	TaskSystem::Instance->ExecuteTask(&_StaticModelsCullingTask);
 	TaskSystem::Instance->ExecuteTask(&_TerrainCullingTask);
 }
@@ -68,6 +77,25 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 	//Iterate over all patches and determine their visibility.
 	const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
 	DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+	for (uint64 i = 0; i < number_of_components; ++i, ++component)
+	{
+		component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell));
+	}
+}
+
+/*
+*	Culls instanced static models.
+*/
+void CullingSystem::CullInstancedStaticModels() const NOEXCEPT
+{
+	//Cache data that will be used.
+	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
+	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
+
+	//Iterate over all patches and determine their visibility.
+	const uint64 number_of_components{ ComponentManager::GetNumberOfInstancedStaticModelComponents() };
+	InstancedStaticModelComponent *RESTRICT component{ ComponentManager::GetInstancedStaticModelInstancedStaticModelComponents() };
 
 	for (uint64 i = 0; i < number_of_components; ++i, ++component)
 	{

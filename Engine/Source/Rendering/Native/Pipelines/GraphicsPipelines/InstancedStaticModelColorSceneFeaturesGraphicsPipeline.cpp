@@ -9,6 +9,7 @@
 #include <Rendering/Native/Vertex.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
@@ -189,8 +190,44 @@ void InstancedStaticModelColorSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		const uint64 number_of_components{ ComponentManager::GetNumberOfInstancedStaticModelComponents() };
 		const InstancedStaticModelComponent *RESTRICT component{ ComponentManager::GetInstancedStaticModelInstancedStaticModelComponents() };
 
+		//Wait for instanced static model culling.
+		CullingSystem::Instance->WaitForInstancedStaticModelsCulling();
+
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
+#if !defined(CATALYST_CONFIGURATION_FINAL) && 0
+			//Debug draw. (:
+			{
+				StaticArray<Vector4<float32>, 7> COLORS
+				{
+					Vector4<float32>(1.0f, 0.0f, 0.0f, 0.25f),
+					Vector4<float32>(0.0f, 1.0f, 0.0f, 0.25f),
+					Vector4<float32>(0.0f, 0.0f, 1.0f, 0.25f),
+
+					Vector4<float32>(1.0f, 1.0f, 0.0f, 0.25f),
+					Vector4<float32>(1.0f, 0.0f, 1.0f, 0.25f),
+					Vector4<float32>(0.0f, 1.0f, 1.0f, 0.25f),
+
+					Vector4<float32>(1.0f, 1.0f, 1.0f, 0.25f),
+				};
+
+				RenderingSystem::Instance->GetDebugRenderingSystem()->DebugRenderAxisAlignedBoundingBox3D
+				(
+					COLORS[i % COLORS.Size()],
+					false,
+					false,
+					component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(WorldSystem::Instance->GetCurrentWorldGridCell()),
+					0.0f
+				);
+			}
+#endif
+
+			//Is this instanced static model visible?
+			if (!component->_Visibility)
+			{
+				continue;
+			}
+
 			//Bind the transformations buffer.
 			command_buffer->BindVertexBuffer(this, 1, component->_TransformationsBuffer, &OFFSET);
 

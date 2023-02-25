@@ -42,4 +42,7 @@ public:
 	//The model fade data.
 	Optional<ModelFadeData> _ModelFadeData;
 
+	//Denotes whether or not this instanced static model is visible.
+	bool _Visibility;
+
 };
