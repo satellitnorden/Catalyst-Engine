@@ -361,7 +361,7 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		Texture2DBuildParameters texture_2d_build_parameters;
 
 		char output_buffer[128];
-		sprintf_s(output_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\Impostors\\%s_Impostor_Albedo_Texture2D", parameters._Identifier);
+		sprintf_s(output_buffer, "..\\..\\..\\Content\\Intermediate\\Textures\\Impostors\\%s_Impostor_Albedo_Texture2D", parameters._Identifier);
 		texture_2d_build_parameters._Output = output_buffer;
 		char identifier_buffer[128];
 		sprintf_s(identifier_buffer, "%s_Impostor_Albedo_Texture2D", parameters._Identifier);
@@ -393,7 +393,7 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		Texture2DBuildParameters texture_2d_build_parameters;
 
 		char output_buffer[128];
-		sprintf_s(output_buffer, "..\\..\\..\\Resources\\Intermediate\\Textures\\Impostors\\%s_Impostor_Opacity_Texture2D", parameters._Identifier);
+		sprintf_s(output_buffer, "..\\..\\..\\Content\\Intermediate\\Textures\\Impostors\\%s_Impostor_Opacity_Texture2D", parameters._Identifier);
 		texture_2d_build_parameters._Output = output_buffer;
 		char identifier_buffer[128];
 		sprintf_s(identifier_buffer, "%s_Impostor_Opacity_Texture2D", parameters._Identifier);
@@ -425,7 +425,7 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		MaterialBuildParameters material_build_parameters;
 
 		char output_buffer[128];
-		sprintf_s(output_buffer, "..\\..\\..\\Resources\\Intermediate\\Materials\\%s_Impostor_Material", parameters._Identifier);
+		sprintf_s(output_buffer, "..\\..\\..\\Content\\Intermediate\\Materials\\%s_Impostor_Material", parameters._Identifier);
 		material_build_parameters._Output = output_buffer;
 		char identifier_buffer[128];
 		sprintf_s(identifier_buffer, "%s_Impostor_Material", parameters._Identifier);
