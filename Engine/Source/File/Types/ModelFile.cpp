@@ -74,9 +74,9 @@ void ModelFile::PostProcess() NOEXCEPT
 				|| invalid_indices.Exists(mesh._Indices[index_index + 1])
 				|| invalid_indices.Exists(mesh._Indices[index_index + 2]))
 			{
-				mesh._Indices.EraseAt<true>(index_index + 0);
-				mesh._Indices.EraseAt<true>(index_index + 1);
-				mesh._Indices.EraseAt<true>(index_index + 2);
+				mesh._Indices.EraseAt<true>(index_index);
+				mesh._Indices.EraseAt<true>(index_index);
+				mesh._Indices.EraseAt<true>(index_index);
 			}
 
 			else
