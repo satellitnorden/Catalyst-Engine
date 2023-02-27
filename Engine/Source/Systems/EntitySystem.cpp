@@ -297,7 +297,6 @@ void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 	}
 
 	//If none were force-initialized, just initialize one.
-
 	for (uint64 i{ 0 }, size{ _InitializationQueue.Size() }; i < size; ++i)
 	{
 		InitializationData &data{ _InitializationQueue[i] };
@@ -387,7 +386,8 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 	//Destroy all entities.
 	for (uint64 i{ 0 }; i < _DestructionQueue.Size();)
 	{
-		if (!_DestructionQueue[i]->_Initialized)
+		if (!_DestructionQueue[i]->_Initialized
+			&& !_TerminationQueue.Exists(_DestructionQueue[i]))
 		{
 			DestroyEntity(_DestructionQueue[i]);
 

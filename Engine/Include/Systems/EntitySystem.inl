@@ -27,7 +27,13 @@ RESTRICTED CLASS* const RESTRICT EntitySystem::CreateEntity(ARGUMENTS&&... argum
 template <typename TYPE>
 RESTRICTED TYPE* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEPT
 {
-	return new (MemorySystem::Instance->TypeAllocate<TYPE>()) TYPE();
+	TYPE *const RESTRICT memory{ MemorySystem::Instance->TypeAllocate<TYPE>() };
+
+	Memory::Set(memory, 0, sizeof(TYPE));
+
+	new (memory) TYPE();
+
+	return memory;
 }
 
 /*

@@ -7,9 +7,6 @@
 class AxisAlignedBoundingBox3D;
 class Entity;
 
-//Type aliases.
-using EntityPlacementFunction = void(*)(const AxisAlignedBoundingBox3D &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities);
-
 //Entity types.
 #define ENTITY_TYPES	ENTITY_TYPE(AnimatedModel)			\
 						ENTITY_TYPE(DistanceTrigger)		\

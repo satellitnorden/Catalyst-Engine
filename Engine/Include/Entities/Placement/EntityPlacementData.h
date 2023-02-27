@@ -17,9 +17,6 @@ class EntityPlacementData final
 
 public:
 
-	//The function.
-	EntityPlacementFunction _Function;
-
 	//The grid size.
 	uint8 _GridSize;
 
