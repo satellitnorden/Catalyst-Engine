@@ -30,29 +30,33 @@ void CommandLine::Initialize() NOEXCEPT
 			if (_CommandLine[i] == ' '
 				|| i == _CommandLine.Length() - 1)
 			{
-				if (current_argument[0] == '-')
+				//Ignore the executable string.
+				if (current_argument[0] != '\"')
 				{
-					if (i != _CommandLine.Length() - 1)
+					if (current_argument[0] == '-')
 					{
-						_CommandLine[i] = '\0';
+						if (i != _CommandLine.Length() - 1)
+						{
+							_CommandLine[i] = '\0';
+						}
+
+						if (_Keys.Size() > _Values.Size())
+						{
+							_Values.Emplace(nullptr);
+						}
+
+						_Keys.Emplace(current_argument + 1);
 					}
 
-					if (_Keys.Size() > _Values.Size())
+					else if (_Keys.Size() > _Values.Size())
 					{
-						_Values.Emplace(nullptr);
+						if (i != _CommandLine.Length() - 1)
+						{
+							_CommandLine[i] = '\0';
+						}
+
+						_Values.Emplace(current_argument);
 					}
-
-					_Keys.Emplace(current_argument + 1);
-				}
-
-				else if (_Keys.Size() > _Values.Size())
-				{
-					if (i != _CommandLine.Length() - 1)
-					{
-						_CommandLine[i] = '\0';
-					}
-
-					_Keys.Emplace(current_argument);
 				}
 
 				current_argument = &_CommandLine[i + 1];
@@ -85,6 +89,30 @@ NO_DISCARD bool CommandLine::HasKey(const char *const RESTRICT key) NOEXCEPT
 	{
 		if (StringUtilities::IsEqual(_key, key))
 		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*
+*	Returns the value for the given key.
+*/
+NO_DISCARD bool CommandLine::GetValue(const char *const RESTRICT key, const char *RESTRICT *const RESTRICT value) NOEXCEPT
+{
+	//Initialize, if needed.
+	if (!_Initialized)
+	{
+		Initialize();
+	}
+
+	for (uint64 i{ 0 }; i < _Keys.Size(); ++i)
+	{
+		if (StringUtilities::IsEqual(_Keys[i], key))
+		{
+			*value = _Values[i];
+
 			return true;
 		}
 	}

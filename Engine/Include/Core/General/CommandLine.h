@@ -31,6 +31,11 @@ public:
 	*/
 	NO_DISCARD bool HasKey(const char *const RESTRICT key) NOEXCEPT;
 
+	/*
+	*	Returns the value for the given key.
+	*/
+	NO_DISCARD bool GetValue(const char *const RESTRICT key, const char *RESTRICT *const RESTRICT value) NOEXCEPT;
+
 private:
 
 	//Denotes if the command line is initialized.
