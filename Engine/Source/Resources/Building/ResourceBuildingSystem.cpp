@@ -1576,6 +1576,8 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 
 	if (parameters._File1)
 	{
+		ASSERT(File::Exists(parameters._File1), "File " << parameters._File1 << " does not exist!");
+
 		switch (File::GetExtension(parameters._File1))
 		{
 			case File::Extension::JPG:
@@ -1603,6 +1605,8 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 
 	if (parameters._File2)
 	{
+		ASSERT(File::Exists(parameters._File2), "File " << parameters._File2 << " does not exist!");
+
 		switch (File::GetExtension(parameters._File2))
 		{
 			case File::Extension::JPG:
@@ -1630,6 +1634,8 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 
 	if (parameters._File3)
 	{
+		ASSERT(File::Exists(parameters._File3), "File " << parameters._File3 << " does not exist!");
+
 		switch (File::GetExtension(parameters._File3))
 		{
 			case File::Extension::JPG:
@@ -1657,6 +1663,8 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 
 	if (parameters._File4)
 	{
+		ASSERT(File::Exists(parameters._File4), "File " << parameters._File4 << " does not exist!");
+
 		switch (File::GetExtension(parameters._File4))
 		{
 			case File::Extension::JPG:
@@ -1699,6 +1707,11 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	{
 		width = parameters._DefaultWidth;
 		height = parameters._DefaultHeight;
+	}
+
+	if (width == 0 && height == 0)
+	{
+		ASSERT(false, "Invalid resolution!");
 	}
 
 	//Create the composite texture. Assume that all input textures are the same size.
