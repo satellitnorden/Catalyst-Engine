@@ -310,6 +310,7 @@ VkSurfaceFormatKHR VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() const NOE
 */
 VkPresentModeKHR VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEPT
 {
+	/*
 	//Query for present mode support.
 	uint32 availablePresentModesCount = 0;
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, nullptr));
@@ -327,6 +328,7 @@ VkPresentModeKHR VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEP
 			return availablePresentMode;
 		}
 	}
+	*/
 
 	return VkPresentModeKHR::VK_PRESENT_MODE_FIFO_KHR;
 }
