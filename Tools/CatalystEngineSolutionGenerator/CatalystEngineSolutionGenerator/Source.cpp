@@ -57,6 +57,9 @@ public:
 	//The physics.
 	Physics _Physics{ Physics::NULL };
 
+	//Denotes whether or not to use the mlpack library.
+	bool _UseMlpackLibrary{ false };
+
 	//Denotes whether or not to include environment resource collection.
 	bool _IncludeEnvironmentResourceCollection{ false };
 
@@ -872,6 +875,8 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 
 	while (std::getline(cmake_lists_input_file, cmake_lists_line))
 	{
+		bool include_line{ true };
+
 		{
 			const size_t project_name_position{ cmake_lists_line.find("[PROJECT_NAME]") };
 
@@ -911,15 +916,35 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 
 				switch (general_parameters._Physics)
 				{
-				case Physics::PHYSX:
-				{
-					physics_string = "CATALYST_PHYSICS_PHYSX";
+					case Physics::PHYSX:
+					{
+						physics_string = "CATALYST_PHYSICS_PHYSX";
 
-					break;
-				}
+						break;
+					}
 				}
 
 				cmake_lists_line.replace(catalyst_physics_position, strlen("[CATALYST_PHYSICS]"), physics_string);
+			}
+		}
+
+		{
+			const size_t position{ cmake_lists_line.find("[SET_MLPACK_INCLUDE_DIRECTORIES]") };
+
+			if (position != std::string::npos)
+			{
+				if (general_parameters._UseMlpackLibrary)
+				{
+					cmake_lists_line = "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/mlpack)\n";
+					cmake_lists_line += "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/armadillo)\n";
+					cmake_lists_line += "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/cereal)\n";
+					cmake_lists_line += "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/ensmallen)\n";
+				}
+
+				else
+				{
+					include_line = false;
+				}
 			}
 		}
 
@@ -930,25 +955,25 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 			{
 				switch (general_parameters._Physics)
 				{
-				case Physics::NULL:
-				{
-					cmake_lists_line.replace(position, strlen("[LINK_PHYSX_LIBRARIES]"), "");
+					case Physics::NULL:
+					{
+						cmake_lists_line.replace(position, strlen("[LINK_PHYSX_LIBRARIES]"), "");
 
-					break;
-				}
+						break;
+					}
 
-				case Physics::PHYSX:
-				{
-					cmake_lists_line = "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysX_64> $<$<CONFIG:DebugEditor>:Debug/PhysX_64> $<$<CONFIG:Profile>:Profile/PhysX_64> $<$<CONFIG:ProfileEditor>:Profile/PhysX_64> $<$<CONFIG:Final>:Final/PhysX_64>)\n";
-					cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCharacterKinematic_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCharacterKinematic_static_64> $<$<CONFIG:Profile>:Profile/PhysXCharacterKinematic_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCharacterKinematic_static_64> $<$<CONFIG:Final>:Final/PhysXCharacterKinematic_static_64>)\n";
-					cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCommon_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCommon_64> $<$<CONFIG:Profile>:Profile/PhysXCommon_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCommon_64> $<$<CONFIG:Final>:Final/PhysXCommon_64>)\n";
-					cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCooking_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCooking_64> $<$<CONFIG:Profile>:Profile/PhysXCooking_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCooking_64> $<$<CONFIG:Final>:Final/PhysXCooking_64>)\n";
-					cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXExtensions_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXExtensions_static_64> $<$<CONFIG:Profile>:Profile/PhysXExtensions_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXExtensions_static_64> $<$<CONFIG:Final>:Final/PhysXExtensions_static_64>)\n";
-					cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXFoundation_64> $<$<CONFIG:DebugEditor>:Debug/PhysXFoundation_64> $<$<CONFIG:Profile>:Profile/PhysXFoundation_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXFoundation_64> $<$<CONFIG:Final>:Final/PhysXFoundation_64>)\n";
-					cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXPvdSDK_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXPvdSDK_static_64> $<$<CONFIG:Profile>:Profile/PhysXPvdSDK_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXPvdSDK_static_64>)\n";
+					case Physics::PHYSX:
+					{
+						cmake_lists_line = "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysX_64> $<$<CONFIG:DebugEditor>:Debug/PhysX_64> $<$<CONFIG:Profile>:Profile/PhysX_64> $<$<CONFIG:ProfileEditor>:Profile/PhysX_64> $<$<CONFIG:Final>:Final/PhysX_64>)\n";
+						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCharacterKinematic_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCharacterKinematic_static_64> $<$<CONFIG:Profile>:Profile/PhysXCharacterKinematic_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCharacterKinematic_static_64> $<$<CONFIG:Final>:Final/PhysXCharacterKinematic_static_64>)\n";
+						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCommon_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCommon_64> $<$<CONFIG:Profile>:Profile/PhysXCommon_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCommon_64> $<$<CONFIG:Final>:Final/PhysXCommon_64>)\n";
+						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCooking_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCooking_64> $<$<CONFIG:Profile>:Profile/PhysXCooking_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCooking_64> $<$<CONFIG:Final>:Final/PhysXCooking_64>)\n";
+						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXExtensions_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXExtensions_static_64> $<$<CONFIG:Profile>:Profile/PhysXExtensions_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXExtensions_static_64> $<$<CONFIG:Final>:Final/PhysXExtensions_static_64>)\n";
+						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXFoundation_64> $<$<CONFIG:DebugEditor>:Debug/PhysXFoundation_64> $<$<CONFIG:Profile>:Profile/PhysXFoundation_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXFoundation_64> $<$<CONFIG:Final>:Final/PhysXFoundation_64>)\n";
+						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXPvdSDK_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXPvdSDK_static_64> $<$<CONFIG:Profile>:Profile/PhysXPvdSDK_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXPvdSDK_static_64>)\n";
 
-					break;
-				}
+						break;
+					}
 				}
 			}
 		}
@@ -960,24 +985,61 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 			{
 				switch (platform_parameters._Distribution)
 				{
-				case Win64Distribution::NULL:
-				{
-					cmake_lists_line.replace(position, strlen("[LINK_STEAM_LIBRARIES]"), "");
+					case Win64Distribution::NULL:
+					{
+						cmake_lists_line.replace(position, strlen("[LINK_STEAM_LIBRARIES]"), "");
 
-					break;
-				}
+						break;
+					}
 
-				case Win64Distribution::STEAM:
-				{
-					cmake_lists_line.replace(position, strlen("[LINK_STEAM_LIBRARIES]"), "target_link_libraries(${PROJECT_NAME} steam_api64)");
+					case Win64Distribution::STEAM:
+					{
+						cmake_lists_line.replace(position, strlen("[LINK_STEAM_LIBRARIES]"), "target_link_libraries(${PROJECT_NAME} steam_api64)");
 
-					break;
-				}
+						break;
+					}
 				}
 			}
 		}
 
-		cmake_lists_output_file << cmake_lists_line << std::endl;
+		{
+			const size_t position{ cmake_lists_line.find("[LINK_MLPACK_LIBRARIES]") };
+
+			if (position != std::string::npos)
+			{
+				if (general_parameters._UseMlpackLibrary)
+				{
+					cmake_lists_line = "target_link_libraries(${PROJECT_NAME} libopenblas)";
+				}
+
+				else
+				{
+					include_line = false;
+				}
+			}
+		}
+
+		{
+			const size_t position{ cmake_lists_line.find("[MLPACK_CXX_FLAGS]") };
+
+			if (position != std::string::npos)
+			{
+				if (general_parameters._UseMlpackLibrary)
+				{
+					cmake_lists_line.replace(position, strlen("[MLPACK_CXX_FLAGS]"), "/Zc:__cplusplus");
+				}
+
+				else
+				{
+					cmake_lists_line.replace(position, strlen("[MLPACK_CXX_FLAGS]"), "");
+				}
+			}
+		}
+
+		if (include_line)
+		{
+			cmake_lists_output_file << cmake_lists_line << std::endl;
+		}
 	}
 
 	//Add the CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION define.
@@ -1061,6 +1123,16 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Final\\PhysXCommon_64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Final\\PhysXCooking_64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Final\\PhysXFoundation_64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		}
+
+		//Copy libopenblas.dll.
+		if (general_parameters._UseMlpackLibrary)
+		{
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
 	}
 
@@ -1149,6 +1221,21 @@ int main(int argument_count, char* arguments[])
 				general_parameters._ProjectName = argument;
 			}
 
+			//Is this the physics?
+			else if (identifier == "PHYSICS")
+			{
+				if (argument == "PHYSX")
+				{
+					general_parameters._Physics = Physics::PHYSX;
+				}
+			}
+
+			//Should the mlpack library be used?
+			else if (identifier == "USE_MLPACK_LIBRARY")
+			{
+				general_parameters._UseMlpackLibrary = true;
+			}
+
 			//Should the environment resource collection be included?
 			else if (identifier == "INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION")
 			{
@@ -1159,15 +1246,6 @@ int main(int argument_count, char* arguments[])
 			else if (identifier == "INCLUDE_EXTRA_RESOURCE_COLLECTION")
 			{
 				general_parameters._IncludeExtraResourceCollection = true;
-			}
-
-			//Is this the physics?
-			else if (identifier == "PHYSICS")
-			{
-				if (argument == "PHYSX")
-				{
-					general_parameters._Physics = Physics::PHYSX;
-				}
 			}
 
 			//Should android force landscape mode?
