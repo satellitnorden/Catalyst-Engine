@@ -310,25 +310,23 @@ VkSurfaceFormatKHR VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() const NOE
 */
 VkPresentModeKHR VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEPT
 {
-	/*
 	//Query for present mode support.
-	uint32 availablePresentModesCount = 0;
-	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, nullptr));
+	uint32 number_of_available_present_modes{ 0 };
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &number_of_available_present_modes, nullptr));
 
-	DynamicArray<VkPresentModeKHR> availablePresentModes;
-	availablePresentModes.Upsize<false>(availablePresentModesCount);
+	DynamicArray<VkPresentModeKHR> available_present_modes;
+	available_present_modes.Upsize<false>(number_of_available_present_modes);
 
-	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, availablePresentModes.Data()));
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &number_of_available_present_modes, available_present_modes.Data()));
 
 	//Find the most optimal present mode.
-	for (const auto& availablePresentMode : availablePresentModes)
+	for (const VkPresentModeKHR available_present_mode : available_present_modes)
 	{
-		if (availablePresentMode == VkPresentModeKHR::VK_PRESENT_MODE_MAILBOX_KHR)
+		if (available_present_mode == VkPresentModeKHR::VK_PRESENT_MODE_FIFO_RELAXED_KHR)
 		{
-			return availablePresentMode;
+			return available_present_mode;
 		}
 	}
-	*/
 
 	return VkPresentModeKHR::VK_PRESENT_MODE_FIFO_KHR;
 }
