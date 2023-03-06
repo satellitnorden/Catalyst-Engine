@@ -44,11 +44,9 @@
 #include <Systems/TaskSystem.h>
 
 //Third party.
-#include <ThirdParty/ft2build.h>
 #include <ThirdParty/freetype/freetype.h>
 #include <ThirdParty/stb_image.h>
 #include <ThirdParty/stb_image_resize.h>
-#include <ThirdParty/glslang/Public/ShaderLang.h>
 
 /*
 *	Builds the resource collection recursively.

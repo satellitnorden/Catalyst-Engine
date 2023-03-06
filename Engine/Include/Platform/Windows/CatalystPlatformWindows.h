@@ -5,11 +5,6 @@
 #if defined(_WIN32)
 	#define _WIN32_WINNT 0x0A00
 #endif
-#define ASIO_STANDALONE
-__pragma(warning(disable : 4530)) //Disable warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc.
-#include <ThirdParty/asio/asio.hpp>
-#include <ThirdParty/asio/asio/ts/buffer.hpp>
-#include <ThirdParty/asio/asio/ts/internet.hpp>
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>

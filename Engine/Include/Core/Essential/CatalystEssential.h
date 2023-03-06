@@ -21,6 +21,9 @@
 	#pragma inline_depth(255)
 	#pragma inline_recursion(on)
 	#pragma auto_inline(on)
+
+	//Include the intrinsics header.
+	#include <intrin.h>
 #endif
 
 /*
