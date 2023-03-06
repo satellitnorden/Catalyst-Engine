@@ -8,18 +8,18 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TemporalAntiAliasingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) TemporalAntiAliasingRenderPass final : public RenderPass
+class ALIGN(8) AntiAliasingRenderPass final : public RenderPass
 {
 	
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(TemporalAntiAliasingRenderPass);
+	DECLARE_SINGLETON(AntiAliasingRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	TemporalAntiAliasingRenderPass() NOEXCEPT;
+	AntiAliasingRenderPass() NOEXCEPT;
 
 private:
 

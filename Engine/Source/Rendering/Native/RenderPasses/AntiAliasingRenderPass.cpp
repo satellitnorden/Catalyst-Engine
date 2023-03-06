@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Native/RenderPasses/TemporalAntiAliasingRenderPass.h>
+#include <Rendering/Native/RenderPasses/AntiAliasingRenderPass.h>
 
 //Rendering.
 #include <Rendering/Native/NativeRenderPassManager.h>
@@ -8,40 +8,40 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(TemporalAntiAliasingRenderPass);
+DEFINE_SINGLETON(AntiAliasingRenderPass);
 
 /*
 *	Default constructor.
 */
-TemporalAntiAliasingRenderPass::TemporalAntiAliasingRenderPass() NOEXCEPT
+AntiAliasingRenderPass::AntiAliasingRenderPass() NOEXCEPT
 {
 	//Register this render pass.
-	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::TEMPORAL_ANTI_ALIASING, this);
-	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::TEMPORAL_ANTI_ALIASING, this);
+	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::ANTI_ALIASING, this);
+	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::ANTI_ALIASING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
 	{
-		TemporalAntiAliasingRenderPass::Instance->Initialize();
+		AntiAliasingRenderPass::Instance->Initialize();
 	});
 
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
-		TemporalAntiAliasingRenderPass::Instance->Execute();
+		AntiAliasingRenderPass::Instance->Execute();
 	});
 
 	//Set the termination function function.
 	SetTerminationFunction([]()
 	{
-		TemporalAntiAliasingRenderPass::Instance->Terminate();
+		AntiAliasingRenderPass::Instance->Terminate();
 	});
 }
 
 /*
 *	Initializes this render pass.
 */
-void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
+void AntiAliasingRenderPass::Initialize() NOEXCEPT
 {
 	//Reset this render pass.
 	ResetRenderPass();
@@ -70,7 +70,7 @@ void TemporalAntiAliasingRenderPass::Initialize() NOEXCEPT
 /*
 *	Executes this render pass.
 */
-void TemporalAntiAliasingRenderPass::Execute() NOEXCEPT
+void AntiAliasingRenderPass::Execute() NOEXCEPT
 {
 	//Calculate the weight override/weight override weight depending on if the rendering system is taking a screenshot.
 	float32 weight_override;
@@ -113,7 +113,7 @@ void TemporalAntiAliasingRenderPass::Execute() NOEXCEPT
 /*
 *	Terminates this render pass.
 */
-void TemporalAntiAliasingRenderPass::Terminate() NOEXCEPT
+void AntiAliasingRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
 	for (TemporalAntiAliasingGraphicsPipeline &pipeline : _TemporalAntiAliasingGraphicsPipelines)
