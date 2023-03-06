@@ -105,7 +105,6 @@ enum class RenderingPath : uint8
 enum class DefaultNativeRenderPassStage : uint8
 {
 	SCENE_FEATURES,
-	OCEAN,
 	POST_SCENE_FEATURES,
 	SHADOWS,
 	AMBIENT_OCCLUSION,
