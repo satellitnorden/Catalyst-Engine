@@ -46,7 +46,7 @@
 #define BUILD_ENGINE_STAR_TEXTURE (0)
 #define BUILD_ENGINE_MISCELLANEOUS (0)
 
-#define BUILD_ENGINE_RESOURCE_COLLECTIONS (1)
+#define BUILD_ENGINE_RESOURCE_COLLECTIONS (0)
 
 /*
 *	Builds resources for the Catalyst Engine.
