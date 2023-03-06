@@ -1478,8 +1478,9 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	//Jitter the projection matrix a bit.
 	Vector2<float32> current_frame_jitter;
 
-	if (_CurrentRenderingPath == RenderingPath::DEFAULT
-		|| _CurrentRenderingPath == RenderingPath::PATH_TRACING)
+	if (_RenderingConfiguration.GetAntiAliasingMode() == RenderingConfiguration::AntiAliasingMode::TEMPORAL
+		&& (_CurrentRenderingPath == RenderingPath::DEFAULT
+		|| _CurrentRenderingPath == RenderingPath::PATH_TRACING))
 	{
 		current_frame_jitter = JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution;
 	}

@@ -51,10 +51,10 @@ vec3 ApplyColorGrading(vec3 fragment)
 void CatalystShaderMain()
 {
     //Sample the scene texture.
-    vec3 scene_sample = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate).rgb;
+    vec4 scene_sample = texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_1_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_texture_coordinate);
 
     //Apply tone mapping.
-    vec3 tonemapped_scene_sample = ApplyToneMapping(scene_sample * EXPOSURE);
+    vec3 tonemapped_scene_sample = ApplyToneMapping(scene_sample.rgb * EXPOSURE);
 
     //Apply color grading.
     if (COLOR_GRADING_TEXTURE_INDEX < UINT32_MAXIMUM)
@@ -62,8 +62,11 @@ void CatalystShaderMain()
         tonemapped_scene_sample = ApplyColorGrading(tonemapped_scene_sample);
     }
 
+    //Calculate the luminance.
+    float luminance = sqrt(CalculateAverage(tonemapped_scene_sample));
+
     //Write the fragment
-    if (isnan(tonemapped_scene_sample.r) || isnan(tonemapped_scene_sample.g) || isnan(tonemapped_scene_sample.b)) scene = vec4(vec3(1.0f, 0.0f, 0.0f), 1.0f);
-    else scene = vec4(tonemapped_scene_sample, 1.0f);
-    previous_scene = vec4(scene_sample, 1.0f);
+    if (isnan(tonemapped_scene_sample.r) || isnan(tonemapped_scene_sample.g) || isnan(tonemapped_scene_sample.b)) scene = vec4(vec3(1.0f, 0.0f, 0.0f), luminance);
+    else scene = vec4(tonemapped_scene_sample, luminance);
+    previous_scene = scene_sample;
 }

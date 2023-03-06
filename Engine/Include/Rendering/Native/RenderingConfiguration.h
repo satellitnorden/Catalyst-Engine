@@ -24,6 +24,14 @@ public:
 		HIGH
 	};
 
+	//Enumeration covering all anti aliasing modes.
+	enum class AntiAliasingMode : uint8
+	{
+		NONE,
+		FAST_APPROXIMATE,
+		TEMPORAL
+	};
+
 	//Enumeration covering all indirect lighting modes.
 	enum class IndirectLightingMode : uint8
 	{
@@ -92,6 +100,22 @@ public:
 	FORCE_INLINE void SetAmbientOcclusionQuality(const AmbientOcclusionQuality value) NOEXCEPT
 	{
 		_AmbientOcclusionQuality = value;
+	}
+
+	/*
+	*	Returns the anti aliasing mode.
+	*/
+	FORCE_INLINE NO_DISCARD AntiAliasingMode GetAntiAliasingMode() const NOEXCEPT
+	{
+		return _AntiAliasingMode;
+	}
+
+	/*
+	*	Sets the anti aliasing mode.
+	*/
+	FORCE_INLINE void SetAntiAliasingMode(const AntiAliasingMode value) NOEXCEPT
+	{
+		_AntiAliasingMode = value;
 	}
 
 	/*
@@ -197,6 +221,9 @@ private:
 
 	//The ambient occlusion quality.
 	AmbientOcclusionQuality _AmbientOcclusionQuality{ AmbientOcclusionQuality::MEDIUM };
+
+	//The anti aliasing mode.
+	AntiAliasingMode _AntiAliasingMode{ AntiAliasingMode::TEMPORAL };
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };
