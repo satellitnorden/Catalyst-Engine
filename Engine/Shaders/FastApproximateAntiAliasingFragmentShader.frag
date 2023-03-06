@@ -96,8 +96,8 @@ void CatalystShaderMain()
             negative_gradient = abs(negative_gradient - middle_sample.a);
 
             //Calculate the pixel step.
-            vec2 pixel_step = ((vec2(1.0f, 0.0f) * float(is_horizontal_edge) + vec2(0.0f, 1.0f) * float(!is_horizontal_edge)) * float(positive_gradient >= negative_gradient))
-                                + ((vec2(-1.0f, 0.0f) * float(is_horizontal_edge) + vec2(0.0f, -1.0f) * float(!is_horizontal_edge)) * float(positive_gradient < negative_gradient));
+            vec2 pixel_step = ((vec2(0.0f, 1.0f) * float(is_horizontal_edge) + vec2(1.0f, 0.0f) * float(!is_horizontal_edge)) * float(positive_gradient >= negative_gradient))
+                                + ((vec2(0.0f, -1.0f) * float(is_horizontal_edge) + vec2(-1.0f, 0.0f) * float(!is_horizontal_edge)) * float(positive_gradient < negative_gradient));
             pixel_step *= INVERSE_SCALED_RESOLUTION;
 
             //Finally, perform the blend!
