@@ -43,7 +43,7 @@ void CatalystShaderMain()
 
 
     //Calculate the velocity.
-    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragmentPreviousWorldPosition);
+    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragmentCurrentWorldPosition) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragmentPreviousWorldPosition) - CURRENT_FRAME_JITTER;
 
     //Write the fragments.
     sceneFeatures1 = vec4(albedo, 1.0f);

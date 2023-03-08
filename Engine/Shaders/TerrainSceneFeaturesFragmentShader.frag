@@ -60,7 +60,7 @@ void CatalystShaderMain()
 	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map);
 
     //Calculate the velocity.
-    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position);
+    vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_world_position) - CURRENT_FRAME_JITTER;
 
     //Write the fragments.
     scene_features_1 = vec4(final_material.albedo, 1.0f);

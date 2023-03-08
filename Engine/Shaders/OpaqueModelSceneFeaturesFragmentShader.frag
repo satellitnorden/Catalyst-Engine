@@ -44,7 +44,7 @@ void CatalystShaderMain()
   shading_normal = gl_FrontFacing ? shading_normal : -shading_normal;
 
   //Calculate the velocity.
-  vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_current_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_previous_world_position);
+  vec2 velocity = CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, fragment_current_world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, fragment_previous_world_position) - CURRENT_FRAME_JITTER;
 
   //Write the fragments.
   scene_features_1 = albedo_thickness;

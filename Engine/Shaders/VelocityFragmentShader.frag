@@ -16,5 +16,5 @@ void CatalystShaderMain()
    vec3 world_position = CalculateWorldPosition(fragment_texture_coordinate, 0.0f);
 
     //Write the fragments.
-    scene_features_4 = vec4(CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, world_position), 0.0f, 0.0f);
+    scene_features_4 = vec4(CalculateScreenCoordinate(WORLD_TO_CLIP_MATRIX, world_position) - CalculateScreenCoordinate(PREVIOUS_WORLD_TO_CLIP_MATRIX, world_position) - CURRENT_FRAME_JITTER, 0.0f, 0.0f);
 }

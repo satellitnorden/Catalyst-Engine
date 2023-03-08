@@ -1,5 +1,5 @@
 //Constants.
-#define TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR (0.99f)
+#define TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR (0.9f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -61,6 +61,8 @@ void CatalystShaderMain()
 		vec3 minimum = vec3(1.0f);
 		vec3 maximum = vec3(0.0f);
 
+		vec3 current_frame_texture_sampler = vec3(0.0f);
+
 		for (int Y = -1; Y <= 1; ++Y)
 		{
 			for (int X = -1; X <= 1; ++X)
@@ -79,23 +81,19 @@ void CatalystShaderMain()
 					closest_depth = neighborhood_depth;
 					closest_velocity = texture(SCENE_FEATURES_4_TEXTURE, sample_coordinate).xy;
 				}
+
+				current_frame_texture_sampler += neighbordhood_sample * float(X == 0 && Y == 0);
 			}
 		}
 
-		//Calculate the unjittered screen coordinate.
-		vec2 unjittered_screen_coordinate = fragment_texture_coordinate - CURRENT_FRAME_JITTER;
-
 		//Calculate the previous screen coordinate.
-		vec2 previous_screen_coordinate = unjittered_screen_coordinate - closest_velocity;
+		vec2 previous_screen_coordinate = fragment_texture_coordinate - closest_velocity;
 
 		//Sample the previous frame texture.
-		vec4 previous_frame_texture_sampler = texture(PREVIOUS_FRAME_TEXTURE, previous_screen_coordinate);
-
-		//Sample the current frame texture.
-		vec4 current_frame_texture_sampler = texture(CURRENT_FRAME_TEXTURE_LINEAR, unjittered_screen_coordinate);
+		vec3 previous_frame_texture_sampler = texture(PREVIOUS_FRAME_TEXTURE, previous_screen_coordinate).rgb;
 
 		//Constrain the previous sample.
-		previous_frame_texture_sampler.rgb = Constrain(previous_frame_texture_sampler.rgb, minimum, maximum);
+		previous_frame_texture_sampler = Constrain(previous_frame_texture_sampler, minimum, maximum);
 
 		/*
 		*	Calculate the weight between the current frame and the history depending on certain criteria.
@@ -110,7 +108,7 @@ void CatalystShaderMain()
 		float final_weight = TEMPORAL_ANTI_ALIASING_FEEDBACK_FACTOR * previous_sample_weight;
 
 		//Blend the previous and the current frame.
-		vec3 blended_frame = mix(current_frame_texture_sampler.rgb, previous_frame_texture_sampler.rgb, final_weight);
+		vec3 blended_frame = mix(current_frame_texture_sampler, previous_frame_texture_sampler, final_weight);
 
 		//Write the fragments.
 		current_frame = vec4(blended_frame, 1.0f);
