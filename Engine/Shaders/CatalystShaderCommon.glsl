@@ -121,32 +121,29 @@ layout (std140, set = 0, binding = 0) uniform GlobalDynamicUniformData
     //Total size; 624
 };
 
-//The render targets.
-layout (set = 0, binding = 1) uniform texture2D RENDER_TARGETS[NUMBER_OF_RENDER_TARGETS];
-
 //The global textures.
-layout (set = 0, binding = 2) uniform texture2D GLOBAL_TEXTURES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
+layout (set = 0, binding = 1) uniform texture2D GLOBAL_TEXTURES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
 
 //The global samplers.
-layout (set = 0, binding = 3) uniform sampler GLOBAL_SAMPLERS[GLOBAL_SAMPLER_NUMBER_OF_GLOBAL_SAMPLERS];
+layout (set = 0, binding = 2) uniform sampler GLOBAL_SAMPLERS[GLOBAL_SAMPLER_NUMBER_OF_GLOBAL_SAMPLERS];
 
 //Global materials.
-layout (std140, set = 0, binding = 4) uniform GlobalMaterials
+layout (std140, set = 0, binding = 3) uniform GlobalMaterials
 {
     layout (offset = 0) Material GLOBAL_MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
 };
 
 //The blue noise textures.
-layout (set = 0, binding = 5) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
+layout (set = 0, binding = 4) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
 
 //The sky texture.
-layout (set = 0, binding = 6) uniform samplerCube SKY_TEXTURE;
+layout (set = 0, binding = 5) uniform samplerCube SKY_TEXTURE;
 
 //The star texture.
-layout (set = 0, binding = 7) uniform samplerCube STAR_TEXTURE;
+layout (set = 0, binding = 6) uniform samplerCube STAR_TEXTURE;
 
 //Hammersley hemisphere uniform buffer
-layout (std140, set = 0, binding = 8) uniform HammersleyHemisphereSamples
+layout (std140, set = 0, binding = 7) uniform HammersleyHemisphereSamples
 {
     layout (offset = 0) vec4 HAMMERSLEY_HEMISPHERE_SAMPLES[64];
 };

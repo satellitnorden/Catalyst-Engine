@@ -7,6 +7,7 @@ layout (location = 0) in vec2 fragment_texture_coordinate;
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D PREVIOUS_TEMPORAL_BUFFER_TEXTURE;
 layout (set = 1, binding = 1) uniform sampler2D AMBIENT_OCCLUSION_TEXTURE;
+layout (set = 1, binding = 2) uniform sampler2D SCENE_FEATURES_4_HALF_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 current_temporal_buffer;
@@ -46,7 +47,7 @@ void CatalystShaderMain()
 	}
 
 	//Calculate the previous screen coordinate.
-	vec2 previous_screen_coordinate = unjittered_screen_coordinate - texture(sampler2D(RENDER_TARGETS[SCENE_FEATURES_4_HALF_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), unjittered_screen_coordinate).xy;
+	vec2 previous_screen_coordinate = unjittered_screen_coordinate - texture(SCENE_FEATURES_4_HALF_TEXTURE, unjittered_screen_coordinate).xy;
 
 	//Sample the previous ambient occlusion texture.
 	float previous_ambient_occlusion = texture(PREVIOUS_TEMPORAL_BUFFER_TEXTURE, previous_screen_coordinate).r;

@@ -25,10 +25,10 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 fragment_texture_coordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D SCENE_FEATURES_1_TEXTURE;
-layout (set = 1, binding = 1) uniform sampler2D SCENE_FEATURES_2_TEXTURE;
-layout (set = 1, binding = 2) uniform sampler2D SCENE_FEATURES_3_TEXTURE;
-layout (set = 1, binding = 3) uniform sampler2D DEPTH_TEXTURE;
+layout (set = 1, binding = 0) uniform sampler2D INDIRECT_LIGHTING_TEXTURE;
+layout (set = 1, binding = 1) uniform sampler2D SCENE_FEATURES_1_TEXTURE;
+layout (set = 1, binding = 2) uniform sampler2D SCENE_FEATURES_2_TEXTURE;
+layout (set = 1, binding = 3) uniform sampler2D SCENE_FEATURES_3_TEXTURE;
 
 //Out parameters.
 layout (location = 0) out vec4 scene;
@@ -40,7 +40,7 @@ vec4 SampleIndirectLighting(vec2 coordinate)
 {
 	if (INDIRECT_LIGHTING_ENABLED != 0)
 	{
-		return texture(sampler2D(RENDER_TARGETS[INTERMEDIATE_RGBA_FLOAT32_2_RENDER_TARGET_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), coordinate);
+		return texture(INDIRECT_LIGHTING_TEXTURE, coordinate);
 	}
 	
 	else

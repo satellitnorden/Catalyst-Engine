@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const uint32 source_render_target_index, const int32 stride, const RenderTargetHandle target) NOEXCEPT;
+	void Initialize(const RenderTargetHandle source, const int32 stride, const RenderTargetHandle target) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
@@ -34,9 +34,6 @@ private:
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 
-	//The source render target index.
-	uint32 _SourceRenderTargetIndex;
-
 	//The stride.
 	int32 _Stride;
 
@@ -48,6 +45,6 @@ private:
 	/*
 	*	Creates the render data table.
 	*/
-	void CreateRenderDataTable() NOEXCEPT;
+	void CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT;
 
 };

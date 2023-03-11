@@ -17,9 +17,6 @@ class ShadowsSpatialDenoisingFragmentPushConstantData final
 
 public:
 
-	//The source render target index.
-	uint32 _SourceRenderTargetIndex;
-
 	//The stride.
 	int32 _Stride;
 
@@ -28,7 +25,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void ShadowsSpatialDenoisingGraphicsPipeline::Initialize(const uint32 source_render_target_index, const int32 stride, const RenderTargetHandle target) NOEXCEPT
+void ShadowsSpatialDenoisingGraphicsPipeline::Initialize(const RenderTargetHandle source, const int32 stride, const RenderTargetHandle target) NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -37,10 +34,7 @@ void ShadowsSpatialDenoisingGraphicsPipeline::Initialize(const uint32 source_ren
 	CreateRenderDataTableLayout();
 
 	//Create the render data table.
-	CreateRenderDataTable();
-
-	//Set the source render target index.
-	_SourceRenderTargetIndex = source_render_target_index;
+	CreateRenderDataTable(source);
 
 	//Set the stride.
 	_Stride = stride;
@@ -120,7 +114,6 @@ void ShadowsSpatialDenoisingGraphicsPipeline::Execute() NOEXCEPT
 	//Push constants.
 	ShadowsSpatialDenoisingFragmentPushConstantData data;
 
-	data._SourceRenderTargetIndex = _SourceRenderTargetIndex;
 	data._Stride = _Stride;
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(ShadowsSpatialDenoisingFragmentPushConstantData), &data);
@@ -152,9 +145,10 @@ void ShadowsSpatialDenoisingGraphicsPipeline::Terminate() NOEXCEPT
 */
 void ShadowsSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -163,9 +157,10 @@ void ShadowsSpatialDenoisingGraphicsPipeline::CreateRenderDataTableLayout() NOEX
 /*
 *	Creates the render data table.
 */
-void ShadowsSpatialDenoisingGraphicsPipeline::CreateRenderDataTable() NOEXCEPT
+void ShadowsSpatialDenoisingGraphicsPipeline::CreateRenderDataTable(const RenderTargetHandle source) NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, &_RenderDataTable, PostSceneFeaturesRenderPass::Instance->GetDepthMip(0), RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, &_RenderDataTable, source, RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 }
