@@ -93,35 +93,32 @@ layout (std140, set = 0, binding = 0) uniform GlobalDynamicUniformData
     layout (offset = 544) float globalRandomSeed2;
     layout (offset = 548) float globalRandomSeed3;
     layout (offset = 552) float totalTime;
-    layout (offset = 556) float windSpeed;
 
-    layout (offset = 560) float BLOOM_INTENSITY;
+    layout (offset = 556) float ASPECT_RATIO;
 
-    layout (offset = 564) float ASPECT_RATIO;
+    layout (offset = 560) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
+    layout (offset = 564) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
+    layout (offset = 568) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
 
-    layout (offset = 568) uint CURRENT_BLUE_NOISE_TEXTURE_INDEX;
-    layout (offset = 572) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_X;
-    layout (offset = 576) float CURRENT_BLUE_NOISE_TEXTURE_OFFSET_Y;
+    layout (offset = 572) float VIEW_DISTANCE;
+    layout (offset = 576) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
+    layout (offset = 580) float WETNESS;
+    layout (offset = 584) float NEAR_PLANE;
+    layout (offset = 588) float FAR_PLANE;
 
-    layout (offset = 580) float VIEW_DISTANCE;
-    layout (offset = 584) float MAX_SKY_TEXTURE_MIPMAP_LEVEL;
-    layout (offset = 588) float WETNESS;
-    layout (offset = 592) float NEAR_PLANE;
-    layout (offset = 596) float FAR_PLANE;
+    layout (offset = 592) float CAMERA_ABSOLUTE_HEIGHT;
 
-    layout (offset = 600) float CAMERA_ABSOLUTE_HEIGHT;
+    layout (offset = 596) uint SKY_MODE;
+    layout (offset = 600) float SKY_INTENSITY;
+    layout (offset = 604) float STAR_INTENSITY;
 
-    layout (offset = 604) uint SKY_MODE;
-    layout (offset = 608) float SKY_INTENSITY;
-    layout (offset = 612) float STAR_INTENSITY;
+    layout (offset = 608) float VOLUMETRIC_LIGHTING_DISTANCE;
+    layout (offset = 612) float VOLUMETRIC_LIGHTING_HEIGHT;
+    layout (offset = 616) float VOLUMETRIC_LIGHTING_THICKNESS;
 
-    layout (offset = 616) float VOLUMETRIC_LIGHTING_DISTANCE;
-    layout (offset = 620) float VOLUMETRIC_LIGHTING_HEIGHT;
-    layout (offset = 624) float VOLUMETRIC_LIGHTING_THICKNESS;
+    layout (offset = 620) float WORLD_GRID_SIZE;
 
-    layout (offset = 628) float WORLD_GRID_SIZE;
-
-    //Total size; 640
+    //Total size; 624
 };
 
 //The render targets.

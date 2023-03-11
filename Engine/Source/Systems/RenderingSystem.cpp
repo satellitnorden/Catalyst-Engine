@@ -1557,9 +1557,6 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._GlobalRandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._GlobalRandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._TotalTime = CatalystEngineSystem::Instance->GetTotalTime();
-	_DynamicUniformData._WindSpeed = 2.5f;
-
-	_DynamicUniformData._BloomIntensity = _RenderingConfiguration.GetBloomIntensity();
 
 	_DynamicUniformData._AspectRatio = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width) / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
 

@@ -19,6 +19,9 @@ public:
 	//The bloom threshold.
 	float32 _BloomThreshold;
 
+	//The bloom intensity.
+	float32 _BloomIntensity;
+
 };
 
 /*
@@ -103,6 +106,7 @@ void BloomIsolationGraphicsPipeline::Execute() NOEXCEPT
 	BloomIsolationPushConstantData data;
 
 	data._BloomThreshold = RenderingSystem::Instance->GetRenderingConfiguration()->GetBloomThreshold();
+	data._BloomIntensity = RenderingSystem::Instance->GetRenderingConfiguration()->GetBloomIntensity();
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(BloomIsolationPushConstantData), &data);
 

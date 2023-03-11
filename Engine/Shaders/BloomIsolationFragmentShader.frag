@@ -5,6 +5,7 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
     layout (offset = 0) float BLOOM_THRESHOLD;
+    layout (offset = 4) float BLOOM_INTENSITY;
 };
 
 //In parameters.

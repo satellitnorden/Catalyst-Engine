@@ -43,9 +43,6 @@ public:
 	float32 _GlobalRandomSeed2;
 	float32 _GlobalRandomSeed3;
 	float32 _TotalTime;
-	float32 _WindSpeed;
-
-	float32 _BloomIntensity;
 
 	float32 _AspectRatio;
 
@@ -73,4 +70,4 @@ public:
 
 };
 
-static_assert(sizeof(DynamicUniformData) == 632, "Size of dynamic uniform data is wrong!");
+static_assert(sizeof(DynamicUniformData) == 624, "Size of dynamic uniform data is wrong!");
