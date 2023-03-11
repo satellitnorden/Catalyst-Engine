@@ -31,6 +31,9 @@ void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configurat
 	//Set the world grid size.
 	_WorldGridSize = configuration._WorldGridSize;
 
+	//Initialize the wind system.
+	_WindSystem.Initialize();
+
 	//Register the updates.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{
@@ -69,6 +72,15 @@ void WorldSystem::Terminate() NOEXCEPT
 {
 	//Terminate the time of day system.
 	_TimeOfDaySystem.Terminate();
+}
+
+/*
+*	Updates the world system during render.
+*/
+void WorldSystem::RenderUpdate() NOEXCEPT
+{
+	//Update the wind system.
+	_WindSystem.RenderUpdate();
 }
 
 /*

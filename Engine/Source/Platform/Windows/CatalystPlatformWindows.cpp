@@ -38,6 +38,9 @@ namespace CatalystWindowsData
 	//Denotes the cursor's current visibility.
 	bool _CursorCurrentVisibility{ true };
 
+	//The cached cursor position.
+	POINT _CachedCursorPosition{ 0, 0 };
+
 	//The scroll wheel step.
 	int8 _ScrollWheelStep{ 0 };
 }
@@ -66,6 +69,35 @@ namespace CatalystWindowsLogic
 		//Update the cursor.
 		if (CatalystWindowsData::_CursorCurrentVisibility != CatalystWindowsData::_CursorRequestedVisibility)
 		{
+			//If the cursor is being hidden, remember the cursor position for when it is shown again.
+			if (CatalystWindowsData::_CursorCurrentVisibility)
+			{
+				POINT cursor_position;
+
+				if (GetCursorPos(&cursor_position))
+				{
+					CatalystWindowsData::_CachedCursorPosition = cursor_position;
+
+					RECT rectangle;
+
+					if (GetClientRect(CatalystPlatform::_Window, &rectangle))
+					{
+						POINT minimum{ rectangle.left, rectangle.bottom };
+						POINT maximum{ rectangle.right, rectangle.top };
+
+						if (ClientToScreen(CatalystPlatform::_Window, &minimum) && ClientToScreen(CatalystPlatform::_Window, &maximum))
+						{
+							SetCursorPos(minimum.x + ((maximum.x - minimum.x) / 2), minimum.y + ((maximum.y - minimum.y) / 2));
+						}
+					}
+				}
+			}
+
+			else
+			{
+				SetCursorPos(CatalystWindowsData::_CachedCursorPosition.x, CatalystWindowsData::_CachedCursorPosition.y);
+			}
+
 			CatalystWindowsData::_CursorCurrentVisibility = CatalystWindowsData::_CursorRequestedVisibility;
 
 			if (CatalystWindowsData::_CursorRequestedVisibility)
@@ -120,25 +152,6 @@ FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
 {
 	//Set the requested visibility.
 	CatalystWindowsData::_CursorRequestedVisibility = visibility;
-
-	//If the cursor is hidden/shown from the main thread, if can be hidden/shown immediately.
-	if (Concurrency::CurrentThread::IsMainThread())
-	{
-		if (CatalystWindowsData::_CursorCurrentVisibility != CatalystWindowsData::_CursorRequestedVisibility)
-		{
-			CatalystWindowsData::_CursorCurrentVisibility = CatalystWindowsData::_CursorRequestedVisibility;
-
-			if (CatalystWindowsData::_CursorRequestedVisibility)
-			{
-				while (ShowCursor(true) < 0);
-			}
-
-			else
-			{
-				while (ShowCursor(false) >= 0);
-			}
-		}
-	}
 }
 
 /*

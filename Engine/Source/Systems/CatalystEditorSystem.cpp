@@ -70,6 +70,12 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 	}
 
+	//Initialize the editor camera system.
+	_EditorCameraSystem.Initialize();
+
+	//Initialize the editor selection system.
+	_EditorSelectionSystem.Initialize();
+
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
 	{
@@ -80,9 +86,6 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	UpdatePhase::LOGIC,
 	true,
 	false);
-
-	//Initialize the editor selection system.
-	_EditorSelectionSystem.Initialize();
 }
 
 /*

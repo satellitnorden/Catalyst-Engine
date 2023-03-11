@@ -64,8 +64,9 @@ void InstancedStaticModelDepthSceneFeaturesGraphicsPipeline::Initialize(const bo
 	SetDepthBuffer(depth_buffer);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+	AddRenderDataTableLayout(WorldSystem::Instance->GetWindSystem()->GetRenderDataTableLayout());
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -174,6 +175,7 @@ void InstancedStaticModelDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, WorldSystem::Instance->GetWindSystem()->GetCurrentRenderDataTable());
 
 	//Draw instanced static models.
 	{

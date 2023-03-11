@@ -8,6 +8,7 @@
 #include <World/Core/EnvironmentSystem.h>
 #include <World/Core/SkySystem.h>
 #include <World/Core/TimeOfDaySystem.h>
+#include <World/Core/WindSystem.h>
 
 //Forward declarations.
 class LevelResource;
@@ -42,6 +43,11 @@ public:
 	*	Terminates the world system.
 	*/
 	void Terminate() NOEXCEPT;
+
+	/*
+	*	Updates the world system during render.
+	*/
+	void RenderUpdate() NOEXCEPT;
 
 	/*
 	*	Returns the world grid size.
@@ -80,6 +86,13 @@ public:
 		return &_TimeOfDaySystem;
 	}
 
+	/*
+	*	Returns the wind system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD WindSystem *const RESTRICT GetWindSystem() NOEXCEPT
+	{
+		return &_WindSystem;
+	}
 
 	/*
 	*	Returns the wetness.
@@ -110,6 +123,9 @@ private:
 
 	//The time of day system.
 	TimeOfDaySystem _TimeOfDaySystem;
+
+	//The wind system.
+	WindSystem _WindSystem;
 
 	//The wetness.
 	float _Wetness{ 0.0f };

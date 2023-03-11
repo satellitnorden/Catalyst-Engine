@@ -1,6 +1,6 @@
 //Includes.
 #include "CatalystModelCore.glsl"
-#include "CatalystVegetationCore.glsl"
+#include "CatalystWindCore.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -48,7 +48,7 @@ void CatalystShaderMain()
 	if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
 	{
 		//Apply the wind displacement.
-		world_position += CalculateWindDisplacement(vertex_transformation[3].xyz, world_position, normal, 0.5f, 0.5f, 0.5f) * vertex_position.y;
+		world_position += CalculateWindDisplacement(vertex_transformation[3].xyz, world_position, normal, 1.0f, 1.0f, 1.0f) * vertex_position.y;
 	}
 
 	//Write the position!

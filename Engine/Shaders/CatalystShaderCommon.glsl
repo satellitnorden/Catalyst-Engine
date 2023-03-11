@@ -55,7 +55,7 @@ struct Material
 };
 
 //Global uniform data.
-layout (std140, set = 0, binding = 0) uniform DynamicUniformData
+layout (std140, set = 0, binding = 0) uniform GlobalDynamicUniformData
 {
     //Matrices.
     layout (offset = 0) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;

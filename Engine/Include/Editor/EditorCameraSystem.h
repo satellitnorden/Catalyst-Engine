@@ -4,13 +4,18 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Math.
-#include <Math/General/Vector.h>
+//Gameplay.
+#include <Gameplay/FreeflyCamera.h>
 
 class EditorCameraSystem final
 {
 
 public:
+
+	/*
+	*	Initializes the editor camera system.
+	*/
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Updates the editor camera system.
@@ -19,14 +24,8 @@ public:
 
 private:
 
-	//The position.
-	Vector3<float32> _Position;
-
-	//The rotation.
-	EulerAngles _Rotation;
-
-	//The speed.
-	float32 _MovementSpeed{ 8.0f };
+	//The freefly camera.
+	FreeflyCamera _FreeflyCamera;
 
 };
 

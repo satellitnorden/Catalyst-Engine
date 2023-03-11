@@ -257,6 +257,13 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		AnimationSystem::Instance->RenderUpdate();
 	}
 
+	//Update the world system.
+	{
+		PROFILING_SCOPE(RenderingSystem_WorldSystem_RenderUpdate);
+
+		WorldSystem::Instance->RenderUpdate();
+	}
+
 	//Execute all render passes.
 	{
 		PROFILING_SCOPE(RenderingSystem_ExecuteAllRenderPasses);

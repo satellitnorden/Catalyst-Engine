@@ -862,8 +862,8 @@ void VulkanSubRenderingSystem::EditorPostInitialize() NOEXCEPT
 		imgui_init_info.Instance = VulkanInterface::Instance->GetInstance().Get();
 		imgui_init_info.PhysicalDevice = VulkanInterface::Instance->GetPhysicalDevice().Get();
 		imgui_init_info.Device = VulkanInterface::Instance->GetLogicalDevice().Get();
-		imgui_init_info.QueueFamily = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::GRAPHICS);
-		imgui_init_info.Queue = VulkanInterface::Instance->GetGraphicsQueue()->Get();
+		imgui_init_info.QueueFamily = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::MAIN);
+		imgui_init_info.Queue = VulkanInterface::Instance->GetMainQueue()->Get();
 		imgui_init_info.PipelineCache = VK_NULL_HANDLE;
 		imgui_init_info.DescriptorPool = VulkanInterface::Instance->GetDescriptorPool().Get();
 		imgui_init_info.Allocator = nullptr;
@@ -892,7 +892,7 @@ void VulkanSubRenderingSystem::EditorPostInitialize() NOEXCEPT
 		end_info.pCommandBuffers = &vulkan_command_buffer;
 		vkEndCommandBuffer(vulkan_command_buffer);
 
-		vkQueueSubmit(VulkanInterface::Instance->GetGraphicsQueue()->Get(), 1, &end_info, VK_NULL_HANDLE);
+		vkQueueSubmit(VulkanInterface::Instance->GetMainQueue()->Get(), 1, &end_info, VK_NULL_HANDLE);
 		vkDeviceWaitIdle(VulkanInterface::Instance->GetLogicalDevice().Get());
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();

@@ -63,8 +63,9 @@ void InstancedOpaqueModelShadowsGraphicsPipeline::Initialize(const bool double_s
 	AddOutputRenderTarget(render_target);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
+	AddRenderDataTableLayout(WorldSystem::Instance->GetWindSystem()->GetRenderDataTableLayout());
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -173,6 +174,7 @@ void InstancedOpaqueModelShadowsGraphicsPipeline::Execute(const uint8 cascade_in
 
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
+	command_buffer->BindRenderDataTable(this, 1, WorldSystem::Instance->GetWindSystem()->GetCurrentRenderDataTable());
 
 	//Draw instanced static models.
 	{
