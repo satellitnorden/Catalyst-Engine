@@ -68,6 +68,7 @@ void TerrainEntity::Preprocess(EntityInitializationData* const RESTRICT data) NO
 	DynamicArray<uint32> indices;
 
 	TerrainGeneralUtilities::GenerateTerrainPlane(	terrain_initialization_data->_HeightMap,
+													static_cast<float32>(terrain_initialization_data->_PatchSize),
 													&vertices,
 													&indices);
 
