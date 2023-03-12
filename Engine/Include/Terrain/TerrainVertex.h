@@ -12,9 +12,9 @@ class TerrainVertex final
 public:
 
 	//The position.
-	Vector2<float32> _Position;
+	Vector3<float32> _Position;
 
-	//The borders.
-	int32 _Borders;
+	//The texture coordinate.
+	Vector2<float32> _TextureCoordinate;
 
 };

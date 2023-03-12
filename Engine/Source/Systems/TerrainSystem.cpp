@@ -670,6 +670,7 @@ void TerrainSystem::GeneratePatchInformations(TerrainQuadTreeNode* const RESTRIC
 */
 void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 {
+	/*
 	//No need to update if ray tracing isn't active.
 	if (!RenderingSystem::Instance->IsRayTracingActive())
 	{
@@ -810,6 +811,7 @@ void TerrainSystem::UpdateTerrainRayTracingData() NOEXCEPT
 																		_TerrainRayTracingData._IndexBuffers[_TerrainRayTracingData._CurrentBufferIndex],
 																		static_cast<uint32>(master_indices.Size()),
 																		&_TerrainRayTracingData._BottomLevelAccelerationStructures[_TerrainRayTracingData._CurrentBufferIndex]);
+	*/
 }
 
 /*

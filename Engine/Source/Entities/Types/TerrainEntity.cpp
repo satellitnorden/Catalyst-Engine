@@ -67,9 +67,10 @@ void TerrainEntity::Preprocess(EntityInitializationData* const RESTRICT data) NO
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
 
-	TerrainGeneralUtilities::GenerateTerrainPlane(	terrain_initialization_data->_HeightMap.GetResolution(),
+	TerrainGeneralUtilities::GenerateTerrainPlane(	terrain_initialization_data->_HeightMap,
 													&vertices,
 													&indices);
+
 	StaticArray<void* RESTRICT, 2> buffer_data;
 
 	buffer_data[0] = vertices.Data();
@@ -85,11 +86,6 @@ void TerrainEntity::Preprocess(EntityInitializationData* const RESTRICT data) NO
 
 	terrain_initialization_data->_PreprocessedData._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
 	terrain_initialization_data->_PreprocessedData._IndexCount = static_cast<uint32>(indices.Size());
-
-	//Create the height map texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(terrain_initialization_data->_HeightMap), TextureFormat::R_FLOAT32, TextureUsage::NONE), &terrain_initialization_data->_PreprocessedData._HeightMapTexture);
-
-	terrain_initialization_data->_PreprocessedData._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(terrain_initialization_data->_PreprocessedData._HeightMapTexture);
 
 	//Create the normal map texture.
 	{
@@ -165,8 +161,6 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 	render_component._Buffer = terrain_initialization_data->_PreprocessedData._Buffer;
 	render_component._IndexOffset = terrain_initialization_data->_PreprocessedData._IndexOffset;
 	render_component._IndexCount = terrain_initialization_data->_PreprocessedData._IndexCount;
-	render_component._HeightMapTexture = terrain_initialization_data->_PreprocessedData._HeightMapTexture;
-	render_component._HeightMapTextureIndex = terrain_initialization_data->_PreprocessedData._HeightMapTextureIndex;
 	render_component._NormalMapTexture = terrain_initialization_data->_PreprocessedData._NormalMapTexture;
 	render_component._NormalMapTextureIndex = terrain_initialization_data->_PreprocessedData._NormalMapTextureIndex;
 	render_component._IndexMapTexture = terrain_initialization_data->_PreprocessedData._IndexMapTexture;
@@ -197,8 +191,6 @@ void TerrainEntity::Terminate() NOEXCEPT
 	RenderingSystem::Instance->DestroyTexture2D(&render_component._IndexMapTexture);
 	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(render_component._NormalMapTextureIndex);
 	RenderingSystem::Instance->DestroyTexture2D(&render_component._NormalMapTexture);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(render_component._HeightMapTextureIndex);
-	RenderingSystem::Instance->DestroyTexture2D(&render_component._HeightMapTexture);
 	RenderingSystem::Instance->DestroyBuffer(&render_component._Buffer);
 
 	//Return this entitiy's components index.

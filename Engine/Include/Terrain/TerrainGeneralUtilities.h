@@ -22,92 +22,38 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	FORCE_INLINE static void GenerateTerrainPlane(const uint32 resolution, DynamicArray<TerrainVertex>* const RESTRICT vertices, DynamicArray<uint32>* const RESTRICT indices) NOEXCEPT
+	FORCE_INLINE static void GenerateTerrainPlane(const Texture2D<float32> &heightmap, DynamicArray<TerrainVertex>* const RESTRICT vertices, DynamicArray<uint32>* const RESTRICT indices) NOEXCEPT
 	{
+		const uint32 resolution{ heightmap.GetResolution() };
+		const uint32 half_resolution{ resolution / 2 };
+
 		vertices->Reserve(resolution * resolution);
 		indices->Reserve((resolution - 1) * (resolution - 1) * 6);
 
-		uint32 x{ 0 };
-		uint32 y{ 0 };
-
-		for (uint32 i{ 0 }; i < resolution; ++i, x = x < 3 ? x + 1 : 0)
+		for (uint32 Y{ 0 }; Y < resolution; ++Y)
 		{
-			for (uint32 j{ 0 }; j < resolution; ++j, y = y < 3 ? y + 1 : 0)
+			for (uint32 X{ 0 }; X < resolution; ++X)
 			{
 				TerrainVertex vertex;
 
-				vertex._Position._X = static_cast<float32>(i) / static_cast<float32>(resolution - 1) - 0.5f;
-				vertex._Position._Y = static_cast<float32>(j) / static_cast<float32>(resolution - 1) - 0.5f;
+				vertex._Position._X = CatalystBaseMath::LinearlyInterpolate(-static_cast<float32>(half_resolution), static_cast<float32>(half_resolution), static_cast<float32>(X) / static_cast<float32>(resolution - 1));
+				vertex._Position._Y = heightmap.At(X, Y);
+				vertex._Position._Z = CatalystBaseMath::LinearlyInterpolate(-static_cast<float32>(half_resolution), static_cast<float32>(half_resolution), static_cast<float32>(Y) / static_cast<float32>(resolution - 1));
 
-				vertex._Borders = 0;
-
-				//Left.
-				if (i == 0)
-				{
-					if (y == 1 || y == 3)
-					{
-						vertex._Borders |= BIT(6);
-					}
-
-					if (y == 2 || y == 3)
-					{
-						vertex._Borders |= BIT(7);
-					}
-				}
-
-				//Right.
-				else if (i == resolution - 1)
-				{
-					if (y == 1 || y == 3)
-					{
-						vertex._Borders |= BIT(2);
-					}
-
-					if (y == 2 || y == 3)
-					{
-						vertex._Borders |= BIT(3);
-					}
-				}
-
-				//Upper.
-				if (j == 0)
-				{
-					if (x == 1 || x == 3)
-					{
-						vertex._Borders |= BIT(0);
-					}
-
-					if (x == 2 || x == 3)
-					{
-						vertex._Borders |= BIT(1);
-					}
-				}
-
-				//Lower.
-				else if (j == resolution - 1)
-				{
-					if (x == 1 || x == 3)
-					{
-						vertex._Borders |= BIT(4);
-					}
-
-					if (x == 2 || x == 3)
-					{
-						vertex._Borders |= BIT(5);
-					}
-				}
+				vertex._TextureCoordinate._X = static_cast<float32>(X) / static_cast<float32>(resolution - 1);
+				vertex._TextureCoordinate._Y = static_cast<float32>(Y) / static_cast<float32>(resolution - 1);
 
 				vertices->Emplace(vertex);
 
-				if (i != resolution - 1 && j != resolution - 1)
+				if (X != resolution - 1 && Y != resolution - 1)
 				{
-					indices->Emplace((i * resolution) + j);
-					indices->Emplace((i * resolution) + j + 1);
-					indices->Emplace(((i + 1) * resolution) + j);
+					indices->Emplace(X + (Y * resolution));
+					indices->Emplace(X + ((Y + 1) * resolution));
+					indices->Emplace((X + 1) + (Y * resolution));
 
-					indices->Emplace((i * resolution) + j + 1);
-					indices->Emplace(((i + 1) * resolution) + j + 1);
-					indices->Emplace(((i + 1) * resolution) + j);
+					indices->Emplace((X + 1) + (Y * resolution));
+					indices->Emplace(X + ((Y + 1) * resolution));
+					indices->Emplace((X + 1) + ((Y + 1) * resolution));
 				}
 			}
 		}

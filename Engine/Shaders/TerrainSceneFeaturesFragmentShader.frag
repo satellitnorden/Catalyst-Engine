@@ -9,16 +9,11 @@ layout (early_fragment_tests) in;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec3 WORLD_POSITION;
-    layout (offset = 16) float PATCH_SIZE;
-    layout (offset = 20) uint BORDERS;
-    layout (offset = 24) float VERTEX_BORDER_OFFSET_FIRST;
-    layout (offset = 28) float VERTEX_BORDER_OFFSET_SECOND;
-    layout (offset = 32) uint HEIGHT_MAP_TEXTURE_INDEX;
-    layout (offset = 36) uint NORMAL_MAP_TEXTURE_INDEX;
-    layout (offset = 40) uint INDEX_MAP_TEXTURE_INDEX;
-    layout (offset = 44) uint BLEND_MAP_TEXTURE_INDEX;
-    layout (offset = 48) float MAP_RESOLUTION;
-    layout (offset = 52) float MAP_RESOLUTION_RECIPROCAL;
+    layout (offset = 16) uint NORMAL_MAP_TEXTURE_INDEX;
+    layout (offset = 20) uint INDEX_MAP_TEXTURE_INDEX;
+    layout (offset = 24) uint BLEND_MAP_TEXTURE_INDEX;
+    layout (offset = 28) float MAP_RESOLUTION;
+    layout (offset = 32) float MAP_RESOLUTION_RECIPROCAL;
 };
 
 //In parameters.

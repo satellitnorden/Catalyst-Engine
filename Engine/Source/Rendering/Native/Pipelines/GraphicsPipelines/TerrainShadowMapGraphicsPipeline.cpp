@@ -29,29 +29,14 @@ public:
 	//The world to light matrix.
 	Matrix4x4 _WorldToLightMatrix;
 
-	//The world grid delta.
-	Vector3<float32> _WorldGridDelta;
+	//The world position.
+	Vector3<float32> _WorldPosition;
 
 	//Some padding.
 	Padding<4> _Padding;
 
-	//The world position.
-	Vector2<float32> _WorldPosition;
-
-	//The patch size.
-	float32 _PatchSize;
-
-	//The borders
-	int32 _Borders;
-
-	//The vertex border offset first.
-	float32 _VertexBorderOffsetFirst;
-
-	//The vertex border offset second.
-	float32 _VertexBorderOffsetSecond;
-
-	//The height map texture index.
-	uint32 _HeightMapTextureIndex;
+	//The normal map texture index.
+	uint32 _NormalMapTextureIndex;
 
 	//The index map texture index.
 	uint32 _IndexMapTextureIndex;
@@ -59,8 +44,11 @@ public:
 	//The blend map texture index.
 	uint32 _BlendMapTextureIndex;
 
-	//The material maps resolution
-	float32 _MaterialMapsResolution;
+	//The map resolution.
+	float32 _MapResolution;
+
+	//The map resolution reciprocal.
+	float32 _MapResolutionReciprocal;
 
 };
 
@@ -98,12 +86,12 @@ void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_
 	SetNumberOfVertexInputAttributeDescriptions(2);
 	AddVertexInputAttributeDescription(	0,
 										0,
-										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
 										offsetof(TerrainVertex, _Position));
 	AddVertexInputAttributeDescription(	1,
 										0,
-										VertexInputAttributeDescription::Format::X32SignedInt,
-										offsetof(TerrainVertex, _Borders));
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										offsetof(TerrainVertex, _TextureCoordinate));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
@@ -163,35 +151,35 @@ void TerrainShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_m
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Bind the vertex/index buffer.
-	command_buffer->BindVertexBuffer(this, 0, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, &OFFSET);
-	command_buffer->BindIndexBuffer(this, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, TerrainSystem::Instance->GetTerrainProperties()->_IndexOffset);
-
-	//Iterate over all terrain patches and render them.
-	for (const TerrainPatchRenderInformation &information : *TerrainSystem::Instance->GetTerrainPatchRenderInformations())
+	//Draw all terrain entites.
 	{
-		//Push constants.
-		TerrainShadowPushConstantData data;
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfTerrainComponents() };
+		const TerrainGeneralComponent* RESTRICT general_component{ ComponentManager::GetTerrainTerrainGeneralComponents() };
+		const TerrainRenderComponent* RESTRICT render_component{ ComponentManager::GetTerrainTerrainRenderComponents() };
 
-		data._WorldToLightMatrix = world_to_light_matrix;
-		const Vector3<int32> grid_delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
-		data._WorldGridDelta._X = static_cast<float32>(grid_delta._X) * WorldSystem::Instance->GetWorldGridSize();
-		data._WorldGridDelta._Y = static_cast<float32>(grid_delta._Y) * WorldSystem::Instance->GetWorldGridSize();
-		data._WorldGridDelta._Z = static_cast<float32>(grid_delta._Z) * WorldSystem::Instance->GetWorldGridSize();
-		data._WorldPosition = information._WorldPosition;
-		data._PatchSize = information._PatchSize;
-		data._Borders = information._Borders;
-		data._VertexBorderOffsetFirst = 1.0f / static_cast<float32>(TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution - 1);
-		data._VertexBorderOffsetSecond = 1.0f / static_cast<float32>((TerrainSystem::Instance->GetTerrainProperties()->_PatchResolution - 1) / 2);
-		data._HeightMapTextureIndex = information._HeightMapTextureIndex;
-		data._IndexMapTextureIndex = information._IndexMapTextureIndex;
-		data._BlendMapTextureIndex = information._BlendMapTextureIndex;
-		data._MaterialMapsResolution = static_cast<float32>(information._MaterialMapsResolution);
+		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++general_component, ++render_component)
+		{
+			//Push constants.
+			TerrainShadowPushConstantData data;
 
-		command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(TerrainShadowPushConstantData), &data);
+			data._WorldToLightMatrix = world_to_light_matrix;
+			data._WorldPosition = general_component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
+			data._NormalMapTextureIndex = render_component->_NormalMapTextureIndex;
+			data._IndexMapTextureIndex = render_component->_IndexMapTextureIndex;
+			data._BlendMapTextureIndex = render_component->_BlendMapTextureIndex;
+			data._MapResolution = static_cast<float32>(general_component->_HeightMap.GetResolution());
+			data._MapResolutionReciprocal = 1.0f / data._MapResolution;
 
-		//Draw the patch!
-		command_buffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
+			command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(TerrainShadowPushConstantData), &data);
+
+			//Bind the vertex/index buffer.
+			command_buffer->BindVertexBuffer(this, 0, render_component->_Buffer, &OFFSET);
+			command_buffer->BindIndexBuffer(this, render_component->_Buffer, render_component->_IndexOffset);
+
+			//Draw!
+			command_buffer->DrawIndexed(this, render_component->_IndexCount, 1);
+		}
 	}
 
 	//End the command buffer.

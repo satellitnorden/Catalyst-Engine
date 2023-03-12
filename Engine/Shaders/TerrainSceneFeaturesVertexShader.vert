@@ -5,21 +5,16 @@
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec3 WORLD_POSITION;
-    layout (offset = 16) float PATCH_SIZE;
-    layout (offset = 20) uint BORDERS;
-    layout (offset = 24) float VERTEX_BORDER_OFFSET_FIRST;
-    layout (offset = 28) float VERTEX_BORDER_OFFSET_SECOND;
-    layout (offset = 32) uint HEIGHT_MAP_TEXTURE_INDEX;
-    layout (offset = 36) uint NORMAL_MAP_TEXTURE_INDEX;
-    layout (offset = 40) uint INDEX_MAP_TEXTURE_INDEX;
-    layout (offset = 44) uint BLEND_MAP_TEXTURE_INDEX;
-    layout (offset = 48) float MAP_RESOLUTION;
-    layout (offset = 52) float MAP_RESOLUTION_RECIPROCAL;
+    layout (offset = 16) uint NORMAL_MAP_TEXTURE_INDEX;
+    layout (offset = 20) uint INDEX_MAP_TEXTURE_INDEX;
+    layout (offset = 24) uint BLEND_MAP_TEXTURE_INDEX;
+    layout (offset = 28) float MAP_RESOLUTION;
+    layout (offset = 32) float MAP_RESOLUTION_RECIPROCAL;
 };
 
 //In parameters.
-layout (location = 0) in vec2 vertex_position;
-layout (location = 1) in int vertex_borders;
+layout (location = 0) in vec3 vertex_position;
+layout (location = 1) in vec2 vertex_texture_coordinate;
 
 //Out parameters.
 layout (location = 0) out vec3 fragment_world_position;
@@ -92,46 +87,11 @@ float CalculateDisplacement(vec2 height_map_texture_coordinate, vec2 material_te
 
 void CatalystShaderMain()
 {
-	//Set the position.
-	vec2 position = vertex_position.xy;
-
-	//Calculate the horizontal border offset multiplier.
-	float isUpperMultiplier = float((vertex_borders & BIT(0)) & (BORDERS & BIT(0)));
-	float isLowerMultiplier = float((vertex_borders & BIT(4)) & (BORDERS & BIT(4)));
-	float horizontalBorderOffsetWeight = min(isUpperMultiplier + isLowerMultiplier, 1.0f);
-
-	//Calculate the vertical border offset multiplier.
-	float isRightMultiplier = float((vertex_borders & BIT(2)) & (BORDERS & BIT(2)));
-	float isLeftMultiplier = float((vertex_borders & BIT(6)) & (BORDERS & BIT(6)));
-	float verticalBorderOffsetWeight = min(isRightMultiplier + isLeftMultiplier, 1.0f);
-
-	position.x -= VERTEX_BORDER_OFFSET_FIRST * horizontalBorderOffsetWeight;
-	position.y -= VERTEX_BORDER_OFFSET_FIRST * verticalBorderOffsetWeight;
-
-	//Calculate the horizontal border offset multiplier.
-	isUpperMultiplier = float((vertex_borders & BIT(1)) & (BORDERS & BIT(1)));
-	isLowerMultiplier = float((vertex_borders & BIT(5)) & (BORDERS & BIT(5)));
-	horizontalBorderOffsetWeight = min(isUpperMultiplier + isLowerMultiplier, 1.0f);
-
-	//Calculate the vertical border offset multiplier.
-	isRightMultiplier = float((vertex_borders & BIT(3)) & (BORDERS & BIT(3)));
-	isLeftMultiplier = float((vertex_borders & BIT(7)) & (BORDERS & BIT(7)));
-	verticalBorderOffsetWeight = min(isRightMultiplier + isLeftMultiplier, 1.0f);
-
-	position.x -= VERTEX_BORDER_OFFSET_SECOND * horizontalBorderOffsetWeight;
-	position.y -= VERTEX_BORDER_OFFSET_SECOND * verticalBorderOffsetWeight;
-
 	//Calculate the fragment world position.
-	fragment_world_position = WORLD_POSITION + vec3(position.x, 0.0f, position.y) * PATCH_SIZE;
+	fragment_world_position = WORLD_POSITION + vertex_position;
 
 	//Calculate the fragment height map texture coordinate.
-	fragment_height_map_texture_coordinate = position.xy + 0.5f;
-
-	fragment_height_map_texture_coordinate.x *= 1.0f - MAP_RESOLUTION_RECIPROCAL * 0.5f;
-	fragment_height_map_texture_coordinate.y *= 1.0f - MAP_RESOLUTION_RECIPROCAL * 0.5f;
-
-	//Apply the height.
-	fragment_world_position.y += texture(sampler2D(GLOBAL_TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_NEAREST_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), fragment_height_map_texture_coordinate).x;
+	fragment_height_map_texture_coordinate = vertex_texture_coordinate;
 
 	//Calculate the material texture coordinate.
 	//vec2 material_texture_coordinate = fragment_world_position.xz * 0.25f;

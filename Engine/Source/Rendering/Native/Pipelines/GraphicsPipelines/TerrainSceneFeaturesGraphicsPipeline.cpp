@@ -34,21 +34,6 @@ public:
 	//Some padding.
 	Padding<4> _Padding;
 
-	//The patch size.
-	float32 _PatchSize;
-
-	//The borders
-	uint32 _Borders;
-
-	//The vertex border offset first.
-	float32 _VertexBorderOffsetFirst;
-
-	//The vertex border offset second.
-	float32 _VertexBorderOffsetSecond;
-
-	//The height map texture index.
-	uint32 _HeightMapTextureIndex;
-
 	//The normal map texture index.
 	uint32 _NormalMapTextureIndex;
 
@@ -103,12 +88,12 @@ void TerrainSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHandle de
 	SetNumberOfVertexInputAttributeDescriptions(2);
 	AddVertexInputAttributeDescription(	0,
 										0,
-										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
 										offsetof(TerrainVertex, _Position));
 	AddVertexInputAttributeDescription(	1,
 										0,
-										VertexInputAttributeDescription::Format::X32SignedInt,
-										offsetof(TerrainVertex, _Borders));
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										offsetof(TerrainVertex, _TextureCoordinate));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
@@ -168,7 +153,7 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Draw static models.
+	//Draw all terrain entites.
 	{
 		//Cache relevant data.
 		const uint64 number_of_components{ ComponentManager::GetNumberOfTerrainComponents() };
@@ -219,11 +204,6 @@ void TerrainSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 			const Vector3<int32> grid_delta{ Vector3<int32>(0, 0, 0) - WorldSystem::Instance->GetCurrentWorldGridCell() };
 
 			data._WorldPosition = general_component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
-			data._PatchSize = static_cast<float32>(general_component->_PatchSize);
-			data._Borders = 0;
-			data._VertexBorderOffsetFirst = 1.0f / static_cast<float32>(general_component->_HeightMap.GetResolution());
-			data._VertexBorderOffsetSecond = 1.0f / static_cast<float32>((general_component->_HeightMap.GetResolution()) / 2);
-			data._HeightMapTextureIndex = render_component->_HeightMapTextureIndex;
 			data._NormalMapTextureIndex = render_component->_NormalMapTextureIndex;
 			data._IndexMapTextureIndex = render_component->_IndexMapTextureIndex;
 			data._BlendMapTextureIndex = render_component->_BlendMapTextureIndex;
