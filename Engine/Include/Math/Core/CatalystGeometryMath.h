@@ -7,6 +7,7 @@
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 #include <Math/Geometry/Capsule.h>
+#include <Math/Geometry/LineSegment2D.h>
 #include <Math/Geometry/Plane.h>
 #include <Math/Geometry/Ray.h>
 #include <Math/Geometry/Sphere.h>
@@ -16,6 +17,19 @@ class CatalystGeometryMath final
 {
 
 public:
+
+	/*
+	*	Performs a box-box intersection and return whether or not there was an intersection.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD bool BoxBoxIntersection(const AxisAlignedBoundingBox3D& box1, const AxisAlignedBoundingBox3D& box2) NOEXCEPT
+	{
+		return	box1._Minimum._X <= box2._Maximum._X
+			&& box1._Maximum._X >= box2._Minimum._X
+			&& box1._Minimum._Y <= box2._Maximum._Y
+			&& box1._Maximum._Y >= box2._Minimum._Y
+			&& box1._Minimum._Z <= box2._Maximum._Z
+			&& box1._Maximum._Z >= box2._Minimum._Z;
+	}
 
 	/*
 	*	Calculates the barycentric coordinates for a point in a triangle.
@@ -72,16 +86,19 @@ public:
 	}
 
 	/*
-	*	Performs a box-box intersection and return whether or not there was an intersection.
+	*	Returns the closest point on a 2D line segment to the given point.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD bool BoxBoxIntersection(const AxisAlignedBoundingBox3D &box1, const AxisAlignedBoundingBox3D &box2) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector2<float32> ClosestPointOnLineSegment(const LineSegment2D &line_segment, const Vector2<float32> point) NOEXCEPT
 	{
-		return	box1._Minimum._X <= box2._Maximum._X
-				&& box1._Maximum._X >= box2._Minimum._X
-				&& box1._Minimum._Y <= box2._Maximum._Y
-				&& box1._Maximum._Y >= box2._Minimum._Y
-				&& box1._Minimum._Z <= box2._Maximum._Z
-				&& box1._Maximum._Z >= box2._Minimum._Z;
+		const Vector2<float32> end_to_start{ line_segment._End - line_segment._Start };
+		const Vector2<float32> point_to_start{ point - line_segment._Start };
+
+		const float32 end_to_start_length{ Vector2<float32>::LengthSquared(end_to_start) };
+		const float32 end_to_start_length_reciprocal{ 1.0f / end_to_start_length };
+
+		const float32 projection{ Vector2<float32>::DotProduct(point_to_start, end_to_start) * end_to_start_length_reciprocal };
+
+		return CatalystBaseMath::LinearlyInterpolate(line_segment._Start, line_segment._End, CatalystBaseMath::Clamp<float32>(projection, 0.0f, 1.0f));
 	}
 
 	/*
