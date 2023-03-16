@@ -33,6 +33,18 @@ void UserInterfaceSystem::Initialize() NOEXCEPT
 }
 
 /*
+*	Terminates the user interface system.
+*/
+void UserInterfaceSystem::Terminate() NOEXCEPT
+{
+	//Deactivate all active user interface scenes.
+	for (UserInterfaceScene* const RESTRICT scene : _ActiveUserInterfaceScenes)
+	{
+		scene->OnDeactivated();
+	}
+}
+
+/*
 *	Creates a user interface primitive.
 */
 RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem::CreateUserInterfacePrimitive(const UserInterfacePrimitiveDescription *const RESTRICT description, const bool is_three_dimensional) NOEXCEPT

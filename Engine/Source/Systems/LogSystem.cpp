@@ -239,6 +239,10 @@ void LogSystem::Log(const LogLevel log_level,
 		//Wait for the flush task to finish.
 		LogSystemData::_QueuedLines[LogSystemData::_CurrentBufferIndex]._FlushTask.Wait<WaitMode::PAUSE>();
 	}
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	PRINT_TO_OUTPUT(new_line);
+#endif
 }
 
 /*

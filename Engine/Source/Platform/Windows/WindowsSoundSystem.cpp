@@ -461,7 +461,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 	{
 		case SoundSystemMode::DEFAULT:
 		{
-			WindowsSoundSystemData::_RtAudioAPI = RtAudio::Api::WINDOWS_DS;
+			WindowsSoundSystemData::_RtAudioAPI = RtAudio::Api::WINDOWS_WASAPI;
 
 			break;
 		}
@@ -595,7 +595,7 @@ void SoundSystem::PlatformTerminate() NOEXCEPT
 			break;
 		}
 
-		case RtAudio::Api::WINDOWS_DS:
+		case RtAudio::Api::WINDOWS_WASAPI:
 		{
 			//Wait for the thread to finish.
 			WindowsSoundSystemData::_Thread.Join();

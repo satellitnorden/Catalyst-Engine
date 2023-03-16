@@ -15,6 +15,9 @@
 //Memory.
 #include <Memory/PoolAllocator.h>
 
+//Systems.
+#include <Systems/LogSystem.h>
+
 template <typename TYPE>
 class AccelerationStructure final
 {
@@ -344,7 +347,7 @@ private:
 		//Allocate the acceleration structure memory.
 		_AccelerationStructureMemory = Memory::Allocate(_BuildData->_NumberBytesNeededForVertexData + _BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
 
-		PRINT_TO_OUTPUT("Acceleration structure memory usage: " << _BuildData->_NumberBytesNeededForVertexData + _BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
+		LOG_INFORMATION("Acceleration structure memory usage: %ull", _BuildData->_NumberBytesNeededForVertexData + _BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
 
 		//Copy the vertex data to the acceleration structure memory.
 		Memory::Copy(_AccelerationStructureMemory, _BuildData->_VertexData.Data(), _BuildData->_NumberBytesNeededForVertexData);

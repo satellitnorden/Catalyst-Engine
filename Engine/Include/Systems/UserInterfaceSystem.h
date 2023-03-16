@@ -35,6 +35,11 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
+	*	Terminates the user interface system.
+	*/
+	void Terminate() NOEXCEPT;
+
+	/*
 	*	Creates a user interface primitive.
 	*/
 	RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT CreateUserInterfacePrimitive(const UserInterfacePrimitiveDescription *const RESTRICT description, const bool is_three_dimensional) NOEXCEPT;

@@ -40,6 +40,7 @@
 #include <Resources/Core/ResourcesCore.h>
 
 //Systems.
+#include <Systems/LogSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/TaskSystem.h>
 
@@ -228,7 +229,7 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	//Load all characters.
 	for (int8 i{ 0 }; i < FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
 	{
-		PRINT_TO_OUTPUT("Calculating character " << static_cast<int32>(i + 1) << " of " << static_cast<int32>(FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS));
+		LOG_INFORMATION("Calculating character %i of %i", static_cast<int32>(i + 1), static_cast<int32>(FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS));
 
 		if (FT_Load_Char(free_type_face, i, FT_LOAD_RENDER))
 		{
@@ -1403,7 +1404,7 @@ void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &
 		{
 			for (uint32 Y{ 0 }; Y < resolution; ++Y)
 			{
-				PRINT_TO_OUTPUT("Processing face #" << static_cast<uint32>(face_index + 1) << " and Y: " << Y);
+				LOG_INFORMATION("Processing face #%u and Y: %u", static_cast<uint32>(face_index + 1), Y);
 
 				for (uint32 X{ 0 }; X < resolution; ++X)
 				{
@@ -1789,23 +1790,6 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 			}
 		}
 	}
-
-#if 0 //Print average color.
-	//Calculate the average color.
-	Vector4<float32> average_color{ 0.0f, 0.0f, 0.0f, 0.0f };
-
-	for (uint32 Y{ 0 }; Y < mip_chain[parameters._BaseMipmapLevel].GetHeight(); ++Y)
-	{
-		for (uint32 X{ 0 }; X < mip_chain[parameters._BaseMipmapLevel].GetWidth(); ++X)
-		{
-			average_color += mip_chain[parameters._BaseMipmapLevel].At(X, Y);
-		}
-	}
-
-	average_color /= static_cast<float32>(mip_chain[parameters._BaseMipmapLevel].GetWidth() * mip_chain[parameters._BaseMipmapLevel].GetHeight());
-
-	PRINT_TO_OUTPUT("Average color for " << parameters._ID << ": " << average_color._R << "f, " << average_color._G << "f, " << average_color._B << "f, " << average_color._A << "f");
-#endif
 
 	//What should the file be called?
 	DynamicString file_name{ parameters._Output };

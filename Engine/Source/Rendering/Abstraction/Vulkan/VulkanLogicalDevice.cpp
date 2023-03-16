@@ -9,6 +9,9 @@
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 #include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
 
+//Systems.
+#include <Systems/LogSystem.h>
+
 /*
 *	Initializes this Vulkan logical device.
 */
@@ -29,11 +32,6 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 	DynamicArray<const char *const RESTRICT> extensions;
 
 	VulkanPlatform::RequiredLogicalDeviceExtensions(&extensions);
-
-	for (const char *const RESTRICT extension : extensions)
-	{
-		PRINT_TO_OUTPUT(extension);
-	}
 
 	if (VulkanInterface::Instance->GetPhysicalDevice().HasMultiviewSupport())
 	{
@@ -275,9 +273,8 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 	number_of_allocated_queues.Upsize<false>(queue_family_count);
 	Memory::Set(number_of_allocated_queues.Data(), 0, sizeof(uint32) * number_of_allocated_queues.Size());
 
-#if !defined(CATALYST_CONFIGURATION_FINAL)
 	{
-		PRINT_TO_OUTPUT("VULKAN QUEUE INFORMATION:");
+		LOG_INFORMATION("VULKAN QUEUE INFORMATION:");
 
 		uint32 temp_counter{ 0 };
 
@@ -287,34 +284,33 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 			VkBool32 has_present_support{ false };
 			VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), temp_counter, VulkanInterface::Instance->GetSurface().Get(), &has_present_support));
 
-			PRINT_TO_OUTPUT("\tQueue family #" << (temp_counter + 1) << ":");
+			LOG_INFORMATION("\tQueue family #%u:", temp_counter + 1);
 
-			PRINT_TO_OUTPUT("\t\t- Number of queues: " << queue_family_property.queueCount);
+			LOG_INFORMATION("\t\t- Number of queues: %u", queue_family_property.queueCount);
 
 			if (queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT)
 			{
-				PRINT_TO_OUTPUT("\t\t- Has graphics support");
+				LOG_INFORMATION("\t\t- Has graphics support");
 			}
 
 			if (queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT)
 			{
-				PRINT_TO_OUTPUT("\t\t- Has compute support");
+				LOG_INFORMATION("\t\t- Has compute support");
 			}
 
 			if (queue_family_property.queueFlags & VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT)
 			{
-				PRINT_TO_OUTPUT("\t\t- Has transfer support");
+				LOG_INFORMATION("\t\t- Has transfer support");
 			}
 
 			if (has_present_support)
 			{
-				PRINT_TO_OUTPUT("\t\t- Has present support");
+				LOG_INFORMATION("\t\t- Has present support");
 			}
 
 			++temp_counter;
 		}
 	}
-#endif
 
 	/*
 	*	First off, find the queue family index for the "main" queue.
