@@ -20,13 +20,13 @@ public:
 	/*
 	*	Reads the sound resource at the given file path. Returns if the read was succesful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool Read(const char* const RESTRICT file_path, SoundResource* const RESTRICT resource) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, SoundResource *const RESTRICT resource) NOEXCEPT
 	{
 		//Read the file.
 		BinaryFile<BinaryFileMode::IN> file{ file_path };
 
 		//Read the raw data.
-		byte* const RESTRICT raw_data{ static_cast<byte* const RESTRICT>(Memory::Allocate(file.Size())) };
+		byte *const RESTRICT raw_data{ static_cast<byte *const RESTRICT>(Memory::Allocate(file.Size())) };
 		file.Read(raw_data, file.Size());
 
 		//Create the library.
