@@ -76,6 +76,14 @@ public:
 	SoundFormat GetSoundFormat() const NOEXCEPT;
 
 	/*
+	*	Returns the audio latency.
+	*	That is, the time between a sound is requested to be played until it is heard.
+	*	This gives an estimate, and might be a bit unreliable on certain platforms.
+	*	The returned value is in milliseconds.
+	*/
+	uint32 GetAudioLatency() const NOEXCEPT;
+
+	/*
 	*	Adds a mix component to the master mix channel. Returns the unique identifier for that sound mix component.
 	*/
 	uint64 AddMasterChannelSoundMixComponent(const SoundMixComponent &component) NOEXCEPT;

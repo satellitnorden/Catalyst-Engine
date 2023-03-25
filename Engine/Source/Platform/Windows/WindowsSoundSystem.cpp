@@ -129,6 +129,9 @@ namespace WindowsSoundSystemData
 	//The sound format.
 	SoundFormat _SoundFormat{ SoundFormat::UNKNOWN };
 
+	//The buffer size.
+	uint32 _BufferSize;
+
 	//The query MIDI in.
 	RtMidiIn *RESTRICT _QueryMIDIIn{ nullptr };
 
@@ -670,6 +673,44 @@ SoundFormat SoundSystem::GetSoundFormat() const NOEXCEPT
 }
 
 /*
+*	Returns the audio latency.
+*	That is, the time between a sound is requested to be played until it is heard.
+*	This gives an estimate, and might be a bit unreliable on certain platforms.
+*	The returned value is in milliseconds.
+*/
+uint32 SoundSystem::GetAudioLatency() const NOEXCEPT
+{
+	//Can't query the audio latency if the sound system isn't initialized.
+	if (!WindowsSoundSystemData::_Initialized)
+	{
+		return 0;
+	}
+
+	//Go over the steps and calculate the final latency.
+	float32 final_latency{ 0 };
+
+	//First off, ask the audio client for the stream latency.
+	{
+		REFERENCE_TIME stream_latency;
+
+		if (WindowsSoundSystemData::_AudioClient->GetStreamLatency(&stream_latency) == S_OK)
+		{
+			//Hard-coded 30 ms adjustment here.
+			final_latency += static_cast<float32>(stream_latency) / 10'000.0f + 30.0f;
+		}
+	}
+
+	//Secondly, add the buffer size delay.
+	final_latency += static_cast<float32>(WindowsSoundSystemData::_BufferSize) / GetSampleRate() * 1'000.0f;
+
+	//Lastly, add the time it takes for the sound system to process sounds.
+	final_latency += (static_cast<float32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER) * static_cast<float32>(DEFAULT_NUMBER_OF_MIXING_BUFFERS)) / GetSampleRate() * 1'000.0f;
+
+	//Return the final latency.
+	return CatalystBaseMath::Round<uint32>(final_latency);
+}
+
+/*
 *	Queries for input MIDI devices.
 */
 void SoundSystem::QueryMIDIDevices(DynamicArray<InputMIDIDevice> *const RESTRICT midi_devices) NOEXCEPT
@@ -910,7 +951,6 @@ void SoundSystem::PlatformUpdate() NOEXCEPT
 	//Define local variables.
 	IMMDeviceEnumerator* RESTRICT device_enumerator{ nullptr };
 	const WAVEFORMATEX *RESTRICT chosen_mix_format{ nullptr };
-	uint32 buffer_size{ 0 };
 	REFERENCE_TIME default_device_period{ 0 };
 	REFERENCE_TIME minimum_device_period{ 0 };
 	REFERENCE_TIME optimal_device_period{ 0 };
@@ -995,7 +1035,7 @@ void SoundSystem::PlatformUpdate() NOEXCEPT
 																	nullptr));
 
 	//Retrieve the buffer size.
-	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetBufferSize(&buffer_size));
+	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetBufferSize(&WindowsSoundSystemData::_BufferSize));
 
 	//Retrieve the audio render client.
 	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetService(	WindowsSoundSystemConstants::IAudioRenderClient_IID,
@@ -1058,7 +1098,7 @@ void SoundSystem::PlatformUpdate() NOEXCEPT
 		HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetCurrentPadding(&current_padding));
 
 		//Calculate the number of samples available.
-		number_of_samples_available = buffer_size - current_padding;
+		number_of_samples_available = WindowsSoundSystemData::_BufferSize - current_padding;
 
 		if (number_of_samples_available > 0)
 		{

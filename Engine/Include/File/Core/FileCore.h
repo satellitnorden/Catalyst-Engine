@@ -18,6 +18,7 @@ namespace File
 		FBX,
 		JPG,
 		MID,
+		MP3,
 		MTL,
 		OBJ,
 		OGG,
@@ -109,6 +110,11 @@ namespace File
 		if (strcmp(dot_position, ".mid") == 0)
 		{
 			return Extension::MID;
+		}
+
+		if (strcmp(dot_position, ".mp3") == 0)
+		{
+			return Extension::MP3;
 		}
 
 		if (strcmp(dot_position, ".mtl") == 0)
