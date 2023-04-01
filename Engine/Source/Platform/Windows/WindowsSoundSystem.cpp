@@ -873,6 +873,15 @@ void SoundSystem::SendMIDIMessage(OutputMIDIDevice *const RESTRICT midi_device, 
 			break;
 		}
 
+		case MIDIMessage::Type::NOTE_OFF:
+		{
+			message.Emplace(0x80);
+			message.Emplace(midi_message._NoteOffNote & 0x7f);
+			message.Emplace(0x00);
+
+			break;
+		}
+
 		case MIDIMessage::Type::AFTERTOUCH:
 		{
 			message.Emplace(0xf0);
