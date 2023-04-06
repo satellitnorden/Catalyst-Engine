@@ -70,20 +70,21 @@ public:
 	*	Given a value in the range [0.0f, 1.0f] and a bias in the range [0.0f, 1.0f],
 	*	biases the value either towards 0.0f if bias is < 0.5f or towards 1.0f if bias is >= 0.5f.
 	*/
-	FORCE_INLINE static NO_DISCARD float32 Bias(const float32 value, const float32 bias) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD TYPE Bias(const TYPE value, const TYPE bias) NOEXCEPT
 	{
-		if (bias >= 0.5f)
+		if (bias >= static_cast<TYPE>(0.5))
 		{
-			const float32 bias_alpha{ (bias - 0.5f) * 2.0f };
+			const TYPE bias_alpha{ (bias - static_cast<TYPE>(0.5)) * static_cast<TYPE>(2) };
 
-			return (value * (1.0f - bias_alpha)) + (InverseSquare(value) * bias_alpha);
+			return (value * (static_cast<TYPE>(1) - bias_alpha)) + (InverseSquare(value) * bias_alpha);
 		}
 
 		else
 		{
-			const float32 bias_alpha{ 1.0f - (bias * 2.0f) };
+			const TYPE bias_alpha{ static_cast<TYPE>(1) - (bias * static_cast<TYPE>(2)) };
 
-			return (value * (1.0f - bias_alpha)) + (Square(value) * bias_alpha);
+			return (value * (static_cast<TYPE>(1) - bias_alpha)) + (Square(value) * bias_alpha);
 		}
 	}
 
@@ -207,9 +208,10 @@ public:
 	/*
 	*	Given a number, returns the inverse square of that number.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float32 InverseSquare(const float32 number) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE InverseSquare(const TYPE number) NOEXCEPT
 	{
-		return 1.0f - Square(1.0f - number);
+		return static_cast<TYPE>(1) - Square(static_cast<TYPE>(1) - number);
 	}
 
 	/*
@@ -451,7 +453,8 @@ public:
 	/*
 	*	Given a number, returns the square of that number.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float32 Square(const float32 number) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Square(const TYPE number) NOEXCEPT
 	{
 		return number * number;
 	}
