@@ -404,6 +404,9 @@ void SoundSystem::Mix() NOEXCEPT
 	//Return if the game is shutting down.
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
+		//Remember the start of the update.
+		const std::chrono::steady_clock::time_point start_of_update{ std::chrono::steady_clock::now() };
+
 		//Need the platform to have been initialized before the mixing buffers has been initialized. And no mixing is done when paused.
 		if (!_ShouldMix.IsSet() || !PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused() || (_ContinueWhileEnginePaused ? false : CatalystEngineSystem::Instance->IsEnginePaused()))
 		{
@@ -659,8 +662,10 @@ void SoundSystem::Mix() NOEXCEPT
 
 		if (_MixingBuffersReady == _NumberOfMixingBuffers)
 		{
-			//Yield for some time.
-			Concurrency::CurrentThread::Yield();
+			//Sleep approximately until the next buffer needs mixing.
+			const float64 milliseconds_to_sleep{ static_cast<float64>(_NumberOfSamplesPerMixingBuffer) / static_cast<float64>(GetSampleRate()) * 1'000.0 };
+			const std::chrono::steady_clock::time_point next_update{ start_of_update + std::chrono::nanoseconds(static_cast<uint64>(milliseconds_to_sleep * 1'000'000.0)) };
+			std::this_thread::sleep_until(next_update);
 		}
 	}
 }

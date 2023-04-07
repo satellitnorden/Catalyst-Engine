@@ -1103,6 +1103,9 @@ void SoundSystem::PlatformUpdate() NOEXCEPT
 	//Main update loop.
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
+		//Remember the start of the update.
+		const std::chrono::steady_clock::time_point start_of_update{ std::chrono::steady_clock::now() };
+
 		//Retrieve the current padding.
 		HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetCurrentPadding(&current_padding));
 
@@ -1127,8 +1130,10 @@ void SoundSystem::PlatformUpdate() NOEXCEPT
 
 		else
 		{
-			//Yield for some time.
-			Concurrency::CurrentThread::Yield();
+			//Sleep approximately until the next buffer needs writing.
+			const float64 milliseconds_to_sleep{ static_cast<float64>(WindowsSoundSystemData::_BufferSize / 2) / static_cast<float64>(GetSampleRate()) * 1'000.0 };
+			const std::chrono::steady_clock::time_point next_update{ start_of_update + std::chrono::nanoseconds(static_cast<uint64>(milliseconds_to_sleep * 1'000'000.0)) };
+			std::this_thread::sleep_until(next_update);
 		}
 	}
 
