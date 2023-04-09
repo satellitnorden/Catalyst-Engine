@@ -134,15 +134,11 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE static void RandomShuffle(ArrayProxy<TYPE> *const RESTRICT array) NOEXCEPT
 	{
-		//Determine the number of iterations.
-		const uint64 number_of_iterations{ array->Size() };
-
-		for (uint64 i{ 0 }; i < number_of_iterations; ++i)
+		for (uint64 i{ 0 }; i < (array->Size() - 1); ++i)
 		{
-			const uint64 first_index{ RandomIntegerInRange<uint64>(0, array->Size() - 1) };
-			const uint64 second_index{ RandomIntegerInRange<uint64>(0, array->Size() - 1) };
+			const uint64 random_index{ RandomIntegerInRange<uint64>(i + 1, array->LastIndex()) };
 
-			Swap(&array->At(first_index), &array->At(second_index));
+			Swap(&array->At(i), &array->At(random_index));
 		}
 	}
 
