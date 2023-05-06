@@ -151,6 +151,14 @@ public:
 	}
 
 	/*
+	*	Inequality operator overload.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool operator!=(const Vector2 &other) const NOEXCEPT
+	{
+		return !operator==(other);
+	}
+
+	/*
 	*	Inquality operator overload.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD bool operator!=(const Vector2 &other) const NOEXCEPT
