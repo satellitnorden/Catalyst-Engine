@@ -159,14 +159,6 @@ public:
 	}
 
 	/*
-	*	Inquality operator overload.
-	*/
-	FORCE_INLINE constexpr NO_DISCARD bool operator!=(const Vector2 &other) const NOEXCEPT
-	{
-		return !(*this == other);
-	}
-
-	/*
 	*	Negative operator overload.
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector2 operator-() const NOEXCEPT

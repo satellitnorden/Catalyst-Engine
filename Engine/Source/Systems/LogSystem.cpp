@@ -116,7 +116,7 @@ namespace LogSystemLogic
 	}
 
 	/*
-	*	Flushes the given queued lines.B
+	*	Flushes the given queued lines.
 	*/
 	FORCE_INLINE void FlushQueuedLines(const uint8 index) NOEXCEPT
 	{
