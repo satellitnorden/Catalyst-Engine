@@ -167,6 +167,30 @@ void SoundSystem::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns the number of channels for the chosen audio output device.
+*/
+uint8 SoundSystem::GetNumberOfChannels() const NOEXCEPT
+{
+	return _SubSystem->GetNumberOfChannels();
+}
+
+/*
+*	Returns the sample rate for the chosen audio output device.
+*/
+float32 SoundSystem::GetSampleRate() const NOEXCEPT
+{
+	return _SubSystem->GetSampleRate();
+}
+
+/*
+*	Returns the sound format.
+*/
+SoundFormat SoundSystem::GetSoundFormat() const NOEXCEPT
+{
+	return _SubSystem->GetSoundFormat();
+}
+
+/*
 *	Adds a mix component to the master mix channel. Returns the unique identifier for that sound mix component.
 */
 uint64 SoundSystem::AddMasterChannelSoundMixComponent(const SoundMixComponent &component) NOEXCEPT
@@ -408,7 +432,7 @@ void SoundSystem::Mix() NOEXCEPT
 		const std::chrono::steady_clock::time_point start_of_update{ std::chrono::steady_clock::now() };
 
 		//Need the platform to have been initialized before the mixing buffers has been initialized. And no mixing is done when paused.
-		if (!_ShouldMix.IsSet() || !PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused() || (_ContinueWhileEnginePaused ? false : CatalystEngineSystem::Instance->IsEnginePaused()))
+		if (!_ShouldMix.IsSet() || !_SubSystem->IsInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused() || (_ContinueWhileEnginePaused ? false : CatalystEngineSystem::Instance->IsEnginePaused()))
 		{
 			//The sound system is not mixing.
 			_IsMixing.Clear();
@@ -680,7 +704,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 								void *const RESTRICT buffer_data) NOEXCEPT
 {
 	//If the sound system is currently muted or paused, just fill the buffer with zeroes.
-	if (!PlatformInitialized() || !_MixingBuffersInitialized || IsCurrentlyMuted() || IsCurrentlyPaused() || (_ContinueWhileEnginePaused ? false : CatalystEngineSystem::Instance->IsEnginePaused()))
+	if (!_SubSystem->IsInitialized() || !_MixingBuffersInitialized || IsCurrentlyMuted() || IsCurrentlyPaused() || (_ContinueWhileEnginePaused ? false : CatalystEngineSystem::Instance->IsEnginePaused()))
 	{
 		Memory::Set(buffer_data, 0, (GetNumberOfBitsPerSample(sound_format) / 8) * number_of_channels * number_of_samples);
 	}

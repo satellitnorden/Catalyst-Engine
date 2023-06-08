@@ -17,6 +17,7 @@
 #include <Sound/PlaySoundRequest.h>
 #include <Sound/SoundCore.h>
 #include <Sound/SoundMixComponent.h>
+#include <Sound/SoundSubSystem.h>
 
 class ALIGN(8) SoundSystem final
 {
@@ -267,20 +268,13 @@ private:
 	//Denotes whether or not the sound system should continue while the engine is paused.
 	bool _ContinueWhileEnginePaused{ false };
 
+	//The sub system.
+	SoundSubSystem *RESTRICT _SubSystem;
+
 	/*
 	*	Initializes the platform.
 	*/
 	void PlatformInitialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT;
-
-	/*
-	*	Returns if the platform is initialized.
-	*/
-	NO_DISCARD bool PlatformInitialized() const NOEXCEPT;
-
-	/*
-	*	Updates the platform.
-	*/
-	void PlatformUpdate() NOEXCEPT;
 
 	/*
 	*	Terminates the platform.
@@ -310,5 +304,11 @@ private:
 						const uint8 number_of_channels,
 						const uint32 number_of_samples,
 						void *const RESTRICT buffer_data) NOEXCEPT;
+
+	//Friend declarations.
+#if defined(CATALYST_PLATFORM_WINDOWS)
+	friend class SoundSubSystemWASAPI;
+	friend class SoundSubSystemASIO;
+#endif
 
 };

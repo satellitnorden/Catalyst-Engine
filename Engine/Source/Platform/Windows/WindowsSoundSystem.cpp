@@ -8,6 +8,8 @@
 
 //Sound.
 #include <Sound/SoundResourcePlayer.h>
+#include <Sound/SoundSubSystemASIO.h>
+#include <Sound/SoundSubSystemWASAPI.h>
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
@@ -17,9 +19,6 @@
 //Third party.
 #include <ThirdParty/RtAudio/RtAudio.h>
 #include <ThirdParty/RtMidi/RtMidi.h>
-
-//Macros.
-#define SAFE_RELEASE(POINTER) if (POINTER) { POINTER->Release(); POINTER = nullptr; }
 
 //Windows sound system constants.
 namespace WindowsSoundSystemConstants
@@ -459,6 +458,42 @@ void SoundSystem::OpenAudioDevice(AudioDevice *const RESTRICT audio_device) NOEX
 */
 void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT
 {
+	//Create the sub system.
+	switch (configuration._SoundSystemMode)
+	{
+		case SoundSystemMode::DEFAULT:
+		{
+			_SubSystem = new SoundSubSystemWASAPI();
+
+			break;
+		}
+
+		case SoundSystemMode::LOW_LATENCY:
+		{
+			_SubSystem = new SoundSubSystemASIO();
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Set the sound system.
+	_SubSystem->_SoundSystem = this;
+
+	//Initialize the sub system!
+	{
+		SoundSubSystem::InitializationParameters initialization_parameters;
+
+		_SubSystem->Initialize(initialization_parameters);
+	}
+
+	/*
 	//Set the Rt Audio API.
 	switch (configuration._SoundSystemMode)
 	{
@@ -484,24 +519,8 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 		}
 	}
 
-	//Is this the default sound system mode?
-	if (configuration._SoundSystemMode == SoundSystemMode::DEFAULT)
-	{
-		//Set up the thread.
-		WindowsSoundSystemData::_Thread.SetFunction([]()
-		{
-			SoundSystem::Instance->PlatformUpdate();
-		});
-		WindowsSoundSystemData::_Thread.SetPriority(Thread::Priority::HIGHEST);
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-		WindowsSoundSystemData::_Thread.SetName("Sound System - Platform Thread");
-#endif
-		//Launch the thread!
-		WindowsSoundSystemData::_Thread.Launch();
-	}
-
 	//Is this the low latency sound system mode?
-	else if (configuration._SoundSystemMode == SoundSystemMode::LOW_LATENCY)
+	if (configuration._SoundSystemMode == SoundSystemMode::LOW_LATENCY)
 	{
 		//Should the default sound device be picked?
 		if (configuration._AudioDevicePickingMode == AudioDevicePickingMode::PICK_DEFAULT)
@@ -542,14 +561,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 #endif
 		}
 	}
-}
-
-/*
-*	Returns if the platform is initialized.
-*/
-NO_DISCARD bool SoundSystem::PlatformInitialized() const NOEXCEPT
-{
-	return WindowsSoundSystemData::_Initialized;
+	*/
 }
 
 /*
@@ -557,6 +569,12 @@ NO_DISCARD bool SoundSystem::PlatformInitialized() const NOEXCEPT
 */
 void SoundSystem::PlatformTerminate() NOEXCEPT
 {
+	//Terminate the sub system.
+	_SubSystem->Terminate();
+
+	//Destroy the sub system.
+	delete _SubSystem;
+
 	//Destroy the query Rt Midi In.
 	if (WindowsSoundSystemData::_QueryMIDIIn)
 	{
@@ -576,100 +594,6 @@ void SoundSystem::PlatformTerminate() NOEXCEPT
 		opened_midi_out->closePort();
 		opened_midi_out->~RtMidiOut(); //The MemorySystem will take care of actually freeing the memory. (:
 	}
-
-	switch (WindowsSoundSystemData::_RtAudioAPI)
-	{
-		case RtAudio::Api::WINDOWS_ASIO:
-		{
-			//Close the opened Rt Audio.
-			if (WindowsSoundSystemData::_OpenedRtAudio)
-			{
-				WindowsSoundSystemData::_OpenedRtAudio->stopStream();
-				WindowsSoundSystemData::_OpenedRtAudio->closeStream();
-				WindowsSoundSystemData::_OpenedRtAudio->~RtAudio(); //The MemorySystem will take care of actually freeing the memory. (:
-			}
-
-			//Destroy the query Rt Audio.
-			if (WindowsSoundSystemData::_QueryRtAudio)
-			{
-				WindowsSoundSystemData::_QueryRtAudio->~RtAudio(); //The MemorySystem will take care of actually freeing the memory. (:
-			}
-
-			break;
-		}
-
-		case RtAudio::Api::WINDOWS_WASAPI:
-		{
-			//Wait for the thread to finish.
-			WindowsSoundSystemData::_Thread.Join();
-
-			//Release the audio end point.
-			SAFE_RELEASE(WindowsSoundSystemData::_AudioEndpoint);
-
-			//Release the audio client.
-			SAFE_RELEASE(WindowsSoundSystemData::_AudioClient);
-
-			//Release the audio render client.
-			SAFE_RELEASE(WindowsSoundSystemData::_AudioRenderClient);
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
-}
-
-/*
-*	Returns the number of channels for the chosen audio output device.
-*/
-uint8 SoundSystem::GetNumberOfChannels() const NOEXCEPT
-{
-	//Don't do anything if the Windows sound system isn't initialized.
-	if (!WindowsSoundSystemData::_Initialized)
-	{
-		return 0;
-	}
-
-	ASSERT(WindowsSoundSystemData::_NumberOfChannels != 0, "Oh no!");
-
-	return WindowsSoundSystemData::_NumberOfChannels;
-}
-
-/*
-*	Returns the sample rate for the chosen audio output device.
-*/
-float32 SoundSystem::GetSampleRate() const NOEXCEPT
-{
-	//Don't do anything if the Windows sound system isn't initialized.
-	if (!WindowsSoundSystemData::_Initialized)
-	{
-		return 0;
-	}
-
-	ASSERT(WindowsSoundSystemData::_SampleRate != 0.0f, "Oh no!");
-
-	return WindowsSoundSystemData::_SampleRate;
-}
-
-/*
-*	Returns the sound format.
-*/
-SoundFormat SoundSystem::GetSoundFormat() const NOEXCEPT
-{
-	//Don't do anything if the Windows sound system isn't initialized.
-	if (!WindowsSoundSystemData::_Initialized)
-	{
-		return SoundFormat::UNKNOWN;
-	}
-
-	ASSERT(WindowsSoundSystemData::_SoundFormat != SoundFormat::UNKNOWN, "Oh no!");
-
-	return WindowsSoundSystemData::_SoundFormat;
 }
 
 /*
@@ -947,212 +871,5 @@ void SoundSystem::CloseMIDIDevice(OutputMIDIDevice *const RESTRICT midi_device) 
 
 	//Remove from the opened MIDI outs.
 	WindowsSoundSystemData::_OpenedMIDIOuts.Erase<false>(static_cast<RtMidiOut *const RESTRICT>(midi_device->_Handle));
-}
-
-/*
-*	Updates the platform.
-*/
-void SoundSystem::PlatformUpdate() NOEXCEPT
-{
-	//Define macros.
-#define HANDLE_ERROR(FUNCTION) if (FAILED(FUNCTION)) { LOG_ERROR("Sound system failted to initialize!, %s failed!", #FUNCTION); goto CLEANUP; }
-
-	//Define local variables.
-	IMMDeviceEnumerator* RESTRICT device_enumerator{ nullptr };
-	const WAVEFORMATEX *RESTRICT chosen_mix_format{ nullptr };
-	REFERENCE_TIME default_device_period{ 0 };
-	REFERENCE_TIME minimum_device_period{ 0 };
-	REFERENCE_TIME optimal_device_period{ 0 };
-	uint32 current_padding{ 0 };
-	uint32 number_of_samples_available{ 0 };
-	BYTE *RESTRICT buffer_data{ nullptr };
-
-	//Initialize the COM library.
-	HANDLE_ERROR(CoInitialize(nullptr));
-
-	//Create the device enumerator.
-	HANDLE_ERROR(CoCreateInstance(	WindowsSoundSystemConstants::MMDeviceEnumerator_CLSID,
-									nullptr,
-									CLSCTX_ALL,
-									WindowsSoundSystemConstants::IMMDeviceEnumerator_IID,
-									reinterpret_cast<void* RESTRICT* const RESTRICT>(&device_enumerator)));
-
-	//Retrieve the default audio endpoint.
-	HANDLE_ERROR(device_enumerator->GetDefaultAudioEndpoint(EDataFlow::eRender,
-															ERole::eConsole,
-															&WindowsSoundSystemData::_AudioEndpoint));
-
-	//Activated the chosen audio endpoint and retrieve the audio client.
-	HANDLE_ERROR(WindowsSoundSystemData::_AudioEndpoint->Activate(	WindowsSoundSystemConstants::IAudioClient_IID,
-																	CLSCTX_ALL,
-																	nullptr,
-																	reinterpret_cast<void* RESTRICT* const RESTRICT>(&WindowsSoundSystemData::_AudioClient)));
-
-	//Check if any of the desired formats are supported.
-	for (const WAVEFORMATEX &desired_mix_format : WindowsSoundSystemConstants::DESIRED_MIX_FORMATS)
-	{
-		WAVEFORMATEX *RESTRICT closest_match_dummy{ nullptr };
-		const HRESULT result{ WindowsSoundSystemData::_AudioClient->IsFormatSupported(AUDCLNT_SHAREMODE::AUDCLNT_SHAREMODE_SHARED, &desired_mix_format, &closest_match_dummy) };
-
-		if (closest_match_dummy)
-		{
-			CoTaskMemFree(closest_match_dummy);
-		}
-
-		if (result == S_OK)
-		{
-			chosen_mix_format = &desired_mix_format;
-
-			break;
-		}
-	}
-
-	//If none of the desired mix formats were supported, abort.
-	if (!chosen_mix_format)
-	{
-		ASSERT(false, "None of the desired mix formats were supported!");
-
-		LOG_ERROR("Couldn't find a supported mix format!");
-
-		WAVEFORMATEX *RESTRICT device_format{ nullptr };
-		HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetMixFormat(&device_format));
-
-		if (device_format)
-		{
-			LOG_INFORMATION("Device format - nChannels: %i - nSamplesPerSec: %i - wBitsPerSample: %i", device_format->nChannels, device_format->nSamplesPerSec, device_format->wBitsPerSample);
-		
-			CoTaskMemFree(device_format);
-		}
-
-		goto CLEANUP;
-	}
-
-	LOG_INFORMATION("Chosen mix format - nChannels: %i - nSamplesPerSec: %i - wBitsPerSample: %i", chosen_mix_format->nChannels, chosen_mix_format->nSamplesPerSec, chosen_mix_format->wBitsPerSample);
-
-	//Retrieve the default and minimum device period.
-	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetDevicePeriod(&default_device_period, &minimum_device_period));
-
-	//Calculate the optimal device period.
-	optimal_device_period = WindowsSoundSystemLogic::CalculateOptimalDevicePeriod(chosen_mix_format->nSamplesPerSec);
-
-	//Initialize the audio client.
-	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->Initialize(	AUDCLNT_SHAREMODE::AUDCLNT_SHAREMODE_SHARED,
-																	0,
-																	CatalystBaseMath::Maximum<REFERENCE_TIME>(minimum_device_period, optimal_device_period),
-																	0,
-																	chosen_mix_format,
-																	nullptr));
-
-	//Retrieve the buffer size.
-	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetBufferSize(&WindowsSoundSystemData::_BufferSize));
-
-	//Retrieve the audio render client.
-	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetService(	WindowsSoundSystemConstants::IAudioRenderClient_IID,
-																	reinterpret_cast<void* RESTRICT* const RESTRICT>(&WindowsSoundSystemData::_AudioRenderClient)));
-
-	//Set the number of channels.
-	WindowsSoundSystemData::_NumberOfChannels = static_cast<uint8>(chosen_mix_format->nChannels);
-
-	//Set the sample rate.
-	WindowsSoundSystemData::_SampleRate = static_cast<float32>(chosen_mix_format->nSamplesPerSec);
-
-	//Set the sound format.
-	switch (chosen_mix_format->wBitsPerSample)
-	{
-		case 8:
-		{
-			WindowsSoundSystemData::_SoundFormat = SoundFormat::SIGNED_INTEGER_8_BIT;
-
-			break;
-		}
-
-		case 16:
-		{
-			WindowsSoundSystemData::_SoundFormat = SoundFormat::SIGNED_INTEGER_16_BIT;
-
-			break;
-		}
-
-		case 32:
-		{
-			WindowsSoundSystemData::_SoundFormat = SoundFormat::SIGNED_INTEGER_32_BIT;
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
-
-	//The Windows sound system is successfully initialized!
-	WindowsSoundSystemData::_Initialized = true;
-
-	//Initialize the mixing buffers.
-	InitializeMixingBuffers(DEFAULT_NUMBER_OF_MIXING_BUFFERS, DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER);
-
-	//Start playing.
-	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->Start());
-
-	//Log.
-	LOG_INFORMATION("Sound system successfully initialized!");
-
-	//Main update loop.
-	while (!CatalystEngineSystem::Instance->ShouldTerminate())
-	{
-		//Remember the start of the update.
-		const std::chrono::steady_clock::time_point start_of_update{ std::chrono::steady_clock::now() };
-
-		//Retrieve the current padding.
-		HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->GetCurrentPadding(&current_padding));
-
-		//Calculate the number of samples available.
-		number_of_samples_available = WindowsSoundSystemData::_BufferSize - current_padding;
-
-		if (number_of_samples_available > 0)
-		{
-			//Retrieve the buffer.
-			HANDLE_ERROR(WindowsSoundSystemData::_AudioRenderClient->GetBuffer(number_of_samples_available, &buffer_data));
-
-			//Do the update.
-			SoundCallback(	static_cast<float32>(chosen_mix_format->nSamplesPerSec),
-							WindowsSoundSystemData::_SoundFormat,
-							static_cast<uint8>(chosen_mix_format->nChannels),
-							number_of_samples_available,
-							buffer_data);
-
-			//Release the buffer.
-			HANDLE_ERROR(WindowsSoundSystemData::_AudioRenderClient->ReleaseBuffer(number_of_samples_available, 0));
-		}
-
-		else
-		{
-			/*
-			//Sleep approximately until the next buffer needs writing.
-			const float64 milliseconds_to_sleep{ static_cast<float64>(WindowsSoundSystemData::_BufferSize / 2) / static_cast<float64>(GetSampleRate()) * 1'000.0 };
-			const std::chrono::steady_clock::time_point next_update{ start_of_update + std::chrono::nanoseconds(static_cast<uint64>(milliseconds_to_sleep * 1'000'000.0)) };
-			std::this_thread::sleep_until(next_update);
-			*/
-			//Yield the current thread.
-			Concurrency::CurrentThread::Yield();
-		}
-	}
-
-	//Stop playing.
-	HANDLE_ERROR(WindowsSoundSystemData::_AudioClient->Stop());
-
-CLEANUP:
-
-	//Release the local variables.
-	SAFE_RELEASE(device_enumerator);
-
-	//Uninitialize the COM library.
-	CoUninitialize();
-
-	//Undefine macors.
-#undef HANDLE_ERROR
 }
 #endif

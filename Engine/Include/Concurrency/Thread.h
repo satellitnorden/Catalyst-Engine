@@ -25,6 +25,7 @@ public:
 	*	Type aliases.
 	*/
 	using Function = void(*)();
+	using FunctionWithArguments = void(*)(void *const RESTRICT arguments);
 
 	/*
 	*	Default constructor.
@@ -40,6 +41,11 @@ public:
 	*	Sets the function.
 	*/
 	void SetFunction(const Function function) NOEXCEPT;
+
+	/*
+	*	Sets the function with arguments.
+	*/
+	void SetFunctionWithArguments(const FunctionWithArguments function_with_arguments, void *const RESTRICT arguments) NOEXCEPT;
 
 	/*
 	*	Sets the priority of this thread.
@@ -71,6 +77,12 @@ private:
 
 	//The function.
 	Function _Function{ nullptr };
+
+	//The function with arguments.
+	FunctionWithArguments _FunctionWithArguments{ nullptr };
+
+	//The arguments.
+	void *RESTRICT _Arguments{ nullptr };
 
 	//The priority.
 	Priority _Priority{ Priority::NORMAL };

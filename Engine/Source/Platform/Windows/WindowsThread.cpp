@@ -27,6 +27,18 @@ void Thread::SetFunction(const Function function) NOEXCEPT
 }
 
 /*
+*	Sets the function with arguments.
+*/
+void Thread::SetFunctionWithArguments(const FunctionWithArguments function_with_arguments, void *const RESTRICT arguments) NOEXCEPT
+{
+	//Set the function with arguments.
+	_FunctionWithArguments = function_with_arguments;
+
+	//Set the arguments.
+	_Arguments = arguments;
+}
+
+/*
 *	Sets the priority of this thread.
 */
 void Thread::SetPriority(const Priority priority) NOEXCEPT
@@ -49,10 +61,22 @@ void Thread::SetName(const DynamicString &name) NOEXCEPT
 */
 void Thread::Launch() NOEXCEPT
 {
-	ASSERT(_Function, "Need to set a function to launch this thread!");
-
 	//Allocate an std::thread with the function.
-	_PlatformData = new std::thread(_Function);
+	if (_Function)
+	{
+		_PlatformData = new std::thread(_Function);
+	}
+
+	else if (_FunctionWithArguments)
+	{
+		ASSERT(_Arguments, "Set function with arguments without arguments!");
+		_PlatformData = new std::thread(_FunctionWithArguments, _Arguments);
+	}
+
+	else
+	{
+		ASSERT(false, "Need to set either function or function with arguments before launching!");
+	}
 
 	//Retrieve the native handle.
 	std::thread::native_handle_type native_handle{ static_cast<std::thread *const RESTRICT>(_PlatformData)->native_handle() };
