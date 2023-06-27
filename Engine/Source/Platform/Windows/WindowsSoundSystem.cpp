@@ -790,7 +790,7 @@ void SoundSystem::SendMIDIMessage(OutputMIDIDevice *const RESTRICT midi_device, 
 	{
 		case MIDIMessage::Type::NOTE_ON:
 		{
-			message.Emplace(0x90);
+			message.Emplace(0x90 | (0x0f & midi_message._NoteOnChannel));
 			message.Emplace(midi_message._NoteOnNote & 0x7f);
 			message.Emplace(midi_message._NoteOnVelocity & 0x7f);
 
@@ -799,7 +799,7 @@ void SoundSystem::SendMIDIMessage(OutputMIDIDevice *const RESTRICT midi_device, 
 
 		case MIDIMessage::Type::NOTE_OFF:
 		{
-			message.Emplace(0x80);
+			message.Emplace(0x80 | (0x0f & midi_message._NoteOffChannel));
 			message.Emplace(midi_message._NoteOffNote & 0x7f);
 			message.Emplace(0x00);
 

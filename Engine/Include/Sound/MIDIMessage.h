@@ -26,6 +26,7 @@ public:
 		//NOTE_ON data.
 		struct
 		{
+			uint8 _NoteOnChannel;
 			uint8 _NoteOnNote;
 			uint8 _NoteOnVelocity;
 		};
@@ -33,6 +34,7 @@ public:
 		//NOTE_OFF data.
 		struct
 		{
+			uint8 _NoteOffChannel;
 			uint8 _NoteOffNote;
 		};
 

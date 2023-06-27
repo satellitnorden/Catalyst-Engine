@@ -17,6 +17,23 @@ FORCE_INLINE static NO_DISCARD TYPE *const RESTRICT AdvancePointer(TYPE *const R
 }
 
 /*
+*	Returns the index of the first set bit in the given integer bit field.
+*/
+template <typename TYPE>
+FORCE_INLINE static NO_DISCARD uint64 BitIndex(const TYPE bit_field) NOEXCEPT
+{
+	for (uint64 i{ 0 }; i < (sizeof(TYPE) * 8); ++i)
+	{
+		if (TEST_BIT(bit_field, BIT(i)))
+		{
+			return i;
+		}
+	}
+
+	return 0;
+}
+
+/*
 *	Flips the endian of the given value.
 */
 template <typename TYPE>

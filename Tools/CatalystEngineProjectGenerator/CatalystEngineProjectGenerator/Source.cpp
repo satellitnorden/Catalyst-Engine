@@ -129,6 +129,28 @@ int main(int argument_count, char *arguments[])
 			{
 				std::filesystem::create_directory("Code\\Include\\Main");
 
+				//Create the essential header file.
+				{
+					char game_system_header_file_buffer[260];
+					sprintf_s(game_system_header_file_buffer, "Code\\Include\\Main\\%sEssential.h", parameters._ProjectNameNoSpaces.c_str());
+
+					std::ofstream file{ game_system_header_file_buffer };
+
+					file << "#pragma once" << std::endl;
+
+					file << std::endl;
+
+					file << "//Core." << std::endl;
+					file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
+
+					file << std::endl;
+
+					file << "//Main." << std::endl;
+					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "FilePaths.h>";
+
+					file.close();
+				}
+
 				//Create the game system header file.
 				{
 					char game_system_header_file_buffer[260];
@@ -140,8 +162,8 @@ int main(int argument_count, char *arguments[])
 
 					file << std::endl;
 
-					file << "//Core." << std::endl;
-					file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
+					file << "//Main." << std::endl;
+					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "Essential.h>" << std::endl;
 
 					file << std::endl;
 
@@ -216,8 +238,8 @@ int main(int argument_count, char *arguments[])
 
 					file << std::endl;
 
-					file << "//Core." << std::endl;
-					file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
+					file << "//Main." << std::endl;
+					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "Essential.h>" << std::endl;
 
 					file << std::endl;
 
@@ -245,6 +267,32 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "};";
+
+					file.close();
+				}
+
+				//Create the file paths header file.
+				{
+					char game_system_header_file_buffer[260];
+					sprintf_s(game_system_header_file_buffer, "Code\\Include\\Main\\%sFilePaths.h", parameters._ProjectNameNoSpaces.c_str());
+
+					std::ofstream file{ game_system_header_file_buffer };
+
+					file << "#pragma once" << std::endl;
+
+					file << std::endl;
+
+					file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+
+					file << "\t#define GAME_CONTENT_FINAL \"..\\\\..\\\\..\\\\Content\\\\Final\\\\\"" << std::endl;
+					file << "\t#define GAME_CONTENT_INTERMEDIATE \"..\\\\..\\\\..\\\\Content\\\\Intermediate\\\\\"" << std::endl;
+					file << "\t#define GAME_CONTENT_RAW \"..\\\\..\\\\..\\\\Content\\\\Raw\\\\\"" << std::endl;
+
+					file << "#else" << std::endl;
+
+					file << "\t#define GAME_CONTENT_FINAL \"GameContent\\\\\"" << std::endl;
+
+					file << "#endif";
 
 					file.close();
 				}
@@ -358,7 +406,7 @@ int main(int argument_count, char *arguments[])
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
-					file << "#endif" << std::endl;
+					file << "#endif";
 
 					file.close();
 				}
