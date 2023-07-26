@@ -27,6 +27,15 @@ public:
 
 		//The world position. Used for point lights.
 		WorldPosition _WorldPosition;
+
+		struct
+		{
+			//The minimum world position. Used for box lights.
+			WorldPosition _MinimumWorldPosition;
+
+			//The maximum world position. Used for box lights.
+			WorldPosition _MaximumWorldPosition;
+		};
 	};
 
 	//The color.
@@ -80,6 +89,14 @@ public:
 			case LightType::POINT:
 			{
 				_WorldPosition = other._WorldPosition;
+
+				break;
+			}
+
+			case LightType::BOX:
+			{
+				_MinimumWorldPosition = other._MinimumWorldPosition;
+				_MaximumWorldPosition = other._MaximumWorldPosition;
 
 				break;
 			}

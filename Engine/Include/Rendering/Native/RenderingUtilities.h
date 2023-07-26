@@ -180,18 +180,24 @@ public:
 		//Generate all mip levels.
 		for (uint8 i{ 1 }; i < levels; ++i)
 		{
+			//Cache stuff.
+			const uint32 previous_width{ output_textures->At(i - 1).GetWidth() };
+			const uint32 previous_height{ output_textures->At(i - 1).GetHeight() };
+			const uint32 current_width{ CatalystBaseMath::Maximum<uint32>(output_textures->At(i - 1).GetWidth() >> 1, 1) };
+			const uint32 current_height{ CatalystBaseMath::Maximum<uint32>(output_textures->At(i - 1).GetHeight() >> 1, 1) };
+
 			//Initialize this mip level.
-			output_textures->At(i).Initialize(CatalystBaseMath::Maximum<uint32>(output_textures->At(i - 1).GetWidth() >> 1, 1), CatalystBaseMath::Maximum<uint32>(output_textures->At(i - 1).GetHeight() >> 1, 1));
+			output_textures->At(i).Initialize(current_width, current_height);
 
 			for (uint32 Y{ 0 }; Y < output_textures->At(i).GetHeight(); ++Y)
 			{
 				for (uint32 X{ 0 }; X < output_textures->At(i).GetWidth(); ++X)
 				{
-					//Calculate the normalized coordinate.
-					const Vector2<float32> normalized_coordinate{ (static_cast<float32>(X) + 0.5f) / static_cast<float32>(output_textures->At(i).GetWidth()), (static_cast<float32>(Y) + 0.5f) / static_cast<float32>(output_textures->At(i).GetHeight()) };
-
 					//Retrieve the value at this texel.
-					output_textures->At(i).At(X, Y) = output_textures->At(i - 1).Sample(normalized_coordinate, AddressMode::CLAMP_TO_EDGE);
+					output_textures->At(i).At(X, Y) = output_textures->At(i - 1).At(X * 2 + 0, Y * 2 + 0) * 0.25f;
+					output_textures->At(i).At(X, Y) += output_textures->At(i - 1).At(X * 2 + 0, Y * 2 + 1) * 0.25f;
+					output_textures->At(i).At(X, Y) += output_textures->At(i - 1).At(X * 2 + 1, Y * 2 + 0) * 0.25f;
+					output_textures->At(i).At(X, Y) += output_textures->At(i - 1).At(X * 2 + 1, Y * 2 + 1) * 0.25f;
 				}
 			}
 		}

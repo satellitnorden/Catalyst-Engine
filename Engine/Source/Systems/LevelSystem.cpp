@@ -79,6 +79,13 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 						break;
 					}
 
+					case LightType::BOX:
+					{
+						ASSERT(false, "Implement this!");
+
+						break;
+					}
+
 					default:
 					{
 						ASSERT(false, "Invalid case!");

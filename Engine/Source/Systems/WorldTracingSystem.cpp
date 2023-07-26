@@ -395,9 +395,34 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 					}
 
 					case LightType::POINT:
+					case LightType::BOX: //Box lights are kinda like points lights.
 					{
 						//Calculate the direction to the light.
-						Vector3<float32> direction_to_light{ component->_WorldPosition.GetAbsolutePosition() - hit_position };
+						Vector3 <float32> light_position;
+
+						if (component->_LightType == LightType::POINT)
+						{
+							light_position = component->_WorldPosition.GetAbsolutePosition();
+						}
+
+						else if (component->_LightType == LightType::BOX)
+						{
+							const Vector3<float32> minimum{ component->_MinimumWorldPosition.GetAbsolutePosition() };
+							const Vector3<float32> maximum{ component->_MaximumWorldPosition.GetAbsolutePosition() };
+
+							light_position = Vector3<float32>
+							(
+								CatalystBaseMath::Clamp<float32>(hit_position._X, minimum._X, maximum._X),
+								CatalystBaseMath::Clamp<float32>(hit_position._Y, minimum._Y, maximum._Y),
+								CatalystBaseMath::Clamp<float32>(hit_position._Z, minimum._Z, maximum._Z)
+							);
+						}
+
+						else
+						{
+							ASSERT(false, "Unknown light type!");
+						}
+						Vector3<float32> direction_to_light{ light_position - hit_position };
 						const float32 distance_to_light{ Vector3<float32>::Length(direction_to_light) };
 						const float32 distance_to_light_reciprocal{ 1.0f / distance_to_light };
 						direction_to_light *= distance_to_light_reciprocal;

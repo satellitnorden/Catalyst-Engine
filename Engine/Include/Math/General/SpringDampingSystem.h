@@ -17,6 +17,14 @@ public:
 	}
 
 	/*
+	*	Returns the velocity.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetVelocity() const NOEXCEPT
+	{
+		return _Velocity;
+	}
+
+	/*
 	*	Sets the current.
 	*/
 	FORCE_INLINE void SetCurrent(const float32 value) NOEXCEPT
@@ -54,6 +62,14 @@ public:
 	FORCE_INLINE void SetSpringConstant(const float32 spring_constant) NOEXCEPT
 	{
 		_SpringConstant = spring_constant;
+	}
+
+	/*
+	*	Sets the velocity.
+	*/
+	FORCE_INLINE void SetVelocity(const float32 velocity) NOEXCEPT
+	{
+		_Velocity = velocity;
 	}
 
 	/*

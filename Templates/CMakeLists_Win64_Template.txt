@@ -52,9 +52,9 @@ add_compile_definitions(CATALYST_RENDERING_VULKAN)
 #Add the include/source files.
 file(GLOB_RECURSE ENGINE_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/*.h)
 file(GLOB_RECURSE ENGINE_INLINE_FILES ../../Catalyst-Engine/Engine/Include/*.inl)
-file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../Catalyst-Engine/Engine/Source/*.cpp ../../Catalyst-Engine/Engine/Source/*.asm)
+file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../Catalyst-Engine/Engine/Source/*.cpp ../../Catalyst-Engine/Engine/Source/*.c ../../Catalyst-Engine/Engine/Source/*.asm)
 file(GLOB_RECURSE GAME_INCLUDE_FILES ../Code/Include/*.h)
-file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.cpp ../Code/Source/*.asm)
+file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.cpp ../Code/Source/*.c ../Code/Source/*.asm)
 
 #Add the executable.
 add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES} ${GAME_INCLUDE_FILES} ${GAME_SOURCE_FILES})

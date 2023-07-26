@@ -46,6 +46,14 @@ void LightEntity::Initialize(EntityInitializationData *const RESTRICT data) NOEX
 
 			break;
 		}
+
+		case LightType::BOX:
+		{
+			light_component._MinimumWorldPosition = light_initialization_data->_MinimumWorldPosition;
+			light_component._MaximumWorldPosition = light_initialization_data->_MaximumWorldPosition;
+
+			break;
+		}
 	}
 
 	light_component._Color = light_initialization_data->_Color;

@@ -13,5 +13,6 @@ namespace LightingConstants
 enum class LightType : uint32
 {
 	DIRECTIONAL,
-	POINT
+	POINT,
+	BOX
 };

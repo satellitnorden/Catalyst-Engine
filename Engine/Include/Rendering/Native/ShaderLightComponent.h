@@ -28,6 +28,15 @@ public:
 
 		//The world position. Used for point lights.
 		Vector3<float32> _WorldPosition;
+
+		struct
+		{
+			//The minimum world position. Used for box lights.
+			Vector3<float32> _MinimumWorldPosition;
+
+			//The maximum world position. Used for box lights.
+			Vector3<float32> _MaximumWorldPosition;
+		};
 	};
 
 	//The color.
@@ -49,7 +58,7 @@ public:
 	float32 _Size;
 
 	//Padding.
-	Padding<4> _Padding;
+	Padding<8> _Padding;
 
 	/*
 	*	Default constructor.
@@ -74,4 +83,4 @@ public:
 
 };
 
-static_assert(sizeof(ShaderLightComponent) == 48, "Light components must be exactly 48 bytes!");
+static_assert(sizeof(ShaderLightComponent) == 64, "Light components must be exactly 64 bytes!");

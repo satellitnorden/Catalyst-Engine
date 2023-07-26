@@ -33,6 +33,7 @@
 
 #define LIGHT_TYPE_DIRECTIONAL (0)
 #define LIGHT_TYPE_POINT (1)
+#define LIGHT_TYPE_BOX (2)
 
 //Includes.
 #define CATALYST_SHADER_LANGUAGE_GLSL

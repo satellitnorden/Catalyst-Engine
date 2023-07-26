@@ -16,8 +16,7 @@ namespace CompressionAlgorithms
 
 		public:
 
-			//The amount of compression. 0 = lossless compression, 1-255 means lossy compression.
-			uint8 _Compression;
+
 		};
 
 		/*
@@ -41,7 +40,7 @@ namespace CompressionAlgorithms
 			for (uint64 i{ 1 }; i < input_size; ++i)
 			{
 				//Has the run ended?
-				if (CatalystBaseMath::Absolute<int32>(static_cast<int32>(run_value) - static_cast<int32>(input_data[i])) > parameters._Compression || run_counter == UINT8_MAX)
+				if (CatalystBaseMath::Absolute<int32>(static_cast<int32>(run_value) - static_cast<int32>(input_data[i])) > 0 || run_counter == UINT8_MAX)
 				{
 					//Write how long the previous run lasted.
 					intermediate_data[(*compressed_size)++] = run_counter;

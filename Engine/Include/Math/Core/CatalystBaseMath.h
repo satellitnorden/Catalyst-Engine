@@ -362,6 +362,22 @@ public:
 	}
 
 	/*
+	*	Rounds the given uint32 down to the nearest power of two.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD uint32 RoundDownToNearestPowerOfTwo(const uint32 value) NOEXCEPT
+	{
+		uint32 output{ value };
+
+		output |= output >> 1;
+		output |= output >> 2;
+		output |= output >> 4;
+		output |= output >> 8;
+		output |= output >> 16;
+
+		return output - (output >> 1);
+	}
+
+	/*
 	*	Rounds the given uint32 up to the nearest power of two.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD uint32 RoundUpToNearestPowerOfTwo(const uint32 value) NOEXCEPT
