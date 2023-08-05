@@ -258,17 +258,6 @@ public:
 		//Are all tasks done?
 		if (AllTasksDone())
 		{
-			for (uint32 Y{ 0 }; Y < RenderingReferenceSystemData::_FinalTexture.GetHeight(); ++Y)
-			{
-				for (uint32 X{ 0 }; X < RenderingReferenceSystemData::_FinalTexture.GetWidth(); ++X)
-				{
-					if (RenderingReferenceSystemData::_FinalTexture.At(X, Y)._A != 1.0f)
-					{
-						BREAKPOINT();
-					}
-				}
-			}
-
 			//Create a new final texture handle.
 			Texture2DHandle new_final_texture_handle;
 			RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(RenderingReferenceSystemData::_FinalTexture), TextureFormat::RGBA_FLOAT32, TextureUsage::NONE), &new_final_texture_handle);
@@ -351,7 +340,7 @@ public:
 			for (uint32 X{ 0 }; X < RenderingReferenceSystemData::_IntermediateTexture.GetWidth(); ++X)
 			{
 				//Calculate the jitter.
-				const Vector2<float32> jitter{ CatalystRandomMath::RandomFloatInRange(-0.5f, 0.5f), CatalystRandomMath::RandomFloatInRange(-0.5f, 0.5f) };
+				const Vector2<float32> jitter{ CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f), CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f) };
 
 				//Calculate the normalized coordinate.
 				const Vector2<float32> normalized_coordinate{	(static_cast<float32>(X) + 0.5f + jitter._X) / static_cast<float32>(RenderingReferenceSystemData::_IntermediateTexture.GetWidth()),
@@ -383,9 +372,9 @@ public:
 				//Write to the final texture.
 				Vector4<float32>& final_sample{ RenderingReferenceSystemData::_FinalTexture.At(X, *Y) };
 
-				final_sample._R = final_radiance._R;
-				final_sample._G = final_radiance._G;
-				final_sample._B = final_radiance._B;
+				final_sample._R = CatalystBaseMath::Clamp<float32>(final_radiance._R, 0.0f, 1.0f);
+				final_sample._G = CatalystBaseMath::Clamp<float32>(final_radiance._G, 0.0f, 1.0f);
+				final_sample._B = CatalystBaseMath::Clamp<float32>(final_radiance._B, 0.0f, 1.0f);
 				final_sample._A = 1.0f;
 
 				//Update the current number of pixels.

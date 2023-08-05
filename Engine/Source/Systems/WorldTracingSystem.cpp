@@ -24,7 +24,7 @@ namespace WorldTracingSystemConstants
 {
 	constexpr float32 DIRECTIONAL_LIGHT_SOFTNESS{ 0.01f };
 	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 64.0f };
-	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 2 };
+	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 3 };
 }
 
 /*
@@ -706,7 +706,10 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray &ray) NOEXCEPT
 
 		case SkySystem::SkyMode::GRADIENT:
 		{
-			return Vector3<float32>(0.0f, 0.0f, 0.0f) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
+			const SkyGradient &sky_gradient{ WorldSystem::Instance->GetSkySystem()->GetSkyGradient() };
+			const float32 up_factor{ Vector3<float32>::DotProduct(ray._Direction, Vector3<float32>(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f };
+
+			return CatalystBaseMath::LinearlyInterpolate(sky_gradient._LowerSkyColor, sky_gradient._UpperSkyColor, up_factor) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
 		}
 
 		case SkySystem::SkyMode::TEXTURE:
