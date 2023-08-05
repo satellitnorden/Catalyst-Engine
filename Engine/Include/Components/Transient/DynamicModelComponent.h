@@ -22,14 +22,6 @@ class DynamicModelComponent final
 
 public:
 
-	/*
-	*	Default constructor.
-	*/
-	FORCE_INLINE DynamicModelComponent() NOEXCEPT
-	{
-
-	}
-
 	//The model resource.
 	ResourcePointer<ModelResource> _ModelResource;
 

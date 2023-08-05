@@ -9,7 +9,6 @@
 
 //Systems.
 #include <Systems/EntitySystem.h>
-#include <Systems/SoundSystem.h>
 
 /*
 *	Default constructor.

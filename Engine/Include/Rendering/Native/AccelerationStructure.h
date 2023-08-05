@@ -182,9 +182,9 @@ public:
 	*	If an intersection is detected, it returns true
 	*	If no interseaction was found, it returns false.
 	*/
-	FORCE_INLINE NO_DISCARD bool TraceShadow(const Ray& ray) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool TraceShadow(const Ray &ray, const float32 maximum_distance) const NOEXCEPT
 	{
-		return TraceShadow(ray, _Root);
+		return TraceShadow(ray, maximum_distance, _Root);
 	}
 
 	/*
@@ -581,6 +581,8 @@ private:
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD const TriangleData *const RESTRICT TraceSurface(const Ray& ray, const Node &node, float *const RESTRICT intersection_distance) const NOEXCEPT
 	{
+		float32 maximum_distance_squared{ *intersection_distance == FLOAT32_MAXIMUM ? FLOAT32_MAXIMUM : *intersection_distance * *intersection_distance };
+
 		const TriangleData *RESTRICT intersected_triangle_data{ nullptr };
 
 		if (node._HasTriangles)
@@ -603,6 +605,7 @@ private:
 				{
 					intersected_triangle_data = &triangle_data;
 					*intersection_distance = intersection_distance_temporary;
+					maximum_distance_squared = intersection_distance_temporary * intersection_distance_temporary;
 				}
 			}
 		}
@@ -611,6 +614,19 @@ private:
 		{
 			for (uint8 i{ 0 }; i < 2; ++i)
 			{
+				//Check first if this box is close enough.
+				const Vector3<float32> closest_point
+				{
+					CatalystBaseMath::Clamp(ray._Origin._X, node._AxisAlignedBoundingBoxes[i]._Minimum._X, node._AxisAlignedBoundingBoxes[i]._Maximum._X),
+					CatalystBaseMath::Clamp(ray._Origin._Y, node._AxisAlignedBoundingBoxes[i]._Minimum._Y, node._AxisAlignedBoundingBoxes[i]._Maximum._Y),
+					CatalystBaseMath::Clamp(ray._Origin._Z, node._AxisAlignedBoundingBoxes[i]._Minimum._Z, node._AxisAlignedBoundingBoxes[i]._Maximum._Z)
+				};
+
+				if (Vector3<float32>::LengthSquared(ray._Origin - closest_point) >= maximum_distance_squared)
+				{
+					continue;
+				}
+
 				float intersection_distance_temporary{ FLOAT_MAXIMUM };
 
 				if (node._AxisAlignedBoundingBoxes[i].IsValid()
@@ -633,8 +649,10 @@ private:
 	*	If an intersection is detected, it returns true
 	*	If no interseaction was found, it returns false.
 	*/
-	FORCE_INLINE NO_DISCARD bool TraceShadow(const Ray &ray, const Node &node) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool TraceShadow(const Ray &ray, const float32 maximum_distance, const Node &node) const NOEXCEPT
 	{
+		const float32 maximum_distance_squared{ maximum_distance * maximum_distance };
+
 		if (node._HasTriangles)
 		{
 			for (uint64 i{ 0 }; i < node._TriangleDataSize; ++i)
@@ -661,12 +679,25 @@ private:
 		{
 			for (uint8 i{ 0 }; i < 2; ++i)
 			{
+				//Check first if this box is close enough.
+				const Vector3<float32> closest_point
+				{
+					CatalystBaseMath::Clamp(ray._Origin._X, node._AxisAlignedBoundingBoxes[i]._Minimum._X, node._AxisAlignedBoundingBoxes[i]._Maximum._X),
+					CatalystBaseMath::Clamp(ray._Origin._Y, node._AxisAlignedBoundingBoxes[i]._Minimum._Y, node._AxisAlignedBoundingBoxes[i]._Maximum._Y),
+					CatalystBaseMath::Clamp(ray._Origin._Z, node._AxisAlignedBoundingBoxes[i]._Minimum._Z, node._AxisAlignedBoundingBoxes[i]._Maximum._Z)
+				};
+
+				if (Vector3<float32>::LengthSquared(ray._Origin - closest_point) >= maximum_distance_squared)
+				{
+					continue;
+				}
+
 				float intersection_distance_temporary{ FLOAT_MAXIMUM };
 
 				if (node._AxisAlignedBoundingBoxes[i].IsValid()
 					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary))
 				{
-					if (TraceShadow(ray, node._Nodes[i]))
+					if (TraceShadow(ray, maximum_distance, node._Nodes[i]))
 					{
 						return true;
 					}

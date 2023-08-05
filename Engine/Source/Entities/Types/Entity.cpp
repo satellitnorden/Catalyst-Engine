@@ -1,9 +1,6 @@
 //Header file.
 #include <Entities/Types/Entity.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Entities.
 #include <Entities/Types/AnimatedModelEntity.h>
 #include <Entities/Types/DistanceTriggerEntity.h>

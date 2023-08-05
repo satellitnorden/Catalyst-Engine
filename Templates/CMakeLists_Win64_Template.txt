@@ -70,11 +70,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ../Code/Include)
 target_link_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Libraries/Static)
 
 #Link the libraries.
-target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:assimp>
-										$<$<CONFIG:DebugEditor>:assimp>
-										$<$<CONFIG:Profile>:assimp>
-										$<$<CONFIG:ProfileEditor>:assimp>
-										)
 target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/freetype>
 										$<$<CONFIG:DebugEditor>:Debug/freetype>
 										$<$<CONFIG:Profile>:Profile/freetype>

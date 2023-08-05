@@ -5,6 +5,32 @@
 #include <Rendering/Native/RenderingUtilities.h>
 
 /*
+*	Returns if this model file is valid.
+*/
+NO_DISCARD bool ModelFile::IsValid() const NOEXCEPT
+{
+	if (_Meshes.Empty())
+	{
+		return false;
+	}
+
+	for (const Mesh &mesh : _Meshes)
+	{
+		if (mesh._Vertices.Empty())
+		{
+			return false;
+		}
+
+		if (mesh._Indices.Empty())
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/*
 *	Post processes this model file.
 */
 void ModelFile::PostProcess() NOEXCEPT

@@ -23,8 +23,8 @@ DEFINE_SINGLETON(WorldTracingSystem);
 namespace WorldTracingSystemConstants
 {
 	constexpr float32 DIRECTIONAL_LIGHT_SOFTNESS{ 0.01f };
-	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 256.0f };
-	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 3 };
+	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 64.0f };
+	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 2 };
 }
 
 /*
@@ -144,7 +144,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRay(const Ray &ray) NOEX
 */
 NO_DISCARD bool WorldTracingSystem::OcclusionRay(const Ray &ray, const float32 length) NOEXCEPT
 {
-	return _AccelerationStructure.TraceShadow(ray);
+	return _AccelerationStructure.TraceShadow(ray, length);
 }
 
 /*
@@ -256,23 +256,23 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 				Matrix3x3 tangent_space_matrix;
 
 				{
-					Vector3<float32> normal{ 0.0f, 0.0f, 0.0f };
+					surface_description._GeometryNormal = Vector3<float32>(0.0f, 0.0f, 0.0f);
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
-						normal += vertex_data[0]._UserData._Normal * barycentric_coordinates[i];
+						surface_description._GeometryNormal += vertex_data[i]._UserData._Normal * barycentric_coordinates[i];
 					}
 
 					Vector3<float32> tangent{ 0.0f, 0.0f, 0.0f };
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
-						tangent += vertex_data[0]._UserData._Tangent * barycentric_coordinates[i];
+						tangent += vertex_data[i]._UserData._Tangent * barycentric_coordinates[i];
 					}
 
-					const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(surface_description._Normal, tangent) };
+					const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(surface_description._GeometryNormal, tangent) };
 
-					tangent_space_matrix = Matrix3x3(tangent, bitangent, surface_description._Normal);
+					tangent_space_matrix = Matrix3x3(tangent, bitangent, surface_description._GeometryNormal);
 				}
 
 				//Retrieve the normal map.
@@ -308,8 +308,8 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 					normal_map = Vector3<float32>(normal_map_displacement._X * 2.0f - 1.0f, normal_map_displacement._Y * 2.0f - 1.0f, normal_map_displacement._Z * 2.0f - 1.0f);
 				}
 
-				//Fill in the normal.
-				surface_description._Normal = tangent_space_matrix * normal_map;
+				//Fill in the shading normal.
+				surface_description._ShadingNormal = tangent_space_matrix * normal_map;
 			}
 
 			//Fill in the material properties.
@@ -345,6 +345,9 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 			surface_description._Emissive = material_properties[3] * vertex_data[0]._UserData._MaterialResource->_EmissiveMultiplier;
 		}
 
+		//Calculate the offset hit position.
+		const Vector3<float32> offset_hit_position{ hit_position + surface_description._GeometryNormal * WorldTracingSystemConstants::SELF_INTERSECTION_OFFSET };
+
 		//Calculate the final radiance.
 		Vector3<float32> final_radiance{ 0.0f, 0.0f, 0.0f };
 
@@ -371,7 +374,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 						{
 							Ray occlusion_ray;
 
-							occlusion_ray.SetOrigin(hit_position + direction_to_light * WorldTracingSystemConstants::SELF_INTERSECTION_OFFSET);
+							occlusion_ray.SetOrigin(offset_hit_position);
 							occlusion_ray.SetDirection(direction_to_light);
 
 							if (OcclusionRay(occlusion_ray, FLOAT32_MAXIMUM))
@@ -383,7 +386,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 						//Calculate the lighting.
 						final_radiance += CatalystLighting::CalculateLighting(	-ray._Direction,
 																				surface_description._Albedo,
-																				surface_description._Normal,
+																				surface_description._ShadingNormal,
 																				surface_description._Roughness,
 																				surface_description._Metallic,
 																				surface_description._AmbientOcclusion,
@@ -403,6 +406,8 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 						if (component->_LightType == LightType::POINT)
 						{
 							light_position = component->_WorldPosition.GetAbsolutePosition();
+
+							light_position += CatalystRandomMath::RandomPointInSphere(component->_Size);
 						}
 
 						else if (component->_LightType == LightType::BOX)
@@ -412,17 +417,22 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 
 							light_position = Vector3<float32>
 							(
-								CatalystBaseMath::Clamp<float32>(hit_position._X, minimum._X, maximum._X),
-								CatalystBaseMath::Clamp<float32>(hit_position._Y, minimum._Y, maximum._Y),
-								CatalystBaseMath::Clamp<float32>(hit_position._Z, minimum._Z, maximum._Z)
+								CatalystBaseMath::Clamp<float32>(offset_hit_position._X, minimum._X, maximum._X),
+								CatalystBaseMath::Clamp<float32>(offset_hit_position._Y, minimum._Y, maximum._Y),
+								CatalystBaseMath::Clamp<float32>(offset_hit_position._Z, minimum._Z, maximum._Z)
 							);
+
+							light_position += CatalystRandomMath::RandomPointInSphere(component->_Size);
 						}
 
 						else
 						{
 							ASSERT(false, "Unknown light type!");
 						}
-						Vector3<float32> direction_to_light{ light_position - hit_position };
+
+						ASSERT(light_position != offset_hit_position, "oh no");
+
+						Vector3<float32> direction_to_light{ light_position - offset_hit_position };
 						const float32 distance_to_light{ Vector3<float32>::Length(direction_to_light) };
 						const float32 distance_to_light_reciprocal{ 1.0f / distance_to_light };
 						direction_to_light *= distance_to_light_reciprocal;
@@ -431,7 +441,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 						{
 							Ray occlusion_ray;
 
-							occlusion_ray.SetOrigin(hit_position + direction_to_light * WorldTracingSystemConstants::SELF_INTERSECTION_OFFSET);
+							occlusion_ray.SetOrigin(offset_hit_position);
 							occlusion_ray.SetDirection(direction_to_light);
 
 							if (OcclusionRay(occlusion_ray, distance_to_light))
@@ -440,16 +450,19 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 							}
 						}
 
+						//Calculate the attenuation.
+						const float32 attenuation{ CatalystLighting::CalculateAttenuation(distance_to_light, component->_Radius) };
+
 						//Calculate the lighting.
 						final_radiance += CatalystLighting::CalculateLighting(	-ray._Direction,
 																				surface_description._Albedo,
-																				surface_description._Normal,
+																				surface_description._ShadingNormal,
 																				surface_description._Roughness,
 																				surface_description._Metallic,
 																				surface_description._AmbientOcclusion,
 																				1.0f,
 																				-direction_to_light,
-																				component->_Color * component->_Intensity);
+																				component->_Color * component->_Intensity * attenuation);
 
 						break;
 					}
@@ -466,24 +479,49 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 
 		//Add indirect lighting.
 		{
-			//Calculate the random hemisphere direction.
-			Vector3<float32> random_hemisphere_direction;
+			//Calculate the indirect lighting direction.
+			Vector3<float32> indirect_lighting_direction;
 
+#if 1
+			//Choose if we should shoot a diffuse ray.
+			if (CatalystRandomMath::RandomChance(surface_description._Roughness))
 			{
-				const Vector2<float32> random_hemisphere_coordinate{ CatalystRandomMath::RandomFloat(), CatalystRandomMath::RandomFloat() };
-				random_hemisphere_direction = CatalystGeometryMath::CalculateHemisphereUniform(random_hemisphere_coordinate);
+				indirect_lighting_direction = CatalystRandomMath::RandomPointInSphere();
+
+				if (Vector3<float32>::DotProduct(indirect_lighting_direction, surface_description._GeometryNormal) < 0.0f)
+				{
+					indirect_lighting_direction *= -1.0f;
+				}
 			}
 
-			if (Vector3<float32>::DotProduct(surface_description._Normal, random_hemisphere_direction) < 0.0f)
+			//Otherwise, shoot a specular ray.
+			else
 			{
-				random_hemisphere_direction *= -1.0f;
+				indirect_lighting_direction = Vector3<float32>::Reflect(ray._Direction, surface_description._GeometryNormal) + (CatalystRandomMath::RandomPointInSphere() * CatalystBaseMath::PowerOf(surface_description._Roughness, 2));
+				indirect_lighting_direction.Normalize();
 			}
+#else
+			{
+				const Vector3<float32> specular_direction{ Vector3<float32>::Reflect(ray._Direction, surface_description._GeometryNormal) };
+
+				Vector3<float32> diffuse_direction{ CatalystRandomMath::RandomPointInSphere() };
+
+				if (Vector3<float32>::DotProduct(diffuse_direction, surface_description._GeometryNormal) < 0.0f)
+				{
+					diffuse_direction *= -1.0f;
+				}
+
+				indirect_lighting_direction = CatalystBaseMath::LinearlyInterpolate(specular_direction, diffuse_direction, surface_description._Roughness * surface_description._Roughness);
+
+				indirect_lighting_direction.Normalize();
+			}
+#endif
 
 			//Construct the indirect ray.
 			Ray indirect_ray;
 
-			indirect_ray.SetOrigin(hit_position + random_hemisphere_direction * WorldTracingSystemConstants::SELF_INTERSECTION_OFFSET);
-			indirect_ray.SetDirection(random_hemisphere_direction);
+			indirect_ray.SetOrigin(offset_hit_position);
+			indirect_ray.SetDirection(indirect_lighting_direction);
 
 			//Cast the ray!
 			const Vector3<float32> indirect_radiance{ RadianceRayInternal(indirect_ray, depth + 1) };
@@ -491,12 +529,12 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 			//Add the indirect lighting.
 			final_radiance += CatalystLighting::CalculateLighting(	-ray._Direction,
 																	surface_description._Albedo,
-																	surface_description._Normal,
+																	surface_description._ShadingNormal,
 																	surface_description._Roughness,
 																	surface_description._Metallic,
 																	surface_description._AmbientOcclusion,
 																	1.0f,
-																	-random_hemisphere_direction,
+																	-indirect_lighting_direction,
 																	indirect_radiance);
 		}
 

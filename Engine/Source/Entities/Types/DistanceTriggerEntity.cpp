@@ -50,11 +50,3 @@ void DistanceTriggerEntity::Terminate() NOEXCEPT
 	//Return this entitiy's components index.
 	ComponentManager::ReturnDistanceTriggerComponentsIndex(_ComponentsIndex);
 }
-
-/*
-*	Returns the world transform.
-*/
-RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT DistanceTriggerEntity::GetWorldTransform() NOEXCEPT
-{
-	return nullptr;
-}

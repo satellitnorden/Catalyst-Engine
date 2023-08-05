@@ -48,28 +48,7 @@ public:
 	/*
 	*	Returns if this model file is valid.
 	*/
-	FORCE_INLINE NO_DISCARD bool IsValid() const NOEXCEPT
-	{
-		if (_Meshes.Empty())
-		{
-			return false;
-		}
-
-		for (const Mesh &mesh : _Meshes)
-		{
-			if (mesh._Vertices.Empty())
-			{
-				return false;
-			}
-
-			if (mesh._Indices.Empty())
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
+	NO_DISCARD bool IsValid() const NOEXCEPT;
 
 	/*
 	*	Post processes this model file.

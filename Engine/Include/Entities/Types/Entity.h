@@ -2,15 +2,11 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/DynamicArray.h>
 
 //Entities.
 #include <Entities/Core/EntityCore.h>
 #include <Entities/Creation/EntityInitializationData.h>
 #include <Entities/Creation/EntityPreprocessingParameters.h>
-
-//Math.
-#include <Math/General/Matrix.h>
 
 class Entity
 {

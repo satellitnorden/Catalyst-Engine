@@ -73,9 +73,4 @@ public:
 		return nullptr;
 	}
 
-	/*
-	*	Returns the world transform.
-	*/
-	RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT GetWorldTransform() NOEXCEPT;
-
 };

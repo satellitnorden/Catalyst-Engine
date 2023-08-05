@@ -22,7 +22,7 @@ public:
 	/*
 	*	Default constuctor.
 	*/
-	FORCE_INLINE constexpr ResourceHeader() NOEXCEPT
+	FORCE_INLINE ResourceHeader() NOEXCEPT
 		:
 		_TypeIdentifier(),
 		_ResourceIdentifier(),
@@ -34,7 +34,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr ResourceHeader(const HashString initial_type_identifier, const HashString initial_resource_identifier, const StaticString<64> initial_resource_name) NOEXCEPT
+	FORCE_INLINE ResourceHeader(const HashString initial_type_identifier, const HashString initial_resource_identifier, const StaticString<64> initial_resource_name) NOEXCEPT
 		:
 		_TypeIdentifier(initial_type_identifier),
 		_ResourceIdentifier(initial_resource_identifier),

@@ -10,6 +10,7 @@
 //Systems.
 #include <Systems/EntitySystem.h>
 #include <Systems/PhysicsSystem.h>
+#include <Systems/RenderingSystem.h>
 
 //Terrain.
 #include <Terrain/TerrainGeneralUtilities.h>

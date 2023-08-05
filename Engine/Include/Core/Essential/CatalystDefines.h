@@ -88,6 +88,15 @@
 	#define RESTRICTED __declspec(restrict)
 #elif defined(CATALYST_CLANG)
 	#define RESTRICTED
+#endif 
+
+/*
+*	Defines a variable or a function to be constexpr, but only in final configurattion.
+*/
+#if defined(CATALYST_CONFIGURATION_FINAL)
+	#define FINAL_CONSTEXPR constexpr
+#else
+	#define FINAL_CONSTEXPR
 #endif
 
 /*

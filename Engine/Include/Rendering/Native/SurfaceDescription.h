@@ -14,8 +14,11 @@ public:
 	//The albedo.
 	Vector3<float32> _Albedo;
 
-	//The normal.
-	Vector3<float32> _Normal;
+	//The geometry normal.
+	Vector3<float32> _GeometryNormal;
+
+	//The shading normal.
+	Vector3<float32> _ShadingNormal;
 
 	//The roughness.
 	float32 _Roughness;

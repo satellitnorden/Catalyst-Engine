@@ -65,7 +65,7 @@ public:
 	/*
 	*	Returns the world transform.
 	*/
-	RESTRICTED NO_DISCARD Matrix4x4 *const RESTRICT GetWorldTransform() NOEXCEPT;
+	RESTRICTED NO_DISCARD class Matrix4x4 *const RESTRICT GetWorldTransform() NOEXCEPT;
 
 	/*
 	*	Returns the model space axis aligned bounding box.

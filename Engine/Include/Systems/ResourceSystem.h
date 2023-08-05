@@ -91,15 +91,7 @@ public:
 	/*
 	*	Returns the animated model resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<AnimatedModelResource> GetAnimatedModelResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		AnimatedModelResource *const RESTRICT *const RESTRICT resource{ _AnimatedModelResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<AnimatedModelResource>(*resource) : ResourcePointer<AnimatedModelResource>();
-	}
+	NO_DISCARD ResourcePointer<AnimatedModelResource> GetAnimatedModelResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the animated model resource with the given identifier.
@@ -117,15 +109,7 @@ public:
 	/*
 	*	Returns the animation resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<AnimationResource> GetAnimationResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		AnimationResource *const RESTRICT *const RESTRICT resource{ _AnimationResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<AnimationResource>(*resource) : ResourcePointer<AnimationResource>();
-	}
+	NO_DISCARD ResourcePointer<AnimationResource> GetAnimationResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the animation resource with the given identifier.
@@ -143,15 +127,7 @@ public:
 	/*
 	*	Returns the font resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<FontResource> GetFontResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		FontResource *const RESTRICT *const RESTRICT resource{ _FontResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<FontResource>(*resource) : ResourcePointer<FontResource>();
-	}
+	NO_DISCARD ResourcePointer<FontResource> GetFontResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the font resource with the given identifier.
@@ -169,15 +145,7 @@ public:
 	/*
 	*	Returns the level resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<LevelResource> GetLevelResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		LevelResource *const RESTRICT *const RESTRICT resource{ _LevelResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<LevelResource>(*resource) : ResourcePointer<LevelResource>();
-	}
+	NO_DISCARD ResourcePointer<LevelResource> GetLevelResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the level resource with the given identifier.
@@ -195,15 +163,7 @@ public:
 	/*
 	*	Returns the material resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<MaterialResource> GetMaterialResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		MaterialResource *const RESTRICT *const RESTRICT resource{ _MaterialResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<MaterialResource>(*resource) : ResourcePointer<MaterialResource>();
-	}
+	NO_DISCARD ResourcePointer<MaterialResource> GetMaterialResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the material resource with the given identifier.
@@ -221,15 +181,7 @@ public:
 	/*
 	*	Returns the model resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<ModelResource> GetModelResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		ModelResource *const RESTRICT *const RESTRICT resource{ _ModelResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<ModelResource>(*resource) : ResourcePointer<ModelResource>();
-	}
+	NO_DISCARD ResourcePointer<ModelResource> GetModelResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the model resource with the given identifier.
@@ -239,15 +191,7 @@ public:
 	/*
 	*	Returns the raw data resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<RawDataResource> GetRawDataResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		RawDataResource *const RESTRICT *const RESTRICT resource{ _RawDataResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<RawDataResource>(*resource) : ResourcePointer<RawDataResource>();
-	}
+	NO_DISCARD ResourcePointer<RawDataResource> GetRawDataResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the raw data resource with the given identifier.
@@ -265,15 +209,7 @@ public:
 	/*
 	*	Returns the shader resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<ShaderResource> GetShaderResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		ShaderResource *const RESTRICT *const RESTRICT resource{ _ShaderResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<ShaderResource>(*resource) : ResourcePointer<ShaderResource>();
-	}
+	NO_DISCARD ResourcePointer<ShaderResource> GetShaderResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the shader resource with the given identifier.
@@ -291,15 +227,7 @@ public:
 	/*
 	*	Returns the sound resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<SoundResource> GetSoundResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		SoundResource *const RESTRICT *const RESTRICT resource{ _SoundResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<SoundResource>(*resource) : ResourcePointer<SoundResource>();
-	}
+	NO_DISCARD ResourcePointer<SoundResource> GetSoundResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the sound resource with the given identifier.
@@ -317,15 +245,7 @@ public:
 	/*
 	*	Returns the texture cube resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<TextureCubeResource> GetTextureCubeResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		TextureCubeResource *const RESTRICT *const RESTRICT resource{ _TextureCubeResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<TextureCubeResource>(*resource) : ResourcePointer<TextureCubeResource>();
-	}
+	NO_DISCARD ResourcePointer<TextureCubeResource> GetTextureCubeResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the texture cube resource with the given identifier.
@@ -343,15 +263,7 @@ public:
 	/*
 	*	Returns the video resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<VideoResource> GetVideoResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		VideoResource *const RESTRICT *const RESTRICT resource{ _VideoResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<VideoResource>(*resource) : ResourcePointer<VideoResource>();
-	}
+	NO_DISCARD ResourcePointer<VideoResource> GetVideoResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the video resource with the given identifier.
@@ -369,15 +281,7 @@ public:
 	/*
 	*	Returns the texture 2D resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<Texture2DResource> GetTexture2DResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		Texture2DResource *const RESTRICT *const RESTRICT resource{ _Texture2DResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<Texture2DResource>(*resource) : ResourcePointer<Texture2DResource>();
-	}
+	NO_DISCARD ResourcePointer<Texture2DResource> GetTexture2DResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the texture 2D resource with the given identifier.
@@ -395,15 +299,7 @@ public:
 	/*
 	*	Returns the texture 3D resource with the given identifier.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT
-	{
-		//Find the resource.
-		Texture3DResource *const RESTRICT *const RESTRICT resource{ _Texture3DResources.Find(identifier) };
-
-		ASSERT(resource, "Couldn't find resource!");
-
-		return resource ? ResourcePointer<Texture3DResource>(*resource) : ResourcePointer<Texture3DResource>();
-	}
+	NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT;
 
 	/*
 	*	Returns or creates the texture 3D resource with the given identifier.

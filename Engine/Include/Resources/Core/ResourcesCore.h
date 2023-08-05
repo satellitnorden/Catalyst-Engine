@@ -25,17 +25,17 @@ enum class ResourceLoadState : uint8
 namespace ResourceConstants
 {
 	//The type identifiers.
-	constexpr HashString ANIMATED_MODEL_TYPE_IDENTIFIER{ "AnimatedModel" };
-	constexpr HashString ANIMATION_TYPE_IDENTIFIER{ "Animation" };
-	constexpr HashString FONT_TYPE_IDENTIFIER{ "Font" };
-	constexpr HashString LEVEL_TYPE_IDENTIFIER{ "Level" };
-	constexpr HashString MATERIAL_TYPE_IDENTIFIER{ "Material" };
-	constexpr HashString MODEL_TYPE_IDENTIFIER{ "Model" };
-	constexpr HashString RAW_DATA_TYPE_IDENTIFIER{ "RawData" };
-	constexpr HashString SHADER_TYPE_IDENTIFIER{ "Shader" };
-	constexpr HashString SOUND_TYPE_IDENTIFIER{ "Sound" };
-	constexpr HashString TEXTURE_CUBE_TYPE_IDENTIFIER{ "TextureCube" };
-	constexpr HashString TEXTURE_2D_TYPE_IDENTIFIER{ "Texture2D" };
-	constexpr HashString TEXTURE_3D_TYPE_IDENTIFIER{ "Texture3D" };
-	constexpr HashString VIDEO_TYPE_IDENTIFIER{ "Video" };
+	const extern HashString ANIMATED_MODEL_TYPE_IDENTIFIER;
+	const extern HashString ANIMATION_TYPE_IDENTIFIER;
+	const extern HashString FONT_TYPE_IDENTIFIER;
+	const extern HashString LEVEL_TYPE_IDENTIFIER;
+	const extern HashString MATERIAL_TYPE_IDENTIFIER;
+	const extern HashString MODEL_TYPE_IDENTIFIER;
+	const extern HashString RAW_DATA_TYPE_IDENTIFIER;
+	const extern HashString SHADER_TYPE_IDENTIFIER;
+	const extern HashString SOUND_TYPE_IDENTIFIER;
+	const extern HashString TEXTURE_CUBE_TYPE_IDENTIFIER;
+	const extern HashString TEXTURE_2D_TYPE_IDENTIFIER;
+	const extern HashString TEXTURE_3D_TYPE_IDENTIFIER;
+	const extern HashString VIDEO_TYPE_IDENTIFIER;
 }
