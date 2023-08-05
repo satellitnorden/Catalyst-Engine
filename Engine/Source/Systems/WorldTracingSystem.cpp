@@ -482,11 +482,11 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 			//Calculate the indirect lighting direction.
 			Vector3<float32> indirect_lighting_direction;
 
-#if 1
 			//Choose if we should shoot a diffuse ray.
 			if (CatalystRandomMath::RandomChance(surface_description._Roughness))
 			{
 				indirect_lighting_direction = CatalystRandomMath::RandomPointInSphere();
+				indirect_lighting_direction.Normalize();
 
 				if (Vector3<float32>::DotProduct(indirect_lighting_direction, surface_description._GeometryNormal) < 0.0f)
 				{
@@ -500,22 +500,6 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 				indirect_lighting_direction = Vector3<float32>::Reflect(ray._Direction, surface_description._GeometryNormal) + (CatalystRandomMath::RandomPointInSphere() * CatalystBaseMath::PowerOf(surface_description._Roughness, 2));
 				indirect_lighting_direction.Normalize();
 			}
-#else
-			{
-				const Vector3<float32> specular_direction{ Vector3<float32>::Reflect(ray._Direction, surface_description._GeometryNormal) };
-
-				Vector3<float32> diffuse_direction{ CatalystRandomMath::RandomPointInSphere() };
-
-				if (Vector3<float32>::DotProduct(diffuse_direction, surface_description._GeometryNormal) < 0.0f)
-				{
-					diffuse_direction *= -1.0f;
-				}
-
-				indirect_lighting_direction = CatalystBaseMath::LinearlyInterpolate(specular_direction, diffuse_direction, surface_description._Roughness * surface_description._Roughness);
-
-				indirect_lighting_direction.Normalize();
-			}
-#endif
 
 			//Construct the indirect ray.
 			Ray indirect_ray;
