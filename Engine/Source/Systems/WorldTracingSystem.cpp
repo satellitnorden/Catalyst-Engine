@@ -132,58 +132,20 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 }
 
 /*
-*	Casts a ray into the world and returns the radiance.
+*	Returns a description of the surface which the given ray hits. Returns false if no surface was hit.
 */
-NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRay(const Ray &ray) NOEXCEPT
+NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float32 *const RESTRICT intersection_distance, SurfaceDescription *const RESTRICT surface_description) NOEXCEPT
 {
-	return RadianceRayInternal(ray, 0);
-}
-
-/*
-*	Casts a ray into the world and returns if there was occlusion.
-*/
-NO_DISCARD bool WorldTracingSystem::OcclusionRay(const Ray &ray, const float32 length) NOEXCEPT
-{
-	return _AccelerationStructure.TraceShadow(ray, length);
-}
-
-/*
-*	Casts a ray into the world and checks for the hit distance. Returns if there was a hit.
-*/
-NO_DISCARD bool WorldTracingSystem::DistanceRay(const Ray &ray, const float32 maximum_distance, float32 *const RESTRICT hit_distance, const bool use_cached_world_state) NOEXCEPT
-{
-	//Set the hit distance to maximum distance, to early rejection.
-	*hit_distance = maximum_distance;
-
-	return DistanceRayModels(ray, maximum_distance, hit_distance, use_cached_world_state);
-}
-
-/*
-*	Casts a ray into the world and returns the radiance internally.
-*/
-NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& ray, const uint8 depth) NOEXCEPT
-{
-	//Don't go over the maximum depth.
-	if (depth > WorldTracingSystemConstants::MAXIMUM_RADIANCE_DEPTH)
-	{
-		return Vector3<float32>(0.0f, 0.0f, 0.0f);
-	}
-
-	//Remember the closest intersection distance.
-	float32 closest_intersection_distance{ FLOAT32_MAXIMUM };
-
 	//Cast a ray into the acceleration structure.
-	const AccelerationStructure<VertexData>::TriangleData *const RESTRICT triangle_data{ _AccelerationStructure.TraceSurface(ray, &closest_intersection_distance) };
+	const AccelerationStructure<VertexData>::TriangleData *const RESTRICT triangle_data{ _AccelerationStructure.TraceSurface(ray, intersection_distance) };
 
 	//Did the ray hit anything?
 	if (triangle_data)
 	{
 		//Calculate the hit position.
-		const Vector3<float32> hit_position{ ray._Origin + ray._Direction * closest_intersection_distance };
+		const Vector3<float32> hit_position{ ray._Origin + ray._Direction * *intersection_distance };
 
-		//Construct the surface description.
-		SurfaceDescription surface_description;
-
+		//Fill in the surface description.
 		{
 			//Retrieve the vertex data.
 			StaticArray<AccelerationStructure<VertexData>::VertexData, 3> vertex_data
@@ -224,7 +186,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
-						surface_description._Albedo[i] = color[i];
+						surface_description->_Albedo[i] = color[i];
 					}
 
 					break;
@@ -236,7 +198,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
-						surface_description._Albedo[i] = color[i];
+						surface_description->_Albedo[i] = color[i];
 					}
 
 					break;
@@ -256,11 +218,11 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 				Matrix3x3 tangent_space_matrix;
 
 				{
-					surface_description._GeometryNormal = Vector3<float32>(0.0f, 0.0f, 0.0f);
+					surface_description->_GeometryNormal = Vector3<float32>(0.0f, 0.0f, 0.0f);
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
-						surface_description._GeometryNormal += vertex_data[i]._UserData._Normal * barycentric_coordinates[i];
+						surface_description->_GeometryNormal += vertex_data[i]._UserData._Normal * barycentric_coordinates[i];
 					}
 
 					Vector3<float32> tangent{ 0.0f, 0.0f, 0.0f };
@@ -270,9 +232,9 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 						tangent += vertex_data[i]._UserData._Tangent * barycentric_coordinates[i];
 					}
 
-					const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(surface_description._GeometryNormal, tangent) };
+					const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(surface_description->_GeometryNormal, tangent) };
 
-					tangent_space_matrix = Matrix3x3(tangent, bitangent, surface_description._GeometryNormal);
+					tangent_space_matrix = Matrix3x3(tangent, bitangent, surface_description->_GeometryNormal);
 				}
 
 				//Retrieve the normal map.
@@ -309,7 +271,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 				}
 
 				//Fill in the shading normal.
-				surface_description._ShadingNormal = tangent_space_matrix * normal_map;
+				surface_description->_ShadingNormal = tangent_space_matrix * normal_map;
 			}
 
 			//Fill in the material properties.
@@ -339,11 +301,68 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 				}
 			}
 
-			surface_description._Roughness = material_properties[0];
-			surface_description._Metallic = material_properties[1];
-			surface_description._AmbientOcclusion = material_properties[2];
-			surface_description._Emissive = material_properties[3] * vertex_data[0]._UserData._MaterialResource->_EmissiveMultiplier;
+			surface_description->_Roughness = material_properties[0];
+			surface_description->_Metallic = material_properties[1];
+			surface_description->_AmbientOcclusion = material_properties[2];
+			surface_description->_Emissive = material_properties[3] * vertex_data[0]._UserData._MaterialResource->_EmissiveMultiplier;
 		}
+
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+/*
+*	Casts a ray into the world and returns the radiance.
+*/
+NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRay(const Ray &ray) NOEXCEPT
+{
+	return RadianceRayInternal(ray, 0);
+}
+
+/*
+*	Casts a ray into the world and returns if there was occlusion.
+*/
+NO_DISCARD bool WorldTracingSystem::OcclusionRay(const Ray &ray, const float32 length) NOEXCEPT
+{
+	return _AccelerationStructure.TraceShadow(ray, length);
+}
+
+/*
+*	Casts a ray into the world and checks for the hit distance. Returns if there was a hit.
+*/
+NO_DISCARD bool WorldTracingSystem::DistanceRay(const Ray &ray, const float32 maximum_distance, float32 *const RESTRICT hit_distance, const bool use_cached_world_state) NOEXCEPT
+{
+	//Set the hit distance to maximum distance, to early rejection.
+	*hit_distance = maximum_distance;
+
+	return DistanceRayModels(ray, maximum_distance, hit_distance, use_cached_world_state);
+}
+
+/*
+*	Casts a ray into the world and returns the radiance internally.
+*/
+NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& ray, const uint8 depth) NOEXCEPT
+{
+	//Don't go over the maximum depth.
+	if (depth > WorldTracingSystemConstants::MAXIMUM_RADIANCE_DEPTH)
+	{
+		return Vector3<float32>(0.0f, 0.0f, 0.0f);
+	}
+
+	//Retrieve the surface description.
+	float32 intersection_distance{ FLOAT32_MAXIMUM };
+	SurfaceDescription surface_description;
+
+	//Did the ray hit anything?
+	if (SurfaceDescriptionRay(ray, &intersection_distance, &surface_description))
+	{
+		//Calculate the hit position.
+		const Vector3<float32> hit_position{ ray._Origin + ray._Direction * intersection_distance };
 
 		//Calculate the offset hit position.
 		const Vector3<float32> offset_hit_position{ hit_position + surface_description._GeometryNormal * WorldTracingSystemConstants::SELF_INTERSECTION_OFFSET };
@@ -482,6 +501,45 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 			//Calculate the indirect lighting direction.
 			Vector3<float32> indirect_lighting_direction;
 
+#if 1
+			{
+				constexpr uint64 NUMBER_OF_CANDIDATES{ 8 };
+				
+				StaticArray<Vector3<float32>, NUMBER_OF_CANDIDATES> candidates;
+				StaticArray<float32, NUMBER_OF_CANDIDATES> candidate_weights;
+
+				for (uint64 i{ 0 }; i < NUMBER_OF_CANDIDATES; ++i)
+				{
+					candidates[i] = CatalystRandomMath::RandomPointInSphere();
+					candidates[i].Normalize();
+
+					if (Vector3<float32>::DotProduct(candidates[i], surface_description._GeometryNormal) < 0.0f)
+					{
+						candidates[i] *= -1.0f;
+					}
+
+					candidate_weights[i] = CatalystLighting::SampleBidirectionalReflectanceDistribution
+					(
+						-ray._Direction,
+						surface_description._Albedo,
+						surface_description._ShadingNormal,
+						surface_description._Roughness,
+						surface_description._Metallic,
+						surface_description._AmbientOcclusion,
+						1.0f,
+						-candidates[i],
+						Vector3<float32>(0.0f, 0.0f, 0.0f)
+					);
+				}
+
+				{
+					ArrayProxy<Vector3<float32>> proxy{ candidates };
+					ArrayProxy<float32> weights{candidate_weights};
+
+					indirect_lighting_direction = CatalystRandomMath::WeightedRandomElement(proxy, weights);
+				}
+			}
+#else
 			//Choose if we should shoot a diffuse ray.
 			if (CatalystRandomMath::RandomChance(surface_description._Roughness))
 			{
@@ -500,6 +558,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 				indirect_lighting_direction = Vector3<float32>::Reflect(ray._Direction, surface_description._GeometryNormal) + (CatalystRandomMath::RandomPointInSphere() * CatalystBaseMath::PowerOf(surface_description._Roughness, 2));
 				indirect_lighting_direction.Normalize();
 			}
+#endif
 
 			//Construct the indirect ray.
 			Ray indirect_ray;

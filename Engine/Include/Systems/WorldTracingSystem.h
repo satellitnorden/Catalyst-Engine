@@ -40,6 +40,11 @@ public:
 	void CacheWorldState() NOEXCEPT;
 
 	/*
+	*	Returns a description of the surface which the given ray hits. Returns false if no surface was hit.
+	*/
+	NO_DISCARD bool SurfaceDescriptionRay(const Ray &ray, float32 *const RESTRICT intersection_distance, SurfaceDescription *const RESTRICT surface_description) NOEXCEPT;
+
+	/*
 	*	Casts a ray into the world and returns the radiance.
 	*/
 	NO_DISCARD Vector3<float32> RadianceRay(const Ray &ray) NOEXCEPT;

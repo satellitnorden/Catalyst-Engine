@@ -633,7 +633,7 @@ CATALYST_SHADER_NAMESPACE_BEGIN(CatalystLighting)
 		float fresnel_coefficient = halfway_vector_minus_one * halfway_vector_minus_one * halfway_vector_minus_one * halfway_vector_minus_one * halfway_vector_minus_one;
 
 		//Calculate the fresnel.
-		return surface_scalar + (1.0f, 1.0f, 1.0f - surface_scalar) * fresnel_coefficient;
+		return surface_scalar + (1.0f - surface_scalar) * fresnel_coefficient;
 	}
 
 	/*
