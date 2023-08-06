@@ -23,7 +23,7 @@ DEFINE_SINGLETON(WorldTracingSystem);
 namespace WorldTracingSystemConstants
 {
 	constexpr float32 DIRECTIONAL_LIGHT_SOFTNESS{ 0.01f };
-	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 64.0f };
+	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 128.0f };
 	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 3 };
 }
 
