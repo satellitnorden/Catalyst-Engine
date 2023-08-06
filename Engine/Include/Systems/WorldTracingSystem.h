@@ -59,6 +59,11 @@ public:
 	*/
 	NO_DISCARD bool DistanceRay(const Ray &ray, const float32 maximum_distance, float32 *const RESTRICT hit_distance, const bool use_cached_world_state = true) NOEXCEPT;
 
+	/*
+	*	Casts a ray against the sky.
+	*/
+	NO_DISCARD Vector3<float32> SkyRay(const Ray &ray) NOEXCEPT;
+
 private:
 
 	/*
@@ -105,10 +110,5 @@ private:
 	*	Casts an distance ray against models.
 	*/
 	NO_DISCARD bool DistanceRayModels(const Ray &ray, const float32 maximum_distance, float32 *const RESTRICT hit_distance, const bool use_cached_world_state) NOEXCEPT;
-
-	/*
-	*	Casts a ray against the sky.
-	*/
-	NO_DISCARD Vector3<float32> SkyRay(const Ray &ray) NOEXCEPT;
 
 };

@@ -344,6 +344,61 @@ NO_DISCARD bool WorldTracingSystem::DistanceRay(const Ray &ray, const float32 ma
 }
 
 /*
+*	Casts a ray against the sky.
+*/
+NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray& ray) NOEXCEPT
+{
+	switch (WorldSystem::Instance->GetSkySystem()->GetSkyMode())
+	{
+		case SkySystem::SkyMode::ATMOSPHERIC_SCATTERING:
+		{
+			Vector3<float32> sky_light_radiance{ 0.0f, 0.0f, 0.0f };
+			Vector3<float32> sky_light_direction{ 0.0f, -1.0f, 0.0f };
+
+			{
+				const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
+				const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+				for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+				{
+					if (component->_LightType == LightType::DIRECTIONAL)
+					{
+						sky_light_radiance = component->_Color * component->_Intensity;
+						sky_light_direction = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation);
+
+						break;
+					}
+				}
+			}
+
+			return CatalystAtmosphericScattering::CalculateAtmosphericScattering(ray._Origin, ray._Direction, sky_light_radiance, sky_light_direction) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
+		}
+
+		case SkySystem::SkyMode::GRADIENT:
+		{
+			const SkyGradient& sky_gradient{ WorldSystem::Instance->GetSkySystem()->GetSkyGradient() };
+			const float32 up_factor{ Vector3<float32>::DotProduct(ray._Direction, Vector3<float32>(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f };
+
+			return CatalystBaseMath::LinearlyInterpolate(sky_gradient._LowerSkyColor, sky_gradient._UpperSkyColor, up_factor) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
+		}
+
+		case SkySystem::SkyMode::TEXTURE:
+		{
+			const Vector4<float32> sky_color{ WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCube.Sample(ray._Direction) };
+
+			return Vector3<float32>(sky_color._R, sky_color._G, sky_color._B) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			return Vector3<float32>(0.0f, 0.0f, 0.0f);
+		}
+	}
+}
+
+/*
 *	Casts a ray into the world and returns the radiance internally.
 */
 NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& ray, const uint8 depth) NOEXCEPT
@@ -357,9 +412,10 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 	//Retrieve the surface description.
 	float32 intersection_distance{ FLOAT32_MAXIMUM };
 	SurfaceDescription surface_description;
+	const bool could_get_surface_description{ SurfaceDescriptionRay(ray, &intersection_distance, &surface_description) };
 
 	//Did the ray hit anything?
-	if (SurfaceDescriptionRay(ray, &intersection_distance, &surface_description))
+	if (could_get_surface_description)
 	{
 		//Calculate the hit position.
 		const Vector3<float32> hit_position{ ray._Origin + ray._Direction * intersection_distance };
@@ -501,45 +557,6 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 			//Calculate the indirect lighting direction.
 			Vector3<float32> indirect_lighting_direction;
 
-#if 1
-			{
-				constexpr uint64 NUMBER_OF_CANDIDATES{ 8 };
-				
-				StaticArray<Vector3<float32>, NUMBER_OF_CANDIDATES> candidates;
-				StaticArray<float32, NUMBER_OF_CANDIDATES> candidate_weights;
-
-				for (uint64 i{ 0 }; i < NUMBER_OF_CANDIDATES; ++i)
-				{
-					candidates[i] = CatalystRandomMath::RandomPointInSphere();
-					candidates[i].Normalize();
-
-					if (Vector3<float32>::DotProduct(candidates[i], surface_description._GeometryNormal) < 0.0f)
-					{
-						candidates[i] *= -1.0f;
-					}
-
-					candidate_weights[i] = CatalystLighting::SampleBidirectionalReflectanceDistribution
-					(
-						-ray._Direction,
-						surface_description._Albedo,
-						surface_description._ShadingNormal,
-						surface_description._Roughness,
-						surface_description._Metallic,
-						surface_description._AmbientOcclusion,
-						1.0f,
-						-candidates[i],
-						Vector3<float32>(0.0f, 0.0f, 0.0f)
-					);
-				}
-
-				{
-					ArrayProxy<Vector3<float32>> proxy{ candidates };
-					ArrayProxy<float32> weights{candidate_weights};
-
-					indirect_lighting_direction = CatalystRandomMath::WeightedRandomElement(proxy, weights);
-				}
-			}
-#else
 			//Choose if we should shoot a diffuse ray.
 			if (CatalystRandomMath::RandomChance(surface_description._Roughness))
 			{
@@ -558,7 +575,6 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 				indirect_lighting_direction = Vector3<float32>::Reflect(ray._Direction, surface_description._GeometryNormal) + (CatalystRandomMath::RandomPointInSphere() * CatalystBaseMath::PowerOf(surface_description._Roughness, 2));
 				indirect_lighting_direction.Normalize();
 			}
-#endif
 
 			//Construct the indirect ray.
 			Ray indirect_ray;
@@ -729,60 +745,5 @@ NO_DISCARD bool WorldTracingSystem::DistanceRayModels(const Ray &ray, const floa
 
 		//Return if there was a hit.
 		return hit;
-	}
-}
-
-/*
-*	Casts a ray against the sky.
-*/
-NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray &ray) NOEXCEPT
-{
-	switch (WorldSystem::Instance->GetSkySystem()->GetSkyMode())
-	{
-		case SkySystem::SkyMode::ATMOSPHERIC_SCATTERING:
-		{
-			Vector3<float32> sky_light_radiance{ 0.0f, 0.0f, 0.0f };
-			Vector3<float32> sky_light_direction{ 0.0f, -1.0f, 0.0f };
-
-			{
-				const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
-				const LightComponent *RESTRICT component{ ComponentManager::GetLightLightComponents() };
-
-				for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
-				{
-					if (component->_LightType == LightType::DIRECTIONAL)
-					{
-						sky_light_radiance = component->_Color * component->_Intensity;
-						sky_light_direction = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation);
-
-						break;
-					}
-				}
-			}
-
-			return CatalystAtmosphericScattering::CalculateAtmosphericScattering(ray._Origin, ray._Direction, sky_light_radiance, sky_light_direction) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
-		}
-
-		case SkySystem::SkyMode::GRADIENT:
-		{
-			const SkyGradient &sky_gradient{ WorldSystem::Instance->GetSkySystem()->GetSkyGradient() };
-			const float32 up_factor{ Vector3<float32>::DotProduct(ray._Direction, Vector3<float32>(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f };
-
-			return CatalystBaseMath::LinearlyInterpolate(sky_gradient._LowerSkyColor, sky_gradient._UpperSkyColor, up_factor) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
-		}
-
-		case SkySystem::SkyMode::TEXTURE:
-		{
-			const Vector4<float32> sky_color{ WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCube.Sample(ray._Direction) };
-
-			return Vector3<float32>(sky_color._R, sky_color._G, sky_color._B) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			return Vector3<float32>(0.0f, 0.0f, 0.0f);
-		}
 	}
 }

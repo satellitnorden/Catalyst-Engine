@@ -7,6 +7,9 @@
 //Entities.
 #include <Entities/Types/Entity.h>
 
+//Math.
+#include <Math/General/Vector.h>
+
 class EditorEntitySystem final
 {
 

@@ -9,6 +9,7 @@
 #include <Editor/EditorCore.h>
 #include <Editor/EditorUtilities.h>
 
+
 //File.
 #include <File/Core/FileCore.h>
 
@@ -2133,6 +2134,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 
 							ASSERT(accessor.bufferView >= 0, "Accessor has no buffer view!");
 							ASSERT(accessor.type == TINYGLTF_TYPE_VEC3, "Type of POSITION accessor is not TINYGLTF_TYPE_VEC3!");
+							ASSERT(accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT, "Component type of POSITION accessor is not TINYGLTF_COMPONENT_TYPE_FLOAT!");
 
 							//Cache the buffer view.
 							const tinygltf::BufferView &buffer_view{ model.bufferViews[accessor.bufferView] };
@@ -2146,7 +2148,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 							for (uint64 i{ 0 }; i < accessor.count; ++i)
 							{
 								//Calculate the byte offset.
-								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(Vector3<float32>) * i };
+								const uint64 byte_offset{ buffer_view.byteOffset + i * (buffer_view.byteStride > 0 ? buffer_view.byteStride : sizeof(Vector3<float32>)) };
 
 								//Retrieve the position.
 								const Vector3<float32> position{ *reinterpret_cast<const Vector3<float32> *const RESTRICT>(&buffer.data[byte_offset]) };
@@ -2180,6 +2182,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 
 							ASSERT(accessor.bufferView >= 0, "Accessor has no buffer view!");
 							ASSERT(accessor.type == TINYGLTF_TYPE_VEC3, "Type of NORMAL accessor is not TINYGLTF_TYPE_VEC3!");
+							ASSERT(accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT, "Component type of NORMAL accessor is not TINYGLTF_COMPONENT_TYPE_FLOAT!");
 
 							//Cache the buffer view.
 							const tinygltf::BufferView &buffer_view{ model.bufferViews[accessor.bufferView] };
@@ -2193,7 +2196,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 							for (uint64 i{ 0 }; i < accessor.count; ++i)
 							{
 								//Calculate the byte offset.
-								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(Vector3<float32>) * i };
+								const uint64 byte_offset{ buffer_view.byteOffset + i * (buffer_view.byteStride > 0 ? buffer_view.byteStride : sizeof(Vector3<float32>)) };
 							
 								//Retrieve the normal.
 								const Vector3<float32> normal{ *reinterpret_cast<const Vector3<float32> *const RESTRICT>(&buffer.data[byte_offset]) };
@@ -2227,6 +2230,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 
 							ASSERT(accessor.bufferView >= 0, "Accessor has no buffer view!");
 							ASSERT(accessor.type == TINYGLTF_TYPE_VEC4, "Type of TANGENT accessor is not TINYGLTF_TYPE_VEC4!");
+							ASSERT(accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT, "Component type of TANGENT accessor is not TINYGLTF_COMPONENT_TYPE_FLOAT!");
 
 							//Cache the buffer view.
 							const tinygltf::BufferView &buffer_view{ model.bufferViews[accessor.bufferView] };
@@ -2240,7 +2244,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 							for (uint64 i{ 0 }; i < accessor.count; ++i)
 							{
 								//Calculate the byte offset.
-								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(Vector4<float32>) * i };
+								const uint64 byte_offset{ buffer_view.byteOffset + i * (buffer_view.byteStride > 0 ? buffer_view.byteStride : sizeof(Vector4<float32>)) };
 
 								//Retrieve the tangent.
 								const Vector4<float32> tangent{ *reinterpret_cast<const Vector4<float32> *const RESTRICT>(&buffer.data[byte_offset]) };
@@ -2274,6 +2278,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 
 							ASSERT(accessor.bufferView >= 0, "Accessor has no buffer view!");
 							ASSERT(accessor.type == TINYGLTF_TYPE_VEC2, "Type of TEXCOORD_0 accessor is not TINYGLTF_TYPE_VEC2!");
+							ASSERT(accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT, "Component type of TEXCOORD_0 accessor is not TINYGLTF_COMPONENT_TYPE_FLOAT!");
 
 							//Cache the buffer view.
 							const tinygltf::BufferView& buffer_view{ model.bufferViews[accessor.bufferView] };
@@ -2287,7 +2292,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 							for (uint64 i{ 0 }; i < accessor.count; ++i)
 							{
 								//Calculate the byte offset.
-								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(Vector2<float32>) * i };
+								const uint64 byte_offset{ buffer_view.byteOffset + i * (buffer_view.byteStride > 0 ? buffer_view.byteStride : sizeof(Vector2<float32>)) };
 
 								//Retrieve the texture coordinate.
 								const Vector2<float32> texture_coordinate{ *reinterpret_cast<const Vector2<float32> *const RESTRICT>(&buffer.data[byte_offset]) };
@@ -2343,7 +2348,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 							if (accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
 							{
 								//Calculate the byte offset.
-								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(uint16) * i };
+								const uint64 byte_offset{ buffer_view.byteOffset + i * (buffer_view.byteStride > 0 ? buffer_view.byteStride : sizeof(uint16)) };
 
 								//Retrieve the index
 								const uint16 index{ *reinterpret_cast<const uint16* const RESTRICT>(&buffer.data[byte_offset]) };
@@ -2355,7 +2360,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 							else if (accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
 							{
 								//Calculate the byte offset.
-								const uint64 byte_offset{ buffer_view.byteOffset + sizeof(uint32) * i };
+								const uint64 byte_offset{ buffer_view.byteOffset + i * (buffer_view.byteStride > 0 ? buffer_view.byteStride : sizeof(uint32)) };
 
 								//Retrieve the index
 								const uint32 index{ *reinterpret_cast<const uint32* const RESTRICT>(&buffer.data[byte_offset]) };
@@ -2376,6 +2381,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 				}
 
 				//Do some sanity-checking.
+				/*
 				{
 					for (uint32 &index : model_file._Meshes[0]._Indices)
 					{
@@ -2383,6 +2389,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 						index = CatalystBaseMath::Minimum<uint32>(index, static_cast<uint32>(model_file._Meshes[0]._Vertices.LastIndex()));
 					}
 				}
+				*/
 
 				//Scale the vertices.
 				for (Vertex &vertex : model_file._Meshes[0]._Vertices)
@@ -2394,7 +2401,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 				//model_file.FixTangents();
 
 				//Post process the model file.
-				model_file.PostProcess();
+				//model_file.PostProcess();
 
 				//Determine the model space axis aligned bounding box.
 				{

@@ -354,7 +354,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				}
 
 				//Add the rotation editor.
-				EulerAngles rotation{ world_transform.GetRotation() };
+				EulerAngles rotation{ world_transform.GetRotation().ToEulerAngles() };
 
 				rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
 				rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
@@ -802,7 +802,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				}
 
 				//Add the rotation editor.
-				EulerAngles rotation{ world_transform.GetRotation() };
+				EulerAngles rotation{ world_transform.GetRotation().ToEulerAngles() };
 
 				rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
 				rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
@@ -1170,7 +1170,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 			UserInterfaceEntity *const RESTRICT user_interface_entity{ static_cast<UserInterfaceEntity *const RESTRICT>(_CurrentlySelectedEntity) };
 
 			user_interface_entity->SetWorldPosition(world_transform.GetWorldPosition());
-			user_interface_entity->SetRotation(world_transform.GetRotation());
+			user_interface_entity->SetRotation(world_transform.GetRotation().ToEulerAngles());
 
 			break;
 		}
