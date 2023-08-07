@@ -27,6 +27,65 @@ namespace WorldTracingSystemConstants
 	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 3 };
 }
 
+//Discard funtions.
+class DiscardFunctions final
+{
+
+public:
+
+	/*
+	*	The masked discard function.
+	*/
+	FORCE_INLINE static NO_DISCARD bool MaskedDiscardFunction(const AccelerationStructure<WorldTracingSystem::VertexData> &acceleration_structure, const Ray &ray, const uint32 index_1, const uint32 index_2, const uint32 index_3, const float32 intersection_distance) NOEXCEPT
+	{
+		//Calculate the hit position.
+		const Vector3<float32> hit_position{ ray._Origin + ray._Direction * intersection_distance };
+
+		//Retrieve the vertex data.
+		StaticArray<AccelerationStructure<WorldTracingSystem::VertexData>::VertexData, 3> vertex_data
+		{
+			acceleration_structure.GetVertexData(index_1),
+			acceleration_structure.GetVertexData(index_2),
+			acceleration_structure.GetVertexData(index_3)
+		};
+
+		if (vertex_data[0]._UserData._MaterialResource->_OpacityComponent._Type == MaterialResource::MaterialResourceComponent::Type::COLOR)
+		{
+			return vertex_data[0]._UserData._MaterialResource->_OpacityComponent._Color.Get()[0] >= 0.5f;
+		}
+
+		else
+		{
+			//Calculate the barycentric coordinates.
+			Vector3<float32> barycentric_coordinates;
+
+			{
+				Triangle triangle;
+
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					triangle._Vertices[i] = vertex_data[i]._Position;
+				}
+
+				barycentric_coordinates = CatalystGeometryMath::CalculateBarycentricCoordinates(triangle, hit_position);
+			}
+
+			//Calculate the texture coordinate.
+			Vector2<float32> texture_coordinate{ 0.0f, 0.0f };
+
+			for (uint8 i{ 0 }; i < 3; ++i)
+			{
+				texture_coordinate += vertex_data[i]._UserData._TextureCoordinate * barycentric_coordinates[i];
+			}
+
+			const Vector4<float32> color{ vertex_data[0]._UserData._MaterialResource->_OpacityComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::REPEAT) };
+
+			return color[0] >= 0.5f;
+		}
+	}
+
+};
+
 /*
 *	Caches the world state.
 */
@@ -53,7 +112,7 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 				//Add the triangle data.
 				for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
 				{
-					_AccelerationStructure.AddTriangleData(AccelerationStructure<VertexData>::TriangleData(index_offset + indices[triangle_index + 0], index_offset + indices[triangle_index + 1], index_offset + indices[triangle_index + 2]));
+					_AccelerationStructure.AddTriangleData(AccelerationStructure<VertexData>::TriangleData(index_offset + indices[triangle_index + 0], index_offset + indices[triangle_index + 1], index_offset + indices[triangle_index + 2], component->_MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED ? DiscardFunctions::MaskedDiscardFunction : nullptr));
 				}
 
 				//Add the vertex data.
@@ -69,7 +128,6 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 					vertex_data._Normal = vertex._Normal;
 					vertex_data._Tangent = vertex._Tangent;
 					vertex_data._TextureCoordinate = vertex._TextureCoordinate;
-					vertex_data._Type = VertexData::Type::DYNAMIC_MODEL;
 
 					//Add the vertex data!
 					_AccelerationStructure.AddVertexData(AccelerationStructure<VertexData>::VertexData(vertex._Position, vertex_data));
@@ -99,7 +157,7 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 				//Add the triangle data.
 				for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
 				{
-					_AccelerationStructure.AddTriangleData(AccelerationStructure<VertexData>::TriangleData(index_offset + indices[triangle_index + 0], index_offset + indices[triangle_index + 1], index_offset + indices[triangle_index + 2]));
+					_AccelerationStructure.AddTriangleData(AccelerationStructure<VertexData>::TriangleData(index_offset + indices[triangle_index + 0], index_offset + indices[triangle_index + 1], index_offset + indices[triangle_index + 2], component->_MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED ? DiscardFunctions::MaskedDiscardFunction : nullptr));
 				}
 
 				//Add the vertex data.
@@ -115,7 +173,6 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 					vertex_data._Normal = vertex._Normal;
 					vertex_data._Tangent = vertex._Tangent;
 					vertex_data._TextureCoordinate = vertex._TextureCoordinate;
-					vertex_data._Type = VertexData::Type::STATIC_MODEL;
 
 					//Add the vertex data!
 					_AccelerationStructure.AddVertexData(AccelerationStructure<VertexData>::VertexData(vertex._Position, vertex_data));

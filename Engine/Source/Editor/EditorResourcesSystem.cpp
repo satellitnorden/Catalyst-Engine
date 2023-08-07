@@ -2476,7 +2476,21 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 			sprintf_s(ID_buffer, "%s_%llu_Material", base_file_name.Data(), material_index);
 			parameters._ID = ID_buffer;
 
-			parameters._Type = MaterialResource::Type::OPAQUE;
+			if (material.alphaMode == "OPAQUE")
+			{
+				parameters._Type = MaterialResource::Type::OPAQUE;
+			}
+
+			else if (material.alphaMode == "MASK")
+			{
+				parameters._Type = MaterialResource::Type::MASKED;
+			}
+			
+			else
+			{
+				ASSERT(false, "Unknown alpha mode " << material.alphaMode.c_str() << "!");
+				parameters._Type = MaterialResource::Type::OPAQUE;
+			}
 
 			//Does this material have an albedo texture?
 			if (material.pbrMetallicRoughness.baseColorTexture.index == -1)
@@ -2772,9 +2786,104 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 				parameters._MaterialPropertiesComponent._TextureResourceIdentifier = HashString(texture_ID_buffer);
 			}
 
-			//TODO.
-			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+			if (parameters._Type == MaterialResource::Type::MASKED)
+			{
+				if (material.pbrMetallicRoughness.baseColorTexture.index == -1)
+				{
+					parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+					parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f - static_cast<float32>(material.pbrMetallicRoughness.baseColorFactor[3]), 1.0f, 1.0f, 1.0f));
+				}
+
+				else
+				{
+					//Cache the image.
+					tinygltf::Image &image{ model.images[model.textures[material.pbrMetallicRoughness.baseColorTexture.index].source] };
+
+					//Replace "%20" with spaces.
+					{
+						size_t position{ 0 };
+
+						do
+						{
+							position = image.uri.find("%20");
+
+							if (position != std::string::npos)
+							{
+								image.uri.replace(position, 3, " ");
+							}
+
+						} while (position != std::string::npos);
+					}
+
+					//Create the texture.
+					char texture_ID_buffer[MAXIMUM_FILE_PATH_LENGTH];
+
+					{
+						//Build the texture 2D.
+						Texture2DBuildParameters texture_parameters;
+
+						char texture_output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+						sprintf_s(texture_output_buffer, "..\\..\\..\\Resources\\Intermediate\\%s_%llu_Material_Opacity_Texture2D", base_file_name.Data(), material_index);
+						texture_parameters._Output = texture_output_buffer;
+
+						sprintf_s(texture_ID_buffer, "%s_%llu_Material_Opacity_Texture2D", base_file_name.Data(), material_index);
+						texture_parameters._ID = texture_ID_buffer;
+
+						texture_parameters._DefaultWidth = 0;
+						texture_parameters._DefaultHeight = 0;
+
+						char file_1_buffer[MAXIMUM_FILE_PATH_LENGTH];
+						sprintf_s(file_1_buffer, "%s%s", base_file_path.Data(), image.uri.c_str());
+						texture_parameters._File1 = file_1_buffer;
+
+						texture_parameters._File2 = nullptr;
+						texture_parameters._File3 = nullptr;
+						texture_parameters._File4 = nullptr;
+						texture_parameters._Default = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
+						texture_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
+						texture_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
+						texture_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
+						texture_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+						texture_parameters._ApplyGammaCorrection = true;
+						texture_parameters._TransformFunction = nullptr;
+						texture_parameters._BaseMipmapLevel = 0;
+
+						{
+							uint8 mipmap_levels{ 1 };
+							uint32 width{ static_cast<uint32>(image.width) };
+							uint32 height{ static_cast<uint32>(image.height) };
+
+							while (width > 4 && height > 4)
+							{
+								++mipmap_levels;
+								width >>= 1;
+								height >>= 1;
+							}
+
+							texture_parameters._MipmapLevels = mipmap_levels;
+						}
+
+						ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
+
+						{
+							char load_buffer[MAXIMUM_FILE_PATH_LENGTH];
+							sprintf_s(load_buffer, "%s.cr", texture_parameters._Output);
+
+							ResourceSystem::Instance->LoadResource(load_buffer);
+						}
+					}
+
+					//Set the material properties.
+					parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+					parameters._OpacityComponent._TextureResourceIdentifier = HashString(texture_ID_buffer);
+				}
+			}
+
+			else
+			{
+				parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
+				parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
+			}
 
 			parameters._EmissiveMultiplier = 0.0f;
 			parameters._DoubleSided = material.doubleSided;

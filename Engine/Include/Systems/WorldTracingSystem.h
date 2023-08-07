@@ -66,6 +66,9 @@ public:
 
 private:
 
+	//Friend declarations.
+	friend class DiscardFunctions;
+
 	/*
 	*	Vertex data class definition.
 	*/
@@ -92,9 +95,6 @@ private:
 
 		//The texture coordinate.
 		Vector2<float32> _TextureCoordinate;
-
-		//The type.
-		Type _Type;
 
 	};
 

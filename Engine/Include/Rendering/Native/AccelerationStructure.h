@@ -25,6 +25,12 @@ class AccelerationStructure final
 public:
 
 	/*
+	*	Type alias for the discard function
+	*	Should return whether or not it is actually a hit.
+	*/
+	using DiscardFunction = bool(*)(const AccelerationStructure<TYPE> &acceleration_structure, const Ray &ray, const uint32 index_1, const uint32 index_2, const uint32 index_3, const float32 intersection_distance);
+
+	/*
 	*	Triangle data class definition.
 	*/
 	class TriangleData final
@@ -34,6 +40,9 @@ public:
 
 		//The indices.
 		StaticArray<uint32, 3> _Indices;
+
+		//The discard function.
+		DiscardFunction _DiscardFunction;
 
 		/*
 		*	Default constructor.
@@ -46,9 +55,10 @@ public:
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		FORCE_INLINE TriangleData(const StaticArray<uint32, 3> &initial_indices) NOEXCEPT
+		FORCE_INLINE TriangleData(const StaticArray<uint32, 3> &initial_indices, const DiscardFunction initial_discard_function) NOEXCEPT
 			:
-			_Indices(initial_indices)
+			_Indices(initial_indices),
+			_DiscardFunction(initial_discard_function)
 		{
 
 		}
@@ -56,9 +66,10 @@ public:
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		FORCE_INLINE TriangleData(const uint32 index_0, uint32 index_1, uint32 index_2) NOEXCEPT
+		FORCE_INLINE TriangleData(const uint32 index_0, uint32 index_1, uint32 index_2, const DiscardFunction initial_discard_function) NOEXCEPT
 			:
-			_Indices(index_0, index_1, index_2)
+			_Indices(index_0, index_1, index_2),
+			_DiscardFunction(initial_discard_function)
 		{
 
 		}
@@ -190,7 +201,7 @@ public:
 	/*
 	*	Returns the vertex data at the given index.
 	*/
-	FORCE_INLINE NO_DISCARD const VertexData &GetVertexData(const uint64 index) NOEXCEPT
+	FORCE_INLINE NO_DISCARD const VertexData &GetVertexData(const uint64 index) const NOEXCEPT
 	{
 		return _VertexDataMemory[index];
 	}
@@ -603,9 +614,19 @@ private:
 				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &intersection_distance_temporary)
 					&& intersection_distance_temporary < *intersection_distance)
 				{
-					intersected_triangle_data = &triangle_data;
-					*intersection_distance = intersection_distance_temporary;
-					maximum_distance_squared = intersection_distance_temporary * intersection_distance_temporary;
+					bool is_actually_a_hit{ true };
+
+					if (triangle_data._DiscardFunction)
+					{
+						is_actually_a_hit = triangle_data._DiscardFunction(*this, ray, triangle_data._Indices[0], triangle_data._Indices[1], triangle_data._Indices[2], intersection_distance_temporary);
+					}
+
+					if (is_actually_a_hit)
+					{
+						intersected_triangle_data = &triangle_data;
+						*intersection_distance = intersection_distance_temporary;
+						maximum_distance_squared = intersection_distance_temporary * intersection_distance_temporary;
+					}
 				}
 			}
 		}
@@ -633,9 +654,10 @@ private:
 					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary)
 					&& intersection_distance_temporary < *intersection_distance)
 				{
-					if (const TriangleData* const RESTRICT intersected_triangle_data_temporary{ TraceSurface(ray, node._Nodes[i], intersection_distance) })
+					if (const TriangleData *const RESTRICT intersected_triangle_data_temporary{ TraceSurface(ray, node._Nodes[i], intersection_distance) })
 					{
 						intersected_triangle_data = intersected_triangle_data_temporary;
+						maximum_distance_squared = *intersection_distance * *intersection_distance;
 					}
 				}
 			}
@@ -668,9 +690,20 @@ private:
 				triangle._Vertices[1] = _VertexDataMemory[triangle_data._Indices[1]]._Position;
 				triangle._Vertices[2] = _VertexDataMemory[triangle_data._Indices[2]]._Position;
 
-				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &intersection_distance_temporary))
+				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &intersection_distance_temporary)
+					&& intersection_distance_temporary < maximum_distance)
 				{
-					return true;
+					bool is_actually_a_hit{ true };
+
+					if (triangle_data._DiscardFunction)
+					{
+						is_actually_a_hit = triangle_data._DiscardFunction(*this, ray, triangle_data._Indices[0], triangle_data._Indices[1], triangle_data._Indices[2], intersection_distance_temporary);
+					}
+
+					if (is_actually_a_hit)
+					{
+						return true;
+					}
 				}
 			}
 		}
@@ -695,7 +728,8 @@ private:
 				float intersection_distance_temporary{ FLOAT_MAXIMUM };
 
 				if (node._AxisAlignedBoundingBoxes[i].IsValid()
-					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary))
+					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary)
+					&& intersection_distance_temporary < maximum_distance)
 				{
 					if (TraceShadow(ray, maximum_distance, node._Nodes[i]))
 					{
