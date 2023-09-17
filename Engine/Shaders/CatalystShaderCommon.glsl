@@ -449,4 +449,15 @@ bool ValidCoordinate(vec2 coordinate)
             && coordinate.y >= 0.0f
             && coordinate.y < 1.0f;
 }
+
+/*
+*   Rotates a vector by the given amount.
+*/
+vec2 Rotate(vec2 X, float amount)
+{
+    float cosine = cos(amount);
+    float sine = sin(amount);
+
+    return vec2(X.x * cosine - X.y * sine, X.x * sine + X.y * cosine);
+}
 #endif
