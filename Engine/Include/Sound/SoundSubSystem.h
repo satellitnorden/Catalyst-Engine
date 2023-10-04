@@ -74,4 +74,17 @@ public:
 	*/
 	virtual NO_DISCARD SoundFormat GetSoundFormat() const NOEXCEPT = 0;
 
+	/*
+	*	Returns the buffer size.
+	*/
+	virtual NO_DISCARD uint32 GetBufferSize() const NOEXCEPT = 0;
+
+	/*
+	*	Returns the audio latency.
+	*	That is, the time between a sound is requested to be played until it is heard.
+	*	This gives an estimate, and might be a bit unreliable on certain platforms.
+	*	The returned value is in milliseconds.
+	*/
+	virtual NO_DISCARD float32 GetAudioLatency() const NOEXCEPT = 0;
+
 };

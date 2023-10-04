@@ -150,6 +150,30 @@ void SoundSubSystemWASAPI::Terminate() NOEXCEPT
 	SAFE_RELEASE(_AudioRenderClient);
 }
 
+/*
+*	Returns the audio latency.
+*	That is, the time between a sound is requested to be played until it is heard.
+*	This gives an estimate, and might be a bit unreliable on certain platforms.
+*	The returned value is in milliseconds.
+*/
+NO_DISCARD float32 SoundSubSystemWASAPI::GetAudioLatency() const NOEXCEPT
+{
+	//Ask the audio client for the stream latency.
+	REFERENCE_TIME stream_latency;
+
+	if (_AudioClient->GetStreamLatency(&stream_latency) == S_OK)
+	{
+		//Hard-coded 30 ms adjustment here.
+		return static_cast<float32>(stream_latency) / 10'000.0f + 30.0f;
+	}
+
+	else
+	{
+		//Guess?
+		return 30.0f;
+	}
+}
+
 //The update function.
 void SoundSubSystemWASAPI::Update() NOEXCEPT
 {

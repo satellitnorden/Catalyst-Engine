@@ -191,6 +191,30 @@ SoundFormat SoundSystem::GetSoundFormat() const NOEXCEPT
 }
 
 /*
+*	Returns the audio latency.
+*	That is, the time between a sound is requested to be played until it is heard.
+*	This gives an estimate, and might be a bit unreliable on certain platforms.
+*	The returned value is in milliseconds.
+*/
+uint32 SoundSystem::GetAudioLatency() const NOEXCEPT
+{
+	//Construct the final latency.
+	float32 final_latency{ 0.0f };
+
+	//Add the sub system latency.
+	final_latency += _SubSystem->GetAudioLatency();
+
+	//Add the buffer size delay.
+	final_latency += static_cast<float32>(_SubSystem->GetBufferSize()) / GetSampleRate() * 1'000.0f;
+
+	//Lastly, add the time it takes for the sound system to process sounds.
+	final_latency += (static_cast<float32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER) * static_cast<float32>(DEFAULT_NUMBER_OF_MIXING_BUFFERS)) / GetSampleRate() * 1'000.0f;
+
+	//Return the final latency.
+	return CatalystBaseMath::Round<uint32>(final_latency);
+}
+
+/*
 *	Adds a mix component to the master mix channel. Returns the unique identifier for that sound mix component.
 */
 uint64 SoundSystem::AddMasterChannelSoundMixComponent(const SoundMixComponent &component) NOEXCEPT

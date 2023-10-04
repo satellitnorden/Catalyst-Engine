@@ -597,44 +597,6 @@ void SoundSystem::PlatformTerminate() NOEXCEPT
 }
 
 /*
-*	Returns the audio latency.
-*	That is, the time between a sound is requested to be played until it is heard.
-*	This gives an estimate, and might be a bit unreliable on certain platforms.
-*	The returned value is in milliseconds.
-*/
-uint32 SoundSystem::GetAudioLatency() const NOEXCEPT
-{
-	//Can't query the audio latency if the sound system isn't initialized.
-	if (!WindowsSoundSystemData::_Initialized)
-	{
-		return 0;
-	}
-
-	//Go over the steps and calculate the final latency.
-	float32 final_latency{ 0 };
-
-	//First off, ask the audio client for the stream latency.
-	{
-		REFERENCE_TIME stream_latency;
-
-		if (WindowsSoundSystemData::_AudioClient->GetStreamLatency(&stream_latency) == S_OK)
-		{
-			//Hard-coded 30 ms adjustment here.
-			final_latency += static_cast<float32>(stream_latency) / 10'000.0f + 30.0f;
-		}
-	}
-
-	//Secondly, add the buffer size delay.
-	final_latency += static_cast<float32>(WindowsSoundSystemData::_BufferSize) / GetSampleRate() * 1'000.0f;
-
-	//Lastly, add the time it takes for the sound system to process sounds.
-	final_latency += (static_cast<float32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER) * static_cast<float32>(DEFAULT_NUMBER_OF_MIXING_BUFFERS)) / GetSampleRate() * 1'000.0f;
-
-	//Return the final latency.
-	return CatalystBaseMath::Round<uint32>(final_latency);
-}
-
-/*
 *	Queries for input MIDI devices.
 */
 void SoundSystem::QueryMIDIDevices(DynamicArray<InputMIDIDevice> *const RESTRICT midi_devices) NOEXCEPT

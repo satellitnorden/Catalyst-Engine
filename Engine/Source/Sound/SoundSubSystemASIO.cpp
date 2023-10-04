@@ -22,9 +22,23 @@ void SoundSubSystemASIO::Terminate() NOEXCEPT
 	
 }
 
-//The update function.
+/*
+*	The update function.
+*/
 void SoundSubSystemASIO::Update() NOEXCEPT
 {
 	
+}
+
+/*
+*	Returns the audio latency.
+*	That is, the time between a sound is requested to be played until it is heard.
+*	This gives an estimate, and might be a bit unreliable on certain platforms.
+*	The returned value is in milliseconds.
+*/
+NO_DISCARD float32 SoundSubSystemASIO::GetAudioLatency() const NOEXCEPT
+{
+	//Should have practically no latency, no?
+	return 0.0f;
 }
 #endif

@@ -98,6 +98,30 @@ public:
 		return _SoundFormat;
 	}
 
+	/*
+	*	Returns the buffer size.
+	*/
+	FORCE_INLINE NO_DISCARD uint32 GetBufferSize() const NOEXCEPT override
+	{
+		//Don't do anything if this sound sub system isn't initialized.
+		if (!_Initialized)
+		{
+			return 0;
+		}
+
+		ASSERT(_BufferSize != 0, "Oh no!");
+
+		return _BufferSize;
+	}
+
+	/*
+	*	Returns the audio latency.
+	*	That is, the time between a sound is requested to be played until it is heard.
+	*	This gives an estimate, and might be a bit unreliable on certain platforms.
+	*	The returned value is in milliseconds.
+	*/
+	NO_DISCARD float32 GetAudioLatency() const NOEXCEPT override;
+
 private:
 
 	//The thread.
@@ -127,7 +151,9 @@ private:
 	//The buffer size.
 	uint32 _BufferSize;
 
-	//The update function.
+	/*
+	*	The update function.
+	*/
 	void Update() NOEXCEPT;
 
 };
