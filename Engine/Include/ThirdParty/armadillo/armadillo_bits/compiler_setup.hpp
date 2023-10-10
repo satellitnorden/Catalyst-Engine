@@ -114,8 +114,10 @@
 
 
 #if defined(__APPLE__) || defined(__apple_build_version__)
-  #undef  ARMA_BLAS_SDOT_BUG
-  #define ARMA_BLAS_SDOT_BUG
+  // NOTE: Apple accelerate framework has broken implementations of functions that return a float value,
+  // NOTE: such as sdot(), slange(), clange(), slansy(), clanhe(), slangb()
+  #undef  ARMA_BLAS_FLOAT_BUG
+  #define ARMA_BLAS_FLOAT_BUG
   
   // #undef  ARMA_HAVE_POSIX_MEMALIGN
   // NOTE: posix_memalign() is available since macOS 10.6 (late 2009 onwards)
@@ -159,8 +161,8 @@
   #undef  ARMA_GCC_VERSION
   #define ARMA_GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
   
-  #if (ARMA_GCC_VERSION < 40800)
-    #error "*** newer compiler required; need gcc 4.8 or later ***"
+  #if (ARMA_GCC_VERSION < 40803)
+    #error "*** newer compiler required; need gcc 4.8.3 or newer ***"
   #endif
   
   // #if (ARMA_GCC_VERSION < 60100)
@@ -207,6 +209,7 @@
 #endif
 
 
+// TODO: __INTEL_CLANG_COMPILER indicates the clang based intel compiler, distinct from the classic intel compiler
 #if !defined(ARMA_ALLOW_FAKE_CLANG)
   #if defined(__clang__) && (defined(__INTEL_COMPILER) || defined(__NVCC__) || defined(__CUDACC__) || defined(__PGI) || defined(__PATHSCALE__) || defined(__ARMCC_VERSION) || defined(__IBMCPP__))
     #undef  ARMA_DETECTED_FAKE_CLANG
@@ -438,6 +441,19 @@
 #endif
 
 
+#if (defined(__FAST_MATH__) || (defined(__FINITE_MATH_ONLY__) && (__FINITE_MATH_ONLY__ > 0)) || defined(_M_FP_FAST))
+  #undef  ARMA_FAST_MATH
+  #define ARMA_FAST_MATH
+#endif
+
+
+#if defined(ARMA_FAST_MATH) && !defined(ARMA_DONT_PRINT_FAST_MATH_WARNING)
+  #pragma message ("WARNING: compiler is in fast math mode; some functions may be unreliable.")
+  #pragma message ("WARNING: to suppress this warning and related warnings,")
+  #pragma message ("WARNING: #define ARMA_DONT_PRINT_FAST_MATH_WARNING before #include <armadillo>")
+#endif
+
+
 #if ( (defined(_WIN32) || defined(_WIN64) || defined(_MSC_VER)) && (!defined(__MINGW32__) && !defined(__MINGW64__)) )
   #undef  ARMA_PRINT_EXCEPTIONS_INTERNAL
   #define ARMA_PRINT_EXCEPTIONS_INTERNAL
@@ -474,8 +490,7 @@
 #if defined(min) || defined(max)
   #undef min
   #undef max
-  #pragma message ("WARNING: undefined conflicting 'min' and/or 'max' macros;")
-  #pragma message ("WARNING: suggest to define NOMINMAX before including any windows header")
+  #pragma message ("WARNING: undefined conflicting 'min' and/or 'max' macros")
 #endif
 
 // https://sourceware.org/bugzilla/show_bug.cgi?id=19239

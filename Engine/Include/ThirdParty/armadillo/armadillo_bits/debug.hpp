@@ -147,7 +147,7 @@ arma_stop_logic_error(const char* x, const char* y)
 
 
 
-//! print a message to get_cerr_stream() and throw logic_error exception
+//! print a message to get_cerr_stream() and throw out_of_range exception
 template<typename T1>
 arma_cold
 arma_noinline
@@ -263,7 +263,7 @@ arma_print(const T1& x, const T2& y, const T3& z)
 //
 // arma_sigprint
 
-//! print a message the the log stream with a preceding @ character.
+//! print a message to the log stream with a preceding @ character.
 //! by default the log stream is cout.
 //! used for printing the signature of a function
 //! (see the arma_extra_debug_sigprint macro) 
@@ -335,7 +335,7 @@ static
 void
 arma_warn(const T1& arg1)
   {
-  get_cerr_stream() << "\nwarning: " << arg1 << '\n';
+  get_cerr_stream() << "\nwarning: " << arg1 << std::endl;
   }
 
 
@@ -346,7 +346,7 @@ static
 void
 arma_warn(const T1& arg1, const T2& arg2)
   {
-  get_cerr_stream() << "\nwarning: " << arg1 << arg2 << '\n';
+  get_cerr_stream() << "\nwarning: " << arg1 << arg2 << std::endl;
   }
 
 
@@ -357,7 +357,7 @@ static
 void
 arma_warn(const T1& arg1, const T2& arg2, const T3& arg3)
   {
-  get_cerr_stream() << "\nwarning: " << arg1 << arg2 << arg3 << '\n';
+  get_cerr_stream() << "\nwarning: " << arg1 << arg2 << arg3 << std::endl;
   }
 
 
@@ -368,7 +368,7 @@ static
 void
 arma_warn(const T1& arg1, const T2& arg2, const T3& arg3, const T4& arg4)
   {
-  get_cerr_stream() << "\nwarning: " << arg1 << arg2 << arg3 << arg4 << '\n';
+  get_cerr_stream() << "\nwarning: " << arg1 << arg2 << arg3 << arg4 << std::endl;
   }
 
 
@@ -1445,6 +1445,7 @@ arma_assert_atlas_size(const T1& A, const T2& B)
         out << "@ arma_config::optimise_invexpr = " << arma_config::optimise_invexpr << '\n';
         out << "@ arma_config::check_nonfinite  = " << arma_config::check_nonfinite  << '\n';
         out << "@ arma_config::zero_init        = " << arma_config::zero_init        << '\n';
+        out << "@ arma_config::fast_math        = " << arma_config::fast_math        << '\n';
         out << "@ sizeof(void*)    = " << sizeof(void*)    << '\n';
         out << "@ sizeof(int)      = " << sizeof(int)      << '\n';
         out << "@ sizeof(long)     = " << sizeof(long)     << '\n';

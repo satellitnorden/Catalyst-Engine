@@ -343,6 +343,19 @@ struct is_SpToDOp< const SpToDOp<T1,op_type> >
 
 
 template<typename T>
+struct is_SpToDGlue
+  { static constexpr bool value = false; };
+ 
+template<typename T1, typename T2, typename glue_type>
+struct is_SpToDGlue< SpToDGlue<T1,T2,glue_type> >
+  { static constexpr bool value = true; };
+ 
+template<typename T1, typename T2, typename glue_type>
+struct is_SpToDGlue< const SpToDGlue<T1,T2,glue_type> >
+  { static constexpr bool value = true; };
+
+
+template<typename T>
 struct is_eOp
   { static constexpr bool value = false; };
  
@@ -546,8 +559,6 @@ struct is_arma_type2
   =  is_Mat<T1>::value
   || is_Gen<T1>::value
   || is_Op<T1>::value
-  || is_CubeToMatOp<T1>::value
-  || is_SpToDOp<T1>::value
   || is_Glue<T1>::value
   || is_eOp<T1>::value
   || is_eGlue<T1>::value
@@ -560,6 +571,9 @@ struct is_arma_type2
   || is_subview_cols<T1>::value
   || is_subview_elem1<T1>::value
   || is_subview_elem2<T1>::value
+  || is_CubeToMatOp<T1>::value
+  || is_SpToDOp<T1>::value
+  || is_SpToDGlue<T1>::value
   ;
   };
 
@@ -1060,6 +1074,18 @@ struct is_supported_blas_type
     is_double<T1>::value ||
     is_cx_float<T1>::value ||
     is_cx_double<T1>::value;
+  };
+
+
+
+template<typename T1>
+struct has_blas_float_bug
+  {
+  #if defined(ARMA_BLAS_FLOAT_BUG)
+    static constexpr bool value = is_float<typename get_pod_type<T1>::result>::value;
+  #else
+    static constexpr bool value = false;
+  #endif
   };
 
 

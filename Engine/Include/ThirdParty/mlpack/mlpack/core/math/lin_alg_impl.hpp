@@ -211,7 +211,7 @@ inline void Svec(const arma::mat& input, arma::vec& output)
       if (i == j)
         output(idx++) = input(i, j);
       else
-        output(idx++) = (1.41421356237309504880) * input(i, j);
+        output(idx++) = M_SQRT2 * input(i, j);
     }
   }
 }
@@ -232,7 +232,7 @@ inline void Svec(const arma::sp_mat& input, arma::sp_vec& output)
     if (i == j)
       output(SvecIndex(i, j, n)) = *it;
     else
-      output(SvecIndex(i, j, n)) = (1.41421356237309504880) * (*it);
+      output(SvecIndex(i, j, n)) = M_SQRT2 * (*it);
   }
 }
 
@@ -251,7 +251,7 @@ inline void Smat(const arma::vec& input, arma::mat& output)
       if (i == j)
         output(i, j) = input(idx++);
       else
-        output(i, j) = output(j, i) = (0.70710678118654752440) * input(idx++);
+        output(i, j) = output(j, i) = M_SQRT1_2 * input(idx++);
     }
   }
 }
@@ -272,13 +272,13 @@ inline void SymKronId(const arma::mat& A, arma::mat& op)
       for (size_t k = 0; k < n; ++k)
       {
         op(idx, SvecIndex(k, j, n)) +=
-          ((k == j) ? 1. : (0.70710678118654752440)) * A(i, k);
+          ((k == j) ? 1. : M_SQRT1_2) * A(i, k);
         op(idx, SvecIndex(i, k, n)) +=
-          ((k == i) ? 1. : (0.70710678118654752440)) * A(k, j);
+          ((k == i) ? 1. : M_SQRT1_2) * A(k, j);
       }
       op.row(idx) *= 0.5;
       if (i != j)
-        op.row(idx) *= (1.41421356237309504880);
+        op.row(idx) *= M_SQRT2;
       idx++;
     }
   }

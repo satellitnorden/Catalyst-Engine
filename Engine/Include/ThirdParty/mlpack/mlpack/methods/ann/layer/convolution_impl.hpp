@@ -384,8 +384,8 @@ void ConvolutionType<
       (padWLeft != 0 || padWRight != 0 || padHTop != 0 || padHBottom != 0);
 
   // To perform the backward pass, we need to rotate all the filters.
-  arma::Cube<typename MatType::elem_type> rotatedFilters(weight.n_cols,
-      weight.n_rows, weight.n_slices);
+  arma::Cube<typename MatType::elem_type> rotatedFilters(weight.n_rows,
+      weight.n_cols, weight.n_slices);
 
   // To perform the backward pass, we need to dilate all the mappedError.
   arma::Cube<typename MatType::elem_type> dilatedMappedError;
@@ -573,7 +573,7 @@ void ConvolutionType<
     InitializeSamePadding();
   }
 
-  padding = Padding(padWLeft, padWRight, padHTop, padHBottom);
+  padding = PaddingType<MatType>(padWLeft, padWRight, padHTop, padHBottom);
   padding.InputDimensions() = this->inputDimensions;
   padding.ComputeOutputDimensions();
 
@@ -600,7 +600,7 @@ void ConvolutionType<
   apparentHeight = (this->outputDimensions[1] - 1) * strideHeight +
       kernelHeight;
 
-  paddingBackward = Padding(0, padding.OutputDimensions()[0] -
+  paddingBackward = PaddingType<MatType>(0, padding.OutputDimensions()[0] -
       apparentWidth, 0, padding.OutputDimensions()[1] - apparentHeight);
   paddingBackward.InputDimensions() = std::vector<size_t>({ apparentWidth,
       apparentHeight, inMaps * higherInDimensions });

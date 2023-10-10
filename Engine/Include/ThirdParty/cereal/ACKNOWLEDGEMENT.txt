@@ -1,0 +1,3 @@
+This version of the "cereal" library was downloaded 2023-10-10 from https://uscilab.github.io/cereal/ with the following license:
+
+https://opensource.org/license/bsd-3-clause/

@@ -59,6 +59,8 @@ class fft_engine_fftw3
     {
     arma_extra_debug_sigprint();
     
+    if(N == 0)  { return; }
+    
     if(N > uword(std::numeric_limits<int>::max()))
       {
       arma_stop_runtime_error("integer overflow: FFT size too large for integer type used by FFTW3");
@@ -74,7 +76,7 @@ class fft_engine_fftw3
     arma_extra_debug_print("fft_engine_fftw3::constructor: generating 1D plan");
     fftw3_plan = fftw3::plan_dft_1d<cx_type>(N, X_work.memptr(), Y_work.memptr(), fftw3_sign, fftw3_flags);
     
-    if(fftw3_plan == nullptr)  { arma_stop_runtime_error("fft_engine_fftw3::constructor: couldn't create plan"); }
+    if(fftw3_plan == nullptr)  { arma_stop_runtime_error("fft_engine_fftw3::constructor: failed to create plan"); }
     }
   
   inline

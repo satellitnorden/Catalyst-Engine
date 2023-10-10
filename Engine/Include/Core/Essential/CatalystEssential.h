@@ -32,6 +32,7 @@
 */
 #include <atomic>
 #include <chrono>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <ctime>
 #include <cstdio>
