@@ -270,6 +270,9 @@ void SoundSubSystemWASAPI::Initialize(const InitializationParameters &initializa
 */
 void SoundSubSystemWASAPI::Terminate() NOEXCEPT
 {
+	//Signal that this sub system should terminate.
+	_Terminate = true;
+
 	//Wait for the thread to finish.
 	_Thread.Join();
 
@@ -459,7 +462,7 @@ void SoundSubSystemWASAPI::Update() NOEXCEPT
 	LOG_INFORMATION("Sound system successfully initialized!");
 
 	//Main update loop.
-	while (!CatalystEngineSystem::Instance->ShouldTerminate())
+	while (!CatalystEngineSystem::Instance->ShouldTerminate() && !_Terminate)
 	{
 		//Remember the start of the update.
 		const std::chrono::steady_clock::time_point start_of_update{ std::chrono::steady_clock::now() };

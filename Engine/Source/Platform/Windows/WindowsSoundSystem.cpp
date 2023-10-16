@@ -37,14 +37,6 @@ namespace WindowsSoundSystemData
 }
 
 /*
-*	Opens the given audio device.
-*/
-void SoundSystem::OpenAudioDevice(AudioDevice *const RESTRICT audio_device) NOEXCEPT
-{
-	
-}
-
-/*
 *	Initializes the platform.
 */
 void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT

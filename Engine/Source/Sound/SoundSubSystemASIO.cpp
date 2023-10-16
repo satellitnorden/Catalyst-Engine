@@ -310,7 +310,7 @@ void SoundSubSystemASIO::Initialize(const InitializationParameters &initializati
 	//Open the stream.
 	RtAudio::StreamParameters output_parameters;
 
-	output_parameters.deviceId = _QueryRtAudio->getDeviceIds()[_OpenedAudioDevice._Index];
+	output_parameters.deviceId = static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle)->getDeviceIds()[_OpenedAudioDevice._Index];
 	output_parameters.nChannels = _NumberOfChannels;
 	output_parameters.firstChannel = 0;
 
@@ -404,6 +404,10 @@ void SoundSubSystemASIO::Terminate() NOEXCEPT
 	//Destroy the RtAudio object.
 	static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle)->~RtAudio();
 	MemorySystem::Instance->TypeFree<RtAudio>(static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle));
+
+	//Destroy the query RtAudio object.
+	static_cast<RtAudio *const RESTRICT>(_QueryRtAudio)->~RtAudio();
+	MemorySystem::Instance->TypeFree<RtAudio>(static_cast<RtAudio *const RESTRICT>(_QueryRtAudio));
 }
 
 /*

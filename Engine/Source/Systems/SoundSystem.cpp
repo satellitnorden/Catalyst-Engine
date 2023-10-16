@@ -137,6 +137,9 @@ namespace SoundSystemData
 */
 void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT
 {
+	//Copy the configuration.
+	_Configuration = configuration;
+
 	//Reserve the appropriate memory to (hopefully) avoid memory allocations in mixing thread.
 	SoundSystemData::_PlayingSounds.Reserve(SoundSystemConstants::MAXIMUM_NUMBER_OF_PLAYING_SOUNDS);
 
@@ -153,7 +156,7 @@ void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configurat
 	_MixingThread.Launch();
 
 	//Create the sub system.
-	switch (configuration._SoundSubSystemType)
+	switch (_Configuration._SoundSubSystemType)
 	{
 		case SoundSubSystemType::WASAPI:
 		case SoundSubSystemType::DEFAULT:
@@ -187,13 +190,13 @@ void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configurat
 		DynamicArray<AudioDevice> audio_devices;
 		AudioDevice *RESTRICT audio_device{ nullptr };
 
-		if (configuration._AudioDevice)
+		if (_Configuration._AudioDevice)
 		{
 			SoundSystem::Instance->QueryAudioDevices(&audio_devices);
 
 			for (AudioDevice &queried_audio_device : audio_devices)
 			{
-				if (configuration._AudioDevice.Get() == queried_audio_device._Name)
+				if (_Configuration._AudioDevice.Get() == queried_audio_device._Name)
 				{
 					audio_device = &queried_audio_device;
 
@@ -210,7 +213,7 @@ void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configurat
 	}
 
 	//Initialize the platform.
-	PlatformInitialize(configuration);
+	PlatformInitialize(_Configuration);
 }
 
 /*
@@ -232,6 +235,91 @@ void SoundSystem::Terminate() NOEXCEPT
 }
 
 /*
+*	Sets the sound sub system type.
+*/
+void SoundSystem::SetSoundSubSystemType(const SoundSubSystemType sound_sub_system_type) NOEXCEPT
+{
+	//Stop mixing.
+	_ShouldMix.Clear();
+
+	//Wait for the mixing thread to stop mixing.
+	while (_IsMixing.IsSet())
+	{
+		Concurrency::CurrentThread::Pause();
+	}
+
+	//Destroy the current sound system, if there is one.
+	if (_SubSystem)
+	{
+		//Terminate the sub system.
+		_SubSystem->Terminate();
+
+		//Destroy the sub system.
+		delete _SubSystem;
+	}
+
+	//Create the sub system.
+	switch (sound_sub_system_type)
+	{
+		case SoundSubSystemType::WASAPI:
+		case SoundSubSystemType::DEFAULT:
+		{
+			_SubSystem = new SoundSubSystemWASAPI();
+
+			break;
+		}
+
+		case SoundSubSystemType::ASIO:
+		{
+			_SubSystem = new SoundSubSystemASIO();
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Set the sound system.
+	_SubSystem->_SoundSystem = this;
+
+	//Initialize the sub system!
+	{
+		//If the audio device is set, find and set it!
+		DynamicArray<AudioDevice> audio_devices;
+		AudioDevice *RESTRICT audio_device{ nullptr };
+
+		if (_Configuration._AudioDevice)
+		{
+			SoundSystem::Instance->QueryAudioDevices(&audio_devices);
+
+			for (AudioDevice &queried_audio_device : audio_devices)
+			{
+				if (_Configuration._AudioDevice.Get() == queried_audio_device._Name)
+				{
+					audio_device = &queried_audio_device;
+
+					break;
+				}
+			}
+		}
+
+		SoundSubSystem::InitializationParameters initialization_parameters;
+
+		initialization_parameters._AudioDevice = audio_device;
+
+		_SubSystem->Initialize(initialization_parameters);
+	}
+
+	//The mixing thread can mix once again. (:
+	_ShouldMix.Set();
+}
+
+/*
 *	Queries for audio devices.
 */
 void SoundSystem::QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT
@@ -239,6 +327,78 @@ void SoundSystem::QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT au
 	ASSERT(_SubSystem, "Needs a sub system to query audio devices!");
 
 	_SubSystem->QueryAudioDevices(audio_devices);
+}
+
+/*
+*	Opens the given audio device.
+*/
+void SoundSystem::OpenAudioDevice(AudioDevice *const RESTRICT audio_device) NOEXCEPT
+{
+	//Stop mixing.
+	_ShouldMix.Clear();
+
+	//Wait for the mixing thread to stop mixing.
+	while (_IsMixing.IsSet())
+	{
+		Concurrency::CurrentThread::Pause();
+	}
+
+	//Cache the sound sub system type.
+	SoundSubSystemType sound_sub_system_type{ _Configuration._SoundSubSystemType };
+
+	//Destroy the current sound system, if there is one.
+	if (_SubSystem)
+	{
+		//Use the current sub system's type.
+		sound_sub_system_type = _SubSystem->_Type;
+
+		//Terminate the sub system.
+		_SubSystem->Terminate();
+
+		//Destroy the sub system.
+		delete _SubSystem;
+	}
+
+	//Create the sub system.
+	switch (sound_sub_system_type)
+	{
+		case SoundSubSystemType::WASAPI:
+		case SoundSubSystemType::DEFAULT:
+		{
+			_SubSystem = new SoundSubSystemWASAPI();
+
+			break;
+		}
+
+		case SoundSubSystemType::ASIO:
+		{
+			_SubSystem = new SoundSubSystemASIO();
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Set the sound system.
+	_SubSystem->_SoundSystem = this;
+
+	//Initialize the sub system!
+	{
+		SoundSubSystem::InitializationParameters initialization_parameters;
+
+		initialization_parameters._AudioDevice = audio_device;
+
+		_SubSystem->Initialize(initialization_parameters);
+	}
+
+	//The mixing thread can mix once again. (:
+	_ShouldMix.Set();
 }
 
 /*
@@ -498,13 +658,18 @@ void SoundSystem::TerminateMixingBuffers() NOEXCEPT
 	_ShouldMix.Clear();
 
 	//Wait for the sound system to smixing.
-	_IsMixing.Wait<WaitMode::YIELD>();
+	while (_IsMixing.IsSet())
+	{
+		Concurrency::CurrentThread::Pause();
+	}
 
 	//Free the mixing buffers.
 	for (void *const RESTRICT mixing_buffer : _MixingBuffers)
 	{
 		Memory::Free(mixing_buffer);
 	}
+
+	_MixingBuffers.Clear();
 
 	//Free the intermediate mixing buffer.
 	Memory::Free(_IntermediateMixingBuffer);

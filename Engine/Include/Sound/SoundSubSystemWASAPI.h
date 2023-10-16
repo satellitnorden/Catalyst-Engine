@@ -132,6 +132,9 @@ private:
 	//The thread.
 	Thread _Thread;
 
+	//Denotes if this sub system should terminate.
+	bool _Terminate{ false };
+
 	//The audio endpoint.
 	IMMDevice *RESTRICT _AudioEndpoint{ nullptr };
 

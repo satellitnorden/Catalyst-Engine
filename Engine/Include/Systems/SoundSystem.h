@@ -52,6 +52,11 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Sets the sound sub system type.
+	*/
+	void SetSoundSubSystemType(const SoundSubSystemType sound_sub_system_type) NOEXCEPT;
+
+	/*
 	*	Queries for audio devices.
 	*/
 	void QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT;
@@ -207,6 +212,9 @@ public:
 	}
 
 private:
+
+	//The configuration.
+	CatalystProjectSoundConfiguration _Configuration;
 
 	//The sound instance counter.
 	uint64 _SoundInstanceCounter{ 1 };
