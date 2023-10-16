@@ -20,6 +20,9 @@ UserInterfaceProgressBar::UserInterfaceProgressBar(	const Vector2<float32> initi
 													const ResourcePointer<FontResource> font_resource,
 													const bool is_three_dimensional) NOEXCEPT
 {
+	//Set the type.
+	SetType(UserInterfaceElementType::PROGRESS_BAR);
+
 	//Set the font resource.
 	_FontResource = font_resource;
 

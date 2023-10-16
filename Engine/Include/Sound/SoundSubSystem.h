@@ -3,6 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Sound.
+#include <Sound/SoundCore.h>
+#include <Sound/AudioDevice.h>
+
 //Forward declarations.
 class SoundSystem;
 
@@ -11,30 +15,24 @@ class SoundSubSystem
 
 public:
 
-	//Enumeration covering all types.
-	enum class Type : uint8
-	{
-#if defined(CATALYST_PLATFORM_WINDOWS)
-		WASAPI,
-		ASIO,
-#endif
-
-		DEFAULT //This will pick the default (first) sub system for each platform.
-	};
-
 	/*
 	*	Initialization parameters class definition.
 	*/
 	class InitializationParameters final
 	{
 
+	public:
+
+		//The audio device. If nullptr, the sub system will pick the default one. Otherwise, this one will be used.
+		AudioDevice *RESTRICT _AudioDevice;
+
 	};
+
+	//The type.
+	SoundSubSystemType _Type;
 
 	//The sound system.
 	SoundSystem *RESTRICT _SoundSystem;
-
-	//The type.
-	Type _Type;
 
 	/*
 	*	Default destructor.
@@ -43,6 +41,11 @@ public:
 	{
 
 	}
+
+	/*
+	*	Queries for available audio devices.
+	*/
+	virtual void QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT = 0;
 
 	/*
 	*	Initializes this sound sub system.

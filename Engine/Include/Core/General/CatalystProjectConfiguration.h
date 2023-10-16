@@ -189,12 +189,12 @@ public:
 	/*
 	*	The sound system mode.
 	*/
-	OptionalWithDefault<SoundSystemMode> _SoundSystemMode{ SoundSystemMode::DEFAULT };
+	OptionalWithDefault<SoundSubSystemType> _SoundSubSystemType{ SoundSubSystemType::DEFAULT };
 
 	/*
-	*	The audio device picking mode.
+	*	If set, the sound system will open this device. Otherwise, it defaults to the default audio device.
 	*/
-	OptionalWithDefault<AudioDevicePickingMode> _AudioDevicePickingMode{ AudioDevicePickingMode::PICK_DEFAULT };
+	Optional<DynamicString> _AudioDevice;
 
 	/*
 	*	Default constructor.

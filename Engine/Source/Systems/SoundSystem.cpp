@@ -6,6 +6,8 @@
 
 //Sound.
 #include <Sound/SoundResourcePlayer.h>
+#include <Sound/SoundSubSystemASIO.h>
+#include <Sound/SoundSubSystemWASAPI.h>
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
@@ -150,6 +152,63 @@ void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configurat
 
 	_MixingThread.Launch();
 
+	//Create the sub system.
+	switch (configuration._SoundSubSystemType)
+	{
+		case SoundSubSystemType::WASAPI:
+		case SoundSubSystemType::DEFAULT:
+		{
+			_SubSystem = new SoundSubSystemWASAPI();
+
+			break;
+		}
+
+		case SoundSubSystemType::ASIO:
+		{
+			_SubSystem = new SoundSubSystemASIO();
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Set the sound system.
+	_SubSystem->_SoundSystem = this;
+
+	//Initialize the sub system!
+	{
+		//If the audio device is set, find and set it!
+		DynamicArray<AudioDevice> audio_devices;
+		AudioDevice *RESTRICT audio_device{ nullptr };
+
+		if (configuration._AudioDevice)
+		{
+			SoundSystem::Instance->QueryAudioDevices(&audio_devices);
+
+			for (AudioDevice &queried_audio_device : audio_devices)
+			{
+				if (configuration._AudioDevice.Get() == queried_audio_device._Name)
+				{
+					audio_device = &queried_audio_device;
+
+					break;
+				}
+			}
+		}
+
+		SoundSubSystem::InitializationParameters initialization_parameters;
+
+		initialization_parameters._AudioDevice = audio_device;
+
+		_SubSystem->Initialize(initialization_parameters);
+	}
+
 	//Initialize the platform.
 	PlatformInitialize(configuration);
 }
@@ -162,8 +221,24 @@ void SoundSystem::Terminate() NOEXCEPT
 	//Wait for the mixing thread to finish.
 	_MixingThread.Join();
 
+	//Terminate the sub system.
+	_SubSystem->Terminate();
+
+	//Destroy the sub system.
+	delete _SubSystem;
+
 	//Terminate the platform.
 	PlatformTerminate();
+}
+
+/*
+*	Queries for audio devices.
+*/
+void SoundSystem::QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT
+{
+	ASSERT(_SubSystem, "Needs a sub system to query audio devices!");
+
+	_SubSystem->QueryAudioDevices(audio_devices);
 }
 
 /*
@@ -378,6 +453,12 @@ void SoundSystem::StopRecording() NOEXCEPT
 */
 void SoundSystem::InitializeMixingBuffers(const uint8 number_of_mixing_buffers, const uint32 number_of_samples_per_mixing_buffer) NOEXCEPT
 {
+	//If mixing buffers are already created, terminate them.
+	if (!_MixingBuffers.Empty())
+	{
+		TerminateMixingBuffers();
+	}
+
 	//Set the number of mixing buffers.
 	_NumberOfMixingBuffers = number_of_mixing_buffers;
 

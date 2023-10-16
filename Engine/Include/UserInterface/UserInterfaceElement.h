@@ -28,6 +28,22 @@ public:
 	}
 
 	/*
+	*	Returns the type.
+	*/
+	FORCE_INLINE NO_DISCARD UserInterfaceElementType GetType() const NOEXCEPT
+	{
+		return _Type;
+	}
+
+	/*
+	*	Sets the type.
+	*/
+	FORCE_INLINE void SetType(const UserInterfaceElementType value) NOEXCEPT
+	{
+		_Type = value;
+	}
+
+	/*
 	*	Returns the parent.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD UserInterfaceScene *const RESTRICT GetParent() NOEXCEPT
@@ -57,6 +73,9 @@ public:
 	FORCE_INLINE virtual void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT = 0;
 
 private:
+
+	//The type.
+	UserInterfaceElementType _Type;
 
 	//The parent.
 	UserInterfaceScene *RESTRICT _Parent;

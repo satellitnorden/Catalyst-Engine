@@ -17,6 +17,9 @@ UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
 										const float32 opacity,
 										const bool is_three_dimensional) NOEXCEPT
 {
+	//Set the type.
+	SetType(UserInterfaceElementType::IMAGE);
+
 	//Remember whether or not this image is three dimensional.
 	_IsThreeDimensional = is_three_dimensional;
 

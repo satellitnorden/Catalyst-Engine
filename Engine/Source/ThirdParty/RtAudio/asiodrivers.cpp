@@ -1,4 +1,3 @@
-#if defined(CATALYST_PLATFORM_WINDOWS)
 #include <string.h>
 #include <ThirdParty/RtAudio/asiodrivers.h>
 
@@ -184,5 +183,4 @@ void AsioDrivers::removeCurrentDriver()
 
 #else
 #error implement me
-#endif
 #endif

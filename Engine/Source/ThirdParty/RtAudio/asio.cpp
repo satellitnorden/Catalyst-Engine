@@ -1,4 +1,3 @@
-#if defined(CATALYST_PLATFORM_WINDOWS)
 /*
 	Steinberg Audio Stream I/O API
 	(c) 1996, Steinberg Soft- und Hardware GmbH
@@ -74,7 +73,7 @@ ASIOError ASIOInit(ASIODriverInfo *info)
 #else
 
 	info->driverVersion = 0;
-	strcpy_s(info->name, "No ASIO Driver");
+	strcpy(info->name, "No ASIO Driver");
 	if(theAsioDriver)	// must be loaded!
 	{
 		if(!theAsioDriver->init(info->sysRef))
@@ -84,7 +83,7 @@ ASIOError ASIOInit(ASIODriverInfo *info)
 			return ASE_NotPresent;
 		}		
 
-		strcpy_s(info->errorMessage, "No ASIO Driver Error");
+		strcpy(info->errorMessage, "No ASIO Driver Error");
 		theAsioDriver->getDriverName(info->name);
 		info->driverVersion = theAsioDriver->getDriverVersion();
 		return ASE_OK;
@@ -99,7 +98,8 @@ ASIOError ASIOExit(void)
 	if(theAsioDriver)
 	{
 #if WINDOWS
-		asioDrivers->removeCurrentDriver();
+    if ( asioDrivers ) // added by Axel Holzinger
+      asioDrivers->removeCurrentDriver();
 #else
 		delete theAsioDriver;
 #endif
@@ -203,7 +203,7 @@ ASIOError ASIOGetChannelInfo(ASIOChannelInfo *info)
 	{
 		info->channelGroup = -1;
 		info->type = ASIOSTInt16MSB;
-		strcpy_s(info->name, "None");
+		strcpy(info->name, "None");
 		return ASE_NotPresent;
 	}
 	return theAsioDriver->getChannelInfo(info);
@@ -254,4 +254,5 @@ ASIOError ASIOOutputReady(void)
 }	// extern "C"
 #pragma export off
 #endif
-#endif
+
+

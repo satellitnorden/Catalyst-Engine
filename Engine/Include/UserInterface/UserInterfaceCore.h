@@ -22,6 +22,18 @@ enum class UserInterfacePrimitiveType : uint8
 	NUMBER_OF_USER_INTERFACE_PRIMITIVE_TYPES
 };
 
+//Enumeration covering all user interface element types.
+enum class UserInterfaceElementType : uint8
+{
+	BUTTON,
+	CHECKBOX,
+	IMAGE,
+	PROGRESS_BAR,
+	TEXT,
+
+	NUMBER_OF_USER_INTERFACE_ELEMENT_TYPES
+};
+
 //Enumeration covering all user interface button states.
 enum class UserInterfaceButtonState : uint8
 {

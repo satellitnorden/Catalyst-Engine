@@ -33,6 +33,9 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 												const ResourcePointer<FontResource> font_resource,
 												const bool is_three_dimensional) NOEXCEPT
 {
+	//Set the type.
+	SetType(UserInterfaceElementType::CHECKBOX);
+
 	//Calculate the initial extent.
 	const Vector2<float32> initial_extent{ initial_maximum - initial_minimum };
 

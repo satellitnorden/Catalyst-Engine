@@ -7,6 +7,9 @@
 #include <Systems/LogSystem.h>
 #include <Systems/SoundSystem.h>
 
+//Windows.
+#include <functiondiscoverykeys_devpkey.h>
+
 //Macros.
 #define SAFE_RELEASE(POINTER) if (POINTER) { POINTER->Release(); POINTER = nullptr; }
 
@@ -111,6 +114,136 @@ namespace SoundSubSystemWASAPILogic
 }
 
 /*
+*	Queries for available audio devices.
+*/
+void SoundSubSystemWASAPI::QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT
+{
+	//Define macros.
+#define HANDLE_ERROR(FUNCTION) if (FAILED(FUNCTION)) { LOG_ERROR("Sound system failted to initialize!, %s failed!", #FUNCTION); goto CLEANUP; }
+
+	//Define local variables.
+	IMMDeviceEnumerator *RESTRICT device_enumerator{ nullptr };
+	IMMDevice *RESTRICT default_endpoint{ nullptr };
+	IMMDeviceCollection *RESTRICT device_collection{ nullptr };
+	IMMDevice *RESTRICT endpoint{ nullptr };
+	IPropertyStore *RESTRICT property_store{ nullptr };
+	PROPVARIANT friendly_name_prop_variant{  };
+	DynamicString default_audio_device_name;
+
+	//Initialize the COM library.
+	HANDLE_ERROR(CoInitialize(nullptr));
+
+	//Create the device enumerator.
+	HANDLE_ERROR(CoCreateInstance(	SoundSubSystemWASAPIConstants::MMDeviceEnumerator_CLSID,
+									nullptr,
+									CLSCTX_ALL,
+									SoundSubSystemWASAPIConstants::IMMDeviceEnumerator_IID,
+									reinterpret_cast<void *RESTRICT *const RESTRICT>(&device_enumerator)));
+
+	//Retrieve the default endpoint.
+	HANDLE_ERROR(device_enumerator->GetDefaultAudioEndpoint(EDataFlow::eRender,
+															ERole::eConsole,
+															&default_endpoint));
+
+	//Retrieve the name of the default audio device.
+	{
+		//Open the property store.
+		HANDLE_ERROR(default_endpoint->OpenPropertyStore(STGM_READ, &property_store));
+
+		//Initialize the friendly name prop variant.
+		PropVariantInit(&friendly_name_prop_variant);
+
+		//Retrieve the name.
+		HANDLE_ERROR(property_store->GetValue(PKEY_Device_FriendlyName, &friendly_name_prop_variant));
+
+		std::string endpoint_id_string;
+
+		{
+			WCHAR* RESTRICT current = friendly_name_prop_variant.pwszVal;
+
+			while (*current)
+			{
+				endpoint_id_string += static_cast<char>(*current);
+				++current;
+			}
+		}
+
+		default_audio_device_name = endpoint_id_string.c_str();
+
+		PropVariantClear(&friendly_name_prop_variant);
+		SAFE_RELEASE(property_store);
+	}
+
+	//Retrieve the audio endpoints.
+	HANDLE_ERROR(device_enumerator->EnumAudioEndpoints(	EDataFlow::eRender,
+														DEVICE_STATE_ACTIVE,
+														&device_collection));
+
+	//Retrieve the number of endpoints.
+	uint32 number_of_endpoints{ 0 };
+	HANDLE_ERROR(device_collection->GetCount(&number_of_endpoints));
+
+	for (uint32 i{ 0 }; i < number_of_endpoints; ++i)
+	{
+		//Retrieve the endpoint.
+		HANDLE_ERROR(device_collection->Item(i, &endpoint));
+
+		//Add the audio device.
+		audio_devices->Emplace();
+		AudioDevice &audio_device{ audio_devices->Back() };
+
+		//Set the handle.
+		audio_device._Handle = nullptr;
+
+		//Set the index.
+		audio_device._Index = i;
+
+		//Open the property store.
+		HANDLE_ERROR(endpoint->OpenPropertyStore(STGM_READ, &property_store));
+
+		//Initialize the friendly name prop variant.
+		PropVariantInit(&friendly_name_prop_variant);
+
+		//Retrieve the name.
+		HANDLE_ERROR(property_store->GetValue(PKEY_Device_FriendlyName, &friendly_name_prop_variant));
+
+		std::string endpoint_id_string;
+
+		{
+			WCHAR *RESTRICT current = friendly_name_prop_variant.pwszVal;
+
+			while (*current)
+			{
+				endpoint_id_string += static_cast<char>(*current);
+				++current;
+			}
+		}
+
+		audio_device._Name = endpoint_id_string.c_str();
+
+		//Set if this is the default audio device.
+		audio_device._IsDefault = audio_device._Name == default_audio_device_name;
+
+		PropVariantClear(&friendly_name_prop_variant);
+		SAFE_RELEASE(property_store);
+		SAFE_RELEASE(endpoint);
+	}
+
+CLEANUP:
+
+	//Release the local variables.
+	SAFE_RELEASE(device_collection);
+	SAFE_RELEASE(default_endpoint);
+	SAFE_RELEASE(device_enumerator);
+
+	//Uninitialize the COM library.
+	CoUninitialize();
+
+	//Undefine macors.
+#undef HANDLE_ERROR
+}
+
+/*
 *	Initializes this sound sub system.
 */
 void SoundSubSystemWASAPI::Initialize(const InitializationParameters &initialization_parameters) NOEXCEPT
@@ -174,7 +307,9 @@ NO_DISCARD float32 SoundSubSystemWASAPI::GetAudioLatency() const NOEXCEPT
 	}
 }
 
-//The update function.
+/*
+*	The update function.
+*/
 void SoundSubSystemWASAPI::Update() NOEXCEPT
 {
 	//Define macros.
@@ -188,7 +323,7 @@ void SoundSubSystemWASAPI::Update() NOEXCEPT
 	REFERENCE_TIME optimal_device_period{ 0 };
 	uint32 current_padding{ 0 };
 	uint32 number_of_samples_available{ 0 };
-	BYTE* RESTRICT buffer_data{ nullptr };
+	BYTE *RESTRICT buffer_data{ nullptr };
 
 	//Initialize the COM library.
 	HANDLE_ERROR(CoInitialize(nullptr));
@@ -311,7 +446,7 @@ void SoundSubSystemWASAPI::Update() NOEXCEPT
 		}
 	}
 
-	//The WASAPI sound sub system is successfully initialized!
+	//This sound sub system is successfully initialized!
 	_Initialized = true;
 
 	//Initialize the mixing buffers.

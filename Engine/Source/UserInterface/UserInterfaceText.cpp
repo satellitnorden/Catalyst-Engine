@@ -20,6 +20,9 @@ UserInterfaceText::UserInterfaceText(	const Vector2<float32> initial_minimum,
 										const TextVerticalAlignment vertical_alignment,
 										const bool is_three_dimensional) NOEXCEPT
 {
+	//Set the type.
+	SetType(UserInterfaceElementType::TEXT);
+
 	//Set the minimum/maximum.
 	_Minimum = initial_minimum;
 	_Maximum = initial_maximum;

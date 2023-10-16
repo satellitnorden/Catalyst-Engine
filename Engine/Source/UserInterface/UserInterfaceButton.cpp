@@ -26,6 +26,9 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 											const float32 text_scale,
 											const bool is_three_dimensional) NOEXCEPT
 {
+	//Set the type.
+	SetType(UserInterfaceElementType::BUTTON);
+
 	//Set the minimum/maximum.
 	_Minimum = initial_minimum;
 	_Maximum = initial_maximum;

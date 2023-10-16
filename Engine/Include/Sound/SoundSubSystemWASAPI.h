@@ -21,7 +21,7 @@ public:
 	*/
 	FORCE_INLINE SoundSubSystemWASAPI() NOEXCEPT
 	{
-		_Type = Type::WASAPI;
+		_Type = SoundSubSystemType::WASAPI;
 	}
 
 	/*
@@ -31,6 +31,11 @@ public:
 	{
 
 	}
+
+	/*
+	*	Queries for available audio devices.
+	*/
+	void QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT override;
 
 	/*
 	*	Initializes this sound sub system.
@@ -151,7 +156,9 @@ private:
 	//The buffer size.
 	uint32 _BufferSize;
 
-	//The update function.
+	/*
+	*	The update function.
+	*/
 	void Update() NOEXCEPT;
 
 };

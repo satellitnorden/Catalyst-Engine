@@ -158,18 +158,15 @@ using SoundStoppedCallback = void(*)(const SoundInstanceHandle sound_instance);
 */
 constexpr SoundInstanceHandle EMPTY_SOUND_INSTANCE_HANDLE{ 0 };
 
-//Enumeration covering all sound system modes.
-enum class SoundSystemMode : uint8
+//Enumeration covering all sound sub system types.
+enum class SoundSubSystemType : uint8
 {
-	/*
-	*	Will use the default platform API for processing sound.
-	*/
-	DEFAULT,
+#if defined(CATALYST_PLATFORM_WINDOWS)
+	WASAPI,
+	ASIO,
+#endif
 
-	/*
-	*	Will use a low latency platform API for processing sound, if one exists.
-	*/
-	LOW_LATENCY
+	DEFAULT //This will pick the default (first) sub system for each platform.
 };
 
 /*

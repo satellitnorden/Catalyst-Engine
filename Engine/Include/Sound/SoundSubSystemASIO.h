@@ -11,6 +11,9 @@
 #include <Sound/SoundCore.h>
 #include <Sound/SoundSubSystem.h>
 
+//Forward declarations.
+class RtAudio;
+
 class SoundSubSystemASIO final : public SoundSubSystem
 {
 
@@ -21,7 +24,7 @@ public:
 	*/
 	FORCE_INLINE SoundSubSystemASIO() NOEXCEPT
 	{
-		_Type = Type::ASIO;
+		_Type = SoundSubSystemType::ASIO;
 	}
 
 	/*
@@ -33,9 +36,14 @@ public:
 	}
 
 	/*
+	*	Queries for available audio devices.
+	*/
+	void QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT override;
+
+	/*
 	*	Initializes this sound sub system.
 	*/
-	void Initialize(const InitializationParameters& initialization_parameters) NOEXCEPT override;
+	void Initialize(const InitializationParameters &initialization_parameters) NOEXCEPT override;
 
 	/*
 	*	Terminates this sound sub system.
@@ -124,18 +132,6 @@ public:
 
 private:
 
-	//The thread.
-	Thread _Thread;
-
-	//The audio endpoint.
-	IMMDevice *RESTRICT _AudioEndpoint{ nullptr };
-
-	//The audio client.
-	IAudioClient *RESTRICT _AudioClient{ nullptr };
-
-	//The audio render client.
-	IAudioRenderClient *RESTRICT _AudioRenderClient{ nullptr };
-
 	//Denotes if this sound sub system is initialized.
 	Atomic<bool> _Initialized{ false };
 
@@ -150,6 +146,12 @@ private:
 
 	//The buffer size.
 	uint32 _BufferSize;
+
+	//The query Rt Audio.
+	RtAudio *RESTRICT _QueryRtAudio{ nullptr };
+
+	//The opened audio device.
+	AudioDevice _OpenedAudioDevice;
 
 	/*
 	*	The update function.

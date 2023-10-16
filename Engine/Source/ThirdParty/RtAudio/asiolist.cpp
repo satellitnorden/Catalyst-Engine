@@ -1,8 +1,3 @@
-#if defined(CATALYST_PLATFORM_WINDOWS)
-#define _CRT_SECURE_NO_WARNINGS
-
-__pragma(warning(disable : 4267)) //Disablewarning C4267: 'argument': conversion from 'size_t' to 'DWORD', possible loss of data
-
 #include <windows.h>
 #include <ThirdParty/RtAudio/iasiodrv.h>
 #include <ThirdParty/RtAudio/asiolist.h>
@@ -90,6 +85,7 @@ static LONG findDrvPath (char *clsidstr,char *dllpath,int dllpathsize)
 	return rc;
 }
 
+
 static LPASIODRVSTRUCT newDrvStruct (HKEY hkey,char *keyname,int drvID,LPASIODRVSTRUCT lpdrv)
 {
 	HKEY	hksub;
@@ -119,11 +115,10 @@ static LPASIODRVSTRUCT newDrvStruct (HKEY hkey,char *keyname,int drvID,LPASIODRV
 
 						datatype = REG_SZ; datasize = 256;
 						cr = RegQueryValueExA(hksub,ASIODRV_DESC,0,&datatype,(LPBYTE)databuf,&datasize);
-						if (cr == ERROR_SUCCESS)
-						{
-							strcpy(lpdrv->drvname, databuf);
+						if (cr == ERROR_SUCCESS) {
+							strcpy(lpdrv->drvname,databuf);
 						}
-						else strcpy_s(lpdrv->drvname, strlen(lpdrv->drvname), keyname);
+						else strcpy(lpdrv->drvname,keyname);
 					}
 				}
 			}
@@ -145,7 +140,8 @@ static void deleteDrvStruct (LPASIODRVSTRUCT lpdrv)
 			iasio = (IASIO *)lpdrv->asiodrv;
 			iasio->Release();
 		}
-		delete lpdrv;
+		//delete lpdrv;
+    delete[] lpdrv; // correction from Axel Holzinger
 	}
 }
 
@@ -171,7 +167,6 @@ AsioDriverList::AsioDriverList ()
 	LPASIODRVSTRUCT	pdl;
 	LONG 			cr;
 	DWORD			index = 0;
-	BOOL			fin = FALSE;
 
 	numdrv		= 0;
 	lpdrvlist	= 0;
@@ -189,7 +184,6 @@ AsioDriverList::AsioDriverList ()
 #endif
 			lpdrvlist = newDrvStruct (hkEnum,keyname,0,lpdrvlist);
 		}
-		else fin = TRUE;
 	}
 	if (hkEnum) RegCloseKey(hkEnum);
 
@@ -266,7 +260,7 @@ LONG AsioDriverList::asioGetDriverName (int drvID,char *drvname,int drvnamesize)
 
 	if ((lpdrv = getDrvStruct(drvID,lpdrvlist)) != 0) {
 		if (strlen(lpdrv->drvname) < (unsigned int)drvnamesize) {
-			strcpy(drvname, lpdrv->drvname);
+			strcpy(drvname,lpdrv->drvname);
 		}
 		else {
 			memcpy(drvname,lpdrv->drvname,drvnamesize-4);
@@ -288,7 +282,7 @@ LONG AsioDriverList::asioGetDriverPath (int drvID,char *dllpath,int dllpathsize)
 
 	if ((lpdrv = getDrvStruct(drvID,lpdrvlist)) != 0) {
 		if (strlen(lpdrv->dllpath) < (unsigned int)dllpathsize) {
-			strcpy(dllpath, lpdrv->dllpath);
+			strcpy(dllpath,lpdrv->dllpath);
 			return 0;
 		}
 		dllpath[0] = 0;
@@ -309,4 +303,5 @@ LONG AsioDriverList::asioGetDriverCLSID (int drvID,CLSID *clsid)
 	}
 	return DRVERR_DEVICE_NOT_FOUND;
 }
-#endif
+
+

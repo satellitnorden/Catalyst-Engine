@@ -265,6 +265,12 @@ protected:
 																						const float32 *const RESTRICT scale_override = nullptr,
 																						const TextHorizontalAlignment horizontal_alignment = TextHorizontalAlignment::LEFT,
 																						const TextVerticalAlignment vertical_alignment = TextVerticalAlignment::CENTER) NOEXCEPT;
+	
+	/*
+	*	Removes a checkbox.
+	*/
+	void RemoveCheckbox(UserInterfaceCheckbox *const RESTRICT checkbox) NOEXCEPT;
+
 	/*
 	*	Adds an image, using cells.
 	*/
@@ -327,6 +333,11 @@ protected:
 	*	Removes a text.
 	*/
 	void RemoveText(UserInterfaceText *const RESTRICT text) NOEXCEPT;
+
+	/*
+	*	Removes all user interface elements.
+	*/
+	void RemoveAll() NOEXCEPT;
 
 	/*
 	*	Returns the normalized coordinate center of the given cell.

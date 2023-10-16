@@ -10,7 +10,7 @@ class AudioDevice final
 
 public:
 
-	//The handle to the MIDI device. Will be nullptr until the MIDI device has been opened.
+	//The handle to the audio device. Will be nullptr until the audio device has been opened.
 	void *RESTRICT _Handle;
 
 	//The index.

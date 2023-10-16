@@ -359,6 +359,18 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 }
 
 /*
+*	Removes a checkbox.
+*/
+void UserInterfaceScene::RemoveCheckbox(UserInterfaceCheckbox *const RESTRICT checkbox) NOEXCEPT
+{
+	_Checkboxes.Erase<false>(checkbox);
+	_Elements.Erase<true>(checkbox);
+
+	checkbox->~UserInterfaceCheckbox();
+	MemorySystem::Instance->TypeFree<UserInterfaceCheckbox>(checkbox);
+}
+
+/*
 *	Adds an image, using cells.
 */
 RESTRICTED UserInterfaceImage *const RESTRICT UserInterfaceScene::AddImageByCell(	const Vector2<uint32> &minimum_cell,
@@ -540,6 +552,64 @@ void UserInterfaceScene::RemoveText(UserInterfaceText *const RESTRICT text) NOEX
 
 	text->~UserInterfaceText();
 	MemorySystem::Instance->TypeFree<UserInterfaceText>(text);
+}
+
+/*
+*	Removes all user interface elements.
+*/
+void UserInterfaceScene::RemoveAll() NOEXCEPT
+{
+	DynamicArray<UserInterfaceElement *RESTRICT> elements{ _Elements };
+
+	for (UserInterfaceElement *const RESTRICT element : elements)
+	{
+		switch (element->GetType())
+		{
+			case UserInterfaceElementType::BUTTON:
+			{
+				RemoveButton(static_cast<UserInterfaceButton *const RESTRICT>(element));
+
+				break;
+			}
+
+			case UserInterfaceElementType::CHECKBOX:
+			{
+				RemoveCheckbox(static_cast<UserInterfaceCheckbox *const RESTRICT>(element));
+
+				break;
+			}
+
+			case UserInterfaceElementType::IMAGE:
+			{
+				RemoveImage(static_cast<UserInterfaceImage *const RESTRICT>(element));
+
+				break;
+			}
+
+			/*
+			case UserInterfaceElementType::PROGRESS_BAR:
+			{
+				RemoveProgressBar(static_cast<UserInterfaceProgressBar *const RESTRICT>(element));
+
+				break;
+			}
+			*/
+
+			case UserInterfaceElementType::TEXT:
+			{
+				RemoveText(static_cast<UserInterfaceText *const RESTRICT>(element));
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
 }
 
 /*

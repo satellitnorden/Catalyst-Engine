@@ -1,4 +1,3 @@
-#if defined(CATALYST_PLATFORM_WINDOWS)
 #ifndef __AsioDrivers__
 #define __AsioDrivers__
 
@@ -39,5 +38,4 @@ protected:
 	long curIndex;
 };
 
-#endif
 #endif
