@@ -5,6 +5,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
 
+//Sound.
+#include <Sound/SoundCore.h>
+
 class AudioDevice final
 {
 
@@ -22,8 +25,8 @@ public:
 	//Denotes whether or not this audio device is the default one.
 	bool _IsDefault;
 
-	//The available bit depts.
-	DynamicArray<uint8> _AvailableBitDepths;
+	//The available sound formats.
+	DynamicArray<SoundFormat> _AvailableSoundFormats;
 
 	//The available samples rates.
 	DynamicArray<float32> _AvailableSampleRates;

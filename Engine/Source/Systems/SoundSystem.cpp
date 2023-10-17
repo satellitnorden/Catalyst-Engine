@@ -842,6 +842,20 @@ void SoundSystem::Mix() NOEXCEPT
 					break;
 				}
 
+				case SoundFormat::SIGNED_INTEGER_24_BIT:
+				{
+					//Unsure about this, find an audio device that supports it and test it. :x
+					for (uint32 sample_index{ 0 }; sample_index < _NumberOfSamplesPerMixingBuffer * number_of_channels; ++sample_index)
+					{
+						const byte *const RESTRICT destination{ static_cast<byte *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex]) + (sample_index * 3) };
+						const int32 value{ static_cast<int32>(_IntermediateMixingBuffer[sample_index] * static_cast<float32>(INT24_MAXIMUM)) };
+
+						Memory::Copy(destination, &value, 3);
+					}
+
+					break;
+				}
+
 				case SoundFormat::SIGNED_INTEGER_32_BIT:
 				{
 					for (uint32 sample_index{ 0 }; sample_index < _NumberOfSamplesPerMixingBuffer * number_of_channels; ++sample_index)
@@ -855,6 +869,16 @@ void SoundSystem::Mix() NOEXCEPT
 				case SoundFormat::FLOAT_32_BIT:
 				{
 					Memory::Copy(_MixingBuffers[_CurrentMixingBufferWriteIndex], _IntermediateMixingBuffer, _NumberOfSamplesPerMixingBuffer* number_of_channels * sizeof(float32));
+
+					break;
+				}
+
+				case SoundFormat::FLOAT_64_BIT:
+				{
+					for (uint32 sample_index{ 0 }; sample_index < _NumberOfSamplesPerMixingBuffer * number_of_channels; ++sample_index)
+					{
+						static_cast<float64 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[sample_index] = static_cast<float64>(_IntermediateMixingBuffer[sample_index]);
+					}
 
 					break;
 				}

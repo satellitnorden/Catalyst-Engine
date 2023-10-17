@@ -190,8 +190,10 @@ enum class SoundFormat : uint8
 {
 	SIGNED_INTEGER_8_BIT,
 	SIGNED_INTEGER_16_BIT,
+	SIGNED_INTEGER_24_BIT,
 	SIGNED_INTEGER_32_BIT,
 	FLOAT_32_BIT,
+	FLOAT_64_BIT,
 
 	UNKNOWN
 };
@@ -233,6 +235,11 @@ static NO_DISCARD uint8 GetNumberOfBitsPerSample(const SoundFormat sound_format)
 			return 16;
 		}
 
+		case SoundFormat::SIGNED_INTEGER_24_BIT:
+		{
+			return 24;
+		}
+
 		case SoundFormat::SIGNED_INTEGER_32_BIT:
 		{
 			return 32;
@@ -241,6 +248,11 @@ static NO_DISCARD uint8 GetNumberOfBitsPerSample(const SoundFormat sound_format)
 		case SoundFormat::FLOAT_32_BIT:
 		{
 			return 32;
+		}
+
+		case SoundFormat::FLOAT_64_BIT:
+		{
+			return 64;
 		}
 
 		default:

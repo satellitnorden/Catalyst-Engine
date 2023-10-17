@@ -22,10 +22,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE SoundSubSystemASIO() NOEXCEPT
-	{
-		_Type = SoundSubSystemType::ASIO;
-	}
+	SoundSubSystemASIO() NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -147,8 +144,8 @@ private:
 	//The buffer size.
 	uint32 _BufferSize;
 
-	//The query Rt Audio.
-	RtAudio *RESTRICT _QueryRtAudio{ nullptr };
+	//The Rt Audio object.
+	RtAudio *RESTRICT _RtAudio{ nullptr };
 
 	//The opened audio device.
 	AudioDevice _OpenedAudioDevice;

@@ -14,12 +14,15 @@
 //Sound sub system ASIO constants.
 namespace SoundSubSystemASIOConstants
 {
-	//List of desired bit depths.
-	constexpr uint8 DESIRED_BIT_DEPTHS[]
+	//List of desired sound formats.
+	constexpr SoundFormat DESIRED_SOUND_FORMATS[]
 	{
-		16,
-		32,
-		8
+		SoundFormat::FLOAT_32_BIT,
+		SoundFormat::SIGNED_INTEGER_16_BIT,
+		SoundFormat::SIGNED_INTEGER_32_BIT,
+		SoundFormat::SIGNED_INTEGER_24_BIT,
+		SoundFormat::FLOAT_64_BIT,
+		SoundFormat::SIGNED_INTEGER_8_BIT
 	};
 
 	//List of desired sample rates.
@@ -37,28 +40,38 @@ namespace SoundSubSystemASIOLogic
 	/*
 	*	Returns the RtAudioFormat for the given bit depth.
 	*/
-	FORCE_INLINE NO_DISCARD RtAudioFormat GetRtAudioFormat(const uint8 bit_depth) NOEXCEPT
+	FORCE_INLINE NO_DISCARD RtAudioFormat GetRtAudioFormat(const SoundFormat sound_format) NOEXCEPT
 	{
-		switch (bit_depth)
+		switch (sound_format)
 		{
-			case 8:
+			case SoundFormat::SIGNED_INTEGER_8_BIT:
 			{
 				return RTAUDIO_SINT8;
 			}
 
-			case 16:
+			case SoundFormat::SIGNED_INTEGER_16_BIT:
 			{
 				return RTAUDIO_SINT16;
 			}
 
-			case 24:
+			case SoundFormat::SIGNED_INTEGER_24_BIT:
 			{
 				return RTAUDIO_SINT24;
 			}
 
-			case 32:
+			case SoundFormat::SIGNED_INTEGER_32_BIT:
 			{
 				return RTAUDIO_SINT32;
+			}
+
+			case SoundFormat::FLOAT_32_BIT:
+			{
+				return RTAUDIO_FLOAT32;
+			}
+
+			case SoundFormat::FLOAT_64_BIT:
+			{
+				return RTAUDIO_FLOAT64;
 			}
 
 			default:
@@ -119,21 +132,25 @@ void ErrorCallback(RtAudioErrorType type, const std::string &error_text) NOEXCEP
 }
 
 /*
+*	Default constructor.
+*/
+SoundSubSystemASIO::SoundSubSystemASIO() NOEXCEPT
+{
+	//Set the type.
+	_Type = SoundSubSystemType::ASIO;
+
+	//Create the RtAudio object.
+	_RtAudio = new (MemorySystem::Instance->TypeAllocate<RtAudio>()) RtAudio(RtAudio::Api::WINDOWS_ASIO, ErrorCallback);
+}
+
+/*
 *	Queries for available audio devices.
 */
 void SoundSubSystemASIO::QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT
 {
-	//Create the Query Rt Audio, if possible.
-	if (!_QueryRtAudio)
-	{
-		_QueryRtAudio = new (MemorySystem::Instance->TypeAllocate<RtAudio>()) RtAudio(RtAudio::Api::WINDOWS_ASIO, ErrorCallback);
-
-		ASSERT(_QueryRtAudio, "Couldn't create query Rt Audio object!");
-	}
-
 	//Get the device count.
-	const uint32 device_count{ _QueryRtAudio->getDeviceCount() };
-	const std::vector<uint32> device_ids{ _QueryRtAudio->getDeviceIds() };
+	const uint32 device_count{ _RtAudio->getDeviceCount() };
+	const std::vector<uint32> device_ids{ _RtAudio->getDeviceIds() };
 
 	//Reserve the appropriate size.
 	audio_devices->Reserve(device_count);
@@ -142,7 +159,7 @@ void SoundSubSystemASIO::QueryAudioDevices(DynamicArray<AudioDevice> *const REST
 	for (uint32 i{ 0 }; i < device_count; ++i)
 	{
 		//Get the device info.
-		const RtAudio::DeviceInfo device_info{ _QueryRtAudio->getDeviceInfo(device_ids[i]) };
+		const RtAudio::DeviceInfo device_info{ _RtAudio->getDeviceInfo(device_ids[i]) };
 
 		//Skip if the device isn't valid.
 		if (device_info.nativeFormats == 0
@@ -160,25 +177,39 @@ void SoundSubSystemASIO::QueryAudioDevices(DynamicArray<AudioDevice> *const REST
 		audio_device._Name = device_info.name.c_str();
 		audio_device._IsDefault = device_info.isDefaultOutput;
 
+		ASSERT(device_info.nativeFormats != 0, "Audio device has no sound formats, this shouldn't happen!");
+
 		if (TEST_BIT(device_info.nativeFormats, RTAUDIO_SINT8))
 		{
-			audio_device._AvailableBitDepths.Emplace(8);
+			audio_device._AvailableSoundFormats.Emplace(SoundFormat::SIGNED_INTEGER_8_BIT);
 		}
 
 		if (TEST_BIT(device_info.nativeFormats, RTAUDIO_SINT16))
 		{
-			audio_device._AvailableBitDepths.Emplace(16);
+			audio_device._AvailableSoundFormats.Emplace(SoundFormat::SIGNED_INTEGER_16_BIT);
 		}
 
 		if (TEST_BIT(device_info.nativeFormats, RTAUDIO_SINT24))
 		{
-			audio_device._AvailableBitDepths.Emplace(24);
+			audio_device._AvailableSoundFormats.Emplace(SoundFormat::SIGNED_INTEGER_24_BIT);
 		}
 
 		if (TEST_BIT(device_info.nativeFormats, RTAUDIO_SINT32))
 		{
-			audio_device._AvailableBitDepths.Emplace(32);
+			audio_device._AvailableSoundFormats.Emplace(SoundFormat::SIGNED_INTEGER_32_BIT);
 		}
+
+		if (TEST_BIT(device_info.nativeFormats, RTAUDIO_FLOAT32))
+		{
+			audio_device._AvailableSoundFormats.Emplace(SoundFormat::FLOAT_32_BIT);
+		}
+
+		if (TEST_BIT(device_info.nativeFormats, RTAUDIO_FLOAT64))
+		{
+			audio_device._AvailableSoundFormats.Emplace(SoundFormat::FLOAT_64_BIT);
+		}
+
+		ASSERT(!audio_device._AvailableSoundFormats.Empty(), "Couldn't gather any available sound formats!");
 
 		audio_device._AvailableSampleRates.Reserve(device_info.sampleRates.size());
 
@@ -227,65 +258,29 @@ void SoundSubSystemASIO::Initialize(const InitializationParameters &initializati
 		}
 	}
 
-	ASSERT(!_OpenedAudioDevice._Handle, "Trying to open an audio device when one is already opened, this needs to be handled!");
-
-	//Create the handle.
-	_OpenedAudioDevice._Handle = new (MemorySystem::Instance->TypeAllocate<RtAudio>()) RtAudio(RtAudio::Api::WINDOWS_ASIO, ErrorCallback);
-
-	ASSERT(_OpenedAudioDevice._Handle, "Couldn't create query Rt Audio object!");
+	//Set the handle
+	_OpenedAudioDevice._Handle = _RtAudio;
 
 	//Set the number of channels.
 	_NumberOfChannels = 2;
 
-	//Determine the bit depth.
-	uint8 bit_depth{ 0 };
+	//Determine the sound format.
+	_SoundFormat = SoundFormat::UNKNOWN;
 
-	for (uint64 i{ 0 }; i < ARRAY_LENGTH(SoundSubSystemASIOConstants::DESIRED_BIT_DEPTHS) && bit_depth == 0; ++i)
+	for (uint64 i{ 0 }; i < ARRAY_LENGTH(SoundSubSystemASIOConstants::DESIRED_SOUND_FORMATS) && _SoundFormat == SoundFormat::UNKNOWN; ++i)
 	{
-		for (const uint8 available_bit_depth : _OpenedAudioDevice._AvailableBitDepths)
+		for (const SoundFormat available_sound_format : _OpenedAudioDevice._AvailableSoundFormats)
 		{
-			if (available_bit_depth == SoundSubSystemASIOConstants::DESIRED_BIT_DEPTHS[i])
+			if (available_sound_format == SoundSubSystemASIOConstants::DESIRED_SOUND_FORMATS[i])
 			{
-				bit_depth = available_bit_depth;
+				_SoundFormat = available_sound_format;
 
 				break;
 			}
 		}
 	}
 
-	ASSERT(bit_depth != 0, "Couldn't find a proper bit depth!");
-
-	//Set the sound format.
-	switch (bit_depth)
-	{
-		case 8:
-		{
-			_SoundFormat = SoundFormat::SIGNED_INTEGER_8_BIT;
-
-			break;
-		}
-
-		case 16:
-		{
-			_SoundFormat = SoundFormat::SIGNED_INTEGER_16_BIT;
-
-			break;
-		}
-
-		case 32:
-		{
-			_SoundFormat = SoundFormat::SIGNED_INTEGER_32_BIT;
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
+	ASSERT(_SoundFormat != SoundFormat::UNKNOWN, "Couldn't find a proper sound format!");
 
 	//Determine the sample rate.
 	float32 sample_rate{ 0.0f };
@@ -352,7 +347,7 @@ void SoundSubSystemASIO::Initialize(const InitializationParameters &initializati
 			(
 				&output_parameters,
 				nullptr,
-				SoundSubSystemASIOLogic::GetRtAudioFormat(bit_depth),
+				SoundSubSystemASIOLogic::GetRtAudioFormat(_SoundFormat),
 				static_cast<uint32>(sample_rate),
 				&buffer_frames,
 				audio_callback,
@@ -404,10 +399,6 @@ void SoundSubSystemASIO::Terminate() NOEXCEPT
 	//Destroy the RtAudio object.
 	static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle)->~RtAudio();
 	MemorySystem::Instance->TypeFree<RtAudio>(static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle));
-
-	//Destroy the query RtAudio object.
-	static_cast<RtAudio *const RESTRICT>(_QueryRtAudio)->~RtAudio();
-	MemorySystem::Instance->TypeFree<RtAudio>(static_cast<RtAudio *const RESTRICT>(_QueryRtAudio));
 }
 
 /*
