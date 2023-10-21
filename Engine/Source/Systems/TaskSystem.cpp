@@ -13,39 +13,26 @@ DEFINE_SINGLETON(TaskSystem);
 */
 void TaskSystem::Initialize(const CatalystProjectConcurrencyConfiguration &configuration) NOEXCEPT
 {
-	if (!_IsInitialized)
+	const bool single_threaded = configuration._SingleThreaded.Valid() && configuration._SingleThreaded.Get();
+
+	if (!single_threaded && !_IsInitialized)
 	{
-		if (configuration._EstimatedNumberOfTaskExecutors)
+		//Retrieve the number of hardware threads.
+		const uint32 number_of_hardware_threads{ Concurrency::NumberOfHardwareThreads() };
+
+		//Set the number of task executors.
+		_NumberOfTaskExecutors = number_of_hardware_threads;
+
+		//Subtract the sound thread.
+		if (_NumberOfTaskExecutors > 1)
 		{
-			//Start at zero.
-			_NumberOfTaskExecutors = 0;
-
-			//Add two engine threads. Should be enough.
-			_NumberOfTaskExecutors += 2;
-
-			//Add the project threads.
-			_NumberOfTaskExecutors += configuration._EstimatedNumberOfTaskExecutors.Get();
+			--_NumberOfTaskExecutors;
 		}
 
-		else
+		//Leave one thread for the OS. (:
+		if (_NumberOfTaskExecutors > 1)
 		{
-			//Retrieve the number of hardware threads.
-			const uint32 number_of_hardware_threads{ Concurrency::NumberOfHardwareThreads() };
-
-			//Set the number of task executors.
-			_NumberOfTaskExecutors = number_of_hardware_threads;
-
-			//Subtract the sound thread.
-			if (_NumberOfTaskExecutors > 1)
-			{
-				--_NumberOfTaskExecutors;
-			}
-
-			//Leave one thread for the OS. (:
-			if (_NumberOfTaskExecutors > 1)
-			{
-				--_NumberOfTaskExecutors;
-			}
+			--_NumberOfTaskExecutors;
 		}
 
 		//Kick off all task executor threads.
@@ -81,6 +68,11 @@ void TaskSystem::Initialize(const CatalystProjectConcurrencyConfiguration &confi
 
 		_IsInitialized = true;
 	}
+
+	if (single_threaded)
+	{
+		_NumberOfTaskExecutors = 0;
+	}
 }
 
 /*
@@ -111,8 +103,12 @@ void TaskSystem::ExecuteTask(Task *const RESTRICT task) NOEXCEPT
 	//Clear the atomic flag denoting whether or not this task is executed.
 	task->_IsExecuted.Clear();
 
-	//If the number of tasks in queue is the same as the number of task executors, try to run this task on the same thread.
-	if (_TasksInQueue >= _NumberOfTaskExecutors && task->_ExecutableOnSameThread)
+	/*
+	*	If the number of tasks in queue is the same as the number of task executors, try to run this task on the same thread.
+	*	Also, is the task system isn't initialized (possibly due to the engine running single-threaded), we have no choice but to execute it immediately.
+	*/
+	if ((_TasksInQueue >= _NumberOfTaskExecutors && task->_ExecutableOnSameThread)
+		|| !_IsInitialized)
 	{
 		task->Execute();
 	}

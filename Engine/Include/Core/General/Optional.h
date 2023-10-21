@@ -40,19 +40,11 @@ public:
 	}
 
 	/*
-	*	Bool conversion operator overload.
+	*	Returns whether or not this optional holds a value.
 	*/
-	FORCE_INLINE constexpr operator bool() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool Valid() const NOEXCEPT
 	{
 		return _Valid;
-	}
-
-	/*
-	*	Type conversion operator overload.
-	*/
-	FORCE_INLINE constexpr operator TYPE() const NOEXCEPT
-	{
-		return _Value;
 	}
 
 	/*

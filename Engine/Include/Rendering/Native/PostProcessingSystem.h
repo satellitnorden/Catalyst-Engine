@@ -194,7 +194,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetTemporalAntiAliasingWeightOverride() const NOEXCEPT
 	{
-		return _TemporalAntiAliasingWeightOverride;
+		return _TemporalAntiAliasingWeightOverride.Valid();
 	}
 	
 	/*

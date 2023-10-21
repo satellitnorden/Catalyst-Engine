@@ -72,6 +72,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Set the project configuration.
 	_ProjectConfiguration = initial_project_configuration;
 
+	//Set whether or not to run the engine single-threaded.
+	_SingleThreaded = _ProjectConfiguration._ConcurrencyConfiguration._SingleThreaded.Valid() && _ProjectConfiguration._ConcurrencyConfiguration._SingleThreaded.Get();
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Build the Catalyst Engine resources.
 	CatalystEngineResourceBuilding::BuildResources(_ProjectConfiguration);
@@ -451,39 +454,57 @@ void CatalystEngineSystem::DeregisterUpdate(const uint64 identifier) NOEXCEPT
 */
 void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCEPT
 {
-	//Wait for the update data that ends in this update phase.
-	for (UpdateData *const RESTRICT update_data : _EndUpdateData[UNDERLYING(phase)])
+	if (_SingleThreaded)
 	{
-		update_data->_Task.Wait<WaitMode::PAUSE>();
-	}
-
-	//Execute the tasks for the update data that starts in this update phase.
-	for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
-	{
+		//Execute the tasks for the update data that starts in this update phase.
+		for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
+		{
 #if defined(CATALYST_EDITOR)
-		if (update_data->_OnlyUpdateInGame && !CatalystEditorSystem::Instance->IsInGame())
-		{
-			continue;
-		}
+			if (update_data->_OnlyUpdateInGame && !CatalystEditorSystem::Instance->IsInGame())
+			{
+				continue;
+			}
 #endif
-		if (!update_data->_RunOnMainThread)
-		{
-			TaskSystem::Instance->ExecuteTask(&update_data->_Task);
-		}
-	}
-
-	//Next, execute the tasks for the update data that starts in this update phase that needs to be run on the main thread.
-	for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
-	{
-#if defined(CATALYST_EDITOR)
-		if (update_data->_OnlyUpdateInGame && !CatalystEditorSystem::Instance->IsInGame())
-		{
-			continue;
-		}
-#endif
-		if (update_data->_RunOnMainThread)
-		{
 			update_data->_Task.Execute();
+		}
+	}
+
+	else
+	{
+		//Wait for the update data that ends in this update phase.
+		for (UpdateData *const RESTRICT update_data : _EndUpdateData[UNDERLYING(phase)])
+		{
+			update_data->_Task.Wait<WaitMode::PAUSE>();
+		}
+
+		//Execute the tasks for the update data that starts in this update phase.
+		for (UpdateData	*const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
+		{
+#if defined(CATALYST_EDITOR)
+			if (update_data->_OnlyUpdateInGame && !CatalystEditorSystem::Instance->IsInGame())
+			{
+				continue;
+	}
+#endif
+			if (!update_data->_RunOnMainThread)
+			{
+				TaskSystem::Instance->ExecuteTask(&update_data->_Task);
+			}
+}
+
+		//Next, execute the tasks for the update data that starts in this update phase that needs to be run on the main thread.
+		for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
+		{
+#if defined(CATALYST_EDITOR)
+			if (update_data->_OnlyUpdateInGame && !CatalystEditorSystem::Instance->IsInGame())
+			{
+				continue;
+			}
+#endif
+			if (update_data->_RunOnMainThread)
+			{
+				update_data->_Task.Execute();
+			}
 		}
 	}
 }

@@ -190,7 +190,7 @@ void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configurat
 		DynamicArray<AudioDevice> audio_devices;
 		AudioDevice *RESTRICT audio_device{ nullptr };
 
-		if (_Configuration._AudioDevice)
+		if (_Configuration._AudioDevice.Valid())
 		{
 			SoundSystem::Instance->QueryAudioDevices(&audio_devices);
 
@@ -293,7 +293,7 @@ void SoundSystem::SetSoundSubSystemType(const SoundSubSystemType sound_sub_syste
 		DynamicArray<AudioDevice> audio_devices;
 		AudioDevice *RESTRICT audio_device{ nullptr };
 
-		if (_Configuration._AudioDevice)
+		if (_Configuration._AudioDevice.Valid())
 		{
 			SoundSystem::Instance->QueryAudioDevices(&audio_devices);
 

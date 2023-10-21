@@ -213,7 +213,7 @@ void InstancedStaticModelDepthSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 					data._ModelFlags = static_cast<uint32>(component->_ModelFlags);
 
-					if (component->_ModelFadeData)
+					if (component->_ModelFadeData.Valid())
 					{
 						data._StartFadeOutDistanceSquared = component->_ModelFadeData.Get()._StartFadeOutDistance * component->_ModelFadeData.Get()._StartFadeOutDistance;
 						data._EndFadeOutDistanceSquared = component->_ModelFadeData.Get()._EndFadeOutDistance * component->_ModelFadeData.Get()._EndFadeOutDistance;

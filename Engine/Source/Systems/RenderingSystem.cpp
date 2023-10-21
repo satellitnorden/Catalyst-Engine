@@ -75,7 +75,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	_CurrentRenderingPath = _Configuration._InitialRenderingPath;
 
 	//Set the full resolution.
-	_FullResolution = _Configuration._Resolution ? _Configuration._Resolution : CatalystPlatform::GetDefaultResolution();
+	_FullResolution = _Configuration._Resolution.Valid() ? _Configuration._Resolution.Get() : CatalystPlatform::GetDefaultResolution();
 
 	//Set the scaled resolutions.
 	_ScaledResolutions[0] = Resolution(static_cast<uint32>(static_cast<float32>(_FullResolution._Width) * _Configuration._ResolutionScale), static_cast<uint32>(static_cast<float32>(_FullResolution._Height) * _Configuration._ResolutionScale));

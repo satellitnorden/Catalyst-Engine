@@ -68,20 +68,19 @@ class CatalystProjectConcurrencyConfiguration final
 public:
 
 	/*
-	*	The estimed number of task executors.
-	*	The number of task executors needed for this project.
-	*	If your project is mostly single-threaded, set this to some low number
-	*	to open up resources for other stuff.
-	*/
-	Optional<uint32> _EstimatedNumberOfTaskExecutors;
-
-	/*
 	*	Default constructor.
 	*/
 	CatalystProjectConcurrencyConfiguration() NOEXCEPT
 	{
 
 	}
+
+	/*
+	*	Denotes if the engine should run single-threaded.
+	*	Can be useful to save resources if this is an application that does quite little on the main thread,
+	*	and wants extra resources if it for example spawns some dedicated threads.
+	*/
+	Optional<bool> _SingleThreaded;
 
 };
 

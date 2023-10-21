@@ -218,6 +218,9 @@ private:
 	//The project configuration.
 	CatalystProjectConfiguration _ProjectConfiguration;
 
+	//Denotes if the engine is running single-threaded.
+	bool _SingleThreaded{ false };
+
 	//Denotes whether or not the game should terminate.
 	bool _ShouldTerminate{ false };
 
