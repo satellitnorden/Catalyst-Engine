@@ -4,6 +4,9 @@
 //File.
 #include <File/Writers/WAVWriter.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Sound.
 #include <Sound/SoundResourcePlayer.h>
 #include <Sound/SoundSubSystemASIO.h>
@@ -698,6 +701,8 @@ void SoundSystem::Mix() NOEXCEPT
 	//Return if the game is shutting down.
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
+		PROFILING_SCOPE(SoundSystem_Mix);
+
 		//Remember the start of the update.
 		const std::chrono::steady_clock::time_point start_of_update{ std::chrono::steady_clock::now() };
 
@@ -980,6 +985,8 @@ void SoundSystem::Mix() NOEXCEPT
 
 		if (_MixingBuffersReady == _NumberOfMixingBuffers)
 		{
+			PROFILING_SCOPE(SoundSystem_Mix_Sleep);
+
 			//Sleep approximately until the next buffer needs mixing.
 			const float64 milliseconds_to_sleep{ static_cast<float64>(_NumberOfSamplesPerMixingBuffer) / static_cast<float64>(GetSampleRate()) * 1'000.0 };
 			const std::chrono::steady_clock::time_point next_update{ start_of_update + std::chrono::nanoseconds(static_cast<uint64>(milliseconds_to_sleep * 1'000'000.0)) };
