@@ -6,7 +6,7 @@
 #include <Concurrency/ScopedLock.h>
 
 //Profiling.
-#include <Profiling/ProfilingCore.h>
+#include <Profiling/Profiling.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>

@@ -61,6 +61,9 @@ void VulkanFence::Reset() NOEXCEPT
 void VulkanFence::WaitFor() const NOEXCEPT
 {
 	//Wait for this Vulkan fence.
-	while (vkWaitForFences(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &_VulkanFence, VK_TRUE, 0) == VK_TIMEOUT);
+	while (vkWaitForFences(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &_VulkanFence, VK_TRUE, 0) == VK_TIMEOUT)
+	{
+		Concurrency::CurrentThread::Yield();
+	}
 }
 #endif

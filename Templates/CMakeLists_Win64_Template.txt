@@ -48,13 +48,23 @@ add_compile_definitions($<$<CONFIG:DebugEditor>:CATALYST_EDITOR>
 add_compile_definitions([CATALYST_PHYSICS])
 add_compile_definitions(CATALYST_PLATFORM_WINDOWS)
 add_compile_definitions(CATALYST_RENDERING_VULKAN)
+add_compile_definitions($<$<CONFIG:Debug>:TRACY_ENABLE>
+						$<$<CONFIG:DebugEditor>:TRACY_ENABLE>
+						$<$<CONFIG:Profile>:TRACY_ENABLE>
+						$<$<CONFIG:ProfileEditor>:TRACY_ENABLE>
+						)
+add_compile_definitions($<$<CONFIG:Debug>:TRACY_ON_DEMAND>
+						$<$<CONFIG:DebugEditor>:TRACY_ON_DEMAND>
+						$<$<CONFIG:Profile>:TRACY_ON_DEMAND>
+						$<$<CONFIG:ProfileEditor>:TRACY_ON_DEMAND>
+						)
 
 #Add the include/source files.
-file(GLOB_RECURSE ENGINE_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/*.h)
+file(GLOB_RECURSE ENGINE_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/*.h ../../Catalyst-Engine/Engine/Include/*.hpp)
 file(GLOB_RECURSE ENGINE_INLINE_FILES ../../Catalyst-Engine/Engine/Include/*.inl)
-file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../Catalyst-Engine/Engine/Source/*.cpp ../../Catalyst-Engine/Engine/Source/*.c ../../Catalyst-Engine/Engine/Source/*.asm)
-file(GLOB_RECURSE GAME_INCLUDE_FILES ../Code/Include/*.h)
-file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.cpp ../Code/Source/*.c ../Code/Source/*.asm)
+file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../Catalyst-Engine/Engine/Source/*.c ../../Catalyst-Engine/Engine/Source/*.cpp  ../../Catalyst-Engine/Engine/Source/*.asm)
+file(GLOB_RECURSE GAME_INCLUDE_FILES ../Code/Include/*.h ../Code/Include/*.hpp)
+file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.c ../Code/Source/*.cpp  ../Code/Source/*.asm)
 
 #Add the executable.
 add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES} ${GAME_INCLUDE_FILES} ${GAME_SOURCE_FILES})

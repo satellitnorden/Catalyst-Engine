@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -82,6 +85,8 @@ void ModelSystem::CreateRenderDataTables() NOEXCEPT
 */
 void ModelSystem::InputUpdate() NOEXCEPT
 {
+	PROFILING_SCOPE(ModelSystem_InputUpdate);
+
 	//Store the previous world transform for all dynamic model entities.
 	{
 		const uint64 number_of_dynamic_model_components{ ComponentManager::GetNumberOfDynamicModelComponents() };

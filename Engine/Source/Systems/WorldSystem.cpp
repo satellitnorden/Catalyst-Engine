@@ -11,6 +11,9 @@
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Resources.
 #include <Resources/Core/LevelResource.h>
 
@@ -97,6 +100,8 @@ NO_DISCARD const Vector3<int32> &WorldSystem::GetCurrentWorldGridCell() const NO
 */
 void WorldSystem::InputUpdate() NOEXCEPT
 {
+	PROFILING_SCOPE(WorldSystem_InputUpdate);
+
 	//Update all particle systems.
 	UpdateParticleSystems();
 }

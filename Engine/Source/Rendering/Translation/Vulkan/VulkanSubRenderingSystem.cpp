@@ -22,7 +22,7 @@
 #include <Math/Core/CatalystBaseMath.h>
 
 //Profiling.
-#include <Profiling/ProfilingCore.h>
+#include <Profiling/Profiling.h>
 
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>

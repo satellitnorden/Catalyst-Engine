@@ -17,7 +17,7 @@
 #include <Math/Noise/HammersleySequence.h>
 
 //Profiling.
-#include <Profiling/ProfilingCore.h>
+#include <Profiling/Profiling.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>

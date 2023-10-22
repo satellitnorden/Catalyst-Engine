@@ -11,7 +11,7 @@
 #include <Concurrency/ConcurrencyCore.h>
 
 //Profiling.
-#include <Profiling/ProfilingCore.h>
+#include <Profiling/Profiling.h>
 
 //Resources.
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -33,9 +33,6 @@
 #include <Systems/NetworkSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/PlacementSystem.h>
-#if defined(CATALYST_CONFIGURATION_PROFILE)
-#include <Systems/ProfilingSystem.h>
-#endif
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/SaveSystem.h>
@@ -96,9 +93,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	MemorySystem::Instance->Initialize();
 	NetworkSystem::Instance->Initialize();
 	PhysicsSystem::Instance->Initialize();
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	ProfilingSystem::Instance->Initialize();
-#endif
 	SaveSystem::Instance->Initialize();
 	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	ScriptSystem::Instance->Initialize();
@@ -179,6 +173,8 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 */
 bool CatalystEngineSystem::Update() NOEXCEPT
 {
+	PROFILING_FRAME();
+
 	//Define constants.
 	constexpr float32 MAXIMUM_DELTA_TIME{ 0.1f };
 

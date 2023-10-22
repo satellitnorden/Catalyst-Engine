@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/InputSystem.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 
@@ -57,26 +60,46 @@ void InputSystem::ShowCursor() const NOEXCEPT
 */
 void InputSystem::InputUpdate() NOEXCEPT
 {
+	PROFILING_SCOPE(InputSystem_InputUpdate);
+
 	//Remember the old input state.
 	const InputState old_input_state{ _InputState };
 
 	//Update the gamepad states.
-	for (uint8 i{ 0 }; i < CatalystBaseMath::Minimum<uint8>(_NumberOfSupportedGamepads, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS); ++i)
 	{
-		UpdateGamepadState(i);
+		PROFILING_SCOPE(InputSystem_InputUpdate_UpdateGamepadStates);
+
+		for (uint8 i{ 0 }; i < CatalystBaseMath::Minimum<uint8>(_NumberOfSupportedGamepads, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS); ++i)
+		{
+			UpdateGamepadState(i);
+		}
 	}
 
 	//Update the keyboard state.
-	UpdateKeyboardState();
+	{
+		PROFILING_SCOPE(InputSystem_InputUpdate_UpdateKeyboardState);
+
+		UpdateKeyboardState();
+	}
 
 	//Update the mouse state.
-	UpdateMouseState();
+	{
+		PROFILING_SCOPE(InputSystem_InputUpdate_UpdateMouseState);
+
+		UpdateMouseState();
+	}
 
 	//Update the touch state.
-	UpdateTouchState();
+	{
+		PROFILING_SCOPE(InputSystem_InputUpdate_UpdateTouchState);
+
+		UpdateTouchState();
+	}
 
 	//Determine the last updated input device type.
 	{
+		PROFILING_SCOPE(InputSystem_InputUpdate_DetermineLastUpdatedInputDeviceType);
+
 		//Did the gamepad state change?
 		if (!Memory::Compare(&old_input_state._GamepadStates, &_InputState._GamepadStates, sizeof(_InputState._GamepadStates)))
 		{
