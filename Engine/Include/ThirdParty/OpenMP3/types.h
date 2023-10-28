@@ -1,9 +1,9 @@
 #pragma once
 
-#include <ThirdParty/OpenMP3/openmp3.h>
+#include "openmp3.h"
 
 
-__pragma(warning(disable : 4267))
+
 
 //
 //external dependencies

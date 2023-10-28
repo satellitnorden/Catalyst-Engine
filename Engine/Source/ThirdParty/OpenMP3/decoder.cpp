@@ -1,15 +1,11 @@
 #include <ThirdParty/OpenMP3/openmp3.h>
 
-#include "types.h"
-#include "tables.h"
-#include "requantize.h"
-#include "stereo.h"
-#include "synthesis.h"
-#include "huffman.h"
-
-
-
-
+#include <ThirdParty/OpenMP3/types.h>
+#include <ThirdParty/OpenMP3/tables.h>
+#include <ThirdParty/OpenMP3/requantize.h>
+#include <ThirdParty/OpenMP3/stereo.h>
+#include <ThirdParty/OpenMP3/synthesis.h>
+#include <ThirdParty/OpenMP3/huffman.h>
 
 //nsa debug
 
@@ -370,11 +366,6 @@ bool OpenMP3::Decoder::Private::ReadMain(Decoder & self, const Frame & frame)
 	//size_t size = (frame.m_ptr + frame.m_datasize) - ptr;
 
 	return true;
-}
-
-FORCEINLINE void OpenMP3::FrequencyInversion(Float32 is[576])
-{
-	for (UInt sb = 1; sb < 32; sb += 2) for (UInt i = 1; i < 18; i += 2) is[sb * 18 + i] = -is[sb * 18 + i];
 }
 
 void OpenMP3::Decoder::Private::DecodeFrame(Decoder & self, const Frame & header, Float32 datais[2][2][576], float out[2][1152])

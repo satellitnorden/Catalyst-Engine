@@ -1,6 +1,6 @@
-#include "huffman.h"
+#include <ThirdParty/OpenMP3/huffman.h>
 
-#include "tables.h"
+#include <ThirdParty/OpenMP3/tables.h>
 
 
 

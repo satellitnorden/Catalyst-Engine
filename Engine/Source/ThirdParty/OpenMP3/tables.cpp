@@ -1,4 +1,5 @@
-#include "tables.h"
+#include <ThirdParty/OpenMP3/types.h>
+#include <ThirdParty/OpenMP3/tables.h>
 
 
 

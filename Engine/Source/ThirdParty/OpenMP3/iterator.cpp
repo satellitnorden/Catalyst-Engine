@@ -1,10 +1,10 @@
 #include <ThirdParty/OpenMP3/openmp3.h>
 
-#include "types.h"
-#include "tables.h"
+#include <ThirdParty/OpenMP3/types.h>
+#include <ThirdParty/OpenMP3/tables.h>
 
 
-__pragma(warning(disable : 4244))
+
 
 //
 //

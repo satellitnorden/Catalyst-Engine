@@ -1,11 +1,10 @@
-#include "synthesis.h"
+#include <ThirdParty/OpenMP3/synthesis.h>
 
-#include "types.h"
-#include "tables.h"
+#include <ThirdParty/OpenMP3/types.h>
+#include <ThirdParty/OpenMP3/tables.h>
 
 #define C_PI 3.14159265358979323846
 
-__pragma(warning(disable : 4305))
 
 //
 //impl
@@ -85,6 +84,11 @@ void OpenMP3::HybridSynthesis(const FrameData & data, UInt gr, UInt ch, Float32 
 			store[sb][i] = rawout[i + 18];
 		}
 	}
+}
+
+void OpenMP3::FrequencyInversion(Float32 is[576])
+{
+	for (UInt sb = 1; sb < 32; sb += 2) for (UInt i = 1; i < 18; i += 2) is[sb * 18 + i] = -is[sb * 18 + i];
 }
 
 void OpenMP3::SubbandSynthesis(const FrameData & data, const Float32 is[576], Float32 v_vec[1024], Float32 out[576])
