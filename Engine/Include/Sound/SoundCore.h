@@ -207,7 +207,8 @@ enum class NoteDuration : uint8
 	EIGHTH,
 	SIXTEENTH,
 	THIRTYSECOND,
-	SIXTYFOURTH
+	SIXTYFOURTH,
+	HUNDREDTWENTYEIGHTH
 };
 
 //Enumeration covering all note types.

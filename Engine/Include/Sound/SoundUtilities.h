@@ -74,6 +74,13 @@ namespace SoundUtilities
 				break;
 			}
 
+			case NoteDuration::HUNDREDTWENTYEIGHTH:
+			{
+				calculated_note_duration = (static_cast<TYPE>(60) / beats_per_minute) * static_cast<TYPE>(0.03125);
+
+				break;
+			}
+
 			default:
 			{
 				ASSERT(false, "Invalid case!");

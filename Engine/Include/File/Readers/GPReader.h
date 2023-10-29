@@ -5,6 +5,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
 
+//Sound.
+#include <Sound/SoundUtilities.h>
+
 //Third party.
 #include <ThirdParty/Minizip/minizip/unzip.h>
 #include <ThirdParty/pugixml/pugixml.hpp>
@@ -86,7 +89,7 @@ public:
 					uint8 _FretIndex;
 
 					//The articulation.
-					Articulation _Artucilation;
+					Articulation _Articulation;
 
 				};
 
@@ -191,6 +194,16 @@ public:
 			return false;
 		}
 
+#if 0
+		//Write out a "debug" version of the xml document.
+		{
+			char buffer[MAXIMUM_FILE_PATH_LENGTH];
+			sprintf_s(buffer, "%s_debug.xml", file_path);
+
+			xml_document.save_file(buffer);
+		}
+#endif
+
 		//Cache the root GPIF node.
 		const pugi::xml_node gpif_node{ xml_document.child("GPIF") };
 
@@ -274,15 +287,14 @@ public:
 			for (const pugi::xml_node master_bar_node : master_bars_node)
 			{
 				const pugi::xml_node time_node{ master_bar_node.child("Time") };
-				const pugi::xml_node bars_node{ master_bar_node.child("Bars") };
 
 				tablature->_Bars.Emplace();
-				Tablature::Bar &new_bar{ tablature->_Bars.Back() };
+				Tablature::Bar& new_bar{ tablature->_Bars.Back() };
 
 				new_bar._Tempo = FLOAT64_MAXIMUM; //Will be filled in when we read the master track data. (:
 				const pugi::char_t *RESTRICT numerator_string{ time_node.child_value() };
 				new_bar._TimeSignatureNumerator = static_cast<uint8>(std::stoul(numerator_string));
-				const pugi::char_t *RESTRICT denominator_string{ numerator_string };
+				const pugi::char_t* RESTRICT denominator_string{ numerator_string };
 				while (*denominator_string) { if ((*denominator_string) == '/') { ++denominator_string; break; } else { ++denominator_string; } }
 				new_bar._TimeSignatureDenominator = std::stoul(denominator_string);
 			}
@@ -428,8 +440,31 @@ public:
 				//Set the rhythm index.
 				new_beat._RhythmIndex = std::stoul(beat_node.child("Rhythm").attribute("ref").value());
 
-				//Set the note index.
-				new_beat._NoteIndex = std::stoul(beat_node.child("Notes").child_value());
+				//Set the note indices.
+				{
+					const pugi::xml_node notes_node{ beat_node.child("Notes") };
+
+					if (notes_node)
+					{
+						const pugi::char_t *RESTRICT notes_string{ notes_node.child_value() };
+
+						new_beat._NoteIndices.Emplace(std::stoul(notes_string));
+
+						while (*notes_string)
+						{
+							if ((*notes_string) == ' ')
+							{
+								++notes_string;
+								new_beat._NoteIndices.Emplace(std::stoul(notes_string));
+							}
+
+							else
+							{
+								++notes_string;
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -441,7 +476,17 @@ public:
 			{
 				//Add the new note.
 				temporary_data._Notes.Emplace();
-				TemporaryData::Note& new_note{ temporary_data._Notes.Back() };
+				TemporaryData::Note &new_note{ temporary_data._Notes.Back() };
+
+				new_note._Flags = TemporaryData::Note::Flags::NONE;
+
+				if (const pugi::xml_node tie_node{ note_node.child("Tie") })
+				{
+					if (StringUtilities::IsEqual(tie_node.attribute("destination").value(), "true"))
+					{
+						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::TIE_DESTINATION));
+					}
+				}
 
 				//Fill in the properties.
 				const pugi::xml_node properties_node{ note_node.child("Properties") };
@@ -485,17 +530,63 @@ public:
 				temporary_data._Rhythms.Emplace();
 				TemporaryData::Rhythm &new_rhythm{ temporary_data._Rhythms.Back() };
 
-				//Set the note value.
+				//Set the note duration.
 				const pugi::char_t *const RESTRICT note_value_string{ rhythm_node.child("NoteValue").child_value() };
 
-				if (StringUtilities::IsEqual(note_value_string, "Eighth"))
+				if (StringUtilities::IsEqual(note_value_string, "Whole"))
 				{
-					new_rhythm._NoteValue = TemporaryData::Rhythm::NoteValue::EIGHTH;
+					new_rhythm._NoteDuration = NoteDuration::WHOLE;
+				}
+
+				else if (StringUtilities::IsEqual(note_value_string, "Half"))
+				{
+					new_rhythm._NoteDuration = NoteDuration::HALF;
+				}
+
+				else if (StringUtilities::IsEqual(note_value_string, "Quarter"))
+				{
+					new_rhythm._NoteDuration = NoteDuration::QUARTER;
+				}
+
+				else if (StringUtilities::IsEqual(note_value_string, "Eighth"))
+				{
+					new_rhythm._NoteDuration = NoteDuration::EIGHTH;
 				}
 
 				else if (StringUtilities::IsEqual(note_value_string, "16th"))
 				{
-					new_rhythm._NoteValue = TemporaryData::Rhythm::NoteValue::SIXTEENTH;
+					new_rhythm._NoteDuration = NoteDuration::SIXTEENTH;
+				}
+
+				else if (StringUtilities::IsEqual(note_value_string, "32nd"))
+				{
+					new_rhythm._NoteDuration = NoteDuration::THIRTYSECOND;
+				}
+
+				else if (StringUtilities::IsEqual(note_value_string, "64th"))
+				{
+					new_rhythm._NoteDuration = NoteDuration::SIXTEENTH;
+				}
+
+				else if (StringUtilities::IsEqual(note_value_string, "128th"))
+				{
+					new_rhythm._NoteDuration = NoteDuration::HUNDREDTWENTYEIGHTH;
+				}
+
+				//Set the note type.
+				if (rhythm_node.child("AugmentationDot"))
+				{
+					new_rhythm._NoteType = NoteType::DOTTED;
+				}
+
+				else if (rhythm_node.child("PrimaryTuplet"))
+				{
+					new_rhythm._NoteType = NoteType::TRIPLET;
+				}
+
+				else
+				{
+					new_rhythm._NoteType = NoteType::REGULAR;
 				}
 			}
 		}
@@ -518,10 +609,8 @@ public:
 				//Remember the current offset.
 				float64 current_offset{ 0.0 };
 
-				//TODO: No idea how voices/beats/notes etc are applied to each track, so eeeeh assume they all belong to all tracks for now!
-
 				//Cache the bar to voices mapping.
-				const DynamicArray<int32> &bar_to_voice_mappings{ temporary_data._BarToVoiceMappings[bar_index] };
+				const DynamicArray<int32> &bar_to_voice_mappings{ temporary_data._BarToVoiceMappings[track_index + (bar_index * tablature->_Tracks.Size())] };
 
 				for (const int32 bar_to_voice_mapping : bar_to_voice_mappings)
 				{
@@ -536,62 +625,92 @@ public:
 					{
 						const TemporaryData::Beat &beat{ temporary_data._Beats[voice_to_beat_mapping] };
 						const TemporaryData::Rhythm &rhythm{ temporary_data._Rhythms[beat._RhythmIndex] };
-						const TemporaryData::Note &note{ temporary_data._Notes[beat._NoteIndex] };
 
-						//Add the new event.
-						track_bar._Events.Emplace();
-						Tablature::Track::TrackBar::Event &new_event{ track_bar._Events.Back() };
-
-						//Set the offset.
-						new_event._Offset = current_offset;
-
-						//Calculate the duration.
-						switch (rhythm._NoteValue)
+						for (const uint32 note_index : beat._NoteIndices)
 						{
-							case TemporaryData::Rhythm::NoteValue::EIGHTH:
-							{
-								new_event._Duration = 0.5;
+							const TemporaryData::Note &note{ temporary_data._Notes[note_index] };
 
-								break;
+							//Disregard illegal notes. (:
+							if (note._FretIndex > 24)
+							{
+								continue;
 							}
 
-							case TemporaryData::Rhythm::NoteValue::SIXTEENTH:
+							//If this is a tie destination, iterate backwards and try to extend a previous event.
+							if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::TIE_DESTINATION)))
 							{
-								new_event._Duration = 0.25;
+								int64 current_event_index{ static_cast<int64>(track_bar._Events.Size()) - 1 };
+								int64 current_bar_index{ static_cast<int64>(bar_index) };
+								bool found{ false };
 
-								break;
+								while (current_bar_index > 0 && !found)
+								{
+									if (current_event_index < 0)
+									{
+										--current_bar_index;
+
+										if (current_bar_index < 0)
+										{
+											break;
+										}
+
+										current_event_index = static_cast<int64>(track._TrackBars[current_bar_index]._Events.Size()) - 1;
+									}
+
+									Tablature::Track::TrackBar &current_track_bar{ track._TrackBars[current_bar_index] };
+									Tablature::Track::TrackBar::Event &current_event{ current_track_bar._Events[current_event_index] };
+
+									if (current_event._StringIndex == note._StringIndex && current_event._FretIndex == note._FretIndex)
+									{
+										//TODO: Do proper calculation here.
+										current_event._Duration += SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0);
+
+										found = true;
+									}
+
+									else
+									{
+										--current_event_index;
+									}
+								}
 							}
 
-							default:
+							else
 							{
-								ASSERT(false, "Invalid case!");
+								//Add the new event.
+								track_bar._Events.Emplace();
+								Tablature::Track::TrackBar::Event& new_event{ track_bar._Events.Back() };
 
-								break;
+								//Set the offset.
+								new_event._Offset = current_offset;
+
+								//Calculate the duration.
+								new_event._Duration = SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0);
+
+								//Set the string index.
+								new_event._StringIndex = note._StringIndex;
+
+								//Set the fret index.
+								new_event._FretIndex = note._FretIndex;
+
+								//Set the articulation.
+								new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::SUSTAIN;
+
+								if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::HOPO_DESTINATION)))
+								{
+									//TODO: Figure out if this is a hammer-on or a pull-off. (:
+									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::HAMMER_ON;
+								}
+
+								else if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::PALM_MUTED)))
+								{
+									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::PALM_MUTED;
+								}
 							}
-						}
-
-						//Set the string index.
-						new_event._StringIndex = note._StringIndex;
-
-						//Set the fret index.
-						new_event._FretIndex = note._FretIndex;
-
-						//Set the articulation.
-						new_event._Artucilation = Tablature::Track::TrackBar::Event::Articulation::SUSTAIN;
-
-						if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::HOPO_DESTINATION)))
-						{
-							//TODO: Figure out if this is a hammer-on or a pull-off. (:
-							new_event._Artucilation = Tablature::Track::TrackBar::Event::Articulation::HAMMER_ON;
-						}
-
-						else if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::PALM_MUTED)))
-						{
-							new_event._Artucilation = Tablature::Track::TrackBar::Event::Articulation::PALM_MUTED;
 						}
 
 						//Update the current offset.
-						current_offset += new_event._Duration;
+						current_offset += SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0);
 					}
 				}
 			}
@@ -635,8 +754,8 @@ private:
 			//The rhythm index.
 			uint32 _RhythmIndex;
 
-			//The note index.
-			uint32 _NoteIndex;
+			//The note indices.
+			DynamicArray<uint32> _NoteIndices;
 
 		};
 
@@ -653,7 +772,8 @@ private:
 			{
 				NONE = 0,
 				HOPO_DESTINATION = BIT(0),
-				PALM_MUTED = BIT(1)
+				PALM_MUTED = BIT(1),
+				TIE_DESTINATION = BIT(2)
 			};
 
 			//The string index.
@@ -675,20 +795,11 @@ private:
 
 		public:
 
-			//Enumeration covering all note values.
-			enum class NoteValue : uint8
-			{
-				WHOLE,
-				HALF,
-				QUARTER,
-				EIGHTH,
-				SIXTEENTH,
-				THIRTYSECOND,
-				SIXTYFOURTH
-			};
+			//The note duration.
+			NoteDuration _NoteDuration;
 
-			//The note value.
-			NoteValue _NoteValue;
+			//The note type.
+			NoteType _NoteType;
 
 		};
 
