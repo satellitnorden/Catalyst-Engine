@@ -90,12 +90,6 @@ target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/freetype>
 target_link_libraries(${PROJECT_NAME} vulkan-1)
 target_link_libraries(${PROJECT_NAME} Winmm)
 target_link_libraries(${PROJECT_NAME} xinput)
-target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/zlibstaticd>
-										$<$<CONFIG:DebugEditor>:Debug/zlibstaticd>
-										$<$<CONFIG:Profile>:Profile/zlibstatic>
-										$<$<CONFIG:ProfileEditor>:Profile/zlibstatic>
-										$<$<CONFIG:Final>:final/zlibstatic>
-										)
 target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/libsoundwave>
 										$<$<CONFIG:DebugEditor>:Debug/libsoundwave>
 										$<$<CONFIG:Profile>:Profile/libsoundwave>
