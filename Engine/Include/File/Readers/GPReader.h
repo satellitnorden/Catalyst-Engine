@@ -183,7 +183,7 @@ public:
 		//Read the data.
 		const int32 bytes_read{ unzReadCurrentFile(unzipped_file, data, file_info.uncompressed_size) };
 
-		ASSERT(bytes_read == file_info.uncompressed_size, "Didn't read all of it. Hora.");
+		ASSERT(bytes_read == file_info.uncompressed_size, "Didn't read all of the data, something went wrong!");
 
 		pugi::xml_document xml_document;
 
@@ -194,11 +194,35 @@ public:
 			return false;
 		}
 
-#if 0
+#if 1
 		//Write out a "debug" version of the xml document.
 		{
+			constexpr const char *const RESTRICT FILE_POSTFIX{ "_debug.xml" };
+			constexpr uint64 FILE_POSTFIX_LENGTH{ StringUtilities::StringLength(FILE_POSTFIX) };
+
+			const uint64 file_path_length{ StringUtilities::StringLength(file_path) };
+
 			char buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(buffer, "%s_debug.xml", file_path);
+			sprintf_s(buffer, file_path);
+
+			uint64 last_dot_position{ 0 };
+
+			for (int64 i{ static_cast<int64>(file_path_length) - 1 }; i >= 0; --i)
+			{
+				if (buffer[i] == '.')
+				{
+					last_dot_position = i;
+
+					break;
+				}
+			}
+
+			for (uint64 i{ 0 }; i < FILE_POSTFIX_LENGTH; ++i)
+			{
+				buffer[last_dot_position + i] = FILE_POSTFIX[i];
+			}
+
+			buffer[last_dot_position + FILE_POSTFIX_LENGTH] = '\0';
 
 			xml_document.save_file(buffer);
 		}

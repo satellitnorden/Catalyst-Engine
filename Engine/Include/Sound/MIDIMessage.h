@@ -47,6 +47,7 @@ public:
 		//CONTROL_CHANGE data.
 		struct
 		{
+			uint8 _ControlChangeChannel;
 			uint8 _ControlChangeNote;
 			uint8 _ControlChangeValue;
 		};

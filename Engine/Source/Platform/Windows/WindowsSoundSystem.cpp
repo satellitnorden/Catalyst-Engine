@@ -253,7 +253,7 @@ void SoundSystem::SendMIDIMessage(OutputMIDIDevice *const RESTRICT midi_device, 
 
 		case MIDIMessage::Type::CONTROL_CHANGE:
 		{
-			message.Emplace(0xb0);
+			message.Emplace(0xb0 | (0x0f & midi_message._ControlChangeChannel));
 			message.Emplace(midi_message._ControlChangeNote & 0x7f);
 			message.Emplace(midi_message._ControlChangeValue & 0x7f);
 
