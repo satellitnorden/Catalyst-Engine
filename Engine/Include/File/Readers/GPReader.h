@@ -99,6 +99,12 @@ public:
 					//The articulation.
 					Articulation _Articulation;
 
+					//The bend offsets.
+					DynamicArray<float32> _BendOffsets;
+
+					//The bend values.
+					DynamicArray<float32> _BendValues;
+
 					//Denotes if this is a slide event.
 					bool _IsSlideEvent;
 
@@ -630,6 +636,43 @@ public:
 						//Add the flag.
 						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::SLIDE_ORIGIN));
 					}
+
+					else if (	StringUtilities::IsEqual(property_node.attribute("name").value(), "BendDestinationOffset")
+								|| StringUtilities::IsEqual(property_node.attribute("name").value(), "BendMiddleOffset1"))
+					{
+						const pugi::xml_node float_node{ property_node.child("Float") };
+						const float32 value{ std::stof(float_node.child_value()) };
+
+						new_note._BendOffsets.Emplace(value / 100.0f);
+					}
+
+					else if (	StringUtilities::IsEqual(property_node.attribute("name").value(), "BendDestinationValue")
+								|| StringUtilities::IsEqual(property_node.attribute("name").value(), "BendMiddleValue"))
+					{
+						const pugi::xml_node float_node{ property_node.child("Float") };
+						const float32 value{ std::stof(float_node.child_value()) };
+
+						new_note._BendValues.Emplace(value / 100.0f * 4.0f);
+					}
+				}
+
+				ASSERT(new_note._BendOffsets.Size() == new_note._BendValues.Size(), "Bend offset/value mismatch!");
+
+				//Sort the bend offsets/values.
+				if (!new_note._BendOffsets.Empty())
+				{
+					for (uint64 iterator{ 1 }; iterator != new_note._BendOffsets.Size(); ++iterator)
+					{
+						uint64 reverse_iterator{ iterator };
+
+						while (reverse_iterator != 0 && new_note._BendOffsets[reverse_iterator] < new_note._BendOffsets[reverse_iterator - 1])
+						{
+							Swap(&new_note._BendOffsets[reverse_iterator], &new_note._BendOffsets[reverse_iterator - 1]);
+							Swap(&new_note._BendValues[reverse_iterator], &new_note._BendValues[reverse_iterator - 1]);
+
+							--reverse_iterator;
+						}
+					}
 				}
 			}
 		}
@@ -836,6 +879,10 @@ public:
 									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::PALM_MUTED;
 								}
 
+								//Set the bend offsets/values.
+								new_event._BendOffsets = note._BendOffsets;
+								new_event._BendValues = note._BendValues;
+
 								//Set whether or not this is a slide event.
 								new_event._IsSlideEvent = last_played_note._WasSlideOrigin;
 
@@ -932,6 +979,12 @@ private:
 
 			//The flags.
 			Flags _Flags;
+
+			//The bend offsets.
+			DynamicArray<float32> _BendOffsets;
+
+			//The bend values.
+			DynamicArray<float32> _BendValues;
 
 		};
 
