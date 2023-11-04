@@ -12,6 +12,13 @@
 #include <ThirdParty/Minizip/minizip/unzip.h>
 #include <ThirdParty/pugixml/pugixml.hpp>
 
+/*
+*	TODO:
+*	Handles linear tempo events.
+*	Correctly identify dead notes.
+*	Correctly identify tapped notes.
+*	Correctly identify pinched harmonic notes.
+*/
 class GPReader
 {
 
@@ -73,7 +80,8 @@ public:
 						SUSTAIN,
 						PALM_MUTED,
 						HAMMER_ON,
-						PULL_OFF
+						PULL_OFF,
+						NATURAL_HARMONIC
 					};
 
 					//The offset (from the start of the bar, in quarter notes).
@@ -90,6 +98,12 @@ public:
 
 					//The articulation.
 					Articulation _Articulation;
+
+					//Denotes if this is a slide event.
+					bool _IsSlideEvent;
+
+					//The text (if any) associated with this event.
+					DynamicString _Text;
 
 				};
 
@@ -310,17 +324,43 @@ public:
 
 			for (const pugi::xml_node master_bar_node : master_bars_node)
 			{
-				const pugi::xml_node time_node{ master_bar_node.child("Time") };
+				{
+					const pugi::xml_node bars_node{ master_bar_node.child("Bars") };
+					const pugi::char_t *RESTRICT bars_string{ bars_node.child_value() };
 
-				tablature->_Bars.Emplace();
-				Tablature::Bar& new_bar{ tablature->_Bars.Back() };
+					temporary_data._TrackToBarMappings.Emplace();
+					DynamicArray<int32> &track_to_bar_mapping{ temporary_data._TrackToBarMappings.Back() };
 
-				new_bar._Tempo = FLOAT64_MAXIMUM; //Will be filled in when we read the master track data. (:
-				const pugi::char_t *RESTRICT numerator_string{ time_node.child_value() };
-				new_bar._TimeSignatureNumerator = static_cast<uint8>(std::stoul(numerator_string));
-				const pugi::char_t* RESTRICT denominator_string{ numerator_string };
-				while (*denominator_string) { if ((*denominator_string) == '/') { ++denominator_string; break; } else { ++denominator_string; } }
-				new_bar._TimeSignatureDenominator = std::stoul(denominator_string);
+					track_to_bar_mapping.Emplace(std::stoi(bars_string));
+
+					while (*bars_string)
+					{
+						if ((*bars_string) == ' ')
+						{
+							++bars_string;
+							track_to_bar_mapping.Emplace(std::stoi(bars_string));
+						}
+
+						else
+						{
+							++bars_string;
+						}
+					}
+				}
+
+				{
+					const pugi::xml_node time_node{ master_bar_node.child("Time") };
+
+					tablature->_Bars.Emplace();
+					Tablature::Bar& new_bar{ tablature->_Bars.Back() };
+
+					new_bar._Tempo = FLOAT64_MAXIMUM; //Will be filled in when we read the master track data. (:
+					const pugi::char_t* RESTRICT numerator_string{ time_node.child_value() };
+					new_bar._TimeSignatureNumerator = static_cast<uint8>(std::stoul(numerator_string));
+					const pugi::char_t* RESTRICT denominator_string{ numerator_string };
+					while (*denominator_string) { if ((*denominator_string) == '/') { ++denominator_string; break; } else { ++denominator_string; } }
+					new_bar._TimeSignatureDenominator = std::stoul(denominator_string);
+				}
 			}
 		}
 
@@ -392,7 +432,22 @@ public:
 							}
 						}
 					}
-					
+				}
+				
+				//Initialize the last played note for this track.
+				temporary_data._LastPlayedNotes.Emplace();
+				DynamicArray<TemporaryData::LastPlayedNote> &last_played_notes{ temporary_data._LastPlayedNotes.Back() };
+
+				for (uint64 string_index{ 0 }; string_index < new_track._Tuning.Size(); ++string_index)
+				{
+					last_played_notes.Emplace();
+					TemporaryData::LastPlayedNote &last_played_note{ last_played_notes.Back() };
+
+					last_played_note._FretIndex = -1;
+					last_played_note._WasTieOrigin = false;
+					last_played_note._WasSlideOrigin = false;
+					last_played_note._BarIndex = UINT64_MAXIMUM;
+					last_played_note._EventIndex = UINT64_MAXIMUM;
 				}
 			}
 		}
@@ -489,6 +544,18 @@ public:
 						}
 					}
 				}
+
+				//Read the text.
+				{
+					const pugi::xml_node free_text_node{ beat_node.child("FreeText") };
+
+					if (free_text_node)
+					{
+						const pugi::char_t *RESTRICT free_text_string{ free_text_node.child_value() };
+
+						new_beat._Text = free_text_string;
+					}
+				}
 			}
 		}
 
@@ -506,6 +573,11 @@ public:
 
 				if (const pugi::xml_node tie_node{ note_node.child("Tie") })
 				{
+					if (StringUtilities::IsEqual(tie_node.attribute("origin").value(), "true"))
+					{
+						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::TIE_ORIGIN));
+					}
+
 					if (StringUtilities::IsEqual(tie_node.attribute("destination").value(), "true"))
 					{
 						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::TIE_DESTINATION));
@@ -529,16 +601,34 @@ public:
 						new_note._StringIndex = static_cast<uint8>(std::stoul(property_node.child("String").child_value()));
 					}
 
+					else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "HarmonicType"))
+					{
+						const pugi::xml_node h_type_node{ property_node.child("HType") };
+
+						if (StringUtilities::IsEqual(h_type_node.child_value(), "Natural"))
+						{
+							new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::NATURAL_HARMONIC));
+						}
+
+						//TODO: Handle pinch harmonics.
+					}
+
 					else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "HopoDestination"))
 					{
-						//Add the flag,
+						//Add the flag.
 						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::HOPO_DESTINATION));
 					}
 
 					else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "PalmMuted"))
 					{
-						//Add the flag,
+						//Add the flag.
 						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::PALM_MUTED));
+					}
+
+					else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "Slide"))
+					{
+						//Add the flag.
+						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::SLIDE_ORIGIN));
 					}
 				}
 			}
@@ -633,8 +723,11 @@ public:
 				//Remember the current offset.
 				float64 current_offset{ 0.0 };
 
+				//Retrieve the track to bar mapping.
+				const int32 track_to_bar_mapping{ temporary_data._TrackToBarMappings[bar_index][track_index] };
+
 				//Cache the bar to voices mapping.
-				const DynamicArray<int32> &bar_to_voice_mappings{ temporary_data._BarToVoiceMappings[track_index + (bar_index * tablature->_Tracks.Size())] };
+				const DynamicArray<int32> &bar_to_voice_mappings{ temporary_data._BarToVoiceMappings[track_to_bar_mapping] };
 
 				for (const int32 bar_to_voice_mapping : bar_to_voice_mappings)
 				{
@@ -660,50 +753,49 @@ public:
 								continue;
 							}
 
-							//If this is a tie destination, iterate backwards and try to extend a previous event.
-							if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::TIE_DESTINATION)))
+							//Cache the last played note on this string.
+							TemporaryData::LastPlayedNote &last_played_note{ temporary_data._LastPlayedNotes[track_index][note._StringIndex] };
+
+							//If the last played note was a tie origin, simply extend it.
+							if (last_played_note._WasTieOrigin && TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::TIE_DESTINATION)))
 							{
-								int64 current_event_index{ static_cast<int64>(track_bar._Events.Size()) - 1 };
-								int64 current_bar_index{ static_cast<int64>(bar_index) };
-								bool found{ false };
+								//Cache the tie origin track bar/event.
+								Tablature::Track::TrackBar &tie_origin_track_bar{ track._TrackBars[last_played_note._BarIndex] };
+								Tablature::Track::TrackBar::Event &tie_origin_event{ tie_origin_track_bar._Events[last_played_note._EventIndex] };
 
-								while (current_bar_index > 0 && !found)
+								//If the tie origin event was from the same bar, the duration is simply the current offset minus the offset of the tie origin event.
+								if (last_played_note._BarIndex == bar_index)
 								{
-									if (current_event_index < 0)
+									tie_origin_event._Duration = (current_offset + SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0)) - tie_origin_event._Offset;
+								}
+
+								//Otherwise, add up the duration!
+								else
+								{
+									tie_origin_event._Duration = 0.0;
+
+									//Add the duration from the start of the tie origin event to the end of it's bar.
+									tie_origin_event._Duration += CalculateDurationOfBar(*tie_origin_track_bar._Bar) - tie_origin_event._Offset;
+								
+									//Add the duration of all in-between bars. This needs to be relative to the tie origin event's tempo, so include that.
+									for (uint64 in_between_index{ last_played_note._BarIndex + 1 }; in_between_index < bar_index; ++in_between_index)
 									{
-										--current_bar_index;
+										const Tablature::Bar &in_between_bar{ tablature->_Bars[in_between_index] };
 
-										if (current_bar_index < 0)
-										{
-											break;
-										}
-
-										current_event_index = static_cast<int64>(track._TrackBars[current_bar_index]._Events.Size()) - 1;
+										tie_origin_event._Duration += CalculateDurationOfBar(in_between_bar) * (in_between_bar._Tempo / tie_origin_track_bar._Bar->_Tempo);
 									}
 
-									Tablature::Track::TrackBar &current_track_bar{ track._TrackBars[current_bar_index] };
-									Tablature::Track::TrackBar::Event &current_event{ current_track_bar._Events[current_event_index] };
-
-									if (current_event._StringIndex == note._StringIndex && current_event._FretIndex == note._FretIndex)
-									{
-										//TODO: Do proper calculation here.
-										current_event._Duration += SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0);
-
-										found = true;
-									}
-
-									else
-									{
-										--current_event_index;
-									}
+									//Finally, add the current offset, again taking into consideration tempo changes.
+									tie_origin_event._Duration += (current_offset + SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0)) * (bar._Tempo / tie_origin_track_bar._Bar->_Tempo);
 								}
 							}
 
+							//Otherwise, add a new event!
 							else
 							{
 								//Add the new event.
 								track_bar._Events.Emplace();
-								Tablature::Track::TrackBar::Event& new_event{ track_bar._Events.Back() };
+								Tablature::Track::TrackBar::Event &new_event{ track_bar._Events.Back() };
 
 								//Set the offset.
 								new_event._Offset = current_offset;
@@ -720,16 +812,42 @@ public:
 								//Set the articulation.
 								new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::SUSTAIN;
 
-								if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::HOPO_DESTINATION)))
+								if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::NATURAL_HARMONIC)))
 								{
-									//TODO: Figure out if this is a hammer-on or a pull-off. (:
-									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::HAMMER_ON;
+									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::NATURAL_HARMONIC;
+								}
+
+								else if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::HOPO_DESTINATION)))
+								{
+									//Figure out if this note is a hammer on or a pull off.
+									if (last_played_note._FretIndex < note._FretIndex)
+									{
+										new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::HAMMER_ON;
+									}
+
+									else
+									{
+										new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::PULL_OFF;
+									}
 								}
 
 								else if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::PALM_MUTED)))
 								{
 									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::PALM_MUTED;
 								}
+
+								//Set whether or not this is a slide event.
+								new_event._IsSlideEvent = last_played_note._WasSlideOrigin;
+
+								//Set the text.
+								new_event._Text = beat._Text;
+
+								//Update the last played note.
+								last_played_note._FretIndex = note._FretIndex;
+								last_played_note._WasTieOrigin = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::TIE_ORIGIN));
+								last_played_note._WasSlideOrigin = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::SLIDE_ORIGIN));
+								last_played_note._BarIndex = bar_index;
+								last_played_note._EventIndex = track_bar._Events.LastIndex();
 							}
 						}
 
@@ -781,6 +899,9 @@ private:
 			//The note indices.
 			DynamicArray<uint32> _NoteIndices;
 
+			//The text.
+			DynamicString _Text;
+
 		};
 
 		/*
@@ -796,8 +917,11 @@ private:
 			{
 				NONE = 0,
 				HOPO_DESTINATION = BIT(0),
-				PALM_MUTED = BIT(1),
-				TIE_DESTINATION = BIT(2)
+				NATURAL_HARMONIC = BIT(1),
+				PALM_MUTED = BIT(2),
+				SLIDE_ORIGIN = BIT(3),
+				TIE_ORIGIN = BIT(4),
+				TIE_DESTINATION = BIT(5)
 			};
 
 			//The string index.
@@ -827,6 +951,34 @@ private:
 
 		};
 
+		/*
+		*	Last played note class definition.
+		*/
+		class LastPlayedNote final
+		{
+
+		public:
+
+			//The fret index.
+			int8 _FretIndex;
+
+			//Whether or not this was a tie origin.
+			bool _WasTieOrigin;
+
+			//Whether or not this was a slide origin.
+			bool _WasSlideOrigin;
+
+			//The bar index.
+			uint64 _BarIndex;
+
+			//The event index.
+			uint64 _EventIndex;
+
+		};
+
+		//The track to bar mappings.
+		DynamicArray<DynamicArray<int32>> _TrackToBarMappings;
+
 		//The bar to voice mappings.
 		DynamicArray<DynamicArray<int32>> _BarToVoiceMappings;
 
@@ -841,7 +993,41 @@ private:
 
 		//The rhythms.
 		DynamicArray<Rhythm> _Rhythms;
+		
+		//Container for the last played note, per track, per string.
+		DynamicArray<DynamicArray<LastPlayedNote>> _LastPlayedNotes;
 
 	};
+
+	/*
+	*	Calculates the duration (in quarter notes) of a bar.
+	*/
+	FORCE_INLINE static NO_DISCARD float64 CalculateDurationOfBar(const Tablature::Bar &bar) NOEXCEPT
+	{
+		switch (bar._TimeSignatureDenominator)
+		{
+			case 4:
+			{
+				return static_cast<float64>(bar._TimeSignatureNumerator);
+			}
+
+			case 8:
+			{
+				return static_cast<float64>(bar._TimeSignatureNumerator) * 0.5;
+			}
+
+			case 16:
+			{
+				return static_cast<float64>(bar._TimeSignatureNumerator) * 0.25;
+			}
+
+			default:
+			{
+				ASSERT(false, "Handle this!");
+
+				return 0.0;
+			}
+		}
+	}
 
 };
