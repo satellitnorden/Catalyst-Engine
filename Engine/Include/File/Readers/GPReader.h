@@ -15,7 +15,6 @@
 /*
 *	TODO:
 *	Handles linear tempo events.
-*	Correctly identify dead notes.
 *	Correctly identify tapped notes.
 *	Correctly identify pinched harmonic notes.
 */
@@ -81,6 +80,7 @@ public:
 						PALM_MUTED,
 						HAMMER_ON,
 						PULL_OFF,
+						DEAD,
 						NATURAL_HARMONIC
 					};
 
@@ -619,6 +619,12 @@ public:
 						//TODO: Handle pinch harmonics.
 					}
 
+					else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "Muted"))
+					{
+						//Add the flag.
+						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::DEAD));
+					}
+
 					else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "HopoDestination"))
 					{
 						//Add the flag.
@@ -879,6 +885,11 @@ public:
 									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::PALM_MUTED;
 								}
 
+								else if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::DEAD)))
+								{
+									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::DEAD;
+								}
+
 								//Set the bend offsets/values.
 								new_event._BendOffsets = note._BendOffsets;
 								new_event._BendValues = note._BendValues;
@@ -963,12 +974,13 @@ private:
 			enum class Flags : uint8
 			{
 				NONE = 0,
-				HOPO_DESTINATION = BIT(0),
-				NATURAL_HARMONIC = BIT(1),
-				PALM_MUTED = BIT(2),
-				SLIDE_ORIGIN = BIT(3),
-				TIE_ORIGIN = BIT(4),
-				TIE_DESTINATION = BIT(5)
+				DEAD = BIT(0),
+				HOPO_DESTINATION = BIT(1),
+				NATURAL_HARMONIC = BIT(2),
+				PALM_MUTED = BIT(3),
+				SLIDE_ORIGIN = BIT(4),
+				TIE_ORIGIN = BIT(5),
+				TIE_DESTINATION = BIT(6)
 			};
 
 			//The string index.
