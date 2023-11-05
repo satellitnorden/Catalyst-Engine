@@ -5,6 +5,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Sound.
 #include <Sound/SoundUtilities.h>
 
@@ -154,6 +157,8 @@ public:
 	*/
 	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, Tablature *const RESTRICT tablature) NOEXCEPT
 	{
+		PROFILING_SCOPE(GPReader_Read);
+
 		//Set up the temporary data.
 		TemporaryData temporary_data;
 
