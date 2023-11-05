@@ -30,6 +30,7 @@ enum class UserInterfaceElementType : uint8
 	IMAGE,
 	PROGRESS_BAR,
 	TEXT,
+	TEXT_INPUT,
 
 	NUMBER_OF_USER_INTERFACE_ELEMENT_TYPES
 };

@@ -175,7 +175,7 @@ public:
 	}
 
 	/*
-	*	Addition operator overload.
+	*	Addition operator overload for C-style strings.
 	*/
 	FORCE_INLINE NO_DISCARD DynamicString operator+(const char *const RESTRICT new_string) const NOEXCEPT
 	{
@@ -203,7 +203,7 @@ public:
 	}
 
 	/*
-	*	Addition assignment operator overload.
+	*	Addition assignment operator overload for C-style strings.
 	*/
 	FORCE_INLINE void operator+=(const char *const RESTRICT new_string) NOEXCEPT
 	{
@@ -216,6 +216,33 @@ public:
 
 		//Copy the new string.
 		Memory::Copy(_String + _Length, new_string, new_string_length);
+
+		//Update the length of the string.
+		_Length = new_length;
+	}
+
+	/*
+	*	Addition assignment operator overload for charrs.
+	*/
+	FORCE_INLINE void operator+=(const char new_character) NOEXCEPT
+	{
+		//Calculate the new length.
+		const uint64 new_length = _Length + 1;
+
+		//Allocate sufficient memory to host the concatenated string.
+		if (!_String)
+		{
+			_String = static_cast<char *RESTRICT>(Memory::Allocate( new_length + 1));
+		}
+
+		else
+		{
+			_String = static_cast<char *RESTRICT>(Memory::Reallocate(static_cast<void *RESTRICT>(_String), new_length + 1));
+		}
+
+		//Copy the new string.
+		Memory::Copy(_String + _Length, &new_character, sizeof(char));
+		_String[_Length + 1] = '\0';
 
 		//Update the length of the string.
 		_Length = new_length;

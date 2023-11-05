@@ -9,7 +9,7 @@
 
 //Systems.
 #if defined(CATALYST_EDITOR)
-#include <Systems/CatalystEditorSystem.h>
+	#include <Systems/CatalystEditorSystem.h>
 #endif
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/ResourceSystem.h>
@@ -90,6 +90,9 @@ void UserInterfaceScene::Update() NOEXCEPT
 {
 	//Update buttons.
 	UpdateButtons();
+
+	//Update the text inputs.
+	UpdateTextInputs();
 }
 
 /*
@@ -141,6 +144,15 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 	}
 
 	_Texts.Clear();
+
+	//Free all text inputs.
+	for (UserInterfaceTextInput *const RESTRICT text_input : _TextInputs)
+	{
+		text_input->~UserInterfaceTextInput();
+		MemorySystem::Instance->TypeFree<UserInterfaceTextInput>(text_input);
+	}
+
+	_TextInputs.Clear();
 
 	//Clear the button interfaces.
 	_ButtonInterfaces.Clear();
@@ -555,6 +567,75 @@ void UserInterfaceScene::RemoveText(UserInterfaceText *const RESTRICT text) NOEX
 }
 
 /*
+*	Adds a text input, using cells.
+*/
+RESTRICTED UserInterfaceTextInput *const RESTRICT UserInterfaceScene::AddTextInputByCell(	const Vector2<uint32> &minimum_cell,
+																							const Vector2<uint32> &maximum_cell,
+																							const char *const RESTRICT prompt_text,
+																							const char *const RESTRICT text) NOEXCEPT
+{
+	//Calculate the bounding box.
+	Vector2<float32> minimum;
+	Vector2<float32> maximum;
+
+	CalculateBoundingBox(minimum_cell, maximum_cell, &minimum, &maximum);
+
+	//Add the text input.
+	return AddTextInputByNormalizedCoordinate(	minimum,
+												maximum,
+												prompt_text,
+												text);
+}
+
+/*
+*	Adds a text input, using raw coordinates.
+*/
+RESTRICTED UserInterfaceTextInput *const RESTRICT UserInterfaceScene::AddTextInputByNormalizedCoordinate(	const Vector2<float32> &minimum,
+																											const Vector2<float32> &maximum,
+																											const char *const RESTRICT prompt_text,
+																											const char *const RESTRICT text) NOEXCEPT
+{
+	//Allocate the text input.
+	UserInterfaceTextInput *const RESTRICT new_text_input
+	{
+		new (MemorySystem::Instance->TypeAllocate<UserInterfaceTextInput>()) UserInterfaceTextInput
+		(
+			minimum,
+			maximum,
+			_ButtonIdleMaterial,
+			_FontResource,
+			_TextScale,
+			prompt_text,
+			text
+		)
+	};
+
+	//Add the text input to the container.
+	_TextInputs.Emplace(new_text_input);
+
+	//Add the text input to the elements container.
+	_Elements.Emplace(new_text_input);
+
+	//Set the parent.
+	new_text_input->SetParent(this);
+
+	//Return the text input.
+	return new_text_input;
+}
+
+/*
+*	Removes a text input.
+*/
+void UserInterfaceScene::RemoveTextInput(UserInterfaceTextInput *const RESTRICT text_input) NOEXCEPT
+{
+	_TextInputs.Erase<false>(text_input);
+	_Elements.Erase<true>(text_input);
+
+	text_input->~UserInterfaceTextInput();
+	MemorySystem::Instance->TypeFree<UserInterfaceTextInput>(text_input);
+}
+
+/*
 *	Removes all user interface elements.
 */
 void UserInterfaceScene::RemoveAll() NOEXCEPT
@@ -598,6 +679,13 @@ void UserInterfaceScene::RemoveAll() NOEXCEPT
 			case UserInterfaceElementType::TEXT:
 			{
 				RemoveText(static_cast<UserInterfaceText *const RESTRICT>(element));
+
+				break;
+			}
+
+			case UserInterfaceElementType::TEXT_INPUT:
+			{
+				RemoveTextInput(static_cast<UserInterfaceTextInput *const RESTRICT>(element));
 
 				break;
 			}
@@ -942,6 +1030,18 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 				break;
 			}
 		}
+	}
+}
+
+/*
+*	Updates text inputs.
+*/
+void UserInterfaceScene::UpdateTextInputs() NOEXCEPT
+{
+	//Update all text inputs.
+	for (UserInterfaceTextInput *const RESTRICT text_input : _TextInputs)
+	{
+		text_input->Update();
 	}
 }
 

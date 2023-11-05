@@ -13,6 +13,7 @@
 #include <UserInterface/UserInterfaceImage.h>
 #include <UserInterface/UserInterfaceProgressBar.h>
 #include <UserInterface/UserInterfaceText.h>
+#include <UserInterface/UserInterfaceTextInput.h>
 
 //Forward declarations.
 class UserInterfaceEntity;
@@ -333,6 +334,27 @@ protected:
 	*	Removes a text.
 	*/
 	void RemoveText(UserInterfaceText *const RESTRICT text) NOEXCEPT;
+
+	/*
+	*	Adds a text input, using cells.
+	*/
+	RESTRICTED UserInterfaceTextInput *const RESTRICT AddTextInputByCell(	const Vector2<uint32> &minimum_cell,
+																			const Vector2<uint32> &maximum_cell,
+																			const char *const RESTRICT prompt_text,
+																			const char *const RESTRICT text = "") NOEXCEPT;
+
+	/*
+	*	Adds a text input, using raw coordinates.
+	*/
+	RESTRICTED UserInterfaceTextInput *const RESTRICT AddTextInputByNormalizedCoordinate(	const Vector2<float32> &minimum,
+																							const Vector2<float32> &maximum,
+																							const char *const RESTRICT prompt_text,
+																							const char *const RESTRICT text = "") NOEXCEPT;
+
+	/*
+	*	Removes a text input.
+	*/
+	void RemoveTextInput(UserInterfaceTextInput *const RESTRICT text_input) NOEXCEPT;
 
 	/*
 	*	Removes all user interface elements.
@@ -880,6 +902,9 @@ private:
 	//The texts.
 	DynamicArray<UserInterfaceText *RESTRICT> _Texts;
 
+	//The text inputs.
+	DynamicArray<UserInterfaceTextInput *RESTRICT> _TextInputs;
+
 	//The button interfaces.
 	DynamicArray<ButtonInterface> _ButtonInterfaces;
 
@@ -890,6 +915,11 @@ private:
 	*	Updates buttons.
 	*/
 	void UpdateButtons() NOEXCEPT;
+
+	/*
+	*	Updates text inputs.
+	*/
+	void UpdateTextInputs() NOEXCEPT;
 
 	/*
 	*	Retrieves the cursor state.
