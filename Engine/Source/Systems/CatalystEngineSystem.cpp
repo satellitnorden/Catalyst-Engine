@@ -60,6 +60,8 @@ namespace CatalystEngineSystemData
 */
 void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initial_project_configuration) NOEXCEPT
 {
+	PROFILING_SCOPE(CatalystEngineSystem_Initialize);
+
 	//Initialize the current thread's index.
 	Concurrency::CurrentThread::InitializeIndex();
 
@@ -174,6 +176,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 bool CatalystEngineSystem::Update() NOEXCEPT
 {
 	PROFILING_FRAME();
+	PROFILING_SCOPE(CatalystEngineSystem_Update);
 
 	//Define constants.
 	constexpr float32 MAXIMUM_DELTA_TIME{ 0.1f };
@@ -188,9 +191,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 		return true;
 	}
-
-	//Start the profiling scope.
-	PROFILING_SCOPE(CatalystEngineUpdate);
 
 	//Update the total frames.
 	++_TotalFrames;
@@ -319,6 +319,8 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 */
 void CatalystEngineSystem::Terminate() NOEXCEPT
 {
+	PROFILING_SCOPE(CatalystEngineSystem_Terminate);
+
 	//Flush the logs before termination.
 	LogSystem::Instance->Flush();
 
