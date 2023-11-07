@@ -398,4 +398,51 @@ namespace HashAlgorithms
 		return hash;
 	}
 
+	/*
+	*	Given arbitrary data and a length of the data, specified in bytes, returns a 64-bit hashed value.
+	*	Uses the Jenkins hashing algorithm.
+	*/
+	FORCE_INLINE static constexpr uint64 MurmurHash64(const void *const RESTRICT input, const uint64 length, const uint64 seed = 0) NOEXCEPT
+	{
+		constexpr uint64 M{ 0xc6a4a7935bd1e995 };
+		constexpr int32 R{ 47 };
+
+		uint64_t hash{ seed ^ (length * M) };
+
+		const uint64_t *data{ (const uint64_t*)input };
+		const uint64_t *end{ data + (length / 8) };
+
+		while (data != end)
+		{
+			uint64_t k{ *(data++) };
+
+			k *= M;
+			k ^= k >> R;
+			k *= M;
+
+			hash ^= k;
+			hash *= M;
+		}
+
+		const unsigned char *data_2{ (const unsigned char*)data };
+
+		switch (length & 7)
+		{
+			case 7: hash ^= uint64_t(data_2[6]) << 48;
+			case 6: hash ^= uint64_t(data_2[5]) << 40;
+			case 5: hash ^= uint64_t(data_2[4]) << 32;
+			case 4: hash ^= uint64_t(data_2[3]) << 24;
+			case 3: hash ^= uint64_t(data_2[2]) << 16;
+			case 2: hash ^= uint64_t(data_2[1]) << 8;
+			case 1: hash ^= uint64_t(data_2[0]);
+				hash *= M;
+		};
+
+		hash ^= hash >> R;
+		hash *= M;
+		hash ^= hash >> R;
+
+		return hash;
+	}
+
 }
