@@ -16,21 +16,6 @@
 //Sound sub system WASAPI constants.
 namespace SoundSubSystemWASAPIConstants
 {
-	//List of desired bit depths.
-	constexpr uint8 DESIRED_BIT_DEPTHS[]
-	{
-		16,
-		32,
-		8
-	};
-
-	//List of desired sample rates.
-	constexpr float32 DESIRED_SAMPLE_RATES[]
-	{
-		44'100.0f,
-		48'000.0f
-	};
-
 	constexpr CLSID MMDeviceEnumerator_CLSID{ __uuidof(MMDeviceEnumerator) };
 	constexpr IID IAudioClient_IID{ __uuidof(IAudioClient) };
 	constexpr IID IAudioRenderClient_IID{ __uuidof(IAudioRenderClient) };
@@ -453,7 +438,17 @@ void SoundSubSystemWASAPI::Update() NOEXCEPT
 	_Initialized = true;
 
 	//Initialize the mixing buffers.
-	_SoundSystem->InitializeMixingBuffers(SoundSystem::DEFAULT_NUMBER_OF_MIXING_BUFFERS, SoundSystem::DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER);
+	{
+		uint32 number_of_mixing_buffers{ SoundSystem::DEFAULT_NUMBER_OF_MIXING_BUFFERS };
+		uint32 number_of_samples_per_mixing_buffer{ SoundSystem::DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER };
+
+		while ((number_of_mixing_buffers * number_of_samples_per_mixing_buffer) < _BufferSize)
+		{
+			number_of_mixing_buffers *= 2;
+		}
+
+		_SoundSystem->InitializeMixingBuffers(number_of_mixing_buffers, number_of_samples_per_mixing_buffer);
+	}
 
 	//Start playing.
 	HANDLE_ERROR(_AudioClient->Start());
