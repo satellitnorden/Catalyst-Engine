@@ -27,6 +27,7 @@ namespace File
 		TGA,
 		TXT,
 		WAV,
+		XML,
 
 		UNKNOWN
 	};
@@ -155,6 +156,11 @@ namespace File
 		if (strcmp(dot_position, ".wav") == 0)
 		{
 			return Extension::WAV;
+		}
+
+		if (strcmp(dot_position, ".xml") == 0)
+		{
+			return Extension::XML;
 		}
 
 		return Extension::UNKNOWN;
