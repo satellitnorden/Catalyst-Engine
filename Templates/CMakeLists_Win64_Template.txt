@@ -28,6 +28,7 @@ add_compile_definitions($<$<CONFIG:Debug>:_DEBUG>
 						$<$<CONFIG:ProfileEditor>:NDEBUG>
 						$<$<CONFIG:Final>:NDEBUG>
 						)
+add_compile_definitions(__WINDOWS_WASAPI__)
 add_compile_definitions(__WINDOWS_ASIO__)
 add_compile_definitions(__WINDOWS_MM__)
 add_compile_definitions($<$<CONFIG:Debug>:CATALYST_CONFIGURATION_DEBUG>

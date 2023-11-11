@@ -88,7 +88,7 @@ namespace SoundSubSystemASIOLogic
 /*
 *	The error callback.
 */
-void ErrorCallback(RtAudioErrorType type, const std::string &error_text) NOEXCEPT
+static void ErrorCallback(RtAudioErrorType type, const std::string &error_text) NOEXCEPT
 {
 	switch (type)
 	{
