@@ -12,21 +12,12 @@
 #include <ThirdParty/RtAudio/RtAudio.h>
 
 /*
-	*	Opened input stream class definition.
-	*/
+*	Opened input stream class definition.
+*/
 class OpenedInputStream final
 {
 
 public:
-
-	//The parent.
-	SoundSubSystemASIO *RESTRICT _Parent;
-
-	//The RtAudio object.
-	RtAudio *RESTRICT _RtAudio;
-
-	//The audio device.
-	AudioDevice _AudioDevice;
 
 	//The start channel index.
 	uint32 _StartChannelIndex;
@@ -40,17 +31,11 @@ public:
 	//The user data.
 	void *RESTRICT _UserData;
 
-	//The sample rate.
-	float32 _SampleRate;
-
-	//The sound format.
-	SoundFormat _SoundFormat;
+	//Denotes if this input stream wants to stop.
+	AtomicFlag _WantsToStop;
 
 	//The samples buffer.
 	DynamicArray<float32> _SamplesBuffer;
-
-	//Denotes if this input stream wants to stop.
-	AtomicFlag _WantsToStop;
 
 };
 
@@ -124,119 +109,6 @@ namespace SoundSubSystemASIOLogic
 				return 0;
 			}
 		}
-	}
-
-	/*
-	*	The input stream callback.
-	*/
-	FORCE_INLINE NO_DISCARD int32 InputStreamCallback
-	(
-		void *outputBuffer,
-		void *inputBuffer,
-		unsigned int nFrames,
-		double streamTime,
-		RtAudioStreamStatus status,
-		void *userData) NOEXCEPT
-	{
-		//Cache the opened input stream.
-		OpenedInputStream *const RESTRICT opened_input_stream{ static_cast<OpenedInputStream* const RESTRICT>(userData) };
-	
-		//If this input stream wants to stop, do nothing.
-		if (opened_input_stream->_WantsToStop.IsSet())
-		{
-			return 0;
-		}
-
-		//Check if we need to upsize the samples buffer.
-		if (opened_input_stream->_SamplesBuffer.Size() < nFrames)
-		{
-			opened_input_stream->_SamplesBuffer.Upsize<false>(nFrames);
-		}
-
-		//Convert the incoming buffer to float32.
-		for (uint32 sample_index{ 0 }; sample_index < nFrames; ++sample_index)
-		{
-			switch (opened_input_stream->_SoundFormat)
-			{
-				case SoundFormat::SIGNED_INTEGER_8_BIT:
-				{
-					const int8 sample{ static_cast<const int8 *const RESTRICT>(inputBuffer)[sample_index] };
-					opened_input_stream->_SamplesBuffer[sample_index] = static_cast<float32>(sample) / static_cast<float32>(INT8_MAXIMUM);
-
-					break;
-				}
-
-				case SoundFormat::SIGNED_INTEGER_16_BIT:
-				{
-					const int16 sample{ static_cast<const int16*const RESTRICT>(inputBuffer)[sample_index] };
-					opened_input_stream->_SamplesBuffer[sample_index] = static_cast<float32>(sample) / static_cast<float32>(INT16_MAXIMUM);
-
-					break;
-				}
-
-				/* TODO!
-				case SoundFormat::SIGNED_INTEGER_24_BIT:
-				{
-					const int16 sample{ static_cast<const int16 *const RESTRICT>(inputBuffer)[sample_index] };
-					opened_input_stream->_SamplesBuffer[sample_index] = static_cast<float32>(sample) / static_cast<float32>(INT16_MAXIMUM);
-
-					break;
-				}
-				*/
-
-				case SoundFormat::SIGNED_INTEGER_32_BIT:
-				{
-					const int32 sample{ static_cast<const int32 *const RESTRICT>(inputBuffer)[sample_index] };
-					opened_input_stream->_SamplesBuffer[sample_index] = static_cast<float32>(sample) / static_cast<float32>(INT32_MAXIMUM);
-
-					break;
-				}
-
-				case SoundFormat::FLOAT_32_BIT:
-				{
-					const float32 sample{ static_cast<const float32 *const RESTRICT>(inputBuffer)[sample_index] };
-					opened_input_stream->_SamplesBuffer[sample_index] = sample;
-
-					break;
-				}
-
-				case SoundFormat::FLOAT_64_BIT:
-				{
-					const float64 sample{ static_cast<const float64 *const RESTRICT>(inputBuffer)[sample_index] };
-					opened_input_stream->_SamplesBuffer[sample_index] = static_cast<float32>(sample);
-
-					break;
-				}
-
-				default:
-				{
-					ASSERT(false, "Invalid case!");
-
-					break;
-				}
-			}
-		}
-
-		//Call the callback.
-		const bool wants_to_continue
-		{
-			opened_input_stream->_InputStreamCallback
-			(
-				opened_input_stream->_SamplesBuffer.Data(),
-				nFrames,
-				opened_input_stream->_SampleRate,
-				opened_input_stream->_NumberOfChannels,
-				opened_input_stream->_UserData
-			)
-		};
-
-		//Set if this stream wants to stop.
-		if (!wants_to_continue)
-		{
-			opened_input_stream->_WantsToStop.Set();
-		}
-
-		return 0;
 	}
 
 }
@@ -417,121 +289,8 @@ void SoundSubSystemASIO::Initialize(const InitializationParameters &initializati
 	//Set the handle
 	_OpenedAudioDevice._Handle = _RtAudio;
 
-	//Set the number of channels.
-	_NumberOfChannels = 2;
-
-	//Determine the sound format.
-	_SoundFormat = SoundFormat::UNKNOWN;
-
-	for (uint64 i{ 0 }; i < ARRAY_LENGTH(SoundSubSystemASIOConstants::DESIRED_SOUND_FORMATS) && _SoundFormat == SoundFormat::UNKNOWN; ++i)
-	{
-		for (const SoundFormat available_sound_format : _OpenedAudioDevice._AvailableSoundFormats)
-		{
-			if (available_sound_format == SoundSubSystemASIOConstants::DESIRED_SOUND_FORMATS[i])
-			{
-				_SoundFormat = available_sound_format;
-
-				break;
-			}
-		}
-	}
-
-	ASSERT(_SoundFormat != SoundFormat::UNKNOWN, "Couldn't find a proper sound format!");
-
-	//Determine the sample rate.
-	float32 sample_rate{ 0.0f };
-
-	for (uint64 i{ 0 }; i < ARRAY_LENGTH(SoundSubSystemASIOConstants::DESIRED_SAMPLE_RATES) && sample_rate == 0.0f; ++i)
-	{
-		for (const float32 available_sample_rate : _OpenedAudioDevice._AvailableSampleRates)
-		{
-			if (available_sample_rate == SoundSubSystemASIOConstants::DESIRED_SAMPLE_RATES[i])
-			{
-				sample_rate = available_sample_rate;
-
-				break;
-			}
-		}
-	}
-
-	ASSERT(sample_rate != 0.0f, "Couldn't find a proper sample rate!");
-
-	_SampleRate = sample_rate;
-
-	//Open the stream.
-	RtAudio::StreamParameters output_parameters;
-
-	output_parameters.deviceId = static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle)->getDeviceIds()[_OpenedAudioDevice._Index];
-	output_parameters.nChannels = _NumberOfChannels;
-	output_parameters.firstChannel = 0;
-
-	uint32 buffer_frames{ 0 };
-
-	auto audio_callback{ [](void *outputBuffer, void *inputBuffer,
-							unsigned int nFrames,
-							double streamTime,
-							RtAudioStreamStatus status,
-							void *userData)
-	{
-		const SoundSubSystemASIO *const RESTRICT sub_system{static_cast<const SoundSubSystemASIO *const RESTRICT>(userData)};
-
-		sub_system->_SoundSystem->SoundCallback
-		(
-			sub_system->_SampleRate,
-			sub_system->_SoundFormat,
-			sub_system->_NumberOfChannels,
-			nFrames,
-			outputBuffer
-		);
-
-		return 0;
-	} };
-
-
-
-	RtAudio::StreamOptions stream_options;
-
-	stream_options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_SCHEDULE_REALTIME;
-	stream_options.numberOfBuffers = 0;
-	stream_options.streamName = "";
-	stream_options.priority = 0;
-
-	{
-		const RtAudioErrorType error_type
-		{
-			static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle)->openStream
-			(
-				&output_parameters,
-				nullptr,
-				SoundSubSystemASIOLogic::GetRtAudioFormat(_SoundFormat),
-				static_cast<uint32>(sample_rate),
-				&buffer_frames,
-				audio_callback,
-				this,
-				&stream_options
-			)
-		};
-
-		ASSERT(error_type == RtAudioErrorType::RTAUDIO_NO_ERROR, "Error!");
-	}
-
-	{
-		const RtAudioErrorType error_type
-		{
-			static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle)->startStream()
-		};
-
-		ASSERT(error_type == RtAudioErrorType::RTAUDIO_NO_ERROR, "Error!");
-	}
-
-	//Set the buffer size.
-	_BufferSize = buffer_frames;
-
-	//This sound sub system is successfully initialized!
-	_Initialized = true;
-
-	//Initialize the mixing buffers.
-	_SoundSystem->InitializeMixingBuffers(stream_options.numberOfBuffers + 2 /* 1 extra to avoid stutters. (: */, buffer_frames);
+	//Start the stream.
+	StartStream();
 }
 
 /*
@@ -539,7 +298,10 @@ void SoundSubSystemASIO::Initialize(const InitializationParameters &initializati
 */
 void SoundSubSystemASIO::MixUpdate() NOEXCEPT
 {
+	/*
 	//Check if any opened input streams wants to stop.
+	bool made_changes{ false };
+
 	for (uint64 i{ 0 }; i < _OpenedInputStreams.Size();)
 	{
 		OpenedInputStream *const RESTRICT opened_input_stream{ _OpenedInputStreams[i] };
@@ -547,21 +309,7 @@ void SoundSubSystemASIO::MixUpdate() NOEXCEPT
 		if (opened_input_stream->_WantsToStop.IsSet())
 		{
 			//Stop the stream.
-			{
-				const RtAudioErrorType error_type
-				{
-					opened_input_stream->_RtAudio->stopStream()
-				};
-
-				ASSERT(error_type == RtAudioErrorType::RTAUDIO_NO_ERROR, "Error!");
-			}
-
-			//Close the stream.
-			opened_input_stream->_RtAudio->closeStream();
-
-			//Destroy the RtAudio object.
-			opened_input_stream->_RtAudio->~RtAudio();
-			MemorySystem::Instance->TypeFree<RtAudio>(opened_input_stream->_RtAudio);
+			StopStream();
 
 			//Destroy the opened input stream object.
 			opened_input_stream->~OpenedInputStream();
@@ -569,6 +317,9 @@ void SoundSubSystemASIO::MixUpdate() NOEXCEPT
 
 			//Erase the opened input stream.
 			_OpenedInputStreams.EraseAt<false>(i);
+
+			//Signal that changes were made.
+			made_changes = true;
 		}
 
 		else
@@ -576,6 +327,13 @@ void SoundSubSystemASIO::MixUpdate() NOEXCEPT
 			++i;
 		}
 	}
+
+	//If any changes were made, start the stream again.
+	if (made_changes)
+	{
+		StartStream();
+	}
+	*/
 }
 
 /*
@@ -586,23 +344,6 @@ void SoundSubSystemASIO::Terminate() NOEXCEPT
 	//Shut down all opened input stream.
 	for (OpenedInputStream *const RESTRICT opened_input_stream : _OpenedInputStreams)
 	{
-		//Stop the stream.
-		{
-			const RtAudioErrorType error_type
-			{
-				opened_input_stream->_RtAudio->stopStream()
-			};
-
-			ASSERT(error_type == RtAudioErrorType::RTAUDIO_NO_ERROR, "Error!");
-		}
-
-		//Close the stream.
-		opened_input_stream->_RtAudio->closeStream();
-
-		//Destroy the RtAudio object.
-		opened_input_stream->_RtAudio->~RtAudio();
-		MemorySystem::Instance->TypeFree<RtAudio>(opened_input_stream->_RtAudio);
-
 		//Destroy the opened input stream object.
 		opened_input_stream->~OpenedInputStream();
 		Memory::Free(opened_input_stream);
@@ -614,26 +355,18 @@ void SoundSubSystemASIO::Terminate() NOEXCEPT
 	{
 		const RtAudioErrorType error_type
 		{
-			static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle)->stopStream()
+			_RtAudio->stopStream()
 		};
 
 		ASSERT(error_type == RtAudioErrorType::RTAUDIO_NO_ERROR, "Error!");
 	}
 
 	//Close the stream.
-	static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle)->closeStream();
+	_RtAudio->closeStream();
 
 	//Destroy the RtAudio object.
-	static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle)->~RtAudio();
-	MemorySystem::Instance->TypeFree<RtAudio>(static_cast<RtAudio *const RESTRICT>(_OpenedAudioDevice._Handle));
-}
-
-/*
-*	The update function.
-*/
-void SoundSubSystemASIO::Update() NOEXCEPT
-{
-	
+	_RtAudio->~RtAudio();
+	MemorySystem::Instance->TypeFree<RtAudio>(_RtAudio);
 }
 
 /*
@@ -653,25 +386,18 @@ NO_DISCARD float32 SoundSubSystemASIO::GetAudioLatency() const NOEXCEPT
 */
 void SoundSubSystemASIO::OpenInputStream
 (
-	AudioDevice *const RESTRICT audio_device,
 	const uint32 start_channel_index,
 	const uint32 number_of_channels,
 	InputStreamCallback input_stream_callback,
 	void *const RESTRICT user_data
 ) NOEXCEPT
 {
+	//Stop the stream.
+	StopStream();
+
 	//Allocate the new opened input stream object.
 	OpenedInputStream *const RESTRICT new_opened_input_stream{ new (Memory::Allocate(sizeof(OpenedInputStream))) OpenedInputStream() };
 	Memory::Set(new_opened_input_stream, 0, sizeof(OpenedInputStream));
-
-	//Set the parent.
-	new_opened_input_stream->_Parent = this;
-
-	//Allocate the RtAudio object.
-	new_opened_input_stream->_RtAudio = new (MemorySystem::Instance->TypeAllocate<RtAudio>()) RtAudio(RtAudio::Api::WINDOWS_ASIO, ErrorCallback);
-
-	//Set the audio device.
-	new_opened_input_stream->_AudioDevice = *audio_device;
 
 	//Set the start channel index.
 	new_opened_input_stream->_StartChannelIndex = start_channel_index;
@@ -685,46 +411,117 @@ void SoundSubSystemASIO::OpenInputStream
 	//The the user data.
 	new_opened_input_stream->_UserData = user_data;
 
-	//Figure out the sample rate.
-	for (uint64 i{ 0 }; i < ARRAY_LENGTH(SoundSubSystemASIOConstants::DESIRED_SAMPLE_RATES) && new_opened_input_stream->_SampleRate == 0.0f; ++i)
+	//Add the new opened input stream.
+	_OpenedInputStreams.Emplace(new_opened_input_stream);
+
+	//Re-start the stream.
+	StartStream();
+}
+
+/*
+*	Starts the stream.
+*/
+void SoundSubSystemASIO::StartStream() NOEXCEPT
+{
+	//If a stream is already open, close it.
+	StopStream();
+
+	//Set the first output channel.
+	_OpenedStreamInformation._FirstOutputChannel = 0;
+
+	//Set the number of output channels.
+	_OpenedStreamInformation._NumberOfOutputChannels = 2;
+
+	//Set the input channels.
+	{
+		uint32 first_input_channel{ UINT32_MAXIMUM };
+		uint32 last_input_channel{ 0 };
+
+		for (const OpenedInputStream *const RESTRICT opened_input_stream : _OpenedInputStreams)
+		{
+			first_input_channel = CatalystBaseMath::Minimum<uint32>(first_input_channel, opened_input_stream->_StartChannelIndex);
+			last_input_channel = CatalystBaseMath::Maximum<uint32>(last_input_channel, opened_input_stream->_StartChannelIndex + opened_input_stream->_NumberOfChannels);
+		}
+
+		if (first_input_channel != UINT32_MAXIMUM)
+		{
+			_OpenedStreamInformation._FirstInputChannel = first_input_channel;
+			_OpenedStreamInformation._NumberOfInputChannels = last_input_channel - first_input_channel;
+		}
+
+		else
+		{
+			_OpenedStreamInformation._FirstInputChannel = 0;
+			_OpenedStreamInformation._NumberOfInputChannels = 0;
+		}
+	}
+
+	//Determine the sample rate.
+	_OpenedStreamInformation._SampleRate = 0.0f;
+
+	for (uint64 i{ 0 }; i < ARRAY_LENGTH(SoundSubSystemASIOConstants::DESIRED_SAMPLE_RATES) && _OpenedStreamInformation._SampleRate == 0.0f; ++i)
 	{
 		for (const float32 available_sample_rate : _OpenedAudioDevice._AvailableSampleRates)
 		{
 			if (available_sample_rate == SoundSubSystemASIOConstants::DESIRED_SAMPLE_RATES[i])
 			{
-				new_opened_input_stream->_SampleRate = available_sample_rate;
+				_OpenedStreamInformation._SampleRate = available_sample_rate;
 
 				break;
 			}
 		}
 	}
 
-	ASSERT(new_opened_input_stream->_SampleRate != 0.0f, "Couldn't find a proper sample rate!");
+	ASSERT(_OpenedStreamInformation._SampleRate != 0.0f, "Couldn't find a proper sample rate!");
 
-	//Figure out the sound format.
-	for (uint64 i{ 0 }; i < ARRAY_LENGTH(SoundSubSystemASIOConstants::DESIRED_SOUND_FORMATS) && new_opened_input_stream->_SoundFormat == SoundFormat::UNKNOWN; ++i)
+	//Determine the sound format.
+	_OpenedStreamInformation._SoundFormat = SoundFormat::UNKNOWN;
+
+	for (uint64 i{ 0 }; i < ARRAY_LENGTH(SoundSubSystemASIOConstants::DESIRED_SOUND_FORMATS) && _OpenedStreamInformation._SoundFormat == SoundFormat::UNKNOWN; ++i)
 	{
 		for (const SoundFormat available_sound_format : _OpenedAudioDevice._AvailableSoundFormats)
 		{
 			if (available_sound_format == SoundSubSystemASIOConstants::DESIRED_SOUND_FORMATS[i])
 			{
-				new_opened_input_stream->_SoundFormat = available_sound_format;
+				_OpenedStreamInformation._SoundFormat = available_sound_format;
 
 				break;
 			}
 		}
 	}
 
-	ASSERT(new_opened_input_stream->_SoundFormat != SoundFormat::UNKNOWN, "Couldn't find a proper sound format!");
+	ASSERT(_OpenedStreamInformation._SoundFormat != SoundFormat::UNKNOWN, "Couldn't find a proper sound format!");
 
 	//Open the stream.
+	RtAudio::StreamParameters output_parameters;
+
+	output_parameters.deviceId = _RtAudio->getDeviceIds()[_OpenedAudioDevice._Index];
+	output_parameters.nChannels = _OpenedStreamInformation._NumberOfOutputChannels;
+	output_parameters.firstChannel = _OpenedStreamInformation._FirstOutputChannel;
+
 	RtAudio::StreamParameters input_parameters;
 
-	input_parameters.deviceId = new_opened_input_stream->_RtAudio->getDeviceIds()[_OpenedAudioDevice._Index];
-	input_parameters.nChannels = new_opened_input_stream->_NumberOfChannels;
-	input_parameters.firstChannel = new_opened_input_stream->_StartChannelIndex;
+	input_parameters.deviceId = _RtAudio->getDeviceIds()[_OpenedAudioDevice._Index];
+	input_parameters.nChannels = _OpenedStreamInformation._NumberOfInputChannels;
+	input_parameters.firstChannel = _OpenedStreamInformation._FirstInputChannel;
 
 	uint32 buffer_frames{ 0 };
+
+	auto audio_callback{ [](void* outputBuffer, void* inputBuffer,
+							unsigned int nFrames,
+							double streamTime,
+							RtAudioStreamStatus status,
+							void *userData)
+	{
+		SoundSubSystemASIO *const RESTRICT sub_system{static_cast<SoundSubSystemASIO* const RESTRICT>(userData)};
+
+		sub_system->AudioCallback
+		(
+			outputBuffer, inputBuffer, nFrames
+		);
+
+		return 0;
+	} };
 
 	RtAudio::StreamOptions stream_options;
 
@@ -736,15 +533,15 @@ void SoundSubSystemASIO::OpenInputStream
 	{
 		const RtAudioErrorType error_type
 		{
-			new_opened_input_stream->_RtAudio->openStream
+			_RtAudio->openStream
 			(
-				nullptr,
-				&input_parameters,
-				SoundSubSystemASIOLogic::GetRtAudioFormat(new_opened_input_stream->_SoundFormat),
-				static_cast<uint32>(new_opened_input_stream->_SampleRate),
+				&output_parameters,
+				input_parameters.nChannels > 0 ? &input_parameters : nullptr,
+				SoundSubSystemASIOLogic::GetRtAudioFormat(_OpenedStreamInformation._SoundFormat),
+				static_cast<uint32>(_OpenedStreamInformation._SampleRate),
 				&buffer_frames,
-				SoundSubSystemASIOLogic::InputStreamCallback,
-				new_opened_input_stream,
+				audio_callback,
+				this,
 				&stream_options
 			)
 		};
@@ -755,13 +552,244 @@ void SoundSubSystemASIO::OpenInputStream
 	{
 		const RtAudioErrorType error_type
 		{
-			new_opened_input_stream->_RtAudio->startStream()
+			static_cast<RtAudio* const RESTRICT>(_OpenedAudioDevice._Handle)->startStream()
 		};
 
 		ASSERT(error_type == RtAudioErrorType::RTAUDIO_NO_ERROR, "Error!");
 	}
 
-	//Add the new opened input stream.
-	_OpenedInputStreams.Emplace(new_opened_input_stream);
+	//The stream is now open.
+	_OpenedStreamInformation._IsOpen = true;
+
+	//Set the buffer size.
+	_BufferSize = buffer_frames;
+
+	//This sound sub system is successfully initialized!
+	_Initialized = true;
+
+	//Initialize the mixing buffers.
+	_SoundSystem->InitializeMixingBuffers(stream_options.numberOfBuffers + 2 /* 2 extra to avoid stutters. (: */, buffer_frames);
+}
+
+/*
+*	Stops the stream.
+*/
+void SoundSubSystemASIO::StopStream() NOEXCEPT
+{
+	if (_OpenedStreamInformation._IsOpen)
+	{
+		//Stop the stream.
+		{
+			const RtAudioErrorType error_type
+			{
+				_RtAudio->abortStream()
+			};
+
+			ASSERT(error_type == RtAudioErrorType::RTAUDIO_NO_ERROR, "Error!");
+		}
+
+		//Close the stream.
+		_RtAudio->closeStream();
+
+		//Re-create the RtAudio object.
+		_RtAudio->~RtAudio();
+		new (_RtAudio) RtAudio(RtAudio::Api::WINDOWS_ASIO, ErrorCallback);
+
+		//The stream is no longer open.
+		_OpenedStreamInformation._IsOpen = false;
+	}
+}
+
+/*
+*	The audio callback.
+*/
+void SoundSubSystemASIO::AudioCallback
+(
+	void *const RESTRICT output_buffer,
+	void *const RESTRICT input_buffer,
+	const uint32 number_of_samples
+) NOEXCEPT
+{
+	//Call the sound system.
+	_SoundSystem->SoundCallback
+	(
+		_OpenedStreamInformation._SampleRate,
+		_OpenedStreamInformation._SoundFormat,
+		_OpenedStreamInformation._NumberOfOutputChannels,
+		number_of_samples,
+		output_buffer
+	);
+
+#if 0
+	//For debugging purposes, copy the input to the output.
+	if (input_buffer)
+	{
+		uint32 output_sample_index{ 0 };
+
+		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+		{
+			switch (_OpenedStreamInformation._SoundFormat)
+			{
+				case SoundFormat::SIGNED_INTEGER_8_BIT:
+				{
+					const int8 sample{ static_cast<const int8 *const RESTRICT>(input_buffer)[sample_index] };
+					static_cast<int8 *const RESTRICT>(output_buffer)[output_sample_index++] = sample;
+					static_cast<int8 *const RESTRICT>(output_buffer)[output_sample_index++] = sample;
+
+					break;
+				}
+
+				case SoundFormat::SIGNED_INTEGER_16_BIT:
+				{
+					const int16 sample{ static_cast<const int16* const RESTRICT>(input_buffer)[sample_index] };
+					static_cast<int16 *const RESTRICT>(output_buffer)[output_sample_index++] = sample;
+					static_cast<int16 *const RESTRICT>(output_buffer)[output_sample_index++] = sample;
+
+					break;
+				}
+
+				/* TODO!
+				case SoundFormat::SIGNED_INTEGER_24_BIT:
+				{
+
+
+					break;
+				}
+				*/
+
+				case SoundFormat::SIGNED_INTEGER_32_BIT:
+				{
+					const int32 sample{ static_cast<const int32* const RESTRICT>(input_buffer)[sample_index] };
+					static_cast<int32 *const RESTRICT>(output_buffer)[output_sample_index++] = sample;
+					static_cast<int32 *const RESTRICT>(output_buffer)[output_sample_index++] = sample;
+
+					break;
+				}
+
+				case SoundFormat::FLOAT_32_BIT:
+				{
+					const float32 sample{ static_cast<const float32* const RESTRICT>(input_buffer)[sample_index] };
+					static_cast<float32 *const RESTRICT>(output_buffer)[output_sample_index++] = sample;
+					static_cast<float32 *const RESTRICT>(output_buffer)[output_sample_index++] = sample;
+
+					break;
+				}
+
+				case SoundFormat::FLOAT_64_BIT:
+				{
+					const float64 sample{ static_cast<const float64* const RESTRICT>(input_buffer)[sample_index] };
+					static_cast<float64*const RESTRICT>(output_buffer)[output_sample_index++] = sample;
+					static_cast<float64*const RESTRICT>(output_buffer)[output_sample_index++] = sample;
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+		}
+	}
+#endif
+
+	//Handle opened input streams.
+	for (OpenedInputStream *const RESTRICT opened_input_stream : _OpenedInputStreams)
+	{
+		if (opened_input_stream->_WantsToStop.IsSet())
+		{
+			continue;
+		}
+
+		//Do we need to upsize the samples buffer?
+		if (opened_input_stream->_SamplesBuffer.Size() < number_of_samples)
+		{
+			opened_input_stream->_SamplesBuffer.Upsize<false>(number_of_samples);
+		}
+
+		//Convert the incoming buffer to float32. 
+		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+		{
+			switch (_OpenedStreamInformation._SoundFormat)
+			{
+				case SoundFormat::SIGNED_INTEGER_8_BIT:
+				{
+					const int8 sample{ static_cast<const int8 *const RESTRICT>(input_buffer)[sample_index] };
+					opened_input_stream->_SamplesBuffer[sample_index] = static_cast<float32>(sample) / static_cast<float32>(INT8_MAXIMUM);
+
+					break;
+				}
+
+				case SoundFormat::SIGNED_INTEGER_16_BIT:
+				{
+					const int16 sample{ static_cast<const int16 *const RESTRICT>(input_buffer)[sample_index] };
+					opened_input_stream->_SamplesBuffer[sample_index] = static_cast<float32>(sample) / static_cast<float32>(INT16_MAXIMUM);
+
+					break;
+				}
+
+				/* TODO!
+				case SoundFormat::SIGNED_INTEGER_24_BIT:
+				{
+
+
+					break;
+				}
+				*/
+
+				case SoundFormat::SIGNED_INTEGER_32_BIT:
+				{
+					const int32 sample{ static_cast<const int32 *const RESTRICT>(input_buffer)[sample_index] };
+					opened_input_stream->_SamplesBuffer[sample_index] = static_cast<float32>(sample) / static_cast<float32>(INT32_MAXIMUM);
+
+					break;
+				}
+
+				case SoundFormat::FLOAT_32_BIT:
+				{
+					const float32 sample{ static_cast<const float32 *const RESTRICT>(input_buffer)[sample_index] };
+					opened_input_stream->_SamplesBuffer[sample_index] = (sample);
+
+					break;
+				}
+
+				case SoundFormat::FLOAT_64_BIT:
+				{
+					const float64 sample{ static_cast<const float64 *const RESTRICT>(input_buffer)[sample_index] };
+					opened_input_stream->_SamplesBuffer[sample_index] = static_cast<float32>(sample);
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+		}
+
+		//Call the input stream callback.
+		const bool wants_to_continue
+		{
+			opened_input_stream->_InputStreamCallback
+			(
+				opened_input_stream->_SamplesBuffer.Data(),
+				number_of_samples,
+				_OpenedStreamInformation._SampleRate,
+				SoundFormat::FLOAT_32_BIT,
+				1,
+				opened_input_stream->_UserData
+			)
+		};
+
+		if (!wants_to_continue)
+		{
+			opened_input_stream->_WantsToStop.Set();
+		}
+	}
 }
 #endif

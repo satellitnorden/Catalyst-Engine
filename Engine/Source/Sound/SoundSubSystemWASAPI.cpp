@@ -435,7 +435,6 @@ NO_DISCARD float32 SoundSubSystemWASAPI::GetAudioLatency() const NOEXCEPT
 */
 void SoundSubSystemWASAPI::OpenInputStream
 (
-	AudioDevice *const RESTRICT audio_device,
 	const uint32 start_channel_index,
 	const uint32 number_of_channels,
 	InputStreamCallback input_stream_callback,

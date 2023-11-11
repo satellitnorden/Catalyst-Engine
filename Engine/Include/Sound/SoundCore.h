@@ -3,6 +3,40 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Enumeration covering all sound formats.
+enum class SoundFormat : uint8
+{
+	SIGNED_INTEGER_8_BIT,
+	SIGNED_INTEGER_16_BIT,
+	SIGNED_INTEGER_24_BIT,
+	SIGNED_INTEGER_32_BIT,
+	FLOAT_32_BIT,
+	FLOAT_64_BIT,
+
+	UNKNOWN
+};
+
+//Enumeration covering all note durations.
+enum class NoteDuration : uint8
+{
+	WHOLE,
+	HALF,
+	QUARTER,
+	EIGHTH,
+	SIXTEENTH,
+	THIRTYSECOND,
+	SIXTYFOURTH,
+	HUNDREDTWENTYEIGHTH
+};
+
+//Enumeration covering all note types.
+enum class NoteType : uint8
+{
+	REGULAR,
+	DOTTED,
+	TRIPLET
+};
+
 //Sound constants.
 namespace SoundConstants
 {
@@ -154,10 +188,11 @@ using SoundInstanceHandle = uint64;
 using SoundStoppedCallback = void(*)(const SoundInstanceHandle sound_instance);
 using InputStreamCallback = bool(*)
 (
-	float32 *const RESTRICT input_buffer,
+	void *const RESTRICT input_buffer,
 	const uint32 number_of_samples,
 	const float32 sample_rate,
-	const uint8 number_of_channel,
+	const SoundFormat sound_format,
+	const uint8 number_of_channels,
 	void *const RESTRICT user_data
 );
 
@@ -191,40 +226,6 @@ enum class AudioDevicePickingMode : uint8
 	*	Waits for the user to select one.
 	*/
 	WAIT_FOR_SELECTION
-};
-
-//Enumeration covering all sound formats.
-enum class SoundFormat : uint8
-{
-	SIGNED_INTEGER_8_BIT,
-	SIGNED_INTEGER_16_BIT,
-	SIGNED_INTEGER_24_BIT,
-	SIGNED_INTEGER_32_BIT,
-	FLOAT_32_BIT,
-	FLOAT_64_BIT,
-
-	UNKNOWN
-};
-
-//Enumeration covering all note durations.
-enum class NoteDuration : uint8
-{
-	WHOLE,
-	HALF,
-	QUARTER,
-	EIGHTH,
-	SIXTEENTH,
-	THIRTYSECOND,
-	SIXTYFOURTH,
-	HUNDREDTWENTYEIGHTH
-};
-
-//Enumeration covering all note types.
-enum class NoteType : uint8
-{
-	REGULAR,
-	DOTTED,
-	TRIPLET
 };
 
 /*

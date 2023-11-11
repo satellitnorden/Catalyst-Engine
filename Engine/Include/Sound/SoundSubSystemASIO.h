@@ -66,14 +66,14 @@ public:
 	FORCE_INLINE NO_DISCARD uint8 GetNumberOfChannels() const NOEXCEPT override
 	{
 		//Don't do anything if this sound sub system isn't initialized.
-		if (!_Initialized)
+		if (!_Initialized || !_OpenedStreamInformation._IsOpen)
 		{
 			return 0;
 		}
 
-		ASSERT(_NumberOfChannels != 0, "Oh no!");
+		ASSERT(_OpenedStreamInformation._NumberOfOutputChannels != 0, "Oh no!");
 
-		return _NumberOfChannels;
+		return _OpenedStreamInformation._NumberOfOutputChannels;
 	}
 
 	/*
@@ -82,14 +82,14 @@ public:
 	FORCE_INLINE NO_DISCARD float32 GetSampleRate() const NOEXCEPT override
 	{
 		//Don't do anything if this sound sub system isn't initialized.
-		if (!_Initialized)
+		if (!_Initialized || !_OpenedStreamInformation._IsOpen)
 		{
 			return 0.0f;
 		}
 
-		ASSERT(_SampleRate != 0.0f, "Oh no!");
+		ASSERT(_OpenedStreamInformation._SampleRate != 0.0f, "Oh no!");
 
-		return _SampleRate;
+		return _OpenedStreamInformation._SampleRate;
 	}
 
 	/*
@@ -98,14 +98,14 @@ public:
 	FORCE_INLINE NO_DISCARD SoundFormat GetSoundFormat() const NOEXCEPT override
 	{
 		//Don't do anything if this sound sub system isn't initialized.
-		if (!_Initialized)
+		if (!_Initialized || !_OpenedStreamInformation._IsOpen)
 		{
 			return SoundFormat::UNKNOWN;
 		}
 
-		ASSERT(_SoundFormat != SoundFormat::UNKNOWN, "Oh no!");
+		ASSERT(_OpenedStreamInformation._SoundFormat != SoundFormat::UNKNOWN, "Oh no!");
 
-		return _SoundFormat;
+		return _OpenedStreamInformation._SoundFormat;
 	}
 
 	/*
@@ -137,7 +137,6 @@ public:
 	*/
 	void OpenInputStream
 	(
-		AudioDevice *const RESTRICT audio_device,
 		const uint32 start_channel_index,
 		const uint32 number_of_channels,
 		InputStreamCallback input_stream_callback,
@@ -146,34 +145,74 @@ public:
 
 private:
 
+	/*
+	*	Opened stream information class definition.
+	*/
+	class OpenedStreamInformation final
+	{
+
+	public:
+
+		//Denotes whether or not this stream is open.
+		bool _IsOpen{ false };
+
+		//The first output channel.
+		uint32 _FirstOutputChannel{ 0 };
+
+		//The number of output channels.
+		uint32 _NumberOfOutputChannels{ 0 };
+
+		//The first input channel.
+		uint32 _FirstInputChannel{ 0 };
+
+		//The number of input channels.
+		uint32 _NumberOfInputChannels{ 0 };
+
+		//The sample rate.
+		float32 _SampleRate{ 0.0f };
+
+		//The sound format.
+		SoundFormat _SoundFormat{ SoundFormat::UNKNOWN };
+
+	};
+
 	//Denotes if this sound sub system is initialized.
 	Atomic<bool> _Initialized{ false };
 
-	//The number of channels.
-	uint8 _NumberOfChannels;
-
-	//The sample rate.
-	float32 _SampleRate;
-
-	//The sound format.
-	SoundFormat _SoundFormat{ SoundFormat::UNKNOWN };
-
-	//The buffer size.
-	uint32 _BufferSize;
-
 	//The Rt Audio object.
-	RtAudio *RESTRICT _RtAudio{ nullptr };
+	RtAudio* RESTRICT _RtAudio{ nullptr };
 
 	//The opened audio device.
 	AudioDevice _OpenedAudioDevice;
 
+	//The opened stream information.
+	OpenedStreamInformation _OpenedStreamInformation;
+
 	//Container for all opened input streams.
 	DynamicArray<class OpenedInputStream *RESTRICT> _OpenedInputStreams;
 
+	//The buffer size.
+	uint32 _BufferSize;
+
 	/*
-	*	The update function.
+	*	Starts the stream.
 	*/
-	void Update() NOEXCEPT;
+	void StartStream() NOEXCEPT;
+
+	/*
+	*	Stops the stream.
+	*/
+	void StopStream() NOEXCEPT;
+
+	/*
+	*	The audio callback.
+	*/
+	void AudioCallback
+	(
+		void *const RESTRICT output_buffer,
+		void *const RESTRICT input_buffer,
+		const uint32 number_of_samples
+	) NOEXCEPT;
 
 };
 #endif
