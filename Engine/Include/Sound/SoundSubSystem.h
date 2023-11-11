@@ -53,6 +53,11 @@ public:
 	virtual void Initialize(const InitializationParameters &initialization_parameters) NOEXCEPT = 0;
 
 	/*
+	*	Updates this sound sub system from the mixing thread.
+	*/
+	virtual void MixUpdate() NOEXCEPT = 0;
+
+	/*
 	*	Terminates this sound sub system.
 	*/
 	virtual void Terminate() NOEXCEPT = 0;
@@ -89,5 +94,17 @@ public:
 	*	The returned value is in milliseconds.
 	*/
 	virtual NO_DISCARD float32 GetAudioLatency() const NOEXCEPT = 0;
+
+	/*
+	*	Opens an input stream on the given audio device, with the given parameters.
+	*/
+	virtual void OpenInputStream
+	(
+		AudioDevice *const RESTRICT audio_device,
+		const uint32 start_channel_index,
+		const uint32 number_of_channels,
+		InputStreamCallback input_stream_callback,
+		void *const RESTRICT user_data
+	) NOEXCEPT = 0;
 
 };

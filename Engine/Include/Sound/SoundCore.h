@@ -152,6 +152,14 @@ namespace SoundConstants
 //Type aliases.
 using SoundInstanceHandle = uint64;
 using SoundStoppedCallback = void(*)(const SoundInstanceHandle sound_instance);
+using InputStreamCallback = bool(*)
+(
+	float32 *const RESTRICT input_buffer,
+	const uint32 number_of_samples,
+	const float32 sample_rate,
+	const uint8 number_of_channel,
+	void *const RESTRICT user_data
+);
 
 /*
 *	Definition of an empty sound instance handle.

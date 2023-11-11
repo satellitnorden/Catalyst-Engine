@@ -46,6 +46,11 @@ public:
 	void Initialize(const InitializationParameters &initialization_parameters) NOEXCEPT override;
 
 	/*
+	*	Updates this sound sub system from the mixing thread.
+	*/
+	void MixUpdate() NOEXCEPT override;
+
+	/*
 	*	Terminates this sound sub system.
 	*/
 	void Terminate() NOEXCEPT override;
@@ -129,6 +134,18 @@ public:
 	*	The returned value is in milliseconds.
 	*/
 	NO_DISCARD float32 GetAudioLatency() const NOEXCEPT override;
+
+	/*
+	*	Opens an input stream on the given audio device, with the given parameters.
+	*/
+	void OpenInputStream
+	(
+		AudioDevice *const RESTRICT audio_device,
+		const uint32 start_channel_index,
+		const uint32 number_of_channels,
+		InputStreamCallback input_stream_callback,
+		void *const RESTRICT user_data
+	) NOEXCEPT override;
 
 private:
 

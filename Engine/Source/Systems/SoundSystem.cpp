@@ -453,6 +453,21 @@ uint32 SoundSystem::GetAudioLatency() const NOEXCEPT
 }
 
 /*
+*	Opens an input stream on the given audio device, with the given parameters.
+*/
+void SoundSystem::OpenInputStream
+(
+	AudioDevice *const RESTRICT audio_device,
+	const uint32 start_channel_index,
+	const uint32 number_of_channels,
+	InputStreamCallback input_stream_callback,
+	void *const RESTRICT user_data
+) NOEXCEPT
+{
+	_SubSystem->OpenInputStream(audio_device, start_channel_index, number_of_channels, input_stream_callback, user_data);
+}
+
+/*
 *	Adds a mix component to the master mix channel. Returns the unique identifier for that sound mix component.
 */
 uint64 SoundSystem::AddMasterChannelSoundMixComponent(const SoundMixComponent &component) NOEXCEPT
@@ -717,6 +732,9 @@ void SoundSystem::Mix() NOEXCEPT
 
 		//The sound system is mixing.
 		_IsMixing.Set();
+
+		//Update the sub system.
+		_SubSystem->MixUpdate();
 
 		//Cache the number of channels.
 		const uint8 number_of_channels{ GetNumberOfChannels() };

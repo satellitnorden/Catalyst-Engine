@@ -380,6 +380,14 @@ void SoundSubSystemWASAPI::Initialize(const InitializationParameters &initializa
 }
 
 /*
+*	Updates this sound sub system from the mixing thread.
+*/
+void SoundSubSystemWASAPI::MixUpdate() NOEXCEPT
+{
+	//Nothing to do here. (:
+}
+
+/*
 *	Terminates this sound sub system.
 */
 void SoundSubSystemWASAPI::Terminate() NOEXCEPT
@@ -420,6 +428,21 @@ NO_DISCARD float32 SoundSubSystemWASAPI::GetAudioLatency() const NOEXCEPT
 {
 	//Should have practically no latency, no?
 	return 0.0f;
+}
+
+/*
+*	Opens an input stream on the given audio device, with the given parameters.
+*/
+void SoundSubSystemWASAPI::OpenInputStream
+(
+	AudioDevice *const RESTRICT audio_device,
+	const uint32 start_channel_index,
+	const uint32 number_of_channels,
+	InputStreamCallback input_stream_callback,
+	void *const RESTRICT user_data
+) NOEXCEPT
+{
+	//Do nothing here. (:
 }
 #else
 //Systems.
