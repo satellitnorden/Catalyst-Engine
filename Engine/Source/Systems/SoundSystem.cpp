@@ -732,9 +732,6 @@ void SoundSystem::Mix() NOEXCEPT
 		//The sound system is mixing.
 		_IsMixing.Set();
 
-		//Update the sub system.
-		_SubSystem->MixUpdate();
-
 		//Cache the number of channels.
 		const uint8 number_of_channels{ GetNumberOfChannels() };
 

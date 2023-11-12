@@ -448,6 +448,22 @@ void CatalystEngineSystem::DeregisterUpdate(const uint64 identifier) NOEXCEPT
 }
 
 /*
+*	Deregisters a sequential update.
+*/
+void CatalystEngineSystem::DeregisterSequentialUpdate(const uint64 identifier) NOEXCEPT
+{
+	for (uint64 i{ 0 }; i < _SequentialUpdateData.Size(); ++i)
+	{
+		if (_SequentialUpdateData[i]._Identifier == identifier)
+		{
+			_SequentialUpdateData.EraseAt<false>(i);
+
+			return;
+		}
+	}
+}
+
+/*
 *	Updates an individual phase.
 */
 void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCEPT

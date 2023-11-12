@@ -46,11 +46,6 @@ public:
 	void Initialize(const InitializationParameters &initialization_parameters) NOEXCEPT override;
 
 	/*
-	*	Updates this sound sub system from the mixing thread.
-	*/
-	void MixUpdate() NOEXCEPT override;
-
-	/*
 	*	Terminates this sound sub system.
 	*/
 	void Terminate() NOEXCEPT override;

@@ -291,49 +291,18 @@ void SoundSubSystemASIO::Initialize(const InitializationParameters &initializati
 
 	//Start the stream.
 	StartStream();
-}
 
-/*
-*	Updates this sound sub system from the mixing thread.
-*/
-void SoundSubSystemASIO::MixUpdate() NOEXCEPT
-{
-	/*
-	//Check if any opened input streams wants to stop.
-	bool made_changes{ false };
-
-	for (uint64 i{ 0 }; i < _OpenedInputStreams.Size();)
-	{
-		OpenedInputStream *const RESTRICT opened_input_stream{ _OpenedInputStreams[i] };
-
-		if (opened_input_stream->_WantsToStop.IsSet())
+	//Register the update.
+	_UpdateIdentifier = CatalystEngineSystem::Instance->RegisterSequentialUpdate
+	(
+		[](void* const RESTRICT arguments)
 		{
-			//Stop the stream.
-			StopStream();
+			SoundSubSystemASIO *const RESTRICT sub_system{ static_cast<SoundSubSystemASIO *const RESTRICT>(arguments) };
 
-			//Destroy the opened input stream object.
-			opened_input_stream->~OpenedInputStream();
-			Memory::Free(opened_input_stream);
-
-			//Erase the opened input stream.
-			_OpenedInputStreams.EraseAt<false>(i);
-
-			//Signal that changes were made.
-			made_changes = true;
-		}
-
-		else
-		{
-			++i;
-		}
-	}
-
-	//If any changes were made, start the stream again.
-	if (made_changes)
-	{
-		StartStream();
-	}
-	*/
+			sub_system->SequentialUpdate();
+		},
+		this
+	);
 }
 
 /*
@@ -341,6 +310,12 @@ void SoundSubSystemASIO::MixUpdate() NOEXCEPT
 */
 void SoundSubSystemASIO::Terminate() NOEXCEPT
 {
+	//De-register the update.
+	CatalystEngineSystem::Instance->DeregisterSequentialUpdate(_UpdateIdentifier);
+
+	//Stop the stream.
+	StopStream();
+
 	//Shut down all opened input stream.
 	for (OpenedInputStream *const RESTRICT opened_input_stream : _OpenedInputStreams)
 	{
@@ -350,19 +325,6 @@ void SoundSubSystemASIO::Terminate() NOEXCEPT
 	}
 
 	_OpenedInputStreams.Clear();
-
-	//Stop the stream.
-	{
-		const RtAudioErrorType error_type
-		{
-			_RtAudio->stopStream()
-		};
-
-		ASSERT(error_type == RtAudioErrorType::RTAUDIO_NO_ERROR, "Error!");
-	}
-
-	//Close the stream.
-	_RtAudio->closeStream();
 
 	//Destroy the RtAudio object.
 	_RtAudio->~RtAudio();
@@ -392,9 +354,6 @@ void SoundSubSystemASIO::OpenInputStream
 	void *const RESTRICT user_data
 ) NOEXCEPT
 {
-	//Stop the stream.
-	StopStream();
-
 	//Allocate the new opened input stream object.
 	OpenedInputStream *const RESTRICT new_opened_input_stream{ new (Memory::Allocate(sizeof(OpenedInputStream))) OpenedInputStream() };
 	Memory::Set(new_opened_input_stream, 0, sizeof(OpenedInputStream));
@@ -411,11 +370,49 @@ void SoundSubSystemASIO::OpenInputStream
 	//The the user data.
 	new_opened_input_stream->_UserData = user_data;
 
-	//Add the new opened input stream.
-	_OpenedInputStreams.Emplace(new_opened_input_stream);
+	//Add the pending opened input stream.
+	_PendingOpenedInputStreams.Push(new_opened_input_stream);
 
-	//Re-start the stream.
-	StartStream();
+	//Signal that the opened stream needs a restart.
+	_OpenedStreamInformation._NeedsRestart.Set();
+}
+
+/*
+*	Sequentially updates this sound sub system.
+*/
+void SoundSubSystemASIO::SequentialUpdate() NOEXCEPT
+{
+	//If the opened stream needs a restart, do so.
+	if (_OpenedStreamInformation._NeedsRestart.IsSet())
+	{
+		//Stop the stream.
+		StopStream();
+
+		//Remove any opened input stream that wants to stop.
+		for (uint64 i{ 0 }; i < _OpenedInputStreams.Size();)
+		{
+			if (_OpenedInputStreams[i]->_WantsToStop.IsSet())
+			{
+				_OpenedInputStreams[i]->~OpenedInputStream();
+				Memory::Free(_OpenedInputStreams[i]);
+				_OpenedInputStreams.EraseAt<false>(i);
+			}
+
+			else
+			{
+				++i;
+			}
+		}
+
+		//Add any pending opened input streams.
+		while (OpenedInputStream *const RESTRICT* const RESTRICT opened_input_stream{ _PendingOpenedInputStreams.Pop() })
+		{
+			_OpenedInputStreams.Emplace(*opened_input_stream);
+		}
+
+		//Start the stream again!
+		StartStream();
+	}
 }
 
 /*
@@ -560,6 +557,9 @@ void SoundSubSystemASIO::StartStream() NOEXCEPT
 
 	//The stream is now open.
 	_OpenedStreamInformation._IsOpen = true;
+
+	//Signal that the stream no longer needs a restart.
+	_OpenedStreamInformation._NeedsRestart.Clear();
 
 	//Set the buffer size.
 	_BufferSize = buffer_frames;
@@ -789,6 +789,7 @@ void SoundSubSystemASIO::AudioCallback
 		if (!wants_to_continue)
 		{
 			opened_input_stream->_WantsToStop.Set();
+			_OpenedStreamInformation._NeedsRestart.Set();
 		}
 	}
 }

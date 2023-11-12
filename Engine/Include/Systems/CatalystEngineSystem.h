@@ -73,6 +73,11 @@ public:
 	void DeregisterUpdate(const uint64 identifier) NOEXCEPT;
 
 	/*
+	*	Deregisters a sequential update.
+	*/
+	void DeregisterSequentialUpdate(const uint64 identifier) NOEXCEPT;
+
+	/*
 	*	Returns the project configuration.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD const CatalystProjectConfiguration *const RESTRICT GetProjectConfiguration() const NOEXCEPT

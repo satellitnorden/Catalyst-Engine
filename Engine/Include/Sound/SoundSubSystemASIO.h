@@ -5,7 +5,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Concurrency.
-#include <Concurrency/Thread.h>
+#include <Concurrency/AtomicFlag.h>
+#include <Concurrency/AtomicQueue.h>
 
 //Sound.
 #include <Sound/SoundCore.h>
@@ -41,11 +42,6 @@ public:
 	*	Initializes this sound sub system.
 	*/
 	void Initialize(const InitializationParameters &initialization_parameters) NOEXCEPT override;
-
-	/*
-	*	Updates this sound sub system from the mixing thread.
-	*/
-	void MixUpdate() NOEXCEPT override;
 
 	/*
 	*	Terminates this sound sub system.
@@ -156,6 +152,9 @@ private:
 		//Denotes whether or not this stream is open.
 		bool _IsOpen{ false };
 
+		//Denotes if this stream needs a restarts.
+		AtomicFlag _NeedsRestart;
+
 		//The first output channel.
 		uint32 _FirstOutputChannel{ 0 };
 
@@ -188,11 +187,22 @@ private:
 	//The opened stream information.
 	OpenedStreamInformation _OpenedStreamInformation;
 
+	//The update identifier.
+	uint64 _UpdateIdentifier;
+
+	//The pending opened input streams.
+	AtomicQueue<class OpenedInputStream *RESTRICT, 64, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _PendingOpenedInputStreams;
+
 	//Container for all opened input streams.
 	DynamicArray<class OpenedInputStream *RESTRICT> _OpenedInputStreams;
 
 	//The buffer size.
 	uint32 _BufferSize;
+
+	/*
+	*	Sequentially updates this sound sub system.
+	*/
+	void SequentialUpdate() NOEXCEPT;
 
 	/*
 	*	Starts the stream.

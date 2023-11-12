@@ -53,11 +53,6 @@ public:
 	virtual void Initialize(const InitializationParameters &initialization_parameters) NOEXCEPT = 0;
 
 	/*
-	*	Updates this sound sub system from the mixing thread.
-	*/
-	virtual void MixUpdate() NOEXCEPT = 0;
-
-	/*
 	*	Terminates this sound sub system.
 	*/
 	virtual void Terminate() NOEXCEPT = 0;

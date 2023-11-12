@@ -380,14 +380,6 @@ void SoundSubSystemWASAPI::Initialize(const InitializationParameters &initializa
 }
 
 /*
-*	Updates this sound sub system from the mixing thread.
-*/
-void SoundSubSystemWASAPI::MixUpdate() NOEXCEPT
-{
-	//Nothing to do here. (:
-}
-
-/*
 *	Terminates this sound sub system.
 */
 void SoundSubSystemWASAPI::Terminate() NOEXCEPT
