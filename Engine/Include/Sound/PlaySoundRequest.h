@@ -68,9 +68,22 @@ public:
 	SoundInstanceHandle* RESTRICT _SoundInstance;
 
 	/*
+	*	The sound started callback.
+	*	Will be nullptr in most cases.
+	*/
+	SoundStartedCallback _SoundStartedCallback{ nullptr };
+
+	/*
 	*	The sound stopped callback.
 	*	Will be nullptr in most cases.
 	*/
-	SoundStoppedCallback _SoundStoppedCallback;
+	SoundStoppedCallback _SoundStoppedCallback{ nullptr };
+
+	/*
+	*	The audio time tracker.
+	*	Can be used if playback of sounds need to be tracked with precision.
+	*	Will be nullptr in most cases.
+	*/
+	Atomic<float64> *RESTRICT _AudioTimeTracker{ nullptr };
 
 };

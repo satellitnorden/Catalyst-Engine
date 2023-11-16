@@ -193,6 +193,14 @@ public:
         return _CurrentSamples[0] < 0 || (_IsActive && _ADSREnvelopes[0].IsActive());
     }
 
+    /*
+    *   Returns the current audio time.
+    */
+    FORCE_INLINE NO_DISCARD float64 GetCurrentAudioTime() const NOEXCEPT
+    {
+        return (static_cast<float64>(_CurrentSamples[0]) + static_cast<float64>(_CurrentSampleFractions[0])) / static_cast<float64>(_SoundResource->_SampleRate);
+    }
+
 private:
 
     //The sound resource.

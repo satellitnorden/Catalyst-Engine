@@ -59,8 +59,14 @@ public:
 	//The sound instance handle.
 	SoundInstanceHandle _SoundInstanceHandle;
 
+	//The sound started callback.
+	SoundStartedCallback _SoundStartedCallback;
+
 	//The sound stopped callback.
 	SoundStoppedCallback _SoundStoppedCallback;
+
+	//The audio time tracker.
+	Atomic<float64> *RESTRICT _AudioTimeTracker{ nullptr };
 
 };
 
@@ -93,6 +99,9 @@ public:
 
 	//The sound stopped callback.
 	SoundStoppedCallback _SoundStoppedCallback;
+
+	//The audio time tracker.
+	Atomic<float64> *RESTRICT _AudioTimeTracker{ nullptr };
 
 };
 
@@ -506,7 +515,9 @@ void SoundSystem::PlaySound(const PlaySoundRequest &request) NOEXCEPT
 	queued_play_sound_request._SustainGain = request._SustainGain;
 	queued_play_sound_request._ReleaseTime = request._ReleaseTime;
 	queued_play_sound_request._SoundInstanceHandle = _SoundInstanceCounter++;
+	queued_play_sound_request._SoundStartedCallback = request._SoundStartedCallback;
 	queued_play_sound_request._SoundStoppedCallback = request._SoundStoppedCallback;
+	queued_play_sound_request._AudioTimeTracker = request._AudioTimeTracker;
 
 	if (request._SoundInstance)
 	{
@@ -788,10 +799,16 @@ void SoundSystem::Mix() NOEXCEPT
 			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
 			new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
 			new_playing_sound._SoundStoppedCallback = queued_play_sound_request->_SoundStoppedCallback;
+			new_playing_sound._AudioTimeTracker = queued_play_sound_request->_AudioTimeTracker;
 
 			SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
 
 			ASSERT(SoundSystemData::_PlayingSounds.Capacity() == SoundSystemConstants::MAXIMUM_NUMBER_OF_PLAYING_SOUNDS, "Growing dynamic array in SoundSystem::Mix(), this is bad!");
+		
+			if (queued_play_sound_request->_SoundStartedCallback)
+			{
+				queued_play_sound_request->_SoundStartedCallback(queued_play_sound_request->_SoundInstanceHandle);
+			}
 		}
 
 		//Stop all queued stop sound requests.
@@ -823,6 +840,12 @@ void SoundSystem::Mix() NOEXCEPT
 					{
 						_IntermediateMixingBuffer[sample_index * number_of_channels + channel_index] += playing_sound._SoundResourcePlayer.NextSample(channel_index);
 						playing_sound._SoundResourcePlayer.Advance(channel_index);
+					}
+
+					//Update the audio time tracker, if it exists.
+					if (playing_sound._AudioTimeTracker)
+					{
+						playing_sound._AudioTimeTracker->store(playing_sound._SoundResourcePlayer.GetCurrentAudioTime(), std::memory_order_release);
 					}
 				}
 			}

@@ -185,6 +185,7 @@ namespace SoundConstants
 
 //Type aliases.
 using SoundInstanceHandle = uint64;
+using SoundStartedCallback = void(*)(const SoundInstanceHandle sound_instance);
 using SoundStoppedCallback = void(*)(const SoundInstanceHandle sound_instance);
 using InputStreamCallback = bool(*)
 (
