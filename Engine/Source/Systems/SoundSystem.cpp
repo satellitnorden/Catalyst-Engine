@@ -801,6 +801,11 @@ void SoundSystem::Mix() NOEXCEPT
 			new_playing_sound._SoundStoppedCallback = queued_play_sound_request->_SoundStoppedCallback;
 			new_playing_sound._AudioTimeTracker = queued_play_sound_request->_AudioTimeTracker;
 
+			if (new_playing_sound._AudioTimeTracker)
+			{
+				new_playing_sound._AudioTimeTracker->store(static_cast<float64>(queued_play_sound_request->_StartTime));
+			}
+
 			SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
 
 			ASSERT(SoundSystemData::_PlayingSounds.Capacity() == SoundSystemConstants::MAXIMUM_NUMBER_OF_PLAYING_SOUNDS, "Growing dynamic array in SoundSystem::Mix(), this is bad!");
