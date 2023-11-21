@@ -195,6 +195,13 @@ NO_DISCARD bool SoundSystem::RetrieveMIDIMessage(InputMIDIDevice *const RESTRICT
 			midi_message->_NoteOnVelocity = message[2];
 		}
 
+		//Is this a note off?
+		else if (message.size() == 3 && ((message[0] & 0xf0) == 0x80))
+		{
+			midi_message->_Type = MIDIMessage::Type::NOTE_OFF;
+			midi_message->_NoteOffNote = message[1];
+		}
+
 		//Is this an aftertouch?
 		else if (message.size() == 3 && ((message[0] & 0xf0) == 0xA0))
 		{
