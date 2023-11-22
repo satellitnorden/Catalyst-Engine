@@ -1025,14 +1025,9 @@ void SoundSystem::Mix() NOEXCEPT
 			}
 		}
 
-		if (_MixingBuffersReady == _NumberOfMixingBuffers)
+		while (_MixingBuffersReady == _NumberOfMixingBuffers)
 		{
-			PROFILING_SCOPE(SoundSystem_Mix_Sleep);
-
-			//Sleep approximately until the next buffer needs mixing.
-			const float64 milliseconds_to_sleep{ static_cast<float64>(_NumberOfSamplesPerMixingBuffer) / static_cast<float64>(GetSampleRate()) * 1'000.0 };
-			const std::chrono::steady_clock::time_point next_update{ start_of_update + std::chrono::nanoseconds(static_cast<uint64>(milliseconds_to_sleep * 1'000'000.0)) };
-			std::this_thread::sleep_until(next_update);
+			Concurrency::CurrentThread::Yield();
 		}
 	}
 }

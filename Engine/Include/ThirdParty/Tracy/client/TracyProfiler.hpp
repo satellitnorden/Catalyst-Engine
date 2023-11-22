@@ -63,7 +63,14 @@ struct GpuCtxWrapper
     GpuCtx* ptr;
 };
 
+#if TRACY_ENABLE
 TRACY_API moodycamel::ConcurrentQueue<QueueItem>::ExplicitProducer* GetToken();
+#else
+TRACY_API moodycamel::ConcurrentQueue<QueueItem>::ExplicitProducer* GetToken()
+{
+    return nullptr;
+}
+#endif
 TRACY_API Profiler& GetProfiler();
 TRACY_API std::atomic<uint32_t>& GetLockCounter();
 TRACY_API std::atomic<uint8_t>& GetGpuCtxCounter();
