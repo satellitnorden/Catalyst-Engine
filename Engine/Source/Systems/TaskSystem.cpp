@@ -124,6 +124,19 @@ void TaskSystem::ExecuteTask(Task *const RESTRICT task) NOEXCEPT
 }
 
 /*
+*	Does work on the calling thread.
+*/
+void TaskSystem::DoWork() NOEXCEPT
+{
+	if (Task *const RESTRICT *const RESTRICT new_task{ _TaskQueue.Pop() })
+	{
+		(*new_task)->Execute();
+
+		--_TasksInQueue;
+	}
+}
+
+/*
 *	Waits for all tasks to finish.
 */
 void TaskSystem::WaitForAllTasksToFinish() const NOEXCEPT

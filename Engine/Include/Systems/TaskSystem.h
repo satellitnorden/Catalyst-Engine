@@ -52,6 +52,11 @@ public:
 	void ExecuteTask(Task *const RESTRICT task) NOEXCEPT;
 
 	/*
+	*	Does work on the calling thread.
+	*/
+	void DoWork() NOEXCEPT;
+
+	/*
 	*	Waits for all tasks to finish.
 	*/
 	void WaitForAllTasksToFinish() const NOEXCEPT;
