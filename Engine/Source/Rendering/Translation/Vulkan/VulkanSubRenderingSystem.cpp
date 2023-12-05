@@ -1777,7 +1777,16 @@ void VulkanSubRenderingSystem::CreateTexture2D(const TextureData &data, Texture2
 																						data._TextureDataContainer._TextureTexelSize,
 																						data._TextureDataContainer._TextureData.Data(),
 																						VulkanTranslationUtilities::GetVulkanFormat(data._TextureFormat),
-																						VulkanTranslationUtilities::GetVulkanImageUsage(data._TextureUsage)));
+																						VulkanTranslationUtilities::GetVulkanImageUsage(data._TextureUsage),
+																						data._Updatable));
+}
+
+/*
+*	Updates a texture 2D.
+*/
+void VulkanSubRenderingSystem::UpdateTexture2D(const TextureDataContainer &texture_data_container, Texture2DHandle *const RESTRICT handle) const NOEXCEPT
+{
+	VulkanInterface::Instance->Update2DTexture(texture_data_container._TextureData.Data(), static_cast<Vulkan2DTexture* const RESTRICT>(*handle));
 }
 
 /*

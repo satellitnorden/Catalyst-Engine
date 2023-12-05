@@ -138,7 +138,12 @@ public:
 	/*
 	*	Creates and returns a 2D texture.
 	*/
-	RESTRICTED Vulkan2DTexture *const RESTRICT Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkImageUsageFlags image_usage_flags) NOEXCEPT;
+	RESTRICTED Vulkan2DTexture *const RESTRICT Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkImageUsageFlags image_usage_flags, const bool updatable) NOEXCEPT;
+
+	/*
+	*	Updates a 2D texture.
+	*/
+	void Update2DTexture(const void *RESTRICT const *RESTRICT texture_data, Vulkan2DTexture *const RESTRICT texture) NOEXCEPT;
 
 	/*
 	*	Destroys a 2D texture.

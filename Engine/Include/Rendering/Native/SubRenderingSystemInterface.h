@@ -268,6 +268,11 @@ public:
 	virtual void CreateTexture2D(const TextureData &data, Texture2DHandle *const RESTRICT handle) const NOEXCEPT = 0;
 
 	/*
+	*	Updates a texture 2D.
+	*/
+	virtual void UpdateTexture2D(const TextureDataContainer &texture_data_container, Texture2DHandle *const RESTRICT handle) const NOEXCEPT = 0;
+
+	/*
 	*	Destroys a texture 2D.
 	*/
 	virtual void DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT = 0;

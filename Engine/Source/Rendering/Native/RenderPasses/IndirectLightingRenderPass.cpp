@@ -83,7 +83,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 		ResourcePointer<RawDataResource> data{ ResourceSystem::Instance->GetRawDataResource(HashString("Specular_Bias_Lookup_Texture_Raw_Data")) };
 
 		//Create the texture.
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(static_cast<float32 *const RESTRICT>(static_cast<void *const RESTRICT>(data->_Data.Data())), 512, 512, 1, 2), TextureFormat::RG_FLOAT32, TextureUsage::NONE), &_SpecularBiasLookupTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(static_cast<float32 *const RESTRICT>(static_cast<void *const RESTRICT>(data->_Data.Data())), 512, 512, 1, 2), TextureFormat::RG_FLOAT32, TextureUsage::NONE, false), &_SpecularBiasLookupTexture);
 
 		//Add the texture to the global render data.
 		_SpecularBiasLookupTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_SpecularBiasLookupTexture);

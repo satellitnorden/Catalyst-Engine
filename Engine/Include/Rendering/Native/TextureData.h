@@ -21,6 +21,9 @@ public:
 	//The texture usage.
 	TextureUsage _TextureUsage;
 
+	//Denotes if this texture is updatable.
+	bool _Updatable;
+
 	/*
 	*	Default constructor, prohibited - must be constructed with the proper arguments.
 	*/
@@ -29,11 +32,12 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	TextureData(TextureDataContainer &&initial_texture_data_container, const TextureFormat initial_texture_format, const TextureUsage initial_texture_usage) NOEXCEPT
+	TextureData(TextureDataContainer &&initial_texture_data_container, const TextureFormat initial_texture_format, const TextureUsage initial_texture_usage, const bool initial_updatable) NOEXCEPT
 		:
 		_TextureDataContainer(std::move(initial_texture_data_container)),
 		_TextureFormat(initial_texture_format),
-		_TextureUsage(initial_texture_usage)
+		_TextureUsage(initial_texture_usage),
+		_Updatable(initial_updatable)
 	{
 
 	}

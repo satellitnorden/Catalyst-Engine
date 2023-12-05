@@ -236,6 +236,11 @@ public:
 	void CreateTexture2D(const TextureData &data, Texture2DHandle *const RESTRICT handle) const NOEXCEPT override;
 
 	/*
+	*	Updates a texture 2D.
+	*/
+	void UpdateTexture2D(const TextureDataContainer &texture_data_container, Texture2DHandle *const RESTRICT handle) const NOEXCEPT override;
+
+	/*
 	*	Destroys a texture 2D.
 	*/
 	void DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT override;

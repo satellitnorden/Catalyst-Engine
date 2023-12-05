@@ -852,7 +852,7 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 		}
 	}
 
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32, TextureUsage::STORAGE), &node->_HeightMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(height_map), TextureFormat::R_FLOAT32, TextureUsage::STORAGE, false), &node->_HeightMapTexture);
 
 	node->_HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_HeightMapTexture);
 
@@ -884,9 +884,9 @@ void TerrainSystem::GenerateMaps(TerrainQuadTreeNode *const RESTRICT node) NOEXC
 		}
 	}
 
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(normal_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_NormalMapTexture);
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_IndexMapTexture);
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE), &node->_BlendMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(normal_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE, false), &node->_NormalMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(index_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE, false), &node->_IndexMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(blend_map), TextureFormat::RGBA_UINT8, TextureUsage::STORAGE, false), &node->_BlendMapTexture);
 
 	node->_NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_NormalMapTexture);
 	node->_IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(node->_IndexMapTexture);

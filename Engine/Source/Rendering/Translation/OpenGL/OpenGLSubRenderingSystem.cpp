@@ -356,6 +356,14 @@ void OpenGLSubRenderingSystem::CreateTexture2D(const TextureData &data, Texture2
 }
 
 /*
+*	Updates a texture 2D.
+*/
+void OpenGLSubRenderingSystem::UpdateTexture2D(const TextureDataContainer &texture_data_container, Texture2DHandle *const RESTRICT handle) const NOEXCEPT
+{
+
+}
+
+/*
 *	Destroys a texture 2D.
 */
 void OpenGLSubRenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT handle) const NOEXCEPT

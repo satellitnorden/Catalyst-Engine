@@ -260,7 +260,7 @@ public:
 		{
 			//Create a new final texture handle.
 			Texture2DHandle new_final_texture_handle;
-			RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(RenderingReferenceSystemData::_FinalTexture), TextureFormat::RGBA_FLOAT32, TextureUsage::NONE), &new_final_texture_handle);
+			RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(RenderingReferenceSystemData::_FinalTexture), TextureFormat::RGBA_FLOAT32, TextureUsage::NONE, false), &new_final_texture_handle);
 
 			//Add the new final texture to the global render data.
 			const uint32 new_final_texture_index{ RenderingSystem::Instance->AddTextureToGlobalRenderData(new_final_texture_handle) };

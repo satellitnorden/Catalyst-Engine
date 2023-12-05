@@ -106,12 +106,12 @@ void TerrainEntity::Preprocess(EntityInitializationData* const RESTRICT data) NO
 			}
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_normal_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &terrain_initialization_data->_PreprocessedData._NormalMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_normal_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &terrain_initialization_data->_PreprocessedData._NormalMapTexture);
 		terrain_initialization_data->_PreprocessedData._NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(terrain_initialization_data->_PreprocessedData._NormalMapTexture);
 	}
 
 	//Create the index map texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(terrain_initialization_data->_IndexMap), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &terrain_initialization_data->_PreprocessedData._IndexMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(terrain_initialization_data->_IndexMap), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &terrain_initialization_data->_PreprocessedData._IndexMapTexture);
 	terrain_initialization_data->_PreprocessedData._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(terrain_initialization_data->_PreprocessedData._IndexMapTexture);
 
 	//Create the blend map texture.
@@ -129,7 +129,7 @@ void TerrainEntity::Preprocess(EntityInitializationData* const RESTRICT data) NO
 			}
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE), &terrain_initialization_data->_PreprocessedData._BlendMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &terrain_initialization_data->_PreprocessedData._BlendMapTexture);
 		terrain_initialization_data->_PreprocessedData._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(terrain_initialization_data->_PreprocessedData._BlendMapTexture);
 	}
 

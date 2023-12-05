@@ -283,10 +283,10 @@ void VulkanInterface::Release() NOEXCEPT
 /*
 *	Creates and returns a 2D texture.
 */
-RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkImageUsageFlags image_usage_flags) NOEXCEPT
+RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkImageUsageFlags image_usage_flags, const bool updatable) NOEXCEPT
 {
 	Vulkan2DTexture *const RESTRICT new_vulkan_2D_texture{ new (MemorySystem::Instance->TypeAllocate<Vulkan2DTexture>()) Vulkan2DTexture() };
-	new_vulkan_2D_texture->Initialize(textureMipmapLevels, textureWidth, textureHeight, textureChannels, textureTexelSize, textureData, format, image_usage_flags);
+	new_vulkan_2D_texture->Initialize(textureMipmapLevels, textureWidth, textureHeight, textureChannels, textureTexelSize, textureData, format, image_usage_flags, updatable);
 
 	{
 		SCOPED_LOCK(_Vulkan2DTexturesLock);
@@ -295,6 +295,14 @@ RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(cons
 	}
 
 	return new_vulkan_2D_texture;
+}
+
+/*
+*	Updates a 2D texture.
+*/
+void VulkanInterface::Update2DTexture(const void *RESTRICT const *RESTRICT texture_data, Vulkan2DTexture *const RESTRICT texture) NOEXCEPT
+{
+	texture->Update(texture_data);
 }
 
 /*
