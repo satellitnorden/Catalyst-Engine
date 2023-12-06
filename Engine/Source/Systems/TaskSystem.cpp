@@ -5,6 +5,9 @@
 #include <Concurrency/ConcurrencyCore.h>
 #include <Concurrency/Task.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(TaskSystem);
 
@@ -13,15 +16,19 @@ DEFINE_SINGLETON(TaskSystem);
 */
 void TaskSystem::Initialize(const CatalystProjectConcurrencyConfiguration &configuration) NOEXCEPT
 {
-	const bool single_threaded = configuration._SingleThreaded.Valid() && configuration._SingleThreaded.Get();
+	ASSERT(!_IsInitialized, "Calling TaskSystem::Initialize when task system is already initialized!");
 
-	if (!single_threaded && !_IsInitialized)
+	//Calculate the number of task executors.
+	uint32 number_of_task_executors;
+
+	if (configuration._NumberOfTaskExecutors.Valid())
 	{
-		//Retrieve the number of hardware threads.
-		const uint32 number_of_hardware_threads{ Concurrency::NumberOfHardwareThreads() };
+		number_of_task_executors = configuration._NumberOfTaskExecutors.Get();
+	}
 
-		//Set the number of task executors.
-		_NumberOfTaskExecutors = number_of_hardware_threads;
+	else
+	{
+		number_of_task_executors = Concurrency::NumberOfHardwareThreads();
 
 		//Subtract the sound thread.
 		if (_NumberOfTaskExecutors > 1)
@@ -34,6 +41,25 @@ void TaskSystem::Initialize(const CatalystProjectConcurrencyConfiguration &confi
 		{
 			--_NumberOfTaskExecutors;
 		}
+
+		if (_NumberOfTaskExecutors > 1)
+		{
+			--_NumberOfTaskExecutors;
+		}
+
+		if (_NumberOfTaskExecutors > 1)
+		{
+			--_NumberOfTaskExecutors;
+		}
+	}
+
+	if (number_of_task_executors > 0)
+	{
+		//Set the number of task executors.
+		_NumberOfTaskExecutors = number_of_task_executors;
+
+		//Task executors should now execute tasks.
+		_ExecuteTasks = true;
 
 		//Kick off all task executor threads.
 		_TaskExecutorThreads.Upsize<true>(_NumberOfTaskExecutors);
@@ -66,10 +92,11 @@ void TaskSystem::Initialize(const CatalystProjectConcurrencyConfiguration &confi
 			task_executor_thread.Launch();
 		}
 
+		//The task system is now initialized.
 		_IsInitialized = true;
 	}
 
-	if (single_threaded)
+	else
 	{
 		_NumberOfTaskExecutors = 0;
 	}
@@ -91,6 +118,11 @@ void TaskSystem::Terminate() NOEXCEPT
 	{
 		task_executor_thread.Join();
 	}
+
+	_TaskExecutorThreads.Clear();
+
+	//The task system is no longer initialized.
+	_IsInitialized = false;
 }
 
 /*
@@ -160,6 +192,8 @@ void TaskSystem::ExecuteTasks() NOEXCEPT
 		//Try to pop a task from the task queue, and execute it if it succeeds.
 		if (Task* const RESTRICT* const RESTRICT new_task{ _TaskQueue.Pop() })
 		{
+			PROFILING_SCOPE(TaskExecutor_ExecuteTask);
+
 			(*new_task)->Execute();
 
 			--_TasksInQueue;

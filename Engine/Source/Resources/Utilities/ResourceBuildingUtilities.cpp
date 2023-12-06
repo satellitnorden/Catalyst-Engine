@@ -135,6 +135,41 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		}
 	}
 
+	//Read the normal map textures.
+	StaticArray<Texture2D<Vector4<float32>>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> normal_map_textures;
+
+	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+	{
+		if (!parameters._NormalMapTextureFilePaths[i])
+		{
+			continue;
+		}
+
+		switch (File::GetExtension(parameters._NormalMapTextureFilePaths[i]))
+		{
+			case File::Extension::JPG:
+			{
+				JPGReader::Read(parameters._NormalMapTextureFilePaths[i], &normal_map_textures[i]);
+
+				break;
+			}
+
+			case File::Extension::PNG:
+			{
+				PNGReader::Read(parameters._NormalMapTextureFilePaths[i], &normal_map_textures[i]);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
+
 	//Read the mask textures.
 	StaticArray<Texture2D<Vector4<float32>>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> mask_textures;
 
@@ -184,6 +219,7 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 	
 	//Create the impostor textures!
 	Texture2D<Vector4<float32>> impostor_albedo_texture{ parameters._Dimensions._Width, parameters._Dimensions._Height };
+	Texture2D<Vector4<float32>> impostor_normal_map_texture{ parameters._Dimensions._Width, parameters._Dimensions._Height };
 	Texture2D<Vector4<float32>> impostor_mask_texture{ parameters._Dimensions._Width, parameters._Dimensions._Height };
 
 	for (uint32 Y{ 0 }; Y < parameters._Dimensions._Height; ++Y)
@@ -209,6 +245,8 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 			//Intersect every triangle and check for hits.
 			float32 intersection_distance{ FLOAT32_MAXIMUM };
 			uint64 intersected_mesh_index{ 0 };
+			Vector3<float32> intersected_normal;
+			Vector3<float32> intersected_tangent;
 			Vector2<float32> intersected_texture_coordinate;
 
 			for (uint64 mesh_index{ 0 }, size{ model_file._Meshes.Size() }; mesh_index < size; ++mesh_index)
@@ -232,7 +270,9 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 					{
 						if (intersection_distance > temporary_intersection_distance)
 						{
-							//Calculate the texture coordinate.
+							//Calculate the vertex properties.
+							Vector3<float32> normal;
+							Vector3<float32> tangent;
 							Vector2<float32> texture_coordinate;
 
 							{
@@ -242,10 +282,16 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 								//Calculate the barycentric coordinate.
 								Vector3<float32> barycentric_coordinate{ CatalystGeometryMath::CalculateBarycentricCoordinates(triangle, intersection_point) };
 
+								//Calculate the normal.
+								normal = mesh._Vertices[mesh._Indices[index + 0]]._Normal * barycentric_coordinate[0] + mesh._Vertices[mesh._Indices[index + 1]]._Normal * barycentric_coordinate[1] + mesh._Vertices[mesh._Indices[index + 2]]._Normal * barycentric_coordinate[2];
+
+								//Calculate the tangent.
+								tangent = mesh._Vertices[mesh._Indices[index + 0]]._Tangent * barycentric_coordinate[0] + mesh._Vertices[mesh._Indices[index + 1]]._Tangent * barycentric_coordinate[1] + mesh._Vertices[mesh._Indices[index + 2]]._Tangent * barycentric_coordinate[2];
+
 								//Calculate the texture coordinate.
 								texture_coordinate =  mesh._Vertices[mesh._Indices[index + 0]]._TextureCoordinate * barycentric_coordinate[0] + mesh._Vertices[mesh._Indices[index + 1]]._TextureCoordinate * barycentric_coordinate[1] + mesh._Vertices[mesh._Indices[index + 2]]._TextureCoordinate * barycentric_coordinate[2];
-
 							}
+
 							//Check the mask texture if this was really a hit.
 							bool was_really_a_hit{ true };
 
@@ -260,6 +306,8 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 							{
 								intersection_distance = temporary_intersection_distance;
 								intersected_mesh_index = mesh_index;
+								intersected_normal = normal;
+								intersected_tangent = tangent;
 								intersected_texture_coordinate = texture_coordinate;
 							}
 						}
@@ -273,12 +321,41 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 				//Fill in the textures.
 				impostor_albedo_texture.At(X, Y) = albedo_textures[intersected_mesh_index].Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE);
 				impostor_mask_texture.At(X, Y) = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
+			
+				//Calculate the normal
+				{
+					Matrix3x3 tangent_space_matrix{ intersected_tangent, Vector3<float32>::CrossProduct(intersected_normal, intersected_tangent), intersected_normal };
+				
+					tangent_space_matrix._Matrix[0] = Vector3<float32>::Normalize(tangent_space_matrix._Matrix[0]);
+					tangent_space_matrix._Matrix[1] = Vector3<float32>::Normalize(tangent_space_matrix._Matrix[1]);
+					tangent_space_matrix._Matrix[2] = Vector3<float32>::Normalize(tangent_space_matrix._Matrix[2]);
+
+					const Vector4<float32> normal_map_displacement_sample{ normal_map_textures[intersected_mesh_index].Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE) };
+					Vector3<float32> normal_map_sample{ normal_map_displacement_sample._X, normal_map_displacement_sample._Y, normal_map_displacement_sample._Z };
+					
+					normal_map_sample._X = normal_map_sample._X * 2.0f - 1.0f;
+					normal_map_sample._Y = normal_map_sample._Y * 2.0f - 1.0f;
+					normal_map_sample._Z = normal_map_sample._Z * 2.0f - 1.0f;
+
+					Vector3<float32> surface_normal{ tangent_space_matrix * normal_map_sample };
+
+					surface_normal._Z *= -1.0f;
+
+					surface_normal.Normalize();
+
+					surface_normal._X = surface_normal._X * 0.5f + 0.5f;
+					surface_normal._Y = surface_normal._Y * 0.5f + 0.5f;
+					surface_normal._Z = surface_normal._Z * 0.5f + 0.5f;
+
+					impostor_normal_map_texture.At(X, Y) = Vector4<float32>(surface_normal, 0.5f);
+				}
 			}
 
 			else
 			{
 				//Fill in the textures.
 				impostor_albedo_texture.At(X, Y) = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+				impostor_normal_map_texture.At(X, Y) = Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f);
 				impostor_mask_texture.At(X, Y) = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
 			}
 		}
@@ -350,6 +427,13 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 
 	{
 		char buffer[128];
+		sprintf_s(buffer, "%s\\%s_Impostor_Normal_Map.png", parameters._RawTexturesFilePath, parameters._Identifier);
+
+		PNGWriter::Write(impostor_normal_map_texture, buffer);
+	}
+
+	{
+		char buffer[128];
 		sprintf_s(buffer, "%s\\%s_Impostor_Mask.png", parameters._RawTexturesFilePath, parameters._Identifier);
 
 		PNGWriter::Write(impostor_mask_texture, buffer);
@@ -370,6 +454,38 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		texture_2d_build_parameters._DefaultHeight = 0;
 		char file_1_buffer[128];
 		sprintf_s(file_1_buffer, "%s\\%s_Impostor_Albedo.png", parameters._RawTexturesFilePath, parameters._Identifier);
+		texture_2d_build_parameters._File1 = file_1_buffer;
+		texture_2d_build_parameters._File2 = nullptr;
+		texture_2d_build_parameters._File3 = nullptr;
+		texture_2d_build_parameters._File4 = nullptr;
+		texture_2d_build_parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+		texture_2d_build_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		texture_2d_build_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		texture_2d_build_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		texture_2d_build_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
+		texture_2d_build_parameters._ApplyGammaCorrection = true;
+		texture_2d_build_parameters._TransformFunction = nullptr;
+		texture_2d_build_parameters._BaseMipmapLevel = 0;
+		texture_2d_build_parameters._MipmapLevels = 2;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
+	}
+
+	//Build the impostor normal_map texture.
+	{
+		//Build the texture 2D.
+		Texture2DBuildParameters texture_2d_build_parameters;
+
+		char output_buffer[128];
+		sprintf_s(output_buffer, "..\\..\\..\\Content\\Intermediate\\Textures\\Impostors\\%s_Impostor_NormalMapDisplacement_Texture2D", parameters._Identifier);
+		texture_2d_build_parameters._Output = output_buffer;
+		char identifier_buffer[128];
+		sprintf_s(identifier_buffer, "%s_Impostor_NormalMapDisplacement_Texture2D", parameters._Identifier);
+		texture_2d_build_parameters._ID = identifier_buffer;
+		texture_2d_build_parameters._DefaultWidth = 0;
+		texture_2d_build_parameters._DefaultHeight = 0;
+		char file_1_buffer[128];
+		sprintf_s(file_1_buffer, "%s\\%s_Impostor_Normal_Map.png", parameters._RawTexturesFilePath, parameters._Identifier);
 		texture_2d_build_parameters._File1 = file_1_buffer;
 		texture_2d_build_parameters._File2 = nullptr;
 		texture_2d_build_parameters._File3 = nullptr;
@@ -435,8 +551,10 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		char albedo_identifier_buffer[128];
 		sprintf_s(albedo_identifier_buffer, "%s_Impostor_Albedo_Texture2D", parameters._Identifier);
 		material_build_parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString(albedo_identifier_buffer);
-		material_build_parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-		material_build_parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
+		material_build_parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+		char normal_map_identifier_buffer[128];
+		sprintf_s(normal_map_identifier_buffer, "%s_Impostor_NormalMapDisplacement_Texture2D", parameters._Identifier);
+		material_build_parameters._NormalMapDisplacementComponent._TextureResourceIdentifier = HashString(normal_map_identifier_buffer);
 		material_build_parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
 		material_build_parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f));
 		material_build_parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;

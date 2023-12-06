@@ -54,7 +54,11 @@
 void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfiguration &configuration) NOEXCEPT
 {
 	//Initialize the task system as it will be used to build resources.
-	TaskSystem::Instance->Initialize(configuration._ConcurrencyConfiguration);
+	CatalystProjectConcurrencyConfiguration concurrency_configuration;
+
+	concurrency_configuration._NumberOfTaskExecutors = Concurrency::NumberOfHardwareThreads();
+
+	TaskSystem::Instance->Initialize(concurrency_configuration);
 
 	//Keep track of all tasks so that they can be deallocated.
 	DynamicArray<Task* RESTRICT> tasks;
@@ -2824,6 +2828,9 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(parameters);
 	}
 #endif
+
+	//Terminate the task system so that it can be re-initialized with the proper arguments.
+	TaskSystem::Instance->Terminate();
 }
 
 /*

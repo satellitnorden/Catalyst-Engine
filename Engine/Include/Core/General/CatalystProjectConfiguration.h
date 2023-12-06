@@ -76,11 +76,12 @@ public:
 	}
 
 	/*
-	*	Denotes if the engine should run single-threaded.
-	*	Can be useful to save resources if this is an application that does quite little on the main thread,
-	*	and wants extra resources if it for example spawns some dedicated threads.
+	*	Details the number of task executors.
+	*	This can be used to override the number of task executors,
+	*	for example to save some processing power if you know that your game won't use that many async operations
+	*	Default power is to run as many task executors as there are hardware threads.
 	*/
-	Optional<bool> _SingleThreaded;
+	Optional<uint32> _NumberOfTaskExecutors;
 
 };
 

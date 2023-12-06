@@ -72,7 +72,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	_ProjectConfiguration = initial_project_configuration;
 
 	//Set whether or not to run the engine single-threaded.
-	_SingleThreaded = _ProjectConfiguration._ConcurrencyConfiguration._SingleThreaded.Valid() && _ProjectConfiguration._ConcurrencyConfiguration._SingleThreaded.Get();
+	_SingleThreaded = _ProjectConfiguration._ConcurrencyConfiguration._NumberOfTaskExecutors.Valid() && _ProjectConfiguration._ConcurrencyConfiguration._NumberOfTaskExecutors.Get() == 0;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Build the Catalyst Engine resources.
@@ -308,7 +308,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	}
 
 	//Post-update the frame pacer.
-	_FramePacer.PostUpdate(preferred_refresh_rate);
+	//_FramePacer.PostUpdate(preferred_refresh_rate);
 
 	//Return if the game should be terminated.
 	return !_ShouldTerminate;
@@ -485,10 +485,19 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 
 	else
 	{
-		//Wait for the update data that ends in this update phase.
-		for (UpdateData *const RESTRICT update_data : _EndUpdateData[UNDERLYING(phase)])
+		//Finish up the work that ends in this update phase.
+		bool all_done{ _EndUpdateData[UNDERLYING(phase)].Empty() };
+
+		while (!all_done)
 		{
-			update_data->_Task.Wait<WaitMode::PAUSE>();
+			TaskSystem::Instance->DoWork();
+
+			all_done = true;
+
+			for (UpdateData *const RESTRICT update_data : _EndUpdateData[UNDERLYING(phase)])
+			{
+				all_done &= update_data->_Task.IsExecuted();
+			}
 		}
 
 		//Execute the tasks for the update data that starts in this update phase.
