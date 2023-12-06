@@ -48,6 +48,7 @@
 #include <ThirdParty/freetype/freetype.h>
 #include <ThirdParty/stb_image.h>
 #include <ThirdParty/stb_image_resize.h>
+#include <ThirdParty/vulkan/shaderc/shaderc.h>
 
 /*
 *	Builds the resource collection recursively.
@@ -845,6 +846,17 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 		//Allocate the result.
 		shaderc_include_result *const RESTRICT result{static_cast<shaderc_include_result *const RESTRICT>(Memory::Allocate(sizeof(shaderc_include_result)))};
 
+		//Absolute include paths aren't allowed.
+		if (type == shaderc_include_type_standard)
+		{
+			result->source_name = nullptr;
+			result->source_name_length = 0;
+			result->content = "No absolute paths!";
+			result->content_length = strlen("No absolute paths!");
+
+			return result;
+		}
+
 		//Fill in the result.
 		result->source_name = requested_source;
 		result->source_name_length = strlen(requested_source);
@@ -932,7 +944,7 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 	file_name += ".cr";
 
 	//Open the file to be written to.
-	BinaryFile<IOMode::Out> file{ file_name.Data() };
+	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
 
 	//Write the resource header to the file.
 	const ResourceHeader header{ ResourceConstants::SHADER_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
