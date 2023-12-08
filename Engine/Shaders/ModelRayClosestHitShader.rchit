@@ -116,22 +116,25 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 				//Trace the visibility.
 				bool hit_anything = false;
 
-				visibility = 0.0f;
+				if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT))
+				{
+					visibility = 0.0f;
 
-				traceNV(TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
-						gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
-						0xff, 																						//cullMask
-						0, 																							//sbtRecordOffset
-						0, 																							//sbtRecordStride
-						1, 																							//missIndex
-						hit_position, 																				//origin
-						CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
-						-light_direction,																			//direction
-						VIEW_DISTANCE,																				//Tmax
-						1 																							//payload
-						);
+					traceNV(TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
+							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
+							0xff, 																						//cullMask
+							0, 																							//sbtRecordOffset
+							0, 																							//sbtRecordStride
+							1, 																							//missIndex
+							hit_position, 																				//origin
+							CATALYST_RAY_TRACING_T_MINIMUM, 															//Tmin
+							-light_direction,																			//direction
+							VIEW_DISTANCE,																				//Tmax
+							1 																							//payload
+							);
 
-				hit_anything = visibility < 1.0f;
+					hit_anything = visibility < 1.0f;
+				}
 
 				if (!hit_anything)
 				{
@@ -169,9 +172,15 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 					light_direction *= distance_to_light_reciprocal;
 
 					//Trace the visibility.
-					visibility = 0.0f;
+					bool hit_anything = false;
 
-					traceNV(TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
+					if (TEST_BIT(light.light_properties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT))
+					{
+						visibility = 0.0f;
+
+						traceNV
+						(
+							TOP_LEVEL_ACCELERATION_STRUCTURE, 															//topLevel
 							gl_RayFlagsTerminateOnFirstHitNV | gl_RayFlagsOpaqueNV | gl_RayFlagsSkipClosestHitShaderNV, //rayFlags
 							0xff, 																						//cullMask
 							0, 																							//sbtRecordOffset
@@ -182,9 +191,12 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 							-light_direction,																			//direction
 							distance_to_light,																			//Tmax
 							1 																							//payload
-							);
+						);
 
-					if (visibility == 1.0f)
+						hit_anything = visibility < 1.0f;
+					}
+
+					if (!hit_anything)
 					{
 						//Calculate the attenuation.
 						float attenuation = CalculateAttenuation(distance_to_light, light.radius);

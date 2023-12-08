@@ -46,11 +46,11 @@ private:
 	//The ambient occlusion ray tracing pipeline.
 	AmbientOcclusionRayTracingPipeline _AmbientOcclusionRayTracingPipeline;
 
-	//The ambient occlusion spatial denoising graphics pipelines.
-	StaticArray<AmbientOcclusionSpatialDenoisingGraphicsPipeline, 4> _AmbientOcclusionSpatialDenoisingGraphicsPipelines;
-
 	//The ambient occlusion temporal denoising graphics pipelines.
 	StaticArray<AmbientOcclusionTemporalDenoisingGraphicsPipeline, 2> _AmbientOcclusionTemporalDenoisingGraphicsPipelines;
+
+	//The ambient occlusion spatial denoising graphics pipelines.
+	StaticArray<AmbientOcclusionSpatialDenoisingGraphicsPipeline, 4> _AmbientOcclusionSpatialDenoisingGraphicsPipelines;
 
 	//The ambient occlusion application graphics pipeline.
 	AmbientOcclusionApplicationGraphicsPipeline _AmbientOcclusionApplicationGraphicsPipeline;

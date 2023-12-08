@@ -62,12 +62,12 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_ScreenSpaceAmbientOcclusionGraphicsPipeline);
 	AddPipeline(&_AmbientOcclusionRayTracingPipeline);
 
-	for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+	for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
 
-	for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
+	for (AmbientOcclusionSpatialDenoisingGraphicsPipeline& pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -78,18 +78,6 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize(_AmbientOcclusionRenderTarget);
 	_AmbientOcclusionRayTracingPipeline.Initialize(_AmbientOcclusionRenderTarget);
 
-	for (uint64 i{ 0 }; i < _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size(); i += 2)
-	{
-		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 0].Initialize(	_AmbientOcclusionRenderTarget,
-																				static_cast<int32>(i / 2 + 1),
-																				0,
-																				_IntermediateAmbientOcclusionRenderTarget);
-		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 1].Initialize(	_IntermediateAmbientOcclusionRenderTarget,
-																				static_cast<int32>(i / 2 + 1),
-																				1,
-																				_AmbientOcclusionRenderTarget);
-	}
-
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[0],
 																		_AmbientOcclusionTemporalBufferRenderTargets[1],
 																		_AmbientOcclusionRenderTarget,
@@ -98,6 +86,18 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 																		_AmbientOcclusionTemporalBufferRenderTargets[0],
 																		_AmbientOcclusionRenderTarget,
 																		_IntermediateAmbientOcclusionRenderTarget);
+
+	for (uint64 i{ 0 }; i < _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size(); i += 2)
+	{
+		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 0].Initialize(	_IntermediateAmbientOcclusionRenderTarget,
+																				static_cast<int32>(i / 2 + 1),
+																				0,
+																				_AmbientOcclusionRenderTarget);
+		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 1].Initialize(	_AmbientOcclusionRenderTarget,
+																				static_cast<int32>(i / 2 + 1),
+																				1,
+																				_IntermediateAmbientOcclusionRenderTarget);
+	}
 
 	_AmbientOcclusionApplicationGraphicsPipeline.Initialize(_IntermediateAmbientOcclusionRenderTarget);
 }
@@ -157,11 +157,6 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 
 	if (!RenderingSystem::Instance->IsTakingScreenshot())
 	{
-		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
-		{
-			pipeline.Execute();
-		}
-
 		//Execute the current buffer, don't include the rest.
 		for (uint64 i{ 0 }, size{ _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
 		{
@@ -178,6 +173,11 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 
 		//Update the current buffer index.
 		_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
+
+		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+		{
+			pipeline.Execute();
+		}
 	}
 	
 	else

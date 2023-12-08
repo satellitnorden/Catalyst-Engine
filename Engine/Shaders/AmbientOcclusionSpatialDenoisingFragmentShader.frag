@@ -71,13 +71,11 @@ void CatalystShaderMain()
 		*	Calculate the sample weight based on certain criteria;
 		*	
 		*	1. Is the sample coordinate valid?
-		*	2. How closely aligned are the normals to each other?
-		*	3. How closely aligned are the depths to each other?
+		*	2. How closely aligned are the depths to each other?
 		*/
 		float sample_weight = 1.0f;
 
 		sample_weight *= float(ValidCoordinate(sample_coordinate));
-		sample_weight *= max(dot(current_scene_features._Normal, sample_scene_features._Normal), 0.0f);
 		sample_weight *= 1.0f - SmoothStep(min(abs(current_scene_features._ViewDistance - sample_scene_features._ViewDistance), 1.0f));
 
 		denoised_ambient_occlusion += sample_ambient_occlusion * sample_weight;

@@ -55,9 +55,6 @@ void CatalystShaderMain()
 	//Calculate the random hemisphere sample start index.
 	uint random_hemisphere_sample_start_index = uint(noise_texture_sample.w * 64.0f);
 
-	//Calculate the hemisphere index stride.
-	uint hemisphere_index_stride = 64 / AMBIENT_OCCLUSION_NUMBER_OF_SAMPLES;
-
 	//Keep track of the total weight.
 	float total_weight = 0.0f;
 
@@ -70,7 +67,7 @@ void CatalystShaderMain()
 		vec3 pre_rotation_hemisphere_direction;
 		float random_length;
 
-		SampleHammersleyHemisphereSample(random_hemisphere_sample_start_index + (i * hemisphere_index_stride) + uint(gl_FragCoord.x) + uint(gl_FragCoord.y), pre_rotation_hemisphere_direction, random_length);
+		SampleHammersleyHemisphereSample(random_hemisphere_sample_start_index + i, pre_rotation_hemisphere_direction, random_length);
 
 		//Rotate the random direction.
 		vec3 random_direction = random_rotation * pre_rotation_hemisphere_direction;
@@ -104,9 +101,6 @@ void CatalystShaderMain()
 
 	//Normalize the ambient occlusion.
 	occlusion = total_weight != 0.0f ? 1.0f - (occlusion / total_weight) : 1.0f;
-
-	//Bias the occlusion.
-	occlusion *= occlusion;
 
     //Write the fragment
     fragment = vec4(vec3(occlusion), 1.0f);

@@ -41,16 +41,6 @@ void TaskSystem::Initialize(const CatalystProjectConcurrencyConfiguration &confi
 		{
 			--_NumberOfTaskExecutors;
 		}
-
-		if (_NumberOfTaskExecutors > 1)
-		{
-			--_NumberOfTaskExecutors;
-		}
-
-		if (_NumberOfTaskExecutors > 1)
-		{
-			--_NumberOfTaskExecutors;
-		}
 	}
 
 	if (number_of_task_executors > 0)

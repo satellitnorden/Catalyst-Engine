@@ -1,3 +1,6 @@
+//Constants.
+#define AMBIENT_OCCLUSION_FEEDBACK_FACTOR (0.9f)
+
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -65,8 +68,11 @@ void CatalystShaderMain()
 
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
 
+	//Calculate the final weight.
+	float final_weight = AMBIENT_OCCLUSION_FEEDBACK_FACTOR * previous_sample_weight;
+
 	//Blend the previous and the current ambient occlusion.
-	float blended_ambient_occlusion = mix(current_ambient_occlusion, previous_ambient_occlusion, previous_sample_weight);
+	float blended_ambient_occlusion = mix(current_ambient_occlusion, previous_ambient_occlusion, final_weight);
 
 	//Write the fragments.
 	current_temporal_buffer = vec4(vec3(blended_ambient_occlusion), 1.0f);
