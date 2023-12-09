@@ -343,6 +343,9 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 		}
 	}
 
+	//Read the output depth buffer.
+	file->Read(&data->_OutputDepthBuffer, sizeof(HashString));
+
 	//Read the output render targets.
 	{
 		uint64 length{ 0 };
@@ -354,6 +357,12 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 			file->Read(data->_OutputRenderTargets.Data(), sizeof(HashString) * data->_OutputRenderTargets.Size());
 		}
 	}
+
+	//Read the load/store operators.
+	file->Read(&data->_ColorLoadOperator, sizeof(AttachmentLoadOperator));
+	file->Read(&data->_ColorStoreOperator, sizeof(AttachmentStoreOperator));
+	file->Read(&data->_DepthStencilLoadOperator, sizeof(AttachmentLoadOperator));
+	file->Read(&data->_DepthStencilStoreOperator, sizeof(AttachmentStoreOperator));
 }
 
 /*

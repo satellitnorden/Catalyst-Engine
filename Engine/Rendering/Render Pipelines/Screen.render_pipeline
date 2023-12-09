@@ -1,3 +1,12 @@
+//Declare input render targets.
+InputRenderTargets(Scene /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(Screen);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
 //The vertex shader.
 Vertex
 {
@@ -21,12 +30,6 @@ Fragment
 {
     //Declare input parameters.
     InputParameter(vec2, InTextureCoordinate);
-
-    //Declare input render targets.
-    InputRenderTargets(Scene /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
-
-    //Declare output render targets.
-    OutputRenderTarget(Screen);
 
     //Sample the scene texture.
     vec4 scene_texture_sample = texture(Scene, InTextureCoordinate);

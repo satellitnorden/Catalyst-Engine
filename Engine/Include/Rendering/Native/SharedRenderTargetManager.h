@@ -28,7 +28,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD RenderTargetHandle GetSharedRenderTarget(const SharedRenderTarget shared_render_target) NOEXCEPT
 	{
-		return _SharedRenderTargets[UNDERLYING(shared_render_target)];
+		return _SharedRenderTargetInformations[UNDERLYING(shared_render_target)]._Handle;
 	}
 
 	/*
@@ -46,6 +46,9 @@ private:
 
 	public:
 
+		//The identifier.
+		HashString _Identifier;
+
 		//The resolution.
 		Resolution _Resolution;
 
@@ -55,10 +58,13 @@ private:
 		//The rendering paths that this shared render target is needed in.
 		StaticArray<bool, UNDERLYING(RenderingPath::NUMBER_OF_RENDERING_PATHS)> _IsNeeded;
 
-	};
+		//Denotes if this is a depth buffer.
+		bool _IsDepthBuffer;
 
-	//The shared render targets.
-	StaticArray<RenderTargetHandle, UNDERLYING(SharedRenderTarget::NUMBER_OF_SHARED_RENDER_TARGETS)> _SharedRenderTargets;
+		//The handle.
+		RenderTargetHandle _Handle;
+
+	};
 
 	//The shared render target informations.
 	StaticArray<SharedRenderTargetInformation, UNDERLYING(SharedRenderTarget::NUMBER_OF_SHARED_RENDER_TARGETS)> _SharedRenderTargetInformations;

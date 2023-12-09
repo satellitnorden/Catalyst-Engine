@@ -331,9 +331,16 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_FragmentShaderData._GLSLData), ShaderStage::FRAGMENT, &resource->_FragmentShaderHandle);
 	}
 
-	//Copy the input/output render targets.
+	//Copy the input/output depth buffer/render targets.
 	resource->_InputRenderTargets = std::move(data->_InputRenderTargets);
+	resource->_OutputDepthBuffer = data->_OutputDepthBuffer;
 	resource->_OutputRenderTargets = std::move(data->_OutputRenderTargets);
+
+	//Copy the load/store operators.
+	resource->_ColorLoadOperator = data->_ColorLoadOperator;
+	resource->_ColorStoreOperator = data->_ColorStoreOperator;
+	resource->_DepthStencilLoadOperator = data->_DepthStencilLoadOperator;
+	resource->_DepthStencilStoreOperator = data->_DepthStencilStoreOperator;
 }
 
 /*

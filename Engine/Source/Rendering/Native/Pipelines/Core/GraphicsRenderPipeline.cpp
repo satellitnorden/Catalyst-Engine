@@ -63,8 +63,27 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 	SetVertexShader(render_pipeline_resource->_VertexShaderHandle);
 	SetFragmentShader(render_pipeline_resource->_FragmentShaderHandle);
 
-	//Set whether or not this graphics pipeline is rendering directly to the screen.
-	SetIsRenderingDirectlyToScreen(true);
+	//Set the depth buffer.
+	if (render_pipeline_resource->_OutputDepthBuffer)
+	{
+		SetDepthBuffer(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(render_pipeline_resource->_OutputDepthBuffer));
+	}
+
+	//Add the output render targets.
+	if (render_pipeline_resource->_OutputRenderTargets.Size() == 1 && render_pipeline_resource->_OutputRenderTargets[0] == HashString("Screen"))
+	{
+		SetIsRenderingDirectlyToScreen(true);
+	}
+	
+	else
+	{
+		SetNumberOfOutputRenderTargets(render_pipeline_resource->_OutputRenderTargets.Size());
+
+		for (const HashString output_render_target : render_pipeline_resource->_OutputRenderTargets)
+		{
+			AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(output_render_target));
+		}
+	}
 
 	//Add the render data table layouts.
 	if (_UsesRenderDataTable)
@@ -77,10 +96,10 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
 
 	//Set the properties of the render pass.
-	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
-	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
-	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
+	SetDepthStencilAttachmentLoadOperator(render_pipeline_resource->_DepthStencilLoadOperator);
+	SetDepthStencilAttachmentStoreOperator(render_pipeline_resource->_DepthStencilStoreOperator);
+	SetColorAttachmentLoadOperator(render_pipeline_resource->_ColorLoadOperator);
+	SetColorAttachmentStoreOperator(render_pipeline_resource->_ColorStoreOperator);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);

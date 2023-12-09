@@ -452,6 +452,11 @@ enum class SharedRenderTarget : uint8
 	*/
 	INTERMEDIATE_RGBA_FLOAT32_QUARTER_2,
 
+	/*
+	*	The scene depth buffer.
+	*/
+	SCENE_DEPTH_BUFFER,
+
 	NUMBER_OF_SHARED_RENDER_TARGETS
 };
 

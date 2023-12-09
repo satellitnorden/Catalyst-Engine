@@ -51,7 +51,7 @@ void SkyRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_SkyGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_SkyGraphicsPipeline.Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer());
+	_SkyGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 }
 
 /*

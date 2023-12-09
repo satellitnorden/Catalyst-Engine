@@ -104,7 +104,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 1
+#if 0
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -160,6 +160,37 @@ public:
 		//Close the file.
 		file.Close();
 	}
+
+};
+
+/*
+*	Render pipeline information class definition.
+*/
+class RenderPipelineInformation final
+{
+
+public:
+
+	//The input render targets.
+	DynamicArray<DynamicString> _InputRenderTargets;
+
+	//The output depth buffers.
+	DynamicString _OutputDepthBuffer;
+
+	//The output render targets.
+	DynamicArray<DynamicString> _OutputRenderTargets;
+
+	//The color load operator.
+	AttachmentLoadOperator _ColorLoadOperator{ AttachmentLoadOperator::DONT_CARE };
+
+	//The color store operator.
+	AttachmentStoreOperator _ColorStoreOperator{ AttachmentStoreOperator::DONT_CARE };
+
+	//The depth/stencil load operator.
+	AttachmentLoadOperator _DepthStencilLoadOperator{ AttachmentLoadOperator::DONT_CARE };
+
+	//The depth/stencil store operator.
+	AttachmentStoreOperator _DepthStencilStoreOperator{ AttachmentStoreOperator::DONT_CARE };
 
 };
 
@@ -254,7 +285,14 @@ void CompileGLSLShader(const char *const RESTRICT file_path, const shaderc_shade
 /*
 *	Generates a vertex shader.
 */
-void GenerateVertexShader(std::ifstream &file, const char *const RESTRICT generated_file_path, const std::string &shader_name, RenderPipelineBuildParameters *const RESTRICT parameters) NOEXCEPT
+void GenerateVertexShader
+(
+	std::ifstream &file,
+	const char *const RESTRICT generated_file_path,
+	const std::string &shader_name,
+	const RenderPipelineInformation &render_pipeline_information,
+	RenderPipelineBuildParameters *const RESTRICT parameters
+) NOEXCEPT
 {
 	//Gather all the lines in the vertex function.
 	DynamicArray<std::string> lines;
@@ -387,26 +425,20 @@ void GenerateVertexShader(std::ifstream &file, const char *const RESTRICT genera
 /*
 *	Generates a fragment shader.
 */
-void GenerateFragmentShader(std::ifstream &file, const char *const RESTRICT generated_file_path, const std::string &shader_name, RenderPipelineBuildParameters *const RESTRICT parameters) NOEXCEPT
+void GenerateFragmentShader
+(
+	std::ifstream &file,
+	const char *const RESTRICT generated_file_path,
+	const std::string &shader_name,
+	const RenderPipelineInformation &render_pipeline_information,
+	RenderPipelineBuildParameters *const RESTRICT parameters
+) NOEXCEPT
 {
 	//Struct definitions.
 	struct InputParameter final
 	{
 		DynamicString _Type;
 		DynamicString _Name;
-	};
-
-	struct InputRenderTarget final
-	{
-		DynamicString _Identifier;
-		DynamicString _MagnificationFilter;
-		DynamicString _MipmapMode;
-		DynamicString _AddressMode;
-	};
-
-	struct OutputRenderTarget final
-	{
-		DynamicString _Identifier;
 	};
 
 	struct OutputFragment final
@@ -440,69 +472,6 @@ void GenerateFragmentShader(std::ifstream &file, const char *const RESTRICT gene
 			input_parameters.Emplace();
 			input_parameters.Back()._Type = std::move(input_parameter_strings[0]);
 			input_parameters.Back()._Name = std::move(input_parameter_strings[1]);
-
-			lines.EraseAt<true>(i);
-		}
-
-		else
-		{
-			++i;
-		}
-	}
-
-	//Gather the input render targets
-	DynamicArray<InputRenderTarget> input_render_targets;
-
-	for (uint64 i{ 0 }; i < lines.Size();)
-	{
-		const size_t input_render_target_position{ lines[i].find("InputRenderTargets") };
-
-		if (input_render_target_position != std::string::npos)
-		{
-			StaticArray<DynamicString, 4> input_render_target_strings;
-
-			TextParsingUtilities::ParseFunctionArguments
-			(
-				lines[i].data(),
-				lines[i].length(),
-				input_render_target_strings.Data()
-			);
-
-			input_render_targets.Emplace();
-			input_render_targets.Back()._Identifier = std::move(input_render_target_strings[0]);
-			input_render_targets.Back()._MagnificationFilter = std::move(input_render_target_strings[1]);
-			input_render_targets.Back()._MipmapMode = std::move(input_render_target_strings[2]);
-			input_render_targets.Back()._AddressMode = std::move(input_render_target_strings[3]);
-
-			lines.EraseAt<true>(i);
-		}
-
-		else
-		{
-			++i;
-		}
-	}
-
-	//Gather the output render targets
-	DynamicArray<OutputRenderTarget> output_render_targets;
-
-	for (uint64 i{ 0 }; i < lines.Size();)
-	{
-		const size_t output_render_target_position{ lines[i].find("OutputRenderTarget") };
-
-		if (output_render_target_position != std::string::npos)
-		{
-			StaticArray<DynamicString, 1> output_render_target_strings;
-
-			TextParsingUtilities::ParseFunctionArguments
-			(
-				lines[i].data(),
-				lines[i].length(),
-				output_render_target_strings.Data()
-			);
-
-			output_render_targets.Emplace();
-			output_render_targets.Back()._Identifier = std::move(output_render_target_strings[0]);
 
 			lines.EraseAt<true>(i);
 		}
@@ -572,28 +541,28 @@ void GenerateFragmentShader(std::ifstream &file, const char *const RESTRICT gene
 		}
 
 		//Write the input render targets.
-		if (!input_render_targets.Empty())
+		if (!render_pipeline_information._InputRenderTargets.Empty())
 		{
 			//Remember the current binding index.
 			uint32 binding_index{ 0 };
 
-			for (const InputRenderTarget &input_render_target : input_render_targets)
+			for (const DynamicString &input_render_target : render_pipeline_information._InputRenderTargets)
 			{
-				glsl_file << "layout (set = 0, binding = " << binding_index++ << ") uniform sampler2D " << input_render_target._Identifier.Data() << ";" << std::endl;
+				glsl_file << "layout (set = 0, binding = " << binding_index++ << ") uniform sampler2D " << input_render_target.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;
 		}
 
 		//Write the output render targets.
-		if (!output_render_targets.Empty())
+		if (!render_pipeline_information._OutputRenderTargets.Empty())
 		{
 			//Remember the current location index.
 			uint32 location_index{ 0 };
 
-			for (const OutputRenderTarget &output_render_target : output_render_targets)
+			for (const DynamicString &output_render_target : render_pipeline_information._OutputRenderTargets)
 			{
-				glsl_file << "layout (location = " << location_index++ << ") out vec4 " << output_render_target._Identifier.Data() << ";" << std::endl;
+				glsl_file << "layout (location = " << location_index++ << ") out vec4 " << output_render_target.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;
@@ -631,22 +600,6 @@ void GenerateFragmentShader(std::ifstream &file, const char *const RESTRICT gene
 
 		//Compile the GLSL shader.
 		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_fragment_shader, &parameters->_FragmentShaderData._GLSLData);
-	}
-
-	//Write the input render targets.
-	parameters->_InputRenderTargets.Reserve(input_render_targets.Size());
-
-	for (const InputRenderTarget &input_render_target : input_render_targets)
-	{
-		parameters->_InputRenderTargets.Emplace(HashString(input_render_target._Identifier.Data()));
-	}
-
-	//Write the output render targets.
-	parameters->_OutputRenderTargets.Reserve(output_render_targets.Size());
-
-	for (const OutputRenderTarget &output_render_target : output_render_targets)
-	{
-		parameters->_OutputRenderTargets.Emplace(HashString(output_render_target._Identifier.Data()));
 	}
 }
 
@@ -719,6 +672,9 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 		//Set up the build parameters.
 		RenderPipelineBuildParameters parameters;
 
+		//Set up the render pipeline information.
+		RenderPipelineInformation render_pipeline_information;
+
 		//Fill in the output.
 		char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
 		sprintf_s(output_buffer, "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Render Pipelines\\%s_RenderPipeline", render_pipeline_name.data());
@@ -732,18 +688,262 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 		while (std::getline(file, current_line))
 		{
+			//Disregard whitespace and comment-only lines.
+			if (TextParsingUtilities::OnlyWhitespace(current_line.data(), current_line.length())
+				|| TextParsingUtilities::OnlyComment(current_line.data(), current_line.length()))
+			{
+				continue;
+			}
+
+			//Is this an input render target declaration?
+			{
+				const size_t input_render_target_position{ current_line.find("InputRenderTarget") };
+
+				if (input_render_target_position != std::string::npos)
+				{
+					StaticArray<DynamicString, 4> input_render_target_strings;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						input_render_target_strings.Data()
+					);
+
+					render_pipeline_information._InputRenderTargets.Emplace(std::move(input_render_target_strings[0]));
+
+					continue;
+				}
+			}
+
+			//Is this an output depth buffer declaration?
+			{
+				const size_t output_depth_buffer_position{ current_line.find("OutputDepthBuffer") };
+
+				if (output_depth_buffer_position != std::string::npos)
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&render_pipeline_information._OutputDepthBuffer
+					);
+
+					continue;
+				}
+			}
+
+			//Is this an output render target declaration?
+			{
+				const size_t output_render_target_position{ current_line.find("OutputRenderTarget") };
+
+				if (output_render_target_position != std::string::npos)
+				{
+					render_pipeline_information._OutputRenderTargets.Emplace();
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&render_pipeline_information._OutputRenderTargets.Back()
+					);
+
+					continue;
+				}
+			}
+
+			//Is this a color load operator declaration?
+			{
+				const size_t position{ current_line.find("ColorLoadOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "LOAD")
+					{
+						render_pipeline_information._ColorLoadOperator = AttachmentLoadOperator::LOAD;
+					}
+
+					else if (string == "CLEAR")
+					{
+						render_pipeline_information._ColorLoadOperator = AttachmentLoadOperator::CLEAR;
+					}
+
+					else if (string == "DONT_CARE")
+					{
+						render_pipeline_information._ColorLoadOperator = AttachmentLoadOperator::DONT_CARE;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a color store operator declaration?
+			{
+				const size_t position{ current_line.find("ColorStoreOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "STORE")
+					{
+						render_pipeline_information._ColorStoreOperator = AttachmentStoreOperator::STORE;
+					}
+
+					else if (string == "DONT_CARE")
+					{
+						render_pipeline_information._ColorStoreOperator = AttachmentStoreOperator::DONT_CARE;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a depth/stencil load operator declaration?
+			{
+				const size_t position{ current_line.find("DepthStencilLoadOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "LOAD")
+					{
+						render_pipeline_information._DepthStencilLoadOperator = AttachmentLoadOperator::LOAD;
+					}
+
+					else if (string == "CLEAR")
+					{
+						render_pipeline_information._DepthStencilLoadOperator = AttachmentLoadOperator::CLEAR;
+					}
+
+					else if (string == "DONT_CARE")
+					{
+						render_pipeline_information._DepthStencilLoadOperator = AttachmentLoadOperator::DONT_CARE;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a depth/stencil store operator declaration?
+			{
+				const size_t position{ current_line.find("DepthStencilStoreOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "STORE")
+					{
+						render_pipeline_information._DepthStencilStoreOperator = AttachmentStoreOperator::STORE;
+					}
+
+					else if (string == "DONT_CARE")
+					{
+						render_pipeline_information._DepthStencilStoreOperator = AttachmentStoreOperator::DONT_CARE;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+			
 			//Is this the beginning of a vertex shader?
 			if (current_line == "Vertex")
 			{
-				GenerateVertexShader(file, generated_file_path, render_pipeline_name, &parameters);
+				GenerateVertexShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
 			}
 
 			//Is this the beginning of a vertex shader?
 			else if (current_line == "Fragment")
 			{
-				GenerateFragmentShader(file, generated_file_path, render_pipeline_name, &parameters);
+				GenerateFragmentShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
 			}
 		}
+
+		//Fill in the input render targets.
+		if (!render_pipeline_information._InputRenderTargets.Empty())
+		{
+			parameters._InputRenderTargets.Reserve(render_pipeline_information._InputRenderTargets.Size());
+
+			for (const DynamicString &input_render_target : render_pipeline_information._InputRenderTargets)
+			{
+				parameters._InputRenderTargets.Emplace(HashString(input_render_target.Data()));
+			}
+		}
+
+		//Fill in the output depth buffer.
+		if (render_pipeline_information._OutputDepthBuffer)
+		{
+			parameters._OutputDepthBuffer = HashString(render_pipeline_information._OutputDepthBuffer.Data());
+		}
+
+		//Fill in the output render targets.
+		if (!render_pipeline_information._OutputRenderTargets.Empty())
+		{
+			parameters._OutputRenderTargets.Reserve(render_pipeline_information._OutputRenderTargets.Size());
+
+			for (const DynamicString &output_render_target : render_pipeline_information._OutputRenderTargets)
+			{
+				parameters._OutputRenderTargets.Emplace(HashString(output_render_target.Data()));
+			}
+		}
+
+		//Fill in the load/store operators.
+		parameters._ColorLoadOperator = render_pipeline_information._ColorLoadOperator;
+		parameters._ColorStoreOperator = render_pipeline_information._ColorStoreOperator;
+		parameters._DepthStencilLoadOperator = render_pipeline_information._DepthStencilLoadOperator;
+		parameters._DepthStencilStoreOperator = render_pipeline_information._DepthStencilStoreOperator;
 
 		//Build the render pipeline!
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildRenderPipeline(parameters);

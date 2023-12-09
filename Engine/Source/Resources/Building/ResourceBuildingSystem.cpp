@@ -788,6 +788,9 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 		output_file.Write(parameters._InputRenderTargets.Data(), sizeof(HashString) * parameters._InputRenderTargets.Size());
 	}
 
+	//Write the output depth buffer.
+	output_file.Write(&parameters._OutputDepthBuffer, sizeof(HashString));
+
 	//Write the output render targets.
 	{
 		//Write the count.
@@ -797,6 +800,12 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 		//Write the data.
 		output_file.Write(parameters._OutputRenderTargets.Data(), sizeof(HashString) * parameters._OutputRenderTargets.Size());
 	}
+
+	//Write the load/store operators.
+	output_file.Write(&parameters._ColorLoadOperator, sizeof(AttachmentLoadOperator));
+	output_file.Write(&parameters._ColorStoreOperator, sizeof(AttachmentStoreOperator));
+	output_file.Write(&parameters._DepthStencilLoadOperator, sizeof(AttachmentLoadOperator));
+	output_file.Write(&parameters._DepthStencilStoreOperator, sizeof(AttachmentStoreOperator));
 
 	//Close the output file.
 	output_file.Close();

@@ -25,7 +25,22 @@ public:
 	//The input render targets.
 	DynamicArray<HashString> _InputRenderTargets;
 
+	//The output depth buffer.
+	HashString _OutputDepthBuffer;
+
 	//The output render targets.
 	DynamicArray<HashString> _OutputRenderTargets;
+
+	//The color load operator.
+	AttachmentLoadOperator _ColorLoadOperator;
+
+	//The color store operator.
+	AttachmentStoreOperator _ColorStoreOperator;
+
+	//The depth/stencil load operator.
+	AttachmentLoadOperator _DepthStencilLoadOperator;
+
+	//The depth/stencil store operator.
+	AttachmentStoreOperator _DepthStencilStoreOperator;
 
 };

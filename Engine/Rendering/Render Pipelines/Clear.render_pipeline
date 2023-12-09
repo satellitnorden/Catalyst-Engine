@@ -1,0 +1,32 @@
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(SceneFeatures1);
+OutputRenderTarget(SceneFeatures2);
+OutputRenderTarget(SceneFeatures3);
+OutputRenderTarget(SceneFeatures4);
+OutputRenderTarget(Scene);
+
+//Set the load/store operators.
+ColorLoadOperator(CLEAR);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(CLEAR);
+DepthStencilStoreOperator(STORE);
+
+//The vertex shader.
+Vertex
+{
+	//Calculate the viewport coordinates.
+	float x = -1.0f + float((VERTEX_INDEX & 2) << 1);
+    float y = -1.0f + float((VERTEX_INDEX & 1) << 2);
+
+    //Output the position.
+    OutputVertexPosition(vec4(x, y, 0.0f, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Do nothing. (:
+}

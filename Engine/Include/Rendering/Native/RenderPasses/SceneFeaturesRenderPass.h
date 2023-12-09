@@ -5,8 +5,8 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AnimatedModelSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ClearGraphicsPipeline.h>
 #if defined(CATALYST_EDITOR)
 #include <Rendering/Native/Pipelines/GraphicsPipelines/EditorSelectedModelGraphicsPipeline.h>
 #endif
@@ -38,21 +38,10 @@ public:
 	*/
 	SceneFeaturesRenderPass() NOEXCEPT;
 
-	/*
-	*	Returns the scene depth buffer.
-	*/
-	FORCE_INLINE NO_DISCARD DepthBufferHandle GetSceneDepthBuffer() NOEXCEPT
-	{
-		return _SceneDepthBuffer;
-	}
-
 private:
 
-	//The scene depth buffer.
-	DepthBufferHandle _SceneDepthBuffer{ EMPTY_HANDLE };
-
 	//The clear graphics pipeline.
-	ClearGraphicsPipeline _ClearGraphicsPipeline;
+	GraphicsRenderPipeline _ClearGraphicsPipeline{ HashString("Clear_RenderPipeline") };
 
 	//The particle system compute pipeline.
 	ParticleSystemComputePipeline _ParticleSystemComputePipeline;

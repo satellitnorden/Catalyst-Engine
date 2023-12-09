@@ -63,8 +63,8 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 	//Initialize all pipelines.
 	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[0].Initialize(EMPTY_HANDLE, false, false);
 	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[1].Initialize(EMPTY_HANDLE, false, true);
-	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[2].Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer(), true, false);
-	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[3].Initialize(SceneFeaturesRenderPass::Instance->GetSceneDepthBuffer(), true, true);
+	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[2].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true, false);
+	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[3].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true, true);
 	_DebugRenderSphereGraphicsPipeline.Initialize();
 }
 

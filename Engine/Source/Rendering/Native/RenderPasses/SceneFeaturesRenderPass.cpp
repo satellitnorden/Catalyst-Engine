@@ -45,9 +45,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
-	//Create the scene depth buffer.
-	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(0), SampleCount::SAMPLE_COUNT_1, &_SceneDepthBuffer);
-
 	//Add the pipelines.
 	SetNumberOfPipelines(200
 #if defined(CATALYST_EDITOR)
@@ -99,29 +96,29 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_VelocityGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_ClearGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_ClearGraphicsPipeline.Initialize();
 	_ParticleSystemComputePipeline.Initialize();
-	_MaskedModelDepthSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
-	_MaskedModelDepthSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
-	_InstancedStaticModelDepthSceneFeaturesGraphicsPipelines[0].Initialize(false, _SceneDepthBuffer);
-	_InstancedStaticModelDepthSceneFeaturesGraphicsPipelines[1].Initialize(true, _SceneDepthBuffer);
-	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_MaskedModelColorSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
-	_MaskedModelColorSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
-	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_TerrainSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_OpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(_SceneDepthBuffer, false);
-	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(_SceneDepthBuffer, true);
-	_InstancedStaticModelColorSceneFeaturesGraphicsPipelines[0].Initialize(false, _SceneDepthBuffer);
-	_InstancedStaticModelColorSceneFeaturesGraphicsPipelines[1].Initialize(true, _SceneDepthBuffer);
-	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_UserInterfaceSceneFeaturesGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_MaskedModelDepthSceneFeaturesGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), false);
+	_MaskedModelDepthSceneFeaturesGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true);
+	_InstancedStaticModelDepthSceneFeaturesGraphicsPipelines[0].Initialize(false, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_InstancedStaticModelDepthSceneFeaturesGraphicsPipelines[1].Initialize(true, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_MaskedModelColorSceneFeaturesGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), false);
+	_MaskedModelColorSceneFeaturesGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true);
+	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_TerrainSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_OpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), false);
+	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true);
+	_InstancedStaticModelColorSceneFeaturesGraphicsPipelines[0].Initialize(false, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_InstancedStaticModelColorSceneFeaturesGraphicsPipelines[1].Initialize(true, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_UserInterfaceSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 #if defined(CATALYST_EDITOR)
-	_EditorSelectedModelGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_EditorSelectedModelGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 #endif
-	_VelocityGraphicsPipeline.Initialize(_SceneDepthBuffer);
+	_VelocityGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 }
 
 /*
@@ -222,7 +219,4 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 	_EditorSelectedModelGraphicsPipeline.Terminate();
 #endif
 	_VelocityGraphicsPipeline.Terminate();
-
-	//Destroy the scene depth buffer.
-	RenderingSystem::Instance->DestroyDepthBuffer(&_SceneDepthBuffer);
 }
