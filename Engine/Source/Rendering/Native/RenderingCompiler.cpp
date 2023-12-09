@@ -192,6 +192,27 @@ public:
 	//The depth/stencil store operator.
 	AttachmentStoreOperator _DepthStencilStoreOperator{ AttachmentStoreOperator::DONT_CARE };
 
+	//Denotes whether or not blend is enabled.
+	bool _BlendEnabled{ false };
+
+	//The blend color source factor.
+	BlendFactor _BlendColorSourceFactor{ BlendFactor::SourceAlpha };
+
+	//The blend color destination factor.
+	BlendFactor _BlendColorDestinationFactor{ BlendFactor::OneMinusSourceAlpha };
+
+	//The blend color operator.
+	BlendOperator _BlendColorOperator{ BlendOperator::ADD };
+
+	//The blend alpha source factor.
+	BlendFactor _BlendAlphaSourceFactor{ BlendFactor::SourceAlpha };
+
+	//The blend alpha destination factor.
+	BlendFactor _BlendAlphaDestinationFactor{ BlendFactor::OneMinusSourceAlpha };
+
+	//The blend alpha operator.
+	BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
+
 };
 
 /*
@@ -897,6 +918,252 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					continue;
 				}
 			}
+
+			//Is this a blend enable declaration?
+			{
+				const size_t position{ current_line.find("BlendEnable") };
+
+				if (position != std::string::npos)
+				{
+					render_pipeline_information._BlendEnabled = true;
+
+					continue;
+				}
+			}
+
+			//Is this a blend color source factor declaration?
+			{
+				const size_t position{ current_line.find("BlendColorSourceFactor") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "ZERO")
+					{
+						render_pipeline_information._BlendColorSourceFactor = BlendFactor::Zero;
+					}
+
+					else if (string == "ONE")
+					{
+						render_pipeline_information._BlendColorSourceFactor = BlendFactor::One;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a blend color destination factor declaration?
+			{
+				const size_t position{ current_line.find("BlendColorDestinationFactor") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "ZERO")
+					{
+						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::Zero;
+					}
+
+					else if (string == "ONE")
+					{
+						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::One;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a blend color operator declaration?
+			{
+				const size_t position{ current_line.find("BlendColorOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "ADD")
+					{
+						render_pipeline_information._BlendColorOperator = BlendOperator::ADD;
+					}
+
+					else if (string == "SUBTRACT")
+					{
+						render_pipeline_information._BlendColorOperator = BlendOperator::SUBTRACT;
+					}
+
+					else if (string == "REVERSE_SUBTRACT")
+					{
+						render_pipeline_information._BlendColorOperator = BlendOperator::REVERSE_SUBTRACT;
+					}
+
+					else if (string == "MIN")
+					{
+						render_pipeline_information._BlendColorOperator = BlendOperator::MIN;
+					}
+
+					else if (string == "MAX")
+					{
+						render_pipeline_information._BlendColorOperator = BlendOperator::MAX;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a blend alpha source factor declaration?
+			{
+				const size_t position{ current_line.find("BlendAlphaSourceFactor") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "ZERO")
+					{
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::Zero;
+					}
+
+					else if (string == "ONE")
+					{
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::One;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a blend alpha destination factor declaration?
+			{
+				const size_t position{ current_line.find("BlendAlphaDestinationFactor") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "ZERO")
+					{
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::Zero;
+					}
+
+					else if (string == "ONE")
+					{
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::One;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a blend alpha operator declaration?
+			{
+				const size_t position{ current_line.find("BlendColorOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "ADD")
+					{
+						render_pipeline_information._BlendAlphaOperator = BlendOperator::ADD;
+					}
+
+					else if (string == "SUBTRACT")
+					{
+						render_pipeline_information._BlendAlphaOperator = BlendOperator::SUBTRACT;
+					}
+
+					else if (string == "REVERSE_SUBTRACT")
+					{
+						render_pipeline_information._BlendAlphaOperator = BlendOperator::REVERSE_SUBTRACT;
+					}
+
+					else if (string == "MIN")
+					{
+						render_pipeline_information._BlendAlphaOperator = BlendOperator::MIN;
+					}
+
+					else if (string == "MAX")
+					{
+						render_pipeline_information._BlendAlphaOperator = BlendOperator::MAX;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
 			
 			//Is this the beginning of a vertex shader?
 			if (current_line == "Vertex")
@@ -944,6 +1211,15 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 		parameters._ColorStoreOperator = render_pipeline_information._ColorStoreOperator;
 		parameters._DepthStencilLoadOperator = render_pipeline_information._DepthStencilLoadOperator;
 		parameters._DepthStencilStoreOperator = render_pipeline_information._DepthStencilStoreOperator;
+
+		//Copy the blend properties.
+		parameters._BlendEnabled = render_pipeline_information._BlendEnabled;
+		parameters._BlendColorSourceFactor = render_pipeline_information._BlendColorSourceFactor;
+		parameters._BlendColorDestinationFactor = render_pipeline_information._BlendColorDestinationFactor;
+		parameters._BlendColorOperator = render_pipeline_information._BlendColorOperator;
+		parameters._BlendAlphaSourceFactor = render_pipeline_information._BlendAlphaSourceFactor;
+		parameters._BlendAlphaDestinationFactor = render_pipeline_information._BlendAlphaDestinationFactor;
+		parameters._BlendAlphaOperator = render_pipeline_information._BlendAlphaOperator;
 
 		//Build the render pipeline!
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildRenderPipeline(parameters);

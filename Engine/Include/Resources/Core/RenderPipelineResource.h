@@ -43,4 +43,25 @@ public:
 	//The depth/stencil store operator.
 	AttachmentStoreOperator _DepthStencilStoreOperator;
 
+	//Denotes whether or not blend is enabled.
+	bool _BlendEnabled{ false };
+
+	//The blend color source factor.
+	BlendFactor _BlendColorSourceFactor{ BlendFactor::SourceAlpha };
+
+	//The blend color destination factor.
+	BlendFactor _BlendColorDestinationFactor{ BlendFactor::OneMinusSourceAlpha };
+
+	//The blend color operator.
+	BlendOperator _BlendColorOperator{ BlendOperator::ADD };
+
+	//The blend alpha source factor.
+	BlendFactor _BlendAlphaSourceFactor{ BlendFactor::SourceAlpha };
+
+	//The blend alpha destination factor.
+	BlendFactor _BlendAlphaDestinationFactor{ BlendFactor::OneMinusSourceAlpha };
+
+	//The blend alpha operator.
+	BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
+
 };

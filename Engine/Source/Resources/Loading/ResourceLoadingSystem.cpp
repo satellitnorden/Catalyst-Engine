@@ -363,6 +363,15 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 	file->Read(&data->_ColorStoreOperator, sizeof(AttachmentStoreOperator));
 	file->Read(&data->_DepthStencilLoadOperator, sizeof(AttachmentLoadOperator));
 	file->Read(&data->_DepthStencilStoreOperator, sizeof(AttachmentStoreOperator));
+
+	//Write the blend properties.
+	file->Read(&data->_BlendEnabled, sizeof(bool));
+	file->Read(&data->_BlendColorSourceFactor, sizeof(BlendFactor));
+	file->Read(&data->_BlendColorDestinationFactor, sizeof(BlendFactor));
+	file->Read(&data->_BlendColorOperator, sizeof(BlendOperator));
+	file->Read(&data->_BlendAlphaSourceFactor, sizeof(BlendFactor));
+	file->Read(&data->_BlendAlphaDestinationFactor, sizeof(BlendFactor));
+	file->Read(&data->_BlendAlphaOperator, sizeof(BlendOperator));
 }
 
 /*

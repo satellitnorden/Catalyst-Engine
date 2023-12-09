@@ -5,7 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/BloomApplicationGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/BloomIsolationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
@@ -35,7 +35,7 @@ private:
 	StaticArray<ResampleGraphicsPipeline, 7> _BloomUpsampleGraphicsPipelines;
 
 	//The bloom application graphics pipeline.
-	BloomApplicationGraphicsPipeline _BloomApplicationGraphicsPipeline;
+	GraphicsRenderPipeline _BloomApplicationGraphicsPipeline{ HashString("BloomApplication_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

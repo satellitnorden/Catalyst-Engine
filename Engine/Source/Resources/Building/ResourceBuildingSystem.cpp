@@ -807,6 +807,15 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 	output_file.Write(&parameters._DepthStencilLoadOperator, sizeof(AttachmentLoadOperator));
 	output_file.Write(&parameters._DepthStencilStoreOperator, sizeof(AttachmentStoreOperator));
 
+	//Write the blend properties.
+	output_file.Write(&parameters._BlendEnabled, sizeof(bool));
+	output_file.Write(&parameters._BlendColorSourceFactor, sizeof(BlendFactor));
+	output_file.Write(&parameters._BlendColorDestinationFactor, sizeof(BlendFactor));
+	output_file.Write(&parameters._BlendColorOperator, sizeof(BlendOperator));
+	output_file.Write(&parameters._BlendAlphaSourceFactor, sizeof(BlendFactor));
+	output_file.Write(&parameters._BlendAlphaDestinationFactor, sizeof(BlendFactor));
+	output_file.Write(&parameters._BlendAlphaOperator, sizeof(BlendOperator));
+
 	//Close the output file.
 	output_file.Close();
 }

@@ -354,11 +354,6 @@ enum class RenderTarget : uint8
 	/*
 	*	Intermediate render target.
 	*/
-	INTERMEDIATE_RGBA_FLOAT32_1,
-
-	/*
-	*	Intermediate render target.
-	*/
 	INTERMEDIATE_RGBA_FLOAT32_2,
 
 	/*
@@ -441,6 +436,11 @@ enum class SharedRenderTarget : uint8
 	*	Contains the final color for the previous scene.
 	*/
 	PREVIOUS_SCENE,
+
+	/*
+	*	Intermediate render target.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_1,
 
 	/*
 	*	Intermediate render target at quarter resolution.

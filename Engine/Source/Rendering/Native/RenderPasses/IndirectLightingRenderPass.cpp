@@ -180,7 +180,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 				{
 					_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Initialize
 					(
-						RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
+						RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
 						RenderingSystem::Instance->GetScaledResolution(0),
 						_TemporalReprojectionBuffer
 					);

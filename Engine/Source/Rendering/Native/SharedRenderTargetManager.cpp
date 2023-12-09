@@ -96,6 +96,16 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::PREVIOUS_SCENE)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::PREVIOUS_SCENE)]._IsDepthBuffer = false;
 
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]._Identifier = HashString("INTERMEDIATE_RGBA_FLOAT32_1");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]._Resolution = RenderingSystem::Instance->GetScaledResolution(0);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]._TextureFormat = TextureFormat::RGBA_FLOAT32;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1)]._IsDepthBuffer = false;
+
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1)]._Identifier = HashString("INTERMEDIATE_RGBA_FLOAT32_QUARTER_1");
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1)]._Resolution = RenderingSystem::Instance->GetScaledResolution(2);
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1)]._TextureFormat = TextureFormat::RGBA_FLOAT32;

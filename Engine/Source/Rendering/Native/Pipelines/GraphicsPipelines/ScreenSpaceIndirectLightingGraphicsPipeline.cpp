@@ -41,7 +41,7 @@ void ScreenSpaceIndirectLightingGraphicsPipeline::Initialize(const RenderingConf
 
 		case RenderingConfiguration::IndirectLightingQuality::HIGH:
 		{
-			AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
+			AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1));
 
 			break;
 		}

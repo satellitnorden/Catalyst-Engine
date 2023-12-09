@@ -341,6 +341,15 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 	resource->_ColorStoreOperator = data->_ColorStoreOperator;
 	resource->_DepthStencilLoadOperator = data->_DepthStencilLoadOperator;
 	resource->_DepthStencilStoreOperator = data->_DepthStencilStoreOperator;
+
+	//Copy the blend properties.
+	resource->_BlendEnabled = data->_BlendEnabled;
+	resource->_BlendColorSourceFactor = data->_BlendColorSourceFactor;
+	resource->_BlendColorDestinationFactor = data->_BlendColorDestinationFactor;
+	resource->_BlendColorOperator = data->_BlendColorOperator;
+	resource->_BlendAlphaSourceFactor = data->_BlendAlphaSourceFactor;
+	resource->_BlendAlphaDestinationFactor = data->_BlendAlphaDestinationFactor;
+	resource->_BlendAlphaOperator = data->_BlendAlphaOperator;
 }
 
 /*

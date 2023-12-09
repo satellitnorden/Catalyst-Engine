@@ -100,11 +100,13 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 	SetDepthStencilAttachmentStoreOperator(render_pipeline_resource->_DepthStencilStoreOperator);
 	SetColorAttachmentLoadOperator(render_pipeline_resource->_ColorLoadOperator);
 	SetColorAttachmentStoreOperator(render_pipeline_resource->_ColorStoreOperator);
-	SetBlendEnabled(false);
-	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
-	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
-	SetBlendFactorSourceAlpha(BlendFactor::One);
-	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
+	SetBlendEnabled(render_pipeline_resource->_BlendEnabled);
+	SetBlendFactorSourceColor(render_pipeline_resource->_BlendColorSourceFactor);
+	SetBlendFactorDestinationColor(render_pipeline_resource->_BlendColorDestinationFactor);
+	SetColorBlendOperator(render_pipeline_resource->_BlendColorOperator);
+	SetBlendFactorSourceAlpha(render_pipeline_resource->_BlendAlphaSourceFactor);
+	SetBlendFactorDestinationAlpha(render_pipeline_resource->_BlendAlphaDestinationFactor);
+	SetAlphaBlendOperator(render_pipeline_resource->_BlendAlphaOperator);
 	SetCullMode(CullMode::None);
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
