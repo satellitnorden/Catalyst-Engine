@@ -51,11 +51,8 @@ void InstancedImpostorColorSceneFeaturesGraphicsPipeline::Initialize(const Depth
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedImpostorColorSceneFeaturesVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedImpostorColorSceneFeaturesFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedImpostorColorSceneFeaturesVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedImpostorColorSceneFeaturesFragmentShader"))->_Handle);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

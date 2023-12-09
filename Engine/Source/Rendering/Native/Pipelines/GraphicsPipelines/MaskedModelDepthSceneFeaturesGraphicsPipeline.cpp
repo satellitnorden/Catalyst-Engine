@@ -53,11 +53,8 @@ void MaskedModelDepthSceneFeaturesGraphicsPipeline::Initialize(const DepthBuffer
 	_DoubleSided = double_sided;
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("MaskedModelDepthSceneFeaturesVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("MaskedModelDepthSceneFeaturesFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("MaskedModelDepthSceneFeaturesVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("MaskedModelDepthSceneFeaturesFragmentShader"))->_Handle);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

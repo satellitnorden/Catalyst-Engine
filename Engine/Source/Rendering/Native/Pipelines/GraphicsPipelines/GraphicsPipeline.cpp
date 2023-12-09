@@ -7,7 +7,7 @@
 GraphicsPipeline::GraphicsPipeline() NOEXCEPT
 {
 	//Set the type.
-	SetType(Type::Graphics);
+	SetType(Type::GRAPHICS);
 }
 
 /*

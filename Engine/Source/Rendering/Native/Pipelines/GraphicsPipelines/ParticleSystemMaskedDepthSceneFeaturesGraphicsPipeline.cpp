@@ -57,11 +57,9 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const De
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemMaskedDepthSceneFeaturesVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemMaskedDepthSceneFeaturesGeometryShader")));
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemMaskedDepthSceneFeaturesFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemMaskedDepthSceneFeaturesVertexShader"))->_Handle);
+	SetGeometryShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemMaskedDepthSceneFeaturesGeometryShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemMaskedDepthSceneFeaturesFragmentShader"))->_Handle);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

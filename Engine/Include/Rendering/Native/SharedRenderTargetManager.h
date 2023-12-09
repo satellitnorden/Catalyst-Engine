@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
+#include <Core/General/HashString.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -29,6 +30,11 @@ public:
 	{
 		return _SharedRenderTargets[UNDERLYING(shared_render_target)];
 	}
+
+	/*
+	*	Returns the shared render target with the given identifier..
+	*/
+	NO_DISCARD RenderTargetHandle GetSharedRenderTarget(const HashString identifier) NOEXCEPT;
 
 private:
 

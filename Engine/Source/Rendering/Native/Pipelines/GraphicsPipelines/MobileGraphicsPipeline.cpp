@@ -54,11 +54,8 @@ void MobileGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NO
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("MobileVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("MobileFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("MobileVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("MobileFragmentShader"))->_Handle);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

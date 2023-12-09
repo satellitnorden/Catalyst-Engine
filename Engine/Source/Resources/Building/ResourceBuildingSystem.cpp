@@ -698,6 +698,111 @@ void ResourceBuildingSystem::BuildRawData(const RawDataBuildParameters &paramete
 }
 
 /*
+*	Builds a render pipeline.
+*/
+void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParameters &parameters) NOEXCEPT
+{
+	//What should the output file path name be?
+	DynamicString output_file_path_name{ parameters._Output };
+	output_file_path_name += ".cr";
+
+	//Figure out the resource identifier.
+	const char *resource_identifier{ nullptr };
+
+	{
+		const uint64 output_length{ StringUtilities::StringLength(parameters._Output) };
+
+		for (int64 i{ static_cast<int64>(output_length) - 1 }; i >= 0; --i)
+		{
+			if (parameters._Output[i] == '\\')
+			{
+				resource_identifier = &parameters._Output[i + 1];
+
+				break;
+			}
+		}
+	}
+
+	//Open the output file to be written to.
+	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path_name.Data() };
+
+	//Write the resource header to the file.
+	const ResourceHeader header{ ResourceConstants::RENDER_PIPELINE_TYPE_IDENTIFIER, HashString(resource_identifier), resource_identifier };
+	output_file.Write(&header, sizeof(ResourceHeader));
+
+	//Write the vertex shader data.
+	{
+		if (!parameters._VertexShaderData._GLSLData.Empty())
+		{
+			//Write that it has GLSL shader data.
+			const bool has_data{ true };
+			output_file.Write(&has_data, sizeof(bool));
+
+			//Write the data size.
+			const uint64 data_size{ parameters._VertexShaderData._GLSLData.Size() };
+			output_file.Write(&data_size, sizeof(uint64));
+
+			//Write the data.
+			output_file.Write(parameters._VertexShaderData._GLSLData.Data(), parameters._VertexShaderData._GLSLData.Size());
+		}
+
+		else
+		{
+			//Write that it doesn't GLSL shader data.
+			const bool has_data{ false };
+			output_file.Write(&has_data, sizeof(bool));
+		}
+	}
+
+	//Write the fragment shader data.
+	{
+		if (!parameters._FragmentShaderData._GLSLData.Empty())
+		{
+			//Write that it has GLSL shader data.
+			const bool has_data{ true };
+			output_file.Write(&has_data, sizeof(bool));
+
+			//Write the data size.
+			const uint64 data_size{ parameters._FragmentShaderData._GLSLData.Size() };
+			output_file.Write(&data_size, sizeof(uint64));
+
+			//Write the data.
+			output_file.Write(parameters._FragmentShaderData._GLSLData.Data(), parameters._FragmentShaderData._GLSLData.Size());
+		}
+
+		else
+		{
+			//Write that it doesn't GLSL shader data.
+			const bool has_data{ false };
+			output_file.Write(&has_data, sizeof(bool));
+		}
+	}
+
+	//Write the input render targets.
+	{
+		//Write the count.
+		const uint64 count{ parameters._InputRenderTargets.Size() };
+		output_file.Write(&count, sizeof(uint64));
+
+		//Write the data.
+		output_file.Write(parameters._InputRenderTargets.Data(), sizeof(HashString) * parameters._InputRenderTargets.Size());
+	}
+
+	//Write the output render targets.
+	{
+		//Write the count.
+		const uint64 count{ parameters._OutputRenderTargets.Size() };
+		output_file.Write(&count, sizeof(uint64));
+
+		//Write the data.
+		output_file.Write(parameters._OutputRenderTargets.Data(), sizeof(HashString) * parameters._OutputRenderTargets.Size());
+	}
+
+	//Close the output file.
+	output_file.Close();
+}
+
+/*
 *	Builds a shader.
 */
 void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters) NOEXCEPT
@@ -965,7 +1070,6 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 
 	//Write the data.
 	file.Write(data.Data(), compiled_file_size);
-
 
 	//Close the file.
 	file.Close();

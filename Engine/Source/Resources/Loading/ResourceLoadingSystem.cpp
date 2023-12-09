@@ -294,7 +294,66 @@ void ResourceLoadingSystem::LoadRawData(BinaryFile<BinaryFileMode::IN> *const RE
 
 	//Read the data.
 	file->Read(data->_Data.Data(), data_size);
+}
 
+/*
+*	Given a file, load render pipeline data.
+*/
+void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RenderPipelineData *const RESTRICT data) NOEXCEPT
+{
+	//Read the vertex shader data.
+	{
+		bool has_data{ false };
+		file->Read(&has_data, sizeof(bool));
+
+		if (has_data)
+		{
+			uint64 data_size{ 0 };
+			file->Read(&data_size, sizeof(uint64));
+			data->_VertexShaderData._GLSLData.Upsize<false>(data_size);
+
+			file->Read(data->_VertexShaderData._GLSLData.Data(), data_size);
+		}
+	}
+
+	//Read the fragment shader data.
+	{
+		bool has_data{ false };
+		file->Read(&has_data, sizeof(bool));
+
+		if (has_data)
+		{
+			uint64 data_size{ 0 };
+			file->Read(&data_size, sizeof(uint64));
+			data->_FragmentShaderData._GLSLData.Upsize<false>(data_size);
+
+			file->Read(data->_FragmentShaderData._GLSLData.Data(), data_size);
+		}
+	}
+
+	//Read the input render targets.
+	{
+		uint64 length{ 0 };
+		file->Read(&length, sizeof(uint64));
+
+		if (length > 0)
+		{
+			data->_InputRenderTargets.Upsize<false>(length);
+			file->Read(data->_InputRenderTargets.Data(), sizeof(HashString) * data->_InputRenderTargets.Size());
+		}
+	}
+
+	//Read the output render targets.
+	{
+		uint64 length{ 0 };
+		file->Read(&length, sizeof(uint64));
+
+		if (length > 0)
+		{
+			data->_OutputRenderTargets.Upsize<false>(length);
+			file->Read(data->_OutputRenderTargets.Data(), sizeof(HashString) * data->_OutputRenderTargets.Size());
+		}
+	}
 }
 
 /*

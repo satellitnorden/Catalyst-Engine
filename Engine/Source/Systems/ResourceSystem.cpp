@@ -349,6 +349,42 @@ NO_DISCARD ResourcePointer<RawDataResource> ResourceSystem::FindOrCreateRawDataR
 }
 
 /*
+*	Returns the render pipeline resource with the given identifier.
+*/
+NO_DISCARD ResourcePointer<RenderPipelineResource> ResourceSystem::GetRenderPipelineResource(const HashString identifier) NOEXCEPT
+{
+	//Find the resource.
+	RenderPipelineResource *const RESTRICT *const RESTRICT resource{ _RenderPipelineResources.Find(identifier) };
+
+	ASSERT(resource, "Couldn't find resource!");
+
+	return resource ? ResourcePointer<RenderPipelineResource>(*resource) : ResourcePointer<RenderPipelineResource>();
+}
+
+/*
+*	Returns or creates the render pipeline resource with the given identifier.
+*/
+NO_DISCARD ResourcePointer<RenderPipelineResource> ResourceSystem::FindOrCreateRenderPipelineResource(const HashString identifier) NOEXCEPT
+{
+	//Find the resource.
+	RenderPipelineResource *const RESTRICT *const RESTRICT resource{ _RenderPipelineResources.Find(identifier) };
+
+	if (!resource)
+	{
+		//If the resource couldn't be found, create it.
+		RenderPipelineResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<RenderPipelineResource>()) RenderPipelineResource() };
+		_RenderPipelineResources.Add(identifier, new_resource);
+
+		return ResourcePointer<RenderPipelineResource>(new_resource);
+	}
+
+	else
+	{
+		return ResourcePointer<RenderPipelineResource>(*resource);
+	}
+}
+
+/*
 *	Returns the shader resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<ShaderResource> ResourceSystem::GetShaderResource(const HashString identifier) NOEXCEPT
@@ -839,6 +875,43 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 		//Create the resource.
 		_ResourceCreationSystem.CreateRawData(&data, new_resource);
+
+		//Register that the resource is now loaded.
+		new_resource->_LoadState = ResourceLoadState::LOADED;
+	}
+
+	else if (header._TypeIdentifier == ResourceConstants::RENDER_PIPELINE_TYPE_IDENTIFIER)
+	{
+		/*
+		*	Find or allocate the new resource.
+		*	The resource might have been created already by other dependant resources, but not loaded yet.
+		*/
+		RenderPipelineResource *RESTRICT new_resource;
+
+		if (RenderPipelineResource *const RESTRICT *const RESTRICT found_resource{ _RenderPipelineResources.Find(header._ResourceIdentifier) })
+		{
+			new_resource = *found_resource;
+		}
+
+		else
+		{
+			new_resource = new (MemorySystem::Instance->TypeAllocate<RenderPipelineResource>()) RenderPipelineResource();
+			_RenderPipelineResources.Add(header._ResourceIdentifier, new_resource);
+		}
+
+		//Set the resource header.
+		new_resource->_Header = header;
+
+		//Set the file path and file offset.
+		new_resource->_FilePath = file->GetFilePath();
+		new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
+
+		//Load the resource.
+		RenderPipelineData data;
+		_ResourceLoadingSystem.LoadRenderPipeline(file, &data);
+
+		//Create the resource.
+		_ResourceCreationSystem.CreateRenderPipeline(&data, new_resource);
 
 		//Register that the resource is now loaded.
 		new_resource->_LoadState = ResourceLoadState::LOADED;

@@ -26,27 +26,27 @@ public:
 	/*
 	*	Returns the vertex shader.
 	*/
-	ResourcePointer<ShaderResource> GetVertexShader() const NOEXCEPT { return _VertexShader; }
+	ShaderHandle GetVertexShader() const NOEXCEPT { return _VertexShader; }
 
 	/*
 	*	Returns the tessellation control shader.
 	*/
-	ResourcePointer<ShaderResource> GetTessellationControlShader() const NOEXCEPT { return _TessellationControlShader; }
+	ShaderHandle GetTessellationControlShader() const NOEXCEPT { return _TessellationControlShader; }
 
 	/*
 	*	Returns the tessellation evaluation shader.
 	*/
-	ResourcePointer<ShaderResource> GetTessellationEvaluationShader() const NOEXCEPT { return _TessellationEvaluationShader; }
+	ShaderHandle GetTessellationEvaluationShader() const NOEXCEPT { return _TessellationEvaluationShader; }
 
 	/*
 	*	Returns the geometry shader.
 	*/
-	ResourcePointer<ShaderResource> GetGeometryShader() const NOEXCEPT { return _GeometryShader; }
+	ShaderHandle GetGeometryShader() const NOEXCEPT { return _GeometryShader; }
 
 	/*
 	*	Returns the fragment shader.
 	*/
-	ResourcePointer<ShaderResource> GetFragmentShader() const NOEXCEPT { return _FragmentShader; }
+	ShaderHandle GetFragmentShader() const NOEXCEPT { return _FragmentShader; }
 
 	/*
 	*	Returns the depth buffer.
@@ -64,17 +64,17 @@ public:
 	/*
 	*	Returns the output render targets.
 	*/
-	const DynamicArray<RenderTargetHandle>& GetOutputRenderTargets() const NOEXCEPT { return _OutputRenderTargets; }
+	const DynamicArray<RenderTargetHandle> &GetOutputRenderTargets() const NOEXCEPT { return _OutputRenderTargets; }
 
 	/*
 	*	Returns the vertex input attribute descriptions.
 	*/
-	const DynamicArray<VertexInputAttributeDescription>& GetVertexInputAttributeDescriptions() const NOEXCEPT { return _VertexInputAttributeDescriptions; }
+	const DynamicArray<VertexInputAttributeDescription> &GetVertexInputAttributeDescriptions() const NOEXCEPT { return _VertexInputAttributeDescriptions; }
 
 	/*
 	*	Returns the vertex input binding descriptions.
 	*/
-	const DynamicArray<VertexInputBindingDescription>& GetVertexInputBindingDescriptions() const NOEXCEPT { return _VertexInputBindingDescriptions; }
+	const DynamicArray<VertexInputBindingDescription> &GetVertexInputBindingDescriptions() const NOEXCEPT { return _VertexInputBindingDescriptions; }
 
 	/*
 	*	Returns the render resolution.
@@ -226,27 +226,27 @@ protected:
 	/*
 	*	Sets the vertex shader.
 	*/
-	void SetVertexShader(const ResourcePointer<ShaderResource> newVertexShader) NOEXCEPT { _VertexShader = newVertexShader; }
+	void SetVertexShader(const ShaderHandle newVertexShader) NOEXCEPT { _VertexShader = newVertexShader; }
 
 	/*
 	*	Sets the tessellation control shader.
 	*/
-	void SetTessellationControlShader(const ResourcePointer<ShaderResource> newTessellationControlShader) NOEXCEPT { _TessellationControlShader = newTessellationControlShader; }
+	void SetTessellationControlShader(const ShaderHandle newTessellationControlShader) NOEXCEPT { _TessellationControlShader = newTessellationControlShader; }
 
 	/*
 	*	Sets the tessellation evaluation shader.
 	*/
-	void SetTessellationEvaluationShader(const ResourcePointer<ShaderResource> newTessellationEvaluationShader) NOEXCEPT { _TessellationEvaluationShader = newTessellationEvaluationShader; }
+	void SetTessellationEvaluationShader(const ShaderHandle newTessellationEvaluationShader) NOEXCEPT { _TessellationEvaluationShader = newTessellationEvaluationShader; }
 
 	/*
 	*	Sets the geometry shader.
 	*/
-	void SetGeometryShader(const ResourcePointer<ShaderResource> newGeometryShader) NOEXCEPT { _GeometryShader = newGeometryShader; }
+	void SetGeometryShader(const ShaderHandle newGeometryShader) NOEXCEPT { _GeometryShader = newGeometryShader; }
 
 	/*
 	*	Sets the fragment shader.
 	*/
-	void SetFragmentShader(const ResourcePointer<ShaderResource> newFragmentShader) NOEXCEPT { _FragmentShader = newFragmentShader; }
+	void SetFragmentShader(const ShaderHandle newFragmentShader) NOEXCEPT { _FragmentShader = newFragmentShader; }
 
 	/*
 	*	Sets the depth buffer.
@@ -444,19 +444,19 @@ protected:
 private:
 
 	//The vertex shader.
-	ResourcePointer<ShaderResource> _VertexShader;
+	ShaderHandle _VertexShader{ EMPTY_HANDLE };
 
 	//The tessellation control shader.
-	ResourcePointer<ShaderResource> _TessellationControlShader;
+	ShaderHandle _TessellationControlShader{ EMPTY_HANDLE };
 
 	//The tessellation evaluation shader.
-	ResourcePointer<ShaderResource> _TessellationEvaluationShader;
+	ShaderHandle _TessellationEvaluationShader{ EMPTY_HANDLE };
 
 	//The geometry shader.
-	ResourcePointer<ShaderResource> _GeometryShader;
+	ShaderHandle _GeometryShader{ EMPTY_HANDLE };
 
 	//The fragment shader.
-	ResourcePointer<ShaderResource> _FragmentShader;
+	ShaderHandle _FragmentShader{ EMPTY_HANDLE };
 
 	//The depth buffer.
 	DepthBufferHandle _DepthBuffer{ EMPTY_HANDLE };

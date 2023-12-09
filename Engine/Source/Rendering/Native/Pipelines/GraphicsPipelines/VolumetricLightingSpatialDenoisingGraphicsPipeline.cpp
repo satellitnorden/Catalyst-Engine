@@ -45,11 +45,8 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 
 	_Stride = stride;
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VolumetricLightingSpatialDenoisingFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VolumetricLightingSpatialDenoisingFragmentShader"))->_Handle);
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);

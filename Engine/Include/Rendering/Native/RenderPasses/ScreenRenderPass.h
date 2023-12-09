@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) ScreenRenderPass final : public RenderPass
@@ -23,7 +23,7 @@ public:
 private:
 
 	//The Screen graphics pipeline.
-	ScreenGraphicsPipeline _ScreenGraphicsPipeline;
+	GraphicsRenderPipeline _ScreenGraphicsPipeline{ HashString("Screen_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

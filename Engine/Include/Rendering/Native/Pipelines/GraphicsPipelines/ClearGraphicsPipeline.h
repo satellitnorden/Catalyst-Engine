@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const DepthBufferHandle depth_buffer ) NOEXCEPT;
+	void Initialize(const DepthBufferHandle depth_buffer) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.

@@ -37,11 +37,8 @@ void VirtualRealityGraphicsPipeline::Initialize() NOEXCEPT
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("VirtualRealityVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VirtualRealityFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("VirtualRealityVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VirtualRealityFragmentShader"))->_Handle);
 
 	//Set whether or not this graphics pipeline is rendering directly to the screen.
 	SetIsRenderingDirectlyToScreen(true);

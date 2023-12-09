@@ -12,6 +12,7 @@ namespace ResourceConstants
 	const HashString MATERIAL_TYPE_IDENTIFIER{ "Material" };
 	const HashString MODEL_TYPE_IDENTIFIER{ "Model" };
 	const HashString RAW_DATA_TYPE_IDENTIFIER{ "RawData" };
+	const HashString RENDER_PIPELINE_TYPE_IDENTIFIER{ "RenderPipeline" };
 	const HashString SHADER_TYPE_IDENTIFIER{ "Shader" };
 	const HashString SOUND_TYPE_IDENTIFIER{ "Sound" };
 	const HashString TEXTURE_CUBE_TYPE_IDENTIFIER{ "TextureCube" };

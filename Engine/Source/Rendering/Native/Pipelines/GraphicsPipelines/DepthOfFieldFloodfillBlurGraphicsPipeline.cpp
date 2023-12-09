@@ -46,11 +46,8 @@ void DepthOfFieldFloodfillBlurGraphicsPipeline::Initialize(	const RenderTargetHa
 	_Direction = direction;
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("DepthOfFieldFloodfillBlurFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("DepthOfFieldFloodfillBlurFragmentShader"))->_Handle);
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);

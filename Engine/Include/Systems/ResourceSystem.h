@@ -13,6 +13,7 @@
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/RawDataResource.h>
+#include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
@@ -199,6 +200,16 @@ public:
 	NO_DISCARD ResourcePointer<RawDataResource> FindOrCreateRawDataResource(const HashString identifier) NOEXCEPT;
 
 	/*
+	*	Returns the render pipeline resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<RenderPipelineResource> GetRenderPipelineResource(const HashString identifier) NOEXCEPT;
+
+	/*
+	*	Returns or creates the render pipeline resource with the given identifier.
+	*/
+	NO_DISCARD ResourcePointer<RenderPipelineResource> FindOrCreateRenderPipelineResource(const HashString identifier) NOEXCEPT;
+
+	/*
 	*	Returns all model resources.
 	*/
 	FORCE_INLINE NO_DISCARD const HashTable<HashString, ModelResource *RESTRICT> &GetAllModelResources() const NOEXCEPT
@@ -347,6 +358,9 @@ private:
 
 	//Container for all raw data resources.
 	HashTable<HashString, RawDataResource *RESTRICT> _RawDataResources;
+
+	//Container for all render pipeline resources.
+	HashTable<HashString, RenderPipelineResource *RESTRICT> _RenderPipelineResources;
 
 	//Container for all shader resources.
 	HashTable<HashString, ShaderResource *RESTRICT> _ShaderResources;

@@ -64,11 +64,8 @@ void UserInterfaceGraphicsPipeline::Initialize(const RenderTargetHandle render_t
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("UserInterfaceVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("UserInterfaceFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("UserInterfaceVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("UserInterfaceFragmentShader"))->_Handle);
 
 	//Set render targets.
 	if (render_target)

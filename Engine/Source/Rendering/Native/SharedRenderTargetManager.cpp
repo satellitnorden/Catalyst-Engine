@@ -143,3 +143,18 @@ void SharedRenderTargetManager::OnSwitchRenderingPath(const RenderingPath new_re
 		}
 	}
 }
+
+/*
+*	Returns the shared render target with the given identifier..
+*/
+NO_DISCARD RenderTargetHandle SharedRenderTargetManager::GetSharedRenderTarget(const HashString identifier) NOEXCEPT
+{
+	if (identifier == HashString("Scene"))
+	{
+		return _SharedRenderTargets[UNDERLYING(SharedRenderTarget::SCENE)];
+	}
+
+	ASSERT(false, "Invalid identifier!");
+
+	return EMPTY_HANDLE;
+}

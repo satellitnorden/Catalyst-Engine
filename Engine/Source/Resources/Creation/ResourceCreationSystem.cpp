@@ -315,6 +315,28 @@ void ResourceCreationSystem::CreateRawData(RawDataData *const RESTRICT data, Raw
 }
 
 /*
+*	Creates a render pipeline.
+*/
+void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const RESTRICT data, RenderPipelineResource *const RESTRICT resource) NOEXCEPT
+{
+	//Create the vertex shader.
+	if (!data->_VertexShaderData._GLSLData.Empty())
+	{
+		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_VertexShaderData._GLSLData), ShaderStage::VERTEX, &resource->_VertexShaderHandle);
+	}
+
+	//Create the fragment shader.
+	if (!data->_FragmentShaderData._GLSLData.Empty())
+	{
+		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_FragmentShaderData._GLSLData), ShaderStage::FRAGMENT, &resource->_FragmentShaderHandle);
+	}
+
+	//Copy the input/output render targets.
+	resource->_InputRenderTargets = std::move(data->_InputRenderTargets);
+	resource->_OutputRenderTargets = std::move(data->_OutputRenderTargets);
+}
+
+/*
 *	Creates a shader.
 */
 void ResourceCreationSystem::CreateShader(ShaderData *const RESTRICT data, ShaderResource *const RESTRICT resource) NOEXCEPT

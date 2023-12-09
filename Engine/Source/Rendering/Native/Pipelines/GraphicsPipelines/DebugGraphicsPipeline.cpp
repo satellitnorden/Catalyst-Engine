@@ -40,11 +40,8 @@ void DebugGraphicsPipeline::Initialize(const uint32 mode, const RenderTargetHand
 	CreateRenderDataTable(source_render_target);
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("DebugFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("DebugFragmentShader"))->_Handle);
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);

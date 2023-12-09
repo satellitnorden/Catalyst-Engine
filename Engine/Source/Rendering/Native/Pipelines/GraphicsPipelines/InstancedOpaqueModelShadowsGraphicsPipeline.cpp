@@ -49,11 +49,8 @@ void InstancedOpaqueModelShadowsGraphicsPipeline::Initialize(const bool double_s
 	_DoubleSided = double_sided;
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedOpaqueModelShadowsVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedOpaqueModelShadowsFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedOpaqueModelShadowsVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("InstancedOpaqueModelShadowsFragmentShader"))->_Handle);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

@@ -6,10 +6,20 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class ScreenGraphicsPipeline final : public GraphicsPipeline
+class GraphicsRenderPipeline final : public GraphicsPipeline
 {
 
 public:
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE GraphicsRenderPipeline(const HashString render_pipeline_identifier) NOEXCEPT
+		:
+		_RenderPipelineIdentifier(render_pipeline_identifier)
+	{
+
+	}
 
 	/*
 	*	Initializes this graphics pipeline.
@@ -28,20 +38,16 @@ public:
 
 private:
 
+	//The render pipeline identifier.
+	HashString _RenderPipelineIdentifier;
+
+	//Denotes if this render pipeline uses it's own render data table.
+	bool _UsesRenderDataTable;
+
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
-
-	/*
-	*	Creates the render data table layout.
-	*/
-	void CreateRenderDataTableLayout() NOEXCEPT;
-
-	/*
-	*	Creates the render data table.
-	*/
-	void CreateRenderDataTable() NOEXCEPT;
 
 };

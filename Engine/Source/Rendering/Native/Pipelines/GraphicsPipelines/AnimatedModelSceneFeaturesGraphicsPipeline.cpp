@@ -53,11 +53,8 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("AnimatedModelSceneFeaturesVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("AnimatedModelSceneFeaturesFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("AnimatedModelSceneFeaturesVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("AnimatedModelSceneFeaturesFragmentShader"))->_Handle);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depthBuffer);

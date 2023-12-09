@@ -40,11 +40,8 @@ void VolumetricLightingGraphicsPipeline::Initialize(const RenderTargetHandle tar
 	CreateRenderDataTable();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VolumetricLightingFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("VolumetricLightingFragmentShader"))->_Handle);
 
 	//Add the orender targets.
 	SetNumberOfOutputRenderTargets(1);

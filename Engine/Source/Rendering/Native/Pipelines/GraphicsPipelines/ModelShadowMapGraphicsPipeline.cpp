@@ -38,11 +38,8 @@ void ModelShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_bu
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ModelShadowMapVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ModelShadowMapFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ModelShadowMapVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ModelShadowMapFragmentShader"))->_Handle);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

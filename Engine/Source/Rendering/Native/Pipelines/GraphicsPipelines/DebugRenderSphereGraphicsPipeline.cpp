@@ -59,11 +59,8 @@ void DebugRenderSphereGraphicsPipeline::Initialize() NOEXCEPT
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("SphereVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("DebugRenderFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("SphereVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("DebugRenderFragmentShader"))->_Handle);
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);

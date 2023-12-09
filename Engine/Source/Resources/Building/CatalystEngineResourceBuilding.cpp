@@ -20,6 +20,7 @@
 #include <Math/Geometry/Sphere.h>
 
 //Rendering.
+#include <Rendering/Native/RenderingCompiler.h>
 #include <Rendering/Native/Texture2D.h>
 
 //Resources.
@@ -60,8 +61,11 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 
 	TaskSystem::Instance->Initialize(concurrency_configuration);
 
+	//Run the rendering compiler.
+	const bool new_rendering_data_was_compiled{ RenderingCompiler::Instance->Run() };
+
 	//Keep track of all tasks so that they can be deallocated.
-	DynamicArray<Task* RESTRICT> tasks;
+	DynamicArray<Task *RESTRICT> tasks;
 
 #if BUILD_ENGINE_BASE || BUILD_ENGINE_ALL
 	{
@@ -988,28 +992,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ClearVertexShader";
-		parameters._ID = "ClearVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ClearVertexShader.vert";
-		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ClearFragmentShader";
-		parameters._ID = "ClearFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ClearFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DebugFragmentShader";
 		parameters._ID = "DebugFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DebugFragmentShader.frag";
@@ -1608,17 +1590,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\SceneFeaturesDownsampleFragmentShader";
 		parameters._ID = "SceneFeaturesDownsampleFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SceneFeaturesDownsampleFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ScreenFragmentShader";
-		parameters._ID = "ScreenFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ScreenFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
@@ -2793,7 +2764,18 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		MemorySystem::Instance->TypeFree<Task>(task);
 	}
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_BASE || BUILD_ENGINE_FONTS || BUILD_ENGINE_BLUE_NOISE_TEXTURES || BUILD_ENGINE_SHADERS || BUILD_ENGINE_DEFAULT_SKY_TEXTURE || BUILD_ENGINE_DEFAULT_TEXTURE_2D || BUILD_ENGINE_DEFAULT_TEXTURE_3D || BUILD_ENGINE_MODELS || BUILD_ENGINE_MATERIALS || BUILD_ENGINE_RESOURCE_COLLECTIONS
+	if (BUILD_ENGINE_ALL
+		|| BUILD_ENGINE_BASE
+		|| BUILD_ENGINE_FONTS
+		|| BUILD_ENGINE_BLUE_NOISE_TEXTURES
+		|| BUILD_ENGINE_SHADERS
+		|| BUILD_ENGINE_DEFAULT_SKY_TEXTURE
+		|| BUILD_ENGINE_DEFAULT_TEXTURE_2D
+		|| BUILD_ENGINE_DEFAULT_TEXTURE_3D
+		|| BUILD_ENGINE_MODELS
+		|| BUILD_ENGINE_MATERIALS 
+		| BUILD_ENGINE_RESOURCE_COLLECTIONS
+		|| new_rendering_data_was_compiled)
 	{
 		ResourceCollectionBuildParameters parameters;
 
@@ -2803,7 +2785,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(parameters);
 	}
-#endif
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_STAR_TEXTURE || BUILD_ENGINE_RESOURCE_COLLECTIONS
 	{

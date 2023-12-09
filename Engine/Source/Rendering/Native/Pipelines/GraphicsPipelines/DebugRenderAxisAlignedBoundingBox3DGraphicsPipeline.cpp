@@ -62,11 +62,8 @@ void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize(const Depth
 	_Wireframe = wireframe;
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("AxisAlignedBoundingBox3DVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("DebugRenderFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("AxisAlignedBoundingBox3DVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("DebugRenderFragmentShader"))->_Handle);
 
 	//Set the depth buffer.
 	if (_DepthTest)

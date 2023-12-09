@@ -45,11 +45,8 @@ void ScreenSpaceIndirectLightingResolveGraphicsPipeline::Initialize(const Render
 	_SourceRenderResolution = source_render_resolution;
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ScreenSpaceIndirectLightingResolveFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ScreenSpaceIndirectLightingResolveFragmentShader"))->_Handle);
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(2);

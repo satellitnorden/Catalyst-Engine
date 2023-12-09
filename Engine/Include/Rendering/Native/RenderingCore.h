@@ -659,9 +659,22 @@ public:
 	ShaderStage _ShaderStage;
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE constexpr RenderDataTableLayoutBinding() NOEXCEPT
+		:
+		_Binding(0),
+		_Type(Type::AccelerationStructure),
+		_NumberOfArrayElements(0),
+		_ShaderStage(ShaderStage::COMPUTE)
+	{
+
+	}
+
+	/*
 	*	Constructor taking all values as arguments.
 	*/
-	constexpr RenderDataTableLayoutBinding(const uint32 initialBinding, const Type initialType, const uint32 initialNumberOfArrayElements, const ShaderStage initialShaderStage) NOEXCEPT
+	FORCE_INLINE constexpr RenderDataTableLayoutBinding(const uint32 initialBinding, const Type initialType, const uint32 initialNumberOfArrayElements, const ShaderStage initialShaderStage) NOEXCEPT
 		:
 		_Binding(initialBinding),
 		_Type(initialType),

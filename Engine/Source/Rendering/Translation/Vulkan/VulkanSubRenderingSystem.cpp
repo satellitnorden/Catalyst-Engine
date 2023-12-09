@@ -492,11 +492,11 @@ namespace VulkanSubRenderingSystemLogic
 			}
 
 			parameters._ShaderModules.Reserve(5);
-			if (pipeline->GetVertexShader()) parameters._ShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(pipeline->GetVertexShader()->_Handle));
-			if (pipeline->GetTessellationControlShader()) parameters._ShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(pipeline->GetTessellationControlShader()->_Handle));
-			if (pipeline->GetTessellationEvaluationShader()) parameters._ShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(pipeline->GetTessellationEvaluationShader()->_Handle));
-			if (pipeline->GetGeometryShader()) parameters._ShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(pipeline->GetGeometryShader()->_Handle));
-			if (pipeline->GetFragmentShader()) parameters._ShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(pipeline->GetFragmentShader()->_Handle));
+			if (pipeline->GetVertexShader() != EMPTY_HANDLE) parameters._ShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(pipeline->GetVertexShader()));
+			if (pipeline->GetTessellationControlShader() != EMPTY_HANDLE) parameters._ShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(pipeline->GetTessellationControlShader()));
+			if (pipeline->GetTessellationEvaluationShader() != EMPTY_HANDLE) parameters._ShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(pipeline->GetTessellationEvaluationShader()));
+			if (pipeline->GetGeometryShader() != EMPTY_HANDLE) parameters._ShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(pipeline->GetGeometryShader()));
+			if (pipeline->GetFragmentShader() != EMPTY_HANDLE) parameters._ShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(pipeline->GetFragmentShader()));
 			
 			parameters._StencilTestEnable = pipeline->IsStencilTestEnabled();
 			parameters._StencilFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(pipeline->GetStencilFailOperator());
@@ -1150,15 +1150,15 @@ void VulkanSubRenderingSystem::CreateCommandPool(const Pipeline::Type type, Comm
 {
 	switch (type)
 	{
-		case Pipeline::Type::Compute:
-		case Pipeline::Type::RayTracing:
+		case Pipeline::Type::COMPUTE:
+		case Pipeline::Type::RAY_TRACING:
 		{
 			*handle = VulkanInterface::Instance->CreateMainCommandPool(0);
 
 			break;
 		}
 
-		case Pipeline::Type::Graphics:
+		case Pipeline::Type::GRAPHICS:
 		{
 			*handle = VulkanInterface::Instance->CreateMainCommandPool(0);
 
@@ -1841,21 +1841,21 @@ void VulkanSubRenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipel
 {
 	switch (pipeline->GetType())
 	{
-		case Pipeline::Type::Compute:
+		case Pipeline::Type::COMPUTE:
 		{
 			VulkanSubRenderingSystemLogic::InitializeComputePipeline(static_cast<ComputePipeline *const RESTRICT>(pipeline));
 
 			break;
 		}
 
-		case Pipeline::Type::Graphics:
+		case Pipeline::Type::GRAPHICS:
 		{
 			VulkanSubRenderingSystemLogic::InitializeGraphicsPipeline(static_cast<GraphicsPipeline *const RESTRICT>(pipeline));
 
 			break;
 		}
 
-		case Pipeline::Type::RayTracing:
+		case Pipeline::Type::RAY_TRACING:
 		{
 			if (RenderingSystem::Instance->IsRayTracingSupported())
 			{
@@ -1874,21 +1874,21 @@ void VulkanSubRenderingSystem::TerminatePipeline(Pipeline *const RESTRICT pipeli
 {
 	switch (pipeline->GetType())
 	{
-		case Pipeline::Type::Compute:
+		case Pipeline::Type::COMPUTE:
 		{
 			VulkanSubRenderingSystemLogic::TerminateComputePipeline(static_cast<ComputePipeline *const RESTRICT>(pipeline));
 
 			break;
 		}
 
-		case Pipeline::Type::Graphics:
+		case Pipeline::Type::GRAPHICS:
 		{
 			VulkanSubRenderingSystemLogic::TerminateGraphicsPipeline(static_cast<GraphicsPipeline *const RESTRICT>(pipeline));
 
 			break;
 		}
 
-		case Pipeline::Type::RayTracing:
+		case Pipeline::Type::RAY_TRACING:
 		{
 			if (RenderingSystem::Instance->IsRayTracingSupported())
 			{

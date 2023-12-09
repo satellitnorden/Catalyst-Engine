@@ -1395,7 +1395,7 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		for (GlobalCommandPoolData::ThreadData &thread_data : global_command_pool_data._ThreadData)
 		{
 			//Create the command pool.
-			CreateCommandPool(Pipeline::Type::Compute, &thread_data._CommandPool);
+			CreateCommandPool(Pipeline::Type::COMPUTE, &thread_data._CommandPool);
 		}
 	}
 }

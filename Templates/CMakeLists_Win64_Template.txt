@@ -64,11 +64,12 @@ add_compile_definitions($<$<CONFIG:Debug>:TRACY_ON_DEMAND>
 file(GLOB_RECURSE ENGINE_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/*.h ../../Catalyst-Engine/Engine/Include/*.hpp)
 file(GLOB_RECURSE ENGINE_INLINE_FILES ../../Catalyst-Engine/Engine/Include/*.inl)
 file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../Catalyst-Engine/Engine/Source/*.c ../../Catalyst-Engine/Engine/Source/*.cpp  ../../Catalyst-Engine/Engine/Source/*.asm)
+file(GLOB_RECURSE ENGINE_RENDERING_FILES ../../Catalyst-Engine/Engine/Rendering/*.render_pipeline)
 file(GLOB_RECURSE GAME_INCLUDE_FILES ../Code/Include/*.h ../Code/Include/*.hpp)
 file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.c ../Code/Source/*.cpp  ../Code/Source/*.asm)
 
 #Add the executable.
-add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES} ${GAME_INCLUDE_FILES} ${GAME_SOURCE_FILES})
+add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES}  ${ENGINE_RENDERING_FILES} ${GAME_INCLUDE_FILES} ${GAME_SOURCE_FILES})
 
 #Set the core include paths.
 target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include)
@@ -113,6 +114,9 @@ source_group(TREE ${ENGINE_INCLUDE_FILES_ROOT} PREFIX "Catalyst Engine Include" 
 
 set(ENGINE_SOURCE_FILES_ROOT "${CMAKE_SOURCE_DIR}/../../Catalyst-Engine/Engine/Source")
 source_group(TREE ${ENGINE_SOURCE_FILES_ROOT} PREFIX "Catalyst Engine Source" FILES ${ENGINE_SOURCE_FILES})
+
+set(ENGINE_RENDERING_FILES_ROOT "${CMAKE_SOURCE_DIR}/../../Catalyst-Engine/Engine/Rendering")
+source_group(TREE ${ENGINE_RENDERING_FILES_ROOT} PREFIX "Catalyst Engine Rendering" FILES ${ENGINE_RENDERING_FILES})
 
 set(GAME_INCLUDE_FILES_ROOT "${CMAKE_SOURCE_DIR}/../Code/Include")
 source_group(TREE ${GAME_INCLUDE_FILES_ROOT} PREFIX "${PROJECT_NAME} Include" FILES ${GAME_INCLUDE_FILES})

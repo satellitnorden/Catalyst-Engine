@@ -68,11 +68,8 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ThreeDimensionalUserInterfaceVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ThreeDimensionalUserInterfaceFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ThreeDimensionalUserInterfaceVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("ThreeDimensionalUserInterfaceFragmentShader"))->_Handle);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

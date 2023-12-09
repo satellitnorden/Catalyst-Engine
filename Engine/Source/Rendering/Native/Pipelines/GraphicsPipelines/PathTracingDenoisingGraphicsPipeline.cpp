@@ -42,11 +42,8 @@ void PathTracingDenoisingGraphicsPipeline::Initialize(const Direction direction,
 	_Direction = direction;
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertex")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("PathTracingDenoisingFragment")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("ViewportVertex"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("PathTracingDenoisingFragment"))->_Handle);
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);

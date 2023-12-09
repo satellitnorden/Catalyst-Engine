@@ -7,7 +7,7 @@
 ComputePipeline::ComputePipeline() NOEXCEPT
 {
 	//Set the type.
-	SetType(Type::Compute);
+	SetType(Type::COMPUTE);
 }
 
 /*

@@ -14,6 +14,7 @@
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ModelResource.h>
 #include <Resources/Core/RawDataResource.h>
+#include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture2DResource.h>
@@ -27,6 +28,7 @@
 #include <Resources/Loading/MaterialData.h>
 #include <Resources/Loading/ModelData.h>
 #include <Resources/Loading/RawDataData.h>
+#include <Resources/Loading/RenderPipelineData.h>
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture2DData.h>
@@ -73,6 +75,11 @@ public:
 	*	Creates a raw data.
 	*/
 	void CreateRawData(RawDataData *const RESTRICT data, RawDataResource *const RESTRICT resource) NOEXCEPT;
+
+	/*
+	*	Creates a render pipeline.
+	*/
+	void CreateRenderPipeline(RenderPipelineData *const RESTRICT data, RenderPipelineResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a shader.

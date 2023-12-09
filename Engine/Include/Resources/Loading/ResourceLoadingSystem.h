@@ -16,6 +16,7 @@
 #include <Resources/Loading/MaterialData.h>
 #include <Resources/Loading/ModelData.h>
 #include <Resources/Loading/RawDataData.h>
+#include <Resources/Loading/RenderPipelineData.h>
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture2DData.h>
@@ -65,6 +66,11 @@ public:
 	*	Given a file, load raw data data.
 	*/
 	void LoadRawData(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RawDataData *const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Given a file, load render pipeline data.
+	*/
+	void LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RenderPipelineData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load shader data.
