@@ -13,7 +13,6 @@
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/Core/CatalystRandomMath.h>
-#include <Math/Noise/HaltonSequence.h>
 #include <Math/Noise/HammersleySequence.h>
 
 //Profiling.
@@ -207,6 +206,13 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 
 		_SubRenderingSystem->BeginFrame();
 	}
+
+	//Update the camera system.
+	{
+		PROFILING_SCOPE(RenderingSystem_CameraSystem_RenderUpdate);
+
+		_CameraSystem.RenderUpdate();
+	}
 	
 	//Update the global render data.
 	{
@@ -215,11 +221,11 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		UpdateGlobalRenderData();
 	}
 
-	//Update the camera system.
+	//Update the uniform buffer manager.
 	{
-		PROFILING_SCOPE(RenderingSystem_CameraSystem_RenderUpdate);
+		PROFILING_SCOPE(RenderingSystem_UniformBufferManager_RenderUpdate);
 
-		_CameraSystem.RenderUpdate();
+		_UniformBufferManager.RenderUpdate();
 	}
 
 	//Update the lighting system.
@@ -1443,28 +1449,6 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 */
 void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_index) NOEXCEPT
 {
-	//Define constants.
-	constexpr float JITTER_SAMPLE_MULTIPLIER{ 0.5f };
-	constexpr StaticArray<Vector2<float>, 16> JITTER_SAMPLES
-	{
-		(Vector2<float>(HaltonSequence::Generate(0, 3), HaltonSequence::Generate(1, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(2, 3), HaltonSequence::Generate(3, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(4, 3), HaltonSequence::Generate(5, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(6, 3), HaltonSequence::Generate(7, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(8, 3), HaltonSequence::Generate(9, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(10, 3), HaltonSequence::Generate(11, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(12, 3), HaltonSequence::Generate(13, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(14, 3), HaltonSequence::Generate(15, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(16, 3), HaltonSequence::Generate(17, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(18, 3), HaltonSequence::Generate(19, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(20, 3), HaltonSequence::Generate(21, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(22, 3), HaltonSequence::Generate(23, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(24, 3), HaltonSequence::Generate(25, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(26, 3), HaltonSequence::Generate(27, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(28, 3), HaltonSequence::Generate(29, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float>(HaltonSequence::Generate(30, 3), HaltonSequence::Generate(31, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER
-	};
-
 	//Update the previous camera world transform.
 	_PreviousCameraWorldTransform = _CurrentCameraWorldTransform;
 	_CurrentCameraWorldTransform = _CameraSystem.GetCurrentCamera()->GetWorldTransform();
@@ -1472,23 +1456,6 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	//Calculate the previous and current camera matrices, as well as their inverses.
 	const Matrix4x4 previous_camera_matrix{ Matrix4x4::LookAt(_PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()), _PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles())) };
 	const Matrix4x4 current_camera_matrix{ Matrix4x4::LookAt(_CurrentCameraWorldTransform.GetLocalPosition(), _CurrentCameraWorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_CurrentCameraWorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_CurrentCameraWorldTransform.GetRotation().ToEulerAngles())) };
-
-	//Jitter the projection matrix a bit.
-	Vector2<float32> current_frame_jitter;
-
-	if (_RenderingConfiguration.GetAntiAliasingMode() == RenderingConfiguration::AntiAliasingMode::TEMPORAL
-		&& (_CurrentRenderingPath == RenderingPath::DEFAULT
-		|| _CurrentRenderingPath == RenderingPath::PATH_TRACING))
-	{
-		current_frame_jitter = JITTER_SAMPLES[_CurrentJitterIndex] * _DynamicUniformData._InverseScaledResolution;
-	}
-
-	else
-	{
-		current_frame_jitter = Vector2<float32>(0.0f, 0.0f);
-	}
-
-	_CameraSystem.GetCurrentCamera()->SetProjectionMatrixJitter(current_frame_jitter);
 
 	//Update matrices.
 	_DynamicUniformData._PreviousWorldToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetProjectionMatrix() * previous_camera_matrix;
@@ -1537,7 +1504,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._ScaledResolution = Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
 	_DynamicUniformData._InverseScaledResolution = 1.0f / Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
 	_DynamicUniformData._PreviousFramejitter = _DynamicUniformData._CurrentFrameJitter;
-	_DynamicUniformData._CurrentFrameJitter = current_frame_jitter;
+	_DynamicUniformData._CurrentFrameJitter = _CameraSystem.GetCurrentCamera()->GetProjectionMatrixJitter();
 
 	_DynamicUniformData._HeightMapCoordinateOffset._X = 0.0f;
 	_DynamicUniformData._HeightMapCoordinateOffset._Y = 0.0f;
@@ -1575,9 +1542,6 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };
 
 	UploadDataToBuffer(dataChunks, dataSizes, 1, &_GlobalRenderData._DynamicUniformDataBuffers[current_framebuffer_index]);
-
-	//Update the current jitter index.
-	_CurrentJitterIndex = _CurrentJitterIndex == JITTER_SAMPLES.Size() - 1 ? 0 : _CurrentJitterIndex + 1;
 
 	//Update the active noise texture index.
 	_CurrentBlueNoiseTextureIndex = _CurrentBlueNoiseTextureIndex == CatalystShaderConstants::NUMBER_OF_BLUE_NOISE_TEXTURES - 1 ? 0 : _CurrentBlueNoiseTextureIndex + 1;

@@ -47,7 +47,7 @@ private:
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
-	//The render data table.
-	RenderDataTableHandle _RenderDataTable;
+	//The render data tables.
+	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
 };

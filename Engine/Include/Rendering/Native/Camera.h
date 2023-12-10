@@ -30,7 +30,7 @@ public:
 	/*
 	*	Returns the world transform.
 	*/
-	FORCE_INLINE NO_DISCARD const WorldTransform& GetWorldTransform() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const WorldTransform &GetWorldTransform() const NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
@@ -149,9 +149,19 @@ public:
 	}
 
 	/*
+	*	Returns the projection matrix jitter.
+	*/
+	FORCE_INLINE NO_DISCARD const Vector2<float32> &GetProjectionMatrixJitter() const NOEXCEPT
+	{
+		SCOPED_LOCK(_Lock);
+
+		return _ProjectionMatrixJitter;
+	}
+
+	/*
 	*	Sets the jitter of the projection matrix.
 	*/
-	FORCE_INLINE void SetProjectionMatrixJitter(const Vector2<float32>& new_projection_matrix_jitter) NOEXCEPT
+	FORCE_INLINE void SetProjectionMatrixJitter(const Vector2<float32> &new_projection_matrix_jitter) NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 

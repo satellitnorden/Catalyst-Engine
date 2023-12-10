@@ -512,14 +512,14 @@ private:
 	//The cull mode.
 	CullMode _CullMode;
 
-	//The depth compare operator.
-	CompareOperator _DepthCompareOperator;
-
 	//Denotes whether or not depth test is enabled.
 	bool _DepthTestEnabled;
 
 	//Denotes whether or not depth write is enabled.
 	bool _DepthWriteEnabled;
+
+	//The depth compare operator.
+	CompareOperator _DepthCompareOperator;
 
 	//Denotes whether or not stencil test is enabled.
 	bool _StencilTestEnabled;

@@ -20,7 +20,7 @@
 #include <Math/Geometry/Sphere.h>
 
 //Rendering.
-#include <Rendering/Native/RenderingCompiler.h>
+#include <Rendering/Native/Compilation/RenderingCompiler.h>
 #include <Rendering/Native/Texture2D.h>
 
 //Resources.
@@ -1781,17 +1781,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		parameters._ID = "UserInterfaceVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\VelocityFragmentShader";
-		parameters._ID = "VelocityFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VelocityFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}

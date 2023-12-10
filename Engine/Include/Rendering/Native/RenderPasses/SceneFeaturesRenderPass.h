@@ -88,7 +88,7 @@ private:
 #endif
 
 	//The velocity graphics pipeline.
-	VelocityGraphicsPipeline _VelocityGraphicsPipeline;
+	GraphicsRenderPipeline _VelocityGraphicsPipeline{ HashString("Velocity_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

@@ -35,6 +35,9 @@ public:
 	//The fragment shader data.
 	ShaderData _FragmentShaderData;
 
+	//The included uniform buffers.
+	DynamicArray<HashString> _IncludedUniformBuffers;
+
 	//The input render targets.
 	DynamicArray<HashString> _InputRenderTargets;
 
@@ -76,5 +79,38 @@ public:
 
 	//The blend alpha operator.
 	BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
+
+	//Denotes whether or not depth test is enabled.
+	bool _DepthTestEnabled;
+
+	//Denotes whether or not depth write is enabled.
+	bool _DepthWriteEnabled;
+
+	//The depth compare operator.
+	CompareOperator _DepthCompareOperator;
+
+	//Denotes whether or not stencil test is enabled.
+	bool _StencilTestEnabled;
+
+	//The action performed on samples that fail the stencil test.
+	StencilOperator _StencilFailOperator;
+
+	//The action performed on samples that pass both the depth test and the stencil test.
+	StencilOperator _StencilPassOperator;
+
+	//The action performed on samples that fail the depth test but pass the stencil test.
+	StencilOperator _StencilDepthFailOperator;
+
+	//The stencil compare operator.
+	CompareOperator _StencilCompareOperator;
+
+	//The stencil compare mask.
+	uint32 _StencilCompareMask;
+
+	//The stencil write mask.
+	uint32 _StencilWriteMask;
+
+	//The stencil reference mask.
+	uint32 _StencilReferenceMask;
 
 };

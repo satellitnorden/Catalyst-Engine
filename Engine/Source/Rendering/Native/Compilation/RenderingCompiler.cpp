@@ -1,17 +1,21 @@
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 //Header file.
-#include <Rendering/Native/RenderingCompiler.h>
+#include <Rendering/Native/Compilation/RenderingCompiler.h>
 
 //Core.
 #include <Core/Algorithms/HashAlgorithms.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/Pair.h>
+#include <Core/General/Time.h>
 
 //File.
 #include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
 #include <File/Utilities/TextParsingUtilities.h>
+
+//Rendering.
+#include <Rendering/Native/Compilation/GLSLCompilation.h>
 
 //Resources.
 #include <Resources/Building/RenderPipelineBuildParameters.h>
@@ -22,6 +26,9 @@
 
 //Third party.
 #include <ThirdParty/vulkan/shaderc/shaderc.h>
+
+//Constants.
+#define ENGINE_RENDERING_DIRECTORY_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering"
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingCompiler);
@@ -164,12 +171,34 @@ public:
 };
 
 /*
+*	Uniform buffer include class definition.
+*/
+class UniformBufferInclude final
+{
+
+public:
+
+	//The name.
+	DynamicString _Name;
+
+	//The file path.
+	DynamicString _FilePath;
+
+};
+
+/*
 *	Render pipeline information class definition.
 */
 class RenderPipelineInformation final
 {
 
 public:
+
+	//The uniform buffer includes.
+	DynamicArray<UniformBufferInclude> _UniformBufferIncludes;
+
+	//The shader function library includes.
+	DynamicArray<DynamicString> _ShaderFunctionLibraryIncludes;
 
 	//The input render targets.
 	DynamicArray<DynamicString> _InputRenderTargets;
@@ -213,7 +242,82 @@ public:
 	//The blend alpha operator.
 	BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
 
+	//Denotes whether or not depth test is enabled.
+	bool _DepthTestEnabled{ false };
+
+	//Denotes whether or not depth write is enabled.
+	bool _DepthWriteEnabled{ false };
+
+	//The depth compare operator.
+	CompareOperator _DepthCompareOperator{ CompareOperator::Always };
+
+	//Denotes whether or not stencil test is enabled.
+	bool _StencilTestEnabled{ false };
+
+	//The action performed on samples that fail the stencil test.
+	StencilOperator _StencilFailOperator{ StencilOperator::Keep };
+
+	//The action performed on samples that pass both the depth test and the stencil test.
+	StencilOperator _StencilPassOperator{ StencilOperator::Keep };
+
+	//The action performed on samples that fail the depth test but pass the stencil test.
+	StencilOperator _StencilDepthFailOperator{ StencilOperator::Keep };
+
+	//The stencil compare operator.
+	CompareOperator _StencilCompareOperator{ CompareOperator::Always };
+
+	//The stencil compare mask.
+	uint32 _StencilCompareMask{ 0 };
+
+	//The stencil write mask.
+	uint32 _StencilWriteMask{ 0 };
+
+	//The stencil reference mask.
+	uint32 _StencilReferenceMask{ 0 };
+
 };
+
+/*
+*	Finds the file path for the uniform buffer definition with the given name.
+*/
+void FindUniformBufferDefinitionFilePath(const char *const RESTRICT name, DynamicString *const RESTRICT file_path) NOEXCEPT
+{
+	//Try the engine directory.
+	{
+		char buffer[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(buffer, "%s\\Uniform Buffer Definitions\\%s.uniform_buffer_definition", ENGINE_RENDERING_DIRECTORY_PATH, name);
+
+		if (File::Exists(buffer))
+		{
+			*file_path = buffer;
+
+			return;
+		}
+	}
+
+	ASSERT(false, "Couldn't find uniform buffer definition file!");
+}
+
+/*
+*	Finds the file path for the shader function library with the given name.
+*/
+void FindShaderFunctionLibraryFilePath(const char* const RESTRICT name, DynamicString* const RESTRICT file_path) NOEXCEPT
+{
+	//Try the engine directory.
+	{
+		char buffer[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(buffer, "%s\\Shader Function Libraries\\%s.shader_function_library", ENGINE_RENDERING_DIRECTORY_PATH, name);
+
+		if (File::Exists(buffer))
+		{
+			*file_path = buffer;
+
+			return;
+		}
+	}
+
+	ASSERT(false, "Couldn't find shader function library file!");
+}
 
 /*
 *	Gathers shader lines.
@@ -380,6 +484,9 @@ void GenerateVertexShader
 		//Make a copy of the lines.
 		DynamicArray<std::string> glsl_lines{ lines };
 
+		//Remember the current resource binding.
+		uint32 resource_binding_index{ 0 };
+
 		//Remember the current location index.
 		uint32 location_index{ 0 };
 
@@ -390,6 +497,39 @@ void GenerateVertexShader
 
 		//Write the version declaration.
 		glsl_file << "#version 460" << std::endl;
+
+		glsl_file << std::endl;
+
+		//Insert any included uniform buffers.
+		if (!render_pipeline_information._UniformBufferIncludes.Empty())
+		{
+			for (const UniformBufferInclude &uniform_buffer_include : render_pipeline_information._UniformBufferIncludes)
+			{
+				GLSLCompilation::InsertUniformBufferDefinition
+				(
+					glsl_file,
+					uniform_buffer_include._FilePath.Data(),
+					resource_binding_index++
+				);
+
+				glsl_file << std::endl;
+			}
+		}
+
+		//Insert any included shader function libraries.
+		if (!render_pipeline_information._ShaderFunctionLibraryIncludes.Empty())
+		{
+			for (const DynamicString &shader_function_library_include : render_pipeline_information._ShaderFunctionLibraryIncludes)
+			{
+				GLSLCompilation::InsertShaderFunctionLibrary
+				(
+					glsl_file,
+					shader_function_library_include.Data()
+				);
+
+				glsl_file << std::endl;
+			}
+		}
 
 		//Write the output parameters.
 		if (!output_parameters.Empty())
@@ -539,6 +679,9 @@ void GenerateFragmentShader
 		//Make a copy of the lines.
 		DynamicArray<std::string> glsl_lines{ lines };
 
+		//Remember the current resource binding.
+		uint32 resource_binding_index{ 0 };
+
 		//Open the file.
 		char glsl_file_path[MAXIMUM_FILE_PATH_LENGTH];
 		sprintf_s(glsl_file_path, "%s\\%s_Fragment.glsl", generated_file_path, shader_name.c_str());
@@ -546,6 +689,39 @@ void GenerateFragmentShader
 
 		//Write the version declaration.
 		glsl_file << "#version 460" << std::endl;
+
+		glsl_file << std::endl;
+
+		//Insert any included uniform buffers.
+		if (!render_pipeline_information._UniformBufferIncludes.Empty())
+		{
+			for (const UniformBufferInclude &uniform_buffer_include : render_pipeline_information._UniformBufferIncludes)
+			{
+				GLSLCompilation::InsertUniformBufferDefinition
+				(
+					glsl_file,
+					uniform_buffer_include._FilePath.Data(),
+					resource_binding_index++
+				);
+
+				glsl_file << std::endl;
+			}
+		}
+
+		//Insert any included shader function libraries.
+		if (!render_pipeline_information._ShaderFunctionLibraryIncludes.Empty())
+		{
+			for (const DynamicString &shader_function_library_include : render_pipeline_information._ShaderFunctionLibraryIncludes)
+			{
+				GLSLCompilation::InsertShaderFunctionLibrary
+				(
+					glsl_file,
+					shader_function_library_include.Data()
+				);
+
+				glsl_file << std::endl;
+			}
+		}
 
 		//Write the input parameters.
 		if (!input_parameters.Empty())
@@ -630,17 +806,18 @@ void GenerateFragmentShader
 */
 NO_DISCARD bool RenderingCompiler::Run() NOEXCEPT
 {
+	//Cache the start time.
+	const TimePoint start_time{ GetCurrentTimePoint() };
+
 	//Remember if new rendering data was compiled.
 	bool new_rendering_data_compiled{ false };
 
 	//Parse render pipelines.
 	{
-		//Define constants.
-		constexpr const char *const RESTRICT ENGINE_RENDER_PIPELINES_PATH{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines" };
-
-		//Parse the directories.
-		new_rendering_data_compiled |= ParseRenderPipelinesInDirectory(ENGINE_RENDER_PIPELINES_PATH);
+		new_rendering_data_compiled |= ParseRenderPipelinesInDirectory(ENGINE_RENDERING_DIRECTORY_PATH "\\Render Pipelines");
 	}
+
+	LOG_INFORMATION("Rendering Compiler took %f seconds.", start_time.GetSecondsSince());
 
 	return new_rendering_data_compiled;
 }
@@ -714,6 +891,54 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 				|| TextParsingUtilities::OnlyComment(current_line.data(), current_line.length()))
 			{
 				continue;
+			}
+
+			//Is this a uniform buffer include declaration?
+			{
+				const size_t input_render_target_position{ current_line.find("IncludeUniformBuffer") };
+
+				if (input_render_target_position != std::string::npos)
+				{
+					render_pipeline_information._UniformBufferIncludes.Emplace();
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&render_pipeline_information._UniformBufferIncludes.Back()._Name
+					);
+
+					
+					FindUniformBufferDefinitionFilePath
+					(
+						render_pipeline_information._UniformBufferIncludes.Back()._Name.Data(),
+						&render_pipeline_information._UniformBufferIncludes.Back()._FilePath
+					);
+
+					continue;
+				}
+			}
+
+			//Is this a shader function library include declaration?
+			{
+				const size_t input_render_target_position{ current_line.find("IncludeShaderFunctionLibrary") };
+
+				if (input_render_target_position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					render_pipeline_information._ShaderFunctionLibraryIncludes.Emplace();
+					FindShaderFunctionLibraryFilePath(string.Data(), &render_pipeline_information._ShaderFunctionLibraryIncludes.Back());
+
+					continue;
+				}
 			}
 
 			//Is this an input render target declaration?
@@ -1164,6 +1389,285 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					continue;
 				}
 			}
+
+			//Is this a depth test enable declaration?
+			{
+				const size_t position{ current_line.find("DepthTestEnable") };
+
+				if (position != std::string::npos)
+				{
+					render_pipeline_information._DepthTestEnabled = true;
+
+					continue;
+				}
+			}
+
+			//Is this a depth write enable declaration?
+			{
+				const size_t position{ current_line.find("DepthWriteEnable") };
+
+				if (position != std::string::npos)
+				{
+					render_pipeline_information._DepthTestEnabled = true;
+
+					continue;
+				}
+			}
+
+			//Is this a depth compare operator declaration?
+			{
+				const size_t position{ current_line.find("DepthCompareOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "ALWAYS")
+					{
+						render_pipeline_information._DepthCompareOperator = CompareOperator::Always;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a stencil test enable declaration?
+			{
+				const size_t position{ current_line.find("StencilTestEnable") };
+
+				if (position != std::string::npos)
+				{
+					render_pipeline_information._StencilTestEnabled = true;
+
+					continue;
+				}
+			}
+
+			//Is this a stencil fail operator declaration?
+			{
+				const size_t position{ current_line.find("StencilFailOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "KEEP")
+					{
+						render_pipeline_information._StencilFailOperator = StencilOperator::Keep;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a stencil pass operator declaration?
+			{
+				const size_t position{ current_line.find("StencilPassOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "KEEP")
+					{
+						render_pipeline_information._StencilPassOperator = StencilOperator::Keep;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a stencil depth fail operator declaration?
+			{
+				const size_t position{ current_line.find("StencilDepthFailOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "KEEP")
+					{
+						render_pipeline_information._StencilDepthFailOperator = StencilOperator::Keep;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a stencil compare operator declaration?
+			{
+				const size_t position{ current_line.find("StencilCompareOperator") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "ALWAYS")
+					{
+						render_pipeline_information._StencilCompareOperator = CompareOperator::Always;
+					}
+
+					else if (string == "EQUAL")
+					{
+						render_pipeline_information._StencilCompareOperator = CompareOperator::Equal;
+					}
+
+					else if (string == "GREATER")
+					{
+						render_pipeline_information._StencilCompareOperator = CompareOperator::Greater;
+					}
+
+					else if (string == "GREATER_OR_EQUAL")
+					{
+						render_pipeline_information._StencilCompareOperator = CompareOperator::GreaterOrEqual;
+					}
+
+					else if (string == "LESS")
+					{
+						render_pipeline_information._StencilCompareOperator = CompareOperator::Less;
+					}
+
+					else if (string == "LESS_OR_EQUAL")
+					{
+						render_pipeline_information._StencilCompareOperator = CompareOperator::LessOrEqual;
+					}
+
+					else if (string == "NEVER")
+					{
+						render_pipeline_information._StencilCompareOperator = CompareOperator::Never;
+					}
+
+					else if (string == "NOT_EQUAL")
+					{
+						render_pipeline_information._StencilCompareOperator = CompareOperator::NotEqual;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a stencil compare mask declaration?
+			{
+				const size_t position{ current_line.find("StencilCompareMask") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					render_pipeline_information._StencilCompareMask = std::stoul(string.Data());
+
+					continue;
+				}
+			}
+
+			//Is this a stencil write mask declaration?
+			{
+				const size_t position{ current_line.find("StencilWriteMask") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					render_pipeline_information._StencilWriteMask = std::stoul(string.Data());
+
+					continue;
+				}
+			}
+
+			//Is this a stencil reference mask declaration?
+			{
+				const size_t position{ current_line.find("StencilReferenceMask") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					render_pipeline_information._StencilReferenceMask = std::stoul(string.Data());
+
+					continue;
+				}
+			}
 			
 			//Is this the beginning of a vertex shader?
 			if (current_line == "Vertex")
@@ -1175,6 +1679,17 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 			else if (current_line == "Fragment")
 			{
 				GenerateFragmentShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
+			}
+		}
+
+		//Fill in the included uniform buffers.
+		if (!render_pipeline_information._UniformBufferIncludes.Empty())
+		{
+			parameters._IncludedUniformBuffers.Reserve(render_pipeline_information._UniformBufferIncludes.Size());
+
+			for (const UniformBufferInclude &uniform_buffer_include : render_pipeline_information._UniformBufferIncludes)
+			{
+				parameters._IncludedUniformBuffers.Emplace(HashString(uniform_buffer_include._Name.Data()));
 			}
 		}
 
@@ -1220,6 +1735,19 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 		parameters._BlendAlphaSourceFactor = render_pipeline_information._BlendAlphaSourceFactor;
 		parameters._BlendAlphaDestinationFactor = render_pipeline_information._BlendAlphaDestinationFactor;
 		parameters._BlendAlphaOperator = render_pipeline_information._BlendAlphaOperator;
+
+		//Copy depth/stencil properties.
+		parameters._DepthTestEnabled = render_pipeline_information._DepthTestEnabled;
+		parameters._DepthWriteEnabled = render_pipeline_information._DepthWriteEnabled;
+		parameters._DepthCompareOperator = render_pipeline_information._DepthCompareOperator;
+		parameters._StencilTestEnabled = render_pipeline_information._StencilTestEnabled;
+		parameters._StencilFailOperator = render_pipeline_information._StencilFailOperator;
+		parameters._StencilPassOperator = render_pipeline_information._StencilPassOperator;
+		parameters._StencilDepthFailOperator = render_pipeline_information._StencilDepthFailOperator;
+		parameters._StencilCompareOperator = render_pipeline_information._StencilCompareOperator;
+		parameters._StencilCompareMask = render_pipeline_information._StencilCompareMask;
+		parameters._StencilWriteMask = render_pipeline_information._StencilWriteMask;
+		parameters._StencilReferenceMask = render_pipeline_information._StencilReferenceMask;
 
 		//Build the render pipeline!
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildRenderPipeline(parameters);

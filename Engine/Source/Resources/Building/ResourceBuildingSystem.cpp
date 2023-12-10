@@ -778,6 +778,18 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 		}
 	}
 
+	//Write the included uniform buffers.
+	{
+		const uint64 number_of_included_uniform_buffers{ parameters._IncludedUniformBuffers.Size() };
+		output_file.Write(&number_of_included_uniform_buffers, sizeof(uint64));
+
+		if (!parameters._IncludedUniformBuffers.Empty())
+		{
+			//Write the data.
+			output_file.Write(parameters._IncludedUniformBuffers.Data(), sizeof(HashString) * parameters._IncludedUniformBuffers.Size());
+		}
+	}
+
 	//Write the input render targets.
 	{
 		//Write the count.
@@ -815,6 +827,19 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 	output_file.Write(&parameters._BlendAlphaSourceFactor, sizeof(BlendFactor));
 	output_file.Write(&parameters._BlendAlphaDestinationFactor, sizeof(BlendFactor));
 	output_file.Write(&parameters._BlendAlphaOperator, sizeof(BlendOperator));
+
+	//Write the depth/stencil properties.
+	output_file.Write(&parameters._DepthTestEnabled, sizeof(bool));
+	output_file.Write(&parameters._DepthWriteEnabled, sizeof(bool));
+	output_file.Write(&parameters._DepthCompareOperator, sizeof(CompareOperator));
+	output_file.Write(&parameters._StencilTestEnabled, sizeof(bool));
+	output_file.Write(&parameters._StencilFailOperator, sizeof(StencilOperator));
+	output_file.Write(&parameters._StencilPassOperator, sizeof(StencilOperator));
+	output_file.Write(&parameters._StencilDepthFailOperator, sizeof(StencilOperator));
+	output_file.Write(&parameters._StencilCompareOperator, sizeof(CompareOperator));
+	output_file.Write(&parameters._StencilCompareMask, sizeof(uint32));
+	output_file.Write(&parameters._StencilWriteMask, sizeof(uint32));
+	output_file.Write(&parameters._StencilReferenceMask, sizeof(uint32));
 
 	//Close the output file.
 	output_file.Close();

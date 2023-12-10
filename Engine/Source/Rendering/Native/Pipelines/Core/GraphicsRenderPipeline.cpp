@@ -20,39 +20,71 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 	ResetGraphicsPipeline();
 
 	//Set if this render pipeline needs a render data table.
-	_UsesRenderDataTable = !render_pipeline_resource->_InputRenderTargets.Empty();
+	_UsesRenderDataTable = !render_pipeline_resource->_IncludedUniformBuffers.Empty() || !render_pipeline_resource->_InputRenderTargets.Empty();
 
 	//If this render pipeline has input render targets, create a render data table (and its layout).
 	if (_UsesRenderDataTable)
 	{
 		//Create the render data table layout.
 		{
-			constexpr uint64 MAX_BINDINGS{ 1 };
-
-			ASSERT(render_pipeline_resource->_InputRenderTargets.Size() <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS.");
+			constexpr uint64 MAX_BINDINGS{ 2 };
 
 			StaticArray<RenderDataTableLayoutBinding, MAX_BINDINGS> bindings;
+			uint32 current_binding_index{ 0 };
 
-			for (uint64 i{ 0 }; i < render_pipeline_resource->_InputRenderTargets.Size(); ++i)
+			for (const HashString included_uniform_buffer : render_pipeline_resource->_IncludedUniformBuffers)
 			{
-				bindings[i] = RenderDataTableLayoutBinding(static_cast<uint32>(i), RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT);
+				bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT);
+			
+				++current_binding_index;
+
+				ASSERT(current_binding_index <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS");
 			}
 
-			RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(render_pipeline_resource->_InputRenderTargets.Size()), &_RenderDataTableLayout);
+			for (const HashString input_render_target : render_pipeline_resource->_InputRenderTargets)
+			{
+				bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT);
+			
+				++current_binding_index;
+
+				ASSERT(current_binding_index <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS");
+			}
+
+			RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), current_binding_index, &_RenderDataTableLayout);
 		}
 
-		//Create the render data table.
-		{
-			RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+		//Create the render data tables.
+		_RenderDataTables.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
-			for (uint64 i{ 0 }; i < render_pipeline_resource->_InputRenderTargets.Size(); ++i)
+		for (RenderDataTableHandle &render_data_table : _RenderDataTables)
+		{
+			RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &render_data_table);
+
+			uint32 current_binding_index{ 0 };
+
+			{
+				uint8 framebuffer_index{ 0 };
+
+				for (const HashString included_uniform_buffer : render_pipeline_resource->_IncludedUniformBuffers)
+				{
+					RenderingSystem::Instance->BindUniformBufferToRenderDataTable
+					(
+						current_binding_index++,
+						0,
+						&render_data_table,
+						RenderingSystem::Instance->GetUniformBufferManager()->GetUniformBuffer(included_uniform_buffer, framebuffer_index++)
+					);
+				}
+			}
+
+			for (const HashString input_render_target : render_pipeline_resource->_InputRenderTargets)
 			{
 				RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable
 				(
+					current_binding_index++,
 					0,
-					0,
-					&_RenderDataTable,
-					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(render_pipeline_resource->_InputRenderTargets[i]),
+					&render_data_table,
+					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(input_render_target),
 					RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)
 				);
 			}
@@ -108,17 +140,17 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 	SetBlendFactorDestinationAlpha(render_pipeline_resource->_BlendAlphaDestinationFactor);
 	SetAlphaBlendOperator(render_pipeline_resource->_BlendAlphaOperator);
 	SetCullMode(CullMode::None);
-	SetDepthCompareOperator(CompareOperator::Always);
-	SetDepthTestEnabled(false);
-	SetDepthWriteEnabled(false);
-	SetStencilTestEnabled(false);
-	SetStencilFailOperator(StencilOperator::Keep);
-	SetStencilPassOperator(StencilOperator::Keep);
-	SetStencilDepthFailOperator(StencilOperator::Keep);
-	SetStencilCompareOperator(CompareOperator::Always);
-	SetStencilCompareMask(0);
-	SetStencilWriteMask(0);
-	SetStencilReferenceMask(0);
+	SetDepthTestEnabled(render_pipeline_resource->_DepthTestEnabled);
+	SetDepthWriteEnabled(render_pipeline_resource->_DepthWriteEnabled);
+	SetDepthCompareOperator(render_pipeline_resource->_DepthCompareOperator);
+	SetStencilTestEnabled(render_pipeline_resource->_StencilTestEnabled);
+	SetStencilFailOperator(render_pipeline_resource->_StencilFailOperator);
+	SetStencilPassOperator(render_pipeline_resource->_StencilPassOperator);
+	SetStencilDepthFailOperator(render_pipeline_resource->_StencilDepthFailOperator);
+	SetStencilCompareOperator(render_pipeline_resource->_StencilCompareOperator);
+	SetStencilCompareMask(render_pipeline_resource->_StencilCompareMask);
+	SetStencilWriteMask(render_pipeline_resource->_StencilWriteMask);
+	SetStencilReferenceMask(render_pipeline_resource->_StencilReferenceMask);
 	SetTopology(Topology::TriangleFan);
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -142,10 +174,12 @@ void GraphicsRenderPipeline::Execute() NOEXCEPT
 	//Bind the pipeline.
 	command_buffer->BindPipeline(this);
 
-	//Bind the render data tables.
+	//Bind the render data table.
 	if (_UsesRenderDataTable)
 	{
-		command_buffer->BindRenderDataTable(this, 0, _RenderDataTable);
+		RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+
+		command_buffer->BindRenderDataTable(this, 0, current_render_data_table);
 	}
 
 	//Draw!
@@ -166,7 +200,10 @@ void GraphicsRenderPipeline::Terminate() NOEXCEPT
 	if (_UsesRenderDataTable)
 	{
 		//Destroy the render data table.
-		RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
+		for (RenderDataTableHandle &render_data_table : _RenderDataTables)
+		{
+			RenderingSystem::Instance->DestroyRenderDataTable(&render_data_table);
+		}
 
 		//Destroy the render data table layout.
 		RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);

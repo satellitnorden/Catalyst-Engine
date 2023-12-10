@@ -49,6 +49,38 @@ public:
 
 private:
 
+	/*
+	*	Camera uniform data class definition.
+	*/
+	class CameraUniformData final
+	{
+
+	public:
+
+		Matrix4x4 _WorldToClipMatrix;
+		Matrix4x4 _WorldToCameraMatrix;
+		Matrix4x4 _PreviousWorldToClipMatrix;
+		Matrix4x4 _InverseWorldToCameraMatrix;
+		Matrix4x4 _InverseCameraToClipMatrix;
+
+		Vector4<float32> _CameraWorldPosition; //Actually vec3, but needs padding.
+		Vector4<float32> _CameraForwardVector; //Actually vec3, but needs padding.
+
+		Vector2<float32> _CurrentFrameJitter;
+
+		float32 _NearPlane;
+		float32 _FarPlane;
+	};
+
+	//The camera uniform data.
+	CameraUniformData _CameraUniformData;
+
+	//The current jitter index.
+	uint8 _CurrentJitterIndex{ 0 };
+
+	//The previous camera world transform.
+	WorldTransform _PreviousCameraWorldTransform;
+
 	//The default camera.
 	Camera *RESTRICT _DefaultCamera{ nullptr };
 

@@ -1,0 +1,60 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+
+//Declare output render targets.
+OutputRenderTarget(SceneFeatures4);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set depth/stencil properties.
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(KEEP);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(NOT_EQUAL);
+StencilCompareMask(1);
+StencilReferenceMask(1);
+
+//The vertex shader.
+Vertex
+{
+    //Declare output parameters.
+    OutputParameter(vec2, OutScreenCoordinate);
+
+	//Calculate the viewport coordinates.
+	float x = -1.0f + float((VERTEX_INDEX & 2) << 1);
+    float y = -1.0f + float((VERTEX_INDEX & 1) << 2);
+
+    //Calculate the screen coordinate.
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+    
+    //Output the position.
+    OutputVertexPosition(vec4(x, y, 0.0f, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Calculate the world position.
+    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, 0.0f);
+
+    //Calculate the velocity.
+    vec2 velocity = InScreenCoordinate - CalculatePreviousScreenCoordinate(world_position) - CURRENT_FRAME_JITTER;
+
+    //Write the fragment.
+    OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
+}

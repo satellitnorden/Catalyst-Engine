@@ -32,6 +32,7 @@
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/VirtualRealitySystem.h>
+#include <Rendering/Native/UniformBufferManager.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
@@ -159,6 +160,14 @@ public:
 	}
 
 	/*
+	*	Returns the inverse scaled resolution.
+	*/
+	FORCE_INLINE NO_DISCARD Vector2<float32> GetInverseScaledResolution(const uint8 mip_level) const NOEXCEPT
+	{
+		return Vector2<float32>(1.0f / static_cast<float32>(_ScaledResolutions[mip_level]._Width), 1.0f / static_cast<float32>(_ScaledResolutions[mip_level]._Height));
+	}
+
+	/*
 	*	Returns the scaled aspect ratio.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetScaledAspectRatio() const NOEXCEPT
@@ -205,6 +214,14 @@ public:
 	RESTRICTED NO_DISCARD SharedRenderTargetManager *const RESTRICT GetSharedRenderTargetManager() NOEXCEPT
 	{
 		return &_SharedRenderTargetManager;
+	}
+
+	/*
+	*	Returns the uniform buffer manager.
+	*/
+	RESTRICTED NO_DISCARD UniformBufferManager *const RESTRICT GetUniformBufferManager() NOEXCEPT
+	{
+		return &_UniformBufferManager;
 	}
 
 	/*
@@ -606,11 +623,11 @@ private:
 	//The dynamic uniform data.
 	DynamicUniformData _DynamicUniformData;
 
-	//The current jitter index.
-	uint8 _CurrentJitterIndex{ 0 };
-
 	//The shared render target manager.
 	SharedRenderTargetManager _SharedRenderTargetManager;
+
+	//The uniform buffer manager.
+	UniformBufferManager _UniformBufferManager;
 
 	//The camera system.
 	CameraSystem _CameraSystem;

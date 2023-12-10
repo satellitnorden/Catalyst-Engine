@@ -118,7 +118,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 #if defined(CATALYST_EDITOR)
 	_EditorSelectedModelGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 #endif
-	_VelocityGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_VelocityGraphicsPipeline.Initialize();
 }
 
 /*

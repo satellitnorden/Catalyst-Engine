@@ -331,6 +331,9 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_FragmentShaderData._GLSLData), ShaderStage::FRAGMENT, &resource->_FragmentShaderHandle);
 	}
 
+	//Copy the included uniform buffers.
+	resource->_IncludedUniformBuffers = std::move(data->_IncludedUniformBuffers);
+
 	//Copy the input/output depth buffer/render targets.
 	resource->_InputRenderTargets = std::move(data->_InputRenderTargets);
 	resource->_OutputDepthBuffer = data->_OutputDepthBuffer;
@@ -350,6 +353,19 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 	resource->_BlendAlphaSourceFactor = data->_BlendAlphaSourceFactor;
 	resource->_BlendAlphaDestinationFactor = data->_BlendAlphaDestinationFactor;
 	resource->_BlendAlphaOperator = data->_BlendAlphaOperator;
+
+	//Copy the depth/stencil properties.
+	resource->_DepthTestEnabled = data->_DepthTestEnabled;
+	resource->_DepthWriteEnabled = data->_DepthWriteEnabled;
+	resource->_DepthCompareOperator = data->_DepthCompareOperator;
+	resource->_StencilTestEnabled = data->_StencilTestEnabled;
+	resource->_StencilFailOperator = data->_StencilFailOperator;
+	resource->_StencilPassOperator = data->_StencilPassOperator;
+	resource->_StencilDepthFailOperator = data->_StencilDepthFailOperator;
+	resource->_StencilCompareOperator = data->_StencilCompareOperator;
+	resource->_StencilCompareMask = data->_StencilCompareMask;
+	resource->_StencilWriteMask = data->_StencilWriteMask;
+	resource->_StencilReferenceMask = data->_StencilReferenceMask;
 }
 
 /*

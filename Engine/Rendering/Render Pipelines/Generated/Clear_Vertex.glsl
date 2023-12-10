@@ -1,4 +1,5 @@
 #version 460
+
 void main()
 {
 	float x = -1.0f + float((gl_VertexIndex & 2) << 1);

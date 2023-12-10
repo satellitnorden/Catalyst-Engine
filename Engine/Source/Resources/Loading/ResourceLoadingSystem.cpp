@@ -331,6 +331,19 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 		}
 	}
 
+	//Read the included uniform buffers.
+	{
+		uint64 number_of_included_uniform_buffers{ 0 };
+		file->Read(&number_of_included_uniform_buffers, sizeof(uint64));
+
+		if (number_of_included_uniform_buffers > 0)
+		{
+			data->_IncludedUniformBuffers.Upsize<false>(number_of_included_uniform_buffers);
+			file->Read(data->_IncludedUniformBuffers.Data(), sizeof(HashString) * number_of_included_uniform_buffers);
+		}
+	}
+
+
 	//Read the input render targets.
 	{
 		uint64 length{ 0 };
@@ -364,7 +377,7 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 	file->Read(&data->_DepthStencilLoadOperator, sizeof(AttachmentLoadOperator));
 	file->Read(&data->_DepthStencilStoreOperator, sizeof(AttachmentStoreOperator));
 
-	//Write the blend properties.
+	//Read the blend properties.
 	file->Read(&data->_BlendEnabled, sizeof(bool));
 	file->Read(&data->_BlendColorSourceFactor, sizeof(BlendFactor));
 	file->Read(&data->_BlendColorDestinationFactor, sizeof(BlendFactor));
@@ -372,6 +385,19 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 	file->Read(&data->_BlendAlphaSourceFactor, sizeof(BlendFactor));
 	file->Read(&data->_BlendAlphaDestinationFactor, sizeof(BlendFactor));
 	file->Read(&data->_BlendAlphaOperator, sizeof(BlendOperator));
+
+	//Read the depth/stencil properties.
+	file->Read(&data->_DepthTestEnabled, sizeof(bool));
+	file->Read(&data->_DepthWriteEnabled, sizeof(bool));
+	file->Read(&data->_DepthCompareOperator, sizeof(CompareOperator));
+	file->Read(&data->_StencilTestEnabled, sizeof(bool));
+	file->Read(&data->_StencilFailOperator, sizeof(StencilOperator));
+	file->Read(&data->_StencilPassOperator, sizeof(StencilOperator));
+	file->Read(&data->_StencilDepthFailOperator, sizeof(StencilOperator));
+	file->Read(&data->_StencilCompareOperator, sizeof(CompareOperator));
+	file->Read(&data->_StencilCompareMask, sizeof(uint32));
+	file->Read(&data->_StencilWriteMask, sizeof(uint32));
+	file->Read(&data->_StencilReferenceMask, sizeof(uint32));
 }
 
 /*
