@@ -166,6 +166,9 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 	//Post-initialize the model system.
 	_ModelSystem.PostInitialize();
 
+	//Initialize the post processing system.
+	_PostProcessingSystem.Initialize();
+
 	//Post-initialize the ray tracing system.
 	_RayTracingSystem.PostInitialize();
 
@@ -213,12 +216,12 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 
 		_CameraSystem.RenderUpdate();
 	}
-	
-	//Update the global render data.
-	{
-		PROFILING_SCOPE(RenderingSystem_UpdateGlobalRenderData);
 
-		UpdateGlobalRenderData();
+	//Update the post processing system.
+	{
+		PROFILING_SCOPE(RenderingSystem_PostProcessingSystem_RenderUpdate);
+
+		_PostProcessingSystem.RenderUpdate();
 	}
 
 	//Update the uniform buffer manager.
@@ -226,6 +229,13 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		PROFILING_SCOPE(RenderingSystem_UniformBufferManager_RenderUpdate);
 
 		_UniformBufferManager.RenderUpdate();
+	}
+
+	//Update the global render data.
+	{
+		PROFILING_SCOPE(RenderingSystem_UpdateGlobalRenderData);
+
+		UpdateGlobalRenderData();
 	}
 
 	//Update the lighting system.

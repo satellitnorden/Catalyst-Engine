@@ -1,0 +1,54 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(PostProcessing);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Constants);
+
+//Declare input render targets.
+InputRenderTargets(INTERMEDIATE_RGBA_FLOAT32_1 /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(Scene);
+
+//Set the load/store operators.
+ColorLoadOperator(DONT_CARE);
+ColorStoreOperator(STORE);
+
+//The vertex shader.
+Vertex
+{
+    //Declare output parameters.
+    OutputParameter(vec2, OutScreenCoordinate);
+
+	//Calculate the viewport coordinates.
+	float x = -1.0f + float((VERTEX_INDEX & 2) << 1);
+    float y = -1.0f + float((VERTEX_INDEX & 1) << 2);
+
+    //Calculate the screen coordinate.
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+    
+    //Output the position.
+    OutputVertexPosition(vec4(x, y, 0.0f, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample the scene.
+    vec4 scene = texture(INTERMEDIATE_RGBA_FLOAT32_1, InScreenCoordinate);
+
+    //Calculate the brightness.
+    float brightness = max(scene.r, max(scene.g, scene.b));
+
+    //Calculate the contribution.
+    float contribution = max(brightness - BLOOM_THRESHOLD, 0.0f);
+    contribution /= max(brightness, FLOAT32_EPSILON);
+    contribution *= 0.5f;
+
+    //Write the fragment.
+    OutputFragment(Scene, vec4(scene * contribution));
+}

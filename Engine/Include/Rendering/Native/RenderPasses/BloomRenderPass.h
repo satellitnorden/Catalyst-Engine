@@ -6,7 +6,6 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/BloomIsolationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -26,7 +25,7 @@ public:
 private:
 
 	//The bloom isolation graphics pipeline.
-	BloomIsolationGraphicsPipeline _BloomIsolationGraphicsPipeline;
+	GraphicsRenderPipeline _BloomIsolationGraphicsPipeline{ HashString("BloomIsolation_RenderPipeline") };
 
 	//The bloom downsample graphics pipelines.
 	StaticArray<ResampleGraphicsPipeline, 7> _BloomDownsampleGraphicsPipelines;

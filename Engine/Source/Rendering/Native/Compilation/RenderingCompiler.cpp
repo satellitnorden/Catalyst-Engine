@@ -740,12 +740,9 @@ void GenerateFragmentShader
 		//Write the input render targets.
 		if (!render_pipeline_information._InputRenderTargets.Empty())
 		{
-			//Remember the current binding index.
-			uint32 binding_index{ 0 };
-
 			for (const DynamicString &input_render_target : render_pipeline_information._InputRenderTargets)
 			{
-				glsl_file << "layout (set = 0, binding = " << binding_index++ << ") uniform sampler2D " << input_render_target.Data() << ";" << std::endl;
+				glsl_file << "layout (set = 0, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;

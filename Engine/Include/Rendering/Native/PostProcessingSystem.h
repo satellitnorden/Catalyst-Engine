@@ -14,6 +14,48 @@ class PostProcessingSystem final
 public:
 
 	/*
+	*	Initializes the post processing system.
+	*/
+	void Initialize() NOEXCEPT;
+
+	/*
+	*	Updates the post processing system during the render update phase.
+	*/
+	void RenderUpdate() NOEXCEPT;
+
+	/*
+	*	Returns the bloom threshold.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetBloomThreshold() const NOEXCEPT
+	{
+		return _BloomThreshold;
+	}
+
+	/*
+	*	Sets the bloom threshold.
+	*/
+	FORCE_INLINE void SetBloomThreshold(const float32 value) NOEXCEPT
+	{
+		_BloomThreshold = value;
+	}
+
+	/*
+	*	Returns the bloom intensity.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetBloomIntensity() const NOEXCEPT
+	{
+		return _BloomIntensity;
+	}
+
+	/*
+	*	Sets the bloom intensity.
+	*/
+	FORCE_INLINE void SetBloomIntensity(const float32 value) NOEXCEPT
+	{
+		_BloomIntensity = value;
+	}
+
+	/*
 	*	Returns the tint color.
 	*/
 	FORCE_INLINE NO_DISCARD Vector3<float32> GetTintColor() const NOEXCEPT
@@ -207,6 +249,28 @@ public:
 
 private:
 
+	/*
+	*	Post processing uniform data class definition.
+	*/
+	class PostProcessingUniformData final
+	{
+
+	public:
+
+		//The bloom threshold.
+		float32 _BloomThreshold;
+
+		//The bloom intensity.
+		float32 _BloomIntensity;
+
+	};
+
+	//The bloom threshold.
+	float32 _BloomThreshold{ 1.0f };
+
+	//The bloom intensity.
+	float32 _BloomIntensity{ 1.0f };
+
 	//The tint color.
 	Vector3<float32> _TintColor{ 1.0f, 1.0f, 1.0f };
 
@@ -242,5 +306,8 @@ private:
 
 	//The temporal anti aliasing weight override.
 	Optional<float32> _TemporalAntiAliasingWeightOverride;
+
+	//The post processing uniform data.
+	PostProcessingUniformData _PostProcessingUniformData;
 
 };

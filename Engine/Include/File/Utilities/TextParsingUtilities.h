@@ -124,7 +124,7 @@ namespace TextParsingUtilities
 			}
 
 			//Add to the buffer if we're currently parsing an argument.
-			if (currently_parsing_argument && !IsWhitespace(string[i]) && string[i] != '/' && string[i] != '*')
+			if (currently_parsing_argument && !IsWhitespace(string[i]) && string[i] != '/')
 			{
 				buffer[current_buffer_index++] = string[i];
 			}
