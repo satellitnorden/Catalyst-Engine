@@ -22,7 +22,6 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TerrainSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VelocityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) SceneFeaturesRenderPass final : public RenderPass
