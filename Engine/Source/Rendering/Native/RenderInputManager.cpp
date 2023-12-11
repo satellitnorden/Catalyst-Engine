@@ -49,8 +49,9 @@ struct InstancedImpostorPushConstantData
 
 struct TerrainPushConstantData
 {
-	Vector3<float32> _WorldPosition;
-	Padding<4> _Padding;
+	Vector2<float32> _WorldPosition;
+	float32 _PatchSize;
+	uint32 _HeightMapTextureIndex;
 	uint32 _NormalMapTextureIndex;
 	uint32 _IndexMapTextureIndex;
 	uint32 _BlendMapTextureIndex;
@@ -241,12 +242,11 @@ void RenderInputManager::Initialize() NOEXCEPT
 		//Set up the required vertex input attribute/binding descriptions for models.
 		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
 
-		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, 0);
-		required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(sizeof(Vector3<float32>)));
+		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, 0);
 
 		DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
 
-		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vector3<float32>) + sizeof(Vector2<float32>)), VertexInputBindingDescription::InputRate::Vertex);
+		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vector2<float32>)), VertexInputBindingDescription::InputRate::Vertex);
 
 		RegisterInputStream
 		(
@@ -821,7 +821,10 @@ void RenderInputManager::GatherTerrainInputStream
 			//Set up the push constant data.
 			TerrainPushConstantData push_constant_data;
 
-			push_constant_data._WorldPosition = general_component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
+			const Vector3<float32> world_position{ general_component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
+			push_constant_data._WorldPosition = Vector2<float32>(world_position._X, world_position._Z);
+			push_constant_data._PatchSize = static_cast<float32>(general_component->_PatchSize);
+			push_constant_data._HeightMapTextureIndex = render_component->_HeightMapTextureIndex;
 			push_constant_data._NormalMapTextureIndex = render_component->_NormalMapTextureIndex;
 			push_constant_data._IndexMapTextureIndex = render_component->_IndexMapTextureIndex;
 			push_constant_data._BlendMapTextureIndex = render_component->_BlendMapTextureIndex;

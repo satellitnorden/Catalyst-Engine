@@ -40,7 +40,9 @@ StencilReferenceMask(1);
 Topology(TRIANGLE_LIST);
 
 //Declare push constant data.
-PushConstantData(vec3, WORLD_POSITION);
+PushConstantData(vec2, WORLD_POSITION);
+PushConstantData(float, PATCH_SIZE);
+PushConstantData(uint, HEIGHT_MAP_TEXTURE_INDEX);
 PushConstantData(uint, NORMAL_MAP_TEXTURE_INDEX);
 PushConstantData(uint, INDEX_MAP_TEXTURE_INDEX);
 PushConstantData(uint, BLEND_MAP_TEXTURE_INDEX);
@@ -58,18 +60,19 @@ SubscribeToInputStream(Terrain);
 Vertex
 {
     //Declare input parameters.
-    InputParameter(vec3, InPosition);
-    InputParameter(vec2, InTextureCoordinate);
+    InputParameter(vec2, InPosition);
 
     //Declare output parameters.
     OutputParameter(vec3, OutWorldPosition);
     OutputParameter(vec2, OutHeightMapTextureCoordinate);
 
     //Calculate the world position.
-    OutWorldPosition = WORLD_POSITION + InPosition;
+    OutWorldPosition.x = WORLD_POSITION.x + mix(InPosition.x - (PATCH_SIZE * 0.5f), InPosition.x + (PATCH_SIZE * 0.5f), InPosition.x);
+    OutWorldPosition.y = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), InPosition).x;
+    OutWorldPosition.z = WORLD_POSITION.y + mix(InPosition.y - (PATCH_SIZE * 0.5f), InPosition.y + (PATCH_SIZE * 0.5f), InPosition.y);
 
     //Calculate the heightmap texture coordinate.
-    OutHeightMapTextureCoordinate = InTextureCoordinate;
+    OutHeightMapTextureCoordinate = InPosition;
 
     //Output the position.
     OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));

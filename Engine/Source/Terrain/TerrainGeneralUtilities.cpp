@@ -7,10 +7,8 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	void GenerateTerrainPlane(const uint32 resolution, const Texture2D<float32> &heightmap, const float32 patch_size, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	void GenerateTerrainPlane(const uint32 resolution, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
 	{
-		const float32 half_patch_size{ patch_size * 0.5f };
-
 		vertices->Reserve(resolution * resolution);
 		indices->Reserve((resolution - 1) * (resolution - 1) * 6);
 
@@ -22,12 +20,8 @@ namespace TerrainGeneralUtilities
 
 				TerrainVertex vertex;
 
-				vertex._Position._X = CatalystBaseMath::LinearlyInterpolate(-half_patch_size, half_patch_size, static_cast<float32>(X) / static_cast<float32>(resolution - 1));
-				vertex._Position._Y = heightmap.Sample(heightmap_coordinate, AddressMode::CLAMP_TO_EDGE);
-				vertex._Position._Z = CatalystBaseMath::LinearlyInterpolate(-half_patch_size, half_patch_size, static_cast<float32>(Y) / static_cast<float32>(resolution - 1));
-
-				vertex._TextureCoordinate._X = static_cast<float32>(X) / static_cast<float32>(resolution - 1);
-				vertex._TextureCoordinate._Y = static_cast<float32>(Y) / static_cast<float32>(resolution - 1);
+				vertex._Position._X = static_cast<float32>(X) / static_cast<float32>(resolution - 1);
+				vertex._Position._Y = static_cast<float32>(Y) / static_cast<float32>(resolution - 1);
 
 				vertices->Emplace(vertex);
 

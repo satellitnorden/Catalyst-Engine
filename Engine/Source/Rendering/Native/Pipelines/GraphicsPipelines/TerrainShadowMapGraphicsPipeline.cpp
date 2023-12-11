@@ -57,6 +57,7 @@ public:
 */
 void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer, const RenderTargetHandle render_target) NOEXCEPT
 {
+	/*
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
 
@@ -125,6 +126,7 @@ void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_
 	//Set the name.
 	SetName("Terrain Shadow Map");
 #endif
+*/
 }
 
 /*
@@ -132,6 +134,9 @@ void TerrainShadowMapGraphicsPipeline::Initialize(const DepthBufferHandle depth_
 */
 void TerrainShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_matrix) NOEXCEPT
 {
+	SetIncludeInRender(false);
+
+	/*
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
 
@@ -184,6 +189,7 @@ void TerrainShadowMapGraphicsPipeline::Execute(const Matrix4x4 &world_to_light_m
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+	*/
 }
 
 /*

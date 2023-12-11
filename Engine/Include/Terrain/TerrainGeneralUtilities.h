@@ -16,6 +16,6 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	void GenerateTerrainPlane(const uint32 resolution, const Texture2D<float32> &heightmap, const float32 patch_size, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT;
+	void GenerateTerrainPlane(const uint32 resolution, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT;
 
 }

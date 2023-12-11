@@ -215,7 +215,9 @@ TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial seco
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 WORLD_POSITION;
+	layout (offset = 0) vec2 WORLD_POSITION;
+	layout (offset = 8) float PATCH_SIZE;
+	layout (offset = 12) uint HEIGHT_MAP_TEXTURE_INDEX;
 	layout (offset = 16) uint NORMAL_MAP_TEXTURE_INDEX;
 	layout (offset = 20) uint INDEX_MAP_TEXTURE_INDEX;
 	layout (offset = 24) uint BLEND_MAP_TEXTURE_INDEX;
@@ -223,15 +225,16 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 32) float MAP_RESOLUTION_RECIPROCAL;
 };
 
-layout (location = 0) in vec3 InPosition;
-layout (location = 1) in vec2 InTextureCoordinate;
+layout (location = 0) in vec2 InPosition;
 
 layout (location = 0) out vec3 OutWorldPosition;
 layout (location = 1) out vec2 OutHeightMapTextureCoordinate;
 
 void main()
 {
-    OutWorldPosition = WORLD_POSITION + InPosition;
-    OutHeightMapTextureCoordinate = InTextureCoordinate;
+    OutWorldPosition.x = WORLD_POSITION.x + mix(InPosition.x - (PATCH_SIZE * 0.5f), InPosition.x + (PATCH_SIZE * 0.5f), InPosition.x);
+    OutWorldPosition.y = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), InPosition).x;
+    OutWorldPosition.z = WORLD_POSITION.y + mix(InPosition.y - (PATCH_SIZE * 0.5f), InPosition.y + (PATCH_SIZE * 0.5f), InPosition.y);
+    OutHeightMapTextureCoordinate = InPosition;
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

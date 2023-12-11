@@ -217,7 +217,9 @@ TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial seco
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 WORLD_POSITION;
+	layout (offset = 0) vec2 WORLD_POSITION;
+	layout (offset = 8) float PATCH_SIZE;
+	layout (offset = 12) uint HEIGHT_MAP_TEXTURE_INDEX;
 	layout (offset = 16) uint NORMAL_MAP_TEXTURE_INDEX;
 	layout (offset = 20) uint INDEX_MAP_TEXTURE_INDEX;
 	layout (offset = 24) uint BLEND_MAP_TEXTURE_INDEX;
