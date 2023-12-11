@@ -11,7 +11,6 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/EditorSelectedModelGraphicsPipeline.h>
 #endif
 #include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedImpostorColorSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedImpostorDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/OpaqueModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/ComputePipelines/ParticleSystemComputePipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.h>
@@ -39,17 +38,15 @@ private:
 	ParticleSystemComputePipeline _ParticleSystemComputePipeline;
 
 	//The graphics render pipelines 1.
-	StaticArray<GraphicsRenderPipeline, 5> _GraphicsRenderPipelines1
+	StaticArray<GraphicsRenderPipeline, 6> _GraphicsRenderPipelines1
 	{
 		GraphicsRenderPipeline(HashString("Clear_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelDepthSingleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelDepthDoubleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("InstancedModelDepthSingleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("InstancedModelDepthDoubleSided_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("InstancedModelDepthDoubleSided_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("InstancedImpostorDepth_RenderPipeline"))
 	};
-
-	//The instanced impostor depth scene features graphics pipeline.
-	InstancedImpostorDepthSceneFeaturesGraphicsPipeline _InstancedImpostorDepthSceneFeaturesGraphicsPipeline;
 
 	//The particle system masked depth graphics pipeline.
 	ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline _ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline;
@@ -63,11 +60,11 @@ private:
 		GraphicsRenderPipeline(HashString("InstancedModelColorDoubleSided_RenderPipeline"))
 	};
 
-	//The particle system masked color graphics pipeline.
-	ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline _ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline;
-
 	//The instanced impostor color scene features graphics pipeline.
 	InstancedImpostorColorSceneFeaturesGraphicsPipeline _InstancedImpostorColorSceneFeaturesGraphicsPipeline;
+
+	//The particle system masked color graphics pipeline.
+	ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline _ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline;
 
 	//The terrain scene features graphics pipeline.
 	TerrainSceneFeaturesGraphicsPipeline _TerrainSceneFeaturesGraphicsPipeline;

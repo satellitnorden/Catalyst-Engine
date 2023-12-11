@@ -68,7 +68,8 @@ void TerrainEntity::Preprocess(EntityInitializationData* const RESTRICT data) NO
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
 
-	TerrainGeneralUtilities::GenerateTerrainPlane(	terrain_initialization_data->_HeightMap,
+	TerrainGeneralUtilities::GenerateTerrainPlane(	terrain_initialization_data->_BaseResolution,
+													terrain_initialization_data->_HeightMap,
 													static_cast<float32>(terrain_initialization_data->_PatchSize),
 													&vertices,
 													&indices);
@@ -159,6 +160,8 @@ void TerrainEntity::Initialize(EntityInitializationData *const RESTRICT data) NO
 	general_component._NormalMap = std::move(terrain_initialization_data->_NormalMap);
 	general_component._IndexMap = std::move(terrain_initialization_data->_IndexMap);
 	general_component._BlendMap = std::move(terrain_initialization_data->_BlendMap);
+	general_component._BaseResolution = terrain_initialization_data->_BaseResolution;
+	general_component._MaximumSubdivisionSteps = terrain_initialization_data->_MaximumSubdivisionSteps;
 
 	render_component._Buffer = terrain_initialization_data->_PreprocessedData._Buffer;
 	render_component._IndexOffset = terrain_initialization_data->_PreprocessedData._IndexOffset;

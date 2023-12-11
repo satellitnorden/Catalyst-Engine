@@ -57,7 +57,13 @@ public:
 		*	For each entry:
 		*	Should just draw with '_VertexCount' amount of vertices, without binding any buffers.
 		*/
-		DRAW_NO_BUFFER,
+		DRAW,
+
+		/*
+		*	For each entry:
+		*	Should just draw with '_VertexCount' amount of vertices, with '_InstanceCount' instances using '_InstanceBuffer'.
+		*/
+		DRAW_INSTANCED,
 
 		/*
 		*	For each entry:

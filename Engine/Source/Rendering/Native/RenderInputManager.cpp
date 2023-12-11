@@ -33,6 +33,20 @@ struct InstancedModelPushConstantData
 	uint32 _MaterialIndex;
 };
 
+struct InstancedImpostorPushConstantData
+{
+	Vector3<float32> _WorldGridDelta;
+	Padding<4> _Padding;
+	float32 _HalfWidth;
+	float32 _WholeWidth;
+	float32 _Height;
+	uint32 _MaterialIndex;
+	float32 _StartFadeInDistance;
+	float32 _EndFadeInDistance;
+	float32 _StartFadeOutDistance;
+	float32 _EndFadeOutDistance;
+};
+
 /*
 *	Initializes the render input manager.
 */
@@ -59,7 +73,7 @@ void RenderInputManager::Initialize() NOEXCEPT
 				new_entry._IndexCount = 0;
 			}
 		},
-		RenderInputStream::Mode::DRAW_NO_BUFFER,
+		RenderInputStream::Mode::DRAW,
 		nullptr
 	);
 
@@ -137,27 +151,27 @@ void RenderInputManager::Initialize() NOEXCEPT
 	//Register instanced model input streams.
 	{
 		//Set up the required vertex input attribute/binding descriptions for models.
-		DynamicArray<VertexInputAttributeDescription> models_required_vertex_input_attribute_descriptions;
+		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
 
-		models_required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Position)));
-		models_required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Normal)));
-		models_required_vertex_input_attribute_descriptions.Emplace(2, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Tangent)));
-		models_required_vertex_input_attribute_descriptions.Emplace(3, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(Vertex, _TextureCoordinate)));
-		models_required_vertex_input_attribute_descriptions.Emplace(4, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 0));
-		models_required_vertex_input_attribute_descriptions.Emplace(5, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 1));
-		models_required_vertex_input_attribute_descriptions.Emplace(6, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 2));
-		models_required_vertex_input_attribute_descriptions.Emplace(7, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 3));
+		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Position)));
+		required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Normal)));
+		required_vertex_input_attribute_descriptions.Emplace(2, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Tangent)));
+		required_vertex_input_attribute_descriptions.Emplace(3, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(Vertex, _TextureCoordinate)));
+		required_vertex_input_attribute_descriptions.Emplace(4, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 0));
+		required_vertex_input_attribute_descriptions.Emplace(5, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 1));
+		required_vertex_input_attribute_descriptions.Emplace(6, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 2));
+		required_vertex_input_attribute_descriptions.Emplace(7, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 3));
 
-		DynamicArray<VertexInputBindingDescription> models_required_vertex_input_binding_descriptions;
+		DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
 
-		models_required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
-		models_required_vertex_input_binding_descriptions.Emplace(1, static_cast<uint32>(sizeof(Matrix4x4)), VertexInputBindingDescription::InputRate::Instance);
+		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
+		required_vertex_input_binding_descriptions.Emplace(1, static_cast<uint32>(sizeof(Matrix4x4)), VertexInputBindingDescription::InputRate::Instance);
 
 		RegisterInputStream
 		(
 			HashString("SingleSidedInstancedModel"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
+			required_vertex_input_attribute_descriptions,
+			required_vertex_input_binding_descriptions,
 			sizeof(InstancedModelPushConstantData),
 			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
 			{
@@ -170,14 +184,40 @@ void RenderInputManager::Initialize() NOEXCEPT
 		RegisterInputStream
 		(
 			HashString("DoubleSidedInstancedModel"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
+			required_vertex_input_attribute_descriptions,
+			required_vertex_input_binding_descriptions,
 			sizeof(InstancedModelPushConstantData),
 			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
 			{
 				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherInstancedModelInputStream(true, input_stream);
 			},
 			RenderInputStream::Mode::DRAW_INDEXED_INSTANCED,
+			this
+		);
+	}
+
+	//Register the instanced impostor input stream.
+	{
+		//Set up the required vertex input attribute/binding descriptions for models.
+		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
+
+		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, 0);
+
+		DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
+
+		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vector3<float32>)), VertexInputBindingDescription::InputRate::Instance);
+		
+		RegisterInputStream
+		(
+			HashString("InstancedImpostor"),
+			required_vertex_input_attribute_descriptions,
+			required_vertex_input_binding_descriptions,
+			sizeof(InstancedImpostorPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherInstancedImpostorInputStream(input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INSTANCED,
 			this
 		);
 	}
@@ -536,7 +576,7 @@ void RenderInputManager::GatherFullModelInputStream
 }
 
 /*
-*	Gathers a instanced model input stream.
+*	Gathers an instanced model input stream.
 */
 void RenderInputManager::GatherInstancedModelInputStream
 (
@@ -620,6 +660,67 @@ void RenderInputManager::GatherInstancedModelInputStream
 				{
 					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
 				}
+			}
+		}
+	}
+}
+
+/*
+*	Gathers an instanced impostor input stream.
+*/
+void RenderInputManager::GatherInstancedImpostorInputStream
+(
+	RenderInputStream* const RESTRICT input_stream
+) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Gather instanced static impostors.
+	{
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfInstancedImpostorComponents() };
+		const InstancedImpostorComponent *RESTRICT component{ ComponentManager::GetInstancedImpostorInstancedImpostorComponents() };
+	
+		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		{
+			//Add a new entry.
+			input_stream->_Entries.Emplace();
+			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+			new_entry._VertexBuffer = EMPTY_HANDLE;
+			new_entry._IndexBuffer = EMPTY_HANDLE;
+			new_entry._InstanceBuffer = component->_TransformationsBuffer;
+			new_entry._VertexCount = 4;
+			new_entry._IndexCount = 0;
+			new_entry._InstanceCount = component->_NumberOfTransformations;
+
+			//Set up the push constant data.
+			InstancedImpostorPushConstantData push_constant_data;
+
+			const Vector3<int32> delta{ component->_Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
+
+			for (uint8 i{ 0 }; i < 3; ++i)
+			{
+				push_constant_data._WorldGridDelta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
+			}
+
+			push_constant_data._HalfWidth = component->_Dimensions._X * 0.5f;
+			push_constant_data._WholeWidth = component->_Dimensions._X;
+			push_constant_data._Height = component->_Dimensions._Y;
+			push_constant_data._MaterialIndex = component->_MaterialResource->_Index;
+			push_constant_data._StartFadeInDistance = component->_StartFadeInDistance;
+			push_constant_data._EndFadeInDistance = component->_EndFadeInDistance;
+			push_constant_data._StartFadeOutDistance = component->_StartFadeOutDistance;
+			push_constant_data._EndFadeOutDistance = component->_EndFadeOutDistance;
+
+			for (uint64 i{ 0 }; i < sizeof(InstancedImpostorPushConstantData); ++i)
+			{
+				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
 			}
 		}
 	}

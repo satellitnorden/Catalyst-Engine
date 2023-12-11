@@ -1169,28 +1169,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedImpostorDepthSceneFeaturesFragmentShader";
-		parameters._ID = "InstancedImpostorDepthSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedImpostorDepthSceneFeaturesFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedImpostorDepthSceneFeaturesVertexShader";
-		parameters._ID = "InstancedImpostorDepthSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedImpostorDepthSceneFeaturesVertexShader.vert";
-		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedOpaqueModelShadowsFragmentShader";
 		parameters._ID = "InstancedOpaqueModelShadowsFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsFragmentShader.frag";

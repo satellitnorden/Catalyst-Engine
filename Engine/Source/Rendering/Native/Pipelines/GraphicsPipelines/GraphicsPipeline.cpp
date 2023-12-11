@@ -41,12 +41,33 @@ void GraphicsPipeline::ProcessInputStream(const RenderInputStream &input_stream,
 
 	switch (input_stream._Mode)
 	{
-		case RenderInputStream::Mode::DRAW_NO_BUFFER:
+		case RenderInputStream::Mode::DRAW:
 		{
 			for (const RenderInputStreamEntry &entry : input_stream._Entries)
 			{
 				//Draw!
 				command_buffer->Draw(this, entry._VertexCount, 1);
+			}
+
+			break;
+		}
+
+		case RenderInputStream::Mode::DRAW_INSTANCED:
+		{
+			for (const RenderInputStreamEntry &entry : input_stream._Entries)
+			{
+				command_buffer->PushConstants
+				(
+					this,
+					ShaderStage::VERTEX | ShaderStage::FRAGMENT,
+					0,
+					static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
+					&input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
+				);
+
+				command_buffer->BindVertexBuffer(this, 0, entry._InstanceBuffer, &OFFSET);
+
+				command_buffer->Draw(this, entry._VertexCount, entry._InstanceCount);
 			}
 
 			break;

@@ -69,11 +69,19 @@ private:
 	) NOEXCEPT;
 
 	/*
-	*	Gathers a instanced model input stream.
+	*	Gathers an instanced model input stream.
 	*/
 	void GatherInstancedModelInputStream
 	(
 		const bool double_sided,
+		RenderInputStream *const RESTRICT input_stream
+	) NOEXCEPT;
+
+	/*
+	*	Gathers an instanced impostor input stream.
+	*/
+	void GatherInstancedImpostorInputStream
+	(
 		RenderInputStream *const RESTRICT input_stream
 	) NOEXCEPT;
 

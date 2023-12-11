@@ -59,7 +59,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
-	AddPipeline(&_InstancedImpostorDepthSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline);
 
 	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
@@ -67,8 +66,8 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
-	AddPipeline(&_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_InstancedImpostorColorSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline);
 
 	AddPipeline(&_TerrainSceneFeaturesGraphicsPipeline);
 
@@ -92,7 +91,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		pipeline.Initialize();
 	}
 
-	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 
 	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
@@ -100,8 +98,8 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		pipeline.Initialize();
 	}
 	
-	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_TerrainSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_OpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), false);
 	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true);
@@ -126,7 +124,6 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 		pipeline.Execute();
 	}
 
-	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Execute();
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
 
 	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
@@ -163,7 +160,6 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 	}
 
 	_ParticleSystemComputePipeline.Terminate();
-	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Terminate();
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Terminate();
 
 	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)

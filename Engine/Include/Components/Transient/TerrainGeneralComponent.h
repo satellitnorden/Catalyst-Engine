@@ -36,4 +36,10 @@ public:
 	//The blend map.
 	Texture2D<Vector4<float32>> _BlendMap;
 
+	//The base resolution.
+	uint32 _BaseResolution;
+
+	//The maximum subdivision steps.
+	uint8 _MaximumSubdivisionSteps;
+
 };
