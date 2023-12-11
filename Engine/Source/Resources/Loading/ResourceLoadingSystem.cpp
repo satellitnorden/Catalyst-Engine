@@ -386,6 +386,9 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 	file->Read(&data->_BlendAlphaDestinationFactor, sizeof(BlendFactor));
 	file->Read(&data->_BlendAlphaOperator, sizeof(BlendOperator));
 
+	//Read the cull mode.
+	file->Read(&data->_CullMode, sizeof(CullMode));
+
 	//Read the depth/stencil properties.
 	file->Read(&data->_DepthTestEnabled, sizeof(bool));
 	file->Read(&data->_DepthWriteEnabled, sizeof(bool));
@@ -398,6 +401,33 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 	file->Read(&data->_StencilCompareMask, sizeof(uint32));
 	file->Read(&data->_StencilWriteMask, sizeof(uint32));
 	file->Read(&data->_StencilReferenceMask, sizeof(uint32));
+
+	//Read the topology.
+	file->Read(&data->_Topology, sizeof(Topology));
+
+	//Read the sampler properties.
+	{
+		uint64 number_of_sampler_properties{ 0 };
+		file->Read(&number_of_sampler_properties, sizeof(uint64));
+
+		if (number_of_sampler_properties > 0)
+		{
+			data->_SamplerProperties.Upsize<false>(number_of_sampler_properties);
+			file->Read(data->_SamplerProperties.Data(), sizeof(SamplerProperties) * number_of_sampler_properties);
+		}
+	}
+
+	//Read the input stream subscriptions.
+	{
+		uint64 number_of_input_stream_subscriptions{ 0 };
+		file->Read(&number_of_input_stream_subscriptions, sizeof(uint64));
+
+		if (number_of_input_stream_subscriptions > 0)
+		{
+			data->_InputStreamSubscriptions.Upsize<false>(number_of_input_stream_subscriptions);
+			file->Read(data->_InputStreamSubscriptions.Data(), sizeof(HashString) * number_of_input_stream_subscriptions);
+		}
+	}
 }
 
 /*

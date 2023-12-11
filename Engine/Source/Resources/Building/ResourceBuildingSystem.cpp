@@ -828,6 +828,9 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 	output_file.Write(&parameters._BlendAlphaDestinationFactor, sizeof(BlendFactor));
 	output_file.Write(&parameters._BlendAlphaOperator, sizeof(BlendOperator));
 
+	//Write the cull mode.
+	output_file.Write(&parameters._CullMode, sizeof(CullMode));
+
 	//Write the depth/stencil properties.
 	output_file.Write(&parameters._DepthTestEnabled, sizeof(bool));
 	output_file.Write(&parameters._DepthWriteEnabled, sizeof(bool));
@@ -840,6 +843,31 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 	output_file.Write(&parameters._StencilCompareMask, sizeof(uint32));
 	output_file.Write(&parameters._StencilWriteMask, sizeof(uint32));
 	output_file.Write(&parameters._StencilReferenceMask, sizeof(uint32));
+
+	//Write the topology.
+	output_file.Write(&parameters._Topology, sizeof(Topology));
+
+	//Write the sampler properties.
+	{
+		const uint64 number_of_sampler_properties{ parameters._SamplerProperties.Size() };
+		output_file.Write(&number_of_sampler_properties, sizeof(uint64));
+
+		if (!parameters._SamplerProperties.Empty())
+		{
+			output_file.Write(parameters._SamplerProperties.Data(), sizeof(SamplerProperties) * parameters._SamplerProperties.Size());
+		}
+	}
+
+	//Write the input stream subscriptions.
+	{
+		const uint64 number_of_input_stream_subscriptions{ parameters._InputStreamSubscriptions.Size() };
+		output_file.Write(&number_of_input_stream_subscriptions, sizeof(uint64));
+
+		if (!parameters._InputStreamSubscriptions.Empty())
+		{
+			output_file.Write(parameters._InputStreamSubscriptions.Data(), sizeof(HashString)* parameters._InputStreamSubscriptions.Size());
+		}
+	}
 
 	//Close the output file.
 	output_file.Close();

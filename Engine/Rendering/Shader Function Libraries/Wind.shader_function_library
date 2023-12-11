@@ -1,0 +1,27 @@
+/*
+*	Calculates wind displacement.
+*	Requires the Wind uniform buffer to be bound.
+*/
+vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
+{
+	//Calculate the displacement.
+	vec3 displacement = vec3(0.0f, 0.0f, 0.0f);
+
+	//Add large scale motion.
+	displacement.x += (sin(world_position.x + WIND_TIME) + 0.125f) * WIND_DIRECTION_SPEED.x * WIND_DIRECTION_SPEED.w;
+	displacement.z += (cos(world_position.z + WIND_TIME) + 0.125f) * WIND_DIRECTION_SPEED.z * WIND_DIRECTION_SPEED.w;
+
+	//Add medium scale motion.
+	displacement.x += (sin((world_position.x + WIND_TIME) * 2.0f) + 0.25f) * WIND_DIRECTION_SPEED.x * WIND_DIRECTION_SPEED.w * 0.5f;
+	displacement.z += (cos((world_position.z + WIND_TIME) * 2.0f) + 0.25f) * WIND_DIRECTION_SPEED.z * WIND_DIRECTION_SPEED.w * 0.5f;
+
+	//Add small scale motion.
+	displacement.x += (sin((world_position.x + WIND_TIME) * 4.0f) + 0.375f) * WIND_DIRECTION_SPEED.x * WIND_DIRECTION_SPEED.w * 0.25f;
+	displacement.z += (cos((world_position.z + WIND_TIME) * 4.0f) + 0.375f) * WIND_DIRECTION_SPEED.z * WIND_DIRECTION_SPEED.w * 0.25f;
+
+	//Modify the displacement so it doesn't affect the bottom of the mesh.
+	displacement *= max(vertex_position.y * 0.125f, 0.0f);
+
+	//Return the displacement.
+	return displacement;
+}

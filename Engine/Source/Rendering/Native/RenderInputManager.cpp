@@ -1,0 +1,626 @@
+//Header file.
+#include <Rendering/Native/RenderInputManager.h>
+
+//Components.
+#include <Components/Core/ComponentManager.h>
+
+//Systems.
+#include <Systems/CullingSystem.h>
+#include <Systems/LevelOfDetailSystem.h>
+#include <Systems/WorldSystem.h>
+
+//Push constant data struct definitions.
+struct ModelDepthPushConstantData
+{
+	Matrix4x4 _ModelMatrix;
+	uint32 _MaterialIndex;
+};
+
+struct ModelFullPushConstantData
+{
+	Matrix4x4 _PreviousModelMatrix;
+	Matrix4x4 _CurrentModelMatrix;
+	uint32 _MaterialIndex;
+};
+
+struct InstancedModelPushConstantData
+{
+	Vector3<float32> _WorldGridDelta;
+	Padding<4> _Padding;
+	uint32 _ModelFlags;
+	float32 _StartFadeOutDistanceSquared;
+	float32 _EndFadeOutDistanceSquared;
+	uint32 _MaterialIndex;
+};
+
+/*
+*	Initializes the render input manager.
+*/
+void RenderInputManager::Initialize() NOEXCEPT
+{
+	//Register the "Viewport" input stream.
+	RegisterInputStream
+	(
+		HashString("Viewport"),
+		DynamicArray< VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		0,
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			if (input_stream->_Entries.Empty())
+			{
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._VertexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 3;
+				new_entry._IndexCount = 0;
+			}
+		},
+		RenderInputStream::Mode::DRAW_NO_BUFFER,
+		nullptr
+	);
+
+	//Register model input streams.
+	{
+		//Set up the required vertex input attribute/binding descriptions for models.
+		DynamicArray<VertexInputAttributeDescription> models_required_vertex_input_attribute_descriptions;
+
+		models_required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Position)));
+		models_required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Normal)));
+		models_required_vertex_input_attribute_descriptions.Emplace(2, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Tangent)));
+		models_required_vertex_input_attribute_descriptions.Emplace(3, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(Vertex, _TextureCoordinate)));
+
+		DynamicArray<VertexInputBindingDescription> models_required_vertex_input_binding_descriptions;
+		
+		models_required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
+
+		RegisterInputStream
+		(
+			HashString("MaskedSingleSidedModelsDepth"),
+			models_required_vertex_input_attribute_descriptions,
+			models_required_vertex_input_binding_descriptions,
+			sizeof(ModelDepthPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherDepthModelInputStream(MaterialResource::Type::MASKED, false, input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED,
+			this
+		);
+
+		RegisterInputStream
+		(
+			HashString("MaskedDoubleSidedModelsDepth"),
+			models_required_vertex_input_attribute_descriptions,
+			models_required_vertex_input_binding_descriptions,
+			sizeof(ModelDepthPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager* const RESTRICT>(user_data)->GatherDepthModelInputStream(MaterialResource::Type::MASKED, true, input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED,
+			this
+		);
+
+		RegisterInputStream
+		(
+			HashString("MaskedSingleSidedModelsFull"),
+			models_required_vertex_input_attribute_descriptions,
+			models_required_vertex_input_binding_descriptions,
+			sizeof(ModelFullPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialResource::Type::MASKED, false, input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED,
+			this
+		);
+
+		RegisterInputStream
+		(
+			HashString("MaskedDoubleSidedModelsFull"),
+			models_required_vertex_input_attribute_descriptions,
+			models_required_vertex_input_binding_descriptions,
+			sizeof(ModelFullPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialResource::Type::MASKED, true, input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED,
+			this
+		);
+	}
+
+	//Register instanced model input streams.
+	{
+		//Set up the required vertex input attribute/binding descriptions for models.
+		DynamicArray<VertexInputAttributeDescription> models_required_vertex_input_attribute_descriptions;
+
+		models_required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Position)));
+		models_required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Normal)));
+		models_required_vertex_input_attribute_descriptions.Emplace(2, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Tangent)));
+		models_required_vertex_input_attribute_descriptions.Emplace(3, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(Vertex, _TextureCoordinate)));
+		models_required_vertex_input_attribute_descriptions.Emplace(4, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 0));
+		models_required_vertex_input_attribute_descriptions.Emplace(5, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 1));
+		models_required_vertex_input_attribute_descriptions.Emplace(6, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 2));
+		models_required_vertex_input_attribute_descriptions.Emplace(7, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 3));
+
+		DynamicArray<VertexInputBindingDescription> models_required_vertex_input_binding_descriptions;
+
+		models_required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
+		models_required_vertex_input_binding_descriptions.Emplace(1, static_cast<uint32>(sizeof(Matrix4x4)), VertexInputBindingDescription::InputRate::Instance);
+
+		RegisterInputStream
+		(
+			HashString("SingleSidedInstancedModel"),
+			models_required_vertex_input_attribute_descriptions,
+			models_required_vertex_input_binding_descriptions,
+			sizeof(InstancedModelPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherInstancedModelInputStream(false, input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED_INSTANCED,
+			this
+		);
+
+		RegisterInputStream
+		(
+			HashString("DoubleSidedInstancedModel"),
+			models_required_vertex_input_attribute_descriptions,
+			models_required_vertex_input_binding_descriptions,
+			sizeof(InstancedModelPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherInstancedModelInputStream(true, input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED_INSTANCED,
+			this
+		);
+	}
+}
+
+/*
+*	Updates the render input manager during the render update phase.
+*/
+void RenderInputManager::RenderUpdate() NOEXCEPT
+{
+	//Run all gather functions.
+	for (RenderInputStream &input_stream : _InputStreams)
+	{
+		input_stream._GatherFunction(input_stream._UserData, &input_stream);
+	}
+}
+
+/*
+*	Registers an input stream.
+*/
+void RenderInputManager::RegisterInputStream
+(
+	const HashString identifier,
+	const DynamicArray<VertexInputAttributeDescription> &requited_vertex_input_attribute_descriptions,
+	const DynamicArray<VertexInputBindingDescription> &required_vertex_input_binding_descriptions,
+	const uint64 required_push_constant_data_size,
+	const RenderInputStreamGatherFunction gather_function,
+	const RenderInputStream::Mode mode,
+	void *const RESTRICT user_data
+) NOEXCEPT
+{
+	//Add the new input stream.
+	_InputStreams.Emplace();
+	RenderInputStream &new_input_stream{ _InputStreams.Back() };
+
+	new_input_stream._Identifier = identifier;
+	new_input_stream._RequiredVertexInputAttributeDescriptions = requited_vertex_input_attribute_descriptions;
+	new_input_stream._RequiredVertexInputBindingDescriptions = required_vertex_input_binding_descriptions;
+	new_input_stream._RequiredPushConstantDataSize = required_push_constant_data_size;
+	new_input_stream._GatherFunction = gather_function;
+	new_input_stream._Mode = mode;
+	new_input_stream._UserData = user_data;
+}
+
+/*
+*	Returns the input stream with the given identifier.
+*/
+NO_DISCARD const RenderInputStream &RenderInputManager::GetInputStream(const HashString identifier) NOEXCEPT
+{
+	for (const RenderInputStream &input_stream : _InputStreams)
+	{
+		if (input_stream._Identifier == identifier)
+		{
+			return input_stream;
+		}
+	}
+
+	ASSERT(false, "Couldn't find input stream!");
+
+	return RenderInputStream();
+}
+
+/*
+*	Gathers a depth model input stream.
+*/
+void RenderInputManager::GatherDepthModelInputStream
+(
+	const MaterialResource::Type material_type,
+	const bool double_sided,
+	RenderInputStream *const RESTRICT input_stream
+) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Gather static models.
+	{
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+		//Wait for culling.
+		CullingSystem::Instance->WaitForStaticModelsCulling();
+
+		//Wait for static models level of detail to finish.
+		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
+
+		//Go through all components.
+		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		{
+			//Skip this model if it's not visible.
+			if (!component->_Visibility)
+			{
+				continue;
+			}
+
+			//Go through all meshes.
+			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
+			{
+				//Skip this mesh depending on the material type.
+				if (component->_MaterialResources[i]->_Type != material_type)
+				{
+					continue;
+				}
+
+				//Skip this mesh depending on double sided-ness.
+				if (component->_MaterialResources[i]->_DoubleSided != double_sided)
+				{
+					continue;
+				}
+
+				//Cache the mesh.
+				const Mesh &mesh{ component->_ModelResource->_Meshes[i] };
+
+				//Add a new entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
+				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 0;
+				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
+				new_entry._InstanceCount = 0;
+
+				//Set up the push constant data.
+				ModelDepthPushConstantData push_constant_data;
+
+				push_constant_data._ModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
+
+				for (uint64 i{ 0 }; i < sizeof(ModelDepthPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			}
+		}
+	}
+
+	//Gather dynamic models.
+	{
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+		//Wait for culling.
+		CullingSystem::Instance->WaitForDynamicModelsCulling();
+
+		//Wait for dynamic models level of detail to finish.
+		LevelOfDetailSystem::Instance->WaitForDynamicModelsLevelOfDetail();
+
+		//Go through all components.
+		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		{
+			//Skip this model if it's not visible.
+			if (!component->_Visibility)
+			{
+				continue;
+			}
+
+			//Go through all meshes.
+			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
+			{
+				//Skip this mesh depending on the material type.
+				if (component->_MaterialResources[i]->_Type != material_type)
+				{
+					continue;
+				}
+
+				//Skip this mesh depending on double sided-ness.
+				if (component->_MaterialResources[i]->_DoubleSided != double_sided)
+				{
+					continue;
+				}
+
+				//Cache the mesh.
+				const Mesh &mesh{ component->_ModelResource->_Meshes[i] };
+
+				//Add a new entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
+				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 0;
+				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
+				new_entry._InstanceCount = 0;
+
+				//Set up the push constant data.
+				ModelDepthPushConstantData push_constant_data;
+
+				push_constant_data._ModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
+
+				for (uint64 i{ 0 }; i < sizeof(ModelDepthPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			}
+		}
+	}
+}
+
+/*
+*	Gathers a full model input stream.
+*/
+void RenderInputManager::GatherFullModelInputStream
+(
+	const MaterialResource::Type material_type,
+	const bool double_sided,
+	RenderInputStream *const RESTRICT input_stream
+) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Gather static models.
+	{
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
+		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
+
+		//Wait for culling.
+		CullingSystem::Instance->WaitForStaticModelsCulling();
+
+		//Wait for static models level of detail to finish.
+		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
+
+		//Go through all components.
+		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		{
+			//Skip this model if it's not visible.
+			if (!component->_Visibility)
+			{
+				continue;
+			}
+
+			//Go through all meshes.
+			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
+			{
+				//Skip this mesh depending on the material type.
+				if (component->_MaterialResources[i]->_Type != material_type)
+				{
+					continue;
+				}
+
+				//Skip this mesh depending on double sided-ness.
+				if (component->_MaterialResources[i]->_DoubleSided != double_sided)
+				{
+					continue;
+				}
+
+				//Cache the mesh.
+				const Mesh &mesh{ component->_ModelResource->_Meshes[i] };
+
+				//Add a new entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
+				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 0;
+				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
+				new_entry._InstanceCount = 0;
+
+				//Set up the push constant data.
+				ModelFullPushConstantData push_constant_data;
+
+				push_constant_data._PreviousModelMatrix = push_constant_data._CurrentModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
+
+				for (uint64 i{ 0 }; i < sizeof(ModelFullPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			}
+		}
+	}
+
+	//Gather dynamic models.
+	{
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
+		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
+
+		//Wait for culling.
+		CullingSystem::Instance->WaitForDynamicModelsCulling();
+
+		//Wait for dynamic models level of detail to finish.
+		LevelOfDetailSystem::Instance->WaitForDynamicModelsLevelOfDetail();
+
+		//Go through all components.
+		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		{
+			//Skip this model if it's not visible.
+			if (!component->_Visibility)
+			{
+				continue;
+			}
+
+			//Go through all meshes.
+			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
+			{
+				//Skip this mesh depending on the material type.
+				if (component->_MaterialResources[i]->_Type != material_type)
+				{
+					continue;
+				}
+
+				//Skip this mesh depending on double sided-ness.
+				if (component->_MaterialResources[i]->_DoubleSided != double_sided)
+				{
+					continue;
+				}
+
+				//Cache the mesh.
+				const Mesh &mesh{ component->_ModelResource->_Meshes[i] };
+
+				//Add a new entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
+				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 0;
+				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
+				new_entry._InstanceCount = 0;
+
+				//Set up the push constant data.
+				ModelFullPushConstantData push_constant_data;
+
+				push_constant_data._PreviousModelMatrix = component->_PreviousWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				push_constant_data._CurrentModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
+
+				for (uint64 i{ 0 }; i < sizeof(ModelFullPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			}
+		}
+	}
+}
+
+/*
+*	Gathers a instanced model input stream.
+*/
+void RenderInputManager::GatherInstancedModelInputStream
+(
+	const bool double_sided,
+	RenderInputStream *const RESTRICT input_stream
+) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Gather instanced static models.
+	{
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfInstancedStaticModelComponents() };
+		const InstancedStaticModelComponent *RESTRICT component{ ComponentManager::GetInstancedStaticModelInstancedStaticModelComponents() };
+
+		//Wait for culling to finish.
+		CullingSystem::Instance->WaitForInstancedStaticModelsCulling();
+
+		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		{
+			//Skip if not visible.
+			if (!component->_Visibility)
+			{
+				continue;
+			}
+
+			//Draw all meshes.
+			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
+			{
+				//Skip this mesh depending on the double-sidedness.
+				if (component->_MaterialResources[i]->_DoubleSided != double_sided)
+				{
+					continue;
+				}
+
+				//Cache the mesh.
+				const Mesh &mesh{ component->_ModelResource->_Meshes[i] };
+
+				//Add a new entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[0]._VertexBuffer;
+				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[0]._IndexBuffer;
+				new_entry._InstanceBuffer = component->_TransformationsBuffer;
+				new_entry._VertexCount = 0;
+				new_entry._IndexCount = mesh._MeshLevelOfDetails[0]._IndexCount;
+				new_entry._InstanceCount = component->_NumberOfTransformations;
+
+				//Set up the push constant data.
+				InstancedModelPushConstantData push_constant_data;
+
+				const Vector3<int32> delta{ component->_Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
+
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					push_constant_data._WorldGridDelta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
+				}
+
+				push_constant_data._ModelFlags = static_cast<uint32>(component->_ModelFlags);
+
+				if (component->_ModelFadeData.Valid())
+				{
+					push_constant_data._StartFadeOutDistanceSquared = component->_ModelFadeData.Get()._StartFadeOutDistance * component->_ModelFadeData.Get()._StartFadeOutDistance;
+					push_constant_data._EndFadeOutDistanceSquared = component->_ModelFadeData.Get()._EndFadeOutDistance * component->_ModelFadeData.Get()._EndFadeOutDistance;
+				}
+
+				else
+				{
+					push_constant_data._StartFadeOutDistanceSquared = push_constant_data._EndFadeOutDistanceSquared = FLOAT32_MAXIMUM;
+				}
+
+				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
+
+				for (uint64 i{ 0 }; i < sizeof(InstancedModelPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			}
+		}
+	}
+}

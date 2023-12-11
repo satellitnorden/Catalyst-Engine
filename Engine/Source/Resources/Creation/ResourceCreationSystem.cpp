@@ -354,6 +354,9 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 	resource->_BlendAlphaDestinationFactor = data->_BlendAlphaDestinationFactor;
 	resource->_BlendAlphaOperator = data->_BlendAlphaOperator;
 
+	//Copy the cull mode.
+	resource->_CullMode = data->_CullMode;
+
 	//Copy the depth/stencil properties.
 	resource->_DepthTestEnabled = data->_DepthTestEnabled;
 	resource->_DepthWriteEnabled = data->_DepthWriteEnabled;
@@ -366,6 +369,15 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 	resource->_StencilCompareMask = data->_StencilCompareMask;
 	resource->_StencilWriteMask = data->_StencilWriteMask;
 	resource->_StencilReferenceMask = data->_StencilReferenceMask;
+
+	//Copy the topology.
+	resource->_Topology = data->_Topology;
+
+	//Copy the sampler properties.
+	resource->_SamplerProperties = std::move(data->_SamplerProperties);
+
+	//Copy the input stream subscriptions.
+	resource->_InputStreamSubscriptions = std::move(data->_InputStreamSubscriptions);
 }
 
 /*

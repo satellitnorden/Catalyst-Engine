@@ -1,11 +1,8 @@
 //Declare unifom buffer includes.
 IncludeUniformBuffer(PostProcessing);
 
-//Declare shader function library includes.
-IncludeShaderFunctionLibrary(Constants);
-
 //Declare input render targets.
-InputRenderTargets(INTERMEDIATE_RGBA_FLOAT32_1 /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+InputRenderTarget(INTERMEDIATE_RGBA_FLOAT32_1 /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
 
 //Declare output render targets.
 OutputRenderTarget(Scene);
@@ -13,6 +10,12 @@ OutputRenderTarget(Scene);
 //Set the load/store operators.
 ColorLoadOperator(DONT_CARE);
 ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
 
 //The vertex shader.
 Vertex

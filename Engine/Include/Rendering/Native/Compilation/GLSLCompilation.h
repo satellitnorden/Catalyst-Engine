@@ -2,12 +2,134 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Utilities/StringUtilities.h>
 
 //File.
 #include <File/Utilities/TextParsingUtilities.h>
 
 namespace GLSLCompilation
 {
+
+	/*
+	*	Returns the byte offset for the given type.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 GetByteOffsetForType(const char *const RESTRICT type_string) NOEXCEPT
+	{
+		if (StringUtilities::IsEqual(type_string, "mat4"))
+		{
+			return 64;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "mat4x3"))
+		{
+			return 48;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "mat3x4"))
+		{
+			return 48;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "vec4"))
+		{
+			return 16;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "vec3"))
+		{
+			return 16;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "vec2"))
+		{
+			return 8;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "float"))
+		{
+			return 4;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "uint"))
+		{
+			return 4;
+		}
+
+		ASSERT(false, "Unknown type!");
+
+		return 0;
+	}
+
+	/*
+	*	Returns the location offset for the given type.
+	*/
+	FORCE_INLINE NO_DISCARD uint32 GetLocationOffsetForType(const char *const RESTRICT type_string) NOEXCEPT
+	{
+		if (StringUtilities::IsEqual(type_string, "mat4"))
+		{
+			return 4;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "mat3"))
+		{
+			return 3;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "vec4"))
+		{
+			return 1;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "vec3"))
+		{
+			return 1;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "vec2"))
+		{
+			return 1;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "float"))
+		{
+			return 1;
+		}
+
+		if (StringUtilities::IsEqual(type_string, "uint"))
+		{
+			return 1;
+		}
+
+		ASSERT(false, "Unknown type!");
+
+		return 0;
+	}
+
+	/*
+	*	Insert the contents of a file into the given file.
+	*/
+	FORCE_INLINE void InsertFromFile
+	(
+		std::ofstream &output_file,
+		const char *const RESTRICT input_file_path
+	) NOEXCEPT
+	{
+		//Open the input file.
+		std::ifstream input_file{ input_file_path };
+
+		//Go through all the lines.
+		std::string current_line;
+
+		while (std::getline(input_file, current_line))
+		{
+			output_file << current_line << std::endl;
+		}
+
+		output_file << std::endl;
+
+		//Close the input file.
+		input_file.close();
+	}
 
 	/*
 	*	Inserts a uniform buffer definition into the given output file from the given input file.
@@ -25,7 +147,7 @@ namespace GLSLCompilation
 		//Go through all the lines.
 		bool has_parsed_first_line{ false };
 		std::string current_line;
-		uint32 current_offset{ 0 };
+		uint64 current_offset{ 0 };
 
 		while (std::getline(input_file, current_line))
 		{
@@ -38,7 +160,7 @@ namespace GLSLCompilation
 			//If this is the first line, insert the declaration.
 			if (!has_parsed_first_line)
 			{
-				output_file << "layout (std140, set = 0, binding = " << binding << ") uniform " << current_line << std::endl;
+				output_file << "layout (std140, set = 1, binding = " << binding << ") uniform " << current_line << std::endl;
 
 				has_parsed_first_line = true;
 
@@ -94,30 +216,7 @@ namespace GLSLCompilation
 				output_file << "\tlayout (offset = " << current_offset << ") " << type_string.data() << " " << name_string.data() << std::endl;
 			
 				//Update the current offset.
-				if (type_string == "mat4")
-				{
-					current_offset += 64;
-				}
-
-				else if (type_string == "vec3")
-				{
-					current_offset += 16;
-				}
-
-				else if (type_string == "vec2")
-				{
-					current_offset += 8;
-				}
-
-				else if (type_string == "float")
-				{
-					current_offset += 4;
-				}
-
-				else
-				{
-					ASSERT(false, "Unknown type!");
-				}
+				current_offset += GetByteOffsetForType(type_string.data());
 			}
 		}
 	}

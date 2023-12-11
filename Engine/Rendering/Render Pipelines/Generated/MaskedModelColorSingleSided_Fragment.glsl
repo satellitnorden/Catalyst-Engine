@@ -1,0 +1,231 @@
+#version 460
+
+layout (early_fragment_tests) in;
+
+//Constants.
+#define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
+#define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
+
+#define MATERIAL_PROPERTY_TYPE_MASKED (1 << 0)
+#define MATERIAL_PROPERTY_TYPE_OPAQUE (1 << 1)
+#define MATERIAL_PROPERTY_TYPE_TRANSLUCENT (1 << 2)
+#define MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE (1 << 3)
+#define MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE (1 << 4)
+#define MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE (1 << 5)
+#define MATERIAL_PROPERTY_OPACITY_TEXTURE (1 << 6)
+
+#define FLOAT32_MAXIMUM (3.402823466e+38F)
+#define FLOAT32_EPSILON (1.192092896e-07F)
+#define MAXIMUM_8_BIT_FLOAT (255.0f)
+#define MAXIMUM_8_BIT_UINT (255)
+
+/*
+*   Tests the bit of the specified bitfield
+*/
+#define TEST_BIT(BITFIELD, BIT) ((BITFIELD & BIT) == BIT)
+
+/*
+*	Evaluates the albedo/thickness of the given material at the given coordinate.
+*	Assumes a sampler named 'SAMPLER' has been defined.
+*/
+#define EVALUATE_ALBEDO_THICKNESS(MATERIAL, COORDINATE, ALBEDO_THICKNESS)									\
+{																											\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE))							\
+	{																										\
+		ALBEDO_THICKNESS = texture(sampler2D(TEXTURES[MATERIAL._AlbedoThickness], SAMPLER), COORDINATE);	\
+	}																										\
+																											\
+	else																									\
+	{																										\
+		ALBEDO_THICKNESS = UnpackColor(MATERIAL._AlbedoThickness);											\
+	}																										\
+}
+
+/*
+*	Evaluates the normal map/displacement of the given material at the given coordinate.
+*	Assumes a sampler named 'SAMPLER' has been defined.
+*/
+#define EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIAL, COORDINATE, NORMAL_MAP_DISPLACEMENT)									\
+{																														\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))								\
+	{																													\
+		NORMAL_MAP_DISPLACEMENT = texture(sampler2D(TEXTURES[MATERIAL._NormalMapDisplacement], SAMPLER), COORDINATE);	\
+	}																													\
+																														\
+	else																												\
+	{																													\
+		NORMAL_MAP_DISPLACEMENT = UnpackColor(MATERIAL._NormalMapDisplacement);											\
+	}																													\
+}
+
+/*
+*	Evaluates the material properties of the given material at the given coordinate.
+*	Assumes a sampler named 'SAMPLER' has been defined.
+*/
+#define EVALUATE_MATERIAL_PROPERTIES(MATERIAL, COORDINATE, MATERIAL_PROPERTIES)										\
+{																													\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))								\
+	{																												\
+		MATERIAL_PROPERTIES = texture(sampler2D(TEXTURES[MATERIAL._MaterialProperties], SAMPLER), COORDINATE);	\
+	}																												\
+																													\
+	else																											\
+	{																												\
+		MATERIAL_PROPERTIES = UnpackColor(MATERIAL._MaterialProperties);											\
+	}																												\
+}
+
+/*
+*	Evaluates the opacity of the given material at the given coordinate.
+*	Assumes a sampler named 'SAMPLER' has been defined.
+*/
+#define EVALUATE_OPACITY(MATERIAL, COORDINATE, OPACITY)										\
+{																							\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_OPACITY_TEXTURE))					\
+	{																						\
+		OPACITY = texture(sampler2D(TEXTURES[MATERIAL._Opacity], SAMPLER), COORDINATE).x;	\
+	}																						\
+																							\
+	else																					\
+	{																						\
+		OPACITY = UnpackColor(MATERIAL._Opacity).x;											\
+	}																						\
+}
+
+/*
+*	Material struct definition.
+*/
+struct Material
+{
+	uint _Properties;
+	uint _AlbedoThickness;
+	uint _NormalMapDisplacement;
+	uint _MaterialProperties;
+	uint _Opacity;
+	float _EmissiveMultiplier;
+    uint _Padding1;
+    uint _Padding2;
+};
+
+//The textures.
+layout (set = 0, binding = 0) uniform texture2D TEXTURES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
+
+//Materials.
+layout (std140, set = 0, binding = 1) uniform GlobalMaterials
+{
+    layout (offset = 0) Material MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
+};
+
+/*
+*   Returns the length of a vector with three components squared.
+*/
+float LengthSquared3(vec3 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+}
+
+/*
+*   Unpacks a color into a vec4.
+*/
+vec4 UnpackColor(uint color)
+{   
+    vec4 unpacked;
+
+    unpacked.r = float(color & MAXIMUM_8_BIT_UINT) / MAXIMUM_8_BIT_FLOAT;
+    unpacked.g = float((color >> 8) & MAXIMUM_8_BIT_UINT) / MAXIMUM_8_BIT_FLOAT;
+    unpacked.b = float((color >> 16) & MAXIMUM_8_BIT_UINT) / MAXIMUM_8_BIT_FLOAT;
+    unpacked.a = float((color >> 24) & MAXIMUM_8_BIT_UINT) / MAXIMUM_8_BIT_FLOAT;
+
+    return unpacked;
+}
+
+layout (std140, set = 1, binding = 0) uniform Camera
+{
+	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;
+	layout (offset = 64) mat4 WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
+	layout (offset = 192) mat4 INVERSE_WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 256) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;
+	layout (offset = 320) vec3 CAMERA_WORLD_POSITION;
+	layout (offset = 336) vec3 CAMERA_FORWARD_VECTOR;
+	layout (offset = 352) vec2 CURRENT_FRAME_JITTER;
+	layout (offset = 360) float NEAR_PLANE;
+	layout (offset = 364) float FAR_PLANE;
+};
+
+layout (set = 1, binding = 1) uniform sampler SAMPLER;
+
+/*
+*   Calculates the world position.
+*/
+vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position *= inverse_view_space_position_denominator;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
+
+    return world_space_position.xyz;
+}
+
+/*
+*   Returns the current screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Returns the previous screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) mat4 PREVIOUS_MODEL_MATRIX;
+	layout (offset = 64) mat4 CURRENT_MODEL_MATRIX;
+	layout (offset = 128) uint MATERIAL_INDEX;
+};
+
+layout (location = 0) in mat3 InTangentSpaceMatrix;
+layout (location = 3) in vec3 InPreviousWorldPosition;
+layout (location = 4) in vec3 InCurrentWorldPosition;
+layout (location = 5) in vec2 InTextureCoordinate;
+
+layout (location = 0) out vec4 SceneFeatures1;
+layout (location = 1) out vec4 SceneFeatures2;
+layout (location = 2) out vec4 SceneFeatures3;
+layout (location = 3) out vec4 SceneFeatures4;
+layout (location = 4) out vec4 Scene;
+
+void main()
+{
+    vec4 albedo_thickness;
+    EVALUATE_ALBEDO_THICKNESS(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, albedo_thickness);
+    vec4 normal_map_displacement;
+    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, normal_map_displacement);
+    vec4 material_properties;
+    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, material_properties);
+    vec3 shading_normal = normal_map_displacement.xyz * 2.0f - 1.0f;
+    shading_normal = InTangentSpaceMatrix * shading_normal;
+    shading_normal = normalize(shading_normal);
+    vec2 velocity = CalculateCurrentScreenCoordinate(InCurrentWorldPosition) - CalculatePreviousScreenCoordinate(InPreviousWorldPosition) - CURRENT_FRAME_JITTER;
+	SceneFeatures1 = albedo_thickness;
+	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
+	SceneFeatures3 = material_properties;
+	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
+	Scene = vec4(albedo_thickness.rgb*material_properties[3]*MATERIALS[MATERIAL_INDEX]._EmissiveMultiplier,1.0f);
+}

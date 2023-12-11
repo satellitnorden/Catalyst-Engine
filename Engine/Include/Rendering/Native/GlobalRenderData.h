@@ -60,6 +60,9 @@ public:
 	//The render data tables.
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
+	//The render data tables 2.
+	DynamicArray<RenderDataTableHandle> _RenderDataTables2;
+
 	//The dynamic uniform data buffers.
 	DynamicArray<BufferHandle> _DynamicUniformDataBuffers;
 

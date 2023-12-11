@@ -6,6 +6,9 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
+//Resources.
+#include <Resources/Core/RenderPipelineResource.h>
+
 class GraphicsRenderPipeline final : public GraphicsPipeline
 {
 
@@ -40,6 +43,9 @@ private:
 
 	//The render pipeline identifier.
 	HashString _RenderPipelineIdentifier;
+
+	//The render pipeline resource.
+	ResourcePointer<RenderPipelineResource> _RenderPipelineResource;
 
 	//Denotes if this render pipeline uses it's own render data table.
 	bool _UsesRenderDataTable;

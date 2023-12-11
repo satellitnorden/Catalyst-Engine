@@ -24,9 +24,17 @@ public:
 	uint8 _AnisotropicSamples;
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE SamplerProperties() NOEXCEPT
+	{
+
+	}
+
+	/*
 	*	Constructor taking all values as arguments.
 	*/
-	SamplerProperties(const TextureFilter initial_magnification_filter, const MipmapMode initial_mipmap_mode, const AddressMode initial_adress_mode, const uint8 initial_anisotropic_samples) NOEXCEPT
+	FORCE_INLINE SamplerProperties(const TextureFilter initial_magnification_filter, const MipmapMode initial_mipmap_mode, const AddressMode initial_adress_mode, const uint8 initial_anisotropic_samples) NOEXCEPT
 		:
 		_MagnificationFilter(initial_magnification_filter),
 		_MipmapMode(initial_mipmap_mode),

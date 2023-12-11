@@ -1,0 +1,119 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+IncludeUniformBuffer(Wind);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Model);
+IncludeShaderFunctionLibrary(Noise);
+IncludeShaderFunctionLibrary(Wind);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Set the cull mode.
+CullMode(NONE);
+
+//Set the load/store operators.
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER);
+DepthTestEnable();
+DepthWriteEnable();
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(REPLACE);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(ALWAYS);
+StencilCompareMask(0);
+StencilWriteMask(1);
+StencilReferenceMask(1);
+
+//Set the topology.
+Topology(TRIANGLE_LIST);
+
+//Declare push constant data.
+PushConstantData(vec3, WORLD_GRID_DELTA);
+PushConstantData(uint, MODEL_FLAGS);
+PushConstantData(float, START_FADE_OUT_DISTANCE_SQUARED);
+PushConstantData(float, END_FADE_OUT_DISTANCE_SQUARED);
+PushConstantData(uint, MATERIAL_INDEX);
+
+//Declare samplers.
+Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
+
+//Subscribe to input streams.
+SubscribeToInputStream(DoubleSidedInstancedModel);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec3, InPosition);
+    InputParameter(vec3, InNormal);
+    InputParameter(vec3, InTangent);
+    InputParameter(vec2, InTextureCoordinate);
+    InputParameter(mat4, InTransformation);
+
+    //Declare output parameters.
+    OutputParameter(vec2, OutTextureCoordinate);
+    OutputParameter(float, OutFadeOpacity);
+
+    //Write the texture coordinate.
+    OutTextureCoordinate = InTextureCoordinate;
+    
+    //Calculate the world position.
+    vec3 world_position = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
+
+    //Calculate the fade opacity.
+    if (START_FADE_OUT_DISTANCE_SQUARED < FLOAT32_MAXIMUM)
+	{
+		OutFadeOpacity = 1.0f - (clamp(LengthSquared3(world_position - CAMERA_WORLD_POSITION) - START_FADE_OUT_DISTANCE_SQUARED, 0.0f, END_FADE_OUT_DISTANCE_SQUARED - START_FADE_OUT_DISTANCE_SQUARED) / (END_FADE_OUT_DISTANCE_SQUARED - START_FADE_OUT_DISTANCE_SQUARED));
+	}
+
+	else
+	{
+		OutFadeOpacity = 1.0f;
+	}
+
+    //Apply model flags.
+    if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
+    {
+        //Calculate the normal.
+	    vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
+
+        //Apply the wind displacement.
+        world_position += CalculateWindDisplacement(world_position, InPosition, normal);
+    }
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InTextureCoordinate);
+    InputParameter(float, InFadeOpacity);
+
+    //Evaluate the opacity.
+    float opacity = 1.0f;
+
+    if (TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_MASKED))
+    {
+        EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, opacity);
+    }
+
+    //Retrieve the noise value.
+    float noise_value = InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), FRAME);
+
+    //Conditionally discard.
+    if (opacity < 0.5f
+    || (InFadeOpacity < 1.0f && InFadeOpacity < noise_value))
+    {
+        discard;
+    }
+}

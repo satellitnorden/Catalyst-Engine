@@ -1,0 +1,118 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(Wind);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Model);
+IncludeShaderFunctionLibrary(Wind);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(SceneFeatures1);
+OutputRenderTarget(SceneFeatures2);
+OutputRenderTarget(SceneFeatures3);
+OutputRenderTarget(SceneFeatures4);
+OutputRenderTarget(Scene);
+
+//Set the cull mode.
+CullMode(NONE);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(EQUAL);
+DepthTestEnable();
+
+//Set the topology.
+Topology(TRIANGLE_LIST);
+
+//Declare push constant data.
+PushConstantData(vec3, WORLD_GRID_DELTA);
+PushConstantData(uint, MODEL_FLAGS);
+PushConstantData(float, START_FADE_OUT_DISTANCE_SQUARED);
+PushConstantData(float, END_FADE_OUT_DISTANCE_SQUARED);
+PushConstantData(uint, MATERIAL_INDEX);
+
+//Declare samplers.
+Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
+
+//Subscribe to input streams.
+SubscribeToInputStream(DoubleSidedInstancedModel);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec3, InPosition);
+    InputParameter(vec3, InNormal);
+    InputParameter(vec3, InTangent);
+    InputParameter(vec2, InTextureCoordinate);
+    InputParameter(mat4, InTransformation);
+
+    //Declare output parameters.
+    OutputParameter(mat3, OutTangentSpaceMatrix);
+    OutputParameter(vec3, OutWorldPosition);
+    OutputParameter(vec2, OutTextureCoordinate);
+
+    //Calculate the tangent space matrix.
+    vec3 tangent = normalize(vec3(InTransformation * vec4(InTangent, 0.0f)));
+    vec3 bitangent = normalize(vec3(InTransformation * vec4(cross(InNormal, InTangent), 0.0f)));
+    vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
+
+    //Write data for the fragment shader.
+    OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
+    OutWorldPosition = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
+    OutTextureCoordinate = InTextureCoordinate;
+    
+    //Apply model flags.
+    if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
+    {
+        //Apply the wind displacement.
+        OutWorldPosition += CalculateWindDisplacement(OutWorldPosition, InPosition, normal);
+    }
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(mat3, InTangentSpaceMatrix);
+    InputParameter(vec3, InWorldPosition);
+    InputParameter(vec2, InTextureCoordinate);
+
+    //Evaluate the material.
+    vec4 albedo_thickness;
+    EVALUATE_ALBEDO_THICKNESS(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, albedo_thickness);
+    vec4 normal_map_displacement;
+    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, normal_map_displacement);
+    vec4 material_properties;
+    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, material_properties);
+
+    //Calculate the shading normal.
+    vec3 shading_normal = normal_map_displacement.xyz * 2.0f - 1.0f;
+    shading_normal = InTangentSpaceMatrix * shading_normal;
+    shading_normal = normalize(shading_normal);
+
+    //Flip the normal, if necessary.
+    shading_normal = FRAGMENT_FRONT_FACING ? shading_normal : -shading_normal;
+
+    //Calculate the velocity.
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+
+    //Output the fragments.
+    OutputFragment(SceneFeatures1, albedo_thickness);
+    OutputFragment(SceneFeatures2, vec4(shading_normal, gl_FragCoord.z));
+    OutputFragment(SceneFeatures3, material_properties);
+    OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
+    OutputFragment(Scene, vec4(albedo_thickness.rgb * material_properties[3] * MATERIALS[MATERIAL_INDEX]._EmissiveMultiplier, 1.0f));
+}

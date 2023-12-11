@@ -7,6 +7,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/SamplerProperties.h>
 
 class RenderPipelineData final
 {
@@ -77,6 +78,9 @@ public:
 	//The blend alpha operator.
 	BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
 
+	//The cull mode.
+	CullMode _CullMode;
+
 	//Denotes whether or not depth test is enabled.
 	bool _DepthTestEnabled;
 
@@ -109,5 +113,14 @@ public:
 
 	//The stencil reference mask.
 	uint32 _StencilReferenceMask;
+
+	//The topology.
+	Topology _Topology;
+
+	//The sampler properties.
+	DynamicArray<SamplerProperties> _SamplerProperties;
+
+	//The input stream subscriptions.
+	DynamicArray<HashString> _InputStreamSubscriptions;
 
 };

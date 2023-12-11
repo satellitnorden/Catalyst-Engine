@@ -30,7 +30,7 @@ public:
 	/*
 	*	Returns the top level acceleration structure instances.
 	*/
-	FORCE_INLINE const DynamicArray<TopLevelAccelerationStructureInstanceData>& GetTopLevelAccelerationStructureInstances() NOEXCEPT
+	FORCE_INLINE const DynamicArray<TopLevelAccelerationStructureInstanceData> &GetTopLevelAccelerationStructureInstances() NOEXCEPT
 	{
 		return _TopLevelAccelerationStructureInstances;
 	}

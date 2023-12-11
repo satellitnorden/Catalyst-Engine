@@ -1,0 +1,77 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Set the cull mode.
+CullMode(BACK);
+
+//Set the load/store operators.
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER);
+DepthTestEnable();
+DepthWriteEnable();
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(REPLACE);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(ALWAYS);
+StencilCompareMask(0);
+StencilWriteMask(1);
+StencilReferenceMask(1);
+
+//Set the topology.
+Topology(TRIANGLE_LIST);
+
+//Declare push constant data.
+PushConstantData(mat4, MODEL_MATRIX);
+PushConstantData(uint, MATERIAL_INDEX);
+
+//Declare samplers.
+Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
+
+//Subscribe to input streams.
+SubscribeToInputStream(MaskedDoubleSidedModelsDepth);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec3, InPosition);
+    InputParameter(vec3, InNormal);
+    InputParameter(vec3, InTanget);
+    InputParameter(vec2, InTextureCoordinate);
+
+    //Declare output parameters.
+    OutputParameter(vec2, OutTextureCoordinate);
+
+    //Write the texture coordinate.
+    OutTextureCoordinate = InTextureCoordinate;
+    
+    //Calculate the world position.
+    vec3 world_position = vec3(MODEL_MATRIX * vec4(InPosition, 1.0f));
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InTextureCoordinate);
+
+    //Evaluate the opacity.
+    float opacity;
+    EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, opacity);
+
+    //Conditionally discard.
+    if (opacity < 0.5f)
+    {
+        discard;
+    }
+}

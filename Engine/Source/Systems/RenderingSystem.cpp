@@ -115,6 +115,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	//Pre-initialize the sub rendering system.
 	_SubRenderingSystem->PreInitialize();
 
+	//Initialize the render input manager.
+	_RenderInputManager.Initialize();
+
 	//Initialize the shared render target manager.
 	_SharedRenderTargetManager.Initialize(_CurrentRenderingPath);
 
@@ -141,6 +144,14 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 	//Initialize the sub rendering system.
 	_SubRenderingSystem->Initialize();
+
+	//Register the general uniform data.
+	_UniformBufferManager.RegisterUniformBuffer
+	(
+		HashString("General"),
+		&_GeneralUniformData,
+		sizeof(GeneralUniformData)
+	);
 }
 
 /*
@@ -203,6 +214,9 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 */
 void RenderingSystem::RenderUpdate() NOEXCEPT
 {
+	//Update the general uniform data.
+	_GeneralUniformData._FrameIndex = static_cast<uint32>(CatalystEngineSystem::Instance->GetTotalFrames());
+
 	//Tell the sub rendering to begin the frame.
 	{
 		PROFILING_SCOPE(RenderingSystem_BeginFrame);
@@ -222,6 +236,13 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		PROFILING_SCOPE(RenderingSystem_PostProcessingSystem_RenderUpdate);
 
 		_PostProcessingSystem.RenderUpdate();
+	}
+
+	//Update the world system.
+	{
+		PROFILING_SCOPE(RenderingSystem_WorldSystem_RenderUpdate);
+
+		WorldSystem::Instance->RenderUpdate();
 	}
 
 	//Update the uniform buffer manager.
@@ -273,11 +294,11 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		AnimationSystem::Instance->RenderUpdate();
 	}
 
-	//Update the world system.
+	//Update the render input manager.
 	{
-		PROFILING_SCOPE(RenderingSystem_WorldSystem_RenderUpdate);
+		PROFILING_SCOPE(RenderingSystem_RenderInputManager_RenderUpdate);
 
-		WorldSystem::Instance->RenderUpdate();
+		_RenderInputManager.RenderUpdate();
 	}
 
 	//Execute all render passes.
@@ -627,6 +648,28 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 	}
 
 	return _RenderTargets[UNDERLYING(render_target)];
+}
+
+/*
+*	Returns the sampler with the given configuration.
+*/
+NO_DISCARD SamplerHandle RenderingSystem::GetSampler(const SamplerProperties &properties) NOEXCEPT
+{
+	for (const CachedSampler &cached_sampler : _CachedSamplers)
+	{
+		if (cached_sampler._Properties == properties)
+		{
+			return cached_sampler._Handle;
+		}
+	}
+
+	_CachedSamplers.Emplace();
+	CachedSampler &new_cached_sampler{ _CachedSamplers.Back() };
+
+	new_cached_sampler._Properties = properties;
+	CreateSampler(new_cached_sampler._Properties, &new_cached_sampler._Handle);
+
+	return new_cached_sampler._Handle;
 }
 
 /*
@@ -1021,6 +1064,14 @@ RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable() const NOEXCEPT
 }
 
 /*
+*	Returns the global render data table 2.
+*/
+RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable2() const NOEXCEPT
+{
+	return _GlobalRenderData._RenderDataTables2[GetCurrentFramebufferIndex()];
+}
+
+/*
 *	Adds a texture to the global render data and returns it's index.
 */
 uint32 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT
@@ -1170,6 +1221,7 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 
 	//Upsize the buffers.
 	_GlobalRenderData._RenderDataTables.Upsize<false>(number_of_framebuffers);
+	_GlobalRenderData._RenderDataTables2.Upsize<false>(number_of_framebuffers);
 	_GlobalRenderData._DynamicUniformDataBuffers.Upsize<false>(number_of_framebuffers);
 	_GlobalRenderData._RemoveGlobalTextureUpdates.Upsize<true>(number_of_framebuffers);
 	_GlobalRenderData._AddGlobalTextureUpdates.Upsize<true>(number_of_framebuffers);
@@ -1179,6 +1231,7 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 	{
 		//Create the render data table.
 		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL), &_GlobalRenderData._RenderDataTables[i]);
+		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL_2), &_GlobalRenderData._RenderDataTables2[i]);
 
 		//Create the dynamic uniform data buffer.
 		CreateBuffer(sizeof(DynamicUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &_GlobalRenderData._DynamicUniformDataBuffers[i]);
@@ -1274,6 +1327,20 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 	}
 
 	{
+		//Initialize the dynamic uniform data render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
+		{
+			//Global textures.
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::SampledImage, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
+
+			//Global materials.
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GLOBAL_2)]);
+	}
+
+	{
 		//Initialize the particle system data render data table layout.
 		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
 		{
@@ -1363,6 +1430,7 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		for (uint32 j{ 0 }; j < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
 		{
 			BindSampledImageToRenderDataTable(1, j, &_GlobalRenderData._RenderDataTables[i], _DefaultTexture2D);
+			BindSampledImageToRenderDataTable(0, j, &_GlobalRenderData._RenderDataTables2[i], _DefaultTexture2D);
 		}
 
 		//Bind all the samplers to the render data table.
@@ -1465,14 +1533,13 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 
 	//Calculate the previous and current camera matrices, as well as their inverses.
 	const Matrix4x4 previous_camera_matrix{ Matrix4x4::LookAt(_PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()), _PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles())) };
-	const Matrix4x4 current_camera_matrix{ Matrix4x4::LookAt(_CurrentCameraWorldTransform.GetLocalPosition(), _CurrentCameraWorldTransform.GetLocalPosition() + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_CurrentCameraWorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_CurrentCameraWorldTransform.GetRotation().ToEulerAngles())) };
 
 	//Update matrices.
 	_DynamicUniformData._PreviousWorldToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetProjectionMatrix() * previous_camera_matrix;
 	_DynamicUniformData._InverseWorldToCameraMatrix = *_CameraSystem.GetCurrentCamera()->GetInverseCameraMatrix();
 	_DynamicUniformData._InverseCameraToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetInverseProjectionMatrix();
 	_DynamicUniformData._WorldToCameraMatrix = *_CameraSystem.GetCurrentCamera()->GetCameraMatrix();
-	_DynamicUniformData._WorldToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetProjectionMatrix() * current_camera_matrix;
+	_DynamicUniformData._WorldToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetViewMatrix();
 	
 	//Rotate the relevant matrices to fit the surface transform.
 	{
@@ -1568,6 +1635,7 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 	for (const uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index])
 	{
 		BindSampledImageToRenderDataTable(1, update, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTexture2D);
+		BindSampledImageToRenderDataTable(0, update, &_GlobalRenderData._RenderDataTables2[current_framebuffer_index], _DefaultTexture2D);
 	}
 
 	_GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index].Clear();
@@ -1575,6 +1643,7 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index])
 	{
 		BindSampledImageToRenderDataTable(1, update._First, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], update._Second);
+		BindSampledImageToRenderDataTable(0, update._First, &_GlobalRenderData._RenderDataTables2[current_framebuffer_index], update._Second);
 	}
 
 	_GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index].Clear();
@@ -1590,6 +1659,7 @@ void RenderingSystem::UpdateGlobalMaterials(const uint8 current_framebuffer_inde
 {
 	//Bind the current global material uniform buffer to the global render data table.
 	BindUniformBufferToRenderDataTable(3, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _MaterialSystem.GetCurrentMaterialUnifomBuffer());
+	BindUniformBufferToRenderDataTable(1, 0, &_GlobalRenderData._RenderDataTables2[current_framebuffer_index], _MaterialSystem.GetCurrentMaterialUnifomBuffer());
 }
 
 /*

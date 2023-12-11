@@ -2,6 +2,7 @@
 #include <World/Core/WindSystem.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -41,6 +42,17 @@ void WindSystem::Initialize() NOEXCEPT
 		RenderingSystem::Instance->CreateBuffer(sizeof(WindRenderingData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &_UniformBuffers[i]);
 		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &_RenderDataTables[i], _UniformBuffers[i]);
 	}
+
+	//Reset the wind uniform data.
+	Memory::Set(&_WindUniformData, 0, sizeof(WindUniformData));
+
+	//Register the uniform data.
+	RenderingSystem::Instance->GetUniformBufferManager()->RegisterUniformBuffer
+	(
+		HashString("Wind"),
+		&_WindUniformData,
+		sizeof(WindUniformData)
+	);
 }
 
 /*
@@ -62,4 +74,9 @@ void WindSystem::RenderUpdate() NOEXCEPT
 	const uint64 data_sizes[]{ sizeof(_CurrentWindRenderingData) };
 
 	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_uniform_buffer);
+
+	//Update the wind uniform data.
+	_WindUniformData._WindDirection = _WindDirection;
+	_WindUniformData._WindSpeed = _WindSpeed;
+	_WindUniformData._WindTime = fmodf(_WindUniformData._WindTime + CatalystEngineSystem::Instance->GetDeltaTime(), CatalystBaseMathConstants::DOUBLE_PI);
 }

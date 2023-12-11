@@ -14,6 +14,12 @@ ColorStoreOperator(STORE);
 DepthStencilLoadOperator(CLEAR);
 DepthStencilStoreOperator(STORE);
 
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
 //The vertex shader.
 Vertex
 {

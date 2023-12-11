@@ -1,0 +1,5 @@
+Wind
+{
+    vec4 WIND_DIRECTION_SPEED;
+    float WIND_TIME;
+};

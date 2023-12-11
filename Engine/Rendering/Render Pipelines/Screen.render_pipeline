@@ -1,11 +1,17 @@
 //Declare input render targets.
-InputRenderTargets(Scene /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+InputRenderTarget(Scene /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
 
 //Declare output render targets.
 OutputRenderTarget(Screen);
 
 //Set the load/store operators.
 ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
 
 //The vertex shader.
 Vertex

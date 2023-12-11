@@ -80,7 +80,7 @@ namespace TextParsingUtilities
 		DynamicString *const RESTRICT output_arguments
 	) NOEXCEPT
 	{
-		char buffer[64];
+		char buffer[128];
 		uint64 current_buffer_index{ 0 };
 		uint64 current_argument_index{ 0 };
 		bool currently_parsing_argument{ false };

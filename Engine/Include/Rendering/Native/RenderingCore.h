@@ -260,6 +260,7 @@ enum class CommonRenderDataTableLayout : uint8
 {
 	CLOUDS,
 	GLOBAL,
+	GLOBAL_2,
 	PARTICLE_SYSTEM,
 	SHADOW,
 	USER_INTERFACE,

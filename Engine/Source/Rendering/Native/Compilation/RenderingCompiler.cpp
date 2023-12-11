@@ -15,6 +15,7 @@
 #include <File/Utilities/TextParsingUtilities.h>
 
 //Rendering.
+#include <Rendering/Native/SamplerProperties.h>
 #include <Rendering/Native/Compilation/GLSLCompilation.h>
 
 //Resources.
@@ -29,6 +30,7 @@
 
 //Constants.
 #define ENGINE_RENDERING_DIRECTORY_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering"
+#define GLOBAL_RENDER_DATA_FILE_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data"
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingCompiler);
@@ -187,6 +189,22 @@ public:
 };
 
 /*
+*	Push constant data item value definition.
+*/
+class PushConstantDataValue final
+{
+
+public:
+
+	//The type.
+	DynamicString _Type;
+
+	//The name.
+	DynamicString _Name;
+
+};
+
+/*
 *	Render pipeline information class definition.
 */
 class RenderPipelineInformation final
@@ -242,6 +260,9 @@ public:
 	//The blend alpha operator.
 	BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
 
+	//The cull mode.
+	CullMode _CullMode{ CullMode::None };
+
 	//Denotes whether or not depth test is enabled.
 	bool _DepthTestEnabled{ false };
 
@@ -274,6 +295,18 @@ public:
 
 	//The stencil reference mask.
 	uint32 _StencilReferenceMask{ 0 };
+
+	//The topology.
+	Topology _Topology{ Topology::TriangleList };
+
+	//The push constant data values.
+	DynamicArray<PushConstantDataValue> _PushConstantDataValues;
+
+	//The samplers.
+	DynamicArray<Pair<DynamicString, SamplerProperties>> _Samplers;
+
+	//The input stream subscriptions.
+	DynamicArray<HashString> _InputStreamSubscriptions;
 
 };
 
@@ -423,6 +456,35 @@ void GenerateVertexShader
 	DynamicArray<std::string> lines;
 	GatherShaderLines(file, lines);
 
+	//Gather the input parameters parameters.
+	DynamicArray<Pair<DynamicString, DynamicString>> input_parameters;
+
+	for (uint64 i{ 0 }; i < lines.Size();)
+	{
+		const size_t input_parameter_position{ lines[i].find("InputParameter") };
+
+		if (input_parameter_position != std::string::npos)
+		{
+			StaticArray<DynamicString, 2> input_parameter_strings;
+
+			TextParsingUtilities::ParseFunctionArguments
+			(
+				lines[i].data(),
+				lines[i].length(),
+				input_parameter_strings.Data()
+			);
+
+			input_parameters.Emplace(std::move(input_parameter_strings[0]), std::move(input_parameter_strings[1]));
+
+			lines.EraseAt<true>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
+
 	//Gather the output parameters.
 	DynamicArray<Pair<DynamicString, DynamicString>> output_parameters;
 
@@ -487,9 +549,6 @@ void GenerateVertexShader
 		//Remember the current resource binding.
 		uint32 resource_binding_index{ 0 };
 
-		//Remember the current location index.
-		uint32 location_index{ 0 };
-
 		//Open the file.
 		char glsl_file_path[MAXIMUM_FILE_PATH_LENGTH];
 		sprintf_s(glsl_file_path, "%s\\%s_Vertex.glsl", generated_file_path, shader_name.c_str());
@@ -499,6 +558,9 @@ void GenerateVertexShader
 		glsl_file << "#version 460" << std::endl;
 
 		glsl_file << std::endl;
+
+		//Insert the global render data.
+		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
 
 		//Insert any included uniform buffers.
 		if (!render_pipeline_information._UniformBufferIncludes.Empty())
@@ -516,6 +578,17 @@ void GenerateVertexShader
 			}
 		}
 
+		//Insert any samplers.
+		if (!render_pipeline_information._Samplers.Empty())
+		{
+			for (const Pair<DynamicString, SamplerProperties> &sampler : render_pipeline_information._Samplers)
+			{
+				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler " << sampler._First.Data() << ";" << std::endl;
+			}
+
+			glsl_file << std::endl;
+		}
+
 		//Insert any included shader function libraries.
 		if (!render_pipeline_information._ShaderFunctionLibraryIncludes.Empty())
 		{
@@ -531,12 +604,61 @@ void GenerateVertexShader
 			}
 		}
 
+		//Write the push constant data.
+		if (!render_pipeline_information._PushConstantDataValues.Empty())
+		{
+			uint64 current_offset{ 0 };
+
+			glsl_file << "layout (push_constant) uniform PushConstantData" << std::endl;
+			glsl_file << "{" << std::endl;
+
+			for (const PushConstantDataValue &push_constant_data_value : render_pipeline_information._PushConstantDataValues)
+			{
+				glsl_file << "\tlayout (offset = " << current_offset << ") " << push_constant_data_value._Type.Data() << " " << push_constant_data_value._Name.Data() << ";" << std::endl;
+				current_offset += GLSLCompilation::GetByteOffsetForType(push_constant_data_value._Type.Data());
+			}
+
+			glsl_file << "};" << std::endl;
+
+			glsl_file << std::endl;
+		}
+
+		//Write the input parameters.
+		if (!input_parameters.Empty())
+		{
+			//Remember the current location index.
+			uint32 location_index{ 0 };
+
+			for (const Pair<DynamicString, DynamicString> &input_parameter : input_parameters)
+			{
+				glsl_file << "layout (location = " << location_index++ << ") in " << input_parameter._First.Data() << " " << input_parameter._Second.Data() << ";" << std::endl;
+			}
+
+			glsl_file << std::endl;
+		}
+
+		//Write the input render targets.
+		if (!render_pipeline_information._InputRenderTargets.Empty())
+		{
+			for (const DynamicString& input_render_target : render_pipeline_information._InputRenderTargets)
+			{
+				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target.Data() << ";" << std::endl;
+			}
+
+			glsl_file << std::endl;
+		}
+
 		//Write the output parameters.
 		if (!output_parameters.Empty())
 		{
+			//Remember the current location index.
+			uint32 location_index{ 0 };
+
 			for (const Pair<DynamicString, DynamicString> &output_parameter : output_parameters)
 			{
-				glsl_file << "layout (location = " << location_index++ << ") out " << output_parameter._First.Data() << " " << output_parameter._Second.Data() << ";" << std::endl;
+				glsl_file << "layout (location = " << location_index << ") out " << output_parameter._First.Data() << " " << output_parameter._Second.Data() << ";" << std::endl;
+			
+				location_index += GLSLCompilation::GetLocationOffsetForType(output_parameter._First.Data());
 			}
 
 			glsl_file << std::endl;
@@ -674,6 +796,28 @@ void GenerateFragmentShader
 		}
 	}
 
+	//Check if early fragment tests should be enabled.
+	const bool should_enable_early_fragment_tests
+	{
+		render_pipeline_information._DepthTestEnabled || render_pipeline_information._StencilTestEnabled
+	};
+
+	bool can_enable_early_fragment_tests{ true };
+
+	for (const std::string &line : lines)
+	{
+		const size_t position{ line.find("discard;") };
+
+		if (position != std::string::npos)
+		{
+			can_enable_early_fragment_tests = false;
+
+			break;
+		}
+	}
+
+	const bool enable_early_fragment_tests{ should_enable_early_fragment_tests && can_enable_early_fragment_tests };
+
 	//Write the GLSL file.
 	{
 		//Make a copy of the lines.
@@ -692,6 +836,16 @@ void GenerateFragmentShader
 
 		glsl_file << std::endl;
 
+		//Add the early fragment tests flag.
+		if (enable_early_fragment_tests)
+		{
+			glsl_file << "layout (early_fragment_tests) in;" << std::endl;
+			glsl_file << std::endl;
+		}
+
+		//Insert the global render data.
+		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
+
 		//Insert any included uniform buffers.
 		if (!render_pipeline_information._UniformBufferIncludes.Empty())
 		{
@@ -706,6 +860,17 @@ void GenerateFragmentShader
 
 				glsl_file << std::endl;
 			}
+		}
+
+		//Insert any samplers.
+		if (!render_pipeline_information._Samplers.Empty())
+		{
+			for (const Pair<DynamicString, SamplerProperties> &sampler : render_pipeline_information._Samplers)
+			{
+				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler " << sampler._First.Data() << ";" << std::endl;
+			}
+
+			glsl_file << std::endl;
 		}
 
 		//Insert any included shader function libraries.
@@ -723,6 +888,25 @@ void GenerateFragmentShader
 			}
 		}
 
+		//Write the push constant data.
+		if (!render_pipeline_information._PushConstantDataValues.Empty())
+		{
+			uint64 current_offset{ 0 };
+
+			glsl_file << "layout (push_constant) uniform PushConstantData" << std::endl;
+			glsl_file << "{" << std::endl;
+
+			for (const PushConstantDataValue& push_constant_data_value : render_pipeline_information._PushConstantDataValues)
+			{
+				glsl_file << "\tlayout (offset = " << current_offset << ") " << push_constant_data_value._Type.Data() << " " << push_constant_data_value._Name.Data() << ";" << std::endl;
+				current_offset += GLSLCompilation::GetByteOffsetForType(push_constant_data_value._Type.Data());
+			}
+
+			glsl_file << "};" << std::endl;
+
+			glsl_file << std::endl;
+		}
+
 		//Write the input parameters.
 		if (!input_parameters.Empty())
 		{
@@ -731,7 +915,9 @@ void GenerateFragmentShader
 
 			for (const InputParameter &input_parameter : input_parameters)
 			{
-				glsl_file << "layout (location = " << location_index++ << ") in " << input_parameter._Type.Data() << " " << input_parameter._Name.Data() << ";" << std::endl;
+				glsl_file << "layout (location = " << location_index << ") in " << input_parameter._Type.Data() << " " << input_parameter._Name.Data() << ";" << std::endl;
+			
+				location_index += GLSLCompilation::GetLocationOffsetForType(input_parameter._Type.Data());
 			}
 
 			glsl_file << std::endl;
@@ -742,7 +928,7 @@ void GenerateFragmentShader
 		{
 			for (const DynamicString &input_render_target : render_pipeline_information._InputRenderTargets)
 			{
-				glsl_file << "layout (set = 0, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target.Data() << ";" << std::endl;
+				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;
@@ -784,6 +970,26 @@ void GenerateFragmentShader
 
 			else
 			{
+				//Replace "FRAGMENT_COORDINATE" with "gl_FragCoord".
+				{
+					const size_t position{ line.find("FRAGMENT_COORDINATE") };
+
+					if (position != std::string::npos)
+					{
+						line.replace(position, strlen("FRAGMENT_COORDINATE"), "gl_FragCoord");
+					}
+				}
+
+				//Replace "FRAGMENT_FRONT_FACING" with "gl_FrontFacing".
+				{
+					const size_t position{ line.find("FRAGMENT_FRONT_FACING") };
+
+					if (position != std::string::npos)
+					{
+						line.replace(position, strlen("FRAGMENT_FRONT_FACING"), "gl_FrontFacing");
+					}
+				}
+
 				//Write the line.
 				glsl_file << line << std::endl;
 			}
@@ -1340,7 +1546,7 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 			//Is this a blend alpha operator declaration?
 			{
-				const size_t position{ current_line.find("BlendColorOperator") };
+				const size_t position{ current_line.find("BlendAlphaOperator") };
 
 				if (position != std::string::npos)
 				{
@@ -1387,6 +1593,50 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 				}
 			}
 
+			//Is this a cull mode declaration?
+			{
+				const size_t position{ current_line.find("CullMode") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "NONE")
+					{
+						render_pipeline_information._CullMode = CullMode::None;
+					}
+
+					else if (string == "BACK")
+					{
+						render_pipeline_information._CullMode = CullMode::Back;
+					}
+
+					else if (string == "FRONT")
+					{
+						render_pipeline_information._CullMode = CullMode::Front;
+					}
+
+					else if (string == "FRONT_AND_BACK")
+					{
+						render_pipeline_information._CullMode = CullMode::FrontAndBack;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
 			//Is this a depth test enable declaration?
 			{
 				const size_t position{ current_line.find("DepthTestEnable") };
@@ -1405,7 +1655,7 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 				if (position != std::string::npos)
 				{
-					render_pipeline_information._DepthTestEnabled = true;
+					render_pipeline_information._DepthWriteEnabled = true;
 
 					continue;
 				}
@@ -1429,6 +1679,16 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					if (string == "ALWAYS")
 					{
 						render_pipeline_information._DepthCompareOperator = CompareOperator::Always;
+					}
+
+					else if (string == "EQUAL")
+					{
+						render_pipeline_information._DepthCompareOperator = CompareOperator::Equal;
+					}
+
+					else if (string == "GREATER")
+					{
+						render_pipeline_information._DepthCompareOperator = CompareOperator::Greater;
 					}
 
 					else
@@ -1499,6 +1759,11 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					if (string == "KEEP")
 					{
 						render_pipeline_information._StencilPassOperator = StencilOperator::Keep;
+					}
+
+					else if (string == "REPLACE")
+					{
+						render_pipeline_information._StencilPassOperator = StencilOperator::Replace;
 					}
 
 					else
@@ -1665,6 +1930,172 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					continue;
 				}
 			}
+
+			//Is this a topology declaration?
+			{
+				const size_t position{ current_line.find("Topology") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					if (string == "TRIANGLE_FAN")
+					{
+						render_pipeline_information._Topology = Topology::TriangleFan;
+					}
+
+					else if (string == "TRIANGLE_LIST")
+					{
+						render_pipeline_information._Topology = Topology::TriangleList;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a push constant data declaration?
+			{
+				const size_t position{ current_line.find("PushConstantData") };
+
+				if (position != std::string::npos)
+				{
+					StaticArray<DynamicString, 2> strings;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						strings.Data()
+					);
+
+					render_pipeline_information._PushConstantDataValues.Emplace();
+					PushConstantDataValue &value{ render_pipeline_information._PushConstantDataValues.Back() };
+
+					value._Type = std::move(strings[0]);
+					value._Name = std::move(strings[1]);
+
+					continue;
+				}
+			}
+
+			//Is this a sampler declaration?
+			{
+				const size_t position{ current_line.find("Sampler") };
+
+				if (position != std::string::npos)
+				{
+					StaticArray<DynamicString, 5> strings;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						strings.Data()
+					);
+
+					render_pipeline_information._Samplers.Emplace();
+					Pair<DynamicString, SamplerProperties> &new_sampler{ render_pipeline_information._Samplers.Back() };
+
+					new_sampler._First = std::move(strings[0]);
+
+					if (strings[1] == "LINEAR")
+					{
+						new_sampler._Second._MagnificationFilter = TextureFilter::LINEAR;
+					}
+
+					else if (strings[1] == "NEAREST")
+					{
+						new_sampler._Second._MagnificationFilter = TextureFilter::NEAREST;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					if (strings[2] == "LINEAR")
+					{
+						new_sampler._Second._MipmapMode = MipmapMode::LINEAR;
+					}
+
+					else if (strings[2] == "NEAREST")
+					{
+						new_sampler._Second._MipmapMode = MipmapMode::NEAREST;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					if (strings[3] == "CLAMP_TO_BORDER")
+					{
+						new_sampler._Second._AddressMode = AddressMode::CLAMP_TO_BORDER;
+					}
+
+					else if (strings[3] == "CLAMP_TO_EDGE")
+					{
+						new_sampler._Second._AddressMode = AddressMode::CLAMP_TO_EDGE;
+					}
+
+					else if (strings[3] == "MIRROR_CLAMP_TO_EDGE")
+					{
+						new_sampler._Second._AddressMode = AddressMode::MIRROR_CLAMP_TO_EDGE;
+					}
+
+					else if (strings[3] == "MIRRORED_REPEAT")
+					{
+						new_sampler._Second._AddressMode = AddressMode::MIRRORED_REPEAT;
+					}
+
+					else if (strings[3] == "REPEAT")
+					{
+						new_sampler._Second._AddressMode = AddressMode::REPEAT;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					new_sampler._Second._AnisotropicSamples = static_cast<uint8>(std::stoul(strings[4].Data()));
+
+					continue;
+				}
+			}
+
+			//Is this an input stream subscription declaration?
+			{
+				const size_t position{ current_line.find("SubscribeToInputStream") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					render_pipeline_information._InputStreamSubscriptions.Emplace(HashString(string.Data()));
+
+					continue;
+				}
+			}
 			
 			//Is this the beginning of a vertex shader?
 			if (current_line == "Vertex")
@@ -1676,6 +2107,11 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 			else if (current_line == "Fragment")
 			{
 				GenerateFragmentShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
+			}
+
+			else
+			{
+				ASSERT(false, "Unknown line " << current_line.data());
 			}
 		}
 
@@ -1733,6 +2169,9 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 		parameters._BlendAlphaDestinationFactor = render_pipeline_information._BlendAlphaDestinationFactor;
 		parameters._BlendAlphaOperator = render_pipeline_information._BlendAlphaOperator;
 
+		//Copy the cull mode.
+		parameters._CullMode = render_pipeline_information._CullMode;
+
 		//Copy depth/stencil properties.
 		parameters._DepthTestEnabled = render_pipeline_information._DepthTestEnabled;
 		parameters._DepthWriteEnabled = render_pipeline_information._DepthWriteEnabled;
@@ -1745,6 +2184,18 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 		parameters._StencilCompareMask = render_pipeline_information._StencilCompareMask;
 		parameters._StencilWriteMask = render_pipeline_information._StencilWriteMask;
 		parameters._StencilReferenceMask = render_pipeline_information._StencilReferenceMask;
+
+		//Copy the topology.
+		parameters._Topology = render_pipeline_information._Topology;
+
+		//Fill in the sampler properties.
+		for (const Pair<DynamicString, SamplerProperties> &sampler : render_pipeline_information._Samplers)
+		{
+			parameters._SamplerProperties.Emplace(sampler._Second);
+		}
+
+		//Copy the input stream subscriptions.
+		parameters._InputStreamSubscriptions = std::move(render_pipeline_information._InputStreamSubscriptions);
 
 		//Build the render pipeline!
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildRenderPipeline(parameters);

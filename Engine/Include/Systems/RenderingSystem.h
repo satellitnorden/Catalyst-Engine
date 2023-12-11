@@ -25,6 +25,7 @@
 #include <Rendering/Native/RayTracingSystem.h>
 #include <Rendering/Native/RenderingConfiguration.h>
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/RenderInputManager.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/SamplerProperties.h>
 #include <Rendering/Native/SharedRenderTargetManager.h>
@@ -209,11 +210,24 @@ public:
 	}
 
 	/*
+	*	Returns the sampler with the given configuration.
+	*/
+	NO_DISCARD SamplerHandle GetSampler(const SamplerProperties &properties) NOEXCEPT;
+
+	/*
 	*	Returns the shared render target manager.
 	*/
 	RESTRICTED NO_DISCARD SharedRenderTargetManager *const RESTRICT GetSharedRenderTargetManager() NOEXCEPT
 	{
 		return &_SharedRenderTargetManager;
+	}
+
+	/*
+	*	Returns the render input manager.
+	*/
+	RESTRICTED NO_DISCARD RenderInputManager *const RESTRICT GetRenderInputManager() NOEXCEPT
+	{
+		return &_RenderInputManager;
 	}
 
 	/*
@@ -521,6 +535,11 @@ public:
 	RenderDataTableHandle GetGlobalRenderDataTable() const NOEXCEPT;
 
 	/*
+	*	Returns the global render data table 2.
+	*/
+	RenderDataTableHandle GetGlobalRenderDataTable2() const NOEXCEPT;
+
+	/*
 	*	Adds a texture to the global render data and returns it's index.
 	*/
 	uint32 AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;
@@ -577,6 +596,35 @@ public:
 
 private:
 
+	/*
+	*	Cached sampler class definition.
+	*/
+	class CachedSampler final
+	{
+
+	public:
+
+		//The properties.
+		SamplerProperties _Properties;
+
+		//The handle.
+		SamplerHandle _Handle;
+
+	};
+
+	/*
+	*	General uniform data class definition.
+	*/
+	class GeneralUniformData final
+	{
+
+	public:
+
+		//The frame index.
+		uint32 _FrameIndex;
+
+	};
+
 	//The configuration.
 	CatalystProjectRenderingConfiguration _Configuration;
 
@@ -605,6 +653,12 @@ private:
 	//The global render data.
 	GlobalRenderData _GlobalRenderData;
 
+	//The general uniform data.
+	GeneralUniformData _GeneralUniformData;
+
+	//The cached samplers.
+	DynamicArray<CachedSampler> _CachedSamplers;
+
 	//Container for all render targets.
 	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NUMBER_OF_RENDER_TARGETS)> _RenderTargets;
 
@@ -625,6 +679,9 @@ private:
 
 	//The shared render target manager.
 	SharedRenderTargetManager _SharedRenderTargetManager;
+
+	//The render input manager.
+	RenderInputManager _RenderInputManager;
 
 	//The uniform buffer manager.
 	UniformBufferManager _UniformBufferManager;

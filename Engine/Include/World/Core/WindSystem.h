@@ -58,6 +58,25 @@ private:
 
 	};
 
+	/*
+	*	Wind uniform data class definition.
+	*/
+	class WindUniformData final
+	{
+
+	public:
+
+		//The wind direction.
+		Vector3<float32> _WindDirection;
+
+		//The wind speed.
+		float32 _WindSpeed;
+
+		//The wind time.
+		float32 _WindTime;
+
+	};
+
 	//The wind direction.
 	Vector3<float32> _WindDirection;
 
@@ -78,5 +97,8 @@ private:
 
 	//The current wind rendering data.
 	WindRenderingData _CurrentWindRenderingData;
+
+	//The wind uniform data.
+	WindUniformData _WindUniformData;
 
 };

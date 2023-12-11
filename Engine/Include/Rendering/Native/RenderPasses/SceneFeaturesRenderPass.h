@@ -12,10 +12,6 @@
 #endif
 #include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedImpostorColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedImpostorDepthSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedStaticModelColorSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedStaticModelDepthSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/MaskedModelColorSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/MaskedModelDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/OpaqueModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/ComputePipelines/ParticleSystemComputePipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.h>
@@ -39,26 +35,33 @@ public:
 
 private:
 
-	//The clear graphics pipeline.
-	GraphicsRenderPipeline _ClearGraphicsPipeline{ HashString("Clear_RenderPipeline") };
-
 	//The particle system compute pipeline.
 	ParticleSystemComputePipeline _ParticleSystemComputePipeline;
 
-	//The masked model depth scene features graphics pipelines.
-	StaticArray<MaskedModelDepthSceneFeaturesGraphicsPipeline, 2> _MaskedModelDepthSceneFeaturesGraphicsPipelines;
-
-	//The particle system masked depth graphics pipeline.
-	ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline _ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline;
-
-	//The instanced static model depth scene features graphics pipelines.
-	StaticArray<InstancedStaticModelDepthSceneFeaturesGraphicsPipeline, 2> _InstancedStaticModelDepthSceneFeaturesGraphicsPipelines;
+	//The graphics render pipelines 1.
+	StaticArray<GraphicsRenderPipeline, 5> _GraphicsRenderPipelines1
+	{
+		GraphicsRenderPipeline(HashString("Clear_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("MaskedModelDepthSingleSided_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("MaskedModelDepthDoubleSided_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("InstancedModelDepthSingleSided_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("InstancedModelDepthDoubleSided_RenderPipeline"))
+	};
 
 	//The instanced impostor depth scene features graphics pipeline.
 	InstancedImpostorDepthSceneFeaturesGraphicsPipeline _InstancedImpostorDepthSceneFeaturesGraphicsPipeline;
 
-	//The masked model color scene features graphics pipelines.
-	StaticArray<MaskedModelColorSceneFeaturesGraphicsPipeline, 2> _MaskedModelColorSceneFeaturesGraphicsPipelines;
+	//The particle system masked depth graphics pipeline.
+	ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline _ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline;
+
+	//The graphics render pipelines 2.
+	StaticArray<GraphicsRenderPipeline, 4> _GraphicsRenderPipelines2
+	{
+		GraphicsRenderPipeline(HashString("MaskedModelColorSingleSided_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("MaskedModelColorDoubleSided_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("InstancedModelColorSingleSided_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("InstancedModelColorDoubleSided_RenderPipeline"))
+	};
 
 	//The particle system masked color graphics pipeline.
 	ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline _ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline;
@@ -71,9 +74,6 @@ private:
 
 	//The opaque model scene features graphics pipelines.
 	StaticArray<OpaqueModelSceneFeaturesGraphicsPipeline, 2> _OpaqueModelSceneFeaturesGraphicsPipelines;
-
-	//The instanced static model color scene features graphics pipelines.
-	StaticArray<InstancedStaticModelColorSceneFeaturesGraphicsPipeline, 2> _InstancedStaticModelColorSceneFeaturesGraphicsPipelines;
 
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;

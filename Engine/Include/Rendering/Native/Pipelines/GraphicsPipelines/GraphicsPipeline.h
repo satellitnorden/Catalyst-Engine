@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/RenderInputStream.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
@@ -440,6 +441,11 @@ protected:
 	*	Resetis this graphics pipeline.
 	*/
 	void ResetGraphicsPipeline() NOEXCEPT;
+
+	/*
+	*	Processes the given input stream.
+	*/
+	void ProcessInputStream(const RenderInputStream &input_stream, CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;
 
 private:
 

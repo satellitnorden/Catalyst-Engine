@@ -51,24 +51,18 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	+ 1
 #endif
 	);
-	AddPipeline(&_ClearGraphicsPipeline);
+
 	AddPipeline(&_ParticleSystemComputePipeline);
 
-	for (MaskedModelDepthSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelDepthSceneFeaturesGraphicsPipelines)
-	{
-		AddPipeline(&pipeline);
-	}
-
-	AddPipeline(&_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline);
-
-	for (InstancedStaticModelDepthSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelDepthSceneFeaturesGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines1)
 	{
 		AddPipeline(&pipeline);
 	}
 
 	AddPipeline(&_InstancedImpostorDepthSceneFeaturesGraphicsPipeline);
+	AddPipeline(&_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline);
 
-	for (MaskedModelColorSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelColorSceneFeaturesGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -83,11 +77,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
-	for (InstancedStaticModelColorSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelColorSceneFeaturesGraphicsPipelines)
-	{
-		AddPipeline(&pipeline);
-	}
-
 	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_UserInterfaceSceneFeaturesGraphicsPipeline);
 #if defined(CATALYST_EDITOR)
@@ -96,23 +85,26 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_VelocityGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_ClearGraphicsPipeline.Initialize();
 	_ParticleSystemComputePipeline.Initialize();
-	_MaskedModelDepthSceneFeaturesGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), false);
-	_MaskedModelDepthSceneFeaturesGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true);
-	_InstancedStaticModelDepthSceneFeaturesGraphicsPipelines[0].Initialize(false, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
-	_InstancedStaticModelDepthSceneFeaturesGraphicsPipelines[1].Initialize(true, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
-	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+
+	for (GraphicsRenderPipeline& pipeline : _GraphicsRenderPipelines1)
+	{
+		pipeline.Initialize();
+	}
+
 	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
-	_MaskedModelColorSceneFeaturesGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), false);
-	_MaskedModelColorSceneFeaturesGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true);
+	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
+	{
+		pipeline.Initialize();
+	}
+	
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_TerrainSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_OpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), false);
 	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true);
-	_InstancedStaticModelColorSceneFeaturesGraphicsPipelines[0].Initialize(false, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
-	_InstancedStaticModelColorSceneFeaturesGraphicsPipelines[1].Initialize(true, RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_UserInterfaceSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 #if defined(CATALYST_EDITOR)
@@ -127,24 +119,17 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 void SceneFeaturesRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	_ClearGraphicsPipeline.Execute();
 	_ParticleSystemComputePipeline.Execute();
 
-	for (MaskedModelDepthSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelDepthSceneFeaturesGraphicsPipelines)
-	{
-		pipeline.Execute();
-	}
-
-	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
-
-	for (InstancedStaticModelDepthSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelDepthSceneFeaturesGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines1)
 	{
 		pipeline.Execute();
 	}
 
 	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Execute();
+	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
 
-	for (MaskedModelColorSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelColorSceneFeaturesGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
 	{
 		pipeline.Execute();
 	}
@@ -152,11 +137,6 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Execute();
 
 	for (OpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _OpaqueModelSceneFeaturesGraphicsPipelines)
-	{
-		pipeline.Execute();
-	}
-
-	for (InstancedStaticModelColorSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelColorSceneFeaturesGraphicsPipelines)
 	{
 		pipeline.Execute();
 	}
@@ -177,24 +157,16 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	_ClearGraphicsPipeline.Terminate();
-	_ParticleSystemComputePipeline.Terminate();
-
-	for (MaskedModelDepthSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelDepthSceneFeaturesGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines1)
 	{
 		pipeline.Terminate();
 	}
 
+	_ParticleSystemComputePipeline.Terminate();
+	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Terminate();
 	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Terminate();
 
-	for (InstancedStaticModelDepthSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelDepthSceneFeaturesGraphicsPipelines)
-	{
-		pipeline.Terminate();
-	}
-
-	_InstancedImpostorDepthSceneFeaturesGraphicsPipeline.Terminate();
-
-	for (MaskedModelColorSceneFeaturesGraphicsPipeline &pipeline : _MaskedModelColorSceneFeaturesGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
 	{
 		pipeline.Terminate();
 	}
@@ -202,11 +174,6 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Terminate();
 
 	for (OpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _OpaqueModelSceneFeaturesGraphicsPipelines)
-	{
-		pipeline.Terminate();
-	}
-
-	for (InstancedStaticModelColorSceneFeaturesGraphicsPipeline &pipeline : _InstancedStaticModelColorSceneFeaturesGraphicsPipelines)
 	{
 		pipeline.Terminate();
 	}

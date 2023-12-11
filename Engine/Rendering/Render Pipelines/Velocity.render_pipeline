@@ -16,6 +16,9 @@ ColorStoreOperator(STORE);
 DepthStencilLoadOperator(LOAD);
 DepthStencilStoreOperator(STORE);
 
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
 //Set depth/stencil properties.
 StencilTestEnable();
 StencilFailOperator(KEEP);
@@ -24,6 +27,9 @@ StencilDepthFailOperator(KEEP);
 StencilCompareOperator(NOT_EQUAL);
 StencilCompareMask(1);
 StencilReferenceMask(1);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
 
 //The vertex shader.
 Vertex

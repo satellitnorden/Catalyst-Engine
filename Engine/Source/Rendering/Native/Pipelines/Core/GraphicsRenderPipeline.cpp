@@ -14,25 +14,27 @@
 void GraphicsRenderPipeline::Initialize() NOEXCEPT
 {
 	//Retrieve the render pipeline resource.
-	const ResourcePointer<RenderPipelineResource> render_pipeline_resource{ ResourceSystem::Instance->GetRenderPipelineResource(_RenderPipelineIdentifier) };
+	_RenderPipelineResource = ResourceSystem::Instance->GetRenderPipelineResource(_RenderPipelineIdentifier);
 
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
 
 	//Set if this render pipeline needs a render data table.
-	_UsesRenderDataTable = !render_pipeline_resource->_IncludedUniformBuffers.Empty() || !render_pipeline_resource->_InputRenderTargets.Empty();
+	_UsesRenderDataTable =	!_RenderPipelineResource->_IncludedUniformBuffers.Empty()
+							|| !_RenderPipelineResource->_SamplerProperties.Empty()
+							|| !_RenderPipelineResource->_InputRenderTargets.Empty();
 
 	//If this render pipeline has input render targets, create a render data table (and its layout).
 	if (_UsesRenderDataTable)
 	{
 		//Create the render data table layout.
 		{
-			constexpr uint64 MAX_BINDINGS{ 2 };
+			constexpr uint64 MAX_BINDINGS{ 4 };
 
 			StaticArray<RenderDataTableLayoutBinding, MAX_BINDINGS> bindings;
 			uint32 current_binding_index{ 0 };
 
-			for (const HashString included_uniform_buffer : render_pipeline_resource->_IncludedUniformBuffers)
+			for (const HashString included_uniform_buffer : _RenderPipelineResource->_IncludedUniformBuffers)
 			{
 				bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT);
 			
@@ -41,7 +43,16 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 				ASSERT(current_binding_index <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS");
 			}
 
-			for (const HashString input_render_target : render_pipeline_resource->_InputRenderTargets)
+			for (const SamplerProperties &sampler_properties : _RenderPipelineResource->_SamplerProperties)
+			{
+				bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::Sampler, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT);
+
+				++current_binding_index;
+
+				ASSERT(current_binding_index <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS");
+			}
+
+			for (const HashString input_render_target : _RenderPipelineResource->_InputRenderTargets)
 			{
 				bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT);
 			
@@ -56,28 +67,37 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 		//Create the render data tables.
 		_RenderDataTables.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
-		for (RenderDataTableHandle &render_data_table : _RenderDataTables)
+		for (uint64 i{ 0 }; i < _RenderDataTables.Size(); ++i)
 		{
+			RenderDataTableHandle &render_data_table{ _RenderDataTables[i] };
+
 			RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &render_data_table);
 
 			uint32 current_binding_index{ 0 };
 
+			for (const HashString included_uniform_buffer : _RenderPipelineResource->_IncludedUniformBuffers)
 			{
-				uint8 framebuffer_index{ 0 };
-
-				for (const HashString included_uniform_buffer : render_pipeline_resource->_IncludedUniformBuffers)
-				{
-					RenderingSystem::Instance->BindUniformBufferToRenderDataTable
-					(
-						current_binding_index++,
-						0,
-						&render_data_table,
-						RenderingSystem::Instance->GetUniformBufferManager()->GetUniformBuffer(included_uniform_buffer, framebuffer_index++)
-					);
-				}
+				RenderingSystem::Instance->BindUniformBufferToRenderDataTable
+				(
+					current_binding_index++,
+					0,
+					&render_data_table,
+					RenderingSystem::Instance->GetUniformBufferManager()->GetUniformBuffer(included_uniform_buffer, static_cast<uint8>(i))
+				);
 			}
 
-			for (const HashString input_render_target : render_pipeline_resource->_InputRenderTargets)
+			for (const SamplerProperties &sampler_properties : _RenderPipelineResource->_SamplerProperties)
+			{
+				RenderingSystem::Instance->BindSamplerToRenderDataTable
+				(
+					current_binding_index++,
+					0,
+					&render_data_table,
+					RenderingSystem::Instance->GetSampler(sampler_properties)
+				);
+			}
+
+			for (const HashString input_render_target : _RenderPipelineResource->_InputRenderTargets)
 			{
 				RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable
 				(
@@ -92,70 +112,104 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 	}
 
 	//Set the shaders.
-	SetVertexShader(render_pipeline_resource->_VertexShaderHandle);
-	SetFragmentShader(render_pipeline_resource->_FragmentShaderHandle);
+	SetVertexShader(_RenderPipelineResource->_VertexShaderHandle);
+	SetFragmentShader(_RenderPipelineResource->_FragmentShaderHandle);
 
 	//Set the depth buffer.
-	if (render_pipeline_resource->_OutputDepthBuffer)
+	if (_RenderPipelineResource->_OutputDepthBuffer)
 	{
-		SetDepthBuffer(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(render_pipeline_resource->_OutputDepthBuffer));
+		SetDepthBuffer(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(_RenderPipelineResource->_OutputDepthBuffer));
 	}
 
 	//Add the output render targets.
-	if (render_pipeline_resource->_OutputRenderTargets.Size() == 1 && render_pipeline_resource->_OutputRenderTargets[0] == HashString("Screen"))
+	if (_RenderPipelineResource->_OutputRenderTargets.Size() == 1 && _RenderPipelineResource->_OutputRenderTargets[0] == HashString("Screen"))
 	{
 		SetIsRenderingDirectlyToScreen(true);
 	}
 	
 	else
 	{
-		SetNumberOfOutputRenderTargets(render_pipeline_resource->_OutputRenderTargets.Size());
+		SetNumberOfOutputRenderTargets(_RenderPipelineResource->_OutputRenderTargets.Size());
 
-		for (const HashString output_render_target : render_pipeline_resource->_OutputRenderTargets)
+		for (const HashString output_render_target : _RenderPipelineResource->_OutputRenderTargets)
 		{
 			AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(output_render_target));
 		}
 	}
 
 	//Add the render data table layouts.
+	SetNumberOfRenderDataTableLayouts(_UsesRenderDataTable ? 2 : 1);
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL_2));
+
 	if (_UsesRenderDataTable)
 	{
-		SetNumberOfRenderDataTableLayouts(1);
 		AddRenderDataTableLayout(_RenderDataTableLayout);
 	}
 	
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
 
+	//Retrieve the input stream.
+	ASSERT(!_RenderPipelineResource->_InputStreamSubscriptions.Empty(), "Need at least one input stream subscription!");
+	const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(_RenderPipelineResource->_InputStreamSubscriptions[0]) };
+
+	//Assume that all input streams match in required vertex input attribute/binding descriptions.
+	if (!input_stream._RequiredVertexInputAttributeDescriptions.Empty())
+	{
+		SetNumberOfVertexInputAttributeDescriptions(input_stream._RequiredVertexInputAttributeDescriptions.Size());
+
+		for (const VertexInputAttributeDescription &item : input_stream._RequiredVertexInputAttributeDescriptions)
+		{
+			AddVertexInputAttributeDescription(item._Location, item._Binding, item._Format, item._Offset);
+		}
+	}
+
+	if (!input_stream._RequiredVertexInputBindingDescriptions.Empty())
+	{
+		SetNumberOfVertexInputBindingDescriptions(input_stream._RequiredVertexInputBindingDescriptions.Size());
+
+		for (const VertexInputBindingDescription &item : input_stream._RequiredVertexInputBindingDescriptions)
+		{
+			AddVertexInputBindingDescription(item._Binding, item._Stride, item._InputRate);
+		}
+	}
+
+	//Set the push constant ranges.
+	if (input_stream._RequiredPushConstantDataSize > 0)
+	{
+		SetNumberOfPushConstantRanges(1);
+		AddPushConstantRange(ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, static_cast<uint32>(input_stream._RequiredPushConstantDataSize));
+	}
+
 	//Set the properties of the render pass.
-	SetDepthStencilAttachmentLoadOperator(render_pipeline_resource->_DepthStencilLoadOperator);
-	SetDepthStencilAttachmentStoreOperator(render_pipeline_resource->_DepthStencilStoreOperator);
-	SetColorAttachmentLoadOperator(render_pipeline_resource->_ColorLoadOperator);
-	SetColorAttachmentStoreOperator(render_pipeline_resource->_ColorStoreOperator);
-	SetBlendEnabled(render_pipeline_resource->_BlendEnabled);
-	SetBlendFactorSourceColor(render_pipeline_resource->_BlendColorSourceFactor);
-	SetBlendFactorDestinationColor(render_pipeline_resource->_BlendColorDestinationFactor);
-	SetColorBlendOperator(render_pipeline_resource->_BlendColorOperator);
-	SetBlendFactorSourceAlpha(render_pipeline_resource->_BlendAlphaSourceFactor);
-	SetBlendFactorDestinationAlpha(render_pipeline_resource->_BlendAlphaDestinationFactor);
-	SetAlphaBlendOperator(render_pipeline_resource->_BlendAlphaOperator);
-	SetCullMode(CullMode::None);
-	SetDepthTestEnabled(render_pipeline_resource->_DepthTestEnabled);
-	SetDepthWriteEnabled(render_pipeline_resource->_DepthWriteEnabled);
-	SetDepthCompareOperator(render_pipeline_resource->_DepthCompareOperator);
-	SetStencilTestEnabled(render_pipeline_resource->_StencilTestEnabled);
-	SetStencilFailOperator(render_pipeline_resource->_StencilFailOperator);
-	SetStencilPassOperator(render_pipeline_resource->_StencilPassOperator);
-	SetStencilDepthFailOperator(render_pipeline_resource->_StencilDepthFailOperator);
-	SetStencilCompareOperator(render_pipeline_resource->_StencilCompareOperator);
-	SetStencilCompareMask(render_pipeline_resource->_StencilCompareMask);
-	SetStencilWriteMask(render_pipeline_resource->_StencilWriteMask);
-	SetStencilReferenceMask(render_pipeline_resource->_StencilReferenceMask);
-	SetTopology(Topology::TriangleFan);
+	SetDepthStencilAttachmentLoadOperator(_RenderPipelineResource->_DepthStencilLoadOperator);
+	SetDepthStencilAttachmentStoreOperator(_RenderPipelineResource->_DepthStencilStoreOperator);
+	SetColorAttachmentLoadOperator(_RenderPipelineResource->_ColorLoadOperator);
+	SetColorAttachmentStoreOperator(_RenderPipelineResource->_ColorStoreOperator);
+	SetBlendEnabled(_RenderPipelineResource->_BlendEnabled);
+	SetBlendFactorSourceColor(_RenderPipelineResource->_BlendColorSourceFactor);
+	SetBlendFactorDestinationColor(_RenderPipelineResource->_BlendColorDestinationFactor);
+	SetColorBlendOperator(_RenderPipelineResource->_BlendColorOperator);
+	SetBlendFactorSourceAlpha(_RenderPipelineResource->_BlendAlphaSourceFactor);
+	SetBlendFactorDestinationAlpha(_RenderPipelineResource->_BlendAlphaDestinationFactor);
+	SetAlphaBlendOperator(_RenderPipelineResource->_BlendAlphaOperator);
+	SetCullMode(_RenderPipelineResource->_CullMode);
+	SetDepthTestEnabled(_RenderPipelineResource->_DepthTestEnabled);
+	SetDepthWriteEnabled(_RenderPipelineResource->_DepthWriteEnabled);
+	SetDepthCompareOperator(_RenderPipelineResource->_DepthCompareOperator);
+	SetStencilTestEnabled(_RenderPipelineResource->_StencilTestEnabled);
+	SetStencilFailOperator(_RenderPipelineResource->_StencilFailOperator);
+	SetStencilPassOperator(_RenderPipelineResource->_StencilPassOperator);
+	SetStencilDepthFailOperator(_RenderPipelineResource->_StencilDepthFailOperator);
+	SetStencilCompareOperator(_RenderPipelineResource->_StencilCompareOperator);
+	SetStencilCompareMask(_RenderPipelineResource->_StencilCompareMask);
+	SetStencilWriteMask(_RenderPipelineResource->_StencilWriteMask);
+	SetStencilReferenceMask(_RenderPipelineResource->_StencilReferenceMask);
+	SetTopology(_RenderPipelineResource->_Topology);
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set the name.
-	SetName(render_pipeline_resource->_Header._ResourceName.Data());
+	SetName(_RenderPipelineResource->_Header._ResourceName.Data());
 #endif
 }
 
@@ -164,6 +218,25 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 */
 void GraphicsRenderPipeline::Execute() NOEXCEPT
 {
+	//Check if this graphics pipeline should be included in the render.
+	{
+		bool all_input_streams_empty{ true };
+
+		for (const HashString input_stream_subscription : _RenderPipelineResource->_InputStreamSubscriptions)
+		{
+			const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(input_stream_subscription) };
+
+			all_input_streams_empty &= input_stream._Entries.Empty();
+		}
+
+		if (all_input_streams_empty)
+		{
+			SetIncludeInRender(false);
+
+			return;
+		}
+	}
+
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
 	SetCommandBuffer(command_buffer);
@@ -175,16 +248,23 @@ void GraphicsRenderPipeline::Execute() NOEXCEPT
 	command_buffer->BindPipeline(this);
 
 	//Bind the render data table.
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable2());
+
 	if (_UsesRenderDataTable)
 	{
 		RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
-		command_buffer->BindRenderDataTable(this, 0, current_render_data_table);
+		command_buffer->BindRenderDataTable(this, 1, current_render_data_table);
 	}
 
-	//Draw!
-	command_buffer->Draw(this, 3, 1);
+	//Go over the input streams.
+	for (const HashString input_stream_subscription : _RenderPipelineResource->_InputStreamSubscriptions)
+	{
+		const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(input_stream_subscription) };
 
+		ProcessInputStream(input_stream, command_buffer);
+	}
+	
 	//End the command buffer.
 	command_buffer->End(this);
 

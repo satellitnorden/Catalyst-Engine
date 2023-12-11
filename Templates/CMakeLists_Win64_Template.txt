@@ -64,7 +64,7 @@ add_compile_definitions($<$<CONFIG:Debug>:TRACY_ON_DEMAND>
 file(GLOB_RECURSE ENGINE_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/*.h ../../Catalyst-Engine/Engine/Include/*.hpp)
 file(GLOB_RECURSE ENGINE_INLINE_FILES ../../Catalyst-Engine/Engine/Include/*.inl)
 file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../Catalyst-Engine/Engine/Source/*.c ../../Catalyst-Engine/Engine/Source/*.cpp  ../../Catalyst-Engine/Engine/Source/*.asm)
-file(GLOB_RECURSE ENGINE_RENDERING_FILES ../../Catalyst-Engine/Engine/Rendering/*.render_pipeline ../../Catalyst-Engine/Engine/Rendering/*.shader_function_library ../../Catalyst-Engine/Engine/Rendering/*.uniform_buffer_definition)
+file(GLOB_RECURSE ENGINE_RENDERING_FILES ../../Catalyst-Engine/Engine/Rendering/*.global_render_data ../../Catalyst-Engine/Engine/Rendering/*.render_pipeline ../../Catalyst-Engine/Engine/Rendering/*.shader_function_library ../../Catalyst-Engine/Engine/Rendering/*.uniform_buffer_definition)
 file(GLOB_RECURSE GAME_INCLUDE_FILES ../Code/Include/*.h ../Code/Include/*.hpp)
 file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.c ../Code/Source/*.cpp  ../Code/Source/*.asm)
 
