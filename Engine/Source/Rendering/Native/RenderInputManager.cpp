@@ -47,6 +47,17 @@ struct InstancedImpostorPushConstantData
 	float32 _EndFadeOutDistance;
 };
 
+struct TerrainPushConstantData
+{
+	Vector3<float32> _WorldPosition;
+	Padding<4> _Padding;
+	uint32 _NormalMapTextureIndex;
+	uint32 _IndexMapTextureIndex;
+	uint32 _BlendMapTextureIndex;
+	float32 _MapResolution;
+	float32 _MapResolutionReciprocal;
+};
+
 /*
 *	Initializes the render input manager.
 */
@@ -69,8 +80,11 @@ void RenderInputManager::Initialize() NOEXCEPT
 				new_entry._PushConstantDataOffset = 0;
 				new_entry._VertexBuffer = EMPTY_HANDLE;
 				new_entry._IndexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBufferOffset = 0;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
 				new_entry._VertexCount = 3;
 				new_entry._IndexCount = 0;
+				new_entry._InstanceCount = 0;
 			}
 		},
 		RenderInputStream::Mode::DRAW,
@@ -221,6 +235,33 @@ void RenderInputManager::Initialize() NOEXCEPT
 			this
 		);
 	}
+
+	//Register the terrain input stream.
+	{
+		//Set up the required vertex input attribute/binding descriptions for models.
+		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
+
+		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, 0);
+		required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(sizeof(Vector3<float32>)));
+
+		DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
+
+		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vector3<float32>) + sizeof(Vector2<float32>)), VertexInputBindingDescription::InputRate::Vertex);
+
+		RegisterInputStream
+		(
+			HashString("Terrain"),
+			required_vertex_input_attribute_descriptions,
+			required_vertex_input_binding_descriptions,
+			sizeof(TerrainPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherTerrainInputStream(input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED,
+			this
+		);
+	}
 }
 
 /*
@@ -342,6 +383,7 @@ void RenderInputManager::GatherDepthModelInputStream
 				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
 				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
 				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._IndexBufferOffset = 0;
 				new_entry._InstanceBuffer = EMPTY_HANDLE;
 				new_entry._VertexCount = 0;
 				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
@@ -407,6 +449,7 @@ void RenderInputManager::GatherDepthModelInputStream
 				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
 				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
 				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._IndexBufferOffset = 0;
 				new_entry._InstanceBuffer = EMPTY_HANDLE;
 				new_entry._VertexCount = 0;
 				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
@@ -489,6 +532,7 @@ void RenderInputManager::GatherFullModelInputStream
 				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
 				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
 				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._IndexBufferOffset = 0;
 				new_entry._InstanceBuffer = EMPTY_HANDLE;
 				new_entry._VertexCount = 0;
 				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
@@ -554,6 +598,7 @@ void RenderInputManager::GatherFullModelInputStream
 				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
 				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
 				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._IndexBufferOffset = 0;
 				new_entry._InstanceBuffer = EMPTY_HANDLE;
 				new_entry._VertexCount = 0;
 				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
@@ -626,6 +671,7 @@ void RenderInputManager::GatherInstancedModelInputStream
 				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
 				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[0]._VertexBuffer;
 				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[0]._IndexBuffer;
+				new_entry._IndexBufferOffset = 0;
 				new_entry._InstanceBuffer = component->_TransformationsBuffer;
 				new_entry._VertexCount = 0;
 				new_entry._IndexCount = mesh._MeshLevelOfDetails[0]._IndexCount;
@@ -670,7 +716,7 @@ void RenderInputManager::GatherInstancedModelInputStream
 */
 void RenderInputManager::GatherInstancedImpostorInputStream
 (
-	RenderInputStream* const RESTRICT input_stream
+	RenderInputStream *const RESTRICT input_stream
 ) NOEXCEPT
 {
 	//Clear the entries.
@@ -694,6 +740,7 @@ void RenderInputManager::GatherInstancedImpostorInputStream
 			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
 			new_entry._VertexBuffer = EMPTY_HANDLE;
 			new_entry._IndexBuffer = EMPTY_HANDLE;
+			new_entry._IndexBufferOffset = 0;
 			new_entry._InstanceBuffer = component->_TransformationsBuffer;
 			new_entry._VertexCount = 4;
 			new_entry._IndexCount = 0;
@@ -719,6 +766,69 @@ void RenderInputManager::GatherInstancedImpostorInputStream
 			push_constant_data._EndFadeOutDistance = component->_EndFadeOutDistance;
 
 			for (uint64 i{ 0 }; i < sizeof(InstancedImpostorPushConstantData); ++i)
+			{
+				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+			}
+		}
+	}
+}
+
+/*
+*	Gathers a terrain input stream.
+*/
+void RenderInputManager::GatherTerrainInputStream
+(
+	RenderInputStream *const RESTRICT input_stream
+) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Gather terrains.
+	{
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfTerrainComponents() };
+		const TerrainGeneralComponent *RESTRICT general_component{ ComponentManager::GetTerrainTerrainGeneralComponents() };
+		const TerrainRenderComponent *RESTRICT render_component{ ComponentManager::GetTerrainTerrainRenderComponents() };
+
+		//Wait for culling.
+		CullingSystem::Instance->WaitForTerrainCulling();
+
+		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++general_component, ++render_component)
+		{
+			//Is this terrain visible?
+			if (!render_component->_Visibility)
+			{
+				continue;
+			}
+
+			//Add a new entry.
+			input_stream->_Entries.Emplace();
+			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+			new_entry._VertexBuffer = render_component->_Buffer;
+			new_entry._IndexBuffer = render_component->_Buffer;
+			new_entry._IndexBufferOffset = render_component->_IndexOffset;
+			new_entry._InstanceBuffer = EMPTY_HANDLE;
+			new_entry._VertexCount = 0;
+			new_entry._IndexCount = render_component->_IndexCount;
+			new_entry._InstanceCount = 0;
+
+			//Set up the push constant data.
+			TerrainPushConstantData push_constant_data;
+
+			push_constant_data._WorldPosition = general_component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
+			push_constant_data._NormalMapTextureIndex = render_component->_NormalMapTextureIndex;
+			push_constant_data._IndexMapTextureIndex = render_component->_IndexMapTextureIndex;
+			push_constant_data._BlendMapTextureIndex = render_component->_BlendMapTextureIndex;
+			push_constant_data._MapResolution = static_cast<float32>(general_component->_HeightMap.GetResolution());
+			push_constant_data._MapResolutionReciprocal = 1.0f / push_constant_data._MapResolution;
+
+			for (uint64 i{ 0 }; i < sizeof(TerrainPushConstantData); ++i)
 			{
 				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
 			}

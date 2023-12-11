@@ -87,7 +87,7 @@ void GraphicsPipeline::ProcessInputStream(const RenderInputStream &input_stream,
 				);
 
 				command_buffer->BindVertexBuffer(this, 0, entry._VertexBuffer, &OFFSET);
-				command_buffer->BindIndexBuffer(this, entry._IndexBuffer, OFFSET);
+				command_buffer->BindIndexBuffer(this, entry._IndexBuffer, entry._IndexBufferOffset);
 
 				command_buffer->DrawIndexed(this, entry._IndexCount, 1);
 			}
@@ -110,7 +110,7 @@ void GraphicsPipeline::ProcessInputStream(const RenderInputStream &input_stream,
 
 				command_buffer->BindVertexBuffer(this, 0, entry._VertexBuffer, &OFFSET);
 				command_buffer->BindVertexBuffer(this, 1, entry._InstanceBuffer, &OFFSET);
-				command_buffer->BindIndexBuffer(this, entry._IndexBuffer, OFFSET);
+				command_buffer->BindIndexBuffer(this, entry._IndexBuffer, entry._IndexBufferOffset);
 
 				command_buffer->DrawIndexed(this, entry._IndexCount, entry._InstanceCount);
 			}

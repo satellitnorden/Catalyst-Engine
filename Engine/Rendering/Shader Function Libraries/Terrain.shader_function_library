@@ -1,0 +1,23 @@
+/*
+*   Terrain material struct definition.
+*/
+struct TerrainMaterial
+{
+    vec3 albedo;
+    vec3 normal_map;
+    vec4 material_properties;
+};
+
+/*
+*   Blend two terrain materials.
+*/
+TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial second, float alpha)
+{
+    TerrainMaterial output_material;
+
+    output_material.albedo = mix(first.albedo, second.albedo, alpha);
+    output_material.normal_map = mix(first.normal_map, second.normal_map, alpha);
+    output_material.material_properties = mix(first.material_properties, second.material_properties, alpha);
+
+    return output_material;
+}

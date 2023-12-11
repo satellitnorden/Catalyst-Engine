@@ -15,6 +15,7 @@ layout (early_fragment_tests) in;
 #define MATERIAL_PROPERTY_OPACITY_TEXTURE (1 << 6)
 
 #define FLOAT32_MAXIMUM (3.402823466e+38F)
+#define UINT8_MAXIMUM (0xff)
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
@@ -25,10 +26,9 @@ layout (early_fragment_tests) in;
 #define TEST_BIT(BITFIELD, BIT) ((BITFIELD & BIT) == BIT)
 
 /*
-*	Evaluates the albedo/thickness of the given material at the given coordinate.
-*	Assumes a sampler named 'SAMPLER' has been defined.
+*	Evaluates the albedo/thickness of the given material at the given coordinate with the given sampler.
 */
-#define EVALUATE_ALBEDO_THICKNESS(MATERIAL, COORDINATE, ALBEDO_THICKNESS)									\
+#define EVALUATE_ALBEDO_THICKNESS(MATERIAL, COORDINATE, SAMPLER, ALBEDO_THICKNESS)							\
 {																											\
 	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE))							\
 	{																										\
@@ -42,10 +42,9 @@ layout (early_fragment_tests) in;
 }
 
 /*
-*	Evaluates the normal map/displacement of the given material at the given coordinate.
-*	Assumes a sampler named 'SAMPLER' has been defined.
+*	Evaluates the normal map/displacement of the given material at the given coordinate with the given sampler.
 */
-#define EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIAL, COORDINATE, NORMAL_MAP_DISPLACEMENT)									\
+#define EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIAL, COORDINATE, SAMPLER, NORMAL_MAP_DISPLACEMENT)						\
 {																														\
 	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))								\
 	{																													\
@@ -59,14 +58,13 @@ layout (early_fragment_tests) in;
 }
 
 /*
-*	Evaluates the material properties of the given material at the given coordinate.
-*	Assumes a sampler named 'SAMPLER' has been defined.
+*	Evaluates the material properties of the given material at the given coordinate with the given sampler.
 */
-#define EVALUATE_MATERIAL_PROPERTIES(MATERIAL, COORDINATE, MATERIAL_PROPERTIES)										\
+#define EVALUATE_MATERIAL_PROPERTIES(MATERIAL, COORDINATE, SAMPLER, MATERIAL_PROPERTIES)							\
 {																													\
 	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))								\
 	{																												\
-		MATERIAL_PROPERTIES = texture(sampler2D(TEXTURES[MATERIAL._MaterialProperties], SAMPLER), COORDINATE);	\
+		MATERIAL_PROPERTIES = texture(sampler2D(TEXTURES[MATERIAL._MaterialProperties], SAMPLER), COORDINATE);		\
 	}																												\
 																													\
 	else																											\
@@ -76,10 +74,9 @@ layout (early_fragment_tests) in;
 }
 
 /*
-*	Evaluates the opacity of the given material at the given coordinate.
-*	Assumes a sampler named 'SAMPLER' has been defined.
+*	Evaluates the opacity of the given material at the given coordinate with the given sampler.
 */
-#define EVALUATE_OPACITY(MATERIAL, COORDINATE, OPACITY)										\
+#define EVALUATE_OPACITY(MATERIAL, COORDINATE, SAMPLER, OPACITY)							\
 {																							\
 	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_OPACITY_TEXTURE))					\
 	{																						\

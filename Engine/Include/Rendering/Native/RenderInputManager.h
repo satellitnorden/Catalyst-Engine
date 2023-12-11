@@ -85,4 +85,12 @@ private:
 		RenderInputStream *const RESTRICT input_stream
 	) NOEXCEPT;
 
+	/*
+	*	Gathers a terrain input stream.
+	*/
+	void GatherTerrainInputStream
+	(
+		RenderInputStream *const RESTRICT input_stream
+	) NOEXCEPT;
+
 };

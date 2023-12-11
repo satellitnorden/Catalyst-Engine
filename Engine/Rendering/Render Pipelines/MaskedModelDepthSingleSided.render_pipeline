@@ -67,7 +67,7 @@ Fragment
 
     //Evaluate the opacity.
     float opacity;
-    EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, opacity);
+    EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
 
     //Conditionally discard.
     if (opacity < 0.5f)

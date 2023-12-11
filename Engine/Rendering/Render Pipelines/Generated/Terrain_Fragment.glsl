@@ -150,13 +150,8 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (std140, set = 1, binding = 1) uniform Wind
-{
-	layout (offset = 0) vec4 WIND_DIRECTION_SPEED;
-	layout (offset = 16) float WIND_TIME;
-};
-
-layout (set = 1, binding = 2) uniform sampler SAMPLER;
+layout (set = 1, binding = 1) uniform sampler TERRAIN_SAMPLER;
+layout (set = 1, binding = 2) uniform sampler MATERIAL_SAMPLER;
 
 /*
 *   Calculates the world position.
@@ -196,75 +191,126 @@ vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
   return view_space_position.xy * 0.5f + 0.5f;
 }
 
-//Constants.
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_1 	(1 << 0)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_2 	(1 << 1)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_3 	(1 << 2)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_4 	(1 << 3)
-#define MODEL_FLAG_IS_VEGETATION 				(1 << 4)
+/*
+*   Terrain material struct definition.
+*/
+struct TerrainMaterial
+{
+    vec3 albedo;
+    vec3 normal_map;
+    vec4 material_properties;
+};
 
 /*
-*	Calculates wind displacement.
-*	Requires the Wind uniform buffer to be bound.
+*   Blend two terrain materials.
 */
-vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
+TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial second, float alpha)
 {
-	//Calculate the displacement.
-	vec3 displacement = vec3(0.0f, 0.0f, 0.0f);
+    TerrainMaterial output_material;
 
-	//Add large scale motion.
-	displacement.x += (sin(world_position.x + WIND_TIME) + 0.125f) * WIND_DIRECTION_SPEED.x * WIND_DIRECTION_SPEED.w;
-	displacement.z += (cos(world_position.z + WIND_TIME) + 0.125f) * WIND_DIRECTION_SPEED.z * WIND_DIRECTION_SPEED.w;
+    output_material.albedo = mix(first.albedo, second.albedo, alpha);
+    output_material.normal_map = mix(first.normal_map, second.normal_map, alpha);
+    output_material.material_properties = mix(first.material_properties, second.material_properties, alpha);
 
-	//Add medium scale motion.
-	displacement.x += (sin((world_position.x + WIND_TIME) * 2.0f) + 0.25f) * WIND_DIRECTION_SPEED.x * WIND_DIRECTION_SPEED.w * 0.5f;
-	displacement.z += (cos((world_position.z + WIND_TIME) * 2.0f) + 0.25f) * WIND_DIRECTION_SPEED.z * WIND_DIRECTION_SPEED.w * 0.5f;
-
-	//Add small scale motion.
-	displacement.x += (sin((world_position.x + WIND_TIME) * 4.0f) + 0.375f) * WIND_DIRECTION_SPEED.x * WIND_DIRECTION_SPEED.w * 0.25f;
-	displacement.z += (cos((world_position.z + WIND_TIME) * 4.0f) + 0.375f) * WIND_DIRECTION_SPEED.z * WIND_DIRECTION_SPEED.w * 0.25f;
-
-	//Modify the displacement so it doesn't affect the bottom of the mesh.
-	displacement *= max(vertex_position.y * 0.125f, 0.0f);
-
-	//Return the displacement.
-	return displacement;
+    return output_material;
 }
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) uint MODEL_FLAGS;
-	layout (offset = 20) float START_FADE_OUT_DISTANCE_SQUARED;
-	layout (offset = 24) float END_FADE_OUT_DISTANCE_SQUARED;
-	layout (offset = 28) uint MATERIAL_INDEX;
+	layout (offset = 0) vec3 WORLD_POSITION;
+	layout (offset = 16) uint NORMAL_MAP_TEXTURE_INDEX;
+	layout (offset = 20) uint INDEX_MAP_TEXTURE_INDEX;
+	layout (offset = 24) uint BLEND_MAP_TEXTURE_INDEX;
+	layout (offset = 28) float MAP_RESOLUTION;
+	layout (offset = 32) float MAP_RESOLUTION_RECIPROCAL;
 };
 
-layout (location = 0) in mat3 InTangentSpaceMatrix;
-layout (location = 3) in vec3 InWorldPosition;
-layout (location = 4) in vec2 InTextureCoordinate;
+layout (location = 0) in vec3 InWorldPosition;
+layout (location = 1) in vec2 InHeightMapTextureCoordinate;
 
 layout (location = 0) out vec4 SceneFeatures1;
 layout (location = 1) out vec4 SceneFeatures2;
 layout (location = 2) out vec4 SceneFeatures3;
 layout (location = 3) out vec4 SceneFeatures4;
-layout (location = 4) out vec4 Scene;
 
 void main()
 {
-    vec4 albedo_thickness;
-    EVALUATE_ALBEDO_THICKNESS(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, albedo_thickness);
-    vec4 normal_map_displacement;
-    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, normal_map_displacement);
-    vec4 material_properties;
-    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, material_properties);
-    vec3 shading_normal = normal_map_displacement.xyz * 2.0f - 1.0f;
-    shading_normal = InTangentSpaceMatrix * shading_normal;
-    shading_normal = normalize(shading_normal);
+    vec3 normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), InHeightMapTextureCoordinate).xyz;
+    normal = normal * 2.0f - 1.0f;
+	vec3 tangent = cross(normal, vec3(0.0f, 0.0f, 1.0f));
+	vec3 bitangent = cross(tangent, normal);
+	mat3 tangent_space_matrix = mat3(tangent, bitangent, normal);
+    vec2 material_texture_coordinate = InWorldPosition.xz * 0.5f;
+    TerrainMaterial terrain_materials[4];
+    vec2 sample_offsets[4];
+    sample_offsets[0] = vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_offsets[1] = vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_offsets[2] = vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_offsets[3] = vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+    for (uint i = 0; i < 4; ++i)
+    {
+        vec2 height_map_texture_coordinate = InHeightMapTextureCoordinate + sample_offsets[i];
+        vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), height_map_texture_coordinate);
+        Material material_1 = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
+        Material material_2 = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
+        Material material_3 = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
+        Material material_4 = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
+        vec4 albedo_thickness_1;
+        EVALUATE_ALBEDO_THICKNESS(material_1, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_1);
+        vec4 albedo_thickness_2;
+        EVALUATE_ALBEDO_THICKNESS(material_2, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_2);
+        vec4 albedo_thickness_3;
+        EVALUATE_ALBEDO_THICKNESS(material_3, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_3);
+        vec4 albedo_thickness_4;
+        EVALUATE_ALBEDO_THICKNESS(material_4, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_4);
+        vec4 normal_map_displacement_1;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_1);
+        vec4 normal_map_displacement_2;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_2);
+        vec4 normal_map_displacement_3;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_3);
+        vec4 normal_map_displacement_4;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_4);
+        vec4 material_properties_1;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_1);
+        vec4 material_properties_2;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_2);
+        vec4 material_properties_3;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_3);
+        vec4 material_properties_4;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_4);
+        vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), height_map_texture_coordinate);
+        blend_map[0] *= pow(normal_map_displacement_1.w, 2.0f);
+        blend_map[1] *= pow(normal_map_displacement_2.w, 2.0f);
+        blend_map[2] *= pow(normal_map_displacement_3.w, 2.0f);
+        blend_map[3] *= pow(normal_map_displacement_4.w, 2.0f);
+        float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
+        blend_map[0] *= inverse_sum;
+        blend_map[1] *= inverse_sum;
+        blend_map[2] *= inverse_sum;
+        blend_map[3] *= inverse_sum;
+        terrain_materials[i].albedo =   albedo_thickness_1.rgb * blend_map[0]
+                                        + albedo_thickness_2.rgb * blend_map[1]
+                                        + albedo_thickness_3.rgb * blend_map[2]
+                                        + albedo_thickness_4.rgb * blend_map[3];
+        terrain_materials[i].normal_map =   normal_map_displacement_1.rgb * blend_map[0]
+                                            + normal_map_displacement_2.rgb * blend_map[1]
+                                            + normal_map_displacement_3.rgb * blend_map[2]
+                                            + normal_map_displacement_4.rgb * blend_map[3];
+        terrain_materials[i].material_properties =  material_properties_1 * blend_map[0]
+                                                    + material_properties_2 * blend_map[1]
+                                                    + material_properties_3 * blend_map[2]
+                                                    + material_properties_4 * blend_map[3];
+    }
+    TerrainMaterial blend_1 = BlendTerrainMaterial(terrain_materials[0], terrain_materials[1], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+	TerrainMaterial blend_2 = BlendTerrainMaterial(terrain_materials[2], terrain_materials[3], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+	TerrainMaterial final_material = BlendTerrainMaterial(blend_1, blend_2, fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION));
+    final_material.normal_map = final_material.normal_map * 2.0f - 1.0f;
+	final_material.normal_map = normalize(final_material.normal_map);
+	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map);
     vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
-	SceneFeatures1 = albedo_thickness;
+	SceneFeatures1 = vec4(final_material.albedo,1.0f);
 	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
-	SceneFeatures3 = material_properties;
+	SceneFeatures3 = final_material.material_properties;
 	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
-	Scene = vec4(albedo_thickness.rgb*material_properties[3]*MATERIALS[MATERIAL_INDEX]._EmissiveMultiplier,1.0f);
 }

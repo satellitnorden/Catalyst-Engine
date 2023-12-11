@@ -28,6 +28,9 @@ public:
 	//The index buffer.
 	BufferHandle _IndexBuffer;
 
+	//The index buffer offset.
+	uint64 _IndexBufferOffset;
+
 	//The instance buffer.
 	BufferHandle _InstanceBuffer;
 

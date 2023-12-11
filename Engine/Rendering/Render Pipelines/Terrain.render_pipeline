@@ -1,0 +1,204 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Terrain);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(SceneFeatures1);
+OutputRenderTarget(SceneFeatures2);
+OutputRenderTarget(SceneFeatures3);
+OutputRenderTarget(SceneFeatures4);
+
+//Set the cull mode.
+CullMode(BACK);
+
+//Set the load/store operators.
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER);
+DepthTestEnable();
+DepthWriteEnable();
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(REPLACE);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(ALWAYS);
+StencilCompareMask(0);
+StencilWriteMask(1);
+StencilReferenceMask(1);
+
+//Set the topology.
+Topology(TRIANGLE_LIST);
+
+//Declare push constant data.
+PushConstantData(vec3, WORLD_POSITION);
+PushConstantData(uint, NORMAL_MAP_TEXTURE_INDEX);
+PushConstantData(uint, INDEX_MAP_TEXTURE_INDEX);
+PushConstantData(uint, BLEND_MAP_TEXTURE_INDEX);
+PushConstantData(float, MAP_RESOLUTION);
+PushConstantData(float, MAP_RESOLUTION_RECIPROCAL);
+
+//Declare samplers.
+Sampler(TERRAIN_SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
+Sampler(MATERIAL_SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 0 /* Anisotropic Samples */);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Terrain);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec3, InPosition);
+    InputParameter(vec2, InTextureCoordinate);
+
+    //Declare output parameters.
+    OutputParameter(vec3, OutWorldPosition);
+    OutputParameter(vec2, OutHeightMapTextureCoordinate);
+
+    //Calculate the world position.
+    OutWorldPosition = WORLD_POSITION + InPosition;
+
+    //Calculate the heightmap texture coordinate.
+    OutHeightMapTextureCoordinate = InTextureCoordinate;
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec3, InWorldPosition);
+    InputParameter(vec2, InHeightMapTextureCoordinate);
+
+    //Sample the normal.
+    vec3 normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), InHeightMapTextureCoordinate).xyz;
+    normal = normal * 2.0f - 1.0f;
+
+    //Calculate the tangent space matrix.
+	vec3 tangent = cross(normal, vec3(0.0f, 0.0f, 1.0f));
+	vec3 bitangent = cross(tangent, normal);
+
+	mat3 tangent_space_matrix = mat3(tangent, bitangent, normal);
+
+    //Calculate the material texture coordinate.
+    vec2 material_texture_coordinate = InWorldPosition.xz * 0.5f;
+
+    //Sample the terrain materials
+    TerrainMaterial terrain_materials[4];
+    vec2 sample_offsets[4];
+    
+    sample_offsets[0] = vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_offsets[1] = vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_offsets[2] = vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_offsets[3] = vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+
+    for (uint i = 0; i < 4; ++i)
+    {
+        //Cache the height map texture coordinate.
+        vec2 height_map_texture_coordinate = InHeightMapTextureCoordinate + sample_offsets[i];
+
+        //Sample the index map.
+        vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), height_map_texture_coordinate);
+    
+        //Retrieve the materials.
+        Material material_1 = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
+        Material material_2 = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
+        Material material_3 = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
+        Material material_4 = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
+
+        //Evaluate the albedo/thickness of the materials.
+        vec4 albedo_thickness_1;
+        EVALUATE_ALBEDO_THICKNESS(material_1, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_1);
+        vec4 albedo_thickness_2;
+        EVALUATE_ALBEDO_THICKNESS(material_2, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_2);
+        vec4 albedo_thickness_3;
+        EVALUATE_ALBEDO_THICKNESS(material_3, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_3);
+        vec4 albedo_thickness_4;
+        EVALUATE_ALBEDO_THICKNESS(material_4, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_4);
+
+        //Evaluate the normal map/displacement of the materials.
+        vec4 normal_map_displacement_1;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_1);
+        vec4 normal_map_displacement_2;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_2);
+        vec4 normal_map_displacement_3;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_3);
+        vec4 normal_map_displacement_4;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_4);
+
+        //Evaluate the material properties of the materials.
+        vec4 material_properties_1;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_1);
+        vec4 material_properties_2;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_2);
+        vec4 material_properties_3;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_3);
+        vec4 material_properties_4;
+        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_4);
+
+        //Sample the blend map.
+        vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), height_map_texture_coordinate);
+
+        //Alter the blend values based on the displacement.
+        blend_map[0] *= pow(normal_map_displacement_1.w, 2.0f);
+        blend_map[1] *= pow(normal_map_displacement_2.w, 2.0f);
+        blend_map[2] *= pow(normal_map_displacement_3.w, 2.0f);
+        blend_map[3] *= pow(normal_map_displacement_4.w, 2.0f);
+
+        //Renormalize the blend map.
+        float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
+
+        blend_map[0] *= inverse_sum;
+        blend_map[1] *= inverse_sum;
+        blend_map[2] *= inverse_sum;
+        blend_map[3] *= inverse_sum;
+
+        //Blend the material.
+        terrain_materials[i].albedo =   albedo_thickness_1.rgb * blend_map[0]
+                                        + albedo_thickness_2.rgb * blend_map[1]
+                                        + albedo_thickness_3.rgb * blend_map[2]
+                                        + albedo_thickness_4.rgb * blend_map[3];
+
+        terrain_materials[i].normal_map =   normal_map_displacement_1.rgb * blend_map[0]
+                                            + normal_map_displacement_2.rgb * blend_map[1]
+                                            + normal_map_displacement_3.rgb * blend_map[2]
+                                            + normal_map_displacement_4.rgb * blend_map[3];
+
+        terrain_materials[i].material_properties =  material_properties_1 * blend_map[0]
+                                                    + material_properties_2 * blend_map[1]
+                                                    + material_properties_3 * blend_map[2]
+                                                    + material_properties_4 * blend_map[3];
+    }
+
+    TerrainMaterial blend_1 = BlendTerrainMaterial(terrain_materials[0], terrain_materials[1], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+	TerrainMaterial blend_2 = BlendTerrainMaterial(terrain_materials[2], terrain_materials[3], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+
+	TerrainMaterial final_material = BlendTerrainMaterial(blend_1, blend_2, fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION));
+
+    final_material.normal_map = final_material.normal_map * 2.0f - 1.0f;
+	final_material.normal_map = normalize(final_material.normal_map);
+
+    //Calculate the shading normal.
+	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map);
+
+    //Calculate the velocity.
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+
+    //Output the fragments.
+   OutputFragment(SceneFeatures1, vec4(final_material.albedo, 1.0f));
+    OutputFragment(SceneFeatures2, vec4(shading_normal, gl_FragCoord.z));
+    OutputFragment(SceneFeatures3, final_material.material_properties);
+    OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
+}
