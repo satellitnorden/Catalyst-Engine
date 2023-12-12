@@ -206,79 +206,6 @@ public:
 
 };
 
-class CatalystProjectTerrainConfiguration final
-{
-
-public:
-
-	//Type aliases.
-	using TerrainMaximumHeightFunction = float32(*)();
-	using TerrainHeightFunction = float32(*)(const WorldPosition &world_position);
-	using TerrainMaterialFunction = void(*)(const WorldPosition &world_position, Vector4<uint8> *const RESTRICT indices, Vector4<uint8> *const RESTRICT weights);
-
-	/*
-	*	The patch size.
-	*	Defines the size of each root node patch.
-	*/
-	OptionalWithDefault<float32> _PatchSize{ 1'024.0f };
-
-	/*
-	*	The patch resolution.
-	*	Defines the resolution of the terrain plane.
-	*	Higher resolutions means better quality for displacement, but worse performance.
-	*	MUST be a power of two plus one.
-	*/
-	OptionalWithDefault<uint32> _PatchResolution{ 65 };
-
-	/*
-	*	The maximum material maps resolution.
-	*	Defines the texture resolution of the material maps.
-	*	Higher resolutions means better quality for the terrain, but worse performance.
-	*	MUST be a power of two.
-	*/
-	OptionalWithDefault<uint32> _MaximumMaterialMapsResolution{ 256 };
-
-	/*
-	*	The maximum quad tree depth.
-	*	Defines the maximum number of times each quad tree node can be subdivided.
-	*	Higher depths means better quality for displacement, but worse performance.
-	*/
-	OptionalWithDefault<uint8> _MaximumQuadTreeDepth{ 8 };
-
-	/*
-	*	The terrain maximum height function.
-	*	Responsible for reporting the maximum height of the terrain height function.
-	*/
-	TerrainMaximumHeightFunction _TerrainMaximumHeightFunction{ nullptr };
-
-	/*
-	*	The terrain height function.
-	*	Responsible for calculating the height at a given world position.
-	*/
-	TerrainHeightFunction _TerrainHeightFunction{ nullptr };
-
-	/*
-	*	The terrain material function.
-	*	Responsible for calculating the material at a given world position.
-	*/
-	TerrainMaterialFunction _TerrainMaterialFunction{ nullptr };
-
-	/*
-	*	The terrain data save folder.
-	*	This is where terrain data will be saved to disk between sessions, for faster loading when the height/material functions don't change.
-	*/
-	DynamicString _TerrainDataSaveFolder;
-
-	/*
-	*	Default constructor.
-	*/
-	CatalystProjectTerrainConfiguration() NOEXCEPT
-	{
-
-	}
-
-};
-
 class CatalystProjectWorldConfiguration final
 {
 
@@ -320,9 +247,6 @@ public:
 
 	//The project sound configuration.
 	CatalystProjectSoundConfiguration _SoundConfiguration;
-
-	//The project terrain configuration.
-	CatalystProjectTerrainConfiguration _TerrainConfiguration;
 
 	//The project world configuration.
 	CatalystProjectWorldConfiguration _WorldConfiguration;

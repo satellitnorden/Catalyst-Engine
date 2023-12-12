@@ -21,6 +21,11 @@ layout (early_fragment_tests) in;
 #define MAXIMUM_8_BIT_UINT (255)
 
 /*
+*   Defines the bit at the specified index.
+*/
+#define BIT(INDEX) (1 << (INDEX))
+
+/*
 *   Tests the bit of the specified bitfield
 */
 #define TEST_BIT(BITFIELD, BIT) ((BITFIELD & BIT) == BIT)

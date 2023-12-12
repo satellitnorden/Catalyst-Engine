@@ -123,6 +123,39 @@ void CullingSystem::CullStaticModels() const NOEXCEPT
 }
 
 /*
+*	Culls a single terrain quad tree node.
+*/
+void CullTerrainQuadTreeNode
+(
+	const Vector3<float32> &world_grid_delta,
+	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes,
+	TerrainQuadTreeNode *const RESTRICT node
+) NOEXCEPT
+{
+	//If this node is subdivided, cull each child node.
+	if (node->IsSubdivided())
+	{
+		for (TerrainQuadTreeNode &child_node : node->_ChildNodes)
+		{
+			CullTerrainQuadTreeNode(world_grid_delta, frustum_planes, &child_node);
+		}
+	}
+
+	else
+	{
+		//Transform the axis aligned bounding box into the camera's cell.
+		AxisAlignedBoundingBox3D transformed_axis_aligned_bounding_box
+		{
+			node->_AxisAlignedBoundingBox._Minimum + world_grid_delta,
+			node->_AxisAlignedBoundingBox._Maximum + world_grid_delta
+		};
+
+		//Cull!
+		node->_Visible = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, transformed_axis_aligned_bounding_box);
+	}
+}
+
+/*
 *	Culls terrain.
 */
 void CullingSystem::CullTerrain() const NOEXCEPT
@@ -133,11 +166,26 @@ void CullingSystem::CullTerrain() const NOEXCEPT
 
 	//Iterate over all patches and determine their visibility.
 	const uint64 number_of_components{ ComponentManager::GetNumberOfTerrainComponents() };
-	TerrainGeneralComponent *RESTRICT general_component{ ComponentManager::GetTerrainTerrainGeneralComponents() };
-	TerrainRenderComponent *RESTRICT render_component{ ComponentManager::GetTerrainTerrainRenderComponents() };
+	TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainTerrainComponents() };
 
-	for (uint64 i{ 0 }; i < number_of_components; ++i, ++general_component, ++render_component)
+	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
 	{
-		render_component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, general_component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell));
+		component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell));
+	
+		//If this terrain is visible, walk through the quad tree and determine the visibility of each node.
+		if (component->_Visibility)
+		{
+			//Calculate the cell delta.
+			const Vector3<int32> delta{ component->_WorldPosition.GetCell() - WorldSystem::Instance->GetCurrentWorldGridCell()};
+			Vector3<float32> world_grid_delta;
+
+			for (uint8 i{ 0 }; i < 3; ++i)
+			{
+				world_grid_delta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
+			}
+
+			//Start at the root node.
+			CullTerrainQuadTreeNode(world_grid_delta, frustum_planes, &component->_QuadTree._RootNode);
+		}
 	}
 }

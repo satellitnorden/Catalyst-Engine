@@ -100,7 +100,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	ScriptSystem::Instance->Initialize();
 	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
 	TaskSystem::Instance->Initialize(_ProjectConfiguration._ConcurrencyConfiguration);
-	TerrainSystem::Instance->Initialize(_ProjectConfiguration._TerrainConfiguration);
+	TerrainSystem::Instance->Initialize();
 	UserInterfaceSystem::Instance->Initialize();
 	WorldSystem::Instance->Initialize(_ProjectConfiguration._WorldConfiguration);
 
@@ -149,7 +149,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Post-initialize all systems.
 	AnimationSystem::Instance->PostInitialize();
 	RenderingSystem::Instance->PostInitialize();
-	TerrainSystem::Instance->PostInitialize(_ProjectConfiguration._TerrainConfiguration);
 	WorldSystem::Instance->PostInitialize();
 
 	//Post-initialize the game system.

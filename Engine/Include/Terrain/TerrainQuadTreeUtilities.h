@@ -7,7 +7,6 @@
 #include <Math/General/Vector.h>
 
 //Terrain.
-#include <Terrain/TerrainCore.h>
 #include <Terrain/TerrainQuadTree.h>
 
 class TerrainQuadTreeUtilities
@@ -16,54 +15,26 @@ class TerrainQuadTreeUtilities
 public:
 
 	/*
-	*	Given a node, return it's middle point.
-	*/
-	static Vector3<float> MiddlePoint(const TerrainQuadTreeNode &node) NOEXCEPT
-	{
-		return Vector3<float>(	node._Minimum._X + ((node._Maximum._X - node._Minimum._X) * 0.5f),
-								0.0f,
-								node._Minimum._Y + ((node._Maximum._Y - node._Minimum._Y) * 0.5f));
-	}
-
-	/*
-	*	Given a quad tree and a node, returning the neighboring nodes in the order upper, right, lower, left.
-	*/
-	static void NeighboringNodes(const TerrainProperties &properties, const TerrainQuadTree &quadTree, const TerrainQuadTreeNode &node, StaticArray<const TerrainQuadTreeNode *RESTRICT, 4> *const RESTRICT neighboringNodes) NOEXCEPT
-	{
-		//Calculate the middle point of the node.
-		const Vector3<float> middlePoint{ MiddlePoint(node) };
-
-		//Calculate the patch size multiplier.
-		const float patchSizeMultiplier{ PatchSizeMultiplier(node) };
-
-		//Calculate the positions.
-		const StaticArray<const Vector3<float>, 4> positions
-		{
-			middlePoint + Vector3<float>(0.0f, 0.0f, -properties._PatchSize * patchSizeMultiplier),
-			middlePoint + Vector3<float>(properties._PatchSize * patchSizeMultiplier, 0.0f, 0.0f),
-			middlePoint + Vector3<float>(0.0f, 0.0f, properties._PatchSize * patchSizeMultiplier),
-			middlePoint + Vector3<float>(-properties._PatchSize * patchSizeMultiplier, 0.0f, 0.0f)
-		};
-
-		//Find the node with the highest depth for each position.
-		for (uint8 i{ 0 }; i < 4; ++i)
-		{
-			neighboringNodes->At(i) = FindHighestNode(quadTree, positions[i]);
-		}
-	}
-
-	/*
 	*	Given a node, return it's patch size multiplier.
 	*/
-	static float PatchSizeMultiplier(const TerrainQuadTreeNode &node) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 PatchSizeMultiplier(const TerrainQuadTreeNode &node) NOEXCEPT
 	{
-		return 1.0f / static_cast<float>(1 << (node._Depth));
+		return 1.0f / static_cast<float32>(1 << (node._Depth));
+	}
+
+	/*
+	*	Given a node, return it's middle point.
+	*/
+	FORCE_INLINE static NO_DISCARD Vector2<float32> MiddlePoint(const TerrainQuadTreeNode &node) NOEXCEPT
+	{
+		return Vector2<float32>(node._Minimum._X + ((node._Maximum._X - node._Minimum._X) * 0.5f),
+								node._Minimum._Y + ((node._Maximum._Y - node._Minimum._Y) * 0.5f));
 	}
 
 	/*
 	*	Given a node and a position, returns if the node should be combined.
 	*/
-	static bool ShouldBeCombined(const TerrainProperties &properties, const TerrainQuadTreeNode &node, const Vector3<float> &position) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool ShouldBeCombined(TerrainComponent *const RESTRICT component, const TerrainQuadTreeNode& node, const Vector3<float32>& position) NOEXCEPT
 	{
 		if (node.IsSubdivided() && node._ChildNodes.Data()->IsSubdivided())
 		{
@@ -72,56 +43,65 @@ public:
 
 		else
 		{
-			const Vector3<float> middlePoint{ MiddlePoint(node) };
-			const float length{ CatalystBaseMath::Maximum<float>(CatalystBaseMath::Absolute(middlePoint._X - position._X), CatalystBaseMath::Absolute(middlePoint._Z - position._Z)) };
+			const Vector2<float32> middle_point{ MiddlePoint(node) };
+			const float32 length{ CatalystBaseMath::Maximum<float32>(CatalystBaseMath::Absolute(middle_point._X - position._X), CatalystBaseMath::Absolute(middle_point._Y - position._Z)) };
 
-			return	node._Depth > properties._MaximumQuadTreeDepth
-					|| length > properties._PatchSize * PatchSizeMultiplier(node);
+			return	node._Depth > component->_MaximumSubdivisionSteps
+					|| length > static_cast<float32>(component->_PatchSize) * PatchSizeMultiplier(node);
 		}
 	}
 
 	/*
 	*	Given a node and a position, returns if the node should be subdivided.
 	*/
-	static bool ShouldBeSubdivided(const TerrainProperties &properties, const TerrainQuadTreeNode &node, const Vector3<float> &position) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool ShouldBeSubdivided(TerrainComponent *const RESTRICT component, const TerrainQuadTreeNode &node, const Vector3<float32> &position) NOEXCEPT
 	{
-		const Vector3<float> middlePoint{ MiddlePoint(node) };
-		const float length{ CatalystBaseMath::Maximum<float>(CatalystBaseMath::Absolute(middlePoint._X - position._X), CatalystBaseMath::Absolute(middlePoint._Z - position._Z)) };
+		const Vector2<float32> middle_point{ MiddlePoint(node) };
+		const float32 length{ CatalystBaseMath::Maximum<float32>(CatalystBaseMath::Absolute(middle_point._X - position._X), CatalystBaseMath::Absolute(middle_point._Y - position._Z)) };
 
-		return	node._Depth < properties._MaximumQuadTreeDepth
-				&& length <= properties._PatchSize * PatchSizeMultiplier(node);
+		return	node._Depth < component->_MaximumSubdivisionSteps
+				&& length <= static_cast<float32>(component->_PatchSize) * PatchSizeMultiplier(node);
 	}
 
-private:
-
 	/*
-	*	Given a quad tree and a position, find the node with the highest depth within the quad tree.
+	*	Given a terrain component and a node, returning the neighboring nodes in the order upper, right, lower, left.
 	*/
-	RESTRICTED static const TerrainQuadTreeNode *const RESTRICT FindHighestNode(const TerrainQuadTree &quadTree, const Vector3<float> &position) NOEXCEPT
+	FORCE_INLINE static void NeighboringNodes(TerrainComponent* const RESTRICT component, const TerrainQuadTreeNode &node, StaticArray<const TerrainQuadTreeNode *RESTRICT, 4> *const RESTRICT neighboring_nodes) NOEXCEPT
 	{
-		for (const TerrainQuadTreeNode &rootNode : quadTree._RootNodes)
-		{
-			if (const TerrainQuadTreeNode *const RESTRICT node{ FindHighestNode(rootNode, position) })
-			{
-				return node;
-			}
-		}
+		//Calculate the middle point of the node.
+		const Vector2<float32> middle_point{ MiddlePoint(node) };
 
-		return nullptr;
+		//Calculate the patch size multiplier.
+		const float32 patch_size_multiplier{ PatchSizeMultiplier(node) };
+
+		//Calculate the positions.
+		const StaticArray<const Vector2<float32>, 4> positions
+		{
+			middle_point + Vector2<float32>(-static_cast<float32>(component->_PatchSize) * patch_size_multiplier, 0.0f),
+			middle_point + Vector2<float32>(0.0f, -static_cast<float32>(component->_PatchSize) * patch_size_multiplier),
+			middle_point + Vector2<float32>(static_cast<float32>(component->_PatchSize) * patch_size_multiplier, 0.0f),
+			middle_point + Vector2<float32>(0.0f, static_cast<float32>(component->_PatchSize) * patch_size_multiplier),
+		};
+
+		//Find the node with the highest depth for each position.
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			neighboring_nodes->At(i) = FindHighestNode(component->_QuadTree._RootNode, positions[i]);
+		}
 	}
 
 	/*
 	*	Given a node and a position, find the node with the highest depth within the node.
 	*/
-	RESTRICTED static const TerrainQuadTreeNode *const RESTRICT FindHighestNode(const TerrainQuadTreeNode &node, const Vector3<float> &position) NOEXCEPT
+	RESTRICTED static const TerrainQuadTreeNode *const RESTRICT FindHighestNode(const TerrainQuadTreeNode &node, const Vector2<float32> &position) NOEXCEPT
 	{
 		if (node.IsSubdivided())
 		{
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				if (const TerrainQuadTreeNode *const RESTRICT childNode{ FindHighestNode(node._ChildNodes[i], position) })
+				if (const TerrainQuadTreeNode *const RESTRICT child_node{ FindHighestNode(node._ChildNodes[i], position) })
 				{
-					return childNode;
+					return child_node;
 				}
 			}
 		}
@@ -136,5 +116,12 @@ private:
 			return nullptr;
 		}
 	}
+
+#if 0
+
+private:
+
+	
+#endif
 
 };

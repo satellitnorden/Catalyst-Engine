@@ -21,6 +21,11 @@ layout (early_fragment_tests) in;
 #define MAXIMUM_8_BIT_UINT (255)
 
 /*
+*   Defines the bit at the specified index.
+*/
+#define BIT(INDEX) (1 << (INDEX))
+
+/*
 *   Tests the bit of the specified bitfield
 */
 #define TEST_BIT(BITFIELD, BIT) ((BITFIELD & BIT) == BIT)
@@ -150,8 +155,10 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (set = 1, binding = 1) uniform sampler TERRAIN_SAMPLER;
-layout (set = 1, binding = 2) uniform sampler MATERIAL_SAMPLER;
+layout (set = 1, binding = 1) uniform sampler HEIGHT_MAP_SAMPLER;
+layout (set = 1, binding = 2) uniform sampler NORMAL_MAP_SAMPLER;
+layout (set = 1, binding = 3) uniform sampler INDEX_BLEND_MAP_SAMPLER;
+layout (set = 1, binding = 4) uniform sampler MATERIAL_SAMPLER;
 
 /*
 *   Calculates the world position.
@@ -192,6 +199,35 @@ vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
 }
 
 /*
+*	Rotates a vec3 around an arbitrary axis.
+*/
+vec3 Rotate(vec3 vector, vec3 axis, float angle)
+{
+	float dot_product = dot(vector, axis);
+
+	vec3 X =  cos(angle) * (vector - dot_product * axis);
+	vec3 Y = sin(angle) * cross(axis, vector);
+	vec3 Z = dot_product * axis;
+
+	return vector * (X + Y + Z);
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}
+
+//Constants.
+#define TERRAIN_MINIMUM_DISPLACEMENT (0.001f)
+#define BIAS_DISPLACEMENT(X) (X * X * X * X * X * X * X * X)
+
+/*
 *   Terrain material struct definition.
 */
 struct TerrainMaterial
@@ -218,13 +254,17 @@ TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial seco
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 WORLD_POSITION;
-	layout (offset = 8) float PATCH_SIZE;
-	layout (offset = 12) uint HEIGHT_MAP_TEXTURE_INDEX;
-	layout (offset = 16) uint NORMAL_MAP_TEXTURE_INDEX;
-	layout (offset = 20) uint INDEX_MAP_TEXTURE_INDEX;
-	layout (offset = 24) uint BLEND_MAP_TEXTURE_INDEX;
-	layout (offset = 28) float MAP_RESOLUTION;
-	layout (offset = 32) float MAP_RESOLUTION_RECIPROCAL;
+	layout (offset = 8) vec2 MINIMUM_HEIGHT_MAP_COORDINATE;
+	layout (offset = 16) vec2 MAXIMUM_HEIGHT_MAP_COORDINATE;
+	layout (offset = 24) uint BORDERS;
+	layout (offset = 28) float PATCH_RESOLUTION_RECIPROCAL;
+	layout (offset = 32) float PATCH_SIZE;
+	layout (offset = 36) uint HEIGHT_MAP_TEXTURE_INDEX;
+	layout (offset = 40) uint NORMAL_MAP_TEXTURE_INDEX;
+	layout (offset = 44) uint INDEX_MAP_TEXTURE_INDEX;
+	layout (offset = 48) uint BLEND_MAP_TEXTURE_INDEX;
+	layout (offset = 52) float MAP_RESOLUTION;
+	layout (offset = 56) float MAP_RESOLUTION_RECIPROCAL;
 };
 
 layout (location = 0) in vec3 InWorldPosition;
@@ -237,11 +277,9 @@ layout (location = 3) out vec4 SceneFeatures4;
 
 void main()
 {
-    vec3 normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), InHeightMapTextureCoordinate).xyz;
+    vec3 normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate).xyz;
     normal = normal * 2.0f - 1.0f;
-	vec3 tangent = cross(normal, vec3(0.0f, 0.0f, 1.0f));
-	vec3 bitangent = cross(tangent, normal);
-	mat3 tangent_space_matrix = mat3(tangent, bitangent, normal);
+    mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(normal, vec3(0.0f, 0.0f, 1.0f));
     vec2 material_texture_coordinate = InWorldPosition.xz * 0.5f;
     TerrainMaterial terrain_materials[4];
     vec2 sample_offsets[4];
@@ -252,7 +290,7 @@ void main()
     for (uint i = 0; i < 4; ++i)
     {
         vec2 height_map_texture_coordinate = InHeightMapTextureCoordinate + sample_offsets[i];
-        vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), height_map_texture_coordinate);
+        vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
         Material material_1 = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
         Material material_2 = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
         Material material_3 = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
@@ -281,11 +319,15 @@ void main()
         EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_3);
         vec4 material_properties_4;
         EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_4);
-        vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), height_map_texture_coordinate);
-        blend_map[0] *= pow(normal_map_displacement_1.w, 2.0f);
-        blend_map[1] *= pow(normal_map_displacement_2.w, 2.0f);
-        blend_map[2] *= pow(normal_map_displacement_3.w, 2.0f);
-        blend_map[3] *= pow(normal_map_displacement_4.w, 2.0f);
+        normal_map_displacement_1.w = max(normal_map_displacement_1.w, TERRAIN_MINIMUM_DISPLACEMENT);
+        normal_map_displacement_2.w = max(normal_map_displacement_2.w, TERRAIN_MINIMUM_DISPLACEMENT);
+        normal_map_displacement_3.w = max(normal_map_displacement_3.w, TERRAIN_MINIMUM_DISPLACEMENT);
+        normal_map_displacement_4.w = max(normal_map_displacement_4.w, TERRAIN_MINIMUM_DISPLACEMENT);
+        vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
+        blend_map[0] *= BIAS_DISPLACEMENT(normal_map_displacement_1.w);
+        blend_map[1] *= BIAS_DISPLACEMENT(normal_map_displacement_2.w);
+        blend_map[2] *= BIAS_DISPLACEMENT(normal_map_displacement_3.w);
+        blend_map[3] *= BIAS_DISPLACEMENT(normal_map_displacement_4.w);
         float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
         blend_map[0] *= inverse_sum;
         blend_map[1] *= inverse_sum;

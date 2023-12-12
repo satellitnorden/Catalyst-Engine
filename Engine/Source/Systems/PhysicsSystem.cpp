@@ -156,6 +156,7 @@ void PhysicsSystem::PhysicsUpdate() NOEXCEPT
 */
 void PhysicsSystem::CastRayTerrain(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
+	/*
 	//Ray march the terrain until there is a hit.
 	float current_step{ 0.0f };
 
@@ -183,4 +184,5 @@ void PhysicsSystem::CastRayTerrain(const Ray &ray, const RaycastConfiguration &c
 		//Advance the current step.
 		current_step += configuration._TerrainRayMarchStep;
 	}
+	*/
 }

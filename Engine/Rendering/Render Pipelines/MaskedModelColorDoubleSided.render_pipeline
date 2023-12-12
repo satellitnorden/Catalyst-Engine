@@ -15,7 +15,7 @@ OutputRenderTarget(SceneFeatures4);
 OutputRenderTarget(Scene);
 
 //Set the load/store operators.
-ColorLoadOperator(DONT_CARE);
+ColorLoadOperator(LOAD);
 ColorStoreOperator(STORE);
 DepthStencilLoadOperator(LOAD);
 DepthStencilStoreOperator(STORE);

@@ -151,4 +151,54 @@ namespace TextParsingUtilities
 		}
 	}
 
+	/*
+	*	Parses space separated arguments in the given output array.
+	*	For example, if the string is "ARGUMENT_1 ARGUMENT_2",
+	*	the given output array would be filled with the strings "ARGUMENT_1" and "ARGUMENT_2".
+	*/
+	FORCE_INLINE void ParseSpaceSeparatedArguments
+	(
+		const char *const RESTRICT string,
+		const uint64 string_length,
+		DynamicString *const RESTRICT output_arguments
+	) NOEXCEPT
+	{
+		char buffer[128];
+		uint64 current_buffer_index{ 0 };
+		uint64 current_argument_index{ 0 };
+		bool currently_parsing_argument{ false };
+
+		for (uint64 i{ 0 }; i < string_length; ++i)
+		{
+			//See if we should start parsing the argument.
+			if (!currently_parsing_argument && !IsWhitespace(string[i]))
+			{
+				currently_parsing_argument = true;
+			}
+
+			//Check if we should stop parsing the argument.
+			if (currently_parsing_argument && IsWhitespace(string[i]))
+			{
+				//Write the argument.
+				buffer[current_buffer_index] = '\0';
+				output_arguments[current_argument_index] = buffer;
+
+				//Reset values.
+				current_buffer_index = 0;
+				++current_argument_index;
+				currently_parsing_argument = false;
+			}
+
+			//Add to the buffer if we're currently parsing an argument.
+			if (currently_parsing_argument)
+			{
+				buffer[current_buffer_index++] = string[i];
+			}
+		}
+
+		//Write the last argument.
+		buffer[current_buffer_index] = '\0';
+		output_arguments[current_argument_index] = buffer;
+	}
+
 }

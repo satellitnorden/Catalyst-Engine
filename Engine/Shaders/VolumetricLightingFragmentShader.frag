@@ -197,7 +197,7 @@ void CatalystShaderMain()
 						}
 						
 						//Add to the volumetric lighting.
-						volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * VOLUMETRIC_LIGHTING_DENSITY_MULTIPLIER * hit_factor / float(NUMBER_OF_DIRECTIONAL_LIGHT_SAMPLES);
+						volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * exp(-VOLUMETRIC_LIGHTING_THICKNESS * 0.5f) * hit_factor / float(NUMBER_OF_DIRECTIONAL_LIGHT_SAMPLES);
 					}
 
 					break;

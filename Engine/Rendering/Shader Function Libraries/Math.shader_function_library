@@ -1,0 +1,24 @@
+/*
+*	Rotates a vec3 around an arbitrary axis.
+*/
+vec3 Rotate(vec3 vector, vec3 axis, float angle)
+{
+	float dot_product = dot(vector, axis);
+
+	vec3 X =  cos(angle) * (vector - dot_product * axis);
+	vec3 Y = sin(angle) * cross(axis, vector);
+	vec3 Z = dot_product * axis;
+
+	return vector * (X + Y + Z);
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}

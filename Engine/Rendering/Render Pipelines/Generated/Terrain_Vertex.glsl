@@ -19,6 +19,11 @@
 #define MAXIMUM_8_BIT_UINT (255)
 
 /*
+*   Defines the bit at the specified index.
+*/
+#define BIT(INDEX) (1 << (INDEX))
+
+/*
 *   Tests the bit of the specified bitfield
 */
 #define TEST_BIT(BITFIELD, BIT) ((BITFIELD & BIT) == BIT)
@@ -148,8 +153,10 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (set = 1, binding = 1) uniform sampler TERRAIN_SAMPLER;
-layout (set = 1, binding = 2) uniform sampler MATERIAL_SAMPLER;
+layout (set = 1, binding = 1) uniform sampler HEIGHT_MAP_SAMPLER;
+layout (set = 1, binding = 2) uniform sampler NORMAL_MAP_SAMPLER;
+layout (set = 1, binding = 3) uniform sampler INDEX_BLEND_MAP_SAMPLER;
+layout (set = 1, binding = 4) uniform sampler MATERIAL_SAMPLER;
 
 /*
 *   Calculates the world position.
@@ -190,6 +197,35 @@ vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
 }
 
 /*
+*	Rotates a vec3 around an arbitrary axis.
+*/
+vec3 Rotate(vec3 vector, vec3 axis, float angle)
+{
+	float dot_product = dot(vector, axis);
+
+	vec3 X =  cos(angle) * (vector - dot_product * axis);
+	vec3 Y = sin(angle) * cross(axis, vector);
+	vec3 Z = dot_product * axis;
+
+	return vector * (X + Y + Z);
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}
+
+//Constants.
+#define TERRAIN_MINIMUM_DISPLACEMENT (0.001f)
+#define BIAS_DISPLACEMENT(X) (X * X * X * X * X * X * X * X)
+
+/*
 *   Terrain material struct definition.
 */
 struct TerrainMaterial
@@ -216,25 +252,102 @@ TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial seco
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 WORLD_POSITION;
-	layout (offset = 8) float PATCH_SIZE;
-	layout (offset = 12) uint HEIGHT_MAP_TEXTURE_INDEX;
-	layout (offset = 16) uint NORMAL_MAP_TEXTURE_INDEX;
-	layout (offset = 20) uint INDEX_MAP_TEXTURE_INDEX;
-	layout (offset = 24) uint BLEND_MAP_TEXTURE_INDEX;
-	layout (offset = 28) float MAP_RESOLUTION;
-	layout (offset = 32) float MAP_RESOLUTION_RECIPROCAL;
+	layout (offset = 8) vec2 MINIMUM_HEIGHT_MAP_COORDINATE;
+	layout (offset = 16) vec2 MAXIMUM_HEIGHT_MAP_COORDINATE;
+	layout (offset = 24) uint BORDERS;
+	layout (offset = 28) float PATCH_RESOLUTION_RECIPROCAL;
+	layout (offset = 32) float PATCH_SIZE;
+	layout (offset = 36) uint HEIGHT_MAP_TEXTURE_INDEX;
+	layout (offset = 40) uint NORMAL_MAP_TEXTURE_INDEX;
+	layout (offset = 44) uint INDEX_MAP_TEXTURE_INDEX;
+	layout (offset = 48) uint BLEND_MAP_TEXTURE_INDEX;
+	layout (offset = 52) float MAP_RESOLUTION;
+	layout (offset = 56) float MAP_RESOLUTION_RECIPROCAL;
 };
 
 layout (location = 0) in vec2 InPosition;
+layout (location = 1) in uint InBorders;
 
 layout (location = 0) out vec3 OutWorldPosition;
 layout (location = 1) out vec2 OutHeightMapTextureCoordinate;
 
 void main()
 {
-    OutWorldPosition.x = WORLD_POSITION.x + mix(InPosition.x - (PATCH_SIZE * 0.5f), InPosition.x + (PATCH_SIZE * 0.5f), InPosition.x);
-    OutWorldPosition.y = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], TERRAIN_SAMPLER), InPosition).x;
-    OutWorldPosition.z = WORLD_POSITION.y + mix(InPosition.y - (PATCH_SIZE * 0.5f), InPosition.y + (PATCH_SIZE * 0.5f), InPosition.y);
-    OutHeightMapTextureCoordinate = InPosition;
+    vec2 stitched_position = InPosition;
+    {
+	    float is_left_multiplier = float((InBorders & BIT(0)) & (BORDERS & BIT(0)));
+    	float is_right_multiplier = float((InBorders & BIT(2)) & (BORDERS & BIT(2)));
+	    float vertical_offset = min(is_left_multiplier + is_right_multiplier, 1.0f);
+        float is_down_multiplier = float((InBorders & BIT(4)) & (BORDERS & BIT(4)));
+    	float is_up_multiplier = float((InBorders & BIT(6)) & (BORDERS & BIT(6)));
+	    float horizontal_offset = min(is_down_multiplier + is_up_multiplier, 1.0f);
+	    stitched_position.y -= PATCH_RESOLUTION_RECIPROCAL * vertical_offset;
+	    stitched_position.x -= PATCH_RESOLUTION_RECIPROCAL * horizontal_offset;
+    }
+    {
+	    float is_left_multiplier = float((InBorders & BIT(1)) & (BORDERS & BIT(1)));
+    	float is_right_multiplier = float((InBorders & BIT(3)) & (BORDERS & BIT(3)));
+	    float vertical_offset = min(is_left_multiplier + is_right_multiplier, 1.0f);
+        float is_down_multiplier = float((InBorders & BIT(5)) & (BORDERS & BIT(5)));
+    	float is_up_multiplier = float((InBorders & BIT(7)) & (BORDERS & BIT(7)));
+	    float horizontal_offset = min(is_down_multiplier + is_up_multiplier, 1.0f);
+	    stitched_position.y -= (PATCH_RESOLUTION_RECIPROCAL * 2.0f) * vertical_offset;
+	    stitched_position.x -= (PATCH_RESOLUTION_RECIPROCAL * 2.0f) * horizontal_offset;
+    }
+    vec2 height_map_coordinate = vec2(mix(MINIMUM_HEIGHT_MAP_COORDINATE.x, MAXIMUM_HEIGHT_MAP_COORDINATE.x, stitched_position.x), mix(MINIMUM_HEIGHT_MAP_COORDINATE.y, MAXIMUM_HEIGHT_MAP_COORDINATE.y, stitched_position.y));
+    OutWorldPosition.x = WORLD_POSITION.x + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.x);
+    OutWorldPosition.y = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate).x;
+    OutWorldPosition.z = WORLD_POSITION.y + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
+    OutHeightMapTextureCoordinate = height_map_coordinate;
+    vec2 material_texture_coordinate = OutWorldPosition.xz * 0.5f;
+    vec3 normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), OutHeightMapTextureCoordinate).xyz;
+    normal = normal * 2.0f - 1.0f;
+    {
+        float displacements[4];
+        vec2 sample_offsets[4];
+        sample_offsets[0] = vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_offsets[1] = vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_offsets[2] = vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_offsets[3] = vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+        for (uint i = 0; i < 4; ++i)
+        {
+            vec2 height_map_texture_coordinate = OutHeightMapTextureCoordinate + sample_offsets[i];
+            vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
+            Material material_1 = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
+            Material material_2 = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
+            Material material_3 = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
+            Material material_4 = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
+            vec4 normal_map_displacement_1;
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_1);
+            vec4 normal_map_displacement_2;
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_2);
+            vec4 normal_map_displacement_3;
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_3);
+            vec4 normal_map_displacement_4;
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_4);
+            normal_map_displacement_1.w = max(normal_map_displacement_1.w, TERRAIN_MINIMUM_DISPLACEMENT);
+            normal_map_displacement_2.w = max(normal_map_displacement_2.w, TERRAIN_MINIMUM_DISPLACEMENT);
+            normal_map_displacement_3.w = max(normal_map_displacement_3.w, TERRAIN_MINIMUM_DISPLACEMENT);
+            normal_map_displacement_4.w = max(normal_map_displacement_4.w, TERRAIN_MINIMUM_DISPLACEMENT);
+            vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
+            blend_map[0] *= BIAS_DISPLACEMENT(normal_map_displacement_1.w);
+            blend_map[1] *= BIAS_DISPLACEMENT(normal_map_displacement_2.w);
+            blend_map[2] *= BIAS_DISPLACEMENT(normal_map_displacement_3.w);
+            blend_map[3] *= BIAS_DISPLACEMENT(normal_map_displacement_4.w);
+            float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
+            blend_map[0] *= inverse_sum;
+            blend_map[1] *= inverse_sum;
+            blend_map[2] *= inverse_sum;
+            blend_map[3] *= inverse_sum;
+            displacements[i] =  normal_map_displacement_1.w * blend_map[0]
+                                + normal_map_displacement_2.w * blend_map[1]
+                                + normal_map_displacement_3.w * blend_map[2]
+                                + normal_map_displacement_4.w * blend_map[3];
+        }
+        float blend_1 = mix(displacements[0], displacements[1], fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+	    float blend_2 = mix(displacements[2], displacements[3], fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+	    float final_displacement = mix(blend_1, blend_2, fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION));
+        OutWorldPosition += normal * mix(-0.125f, 0.375f, final_displacement) * 0.5f; //Slight bias for upward displacement.
+    }
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

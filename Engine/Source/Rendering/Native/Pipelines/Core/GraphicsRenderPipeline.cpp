@@ -29,7 +29,7 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 	{
 		//Create the render data table layout.
 		{
-			constexpr uint64 MAX_BINDINGS{ 4 };
+			constexpr uint64 MAX_BINDINGS{ 6 };
 
 			StaticArray<RenderDataTableLayoutBinding, MAX_BINDINGS> bindings;
 			uint32 current_binding_index{ 0 };

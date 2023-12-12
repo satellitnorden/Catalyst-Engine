@@ -42,7 +42,7 @@ void AmbientOcclusionApplicationGraphicsPipeline::Initialize(const RenderTargetH
 	//Set the properties of the render pass.
 	SetDepthStencilAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
 	SetDepthStencilAttachmentStoreOperator(AttachmentStoreOperator::DONT_CARE);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);

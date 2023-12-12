@@ -113,7 +113,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 1
+#if 0
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -1947,7 +1947,12 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 						&string
 					);
 
-					if (string == "TRIANGLE_FAN")
+					if (string == "LINE_LIST")
+					{
+						render_pipeline_information._Topology = Topology::LineList;
+					}
+
+					else if (string == "TRIANGLE_FAN")
 					{
 						render_pipeline_information._Topology = Topology::TriangleFan;
 					}

@@ -321,8 +321,8 @@ void TimeOfDaySystem::PreUpdate() NOEXCEPT
 void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 NIGHT_SKY_INTENSITY{ 4.0f };
-	constexpr float32 DAY_SKY_INTENSITY{ 16.0f };
+	constexpr float32 NIGHT_SKY_INTENSITY{ 6.0f };
+	constexpr float32 DAY_SKY_INTENSITY{ 24.0f };
 
 	//Need that sky light.
 	if (!_SkyLight->_Initialized)
@@ -430,7 +430,7 @@ void TimeOfDaySystem::UpdateSky() NOEXCEPT
 	}
 
 	//Set the sky intensity.
-	WorldSystem::Instance->GetSkySystem()->SetSkyIntensity(1.1'75f);
+	WorldSystem::Instance->GetSkySystem()->SetSkyIntensity(1.1'25f);
 
 	//Calculate the indices and the alpha.
 	uint8 first_index;

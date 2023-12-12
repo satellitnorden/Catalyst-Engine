@@ -28,7 +28,7 @@ void CatalystShaderMain()
    float sky_light_influence = smoothstep(SKY_LIGHT_ANCHOR - SKY_LIGHT_SIZE, SKY_LIGHT_ANCHOR + SKY_LIGHT_SIZE, dot(view_direction, -SKY_LIGHT_DIRECTION));
 
    //Calculate the bare sky color.
-   vec3 bare_sky_color = mix(sky_sample, max((SKY_LIGHT_RADIANCE.rgb * SKY_LIGHT_RADIANCE.a) * 4.0f, sky_sample), sky_light_influence);
+   vec3 bare_sky_color = mix(sky_sample, max((SKY_LIGHT_RADIANCE.rgb * SKY_LIGHT_RADIANCE.a), sky_sample), sky_light_influence);
 
    //Calculate the cloud color/alpha.
    //vec4 cloud_color = GetCloudColorInDirection(CAMERA_WORLD_POSITION, view_direction, uvec2(gl_FragCoord.xy), -SKY_LIGHT_DIRECTION, SKY_LIGHT_RADIANCE.rgb * SKY_LIGHT_RADIANCE.a);
