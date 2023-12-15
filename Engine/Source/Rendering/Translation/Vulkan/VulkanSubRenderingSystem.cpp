@@ -746,7 +746,7 @@ namespace VulkanSubRenderingSystemLogic
 
 			if (!VulkanSubRenderingSystemData::_AsyncDestructionQueue.Empty())
 			{
-				TaskSystem::Instance->ExecuteTask(&VulkanSubRenderingSystemData::_AsycnDestructionTask);
+				TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &VulkanSubRenderingSystemData::_AsycnDestructionTask);
 			}
 		}
 	}

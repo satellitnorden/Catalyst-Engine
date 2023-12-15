@@ -1,11 +1,8 @@
 //Declare unifom buffer includes.
 IncludeUniformBuffer(Camera);
-IncludeUniformBuffer(Wind);
 
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
-IncludeShaderFunctionLibrary(Model);
-IncludeShaderFunctionLibrary(Wind);
 
 //Declare output depth buffer.
 OutputDepthBuffer(SceneDepthBuffer);
@@ -17,34 +14,41 @@ OutputRenderTarget(SceneFeatures3);
 OutputRenderTarget(SceneFeatures4);
 OutputRenderTarget(Scene);
 
-//Set the cull mode.
-CullMode(BACK);
-
 //Set the load/store operators.
 ColorLoadOperator(LOAD);
 ColorStoreOperator(STORE);
 DepthStencilLoadOperator(LOAD);
 DepthStencilStoreOperator(STORE);
 
+//Set the cull mode.
+CullMode(NONE);
+
 //Set depth/stencil properties.
-DepthCompareOperator(EQUAL);
+DepthCompareOperator(GREATER);
 DepthTestEnable();
+DepthWriteEnable();
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(REPLACE);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(ALWAYS);
+StencilCompareMask(0);
+StencilWriteMask(1);
+StencilReferenceMask(1);
 
 //Set the topology.
 Topology(TRIANGLE_LIST);
 
 //Declare push constant data.
-PushConstantData(vec3, WORLD_GRID_DELTA);
-PushConstantData(uint, MODEL_FLAGS);
-PushConstantData(float, START_FADE_OUT_DISTANCE_SQUARED);
-PushConstantData(float, END_FADE_OUT_DISTANCE_SQUARED);
+PushConstantData(mat4, PREVIOUS_MODEL_MATRIX);
+PushConstantData(mat4, CURRENT_MODEL_MATRIX);
 PushConstantData(uint, MATERIAL_INDEX);
 
 //Declare samplers.
 Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
 
 //Subscribe to input streams.
-SubscribeToInputStream(SingleSidedInstancedModel);
+SubscribeToInputStream(OpaqueDoubleSidedModels);
 
 //The vertex shader.
 Vertex
@@ -54,7 +58,6 @@ Vertex
     InputParameter(vec3, InNormal);
     InputParameter(vec3, InTangent);
     InputParameter(vec2, InTextureCoordinate);
-    InputParameter(mat4, InTransformation);
 
     //Declare output parameters.
     OutputParameter(mat3, OutTangentSpaceMatrix);
@@ -63,22 +66,15 @@ Vertex
     OutputParameter(vec2, OutTextureCoordinate);
 
     //Calculate the tangent space matrix.
-    vec3 tangent = normalize(vec3(InTransformation * vec4(InTangent, 0.0f)));
-    vec3 bitangent = normalize(vec3(InTransformation * vec4(cross(InNormal, InTangent), 0.0f)));
-    vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
+    vec3 tangent = normalize(vec3(CURRENT_MODEL_MATRIX * vec4(InTangent, 0.0f)));
+    vec3 bitangent = normalize(vec3(CURRENT_MODEL_MATRIX * vec4(cross(InNormal, InTangent), 0.0f)));
+    vec3 normal = normalize(vec3(CURRENT_MODEL_MATRIX * vec4(InNormal, 0.0f)));
 
     //Write data for the fragment shader.
     OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
-    OutPreviousWorldPosition = OutCurrentWorldPosition = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
+    OutPreviousWorldPosition = vec3(PREVIOUS_MODEL_MATRIX * vec4(InPosition, 1.0f));
+    OutCurrentWorldPosition = vec3(CURRENT_MODEL_MATRIX * vec4(InPosition, 1.0f));
     OutTextureCoordinate = InTextureCoordinate;
-    
-    //Apply model flags.
-    if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
-    {
-        //Apply the wind displacement.
-        OutPreviousWorldPosition += CalculatePreviousWindDisplacement(OutPreviousWorldPosition, InPosition, normal);
-        OutCurrentWorldPosition += CalculateCurrentWindDisplacement(OutCurrentWorldPosition, InPosition, normal);
-    }
 
     //Output the position.
     OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutCurrentWorldPosition, 1.0f));

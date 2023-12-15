@@ -155,8 +155,10 @@ layout (std140, set = 1, binding = 0) uniform Camera
 
 layout (std140, set = 1, binding = 1) uniform Wind
 {
-	layout (offset = 0) vec4 WIND_DIRECTION_SPEED;
-	layout (offset = 16) float WIND_TIME;
+	layout (offset = 0) vec4 PREVIOUS_WIND_DIRECTION_SPEED;
+	layout (offset = 16) vec4 CURRENT_WIND_DIRECTION_SPEED;
+	layout (offset = 32) float PREVIOUS_WIND_TIME;
+	layout (offset = 36) float CURRENT_WIND_TIME;
 };
 
 layout (set = 1, binding = 2) uniform sampler SAMPLER;
@@ -210,28 +212,46 @@ vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
 *	Calculates wind displacement.
 *	Requires the Wind uniform buffer to be bound.
 */
-vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
+vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal, vec4 wind_direction_speed, float wind_time)
 {
 	//Calculate the displacement.
 	vec3 displacement = vec3(0.0f, 0.0f, 0.0f);
 
 	//Add large scale motion.
-	displacement.x += (sin(world_position.x + WIND_TIME) + 0.125f) * WIND_DIRECTION_SPEED.x * WIND_DIRECTION_SPEED.w;
-	displacement.z += (cos(world_position.z + WIND_TIME) + 0.125f) * WIND_DIRECTION_SPEED.z * WIND_DIRECTION_SPEED.w;
+	displacement.x += (sin(world_position.x + wind_time) + 0.25f) * wind_direction_speed.x * wind_direction_speed.w;
+	displacement.z += (cos(world_position.z + wind_time) + 0.25f) * wind_direction_speed.z * wind_direction_speed.w;
 
 	//Add medium scale motion.
-	displacement.x += (sin((world_position.x + WIND_TIME) * 2.0f) + 0.25f) * WIND_DIRECTION_SPEED.x * WIND_DIRECTION_SPEED.w * 0.5f;
-	displacement.z += (cos((world_position.z + WIND_TIME) * 2.0f) + 0.25f) * WIND_DIRECTION_SPEED.z * WIND_DIRECTION_SPEED.w * 0.5f;
+	displacement.x += (sin((world_position.x + wind_time) * 2.0f) + 0.375f) * wind_direction_speed.x * wind_direction_speed.w * 0.5f;
+	displacement.z += (cos((world_position.z + wind_time) * 2.0f) + 0.375f) * wind_direction_speed.z * wind_direction_speed.w * 0.5f;
 
 	//Add small scale motion.
-	displacement.x += (sin((world_position.x + WIND_TIME) * 4.0f) + 0.375f) * WIND_DIRECTION_SPEED.x * WIND_DIRECTION_SPEED.w * 0.25f;
-	displacement.z += (cos((world_position.z + WIND_TIME) * 4.0f) + 0.375f) * WIND_DIRECTION_SPEED.z * WIND_DIRECTION_SPEED.w * 0.25f;
+	displacement.x += (sin((world_position.x + wind_time) * 4.0f) + 0.5f) * wind_direction_speed.x * wind_direction_speed.w * 0.25f;
+	displacement.z += (cos((world_position.z + wind_time) * 4.0f) + 0.5f) * wind_direction_speed.z * wind_direction_speed.w * 0.25f;
 
 	//Modify the displacement so it doesn't affect the bottom of the mesh.
 	displacement *= max(vertex_position.y * 0.125f, 0.0f);
 
 	//Return the displacement.
 	return displacement;
+}
+
+/*
+*	Calculates previous wind displacement.
+*	Requires the Wind uniform buffer to be bound.
+*/
+vec3 CalculatePreviousWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
+{
+	return CalculateWindDisplacement(world_position, vertex_position, normal, PREVIOUS_WIND_DIRECTION_SPEED, PREVIOUS_WIND_TIME);
+}
+
+/*
+*	Calculates current wind displacement.
+*	Requires the Wind uniform buffer to be bound.
+*/
+vec3 CalculateCurrentWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
+{
+	return CalculateWindDisplacement(world_position, vertex_position, normal, CURRENT_WIND_DIRECTION_SPEED, CURRENT_WIND_TIME);
 }
 
 layout (push_constant) uniform PushConstantData
@@ -250,8 +270,9 @@ layout (location = 3) in vec2 InTextureCoordinate;
 layout (location = 4) in mat4 InTransformation;
 
 layout (location = 0) out mat3 OutTangentSpaceMatrix;
-layout (location = 3) out vec3 OutWorldPosition;
-layout (location = 4) out vec2 OutTextureCoordinate;
+layout (location = 3) out vec3 OutPreviousWorldPosition;
+layout (location = 4) out vec3 OutCurrentWorldPosition;
+layout (location = 5) out vec2 OutTextureCoordinate;
 
 void main()
 {
@@ -259,11 +280,12 @@ void main()
     vec3 bitangent = normalize(vec3(InTransformation * vec4(cross(InNormal, InTangent), 0.0f)));
     vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
     OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
-    OutWorldPosition = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
+    OutPreviousWorldPosition = OutCurrentWorldPosition = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
     OutTextureCoordinate = InTextureCoordinate;
     if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
     {
-        OutWorldPosition += CalculateWindDisplacement(OutWorldPosition, InPosition, normal);
+        OutPreviousWorldPosition += CalculatePreviousWindDisplacement(OutPreviousWorldPosition, InPosition, normal);
+        OutCurrentWorldPosition += CalculateCurrentWindDisplacement(OutCurrentWorldPosition, InPosition, normal);
     }
-	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutCurrentWorldPosition,1.0f);
 }

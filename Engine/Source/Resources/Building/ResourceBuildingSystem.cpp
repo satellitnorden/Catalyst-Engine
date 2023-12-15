@@ -1916,12 +1916,12 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 					&& input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].GetWidth() > 0
 					&& input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].GetHeight() > 0)
 				{
-					texel[i] = input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].At(X, Y)[UNDERLYING(parameters._ChannelMappings[i]._Channel)];
+					texel[i] = input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].At(X, Y)[UNDERLYING(parameters._ChannelMappings[i]._Channel)] * parameters._Tint[i];
 				}
 
 				else
 				{
-					texel[i] = parameters._Default[UNDERLYING(parameters._ChannelMappings[i]._Channel)];
+					texel[i] = parameters._Default[UNDERLYING(parameters._ChannelMappings[i]._Channel)] * parameters._Tint[i];
 				}
 			}
 		}

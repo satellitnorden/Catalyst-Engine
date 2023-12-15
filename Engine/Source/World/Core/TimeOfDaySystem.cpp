@@ -187,7 +187,8 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 
 			Color lower_sky_color{ 0, 0, 5 };
 			lower_sky_color.ApplyGammaCorrection();
-			const Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
+			Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
+			lower_sky_color_unpacked = lower_sky_color_unpacked * lower_sky_color_unpacked;
 
 			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[0]._UpperSkyColor = Vector3<float32>(upper_sky_color_unpacked._R, upper_sky_color_unpacked._G, upper_sky_color_unpacked._B);
 			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[0]._LowerSkyColor = Vector3<float32>(lower_sky_color_unpacked._R, lower_sky_color_unpacked._G, lower_sky_color_unpacked._B);
@@ -200,7 +201,8 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 
 			Color lower_sky_color{ 230, 225, 0 };
 			lower_sky_color.ApplyGammaCorrection();
-			const Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
+			Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
+			lower_sky_color_unpacked = lower_sky_color_unpacked * lower_sky_color_unpacked;
 
 			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[1]._UpperSkyColor = Vector3<float32>(upper_sky_color_unpacked._R, upper_sky_color_unpacked._G, upper_sky_color_unpacked._B);
 			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[1]._LowerSkyColor = Vector3<float32>(lower_sky_color_unpacked._R, lower_sky_color_unpacked._G, lower_sky_color_unpacked._B);
@@ -213,7 +215,8 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 
 			Color lower_sky_color{ 125, 200, 250 };
 			lower_sky_color.ApplyGammaCorrection();
-			const Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
+			Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
+			lower_sky_color_unpacked = lower_sky_color_unpacked * lower_sky_color_unpacked;
 
 			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[2]._UpperSkyColor = Vector3<float32>(upper_sky_color_unpacked._R, upper_sky_color_unpacked._G, upper_sky_color_unpacked._B);
 			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[2]._LowerSkyColor = Vector3<float32>(lower_sky_color_unpacked._R, lower_sky_color_unpacked._G, lower_sky_color_unpacked._B);
@@ -226,7 +229,8 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 
 			Color lower_sky_color{ 250, 70, 25 };
 			lower_sky_color.ApplyGammaCorrection();
-			const Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
+			Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
+			lower_sky_color_unpacked = lower_sky_color_unpacked * lower_sky_color_unpacked;
 
 			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[3]._UpperSkyColor = Vector3<float32>(upper_sky_color_unpacked._R, upper_sky_color_unpacked._G, upper_sky_color_unpacked._B);
 			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[3]._LowerSkyColor = Vector3<float32>(lower_sky_color_unpacked._R, lower_sky_color_unpacked._G, lower_sky_color_unpacked._B);
@@ -430,7 +434,7 @@ void TimeOfDaySystem::UpdateSky() NOEXCEPT
 	}
 
 	//Set the sky intensity.
-	WorldSystem::Instance->GetSkySystem()->SetSkyIntensity(1.1'25f);
+	WorldSystem::Instance->GetSkySystem()->SetSkyIntensity(1.0f);
 
 	//Calculate the indices and the alpha.
 	uint8 first_index;

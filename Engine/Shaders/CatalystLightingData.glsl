@@ -1,8 +1,12 @@
 #if !defined(CATALYST_LIGHTING_DATA)
 #define CATALYST_LIGHTING_DATA
 
-//Constants.
-#define MAXIMUM_NUMBER_OF_LIGHTS (8)
+//Header data struct definition.
+struct LightHeaderData
+{
+	uint _NumberOfLights;
+	uint _MaximumNumberOfShadowCastingLights;	
+};
 
 //Light struct definition.
 struct Light
@@ -18,14 +22,10 @@ struct Light
 };
 
 //Light uniform data.
-layout (std140, set = CATALYST_LIGHTING_DATA_SET_INDEX, binding = 0) uniform LIGHT_UNIFORM_DATA_BUFFER
+layout (set = CATALYST_LIGHTING_DATA_SET_INDEX, binding = 0) buffer LIGHT_DATA_BUFFER
 {
-	layout (offset = 0) uint NUMBER_OF_LIGHTS;
-	layout (offset = 4) uint MAXIMUM_NUMBER_OF_SHADOW_CASTING_LIGHTS;
-};
-layout (set = CATALYST_LIGHTING_DATA_SET_INDEX, binding = 1) buffer LIGHT_DATA_BUFFER
-{
-	layout (offset = 0) vec4[] LIGHT_DATA;
+	layout (offset = 0) LightHeaderData LIGHT_HEADER_DATA;
+	layout (offset = 16) vec4[] LIGHT_DATA;
 };
 
 /*

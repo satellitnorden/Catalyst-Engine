@@ -47,9 +47,6 @@ private:
 	//The render data tables.
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
-	//The light uniform data buffers.
-	DynamicArray<BufferHandle> _LightUniformDataBuffers;
-
 	//The light data buffers.
 	DynamicArray<BufferHandle> _LightDataBuffers;
 
@@ -68,11 +65,6 @@ private:
 	*	Creates the render data tables.
 	*/
 	void CreateRenderDataTables() NOEXCEPT;
-
-	/*
-	*	Creates the light uniform data buffers.
-	*/
-	void CreateLightUniformDataBuffers() NOEXCEPT;
 
 	/*
 	*	Creates the light data buffers.

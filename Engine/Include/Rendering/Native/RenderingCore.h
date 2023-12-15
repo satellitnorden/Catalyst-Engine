@@ -338,11 +338,6 @@ enum class PipelineStageFlags : uint8
 enum class RenderTarget : uint8
 {
 	/*
-	*	Contains the roughness in the R channel, metallic in the G channel, ambient occlusion in the B channel and the luminance in the A channel at half resolution.
-	*/
-	SCENE_FEATURES_3_HALF,
-
-	/*
 	*	Contains the velocity in the RG channels at half resolution.
 	*/
 	SCENE_FEATURES_4_HALF,
@@ -427,6 +422,11 @@ enum class SharedRenderTarget : uint8
 	*	Contains the shading normal in the RGB channels and the depth in the A channel at half resolution.
 	*/
 	SCENE_FEATURES_2_HALF,
+
+	/*
+	*	Contains the roughness in the R channel, metallic in the G channel, ambient occlusion in the B channel and the luminance in the A channel at half resolution.
+	*/
+	SCENE_FEATURES_3_HALF,
 
 	/*
 	*	Contains the final color for the scene.

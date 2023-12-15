@@ -11,9 +11,9 @@
 #include <Systems/RenderingSystem.h>
 
 /*
-*	Light uniform data definition.
+*	Light header data definition.
 */
-class LightUniformData final
+class LightHeaderData final
 {
 
 public:
@@ -23,6 +23,9 @@ public:
 
 	//The maximum number of shadow casting lights.
 	uint32 _MaximumNumberOfShadowCastingLights;
+
+	//Padding.
+	Padding<8> _Padding;
 
 };
 
@@ -37,9 +40,6 @@ void LightingSystem::PostInitialize() NOEXCEPT
 	//Create the render data tables.
 	CreateRenderDataTables();
 
-	//Create the light uniform data buffers.
-	CreateLightUniformDataBuffers();
-
 	//Create the light data buffers.
 	CreateLightDataBuffers();
 }
@@ -50,28 +50,10 @@ void LightingSystem::PostInitialize() NOEXCEPT
 void LightingSystem::RenderUpdate() NOEXCEPT
 {
 	//Cache relevant data.
-	const uint64 number_of_lights{ ComponentManager::GetNumberOfLightComponents() };
+	const uint32 number_of_lights{ static_cast<uint32>(ComponentManager::GetNumberOfLightComponents()) };
 
 	//Update the current render data table.
 	RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
-
-	//Update the current light uniform data buffer.
-	{
-		BufferHandle &current_light_uniform_data_buffer{ _LightUniformDataBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
-
-		LightUniformData light_uniform_data;
-
-		light_uniform_data._NumberOfLights = static_cast<uint32>(number_of_lights);
-		light_uniform_data._MaximumNumberOfShadowCastingLights = LightingConstants::MAXIMUM_NUMBER_OF_SHADOW_CASTING_LIGHTS;
-
-		const void *const RESTRICT data_chunks[]{ &light_uniform_data };
-		const uint64 data_sizes[]{ sizeof(LightUniformData) };
-
-		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_light_uniform_data_buffer);
-
-		//Bind the light uniform data buffer.
-		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &current_render_data_table, current_light_uniform_data_buffer);
-	}
 
 	//Update the current light data buffer.
 	{
@@ -79,14 +61,14 @@ void LightingSystem::RenderUpdate() NOEXCEPT
 		uint64 &current_light_data_buffer_size{ _LightDataBufferSizes[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
 		//Does the light data buffer need to be recreated?
-		if (current_light_data_buffer_size != CatalystBaseMath::Maximum<uint64>(number_of_lights, 1))
+		if (current_light_data_buffer_size != CatalystBaseMath::Maximum<uint32>(number_of_lights, 1))
 		{
 			if (current_light_data_buffer)
 			{
 				RenderingSystem::Instance->DestroyBuffer(&current_light_data_buffer);
 			}
 
-			RenderingSystem::Instance->CreateBuffer(sizeof(LightComponent) * number_of_lights, BufferUsage::StorageBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &current_light_data_buffer);
+			RenderingSystem::Instance->CreateBuffer(sizeof(uint32) + sizeof(LightComponent) * number_of_lights, BufferUsage::StorageBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &current_light_data_buffer);
 		
 			current_light_data_buffer_size = number_of_lights;
 		}
@@ -101,11 +83,17 @@ void LightingSystem::RenderUpdate() NOEXCEPT
 			_ShaderLightComponents.Emplace(*light_component);
 		}
 
-		//Upload the light data to the buffer.
-		const void *const RESTRICT data_chunks[]{ _ShaderLightComponents.Data() };
-		const uint64 data_sizes[]{ sizeof(ShaderLightComponent) * number_of_lights };
+		//Fill in the header data.
+		LightHeaderData header_data;
 
-		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_light_data_buffer);
+		header_data._NumberOfLights = number_of_lights;
+		header_data._MaximumNumberOfShadowCastingLights = LightingConstants::MAXIMUM_NUMBER_OF_SHADOW_CASTING_LIGHTS;
+
+		//Upload the light data to the buffer.
+		const void *const RESTRICT data_chunks[]{ &header_data, _ShaderLightComponents.Data() };
+		const uint64 data_sizes[]{ sizeof(LightHeaderData), sizeof(ShaderLightComponent) * number_of_lights };
+
+		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 2, &current_light_data_buffer);
 
 		//Bind the light data buffer.
 		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, 0, &current_render_data_table, current_light_data_buffer);
@@ -128,10 +116,9 @@ void LightingSystem::CreateRenderDataTableLayout() NOEXCEPT
 {
 	//Create the render data table layout.
 	{
-		StaticArray<RenderDataTableLayoutBinding, 2> bindings
+		StaticArray<RenderDataTableLayoutBinding, 1> bindings
 		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS)
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS)
 		};
 
 		RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -153,20 +140,6 @@ void LightingSystem::CreateRenderDataTables() NOEXCEPT
 }
 
 /*
-*	Creates the light uniform data buffers.
-*/
-void LightingSystem::CreateLightUniformDataBuffers() NOEXCEPT
-{
-	//Create the light uniform data buffers.
-	_LightUniformDataBuffers.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
-
-	for (BufferHandle &light_uniform_data_buffer : _LightUniformDataBuffers)
-	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(LightUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &light_uniform_data_buffer);
-	}
-}
-
-/*
 *	Creates the light data buffers.
 */
 void LightingSystem::CreateLightDataBuffers() NOEXCEPT
@@ -176,7 +149,7 @@ void LightingSystem::CreateLightDataBuffers() NOEXCEPT
 
 	for (BufferHandle &light_data_buffer : _LightDataBuffers)
 	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(LightComponent), BufferUsage::StorageBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &light_data_buffer);
+		RenderingSystem::Instance->CreateBuffer(sizeof(LightHeaderData) + sizeof(ShaderLightComponent), BufferUsage::StorageBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &light_data_buffer);
 	}
 
 	//Set the light data buffer sizes.

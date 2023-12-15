@@ -135,7 +135,7 @@ void CatalystShaderMain()
 	//Calculate the volumetric lighting for all volumetric lights.
 	uint current_sample_offset_index = 0;
 
-	for (uint i = 0; i < NUMBER_OF_LIGHTS; ++i)
+	for (uint i = 0; i < LIGHT_HEADER_DATA._NumberOfLights; ++i)
 	{
 		//Unpack the light.
 		Light light = UnpackLight(i);
@@ -197,7 +197,7 @@ void CatalystShaderMain()
 						}
 						
 						//Add to the volumetric lighting.
-						volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * exp(-VOLUMETRIC_LIGHTING_THICKNESS * 0.5f) * hit_factor / float(NUMBER_OF_DIRECTIONAL_LIGHT_SAMPLES);
+						volumetric_lighting += VOLUMETRIC_LIGHTING_BASE_COLOR * light.color * light.intensity * min(pow(0.125f, VOLUMETRIC_LIGHTING_THICKNESS), 0.125f) * hit_factor / float(NUMBER_OF_DIRECTIONAL_LIGHT_SAMPLES);
 					}
 
 					break;

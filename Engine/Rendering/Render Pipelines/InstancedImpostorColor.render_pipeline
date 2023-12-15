@@ -1,11 +1,8 @@
 //Declare unifom buffer includes.
 IncludeUniformBuffer(Camera);
-IncludeUniformBuffer(Wind);
 
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
-IncludeShaderFunctionLibrary(Model);
-IncludeShaderFunctionLibrary(Wind);
 
 //Declare output depth buffer.
 OutputDepthBuffer(SceneDepthBuffer);
@@ -31,57 +28,68 @@ DepthCompareOperator(EQUAL);
 DepthTestEnable();
 
 //Set the topology.
-Topology(TRIANGLE_LIST);
+Topology(TRIANGLE_FAN);
 
 //Declare push constant data.
 PushConstantData(vec3, WORLD_GRID_DELTA);
-PushConstantData(uint, MODEL_FLAGS);
-PushConstantData(float, START_FADE_OUT_DISTANCE_SQUARED);
-PushConstantData(float, END_FADE_OUT_DISTANCE_SQUARED);
+PushConstantData(float, HALF_WIDTH);
+PushConstantData(float, WHOLE_WIDTH);
+PushConstantData(float, HEIGHT);
 PushConstantData(uint, MATERIAL_INDEX);
+PushConstantData(float, START_FADE_IN_DISTANCE);
+PushConstantData(float, END_FADE_IN_DISTANCE);
+PushConstantData(float, START_FADE_OUT_DISTANCE);
+PushConstantData(float, END_FADE_OUT_DISTANCE);
 
 //Declare samplers.
 Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
 
 //Subscribe to input streams.
-SubscribeToInputStream(SingleSidedInstancedModel);
+SubscribeToInputStream(InstancedImpostor);
 
 //The vertex shader.
 Vertex
 {
     //Declare input parameters.
     InputParameter(vec3, InPosition);
-    InputParameter(vec3, InNormal);
-    InputParameter(vec3, InTangent);
-    InputParameter(vec2, InTextureCoordinate);
-    InputParameter(mat4, InTransformation);
 
     //Declare output parameters.
     OutputParameter(mat3, OutTangentSpaceMatrix);
-    OutputParameter(vec3, OutPreviousWorldPosition);
-    OutputParameter(vec3, OutCurrentWorldPosition);
+    OutputParameter(vec3, OutWorldPosition);
     OutputParameter(vec2, OutTextureCoordinate);
 
-    //Calculate the tangent space matrix.
-    vec3 tangent = normalize(vec3(InTransformation * vec4(InTangent, 0.0f)));
-    vec3 bitangent = normalize(vec3(InTransformation * vec4(cross(InNormal, InTangent), 0.0f)));
-    vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
+    //Calculate X and Y components.
+	float x = float(VERTEX_INDEX == 1 || VERTEX_INDEX == 2);
+    float y = float(VERTEX_INDEX == 2 || VERTEX_INDEX == 3);
 
-    //Write data for the fragment shader.
-    OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
-    OutPreviousWorldPosition = OutCurrentWorldPosition = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
-    OutTextureCoordinate = InTextureCoordinate;
-    
-    //Apply model flags.
-    if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
-    {
-        //Apply the wind displacement.
-        OutPreviousWorldPosition += CalculatePreviousWindDisplacement(OutPreviousWorldPosition, InPosition, normal);
-        OutCurrentWorldPosition += CalculateCurrentWindDisplacement(OutCurrentWorldPosition, InPosition, normal);
-    }
+    //Calculate the world position.
+    OutWorldPosition = InPosition + WORLD_GRID_DELTA;
+
+    //Calculate the forward vector.
+    vec3 forward_vector = CAMERA_WORLD_POSITION - OutWorldPosition;
+
+	//Calculate the distance to camera and normalize the forward vector.
+    forward_vector.y = 0.0f;
+    float distance_to_camera = length(forward_vector);
+    float distance_to_camera_reciprocal = 1.0f / distance_to_camera;
+    forward_vector *= distance_to_camera_reciprocal;
+
+    //Calculate the right vector.
+    vec3 right_vector = cross(forward_vector, vec3(0.0f, 1.0f, 0.0f));
+
+    //Modify the world position.
+    OutWorldPosition += (right_vector * HALF_WIDTH + -right_vector * WHOLE_WIDTH * x);
+    OutWorldPosition.y += HEIGHT * y;
+
+    //Calculate the tangent space matrix.
+    OutTangentSpaceMatrix = mat3(right_vector, vec3(0.0f, 1.0f, 0.0f), forward_vector);
+
+    //Calculate the texture coordinate.
+    OutTextureCoordinate.x = x;
+    OutTextureCoordinate.y = 1.0f - y;
 
     //Output the position.
-    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutCurrentWorldPosition, 1.0f));
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
 }
 
 //The fragment shader.
@@ -89,8 +97,7 @@ Fragment
 {
     //Declare input parameters.
     InputParameter(mat3, InTangentSpaceMatrix);
-    InputParameter(vec3, InPreviousWorldPosition);
-    InputParameter(vec3, InCurrentWorldPosition);
+    InputParameter(vec3, InWorldPosition);
     InputParameter(vec2, InTextureCoordinate);
 
     //Evaluate the material.
@@ -107,7 +114,7 @@ Fragment
     shading_normal = normalize(shading_normal);
 
     //Calculate the velocity.
-    vec2 velocity = CalculateCurrentScreenCoordinate(InCurrentWorldPosition) - CalculatePreviousScreenCoordinate(InPreviousWorldPosition) - CURRENT_FRAME_JITTER;
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
 
     //Output the fragments.
     OutputFragment(SceneFeatures1, albedo_thickness);

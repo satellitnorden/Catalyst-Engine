@@ -112,8 +112,11 @@ Fragment
         EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
     }
 
-    //Retrieve the noise value.
-    float noise_value = InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), FRAME);
+    /*
+    *   As impostors might be used to fade between impostors and real models,
+    *   use the inverse of the noise value for a smoother fade between them.
+    */
+    float noise_value = 1.0f - InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), FRAME);
 
     //Conditionally discard.
     if (opacity < 0.5f

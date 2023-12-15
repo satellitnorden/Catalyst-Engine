@@ -99,6 +99,9 @@ public:
 	//The channel mappings.
 	StaticArray<ChannelMapping, 4> _ChannelMappings;
 
+	//The tint.
+	Vector4<float32> _Tint{ 1.0f, 1.0f, 1.0f, 1.0f };
+
 	//Whether or not to apply gamma correction.
 	bool _ApplyGammaCorrection{ false };
 

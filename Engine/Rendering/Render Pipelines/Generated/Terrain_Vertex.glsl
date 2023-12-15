@@ -347,7 +347,7 @@ void main()
         float blend_1 = mix(displacements[0], displacements[1], fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
 	    float blend_2 = mix(displacements[2], displacements[3], fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
 	    float final_displacement = mix(blend_1, blend_2, fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION));
-        OutWorldPosition += normal * mix(-0.125f, 0.375f, final_displacement) * 0.5f; //Slight bias for upward displacement.
+        OutWorldPosition += normal * mix(-0.125f, 0.375f, final_displacement); //Slight bias for upward displacement.
     }
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

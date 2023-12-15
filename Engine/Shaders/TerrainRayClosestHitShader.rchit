@@ -87,7 +87,7 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 	vec3 direct_lighting = vec3(0.0f);
 
 	//Calculate all lights.
-	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
+	for (int i = 0; i < LIGHT_HEADER_DATA._NumberOfLights; ++i)
 	{
 		Light light = UnpackLight(i);
 

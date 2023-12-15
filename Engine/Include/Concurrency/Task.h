@@ -14,6 +14,23 @@ class Task final
 
 public:
 
+	//Enumeration covering all priorities.
+	enum class Priority : uint8
+	{
+		/*
+		*	Background tasks that might take multiple frames to complete.
+		*/
+		LOW,
+
+		/*
+		*	High priority tasks that are essential for the frame to proceed as intended.
+		*	Should be fast to execute.
+		*/
+		HIGH,
+
+		NUMBER_OF_TASK_PRIORITIES
+	};
+
 	//The function that this task will exeucte.
 	TaskFunction _Function;
 

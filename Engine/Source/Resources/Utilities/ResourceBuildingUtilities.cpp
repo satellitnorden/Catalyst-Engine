@@ -29,14 +29,20 @@ NO_DISCARD Vector4<float32> ResourceBuildingUtilities::CalculateAverageColor(con
 	{
 		case File::Extension::JPG:
 		{
-			JPGReader::Read(texture_file_path, &texture);
+			if (!JPGReader::Read(texture_file_path, &texture))
+			{
+				ASSERT(false, "Couldn't read " << texture_file_path);
+			}
 
 			break;
 		}
 
 		case File::Extension::PNG:
 		{
-			PNGReader::Read(texture_file_path, &texture);
+			if (!PNGReader::Read(texture_file_path, &texture))
+			{
+				ASSERT(false, "Couldn't read " << texture_file_path);
+			}
 
 			break;
 		}
@@ -114,14 +120,20 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		{
 			case File::Extension::JPG:
 			{
-				JPGReader::Read(parameters._AlbedoTextureFilePaths[i], &albedo_textures[i]);
+				if (!JPGReader::Read(parameters._AlbedoTextureFilePaths[i], &albedo_textures[i]))
+				{
+					ASSERT(false, "Couldn't read " << parameters._AlbedoTextureFilePaths[i]);
+				}
 
 				break;
 			}
 
 			case File::Extension::PNG:
 			{
-				PNGReader::Read(parameters._AlbedoTextureFilePaths[i], &albedo_textures[i]);
+				if (!PNGReader::Read(parameters._AlbedoTextureFilePaths[i], &albedo_textures[i]))
+				{
+					ASSERT(false, "Couldn't read " << parameters._AlbedoTextureFilePaths[i]);
+				}
 
 				break;
 			}
@@ -149,14 +161,20 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		{
 			case File::Extension::JPG:
 			{
-				JPGReader::Read(parameters._NormalMapTextureFilePaths[i], &normal_map_textures[i]);
+				if (!JPGReader::Read(parameters._NormalMapTextureFilePaths[i], &normal_map_textures[i]))
+				{
+					ASSERT(false, "Couldn't read " << parameters._AlbedoTextureFilePaths[i]);
+				}
 
 				break;
 			}
 
 			case File::Extension::PNG:
 			{
-				PNGReader::Read(parameters._NormalMapTextureFilePaths[i], &normal_map_textures[i]);
+				if (!PNGReader::Read(parameters._NormalMapTextureFilePaths[i], &normal_map_textures[i]))
+				{
+					ASSERT(false, "Couldn't read " << parameters._AlbedoTextureFilePaths[i]);
+				}
 
 				break;
 			}
@@ -184,14 +202,20 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		{
 			case File::Extension::JPG:
 			{
-				JPGReader::Read(parameters._MaskTextureFilePaths[i], &mask_textures[i]);
+				if (!JPGReader::Read(parameters._MaskTextureFilePaths[i], &mask_textures[i]))
+				{
+					ASSERT(false, "Couldn't read " << parameters._AlbedoTextureFilePaths[i]);
+				}
 
 				break;
 			}
 
 			case File::Extension::PNG:
 			{
-				PNGReader::Read(parameters._MaskTextureFilePaths[i], &mask_textures[i]);
+				if (!PNGReader::Read(parameters._MaskTextureFilePaths[i], &mask_textures[i]))
+				{
+					ASSERT(false, "Couldn't read " << parameters._AlbedoTextureFilePaths[i]);
+				}
 
 				break;
 			}
@@ -206,13 +230,13 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 	}
 
 	//The albedo texture should have 1.0f in it's alpha channel.
-	for (Texture2D<Vector4<float32>>& albedo_texture : albedo_textures)
+	for (uint64 i{ 0 }; i < albedo_textures.Size(); ++i)
 	{
-		for (uint32 Y{ 0 }; Y < albedo_texture.GetHeight(); ++Y)
+		for (uint32 Y{ 0 }; Y < albedo_textures[i].GetHeight(); ++Y)
 		{
-			for (uint32 X{ 0 }; X < albedo_texture.GetWidth(); ++X)
+			for (uint32 X{ 0 }; X < albedo_textures[i].GetWidth(); ++X)
 			{
-				albedo_texture.At(X, Y)._A = 1.0f;
+				albedo_textures[i].At(X, Y)._A = parameters._Thicknesses[i];
 			}
 		}
 	}
@@ -337,9 +361,11 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 					normal_map_sample._Y = normal_map_sample._Y * 2.0f - 1.0f;
 					normal_map_sample._Z = normal_map_sample._Z * 2.0f - 1.0f;
 
+					normal_map_sample.Normalize();
+
 					Vector3<float32> surface_normal{ tangent_space_matrix * normal_map_sample };
 
-					surface_normal._Z *= -1.0f;
+					surface_normal *= -1.0f;
 
 					surface_normal.Normalize();
 

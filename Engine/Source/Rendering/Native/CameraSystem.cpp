@@ -56,6 +56,12 @@ void CameraSystem::RenderUpdate() NOEXCEPT
 		(Vector2<float>(HaltonSequence::Generate(30, 3), HaltonSequence::Generate(31, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER
 	};
 
+	//Calculate the previous camera/projection matrix.
+	const Matrix4x4 previous_camera_matrix{ Matrix4x4::LookAt(_PreviousCameraWorldTransform.GetRelativePosition(GetCurrentCamera()->GetWorldTransform().GetCell()), _PreviousCameraWorldTransform.GetRelativePosition(GetCurrentCamera()->GetWorldTransform().GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles())) };
+	Matrix4x4 previous_projection_matrix{ *GetCurrentCamera()->GetProjectionMatrix() };
+	previous_projection_matrix._Matrix[2]._X -= _CameraUniformData._CurrentFrameJitter._X;
+	previous_projection_matrix._Matrix[2]._Y -= _CameraUniformData._CurrentFrameJitter._Y;
+
 	//Update the jitter.
 	Vector2<float32> current_jitter;
 
@@ -75,13 +81,10 @@ void CameraSystem::RenderUpdate() NOEXCEPT
 
 	GetCurrentCamera()->SetProjectionMatrixJitter(current_jitter);
 
-	//Calculate the previous camera matrix.
-	const Matrix4x4 previous_camera_matrix{ Matrix4x4::LookAt(_PreviousCameraWorldTransform.GetRelativePosition(GetCurrentCamera()->GetWorldTransform().GetCell()), _PreviousCameraWorldTransform.GetRelativePosition(GetCurrentCamera()->GetWorldTransform().GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles()))};
-
 	//Update the camera uniform data.
 	_CameraUniformData._WorldToClipMatrix = *GetCurrentCamera()->GetViewMatrix();
 	_CameraUniformData._WorldToCameraMatrix = *GetCurrentCamera()->GetCameraMatrix();
-	_CameraUniformData._PreviousWorldToClipMatrix = *GetCurrentCamera()->GetProjectionMatrix() * previous_camera_matrix;
+	_CameraUniformData._PreviousWorldToClipMatrix = previous_projection_matrix * previous_camera_matrix;
 	_CameraUniformData._InverseWorldToCameraMatrix = *GetCurrentCamera()->GetInverseCameraMatrix();
 	_CameraUniformData._InverseCameraToClipMatrix = *GetCurrentCamera()->GetInverseProjectionMatrix();
 

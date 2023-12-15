@@ -27,7 +27,7 @@ void PlacementSystem::SequentialUpdate() NOEXCEPT
 	{
 		if (placement_data->_AsynchronousUpdateTask.IsExecuted())
 		{
-			TaskSystem::Instance->ExecuteTask(&placement_data->_AsynchronousUpdateTask);
+			TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &placement_data->_AsynchronousUpdateTask);
 		}
 	}
 }

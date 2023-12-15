@@ -66,16 +66,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
-	AddPipeline(&_InstancedImpostorColorSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline);
-
-	AddPipeline(&_TerrainSceneFeaturesGraphicsPipeline);
-
-	for (OpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _OpaqueModelSceneFeaturesGraphicsPipelines)
-	{
-		AddPipeline(&pipeline);
-	}
-
 	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_UserInterfaceSceneFeaturesGraphicsPipeline);
 #if defined(CATALYST_EDITOR)
@@ -98,11 +89,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		pipeline.Initialize();
 	}
 	
-	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
-	_TerrainSceneFeaturesGraphicsPipeline.Initialize();
-	_OpaqueModelSceneFeaturesGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), false);
-	_OpaqueModelSceneFeaturesGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true);
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_UserInterfaceSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 #if defined(CATALYST_EDITOR)
@@ -131,14 +118,6 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 		pipeline.Execute();
 	}
 
-	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Execute();
-
-	for (OpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _OpaqueModelSceneFeaturesGraphicsPipelines)
-	{
-		pipeline.Execute();
-	}
-
-	_TerrainSceneFeaturesGraphicsPipeline.Execute();
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Execute();
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();
 	_UserInterfaceSceneFeaturesGraphicsPipeline.Execute();
@@ -167,14 +146,6 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 		pipeline.Terminate();
 	}
 
-	_InstancedImpostorColorSceneFeaturesGraphicsPipeline.Terminate();
-
-	for (OpaqueModelSceneFeaturesGraphicsPipeline &pipeline : _OpaqueModelSceneFeaturesGraphicsPipelines)
-	{
-		pipeline.Terminate();
-	}
-
-	_TerrainSceneFeaturesGraphicsPipeline.Terminate();
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Terminate();
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Terminate();
 	_UserInterfaceSceneFeaturesGraphicsPipeline.Terminate();

@@ -102,7 +102,7 @@ vec3 CalculateDirectLighting(vec3 hit_position, SurfaceProperties surface_proper
 	vec3 direct_lighting = vec3(0.0f);
 
 	//Calculate all lights.
-	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
+	for (int i = 0; i < LIGHT_HEADER_DATA._NumberOfLights; ++i)
 	{
 		Light light = UnpackLight(i);
 
@@ -370,7 +370,7 @@ void CatalystShaderMain()
 		vec3 volumetric_particle_hit_position = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * volumetric_hit_distance * noise_sample[0];
 
 		//Calculate all lights.
-		for (int light_index = 0; light_index < NUMBER_OF_LIGHTS; ++light_index)
+		for (int light_index = 0; light_index < LIGHT_HEADER_DATA._NumberOfLights; ++light_index)
 		{
 			Light light = UnpackLight(light_index);
 

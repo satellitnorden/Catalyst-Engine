@@ -56,7 +56,7 @@ void CatalystShaderMain()
 	//Calculate the volumetric lighting for all volumetric lights.
 	uint current_sample_offset_index = 0;
 
-	for (uint i = 0; i < NUMBER_OF_LIGHTS; ++i)
+	for (uint i = 0; i < LIGHT_HEADER_DATA._NumberOfLights; ++i)
 	{
 		//Unpack the light.
 		Light light = UnpackLight(i);

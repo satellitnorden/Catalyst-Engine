@@ -489,7 +489,7 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 
 		while (!all_done)
 		{
-			TaskSystem::Instance->DoWork();
+			TaskSystem::Instance->DoWork(Task::Priority::HIGH);
 
 			all_done = true;
 
@@ -510,7 +510,7 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 #endif
 			if (!update_data->_RunOnMainThread)
 			{
-				TaskSystem::Instance->ExecuteTask(&update_data->_Task);
+				TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &update_data->_Task);
 			}
 }
 

@@ -69,7 +69,7 @@ void CatalystShaderMain()
 	uint current_shadow_index = 0;
 
 	//Calculate all lights.
-	for (int i = 0; i < NUMBER_OF_LIGHTS; ++i)
+	for (int i = 0; i < LIGHT_HEADER_DATA._NumberOfLights; ++i)
 	{
 		Light light = UnpackLight(i);
 
@@ -89,7 +89,7 @@ void CatalystShaderMain()
 													shading_normal,
 													roughness,
 													metallic,
-													1.0f,
+													ambient_occlusion * 0.5f + 0.5f,
 													thickness,
 													light.position_or_direction,
 													light.color * light.intensity) * shadow_factor;
@@ -120,7 +120,7 @@ void CatalystShaderMain()
 															shading_normal,
 															roughness,
 															metallic,
-															ambient_occlusion,
+															ambient_occlusion * 0.5f + 0.5f,
 															thickness,
 															light_direction,
 															light.color * light.intensity) * attenuation * shadow_factor;
@@ -160,7 +160,7 @@ void CatalystShaderMain()
 															shading_normal,
 															roughness,
 															metallic,
-															ambient_occlusion,
+															ambient_occlusion * 0.5f + 0.5f,
 															thickness,
 															light_direction,
 															light.color * light.intensity) * attenuation * shadow_factor;

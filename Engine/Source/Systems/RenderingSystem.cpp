@@ -561,13 +561,6 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 	{
 		switch (render_target)
 		{
-			case RenderTarget::SCENE_FEATURES_3_HALF:
-			{
-				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3_HALF)]);
-
-				break;
-			}
-
 			case RenderTarget::SCENE_FEATURES_4_HALF:
 			{
 				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RG_FLOAT16, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4_HALF)]);
@@ -1253,7 +1246,6 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all render targets.
-	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_UINT8, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_3_HALF)]);
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RG_FLOAT16, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::SCENE_FEATURES_4_HALF)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_UINT8, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_UINT8)]);
 	CreateRenderTarget(GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2)]);

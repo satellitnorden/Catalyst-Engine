@@ -10,8 +10,6 @@
 #if defined(CATALYST_EDITOR)
 #include <Rendering/Native/Pipelines/GraphicsPipelines/EditorSelectedModelGraphicsPipeline.h>
 #endif
-#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedImpostorColorSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/OpaqueModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/ComputePipelines/ParticleSystemComputePipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.h>
@@ -51,25 +49,21 @@ private:
 	ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline _ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline;
 
 	//The graphics render pipelines 2.
-	StaticArray<GraphicsRenderPipeline, 4> _GraphicsRenderPipelines2
+	StaticArray<GraphicsRenderPipeline, 8> _GraphicsRenderPipelines2
 	{
+
+		GraphicsRenderPipeline(HashString("OpaqueModelSingleSided_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("OpaqueModelDoubleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelColorSingleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelColorDoubleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("InstancedModelColorSingleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("InstancedModelColorDoubleSided_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("InstancedModelColorDoubleSided_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("InstancedImpostorColor_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("Terrain_RenderPipeline"))
 	};
-
-	//The instanced impostor color scene features graphics pipeline.
-	InstancedImpostorColorSceneFeaturesGraphicsPipeline _InstancedImpostorColorSceneFeaturesGraphicsPipeline;
 
 	//The particle system masked color graphics pipeline.
 	ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline _ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline;
-
-	//The terrain scene features graphics pipeline.
-	GraphicsRenderPipeline _TerrainSceneFeaturesGraphicsPipeline{ HashString("Terrain_RenderPipeline") };
-
-	//The opaque model scene features graphics pipelines.
-	StaticArray<OpaqueModelSceneFeaturesGraphicsPipeline, 2> _OpaqueModelSceneFeaturesGraphicsPipelines;
 
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;

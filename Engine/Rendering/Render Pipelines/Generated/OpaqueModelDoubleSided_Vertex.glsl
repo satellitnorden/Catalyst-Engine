@@ -153,57 +153,71 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (std140, set = 1, binding = 1) uniform General
-{
-	layout (offset = 0) uint FRAME;
-};
-
-layout (set = 1, binding = 2) uniform sampler SAMPLER;
+layout (set = 1, binding = 1) uniform sampler SAMPLER;
 
 /*
-*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*   Calculates the world position.
 */
-float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
 {
-	frame = frame % 64;
+    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position *= inverse_view_space_position_denominator;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
 
-	float x = float(coordinate.x) + 5.588238f * float(frame);
-	float y = float(coordinate.y) + 5.588238f * float(frame);
+    return world_space_position.xyz;
+}
 
-	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+/*
+*   Returns the current screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Returns the previous screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
 }
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) float HALF_WIDTH;
-	layout (offset = 20) float WHOLE_WIDTH;
-	layout (offset = 24) float HEIGHT;
-	layout (offset = 28) uint MATERIAL_INDEX;
-	layout (offset = 32) float START_FADE_IN_DISTANCE;
-	layout (offset = 36) float END_FADE_IN_DISTANCE;
-	layout (offset = 40) float START_FADE_OUT_DISTANCE;
-	layout (offset = 44) float END_FADE_OUT_DISTANCE;
+	layout (offset = 0) mat4 PREVIOUS_MODEL_MATRIX;
+	layout (offset = 64) mat4 CURRENT_MODEL_MATRIX;
+	layout (offset = 128) uint MATERIAL_INDEX;
 };
 
-layout (location = 0) in vec2 InTextureCoordinate;
-layout (location = 1) in float InFadeOpacity;
+layout (location = 0) in vec3 InPosition;
+layout (location = 1) in vec3 InNormal;
+layout (location = 2) in vec3 InTangent;
+layout (location = 3) in vec2 InTextureCoordinate;
+
+layout (location = 0) out mat3 OutTangentSpaceMatrix;
+layout (location = 3) out vec3 OutPreviousWorldPosition;
+layout (location = 4) out vec3 OutCurrentWorldPosition;
+layout (location = 5) out vec2 OutTextureCoordinate;
 
 void main()
 {
-    float opacity = 1.0f;
-    if (TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_MASKED))
-    {
-        EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
-    }
-    /*
-    *   As impostors might be used to fade between impostors and real models,
-    *   use the inverse of the noise value for a smoother fade between them.
-    */
-    float noise_value = 1.0f - InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME);
-    if (opacity < 0.5f
-    || (InFadeOpacity < 1.0f && InFadeOpacity < noise_value))
-    {
-        discard;
-    }
+    vec3 tangent = normalize(vec3(CURRENT_MODEL_MATRIX * vec4(InTangent, 0.0f)));
+    vec3 bitangent = normalize(vec3(CURRENT_MODEL_MATRIX * vec4(cross(InNormal, InTangent), 0.0f)));
+    vec3 normal = normalize(vec3(CURRENT_MODEL_MATRIX * vec4(InNormal, 0.0f)));
+    OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
+    OutPreviousWorldPosition = vec3(PREVIOUS_MODEL_MATRIX * vec4(InPosition, 1.0f));
+    OutCurrentWorldPosition = vec3(CURRENT_MODEL_MATRIX * vec4(InPosition, 1.0f));
+    OutTextureCoordinate = InTextureCoordinate;
+	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutCurrentWorldPosition,1.0f);
 }

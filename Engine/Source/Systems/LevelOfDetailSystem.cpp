@@ -41,8 +41,8 @@ void LevelOfDetailSystem::Initialize() NOEXCEPT
 void LevelOfDetailSystem::RenderUpdate() NOEXCEPT
 {
 	//Execute all tasks.
-	TaskSystem::Instance->ExecuteTask(&_StaticModelsLevelOfDetailTask);
-	TaskSystem::Instance->ExecuteTask(&_DynamicModelsLevelOfDetailTask);
+	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_StaticModelsLevelOfDetailTask);
+	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_DynamicModelsLevelOfDetailTask);
 }
 
 /*

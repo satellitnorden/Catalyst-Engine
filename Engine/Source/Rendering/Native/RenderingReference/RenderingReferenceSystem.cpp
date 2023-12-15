@@ -311,7 +311,7 @@ public:
 
 		for (Task &task : RenderingReferenceSystemData::_Tasks)
 		{
-			TaskSystem::Instance->ExecuteTask(&task);
+			TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &task);
 		}
 	}
 

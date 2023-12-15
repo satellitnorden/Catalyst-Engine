@@ -50,7 +50,7 @@ private:
 	StaticArray<AmbientOcclusionTemporalDenoisingGraphicsPipeline, 2> _AmbientOcclusionTemporalDenoisingGraphicsPipelines;
 
 	//The ambient occlusion spatial denoising graphics pipelines.
-	StaticArray<AmbientOcclusionSpatialDenoisingGraphicsPipeline, 4> _AmbientOcclusionSpatialDenoisingGraphicsPipelines;
+	StaticArray<AmbientOcclusionSpatialDenoisingGraphicsPipeline, 2> _AmbientOcclusionSpatialDenoisingGraphicsPipelines;
 
 	//The ambient occlusion application graphics pipeline.
 	AmbientOcclusionApplicationGraphicsPipeline _AmbientOcclusionApplicationGraphicsPipeline;

@@ -231,7 +231,7 @@ void LogSystem::Log(const LogLevel log_level,
 	if (current_queued_lines._CurrentLineIndex == current_queued_lines._Lines.Size())
 	{
 		//Execute the flush task.
-		TaskSystem::Instance->ExecuteTask(&current_queued_lines._FlushTask);
+		TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &current_queued_lines._FlushTask);
 
 		//Flip the current buffer index.
 		LogSystemData::_CurrentBufferIndex ^= 1;

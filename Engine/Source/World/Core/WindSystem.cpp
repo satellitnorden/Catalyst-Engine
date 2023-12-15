@@ -76,7 +76,8 @@ void WindSystem::RenderUpdate() NOEXCEPT
 	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_uniform_buffer);
 
 	//Update the wind uniform data.
-	_WindUniformData._WindDirection = _WindDirection;
-	_WindUniformData._WindSpeed = _WindSpeed;
-	_WindUniformData._WindTime = fmodf(_WindUniformData._WindTime + CatalystEngineSystem::Instance->GetDeltaTime(), CatalystBaseMathConstants::DOUBLE_PI);
+	_WindUniformData._PreviousWindDirectionSpeed = _WindUniformData._CurrentWindDirectionSpeed;
+	_WindUniformData._PreviousWindTime = _WindUniformData._CurrentWindTime;
+	_WindUniformData._CurrentWindDirectionSpeed = Vector4<float32>(_WindDirection, _WindSpeed);
+	_WindUniformData._CurrentWindTime = fmodf(_WindUniformData._CurrentWindTime + CatalystEngineSystem::Instance->GetDeltaTime(), CatalystBaseMathConstants::DOUBLE_PI);
 }

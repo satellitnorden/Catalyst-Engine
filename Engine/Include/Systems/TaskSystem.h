@@ -8,10 +8,8 @@
 //Concurrency.
 #include <Concurrency/Atomic.h>
 #include <Concurrency/AtomicQueue.h>
+#include <Concurrency/Task.h>
 #include <Concurrency/Thread.h>
-
-//Forward declarations.
-class Task;
 
 class ALIGN(8) TaskSystem final
 {
@@ -49,17 +47,18 @@ public:
 	/*
 	*	Executes a task.
 	*/
-	void ExecuteTask(Task *const RESTRICT task) NOEXCEPT;
+	void ExecuteTask(const Task::Priority priority, Task *const RESTRICT task) NOEXCEPT;
 
 	/*
 	*	Does work on the calling thread.
+	*	Work with be executed with a priority equal to or higher than the given priority.
 	*/
-	void DoWork() NOEXCEPT;
+	void DoWork(const Task::Priority priority) NOEXCEPT;
 
 	/*
 	*	Waits for all tasks to finish.
 	*/
-	void WaitForAllTasksToFinish() const NOEXCEPT;
+	void WaitForAllTasksToFinish() NOEXCEPT;
 
 private:
 
@@ -67,10 +66,10 @@ private:
 	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 4'096 };
 
 	//Container for all atomic queues in which to put tasks in.
-	AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::MULTIPLE> _TaskQueue;
+	StaticArray<AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS, AtomicQueueMode::MULTIPLE, AtomicQueueMode::MULTIPLE>, UNDERLYING(Task::Priority::NUMBER_OF_TASK_PRIORITIES)> _TaskQueues;
 
 	//Denotes how many tasks are currently queued.
-	Atomic<uint64> _TasksInQueue{ 0 };
+	StaticArray<Atomic<uint64>, UNDERLYING(Task::Priority::NUMBER_OF_TASK_PRIORITIES)> _TasksInQueue;
 
 	//Denotes whether or not the task system is initialized.
 	bool _IsInitialized{ false };

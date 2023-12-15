@@ -11,6 +11,13 @@
 #include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
 #include <File/Utilities/TextParsingUtilities.h>
+#include <File/Writers/PNGWriter.h>
+
+//Math.
+#include <Math/Core/CatalystGeometryMath.h>
+
+//Resources.
+#include <Resources/Utilities/ResourceBuildingUtilities.h>
 
 //Systems.
 #include <Systems/LogSystem.h>
@@ -19,8 +26,10 @@
 //Constants.
 #define ENGINE_CONTENT_DEFINITIONS "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Content Definitions"
 #define ENGINE_INTERMEDIATE "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate"
+#define ENGINE_RAW "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw"
 #define GAME_CONTENT_DEFINITIONS "..\\..\\..\\Content\\Content Definitions"
 #define GAME_INTERMEDIATE "..\\..\\..\\Content\\Intermediate"
+#define GAME_RAW "..\\..\\..\\Content\\Raw"
 
 //Singleton definition.
 DEFINE_SINGLETON(ContentCompiler);
@@ -104,6 +113,9 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
+#if 0
+		return true;
+#else
 		for (Entry &entry : _Entries)
 		{
 			if (entry._Identifier == identifier)
@@ -129,6 +141,7 @@ public:
 		new_entry._LastWriteTime = last_write_time;
 
 		return true;
+#endif
 	}
 
 	/*
@@ -228,6 +241,20 @@ NO_DISCARD bool ContentCompiler::RunGame() NOEXCEPT
 */
 NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const char *const RESTRICT directory_path) NOEXCEPT
 {
+	enum class DelayedCompileType : uint8
+	{
+		IMPOSTOR_MATERIAL
+	};
+	struct DelayedCompile final
+	{
+		DelayedCompileType _Type;
+		std::string _Name;
+		std::string _FilePath;
+	};
+
+	//Keep track of delayed compiles.
+	DynamicArray<DelayedCompile> delayed_compiles;
+
 	//Remember if new content was compiled.
 	bool new_content_compiled{ false };
 
@@ -288,9 +315,20 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 			ParseMaterial(compilation_domain, content_cache, name, file);
 		}
 
+		else if (content_type == "MODEL")
+		{
+			ParseModel(compilation_domain, content_cache, name, file);
+		}
+
 		else if (content_type == "TEXTURE_2D")
 		{
 			ParseTexture2D(compilation_domain, content_cache, name, file);
+		}
+
+		else if (content_type == "IMPOSTOR_MATERIAL")
+		{
+			//Impostor materials depends on other resources, so delay the compile.
+			delayed_compiles.Emplace(DelayedCompile{ DelayedCompileType::IMPOSTOR_MATERIAL, name, file_path });
 		}
 
 		else
@@ -303,6 +341,29 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 
 		//New content was compiled!
 		new_content_compiled = true;
+	}
+
+	//Process delayed compiles.
+	for (const DelayedCompile &delayed_compile : delayed_compiles)
+	{
+		switch (delayed_compile._Type)
+		{
+			case DelayedCompileType::IMPOSTOR_MATERIAL:
+			{
+				std::ifstream file{ delayed_compile._FilePath };
+				ParseImpostorMaterial(compilation_domain, content_cache, delayed_compile._Name, file);
+				file.close();
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
 	}
 
 	return new_content_compiled;
@@ -320,14 +381,14 @@ void ContentCompiler::ParseMaterial(const CompilationDomain compilation_domain, 
 	{
 		case CompilationDomain::ENGINE:
 		{
-			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\Material");
+			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\Materials");
 
 			break;
 		}
 
 		case CompilationDomain::GAME:
 		{
-			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\Material");
+			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\Materials");
 
 			break;
 		}
@@ -471,6 +532,106 @@ void ContentCompiler::ParseMaterial(const CompilationDomain compilation_domain, 
 }
 
 /*
+*	Parses a Model from the given file.
+*/
+void ContentCompiler::ParseModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT
+{
+	//Calculate the intermediate directory.
+	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
+
+	switch (compilation_domain)
+	{
+		case CompilationDomain::ENGINE:
+		{
+			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\Models");
+
+			break;
+		}
+
+		case CompilationDomain::GAME:
+		{
+			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\Models");
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Create the directory, if it doesn't exist.
+	File::CreateDirectory(intermediate_directory);
+
+	//Set up the build parameters.
+	ModelBuildParameters parameters;
+
+	//Set the output.
+	char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+	sprintf_s(output_buffer, "%s\\%s", intermediate_directory, name.data());
+	parameters._Output = output_buffer;
+
+	//Set the resource identifier.
+	parameters._ResourceIdentifier = name.data();
+
+	//Set some default parameters.
+	parameters._Transformation = Matrix4x4();
+	parameters._TextureCoordinateMultiplier = 1.0f;
+	parameters._TexturCoordinateRotation = 0.0f;
+	parameters._ProceduralFunction = nullptr;
+	parameters._CollisionModelFilePath = nullptr;
+	
+	//Some strings will need to be persistent until building, so cache those.
+	DynamicArray<DynamicString> persistent_strings;
+
+	//Read all of the lines.
+	std::string line;
+	StaticArray<DynamicString, 5> arguments;
+
+	while (std::getline(file, line))
+	{
+		//Skip lines with only whitespace.
+		if (TextParsingUtilities::OnlyWhitespace(line.data(), line.length()))
+		{
+			continue;
+		}
+
+		//Parse the arguments.
+		TextParsingUtilities::ParseSpaceSeparatedArguments
+		(
+			line.data(),
+			line.length(),
+			arguments.Data()
+		);
+
+		if (arguments[0] == "LEVEL_OF_DETAIL")
+		{
+			persistent_strings.Emplace();
+			persistent_strings.Back() = arguments[1];
+			parameters._LevelOfDetails.Emplace(persistent_strings.Back().Data());
+		}
+
+		else if (arguments[0] == "COLLISION")
+		{
+			persistent_strings.Emplace();
+			persistent_strings.Back() = arguments[1];
+			parameters._CollisionModelFilePath = persistent_strings.Back().Data();
+		}
+
+		else
+		{
+			ASSERT(false, "Couldn't parse argument " << arguments[0].Data());
+		}
+	}
+
+	//Build!
+	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+}
+
+/*
 *	Parses a Texture2D from the given file.
 */
 void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT
@@ -482,14 +643,14 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 	{
 		case CompilationDomain::ENGINE:
 		{
-			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\Texture2D");
+			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\Textures");
 
 			break;
 		}
 
 		case CompilationDomain::GAME:
 		{
-			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\Texture2D");
+			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\Textures");
 
 			break;
 		}
@@ -528,6 +689,7 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 	parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
 	parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
 	parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
+	parameters._Tint = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
 	parameters._ApplyGammaCorrection = false;
 	parameters._TransformFunction = nullptr;
 	parameters._BaseMipmapLevel = 0;
@@ -676,6 +838,14 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 			}
 		}
 
+		else if (arguments[0] == "TINT")
+		{
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				parameters._Tint[i] = std::stof(arguments[1 + i].Data());
+			}
+			}
+
 		else if (arguments[0] == "APPLY_GAMMA_CORRECTION")
 		{
 			parameters._ApplyGammaCorrection = true;
@@ -699,5 +869,691 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 
 	//Build!
 	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+}
+
+/*
+*	Loads the texture 2D with the given identifier.
+*/
+NO_DISCARD ResourcePointer<Texture2DResource> LoadTexture2DResource(const char *const RESTRICT directory_path, const HashString identifier) NOEXCEPT
+{
+	/*
+	*	This is a bit tricky, best we can do right now is search in a specific path,
+	*	hash the names of the files, and see if they match.
+	*/
+	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
+	{
+		const std::string file_path{ entry.path().string() };
+		const size_t last_slash_position{ file_path.find_last_of("\\") };
+		const std::string name{ file_path.substr(last_slash_position + 1, file_path.length() - last_slash_position - strlen(".cr") - 1) };
+		const HashString candidate_identifier{ name.data() };
+
+		if (candidate_identifier == identifier)
+		{
+			ResourceSystem::Instance->LoadResource(file_path.data());
+
+			return ResourceSystem::Instance->GetTexture2DResource(candidate_identifier);
+		}
+	}
+
+	ASSERT(false, "Couldn't find resource!");
+
+	return ResourcePointer<Texture2DResource>();
+}
+
+/*
+*	Parses an Impostor Material from the given file.
+*/
+void ContentCompiler::ParseImpostorMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT
+{
+	//Calculate the intermediate directory.
+	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
+
+	switch (compilation_domain)
+	{
+		case CompilationDomain::ENGINE:
+		{
+			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE);
+
+			break;
+		}
+
+		case CompilationDomain::GAME:
+		{
+			sprintf_s(intermediate_directory, GAME_INTERMEDIATE);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Create the directory, if it doesn't exist.
+	File::CreateDirectory(intermediate_directory);
+
+	//Calculate the raw directory.
+	char raw_directory[MAXIMUM_FILE_PATH_LENGTH];
+
+	switch (compilation_domain)
+	{
+		case CompilationDomain::ENGINE:
+		{
+			sprintf_s(raw_directory, ENGINE_RAW "\\Textures\\Impostor Textures");
+
+			break;
+		}
+
+		case CompilationDomain::GAME:
+		{
+			sprintf_s(raw_directory, GAME_RAW "\\Textures\\Impostor Textures");
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Create the directory, if it doesn't exist.
+	File::CreateDirectory(raw_directory);
+
+	//Read all of the lines.
+	ResourcePointer<ModelResource> model_resource;
+	DynamicArray<ResourcePointer<MaterialResource>> material_resources;
+	Resolution dimensions;
+
+	std::string line;
+	StaticArray<DynamicString, 5> arguments;
+
+	while (std::getline(file, line))
+	{
+		//Skip lines with only whitespace.
+		if (TextParsingUtilities::OnlyWhitespace(line.data(), line.length()))
+		{
+			continue;
+		}
+
+		//Parse the arguments.
+		TextParsingUtilities::ParseSpaceSeparatedArguments
+		(
+			line.data(),
+			line.length(),
+			arguments.Data()
+		);
+
+		if (arguments[0] == "IMPOSTOR_MATERIAL")
+		{
+			//Skip. (:
+			continue;
+		}
+
+		else if (arguments[0] == "MODEL")
+		{
+			//Assume it was created in the standardized format.
+			char buffer[MAXIMUM_FILE_PATH_LENGTH];
+
+			switch (compilation_domain)
+			{
+				case CompilationDomain::ENGINE:
+				{
+					sprintf_s(buffer, ENGINE_INTERMEDIATE "\\Models\\%s.cr", arguments[1].Data());
+
+					break;
+				}
+
+				case CompilationDomain::GAME:
+				{
+					sprintf_s(buffer, GAME_INTERMEDIATE "\\Models\\%s.cr", arguments[1].Data());
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			ResourceSystem::Instance->LoadResource(buffer);
+			model_resource = ResourceSystem::Instance->GetModelResource(HashString(arguments[1].Data()));
+		}
+
+		else if (arguments[0] == "MATERIAL")
+		{
+			//Assume it was created in the standardized format.
+			char buffer[MAXIMUM_FILE_PATH_LENGTH];
+
+			switch (compilation_domain)
+			{
+				case CompilationDomain::ENGINE:
+				{
+					sprintf_s(buffer, ENGINE_INTERMEDIATE "\\Materials\\%s.cr", arguments[1].Data());
+
+					break;
+				}
+
+				case CompilationDomain::GAME:
+				{
+					sprintf_s(buffer, GAME_INTERMEDIATE "\\Materials\\%s.cr", arguments[1].Data());
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			ResourceSystem::Instance->LoadResource(buffer);
+			material_resources.Emplace();
+			material_resources.Back() = ResourceSystem::Instance->GetMaterialResource(HashString(arguments[1].Data()));
+		}
+
+		else if (arguments[0] == "DIMENSIONS")
+		{
+			dimensions._Width = static_cast<uint32>(std::stoul(arguments[1].Data()));
+			dimensions._Height = static_cast<uint32>(std::stoul(arguments[2].Data()));
+		}
+
+		else
+		{
+			ASSERT(false, "Couldn't parse argument " << arguments[0].Data());
+		}
+	}
+
+	//Load all textures for all materials.
+	DynamicArray<ResourcePointer<Texture2DResource>> albedo_thickness_textures;
+	DynamicArray<ResourcePointer<Texture2DResource>> normal_map_displacement_textures;
+	DynamicArray<ResourcePointer<Texture2DResource>> material_properties_textures;
+	DynamicArray<ResourcePointer<Texture2DResource>> opacity_textures;
+
+	{
+		/*
+		*	Cache the directory path of texture 2D resources.
+		*	Assume it was created in the standardized format.
+		*/
+		char buffer[MAXIMUM_FILE_PATH_LENGTH];
+
+		switch (compilation_domain)
+		{
+			case CompilationDomain::ENGINE:
+			{
+				sprintf_s(buffer, ENGINE_INTERMEDIATE "\\Textures");
+
+				break;
+			}
+
+			case CompilationDomain::GAME:
+			{
+				sprintf_s(buffer, GAME_INTERMEDIATE "\\Textures");
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+
+		for (const ResourcePointer<MaterialResource> &material_resource : material_resources)
+		{
+			/*
+			*	Emplace one resource pointer for each material component,
+			*	helps a bit in the next steps by being able to assume a 1-to-1 mesh-to-material-to-texture correlation.
+			*/
+			albedo_thickness_textures.Emplace();
+			normal_map_displacement_textures.Emplace();
+			material_properties_textures.Emplace();
+			opacity_textures.Emplace();
+
+			if (material_resource->_AlbedoThicknessComponent._Type == MaterialResource::MaterialResourceComponent::Type::TEXTURE)
+			{
+				albedo_thickness_textures.Back() = LoadTexture2DResource(buffer, material_resource->_AlbedoThicknessComponent._TextureResource->_Header._ResourceIdentifier);
+			}
+
+			if (material_resource->_NormalMapDisplacementComponent._Type == MaterialResource::MaterialResourceComponent::Type::TEXTURE)
+			{
+				normal_map_displacement_textures.Back() = LoadTexture2DResource(buffer, material_resource->_NormalMapDisplacementComponent._TextureResource->_Header._ResourceIdentifier);
+			}
+
+			if (material_resource->_MaterialPropertiesComponent._Type == MaterialResource::MaterialResourceComponent::Type::TEXTURE)
+			{
+				material_properties_textures.Back() = LoadTexture2DResource(buffer, material_resource->_MaterialPropertiesComponent._TextureResource->_Header._ResourceIdentifier);
+			}
+
+			if (material_resource->_OpacityComponent._Type == MaterialResource::MaterialResourceComponent::Type::TEXTURE)
+			{
+				opacity_textures.Back() = LoadTexture2DResource(buffer, material_resource->_OpacityComponent._TextureResource->_Header._ResourceIdentifier);
+			}
+		}
+	}
+
+	//Cache the axis aligned bounding box.
+	const AxisAlignedBoundingBox3D axis_aligned_bounding_box{ model_resource->_ModelSpaceAxisAlignedBoundingBox };
+
+	//Create the impostor textures!
+	Texture2D<Vector4<float32>> impostor_albedo_texture{ dimensions._Width, dimensions._Height };
+	Texture2D<Vector4<float32>> impostor_normal_map_texture{ dimensions._Width, dimensions._Height };
+	Texture2D<Vector4<float32>> impostor_material_properties_texture{ dimensions._Width, dimensions._Height };
+	Texture2D<Vector4<float32>> impostor_opacity_texture{ dimensions._Width, dimensions._Height };
+
+	for (uint32 Y{ 0 }; Y < dimensions._Height; ++Y)
+	{
+		for (uint32 X{ 0 }; X < dimensions._Width; ++X)
+		{
+			//Calculate the normalized coordinate.
+			const Vector2<float32> normalized_coordinate{ static_cast<float32>(X) / static_cast<float32>(dimensions._Width - 1), static_cast<float32>(Y) / static_cast<float32>(dimensions._Height - 1) };
+
+			//Calculate the camera position.
+			Vector3<float32> camera_position;
+
+			camera_position._X = CatalystBaseMath::LinearlyInterpolate(axis_aligned_bounding_box._Minimum._X, axis_aligned_bounding_box._Maximum._X, normalized_coordinate._X);
+			camera_position._Y = CatalystBaseMath::LinearlyInterpolate(axis_aligned_bounding_box._Minimum._Y, axis_aligned_bounding_box._Maximum._Y, normalized_coordinate._Y);
+			camera_position._Z = axis_aligned_bounding_box._Minimum._Z - 1.0f;
+
+			//Construct the ray.
+			Ray ray;
+
+			ray.SetOrigin(camera_position);
+			ray.SetDirection(Vector3<float32>(0.0f, 0.0f, 1.0f));
+
+			//Intersect every triangle and check for hits.
+			float32 intersection_distance{ FLOAT32_MAXIMUM };
+			uint64 intersected_mesh_index{ 0 };
+			Vector3<float32> intersected_normal;
+			Vector3<float32> intersected_tangent;
+			Vector2<float32> intersected_texture_coordinate;
+
+			for (uint64 mesh_index{ 0 }, size{ model_resource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+			{
+				//Cache the mesh.
+				const Mesh &mesh{ model_resource->_Meshes[mesh_index] };
+
+				//Cache the mesh level of detail.
+				const Mesh::MeshLevelOfDetail &mesh_level_of_detail{ mesh._MeshLevelOfDetails[0] };
+
+				for (uint32 index{ 0 }; index < mesh_level_of_detail._Indices.Size(); index += 3)
+				{
+					//Construct the triangle.
+					Triangle triangle;
+
+					triangle._Vertices[0] = mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 0]]._Position;
+					triangle._Vertices[1] = mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 1]]._Position;
+					triangle._Vertices[2] = mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 2]]._Position;
+
+					//Intersect the triangle.
+					float32 temporary_intersection_distance;
+
+					if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &temporary_intersection_distance))
+					{
+						if (intersection_distance > temporary_intersection_distance)
+						{
+							//Calculate the vertex properties.
+							Vector3<float32> normal;
+							Vector3<float32> tangent;
+							Vector2<float32> texture_coordinate;
+
+							{
+								//Calculate the intersected texture coordinate.
+								Vector3<float32> intersection_point = ray._Origin + ray._Direction * temporary_intersection_distance;
+
+								//Calculate the barycentric coordinate.
+								Vector3<float32> barycentric_coordinate{ CatalystGeometryMath::CalculateBarycentricCoordinates(triangle, intersection_point) };
+
+								//Calculate the normal.
+								normal = mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 0]]._Normal * barycentric_coordinate[0] + mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 1]]._Normal * barycentric_coordinate[1] + mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 2]]._Normal * barycentric_coordinate[2];
+
+								//Calculate the tangent.
+								tangent = mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 0]]._Tangent * barycentric_coordinate[0] + mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 1]]._Tangent * barycentric_coordinate[1] + mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 2]]._Tangent * barycentric_coordinate[2];
+
+								//Calculate the texture coordinate.
+								texture_coordinate = mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 0]]._TextureCoordinate * barycentric_coordinate[0] + mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 1]]._TextureCoordinate * barycentric_coordinate[1] + mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index + 2]]._TextureCoordinate * barycentric_coordinate[2];
+							}
+
+							//Check the mask texture if this was really a hit.
+							bool was_really_a_hit{ true };
+
+							if (opacity_textures[mesh_index])
+							{
+								const Vector4<float32> mask_value{ opacity_textures[mesh_index]->_Texture2D.Sample(texture_coordinate, AddressMode::CLAMP_TO_EDGE) };
+
+								was_really_a_hit = mask_value[0] >= 0.5f;
+							}
+
+							if (was_really_a_hit)
+							{
+								intersection_distance = temporary_intersection_distance;
+								intersected_mesh_index = mesh_index;
+								intersected_normal = normal;
+								intersected_tangent = tangent;
+								intersected_texture_coordinate = texture_coordinate;
+							}
+						}
+					}
+				}
+			}
+
+			//Was there a hit?
+			if (intersection_distance != FLOAT32_MAXIMUM)
+			{
+				//Fill in the textures.
+				impostor_albedo_texture.At(X, Y) = albedo_thickness_textures[intersected_mesh_index]->_Texture2D.Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE);
+				impostor_opacity_texture.At(X, Y) = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
+
+				//Calculate the normal
+				{
+					Matrix3x3 tangent_space_matrix{ intersected_tangent, Vector3<float32>::CrossProduct(intersected_normal, intersected_tangent), intersected_normal };
+
+					tangent_space_matrix._Matrix[0] = Vector3<float32>::Normalize(tangent_space_matrix._Matrix[0]);
+					tangent_space_matrix._Matrix[1] = Vector3<float32>::Normalize(tangent_space_matrix._Matrix[1]);
+					tangent_space_matrix._Matrix[2] = Vector3<float32>::Normalize(tangent_space_matrix._Matrix[2]);
+
+					const Vector4<float32> normal_map_displacement_sample{ normal_map_displacement_textures[intersected_mesh_index]->_Texture2D.Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE) };
+					Vector3<float32> normal_map_sample{ normal_map_displacement_sample._X, normal_map_displacement_sample._Y, normal_map_displacement_sample._Z };
+
+					normal_map_sample._X = normal_map_sample._X * 2.0f - 1.0f;
+					normal_map_sample._Y = normal_map_sample._Y * 2.0f - 1.0f;
+					normal_map_sample._Z = normal_map_sample._Z * 2.0f - 1.0f;
+
+					normal_map_sample.Normalize();
+
+					Vector3<float32> surface_normal{ tangent_space_matrix * normal_map_sample };
+
+					surface_normal *= -1.0f;
+
+					surface_normal.Normalize();
+
+					//Flip the normal if we hit the backside.
+					if (Vector3<float32>::DotProduct(ray._Direction, surface_normal) < 0.0f)
+					{
+						surface_normal *= -1.0f;
+					}
+
+					surface_normal._X = surface_normal._X * 0.5f + 0.5f;
+					surface_normal._Y = surface_normal._Y * 0.5f + 0.5f;
+					surface_normal._Z = surface_normal._Z * 0.5f + 0.5f;
+
+					impostor_normal_map_texture.At(X, Y) = Vector4<float32>(surface_normal, 0.5f);
+					impostor_material_properties_texture.At(X, Y) = material_properties_textures[intersected_mesh_index]->_Texture2D.Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE);
+				}
+			}
+
+			else
+			{
+				//Fill in the textures.
+				impostor_albedo_texture.At(X, Y) = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+				impostor_normal_map_texture.At(X, Y) = Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f);
+				impostor_material_properties_texture.At(X, Y) = Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f);
+				impostor_opacity_texture.At(X, Y) = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+			}
+		}
+	}
+
+	//Blur the black pixels of the albedo until there are none left!
+	for (;;)
+	{
+		uint64 number_of_black_pixels{ 0 };
+
+		Texture2D<Vector4<float32>> temporary_impostor_albedo_texture{ impostor_albedo_texture };
+
+		for (uint32 Y{ 0 }; Y < dimensions._Height; ++Y)
+		{
+			for (uint32 X{ 0 }; X < dimensions._Width; ++X)
+			{
+				Vector4<float32> &impostor_albedo_texel{ impostor_albedo_texture.At(X, Y) };
+
+				if (impostor_albedo_texel == Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f))
+				{
+					Vector4<float32> total_color{ 0.0f, 0.0f, 0.0f, 0.0f };
+					float32 total_weight{ 0.0f };
+
+					for (int8 y{ -1 }; y <= 1; ++y)
+					{
+						for (int8 x{ -1 }; x <= 1; ++x)
+						{
+							const uint32 sub_x{ CatalystBaseMath::Clamp<uint32>(X + x, 0, temporary_impostor_albedo_texture.GetWidth() - 1) };
+							const uint32 sub_y{ CatalystBaseMath::Clamp<uint32>(Y + y, 0, temporary_impostor_albedo_texture.GetHeight() - 1) };
+
+							const Vector4<float32>& temporary_impostor_albedo_texel{ temporary_impostor_albedo_texture.At(sub_x, sub_y) };
+
+							if (temporary_impostor_albedo_texel != Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f))
+							{
+								total_color += temporary_impostor_albedo_texel;
+								total_weight += 1.0f;
+							}
+						}
+					}
+
+					//Normalize the total color.
+					if (total_weight > 0.0f)
+					{
+						total_color /= total_weight;
+
+						//Write the blurred value.
+						impostor_albedo_texel = total_color;
+					}
+
+					++number_of_black_pixels;
+				}
+			}
+		}
+
+		//If there are no black pixels left, it's done, finally!
+		if (number_of_black_pixels == 0)
+		{
+			break;
+		}
+	}
+
+	//Write the textures.
+	{
+		char buffer[128];
+		sprintf_s(buffer, "%s\\%s_AlbedoThickness.png", raw_directory, name.data());
+
+		PNGWriter::Write(impostor_albedo_texture, buffer);
+	}
+
+	{
+		char buffer[128];
+		sprintf_s(buffer, "%s\\%s_NormalMapDisplacement.png", raw_directory, name.data());
+
+		PNGWriter::Write(impostor_normal_map_texture, buffer);
+	}
+
+	{
+		char buffer[128];
+		sprintf_s(buffer, "%s\\%s_MaterialProperties.png", raw_directory, name.data());
+
+		PNGWriter::Write(impostor_material_properties_texture, buffer);
+	}
+
+	{
+		char buffer[128];
+		sprintf_s(buffer, "%s\\%s_Opacity.png", raw_directory, name.data());
+
+		PNGWriter::Write(impostor_opacity_texture, buffer);
+	}
+
+	//Build the textures
+	{
+		//Build the texture 2D.
+		Texture2DBuildParameters texture_2d_build_parameters;
+
+		char output_buffer[128];
+		sprintf_s(output_buffer, "%s\\Textures\\Impostors\\%s_AlbedoThickness", intermediate_directory, name.data());
+		texture_2d_build_parameters._Output = output_buffer;
+		char identifier_buffer[128];
+		sprintf_s(identifier_buffer, "%s_AlbedoThickness", name.data());
+		texture_2d_build_parameters._ID = identifier_buffer;
+		texture_2d_build_parameters._DefaultWidth = 0;
+		texture_2d_build_parameters._DefaultHeight = 0;
+		char file_1_buffer[128];
+		sprintf_s(file_1_buffer, "%s\\%s_AlbedoThickness.png", raw_directory, name.data());
+		texture_2d_build_parameters._File1 = file_1_buffer;
+		texture_2d_build_parameters._File2 = nullptr;
+		texture_2d_build_parameters._File3 = nullptr;
+		texture_2d_build_parameters._File4 = nullptr;
+		texture_2d_build_parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+		texture_2d_build_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		texture_2d_build_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		texture_2d_build_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		texture_2d_build_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
+		texture_2d_build_parameters._ApplyGammaCorrection = false;
+		texture_2d_build_parameters._TransformFunction = nullptr;
+		texture_2d_build_parameters._BaseMipmapLevel = 0;
+		texture_2d_build_parameters._MipmapLevels = 2;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
+	}
+
+	{
+		//Build the texture 2D.
+		Texture2DBuildParameters texture_2d_build_parameters;
+
+		char output_buffer[128];
+		sprintf_s(output_buffer, "%s\\Textures\\Impostors\\%s_NormalMapDisplacement", intermediate_directory, name.data());
+		texture_2d_build_parameters._Output = output_buffer;
+		char identifier_buffer[128];
+		sprintf_s(identifier_buffer, "%s_NormalMapDisplacement", name.data());
+		texture_2d_build_parameters._ID = identifier_buffer;
+		texture_2d_build_parameters._DefaultWidth = 0;
+		texture_2d_build_parameters._DefaultHeight = 0;
+		char file_1_buffer[128];
+		sprintf_s(file_1_buffer, "%s\\%s_NormalMapDisplacement.png", raw_directory, name.data());
+		texture_2d_build_parameters._File1 = file_1_buffer;
+		texture_2d_build_parameters._File2 = nullptr;
+		texture_2d_build_parameters._File3 = nullptr;
+		texture_2d_build_parameters._File4 = nullptr;
+		texture_2d_build_parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+		texture_2d_build_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		texture_2d_build_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		texture_2d_build_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		texture_2d_build_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
+		texture_2d_build_parameters._ApplyGammaCorrection = false;
+		texture_2d_build_parameters._TransformFunction = nullptr;
+		texture_2d_build_parameters._BaseMipmapLevel = 0;
+		texture_2d_build_parameters._MipmapLevels = 2;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
+	}
+
+	{
+		//Build the texture 2D.
+		Texture2DBuildParameters texture_2d_build_parameters;
+
+		char output_buffer[128];
+		sprintf_s(output_buffer, "%s\\Textures\\Impostors\\%s_MaterialProperties", intermediate_directory, name.data());
+		texture_2d_build_parameters._Output = output_buffer;
+		char identifier_buffer[128];
+		sprintf_s(identifier_buffer, "%s_MaterialProperties", name.data());
+		texture_2d_build_parameters._ID = identifier_buffer;
+		texture_2d_build_parameters._DefaultWidth = 0;
+		texture_2d_build_parameters._DefaultHeight = 0;
+		char file_1_buffer[128];
+		sprintf_s(file_1_buffer, "%s\\%s_MaterialProperties.png", raw_directory, name.data());
+		texture_2d_build_parameters._File1 = file_1_buffer;
+		texture_2d_build_parameters._File2 = nullptr;
+		texture_2d_build_parameters._File3 = nullptr;
+		texture_2d_build_parameters._File4 = nullptr;
+		texture_2d_build_parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+		texture_2d_build_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		texture_2d_build_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		texture_2d_build_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		texture_2d_build_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
+		texture_2d_build_parameters._ApplyGammaCorrection = false;
+		texture_2d_build_parameters._TransformFunction = nullptr;
+		texture_2d_build_parameters._BaseMipmapLevel = 0;
+		texture_2d_build_parameters._MipmapLevels = 2;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
+	}
+
+	{
+		//Build the texture 2D.
+		Texture2DBuildParameters texture_2d_build_parameters;
+
+		char output_buffer[128];
+		sprintf_s(output_buffer, "%s\\Textures\\Impostors\\%s_Opacity", intermediate_directory, name.data());
+		texture_2d_build_parameters._Output = output_buffer;
+		char identifier_buffer[128];
+		sprintf_s(identifier_buffer, "%s_Opacity", name.data());
+		texture_2d_build_parameters._ID = identifier_buffer;
+		texture_2d_build_parameters._DefaultWidth = 0;
+		texture_2d_build_parameters._DefaultHeight = 0;
+		char file_1_buffer[128];
+		sprintf_s(file_1_buffer, "%s\\%s_Opacity.png", raw_directory, name.data());
+		texture_2d_build_parameters._File1 = file_1_buffer;
+		texture_2d_build_parameters._File2 = nullptr;
+		texture_2d_build_parameters._File3 = nullptr;
+		texture_2d_build_parameters._File4 = nullptr;
+		texture_2d_build_parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+		texture_2d_build_parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::RED);
+		texture_2d_build_parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::GREEN);
+		texture_2d_build_parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::BLUE);
+		texture_2d_build_parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::FILE_1, Texture2DBuildParameters::Channel::ALPHA);
+		texture_2d_build_parameters._ApplyGammaCorrection = true;
+		texture_2d_build_parameters._TransformFunction = nullptr;
+		texture_2d_build_parameters._BaseMipmapLevel = 0;
+		texture_2d_build_parameters._MipmapLevels = 2;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
+	}
+
+	//Build the impostor material.
+	{
+		//Build the material.
+		MaterialBuildParameters material_build_parameters;
+
+		char output_buffer[128];
+		sprintf_s(output_buffer, "%s\\Materials\\%s", intermediate_directory, name.data());
+		material_build_parameters._Output = output_buffer;
+		char identifier_buffer[128];
+		sprintf_s(identifier_buffer, "%s", name.data());
+		material_build_parameters._ID = identifier_buffer;
+		material_build_parameters._Type = MaterialResource::Type::MASKED;
+
+		material_build_parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+		char albedo_identifier_buffer[128];
+		sprintf_s(albedo_identifier_buffer, "%s_AlbedoThickness", name.data());
+		material_build_parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString(albedo_identifier_buffer);
+		
+		material_build_parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+		char normal_map_identifier_buffer[128];
+		sprintf_s(normal_map_identifier_buffer, "%s_NormalMapDisplacement", name.data());
+		material_build_parameters._NormalMapDisplacementComponent._TextureResourceIdentifier = HashString(normal_map_identifier_buffer);
+		
+		material_build_parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+		char material_properties_identifier_buffer[128];
+		sprintf_s(material_properties_identifier_buffer, "%s_MaterialProperties", name.data());
+		material_build_parameters._MaterialPropertiesComponent._TextureResourceIdentifier = HashString(material_properties_identifier_buffer);
+		
+		material_build_parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
+		char opacity_identifier_buffer[128];
+		sprintf_s(opacity_identifier_buffer, "%s_Opacity", name.data());
+		material_build_parameters._OpacityComponent._TextureResourceIdentifier = HashString(opacity_identifier_buffer);
+		
+		material_build_parameters._EmissiveMultiplier = 0.0f;
+		material_build_parameters._DoubleSided = false;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(material_build_parameters);
+	}
+
+	//TODO: Unload the resources. (:
 }
 #endif

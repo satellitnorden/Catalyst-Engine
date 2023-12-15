@@ -52,11 +52,20 @@ private:
 	*/
 	void ParseMaterial(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT;
 
+	/*
+	*	Parses a Model from the given file.
+	*/
+	void ParseModel(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT;
 
 	/*
 	*	Parses a Texture2D from the given file.
 	*/
 	void ParseTexture2D(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT;
+
+	/*
+	*	Parses an Impostor Material from the given file.
+	*/
+	void ParseImpostorMaterial(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT;
 
 };
 #endif

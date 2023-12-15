@@ -153,24 +153,44 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (std140, set = 1, binding = 1) uniform General
-{
-	layout (offset = 0) uint FRAME;
-};
-
-layout (set = 1, binding = 2) uniform sampler SAMPLER;
+layout (set = 1, binding = 1) uniform sampler SAMPLER;
 
 /*
-*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*   Calculates the world position.
 */
-float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
 {
-	frame = frame % 64;
+    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position *= inverse_view_space_position_denominator;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
 
-	float x = float(coordinate.x) + 5.588238f * float(frame);
-	float y = float(coordinate.y) + 5.588238f * float(frame);
+    return world_space_position.xyz;
+}
 
-	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+/*
+*   Returns the current screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Returns the previous screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
 }
 
 layout (push_constant) uniform PushConstantData
@@ -186,24 +206,27 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 44) float END_FADE_OUT_DISTANCE;
 };
 
-layout (location = 0) in vec2 InTextureCoordinate;
-layout (location = 1) in float InFadeOpacity;
+layout (location = 0) in vec3 InPosition;
+
+layout (location = 0) out mat3 OutTangentSpaceMatrix;
+layout (location = 3) out vec3 OutWorldPosition;
+layout (location = 4) out vec2 OutTextureCoordinate;
 
 void main()
 {
-    float opacity = 1.0f;
-    if (TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_MASKED))
-    {
-        EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
-    }
-    /*
-    *   As impostors might be used to fade between impostors and real models,
-    *   use the inverse of the noise value for a smoother fade between them.
-    */
-    float noise_value = 1.0f - InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME);
-    if (opacity < 0.5f
-    || (InFadeOpacity < 1.0f && InFadeOpacity < noise_value))
-    {
-        discard;
-    }
+	float x = float(gl_VertexIndex == 1 || gl_VertexIndex == 2);
+    float y = float(gl_VertexIndex == 2 || gl_VertexIndex == 3);
+    OutWorldPosition = InPosition + WORLD_GRID_DELTA;
+    vec3 forward_vector = CAMERA_WORLD_POSITION - OutWorldPosition;
+    forward_vector.y = 0.0f;
+    float distance_to_camera = length(forward_vector);
+    float distance_to_camera_reciprocal = 1.0f / distance_to_camera;
+    forward_vector *= distance_to_camera_reciprocal;
+    vec3 right_vector = cross(forward_vector, vec3(0.0f, 1.0f, 0.0f));
+    OutWorldPosition += (right_vector * HALF_WIDTH + -right_vector * WHOLE_WIDTH * x);
+    OutWorldPosition.y += HEIGHT * y;
+    OutTangentSpaceMatrix = mat3(right_vector, vec3(0.0f, 1.0f, 0.0f), forward_vector);
+    OutTextureCoordinate.x = x;
+    OutTextureCoordinate.y = 1.0f - y;
+	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

@@ -53,7 +53,7 @@ void SaveSystem::SequentialUpdate() NOEXCEPT
 		_ProcessSavesMask = _RequestedSavesMask;
 		_RequestedSavesMask = 0;
 
-		TaskSystem::Instance->ExecuteTask(&_ProcessSavesTask);
+		TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &_ProcessSavesTask);
 	}
 }
 

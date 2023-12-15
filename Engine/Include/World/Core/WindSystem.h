@@ -66,14 +66,17 @@ private:
 
 	public:
 
-		//The wind direction.
-		Vector3<float32> _WindDirection;
+		//The previous wind direction.
+		Vector4<float32> _PreviousWindDirectionSpeed;
 
-		//The wind speed.
-		float32 _WindSpeed;
+		//The current wind direction.
+		Vector4<float32> _CurrentWindDirectionSpeed;
 
-		//The wind time.
-		float32 _WindTime;
+		//The previous wind time.
+		float32 _PreviousWindTime;
+
+		//The current wind time.
+		float32 _CurrentWindTime;
 
 	};
 

@@ -111,7 +111,7 @@ vec3 CalculateModelRadiance()
 	//Add direct lighting.
 	{
 		//Add direct lighting from all the lights.
-		for (uint light_index = 0; light_index < NUMBER_OF_LIGHTS; ++light_index)
+		for (uint light_index = 0; light_index < LIGHT_HEADER_DATA._NumberOfLights; ++light_index)
 		{
 			Light light = UnpackLight(light_index);
 

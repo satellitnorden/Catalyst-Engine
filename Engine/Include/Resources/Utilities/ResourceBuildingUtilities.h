@@ -36,6 +36,9 @@ namespace ResourceBuildingUtilities
 		//The albedo texture file paths.
 		StaticArray<const char *RESTRICT, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _AlbedoTextureFilePaths;
 
+		//The thicknesses.
+		StaticArray<float32, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _Thicknesses;
+
 		//The normal map texture file paths.
 		StaticArray<const char *RESTRICT, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _NormalMapTextureFilePaths;
 

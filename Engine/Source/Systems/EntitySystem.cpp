@@ -341,7 +341,7 @@ void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 				data._PreprocessingData->_Entity = data._Entity;
 				data._PreprocessingData->_Data = data._Data;
 
-				TaskSystem::Instance->ExecuteTask(&data._PreprocessingData->_Task);
+				TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &data._PreprocessingData->_Task);
 			}
 		}
 

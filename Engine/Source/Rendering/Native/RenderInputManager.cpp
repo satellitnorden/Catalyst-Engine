@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Systems.
 #include <Systems/CullingSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
@@ -112,6 +115,34 @@ void RenderInputManager::Initialize() NOEXCEPT
 		DynamicArray<VertexInputBindingDescription> models_required_vertex_input_binding_descriptions;
 		
 		models_required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
+
+		RegisterInputStream
+		(
+			HashString("OpaqueSingleSidedModels"),
+			models_required_vertex_input_attribute_descriptions,
+			models_required_vertex_input_binding_descriptions,
+			sizeof(ModelFullPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialResource::Type::OPAQUE, false, input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED,
+			this
+		);
+
+		RegisterInputStream
+		(
+			HashString("OpaqueDoubleSidedModels"),
+			models_required_vertex_input_attribute_descriptions,
+			models_required_vertex_input_binding_descriptions,
+			sizeof(ModelFullPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialResource::Type::OPAQUE, true, input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED,
+			this
+		);
 
 		RegisterInputStream
 		(
@@ -277,6 +308,8 @@ void RenderInputManager::Initialize() NOEXCEPT
 */
 void RenderInputManager::RenderUpdate() NOEXCEPT
 {
+	PROFILING_SCOPE(RenderInputManager::RenderUpdate);
+
 	//Run all gather functions.
 	for (RenderInputStream &input_stream : _InputStreams)
 	{

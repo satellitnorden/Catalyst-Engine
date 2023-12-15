@@ -59,10 +59,10 @@ void CullingSystem::Initialize() NOEXCEPT
 void CullingSystem::RenderUpdate() NOEXCEPT
 {
 	//Execute all tasks.
-	TaskSystem::Instance->ExecuteTask(&_DynamicModelsCullingTask);
-	TaskSystem::Instance->ExecuteTask(&_InstancedStaticModelsCullingTask);
-	TaskSystem::Instance->ExecuteTask(&_StaticModelsCullingTask);
-	TaskSystem::Instance->ExecuteTask(&_TerrainCullingTask);
+	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_DynamicModelsCullingTask);
+	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_InstancedStaticModelsCullingTask);
+	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_StaticModelsCullingTask);
+	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_TerrainCullingTask);
 }
 
 /*
@@ -91,6 +91,7 @@ void CullingSystem::CullInstancedStaticModels() const NOEXCEPT
 {
 	//Cache data that will be used.
 	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
+	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
 	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
 
 	//Iterate over all patches and determine their visibility.
@@ -99,7 +100,26 @@ void CullingSystem::CullInstancedStaticModels() const NOEXCEPT
 
 	for (uint64 i = 0; i < number_of_components; ++i, ++component)
 	{
-		component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell));
+		//Set visibility to true.
+		component->_Visibility = true;
+
+		//Cache the camera relative axis aligned bounding box.
+		const AxisAlignedBoundingBox3D camera_relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell) };
+		
+		//Do distance culling.
+		if (component->_ModelFadeData.Valid())
+		{
+			const Vector3<float32> closest_position{ AxisAlignedBoundingBox3D::GetClosestPointInside(camera_relative_axis_aligned_bounding_box, camera_local_position) };
+			const float32 distance_squared{ Vector3<float32>::LengthSquared(camera_local_position - closest_position) };
+
+			component->_Visibility = distance_squared < (component->_ModelFadeData.Get()._EndFadeOutDistance * component->_ModelFadeData.Get()._EndFadeOutDistance);
+		}
+
+		//Do frustum culling.
+		if (component->_Visibility)
+		{
+			component->_Visibility = RenderingUtilities::IsWithinViewFrustum(*frustum_planes, camera_relative_axis_aligned_bounding_box);
+		}
 	}
 }
 
