@@ -1,0 +1,432 @@
+#version 460
+
+//Constants.
+#define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
+#define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
+
+#define MATERIAL_PROPERTY_TYPE_MASKED (1 << 0)
+#define MATERIAL_PROPERTY_TYPE_OPAQUE (1 << 1)
+#define MATERIAL_PROPERTY_TYPE_TRANSLUCENT (1 << 2)
+#define MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE (1 << 3)
+#define MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE (1 << 4)
+#define MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE (1 << 5)
+#define MATERIAL_PROPERTY_OPACITY_TEXTURE (1 << 6)
+
+#define FLOAT32_MAXIMUM (3.402823466e+38F)
+#define UINT8_MAXIMUM (0xff)
+#define FLOAT32_EPSILON (1.192092896e-07F)
+#define MAXIMUM_8_BIT_FLOAT (255.0f)
+#define MAXIMUM_8_BIT_UINT (255)
+#define PI (3.141592f)
+
+/*
+*   Defines the bit at the specified index.
+*/
+#define BIT(INDEX) (1 << (INDEX))
+
+/*
+*   Tests the bit of the specified bitfield
+*/
+#define TEST_BIT(BITFIELD, BIT) ((BITFIELD & BIT) == BIT)
+
+/*
+*	Evaluates the albedo/thickness of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_ALBEDO_THICKNESS(MATERIAL, COORDINATE, SAMPLER, ALBEDO_THICKNESS)							\
+{																											\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE))							\
+	{																										\
+		ALBEDO_THICKNESS = texture(sampler2D(TEXTURES[MATERIAL._AlbedoThickness], SAMPLER), COORDINATE);	\
+	}																										\
+																											\
+	else																									\
+	{																										\
+		ALBEDO_THICKNESS = UnpackColor(MATERIAL._AlbedoThickness);											\
+	}																										\
+}
+
+/*
+*	Evaluates the normal map/displacement of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIAL, COORDINATE, SAMPLER, NORMAL_MAP_DISPLACEMENT)						\
+{																														\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))								\
+	{																													\
+		NORMAL_MAP_DISPLACEMENT = texture(sampler2D(TEXTURES[MATERIAL._NormalMapDisplacement], SAMPLER), COORDINATE);	\
+	}																													\
+																														\
+	else																												\
+	{																													\
+		NORMAL_MAP_DISPLACEMENT = UnpackColor(MATERIAL._NormalMapDisplacement);											\
+	}																													\
+}
+
+/*
+*	Evaluates the material properties of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_MATERIAL_PROPERTIES(MATERIAL, COORDINATE, SAMPLER, MATERIAL_PROPERTIES)							\
+{																													\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))								\
+	{																												\
+		MATERIAL_PROPERTIES = texture(sampler2D(TEXTURES[MATERIAL._MaterialProperties], SAMPLER), COORDINATE);		\
+	}																												\
+																													\
+	else																											\
+	{																												\
+		MATERIAL_PROPERTIES = UnpackColor(MATERIAL._MaterialProperties);											\
+	}																												\
+}
+
+/*
+*	Evaluates the opacity of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_OPACITY(MATERIAL, COORDINATE, SAMPLER, OPACITY)							\
+{																							\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_OPACITY_TEXTURE))					\
+	{																						\
+		OPACITY = texture(sampler2D(TEXTURES[MATERIAL._Opacity], SAMPLER), COORDINATE).x;	\
+	}																						\
+																							\
+	else																					\
+	{																						\
+		OPACITY = UnpackColor(MATERIAL._Opacity).x;											\
+	}																						\
+}
+
+/*
+*	Material struct definition.
+*/
+struct Material
+{
+	uint _Properties;
+	uint _AlbedoThickness;
+	uint _NormalMapDisplacement;
+	uint _MaterialProperties;
+	uint _Opacity;
+	float _EmissiveMultiplier;
+    uint _Padding1;
+    uint _Padding2;
+};
+
+//The textures.
+layout (set = 0, binding = 0) uniform texture2D TEXTURES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
+
+//Materials.
+layout (std140, set = 0, binding = 1) uniform GlobalMaterials
+{
+    layout (offset = 0) Material MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
+};
+
+/*
+*	Returns the square of the given number.
+*/
+float Square(float X)
+{
+	return X * X;
+}
+
+/*
+*	Returns the inverse square of the given number.
+*/
+float InverseSquare(float X)
+{
+	return 1.0f - Square(1.0f - X);
+}
+
+/*
+*   Returns the length of a vector with three components squared.
+*/
+float LengthSquared3(vec3 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+}
+
+/*
+*   Unpacks a color into a vec4.
+*/
+vec4 UnpackColor(uint color)
+{   
+    vec4 unpacked;
+
+    unpacked.r = float(color & MAXIMUM_8_BIT_UINT) / MAXIMUM_8_BIT_FLOAT;
+    unpacked.g = float((color >> 8) & MAXIMUM_8_BIT_UINT) / MAXIMUM_8_BIT_FLOAT;
+    unpacked.b = float((color >> 16) & MAXIMUM_8_BIT_UINT) / MAXIMUM_8_BIT_FLOAT;
+    unpacked.a = float((color >> 24) & MAXIMUM_8_BIT_UINT) / MAXIMUM_8_BIT_FLOAT;
+
+    return unpacked;
+}
+
+layout (std140, set = 1, binding = 0) uniform Camera
+{
+	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;
+	layout (offset = 64) mat4 WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
+	layout (offset = 192) mat4 INVERSE_WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 256) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;
+	layout (offset = 320) vec3 CAMERA_WORLD_POSITION;
+	layout (offset = 336) vec3 CAMERA_FORWARD_VECTOR;
+	layout (offset = 352) vec2 CURRENT_FRAME_JITTER;
+	layout (offset = 360) float NEAR_PLANE;
+	layout (offset = 364) float FAR_PLANE;
+};
+
+layout (std140, set = 1, binding = 1) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+};
+
+layout (std140, set = 1, binding = 2) uniform RenderingConfiguration
+{
+	layout (offset = 0) uint VOLUMETRIC_SHADOWS_MODE;
+};
+
+//Lighting header struct definition.
+struct LightingHeader
+{
+	uint _NumberOfLights;
+	uint _MaximumNumberOfShadowCastingLights;	
+};
+layout (std140, set = 1, binding = 3) buffer Lighting
+{
+	layout (offset = 0) LightingHeader LIGHTING_HEADER;
+	layout (offset = 16) vec4[] LIGHT_DATA;
+};
+
+/*
+*   Linearizes a depth value.
+*/
+float LinearizeDepth(float depth)
+{
+    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
+}
+
+/*
+*   Calculates the world position.
+*/
+vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position *= inverse_view_space_position_denominator;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
+
+    return world_space_position.xyz;
+}
+
+/*
+*   Returns the current screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Returns the previous screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Calculates a screen position, including the (linearized) depth from the given world position.
+*/
+vec3 CalculateScreenPosition(vec3 world_position)
+{
+    vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+    float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
+    view_space_position.xyz *= view_space_position_coefficient_reciprocal;
+
+    view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
+    view_space_position.z = LinearizeDepth(view_space_position.z);
+    
+    return view_space_position.xyz;
+}
+
+//Constants.
+#define LIGHT_TYPE_DIRECTIONAL (0)
+#define LIGHT_TYPE_POINT (1)
+#define LIGHT_TYPE_BOX (2)
+
+#define LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT (BIT(0))
+#define LIGHT_PROPERTY_VOLUMETRIC_BIT (BIT(1))
+#define LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT (BIT(2))
+
+/*
+*	Light struct definition.
+*/
+struct Light
+{
+	/*
+	*	First transform data.
+	*	Direction for directional lights, position for point lights, minimum world position for box lights.
+	*/
+	vec3 _TransformData1;
+
+	/*
+	*	Second transform data.
+	*	Maximum word position for box lights.
+	*/
+	vec3 _TransformData2;
+	vec3 _Color;
+	uint _LightType;
+	uint _LightProperties;
+	float _Intensity;
+	float _Radius;
+	float _Size;
+};
+
+/*
+*	Unpacks the light at the given index.
+*   Requies the Lighting storage buffer to be included.
+*/
+Light UnpackLight(uint index)
+{
+	Light light;
+
+  	vec4 light_data_1 = LIGHT_DATA[index * 4 + 0];
+  	vec4 light_data_2 = LIGHT_DATA[index * 4 + 1];
+  	vec4 light_data_3 = LIGHT_DATA[index * 4 + 2];
+  	vec4 light_data_4 = LIGHT_DATA[index * 4 + 3];
+
+  	light._TransformData1 = vec3(light_data_1.x, light_data_1.y, light_data_1.z);
+  	light._TransformData2 = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
+  	light._Color = vec3(light_data_2.z, light_data_2.w, light_data_3.x);
+  	light._LightType = floatBitsToUint(light_data_3.y);
+  	light._LightProperties = floatBitsToUint(light_data_3.z);
+  	light._Intensity = light_data_3.w;
+  	light._Radius = light_data_4.x;
+  	light._Size = light_data_4.y;
+
+	return light;
+}
+
+/*
+*   Hash function taking a uint.
+*/
+uint Hash1(uint seed)
+{
+    seed = (seed ^ 61u) ^ (seed >> 16u);
+    seed *= 9u;
+    seed = seed ^ (seed >> 4u);
+    seed *= 0x27d4eb2du;
+    seed = seed ^ (seed >> 15u);
+
+    return seed;
+}
+
+/*
+*   Hash function taking a uvec2.
+*/
+uint Hash2(uvec2 seed)
+{
+    return Hash1(seed.x) ^ Hash1(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    return Hash1(seed.x) ^ Hash1(seed.y) ^ Hash1(seed.z);
+}
+
+/*
+*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*/
+float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+{
+	frame = frame % 64;
+
+	float x = float(coordinate.x) + 5.588238f * float(frame);
+	float y = float(coordinate.y) + 5.588238f * float(frame);
+
+	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+}
+
+//Constants.
+#define VOLUMETRIC_SHADOWS_MODE_NONE (0)
+#define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
+#define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
+
+/*
+*	Returns the extinction at the given position.
+*/
+float GetExtinctionAtPosition(vec3 position)
+{
+	#define LOW_EXTINCTION (0.000025f)
+	#define HIGH_EXTINCTION (FLOAT32_EPSILON)
+
+	return mix(LOW_EXTINCTION, HIGH_EXTINCTION, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+
+	#undef LOW_EXTINCTION
+	#undef HIGH_EXTINCTION
+}
+
+/*
+*	Calculates the attenuation in the given direction.
+*/
+float CalculateAttenuationInDirection(vec3 position, vec3 direction)
+{
+	#define NUMBER_OF_SAMPLES (4)
+	#define STEP_SIZE (128.0f)
+
+	float attenuation = 1.0f;
+
+	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+	{
+		vec3 sample_position = position + direction * float(i) * STEP_SIZE;
+		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * STEP_SIZE);
+	}
+
+	return attenuation;
+	
+	#undef NUMBER_OF_SAMPLES
+	#undef STEP_SIZE
+}
+
+/*
+*	The Henyey-Greenstein phase function.
+*/
+float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
+{
+	float G = 0.5f;
+	float dot_product = dot(outgoing_direction, -incoming_direction);
+
+	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
+}
+
+/*
+*	Calculates the scattering with the given properties.
+*/
+vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
+{
+	return vec3(0.0f, 0.0f, 0.0f);
+}
+
+layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2Half;
+
+layout (location = 0) out vec2 OutTextureCoordinate;
+
+void main()
+{
+	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
+    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
+    OutTextureCoordinate.x = (x + 1.0f) * 0.5f;
+    OutTextureCoordinate.y = (y + 1.0f) * 0.5f;
+	gl_Position = vec4(x,y,0.0f,1.0f);
+}

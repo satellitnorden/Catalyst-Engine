@@ -1,0 +1,12 @@
+//Lighting header struct definition.
+struct LightingHeader
+{
+	uint _NumberOfLights;
+	uint _MaximumNumberOfShadowCastingLights;	
+};
+
+StorageBuffer(Lighting)
+{
+    LightingHeader LIGHTING_HEADER;
+	vec4[] LIGHT_DATA;
+};

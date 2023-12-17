@@ -331,13 +331,17 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_FragmentShaderData._GLSLData), ShaderStage::FRAGMENT, &resource->_FragmentShaderHandle);
 	}
 
-	//Copy the included uniform buffers.
+	//Copy the included buffers.
 	resource->_IncludedUniformBuffers = std::move(data->_IncludedUniformBuffers);
+	resource->_IncludedStorageBuffers = std::move(data->_IncludedStorageBuffers);
 
 	//Copy the input/output depth buffer/render targets.
 	resource->_InputRenderTargets = std::move(data->_InputRenderTargets);
 	resource->_OutputDepthBuffer = data->_OutputDepthBuffer;
 	resource->_OutputRenderTargets = std::move(data->_OutputRenderTargets);
+
+	//Copy the render resolution.
+	resource->_RenderResolution = data->_RenderResolution;
 
 	//Copy the load/store operators.
 	resource->_ColorLoadOperator = data->_ColorLoadOperator;

@@ -1,4 +1,34 @@
 /*
+*   Hash function taking a uint.
+*/
+uint Hash1(uint seed)
+{
+    seed = (seed ^ 61u) ^ (seed >> 16u);
+    seed *= 9u;
+    seed = seed ^ (seed >> 4u);
+    seed *= 0x27d4eb2du;
+    seed = seed ^ (seed >> 15u);
+
+    return seed;
+}
+
+/*
+*   Hash function taking a uvec2.
+*/
+uint Hash2(uvec2 seed)
+{
+    return Hash1(seed.x) ^ Hash1(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    return Hash1(seed.x) ^ Hash1(seed.y) ^ Hash1(seed.z);
+}
+
+/*
 *	Returns the interleaved gradient noise for the given coordinate at the given frame.
 */
 float InterleavedGradientNoise(uvec2 coordinate, uint frame)

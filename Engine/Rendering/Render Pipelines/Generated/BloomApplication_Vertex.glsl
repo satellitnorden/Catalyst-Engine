@@ -17,6 +17,7 @@
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
+#define PI (3.141592f)
 
 /*
 *   Defines the bit at the specified index.
@@ -115,6 +116,22 @@ layout (std140, set = 0, binding = 1) uniform GlobalMaterials
 {
     layout (offset = 0) Material MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
 };
+
+/*
+*	Returns the square of the given number.
+*/
+float Square(float X)
+{
+	return X * X;
+}
+
+/*
+*	Returns the inverse square of the given number.
+*/
+float InverseSquare(float X)
+{
+	return 1.0f - Square(1.0f - X);
+}
 
 /*
 *   Returns the length of a vector with three components squared.

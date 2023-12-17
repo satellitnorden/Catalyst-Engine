@@ -4,6 +4,9 @@ InputRenderTarget(Scene /* Identifier */, Nearest /* Magnification Filter */, Ne
 //Declare output render targets.
 OutputRenderTarget(Screen);
 
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
 //Set the load/store operators.
 ColorStoreOperator(STORE);
 

@@ -45,6 +45,9 @@ private:
 	//The allocation.
 	VmaAllocation _Allocation;
 
+	//The allocated size.
+	VkDeviceSize _AllocatedSize;
+
 	//The memory properties.
 	VkMemoryPropertyFlags _MemoryProperties;
 

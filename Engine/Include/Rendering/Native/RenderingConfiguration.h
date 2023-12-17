@@ -71,6 +71,16 @@ public:
 	};
 
 	/*
+	*	Initializes the rendering configuration.
+	*/
+	void Initialize() NOEXCEPT;
+
+	/*
+	*	Updates the rendering configuration.
+	*/
+	void Update() NOEXCEPT;
+
+	/*
 	*	Returns the ambient occlusion mode.
 	*/
 	FORCE_INLINE NO_DISCARD AmbientOcclusionMode GetAmbientOcclusionMode() const NOEXCEPT
@@ -184,6 +194,19 @@ public:
 
 private:
 
+	/*
+	*	Rendering configuration uniform data class definition.
+	*/
+	class RenderingConfigurationUniformData final
+	{
+
+	public:
+
+		//The volumetric shadows mode.
+		uint32 _VolumetricShadowsMode;
+
+	};
+
 	//The ambient occlusion mode.
 	AmbientOcclusionMode _AmbientOcclusionMode{ AmbientOcclusionMode::SCREEN_SPACE };
 
@@ -204,5 +227,8 @@ private:
 
 	//The volumetric shadows mode.
 	VolumetricShadowsMode _VolumetricShadowsMode{ VolumetricShadowsMode::SCREEN_SPACE };
+
+	//The rendering configuration uniform data.
+	RenderingConfigurationUniformData _RenderingConfigurationUniformData;
 
 };

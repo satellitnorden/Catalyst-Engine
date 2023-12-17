@@ -1,4 +1,4 @@
-Wind
+UniformBuffer(Wind)
 {
     vec4 PREVIOUS_WIND_DIRECTION_SPEED;
     vec4 CURRENT_WIND_DIRECTION_SPEED;

@@ -47,11 +47,11 @@ SceneFeatures SampleSceneFeatures(vec2 coordinate)
 void CatalystShaderMain()
 {
 	//Sample the volumetric lighting and scene features at the current fragment.
-	vec3 current_volumetric_lighting = texture(volumetric_lighting_texture, fragment_texture_coordinate).rgb;
+	vec4 current_volumetric_lighting = texture(volumetric_lighting_texture, fragment_texture_coordinate);
 	SceneFeatures current_features = SampleSceneFeatures(fragment_texture_coordinate);
 
 	//Sample neighboring fragments.
-	vec3 denoised_volumetric_lighting = vec3(0.0f);
+	vec4 denoised_volumetric_lighting = vec4(0.0f);
 	float weight_sum = 0.0f;
 
 	for (int y = -STRIDE; y <= STRIDE; y += STRIDE)
@@ -60,7 +60,7 @@ void CatalystShaderMain()
 		{
 			vec2 sample_coordinate = fragment_texture_coordinate + vec2(float(x), float(y)) * INVERSE_RESOLUTION;
 
-			vec3 sample_volumetric_lighting = texture(volumetric_lighting_texture, sample_coordinate).rgb;
+			vec4 sample_volumetric_lighting = texture(volumetric_lighting_texture, sample_coordinate);
 			SceneFeatures sample_features = SampleSceneFeatures(sample_coordinate);
 
 			/*
@@ -83,5 +83,5 @@ void CatalystShaderMain()
 	denoised_volumetric_lighting = weight_sum == 0.0f ? current_volumetric_lighting : denoised_volumetric_lighting / weight_sum;
 
 	//Write the fragment.
-	fragment = vec4(denoised_volumetric_lighting, 1.0f);
+	fragment = denoised_volumetric_lighting;
 }

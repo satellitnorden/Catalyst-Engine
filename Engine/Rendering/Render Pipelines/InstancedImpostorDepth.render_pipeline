@@ -8,6 +8,9 @@ IncludeShaderFunctionLibrary(Noise);
 //Declare output depth buffer.
 OutputDepthBuffer(SceneDepthBuffer);
 
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
 //Set the cull mode.
 CullMode(BACK);
 

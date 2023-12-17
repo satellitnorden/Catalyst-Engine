@@ -2,12 +2,26 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Pair.h>
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
 //Resources.
 #include <Resources/Core/RenderPipelineResource.h>
+
+class GraphicsRenderPipelineParameters final
+{
+
+public:
+
+	//The input render targets.
+	DynamicArray<Pair<HashString, RenderTargetHandle>> _InputRenderTargets;
+
+	//The output render targets.
+	DynamicArray<Pair<HashString, RenderTargetHandle>> _OutputRenderTargets;
+
+};
 
 class GraphicsRenderPipeline final : public GraphicsPipeline
 {
@@ -27,7 +41,7 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize(const GraphicsRenderPipelineParameters &parameters = GraphicsRenderPipelineParameters()) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.

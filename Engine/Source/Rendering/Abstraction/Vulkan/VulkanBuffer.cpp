@@ -11,6 +11,9 @@
 */
 void VulkanBuffer::Initialize(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags memory_properties) NOEXCEPT
 {
+	//Set the allocated size.
+	_AllocatedSize = size;
+
 	//Set the memory properties.
 	_MemoryProperties = memory_properties;
 
@@ -56,6 +59,41 @@ void VulkanBuffer::Release() NOEXCEPT
 */
 void VulkanBuffer::UploadData(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT data_sizes, const uint32 data_chunks) NOEXCEPT
 {
+	//Count the total size being uploaded.
+	uint64 total_size{ 0 };
+
+	for (uint32 i{ 0 }; i < data_chunks; ++i)
+	{
+		total_size += data_sizes[i];
+	}
+
+	/*
+	*	If the size being uploaded is greater than the allocated size, increase the buffer.
+	*	TODO: Also decrease if the uploaded size is much smaller than the allocated size.
+	*/
+	if (_AllocatedSize < total_size)
+	{
+		vmaFreeMemory(VULKAN_MEMORY_ALLOCATOR, _Allocation);
+
+		VmaAllocationCreateInfo allocation_info = { };
+
+		if (TEST_BIT(_MemoryProperties, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT))
+		{
+			allocation_info.flags |= VmaAllocationCreateFlagBits::VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+			allocation_info.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
+		}
+
+		else
+		{
+			allocation_info.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+		}
+
+		vmaAllocateMemoryForBuffer(VULKAN_MEMORY_ALLOCATOR, _VulkanBuffer, &allocation_info, &_Allocation, nullptr);
+		vmaBindBufferMemory(VULKAN_MEMORY_ALLOCATOR, _Allocation, _VulkanBuffer);
+
+		_AllocatedSize = total_size;
+	}
+
 	//If this buffer was created with the VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, the memory can be mapped directly and copied over, otherwise a staging buffer needs to be created.
 	if (TEST_BIT(_MemoryProperties, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT))
 	{

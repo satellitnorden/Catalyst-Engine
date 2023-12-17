@@ -8,6 +8,9 @@ OutputRenderTarget(SceneFeatures3);
 OutputRenderTarget(SceneFeatures4);
 OutputRenderTarget(Scene);
 
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
 //Set the load/store operators.
 ColorLoadOperator(CLEAR);
 ColorStoreOperator(STORE);

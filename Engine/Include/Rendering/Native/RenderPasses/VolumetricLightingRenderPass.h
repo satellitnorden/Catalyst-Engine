@@ -5,8 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingApplicationGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingTemporalDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/VolumetricLightingRayTracingPipeline.h>
@@ -37,7 +36,7 @@ private:
 	StaticArray<RenderTargetHandle, 2> _VolumetricLightingTemporalBufferRenderTargets;
 
 	//The volumetric lighting graphics pipeline.
-	VolumetricLightingGraphicsPipeline _VolumetricLightingGraphicsPipeline;
+	GraphicsRenderPipeline _VolumetricLightingGraphicsPipeline{ HashString("VolumetricLighting_RenderPipeline") };
 
 	//The volumetric lighting ray tracing pipeline.
 	VolumetricLightingRayTracingPipeline _VolumetricLightingRayTracingPipeline;
@@ -49,7 +48,7 @@ private:
 	StaticArray<VolumetricLightingTemporalDenoisingGraphicsPipeline, 2> _VolumetricLightingTemporalDenoisingGraphicsPipelines;
 
 	//The volumetric lighting application graphics pipeline.
-	VolumetricLightingApplicationGraphicsPipeline _VolumetricLightingApplicationGraphicsPipeline;
+	GraphicsRenderPipeline _VolumetricLightingApplicationGraphicsPipeline{ HashString("VolumetricLightingApplication_RenderPipeline") };
 
 	//The current temporal buffer index.
 	uint8 _CurrentTemporalBufferIndex{ 0 };

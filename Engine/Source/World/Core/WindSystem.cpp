@@ -47,7 +47,7 @@ void WindSystem::Initialize() NOEXCEPT
 	Memory::Set(&_WindUniformData, 0, sizeof(WindUniformData));
 
 	//Register the uniform data.
-	RenderingSystem::Instance->GetUniformBufferManager()->RegisterUniformBuffer
+	RenderingSystem::Instance->GetBufferManager()->RegisterUniformBuffer
 	(
 		HashString("Wind"),
 		&_WindUniformData,

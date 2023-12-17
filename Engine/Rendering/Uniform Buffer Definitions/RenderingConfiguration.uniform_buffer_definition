@@ -1,0 +1,4 @@
+UniformBuffer(RenderingConfiguration)
+{
+    uint VOLUMETRIC_SHADOWS_MODE;
+};

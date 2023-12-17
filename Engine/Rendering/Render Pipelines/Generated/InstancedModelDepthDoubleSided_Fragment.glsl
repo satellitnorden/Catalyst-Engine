@@ -17,6 +17,7 @@
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
+#define PI (3.141592f)
 
 /*
 *   Defines the bit at the specified index.
@@ -117,6 +118,22 @@ layout (std140, set = 0, binding = 1) uniform GlobalMaterials
 };
 
 /*
+*	Returns the square of the given number.
+*/
+float Square(float X)
+{
+	return X * X;
+}
+
+/*
+*	Returns the inverse square of the given number.
+*/
+float InverseSquare(float X)
+{
+	return 1.0f - Square(1.0f - X);
+}
+
+/*
 *   Returns the length of a vector with three components squared.
 */
 float LengthSquared3(vec3 vector)
@@ -155,7 +172,11 @@ layout (std140, set = 1, binding = 0) uniform Camera
 
 layout (std140, set = 1, binding = 1) uniform General
 {
-	layout (offset = 0) uint FRAME;
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
 };
 
 layout (std140, set = 1, binding = 2) uniform Wind
@@ -174,6 +195,36 @@ layout (set = 1, binding = 3) uniform sampler SAMPLER;
 #define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_3 	(1 << 2)
 #define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_4 	(1 << 3)
 #define MODEL_FLAG_IS_VEGETATION 				(1 << 4)
+
+/*
+*   Hash function taking a uint.
+*/
+uint Hash1(uint seed)
+{
+    seed = (seed ^ 61u) ^ (seed >> 16u);
+    seed *= 9u;
+    seed = seed ^ (seed >> 4u);
+    seed *= 0x27d4eb2du;
+    seed = seed ^ (seed >> 15u);
+
+    return seed;
+}
+
+/*
+*   Hash function taking a uvec2.
+*/
+uint Hash2(uvec2 seed)
+{
+    return Hash1(seed.x) ^ Hash1(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    return Hash1(seed.x) ^ Hash1(seed.y) ^ Hash1(seed.z);
+}
 
 /*
 *	Returns the interleaved gradient noise for the given coordinate at the given frame.

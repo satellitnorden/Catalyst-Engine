@@ -77,7 +77,14 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_VolumetricLightingApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_VolumetricLightingGraphicsPipeline.Initialize(_VolumetricLightingRenderTarget);
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._OutputRenderTargets.Emplace(HashString("VolumetricLighting"), _VolumetricLightingRenderTarget);
+
+		_VolumetricLightingGraphicsPipeline.Initialize(parameters);
+	}
+
 	_VolumetricLightingRayTracingPipeline.Initialize(_VolumetricLightingRenderTarget);
 	_VolumetricLightingSpatialDenoisingGraphicsPipelines[0].Initialize(	1,
 																		_VolumetricLightingRenderTarget,
@@ -93,7 +100,13 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 																		_VolumetricLightingTemporalBufferRenderTargets[0],
 																		_VolumetricLightingRenderTarget,
 																		_IntermediateVolumetricLightingRenderTarget);
-	_VolumetricLightingApplicationGraphicsPipeline.Initialize(_IntermediateVolumetricLightingRenderTarget);
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("VolumetricLighting"), _VolumetricLightingRenderTarget);
+
+		_VolumetricLightingApplicationGraphicsPipeline.Initialize(parameters);
+	}
 }
 
 /*

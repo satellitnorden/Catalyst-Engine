@@ -40,9 +40,9 @@ void main()
 	previous_sample_weight *= float(ValidCoordinate(previous_screen_coordinate));
 
 	//Blend the previous and the current volumetric lighting.
-	vec3 blended_volumetric_lighting = mix(current_volumetric_lighting_texture_sampler.rgb, previous_volumetric_lighting_texture_sampler.rgb, VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR * previous_sample_weight);
+	vec4 blended_volumetric_lighting = mix(current_volumetric_lighting_texture_sampler, previous_volumetric_lighting_texture_sampler, VOLUMETRIC_LIGHTING_TEMPORAL_DENOISING_FEEDBACK_FACTOR * previous_sample_weight);
 
 	//Write the fragments.
-	current_volumetric_lighting = vec4(blended_volumetric_lighting, 1.0f);
-	volumetric_lighting = vec4(blended_volumetric_lighting, 1.0f);
+	current_volumetric_lighting = blended_volumetric_lighting;
+	volumetric_lighting = blended_volumetric_lighting;
 }

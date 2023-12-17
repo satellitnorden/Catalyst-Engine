@@ -42,6 +42,37 @@ void LightingSystem::PostInitialize() NOEXCEPT
 
 	//Create the light data buffers.
 	CreateLightDataBuffers();
+
+	//Register the storage buffer.
+	RenderingSystem::Instance->GetBufferManager()->RegisterStorageBuffer
+	(
+		HashString("Lighting"),
+		sizeof(LightHeaderData) + sizeof(ShaderLightComponent) * 1,
+		[](DynamicArray<byte> *const RESTRICT data, void* const RESTRICT arguments)
+		{
+			data->Clear();
+			LightingSystem *const RESTRICT lighting_system{ static_cast<LightingSystem *const RESTRICT>(arguments) };
+
+			LightHeaderData header_data;
+
+			header_data._NumberOfLights = static_cast<uint32>(ComponentManager::GetNumberOfLightComponents());
+			header_data._MaximumNumberOfShadowCastingLights = LightingConstants::MAXIMUM_NUMBER_OF_SHADOW_CASTING_LIGHTS;
+
+			for (uint64 i{ 0 }; i < sizeof(LightHeaderData); ++i)
+			{
+				data->Emplace(((const byte *const RESTRICT)&header_data)[i]);
+			}
+
+			for (const ShaderLightComponent &shader_light_component : lighting_system->_ShaderLightComponents)
+			{
+				for (uint64 i{ 0 }; i < sizeof(ShaderLightComponent); ++i)
+				{
+					data->Emplace(((const byte *const RESTRICT)&shader_light_component)[i]);
+				}
+			}
+		},
+		this
+	);
 }
 
 /*
@@ -96,7 +127,7 @@ void LightingSystem::RenderUpdate() NOEXCEPT
 		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 2, &current_light_data_buffer);
 
 		//Bind the light data buffer.
-		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, 0, &current_render_data_table, current_light_data_buffer);
+		RenderingSystem::Instance->BindStorageBufferToRenderDataTable(0, 0, &current_render_data_table, current_light_data_buffer);
 	}
 }
 

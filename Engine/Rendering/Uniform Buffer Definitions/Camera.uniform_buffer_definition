@@ -1,4 +1,4 @@
-Camera
+UniformBuffer(Camera)
 {
     mat4 WORLD_TO_CLIP_MATRIX;
     mat4 WORLD_TO_CAMERA_MATRIX;

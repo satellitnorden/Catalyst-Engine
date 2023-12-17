@@ -7,6 +7,9 @@ InputRenderTarget(INTERMEDIATE_RGBA_FLOAT32_1 /* Identifier */, Nearest /* Magni
 //Declare output render targets.
 OutputRenderTarget(Scene);
 
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
 //Set the load/store operators.
 ColorLoadOperator(DONT_CARE);
 ColorStoreOperator(STORE);

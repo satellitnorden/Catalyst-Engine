@@ -1,4 +1,4 @@
-PostProcessing
+UniformBuffer(PostProcessing)
 {
     float BLOOM_THRESHOLD;
     float BLOOM_INTENSITY;

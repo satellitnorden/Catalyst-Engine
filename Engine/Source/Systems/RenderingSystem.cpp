@@ -146,7 +146,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	_SubRenderingSystem->Initialize();
 
 	//Register the general uniform data.
-	_UniformBufferManager.RegisterUniformBuffer
+	_BufferManager.RegisterUniformBuffer
 	(
 		HashString("General"),
 		&_GeneralUniformData,
@@ -183,6 +183,9 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 	//Post-initialize the ray tracing system.
 	_RayTracingSystem.PostInitialize();
 
+	//Initialize the rendering configuration.
+	_RenderingConfiguration.Initialize();
+
 	//Post-initialize the virtual reality system.
 	_VirtualRealitySystem.PostInitialize();
 
@@ -215,6 +218,10 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 void RenderingSystem::RenderUpdate() NOEXCEPT
 {
 	//Update the general uniform data.
+	_GeneralUniformData._FullResolution = Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
+	_GeneralUniformData._InverseFullResolution = Vector2<float32>(1.0f / _GeneralUniformData._FullResolution._X, 1.0f / _GeneralUniformData._FullResolution._Y);
+	_GeneralUniformData._HalfResolution = Vector2<float32>(static_cast<float32>(GetScaledResolution(1)._Width), static_cast<float32>(GetScaledResolution(1)._Height));
+	_GeneralUniformData._InverseHalfResolution = Vector2<float32>(1.0f / _GeneralUniformData._HalfResolution._X, 1.0f / _GeneralUniformData._HalfResolution._Y);
 	_GeneralUniformData._FrameIndex = static_cast<uint32>(CatalystEngineSystem::Instance->GetTotalFrames());
 
 	//Tell the sub rendering to begin the frame.
@@ -238,6 +245,13 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		_PostProcessingSystem.RenderUpdate();
 	}
 
+	//Update the rendering configuration.
+	{
+		PROFILING_SCOPE(RenderingSystem_RenderingConfiguration_RenderUpdate);
+
+		_RenderingConfiguration.Update();
+	}
+
 	//Update the world system.
 	{
 		PROFILING_SCOPE(RenderingSystem_WorldSystem_RenderUpdate);
@@ -245,11 +259,11 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		WorldSystem::Instance->RenderUpdate();
 	}
 
-	//Update the uniform buffer manager.
+	//Update the buffer manager.
 	{
-		PROFILING_SCOPE(RenderingSystem_UniformBufferManager_RenderUpdate);
+		PROFILING_SCOPE(RenderingSystem_BufferManager_RenderUpdate);
 
-		_UniformBufferManager.RenderUpdate();
+		_BufferManager.RenderUpdate();
 	}
 
 	//Update the global render data.

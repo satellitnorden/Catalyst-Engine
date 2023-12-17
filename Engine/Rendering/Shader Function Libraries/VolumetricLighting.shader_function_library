@@ -1,0 +1,54 @@
+/*
+*	Returns the extinction at the given position.
+*/
+float GetExtinctionAtPosition(vec3 position)
+{
+	#define LOW_EXTINCTION (0.000025f)
+	#define HIGH_EXTINCTION (FLOAT32_EPSILON)
+
+	return mix(LOW_EXTINCTION, HIGH_EXTINCTION, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+
+	#undef LOW_EXTINCTION
+	#undef HIGH_EXTINCTION
+}
+
+/*
+*	Calculates the attenuation in the given direction.
+*/
+float CalculateAttenuationInDirection(vec3 position, vec3 direction)
+{
+	#define NUMBER_OF_SAMPLES (4)
+	#define STEP_SIZE (128.0f)
+
+	float attenuation = 1.0f;
+
+	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+	{
+		vec3 sample_position = position + direction * float(i) * STEP_SIZE;
+		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * STEP_SIZE);
+	}
+
+	return attenuation;
+	
+	#undef NUMBER_OF_SAMPLES
+	#undef STEP_SIZE
+}
+
+/*
+*	The Henyey-Greenstein phase function.
+*/
+float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
+{
+	float G = 0.5f;
+	float dot_product = dot(outgoing_direction, -incoming_direction);
+
+	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
+}
+
+/*
+*	Calculates the scattering with the given properties.
+*/
+vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
+{
+	return vec3(0.0f, 0.0f, 0.0f);
+}

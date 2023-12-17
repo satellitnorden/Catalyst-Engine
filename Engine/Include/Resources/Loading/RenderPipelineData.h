@@ -36,6 +36,9 @@ public:
 	//The included uniform buffers.
 	DynamicArray<HashString> _IncludedUniformBuffers;
 
+	//The included storage buffers.
+	DynamicArray<HashString> _IncludedStorageBuffers;
+
 	//The input render targets.
 	DynamicArray<HashString> _InputRenderTargets;
 
@@ -44,6 +47,9 @@ public:
 
 	//The output render targets.
 	DynamicArray<HashString> _OutputRenderTargets;
+
+	//The render resolution.
+	HashString _RenderResolution;
 
 	//The color load operator.
 	AttachmentLoadOperator _ColorLoadOperator;

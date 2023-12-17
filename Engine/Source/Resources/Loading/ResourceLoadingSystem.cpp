@@ -343,6 +343,17 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 		}
 	}
 
+	//Read the included storage buffers.
+	{
+		uint64 number_of_included_storage_buffers{ 0 };
+		file->Read(&number_of_included_storage_buffers, sizeof(uint64));
+
+		if (number_of_included_storage_buffers > 0)
+		{
+			data->_IncludedStorageBuffers.Upsize<false>(number_of_included_storage_buffers);
+			file->Read(data->_IncludedStorageBuffers.Data(), sizeof(HashString) * number_of_included_storage_buffers);
+		}
+	}
 
 	//Read the input render targets.
 	{
@@ -370,6 +381,9 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 			file->Read(data->_OutputRenderTargets.Data(), sizeof(HashString) * data->_OutputRenderTargets.Size());
 		}
 	}
+
+	//Read the render resolution.
+	file->Read(&data->_RenderResolution, sizeof(HashString));
 
 	//Read the load/store operators.
 	file->Read(&data->_ColorLoadOperator, sizeof(AttachmentLoadOperator));

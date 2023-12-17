@@ -790,6 +790,18 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 		}
 	}
 
+	//Write the included storage buffers.
+	{
+		const uint64 number_of_included_storage_buffers{ parameters._IncludedStorageBuffers.Size() };
+		output_file.Write(&number_of_included_storage_buffers, sizeof(uint64));
+
+		if (!parameters._IncludedStorageBuffers.Empty())
+		{
+			//Write the data.
+			output_file.Write(parameters._IncludedStorageBuffers.Data(), sizeof(HashString) * parameters._IncludedStorageBuffers.Size());
+		}
+	}
+
 	//Write the input render targets.
 	{
 		//Write the count.
@@ -812,6 +824,9 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 		//Write the data.
 		output_file.Write(parameters._OutputRenderTargets.Data(), sizeof(HashString) * parameters._OutputRenderTargets.Size());
 	}
+
+	//Write the render resolution.
+	output_file.Write(&parameters._RenderResolution, sizeof(HashString));
 
 	//Write the load/store operators.
 	output_file.Write(&parameters._ColorLoadOperator, sizeof(AttachmentLoadOperator));

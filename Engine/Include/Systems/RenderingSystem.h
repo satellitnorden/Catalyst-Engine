@@ -12,6 +12,7 @@
 #include <Math/General/Matrix.h>
 
 //Rendering.
+#include <Rendering/Native/BufferManager.h>
 #include <Rendering/Native/CameraSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Rendering/Native/DebugRenderingSystem.h>
@@ -33,7 +34,6 @@
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/VirtualRealitySystem.h>
-#include <Rendering/Native/UniformBufferManager.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
@@ -231,11 +231,11 @@ public:
 	}
 
 	/*
-	*	Returns the uniform buffer manager.
+	*	Returns the buffer manager.
 	*/
-	RESTRICTED NO_DISCARD UniformBufferManager *const RESTRICT GetUniformBufferManager() NOEXCEPT
+	RESTRICTED NO_DISCARD BufferManager *const RESTRICT GetBufferManager() NOEXCEPT
 	{
-		return &_UniformBufferManager;
+		return &_BufferManager;
 	}
 
 	/*
@@ -620,6 +620,18 @@ private:
 
 	public:
 
+		//The full resolution.
+		Vector2<float32> _FullResolution;
+
+		//The inverse full resolution.
+		Vector2<float32> _InverseFullResolution;
+
+		//The half resolution.
+		Vector2<float32> _HalfResolution;
+
+		//The inverse half resolution.
+		Vector2<float32> _InverseHalfResolution;
+
 		//The frame index.
 		uint32 _FrameIndex;
 
@@ -683,8 +695,8 @@ private:
 	//The render input manager.
 	RenderInputManager _RenderInputManager;
 
-	//The uniform buffer manager.
-	UniformBufferManager _UniformBufferManager;
+	//The buffer manager.
+	BufferManager _BufferManager;
 
 	//The camera system.
 	CameraSystem _CameraSystem;

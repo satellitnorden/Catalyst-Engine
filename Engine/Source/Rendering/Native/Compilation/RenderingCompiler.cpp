@@ -189,6 +189,22 @@ public:
 };
 
 /*
+*	Storage buffer include class definition.
+*/
+class StorageBufferInclude final
+{
+
+public:
+
+	//The name.
+	DynamicString _Name;
+
+	//The file path.
+	DynamicString _FilePath;
+
+};
+
+/*
 *	Push constant data item value definition.
 */
 class PushConstantDataValue final
@@ -215,6 +231,9 @@ public:
 	//The uniform buffer includes.
 	DynamicArray<UniformBufferInclude> _UniformBufferIncludes;
 
+	//The storage buffer includes.
+	DynamicArray<StorageBufferInclude> _StorageBufferIncludes;
+
 	//The shader function library includes.
 	DynamicArray<DynamicString> _ShaderFunctionLibraryIncludes;
 
@@ -226,6 +245,9 @@ public:
 
 	//The output render targets.
 	DynamicArray<DynamicString> _OutputRenderTargets;
+
+	//The render resolution.
+	HashString _RenderResolution;
 
 	//The color load operator.
 	AttachmentLoadOperator _ColorLoadOperator{ AttachmentLoadOperator::DONT_CARE };
@@ -329,6 +351,27 @@ void FindUniformBufferDefinitionFilePath(const char *const RESTRICT name, Dynami
 	}
 
 	ASSERT(false, "Couldn't find uniform buffer definition file!");
+}
+
+/*
+*	Finds the file path for the storage buffer definition with the given name.
+*/
+void FindStorageBufferDefinitionFilePath(const char *const RESTRICT name, DynamicString *const RESTRICT file_path) NOEXCEPT
+{
+	//Try the engine directory.
+	{
+		char buffer[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(buffer, "%s\\Storage Buffer Definitions\\%s.storage_buffer_definition", ENGINE_RENDERING_DIRECTORY_PATH, name);
+
+		if (File::Exists(buffer))
+		{
+			*file_path = buffer;
+
+			return;
+		}
+	}
+
+	ASSERT(false, "Couldn't find storage buffer definition file!");
 }
 
 /*
@@ -567,10 +610,26 @@ void GenerateVertexShader
 		{
 			for (const UniformBufferInclude &uniform_buffer_include : render_pipeline_information._UniformBufferIncludes)
 			{
-				GLSLCompilation::InsertUniformBufferDefinition
+				GLSLCompilation::InsertBufferDefinition
 				(
 					glsl_file,
 					uniform_buffer_include._FilePath.Data(),
+					resource_binding_index++
+				);
+
+				glsl_file << std::endl;
+			}
+		}
+
+		//Insert any included storage buffers.
+		if (!render_pipeline_information._StorageBufferIncludes.Empty())
+		{
+			for (const StorageBufferInclude &storage_buffer_include : render_pipeline_information._StorageBufferIncludes)
+			{
+				GLSLCompilation::InsertBufferDefinition
+				(
+					glsl_file,
+					storage_buffer_include._FilePath.Data(),
 					resource_binding_index++
 				);
 
@@ -852,10 +911,26 @@ void GenerateFragmentShader
 		{
 			for (const UniformBufferInclude &uniform_buffer_include : render_pipeline_information._UniformBufferIncludes)
 			{
-				GLSLCompilation::InsertUniformBufferDefinition
+				GLSLCompilation::InsertBufferDefinition
 				(
 					glsl_file,
 					uniform_buffer_include._FilePath.Data(),
+					resource_binding_index++
+				);
+
+				glsl_file << std::endl;
+			}
+		}
+
+		//Insert any included storage buffers.
+		if (!render_pipeline_information._StorageBufferIncludes.Empty())
+		{
+			for (const StorageBufferInclude &storage_buffer_include : render_pipeline_information._StorageBufferIncludes)
+			{
+				GLSLCompilation::InsertBufferDefinition
+				(
+					glsl_file,
+					storage_buffer_include._FilePath.Data(),
 					resource_binding_index++
 				);
 
@@ -1123,6 +1198,32 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 				}
 			}
 
+			//Is this a storage buffer include declaration?
+			{
+				const size_t position{ current_line.find("IncludeStorageBuffer") };
+
+				if (position != std::string::npos)
+				{
+					render_pipeline_information._StorageBufferIncludes.Emplace();
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&render_pipeline_information._StorageBufferIncludes.Back()._Name
+					);
+
+
+					FindStorageBufferDefinitionFilePath
+					(
+						render_pipeline_information._StorageBufferIncludes.Back()._Name.Data(),
+						&render_pipeline_information._StorageBufferIncludes.Back()._FilePath
+					);
+
+					continue;
+				}
+			}
+
 			//Is this a shader function library include declaration?
 			{
 				const size_t input_render_target_position{ current_line.find("IncludeShaderFunctionLibrary") };
@@ -1197,6 +1298,27 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 						current_line.length(),
 						&render_pipeline_information._OutputRenderTargets.Back()
 					);
+
+					continue;
+				}
+			}
+
+			//Is this a render resolution declaration?
+			{
+				const size_t position{ current_line.find("RenderResolution") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString argument;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&argument
+					);
+
+					render_pipeline_information._RenderResolution = HashString(argument.Data());
 
 					continue;
 				}
@@ -1385,6 +1507,46 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 						render_pipeline_information._BlendColorSourceFactor = BlendFactor::One;
 					}
 
+					else if (string == "SOURCE_COLOR")
+					{
+						render_pipeline_information._BlendColorSourceFactor = BlendFactor::SourceColor;
+					}
+
+					else if (string == "ONE_MINUS_SOURCE_COLOR")
+					{
+						render_pipeline_information._BlendColorSourceFactor = BlendFactor::OneMinusSourceColor;
+					}
+
+					else if (string == "DESTINATION_COLOR")
+					{
+						render_pipeline_information._BlendColorSourceFactor = BlendFactor::DestinationColor;
+					}
+
+					else if (string == "ONE_MINUS_DESTINATION_COLOR")
+					{
+						render_pipeline_information._BlendColorSourceFactor = BlendFactor::OneMinusDestinationColor;
+					}
+
+					else if (string == "SOURCE_ALPHA")
+					{
+						render_pipeline_information._BlendColorSourceFactor = BlendFactor::SourceAlpha;
+					}
+
+					else if (string == "ONE_MINUS_SOURCE_ALPHA")
+					{
+						render_pipeline_information._BlendColorSourceFactor = BlendFactor::OneMinusSourceAlpha;
+					}
+
+					else if (string == "DESTINATION_ALPHA")
+					{
+						render_pipeline_information._BlendColorSourceFactor = BlendFactor::DestinationAlpha;
+					}
+
+					else if (string == "ONE_MINUS_DESTINATION_ALPHA")
+					{
+						render_pipeline_information._BlendColorSourceFactor = BlendFactor::OneMinusDestinationAlpha;
+					}
+
 					else
 					{
 						ASSERT(false, "Invalid argument!");
@@ -1417,6 +1579,46 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					else if (string == "ONE")
 					{
 						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::One;
+					}
+
+					else if (string == "SOURCE_COLOR")
+					{
+						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::SourceColor;
+					}
+
+					else if (string == "ONE_MINUS_SOURCE_COLOR")
+					{
+						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::OneMinusSourceColor;
+					}
+
+					else if (string == "DESTINATION_COLOR")
+					{
+						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::DestinationColor;
+					}
+
+					else if (string == "ONE_MINUS_DESTINATION_COLOR")
+					{
+						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::OneMinusDestinationColor;
+					}
+
+					else if (string == "SOURCE_ALPHA")
+					{
+						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::SourceAlpha;
+					}
+
+					else if (string == "ONE_MINUS_SOURCE_ALPHA")
+					{
+						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::OneMinusSourceAlpha;
+					}
+
+					else if (string == "DESTINATION_ALPHA")
+					{
+						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::DestinationAlpha;
+					}
+
+					else if (string == "ONE_MINUS_DESTINATION_ALPHA")
+					{
+						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::OneMinusDestinationAlpha;
 					}
 
 					else
@@ -1502,6 +1704,46 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::One;
 					}
 
+					else if (string == "SOURCE_COLOR")
+					{
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::SourceColor;
+					}
+
+					else if (string == "ONE_MINUS_SOURCE_COLOR")
+					{
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::OneMinusSourceColor;
+					}
+
+					else if (string == "DESTINATION_COLOR")
+					{
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::DestinationColor;
+					}
+
+					else if (string == "ONE_MINUS_DESTINATION_COLOR")
+					{
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::OneMinusDestinationColor;
+					}
+
+					else if (string == "SOURCE_ALPHA")
+					{
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::SourceAlpha;
+					}
+
+					else if (string == "ONE_MINUS_SOURCE_ALPHA")
+					{
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::OneMinusSourceAlpha;
+					}
+
+					else if (string == "DESTINATION_ALPHA")
+					{
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::DestinationAlpha;
+					}
+
+					else if (string == "ONE_MINUS_DESTINATION_ALPHA")
+					{
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::OneMinusDestinationAlpha;
+					}
+
 					else
 					{
 						ASSERT(false, "Invalid argument!");
@@ -1534,6 +1776,46 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					else if (string == "ONE")
 					{
 						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::One;
+					}
+
+					else if (string == "SOURCE_COLOR")
+					{
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::SourceColor;
+					}
+
+					else if (string == "ONE_MINUS_SOURCE_COLOR")
+					{
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::OneMinusSourceColor;
+					}
+
+					else if (string == "DESTINATION_COLOR")
+					{
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::DestinationColor;
+					}
+
+					else if (string == "ONE_MINUS_DESTINATION_COLOR")
+					{
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::OneMinusDestinationColor;
+					}
+
+					else if (string == "SOURCE_ALPHA")
+					{
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::SourceAlpha;
+					}
+
+					else if (string == "ONE_MINUS_SOURCE_ALPHA")
+					{
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::OneMinusSourceAlpha;
+					}
+
+					else if (string == "DESTINATION_ALPHA")
+					{
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::DestinationAlpha;
+					}
+
+					else if (string == "ONE_MINUS_DESTINATION_ALPHA")
+					{
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::OneMinusDestinationAlpha;
 					}
 
 					else
@@ -2132,6 +2414,17 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 			}
 		}
 
+		//Fill in the included storage buffers.
+		if (!render_pipeline_information._StorageBufferIncludes.Empty())
+		{
+			parameters._IncludedStorageBuffers.Reserve(render_pipeline_information._StorageBufferIncludes.Size());
+
+			for (const StorageBufferInclude &storage_buffer_include : render_pipeline_information._StorageBufferIncludes)
+			{
+				parameters._IncludedStorageBuffers.Emplace(HashString(storage_buffer_include._Name.Data()));
+			}
+		}
+
 		//Fill in the input render targets.
 		if (!render_pipeline_information._InputRenderTargets.Empty())
 		{
@@ -2159,6 +2452,9 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 				parameters._OutputRenderTargets.Emplace(HashString(output_render_target.Data()));
 			}
 		}
+
+		//Fill in the render resolution.
+		parameters._RenderResolution = render_pipeline_information._RenderResolution;
 
 		//Fill in the load/store operators.
 		parameters._ColorLoadOperator = render_pipeline_information._ColorLoadOperator;

@@ -10,7 +10,7 @@
 void PostProcessingSystem::Initialize() NOEXCEPT
 {
 	//Register the uniform data.
-	RenderingSystem::Instance->GetUniformBufferManager()->RegisterUniformBuffer
+	RenderingSystem::Instance->GetBufferManager()->RegisterUniformBuffer
 	(
 		HashString("PostProcessing"),
 		&_PostProcessingUniformData,

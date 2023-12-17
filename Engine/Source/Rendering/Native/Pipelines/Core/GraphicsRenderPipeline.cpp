@@ -11,7 +11,7 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void GraphicsRenderPipeline::Initialize() NOEXCEPT
+void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &parameters) NOEXCEPT
 {
 	//Retrieve the render pipeline resource.
 	_RenderPipelineResource = ResourceSystem::Instance->GetRenderPipelineResource(_RenderPipelineIdentifier);
@@ -21,6 +21,7 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 
 	//Set if this render pipeline needs a render data table.
 	_UsesRenderDataTable =	!_RenderPipelineResource->_IncludedUniformBuffers.Empty()
+							|| !_RenderPipelineResource->_IncludedStorageBuffers.Empty()
 							|| !_RenderPipelineResource->_SamplerProperties.Empty()
 							|| !_RenderPipelineResource->_InputRenderTargets.Empty();
 
@@ -38,6 +39,15 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 			{
 				bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT);
 			
+				++current_binding_index;
+
+				ASSERT(current_binding_index <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS");
+			}
+
+			for (const HashString included_storage_buffer : _RenderPipelineResource->_IncludedStorageBuffers)
+			{
+				bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT);
+
 				++current_binding_index;
 
 				ASSERT(current_binding_index <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS");
@@ -82,7 +92,18 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 					current_binding_index++,
 					0,
 					&render_data_table,
-					RenderingSystem::Instance->GetUniformBufferManager()->GetUniformBuffer(included_uniform_buffer, static_cast<uint8>(i))
+					RenderingSystem::Instance->GetBufferManager()->GetUniformBuffer(included_uniform_buffer, static_cast<uint8>(i))
+				);
+			}
+
+			for (const HashString included_storage_buffer : _RenderPipelineResource->_IncludedStorageBuffers)
+			{
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable
+				(
+					current_binding_index++,
+					0,
+					&render_data_table,
+					RenderingSystem::Instance->GetBufferManager()->GetStorageBuffer(included_storage_buffer, static_cast<uint8>(i))
 				);
 			}
 
@@ -99,12 +120,34 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 
 			for (const HashString input_render_target : _RenderPipelineResource->_InputRenderTargets)
 			{
+				RenderTargetHandle render_target;
+
+				//First check if we received an input render target in the parameters.
+				bool found{ false };
+
+				for (const Pair<HashString, RenderTargetHandle>& _input_render_target : parameters._InputRenderTargets)
+				{
+					if (_input_render_target._First == input_render_target)
+					{
+						render_target = _input_render_target._Second;
+						found = true;
+
+						break;
+					}
+				}
+
+				//Otherwise, try the shared render target manager.
+				if (!found)
+				{
+					render_target = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(input_render_target);
+				}
+
 				RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable
 				(
 					current_binding_index++,
 					0,
 					&render_data_table,
-					RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(input_render_target),
+					render_target,
 					RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)
 				);
 			}
@@ -133,7 +176,25 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 
 		for (const HashString output_render_target : _RenderPipelineResource->_OutputRenderTargets)
 		{
-			AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(output_render_target));
+			//First check if we received an output render target in the parameters.
+			bool found{ false };
+
+			for (const Pair<HashString, RenderTargetHandle> &_output_render_target : parameters._OutputRenderTargets)
+			{
+				if (_output_render_target._First == output_render_target)
+				{
+					AddOutputRenderTarget(_output_render_target._Second);
+					found = true;
+
+					break;
+				}
+			}
+			
+			//Otherwise, try the shared render target manager.
+			if (!found)
+			{
+				AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(output_render_target));
+			}
 		}
 	}
 
@@ -147,7 +208,20 @@ void GraphicsRenderPipeline::Initialize() NOEXCEPT
 	}
 	
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetFullResolution());
+	if (_RenderPipelineResource->_RenderResolution == HashString("MAIN_FULL"))
+	{
+		SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
+	}
+
+	else if (_RenderPipelineResource->_RenderResolution == HashString("MAIN_HALF"))
+	{
+		SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
+	}
+	
+	else
+	{
+		ASSERT(false, "Unknown render resolution!");
+	}
 
 	//Retrieve the input stream.
 	ASSERT(!_RenderPipelineResource->_InputStreamSubscriptions.Empty(), "Need at least one input stream subscription!");

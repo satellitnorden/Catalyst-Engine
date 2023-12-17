@@ -4,11 +4,14 @@ IncludeUniformBuffer(Camera);
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
 
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
 //Declare output render targets.
 OutputRenderTarget(SceneFeatures4);
 
-//Declare output depth buffer.
-OutputDepthBuffer(SceneDepthBuffer);
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
 
 //Set the load/store operators.
 ColorLoadOperator(LOAD);

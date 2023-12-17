@@ -132,20 +132,29 @@ namespace GLSLCompilation
 	}
 
 	/*
-	*	Inserts a uniform buffer definition into the given output file from the given input file.
+	*	Inserts a buffer definition into the given output file from the given input file.
+	*	Can be either a uniform buffer or a storage buffer.
 	*/
-	FORCE_INLINE void InsertUniformBufferDefinition
+	FORCE_INLINE void InsertBufferDefinition
 	(
 		std::ofstream &output_file,
 		const char *const RESTRICT input_file_path,
 		const uint32 binding
 	) NOEXCEPT
 	{
+		//Enumeration covering all buffer types.
+		enum class BufferType : uint8
+		{
+			UNKNOWN,
+			UNIFORM,
+			STORAGE
+		};
+
 		//Open the input file.
 		std::ifstream input_file{ input_file_path };
 
 		//Go through all the lines.
-		bool has_parsed_first_line{ false };
+		BufferType buffer_type{ BufferType::UNKNOWN };
 		std::string current_line;
 		uint64 current_offset{ 0 };
 
@@ -157,66 +166,120 @@ namespace GLSLCompilation
 				continue;
 			}
 
-			//If this is the first line, insert the declaration.
-			if (!has_parsed_first_line)
+			//Is this a buffer declaration?
+			if (buffer_type == BufferType::UNKNOWN)
 			{
-				output_file << "layout (std140, set = 1, binding = " << binding << ") uniform " << current_line << std::endl;
+				{
+					const size_t position{ current_line.find("UniformBuffer(") };
 
-				has_parsed_first_line = true;
+					if (position != std::string::npos)
+					{
+						buffer_type = BufferType::UNIFORM;
 
-				continue;
+						DynamicString name;
+
+						TextParsingUtilities::ParseFunctionArguments(current_line.data(), current_line.length(), &name);
+
+						output_file << "layout (std140, set = 1, binding = " << binding << ") uniform " << name.Data() << std::endl;
+
+						continue;
+					}
+				}
+
+				const size_t position{ current_line.find("StorageBuffer(") };
+
+				if (position != std::string::npos)
+				{
+					buffer_type = BufferType::STORAGE;
+
+					DynamicString name;
+
+					TextParsingUtilities::ParseFunctionArguments(current_line.data(), current_line.length(), &name);
+
+					output_file << "layout (std140, set = 1, binding = " << binding << ") buffer " << name.Data() << std::endl;
+
+					continue;
+				}
 			}
 
-			//If it's opening/closing brackets, just insert them.
-			if (current_line[0] == '{' || current_line[0] == '}')
+			//Are we currently parsing a buffer.
+			if (buffer_type != BufferType::UNKNOWN)
+			{
+				//If this is the opening bracket, just insert it.
+				if (current_line[0] == '{')
+				{
+					output_file << current_line << std::endl;
+
+					continue;
+				}
+
+				//If this is the closing bracket, insert it and stop parsing the buffer.
+				if (current_line[0] == '}')
+				{
+					output_file << current_line << std::endl;
+					buffer_type = BufferType::UNKNOWN;
+
+					continue;
+				}
+
+				//The rest of the lines should be type/name pairs, so split them up.
+				std::string type_string;
+				std::string name_string;
+
+				{
+					size_t type_begin{ 0 };
+
+					for (size_t i{ 0 }; i < current_line.length(); ++i)
+					{
+						if (TextParsingUtilities::IsWhitespace(current_line[i]))
+						{
+							++type_begin;
+						}
+
+						else
+						{
+							break;
+						}
+					}
+
+					size_t type_end{ type_begin };
+
+					for (size_t i{ type_begin }; i < current_line.length(); ++i)
+					{
+						if (!TextParsingUtilities::IsWhitespace(current_line[i]))
+						{
+							++type_end;
+						}
+
+						else
+						{
+							break;
+						}
+					}
+
+					type_string = current_line.substr(type_begin, type_end - type_begin);
+					name_string = current_line.substr(type_end + 1);
+
+					output_file << "\tlayout (offset = " << current_offset << ") " << type_string.data() << " " << name_string.data() << std::endl;
+
+					//Update the current offset.
+					if (buffer_type == BufferType::STORAGE)
+					{
+						//Offsets are always 16 for storage buffers.
+						current_offset += 16;
+					}
+
+					else
+					{
+						current_offset += GetByteOffsetForType(type_string.data());
+					}
+				}
+			}
+
+			//Otherwise, just insert the line.
+			else
 			{
 				output_file << current_line << std::endl;
-
-				continue;
-			}
-
-			//The rest of the lines should be type/name pairs, so split them up.
-			std::string type_string;
-			std::string name_string;
-
-			{
-				size_t type_begin{ 0 };
-
-				for (size_t i{ 0 }; i < current_line.length(); ++i)
-				{
-					if (TextParsingUtilities::IsWhitespace(current_line[i]))
-					{
-						++type_begin;
-					}
-
-					else
-					{
-						break;
-					}
-				}
-
-				size_t type_end{ type_begin };
-
-				for (size_t i{ type_begin }; i < current_line.length(); ++i)
-				{
-					if (!TextParsingUtilities::IsWhitespace(current_line[i]))
-					{
-						++type_end;
-					}
-
-					else
-					{
-						break;
-					}
-				}
-
-				type_string = current_line.substr(type_begin, type_end - type_begin);
-				name_string = current_line.substr(type_end + 1);
-
-				output_file << "\tlayout (offset = " << current_offset << ") " << type_string.data() << " " << name_string.data() << std::endl;
-			
-				//Update the current offset.
-				current_offset += GetByteOffsetForType(type_string.data());
 			}
 		}
 	}

@@ -15,6 +15,9 @@ OutputRenderTarget(SceneFeatures2);
 OutputRenderTarget(SceneFeatures3);
 OutputRenderTarget(SceneFeatures4);
 
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
 //Set the cull mode.
 CullMode(BACK);
 

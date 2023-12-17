@@ -1,4 +1,9 @@
-General
+UniformBuffer(General)
 {
+    vec2 FULL_MAIN_RESOLUTION;
+    vec2 INVERSE_FULL_MAIN_RESOLUTION;
+    vec2 HALF_MAIN_RESOLUTION;
+    vec2 INVERSE_HALF_MAIN_RESOLUTION;
+
     uint FRAME;
 };

@@ -19,6 +19,7 @@ layout (early_fragment_tests) in;
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
+#define PI (3.141592f)
 
 /*
 *   Defines the bit at the specified index.
@@ -119,6 +120,22 @@ layout (std140, set = 0, binding = 1) uniform GlobalMaterials
 };
 
 /*
+*	Returns the square of the given number.
+*/
+float Square(float X)
+{
+	return X * X;
+}
+
+/*
+*	Returns the inverse square of the given number.
+*/
+float InverseSquare(float X)
+{
+	return 1.0f - Square(1.0f - X);
+}
+
+/*
 *   Returns the length of a vector with three components squared.
 */
 float LengthSquared3(vec3 vector)
@@ -161,6 +178,14 @@ layout (set = 1, binding = 3) uniform sampler INDEX_BLEND_MAP_SAMPLER;
 layout (set = 1, binding = 4) uniform sampler MATERIAL_SAMPLER;
 
 /*
+*   Linearizes a depth value.
+*/
+float LinearizeDepth(float depth)
+{
+    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
+}
+
+/*
 *   Calculates the world position.
 */
 vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
@@ -196,6 +221,21 @@ vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
   view_space_position.xy *= denominator;
 
   return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Calculates a screen position, including the (linearized) depth from the given world position.
+*/
+vec3 CalculateScreenPosition(vec3 world_position)
+{
+    vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+    float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
+    view_space_position.xyz *= view_space_position_coefficient_reciprocal;
+
+    view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
+    view_space_position.z = LinearizeDepth(view_space_position.z);
+    
+    return view_space_position.xyz;
 }
 
 /*
