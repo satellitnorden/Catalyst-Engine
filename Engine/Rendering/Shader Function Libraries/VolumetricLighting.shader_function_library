@@ -3,10 +3,9 @@
 */
 float GetExtinctionAtPosition(vec3 position)
 {
-	#define LOW_EXTINCTION (0.000025f)
-	#define HIGH_EXTINCTION (FLOAT32_EPSILON)
+	#define BASE_EXTINCTION (0.000025f)
 
-	return mix(LOW_EXTINCTION, HIGH_EXTINCTION, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
 	#undef LOW_EXTINCTION
 	#undef HIGH_EXTINCTION

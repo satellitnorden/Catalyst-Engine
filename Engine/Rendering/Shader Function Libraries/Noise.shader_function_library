@@ -1,7 +1,7 @@
 /*
-*   Hash function taking a uint.
+*   Hash function.
 */
-uint Hash1(uint seed)
+uint Hash(inout uint seed)
 {
     seed = (seed ^ 61u) ^ (seed >> 16u);
     seed *= 9u;
@@ -13,19 +13,11 @@ uint Hash1(uint seed)
 }
 
 /*
-*   Hash function taking a uvec2.
+*   Given a seed, returns a random number.
 */
-uint Hash2(uvec2 seed)
+float RandomFloat(inout uint seed)
 {
-    return Hash1(seed.x) ^ Hash1(seed.y);
-}
-
-/*
-*   Hash function taking a uvec3.
-*/
-uint Hash3(uvec3 seed)
-{
-    return Hash1(seed.x) ^ Hash1(seed.y) ^ Hash1(seed.z);
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
 }
 
 /*

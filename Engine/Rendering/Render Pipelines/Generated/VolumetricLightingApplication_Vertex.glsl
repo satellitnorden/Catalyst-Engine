@@ -17,7 +17,10 @@
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
+#define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
+
 #define PI (3.141592f)
+#define SQUARE_ROOT_OF_TWO (1.414213f)
 
 /*
 *   Defines the bit at the specified index.
@@ -142,6 +145,14 @@ float LengthSquared3(vec3 vector)
 }
 
 /*
+*   Calculates the luminance of a color.
+*/
+float Luminance(vec3 color)
+{
+    return color.r * 0.2126f + color.g * 0.7152f + color.b * 0.0722f;
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -236,10 +247,9 @@ vec3 CalculateScreenPosition(vec3 world_position)
 */
 float GetExtinctionAtPosition(vec3 position)
 {
-	#define LOW_EXTINCTION (0.000025f)
-	#define HIGH_EXTINCTION (FLOAT32_EPSILON)
+	#define BASE_EXTINCTION (0.000025f)
 
-	return mix(LOW_EXTINCTION, HIGH_EXTINCTION, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
 	#undef LOW_EXTINCTION
 	#undef HIGH_EXTINCTION

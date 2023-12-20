@@ -71,34 +71,12 @@ Fragment
     float hit_distance = length(world_position - CAMERA_WORLD_POSITION);
     float hit_distance_reciprocal = 1.0f / hit_distance;
 
-    //Calculate the direction.
-    vec3 direction = (world_position - CAMERA_WORLD_POSITION) * hit_distance_reciprocal;
-
-    //Calculate the transmittance.
-    float transmittance = 1.0f;
-    float sample_alpha = 0.0f;
-
-    for (uint sample_index = 0; sample_index < NUMBER_OF_SAMPLES; ++sample_index)
-    {
-        //Calculate the current sample position and hit distance.
-        float previous_sample_alpha = sample_alpha;
-        sample_alpha = Square(float(sample_index + 1) / float(NUMBER_OF_SAMPLES));
-        vec3 sample_position = mix(CAMERA_WORLD_POSITION, world_position, sample_alpha);
-        float sample_hit_distance = max(hit_distance * sample_alpha - hit_distance * previous_sample_alpha, FLOAT32_EPSILON);
-
-        //Cache the extinction.
-        float extinction = GetExtinctionAtPosition(sample_position);
-
-        //Calculate the attenuation factor.
-        float attenuation_factor = exp(-extinction * sample_hit_distance);
-
-        //Update the transmittance.
-        transmittance *= attenuation_factor;
-    }
+    //Calculate the opacity.
+    float opacity = 1.0f - exp(-GetExtinctionAtPosition(CAMERA_WORLD_POSITION) * hit_distance);
 
     //Sample the volumetric lighting.
     vec4 volumetric_lighting = texture(VolumetricLighting, InTextureCoordinate);
 
     //Write the fragment.
-    OutputFragment(Scene, vec4(volumetric_lighting.rgb, 1.0f - transmittance));
+    OutputFragment(Scene, vec4(volumetric_lighting.rgb, opacity));
 }

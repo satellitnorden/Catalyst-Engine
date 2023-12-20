@@ -1,5 +1,7 @@
 #version 460
 
+layout (early_fragment_tests) in;
+
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -200,12 +202,101 @@ layout (std140, set = 1, binding = 2) uniform Wind
 
 layout (set = 1, binding = 3) uniform sampler SAMPLER;
 
-//Constants.
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_1 	(1 << 0)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_2 	(1 << 1)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_3 	(1 << 2)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_4 	(1 << 3)
-#define MODEL_FLAG_IS_VEGETATION 				(1 << 4)
+/*
+*   Linearizes a depth value.
+*/
+float LinearizeDepth(float depth)
+{
+    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
+}
+
+/*
+*   Calculates the world position.
+*/
+vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position *= inverse_view_space_position_denominator;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
+
+    return world_space_position.xyz;
+}
+
+/*
+*   Returns the current screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Returns the previous screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Calculates a screen position, including the (linearized) depth from the given world position.
+*/
+vec3 CalculateScreenPosition(vec3 world_position)
+{
+    vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+    float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
+    view_space_position.xyz *= view_space_position_coefficient_reciprocal;
+
+    view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
+    view_space_position.z = LinearizeDepth(view_space_position.z);
+    
+    return view_space_position.xyz;
+}
+
+/*
+*	Evaluates tilt/bend. Returns the offset on the Z axis.
+*/
+float EvaluateTiltBend(float tilt, float bend, float normalized_height)
+{
+	float bend_alpha = bend >= 0.5f ? ((bend - 0.5f) * 2.0f) : (bend * 2.0f);
+	return mix(0.0f, tilt, mix(InverseSquare(normalized_height), Square(normalized_height), bend_alpha));
+}
+
+/*
+*	Rotates the given vector around the yaw.
+*/
+vec3 RotateYaw(vec3 X, float angle)
+{
+	float sine = sin(angle);
+    float cosine = cos(angle);
+
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
+
+    return X;
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}
 
 /*
 *   Hash function.
@@ -291,26 +382,59 @@ vec3 CalculateCurrentWindDisplacement(vec3 world_position, vec3 vertex_position,
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) uint MODEL_FLAGS;
-	layout (offset = 20) float START_FADE_OUT_DISTANCE_SQUARED;
-	layout (offset = 24) float END_FADE_OUT_DISTANCE_SQUARED;
-	layout (offset = 28) uint MATERIAL_INDEX;
+	layout (offset = 16) uint MATERIAL_INDEX;
+	layout (offset = 20) float VERTEX_FACTOR;
+	layout (offset = 24) float THICKNESS;
+	layout (offset = 28) float HEIGHT;
+	layout (offset = 32) float TILT;
+	layout (offset = 36) float BEND;
+	layout (offset = 40) float FADE_OUT_DISTANCE;
 };
 
-layout (location = 0) in vec2 InTextureCoordinate;
-layout (location = 1) in float InFadeOpacity;
+layout (location = 0) in vec3 InWorldPosition;
+layout (location = 1) in vec3 InNormal;
+layout (location = 2) in float InX;
+layout (location = 3) in float InThickness;
+layout (location = 4) in float InAmbientOcclusion;
+
+layout (location = 0) out vec4 SceneFeatures1;
+layout (location = 1) out vec4 SceneFeatures2;
+layout (location = 2) out vec4 SceneFeatures3;
+layout (location = 3) out vec4 SceneFeatures4;
 
 void main()
 {
-    float opacity = 1.0f;
-    if (TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_MASKED))
-    {
-        EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
-    }
-    float noise_value = InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME);
-    if (opacity < 0.5f
-    || (InFadeOpacity < 1.0f && InFadeOpacity < noise_value))
-    {
-        discard;
-    }
+    float X_factor = InX * 5.0f;
+    uint X_index_1 = uint(X_factor);
+    uint X_index_2 = min(X_index_1 + 1, 4);
+    float X_fractional = fract(X_factor);
+    vec4 albedo_thickness;
+    EVALUATE_ALBEDO_THICKNESS(MATERIALS[MATERIAL_INDEX], vec2(0.0f, 0.0f), SAMPLER, albedo_thickness);
+    vec4 material_properties;
+    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], vec2(0.0f, 0.0f), SAMPLER, material_properties);
+    float ALBEDO_MULTIPLIERS[5] = float[5]
+    (
+        0.825f,
+        1.125f,
+        0.825f,
+        1.125f,
+        0.825f
+    );
+    float albedo_multiplier = mix(ALBEDO_MULTIPLIERS[X_index_1], ALBEDO_MULTIPLIERS[X_index_2], X_fractional);
+    float ROUGHNESS_MULTIPLIERS[5] = float[5]
+    (
+        1.0f,
+        0.75f,
+        1.0f,
+        0.75f,
+        1.0f
+    );
+    float roughness_multiplier = mix(ROUGHNESS_MULTIPLIERS[X_index_1], ROUGHNESS_MULTIPLIERS[X_index_2], X_fractional);
+    vec3 shading_normal = normalize(InNormal);
+    shading_normal.xz *= gl_FrontFacing ? -1.0f : 1.0f;
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+	SceneFeatures1 = vec4(albedo_thickness.rgb*albedo_multiplier,InThickness);
+	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
+	SceneFeatures3 = material_properties*vec4(roughness_multiplier,1.0f,InAmbientOcclusion,1.0f);
+	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
 }

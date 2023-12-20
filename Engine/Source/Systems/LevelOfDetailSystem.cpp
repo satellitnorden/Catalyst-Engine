@@ -4,7 +4,11 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
+#include <Rendering/Native/GrassCore.h>
 #include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
@@ -18,13 +22,21 @@ DEFINE_SINGLETON(LevelOfDetailSystem);
 */
 void LevelOfDetailSystem::Initialize() NOEXCEPT
 {
+	//Initialize the grass level of detail task.
+	_GrassLevelOfDetailTask._Function = [](void *const RESTRICT)
+	{
+		LevelOfDetailSystem::Instance->LevelOfDetailGrass();
+	};
+	_GrassLevelOfDetailTask._Arguments = nullptr;
+	_GrassLevelOfDetailTask._ExecutableOnSameThread = false;
+
 	//Initialize the static models level of detail task.
 	_StaticModelsLevelOfDetailTask._Function = [](void *const RESTRICT)
 	{
 		LevelOfDetailSystem::Instance->LevelOfDetailStaticModels();
 	};
 	_StaticModelsLevelOfDetailTask._Arguments = nullptr;
-	_StaticModelsLevelOfDetailTask._ExecutableOnSameThread = true;
+	_StaticModelsLevelOfDetailTask._ExecutableOnSameThread = false;
 
 	//Initialize the dynamic models level of detail task.
 	_DynamicModelsLevelOfDetailTask._Function = [](void *const RESTRICT)
@@ -32,7 +44,7 @@ void LevelOfDetailSystem::Initialize() NOEXCEPT
 		LevelOfDetailSystem::Instance->LevelOfDetailDynamicModels();
 	};
 	_DynamicModelsLevelOfDetailTask._Arguments = nullptr;
-	_DynamicModelsLevelOfDetailTask._ExecutableOnSameThread = true;
+	_DynamicModelsLevelOfDetailTask._ExecutableOnSameThread = false;
 }
 
 /*
@@ -41,8 +53,38 @@ void LevelOfDetailSystem::Initialize() NOEXCEPT
 void LevelOfDetailSystem::RenderUpdate() NOEXCEPT
 {
 	//Execute all tasks.
+	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_GrassLevelOfDetailTask);
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_StaticModelsLevelOfDetailTask);
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_DynamicModelsLevelOfDetailTask);
+}
+
+/*
+*	Calculates level of detail for grass.
+*/
+void LevelOfDetailSystem::LevelOfDetailGrass() const NOEXCEPT
+{
+	PROFILING_SCOPE(LevelOfDetailSystem::LevelOfDetailGrass);
+
+	//Cache data that will be used.
+	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
+	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
+
+	//Iterate over all patches and determine their level of detail.
+	const uint64 number_of_components{ ComponentManager::GetNumberOfGrassComponents() };
+	GrassComponent *RESTRICT component{ ComponentManager::GetGrassGrassComponents() };
+
+	for (uint64 i = 0; i < number_of_components; ++i, ++component)
+	{
+		//Cache the camera relative axis aligned bounding box.
+		const AxisAlignedBoundingBox3D camera_relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell) };
+
+		//Calculate the distance.
+		const Vector3<float32> closest_position{ AxisAlignedBoundingBox3D::GetClosestPointInside(camera_relative_axis_aligned_bounding_box, camera_local_position) };
+		const float32 distance{ Vector3<float32>::Length(camera_local_position - closest_position) };
+
+		//Calculate the level of detail.
+		component->_LevelOfDetail = CatalystBaseMath::Minimum<uint8>(static_cast<uint8>(distance / GrassConstants::LEVEL_OF_DETAIL_DISTANCE_FACTOR), GrassConstants::HIGHEST_LEVEL_OF_DETAIL);
+	}
 }
 
 /*
@@ -50,6 +92,8 @@ void LevelOfDetailSystem::RenderUpdate() NOEXCEPT
 */
 void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 {
+	PROFILING_SCOPE(LevelOfDetailSystem::LevelOfDetailStaticModels);
+
 	//Cache the camera world transform.
 	const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform() };
 
@@ -123,6 +167,8 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 */
 void LevelOfDetailSystem::LevelOfDetailDynamicModels() const NOEXCEPT
 {
+	PROFILING_SCOPE(LevelOfDetailSystem::LevelOfDetailDynamicModels);
+
 	//Cache the camera world transform.
 	const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform() };
 

@@ -1,0 +1,8 @@
+/*
+*	Evaluates tilt/bend. Returns the offset on the Z axis.
+*/
+float EvaluateTiltBend(float tilt, float bend, float normalized_height)
+{
+	float bend_alpha = bend >= 0.5f ? ((bend - 0.5f) * 2.0f) : (bend * 2.0f);
+	return mix(0.0f, tilt, mix(InverseSquare(normalized_height), Square(normalized_height), bend_alpha));
+}

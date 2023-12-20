@@ -290,6 +290,17 @@ public:
 		_AutomaticFocalDistance = value;
 	}
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Locks the frustum.
+	*/
+	void LockFrustum() NOEXCEPT
+	{
+		_FrustumLocked = true;
+	}
+#endif
+
+
 private:
 
 	//The lock.
@@ -350,6 +361,11 @@ private:
 
 	//Denotes whether or not to this camera should use automatic focal distance.
 	bool _AutomaticFocalDistance{ false };
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Denotes whether or not the frustum is locked.
+	Atomic<bool> _FrustumLocked{ false };
+#endif
 
 	/*
 	*	Checks for updates.

@@ -2234,6 +2234,11 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 						render_pipeline_information._Topology = Topology::LineList;
 					}
 
+					else if (string == "LINE_STRIP")
+					{
+						render_pipeline_information._Topology = Topology::LineStrip;
+					}
+
 					else if (string == "TRIANGLE_FAN")
 					{
 						render_pipeline_information._Topology = Topology::TriangleFan;
@@ -2242,6 +2247,11 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					else if (string == "TRIANGLE_LIST")
 					{
 						render_pipeline_information._Topology = Topology::TriangleList;
+					}
+
+					else if (string == "TRIANGLE_STRIP")
+					{
+						render_pipeline_information._Topology = Topology::TriangleStrip;
 					}
 
 					else

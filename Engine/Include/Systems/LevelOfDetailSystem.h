@@ -41,6 +41,14 @@ public:
 	}
 
 	/*
+	*	Waits for grass level of detail to finish executing.
+	*/
+	FORCE_INLINE void WaitForGrassLevelOfDetail() const NOEXCEPT
+	{
+		_GrassLevelOfDetailTask.Wait<WaitMode::YIELD>();
+	}
+
+	/*
 	*	Waits for static models level of detail to finish executing.
 	*/
 	FORCE_INLINE void WaitForStaticModelsLevelOfDetail() const NOEXCEPT
@@ -64,8 +72,16 @@ private:
 	//The static models level of detail task.
 	Task _StaticModelsLevelOfDetailTask;
 
+	//The grass level of detail task.
+	Task _GrassLevelOfDetailTask;
+
 	//The dynamic models level of detail task.
 	Task _DynamicModelsLevelOfDetailTask;
+
+	/*
+	*	Calculates level of detail for gras.
+	*/
+	void LevelOfDetailGrass() const NOEXCEPT;
 
 	/*
 	*	Calculates level of detail for static models.

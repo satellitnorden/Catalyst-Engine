@@ -17,7 +17,10 @@
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
+#define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
+
 #define PI (3.141592f)
+#define SQUARE_ROOT_OF_TWO (1.414213f)
 
 /*
 *   Defines the bit at the specified index.
@@ -142,6 +145,14 @@ float LengthSquared3(vec3 vector)
 }
 
 /*
+*   Calculates the luminance of a color.
+*/
+float Luminance(vec3 color)
+{
+    return color.r * 0.2126f + color.g * 0.7152f + color.b * 0.0722f;
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -197,9 +208,9 @@ layout (set = 1, binding = 3) uniform sampler SAMPLER;
 #define MODEL_FLAG_IS_VEGETATION 				(1 << 4)
 
 /*
-*   Hash function taking a uint.
+*   Hash function.
 */
-uint Hash1(uint seed)
+uint Hash(inout uint seed)
 {
     seed = (seed ^ 61u) ^ (seed >> 16u);
     seed *= 9u;
@@ -211,19 +222,11 @@ uint Hash1(uint seed)
 }
 
 /*
-*   Hash function taking a uvec2.
+*   Given a seed, returns a random number.
 */
-uint Hash2(uvec2 seed)
+float RandomFloat(inout uint seed)
 {
-    return Hash1(seed.x) ^ Hash1(seed.y);
-}
-
-/*
-*   Hash function taking a uvec3.
-*/
-uint Hash3(uvec3 seed)
-{
-    return Hash1(seed.x) ^ Hash1(seed.y) ^ Hash1(seed.z);
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
 }
 
 /*
@@ -249,16 +252,16 @@ vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 n
 	vec3 displacement = vec3(0.0f, 0.0f, 0.0f);
 
 	//Add large scale motion.
-	displacement.x += (sin(world_position.x + wind_time) + 0.25f) * wind_direction_speed.x * wind_direction_speed.w;
-	displacement.z += (cos(world_position.z + wind_time) + 0.25f) * wind_direction_speed.z * wind_direction_speed.w;
+	displacement.x += (sin(world_position.x + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w;
+	displacement.z += (cos(world_position.z + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w;
 
 	//Add medium scale motion.
-	displacement.x += (sin((world_position.x + wind_time) * 2.0f) + 0.375f) * wind_direction_speed.x * wind_direction_speed.w * 0.5f;
-	displacement.z += (cos((world_position.z + wind_time) * 2.0f) + 0.375f) * wind_direction_speed.z * wind_direction_speed.w * 0.5f;
+	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.5f;
+	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.5f;
 
 	//Add small scale motion.
-	displacement.x += (sin((world_position.x + wind_time) * 4.0f) + 0.5f) * wind_direction_speed.x * wind_direction_speed.w * 0.25f;
-	displacement.z += (cos((world_position.z + wind_time) * 4.0f) + 0.5f) * wind_direction_speed.z * wind_direction_speed.w * 0.25f;
+	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.25f;
+	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.25f;
 
 	//Modify the displacement so it doesn't affect the bottom of the mesh.
 	displacement *= max(vertex_position.y * 0.125f, 0.0f);

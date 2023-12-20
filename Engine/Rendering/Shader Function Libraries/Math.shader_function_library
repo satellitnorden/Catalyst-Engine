@@ -1,15 +1,16 @@
 /*
-*	Rotates a vec3 around an arbitrary axis.
+*	Rotates the given vector around the yaw.
 */
-vec3 Rotate(vec3 vector, vec3 axis, float angle)
+vec3 RotateYaw(vec3 X, float angle)
 {
-	float dot_product = dot(vector, axis);
+	float sine = sin(angle);
+    float cosine = cos(angle);
 
-	vec3 X =  cos(angle) * (vector - dot_product * axis);
-	vec3 Y = sin(angle) * cross(axis, vector);
-	vec3 Z = dot_product * axis;
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
 
-	return vector * (X + Y + Z);
+    return X;
 }
 
 /*

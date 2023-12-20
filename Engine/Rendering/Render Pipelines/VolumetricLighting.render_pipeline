@@ -140,13 +140,7 @@ Fragment
                                 screen_space_light_position = view_space_position.xyz;
                             }
 
-                            /*
                             //Calculate the screen factor.
-					        float screen_factor = min(abs(screen_space_light_position.x - 0.5f) * abs(screen_space_light_position.y - 0.5f), 1.0f);
-					        screen_factor *= screen_factor;
-					        screen_factor = 1.0f - screen_factor;
-					        screen_factor = dot(light._TransformData1, CAMERA_FORWARD_VECTOR) <= 0.0f ? screen_factor : 0.0f;
-                            */
                             float screen_factor = max(dot(ray_direction, -light._TransformData1), 0.0f);
 
                             //Do a bunch of tests and accumulate the occlusion
@@ -184,12 +178,6 @@ Fragment
         //Update the transmittance.
         transmittance *= attenuation_factor;
     }
-
-    //Add some ambient color.
-    //volumetric_lighting += BASE_COLOR * 0.01f;
-
-    //The volumetric lighting can get quite bright, so uuuuh, tonemap it a bit?
-    volumetric_lighting = mix(volumetric_lighting, volumetric_lighting / (volumetric_lighting + vec3(1.0f)), 0.9f);
 
     //Write the fragment.
     OutputFragment(VolumetricLighting, vec4(volumetric_lighting, 1.0f - transmittance));

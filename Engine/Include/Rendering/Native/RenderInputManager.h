@@ -93,4 +93,12 @@ private:
 		RenderInputStream *const RESTRICT input_stream
 	) NOEXCEPT;
 
+	/*
+	*	Gathers a grass input stream.
+	*/
+	void GatherGrassInputStream
+	(
+		RenderInputStream *const RESTRICT input_stream
+	) NOEXCEPT;
+
 };

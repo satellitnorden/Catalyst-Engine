@@ -11,6 +11,7 @@ class Entity;
 #define ENTITY_TYPES	ENTITY_TYPE(AnimatedModel)			\
 						ENTITY_TYPE(DistanceTrigger)		\
 						ENTITY_TYPE(DynamicModel)			\
+						ENTITY_TYPE(Grass)					\
 						ENTITY_TYPE(InstancedImpostor)		\
 						ENTITY_TYPE(InstancedStaticModel)	\
 						ENTITY_TYPE(Light)					\

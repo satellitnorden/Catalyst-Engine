@@ -41,6 +41,22 @@ public:
 	}
 
 	/*
+	*	Waits for grass culling to finish executing.
+	*/
+	FORCE_INLINE void WaitForGrassCulling() const NOEXCEPT
+	{
+		_GrassCullingTask.Wait<WaitMode::YIELD>();
+	}
+
+	/*
+	*	Waits for instanced impostors culling to finish executing.
+	*/
+	FORCE_INLINE void WaitForInstancedImpostorsCulling() const NOEXCEPT
+	{
+		_InstancedImpostorsCullingTask.Wait<WaitMode::YIELD>();
+	}
+
+	/*
 	*	Waits for instanced static models culling to finish executing.
 	*/
 	FORCE_INLINE void WaitForInstancedStaticModelsCulling() const NOEXCEPT
@@ -69,7 +85,13 @@ private:
 	//The dynamic models culling task.
 	Task _DynamicModelsCullingTask;
 
+	//The grass culling task.
+	Task _GrassCullingTask;
+
 	//The instanced static models culling task.
+	Task _InstancedImpostorsCullingTask;
+
+	//The instanced impostors culling task.
 	Task _InstancedStaticModelsCullingTask;
 
 	//The static models culling task.
@@ -82,6 +104,16 @@ private:
 	*	Culls dynamic models.
 	*/
 	void CullDynamicModels() const NOEXCEPT;
+
+	/*
+	*	Culls grass.
+	*/
+	void CullGrass() const NOEXCEPT;
+
+	/*
+	*	Culls instanced impostors.
+	*/
+	void CullInstancedImpostors() const NOEXCEPT;
 
 	/*
 	*	Culls instanced static models.

@@ -61,6 +61,27 @@ void InstancedImpostorEntity::Initialize(EntityInitializationData *const RESTRIC
 		component._Cell[i] = CatalystBaseMath::Round<int32>(average_cell[i]);
 	}
 
+	//Calculate the axis aligned bounding box.
+	component._WorldSpaceAxisAlignedBoundingBox._Minimum.SetCell(component._Cell);
+	component._WorldSpaceAxisAlignedBoundingBox._Maximum.SetCell(component._Cell);
+
+	Vector3<float32> minimum{ FLOAT32_MAXIMUM };
+	Vector3<float32> maximum{ -FLOAT32_MAXIMUM };
+
+	for (const WorldPosition &world_position : type_initialization_data->_WorldPositions)
+	{
+		const Vector3<float32> relative_position{ world_position.GetRelativePosition(component._Cell) };
+
+		minimum = Vector3<float32>::Minimum(minimum, relative_position);
+		maximum = Vector3<float32>::Maximum(maximum, relative_position);
+	}
+
+	minimum -= Vector3<float32>(component._Dimensions._X * 0.5f, 0.0f, component._Dimensions._X * 0.5f);
+	maximum += Vector3<float32>(component._Dimensions._X * 0.5f, component._Dimensions._Y, component._Dimensions._X * 0.5f);
+
+	component._WorldSpaceAxisAlignedBoundingBox._Minimum.SetLocalPosition(minimum);
+	component._WorldSpaceAxisAlignedBoundingBox._Maximum.SetLocalPosition(maximum);
+
 	DynamicArray<Vector3<float32>> transformations;
 	transformations.Reserve(type_initialization_data->_WorldPositions.Size());
 

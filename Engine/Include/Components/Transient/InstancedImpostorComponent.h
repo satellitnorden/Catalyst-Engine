@@ -25,6 +25,9 @@ public:
 	//The cell.
 	Vector3<int32> _Cell;
 
+	//The world space axis aligned bounding box.
+	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
+
 	//The start fade in distance.
 	float32 _StartFadeInDistance;
 
@@ -42,5 +45,8 @@ public:
 
 	//The number of transformations.
 	uint32 _NumberOfTransformations;
+
+	//The visibility flags.
+	VisibilityFlags _VisibilityFlags;
 
 };

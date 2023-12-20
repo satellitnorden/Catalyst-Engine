@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 
@@ -26,7 +29,23 @@ void CullingSystem::Initialize() NOEXCEPT
 		CullingSystem::Instance->CullDynamicModels();
 	};
 	_DynamicModelsCullingTask._Arguments = nullptr;
-	_DynamicModelsCullingTask._ExecutableOnSameThread = true;
+	_DynamicModelsCullingTask._ExecutableOnSameThread = false;
+
+	//Initialize the grass culling task.
+	_GrassCullingTask._Function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullGrass();
+	};
+	_GrassCullingTask._Arguments = nullptr;
+	_GrassCullingTask._ExecutableOnSameThread = false;
+
+	//Initialize the instanced impostors culling task.
+	_InstancedImpostorsCullingTask._Function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullInstancedImpostors();
+	};
+	_InstancedImpostorsCullingTask._Arguments = nullptr;
+	_InstancedImpostorsCullingTask._ExecutableOnSameThread = false;
 
 	//Initialize the instanced static models culling task.
 	_InstancedStaticModelsCullingTask._Function = [](void *const RESTRICT)
@@ -34,7 +53,7 @@ void CullingSystem::Initialize() NOEXCEPT
 		CullingSystem::Instance->CullInstancedStaticModels();
 	};
 	_InstancedStaticModelsCullingTask._Arguments = nullptr;
-	_InstancedStaticModelsCullingTask._ExecutableOnSameThread = true;
+	_InstancedStaticModelsCullingTask._ExecutableOnSameThread = false;
 
 	//Initialize the static models culling task.
 	_StaticModelsCullingTask._Function = [](void *const RESTRICT)
@@ -42,7 +61,7 @@ void CullingSystem::Initialize() NOEXCEPT
 		CullingSystem::Instance->CullStaticModels();
 	};
 	_StaticModelsCullingTask._Arguments = nullptr;
-	_StaticModelsCullingTask._ExecutableOnSameThread = true;
+	_StaticModelsCullingTask._ExecutableOnSameThread = false;
 
 	//Initialize the terrain culling task.
 	_TerrainCullingTask._Function = [](void *const RESTRICT)
@@ -50,7 +69,7 @@ void CullingSystem::Initialize() NOEXCEPT
 		CullingSystem::Instance->CullTerrain();
 	};
 	_TerrainCullingTask._Arguments = nullptr;
-	_TerrainCullingTask._ExecutableOnSameThread = true;
+	_TerrainCullingTask._ExecutableOnSameThread = false;
 }
 
 /*
@@ -60,6 +79,8 @@ void CullingSystem::RenderUpdate() NOEXCEPT
 {
 	//Execute all tasks.
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_DynamicModelsCullingTask);
+	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_GrassCullingTask);
+	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_InstancedImpostorsCullingTask);
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_InstancedStaticModelsCullingTask);
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_StaticModelsCullingTask);
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_TerrainCullingTask);
@@ -70,6 +91,8 @@ void CullingSystem::RenderUpdate() NOEXCEPT
 */
 void CullingSystem::CullDynamicModels() const NOEXCEPT
 {
+	PROFILING_SCOPE(CullingSystem::CullDynamicModels);
+
 	//Cache data that will be used.
 	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
 	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
@@ -85,10 +108,104 @@ void CullingSystem::CullDynamicModels() const NOEXCEPT
 }
 
 /*
+*	Culls grass.
+*/
+void CullingSystem::CullGrass() const NOEXCEPT
+{
+	PROFILING_SCOPE(CullingSystem::CullGrass);
+
+	//Cache data that will be used.
+	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
+	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
+	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
+
+	//Iterate over all patches and determine their visibility.
+	const uint64 number_of_components{ ComponentManager::GetNumberOfGrassComponents() };
+	GrassComponent *RESTRICT component{ ComponentManager::GetGrassGrassComponents() };
+
+	for (uint64 i = 0; i < number_of_components; ++i, ++component)
+	{
+		//Reset the visibility flags.
+		component->_VisibilityFlags = static_cast<VisibilityFlags>(UINT8_MAXIMUM);
+
+		//Cache the camera relative axis aligned bounding box.
+		const AxisAlignedBoundingBox3D camera_relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell) };
+
+		//Do distance culling.
+		{
+			const Vector3<float32> closest_position{ AxisAlignedBoundingBox3D::GetClosestPointInside(camera_relative_axis_aligned_bounding_box, camera_local_position) };
+			const float32 distance_squared{ Vector3<float32>::LengthSquared(camera_local_position - closest_position) };
+
+			if (distance_squared >= (component->_FadeOutDistance * component->_FadeOutDistance))
+			{
+				CLEAR_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA);
+			}
+		}
+
+		//Do frustum culling.
+		if (TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
+		{
+			if (!RenderingUtilities::IsWithinViewFrustum(*frustum_planes, camera_relative_axis_aligned_bounding_box))
+			{
+				CLEAR_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA);
+			}
+		}
+	}
+}
+
+/*
+*	Culls instanced impostors.
+*/
+void CullingSystem::CullInstancedImpostors() const NOEXCEPT
+{
+	PROFILING_SCOPE(CullingSystem::CullInstancedImpostors);
+
+	//Cache data that will be used.
+	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
+	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
+	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
+
+	//Iterate over all patches and determine their visibility.
+	const uint64 number_of_components{ ComponentManager::GetNumberOfInstancedImpostorComponents() };
+	InstancedImpostorComponent *RESTRICT component{ ComponentManager::GetInstancedImpostorInstancedImpostorComponents() };
+
+	for (uint64 i = 0; i < number_of_components; ++i, ++component)
+	{
+		//Reset the visibility flags.
+		component->_VisibilityFlags = static_cast<VisibilityFlags>(UINT8_MAXIMUM);
+
+		//Cache the camera relative axis aligned bounding box.
+		const AxisAlignedBoundingBox3D camera_relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell) };
+
+		//Do distance culling.
+		{
+			const Vector3<float32> closest_position{ AxisAlignedBoundingBox3D::GetClosestPointInside(camera_relative_axis_aligned_bounding_box, camera_local_position) };
+			const float32 distance_squared{ Vector3<float32>::LengthSquared(camera_local_position - closest_position) };
+
+			if (distance_squared >= (component->_EndFadeOutDistance * component->_EndFadeOutDistance))
+			{
+				CLEAR_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA);
+			}
+		}
+
+		//Do frustum culling.
+		if (TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
+		{
+			if (!RenderingUtilities::IsWithinViewFrustum(*frustum_planes, camera_relative_axis_aligned_bounding_box))
+			{
+				CLEAR_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA);
+			}
+		}
+	}
+}
+
+/*
 *	Culls instanced static models.
 */
 void CullingSystem::CullInstancedStaticModels() const NOEXCEPT
 {
+	PROFILING_SCOPE(CullingSystem::CullInstancedStaticModels);
+
 	//Cache data that will be used.
 	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
 	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
@@ -128,6 +245,8 @@ void CullingSystem::CullInstancedStaticModels() const NOEXCEPT
 */
 void CullingSystem::CullStaticModels() const NOEXCEPT
 {
+	PROFILING_SCOPE(CullingSystem::CullStaticModels);
+
 	//Cache data that will be used.
 	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
 	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };
@@ -180,6 +299,8 @@ void CullTerrainQuadTreeNode
 */
 void CullingSystem::CullTerrain() const NOEXCEPT
 {
+	PROFILING_SCOPE(CullingSystem::CullTerrain);
+
 	//Cache data that will be used.
 	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
 	const StaticArray<Vector4<float32>, 6> *const RESTRICT frustum_planes{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustumPlanes() };

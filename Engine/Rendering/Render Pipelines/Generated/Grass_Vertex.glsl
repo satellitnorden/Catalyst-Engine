@@ -200,12 +200,101 @@ layout (std140, set = 1, binding = 2) uniform Wind
 
 layout (set = 1, binding = 3) uniform sampler SAMPLER;
 
-//Constants.
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_1 	(1 << 0)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_2 	(1 << 1)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_3 	(1 << 2)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_4 	(1 << 3)
-#define MODEL_FLAG_IS_VEGETATION 				(1 << 4)
+/*
+*   Linearizes a depth value.
+*/
+float LinearizeDepth(float depth)
+{
+    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
+}
+
+/*
+*   Calculates the world position.
+*/
+vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position *= inverse_view_space_position_denominator;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
+
+    return world_space_position.xyz;
+}
+
+/*
+*   Returns the current screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Returns the previous screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Calculates a screen position, including the (linearized) depth from the given world position.
+*/
+vec3 CalculateScreenPosition(vec3 world_position)
+{
+    vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+    float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
+    view_space_position.xyz *= view_space_position_coefficient_reciprocal;
+
+    view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
+    view_space_position.z = LinearizeDepth(view_space_position.z);
+    
+    return view_space_position.xyz;
+}
+
+/*
+*	Evaluates tilt/bend. Returns the offset on the Z axis.
+*/
+float EvaluateTiltBend(float tilt, float bend, float normalized_height)
+{
+	float bend_alpha = bend >= 0.5f ? ((bend - 0.5f) * 2.0f) : (bend * 2.0f);
+	return mix(0.0f, tilt, mix(InverseSquare(normalized_height), Square(normalized_height), bend_alpha));
+}
+
+/*
+*	Rotates the given vector around the yaw.
+*/
+vec3 RotateYaw(vec3 X, float angle)
+{
+	float sine = sin(angle);
+    float cosine = cos(angle);
+
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
+
+    return X;
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}
 
 /*
 *   Hash function.
@@ -291,26 +380,57 @@ vec3 CalculateCurrentWindDisplacement(vec3 world_position, vec3 vertex_position,
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) uint MODEL_FLAGS;
-	layout (offset = 20) float START_FADE_OUT_DISTANCE_SQUARED;
-	layout (offset = 24) float END_FADE_OUT_DISTANCE_SQUARED;
-	layout (offset = 28) uint MATERIAL_INDEX;
+	layout (offset = 16) uint MATERIAL_INDEX;
+	layout (offset = 20) float VERTEX_FACTOR;
+	layout (offset = 24) float THICKNESS;
+	layout (offset = 28) float HEIGHT;
+	layout (offset = 32) float TILT;
+	layout (offset = 36) float BEND;
+	layout (offset = 40) float FADE_OUT_DISTANCE;
 };
 
-layout (location = 0) in vec2 InTextureCoordinate;
-layout (location = 1) in float InFadeOpacity;
+layout (location = 0) in vec3 InPosition;
+layout (location = 1) in uint InSeed;
+
+layout (location = 0) out vec3 OutWorldPosition;
+layout (location = 1) out vec3 OutNormal;
+layout (location = 2) out float OutX;
+layout (location = 3) out float OutThickness;
+layout (location = 4) out float OutAmbientOcclusion;
 
 void main()
 {
-    float opacity = 1.0f;
-    if (TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_MASKED))
+    uint seed = InSeed;
+    float random_rotation = mix(-PI, PI, RandomFloat(seed));
+    float wind_influence = mix(0.75f, 1.25f, RandomFloat(seed));
+    float cull_value = RandomFloat(seed);
+    float distance_from_camera = length(InPosition - CAMERA_WORLD_POSITION);
+    float thickness = THICKNESS + (THICKNESS * 0.1f * distance_from_camera);
+    vec3 raw_vertex_position;
     {
-        EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
+        float odd_multiplier = float(gl_VertexIndex & 1) * 2.0f - 1.0f;
+        float height = float(gl_VertexIndex >> 1) * VERTEX_FACTOR;
+        raw_vertex_position = vec3(0.5f * odd_multiplier * (1.0f - Square(height)), height, 0.0f);
     }
-    float noise_value = InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME);
-    if (opacity < 0.5f
-    || (InFadeOpacity < 1.0f && InFadeOpacity < noise_value))
-    {
-        discard;
-    }
+    vec3 vertex_position = raw_vertex_position * vec3(thickness, HEIGHT, 1.0f);
+    vertex_position.z = EvaluateTiltBend(TILT, BEND, raw_vertex_position.y);
+    vec3 bitangent = vec3(-1.0f, 0.0f, 0.0f);
+    vec3 next_position = vec3(vertex_position.x, vertex_position.y + 0.1f, EvaluateTiltBend(TILT, BEND, raw_vertex_position.y + 0.1f));
+    vec3 tangent = normalize(next_position - vertex_position);
+    vec3 normal = cross(bitangent, tangent);
+    normal.x += raw_vertex_position.x * 2.0f;
+    vertex_position = RotateYaw(vertex_position, random_rotation);
+    OutWorldPosition = InPosition + WORLD_GRID_DELTA + vertex_position;
+    OutNormal = RotateYaw(normal, random_rotation);
+    OutWorldPosition += CalculateCurrentWindDisplacement(OutWorldPosition, vertex_position, OutNormal) * wind_influence;
+    OutX = raw_vertex_position.x + 0.5f;
+    OutThickness = mix(0.75f, 0.0f, raw_vertex_position.y);
+    OutAmbientOcclusion = mix(0.0f, 1.0f, raw_vertex_position.y);
+#if 0
+    float distance_to_camera = length(CAMERA_WORLD_POSITION.xz - OutWorldPosition.xz);
+    OutWorldPosition.y = mix(OutWorldPosition.y - (HEIGHT * 0.5f), OutWorldPosition.y, min(distance_to_camera * 0.5f, 1.0f));
+#endif
+    float fade_opacity = clamp((distance_from_camera - (FADE_OUT_DISTANCE * 0.75f)) / (FADE_OUT_DISTANCE * 0.25f), 0.0f, 1.0f);
+    bool should_be_culled = cull_value > fade_opacity;
+	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f)*float(should_be_culled);
 }

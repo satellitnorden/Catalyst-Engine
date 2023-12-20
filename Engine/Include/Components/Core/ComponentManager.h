@@ -8,6 +8,7 @@
 #include <Components/Transient/AnimatedModelComponent.h>
 #include <Components/Transient/DistanceTriggerComponent.h>
 #include <Components/Transient/DynamicModelComponent.h>
+#include <Components/Transient/GrassComponent.h>
 #include <Components/Transient/InstancedImpostorComponent.h>
 #include <Components/Transient/InstancedStaticModelComponent.h>
 #include <Components/Transient/LightComponent.h>
@@ -53,6 +54,7 @@ public:
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(DistanceTrigger, DistanceTriggerComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(DynamicModel, DynamicModelComponent);
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Grass, GrassComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedImpostor, InstancedImpostorComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedStaticModel, InstancedStaticModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);

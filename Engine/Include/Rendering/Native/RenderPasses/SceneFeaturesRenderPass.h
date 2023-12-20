@@ -49,9 +49,10 @@ private:
 	ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline _ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline;
 
 	//The graphics render pipelines 2.
-	StaticArray<GraphicsRenderPipeline, 8> _GraphicsRenderPipelines2
+	StaticArray<GraphicsRenderPipeline, 9> _GraphicsRenderPipelines2
 	{
 
+		GraphicsRenderPipeline(HashString("Grass_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("OpaqueModelSingleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("OpaqueModelDoubleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelColorSingleSided_RenderPipeline")),

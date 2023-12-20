@@ -264,13 +264,13 @@ Fragment
 
         //Evaluate the material properties of the materials.
         vec4 material_properties_1;
-        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_1);
+        EVALUATE_MATERIAL_PROPERTIES(material_1, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_1);
         vec4 material_properties_2;
-        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_2);
+        EVALUATE_MATERIAL_PROPERTIES(material_2, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_2);
         vec4 material_properties_3;
-        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_3);
+        EVALUATE_MATERIAL_PROPERTIES(material_3, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_3);
         vec4 material_properties_4;
-        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_4);
+        EVALUATE_MATERIAL_PROPERTIES(material_4, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_4);
 
         normal_map_displacement_1.w = max(normal_map_displacement_1.w, TERRAIN_MINIMUM_DISPLACEMENT);
         normal_map_displacement_2.w = max(normal_map_displacement_2.w, TERRAIN_MINIMUM_DISPLACEMENT);

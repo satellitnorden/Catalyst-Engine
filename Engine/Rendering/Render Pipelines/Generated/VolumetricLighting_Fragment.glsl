@@ -17,7 +17,10 @@
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
+#define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
+
 #define PI (3.141592f)
+#define SQUARE_ROOT_OF_TWO (1.414213f)
 
 /*
 *   Defines the bit at the specified index.
@@ -139,6 +142,14 @@ float InverseSquare(float X)
 float LengthSquared3(vec3 vector)
 {
     return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+}
+
+/*
+*   Calculates the luminance of a color.
+*/
+float Luminance(vec3 color)
+{
+    return color.r * 0.2126f + color.g * 0.7152f + color.b * 0.0722f;
 }
 
 /*
@@ -316,9 +327,9 @@ Light UnpackLight(uint index)
 }
 
 /*
-*   Hash function taking a uint.
+*   Hash function.
 */
-uint Hash1(uint seed)
+uint Hash(inout uint seed)
 {
     seed = (seed ^ 61u) ^ (seed >> 16u);
     seed *= 9u;
@@ -330,19 +341,11 @@ uint Hash1(uint seed)
 }
 
 /*
-*   Hash function taking a uvec2.
+*   Given a seed, returns a random number.
 */
-uint Hash2(uvec2 seed)
+float RandomFloat(inout uint seed)
 {
-    return Hash1(seed.x) ^ Hash1(seed.y);
-}
-
-/*
-*   Hash function taking a uvec3.
-*/
-uint Hash3(uvec3 seed)
-{
-    return Hash1(seed.x) ^ Hash1(seed.y) ^ Hash1(seed.z);
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
 }
 
 /*
@@ -368,10 +371,9 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 */
 float GetExtinctionAtPosition(vec3 position)
 {
-	#define LOW_EXTINCTION (0.000025f)
-	#define HIGH_EXTINCTION (FLOAT32_EPSILON)
+	#define BASE_EXTINCTION (0.000025f)
 
-	return mix(LOW_EXTINCTION, HIGH_EXTINCTION, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
 	#undef LOW_EXTINCTION
 	#undef HIGH_EXTINCTION
@@ -475,12 +477,6 @@ void main()
                                 view_space_position.z = LinearizeDepth(view_space_position.z);
                                 screen_space_light_position = view_space_position.xyz;
                             }
-                            /*
-					        float screen_factor = min(abs(screen_space_light_position.x - 0.5f) * abs(screen_space_light_position.y - 0.5f), 1.0f);
-					        screen_factor *= screen_factor;
-					        screen_factor = 1.0f - screen_factor;
-					        screen_factor = dot(light._TransformData1, CAMERA_FORWARD_VECTOR) <= 0.0f ? screen_factor : 0.0f;
-                            */
                             float screen_factor = max(dot(ray_direction, -light._TransformData1), 0.0f);
                             float occlusion = 0.0f;
                             for (uint sub_sample_index = 0; sub_sample_index < 4; ++sub_sample_index)
@@ -502,6 +498,5 @@ void main()
         }
         transmittance *= attenuation_factor;
     }
-    volumetric_lighting = mix(volumetric_lighting, volumetric_lighting / (volumetric_lighting + vec3(1.0f)), 0.9f);
 	VolumetricLighting = vec4(volumetric_lighting,1.0f-transmittance);
 }

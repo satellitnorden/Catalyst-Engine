@@ -19,7 +19,11 @@ void Camera::CheckUpdates() NOEXCEPT
 		UpdateCameraMatrix();
 	}
 
-	if (_FrustumPlanesDirty)
+	if (_FrustumPlanesDirty
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+		&& !_FrustumLocked
+#endif
+		)
 	{
 		UpdateFrustumPlanes();
 	}

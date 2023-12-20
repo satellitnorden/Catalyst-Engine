@@ -7,6 +7,9 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
+//Rendering.
+#include <Rendering/Native/GrassCore.h>
+
 //Systems.
 #include <Systems/CullingSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
@@ -67,6 +70,19 @@ struct TerrainPushConstantData
 	uint32 _BlendMapTextureIndex;
 	float32 _MapResolution;
 	float32 _MapResolutionReciprocal;
+};
+
+struct GrassPushConstantData
+{
+	Vector3<float32> _WorldGridDelta;
+	Padding<4> _Padding1;
+	uint32 _MaterialIndex;
+	float32 _VertexFactor;
+	float32 _Thickness;
+	float32 _Height;
+	float32 _Tilt;
+	float32 _Bend;
+	float32 _FadeOutDistance;
 };
 
 /*
@@ -298,6 +314,33 @@ void RenderInputManager::Initialize() NOEXCEPT
 				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherTerrainInputStream(input_stream);
 			},
 			RenderInputStream::Mode::DRAW_INDEXED,
+			this
+		);
+	}
+
+	//Register the grass input stream.
+	{
+		//Set up the required vertex input attribute/binding descriptions for models.
+		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
+
+		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, 0);
+		required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32UnsignedInt, 0);
+
+		DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
+
+		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vector4<float32>)), VertexInputBindingDescription::InputRate::Instance);
+
+		RegisterInputStream
+		(
+			HashString("Grass"),
+			required_vertex_input_attribute_descriptions,
+			required_vertex_input_binding_descriptions,
+			sizeof(GrassPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherGrassInputStream(input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INSTANCED,
 			this
 		);
 	}
@@ -772,8 +815,17 @@ void RenderInputManager::GatherInstancedImpostorInputStream
 		const uint64 number_of_components{ ComponentManager::GetNumberOfInstancedImpostorComponents() };
 		const InstancedImpostorComponent *RESTRICT component{ ComponentManager::GetInstancedImpostorInstancedImpostorComponents() };
 	
+		//Wait for culling.
+		CullingSystem::Instance->WaitForInstancedImpostorsCulling();
+
 		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
 		{
+			//Ignore if not visible.
+			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
+			{
+				continue;
+			}
+
 			//Add a new entry.
 			input_stream->_Entries.Emplace();
 			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
@@ -945,6 +997,79 @@ void RenderInputManager::GatherTerrainInputStream
 				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
 			}
 #endif
+		}
+	}
+}
+
+/*
+*	Gathers a grass input stream.
+*/
+void RenderInputManager::GatherGrassInputStream
+(
+	RenderInputStream *const RESTRICT input_stream
+) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Gather grass.
+	{
+		//Cache relevant data.
+		const uint64 number_of_components{ ComponentManager::GetNumberOfGrassComponents() };
+		const GrassComponent *RESTRICT component{ ComponentManager::GetGrassGrassComponents() };
+
+		//Wait for culling.
+		CullingSystem::Instance->WaitForGrassCulling();
+
+		//Wait for level of detaill.
+		LevelOfDetailSystem::Instance->WaitForGrassLevelOfDetail();
+
+		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		{
+			//Ignore if not visible.
+			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
+			{
+				continue;
+			}
+
+			//Add a new entry.
+			input_stream->_Entries.Emplace();
+			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+			new_entry._VertexBuffer = EMPTY_HANDLE;
+			new_entry._IndexBuffer = EMPTY_HANDLE;
+			new_entry._IndexBufferOffset = 0;
+			new_entry._InstanceBuffer = component->_InstanceBuffer;
+			new_entry._VertexCount = GrassConstants::HIGHEST_VERTICES - (component->_LevelOfDetail * 2);
+			new_entry._IndexCount = 0;
+			new_entry._InstanceCount = component->_NumberOfInstances;
+
+			//Set up the push constant data.
+			GrassPushConstantData push_constant_data;
+
+			const Vector3<int32> delta{ component->_Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
+
+			for (uint8 i{ 0 }; i < 3; ++i)
+			{
+				push_constant_data._WorldGridDelta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
+			}
+
+			push_constant_data._MaterialIndex = component->_MaterialResource->_Index;
+			push_constant_data._VertexFactor = 1.0f / static_cast<float32>((new_entry._VertexCount - 1) >> 1);
+			push_constant_data._Thickness = component->_Thickness;
+			push_constant_data._Height = component->_Height;
+			push_constant_data._Tilt = component->_Tilt;
+			push_constant_data._Bend = component->_Bend;
+			push_constant_data._FadeOutDistance = component->_FadeOutDistance;
+
+			for (uint64 i{ 0 }; i < sizeof(GrassPushConstantData); ++i)
+			{
+				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+			}
 		}
 	}
 }

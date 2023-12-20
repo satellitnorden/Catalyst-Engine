@@ -17,7 +17,10 @@
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
+#define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
+
 #define PI (3.141592f)
+#define SQUARE_ROOT_OF_TWO (1.414213f)
 
 /*
 *   Defines the bit at the specified index.
@@ -142,6 +145,14 @@ float LengthSquared3(vec3 vector)
 }
 
 /*
+*   Calculates the luminance of a color.
+*/
+float Luminance(vec3 color)
+{
+    return color.r * 0.2126f + color.g * 0.7152f + color.b * 0.0722f;
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -236,10 +247,9 @@ vec3 CalculateScreenPosition(vec3 world_position)
 */
 float GetExtinctionAtPosition(vec3 position)
 {
-	#define LOW_EXTINCTION (0.000025f)
-	#define HIGH_EXTINCTION (FLOAT32_EPSILON)
+	#define BASE_EXTINCTION (0.000025f)
 
-	return mix(LOW_EXTINCTION, HIGH_EXTINCTION, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
 	#undef LOW_EXTINCTION
 	#undef HIGH_EXTINCTION
@@ -300,19 +310,7 @@ void main()
     vec3 world_position = CalculateWorldPosition(InTextureCoordinate, depth);
     float hit_distance = length(world_position - CAMERA_WORLD_POSITION);
     float hit_distance_reciprocal = 1.0f / hit_distance;
-    vec3 direction = (world_position - CAMERA_WORLD_POSITION) * hit_distance_reciprocal;
-    float transmittance = 1.0f;
-    float sample_alpha = 0.0f;
-    for (uint sample_index = 0; sample_index < NUMBER_OF_SAMPLES; ++sample_index)
-    {
-        float previous_sample_alpha = sample_alpha;
-        sample_alpha = Square(float(sample_index + 1) / float(NUMBER_OF_SAMPLES));
-        vec3 sample_position = mix(CAMERA_WORLD_POSITION, world_position, sample_alpha);
-        float sample_hit_distance = max(hit_distance * sample_alpha - hit_distance * previous_sample_alpha, FLOAT32_EPSILON);
-        float extinction = GetExtinctionAtPosition(sample_position);
-        float attenuation_factor = exp(-extinction * sample_hit_distance);
-        transmittance *= attenuation_factor;
-    }
+    float opacity = 1.0f - exp(-GetExtinctionAtPosition(CAMERA_WORLD_POSITION) * hit_distance);
     vec4 volumetric_lighting = texture(VolumetricLighting, InTextureCoordinate);
-	Scene = vec4(volumetric_lighting.rgb,1.0f-transmittance);
+	Scene = vec4(volumetric_lighting.rgb,opacity);
 }

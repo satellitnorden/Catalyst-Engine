@@ -596,6 +596,15 @@ enum class TextureUsage : uint8
 	STORAGE
 };
 
+//Enumeration covering all visibility flags.
+enum class VisibilityFlags : uint8
+{
+	NONE = 0,
+	CAMERA = BIT(0)
+};
+
+ENUMERATION_BIT_OPERATIONS(VisibilityFlags);
+
 /*
 *	Push constant range.
 */

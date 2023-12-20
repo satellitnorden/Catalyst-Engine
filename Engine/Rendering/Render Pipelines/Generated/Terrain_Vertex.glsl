@@ -17,7 +17,10 @@
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
+#define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
+
 #define PI (3.141592f)
+#define SQUARE_ROOT_OF_TWO (1.414213f)
 
 /*
 *   Defines the bit at the specified index.
@@ -142,6 +145,14 @@ float LengthSquared3(vec3 vector)
 }
 
 /*
+*   Calculates the luminance of a color.
+*/
+float Luminance(vec3 color)
+{
+    return color.r * 0.2126f + color.g * 0.7152f + color.b * 0.0722f;
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -237,17 +248,18 @@ vec3 CalculateScreenPosition(vec3 world_position)
 }
 
 /*
-*	Rotates a vec3 around an arbitrary axis.
+*	Rotates the given vector around the yaw.
 */
-vec3 Rotate(vec3 vector, vec3 axis, float angle)
+vec3 RotateYaw(vec3 X, float angle)
 {
-	float dot_product = dot(vector, axis);
+	float sine = sin(angle);
+    float cosine = cos(angle);
 
-	vec3 X =  cos(angle) * (vector - dot_product * axis);
-	vec3 Y = sin(angle) * cross(axis, vector);
-	vec3 Z = dot_product * axis;
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
 
-	return vector * (X + Y + Z);
+    return X;
 }
 
 /*

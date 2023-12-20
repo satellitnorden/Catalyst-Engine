@@ -1,0 +1,208 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+IncludeUniformBuffer(Wind);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Grass);
+IncludeShaderFunctionLibrary(Math);
+IncludeShaderFunctionLibrary(Noise);
+IncludeShaderFunctionLibrary(Wind);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(SceneFeatures1);
+OutputRenderTarget(SceneFeatures2);
+OutputRenderTarget(SceneFeatures3);
+OutputRenderTarget(SceneFeatures4);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the cull mode.
+CullMode(NONE);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER);
+DepthTestEnable();
+DepthWriteEnable();
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(REPLACE);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(ALWAYS);
+StencilCompareMask(0);
+StencilWriteMask(1);
+StencilReferenceMask(1);
+
+//Set the topology.
+Topology(TRIANGLE_STRIP);
+
+//Declare push constant data.
+PushConstantData(vec3, WORLD_GRID_DELTA);
+PushConstantData(uint, MATERIAL_INDEX);
+PushConstantData(float, VERTEX_FACTOR);
+PushConstantData(float, THICKNESS);
+PushConstantData(float, HEIGHT);
+PushConstantData(float, TILT);
+PushConstantData(float, BEND);
+PushConstantData(float, FADE_OUT_DISTANCE);
+
+//Declare samplers.
+Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Grass);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec3, InPosition);
+    InputParameter(uint, InSeed);
+
+    //Declare output parameters.
+    OutputParameter(vec3, OutWorldPosition);
+    OutputParameter(vec3, OutNormal);
+    OutputParameter(float, OutX);
+    OutputParameter(float, OutThickness);
+    OutputParameter(float, OutAmbientOcclusion);
+
+    //Calculate random properties.
+    uint seed = InSeed;
+    float random_rotation = mix(-PI, PI, RandomFloat(seed));
+    float wind_influence = mix(0.75f, 1.25f, RandomFloat(seed));
+    float cull_value = RandomFloat(seed);
+
+    //Calculate the distance to the camera.
+    float distance_from_camera = length(InPosition - CAMERA_WORLD_POSITION);
+
+    //Sublty increase thickness based on distance from camera to make fields look fuller.
+    float thickness = THICKNESS + (THICKNESS * 0.1f * distance_from_camera);
+
+    //Generate the raw vertex position.
+    vec3 raw_vertex_position;
+
+    {
+        float odd_multiplier = float(VERTEX_INDEX & 1) * 2.0f - 1.0f;
+        float height = float(VERTEX_INDEX >> 1) * VERTEX_FACTOR;
+        raw_vertex_position = vec3(0.5f * odd_multiplier * (1.0f - Square(height)), height, 0.0f);
+    }
+
+    //Calculate the vertex position.
+    vec3 vertex_position = raw_vertex_position * vec3(thickness, HEIGHT, 1.0f);
+
+    //Evaluate tilt/bend.
+    vertex_position.z = EvaluateTiltBend(TILT, BEND, raw_vertex_position.y);
+
+    //Calculate the normal.
+    vec3 bitangent = vec3(-1.0f, 0.0f, 0.0f);
+    vec3 next_position = vec3(vertex_position.x, vertex_position.y + 0.1f, EvaluateTiltBend(TILT, BEND, raw_vertex_position.y + 0.1f));
+    vec3 tangent = normalize(next_position - vertex_position);
+    vec3 normal = cross(bitangent, tangent);
+
+    //Round the edges a bit.
+    normal.x += raw_vertex_position.x * 2.0f;
+
+    //Rotate the vertex position.
+    vertex_position = RotateYaw(vertex_position, random_rotation);
+
+    //Calculate the world position.
+    OutWorldPosition = InPosition + WORLD_GRID_DELTA + vertex_position;
+
+    //Rotate the normal.
+    OutNormal = RotateYaw(normal, random_rotation);
+
+    //Apply the wind displacement.
+    OutWorldPosition += CalculateCurrentWindDisplacement(OutWorldPosition, vertex_position, OutNormal) * wind_influence;
+
+    //Output data to the fragment shader.
+    OutX = raw_vertex_position.x + 0.5f;
+    OutThickness = mix(0.75f, 0.0f, raw_vertex_position.y);
+    OutAmbientOcclusion = mix(0.0f, 1.0f, raw_vertex_position.y);
+
+#if 0
+    //Apply very simple trample. (:
+    float distance_to_camera = length(CAMERA_WORLD_POSITION.xz - OutWorldPosition.xz);
+    OutWorldPosition.y = mix(OutWorldPosition.y - (HEIGHT * 0.5f), OutWorldPosition.y, min(distance_to_camera * 0.5f, 1.0f));
+#endif
+
+    //Check if this instance should be culled.
+    float fade_opacity = clamp((distance_from_camera - (FADE_OUT_DISTANCE * 0.75f)) / (FADE_OUT_DISTANCE * 0.25f), 0.0f, 1.0f);
+    
+    bool should_be_culled = cull_value > fade_opacity;
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f) * float(should_be_culled));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec3, InWorldPosition);
+    InputParameter(vec3, InNormal);
+    InputParameter(float, InX);
+    InputParameter(float, InThickness);
+    InputParameter(float, InAmbientOcclusion);
+
+    //Calculate the X properties.
+    float X_factor = InX * 5.0f;
+    uint X_index_1 = uint(X_factor);
+    uint X_index_2 = min(X_index_1 + 1, 4);
+    float X_fractional = fract(X_factor);
+
+    //Evaluate the material.
+    vec4 albedo_thickness;
+    EVALUATE_ALBEDO_THICKNESS(MATERIALS[MATERIAL_INDEX], vec2(0.0f, 0.0f), SAMPLER, albedo_thickness);
+    vec4 material_properties;
+    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], vec2(0.0f, 0.0f), SAMPLER, material_properties);
+
+    //Calculate the albedo multiplier.
+    float ALBEDO_MULTIPLIERS[5] = float[5]
+    (
+        0.825f,
+        1.125f,
+        0.825f,
+        1.125f,
+        0.825f
+    );
+    
+    float albedo_multiplier = mix(ALBEDO_MULTIPLIERS[X_index_1], ALBEDO_MULTIPLIERS[X_index_2], X_fractional);
+
+    //Calculate the roughness multiplier.
+    float ROUGHNESS_MULTIPLIERS[5] = float[5]
+    (
+        1.0f,
+        0.75f,
+        1.0f,
+        0.75f,
+        1.0f
+    );
+    
+    float roughness_multiplier = mix(ROUGHNESS_MULTIPLIERS[X_index_1], ROUGHNESS_MULTIPLIERS[X_index_2], X_fractional);
+
+    //Calculate the shading normal.
+    vec3 shading_normal = normalize(InNormal);
+
+    //Flip the normal, if necessary.
+    shading_normal.xz *= FRAGMENT_FRONT_FACING ? -1.0f : 1.0f;
+
+    //Calculate the velocity.
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+
+    //Output the fragments.
+    OutputFragment(SceneFeatures1, vec4(albedo_thickness.rgb * albedo_multiplier, InThickness));
+    OutputFragment(SceneFeatures2, vec4(shading_normal, gl_FragCoord.z));
+    OutputFragment(SceneFeatures3, material_properties * vec4(roughness_multiplier, 1.0f, InAmbientOcclusion, 1.0f));
+    OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
+}

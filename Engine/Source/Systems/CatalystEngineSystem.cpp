@@ -24,6 +24,9 @@
 #include <Systems/CatalystEditorSystem.h>
 #endif
 #include <Systems/CullingSystem.h>
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <Systems/DebugSystem.h>
+#endif
 #include <Systems/DistributionSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/InputSystem.h>
@@ -87,6 +90,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CatalystEditorSystem::Instance->Initialize();
 #endif
 	CullingSystem::Instance->Initialize();
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	DebugSystem::Instance->Initialize();
+#endif
 	DistributionSystem::Instance->Initialize();
 	EntitySystem::Instance->Initialize();
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
@@ -338,6 +344,9 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	//Terminate all systems.
 #if defined(CATALYST_EDITOR)
 	CatalystEditorSystem::Instance->Terminate();
+#endif
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	DebugSystem::Instance->Terminate();
 #endif
 	DistributionSystem::Instance->Terminate();
 	PhysicsSystem::Instance->Terminate();

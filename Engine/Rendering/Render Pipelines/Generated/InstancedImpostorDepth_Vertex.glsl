@@ -17,7 +17,10 @@
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
+#define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
+
 #define PI (3.141592f)
+#define SQUARE_ROOT_OF_TWO (1.414213f)
 
 /*
 *   Defines the bit at the specified index.
@@ -142,6 +145,14 @@ float LengthSquared3(vec3 vector)
 }
 
 /*
+*   Calculates the luminance of a color.
+*/
+float Luminance(vec3 color)
+{
+    return color.r * 0.2126f + color.g * 0.7152f + color.b * 0.0722f;
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -182,9 +193,9 @@ layout (std140, set = 1, binding = 1) uniform General
 layout (set = 1, binding = 2) uniform sampler SAMPLER;
 
 /*
-*   Hash function taking a uint.
+*   Hash function.
 */
-uint Hash1(uint seed)
+uint Hash(inout uint seed)
 {
     seed = (seed ^ 61u) ^ (seed >> 16u);
     seed *= 9u;
@@ -196,19 +207,11 @@ uint Hash1(uint seed)
 }
 
 /*
-*   Hash function taking a uvec2.
+*   Given a seed, returns a random number.
 */
-uint Hash2(uvec2 seed)
+float RandomFloat(inout uint seed)
 {
-    return Hash1(seed.x) ^ Hash1(seed.y);
-}
-
-/*
-*   Hash function taking a uvec3.
-*/
-uint Hash3(uvec3 seed)
-{
-    return Hash1(seed.x) ^ Hash1(seed.y) ^ Hash1(seed.z);
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
 }
 
 /*
