@@ -17,7 +17,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Third party.
-#if defined(CATALYST_EDITOR)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <ThirdParty/imgui.h>
 #include <ThirdParty/imgui_impl_vulkan.h>
 #endif
@@ -169,7 +169,7 @@ void CommandBuffer::Draw(const Pipeline *const RESTRICT pipeline, const uint32 v
 	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandDraw(vertexCount, instanceCount);
 }
 
-#if defined(CATALYST_EDITOR)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 /*
 *	Draws the current ImGui state.
 */

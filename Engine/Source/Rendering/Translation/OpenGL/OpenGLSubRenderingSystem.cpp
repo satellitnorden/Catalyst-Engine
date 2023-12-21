@@ -18,15 +18,13 @@ void OpenGLSubRenderingSystem::Initialize() NOEXCEPT
 
 }
 
-#if defined(CATALYST_EDITOR)
 /*
-*	Post initializes the sub rendering system in editor builds.
+*	Post-initializes the sub rendering system.
 */
-void OpenGLSubRenderingSystem::EditorPostInitialize() NOEXCEPT
+void OpenGLSubRenderingSystem::PostInitialize() NOEXCEPT
 {
-	
+
 }
-#endif
 
 /*
 *	Terminates the sub rendering system.

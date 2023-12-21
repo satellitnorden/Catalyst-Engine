@@ -11,6 +11,15 @@ namespace InputConstants
 	constexpr uint64 MAXIMUM_NUMBER_OF_TOUCH_FINGERS{ 4 };
 }
 
+//Enumeration covering all input layers.
+enum class InputLayer : uint8
+{
+	GAME = BIT(0),
+	DEBUG = BIT(1)
+};
+
+ENUMERATION_BIT_OPERATIONS(InputLayer);
+
 //Enumeration for all input device type.
 enum class InputDeviceType : uint8
 {

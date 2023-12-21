@@ -33,8 +33,8 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/ComputePipelines/ComputePipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracingPipeline.h>
-#if defined(CATALYST_EDITOR)
-#include <Rendering/Native/RenderPasses/EditorUserInterfaceRenderPass.h>
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <Rendering/Native/RenderPasses/ImGuiRenderPass.h>
 #endif
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanComputePipelineData.h>
@@ -56,7 +56,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanUtilities.h>
 
 //Third party.
-#if defined(CATALYST_EDITOR)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <ThirdParty/imgui.h>
 #include <ThirdParty/imgui_impl_vulkan.h>
 #endif
@@ -849,12 +849,12 @@ void VulkanSubRenderingSystem::Initialize() NOEXCEPT
 	VulkanSubRenderingSystemData::_AsycnDestructionTask._ExecutableOnSameThread = false;
 }
 
-#if defined(CATALYST_EDITOR)
 /*
-*	Post initializes the sub rendering system in editor builds.
+*	Post-initializes the sub rendering system.
 */
-void VulkanSubRenderingSystem::EditorPostInitialize() NOEXCEPT
+void VulkanSubRenderingSystem::PostInitialize() NOEXCEPT
 {
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set up ImGui for Vulkan.
 	{
 		ImGui_ImplVulkan_InitInfo imgui_init_info{ };
@@ -871,12 +871,12 @@ void VulkanSubRenderingSystem::EditorPostInitialize() NOEXCEPT
 		imgui_init_info.ImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages();
 		imgui_init_info.CheckVkResultFn = nullptr;
 
-		ImGui_ImplVulkan_Init(&imgui_init_info, static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(EditorUserInterfaceRenderPass::Instance->GetEditorUserInterfaceGraphicsPipeline()->GetData())->_RenderPass->Get());
+		ImGui_ImplVulkan_Init(&imgui_init_info, static_cast<const VulkanGraphicsPipelineData* const RESTRICT>(ImGuiRenderPass::Instance->GetImGuiGraphicsPipeline()->GetData())->_RenderPass->Get());
 	}
 
 	//Create the fonts texture.
 	{
-		CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::PRIMARY) };
+		CommandBuffer* const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::PRIMARY) };
 		VkCommandBuffer vulkan_command_buffer{ static_cast<VulkanCommandBuffer* const RESTRICT>(command_buffer->GetCommandBufferData())->Get() };
 
 		VkCommandBufferBeginInfo begin_info = {};
@@ -897,8 +897,8 @@ void VulkanSubRenderingSystem::EditorPostInitialize() NOEXCEPT
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
-}
 #endif
+}
 
 /*
 *	Terminates the rendering system.
@@ -910,7 +910,7 @@ void VulkanSubRenderingSystem::Terminate() NOEXCEPT
 	VulkanInterface::Instance->GetAsyncComputeQueue()->WaitIdle();
 	VulkanInterface::Instance->GetAsyncTransferQueue()->WaitIdle();
 
-#if defined(CATALYST_EDITOR)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Shut down ImGui.
 	ImGui_ImplVulkan_Shutdown();
 #endif

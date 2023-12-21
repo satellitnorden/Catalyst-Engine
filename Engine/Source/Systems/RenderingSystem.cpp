@@ -23,12 +23,16 @@
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/NativeRenderPassManager.h>
+#include <Rendering/Native/RenderPasses/DebugRenderPass.h>
 #include <Rendering/Translation/OpenGL/OpenGLSubRenderingSystem.h>
 #include <Rendering/Translation/Vulkan/VulkanSubRenderingSystem.h>
 
 //Systems.
 #include <Systems/AnimationSystem.h>
 #include <Systems/CatalystEngineSystem.h>
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <Systems/DebugSystem.h>
+#endif
 #include <Systems/ResourceSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
@@ -152,6 +156,91 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		&_GeneralUniformData,
 		sizeof(GeneralUniformData)
 	);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Register debug commands.
+	DebugSystem::Instance->RegisterDebugCommand
+	(
+		"Rendering\\Visualization Modes\\None",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NONE);
+		},
+		nullptr
+	);
+	DebugSystem::Instance->RegisterDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Albedo",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::ALBEDO);
+		},
+		nullptr
+	);
+	DebugSystem::Instance->RegisterDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Thickness",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::THICKNESS);
+		},
+		nullptr
+	);
+	DebugSystem::Instance->RegisterDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Normal",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NORMAL);
+		},
+		nullptr
+	);
+	DebugSystem::Instance->RegisterDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Depth",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::DEPTH);
+		},
+		nullptr
+	);
+	DebugSystem::Instance->RegisterDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Roughness",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::ROUGHNESS);
+		},
+		nullptr
+	);
+	DebugSystem::Instance->RegisterDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Metallic",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::METALLIC);
+		},
+		nullptr
+	);
+	DebugSystem::Instance->RegisterDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Ambient Occlusion",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::AMBIENT_OCCLUSION);
+		},
+		nullptr
+	);
+	DebugSystem::Instance->RegisterDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Emissive",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::EMISSIVE);
+		},
+		nullptr
+	);
+#endif
 }
 
 /*
@@ -206,10 +295,8 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 		render_pass->Initialize();
 	}
 
-#if defined(CATALYST_EDITOR)
-	//Editor post-initialize the sub rendering system.
-	_SubRenderingSystem->EditorPostInitialize();
-#endif
+	//Post-initialize the sub rendering system.
+	_SubRenderingSystem->PostInitialize();
 }
 
 /*

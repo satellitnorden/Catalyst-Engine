@@ -37,12 +37,10 @@ public:
 	*/
 	virtual void Initialize() NOEXCEPT = 0;
 
-#if defined(CATALYST_EDITOR)
 	/*
-	*	Post initializes the sub rendering system in editor builds.
+	*	Post-initializes the sub rendering system.
 	*/
-	virtual void EditorPostInitialize() NOEXCEPT = 0;
-#endif
+	virtual void PostInitialize() NOEXCEPT = 0;
 
 	/*
 	*	Terminates the sub rendering system.

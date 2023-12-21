@@ -96,12 +96,66 @@ void DebugSystem::RegisterDebugCommand
 	void *const RESTRICT user_data
 ) NOEXCEPT
 {
+	//Remember some stuff.
+	DebugCategory *RESTRICT parent_category{ &_RootDebugCategory };
+	std::string current_name{ name };
+
+	for (;;)
+	{
+		//Figure out the category.
+		const size_t first_slash_position{ current_name.find_first_of("\\") };
+
+		if (first_slash_position != std::string::npos)
+		{
+			const std::string category_name{ current_name.substr(0, first_slash_position) };
+
+			bool category_exists{ false };
+
+			for (DebugCategory &sub_category : parent_category->_SubCategories)
+			{
+				if (StringUtilities::IsEqual(sub_category._Name.Data(), category_name.data()))
+				{
+					parent_category = &sub_category;
+					current_name = current_name.substr(first_slash_position + 1);
+
+					category_exists = true;
+
+					break;
+				}
+			}
+
+			if (!category_exists)
+			{
+				parent_category->_SubCategories.Emplace();
+				DebugCategory &new_sub_category{ parent_category->_SubCategories.Back() };
+
+				new_sub_category._Name = category_name.data();
+
+				parent_category = &new_sub_category;
+				current_name = current_name.substr(first_slash_position + 1);
+			}
+		}
+
+		else
+		{
+			parent_category->_DebugCommands.Emplace();
+			DebugCommand &new_debug_command{ parent_category->_DebugCommands.Back() };
+
+			new_debug_command._Name = current_name.data();
+			new_debug_command._Function = function;
+			new_debug_command._UserData = user_data;
+
+			break;
+		}
+	}
+	/*
 	_DebugCommands.Emplace();
 	DebugCommand &new_debug_command{ _DebugCommands.Back() };
 
 	new_debug_command._Name = name;
 	new_debug_command._Function = function;
 	new_debug_command._UserData = user_data;
+	*/
 }
 
 /*
@@ -110,9 +164,20 @@ void DebugSystem::RegisterDebugCommand
 void DebugSystem::Update() NOEXCEPT
 {
 	//Update if the debug window should be displayed.
-	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::Insert) == ButtonState::PRESSED)
+	if (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::Insert) == ButtonState::PRESSED)
 	{
 		_DisplayDebugWindow = !_DisplayDebugWindow;
+
+		if (_DisplayDebugWindow)
+		{
+			InputSystem::Instance->LockInputLayer(InputLayer::GAME);
+			InputSystem::Instance->ShowCursor(InputLayer::DEBUG);
+		}
+
+		else
+		{
+			InputSystem::Instance->UnlockInputLayer(InputLayer::GAME);
+		}
 	}
 
 	//No need to update if the debug window isn't displayed.
@@ -123,6 +188,12 @@ void DebugSystem::Update() NOEXCEPT
 
 	//Update IO.
 	UpdateIO();
+
+	//Begin the new ImGui frame.
+	ImGui::NewFrame();
+
+	//Draw the debug window.
+	DrawDebugWindow();
 }
 
 /*
@@ -231,15 +302,15 @@ void DebugSystem::UpdateIO() NOEXCEPT
 	io.DisplaySize.y = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
 	io.DeltaTime = CatalystBaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetDeltaTime(), FLOAT32_EPSILON);
 	io.IniFilename = nullptr;
-	io.MousePos = ImVec2(InputSystem::Instance->GetMouseState()->_CurrentX * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), (1.0f - InputSystem::Instance->GetMouseState()->_CurrentY) * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
-	io.MouseDown[0] = InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED_HELD;
-	io.MouseDown[1] = InputSystem::Instance->GetMouseState()->_Right == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_Right == ButtonState::PRESSED_HELD;
-	io.MouseDown[2] = InputSystem::Instance->GetMouseState()->_ScrollWheel == ButtonState::PRESSED || InputSystem::Instance->GetMouseState()->_ScrollWheel == ButtonState::PRESSED_HELD;
-	io.MouseWheel = static_cast<float32>(InputSystem::Instance->GetMouseState()->_ScrollWheelStep);
-	io.KeyCtrl = InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightControl) == ButtonState::PRESSED;
-	io.KeyShift = InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED;
-	io.KeyAlt = InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftAlt) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightAlt) == ButtonState::PRESSED;
-	io.KeySuper = InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftWindows) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightWindows) == ButtonState::PRESSED;
+	io.MousePos = ImVec2(InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_CurrentX * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), (1.0f - InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_CurrentY) * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
+	io.MouseDown[0] = InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_Left == ButtonState::PRESSED || InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_Left == ButtonState::PRESSED_HELD;
+	io.MouseDown[1] = InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_Right == ButtonState::PRESSED || InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_Right == ButtonState::PRESSED_HELD;
+	io.MouseDown[2] = InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_ScrollWheel == ButtonState::PRESSED || InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_ScrollWheel == ButtonState::PRESSED_HELD;
+	io.MouseWheel = static_cast<float32>(InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_ScrollWheelStep);
+	io.KeyCtrl = InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightControl) == ButtonState::PRESSED;
+	io.KeyShift = InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED;
+	io.KeyAlt = InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftAlt) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightAlt) == ButtonState::PRESSED;
+	io.KeySuper = InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftWindows) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightWindows) == ButtonState::PRESSED;
 
 	//Update the KeyMap.
 	io.KeyMap[ImGuiKey_Tab] = UNDERLYING(KeyboardButton::Tab);
@@ -268,18 +339,18 @@ void DebugSystem::UpdateIO() NOEXCEPT
 	//Update the KeyDown array.
 	for (uint8 i{ 0 }; i < UNDERLYING(KeyboardButton::NumberOfKeyboardButtons); ++i)
 	{
-		io.KeysDown[i] = InputSystem::Instance->GetKeyboardState()->GetButtonState(static_cast<KeyboardButton>(i)) == ButtonState::PRESSED;
+		io.KeysDown[i] = InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(static_cast<KeyboardButton>(i)) == ButtonState::PRESSED;
 	}
 
 	//Add the input characters.
-	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED
-		|| InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED_HELD
-		|| InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED
-		|| InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED_HELD)
+	if (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED
+		|| InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED_HELD
+		|| InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED
+		|| InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED_HELD)
 	{
 		for (const KeyboardButtonInputCharacterMapping& mapping : KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS)
 		{
-			if (InputSystem::Instance->GetKeyboardState()->GetButtonState(mapping._KeyboardButton) == ButtonState::PRESSED)
+			if (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(mapping._KeyboardButton) == ButtonState::PRESSED)
 			{
 				io.AddInputCharacter(mapping._UpperCaseInputCharacter);
 			}
@@ -290,9 +361,52 @@ void DebugSystem::UpdateIO() NOEXCEPT
 	{
 		for (const KeyboardButtonInputCharacterMapping& mapping : KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS)
 		{
-			if (InputSystem::Instance->GetKeyboardState()->GetButtonState(mapping._KeyboardButton) == ButtonState::PRESSED)
+			if (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(mapping._KeyboardButton) == ButtonState::PRESSED)
 			{
 				io.AddInputCharacter(mapping._LowerCaseInputCharacter);
+			}
+		}
+	}
+}
+
+/*
+*	Draws the debug window.
+*/
+void DebugSystem::DrawDebugWindow() NOEXCEPT
+{
+	//Retrieve the window resolution.
+	const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
+
+	//Add the window.
+	ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+	ImGui::SetWindowPos(ImVec2(window_resolution._X * 0.8f, 0.0f));
+	ImGui::SetWindowSize(ImVec2(window_resolution._X * 0.2f, window_resolution._Y));
+
+	//Draw the root category.
+	DrawDebugCategory(_RootDebugCategory, true);
+
+	ImGui::End();
+
+	//ImGui::ShowDemoWindow();
+}
+
+/*
+*	Draws a debug category.
+*/
+void DebugSystem::DrawDebugCategory(DebugCategory &debug_category, const bool is_root) NOEXCEPT
+{
+	if (is_root || ImGui::CollapsingHeader(debug_category._Name.Data()))
+	{
+		for (DebugCategory &sub_category : debug_category._SubCategories)
+		{
+			DrawDebugCategory(sub_category, false);
+		}
+
+		for (DebugCommand &debug_command : debug_category._DebugCommands)
+		{
+			if (ImGui::Button(debug_command._Name.Data()))
+			{
+				debug_command._Function(&debug_command, debug_command._UserData);
 			}
 		}
 	}

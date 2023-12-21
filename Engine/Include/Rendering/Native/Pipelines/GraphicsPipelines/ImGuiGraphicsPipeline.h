@@ -1,4 +1,4 @@
-#if defined(CATALYST_EDITOR)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 #pragma once
 
 //Core.
@@ -7,7 +7,7 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
-class EditorUserInterfaceGraphicsPipeline final : public GraphicsPipeline
+class ImGuiGraphicsPipeline final : public GraphicsPipeline
 {
 
 public:

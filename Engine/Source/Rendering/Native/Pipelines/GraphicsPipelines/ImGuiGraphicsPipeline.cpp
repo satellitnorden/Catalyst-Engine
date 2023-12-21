@@ -1,6 +1,6 @@
-#if defined(CATALYST_EDITOR)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 //Header file.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/EditorUserInterfaceGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/GraphicsPipelines/ImGuiGraphicsPipeline.h>
 
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanCommandBufferAbstraction.h>
@@ -10,10 +10,14 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 
+//Third party.
+#include <ThirdParty/imgui.h>
+#include <ThirdParty/imgui_internal.h>
+
 /*
-*	Editor user interface vertex push constant data definition.
+*	ImGui vertex push constant data definition.
 */
-class EditorUserInterfaceVertexPushConstantData final
+class ImGuiVertexPushConstantData final
 {
 
 public:
@@ -29,7 +33,7 @@ public:
 /*
 *	Initializes this graphics pipeline.
 */
-void EditorUserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
+void ImGuiGraphicsPipeline::Initialize() NOEXCEPT
 {
 	//Reset this graphics pipeline.
 	ResetGraphicsPipeline();
@@ -38,11 +42,8 @@ void EditorUserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 	CreateRenderDataTableLayout();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorUserInterfaceVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorUserInterfaceFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorUserInterfaceVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorUserInterfaceFragmentShader"))->_Handle);
 
 	//Add the output render targets.
 	if (RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::MOBILE)
@@ -65,7 +66,7 @@ void EditorUserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(EditorUserInterfaceVertexPushConstantData));
+	AddPushConstantRange(ShaderStage::VERTEX, 0, sizeof(ImGuiVertexPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(3);
@@ -115,18 +116,25 @@ void EditorUserInterfaceGraphicsPipeline::Initialize() NOEXCEPT
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set the name.
-	SetName("Editor User Interface");
+	SetName("ImGui");
 #endif
 }
 
 /*
 *	Executes this graphics pipeline.
 */
-void EditorUserInterfaceGraphicsPipeline::Execute() NOEXCEPT
+void ImGuiGraphicsPipeline::Execute() NOEXCEPT
 {
+	if (!ImGui::GetCurrentContext()->CurrentWindow)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
-	SetCommandBuffer(command_buffer);;
+	SetCommandBuffer(command_buffer);
 
 	//Begin the command buffer.
 	command_buffer->Begin(this);
@@ -150,7 +158,7 @@ void EditorUserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 /*
 *	Terminates this graphics pipeline.
 */
-void EditorUserInterfaceGraphicsPipeline::Terminate() NOEXCEPT
+void ImGuiGraphicsPipeline::Terminate() NOEXCEPT
 {
 	//Destroy the render data table layout.
 	RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
@@ -159,7 +167,7 @@ void EditorUserInterfaceGraphicsPipeline::Terminate() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void EditorUserInterfaceGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
+void ImGuiGraphicsPipeline::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{

@@ -21,12 +21,10 @@ public:
 	*/
 	void Initialize() NOEXCEPT override;
 
-#if defined(CATALYST_EDITOR)
 	/*
-	*	Post initializes the sub rendering system in editor builds.
+	*	Post-initializes the sub rendering system.
 	*/
-	void EditorPostInitialize() NOEXCEPT override;
-#endif
+	void PostInitialize() NOEXCEPT override;
 
 	/*
 	*	Terminates the sub rendering system.

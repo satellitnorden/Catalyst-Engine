@@ -62,13 +62,13 @@ void Player::UpdatePlayer(const float32 delta_time) NOEXCEPT
 		SetWantsToSprint(_CurrentInputState._IsSprinting);
 
 		//Hide the cursor.
-		InputSystem::Instance->HideCursor();
+		InputSystem::Instance->HideCursor(InputLayer::GAME);
 	}
 
 	else
 	{
 		//Show the cursor.
-		InputSystem::Instance->ShowCursor();
+		InputSystem::Instance->ShowCursor(InputLayer::GAME);
 	}
 
 	//Post update the character.
@@ -98,9 +98,9 @@ void Player::UpdateCurrentInputState(const float32 delta_time) NOEXCEPT
 	constexpr float32 MOUSE_ROTATION_SPEED{ 100.0f };
 
 	//Get the input states.
-	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState() };
-	const KeyboardState *const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState() };
-	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState() };
+	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState(InputLayer::GAME) };
+	const KeyboardState *const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState(InputLayer::GAME) };
+	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::GAME) };
 
 	//Update the rotation.
 	_CurrentInputState._Rotation._X = 0.0f;

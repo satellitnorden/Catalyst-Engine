@@ -35,35 +35,59 @@ public:
 	void Initialize(const CatalystProjectInputConfiguration &configuration) NOEXCEPT;
 
 	/*
+	*	Locks an input layer.
+	*/
+	FORCE_INLINE void LockInputLayer(const InputLayer input_layer) NOEXCEPT
+	{
+		SET_BIT(_LockedInputLayers, input_layer);
+	}
+
+	/*
+	*	Unlocks an input layer.
+	*/
+	FORCE_INLINE void UnlockInputLayer(const InputLayer input_layer) NOEXCEPT
+	{
+		CLEAR_BIT(_LockedInputLayers, input_layer);
+	}
+
+	/*
+	*	Returns if an input layer is locked.
+	*/
+	FORCE_INLINE NO_DISCARD bool IsInputLayerBlocked(const InputLayer input_layer) const NOEXCEPT
+	{
+		return TEST_BIT(_LockedInputLayers, input_layer);
+	}
+
+	/*
 	*	Returns the given gamepad state.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const GamepadState *const RESTRICT GetGamepadState(const uint8 index = 0) const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const GamepadState *const RESTRICT GetGamepadState(const InputLayer input_layer, const uint8 index = 0) const NOEXCEPT
 	{
-		return &_InputState._GamepadStates[index];
+		return IsInputLayerBlocked(input_layer) ? &_EmptyInputState._GamepadStates[index] : &_InputState._GamepadStates[index];
 	}
 
 	/*
 	*	Returns the keyboard state.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const KeyboardState *const RESTRICT GetKeyboardState() const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const KeyboardState *const RESTRICT GetKeyboardState(const InputLayer input_layer) const NOEXCEPT
 	{
-		return &_InputState._KeyboardState;
+		return IsInputLayerBlocked(input_layer) ? &_EmptyInputState._KeyboardState : &_InputState._KeyboardState;
 	}
 
 	/*
 	*	Returns the mouse state.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const MouseState *const RESTRICT GetMouseState() const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const MouseState *const RESTRICT GetMouseState(const InputLayer input_layer) const NOEXCEPT
 	{
-		return &_InputState._MouseState;
+		return IsInputLayerBlocked(input_layer) ? &_EmptyInputState._MouseState : &_InputState._MouseState;
 	}
 
 	/*
 	*	Returns the touch state.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const TouchState *const RESTRICT GetTouchState() const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const TouchState *const RESTRICT GetTouchState(const InputLayer input_layer) const NOEXCEPT
 	{
-		return &_InputState._TouchState;
+		return IsInputLayerBlocked(input_layer) ? &_EmptyInputState._TouchState : &_InputState._TouchState;
 	}
 
 	/*
@@ -77,12 +101,12 @@ public:
 	/*
 	*	Hides the cursor.
 	*/
-	void HideCursor() const NOEXCEPT;
+	void HideCursor(const InputLayer input_layer) const NOEXCEPT;
 
 	/*
 	*	Shows the cursor.
 	*/
-	void ShowCursor() const NOEXCEPT;
+	void ShowCursor(const InputLayer input_layer) const NOEXCEPT;
 
 	/*
 	*	Sets the number of supported gamepads.
@@ -117,8 +141,14 @@ private:
 
 	};
 
+	//The locked input layers.
+	InputLayer _LockedInputLayers{ static_cast<InputLayer>(0) };
+
 	//The number of supported gamepads.
 	uint8 _NumberOfSupportedGamepads;
+
+	//The empty input state.
+	InputState _EmptyInputState;
 
 	//The input state.
 	InputState _InputState;

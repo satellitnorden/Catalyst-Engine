@@ -90,7 +90,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 					_DebugGraphicsPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2));
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
 
 				break;
 			}

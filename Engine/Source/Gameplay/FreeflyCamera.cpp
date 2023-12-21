@@ -71,9 +71,9 @@ void FreeflyCamera::UpdateCurrentInputState(const float32 delta_time) NOEXCEPT
 	constexpr float32 MOUSE_ROTATION_SPEED{ 100.0f };
 
 	//Get the input states.
-	const GamepadState* const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState() };
-	const KeyboardState* const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState() };
-	const MouseState* const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState() };
+	const GamepadState* const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState(InputLayer::GAME) };
+	const KeyboardState* const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState(InputLayer::GAME) };
+	const MouseState* const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::GAME) };
 
 	//Update the speed increment.
 	_CurrentInputState._SpeedIncrement = 0;

@@ -125,8 +125,8 @@ enum class DefaultNativeRenderPassStage : uint8
 	DEBUG,
 #endif
 	USER_INTERFACE,
-#if defined(CATALYST_EDITOR)
-	EDITOR_USER_INTERFACE,
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	IMGUI,
 #endif
 	SCREEN,
 
@@ -151,8 +151,8 @@ enum class PathTracingNativeRenderPassStage : uint8
 	ANTI_ALIASING,
 	POST_PROCESSING,
 	USER_INTERFACE,
-#if defined(CATALYST_EDITOR)
-	EDITOR_USER_INTERFACE,
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	IMGUI,
 #endif
 	SCREEN,
 
@@ -166,8 +166,8 @@ enum class PathTracingNativeRenderPassStage : uint8
 enum class MobileNativeRenderPassStage : uint8
 {
 	MOBILE,
-#if defined(CATALYST_EDITOR)
-	EDITOR_USER_INTERFACE,
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	IMGUI,
 #endif
 
 	NUMBER_OF_STAGES
@@ -183,8 +183,8 @@ enum class VirtualRealityNativeRenderPassStage : uint8
 #if defined(CATALYST_PLATFORM_WINDOWS)
 	VIRTUAL_REALITY_VISUALIZATION,
 #endif
-#if defined(CATALYST_EDITOR)
-	EDITOR_USER_INTERFACE,
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	IMGUI,
 #endif
 
 	NUMBER_OF_STAGES

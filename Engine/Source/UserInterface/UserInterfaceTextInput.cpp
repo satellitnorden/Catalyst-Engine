@@ -96,7 +96,7 @@ void UserInterfaceTextInput::Update() NOEXCEPT
 	bool text_was_updated{ false };
 
 	//Retrieve the keyboard state.
-	const KeyboardState *const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState() };
+	const KeyboardState *const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState(InputLayer::GAME) };
 
 	//Check if shift is held down.
 	const bool shift_held

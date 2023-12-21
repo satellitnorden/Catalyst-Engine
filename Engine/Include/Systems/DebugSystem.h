@@ -63,11 +63,30 @@ public:
 
 private:
 
+	/*
+	*	Debug category class definition.
+	*/
+	class DebugCategory final
+	{
+
+	public:
+
+		//The name.
+		DynamicString _Name;
+
+		//The sub categories.
+		DynamicArray<DebugCategory> _SubCategories;
+
+		//The debug commands.
+		DynamicArray<DebugCommand> _DebugCommands;
+
+	};
+
 	//Denotes if the debug window should be displayed.
 	bool _DisplayDebugWindow{ false };
 
-	//The debug commands.
-	DynamicArray<DebugCommand> _DebugCommands;
+	//The root debug category.
+	DebugCategory _RootDebugCategory;
 
 	/*
 	*	Updates the debug system.
@@ -78,6 +97,16 @@ private:
 	*	Updates IO.
 	*/
 	void UpdateIO() NOEXCEPT;
+
+	/*
+	*	Draws the debug window.
+	*/
+	void DrawDebugWindow() NOEXCEPT;
+
+	/*
+	*	Draws a debug category.
+	*/
+	void DrawDebugCategory(DebugCategory &debug_category, const bool is_root) NOEXCEPT;
 
 };
 #endif

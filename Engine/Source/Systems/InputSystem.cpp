@@ -42,17 +42,23 @@ void InputSystem::Initialize(const CatalystProjectInputConfiguration &configurat
 /*
 *	Hides the cursor.
 */
-void InputSystem::HideCursor() const NOEXCEPT
+void InputSystem::HideCursor(const InputLayer input_layer) const NOEXCEPT
 {
-	CatalystPlatform::HideCursor();
+	if (!IsInputLayerBlocked(input_layer))
+	{
+		CatalystPlatform::HideCursor();
+	}
 }
 
 /*
 *	Shows the cursor.
 */
-void InputSystem::ShowCursor() const NOEXCEPT
+void InputSystem::ShowCursor(const InputLayer input_layer) const NOEXCEPT
 {
-	CatalystPlatform::ShowCursor();
+	if (!IsInputLayerBlocked(input_layer))
+	{
+		CatalystPlatform::ShowCursor();
+	}
 }
 
 /*

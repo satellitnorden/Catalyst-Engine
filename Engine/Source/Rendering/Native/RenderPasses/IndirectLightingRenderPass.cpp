@@ -18,7 +18,7 @@ bool USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING{ true };
 
 void UpdateIndirectLightingOptions()
 {
-	if (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::F1) == ButtonState::PRESSED)
+	if (InputSystem::Instance->GetKeyboardState(InputLayer::GAME)->GetButtonState(KeyboardButton::F1) == ButtonState::PRESSED)
 	{
 		USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING = !USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING;
 

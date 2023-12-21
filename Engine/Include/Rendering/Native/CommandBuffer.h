@@ -80,7 +80,7 @@ public:
 	*/
 	void Draw(const Pipeline *const RESTRICT pipeline, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT;
 
-#if defined(CATALYST_EDITOR)
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
 	*	Draws the current ImGui state.
 	*/
