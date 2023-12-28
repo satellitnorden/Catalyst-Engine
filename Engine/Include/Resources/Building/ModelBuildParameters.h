@@ -16,7 +16,7 @@ class ModelBuildParameters final
 public:
 
 	//Type aliases.
-	using ProceduralFunction = void(*)(const uint64 level_of_detail_index, ModelFile *const RESTRICT model_file);
+	using ProceduralFunction = void(*)(DynamicArray<ModelFile> *const RESTRICT model_files, ModelFile *const RESTRICT collision_model_file, void *const RESTRICT user_data);
 
 	//The output file path.
 	const char *RESTRICT _Output{ nullptr };
@@ -38,6 +38,9 @@ public:
 
 	//The procedural function. Will be called instead of loading the provided file(s) if set.
 	ProceduralFunction _ProceduralFunction{ nullptr };
+
+	//The procedural function user data.
+	void *RESTRICT _ProceduralFunctionUserData{ nullptr };
 
 	//The collision model file path.
 	const char *RESTRICT _CollisionModelFilePath{ nullptr };

@@ -537,18 +537,22 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 	const ResourceHeader header{ ResourceConstants::MODEL_TYPE_IDENTIFIER, HashString(parameters._ResourceIdentifier), parameters._ResourceIdentifier };
 	output_file.Write(&header, sizeof(ResourceHeader));
 
-	//Read all model files into memory.
+	//Set up all of the model files and the collision model file.
 	DynamicArray<ModelFile> model_files;
-	model_files.Upsize<true>(parameters._LevelOfDetails.Size());
+	ModelFile collision_model_file;
 
-	for (uint64 i{ 0 }, size{ model_files.Size() }; i < size; ++i)
+	if (parameters._ProceduralFunction)
 	{
-		if (parameters._ProceduralFunction)
-		{
-			parameters._ProceduralFunction(i, &model_files[i]);
-		}
-		
-		else
+		parameters._ProceduralFunction(&model_files, &collision_model_file, parameters._ProceduralFunctionUserData);
+	}
+
+	else
+	{
+		//Read all model files into memory.
+		DynamicArray<ModelFile> model_files;
+		model_files.Upsize<true>(parameters._LevelOfDetails.Size());
+
+		for (uint64 i{ 0 }, size{ model_files.Size() }; i < size; ++i)
 		{
 			FBXReader::Read(parameters._LevelOfDetails[i], &model_files[i]);
 		}
@@ -624,16 +628,18 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 		}
 	}
 
-	//Check if there exists a collision model.
-	if (parameters._CollisionModelFilePath)
+	//Check if there exists a collision model. Might have already been filled in by the procedural function.
+	if (parameters._CollisionModelFilePath || collision_model_file.IsValid())
 	{
 		//Write that there exists a collision model.
 		bool collision_model_exists{ true };
 		output_file.Write(&collision_model_exists, sizeof(bool));
 
 		//Read the model file.
-		ModelFile collision_model_file;
-		FBXReader::Read(parameters._CollisionModelFilePath, &collision_model_file);
+		if (!collision_model_file.IsValid())
+		{
+			FBXReader::Read(parameters._CollisionModelFilePath, &collision_model_file);
+		}
 
 		//Transform all vertices in all meshes.
 		for (ModelFile::Mesh &mesh : collision_model_file._Meshes)

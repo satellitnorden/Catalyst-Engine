@@ -17,6 +17,7 @@
 #include <Math/Core/CatalystGeometryMath.h>
 
 //Resources.
+#include <Resources/Utilities/ProceduralTreeGenerator.h>
 #include <Resources/Utilities/ResourceBuildingUtilities.h>
 
 //Systems.
@@ -122,8 +123,6 @@ public:
 			{
 				if (entry._LastWriteTime < last_write_time)
 				{
-					entry._LastWriteTime = last_write_time;
-
 					return true;
 				}
 
@@ -142,6 +141,22 @@ public:
 
 		return true;
 #endif
+	}
+
+	/*
+	*	Updates the last write time for the given identifier.
+	*/
+	FORCE_INLINE void UpdateLastWriteTime(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
+	{
+		for (Entry& entry : _Entries)
+		{
+			if (entry._Identifier == identifier)
+			{
+				entry._LastWriteTime = last_write_time;
+
+				break;
+			}
+		}
 	}
 
 	/*
@@ -310,6 +325,19 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 			ASSERT(false, "Couldn't retrieve content type for " << file_path.data());
 		}
 
+		//Check if this should always compile.
+		bool always_compile{ false };
+
+		if (content_type == "ALWAYS_COMPILE")
+		{
+			always_compile = true;
+
+			if (!std::getline(file, content_type))
+			{
+				ASSERT(false, "Couldn't retrieve content type for " << file_path.data());
+			}
+		}
+
 		if (content_type == "MATERIAL")
 		{
 			ParseMaterial(compilation_domain, content_cache, name, file);
@@ -325,6 +353,11 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 			ParseTexture2D(compilation_domain, content_cache, name, file);
 		}
 
+		else if (content_type == "PROCEDURAL_TREE_MODEL")
+		{
+			ParseProceduralTreeModel(compilation_domain, content_cache, name, file);
+		}
+
 		else if (content_type == "IMPOSTOR_MATERIAL")
 		{
 			//Impostor materials depends on other resources, so delay the compile.
@@ -338,6 +371,12 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 
 		//Close the file.
 		file.close();
+
+		//Update the last write time.
+		if (!always_compile)
+		{
+			content_cache->UpdateLastWriteTime(identifier, last_write_time);
+		}
 
 		//New content was compiled!
 		new_content_compiled = true;
@@ -872,6 +911,98 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 }
 
 /*
+*	Parses a procedural tree model from the given file.
+*/
+void ContentCompiler::ParseProceduralTreeModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT
+{
+	//Calculate the intermediate directory.
+	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
+
+	switch (compilation_domain)
+	{
+		case CompilationDomain::ENGINE:
+		{
+			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\Models");
+
+			break;
+		}
+
+		case CompilationDomain::GAME:
+		{
+			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\Models");
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Create the directory, if it doesn't exist.
+	File::CreateDirectory(intermediate_directory);
+
+	//Parse the parameters.
+	ProceduralTreeGenerator::Parameters procedural_tree_generator_parameters;
+
+	//TODO!
+
+	//Create the procedural tree model.
+	ProceduralTreeGenerator::Output procedural_tree_generator_output;
+	
+	ProceduralTreeGenerator::GenerateTree(procedural_tree_generator_parameters, &procedural_tree_generator_output);
+
+	//Set up the build parameters.
+	ModelBuildParameters parameters;
+
+	//Set the output.
+	char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+	sprintf_s(output_buffer, "%s\\%s", intermediate_directory, name.data());
+	parameters._Output = output_buffer;
+
+	//Set the resource identifier.
+	parameters._ResourceIdentifier = name.data();
+
+	//Set some default parameters.
+	parameters._Transformation = Matrix4x4();
+	parameters._TextureCoordinateMultiplier = 1.0f;
+	parameters._TexturCoordinateRotation = 0.0f;
+	parameters._ProceduralFunction = [](DynamicArray<ModelFile> *const RESTRICT model_files, ModelFile *const RESTRICT collision_model_file, void *const RESTRICT user_data)
+	{
+		//Cache the output.
+		const ProceduralTreeGenerator::Output &procedural_tree_generator_output{ *static_cast<ProceduralTreeGenerator::Output *const RESTRICT>(user_data) };
+		
+		//Add one level of detail.
+		model_files->Emplace();
+
+		//Add the main vertices/indices.
+		for (uint64 i{ 0 }; i < procedural_tree_generator_output._Vertices.Size(); ++i)
+		{
+			model_files->Back()._Meshes.Emplace();
+			ModelFile::Mesh &new_mesh{ model_files->Back()._Meshes.Back() };
+
+			new_mesh._Vertices = procedural_tree_generator_output._Vertices[i];
+			new_mesh._Indices = procedural_tree_generator_output._Indices[i];
+		}
+
+		//Add the collision vertices/indices.
+		collision_model_file->_Meshes.Emplace();
+		ModelFile::Mesh &new_mesh{ collision_model_file->_Meshes.Back() };
+
+		new_mesh._Vertices = procedural_tree_generator_output._CollisionVertices;
+		new_mesh._Indices = procedural_tree_generator_output._CollisionIndices;
+	};
+	parameters._ProceduralFunctionUserData = &procedural_tree_generator_output;
+	parameters._CollisionModelFilePath = nullptr;
+
+	//Build!
+	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+}
+
+/*
 *	Loads the texture 2D with the given identifier.
 */
 NO_DISCARD ResourcePointer<Texture2DResource> LoadTexture2DResource(const char *const RESTRICT directory_path, const HashString identifier) NOEXCEPT
@@ -1068,7 +1199,7 @@ void ContentCompiler::ParseImpostorMaterial(const CompilationDomain compilation_
 			dimensions._Height = static_cast<uint32>(std::stoul(arguments[2].Data()));
 		}
 
-		else
+		else if (arguments[0] != "ALWAYS_COMPILE")
 		{
 			ASSERT(false, "Couldn't parse argument " << arguments[0].Data());
 		}
