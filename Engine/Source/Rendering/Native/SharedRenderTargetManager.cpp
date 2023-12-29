@@ -86,6 +86,16 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_3_HALF)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_3_HALF)]._IsDepthBuffer = false;
 
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._Identifier = HashString("SceneFeatures4Half");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._Resolution = RenderingSystem::Instance->GetScaledResolution(1);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._TextureFormat = TextureFormat::RG_FLOAT16;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._IsDepthBuffer = false;
+
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE)]._Identifier = HashString("Scene");
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE)]._Resolution = RenderingSystem::Instance->GetScaledResolution(0);
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE)]._TextureFormat = TextureFormat::RGBA_FLOAT32;

@@ -1,0 +1,96 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(General);
+
+//Declare input render targets.
+InputRenderTarget(SceneFeatures1 /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+InputRenderTarget(SceneFeatures2 /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+InputRenderTarget(SceneFeatures3 /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+InputRenderTarget(SceneFeatures4 /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(SceneFeatures1Half);
+OutputRenderTarget(SceneFeatures2Half);
+OutputRenderTarget(SceneFeatures3Half);
+OutputRenderTarget(SceneFeatures4Half);
+
+//Declare render resolution.
+RenderResolution(MAIN_HALF);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+Vertex
+{
+    //Declare output parameters.
+    OutputParameter(vec2, OutScreenCoordinate);
+
+	//Calculate the viewport coordinates.
+	float x = -1.0f + float((VERTEX_INDEX & 2) << 1);
+    float y = -1.0f + float((VERTEX_INDEX & 1) << 2);
+
+    //Calculate the texture coordinate.
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+    
+    //Output the position.
+    OutputVertexPosition(vec4(x, y, 0.0f, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Calculate the texel offset.
+	vec2 texel_offset = vec2(INVERSE_FULL_MAIN_RESOLUTION.x * 0.5f, INVERSE_FULL_MAIN_RESOLUTION.y * 0.5f);
+
+	//Compare the depths in the scene features 2 texture. Choose the texel for the downsample with the depth closest to the camera.
+	vec4 scene_features_2_sample_1 = texture(SceneFeatures2, InScreenCoordinate + vec2(-texel_offset.x, -texel_offset.y));
+	vec4 scene_features_2_sample_2 = texture(SceneFeatures2, InScreenCoordinate + vec2(-texel_offset.x, texel_offset.y));
+	vec4 scene_features_2_sample_3 = texture(SceneFeatures2, InScreenCoordinate + vec2(texel_offset.x, -texel_offset.y));
+	vec4 scene_features_2_sample_4 = texture(SceneFeatures2, InScreenCoordinate + vec2(texel_offset.x, texel_offset.y));
+
+    //Write the fragments.
+    if (scene_features_2_sample_1.w > scene_features_2_sample_2.w
+    	&& scene_features_2_sample_1.w > scene_features_2_sample_3.w
+    	&& scene_features_2_sample_1.w > scene_features_2_sample_4.w)
+    {
+        OutputFragment(SceneFeatures1Half, texture(SceneFeatures1, InScreenCoordinate + vec2(-texel_offset.x, -texel_offset.y)));
+    	OutputFragment(SceneFeatures2Half, scene_features_2_sample_1);
+        OutputFragment(SceneFeatures3Half, texture(SceneFeatures3, InScreenCoordinate + vec2(-texel_offset.x, -texel_offset.y)));
+        OutputFragment(SceneFeatures4Half, texture(SceneFeatures4, InScreenCoordinate + vec2(-texel_offset.x, -texel_offset.y)));
+    }
+
+    else if (	scene_features_2_sample_2.w > scene_features_2_sample_3.w
+    			&& scene_features_2_sample_2.w > scene_features_2_sample_4.w)
+    {
+        OutputFragment(SceneFeatures1Half, texture(SceneFeatures1, InScreenCoordinate + vec2(-texel_offset.x, texel_offset.y)));
+    	OutputFragment(SceneFeatures2Half, scene_features_2_sample_2);
+        OutputFragment(SceneFeatures3Half, texture(SceneFeatures3, InScreenCoordinate + vec2(-texel_offset.x, texel_offset.y)));
+        OutputFragment(SceneFeatures4Half, texture(SceneFeatures4, InScreenCoordinate + vec2(-texel_offset.x, texel_offset.y)));
+    }
+
+    else if (scene_features_2_sample_3.w > scene_features_2_sample_4.w)
+    {
+        OutputFragment(SceneFeatures1Half, texture(SceneFeatures1, InScreenCoordinate + vec2(texel_offset.x, -texel_offset.y)));
+    	OutputFragment(SceneFeatures2Half, scene_features_2_sample_3);
+        OutputFragment(SceneFeatures3Half, texture(SceneFeatures3, InScreenCoordinate + vec2(texel_offset.x, -texel_offset.y)));
+        OutputFragment(SceneFeatures4Half, texture(SceneFeatures4, InScreenCoordinate + vec2(texel_offset.x, -texel_offset.y)));
+    }
+
+    else
+    {
+        OutputFragment(SceneFeatures1Half, texture(SceneFeatures1, InScreenCoordinate + vec2(texel_offset.x, texel_offset.y)));
+    	OutputFragment(SceneFeatures2Half, scene_features_2_sample_4);
+        OutputFragment(SceneFeatures3Half, texture(SceneFeatures3, InScreenCoordinate + vec2(texel_offset.x, texel_offset.y)));
+        OutputFragment(SceneFeatures4Half, texture(SceneFeatures4, InScreenCoordinate + vec2(texel_offset.x, texel_offset.y)));
+    }
+}

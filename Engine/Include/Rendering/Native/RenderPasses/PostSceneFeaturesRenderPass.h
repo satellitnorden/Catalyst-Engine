@@ -5,8 +5,8 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DepthDownsampleGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SceneFeaturesDownsampleGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) PostSceneFeaturesRenderPass final : public RenderPass
@@ -42,7 +42,7 @@ private:
 	StaticArray<DepthDownsampleGraphicsPipeline, DEPTH_MIP_CHAIN_DEPTH> _DepthDownsampleGraphicsPipelines;
 
 	//The scene features downsample graphics pipeline.
-	SceneFeaturesDownsampleGraphicsPipeline _SceneFeaturesDownsampleGraphicsPipeline;
+	GraphicsRenderPipeline _SceneFeaturesDownsampleGraphicsPipeline{ HashString("SceneFeaturesDownsample_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

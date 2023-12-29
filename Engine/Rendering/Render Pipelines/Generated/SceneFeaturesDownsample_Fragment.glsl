@@ -167,21 +167,7 @@ vec4 UnpackColor(uint color)
     return unpacked;
 }
 
-layout (std140, set = 1, binding = 0) uniform Camera
-{
-	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;
-	layout (offset = 64) mat4 WORLD_TO_CAMERA_MATRIX;
-	layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
-	layout (offset = 192) mat4 INVERSE_WORLD_TO_CAMERA_MATRIX;
-	layout (offset = 256) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;
-	layout (offset = 320) vec3 CAMERA_WORLD_POSITION;
-	layout (offset = 336) vec3 CAMERA_FORWARD_VECTOR;
-	layout (offset = 352) vec2 CURRENT_FRAME_JITTER;
-	layout (offset = 360) float NEAR_PLANE;
-	layout (offset = 364) float FAR_PLANE;
-};
-
-layout (std140, set = 1, binding = 1) uniform General
+layout (std140, set = 1, binding = 0) uniform General
 {
 	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
 	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
@@ -190,127 +176,54 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 32) uint FRAME;
 };
 
-layout (std140, set = 1, binding = 2) uniform Wind
-{
-	layout (offset = 0) vec4 PREVIOUS_WIND_DIRECTION_SPEED;
-	layout (offset = 16) vec4 CURRENT_WIND_DIRECTION_SPEED;
-	layout (offset = 32) float PREVIOUS_WIND_TIME;
-	layout (offset = 36) float CURRENT_WIND_TIME;
-};
+layout (location = 0) in vec2 InScreenCoordinate;
 
-layout (set = 1, binding = 3) uniform sampler SAMPLER;
+layout (set = 1, binding = 1) uniform sampler2D SceneFeatures1;
+layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2;
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures3;
+layout (set = 1, binding = 4) uniform sampler2D SceneFeatures4;
 
-//Constants.
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_1 	(1 << 0)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_2 	(1 << 1)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_3 	(1 << 2)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_4 	(1 << 3)
-#define MODEL_FLAG_IS_VEGETATION 				(1 << 4)
-
-/*
-*   Hash function.
-*/
-uint Hash(inout uint seed)
-{
-    seed = (seed ^ 61u) ^ (seed >> 16u);
-    seed *= 9u;
-    seed = seed ^ (seed >> 4u);
-    seed *= 0x27d4eb2du;
-    seed = seed ^ (seed >> 15u);
-
-    return seed;
-}
-
-/*
-*   Given a seed, returns a random number.
-*/
-float RandomFloat(inout uint seed)
-{
-    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
-}
-
-/*
-*	Returns the interleaved gradient noise for the given coordinate at the given frame.
-*/
-float InterleavedGradientNoise(uvec2 coordinate, uint frame)
-{
-	frame = frame % 64;
-
-	float x = float(coordinate.x) + 5.588238f * float(frame);
-	float y = float(coordinate.y) + 5.588238f * float(frame);
-
-	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
-}
-
-/*
-*	Calculates wind displacement.
-*	Requires the Wind uniform buffer to be bound.
-*/
-vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal, vec4 wind_direction_speed, float wind_time)
-{
-	//Calculate the displacement.
-	vec3 displacement = vec3(0.0f, 0.0f, 0.0f);
-
-	//Add large scale motion.
-	displacement.x += (sin(world_position.x + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w;
-	displacement.z += (cos(world_position.z + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w;
-
-	//Add medium scale motion.
-	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.5f;
-	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.5f;
-
-	//Add small scale motion.
-	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.25f;
-	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.25f;
-
-	//Modify the displacement so it doesn't affect the bottom of the mesh.
-	displacement *= max(vertex_position.y * 0.125f, 0.0f);
-
-	//Return the displacement.
-	return displacement;
-}
-
-/*
-*	Calculates previous wind displacement.
-*	Requires the Wind uniform buffer to be bound.
-*/
-vec3 CalculatePreviousWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
-{
-	return CalculateWindDisplacement(world_position, vertex_position, normal, PREVIOUS_WIND_DIRECTION_SPEED, PREVIOUS_WIND_TIME);
-}
-
-/*
-*	Calculates current wind displacement.
-*	Requires the Wind uniform buffer to be bound.
-*/
-vec3 CalculateCurrentWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
-{
-	return CalculateWindDisplacement(world_position, vertex_position, normal, CURRENT_WIND_DIRECTION_SPEED, CURRENT_WIND_TIME);
-}
-
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) uint MODEL_FLAGS;
-	layout (offset = 20) float START_FADE_OUT_DISTANCE_SQUARED;
-	layout (offset = 24) float END_FADE_OUT_DISTANCE_SQUARED;
-	layout (offset = 28) uint MATERIAL_INDEX;
-};
-
-layout (location = 0) in vec2 InTextureCoordinate;
-layout (location = 1) in float InFadeOpacity;
+layout (location = 0) out vec4 SceneFeatures1Half;
+layout (location = 1) out vec4 SceneFeatures2Half;
+layout (location = 2) out vec4 SceneFeatures3Half;
+layout (location = 3) out vec4 SceneFeatures4Half;
 
 void main()
 {
-    float opacity = 1.0f;
-    if (TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_MASKED))
+	vec2 texel_offset = vec2(INVERSE_FULL_MAIN_RESOLUTION.x * 0.5f, INVERSE_FULL_MAIN_RESOLUTION.y * 0.5f);
+	vec4 scene_features_2_sample_1 = texture(SceneFeatures2, InScreenCoordinate + vec2(-texel_offset.x, -texel_offset.y));
+	vec4 scene_features_2_sample_2 = texture(SceneFeatures2, InScreenCoordinate + vec2(-texel_offset.x, texel_offset.y));
+	vec4 scene_features_2_sample_3 = texture(SceneFeatures2, InScreenCoordinate + vec2(texel_offset.x, -texel_offset.y));
+	vec4 scene_features_2_sample_4 = texture(SceneFeatures2, InScreenCoordinate + vec2(texel_offset.x, texel_offset.y));
+    if (scene_features_2_sample_1.w > scene_features_2_sample_2.w
+    	&& scene_features_2_sample_1.w > scene_features_2_sample_3.w
+    	&& scene_features_2_sample_1.w > scene_features_2_sample_4.w)
     {
-        EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
+	SceneFeatures1Half = texture(SceneFeatures1,InScreenCoordinate+vec2(-texel_offset.x,-texel_offset.y));
+	SceneFeatures2Half = scene_features_2_sample_1;
+	SceneFeatures3Half = texture(SceneFeatures3,InScreenCoordinate+vec2(-texel_offset.x,-texel_offset.y));
+	SceneFeatures4Half = texture(SceneFeatures4,InScreenCoordinate+vec2(-texel_offset.x,-texel_offset.y));
     }
-    float noise_value = InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME);
-    if (opacity < 0.5f
-    || (InFadeOpacity < 1.0f && InFadeOpacity < noise_value))
+    else if (	scene_features_2_sample_2.w > scene_features_2_sample_3.w
+    			&& scene_features_2_sample_2.w > scene_features_2_sample_4.w)
     {
-        discard;
+	SceneFeatures1Half = texture(SceneFeatures1,InScreenCoordinate+vec2(-texel_offset.x,texel_offset.y));
+	SceneFeatures2Half = scene_features_2_sample_2;
+	SceneFeatures3Half = texture(SceneFeatures3,InScreenCoordinate+vec2(-texel_offset.x,texel_offset.y));
+	SceneFeatures4Half = texture(SceneFeatures4,InScreenCoordinate+vec2(-texel_offset.x,texel_offset.y));
+    }
+    else if (scene_features_2_sample_3.w > scene_features_2_sample_4.w)
+    {
+	SceneFeatures1Half = texture(SceneFeatures1,InScreenCoordinate+vec2(texel_offset.x,-texel_offset.y));
+	SceneFeatures2Half = scene_features_2_sample_3;
+	SceneFeatures3Half = texture(SceneFeatures3,InScreenCoordinate+vec2(texel_offset.x,-texel_offset.y));
+	SceneFeatures4Half = texture(SceneFeatures4,InScreenCoordinate+vec2(texel_offset.x,-texel_offset.y));
+    }
+    else
+    {
+	SceneFeatures1Half = texture(SceneFeatures1,InScreenCoordinate+vec2(texel_offset.x,texel_offset.y));
+	SceneFeatures2Half = scene_features_2_sample_4;
+	SceneFeatures3Half = texture(SceneFeatures3,InScreenCoordinate+vec2(texel_offset.x,texel_offset.y));
+	SceneFeatures4Half = texture(SceneFeatures4,InScreenCoordinate+vec2(texel_offset.x,texel_offset.y));
     }
 }

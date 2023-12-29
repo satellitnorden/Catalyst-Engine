@@ -784,12 +784,6 @@ void GenerateFragmentShader
 		DynamicString _Name;
 	};
 
-	struct OutputFragment final
-	{
-		DynamicString _Identifier;
-		DynamicString _Value;
-	};
-
 	//Gather all the lines in the vertex function.
 	DynamicArray<std::string> lines;
 	GatherShaderLines(file, lines);
@@ -815,37 +809,6 @@ void GenerateFragmentShader
 			input_parameters.Emplace();
 			input_parameters.Back()._Type = std::move(input_parameter_strings[0]);
 			input_parameters.Back()._Name = std::move(input_parameter_strings[1]);
-
-			lines.EraseAt<true>(i);
-		}
-
-		else
-		{
-			++i;
-		}
-	}
-
-	//Gather the output fragments
-	DynamicArray<OutputFragment> output_fragments;
-
-	for (uint64 i{ 0 }; i < lines.Size();)
-	{
-		const size_t output_fragment_position{ lines[i].find("OutputFragment") };
-
-		if (output_fragment_position != std::string::npos)
-		{
-			StaticArray<DynamicString, 2> output_fragment_strings;
-
-			TextParsingUtilities::ParseFunctionArguments
-			(
-				lines[i].data(),
-				lines[i].length(),
-				output_fragment_strings.Data()
-			);
-
-			output_fragments.Emplace();
-			output_fragments.Back()._Identifier = std::move(output_fragment_strings[0]);
-			output_fragments.Back()._Value = std::move(output_fragment_strings[1]);
 
 			lines.EraseAt<true>(i);
 		}
@@ -1033,42 +996,47 @@ void GenerateFragmentShader
 			//Cache the line.
 			std::string &line{ glsl_lines[i] };
 
-			//If this is the closing bracket, output the output fragments and be done with it.
-			if (i == glsl_lines.LastIndex())
+			//Replace "FRAGMENT_COORDINATE" with "gl_FragCoord".
 			{
-				for (const OutputFragment &output_fragment : output_fragments)
+				const size_t position{ line.find("FRAGMENT_COORDINATE") };
+
+				if (position != std::string::npos)
 				{
-					glsl_file << "\t" << output_fragment._Identifier.Data() << " = " << output_fragment._Value.Data() << ";" << std::endl;
+					line.replace(position, strlen("FRAGMENT_COORDINATE"), "gl_FragCoord");
 				}
-				
-				glsl_file << line;
 			}
 
-			else
+			//Replace "FRAGMENT_FRONT_FACING" with "gl_FrontFacing".
 			{
-				//Replace "FRAGMENT_COORDINATE" with "gl_FragCoord".
+				const size_t position{ line.find("FRAGMENT_FRONT_FACING") };
+
+				if (position != std::string::npos)
 				{
-					const size_t position{ line.find("FRAGMENT_COORDINATE") };
-
-					if (position != std::string::npos)
-					{
-						line.replace(position, strlen("FRAGMENT_COORDINATE"), "gl_FragCoord");
-					}
+					line.replace(position, strlen("FRAGMENT_FRONT_FACING"), "gl_FrontFacing");
 				}
-
-				//Replace "FRAGMENT_FRONT_FACING" with "gl_FrontFacing".
-				{
-					const size_t position{ line.find("FRAGMENT_FRONT_FACING") };
-
-					if (position != std::string::npos)
-					{
-						line.replace(position, strlen("FRAGMENT_FRONT_FACING"), "gl_FrontFacing");
-					}
-				}
-
-				//Write the line.
-				glsl_file << line << std::endl;
 			}
+
+			//Replace "OutputFragment(X)" calls.
+			{
+				const size_t position{ line.find("OutputFragment(") };
+
+				if (position != std::string::npos)
+				{
+					StaticArray<DynamicString, 2> output_fragment_strings;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						lines[i].data(),
+						lines[i].length(),
+						output_fragment_strings.Data()
+					);
+
+					line = "\t" + std::string(output_fragment_strings[0].Data()) + " = " + std::string(output_fragment_strings[1].Data()) + ";";
+				}
+			}
+
+			//Write the line.
+			glsl_file << line << std::endl;
 		}
 
 		//Close the file.
