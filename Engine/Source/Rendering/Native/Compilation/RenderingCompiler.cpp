@@ -602,6 +602,9 @@ void GenerateVertexShader
 
 		glsl_file << std::endl;
 
+		//Insert extensions.
+		GLSLCompilation::InsertExtensions(glsl_file);
+
 		//Insert the global render data.
 		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
 
@@ -858,6 +861,9 @@ void GenerateFragmentShader
 		glsl_file << "#version 460" << std::endl;
 
 		glsl_file << std::endl;
+
+		//Insert extensions.
+		GLSLCompilation::InsertExtensions(glsl_file);
 
 		//Add the early fragment tests flag.
 		if (enable_early_fragment_tests)

@@ -106,6 +106,14 @@ namespace GLSLCompilation
 	}
 
 	/*
+	*	Inserts extensions into the given file.
+	*/
+	FORCE_INLINE void InsertExtensions(std::ofstream &output_file) NOEXCEPT
+	{
+		output_file << "#extension GL_ARB_separate_shader_objects : require" << std::endl;
+	}
+
+	/*
 	*	Insert the contents of a file into the given file.
 	*/
 	FORCE_INLINE void InsertFromFile
