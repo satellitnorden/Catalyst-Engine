@@ -300,9 +300,8 @@ layout (push_constant) uniform PushConstantData
 
 layout (location = 0) in vec3 InPosition;
 layout (location = 1) in vec3 InNormal;
-layout (location = 2) in vec3 InTangent;
-layout (location = 3) in vec2 InTextureCoordinate;
-layout (location = 4) in mat4 InTransformation;
+layout (location = 2) in vec2 InTextureCoordinate;
+layout (location = 3) in mat4 InTransformation;
 
 layout (location = 0) out vec2 OutTextureCoordinate;
 layout (location = 1) out float OutFadeOpacity;

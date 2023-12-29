@@ -48,7 +48,7 @@ PushConstantData(uint, MATERIAL_INDEX);
 Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
 
 //Subscribe to input streams.
-SubscribeToInputStream(DoubleSidedInstancedModel);
+SubscribeToInputStream(DoubleSidedInstancedModelDepth);
 
 //The vertex shader.
 Vertex
@@ -56,7 +56,6 @@ Vertex
     //Declare input parameters.
     InputParameter(vec3, InPosition);
     InputParameter(vec3, InNormal);
-    InputParameter(vec3, InTangent);
     InputParameter(vec2, InTextureCoordinate);
     InputParameter(mat4, InTransformation);
 

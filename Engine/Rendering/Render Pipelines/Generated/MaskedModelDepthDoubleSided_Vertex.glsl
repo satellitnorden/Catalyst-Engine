@@ -191,9 +191,7 @@ layout (push_constant) uniform PushConstantData
 };
 
 layout (location = 0) in vec3 InPosition;
-layout (location = 1) in vec3 InNormal;
-layout (location = 2) in vec3 InTanget;
-layout (location = 3) in vec2 InTextureCoordinate;
+layout (location = 1) in vec2 InTextureCoordinate;
 
 layout (location = 0) out vec2 OutTextureCoordinate;
 

@@ -160,33 +160,44 @@ void RenderInputManager::Initialize() NOEXCEPT
 			this
 		);
 
-		RegisterInputStream
-		(
-			HashString("MaskedSingleSidedModelsDepth"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
-			sizeof(ModelDepthPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherDepthModelInputStream(MaterialResource::Type::MASKED, false, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			this
-		);
+		{
+			DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
 
-		RegisterInputStream
-		(
-			HashString("MaskedDoubleSidedModelsDepth"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
-			sizeof(ModelDepthPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<RenderInputManager* const RESTRICT>(user_data)->GatherDepthModelInputStream(MaterialResource::Type::MASKED, true, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			this
-		);
+			required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Position)));
+			required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(Vertex, _TextureCoordinate)));
+
+			DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
+
+			required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
+
+			RegisterInputStream
+			(
+				HashString("MaskedSingleSidedModelsDepth"),
+				required_vertex_input_attribute_descriptions,
+				required_vertex_input_binding_descriptions,
+				sizeof(ModelDepthPushConstantData),
+				[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+				{
+					static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherDepthModelInputStream(MaterialResource::Type::MASKED, false, input_stream);
+				},
+				RenderInputStream::Mode::DRAW_INDEXED,
+				this
+			);
+
+			RegisterInputStream
+			(
+				HashString("MaskedDoubleSidedModelsDepth"),
+				required_vertex_input_attribute_descriptions,
+				required_vertex_input_binding_descriptions,
+				sizeof(ModelDepthPushConstantData),
+				[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+				{
+					static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherDepthModelInputStream(MaterialResource::Type::MASKED, true, input_stream);
+				},
+				RenderInputStream::Mode::DRAW_INDEXED,
+				this
+			);
+		}
 
 		RegisterInputStream
 		(
@@ -219,50 +230,96 @@ void RenderInputManager::Initialize() NOEXCEPT
 
 	//Register instanced model input streams.
 	{
-		//Set up the required vertex input attribute/binding descriptions for models.
-		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
+		{
+			DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
 
-		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Position)));
-		required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Normal)));
-		required_vertex_input_attribute_descriptions.Emplace(2, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Tangent)));
-		required_vertex_input_attribute_descriptions.Emplace(3, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(Vertex, _TextureCoordinate)));
-		required_vertex_input_attribute_descriptions.Emplace(4, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 0));
-		required_vertex_input_attribute_descriptions.Emplace(5, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 1));
-		required_vertex_input_attribute_descriptions.Emplace(6, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 2));
-		required_vertex_input_attribute_descriptions.Emplace(7, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 3));
+			required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Position)));
+			required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Normal)));
+			required_vertex_input_attribute_descriptions.Emplace(2, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(Vertex, _TextureCoordinate)));
+			required_vertex_input_attribute_descriptions.Emplace(3, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 0));
+			required_vertex_input_attribute_descriptions.Emplace(4, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 1));
+			required_vertex_input_attribute_descriptions.Emplace(5, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 2));
+			required_vertex_input_attribute_descriptions.Emplace(6, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 3));
 
-		DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
+			DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
 
-		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
-		required_vertex_input_binding_descriptions.Emplace(1, static_cast<uint32>(sizeof(Matrix4x4)), VertexInputBindingDescription::InputRate::Instance);
+			required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
+			required_vertex_input_binding_descriptions.Emplace(1, static_cast<uint32>(sizeof(Matrix4x4)), VertexInputBindingDescription::InputRate::Instance);
 
-		RegisterInputStream
-		(
-			HashString("SingleSidedInstancedModel"),
-			required_vertex_input_attribute_descriptions,
-			required_vertex_input_binding_descriptions,
-			sizeof(InstancedModelPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherInstancedModelInputStream(false, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED_INSTANCED,
-			this
-		);
+			RegisterInputStream
+			(
+				HashString("SingleSidedInstancedModelDepth"),
+				required_vertex_input_attribute_descriptions,
+				required_vertex_input_binding_descriptions,
+				sizeof(InstancedModelPushConstantData),
+				[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+				{
+					static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherInstancedModelInputStream(false, input_stream);
+				},
+				RenderInputStream::Mode::DRAW_INDEXED_INSTANCED,
+				this
+			);
 
-		RegisterInputStream
-		(
-			HashString("DoubleSidedInstancedModel"),
-			required_vertex_input_attribute_descriptions,
-			required_vertex_input_binding_descriptions,
-			sizeof(InstancedModelPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherInstancedModelInputStream(true, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED_INSTANCED,
-			this
-		);
+			RegisterInputStream
+			(
+				HashString("DoubleSidedInstancedModelDepth"),
+				required_vertex_input_attribute_descriptions,
+				required_vertex_input_binding_descriptions,
+				sizeof(InstancedModelPushConstantData),
+				[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+				{
+					static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherInstancedModelInputStream(true, input_stream);
+				},
+				RenderInputStream::Mode::DRAW_INDEXED_INSTANCED,
+				this
+			);
+		}
+
+		{
+			DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
+
+			required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Position)));
+			required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Normal)));
+			required_vertex_input_attribute_descriptions.Emplace(2, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Tangent)));
+			required_vertex_input_attribute_descriptions.Emplace(3, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(Vertex, _TextureCoordinate)));
+			required_vertex_input_attribute_descriptions.Emplace(4, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 0));
+			required_vertex_input_attribute_descriptions.Emplace(5, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 1));
+			required_vertex_input_attribute_descriptions.Emplace(6, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 2));
+			required_vertex_input_attribute_descriptions.Emplace(7, 1, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(sizeof(Vector4<float32>) * 3));
+
+			DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
+
+			required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
+			required_vertex_input_binding_descriptions.Emplace(1, static_cast<uint32>(sizeof(Matrix4x4)), VertexInputBindingDescription::InputRate::Instance);
+
+			RegisterInputStream
+			(
+				HashString("SingleSidedInstancedModelFull"),
+				required_vertex_input_attribute_descriptions,
+				required_vertex_input_binding_descriptions,
+				sizeof(InstancedModelPushConstantData),
+				[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+				{
+					static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherInstancedModelInputStream(false, input_stream);
+				},
+				RenderInputStream::Mode::DRAW_INDEXED_INSTANCED,
+				this
+			);
+
+			RegisterInputStream
+			(
+				HashString("DoubleSidedInstancedModelFull"),
+				required_vertex_input_attribute_descriptions,
+				required_vertex_input_binding_descriptions,
+				sizeof(InstancedModelPushConstantData),
+				[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+				{
+					static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherInstancedModelInputStream(true, input_stream);
+				},
+				RenderInputStream::Mode::DRAW_INDEXED_INSTANCED,
+				this
+			);
+		}
 	}
 
 	//Register the instanced impostor input stream.

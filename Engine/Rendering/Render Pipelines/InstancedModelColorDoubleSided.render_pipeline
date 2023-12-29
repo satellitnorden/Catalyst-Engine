@@ -47,7 +47,7 @@ PushConstantData(uint, MATERIAL_INDEX);
 Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
 
 //Subscribe to input streams.
-SubscribeToInputStream(DoubleSidedInstancedModel);
+SubscribeToInputStream(DoubleSidedInstancedModelFull);
 
 //The vertex shader.
 Vertex

@@ -45,8 +45,6 @@ Vertex
 {
     //Declare input parameters.
     InputParameter(vec3, InPosition);
-    InputParameter(vec3, InNormal);
-    InputParameter(vec3, InTanget);
     InputParameter(vec2, InTextureCoordinate);
 
     //Declare output parameters.
