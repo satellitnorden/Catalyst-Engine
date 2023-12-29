@@ -140,7 +140,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_ScreenSpaceAmbientOcclusionGraphicsPipeline);
 	AddPipeline(&_AmbientOcclusionRayTracingPipeline);
 
-	for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -163,14 +163,29 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 
 	_AmbientOcclusionRayTracingPipeline.Initialize(_AmbientOcclusionRenderTarget);
 
-	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[0],
-																		_AmbientOcclusionTemporalBufferRenderTargets[1],
-																		_AmbientOcclusionRenderTarget,
-																		_IntermediateAmbientOcclusionRenderTarget);
-	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[1],
-																		_AmbientOcclusionTemporalBufferRenderTargets[0],
-																		_AmbientOcclusionRenderTarget,
-																		_IntermediateAmbientOcclusionRenderTarget);
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), _AmbientOcclusionTemporalBufferRenderTargets[0]);
+		parameters._InputRenderTargets.Emplace(HashString("InputAmbientOcclusion"), _AmbientOcclusionRenderTarget);
+
+		parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), _AmbientOcclusionTemporalBufferRenderTargets[1]);
+		parameters._OutputRenderTargets.Emplace(HashString("OutputAmbientOcclusion"), _IntermediateAmbientOcclusionRenderTarget);
+	
+		_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(parameters);
+	}
+
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), _AmbientOcclusionTemporalBufferRenderTargets[1]);
+		parameters._InputRenderTargets.Emplace(HashString("InputAmbientOcclusion"), _AmbientOcclusionRenderTarget);
+
+		parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), _AmbientOcclusionTemporalBufferRenderTargets[0]);
+		parameters._OutputRenderTargets.Emplace(HashString("OutputAmbientOcclusion"), _IntermediateAmbientOcclusionRenderTarget);
+
+		_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(parameters);
+	}
 
 	for (uint64 i{ 0 }; i < _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size(); i += 2)
 	{
@@ -267,7 +282,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	
 	else
 	{
-		for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
+		for (GraphicsRenderPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
 		{
 			pipeline.SetIncludeInRender(false);
 		}
@@ -295,7 +310,7 @@ void AmbientOcclusionRenderPass::Terminate() NOEXCEPT
 		pipeline.Terminate();
 	}
 
-	for (AmbientOcclusionTemporalDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
+	for (GraphicsRenderPipeline&pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
 	{
 		pipeline.Terminate();
 	}

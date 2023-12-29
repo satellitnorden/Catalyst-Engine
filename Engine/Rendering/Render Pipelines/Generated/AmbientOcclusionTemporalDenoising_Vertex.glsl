@@ -1,3 +1,6 @@
+#version 460
+
+#extension GL_ARB_separate_shader_objects : require
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -180,4 +183,43 @@ bool ValidScreenCoordinate(vec2 X)
             && X.x < 1.0f
             && X.y >= 0.0f
             && X.y < 1.0f;
+}
+
+layout (std140, set = 1, binding = 0) uniform Camera
+{
+	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;
+	layout (offset = 64) mat4 WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
+	layout (offset = 192) mat4 INVERSE_WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 256) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;
+	layout (offset = 320) vec3 CAMERA_WORLD_POSITION;
+	layout (offset = 336) vec3 CAMERA_FORWARD_VECTOR;
+	layout (offset = 352) vec2 CURRENT_FRAME_JITTER;
+	layout (offset = 360) float NEAR_PLANE;
+	layout (offset = 364) float FAR_PLANE;
+};
+
+layout (std140, set = 1, binding = 1) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
+};
+
+layout (set = 1, binding = 2) uniform sampler2D PreviousTemporalBuffer;
+layout (set = 1, binding = 3) uniform sampler2D InputAmbientOcclusion;
+layout (set = 1, binding = 4) uniform sampler2D SceneFeatures4Half;
+
+layout (location = 0) out vec2 OutScreenCoordinate;
+
+void main()
+{
+	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
+    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+	gl_Position = vec4(x,y,0.0f,1.0f);
 }

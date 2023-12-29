@@ -1,3 +1,6 @@
+#version 460
+
+#extension GL_ARB_separate_shader_objects : require
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -180,4 +183,73 @@ bool ValidScreenCoordinate(vec2 X)
             && X.x < 1.0f
             && X.y >= 0.0f
             && X.y < 1.0f;
+}
+
+layout (std140, set = 1, binding = 0) uniform Camera
+{
+	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;
+	layout (offset = 64) mat4 WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
+	layout (offset = 192) mat4 INVERSE_WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 256) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;
+	layout (offset = 320) vec3 CAMERA_WORLD_POSITION;
+	layout (offset = 336) vec3 CAMERA_FORWARD_VECTOR;
+	layout (offset = 352) vec2 CURRENT_FRAME_JITTER;
+	layout (offset = 360) float NEAR_PLANE;
+	layout (offset = 364) float FAR_PLANE;
+};
+
+layout (std140, set = 1, binding = 1) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
+};
+
+layout (location = 0) in vec2 InScreenCoordinate;
+
+layout (set = 1, binding = 2) uniform sampler2D PreviousTemporalBuffer;
+layout (set = 1, binding = 3) uniform sampler2D InputAmbientOcclusion;
+layout (set = 1, binding = 4) uniform sampler2D SceneFeatures4Half;
+
+layout (location = 0) out vec4 CurrentTemporalBuffer;
+layout (location = 1) out vec4 OutputAmbientOcclusion;
+
+void main()
+{
+    /*
+    *   Calculate the minimum/maximum ambient occlusion values in the neighborhood of the current frame.
+    *   Also retrieve the current ambient occlusion here.
+    */
+    float current_ambient_occlusion = 0.0f;
+	float minimum_ambient_occlusion = 1.0f;
+	float maximum_ambient_occlusion = 0.0f;
+	for (int x = -1; x <= 1; ++x)
+	{
+		for (int y = -1; y <= 1; ++y)
+		{
+			vec2 sample_coordinate = InScreenCoordinate + vec2(float(x), float(y)) * INVERSE_HALF_MAIN_RESOLUTION;
+			float neighborhood_sample = texture(InputAmbientOcclusion, sample_coordinate).x;
+            current_ambient_occlusion += neighborhood_sample * float(x == 0 && y == 0);
+			minimum_ambient_occlusion = min(minimum_ambient_occlusion, neighborhood_sample);
+			maximum_ambient_occlusion = max(maximum_ambient_occlusion, neighborhood_sample);
+		}
+	}
+    vec2 previous_screen_coordinate = InScreenCoordinate - texture(SceneFeatures4Half, InScreenCoordinate).xy;
+    float previous_ambient_occlusion = texture(PreviousTemporalBuffer, previous_screen_coordinate).x;
+    previous_ambient_occlusion = clamp(previous_ambient_occlusion, minimum_ambient_occlusion, maximum_ambient_occlusion);
+    /*
+	*	Calculate the weight between the current frame and the history depending on certain criteria.
+	*
+	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
+	*/
+	float previous_sample_weight = 1.0f;
+	previous_sample_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
+    previous_sample_weight *= 0.9f;
+    float blended_ambient_occlusion = mix(current_ambient_occlusion, previous_ambient_occlusion, previous_sample_weight);
+	CurrentTemporalBuffer = vec4(blended_ambient_occlusion);
+	OutputAmbientOcclusion = vec4(blended_ambient_occlusion);
 }

@@ -8,7 +8,6 @@
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionApplicationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionSpatialDenoisingGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionTemporalDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/AmbientOcclusionRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/RenderingConfiguration.h>
@@ -47,7 +46,11 @@ private:
 	AmbientOcclusionRayTracingPipeline _AmbientOcclusionRayTracingPipeline;
 
 	//The ambient occlusion temporal denoising graphics pipelines.
-	StaticArray<AmbientOcclusionTemporalDenoisingGraphicsPipeline, 2> _AmbientOcclusionTemporalDenoisingGraphicsPipelines;
+	StaticArray<GraphicsRenderPipeline, 2> _AmbientOcclusionTemporalDenoisingGraphicsPipelines
+	{
+		GraphicsRenderPipeline(HashString("AmbientOcclusionTemporalDenoising_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("AmbientOcclusionTemporalDenoising_RenderPipeline"))
+	};
 
 	//The ambient occlusion spatial denoising graphics pipelines.
 	StaticArray<AmbientOcclusionSpatialDenoisingGraphicsPipeline, 2> _AmbientOcclusionSpatialDenoisingGraphicsPipelines;

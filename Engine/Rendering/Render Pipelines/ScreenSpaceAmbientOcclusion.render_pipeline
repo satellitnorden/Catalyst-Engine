@@ -51,6 +51,9 @@ Vertex
 //The fragment shader.
 Fragment
 {
+    //Constants.
+    #define AMBIENT_OCCLUSION_RADIUS (1.0f)
+
     //Declare input parameters.
     InputParameter(vec2, InScreenCoordinate);
 
@@ -91,7 +94,7 @@ Fragment
 		random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
 
 		//Calculate the sample position.
-		vec3 sample_position = world_position + random_direction * InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), i) * 2.0f;
+		vec3 sample_position = world_position + random_direction * InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), i) * AMBIENT_OCCLUSION_RADIUS;
 
 		//Calculate the sample screen coordinate.
 		vec4 sample_view_space_position = WORLD_TO_CLIP_MATRIX * vec4(sample_position, 1.0f);
@@ -104,7 +107,7 @@ Fragment
 		float sample_view_distance = CalculateViewSpacePosition(InScreenCoordinate, sample_scene_features.w).z;
 
 		//Calculate the distance falloff.
-		float distance_falloff = SmoothStep(1.0f - (min(abs(expected_view_distance - sample_view_distance), 2.0f) / 2.0f));
+		float distance_falloff = SmoothStep(1.0f - (min(abs(expected_view_distance - sample_view_distance), AMBIENT_OCCLUSION_RADIUS) / AMBIENT_OCCLUSION_RADIUS));
 
 		//Calculate the sample weight.
 		float sample_weight = 1.0f;

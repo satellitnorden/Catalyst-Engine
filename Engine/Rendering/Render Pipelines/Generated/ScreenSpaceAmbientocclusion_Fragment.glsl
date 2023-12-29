@@ -367,6 +367,7 @@ layout (location = 0) out vec4 AmbientOcclusion;
 
 void main()
 {
+    #define AMBIENT_OCCLUSION_RADIUS (1.0f)
     vec4 scene_features_2 = texture(SceneFeatures2Half, InScreenCoordinate);
     vec3 normal = scene_features_2.xyz;
     float depth = scene_features_2.w;
@@ -383,14 +384,14 @@ void main()
         float random_hemisphere_length = random_hemisphere_sample.w;
 		vec3 random_direction = random_rotation * random_hemisphere_direction;
 		random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
-		vec3 sample_position = world_position + random_direction * InterleavedGradientNoise(uvec2(gl_FragCoord.xy), i) * 2.0f;
+		vec3 sample_position = world_position + random_direction * InterleavedGradientNoise(uvec2(gl_FragCoord.xy), i) * AMBIENT_OCCLUSION_RADIUS;
 		vec4 sample_view_space_position = WORLD_TO_CLIP_MATRIX * vec4(sample_position, 1.0f);
 		float sample_screen_coordinate_inverse_denominator = 1.0f / sample_view_space_position.w;
 		vec2 sample_screen_coordinate = sample_view_space_position.xy * sample_screen_coordinate_inverse_denominator * 0.5f + 0.5f;
 		float expected_view_distance = CalculateViewSpacePosition(InScreenCoordinate, sample_view_space_position.z * sample_screen_coordinate_inverse_denominator).z;
 		vec4 sample_scene_features = texture(SceneFeatures2Half, sample_screen_coordinate);
 		float sample_view_distance = CalculateViewSpacePosition(InScreenCoordinate, sample_scene_features.w).z;
-		float distance_falloff = SmoothStep(1.0f - (min(abs(expected_view_distance - sample_view_distance), 2.0f) / 2.0f));
+		float distance_falloff = SmoothStep(1.0f - (min(abs(expected_view_distance - sample_view_distance), AMBIENT_OCCLUSION_RADIUS) / AMBIENT_OCCLUSION_RADIUS));
 		float sample_weight = 1.0f;
 		occlusion += float(expected_view_distance < sample_view_distance) * distance_falloff * sample_weight;
 		total_weight += sample_weight;
