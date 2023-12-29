@@ -45,6 +45,19 @@ void GraphicsPipeline::ProcessInputStream(const RenderInputStream &input_stream,
 		{
 			for (const RenderInputStreamEntry &entry : input_stream._Entries)
 			{
+				//Push constants.
+				if (input_stream._RequiredPushConstantDataSize != 0)
+				{
+					command_buffer->PushConstants
+					(
+						this,
+						ShaderStage::VERTEX | ShaderStage::FRAGMENT,
+						0,
+						static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
+						&input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
+					);
+				}
+
 				//Draw!
 				command_buffer->Draw(this, entry._VertexCount, 1);
 			}

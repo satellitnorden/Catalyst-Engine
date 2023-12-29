@@ -5,6 +5,9 @@
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
 
+#define NUMBER_OF_BLUE_NOISE_TEXTURES (32)
+#define BLUE_NOISE_TEXTURE_RESOLUTION (32)
+
 #define MATERIAL_PROPERTY_TYPE_MASKED (1 << 0)
 #define MATERIAL_PROPERTY_TYPE_OPAQUE (1 << 1)
 #define MATERIAL_PROPERTY_TYPE_TRANSLUCENT (1 << 2)
@@ -121,6 +124,9 @@ layout (std140, set = 0, binding = 1) uniform GlobalMaterials
     layout (offset = 0) Material MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
 };
 
+//The blue noise textures.
+layout (set = 0, binding = 2) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
+
 /*
 *	Returns the square of the given number.
 */
@@ -175,6 +181,7 @@ layout (std140, set = 1, binding = 0) uniform General
 	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
 	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
 	layout (offset = 32) uint FRAME;
+	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
 };
 
 layout (location = 0) in vec2 InScreenCoordinate;

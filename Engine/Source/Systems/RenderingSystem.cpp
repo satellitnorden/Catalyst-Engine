@@ -149,12 +149,19 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	//Initialize the sub rendering system.
 	_SubRenderingSystem->Initialize();
 
-	//Register the general uniform data.
+	//Register uniformbuffers.
 	_BufferManager.RegisterUniformBuffer
 	(
 		HashString("General"),
 		&_GeneralUniformData,
 		sizeof(GeneralUniformData)
+	);
+
+	_BufferManager.RegisterUniformBuffer
+	(
+		HashString("HammersleyHemisphereSamples"),
+		&_HammersleyHemisphereSamplesUniformData,
+		sizeof(HammersleyHemisphereSamplesUniformData)
 	);
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -310,6 +317,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 	_GeneralUniformData._HalfResolution = Vector2<float32>(static_cast<float32>(GetScaledResolution(1)._Width), static_cast<float32>(GetScaledResolution(1)._Height));
 	_GeneralUniformData._InverseHalfResolution = Vector2<float32>(1.0f / _GeneralUniformData._HalfResolution._X, 1.0f / _GeneralUniformData._HalfResolution._Y);
 	_GeneralUniformData._FrameIndex = static_cast<uint32>(CatalystEngineSystem::Instance->GetTotalFrames());
+	_GeneralUniformData._BlueNoiseTextureIndex = _CurrentBlueNoiseTextureIndex;
 
 	//Tell the sub rendering to begin the frame.
 	{
@@ -1413,13 +1421,16 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
 		{
 			//Global textures.
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::SampledImage, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
 
 			//Global materials.
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
+		
+			//Blue noise textures.
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_BLUE_NOISE_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_MISS | ShaderStage::RAY_GENERATION),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GLOBAL_2)]);
@@ -1492,6 +1503,7 @@ void RenderingSystem::InitializeHammersleyHemisphereSamplesUniformBuffer() NOEXC
 		for (uint8 j{ 0 }; j < 8; ++j)
 		{
 			hemisphere_samples[counter] = Vector4<float32>(HammersleySequence::CalculateCoordinateHemisphereCosinus(i + j * 8 + 1, 65), HammersleySequence::RadicalInverse(counter + 1));
+			_HammersleyHemisphereSamplesUniformData._HammersleyCosinusSamples[counter] = hemisphere_samples[counter];
 
 			++counter;
 		}
@@ -1543,6 +1555,7 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		for (uint8 j{ 0 }; j < GetNumberOfFramebuffers(); ++j)
 		{
 			BindCombinedImageSamplerToRenderDataTable(4, i, &_GlobalRenderData._RenderDataTables[j], texture_2D_handle, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
+			BindCombinedImageSamplerToRenderDataTable(2, i, &_GlobalRenderData._RenderDataTables2[j], texture_2D_handle, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
 		}
 	}
 

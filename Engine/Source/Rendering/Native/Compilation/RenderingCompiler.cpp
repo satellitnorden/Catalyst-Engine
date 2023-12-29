@@ -113,7 +113,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 0
+#if 1
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -1004,11 +1004,12 @@ void GenerateFragmentShader
 
 			//Replace "FRAGMENT_COORDINATE" with "gl_FragCoord".
 			{
-				const size_t position{ line.find("FRAGMENT_COORDINATE") };
+				size_t position{ line.find("FRAGMENT_COORDINATE") };
 
-				if (position != std::string::npos)
+				while (position != std::string::npos)
 				{
 					line.replace(position, strlen("FRAGMENT_COORDINATE"), "gl_FragCoord");
+					position = line.find("FRAGMENT_COORDINATE");
 				}
 			}
 

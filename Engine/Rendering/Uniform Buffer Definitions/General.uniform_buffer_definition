@@ -6,4 +6,5 @@ UniformBuffer(General)
     vec2 INVERSE_HALF_MAIN_RESOLUTION;
 
     uint FRAME;
+    uint BLUE_NOISE_TEXTURE_INDEX;
 };

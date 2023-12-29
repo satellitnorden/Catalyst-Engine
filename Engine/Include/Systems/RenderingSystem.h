@@ -635,6 +635,22 @@ private:
 		//The frame index.
 		uint32 _FrameIndex;
 
+		//The blue noise texture index.
+		uint32 _BlueNoiseTextureIndex;
+
+	};
+
+	/*
+	*	Hammersley hemisphere samples uniform data class definition.
+	*/
+	class HammersleyHemisphereSamplesUniformData final
+	{
+
+	public:
+
+		//The hammersley cosinus samples.
+		StaticArray<Vector4<float32>, 64> _HammersleyCosinusSamples;
+
 	};
 
 	//The configuration.
@@ -667,6 +683,9 @@ private:
 
 	//The general uniform data.
 	GeneralUniformData _GeneralUniformData;
+
+	//The hammersley hemisphere samples uniform data.
+	HammersleyHemisphereSamplesUniformData _HammersleyHemisphereSamplesUniformData;
 
 	//The cached samplers.
 	DynamicArray<CachedSampler> _CachedSamplers;

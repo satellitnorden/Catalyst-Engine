@@ -1,0 +1,122 @@
+//Declare uniform buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+IncludeUniformBuffer(HammersleyHemisphereSamples);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(BlueNoise);
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Math);
+IncludeShaderFunctionLibrary(Noise);
+
+//Declare input render targets.
+InputRenderTarget(SceneFeatures2Half /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(AmbientOcclusion);
+
+//Declare render resolution.
+RenderResolution(MAIN_HALF);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Declare push constant data.
+PushConstantData(uint, NUMBER_OF_SAMPLES);
+
+//Subscribe to input streams.
+SubscribeToInputStream(ScreenSpaceAmbientOcclusion);
+
+//The vertex shader.
+Vertex
+{
+    //Declare output parameters.
+    OutputParameter(vec2, OutScreenCoordinate);
+
+	//Calculate the viewport coordinates.
+	float x = -1.0f + float((VERTEX_INDEX & 2) << 1);
+    float y = -1.0f + float((VERTEX_INDEX & 1) << 2);
+
+    //Calculate the screen coordinate.
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+    
+    //Output the position.
+    OutputVertexPosition(vec4(x, y, 0.0f, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample the scene features.
+    vec4 scene_features_2 = texture(SceneFeatures2Half, InScreenCoordinate);
+    vec3 normal = scene_features_2.xyz;
+    float depth = scene_features_2.w;
+
+    //Calculate the world position.
+    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
+
+    //Sample the noise texture.
+	vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), 0);
+
+    //Calculate the random hemisphere sample start index.
+	uint random_hemisphere_sample_start_index = uint(noise_texture_sample.w * 64.0f);
+
+    //Initialize the random rotation.
+    mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
+
+    //Keep track of the total weight.
+	float total_weight = 0.0f;
+
+	//Calculate the occlusion.
+	float occlusion = 0.0f;
+
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    {
+        //Retrieve the random hemisphere sample.
+        vec4 random_hemisphere_sample = HAMMERSLEY_COSINUS_SAMPLES[(random_hemisphere_sample_start_index + i) & 63];
+        vec3 random_hemisphere_direction = random_hemisphere_sample.xyz;
+        float random_hemisphere_length = random_hemisphere_sample.w;
+
+        //Rotate the random direction.
+		vec3 random_direction = random_rotation * random_hemisphere_direction;
+
+		//Flip the direction, if needed.
+		random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
+
+		//Calculate the sample position.
+		vec3 sample_position = world_position + random_direction * InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), i) * 2.0f;
+
+		//Calculate the sample screen coordinate.
+		vec4 sample_view_space_position = WORLD_TO_CLIP_MATRIX * vec4(sample_position, 1.0f);
+		float sample_screen_coordinate_inverse_denominator = 1.0f / sample_view_space_position.w;
+		vec2 sample_screen_coordinate = sample_view_space_position.xy * sample_screen_coordinate_inverse_denominator * 0.5f + 0.5f;
+		float expected_view_distance = CalculateViewSpacePosition(InScreenCoordinate, sample_view_space_position.z * sample_screen_coordinate_inverse_denominator).z;
+
+		//Sample the samplescene features.
+		vec4 sample_scene_features = texture(SceneFeatures2Half, sample_screen_coordinate);
+		float sample_view_distance = CalculateViewSpacePosition(InScreenCoordinate, sample_scene_features.w).z;
+
+		//Calculate the distance falloff.
+		float distance_falloff = SmoothStep(1.0f - (min(abs(expected_view_distance - sample_view_distance), 2.0f) / 2.0f));
+
+		//Calculate the sample weight.
+		float sample_weight = 1.0f;
+
+		//If the expected hit distance is greater then the sample hit distance, there is occlusion.
+		occlusion += float(expected_view_distance < sample_view_distance) * distance_falloff * sample_weight;
+		total_weight += sample_weight;
+    }
+
+    //Normalize the ambient occlusion.
+	occlusion = total_weight != 0.0f ? 1.0f - (occlusion / total_weight) : 1.0f;
+
+    //Write the fragment
+    OutputFragment(AmbientOcclusion, vec4(occlusion));
+}

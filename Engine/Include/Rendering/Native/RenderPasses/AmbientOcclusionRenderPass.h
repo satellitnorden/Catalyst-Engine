@@ -5,10 +5,10 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionApplicationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionTemporalDenoisingGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceAmbientOcclusionGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/AmbientOcclusionRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/RenderingConfiguration.h>
@@ -41,7 +41,7 @@ private:
 	StaticArray<RenderTargetHandle, 2> _AmbientOcclusionTemporalBufferRenderTargets;
 
 	//The screen space ambient occlusion graphics pipeline.
-	ScreenSpaceAmbientOcclusionGraphicsPipeline _ScreenSpaceAmbientOcclusionGraphicsPipeline;
+	GraphicsRenderPipeline _ScreenSpaceAmbientOcclusionGraphicsPipeline{ HashString("ScreenSpaceAmbientOcclusion_RenderPipeline") };
 
 	//The ambient occlusion ray tracing pipeline.
 	AmbientOcclusionRayTracingPipeline _AmbientOcclusionRayTracingPipeline;

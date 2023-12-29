@@ -45,6 +45,84 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
+	//Register the input stream(s).
+	{
+		struct ScreenSpaceAmbientOcclusionPushConstantData final
+		{
+			uint32 _NumberOfSamples;
+		};
+
+		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+		(
+			HashString("ScreenSpaceAmbientOcclusion"),
+			DynamicArray< VertexInputAttributeDescription>(),
+			DynamicArray<VertexInputBindingDescription>(),
+			sizeof(ScreenSpaceAmbientOcclusionPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				//Clear the entries.
+				input_stream->_Entries.Clear();
+
+				//Clear the push constant data memory.
+				input_stream->_PushConstantDataMemory.Clear();
+
+				//Add an entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._VertexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBufferOffset = 0;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 3;
+				new_entry._IndexCount = 0;
+				new_entry._InstanceCount = 0;
+
+				//Set up the push constant data.
+				ScreenSpaceAmbientOcclusionPushConstantData push_constant_data;
+
+				switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionQuality())
+				{
+					case RenderingConfiguration::AmbientOcclusionQuality::LOW:
+					{
+						push_constant_data._NumberOfSamples = 4;
+
+						break;
+					}
+
+					case RenderingConfiguration::AmbientOcclusionQuality::MEDIUM:
+					{
+						push_constant_data._NumberOfSamples = 8;
+
+						break;
+					}
+
+					case RenderingConfiguration::AmbientOcclusionQuality::HIGH:
+					{
+						push_constant_data._NumberOfSamples = 16;
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
+				}
+
+				for (uint64 i{ 0 }; i < sizeof(ScreenSpaceAmbientOcclusionPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			},
+			RenderInputStream::Mode::DRAW,
+			nullptr
+		);
+	}
+
 	//Create the ambient occlusion render target.
 	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, SampleCount::SAMPLE_COUNT_1, &_AmbientOcclusionRenderTarget);
 
@@ -75,7 +153,14 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_AmbientOcclusionApplicationGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize(_AmbientOcclusionRenderTarget);
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._OutputRenderTargets.Emplace(HashString("AmbientOcclusion"), _AmbientOcclusionRenderTarget);
+
+		_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize(parameters);
+	}
+
 	_AmbientOcclusionRayTracingPipeline.Initialize(_AmbientOcclusionRenderTarget);
 
 	_AmbientOcclusionTemporalDenoisingGraphicsPipelines[0].Initialize(	_AmbientOcclusionTemporalBufferRenderTargets[0],

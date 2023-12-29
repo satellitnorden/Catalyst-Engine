@@ -1,8 +1,6 @@
 #version 460
 
 #extension GL_ARB_separate_shader_objects : require
-layout (early_fragment_tests) in;
-
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -190,7 +188,28 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (set = 1, binding = 1) uniform sampler SAMPLER;
+layout (std140, set = 1, binding = 1) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
+};
+
+layout (std140, set = 1, binding = 2) uniform HammersleyHemisphereSamples
+{
+	layout (offset = 0) vec4 HAMMERSLEY_COSINUS_SAMPLES[64];
+};
+
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    return texture(BLUE_NOISE_TEXTURES[(BLUE_NOISE_TEXTURE_INDEX + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1)], vec2(coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
 
 /*
 *   Linearizes a depth value.
@@ -266,44 +285,89 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
+/*
+*	Rotates the given vector around the yaw.
+*/
+vec3 RotateYaw(vec3 X, float angle)
+{
+	float sine = sin(angle);
+    float cosine = cos(angle);
+
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
+
+    return X;
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}
+
+/*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
+*   Hash function.
+*/
+uint Hash(inout uint seed)
+{
+    seed = (seed ^ 61u) ^ (seed >> 16u);
+    seed *= 9u;
+    seed = seed ^ (seed >> 4u);
+    seed *= 0x27d4eb2du;
+    seed = seed ^ (seed >> 15u);
+
+    return seed;
+}
+
+/*
+*   Given a seed, returns a random number.
+*/
+float RandomFloat(inout uint seed)
+{
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*/
+float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+{
+	frame = frame % 64;
+
+	float x = float(coordinate.x) + 5.588238f * float(frame);
+	float y = float(coordinate.y) + 5.588238f * float(frame);
+
+	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+}
+
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) float HALF_WIDTH;
-	layout (offset = 20) float WHOLE_WIDTH;
-	layout (offset = 24) float HEIGHT;
-	layout (offset = 28) uint MATERIAL_INDEX;
-	layout (offset = 32) float START_FADE_IN_DISTANCE;
-	layout (offset = 36) float END_FADE_IN_DISTANCE;
-	layout (offset = 40) float START_FADE_OUT_DISTANCE;
-	layout (offset = 44) float END_FADE_OUT_DISTANCE;
+	layout (offset = 0) uint NUMBER_OF_SAMPLES;
 };
 
-layout (location = 0) in mat3 InTangentSpaceMatrix;
-layout (location = 3) in vec3 InWorldPosition;
-layout (location = 4) in vec2 InTextureCoordinate;
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2Half;
 
-layout (location = 0) out vec4 SceneFeatures1;
-layout (location = 1) out vec4 SceneFeatures2;
-layout (location = 2) out vec4 SceneFeatures3;
-layout (location = 3) out vec4 SceneFeatures4;
-layout (location = 4) out vec4 Scene;
+layout (location = 0) out vec2 OutScreenCoordinate;
 
 void main()
 {
-    vec4 albedo_thickness;
-    EVALUATE_ALBEDO_THICKNESS(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, albedo_thickness);
-    vec4 normal_map_displacement;
-    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, normal_map_displacement);
-    vec4 material_properties;
-    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, material_properties);
-    vec3 shading_normal = normal_map_displacement.xyz * 2.0f - 1.0f;
-    shading_normal = InTangentSpaceMatrix * shading_normal;
-    shading_normal = normalize(shading_normal);
-    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
-	SceneFeatures1 = albedo_thickness;
-	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
-	SceneFeatures3 = material_properties;
-	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
-	Scene = vec4(albedo_thickness.rgb*material_properties[3]*MATERIALS[MATERIAL_INDEX]._EmissiveMultiplier,1.0f);
+	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
+    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+	gl_Position = vec4(x,y,0.0f,1.0f);
 }
