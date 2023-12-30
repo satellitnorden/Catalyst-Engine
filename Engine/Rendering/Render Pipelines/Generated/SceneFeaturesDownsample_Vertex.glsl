@@ -174,6 +174,17 @@ vec4 UnpackColor(uint color)
     return unpacked;
 }
 
+/*
+*   Returns if the given screen coordinate is valid.
+*/
+bool ValidScreenCoordinate(vec2 X)
+{
+    return  X.x >= 0.0f
+            && X.x < 1.0f
+            && X.y >= 0.0f
+            && X.y < 1.0f;
+}
+
 layout (std140, set = 1, binding = 0) uniform General
 {
 	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;

@@ -174,6 +174,17 @@ vec4 UnpackColor(uint color)
     return unpacked;
 }
 
+/*
+*   Returns if the given screen coordinate is valid.
+*/
+bool ValidScreenCoordinate(vec2 X)
+{
+    return  X.x >= 0.0f
+            && X.x < 1.0f
+            && X.y >= 0.0f
+            && X.y < 1.0f;
+}
+
 layout (location = 0) in vec2 InTextureCoordinate;
 
 layout (set = 1, binding = 0) uniform sampler2D Scene;

@@ -174,6 +174,17 @@ vec4 UnpackColor(uint color)
     return unpacked;
 }
 
+/*
+*   Returns if the given screen coordinate is valid.
+*/
+bool ValidScreenCoordinate(vec2 X)
+{
+    return  X.x >= 0.0f
+            && X.x < 1.0f
+            && X.y >= 0.0f
+            && X.y < 1.0f;
+}
+
 void main()
 {
 	float x = -1.0f + float((gl_VertexIndex & 2) << 1);

@@ -333,6 +333,27 @@ public:
 };
 
 /*
+*	Finds the file path for the common shader with the given name.
+*/
+void FindCommonShaderFilePath(const char* const RESTRICT name, DynamicString* const RESTRICT file_path) NOEXCEPT
+{
+	//Try the engine directory.
+	{
+		char buffer[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(buffer, "%s\\Common Shaders\\%s.common_shader", ENGINE_RENDERING_DIRECTORY_PATH, name);
+
+		if (File::Exists(buffer))
+		{
+			*file_path = buffer;
+
+			return;
+		}
+	}
+
+	ASSERT(false, "Couldn't find common shader file!");
+}
+
+/*
 *	Finds the file path for the uniform buffer definition with the given name.
 */
 void FindUniformBufferDefinitionFilePath(const char *const RESTRICT name, DynamicString *const RESTRICT file_path) NOEXCEPT
@@ -2365,6 +2386,31 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					);
 
 					render_pipeline_information._InputStreamSubscriptions.Emplace(HashString(string.Data()));
+
+					continue;
+				}
+			}
+
+			//Is this a common vertex shader include?
+			{
+				const size_t position{ current_line.find("IncludeCommonVertexShader(") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					DynamicString common_vertex_shader_file_path;
+					FindCommonShaderFilePath(string.Data(), &common_vertex_shader_file_path);
+					std::ifstream common_vertex_shader_file{ common_vertex_shader_file_path.Data() };
+
+					GenerateVertexShader(common_vertex_shader_file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
 
 					continue;
 				}

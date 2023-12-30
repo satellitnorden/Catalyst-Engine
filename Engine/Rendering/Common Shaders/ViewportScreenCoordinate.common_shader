@@ -1,0 +1,15 @@
+{
+    //Declare output parameters.
+    OutputParameter(vec2, OutScreenCoordinate);
+
+	//Calculate the viewport coordinates.
+	float x = -1.0f + float((VERTEX_INDEX & 2) << 1);
+    float y = -1.0f + float((VERTEX_INDEX & 1) << 2);
+
+    //Calculate the screen coordinate.
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+    
+    //Output the vertex position.
+    OutputVertexPosition(vec4(x, y, 0.0f, 1.0f));
+}

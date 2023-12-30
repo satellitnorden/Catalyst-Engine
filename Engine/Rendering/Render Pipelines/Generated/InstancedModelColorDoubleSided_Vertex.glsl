@@ -174,6 +174,17 @@ vec4 UnpackColor(uint color)
     return unpacked;
 }
 
+/*
+*   Returns if the given screen coordinate is valid.
+*/
+bool ValidScreenCoordinate(vec2 X)
+{
+    return  X.x >= 0.0f
+            && X.x < 1.0f
+            && X.y >= 0.0f
+            && X.y < 1.0f;
+}
+
 layout (std140, set = 1, binding = 0) uniform Camera
 {
 	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;

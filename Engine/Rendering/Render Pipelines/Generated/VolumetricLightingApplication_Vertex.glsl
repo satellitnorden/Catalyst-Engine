@@ -174,6 +174,17 @@ vec4 UnpackColor(uint color)
     return unpacked;
 }
 
+/*
+*   Returns if the given screen coordinate is valid.
+*/
+bool ValidScreenCoordinate(vec2 X)
+{
+    return  X.x >= 0.0f
+            && X.x < 1.0f
+            && X.y >= 0.0f
+            && X.y < 1.0f;
+}
+
 layout (std140, set = 1, binding = 0) uniform Camera
 {
 	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;
@@ -319,13 +330,13 @@ vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
 layout (set = 1, binding = 1) uniform sampler2D SceneFeatures2;
 layout (set = 1, binding = 2) uniform sampler2D VolumetricLighting;
 
-layout (location = 0) out vec2 OutTextureCoordinate;
+layout (location = 0) out vec2 OutScreenCoordinate;
 
 void main()
 {
 	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
     float y = -1.0f + float((gl_VertexIndex & 1) << 2);
-    OutTextureCoordinate.x = (x + 1.0f) * 0.5f;
-    OutTextureCoordinate.y = (y + 1.0f) * 0.5f;
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
 	gl_Position = vec4(x,y,0.0f,1.0f);
 }

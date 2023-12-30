@@ -1,0 +1,8 @@
+{
+	//Calculate the viewport coordinates.
+	float x = -1.0f + float((VERTEX_INDEX & 2) << 1);
+    float y = -1.0f + float((VERTEX_INDEX & 1) << 2);
+
+    //Output the vertex position.
+    OutputVertexPosition(vec4(x, y, 0.0f, 1.0f));
+}

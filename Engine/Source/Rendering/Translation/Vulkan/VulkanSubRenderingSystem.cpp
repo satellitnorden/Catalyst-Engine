@@ -1318,7 +1318,7 @@ NO_DISCARD uint64 VulkanSubRenderingSystem::GetExecutionTime(const QueryPoolHand
 	const uint64 timestamp_valid_bits{ static_cast<uint64>(VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyProperties(VulkanLogicalDevice::QueueType::MAIN).timestampValidBits) };
 	const float64 timestamp_period{ static_cast<float64>(VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceProperties().limits.timestampPeriod) };
 
-	return CatalystBaseMath::Round<uint64>(static_cast<float64>((query_pool_results[1] - query_pool_results[0])) * timestamp_period);
+	return CatalystBaseMath::Round<uint64>(static_cast<float32>(static_cast<float64>(query_pool_results[1] - query_pool_results[0]) * timestamp_period));
 }
 
 /*
