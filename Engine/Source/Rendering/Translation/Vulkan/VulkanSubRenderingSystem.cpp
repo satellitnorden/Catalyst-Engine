@@ -1286,26 +1286,39 @@ void VulkanSubRenderingSystem::WaitForEvent(EventHandle handle) NOEXCEPT
 /*
 *	Creates a query pool.
 */
-void VulkanSubRenderingSystem::CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT
+void VulkanSubRenderingSystem::CreateQueryPool(const uint32 query_count, QueryPoolHandle *const RESTRICT handle) NOEXCEPT
 {
-	*handle = static_cast<QueryPoolHandle>(VulkanInterface::Instance->CreateQueryPool(VkQueryType::VK_QUERY_TYPE_TIMESTAMP, 2));
+	*handle = static_cast<QueryPoolHandle>(VulkanInterface::Instance->CreateQueryPool(VkQueryType::VK_QUERY_TYPE_TIMESTAMP, query_count));
 }
 
 /*
 *	Returns the execution time, in nanoseconds, from the given query pool.
 *	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
 */
-NO_DISCARD uint32 VulkanSubRenderingSystem::GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT
+NO_DISCARD uint64 VulkanSubRenderingSystem::GetExecutionTime(const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT
 {
 	//Get the query results.
-	StaticArray<uint32, 2> query_pool_results;
-	VULKAN_ERROR_CHECK(vkGetQueryPoolResults(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<const VulkanQueryPool* const RESTRICT>(query_pool)->Get(), 0, 2, sizeof(uint32) * 2, query_pool_results.Data(), 0, VkQueryResultFlagBits::VK_QUERY_RESULT_WAIT_BIT));
+	StaticArray<uint64, 2> query_pool_results;
+	VULKAN_ERROR_CHECK
+	(
+		vkGetQueryPoolResults
+		(
+			VulkanInterface::Instance->GetLogicalDevice().Get(),
+			static_cast<const VulkanQueryPool *const RESTRICT>(query_pool)->Get(),
+			query_index,
+			2,
+			sizeof(uint64) * 2,
+			query_pool_results.Data(),
+			sizeof(uint64),
+			VkQueryResultFlagBits::VK_QUERY_RESULT_64_BIT | VkQueryResultFlagBits::VK_QUERY_RESULT_WAIT_BIT
+		)
+	);
 
 	//Cache the timestamp valids bits/timestamp period.
-	const uint32 timestamp_valid_bits{ VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyProperties(VulkanLogicalDevice::QueueType::MAIN).timestampValidBits };
-	const float32 timestamp_period{ VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceProperties().limits.timestampPeriod };
+	const uint64 timestamp_valid_bits{ static_cast<uint64>(VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyProperties(VulkanLogicalDevice::QueueType::MAIN).timestampValidBits) };
+	const float64 timestamp_period{ static_cast<float64>(VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceProperties().limits.timestampPeriod) };
 
-	return CatalystBaseMath::Round<uint32>(static_cast<float32>((query_pool_results[1] & timestamp_valid_bits) - (query_pool_results[0] & timestamp_valid_bits)) * timestamp_period);
+	return CatalystBaseMath::Round<uint64>(static_cast<float64>((query_pool_results[1] - query_pool_results[0])) * timestamp_period);
 }
 
 /*

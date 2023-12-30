@@ -13,10 +13,5 @@ class VulkanPipelineData
 
 public:
 
-#if VULKAN_TIMESTAMPS_ENABLED
-	//The query pools.
-	DynamicArray<VulkanQueryPool *RESTRICT> _QueryPools;
-#endif
-
 };
 #endif

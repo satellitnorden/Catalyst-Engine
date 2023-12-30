@@ -153,7 +153,7 @@ public:
 	/*
 	*	Records a write timestamp command.
 	*/
-	void CommandWriteTimestamp(const VkPipelineStageFlagBits pipeline_stage, const VkQueryPool query_pool, const uint32  query_index) NOEXCEPT;
+	void CommandWriteTimestamp(const VkPipelineStageFlagBits pipeline_stage, const VkQueryPool query_pool, const uint32 query_index) NOEXCEPT;
 
 	/*
 	*	Ends this Vulkan command buffer.

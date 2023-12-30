@@ -143,13 +143,13 @@ public:
 	/*
 	*	Creates a query pool.
 	*/
-	void CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT override;
+	void CreateQueryPool(const uint32 query_count, QueryPoolHandle *const RESTRICT handle) NOEXCEPT override;
 
 	/*
 	*	Returns the execution time, in nanoseconds, from the given query pool.
 	*	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
 	*/
-	NO_DISCARD uint32 GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT override;
+	NO_DISCARD uint64 GetExecutionTime(const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT override;
 
 	/*
 	*	Creates a Shader.

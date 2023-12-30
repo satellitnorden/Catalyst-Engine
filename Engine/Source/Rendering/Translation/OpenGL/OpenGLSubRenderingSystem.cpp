@@ -209,7 +209,7 @@ void OpenGLSubRenderingSystem::WaitForEvent(EventHandle handle) NOEXCEPT
 /*
 *	Creates a query pool.
 */
-void OpenGLSubRenderingSystem::CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT
+void OpenGLSubRenderingSystem::CreateQueryPool(const uint32 query_count, QueryPoolHandle *const RESTRICT handle) NOEXCEPT
 {
 
 }
@@ -218,7 +218,7 @@ void OpenGLSubRenderingSystem::CreateQueryPool(QueryPoolHandle *const RESTRICT h
 *	Returns the execution time, in nanoseconds, from the given query pool.
 *	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
 */
-NO_DISCARD uint32 OpenGLSubRenderingSystem::GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT
+NO_DISCARD uint64 OpenGLSubRenderingSystem::GetExecutionTime(const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT
 {
 	return 0;
 }

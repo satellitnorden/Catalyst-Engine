@@ -125,9 +125,14 @@ public:
 	void TraceRays(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height) NOEXCEPT;
 
 	/*
-	*	Writes a timestamp.
+	*	Writes a begin timestamp.
 	*/
-	void WriteTimestamp(const Pipeline *const RESTRICT pipeline, const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT;
+	void WriteBeginTimestamp(const Pipeline *const RESTRICT pipeline, const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT;
+
+	/*
+	*	Writes an end timestamp.
+	*/
+	void WriteEndTimestamp(const Pipeline *const RESTRICT pipeline, const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT;
 
 	/*
 	*	Ends the command buffer.

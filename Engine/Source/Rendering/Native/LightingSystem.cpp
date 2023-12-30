@@ -47,7 +47,7 @@ void LightingSystem::PostInitialize() NOEXCEPT
 	RenderingSystem::Instance->GetBufferManager()->RegisterStorageBuffer
 	(
 		HashString("Lighting"),
-		sizeof(LightHeaderData) + sizeof(ShaderLightComponent) * 1,
+		sizeof(LightHeaderData) + sizeof(ShaderLightComponent) * 64,
 		[](DynamicArray<byte> *const RESTRICT data, void* const RESTRICT arguments)
 		{
 			data->Clear();

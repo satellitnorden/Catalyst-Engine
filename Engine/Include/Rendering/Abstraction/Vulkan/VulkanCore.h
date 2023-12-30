@@ -52,15 +52,6 @@
 	#define VULKAN_DEBUGGING (0)
 #endif
 
-/*
-*	Turns Vulkan timestamps on/off.
-*/
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	#define VULKAN_TIMESTAMPS_ENABLED (0)
-#else
-	#define VULKAN_TIMESTAMPS_ENABLED (0)
-#endif
-
 #if VULKAN_DEBUGGING
 /*
 *	Given a VkResult, return a string.

@@ -9,6 +9,9 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <Rendering/Native/RenderingPerformanceData.h>
+#endif
 #include <Rendering/Native/CommandBuffer.h>
 
 /*
@@ -80,5 +83,10 @@ public:
 
 	//Container for all the global command pool data.
 	DynamicArray<GlobalCommandPoolData> _GlobalCommandPoolData;
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Container for all performance data.
+	DynamicArray<RenderingPerformanceData> _PerformanceData;
+#endif
 
 };

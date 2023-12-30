@@ -148,14 +148,6 @@ void DebugSystem::RegisterDebugCommand
 			break;
 		}
 	}
-	/*
-	_DebugCommands.Emplace();
-	DebugCommand &new_debug_command{ _DebugCommands.Back() };
-
-	new_debug_command._Name = name;
-	new_debug_command._Function = function;
-	new_debug_command._UserData = user_data;
-	*/
 }
 
 /*
@@ -180,17 +172,17 @@ void DebugSystem::Update() NOEXCEPT
 		}
 	}
 
-	//No need to update if the debug window isn't displayed.
-	if (!_DisplayDebugWindow)
-	{
-		return;
-	}
-
 	//Update IO.
 	UpdateIO();
 
 	//Begin the new ImGui frame.
 	ImGui::NewFrame();
+
+	//No need to update if the debug window isn't displayed.
+	if (!_DisplayDebugWindow)
+	{
+		return;
+	}
 
 	//Draw the debug window.
 	DrawDebugWindow();

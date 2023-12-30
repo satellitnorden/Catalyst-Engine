@@ -52,6 +52,16 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Registers a debug window.
+	*/
+	void RegisterDebugWindow
+	(
+		const char *const RESTRICT name,
+		DebugCommandFunction function,
+		void* const RESTRICT user_data
+	) NOEXCEPT;
+
+	/*
 	*	Registers a debug command.
 	*/
 	void RegisterDebugCommand

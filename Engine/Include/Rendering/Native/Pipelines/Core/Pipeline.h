@@ -99,6 +99,16 @@ public:
 	*/
 	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { _IncludeInRender = newIncludeInRender; }
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Returns the name.
+	*/
+	FORCE_INLINE NO_DISCARD const char *const RESTRICT GetName() const NOEXCEPT
+	{
+		return _Name;
+	}
+#endif
+
 protected:
 
 	/*

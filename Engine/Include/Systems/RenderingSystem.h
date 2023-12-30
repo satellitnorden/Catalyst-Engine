@@ -399,13 +399,13 @@ public:
 	/*
 	*	Creates a query pool.
 	*/
-	void CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT;
+	void CreateQueryPool(const uint32 query_count, QueryPoolHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
 	*	Returns the execution time, in nanoseconds, from the given query pool.
 	*	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
 	*/
-	NO_DISCARD uint32 GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT;
+	NO_DISCARD uint64 GetExecutionTime(const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT;
 
 	/*
 	*	Creates a Shader.
@@ -763,6 +763,11 @@ private:
 
 	//Denotes if the rendering system is currently taking a screenshot.
 	bool _IsTakingScreenshot{ false };
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Denotes if the performance window is currently opened.
+	bool _PerformanceWindowOpen{ false };
+#endif
 
 	/*
 	*	Pre-initializes the global render data.

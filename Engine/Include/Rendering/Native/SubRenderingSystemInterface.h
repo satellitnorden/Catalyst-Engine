@@ -175,13 +175,13 @@ public:
 	/*
 	*	Creates a query pool.
 	*/
-	virtual void CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT = 0;
+	virtual void CreateQueryPool(const uint32 query_count, QueryPoolHandle *const RESTRICT handle) NOEXCEPT = 0;
 
 	/*
 	*	Returns the execution time, in nanoseconds, from the given query pool.
 	*	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
 	*/
-	virtual NO_DISCARD uint32 GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT = 0;
+	virtual NO_DISCARD uint64 GetExecutionTime(const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT = 0;
 
 	/*
 	*	Creates a Shader.

@@ -38,6 +38,11 @@
 #include <Systems/TerrainSystem.h>
 #include <Systems/WorldSystem.h>
 
+//Third party.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <ThirdParty/imgui.h>
+#endif
+
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
 
@@ -166,6 +171,15 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Register debug commands.
+	DebugSystem::Instance->RegisterDebugCommand
+	(
+		"Performance\\Rendering",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			RenderingSystem::Instance->_PerformanceWindowOpen = !RenderingSystem::Instance->_PerformanceWindowOpen;
+		},
+		nullptr
+	);
 	DebugSystem::Instance->RegisterDebugCommand
 	(
 		"Rendering\\Visualization Modes\\None",
@@ -326,6 +340,39 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		_SubRenderingSystem->BeginFrame();
 	}
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Update the performance window.
+	if (_PerformanceWindowOpen)
+	{
+		//Retrieve the window resolution.
+		const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
+
+		//Add the window.
+		ImGui::Begin("Rendering Performance", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+		ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
+		ImGui::SetWindowSize(ImVec2(window_resolution._X * 0.2'50f, window_resolution._Y));
+
+		//Fill in the list.
+		float64 total_execution_time{ 0.0 };
+
+		for (uint64 i{ 0 }; i < _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._Names.Size(); ++i)
+		{
+			const uint64 execution_time{ GetExecutionTime(_GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._QueryPool, static_cast<uint32>(i * 2)) };
+			const float64 execution_time_milliseconds{ static_cast<float64>(execution_time) / 1'000.0 / 1'000.0 };
+
+			ImGui::Text("%s - %f ms", _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._Names[i], execution_time_milliseconds);
+		
+			total_execution_time += execution_time_milliseconds;
+		}
+
+		ImGui::Text("----");
+
+		ImGui::Text("Total Execution Time - %f ms", total_execution_time);
+
+		ImGui::End();
+	}
+#endif
+
 	//Update the camera system.
 	{
 		PROFILING_SCOPE(RenderingSystem_CameraSystem_RenderUpdate);
@@ -428,6 +475,11 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		frame_command_buffer->Begin(nullptr);
 
 		//Record all execute commands.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+		_GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._Names.Clear();
+
+		uint32 current_query_index{ 0 };
+#endif
 		for (RenderPass *const RESTRICT render_pass : _RenderPasses)
 		{
 			if (!render_pass->IsEnabled())
@@ -444,7 +496,21 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 					continue;
 				}
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+				if (pipeline->GetName())
+				{
+					_GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._Names.Emplace(pipeline->GetName());
+					frame_command_buffer->WriteBeginTimestamp(pipeline, _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._QueryPool, current_query_index++);
+				}
+#endif
 				frame_command_buffer->ExecuteCommands(pipeline, pipeline->GetCommandBuffer());
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+				if (pipeline->GetName())
+				{
+					frame_command_buffer->WriteEndTimestamp(pipeline, _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._QueryPool, current_query_index++);
+				}
+#endif
 			}
 
 			render_pass->PostRecord(frame_command_buffer);
@@ -936,18 +1002,18 @@ void RenderingSystem::WaitForEvent(const EventHandle handle) NOEXCEPT
 /*
 *	Creates a query pool.
 */
-void RenderingSystem::CreateQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT
+void RenderingSystem::CreateQueryPool(const uint32 query_count, QueryPoolHandle *const RESTRICT handle) NOEXCEPT
 {
-	_SubRenderingSystem->CreateQueryPool(handle);
+	_SubRenderingSystem->CreateQueryPool(query_count, handle);
 }
 
 /*
 *	Returns the execution time, in nanoseconds, from the given query pool.
 *	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
 */
-NO_DISCARD uint32 RenderingSystem::GetExecutionTime(const QueryPoolHandle query_pool) NOEXCEPT
+NO_DISCARD uint64 RenderingSystem::GetExecutionTime(const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT
 {
-	return _SubRenderingSystem->GetExecutionTime(query_pool);
+	return _SubRenderingSystem->GetExecutionTime(query_pool, query_index);
 }
 
 /*
@@ -1321,6 +1387,9 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 	_GlobalRenderData._RemoveGlobalTextureUpdates.Upsize<true>(number_of_framebuffers);
 	_GlobalRenderData._AddGlobalTextureUpdates.Upsize<true>(number_of_framebuffers);
 	_GlobalRenderData._GlobalCommandPoolData.Upsize<true>(number_of_framebuffers);
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	_GlobalRenderData._PerformanceData.Upsize<true>(number_of_framebuffers);
+#endif
 
 	for (uint8 i{ 0 }; i < number_of_framebuffers; ++i)
 	{
@@ -1333,6 +1402,10 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 
 		//Bind the dynamic uniform data buffer to the render data table.
 		BindUniformBufferToRenderDataTable(0, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
+	
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+		CreateQueryPool(128, &_GlobalRenderData._PerformanceData[i]._QueryPool);
+#endif
 	}
 
 	//Mark all global texture slots as free.
