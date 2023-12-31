@@ -1,8 +1,6 @@
 #version 460
 
 #extension GL_ARB_separate_shader_objects : require
-layout (early_fragment_tests) in;
-
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -201,10 +199,20 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (set = 1, binding = 1) uniform sampler HEIGHT_MAP_SAMPLER;
-layout (set = 1, binding = 2) uniform sampler NORMAL_MAP_SAMPLER;
-layout (set = 1, binding = 3) uniform sampler INDEX_BLEND_MAP_SAMPLER;
-layout (set = 1, binding = 4) uniform sampler MATERIAL_SAMPLER;
+layout (std140, set = 1, binding = 1) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
+};
+
+layout (set = 1, binding = 2, r8) uniform image2D AmbientOcclusion; 
+layout (set = 1, binding = 3, rgba32f) uniform image2D SceneFeatures2; 
+layout (set = 1, binding = 4, rgba8) uniform image2D SceneFeatures3; 
+layout (set = 1, binding = 5, rgba32f) uniform image2D SceneFeatures2Half; 
 
 /*
 *   Linearizes a depth value.
@@ -291,172 +299,59 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
-/*
-*	Rotates the given vector around the yaw.
-*/
-vec3 RotateYaw(vec3 X, float angle)
+layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+uvec3 ComputeDimensions()
 {
-	float sine = sin(angle);
-    float cosine = cos(angle);
-
-    float temp = X.x * cosine + X.z * sine;
-    X.z = -X.x * sine + X.z * cosine;
-    X.x = temp;
-
-    return X;
+	return uvec3(8, 8, 1) * gl_NumWorkGroups;
 }
-
-/*
-*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
-*/
-mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
-{
-    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
-    vec3 random_bitangent = cross(normal, random_tangent);
-
-    return mat3(random_tangent, random_bitangent, normal);
-}
-
-/*
-*   Returns a smoothed number in the range 0.0f-1.0f.
-*/
-float SmoothStep(float number)
-{
-    return number * number * (3.0f - 2.0f * number);
-}
-
-//Constants.
-#define TERRAIN_MINIMUM_DISPLACEMENT (0.001f)
-#define BIAS_DISPLACEMENT(X) (X * X * X * X * X * X * X * X)
-
-/*
-*   Terrain material struct definition.
-*/
-struct TerrainMaterial
-{
-    vec3 albedo;
-    vec3 normal_map;
-    vec4 material_properties;
-};
-
-/*
-*   Blend two terrain materials.
-*/
-TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial second, float alpha)
-{
-    TerrainMaterial output_material;
-
-    output_material.albedo = mix(first.albedo, second.albedo, alpha);
-    output_material.normal_map = mix(first.normal_map, second.normal_map, alpha);
-    output_material.material_properties = mix(first.material_properties, second.material_properties, alpha);
-
-    return output_material;
-}
-
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) vec2 WORLD_POSITION;
-	layout (offset = 8) vec2 MINIMUM_HEIGHT_MAP_COORDINATE;
-	layout (offset = 16) vec2 MAXIMUM_HEIGHT_MAP_COORDINATE;
-	layout (offset = 24) uint BORDERS;
-	layout (offset = 28) float PATCH_RESOLUTION_RECIPROCAL;
-	layout (offset = 32) float PATCH_SIZE;
-	layout (offset = 36) uint HEIGHT_MAP_TEXTURE_INDEX;
-	layout (offset = 40) uint NORMAL_MAP_TEXTURE_INDEX;
-	layout (offset = 44) uint INDEX_MAP_TEXTURE_INDEX;
-	layout (offset = 48) uint BLEND_MAP_TEXTURE_INDEX;
-	layout (offset = 52) float MAP_RESOLUTION;
-	layout (offset = 56) float MAP_RESOLUTION_RECIPROCAL;
-};
-
-layout (location = 0) in vec3 InWorldPosition;
-layout (location = 1) in vec2 InHeightMapTextureCoordinate;
-
-layout (location = 0) out vec4 SceneFeatures1;
-layout (location = 1) out vec4 SceneFeatures2;
-layout (location = 2) out vec4 SceneFeatures3;
-layout (location = 3) out vec4 SceneFeatures4;
 
 void main()
 {
-    vec3 normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate).xyz;
-    normal = normal * 2.0f - 1.0f;
-    mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(normal, vec3(0.0f, 0.0f, 1.0f));
-    vec2 material_texture_coordinate = InWorldPosition.xz * 0.5f;
-    TerrainMaterial terrain_materials[4];
-    vec2 sample_offsets[4];
-    sample_offsets[0] = vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
-    sample_offsets[1] = vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
-    sample_offsets[2] = vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
-    sample_offsets[3] = vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
-    for (uint i = 0; i < 4; ++i)
+    uvec3 compute_dimensions = ComputeDimensions();
+    vec2 screen_coordinate = (vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(compute_dimensions);
+    float view_distance = CalculateViewSpaceDistance(screen_coordinate, imageLoad(SceneFeatures2, ivec2(gl_GlobalInvocationID.xy)).w);
+    float ambient_occlusion;
     {
-        vec2 height_map_texture_coordinate = InHeightMapTextureCoordinate + sample_offsets[i];
-        vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
-        Material material_1 = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
-        Material material_2 = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
-        Material material_3 = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
-        Material material_4 = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
-        vec4 albedo_thickness_1;
-        EVALUATE_ALBEDO_THICKNESS(material_1, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_1);
-        vec4 albedo_thickness_2;
-        EVALUATE_ALBEDO_THICKNESS(material_2, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_2);
-        vec4 albedo_thickness_3;
-        EVALUATE_ALBEDO_THICKNESS(material_3, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_3);
-        vec4 albedo_thickness_4;
-        EVALUATE_ALBEDO_THICKNESS(material_4, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_4);
-        vec4 normal_map_displacement_1;
-        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_1);
-        vec4 normal_map_displacement_2;
-        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_2);
-        vec4 normal_map_displacement_3;
-        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_3);
-        vec4 normal_map_displacement_4;
-        EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_4);
-        vec4 material_properties_1;
-        EVALUATE_MATERIAL_PROPERTIES(material_1, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_1);
-        vec4 material_properties_2;
-        EVALUATE_MATERIAL_PROPERTIES(material_2, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_2);
-        vec4 material_properties_3;
-        EVALUATE_MATERIAL_PROPERTIES(material_3, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_3);
-        vec4 material_properties_4;
-        EVALUATE_MATERIAL_PROPERTIES(material_4, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_4);
-        normal_map_displacement_1.w = max(normal_map_displacement_1.w, TERRAIN_MINIMUM_DISPLACEMENT);
-        normal_map_displacement_2.w = max(normal_map_displacement_2.w, TERRAIN_MINIMUM_DISPLACEMENT);
-        normal_map_displacement_3.w = max(normal_map_displacement_3.w, TERRAIN_MINIMUM_DISPLACEMENT);
-        normal_map_displacement_4.w = max(normal_map_displacement_4.w, TERRAIN_MINIMUM_DISPLACEMENT);
-        vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
-        blend_map[0] *= BIAS_DISPLACEMENT(normal_map_displacement_1.w);
-        blend_map[1] *= BIAS_DISPLACEMENT(normal_map_displacement_2.w);
-        blend_map[2] *= BIAS_DISPLACEMENT(normal_map_displacement_3.w);
-        blend_map[3] *= BIAS_DISPLACEMENT(normal_map_displacement_4.w);
-        float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
-        blend_map[0] *= inverse_sum;
-        blend_map[1] *= inverse_sum;
-        blend_map[2] *= inverse_sum;
-        blend_map[3] *= inverse_sum;
-        terrain_materials[i].albedo =   albedo_thickness_1.rgb * blend_map[0]
-                                        + albedo_thickness_2.rgb * blend_map[1]
-                                        + albedo_thickness_3.rgb * blend_map[2]
-                                        + albedo_thickness_4.rgb * blend_map[3];
-        terrain_materials[i].normal_map =   normal_map_displacement_1.rgb * blend_map[0]
-                                            + normal_map_displacement_2.rgb * blend_map[1]
-                                            + normal_map_displacement_3.rgb * blend_map[2]
-                                            + normal_map_displacement_4.rgb * blend_map[3];
-        terrain_materials[i].material_properties =  material_properties_1 * blend_map[0]
-                                                    + material_properties_2 * blend_map[1]
-                                                    + material_properties_3 * blend_map[2]
-                                                    + material_properties_4 * blend_map[3];
-    }
-    TerrainMaterial blend_1 = BlendTerrainMaterial(terrain_materials[0], terrain_materials[1], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
-	TerrainMaterial blend_2 = BlendTerrainMaterial(terrain_materials[2], terrain_materials[3], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
-	TerrainMaterial final_material = BlendTerrainMaterial(blend_1, blend_2, fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION));
-    final_material.normal_map = final_material.normal_map * 2.0f - 1.0f;
-	final_material.normal_map = normalize(final_material.normal_map);
-	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map);
-    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
-	SceneFeatures1 = vec4(final_material.albedo,1.0f);
-	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
-	SceneFeatures3 = final_material.material_properties;
-	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
+        ivec2 sample_coordinate_1 = ivec2(gl_GlobalInvocationID.xy) / 2;
+        ivec2 sample_coordinate_2 = min(ivec2(gl_GlobalInvocationID.xy) / 2 + ivec2(0, 1), ivec2(HALF_MAIN_RESOLUTION));
+        ivec2 sample_coordinate_3 = min(ivec2(gl_GlobalInvocationID.xy) / 2 + ivec2(1, 0), ivec2(HALF_MAIN_RESOLUTION));
+        ivec2 sample_coordinate_4 = min(ivec2(gl_GlobalInvocationID.xy) / 2 + ivec2(1, 1), ivec2(HALF_MAIN_RESOLUTION));
+        float ambient_occlusion_1 = imageLoad(AmbientOcclusion, sample_coordinate_1).x;
+        float ambient_occlusion_2 = imageLoad(AmbientOcclusion, sample_coordinate_2).x;
+        float ambient_occlusion_3 = imageLoad(AmbientOcclusion, sample_coordinate_3).x;
+        float ambient_occlusion_4 = imageLoad(AmbientOcclusion, sample_coordinate_4).x;
+        float depth_1 = imageLoad(SceneFeatures2Half, sample_coordinate_1).w;
+        float depth_2 = imageLoad(SceneFeatures2Half, sample_coordinate_2).w;
+        float depth_3 = imageLoad(SceneFeatures2Half, sample_coordinate_3).w;
+        float depth_4 = imageLoad(SceneFeatures2Half, sample_coordinate_4).w;
+        float view_distance_1 = CalculateViewSpaceDistance(vec2((sample_coordinate_1) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_1);
+        float view_distance_2 = CalculateViewSpaceDistance(vec2((sample_coordinate_2) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_2);
+        float view_distance_3 = CalculateViewSpaceDistance(vec2((sample_coordinate_3) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_3);
+        float view_distance_4 = CalculateViewSpaceDistance(vec2((sample_coordinate_4) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_4);
+        float horizontal_weight = fract(screen_coordinate.x * HALF_MAIN_RESOLUTION.x);
+        float vertical_weight = fract(screen_coordinate.y * HALF_MAIN_RESOLUTION.y);
+        float weight_1 = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
+	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
+	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
+	    float weight_4 = horizontal_weight * vertical_weight;
+        #define VIEW_DISTANCE_POWER (4.0f)
+        weight_1 = max(weight_1 * pow(1.0f - abs(view_distance - view_distance_1), VIEW_DISTANCE_POWER), FLOAT32_EPSILON);
+        weight_2 = max(weight_2 * pow(1.0f - abs(view_distance - view_distance_2), VIEW_DISTANCE_POWER), FLOAT32_EPSILON);
+        weight_3 = max(weight_3 * pow(1.0f - abs(view_distance - view_distance_3), VIEW_DISTANCE_POWER), FLOAT32_EPSILON);
+        weight_4 = max(weight_4 * pow(1.0f - abs(view_distance - view_distance_4), VIEW_DISTANCE_POWER), FLOAT32_EPSILON);
+        float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
+	    weight_1 *= total_weight_reciprocal;
+	    weight_2 *= total_weight_reciprocal;
+	    weight_3 *= total_weight_reciprocal;
+	    weight_4 *= total_weight_reciprocal;
+        ambient_occlusion = ambient_occlusion_1 * weight_1
+                            + ambient_occlusion_2 * weight_2
+                            + ambient_occlusion_3 * weight_3
+                            + ambient_occlusion_4 * weight_4;
+   }
+    ambient_occlusion = (ambient_occlusion * ambient_occlusion * ambient_occlusion * ambient_occlusion);
+    vec4 material_properties = imageLoad(SceneFeatures3, ivec2(gl_GlobalInvocationID.xy));
+    material_properties.z *= ambient_occlusion;
+    imageStore(SceneFeatures3, ivec2(gl_GlobalInvocationID.xy), material_properties);
 }

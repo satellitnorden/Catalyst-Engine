@@ -167,7 +167,7 @@ namespace VulkanSubRenderingSystemLogic
 			parameters._PushConstantRanges = pushConstantRanges.Data();
 		}
 
-		parameters._ShaderModule = static_cast<VulkanShaderModule *const RESTRICT>(pipeline->GetShader()->_Handle);
+		parameters._ShaderModule = static_cast<VulkanShaderModule *const RESTRICT>(pipeline->GetShader());
 
 		//Create the pipeline sub stage data.
 		VulkanComputePipelineData *const RESTRICT data{ new (MemorySystem::Instance->TypeAllocate<VulkanComputePipelineData>()) VulkanComputePipelineData() };
@@ -1289,6 +1289,14 @@ void VulkanSubRenderingSystem::WaitForEvent(EventHandle handle) NOEXCEPT
 void VulkanSubRenderingSystem::CreateQueryPool(const uint32 query_count, QueryPoolHandle *const RESTRICT handle) NOEXCEPT
 {
 	*handle = static_cast<QueryPoolHandle>(VulkanInterface::Instance->CreateQueryPool(VkQueryType::VK_QUERY_TYPE_TIMESTAMP, query_count));
+}
+
+/*
+*	Resets the given query pool.
+*/
+void VulkanSubRenderingSystem::ResetQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT
+{
+	static_cast<VulkanQueryPool *const RESTRICT>(*handle)->Reset();
 }
 
 /*

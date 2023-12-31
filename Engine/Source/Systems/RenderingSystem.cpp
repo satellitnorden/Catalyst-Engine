@@ -341,35 +341,41 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 	}
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	//Update the performance window.
-	if (_PerformanceWindowOpen)
 	{
-		//Retrieve the window resolution.
-		const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
+		RenderingPerformanceData &current_performance_data{ _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()] };
 
-		//Add the window.
-		ImGui::Begin("Rendering Performance", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
-		ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
-		ImGui::SetWindowSize(ImVec2(window_resolution._X * 0.2'50f, window_resolution._Y));
-
-		//Fill in the list.
-		float64 total_execution_time{ 0.0 };
-
-		for (uint64 i{ 0 }; i < _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._Names.Size(); ++i)
+		//Update the performance window.
+		if (_PerformanceWindowOpen)
 		{
-			const uint64 execution_time{ GetExecutionTime(_GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._QueryPool, static_cast<uint32>(i * 2)) };
-			const float64 execution_time_milliseconds{ static_cast<float64>(execution_time) / 1'000.0 / 1'000.0 };
+			//Retrieve the window resolution.
+			const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
 
-			ImGui::Text("%s - %f ms", _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._Names[i], execution_time_milliseconds);
-		
-			total_execution_time += execution_time_milliseconds;
+			//Add the window.
+			ImGui::Begin("Rendering Performance", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
+			ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
+			ImGui::SetWindowSize(ImVec2(window_resolution._X * 0.2'50f, window_resolution._Y));
+
+			//Fill in the list.
+			float64 total_execution_time{ 0.0 };
+
+			for (uint64 i{ 0 }; i < current_performance_data._Names.Size(); ++i)
+			{
+				const uint64 execution_time{ GetExecutionTime(current_performance_data._QueryPool, static_cast<uint32>(i * 2)) };
+				const float64 execution_time_milliseconds{ static_cast<float64>(execution_time) / 1'000.0 / 1'000.0 };
+
+				ImGui::Text("%s - %f ms", current_performance_data._Names[i], execution_time_milliseconds);
+
+				total_execution_time += execution_time_milliseconds;
+			}
+
+			ImGui::Text("--------");
+
+			ImGui::Text("Total Execution Time - %f ms", total_execution_time);
+
+			ImGui::End();
 		}
 
-		ImGui::Text("----");
-
-		ImGui::Text("Total Execution Time - %f ms", total_execution_time);
-
-		ImGui::End();
+		//ResetQueryPool(&current_performance_data._QueryPool);
 	}
 #endif
 
@@ -1005,6 +1011,14 @@ void RenderingSystem::WaitForEvent(const EventHandle handle) NOEXCEPT
 void RenderingSystem::CreateQueryPool(const uint32 query_count, QueryPoolHandle *const RESTRICT handle) NOEXCEPT
 {
 	_SubRenderingSystem->CreateQueryPool(query_count, handle);
+}
+
+/*
+*	Resets the given query pool.
+*/
+void RenderingSystem::ResetQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT
+{
+	_SubRenderingSystem->ResetQueryPool(handle);
 }
 
 /*

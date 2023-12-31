@@ -301,6 +301,21 @@ void ResourceLoadingSystem::LoadRawData(BinaryFile<BinaryFileMode::IN> *const RE
 */
 void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RenderPipelineData *const RESTRICT data) NOEXCEPT
 {
+	//Read the compute shader data.
+	{
+		bool has_data{ false };
+		file->Read(&has_data, sizeof(bool));
+
+		if (has_data)
+		{
+			uint64 data_size{ 0 };
+			file->Read(&data_size, sizeof(uint64));
+			data->_ComputeShaderData._GLSLData.Upsize<false>(data_size);
+
+			file->Read(data->_ComputeShaderData._GLSLData.Data(), data_size);
+		}
+	}
+
 	//Read the vertex shader data.
 	{
 		bool has_data{ false };
@@ -352,6 +367,18 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 		{
 			data->_IncludedStorageBuffers.Upsize<false>(number_of_included_storage_buffers);
 			file->Read(data->_IncludedStorageBuffers.Data(), sizeof(HashString) * number_of_included_storage_buffers);
+		}
+	}
+
+	//Read the compute render targets.
+	{
+		uint64 length{ 0 };
+		file->Read(&length, sizeof(uint64));
+
+		if (length > 0)
+		{
+			data->_ComputeRenderTargets.Upsize<false>(length);
+			file->Read(data->_ComputeRenderTargets.Data(), sizeof(HashString) * data->_ComputeRenderTargets.Size());
 		}
 	}
 

@@ -173,6 +173,22 @@ public:
 };
 
 /*
+*	Compute render target class definition.
+*/
+class ComputeRenderTarget final
+{
+
+public:
+
+	//The name.
+	DynamicString _Name;
+
+	//The texture format.
+	TextureFormat _TextureFormat;
+
+};
+
+/*
 *	Uniform buffer include class definition.
 */
 class UniformBufferInclude final
@@ -236,6 +252,9 @@ public:
 
 	//The shader function library includes.
 	DynamicArray<DynamicString> _ShaderFunctionLibraryIncludes;
+
+	//The compute render targets.
+	DynamicArray<ComputeRenderTarget> _ComputeRenderTargets;
 
 	//The input render targets.
 	DynamicArray<DynamicString> _InputRenderTargets;
@@ -502,6 +521,284 @@ void CompileGLSLShader(const char *const RESTRICT file_path, const shaderc_shade
 	//Copy the data.
 	data->Upsize<false>(compiled_file_size);
 	Memory::Copy(data->Data(), shaderc_result_get_bytes(result), compiled_file_size);
+}
+
+/*
+*	Generates a compute shader.
+*/
+void GenerateComputeShader
+(
+	std::ifstream &file,
+	const char *const RESTRICT generated_file_path,
+	const std::string &shader_name,
+	const RenderPipelineInformation &render_pipeline_information,
+	RenderPipelineBuildParameters *const RESTRICT parameters
+) NOEXCEPT
+{
+	/*
+	*	Compute local size struct definition.
+	*/
+	struct ComputeLocalSize final
+	{
+		uint32 _Width;
+		uint32 _Height;
+		uint32 _Depth;
+	};
+
+	//Gather all the lines in the compute function.
+	DynamicArray<std::string> lines;
+	GatherShaderLines(file, lines);
+
+	//Retrieve the compute local size.
+	ComputeLocalSize compute_local_size;
+
+	for (uint64 i{ 0 }; i < lines.Size();)
+	{
+		const size_t position{ lines[i].find("ComputeLocalSize(") };
+
+		if (position != std::string::npos)
+		{
+			StaticArray<DynamicString, 3> arguments;
+
+			TextParsingUtilities::ParseFunctionArguments
+			(
+				lines[i].data(),
+				lines[i].length(),
+				arguments.Data()
+			);
+
+			compute_local_size._Width = static_cast<uint32>(std::stoul(arguments[0].Data()));
+			compute_local_size._Height = static_cast<uint32>(std::stoul(arguments[1].Data()));
+			compute_local_size._Depth = static_cast<uint32>(std::stoul(arguments[2].Data()));
+
+			lines.EraseAt<true>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
+
+	//Write the GLSL file.
+	{
+		//Make a copy of the lines.
+		DynamicArray<std::string> glsl_lines{ lines };
+
+		//Remember the current resource binding.
+		uint32 resource_binding_index{ 0 };
+
+		//Open the file.
+		char glsl_file_path[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(glsl_file_path, "%s\\%s_Compute.glsl", generated_file_path, shader_name.c_str());
+		std::ofstream glsl_file{ glsl_file_path };
+
+		//Write the version declaration.
+		glsl_file << "#version 460" << std::endl;
+
+		glsl_file << std::endl;
+
+		//Insert extensions.
+		GLSLCompilation::InsertExtensions(glsl_file);
+
+		//Insert the global render data.
+		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
+
+		//Insert any included uniform buffers.
+		if (!render_pipeline_information._UniformBufferIncludes.Empty())
+		{
+			for (const UniformBufferInclude& uniform_buffer_include : render_pipeline_information._UniformBufferIncludes)
+			{
+				GLSLCompilation::InsertBufferDefinition
+				(
+					glsl_file,
+					uniform_buffer_include._FilePath.Data(),
+					resource_binding_index++
+				);
+
+				glsl_file << std::endl;
+			}
+		}
+
+		//Insert any included storage buffers.
+		if (!render_pipeline_information._StorageBufferIncludes.Empty())
+		{
+			for (const StorageBufferInclude& storage_buffer_include : render_pipeline_information._StorageBufferIncludes)
+			{
+				GLSLCompilation::InsertBufferDefinition
+				(
+					glsl_file,
+					storage_buffer_include._FilePath.Data(),
+					resource_binding_index++
+				);
+
+				glsl_file << std::endl;
+			}
+		}
+
+		//Insert any samplers.
+		if (!render_pipeline_information._Samplers.Empty())
+		{
+			for (const Pair<DynamicString, SamplerProperties>& sampler : render_pipeline_information._Samplers)
+			{
+				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler " << sampler._First.Data() << ";" << std::endl;
+			}
+
+			glsl_file << std::endl;
+		}
+
+		//Insert any compute render targets.
+		if (!render_pipeline_information._ComputeRenderTargets.Empty())
+		{
+			for (const ComputeRenderTarget &compute_render_target : render_pipeline_information._ComputeRenderTargets)
+			{
+				const char *RESTRICT format_string{ nullptr };
+
+				switch (compute_render_target._TextureFormat)
+				{
+					case TextureFormat::R_UINT8:
+					{
+						format_string = "r8";
+
+						break;
+					}
+
+					case TextureFormat::RGBA_UINT8:
+					{
+						format_string = "rgba8";
+
+						break;
+					}
+
+					case TextureFormat::RGBA_FLOAT32:
+					{
+						format_string = "rgba32f";
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
+				}
+
+				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ", " << format_string << ") uniform image2D " << compute_render_target._Name.Data() << "; " << std::endl;
+			}
+
+			glsl_file << std::endl;
+		}
+
+		//Insert any included shader function libraries.
+		if (!render_pipeline_information._ShaderFunctionLibraryIncludes.Empty())
+		{
+			for (const DynamicString& shader_function_library_include : render_pipeline_information._ShaderFunctionLibraryIncludes)
+			{
+				GLSLCompilation::InsertShaderFunctionLibrary
+				(
+					glsl_file,
+					shader_function_library_include.Data()
+				);
+
+				glsl_file << std::endl;
+			}
+		}
+
+		//Write the push constant data.
+		if (!render_pipeline_information._PushConstantDataValues.Empty())
+		{
+			uint64 current_offset{ 0 };
+
+			glsl_file << "layout (push_constant) uniform PushConstantData" << std::endl;
+			glsl_file << "{" << std::endl;
+
+			for (const PushConstantDataValue& push_constant_data_value : render_pipeline_information._PushConstantDataValues)
+			{
+				glsl_file << "\tlayout (offset = " << current_offset << ") " << push_constant_data_value._Type.Data() << " " << push_constant_data_value._Name.Data() << ";" << std::endl;
+				current_offset += GLSLCompilation::GetByteOffsetForType(push_constant_data_value._Type.Data());
+			}
+
+			glsl_file << "};" << std::endl;
+
+			glsl_file << std::endl;
+		}
+
+		//Write the input render targets.
+		if (!render_pipeline_information._InputRenderTargets.Empty())
+		{
+			for (const DynamicString& input_render_target : render_pipeline_information._InputRenderTargets)
+			{
+				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target.Data() << ";" << std::endl;
+			}
+
+			glsl_file << std::endl;
+		}
+
+		//Write the local size.
+		glsl_file << "layout (local_size_x = " << compute_local_size._Width << ", local_size_y = " << compute_local_size._Height << ", local_size_z = " << compute_local_size._Depth << ") in;" << std::endl;
+		glsl_file << std::endl;
+
+		//Generate the "ComputeDimensions()" function.
+		glsl_file << "uvec3 ComputeDimensions()" << std::endl;
+		glsl_file << "{" << std::endl;
+		glsl_file << "\treturn uvec3(" << compute_local_size._Width << ", " << compute_local_size._Height << ", " << compute_local_size._Depth << ") * gl_NumWorkGroups;" << std::endl;
+		glsl_file << "}" << std::endl;
+		glsl_file << std::endl;
+
+		//Write the "void main()" line.
+		glsl_file << "void main()" << std::endl;
+
+		//Write the remaining lines.
+		for (uint64 i{ 0 }; i < glsl_lines.Size(); ++i)
+		{
+			//Cache the line.
+			std::string& line{ glsl_lines[i] };
+
+			//Replace "COMPUTE_ID" with "gl_GlobalInvocationID".
+			{
+				size_t position{ line.find("COMPUTE_ID") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("COMPUTE_ID"), "gl_GlobalInvocationID");
+					position = line.find("COMPUTE_ID");
+				}
+			}
+
+			//Replace "ImageLoad" with "imageLoad".
+			{
+				size_t position{ line.find("ImageLoad") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("ImageLoad"), "imageLoad");
+					position = line.find("ImageLoad");
+				}
+			}
+
+			//Replace "ImageStore" with "imageStore".
+			{
+				size_t position{ line.find("ImageStore") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("ImageStore"), "imageStore");
+					position = line.find("ImageStore");
+				}
+			}
+
+			//Write the line.
+			glsl_file << line << std::endl;
+		}
+
+		//Close the file.
+		glsl_file.close();
+
+		//Compile the GLSL shader.
+		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_compute_shader, &parameters->_ComputeShaderData._GLSLData);
+	}
 }
 
 /*
@@ -1237,6 +1534,69 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 					render_pipeline_information._ShaderFunctionLibraryIncludes.Emplace();
 					FindShaderFunctionLibraryFilePath(string.Data(), &render_pipeline_information._ShaderFunctionLibraryIncludes.Back());
+
+					continue;
+				}
+			}
+
+			//Is this a compute render target declaration?
+			{
+				const size_t input_render_target_position{ current_line.find("ComputeRenderTarget(") };
+
+				if (input_render_target_position != std::string::npos)
+				{
+					StaticArray<DynamicString, 2> arguments;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						arguments.Data()
+					);
+
+					render_pipeline_information._ComputeRenderTargets.Emplace();
+
+					render_pipeline_information._ComputeRenderTargets.Back()._Name = arguments[0];
+
+					if (arguments[1] == "R_UINT8")
+					{
+						render_pipeline_information._ComputeRenderTargets.Back()._TextureFormat = TextureFormat::R_UINT8;
+					}
+
+					else if (arguments[1] == "RGB_UINT8")
+					{
+						render_pipeline_information._ComputeRenderTargets.Back()._TextureFormat = TextureFormat::RGB_UINT8;
+					}
+
+					else if (arguments[1] == "RGBA_UINT8")
+					{
+						render_pipeline_information._ComputeRenderTargets.Back()._TextureFormat = TextureFormat::RGBA_UINT8;
+					}
+
+					else if (arguments[1] == "RG_FLOAT16")
+					{
+						render_pipeline_information._ComputeRenderTargets.Back()._TextureFormat = TextureFormat::RG_FLOAT16;
+					}
+
+					else if (arguments[1] == "R_FLOAT32")
+					{
+						render_pipeline_information._ComputeRenderTargets.Back()._TextureFormat = TextureFormat::R_FLOAT32;
+					}
+
+					else if (arguments[1] == "RG_FLOAT32")
+					{
+						render_pipeline_information._ComputeRenderTargets.Back()._TextureFormat = TextureFormat::RG_FLOAT32;
+					}
+
+					else if (arguments[1] == "RGBA_FLOAT32")
+					{
+						render_pipeline_information._ComputeRenderTargets.Back()._TextureFormat = TextureFormat::RGBA_FLOAT32;
+					}
+
+					else
+					{
+						ASSERT(false, "Unknown argument " << arguments[1].Data());
+					}
 
 					continue;
 				}
@@ -2415,9 +2775,15 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					continue;
 				}
 			}
+
+			//Is this the beginning of a compute shader?
+			if (current_line == "Compute")
+			{
+				GenerateComputeShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
+			}
 			
 			//Is this the beginning of a vertex shader?
-			if (current_line == "Vertex")
+			else if (current_line == "Vertex")
 			{
 				GenerateVertexShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
 			}
@@ -2453,6 +2819,17 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 			for (const StorageBufferInclude &storage_buffer_include : render_pipeline_information._StorageBufferIncludes)
 			{
 				parameters._IncludedStorageBuffers.Emplace(HashString(storage_buffer_include._Name.Data()));
+			}
+		}
+
+		//Fill in the compute render targets.
+		if (!render_pipeline_information._ComputeRenderTargets.Empty())
+		{
+			parameters._ComputeRenderTargets.Reserve(render_pipeline_information._ComputeRenderTargets.Size());
+
+			for (const ComputeRenderTarget &compute_render_target : render_pipeline_information._ComputeRenderTargets)
+			{
+				parameters._ComputeRenderTargets.Emplace(HashString(compute_render_target._Name.Data()));
 			}
 		}
 

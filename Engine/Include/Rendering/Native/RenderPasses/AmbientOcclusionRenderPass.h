@@ -5,8 +5,8 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/Core/ComputeRenderPipeline.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionApplicationGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/AmbientOcclusionRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
@@ -56,7 +56,7 @@ private:
 	StaticArray<AmbientOcclusionSpatialDenoisingGraphicsPipeline, 2> _AmbientOcclusionSpatialDenoisingGraphicsPipelines;
 
 	//The ambient occlusion application graphics pipeline.
-	AmbientOcclusionApplicationGraphicsPipeline _AmbientOcclusionApplicationGraphicsPipeline;
+	ComputeRenderPipeline _AmbientOcclusionApplicationGraphicsPipeline{ HashString("AmbientOcclusionApplication_RenderPipeline") };
 
 	//The current temporal buffer index.
 	uint8 _CurrentTemporalBufferIndex{ 0 };

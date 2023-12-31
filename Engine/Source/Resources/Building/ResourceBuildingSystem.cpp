@@ -736,6 +736,30 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 	const ResourceHeader header{ ResourceConstants::RENDER_PIPELINE_TYPE_IDENTIFIER, HashString(resource_identifier), resource_identifier };
 	output_file.Write(&header, sizeof(ResourceHeader));
 
+	//Write the compute shader data.
+	{
+		if (!parameters._ComputeShaderData._GLSLData.Empty())
+		{
+			//Write that it has GLSL shader data.
+			const bool has_data{ true };
+			output_file.Write(&has_data, sizeof(bool));
+
+			//Write the data size.
+			const uint64 data_size{ parameters._ComputeShaderData._GLSLData.Size() };
+			output_file.Write(&data_size, sizeof(uint64));
+
+			//Write the data.
+			output_file.Write(parameters._ComputeShaderData._GLSLData.Data(), parameters._ComputeShaderData._GLSLData.Size());
+		}
+
+		else
+		{
+			//Write that it doesn't GLSL shader data.
+			const bool has_data{ false };
+			output_file.Write(&has_data, sizeof(bool));
+		}
+	}
+
 	//Write the vertex shader data.
 	{
 		if (!parameters._VertexShaderData._GLSLData.Empty())
@@ -806,6 +830,16 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 			//Write the data.
 			output_file.Write(parameters._IncludedStorageBuffers.Data(), sizeof(HashString) * parameters._IncludedStorageBuffers.Size());
 		}
+	}
+
+	//Write the compute render targets.
+	{
+		//Write the count.
+		const uint64 count{ parameters._ComputeRenderTargets.Size() };
+		output_file.Write(&count, sizeof(uint64));
+
+		//Write the data.
+		output_file.Write(parameters._ComputeRenderTargets.Data(), sizeof(HashString) * parameters._ComputeRenderTargets.Size());
 	}
 
 	//Write the input render targets.

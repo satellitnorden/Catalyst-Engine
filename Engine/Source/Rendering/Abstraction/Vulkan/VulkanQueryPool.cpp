@@ -10,6 +10,9 @@
 */
 void VulkanQueryPool::Initialize(const VkQueryType query_type, const uint32 query_count) NOEXCEPT
 {
+	//Set the query count.
+	_QueryCount = query_count;
+
 	//Create the query pool create info.
 	VkQueryPoolCreateInfo query_pool_create_info;
 	CreateQueryPoolCreateInfo(query_pool_create_info, query_type, query_count);
@@ -25,6 +28,14 @@ void VulkanQueryPool::Release() NOEXCEPT
 {
 	//Destroy the Vulkan query pool.
 	vkDestroyQueryPool(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanQueryPool, nullptr);
+}
+
+/*
+*	Resets this query pool.
+*/
+void VulkanQueryPool::Reset() NOEXCEPT
+{
+	vkResetQueryPool(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanQueryPool, 0, _QueryCount);
 }
 
 /*

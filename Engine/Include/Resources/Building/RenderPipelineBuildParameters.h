@@ -30,6 +30,9 @@ public:
 	//The output file path.
 	const char *RESTRICT _Output{ nullptr };
 
+	//The compute shader data.
+	ShaderData _ComputeShaderData;
+
 	//The vertex shader data.
 	ShaderData _VertexShaderData;
 
@@ -41,6 +44,9 @@ public:
 
 	//The included storage buffers.
 	DynamicArray<HashString> _IncludedStorageBuffers;
+
+	//The compute render targets.
+	DynamicArray<HashString> _ComputeRenderTargets;
 
 	//The input render targets.
 	DynamicArray<HashString> _InputRenderTargets;

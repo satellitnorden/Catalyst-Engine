@@ -146,6 +146,11 @@ public:
 	void CreateQueryPool(const uint32 query_count, QueryPoolHandle *const RESTRICT handle) NOEXCEPT override;
 
 	/*
+	*	Resets the given query pool.
+	*/
+	void ResetQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT override;
+
+	/*
 	*	Returns the execution time, in nanoseconds, from the given query pool.
 	*	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
 	*/

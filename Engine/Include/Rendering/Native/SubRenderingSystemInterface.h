@@ -178,6 +178,11 @@ public:
 	virtual void CreateQueryPool(const uint32 query_count, QueryPoolHandle *const RESTRICT handle) NOEXCEPT = 0;
 
 	/*
+	*	Resets the given query pool.
+	*/
+	virtual void ResetQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT = 0;
+
+	/*
 	*	Returns the execution time, in nanoseconds, from the given query pool.
 	*	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
 	*/

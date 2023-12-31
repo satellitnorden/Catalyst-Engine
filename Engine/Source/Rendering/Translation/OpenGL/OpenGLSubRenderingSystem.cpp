@@ -215,6 +215,14 @@ void OpenGLSubRenderingSystem::CreateQueryPool(const uint32 query_count, QueryPo
 }
 
 /*
+*	Resets the given query pool.
+*/
+void OpenGLSubRenderingSystem::ResetQueryPool(QueryPoolHandle *const RESTRICT handle) NOEXCEPT
+{
+
+}
+
+/*
 *	Returns the execution time, in nanoseconds, from the given query pool.
 *	Assumption being that the query pool has been used to record two timestamps into a command buffer that has completed.
 */

@@ -17,6 +17,9 @@ class RenderPipelineResource final : public Resource
 
 public:
 
+	//The compute shader handle.
+	ShaderHandle _ComputeShaderHandle{ EMPTY_HANDLE };
+
 	//The vertex shader handle.
 	ShaderHandle _VertexShaderHandle{ EMPTY_HANDLE };
 
@@ -28,6 +31,9 @@ public:
 
 	//The included storage buffers.
 	DynamicArray<HashString> _IncludedStorageBuffers;
+
+	//The compute render targets.
+	DynamicArray<HashString> _ComputeRenderTargets;
 
 	//The input render targets.
 	DynamicArray<HashString> _InputRenderTargets;

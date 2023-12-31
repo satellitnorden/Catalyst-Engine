@@ -27,10 +27,18 @@ public:
 	*/
 	void Release() NOEXCEPT;
 
+	/*
+	*	Resets this query pool.
+	*/
+	void Reset() NOEXCEPT;
+
 private:
 
 	//The underlying Vulkan query pool.
 	VkQueryPool _VulkanQueryPool;
+
+	//The query count.
+	uint32 _QueryCount;
 
 	/*
 	*	Creates a query pool create info.

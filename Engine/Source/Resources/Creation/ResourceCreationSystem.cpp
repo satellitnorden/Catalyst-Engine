@@ -319,6 +319,12 @@ void ResourceCreationSystem::CreateRawData(RawDataData *const RESTRICT data, Raw
 */
 void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const RESTRICT data, RenderPipelineResource *const RESTRICT resource) NOEXCEPT
 {
+	//Create the compute shader.
+	if (!data->_ComputeShaderData._GLSLData.Empty())
+	{
+		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_ComputeShaderData._GLSLData), ShaderStage::COMPUTE, &resource->_ComputeShaderHandle);
+	}
+
 	//Create the vertex shader.
 	if (!data->_VertexShaderData._GLSLData.Empty())
 	{
@@ -334,6 +340,9 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 	//Copy the included buffers.
 	resource->_IncludedUniformBuffers = std::move(data->_IncludedUniformBuffers);
 	resource->_IncludedStorageBuffers = std::move(data->_IncludedStorageBuffers);
+
+	//Copy the compute render targets.
+	resource->_ComputeRenderTargets = std::move(data->_ComputeRenderTargets);
 
 	//Copy the input/output depth buffer/render targets.
 	resource->_InputRenderTargets = std::move(data->_InputRenderTargets);

@@ -13,6 +13,7 @@
 //Systems.
 #include <Systems/CullingSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
+#include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
 //Terrain.
@@ -115,6 +116,126 @@ void RenderInputManager::Initialize() NOEXCEPT
 			}
 		},
 		RenderInputStream::Mode::DRAW,
+		nullptr
+	);
+
+	//Register the "ComputeFull" input stream.
+	RegisterInputStream
+	(
+		HashString("ComputeFull"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		0,
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			if (input_stream->_Entries.Empty())
+			{
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._DispatchWidth = RenderingSystem::Instance->GetScaledResolution(0)._Width;
+				new_entry._DispatchHeight = RenderingSystem::Instance->GetScaledResolution(0)._Height;
+				new_entry._DispatchDepth = 1;
+			}
+		},
+		RenderInputStream::Mode::DISPATCH,
+		nullptr
+	);
+
+	//Register the "ComputeHalf" input stream.
+	RegisterInputStream
+	(
+		HashString("ComputeHalf"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		0,
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			if (input_stream->_Entries.Empty())
+			{
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._DispatchWidth = RenderingSystem::Instance->GetScaledResolution(1)._Width;
+				new_entry._DispatchHeight = RenderingSystem::Instance->GetScaledResolution(1)._Height;
+				new_entry._DispatchDepth = 1;
+			}
+		},
+		RenderInputStream::Mode::DISPATCH,
+		nullptr
+	);
+
+	//Register the "ComputeQuarter" input stream.
+	RegisterInputStream
+	(
+		HashString("ComputeQuarter"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		0,
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			if (input_stream->_Entries.Empty())
+			{
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._DispatchWidth = RenderingSystem::Instance->GetScaledResolution(2)._Width;
+				new_entry._DispatchHeight = RenderingSystem::Instance->GetScaledResolution(2)._Height;
+				new_entry._DispatchDepth = 1;
+			}
+		},
+		RenderInputStream::Mode::DISPATCH,
+		nullptr
+	);
+
+	//Register the "ComputeEighth" input stream.
+	RegisterInputStream
+	(
+		HashString("ComputeEighth"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		0,
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			if (input_stream->_Entries.Empty())
+			{
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._DispatchWidth = RenderingSystem::Instance->GetScaledResolution(3)._Width;
+				new_entry._DispatchHeight = RenderingSystem::Instance->GetScaledResolution(3)._Height;
+				new_entry._DispatchDepth = 1;
+			}
+		},
+		RenderInputStream::Mode::DISPATCH,
+		nullptr
+	);
+
+	//Register the "ComputeSixteenth" input stream.
+	RegisterInputStream
+	(
+		HashString("ComputeSixteenth"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		0,
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			if (input_stream->_Entries.Empty())
+			{
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._DispatchWidth = RenderingSystem::Instance->GetScaledResolution(4)._Width;
+				new_entry._DispatchHeight = RenderingSystem::Instance->GetScaledResolution(4)._Height;
+				new_entry._DispatchDepth = 1;
+			}
+		},
+		RenderInputStream::Mode::DISPATCH,
 		nullptr
 	);
 

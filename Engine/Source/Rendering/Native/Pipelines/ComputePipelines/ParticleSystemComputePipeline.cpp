@@ -53,7 +53,7 @@ void ParticleSystemComputePipeline::Initialize() NOEXCEPT
 	ResetComputePipeline();
 
 	//Set the shader.
-	SetShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemComputeShader")));
+	SetShader(ResourceSystem::Instance->GetShaderResource(HashString("ParticleSystemComputeShader"))->_Handle);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

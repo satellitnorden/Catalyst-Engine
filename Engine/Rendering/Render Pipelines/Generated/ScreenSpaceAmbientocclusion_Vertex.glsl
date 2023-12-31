@@ -244,6 +244,17 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
 }
 
 /*
+*   Calculates the view space distance.
+*/
+float CalculateViewSpaceDistance(vec2 texture_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+
+    return view_space_position.z / view_space_position.w;
+}
+
+/*
 *   Calculates the world position.
 */
 vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)

@@ -22,26 +22,46 @@ public:
 	//The push constant data offset
 	uint64 _PushConstantDataOffset;
 
-	//The vertex buffer.
-	BufferHandle _VertexBuffer;
+	union
+	{
+		//'DISPATCH' data.
+		struct
+		{
+			//The dispatch width.
+			uint32 _DispatchWidth;
 
-	//The index buffer.
-	BufferHandle _IndexBuffer;
+			//The dispatch height.
+			uint32 _DispatchHeight;
 
-	//The index buffer offset.
-	uint64 _IndexBufferOffset;
+			//The dispatch depth.
+			uint32 _DispatchDepth;
+		};
 
-	//The instance buffer.
-	BufferHandle _InstanceBuffer;
+		struct
+		{
+			//The vertex buffer.
+			BufferHandle _VertexBuffer;
 
-	//The vertex count.
-	uint32 _VertexCount;
+			//The index buffer.
+			BufferHandle _IndexBuffer;
 
-	//The index count.
-	uint32 _IndexCount;
+			//The index buffer offset.
+			uint64 _IndexBufferOffset;
 
-	//The instance count.
-	uint32 _InstanceCount;
+			//The instance buffer.
+			BufferHandle _InstanceBuffer;
+
+			//The vertex count.
+			uint32 _VertexCount;
+
+			//The index count.
+			uint32 _IndexCount;
+
+			//The instance count.
+			uint32 _InstanceCount;
+		};
+	};
+	
 
 };
 
@@ -56,6 +76,12 @@ public:
 	//Enumeration covering all modes.
 	enum class Mode : uint8
 	{
+		/*
+		*	For each entry:
+		*	Dispatch with '_DispatchWidth', '_DispatchHeight' and '_DispatchDepth'.
+		*/
+		DISPATCH,
+
 		/*
 		*	For each entry:
 		*	Should just draw with '_VertexCount' amount of vertices, without binding any buffers.

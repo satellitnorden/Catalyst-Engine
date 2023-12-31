@@ -199,7 +199,13 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 																				_IntermediateAmbientOcclusionRenderTarget);
 	}
 
-	_AmbientOcclusionApplicationGraphicsPipeline.Initialize(_IntermediateAmbientOcclusionRenderTarget);
+	{
+		ComputeRenderPipelineParameters parameters;
+
+		parameters._ComputeRenderTargets.Emplace(HashString("AmbientOcclusion"), _IntermediateAmbientOcclusionRenderTarget);
+
+		_AmbientOcclusionApplicationGraphicsPipeline.Initialize(parameters);
+	}
 }
 
 /*

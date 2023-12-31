@@ -23,7 +23,7 @@ public:
 	/*
 	*	Returns the shader.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<ShaderResource> GetShader() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD ShaderHandle GetShader() const NOEXCEPT
 	{
 		return _Shader;
 	}
@@ -38,7 +38,7 @@ protected:
 	/*
 	*	Sets the shader.
 	*/
-	FORCE_INLINE void SetShader(const ResourcePointer<ShaderResource> shader) NOEXCEPT
+	FORCE_INLINE void SetShader(const ShaderHandle shader) NOEXCEPT
 	{
 		_Shader = shader;
 	}
@@ -46,6 +46,6 @@ protected:
 private:
 
 	//The shader.
-	ResourcePointer<ShaderResource> _Shader;
+	ShaderHandle _Shader;
 
 };

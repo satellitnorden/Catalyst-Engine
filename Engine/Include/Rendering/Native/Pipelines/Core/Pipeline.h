@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/RenderInputStream.h>
 
 //Forward declarations.
 class CommandBuffer;
@@ -159,6 +160,11 @@ protected:
 		_Name = value;
 	}
 #endif
+
+	/*
+	*	Processes the given input stream.
+	*/
+	void ProcessInputStream(const RenderInputStream &input_stream, CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;
 
 private:
 
