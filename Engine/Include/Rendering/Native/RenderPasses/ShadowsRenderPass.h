@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/ShadowUniformData.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedOpaqueModelShadowsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ModelShadowMapGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/RasterizedShadowsGraphicsPipeline.h>
@@ -46,6 +47,15 @@ private:
 
 	//The shadow uniform data render data tables.
 	DynamicArray<RenderDataTableHandle> _ShadowUniformDataRenderDataTables;
+
+	//The clear pipelines.
+	StaticArray<GraphicsRenderPipeline, 4> _ClearPipelines
+	{
+		GraphicsRenderPipeline(HashString("ClearShadow_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("ClearShadow_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("ClearShadow_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("ClearShadow_RenderPipeline"))
+	};
 
 	//The terrain shadow graphics pipelines.
 	StaticArray<TerrainShadowMapGraphicsPipeline, 4> _TerrainShadowMapGraphicsPipelines;

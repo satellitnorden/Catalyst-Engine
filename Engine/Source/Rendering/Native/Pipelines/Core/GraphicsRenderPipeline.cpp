@@ -5,6 +5,7 @@
 #include <Rendering/Native/CommandBuffer.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 
@@ -161,7 +162,19 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 	//Set the depth buffer.
 	if (_RenderPipelineResource->_OutputDepthBuffer)
 	{
-		SetDepthBuffer(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(_RenderPipelineResource->_OutputDepthBuffer));
+		DepthBufferHandle depth_buffer{ EMPTY_HANDLE };
+
+		if (parameters._DepthBuffer.Valid() && parameters._DepthBuffer.Get()._First == _RenderPipelineResource->_OutputDepthBuffer)
+		{
+			depth_buffer = parameters._DepthBuffer.Get()._Second;
+		}
+
+		else
+		{
+			depth_buffer = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(_RenderPipelineResource->_OutputDepthBuffer);
+		}
+
+		SetDepthBuffer(depth_buffer);
 	}
 
 	//Add the output render targets.
@@ -216,6 +229,11 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 	else if (_RenderPipelineResource->_RenderResolution == HashString("MAIN_HALF"))
 	{
 		SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
+	}
+
+	else if (_RenderPipelineResource->_RenderResolution == HashString("SHADOW_MAP"))
+	{
+		SetRenderResolution(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution));
 	}
 	
 	else

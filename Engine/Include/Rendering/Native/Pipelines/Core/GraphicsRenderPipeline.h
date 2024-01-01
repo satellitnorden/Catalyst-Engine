@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Optional.h>
 #include <Core/General/Pair.h>
 
 //Rendering.
@@ -14,6 +15,9 @@ class GraphicsRenderPipelineParameters final
 {
 
 public:
+
+	//The depth buffer.
+	Optional<Pair<HashString, DepthBufferHandle>> _DepthBuffer;
 
 	//The input render targets.
 	DynamicArray<Pair<HashString, RenderTargetHandle>> _InputRenderTargets;

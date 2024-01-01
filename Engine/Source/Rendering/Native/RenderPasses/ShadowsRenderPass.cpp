@@ -174,7 +174,12 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Add the pipelines.
-	SetNumberOfPipelines(_TerrainShadowMapGraphicsPipelines.Size() + _InstancedOpaqueModelShadowsGraphicsPipelines.Size() + _ModelShadowMapGraphicsPipelines.Size() + 2 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
+	SetNumberOfPipelines(_ClearPipelines.Size() + _TerrainShadowMapGraphicsPipelines.Size() + _InstancedOpaqueModelShadowsGraphicsPipelines.Size() + _ModelShadowMapGraphicsPipelines.Size() + 2 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		AddPipeline(&_ClearPipelines[i]);
+	}
 
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
@@ -200,6 +205,16 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Initialize all pipelines.
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowDepthBuffer"), _ShadowMapDepthBuffers[i]);
+		parameters._OutputRenderTargets.Emplace(HashString("Shadow"), _ShadowMapRenderTargets[i]);
+
+		_ClearPipelines[i].Initialize(parameters);
+	}
+
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
 		_TerrainShadowMapGraphicsPipelines[i].Initialize(_ShadowMapDepthBuffers[i], _ShadowMapRenderTargets[i]);
@@ -292,6 +307,11 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 		//Render all cascades.
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
+			_ClearPipelines[i].Execute();
+		}
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
 			_TerrainShadowMapGraphicsPipelines[i].Execute(current_shadow_uniform_data._WorldToLightMatrices[i]);
 		}
 
@@ -316,6 +336,11 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 
 	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RAY_TRACED)
 	{
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			_ClearPipelines[i].SetIncludeInRender(false);
+		}
+
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
 			_TerrainShadowMapGraphicsPipelines[i].SetIncludeInRender(false);
@@ -350,6 +375,11 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 void ShadowsRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
+	for (GraphicsRenderPipeline &pipeline : _ClearPipelines)
+	{
+		pipeline.Terminate();
+	}
+
 	for (TerrainShadowMapGraphicsPipeline &pipeline : _TerrainShadowMapGraphicsPipelines)
 	{
 		pipeline.Terminate();

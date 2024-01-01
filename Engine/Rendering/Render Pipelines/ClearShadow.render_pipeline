@@ -1,0 +1,29 @@
+//Declare output depth buffer.
+OutputDepthBuffer(ShadowDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(Shadow);
+
+//Declare render resolution.
+RenderResolution(SHADOW_MAP);
+
+//Set the load/store operators.
+ColorLoadOperator(CLEAR);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(CLEAR);
+DepthStencilStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(Viewport);
+
+//The fragment shader.
+Fragment
+{
+    //Do nothing. (:
+}
