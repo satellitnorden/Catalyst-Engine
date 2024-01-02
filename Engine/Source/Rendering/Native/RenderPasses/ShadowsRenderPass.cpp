@@ -143,7 +143,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	//Allocate the appropriate size for the shadow uniform data and set initial values.
 	_ShadowUniformData.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
 
-	for (ShadowUniformData &shadow_uniform_data : _ShadowUniformData)
+	for (ShadowUniformDataOld &shadow_uniform_data : _ShadowUniformData)
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
@@ -156,7 +156,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 
 	for (BufferHandle &shadow_uniform_data_buffer : _ShadowUniformDataBuffers)
 	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(ShadowUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &shadow_uniform_data_buffer);
+		RenderingSystem::Instance->CreateBuffer(sizeof(ShadowUniformDataOld), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &shadow_uniform_data_buffer);
 	}
 
 	//Create the shadow uniform data render data tables.
@@ -174,11 +174,22 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Add the pipelines.
-	SetNumberOfPipelines(_ClearPipelines.Size() + _TerrainShadowMapGraphicsPipelines.Size() + _InstancedOpaqueModelShadowsGraphicsPipelines.Size() + _ModelShadowMapGraphicsPipelines.Size() + 2 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
+	SetNumberOfPipelines(_ClearShadowMapPipelines.Size() + _OpaqueModelShadowMapPipelines.Size() + _MaskedModelShadowMapPipelines.Size() + _TerrainShadowMapGraphicsPipelines.Size() + _InstancedOpaqueModelShadowsGraphicsPipelines.Size() + 2 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
+
+	//Add all pipelines.
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		AddPipeline(&_ClearShadowMapPipelines[i]);
+	}
 
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
-		AddPipeline(&_ClearPipelines[i]);
+		AddPipeline(&_OpaqueModelShadowMapPipelines[i]);
+	}
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		AddPipeline(&_MaskedModelShadowMapPipelines[i]);
 	}
 
 	for (uint8 i{ 0 }; i < 4; ++i)
@@ -189,11 +200,6 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	for (uint8 i{ 0 }; i < 8; ++i)
 	{
 		AddPipeline(&_InstancedOpaqueModelShadowsGraphicsPipelines[i]);
-	}
-
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		AddPipeline(&_ModelShadowMapGraphicsPipelines[i]);
 	}
 
 	AddPipeline(&_RasterizedShadowsGraphicsPipeline);
@@ -209,10 +215,36 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	{
 		GraphicsRenderPipelineParameters parameters;
 
-		parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowDepthBuffer"), _ShadowMapDepthBuffers[i]);
-		parameters._OutputRenderTargets.Emplace(HashString("Shadow"), _ShadowMapRenderTargets[i]);
+		parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), _ShadowMapDepthBuffers[i]);
+		parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), _ShadowMapRenderTargets[i]);
 
-		_ClearPipelines[i].Initialize(parameters);
+		_ClearShadowMapPipelines[i].Initialize(parameters);
+	}
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), _ShadowMapDepthBuffers[i]);
+		parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), _ShadowMapRenderTargets[i]);
+		char buffer[64];
+		sprintf_s(buffer, "OpaqueModelsShadowMapCascade%u", static_cast<uint32>(i));
+		parameters._InputStreamSubscriptions.Emplace(buffer);
+
+		_OpaqueModelShadowMapPipelines[i].Initialize(parameters);
+	}
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), _ShadowMapDepthBuffers[i]);
+		parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), _ShadowMapRenderTargets[i]);
+		char buffer[64];
+		sprintf_s(buffer, "MaskedModelsShadowMapCascade%u", static_cast<uint32>(i));
+		parameters._InputStreamSubscriptions.Emplace(buffer);
+
+		_MaskedModelShadowMapPipelines[i].Initialize(parameters);
 	}
 
 	for (uint8 i{ 0 }; i < 4; ++i)
@@ -228,11 +260,6 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
 		_InstancedOpaqueModelShadowsGraphicsPipelines[4 + i].Initialize(true, _ShadowMapDepthBuffers[i], _ShadowMapRenderTargets[i]);
-	}
-
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		_ModelShadowMapGraphicsPipelines[i].Initialize(_ShadowMapDepthBuffers[i], _ShadowMapRenderTargets[i]);
 	}
 
 	_RasterizedShadowsGraphicsPipeline.Initialize();
@@ -251,7 +278,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 void ShadowsRenderPass::Execute() NOEXCEPT
 {	
 	//Cache data that will be used.
-	ShadowUniformData &current_shadow_uniform_data{ _ShadowUniformData[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+	ShadowUniformDataOld &current_shadow_uniform_data{ _ShadowUniformData[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 	BufferHandle &current_shadow_uniform_data_buffer{ _ShadowUniformDataBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 	RenderDataTableHandle &current_shadow_uniform_data_render_data_table{ _ShadowUniformDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
@@ -300,14 +327,24 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 
 		//Upload the shadow uniform data.
 		const void *const RESTRICT data_chunks[]{ &current_shadow_uniform_data };
-		const uint64 data_sizes[]{ sizeof(ShadowUniformData) };
+		const uint64 data_sizes[]{ sizeof(ShadowUniformDataOld) };
 
 		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_shadow_uniform_data_buffer);
 
 		//Render all cascades.
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			_ClearPipelines[i].Execute();
+			_ClearShadowMapPipelines[i].Execute();
+		}
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			_OpaqueModelShadowMapPipelines[i].Execute();
+		}
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			_MaskedModelShadowMapPipelines[i].Execute();
 		}
 
 		for (uint8 i{ 0 }; i < 4; ++i)
@@ -325,11 +362,6 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 			_InstancedOpaqueModelShadowsGraphicsPipelines[4 + i].Execute(i, current_shadow_uniform_data._WorldToLightMatrices[i]);
 		}
 
-		for (uint8 i{ 0 }; i < 4; ++i)
-		{
-			_ModelShadowMapGraphicsPipelines[i].Execute(current_shadow_uniform_data._WorldToLightMatrices[i]);
-		}
-		
 		_RasterizedShadowsGraphicsPipeline.Execute(current_shadow_uniform_data_render_data_table);
 		_ShadowsRayTracingPipeline.SetIncludeInRender(false);
 	}
@@ -338,7 +370,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			_ClearPipelines[i].SetIncludeInRender(false);
+			_ClearShadowMapPipelines[i].SetIncludeInRender(false);
 		}
 
 		for (uint8 i{ 0 }; i < 4; ++i)
@@ -349,11 +381,6 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 		for (uint8 i{ 0 }; i < 8; ++i)
 		{
 			_InstancedOpaqueModelShadowsGraphicsPipelines[i].SetIncludeInRender(false);
-		}
-
-		for (uint8 i{ 0 }; i < 4; ++i)
-		{
-			_ModelShadowMapGraphicsPipelines[i].SetIncludeInRender(false);
 		}
 
 		_RasterizedShadowsGraphicsPipeline.SetIncludeInRender(false);
@@ -375,7 +402,17 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 void ShadowsRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	for (GraphicsRenderPipeline &pipeline : _ClearPipelines)
+	for (GraphicsRenderPipeline &pipeline : _ClearShadowMapPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (GraphicsRenderPipeline &pipeline : _OpaqueModelShadowMapPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	for (GraphicsRenderPipeline &pipeline : _MaskedModelShadowMapPipelines)
 	{
 		pipeline.Terminate();
 	}
@@ -386,11 +423,6 @@ void ShadowsRenderPass::Terminate() NOEXCEPT
 	}
 
 	for (InstancedOpaqueModelShadowsGraphicsPipeline &pipeline : _InstancedOpaqueModelShadowsGraphicsPipelines)
-	{
-		pipeline.Terminate();
-	}
-
-	for (ModelShadowMapGraphicsPipeline &pipeline : _ModelShadowMapGraphicsPipelines)
 	{
 		pipeline.Terminate();
 	}

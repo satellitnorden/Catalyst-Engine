@@ -41,7 +41,7 @@ public:
 	//Bitmask for the visible meshes.
 	uint8 _MeshesVisibleMask;
 
-	//Denotes whether or not this static model is visible.
-	bool _Visibility;
+	//The visibility flags.
+	VisibilityFlags _VisibilityFlags;
 
 };

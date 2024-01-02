@@ -14,6 +14,7 @@
 //Rendering.
 #include <Rendering/Native/BufferManager.h>
 #include <Rendering/Native/CameraSystem.h>
+#include <Rendering/Native/CullingSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Rendering/Native/DebugRenderingSystem.h>
 #endif
@@ -29,6 +30,7 @@
 #include <Rendering/Native/RenderInputManager.h>
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/SamplerProperties.h>
+#include <Rendering/Native/ShadowsSystem.h>
 #include <Rendering/Native/SharedRenderTargetManager.h>
 #include <Rendering/Native/SubRenderingSystemInterface.h>
 #include <Rendering/Native/TextureData.h>
@@ -246,6 +248,14 @@ public:
 		return &_CameraSystem;
 	}
 
+	/*
+	*	Returns the culling system.
+	*/
+	RESTRICTED NO_DISCARD CullingSystem *const RESTRICT GetCullingSystem() NOEXCEPT
+	{
+		return &_CullingSystem;
+	}
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
 	*	Returns the debug rendering system.
@@ -294,6 +304,14 @@ public:
 	RESTRICTED NO_DISCARD RayTracingSystem *const RESTRICT GetRayTracingSystem() NOEXCEPT
 	{
 		return &_RayTracingSystem;
+	}
+
+	/*
+	*	Returns the shadows system.
+	*/
+	RESTRICTED NO_DISCARD ShadowsSystem *const RESTRICT GetShadowsSystem() NOEXCEPT
+	{
+		return &_ShadowsSystem;
 	}
 
 	/*
@@ -725,6 +743,9 @@ private:
 	//The camera system.
 	CameraSystem _CameraSystem;
 
+	//The culling system.
+	CullingSystem _CullingSystem;
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//The debug rendering system.
 	DebugRenderingSystem _DebugRenderingSystem;
@@ -744,6 +765,9 @@ private:
 
 	//The ray tracing system.
 	RayTracingSystem _RayTracingSystem;
+
+	//The shadows system.
+	ShadowsSystem _ShadowsSystem;
 
 	//The rendering reference system.
 	RenderingReferenceSystem _RenderingReferenceSystem;

@@ -241,9 +241,20 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 		ASSERT(false, "Unknown render resolution!");
 	}
 
+	//Add together the input stream subscriptions from the resource and the parameters.
+	for (const HashString input_stream_subscription : _RenderPipelineResource->_InputStreamSubscriptions)
+	{
+		_InputStreamSubscriptions.Emplace(input_stream_subscription);
+	}
+
+	for (const HashString input_stream_subscription : parameters._InputStreamSubscriptions)
+	{
+		_InputStreamSubscriptions.Emplace(input_stream_subscription);
+	}
+
 	//Retrieve the input stream.
-	ASSERT(!_RenderPipelineResource->_InputStreamSubscriptions.Empty(), "Need at least one input stream subscription!");
-	const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(_RenderPipelineResource->_InputStreamSubscriptions[0]) };
+	ASSERT(!_InputStreamSubscriptions.Empty(), "Need at least one input stream subscription!");
+	const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(_InputStreamSubscriptions[0]) };
 
 	//Assume that all input streams match in required vertex input attribute/binding descriptions.
 	if (!input_stream._RequiredVertexInputAttributeDescriptions.Empty())
@@ -314,7 +325,7 @@ void GraphicsRenderPipeline::Execute() NOEXCEPT
 	{
 		bool all_input_streams_empty{ true };
 
-		for (const HashString input_stream_subscription : _RenderPipelineResource->_InputStreamSubscriptions)
+		for (const HashString input_stream_subscription : _InputStreamSubscriptions)
 		{
 			const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(input_stream_subscription) };
 
@@ -350,7 +361,7 @@ void GraphicsRenderPipeline::Execute() NOEXCEPT
 	}
 
 	//Go over the input streams.
-	for (const HashString input_stream_subscription : _RenderPipelineResource->_InputStreamSubscriptions)
+	for (const HashString input_stream_subscription : _InputStreamSubscriptions)
 	{
 		const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(input_stream_subscription) };
 

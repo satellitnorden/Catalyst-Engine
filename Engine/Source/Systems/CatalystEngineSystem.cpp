@@ -23,7 +23,6 @@
 #if defined(CATALYST_EDITOR)
 #include <Systems/CatalystEditorSystem.h>
 #endif
-#include <Systems/CullingSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Systems/DebugSystem.h>
 #endif
@@ -89,7 +88,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #if defined(CATALYST_EDITOR)
 	CatalystEditorSystem::Instance->Initialize();
 #endif
-	CullingSystem::Instance->Initialize();
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DebugSystem::Instance->Initialize();
 #endif
@@ -289,7 +287,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 		UpdateIndividualPhase(UpdatePhase::RENDER);
 
-		CullingSystem::Instance->RenderUpdate();
 		LevelOfDetailSystem::Instance->RenderUpdate();
 		RenderingSystem::Instance->RenderUpdate();
 	}

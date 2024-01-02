@@ -11,6 +11,9 @@
 //Math.
 #include <Math/Core/CatalystCoordinateSpaces.h>
 
+//Rendering.
+#include <Rendering/Native/Frustum.h>
+
 //World.
 #include <World/Core/WorldTransform.h>
 
@@ -47,7 +50,7 @@ public:
 		_WorldTransform = value;
 
 		_CameraMatrixDirty = true;
-		_FrustumPlanesDirty = true;
+		_FrustumDirty = true;
 	}
 
 	/*
@@ -101,7 +104,7 @@ public:
 
 		_ProjectionMatrixDirty = true;
 		_CameraMatrixDirty = true;
-		_FrustumPlanesDirty = true;
+		_FrustumDirty = true;
 	}
 
 	/*
@@ -231,15 +234,15 @@ public:
 	}
 
 	/*
-	*	Returns the frustum planes.
+	*	Returns the frustum.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const StaticArray<Vector4<float32>, 6>* const RESTRICT GetFrustumPlanes() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const Frustum *const RESTRICT GetFrustum() NOEXCEPT
 	{
 		SCOPED_LOCK(_Lock);
 
 		CheckUpdates();
 
-		return &_FrustumPlanes;
+		return &_Frustum;
 	}
 
 	/*
@@ -327,8 +330,8 @@ private:
 	//Denotes whether or not the camera matrix is dirty.
 	bool _CameraMatrixDirty{ true };
 
-	//Denotes whether or not the frustum planes is dirty.
-	bool _FrustumPlanesDirty{ true };
+	//Denotes whether or not the frustum is dirty.
+	bool _FrustumDirty{ true };
 
 	//The projection matrix.
 	Matrix4x4 _ProjectionMatrix;
@@ -345,8 +348,8 @@ private:
 	//The view matrix.
 	Matrix4x4 _ViewMatrix;
 
-	//The frustum planes.
-	StaticArray<Vector4<float32>, 6> _FrustumPlanes;
+	//The frustum.
+	Frustum _Frustum;
 
 	/*
 	*	The aperture.
@@ -383,8 +386,8 @@ private:
 	void UpdateCameraMatrix() NOEXCEPT;
 
 	/*
-	*	Updates the frustum planes.
+	*	Updates the frustum.
 	*/
-	void UpdateFrustumPlanes() NOEXCEPT;
+	void UpdateFrustum() NOEXCEPT;
 
 };

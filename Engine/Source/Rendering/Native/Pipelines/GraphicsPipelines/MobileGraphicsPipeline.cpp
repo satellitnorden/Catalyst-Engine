@@ -9,7 +9,6 @@
 #include <Rendering/Native/Vertex.h>
 
 //Systems.
-#include <Systems/CullingSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
@@ -218,7 +217,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
 
 		//Wait for static models culling to finish.
-		CullingSystem::Instance->WaitForStaticModelsCulling();
+		RenderingSystem::Instance->GetCullingSystem()->WaitForStaticModelsCulling();
 
 		//Wait for static models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
@@ -226,7 +225,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 		for (uint64 component_index{ 0 }; component_index < number_of_static_model_components; ++component_index, ++component)
 		{
 			//Skip this model depending on visibility.
-			if (!component->_Visibility)
+			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
 			{
 				continue;
 			}
@@ -270,7 +269,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
 
 		//Wait for dynamic models culling to finish.
-		CullingSystem::Instance->WaitForDynamicModelsCulling();
+		RenderingSystem::Instance->GetCullingSystem()->WaitForDynamicModelsCulling();
 
 		//Wait for dynamic models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForDynamicModelsLevelOfDetail();
@@ -278,7 +277,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 		for (uint64 i = 0; i < number_of_dynamic_model_components; ++i, ++component)
 		{
 			//Skip this model depending on visibility.
-			if (!component->_Visibility)
+			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
 			{
 				continue;
 			}

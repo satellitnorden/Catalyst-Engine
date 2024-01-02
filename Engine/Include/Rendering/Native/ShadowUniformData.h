@@ -8,7 +8,7 @@
 //Math.
 #include <Math/General/Matrix.h>
 
-class ShadowUniformData final
+class ShadowUniformDataOld final
 {
 
 public:

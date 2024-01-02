@@ -11,7 +11,6 @@
 #include <Rendering/Native/GrassCore.h>
 
 //Systems.
-#include <Systems/CullingSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
@@ -606,7 +605,7 @@ void RenderInputManager::GatherDepthModelInputStream
 		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
 
 		//Wait for culling.
-		CullingSystem::Instance->WaitForStaticModelsCulling();
+		RenderingSystem::Instance->GetCullingSystem()->WaitForStaticModelsCulling();
 
 		//Wait for static models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
@@ -615,7 +614,7 @@ void RenderInputManager::GatherDepthModelInputStream
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
 			//Skip this model if it's not visible.
-			if (!component->_Visibility)
+			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
 			{
 				continue;
 			}
@@ -672,7 +671,7 @@ void RenderInputManager::GatherDepthModelInputStream
 		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
 
 		//Wait for culling.
-		CullingSystem::Instance->WaitForDynamicModelsCulling();
+		RenderingSystem::Instance->GetCullingSystem()->WaitForDynamicModelsCulling();
 
 		//Wait for dynamic models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForDynamicModelsLevelOfDetail();
@@ -681,7 +680,7 @@ void RenderInputManager::GatherDepthModelInputStream
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
 			//Skip this model if it's not visible.
-			if (!component->_Visibility)
+			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
 			{
 				continue;
 			}
@@ -755,7 +754,7 @@ void RenderInputManager::GatherFullModelInputStream
 		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
 
 		//Wait for culling.
-		CullingSystem::Instance->WaitForStaticModelsCulling();
+		RenderingSystem::Instance->GetCullingSystem()->WaitForStaticModelsCulling();
 
 		//Wait for static models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
@@ -764,7 +763,7 @@ void RenderInputManager::GatherFullModelInputStream
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
 			//Skip this model if it's not visible.
-			if (!component->_Visibility)
+			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
 			{
 				continue;
 			}
@@ -821,7 +820,7 @@ void RenderInputManager::GatherFullModelInputStream
 		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
 
 		//Wait for culling.
-		CullingSystem::Instance->WaitForDynamicModelsCulling();
+		RenderingSystem::Instance->GetCullingSystem()->WaitForDynamicModelsCulling();
 
 		//Wait for dynamic models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForDynamicModelsLevelOfDetail();
@@ -830,7 +829,7 @@ void RenderInputManager::GatherFullModelInputStream
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
 			//Skip this model if it's not visible.
-			if (!component->_Visibility)
+			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
 			{
 				continue;
 			}
@@ -904,7 +903,7 @@ void RenderInputManager::GatherInstancedModelInputStream
 		const InstancedStaticModelComponent *RESTRICT component{ ComponentManager::GetInstancedStaticModelInstancedStaticModelComponents() };
 
 		//Wait for culling to finish.
-		CullingSystem::Instance->WaitForInstancedStaticModelsCulling();
+		RenderingSystem::Instance->GetCullingSystem()->WaitForInstancedStaticModelsCulling();
 
 		for (uint64 i = 0; i < number_of_components; ++i, ++component)
 		{
@@ -994,7 +993,7 @@ void RenderInputManager::GatherInstancedImpostorInputStream
 		const InstancedImpostorComponent *RESTRICT component{ ComponentManager::GetInstancedImpostorInstancedImpostorComponents() };
 	
 		//Wait for culling.
-		CullingSystem::Instance->WaitForInstancedImpostorsCulling();
+		RenderingSystem::Instance->GetCullingSystem()->WaitForInstancedImpostorsCulling();
 
 		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
 		{
@@ -1128,7 +1127,7 @@ void RenderInputManager::GatherTerrainInputStream
 		const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainTerrainComponents() };
 
 		//Wait for culling.
-		CullingSystem::Instance->WaitForTerrainCulling();
+		RenderingSystem::Instance->GetCullingSystem()->WaitForTerrainCulling();
 
 		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
 		{
@@ -1200,7 +1199,7 @@ void RenderInputManager::GatherGrassInputStream
 		const GrassComponent *RESTRICT component{ ComponentManager::GetGrassGrassComponents() };
 
 		//Wait for culling.
-		CullingSystem::Instance->WaitForGrassCulling();
+		RenderingSystem::Instance->GetCullingSystem()->WaitForGrassCulling();
 
 		//Wait for level of detaill.
 		LevelOfDetailSystem::Instance->WaitForGrassLevelOfDetail();

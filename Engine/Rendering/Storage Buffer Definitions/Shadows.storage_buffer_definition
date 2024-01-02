@@ -1,0 +1,12 @@
+//Shadows header struct definition.
+struct ShadowsHeader
+{
+	//The directional light cascade distances.
+	vec4 _DirectionalLightCascadeDistances;
+};
+
+StorageBuffer(Shadows)
+{
+    ShadowsHeader SHADOWS_HEADER;
+	mat4[] WORLD_TO_LIGHT_MATRICES;
+};

@@ -25,6 +25,9 @@ public:
 	//The output render targets.
 	DynamicArray<Pair<HashString, RenderTargetHandle>> _OutputRenderTargets;
 
+	//The input stream subscriptions.
+	DynamicArray<HashString> _InputStreamSubscriptions;
+
 };
 
 class GraphicsRenderPipeline final : public GraphicsPipeline
@@ -73,5 +76,8 @@ private:
 
 	//The render data tables.
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
+
+	//The input stream subscriptions.
+	DynamicArray<HashString> _InputStreamSubscriptions;
 
 };

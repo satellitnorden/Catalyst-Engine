@@ -6,21 +6,10 @@
 //Concurrency.
 #include <Concurrency/Task.h>
 
-class ALIGN(8) CullingSystem final
+class CullingSystem final
 {
 
 public:
-
-	//Singleton declaration.
-	DECLARE_SINGLETON(CullingSystem);
-
-	/*
-	*	Default constructor.
-	*/
-	CullingSystem() NOEXCEPT
-	{
-
-	}
 
 	/*
 	*	Initializes the culling system.
@@ -28,9 +17,9 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Updates the culling system during the render update phase.
+	*	Updates the culling system during the pre render update phase.
 	*/
-	void RenderUpdate() NOEXCEPT;
+	void PreRenderUpdate() NOEXCEPT;
 
 	/*
 	*	Waits for dynamic models culling to finish executing.

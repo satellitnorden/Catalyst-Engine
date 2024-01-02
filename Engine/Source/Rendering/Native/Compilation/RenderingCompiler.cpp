@@ -2330,6 +2330,11 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 						render_pipeline_information._DepthCompareOperator = CompareOperator::Greater;
 					}
 
+					else if (string == "LESS")
+					{
+						render_pipeline_information._DepthCompareOperator = CompareOperator::Less;
+					}
+
 					else
 					{
 						ASSERT(false, "Invalid argument!");

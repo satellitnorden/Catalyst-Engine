@@ -46,7 +46,7 @@ public:
 	//The level of detail indices.
 	StaticArray<uint32, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _LevelOfDetailIndices;
 
-	//Denotes whether or not this dynamic model is visible.
-	bool _Visibility;
+	//The visibility flags.
+	VisibilityFlags _VisibilityFlags;
 
 };

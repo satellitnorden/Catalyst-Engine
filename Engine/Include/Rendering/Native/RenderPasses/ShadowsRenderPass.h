@@ -8,7 +8,6 @@
 #include <Rendering/Native/ShadowUniformData.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedOpaqueModelShadowsGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ModelShadowMapGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/RasterizedShadowsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ShadowsSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/TerrainShadowMapGraphicsPipeline.h>
@@ -40,7 +39,7 @@ private:
 	StaticArray<uint32, 4> _ShadowMapRenderTargetIndices;
 
 	//The shadow uniform data.
-	DynamicArray<ShadowUniformData> _ShadowUniformData;
+	DynamicArray<ShadowUniformDataOld> _ShadowUniformData;
 
 	//The shadow uniform data buffers.
 	DynamicArray<BufferHandle> _ShadowUniformDataBuffers;
@@ -48,13 +47,31 @@ private:
 	//The shadow uniform data render data tables.
 	DynamicArray<RenderDataTableHandle> _ShadowUniformDataRenderDataTables;
 
-	//The clear pipelines.
-	StaticArray<GraphicsRenderPipeline, 4> _ClearPipelines
+	//The clear shadow map pipelines.
+	StaticArray<GraphicsRenderPipeline, 4> _ClearShadowMapPipelines
 	{
-		GraphicsRenderPipeline(HashString("ClearShadow_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadow_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadow_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadow_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline"))
+	};
+
+	//The opaque model shadow map pipelines.
+	StaticArray<GraphicsRenderPipeline, 4> _OpaqueModelShadowMapPipelines
+	{
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline"))
+	};
+
+	//The masked model shadow map pipelines.
+	StaticArray<GraphicsRenderPipeline, 4> _MaskedModelShadowMapPipelines
+	{
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline"))
 	};
 
 	//The terrain shadow graphics pipelines.
@@ -62,9 +79,6 @@ private:
 
 	//The instanced opaque model shadows graphics pipelines.
 	StaticArray<InstancedOpaqueModelShadowsGraphicsPipeline, 8> _InstancedOpaqueModelShadowsGraphicsPipelines;
-
-	//The model shadow map graphics pipelines.
-	StaticArray<ModelShadowMapGraphicsPipeline, 4> _ModelShadowMapGraphicsPipelines;
 
 	//The rasterized shadows graphics pipeline.
 	RasterizedShadowsGraphicsPipeline _RasterizedShadowsGraphicsPipeline;

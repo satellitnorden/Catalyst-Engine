@@ -9,7 +9,6 @@
 #include <Rendering/Native/Vertex.h>
 
 //Systems.
-#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/WorldSystem.h>

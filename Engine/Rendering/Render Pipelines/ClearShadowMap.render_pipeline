@@ -1,8 +1,8 @@
 //Declare output depth buffer.
-OutputDepthBuffer(ShadowDepthBuffer);
+OutputDepthBuffer(ShadowMapDepthBuffer);
 
 //Declare output render targets.
-OutputRenderTarget(Shadow);
+OutputRenderTarget(ShadowMap);
 
 //Declare render resolution.
 RenderResolution(SHADOW_MAP);

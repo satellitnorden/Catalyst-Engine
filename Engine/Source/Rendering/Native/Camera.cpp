@@ -19,13 +19,13 @@ void Camera::CheckUpdates() NOEXCEPT
 		UpdateCameraMatrix();
 	}
 
-	if (_FrustumPlanesDirty
+	if (_FrustumDirty
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 		&& !_FrustumLocked
 #endif
 		)
 	{
-		UpdateFrustumPlanes();
+		UpdateFrustum();
 	}
 }
 
@@ -72,30 +72,29 @@ void Camera::UpdateCameraMatrix() NOEXCEPT
 }
 
 /*
-*	Updates the frustum planes.
+*	Updates the frustum.
 */
-void Camera::UpdateFrustumPlanes() NOEXCEPT
+void Camera::UpdateFrustum() NOEXCEPT
 {
 	//Construct the frustum planes.
-	for (uint8 i{ 4 }; i--;) _FrustumPlanes[0][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][0]; //Left.
-	for (uint8 i{ 4 }; i--;) _FrustumPlanes[1][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][0]; //Right.
-	for (uint8 i{ 4 }; i--;) _FrustumPlanes[2][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][1]; //Bottom.
-	for (uint8 i{ 4 }; i--;) _FrustumPlanes[3][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][1]; //Top.
-	for (uint8 i{ 4 }; i--;) _FrustumPlanes[4][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][2]; //Near.
-	for (uint8 i{ 4 }; i--;) _FrustumPlanes[5][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][2]; //Far.
+	for (uint8 i{ 4 }; i--;) _Frustum._Planes[0][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][0]; //Left.
+	for (uint8 i{ 4 }; i--;) _Frustum._Planes[1][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][0]; //Right.
+	for (uint8 i{ 4 }; i--;) _Frustum._Planes[2][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][1]; //Bottom.
+	for (uint8 i{ 4 }; i--;) _Frustum._Planes[3][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][1]; //Top.
+	for (uint8 i{ 4 }; i--;) _Frustum._Planes[4][i] = _ViewMatrix._Matrix[i][3] + _ViewMatrix._Matrix[i][2]; //Near.
+	for (uint8 i{ 4 }; i--;) _Frustum._Planes[5][i] = _ViewMatrix._Matrix[i][3] - _ViewMatrix._Matrix[i][2]; //Far.
 
 	//Normalize the frustum planes.
 	for (uint8 i{ 0 }; i < 6; ++i)
 	{
-		const float32 length{ CatalystBaseMath::SquareRoot(_FrustumPlanes[i]._X * _FrustumPlanes[i]._X + _FrustumPlanes[i]._Y * _FrustumPlanes[i]._Y + _FrustumPlanes[i]._Z * _FrustumPlanes[i]._Z) };
-		const float32 length_reciprocal{ 1.0f / length };
+		const float32 length_reciprocal{ CatalystBaseMath::InverseSquareRoot(_Frustum._Planes[i]._X * _Frustum._Planes[i]._X + _Frustum._Planes[i]._Y * _Frustum._Planes[i]._Y + _Frustum._Planes[i]._Z * _Frustum._Planes[i]._Z) };
 
-		_FrustumPlanes[i]._X *= length_reciprocal;
-		_FrustumPlanes[i]._Y *= length_reciprocal;
-		_FrustumPlanes[i]._Z *= length_reciprocal;
-		_FrustumPlanes[i]._W *= length_reciprocal;
+		_Frustum._Planes[i]._X *= length_reciprocal;
+		_Frustum._Planes[i]._Y *= length_reciprocal;
+		_Frustum._Planes[i]._Z *= length_reciprocal;
+		_Frustum._Planes[i]._W *= length_reciprocal;
 	}
 
-	//Reset the dirtyness of the frustum planes.
-	_FrustumPlanesDirty = false;
+	//Reset the dirtyness of the frustum.
+	_FrustumDirty = false;
 }

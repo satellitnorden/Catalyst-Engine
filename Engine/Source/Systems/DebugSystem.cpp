@@ -155,6 +155,11 @@ void DebugSystem::RegisterDebugCommand
 */
 void DebugSystem::Update() NOEXCEPT
 {
+	if (RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::CUSTOM)
+	{
+		return;
+	}
+
 	//Update if the debug window should be displayed.
 	if (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::Insert) == ButtonState::PRESSED)
 	{

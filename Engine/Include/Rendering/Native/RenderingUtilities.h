@@ -204,56 +204,6 @@ public:
 	}
 
 	/*
-	*	Returns whether or not an axis-aligned bounding box is within the view frustum.
-	*/
-	FORCE_INLINE static bool IsWithinViewFrustum(const StaticArray<Vector4<float>, 6> &planes, const AxisAlignedBoundingBox3D &box) NOEXCEPT
-	{
-		for (uint8 i = 0; i < 6; ++i)
-		{
-			Vector3<float> axis;
-
-			if (planes[i]._X < 0.0f)
-			{
-				axis._X = box._Minimum._X;
-			}
-
-			else
-			{
-				axis._X = box._Maximum._X;
-			}
-
-			if (planes[i]._Y < 0.0f)
-			{
-				axis._Y = box._Minimum._Y;
-			}
-
-			else
-			{
-				axis._Y = box._Maximum._Y;
-			}
-
-			if (planes[i]._Z < 0.0f)
-			{
-				axis._Z = box._Minimum._Z;
-			}
-
-			else
-			{
-				axis._Z = box._Maximum._Z;
-			}
-
-			const Vector3<float> planeNormal{ Vector3<float>(planes[i]._X, planes[i]._Y, planes[i]._Z) };
-
-			if (Vector3<float>::DotProduct(planeNormal, axis) + planes[i]._W < 0.0f)
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/*
 	*	Packs a color into an unsigned integer.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD uint32 PackColor(const Vector4<float> &color, const bool apply_gamma_correction) NOEXCEPT

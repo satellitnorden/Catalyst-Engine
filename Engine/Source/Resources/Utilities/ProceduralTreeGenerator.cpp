@@ -27,23 +27,34 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 		//The rotation.
 		EulerAngles _Rotation;
 
+	};
+
+	/*
+	*	Line segment class definition.
+	*/
+	class LineSegment final
+	{
+
+	public:
+
 		//The parent line segment index.
 		uint64 _ParentLineSegmentIndex;
 
-		//Denotes if this point has branched.
-		bool _HasBranched;
+		//The points.
+		DynamicArray<LineSegmentPoint> _Points;
 
 	};
 
 	//Define some constants.
-	constexpr float32 RANDOM_CONTINUOUS_RANGE{ CatalystBaseMathConstants::PI * 0.125f * 0.125f };
+	constexpr float32 RANDOM_CONTINUOUS_RANGE{ CatalystBaseMathConstants::PI * 0.125f * 0.25f };
 	constexpr float32 RANDOM_BRANCHING_RANGE{ CatalystBaseMathConstants::PI * 0.125f };
+	constexpr float32 MINIMUM_BRANCHING_DIVERGENCE{ CatalystBaseMathConstants::PI * 0.125f * 0.125f };
 	constexpr float32 RADIUS{ 0.5f };
 	constexpr float32 HEIGHT{ 24.0f };
-	constexpr uint32 NUMBER_OF_POINTS{ 48 };
-	constexpr uint32 NUMBER_OF_CIRCLE_SEGMENTS{ 12 };
+	constexpr uint32 NUMBER_OF_POINTS{ 32 };
+	constexpr uint32 NUMBER_OF_CIRCLE_SEGMENTS{ 8 };
 	constexpr uint32 NUMBER_OF_COLLISION_CIRCLE_SEGMENTS{ NUMBER_OF_CIRCLE_SEGMENTS / 2 };
-	constexpr uint8 BRANCHING_PASSES{ 48 };
+	constexpr uint8 BRANCHING_PASSES{ 32 };
 	constexpr float32 MINIMUM_BRANCHING_HEIGHT{ 0.25f };
 	constexpr float32 MINIMUM_CROWN_HEIGHT{ 0.375f };
 
@@ -51,26 +62,26 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 	*	Create line segments.
 	*	One array for each "branch", with position of each point, and the normalized height in the _W component.
 	*/
-	DynamicArray<DynamicArray<LineSegmentPoint>> line_segments;
+	DynamicArray<LineSegment> line_segments;
 
 	//Add the base trunk.
 	line_segments.Emplace();
 
 	//Add the root line segment point.
-	line_segments.Back().Emplace();
-	LineSegmentPoint &new_line_segment_point{ line_segments.Back().Back() };
+	line_segments.Back()._ParentLineSegmentIndex = UINT64_MAXIMUM;
+
+	line_segments.Back()._Points.Emplace();
+	LineSegmentPoint &new_line_segment_point{ line_segments.Back()._Points.Back() };
 
 	new_line_segment_point._Position = Vector3<float32>(0.0f, 0.0f, 0.0f);
 	new_line_segment_point._NormalizedHeight = 0.0f;
 	new_line_segment_point._Rotation = EulerAngles(CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE), 0.0f, CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE));
-	new_line_segment_point._ParentLineSegmentIndex = UINT64_MAXIMUM;
-	new_line_segment_point._HasBranched = false;
 
 	//Grow the root trunk.
 	for (uint32 i{ 1 }; i < NUMBER_OF_POINTS; ++i)
 	{
 		//Cache the previous line segment point.
-		const LineSegmentPoint previous_line_segment_point{ line_segments.Back().Back() };
+		const LineSegmentPoint previous_line_segment_point{ line_segments.Back()._Points.Back() };
 
 		//Calculate the normalized height.
 		const float32 normalized_height{ static_cast<float32>(i) / static_cast<float32>(NUMBER_OF_POINTS - 1) };
@@ -80,14 +91,12 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 		previous_direction.Rotate(previous_line_segment_point._Rotation);
 
 		//Add the new point.
-		line_segments.Back().Emplace();
-		LineSegmentPoint &new_line_segment_point{ line_segments.Back().Back() };
+		line_segments.Back()._Points.Emplace();
+		LineSegmentPoint &new_line_segment_point{ line_segments.Back()._Points.Back() };
 
 		new_line_segment_point._Position = previous_line_segment_point._Position + previous_direction * (HEIGHT / static_cast<float32>(NUMBER_OF_POINTS));
 		new_line_segment_point._NormalizedHeight = normalized_height;
 		new_line_segment_point._Rotation = EulerAngles(previous_line_segment_point._Rotation._Roll + CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE), 0.0f, previous_line_segment_point._Rotation._Pitch + CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE));
-		new_line_segment_point._ParentLineSegmentIndex = UINT64_MAXIMUM;
-		new_line_segment_point._HasBranched = false;
 	}
 
 	//Grow new branches.
@@ -99,81 +108,72 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 		for (uint64 line_segment_index{ 0 }; line_segment_index < line_segments_size; ++line_segment_index)
 		{
 			//Cache the line segment.
-			DynamicArray<LineSegmentPoint> &line_segment{ line_segments[line_segment_index] };
+			LineSegment &line_segment{ line_segments[line_segment_index] };
 
 			//Randomize at which height to branch this off.
 			const float32 branch_height{ CatalystBaseMath::LinearlyInterpolate(MINIMUM_BRANCHING_HEIGHT, 1.0f, CatalystRandomMath::RandomFloat()) };
 
-			if (branch_height < line_segment[0]._NormalizedHeight)
+			if (branch_height < line_segment._Points[0]._NormalizedHeight)
 			{
 				continue;
 			}
 
-			const uint64 line_segment_end{ line_segment.LastIndex() };
+			const uint64 line_segment_end{ line_segment._Points.LastIndex() };
 
 			for (uint64 line_segment_point_index{ 1 }; line_segment_point_index < line_segment_end; ++line_segment_point_index)
 			{
-				LineSegmentPoint &line_segment_point{ line_segment[line_segment_point_index] };
+				LineSegmentPoint &line_segment_point{ line_segment._Points[line_segment_point_index] };
 
 				if (line_segment_point._NormalizedHeight >= branch_height)
 				{
-					if (!line_segment_point._HasBranched)
+					line_segments.Emplace();
+					LineSegment &new_line_segment{ line_segments.Back() };
+
+					new_line_segment._ParentLineSegmentIndex = line_segment_index;
+
+					//Add the root line segment point.
+					new_line_segment._Points.Emplace();
+					LineSegmentPoint &new_line_segment_point{ new_line_segment._Points.Back() };
+
+					new_line_segment_point._Position = line_segment_point._Position;
+					new_line_segment_point._NormalizedHeight = line_segment_point._NormalizedHeight;
+					new_line_segment_point._Rotation = EulerAngles(CatalystRandomMath::RandomFloatInRange(-RANDOM_BRANCHING_RANGE, RANDOM_BRANCHING_RANGE), 0.0f, CatalystRandomMath::RandomFloatInRange(-RANDOM_BRANCHING_RANGE, RANDOM_BRANCHING_RANGE) * 2.0f);
+
+					//Enforce a minimum rotation divergence.
+					const float32 roll_difference{ CatalystBaseMath::Absolute(new_line_segment_point._Rotation._Roll - line_segment_point._Rotation._Roll) };
+					const float32 roll_divergence_fixer{ CatalystBaseMath::Maximum(MINIMUM_BRANCHING_DIVERGENCE - roll_difference, 0.0f) };
+					new_line_segment_point._Rotation._Roll += roll_divergence_fixer * (new_line_segment_point._Rotation._Roll >= line_segment_point._Rotation._Roll ? -1.0f : 1.0f);
+
+					const float32 pitch_difference{ CatalystBaseMath::Absolute(new_line_segment_point._Rotation._Pitch - line_segment_point._Rotation._Pitch) };
+					const float32 pitch_divergence_fixer{ CatalystBaseMath::Maximum(MINIMUM_BRANCHING_DIVERGENCE - pitch_difference, 0.0f) };
+					new_line_segment_point._Rotation._Pitch += pitch_divergence_fixer * (new_line_segment_point._Rotation._Pitch >= line_segment_point._Rotation._Pitch ? -1.0f : 1.0f);
+
+					//Calculate the start index.
+					const uint64 start_index{ NUMBER_OF_POINTS - line_segment_end + 1 + line_segment_point_index + 1 };
+
+					//Grow the rest of the branch.
+					for (uint64 i{ start_index }; i < NUMBER_OF_POINTS; ++i)
 					{
-						line_segments.Emplace();
-						DynamicArray<LineSegmentPoint> &new_line_segment{ line_segments.Back() };
+						//Cache the previous line segment point.
+						const LineSegmentPoint previous_line_segment_point{ new_line_segment._Points.Back() };
 
-						//Add the root line segment point.
-						new_line_segment.Emplace();
-						LineSegmentPoint &new_line_segment_point{ new_line_segment.Back() };
+						//Calculate the normalized height.
+						const float32 normalized_height{ static_cast<float32>(i) / static_cast<float32>(NUMBER_OF_POINTS - 1) };
 
-						new_line_segment_point._Position = line_segment_point._Position;
-						new_line_segment_point._NormalizedHeight = line_segment_point._NormalizedHeight;
-						new_line_segment_point._Rotation = EulerAngles(CatalystRandomMath::RandomFloatInRange(-RANDOM_BRANCHING_RANGE, RANDOM_BRANCHING_RANGE), 0.0f, CatalystRandomMath::RandomFloatInRange(-RANDOM_BRANCHING_RANGE, RANDOM_BRANCHING_RANGE) * 2.0f);
-						new_line_segment_point._ParentLineSegmentIndex = line_segment_index;
-						new_line_segment_point._HasBranched = false;
+						//Calculate the previous direction.
+						Vector3<float32> previous_direction{ 0.0f, 1.0f, 0.0f };
+						previous_direction.Rotate(previous_line_segment_point._Rotation);
 
-						//Enforce a minimum rotation divergence.
-						constexpr float32 MINIMUM_DIVERGENCE{ CatalystBaseMathConstants::PI * 0.125f };
+						//Add the new point.
+						new_line_segment._Points.Emplace();
+						LineSegmentPoint &branched_line_segment_point{ new_line_segment._Points.Back() };
 
-						const float32 roll_difference{ CatalystBaseMath::Absolute(new_line_segment_point._Rotation._Roll - line_segment_point._Rotation._Roll) };
-						const float32 roll_divergence_fixer{ CatalystBaseMath::Maximum(MINIMUM_DIVERGENCE - roll_difference, 0.0f) };
-						new_line_segment_point._Rotation._Roll += roll_divergence_fixer * (new_line_segment_point._Rotation._Roll >= line_segment_point._Rotation._Roll ? 1.0f : -1.0f);
-
-						const float32 pitch_difference{ CatalystBaseMath::Absolute(new_line_segment_point._Rotation._Pitch - line_segment_point._Rotation._Pitch) };
-						const float32 pitch_divergence_fixer{ CatalystBaseMath::Maximum(MINIMUM_DIVERGENCE - pitch_difference, 0.0f) };
-						new_line_segment_point._Rotation._Pitch += pitch_divergence_fixer * (new_line_segment_point._Rotation._Pitch >= line_segment_point._Rotation._Pitch ? 1.0f : -1.0f);
-
-						//Calculate the start index.
-						const uint64 start_index{ NUMBER_OF_POINTS - line_segment_end + 1 + line_segment_point_index + 1 };
-
-						//Grow the rest of the branch.
-						for (uint64 i{ start_index }; i < NUMBER_OF_POINTS; ++i)
-						{
-							//Cache the previous line segment point.
-							const LineSegmentPoint previous_line_segment_point{ new_line_segment.Back() };
-
-							//Calculate the normalized height.
-							const float32 normalized_height{ static_cast<float32>(i) / static_cast<float32>(NUMBER_OF_POINTS - 1) };
-
-							//Calculate the previous direction.
-							Vector3<float32> previous_direction{ 0.0f, 1.0f, 0.0f };
-							previous_direction.Rotate(previous_line_segment_point._Rotation);
-
-							//Add the new point.
-							new_line_segment.Emplace();
-							LineSegmentPoint &branched_line_segment_point{ new_line_segment.Back() };
-
-							branched_line_segment_point._Position = previous_line_segment_point._Position + previous_direction * (HEIGHT / static_cast<float32>(NUMBER_OF_POINTS));
-							branched_line_segment_point._NormalizedHeight = normalized_height;
-							branched_line_segment_point._Rotation = EulerAngles(previous_line_segment_point._Rotation._Roll + CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE), 0.0f, previous_line_segment_point._Rotation._Pitch + CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE));
-							branched_line_segment_point._ParentLineSegmentIndex = line_segment_index;
-							branched_line_segment_point._HasBranched = false;
-						}
-
-						//line_segment_point._HasBranched = true;
-
-						break;
+						branched_line_segment_point._Position = previous_line_segment_point._Position + previous_direction * (HEIGHT / static_cast<float32>(NUMBER_OF_POINTS));
+						branched_line_segment_point._NormalizedHeight = normalized_height;
+						branched_line_segment_point._Rotation = EulerAngles(previous_line_segment_point._Rotation._Roll + CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE), 0.0f, previous_line_segment_point._Rotation._Pitch + CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE));
 					}
+
+					break;
 				}
 			}
 		}
@@ -186,9 +186,9 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 
 	for (int64 line_segment_index{ static_cast<int64>(line_segments.LastIndex()) }; line_segment_index >= 0; --line_segment_index)
 	{
-		const DynamicArray<LineSegmentPoint> &line_segment{ line_segments[line_segment_index] };
+		const LineSegment &line_segment{ line_segments[line_segment_index] };
 
-		for (uint64 line_segment_point_index{ 1 }; line_segment_point_index < line_segment.Size(); ++line_segment_point_index)
+		for (uint64 line_segment_point_index{ 1 }; line_segment_point_index < line_segment._Points.Size(); ++line_segment_point_index)
 		{
 			//Break if already marked for deletion.
 			if (delete_line_segment[line_segment_index])
@@ -196,10 +196,12 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 				break;
 			}
 
-			const LineSegmentPoint &line_segment_point{ line_segment[line_segment_point_index] };
+			const LineSegmentPoint &line_segment_point{ line_segment._Points[line_segment_point_index] };
 
 			for (int64 other_line_segment_index{ static_cast<int64>(line_segments.LastIndex()) }; other_line_segment_index >= 0; --other_line_segment_index)
 			{
+				const LineSegment &other_line_segment{ line_segments[other_line_segment_index] };
+
 				//Break if already marked for deletion.
 				if (delete_line_segment[line_segment_index])
 				{
@@ -207,7 +209,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 				}
 
 				//Ignore parent.
-				if (line_segment_point._ParentLineSegmentIndex == other_line_segment_index)
+				if (line_segment._ParentLineSegmentIndex == other_line_segment_index)
 				{
 					continue;
 				}
@@ -224,14 +226,12 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 					continue;
 				}
 
-				const DynamicArray<LineSegmentPoint> &other_line_segment{ line_segments[other_line_segment_index] };
-
-				for (uint64 other_line_segment_point_index{ 1 }; other_line_segment_point_index < other_line_segment.Size(); ++other_line_segment_point_index)
+				for (uint64 other_line_segment_point_index{ 1 }; other_line_segment_point_index < other_line_segment._Points.Size(); ++other_line_segment_point_index)
 				{
-					const LineSegmentPoint &other_line_segment_point{ other_line_segment[other_line_segment_point_index] };
+					const LineSegmentPoint &other_line_segment_point{ other_line_segment._Points[other_line_segment_point_index] };
 
 					//Ignore parent.
-					if (other_line_segment_point._ParentLineSegmentIndex == line_segment_index)
+					if (other_line_segment._ParentLineSegmentIndex == line_segment_index)
 					{
 						continue;
 					}
@@ -259,7 +259,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 
 		for (;;)
 		{
-			const uint64 parent_line_segment_index{ line_segments[current_line_segment_index][0]._ParentLineSegmentIndex };
+			const uint64 parent_line_segment_index{ line_segments[current_line_segment_index]._ParentLineSegmentIndex };
 
 			if (parent_line_segment_index == UINT64_MAXIMUM)
 			{
@@ -305,20 +305,23 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 	output->_Indices.Emplace();
 	DynamicArray<uint32> crown_branch_candidates;
 
-	for (const DynamicArray<LineSegmentPoint> &line_segment : line_segments)
+	for (const LineSegment &line_segment : line_segments)
 	{
-		for (uint64 line_segment_index{ 0 }; line_segment_index < line_segment.Size(); ++line_segment_index)
+		//Calculate the number of circle segments for this line segment.
+		const uint32 number_of_circle_segments{ static_cast<uint32>(CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(NUMBER_OF_CIRCLE_SEGMENTS), 3.0f, line_segment._Points[0]._NormalizedHeight)) };
+
+		for (uint64 line_segment_index{ 0 }; line_segment_index < line_segment._Points.Size(); ++line_segment_index)
 		{
 			//Calculate the radius at this point.
-			const float32 radius_at_point{ RADIUS * (1.0f - CatalystBaseMath::Square(line_segment[line_segment_index]._NormalizedHeight)) };
+			const float32 radius_at_point{ RADIUS * (1.0f - CatalystBaseMath::Square(line_segment._Points[line_segment_index]._NormalizedHeight)) };
 
 			//Calculate the circumference at this point.
 			const float32 circumference_at_point{ 2.0f * CatalystBaseMathConstants::PI * RADIUS };
 
-			for (uint32 circle_segment_index{ 0 }; circle_segment_index < NUMBER_OF_CIRCLE_SEGMENTS; ++circle_segment_index)
+			for (uint32 circle_segment_index{ 0 }; circle_segment_index < number_of_circle_segments; ++circle_segment_index)
 			{
 				//Calculate the circle percent.
-				const float32 circle_percent{ static_cast<float32>(circle_segment_index) / static_cast<float32>(NUMBER_OF_CIRCLE_SEGMENTS - 1) };
+				const float32 circle_percent{ static_cast<float32>(circle_segment_index) / static_cast<float32>(number_of_circle_segments - 1) };
 
 				//Calculate the rotation.
 				const float32 rotation{ CatalystBaseMathConstants::DOUBLE_PI * circle_percent };
@@ -333,36 +336,36 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 				//Set the position.
 				Vector3<float32> position_offset{ 0.0f, 0.0f, radius_at_point };
 				position_offset.Rotate(EulerAngles(0.0f, rotation, 0.0f));
-				position_offset.Rotate(line_segment[line_segment_index]._Rotation);
-				new_vertex._Position = line_segment[line_segment_index]._Position + position_offset;
+				position_offset.Rotate(line_segment._Points[line_segment_index]._Rotation);
+				new_vertex._Position = line_segment._Points[line_segment_index]._Position + position_offset;
 
 				//Set the normal.
 				new_vertex._Normal = Vector3<float32>(0.0f, 0.0f, 1.0f);
 				new_vertex._Normal.Rotate(EulerAngles(0.0f, rotation, 0.0f));
-				new_vertex._Normal.Rotate(line_segment[line_segment_index]._Rotation);
+				new_vertex._Normal.Rotate(line_segment._Points[line_segment_index]._Rotation);
 
 				//Set the tangent.
 				new_vertex._Tangent = Vector3<float32>(0.0f, 1.0f, 0.0f);
 				new_vertex._Tangent.Rotate(EulerAngles(0.0f, rotation, 0.0f));
-				new_vertex._Tangent.Rotate(line_segment[line_segment_index]._Rotation);
+				new_vertex._Tangent.Rotate(line_segment._Points[line_segment_index]._Rotation);
 
 				//Set the texture coordinate.
-				new_vertex._TextureCoordinate = Vector2<float32>(circle_percent, line_segment[line_segment_index]._Position._Y / circumference_at_point);
+				new_vertex._TextureCoordinate = Vector2<float32>(circle_percent, line_segment._Points[line_segment_index]._Position._Y / circumference_at_point);
 			
 				//If this is not the first line segment, and not the first line segment, add the indices.
 				if (line_segment_index > 0 && circle_segment_index > 0)
 				{
-					output->_Indices.Back().Emplace(vertex_index - NUMBER_OF_CIRCLE_SEGMENTS - 1);
+					output->_Indices.Back().Emplace(vertex_index - number_of_circle_segments - 1);
 					output->_Indices.Back().Emplace(vertex_index);
 					output->_Indices.Back().Emplace(vertex_index - 1);
 
-					output->_Indices.Back().Emplace(vertex_index - NUMBER_OF_CIRCLE_SEGMENTS - 1);
-					output->_Indices.Back().Emplace(vertex_index - NUMBER_OF_CIRCLE_SEGMENTS);
+					output->_Indices.Back().Emplace(vertex_index - number_of_circle_segments - 1);
+					output->_Indices.Back().Emplace(vertex_index - number_of_circle_segments);
 					output->_Indices.Back().Emplace(vertex_index);
 				}
 
 				//Calculate the crown branch weight.
-				const float32 crown_branch_weight{ CatalystBaseMath::Square(CatalystBaseMath::Maximum(line_segment[line_segment_index]._NormalizedHeight - MINIMUM_CROWN_HEIGHT, 0.0f) * (1.0f / (1.0f - MINIMUM_CROWN_HEIGHT))) };
+				const float32 crown_branch_weight{ CatalystBaseMath::Square(CatalystBaseMath::Maximum(line_segment._Points[line_segment_index]._NormalizedHeight - MINIMUM_CROWN_HEIGHT, 0.0f) * (1.0f / (1.0f - MINIMUM_CROWN_HEIGHT))) };
 
 				if (CatalystRandomMath::RandomChance(crown_branch_weight))
 				{
@@ -373,12 +376,12 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 	}
 
 	//Set up the collision vertices/indices.
-	for (const DynamicArray<LineSegmentPoint> &line_segment : line_segments)
+	for (const LineSegment &line_segment : line_segments)
 	{
-		for (uint64 line_segment_index{ 0 }; line_segment_index < line_segment.Size(); ++line_segment_index)
+		for (uint64 line_segment_index{ 0 }; line_segment_index < line_segment._Points.Size(); ++line_segment_index)
 		{
 			//Calculate the radius at this point.
-			const float32 radius_at_point{ RADIUS * (1.0f - CatalystBaseMath::Square(line_segment[line_segment_index]._NormalizedHeight)) };
+			const float32 radius_at_point{ RADIUS * (1.0f - CatalystBaseMath::Square(line_segment._Points[line_segment_index]._NormalizedHeight)) };
 
 			//Don't care about really thin branches after a certain point.
 			if (radius_at_point < (RADIUS * 0.5f))
@@ -407,21 +410,21 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 				//Set the position.
 				Vector3<float32> position_offset{ 0.0f, 0.0f, radius_at_point };
 				position_offset.Rotate(EulerAngles(0.0f, rotation, 0.0f));
-				position_offset.Rotate(line_segment[line_segment_index]._Rotation);
-				new_vertex._Position = line_segment[line_segment_index]._Position + position_offset;
+				position_offset.Rotate(line_segment._Points[line_segment_index]._Rotation);
+				new_vertex._Position = line_segment._Points[line_segment_index]._Position + position_offset;
 
 				//Set the normal.
 				new_vertex._Normal = Vector3<float32>(0.0f, 0.0f, 1.0f);
 				new_vertex._Normal.Rotate(EulerAngles(0.0f, rotation, 0.0f));
-				new_vertex._Normal.Rotate(line_segment[line_segment_index]._Rotation);
+				new_vertex._Normal.Rotate(line_segment._Points[line_segment_index]._Rotation);
 
 				//Set the tangent.
 				new_vertex._Tangent = Vector3<float32>(0.0f, 1.0f, 0.0f);
 				new_vertex._Tangent.Rotate(EulerAngles(0.0f, rotation, 0.0f));
-				new_vertex._Tangent.Rotate(line_segment[line_segment_index]._Rotation);
+				new_vertex._Tangent.Rotate(line_segment._Points[line_segment_index]._Rotation);
 
 				//Set the texture coordinate.
-				new_vertex._TextureCoordinate = Vector2<float32>(circle_percent, line_segment[line_segment_index]._Position._Y / circumference_at_point);
+				new_vertex._TextureCoordinate = Vector2<float32>(circle_percent, line_segment._Points[line_segment_index]._Position._Y / circumference_at_point);
 
 				//If this is not the first line segment, and not the first line segment, add the indices.
 				if (line_segment_index > 0 && circle_segment_index > 0)
@@ -455,9 +458,9 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 		//Calculate the random rotation.
 		const EulerAngles random_rotation
 		{
-			CatalystRandomMath::RandomFloatInRange(-CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) * 0.5f,
+			CatalystRandomMath::RandomFloatInRange(-CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) * 0.25f,
 			CatalystRandomMath::RandomFloatInRange(-CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI),
-			CatalystRandomMath::RandomFloatInRange(-CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) * 0.5f
+			CatalystRandomMath::RandomFloatInRange(-CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) * 0.25f
 		};
 
 		//Add the vertices.

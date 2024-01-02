@@ -1,0 +1,58 @@
+//Declare storage buffer includes.
+IncludeStorageBuffer(Shadows);
+
+//Declare output depth buffer.
+OutputDepthBuffer(ShadowMapDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(ShadowMap);
+
+//Declare render resolution.
+RenderResolution(SHADOW_MAP);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set the cull mode.
+CullMode(FRONT);
+
+//Set depth/stencil properties.
+DepthCompareOperator(LESS);
+DepthTestEnable();
+DepthWriteEnable();
+
+//Set the topology.
+Topology(TRIANGLE_LIST);
+
+//Declare push constant data.
+PushConstantData(mat4, MODEL_MATRIX);
+PushConstantData(uint, LIGHT_MATRIX_INDEX);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec3, InPosition);
+
+    //Calculate the clip position.
+    vec4 clip_position = WORLD_TO_LIGHT_MATRICES[LIGHT_MATRIX_INDEX] * MODEL_MATRIX * vec4(InPosition, 1.0f);
+
+    //Constrain it... Can't remember why.
+    clip_position.z = max(clip_position.z, FLOAT32_EPSILON);
+
+    //Output the position.
+    OutputVertexPosition(clip_position);
+}
+
+//The fragment shader.
+Fragment
+{
+    //Retrieve the depth.
+    float depth = FRAGMENT_COORDINATE.z;
+
+    //Output the fragments.
+    OutputFragment(ShadowMap, vec4(depth, 0.0f, 0.0f, 0.0f));
+}

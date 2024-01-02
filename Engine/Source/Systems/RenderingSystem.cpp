@@ -278,6 +278,9 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 	//Initialize the camera system.
 	_CameraSystem.Initialize();
 
+	//Initialize the culling system.
+	_CullingSystem.Initialize();
+
 	//Post-initialize the lighting system.
 	_LightingSystem.PostInitialize();
 
@@ -292,6 +295,9 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 
 	//Post-initialize the ray tracing system.
 	_RayTracingSystem.PostInitialize();
+
+	//Post-initialize the shadows system.
+	_ShadowsSystem.PostInitialize();
 
 	//Initialize the rendering configuration.
 	_RenderingConfiguration.Initialize();
@@ -379,6 +385,20 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 	}
 #endif
 
+	//Update the shadows system.
+	{
+		PROFILING_SCOPE(RenderingSystem_ShadowsSystem_PreRenderUpdate);
+
+		_ShadowsSystem.PreRenderUpdate();
+	}
+
+	//Update the culling system.
+	{
+		PROFILING_SCOPE(RenderingSystem_CullingSystem_PreRenderUpdate);
+
+		_CullingSystem.PreRenderUpdate();
+	}
+
 	//Update the camera system.
 	{
 		PROFILING_SCOPE(RenderingSystem_CameraSystem_RenderUpdate);
@@ -405,13 +425,6 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		PROFILING_SCOPE(RenderingSystem_WorldSystem_RenderUpdate);
 
 		WorldSystem::Instance->RenderUpdate();
-	}
-
-	//Update the buffer manager.
-	{
-		PROFILING_SCOPE(RenderingSystem_BufferManager_RenderUpdate);
-
-		_BufferManager.RenderUpdate();
 	}
 
 	//Update the global render data.
@@ -461,6 +474,13 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		PROFILING_SCOPE(RenderingSystem_RenderInputManager_RenderUpdate);
 
 		_RenderInputManager.RenderUpdate();
+	}
+
+	//Update the buffer manager.
+	{
+		PROFILING_SCOPE(RenderingSystem_BufferManager_RenderUpdate);
+
+		_BufferManager.RenderUpdate();
 	}
 
 	//Execute all render passes.

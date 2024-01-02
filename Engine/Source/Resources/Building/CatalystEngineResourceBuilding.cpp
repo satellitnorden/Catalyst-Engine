@@ -1125,28 +1125,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedOpaqueModelShadowsFragmentShader";
-		parameters._ID = "InstancedOpaqueModelShadowsFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\InstancedOpaqueModelShadowsVertexShader";
-		parameters._ID = "InstancedOpaqueModelShadowsVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\InstancedOpaqueModelShadowsVertexShader.vert";
-		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\MobileFragmentShader";
 		parameters._ID = "MobileFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MobileFragmentShader.frag";
@@ -1195,28 +1173,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		parameters._ID = "MotionBlurFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MotionBlurFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\OpaqueModelSceneFeaturesFragmentShader";
-		parameters._ID = "OpaqueModelSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OpaqueModelSceneFeaturesFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\OpaqueModelSceneFeaturesVertexShader";
-		parameters._ID = "OpaqueModelSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\OpaqueModelSceneFeaturesVertexShader.vert";
-		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}
@@ -1663,99 +1619,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 			parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
 			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
 			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.25f, 0.75f, 1.0f, 0.0f));
-			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-			parameters._EmissiveMultiplier = 0.0f;
-			parameters._DoubleSided = false;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			//Build the material.
-			MaterialBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Arch_Material";
-			parameters._ID = "Sponza_Arch_Material";
-			parameters._Type = MaterialResource::Type::OPAQUE;
-			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString("Sponza_Arch_AlbedoThickness_Texture2D");
-			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
-			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.789f, 0.0f, 1.0f, 0.0f));
-			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-			parameters._EmissiveMultiplier = 0.0f;
-			parameters._DoubleSided = false;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			//Build the material.
-			MaterialBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Bricks_Material";
-			parameters._ID = "Sponza_Bricks_Material";
-			parameters._Type = MaterialResource::Type::OPAQUE;
-			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString("Sponza_Bricks_AlbedoThickness_Texture2D");
-			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			parameters._NormalMapDisplacementComponent._TextureResourceIdentifier = HashString("Sponza_Bricks_NormalMapDisplacement_Texture2D");
-			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.895f, 0.0f, 1.0f, 0.0f));
-			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-			parameters._EmissiveMultiplier = 0.0f;
-			parameters._DoubleSided = false;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			//Build the material.
-			MaterialBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Sponza_Ceiling_Material";
-			parameters._ID = "Sponza_Ceiling_Material";
-			parameters._Type = MaterialResource::Type::OPAQUE;
-			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString("Sponza_Ceiling_AlbedoThickness_Texture2D");
-			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
-			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(0.895f, 0.0f, 1.0f, 0.0f));
 			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
 			parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 			parameters._EmissiveMultiplier = 0.0f;
