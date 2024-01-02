@@ -63,5 +63,6 @@ Fragment
     vec4 volumetric_lighting = texture(VolumetricLighting, InTextureCoordinate);
 
     //Write the fragment.
+    //OutputFragment(Scene, vec4(volumetric_lighting.rgb, opacity));
     OutputFragment(Scene, vec4(volumetric_lighting.rgb, opacity));
 }

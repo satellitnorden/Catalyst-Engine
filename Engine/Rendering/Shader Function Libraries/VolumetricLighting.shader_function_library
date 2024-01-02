@@ -7,8 +7,7 @@ float GetExtinctionAtPosition(vec3 position)
 
 	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
-	#undef LOW_EXTINCTION
-	#undef HIGH_EXTINCTION
+	#undef BASE_EXTINCTION
 }
 
 /*

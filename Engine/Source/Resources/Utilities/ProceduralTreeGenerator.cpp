@@ -40,21 +40,26 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 		//The parent line segment index.
 		uint64 _ParentLineSegmentIndex;
 
+		//The radius.
+		float32 _Radius;
+
 		//The points.
 		DynamicArray<LineSegmentPoint> _Points;
 
 	};
 
 	//Define some constants.
+	constexpr float32 RANDOM_BASE_TRUNK_ROTATION_RANGE{ CatalystBaseMathConstants::PI * 0.125f * 0.125f };
 	constexpr float32 RANDOM_CONTINUOUS_RANGE{ CatalystBaseMathConstants::PI * 0.125f * 0.25f };
 	constexpr float32 RANDOM_BRANCHING_RANGE{ CatalystBaseMathConstants::PI * 0.125f };
 	constexpr float32 MINIMUM_BRANCHING_DIVERGENCE{ CatalystBaseMathConstants::PI * 0.125f * 0.125f };
-	constexpr float32 RADIUS{ 0.5f };
+	constexpr float32 BASE_RADIUS{ 0.5f };
+	constexpr float32 RADIUS_DECAY_MULTIPLIER{ 0.9f };
 	constexpr float32 HEIGHT{ 24.0f };
 	constexpr uint32 NUMBER_OF_POINTS{ 32 };
 	constexpr uint32 NUMBER_OF_CIRCLE_SEGMENTS{ 8 };
 	constexpr uint32 NUMBER_OF_COLLISION_CIRCLE_SEGMENTS{ NUMBER_OF_CIRCLE_SEGMENTS / 2 };
-	constexpr uint8 BRANCHING_PASSES{ 32 };
+	constexpr uint8 BRANCHING_PASSES{ 12 };
 	constexpr float32 MINIMUM_BRANCHING_HEIGHT{ 0.25f };
 	constexpr float32 MINIMUM_CROWN_HEIGHT{ 0.375f };
 
@@ -69,13 +74,14 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 
 	//Add the root line segment point.
 	line_segments.Back()._ParentLineSegmentIndex = UINT64_MAXIMUM;
+	line_segments.Back()._Radius = BASE_RADIUS;
 
 	line_segments.Back()._Points.Emplace();
 	LineSegmentPoint &new_line_segment_point{ line_segments.Back()._Points.Back() };
 
 	new_line_segment_point._Position = Vector3<float32>(0.0f, 0.0f, 0.0f);
 	new_line_segment_point._NormalizedHeight = 0.0f;
-	new_line_segment_point._Rotation = EulerAngles(CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE), 0.0f, CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE));
+	new_line_segment_point._Rotation = EulerAngles(CatalystRandomMath::RandomFloatInRange(-RANDOM_BASE_TRUNK_ROTATION_RANGE, RANDOM_BASE_TRUNK_ROTATION_RANGE), 0.0f, CatalystRandomMath::RandomFloatInRange(-RANDOM_BASE_TRUNK_ROTATION_RANGE, RANDOM_BASE_TRUNK_ROTATION_RANGE));
 
 	//Grow the root trunk.
 	for (uint32 i{ 1 }; i < NUMBER_OF_POINTS; ++i)
@@ -96,7 +102,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 
 		new_line_segment_point._Position = previous_line_segment_point._Position + previous_direction * (HEIGHT / static_cast<float32>(NUMBER_OF_POINTS));
 		new_line_segment_point._NormalizedHeight = normalized_height;
-		new_line_segment_point._Rotation = EulerAngles(previous_line_segment_point._Rotation._Roll + CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE), 0.0f, previous_line_segment_point._Rotation._Pitch + CatalystRandomMath::RandomFloatInRange(-RANDOM_CONTINUOUS_RANGE, RANDOM_CONTINUOUS_RANGE));
+		new_line_segment_point._Rotation = EulerAngles(previous_line_segment_point._Rotation._Roll + CatalystRandomMath::RandomFloatInRange(-RANDOM_BASE_TRUNK_ROTATION_RANGE, RANDOM_BASE_TRUNK_ROTATION_RANGE), 0.0f, previous_line_segment_point._Rotation._Pitch + CatalystRandomMath::RandomFloatInRange(-RANDOM_BASE_TRUNK_ROTATION_RANGE, RANDOM_BASE_TRUNK_ROTATION_RANGE));
 	}
 
 	//Grow new branches.
@@ -130,6 +136,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 					LineSegment &new_line_segment{ line_segments.Back() };
 
 					new_line_segment._ParentLineSegmentIndex = line_segment_index;
+					new_line_segment._Radius = line_segment._Radius * RADIUS_DECAY_MULTIPLIER;
 
 					//Add the root line segment point.
 					new_line_segment._Points.Emplace();
@@ -236,8 +243,8 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 						continue;
 					}
 
-					const float32 line_segment_point_radius{ RADIUS * (1.0f - CatalystBaseMath::Square(line_segment_point._NormalizedHeight)) };
-					const float32 other_line_segment_point_radius{ RADIUS * (1.0f - CatalystBaseMath::Square(other_line_segment_point._NormalizedHeight)) };
+					const float32 line_segment_point_radius{ line_segment._Radius * (1.0f - CatalystBaseMath::Square(line_segment_point._NormalizedHeight)) };
+					const float32 other_line_segment_point_radius{ other_line_segment._Radius * (1.0f - CatalystBaseMath::Square(other_line_segment_point._NormalizedHeight)) };
 					
 					if (Vector3<float32>::Length(line_segment_point._Position - other_line_segment_point._Position) < (line_segment_point_radius + other_line_segment_point_radius))
 					{
@@ -308,15 +315,15 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 	for (const LineSegment &line_segment : line_segments)
 	{
 		//Calculate the number of circle segments for this line segment.
-		const uint32 number_of_circle_segments{ static_cast<uint32>(CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(NUMBER_OF_CIRCLE_SEGMENTS), 3.0f, line_segment._Points[0]._NormalizedHeight)) };
+		const uint32 number_of_circle_segments{ static_cast<uint32>(CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(NUMBER_OF_CIRCLE_SEGMENTS), 4.0f, line_segment._Points[0]._NormalizedHeight)) };
 
 		for (uint64 line_segment_index{ 0 }; line_segment_index < line_segment._Points.Size(); ++line_segment_index)
 		{
 			//Calculate the radius at this point.
-			const float32 radius_at_point{ RADIUS * (1.0f - CatalystBaseMath::Square(line_segment._Points[line_segment_index]._NormalizedHeight)) };
+			const float32 radius_at_point{ line_segment._Radius * (1.0f - CatalystBaseMath::Square(line_segment._Points[line_segment_index]._NormalizedHeight)) };
 
 			//Calculate the circumference at this point.
-			const float32 circumference_at_point{ 2.0f * CatalystBaseMathConstants::PI * RADIUS };
+			const float32 circumference_at_point{ 2.0f * CatalystBaseMathConstants::PI * line_segment._Radius };
 
 			for (uint32 circle_segment_index{ 0 }; circle_segment_index < number_of_circle_segments; ++circle_segment_index)
 			{
@@ -334,11 +341,25 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 				Vertex &new_vertex{ output->_Vertices.Back().Back() };
 
 				//Set the position.
-				Vector3<float32> position_offset{ 0.0f, 0.0f, radius_at_point };
-				position_offset.Rotate(EulerAngles(0.0f, rotation, 0.0f));
-				position_offset.Rotate(line_segment._Points[line_segment_index]._Rotation);
-				new_vertex._Position = line_segment._Points[line_segment_index]._Position + position_offset;
+				if (circle_segment_index == number_of_circle_segments - 1)
+				{
+					new_vertex._Position = output->_Vertices.Back()[vertex_index - number_of_circle_segments + 1]._Position;
+				}
 
+				else
+				{
+					Vector3<float32> position_offset{ 0.0f, 0.0f, radius_at_point };
+					
+					for (uint8 i{ 0 }; i < 3; ++i)
+					{
+						position_offset[i] += CatalystRandomMath::RandomFloatInRange(-radius_at_point * 0.125f * 0.25f, radius_at_point * 0.125f * 0.25f);
+					}
+					
+					position_offset.Rotate(EulerAngles(0.0f, rotation, 0.0f));
+					position_offset.Rotate(line_segment._Points[line_segment_index]._Rotation);
+					new_vertex._Position = line_segment._Points[line_segment_index]._Position + position_offset;
+				}
+				
 				//Set the normal.
 				new_vertex._Normal = Vector3<float32>(0.0f, 0.0f, 1.0f);
 				new_vertex._Normal.Rotate(EulerAngles(0.0f, rotation, 0.0f));
@@ -381,16 +402,16 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 		for (uint64 line_segment_index{ 0 }; line_segment_index < line_segment._Points.Size(); ++line_segment_index)
 		{
 			//Calculate the radius at this point.
-			const float32 radius_at_point{ RADIUS * (1.0f - CatalystBaseMath::Square(line_segment._Points[line_segment_index]._NormalizedHeight)) };
+			const float32 radius_at_point{ line_segment._Radius * (1.0f - CatalystBaseMath::Square(line_segment._Points[line_segment_index]._NormalizedHeight)) };
 
 			//Don't care about really thin branches after a certain point.
-			if (radius_at_point < (RADIUS * 0.5f))
+			if (radius_at_point < (line_segment._Radius * 0.5f))
 			{
 				continue;
 			}
 
 			//Calculate the circumference at this point.
-			const float32 circumference_at_point{ 2.0f * CatalystBaseMathConstants::PI * RADIUS };
+			const float32 circumference_at_point{ 2.0f * CatalystBaseMathConstants::PI * line_segment._Radius };
 
 			for (uint32 circle_segment_index{ 0 }; circle_segment_index < NUMBER_OF_COLLISION_CIRCLE_SEGMENTS; ++circle_segment_index)
 			{
@@ -444,6 +465,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 	//Spawn crown branches!
 	output->_Vertices.Emplace();
 	output->_Indices.Emplace();
+	DynamicArray<Vector3<float32>> crown_point_cloud;
 
 	for (uint32 i{ 0 }; i < 256; ++i)
 	{
@@ -479,6 +501,8 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 			position_offset.Rotate(random_rotation);
 			new_vertex._Position = spawn_vertex._Position + position_offset;
 
+			crown_point_cloud.Emplace(new_vertex._Position);
+
 			//Set the normal.
 			new_vertex._Normal = Vector3<float32>(0.0f, 0.0f, -1.0f);
 			new_vertex._Normal.Rotate(random_rotation);
@@ -500,4 +524,24 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 		output->_Indices.Back().Emplace(start_index + 1);
 		output->_Indices.Back().Emplace(start_index + 3);
 	}
+
+#if 0
+	//Augment the normals/tangents of the crown.
+	{
+		Vector3<float32> crown_center{ 0.0f, 0.0f, 0.0f };
+
+		for (const Vector3<float32> &crown_point : crown_point_cloud)
+		{
+			crown_center += crown_point / static_cast<float32>(crown_point_cloud.Size());
+		}
+
+		for (Vertex &vertex : output->_Vertices.Back())
+		{
+			const float32 distance_from_center{ Vector3<float32>::Length(vertex._Position - crown_center) };
+
+			vertex._Normal = (vertex._Position - crown_center) / distance_from_center;
+			vertex._Tangent = Vector3<float32>::Normalize(Vector3<float32>::CrossProduct(Vector3<float32>(0.0f, 1.0f, 0.0f), (vertex._Position - crown_center)));
+		}
+	}
+#endif
 }
