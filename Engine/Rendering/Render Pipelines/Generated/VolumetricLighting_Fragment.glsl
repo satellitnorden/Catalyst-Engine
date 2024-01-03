@@ -220,7 +220,7 @@ struct LightingHeader
 	uint _NumberOfLights;
 	uint _MaximumNumberOfShadowCastingLights;	
 };
-layout (std140, set = 1, binding = 3) buffer Lighting
+layout (std430, set = 1, binding = 3) buffer Lighting
 {
 	layout (offset = 0) LightingHeader LIGHTING_HEADER;
 	layout (offset = 16) vec4[] LIGHT_DATA;

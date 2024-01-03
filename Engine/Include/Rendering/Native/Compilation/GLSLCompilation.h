@@ -204,7 +204,7 @@ namespace GLSLCompilation
 
 					TextParsingUtilities::ParseFunctionArguments(current_line.data(), current_line.length(), &name);
 
-					output_file << "layout (std140, set = 1, binding = " << binding << ") buffer " << name.Data() << std::endl;
+					output_file << "layout (std430, set = 1, binding = " << binding << ") buffer " << name.Data() << std::endl;
 
 					continue;
 				}

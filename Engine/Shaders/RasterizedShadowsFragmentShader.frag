@@ -1,5 +1,5 @@
 //Constants.
-#define SHADOW_MAP_SAMPLES (4)
+#define SHADOW_MAP_SAMPLES (8)
 #define SHADOW_MAP_OFFSET (0.001000f) //0.000025f step.
 #define SHADOW_MAP_BIASES (vec4(0.0001825f, 0.0003175f, 0.0003925f, 0.0003925f)) //0.0000025f step.
 
