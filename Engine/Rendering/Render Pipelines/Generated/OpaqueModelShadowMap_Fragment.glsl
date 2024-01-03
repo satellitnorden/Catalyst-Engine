@@ -187,16 +187,20 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-//Shadows header struct definition.
-struct ShadowsHeader
+//Shadow mapping header struct definition.
+struct ShadowMappingHeader
 {
-	//The directional light cascade distances.
-	vec4 _DirectionalLightCascadeDistances;
+	uint _NumberOfShadowMapData;
 };
-layout (std140, set = 1, binding = 0) buffer Shadows
+//Shadow map data struct definition.
+struct ShadowMapData
 {
-	layout (offset = 0) ShadowsHeader SHADOWS_HEADER;
-	layout (offset = 16) mat4[] WORLD_TO_LIGHT_MATRICES;
+	mat4 _WorldToLightMatrix;
+};
+layout (std140, set = 1, binding = 0) buffer ShadowMapping
+{
+	layout (offset = 0) ShadowMappingHeader SHADOW_MAPPING_HEADER;
+	layout (offset = 16) ShadowMapData SHADOW_MAP_DATA[];
 };
 
 layout (push_constant) uniform PushConstantData

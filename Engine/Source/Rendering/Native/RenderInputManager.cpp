@@ -551,6 +551,16 @@ void RenderInputManager::RegisterInputStream
 	void *const RESTRICT user_data
 ) NOEXCEPT
 {
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	for (const RenderInputStream &input_stream : _InputStreams)
+	{
+		if (input_stream._Identifier == identifier)
+		{
+			ASSERT(false, "Already has input stream!");
+		}
+	}
+#endif
+
 	//Add the new input stream.
 	_InputStreams.Emplace();
 	RenderInputStream &new_input_stream{ _InputStreams.Back() };

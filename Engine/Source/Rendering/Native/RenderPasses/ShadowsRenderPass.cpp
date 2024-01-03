@@ -223,7 +223,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 		parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), _ShadowMapDepthBuffers[i]);
 		parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), _ShadowMapRenderTargets[i]);
 		char buffer[64];
-		sprintf_s(buffer, "OpaqueModelsShadowMapCascade%u", static_cast<uint32>(i));
+		sprintf_s(buffer, "OpaqueModelsShadowMap%u", static_cast<uint32>(i));
 		parameters._InputStreamSubscriptions.Emplace(buffer);
 
 		_OpaqueModelShadowMapPipelines[i].Initialize(parameters);
@@ -236,7 +236,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 		parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), _ShadowMapDepthBuffers[i]);
 		parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), _ShadowMapRenderTargets[i]);
 		char buffer[64];
-		sprintf_s(buffer, "MaskedModelsShadowMapCascade%u", static_cast<uint32>(i));
+		sprintf_s(buffer, "MaskedModelsShadowMap%u", static_cast<uint32>(i));
 		parameters._InputStreamSubscriptions.Emplace(buffer);
 
 		_MaskedModelShadowMapPipelines[i].Initialize(parameters);

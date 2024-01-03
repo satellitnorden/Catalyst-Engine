@@ -15,6 +15,7 @@
 //Shadows systems constants.
 namespace ShadowsSystemConstants
 {
+	constexpr uint64 MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA{ 24 };
 	constexpr float32 DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 5.25f };
 	constexpr StaticArray<float32, 4> DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTORS
 	{
@@ -26,15 +27,15 @@ namespace ShadowsSystemConstants
 }
 
 /*
-*	Shadows header data class definition.
+*	Shadow mapping header data class definition.
 */
-class ShadowsHeaderData final
+class ALIGN(16) ShadowMappingHeaderData final
 {
 
 public:
 
-	//The directional light cascade distances.
-	Vector4<float32> _DirectionalLightCascadeDistances;
+	//The number of shadow map data.
+	uint32 _NumberOfShadowMapData;
 
 };
 
@@ -118,30 +119,28 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 	//Register the storage buffer.
 	RenderingSystem::Instance->GetBufferManager()->RegisterStorageBuffer
 	(
-		HashString("Shadows"),
-		sizeof(ShadowsHeaderData) + sizeof(Matrix4x4) * 4,
+		HashString("ShadowMapping"),
+		sizeof(ShadowMappingHeaderData) + sizeof(ShadowMapData) * ShadowsSystemConstants::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA,
 		[](DynamicArray<byte> *const RESTRICT data, void *const RESTRICT arguments)
 		{
 			data->Clear();
 			ShadowsSystem *const RESTRICT shadows_system{ static_cast<ShadowsSystem *const RESTRICT>(arguments) };
 
-			ShadowsHeaderData header_data;
+			ShadowMappingHeaderData header_data;
 
-			for (uint8 i{ 0 }; i < 4; ++i)
-			{
-				header_data._DirectionalLightCascadeDistances[i] = shadows_system->_DirectionalLightCascades[i]._Distance;
-			}
+			header_data._NumberOfShadowMapData = shadows_system->GetNumberOfShadowMapData();
 
-			for (uint64 i{ 0 }; i < sizeof(ShadowsHeaderData); ++i)
+			for (uint64 i{ 0 }; i < sizeof(ShadowMappingHeaderData); ++i)
 			{
 				data->Emplace(((const byte *const RESTRICT)&header_data)[i]);
 			}
 
-			for (const DirectionalLightCascade &directional_light_cascade : shadows_system->_DirectionalLightCascades)
+			for (const ShadowMapData &shadow_map_data : shadows_system->_ShadowMapData)
 			{
+				//Copy the world to light matrix.
 				for (uint64 i{ 0 }; i < sizeof(Matrix4x4); ++i)
 				{
-					data->Emplace(((const byte *const RESTRICT)&directional_light_cascade._WorldToLightMatrix)[i]);
+					data->Emplace(((const byte *const RESTRICT)&shadow_map_data._WorldToLightMatrix)[i]);
 				}
 			}
 		},
@@ -158,61 +157,45 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 
 		models_required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
 
-		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
-		(
-			HashString("OpaqueModelsShadowMapCascade0"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
-			sizeof(OpaqueModelPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<ShadowsSystem *const RESTRICT>(user_data)->GatherOpaqueModelInputStream(0, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			this
+		#define REGISTER_INPUT_STREAM(INDEX)																				\
+		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream												\
+		(																													\
+			HashString("OpaqueModelsShadowMap" #INDEX),																		\
+			models_required_vertex_input_attribute_descriptions,															\
+			models_required_vertex_input_binding_descriptions,																\
+			sizeof(OpaqueModelPushConstantData),																			\
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)								\
+			{																												\
+				static_cast<ShadowsSystem *const RESTRICT>(user_data)->GatherOpaqueModelInputStream(INDEX, input_stream);	\
+			},																												\
+			RenderInputStream::Mode::DRAW_INDEXED,																			\
+			this																											\
 		);
-
-		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
-		(
-			HashString("OpaqueModelsShadowMapCascade1"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
-			sizeof(OpaqueModelPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<ShadowsSystem *const RESTRICT>(user_data)->GatherOpaqueModelInputStream(1, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			this
-		);
-
-		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
-		(
-			HashString("OpaqueModelsShadowMapCascade2"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
-			sizeof(OpaqueModelPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<ShadowsSystem* const RESTRICT>(user_data)->GatherOpaqueModelInputStream(2, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			this
-		);
-
-		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
-		(
-			HashString("OpaqueModelsShadowMapCascade3"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
-			sizeof(OpaqueModelPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<ShadowsSystem *const RESTRICT>(user_data)->GatherOpaqueModelInputStream(3, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			this
-		);
+		REGISTER_INPUT_STREAM(0);
+		REGISTER_INPUT_STREAM(1);
+		REGISTER_INPUT_STREAM(2);
+		REGISTER_INPUT_STREAM(3);
+		REGISTER_INPUT_STREAM(4);
+		REGISTER_INPUT_STREAM(5);
+		REGISTER_INPUT_STREAM(6);
+		REGISTER_INPUT_STREAM(7);
+		REGISTER_INPUT_STREAM(8);
+		REGISTER_INPUT_STREAM(9);
+		REGISTER_INPUT_STREAM(10);
+		REGISTER_INPUT_STREAM(11);
+		REGISTER_INPUT_STREAM(12);
+		REGISTER_INPUT_STREAM(13);
+		REGISTER_INPUT_STREAM(14);
+		REGISTER_INPUT_STREAM(15);
+		REGISTER_INPUT_STREAM(16);
+		REGISTER_INPUT_STREAM(17);
+		REGISTER_INPUT_STREAM(18);
+		REGISTER_INPUT_STREAM(19);
+		REGISTER_INPUT_STREAM(20);
+		REGISTER_INPUT_STREAM(21);
+		REGISTER_INPUT_STREAM(22);
+		REGISTER_INPUT_STREAM(23);
+		#undef REGISTER_INPUT_STREAM
 	}
 
 	{
@@ -225,61 +208,45 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 
 		models_required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
 
-		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
-		(
-			HashString("MaskedModelsShadowMapCascade0"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
-			sizeof(MaskedModelPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<ShadowsSystem *const RESTRICT>(user_data)->GatherMaskedModelInputStream(0, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			this
+		#define REGISTER_INPUT_STREAM(INDEX)																				\
+		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream												\
+		(																													\
+			HashString("MaskedModelsShadowMap" #INDEX),																		\
+			models_required_vertex_input_attribute_descriptions,															\
+			models_required_vertex_input_binding_descriptions,																\
+			sizeof(MaskedModelPushConstantData),																			\
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)								\
+			{																												\
+				static_cast<ShadowsSystem *const RESTRICT>(user_data)->GatherMaskedModelInputStream(INDEX, input_stream);	\
+			},																												\
+			RenderInputStream::Mode::DRAW_INDEXED,																			\
+			this																											\
 		);
-
-		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
-		(
-			HashString("MaskedModelsShadowMapCascade1"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
-			sizeof(MaskedModelPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<ShadowsSystem *const RESTRICT>(user_data)->GatherMaskedModelInputStream(1, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			this
-		);
-
-		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
-		(
-			HashString("MaskedModelsShadowMapCascade2"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
-			sizeof(MaskedModelPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<ShadowsSystem *const RESTRICT>(user_data)->GatherMaskedModelInputStream(2, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			this
-		);
-
-		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
-		(
-			HashString("MaskedModelsShadowMapCascade3"),
-			models_required_vertex_input_attribute_descriptions,
-			models_required_vertex_input_binding_descriptions,
-			sizeof(MaskedModelPushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				static_cast<ShadowsSystem *const RESTRICT>(user_data)->GatherMaskedModelInputStream(3, input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			this
-		);
+		REGISTER_INPUT_STREAM(0);
+		REGISTER_INPUT_STREAM(1);
+		REGISTER_INPUT_STREAM(2);
+		REGISTER_INPUT_STREAM(3);
+		REGISTER_INPUT_STREAM(4);
+		REGISTER_INPUT_STREAM(5);
+		REGISTER_INPUT_STREAM(6);
+		REGISTER_INPUT_STREAM(7);
+		REGISTER_INPUT_STREAM(8);
+		REGISTER_INPUT_STREAM(9);
+		REGISTER_INPUT_STREAM(10);
+		REGISTER_INPUT_STREAM(11);
+		REGISTER_INPUT_STREAM(12);
+		REGISTER_INPUT_STREAM(13);
+		REGISTER_INPUT_STREAM(14);
+		REGISTER_INPUT_STREAM(15);
+		REGISTER_INPUT_STREAM(16);
+		REGISTER_INPUT_STREAM(17);
+		REGISTER_INPUT_STREAM(18);
+		REGISTER_INPUT_STREAM(19);
+		REGISTER_INPUT_STREAM(20);
+		REGISTER_INPUT_STREAM(21);
+		REGISTER_INPUT_STREAM(22);
+		REGISTER_INPUT_STREAM(23);
+#undef REGISTER_INPUT_STREAM
 	}
 }
 
@@ -288,55 +255,52 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 */
 void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 {
-	//Update the directional light cascades.
+	//Update the shadow map data.
+	_ShadowMapData.Clear();
+
+	const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
+	const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+	for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
 	{
-		_DirectionalLightCascadesExist = false;
-
-		const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
-		const LightComponent *RESTRICT component{ ComponentManager::GetLightLightComponents() };
-
-		for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
+		if (component->_LightType == LightType::DIRECTIONAL)
 		{
-			if (component->_LightType == LightType::DIRECTIONAL)
+			Vector4<float32> cascade_distances;
+
+			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				_DirectionalLightCascadesExist = true;
+				cascade_distances[i] = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance * ShadowsSystemConstants::DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTORS[i];
+			}
 
-				Vector4<float32> cascade_distances;
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				_ShadowMapData.Emplace();
+				ShadowMapData &new_shadow_map_data{ _ShadowMapData.Back() };
 
-				for (uint8 i{ 0 }; i < 4; ++i)
+				new_shadow_map_data._WorldToLightMatrix = CalculateCascadeMatrix(CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetNearPlane() : cascade_distances[i - 1], cascade_distances[i]);
+
 				{
-					cascade_distances[i] = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance * ShadowsSystemConstants::DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTORS[i];
-				}
+					//Construct the frustum planes.
+					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[0][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] + new_shadow_map_data._WorldToLightMatrix._Matrix[j][0]; //Left.
+					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[1][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] - new_shadow_map_data._WorldToLightMatrix._Matrix[j][0]; //Right.
+					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[2][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] + new_shadow_map_data._WorldToLightMatrix._Matrix[j][1]; //Bottom.
+					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[3][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] - new_shadow_map_data._WorldToLightMatrix._Matrix[j][1]; //Top.
+					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[4][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] + new_shadow_map_data._WorldToLightMatrix._Matrix[j][2]; //Near.
+					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[5][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] - new_shadow_map_data._WorldToLightMatrix._Matrix[j][2]; //Far.
 
-				for (uint8 i{ 0 }; i < 4; ++i)
-				{
-					_DirectionalLightCascades[i]._WorldToLightMatrix = CalculateCascadeMatrix(CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetNearPlane() : cascade_distances[i - 1], cascade_distances[i]);
-					
+					//Normalize the frustum planes.
+					for (uint8 j{ 0 }; j < 6; ++j)
 					{
-						//Construct the frustum planes.
-						for (uint8 j{ 4 }; j--;) _DirectionalLightCascades[i]._Frustum._Planes[0][j] = _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][3] + _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][0]; //Left.
-						for (uint8 j{ 4 }; j--;) _DirectionalLightCascades[i]._Frustum._Planes[1][j] = _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][3] - _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][0]; //Right.
-						for (uint8 j{ 4 }; j--;) _DirectionalLightCascades[i]._Frustum._Planes[2][j] = _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][3] + _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][1]; //Bottom.
-						for (uint8 j{ 4 }; j--;) _DirectionalLightCascades[i]._Frustum._Planes[3][j] = _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][3] - _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][1]; //Top.
-						for (uint8 j{ 4 }; j--;) _DirectionalLightCascades[i]._Frustum._Planes[4][j] = _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][3] + _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][2]; //Near.
-						for (uint8 j{ 4 }; j--;) _DirectionalLightCascades[i]._Frustum._Planes[5][j] = _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][3] - _DirectionalLightCascades[i]._WorldToLightMatrix._Matrix[j][2]; //Far.
+						const float32 length_reciprocal{ CatalystBaseMath::InverseSquareRoot(new_shadow_map_data._Frustum._Planes[j]._X * new_shadow_map_data._Frustum._Planes[j]._X + new_shadow_map_data._Frustum._Planes[j]._Y * new_shadow_map_data._Frustum._Planes[j]._Y + new_shadow_map_data._Frustum._Planes[j]._Z * new_shadow_map_data._Frustum._Planes[j]._Z) };
 
-						//Normalize the frustum planes.
-						for (uint8 j{ 0 }; j < 6; ++j)
-						{
-							const float32 length_reciprocal{ CatalystBaseMath::InverseSquareRoot(_DirectionalLightCascades[i]._Frustum._Planes[j]._X * _DirectionalLightCascades[i]._Frustum._Planes[j]._X + _DirectionalLightCascades[i]._Frustum._Planes[j]._Y * _DirectionalLightCascades[i]._Frustum._Planes[j]._Y + _DirectionalLightCascades[i]._Frustum._Planes[j]._Z * _DirectionalLightCascades[i]._Frustum._Planes[j]._Z) };
-
-							_DirectionalLightCascades[i]._Frustum._Planes[j]._X *= length_reciprocal;
-							_DirectionalLightCascades[i]._Frustum._Planes[j]._Y *= length_reciprocal;
-							_DirectionalLightCascades[i]._Frustum._Planes[j]._Z *= length_reciprocal;
-							_DirectionalLightCascades[i]._Frustum._Planes[j]._W *= length_reciprocal;
-						}
+						new_shadow_map_data._Frustum._Planes[j]._X *= length_reciprocal;
+						new_shadow_map_data._Frustum._Planes[j]._Y *= length_reciprocal;
+						new_shadow_map_data._Frustum._Planes[j]._Z *= length_reciprocal;
+						new_shadow_map_data._Frustum._Planes[j]._W *= length_reciprocal;
 					}
-
-					_DirectionalLightCascades[i]._Distance = cascade_distances[i];
 				}
 
-				break;
+				new_shadow_map_data._Distance = cascade_distances[i];
 			}
 		}
 	}
@@ -347,7 +311,7 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 */
 void ShadowsSystem::GatherOpaqueModelInputStream
 (
-	const uint8 light_index,
+	const uint8 shadow_map_index,
 	RenderInputStream *const RESTRICT input_stream
 ) NOEXCEPT
 {
@@ -357,52 +321,14 @@ void ShadowsSystem::GatherOpaqueModelInputStream
 	//Clear the push constant data memory.
 	input_stream->_PushConstantDataMemory.Clear();
 
-	//Eh.
-	if (!_DirectionalLightCascadesExist)
+	//Skip if doesn't exist.
+	if (shadow_map_index >= _ShadowMapData.Size())
 	{
 		return;
 	}
 
 	//Cache the required visibility flag.
-	VisibilityFlags required_visibility_flag;
-
-	switch (light_index)
-	{
-		case 0:
-		{
-			required_visibility_flag = VisibilityFlags::DIRECTIONAL_LIGHT_CASCADE_1;
-
-			break;
-		}
-
-		case 1:
-		{
-			required_visibility_flag = VisibilityFlags::DIRECTIONAL_LIGHT_CASCADE_2;
-
-			break;
-		}
-
-		case 2:
-		{
-			required_visibility_flag = VisibilityFlags::DIRECTIONAL_LIGHT_CASCADE_3;
-
-			break;
-		}
-
-		case 3:
-		{
-			required_visibility_flag = VisibilityFlags::DIRECTIONAL_LIGHT_CASCADE_4;
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
+	const VisibilityFlags required_visibility_flag{ VisibilityFlags::SHADOW_MAP_START << shadow_map_index };
 
 	//Gather static models.
 	{
@@ -451,7 +377,7 @@ void ShadowsSystem::GatherOpaqueModelInputStream
 				OpaqueModelPushConstantData push_constant_data;
 
 				push_constant_data._ModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				push_constant_data._LightMatrixIndex = light_index;
+				push_constant_data._LightMatrixIndex = shadow_map_index;
 
 				for (uint64 i{ 0 }; i < sizeof(OpaqueModelPushConstantData); ++i)
 				{
@@ -499,7 +425,7 @@ void ShadowsSystem::GatherOpaqueModelInputStream
 				OpaqueModelPushConstantData push_constant_data;
 
 				push_constant_data._ModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				push_constant_data._LightMatrixIndex = light_index;
+				push_constant_data._LightMatrixIndex = shadow_map_index;
 
 				for (uint64 i{ 0 }; i < sizeof(OpaqueModelPushConstantData); ++i)
 				{
@@ -515,7 +441,7 @@ void ShadowsSystem::GatherOpaqueModelInputStream
 */
 void ShadowsSystem::GatherMaskedModelInputStream
 (
-	const uint8 light_index,
+	const uint8 shadow_map_index,
 	RenderInputStream *const RESTRICT input_stream
 ) NOEXCEPT
 {
@@ -525,52 +451,14 @@ void ShadowsSystem::GatherMaskedModelInputStream
 	//Clear the push constant data memory.
 	input_stream->_PushConstantDataMemory.Clear();
 
-	//Eh.
-	if (!_DirectionalLightCascadesExist)
+	//Skip if doesn't exist.
+	if (shadow_map_index >= _ShadowMapData.Size())
 	{
 		return;
 	}
 
 	//Cache the required visibility flag.
-	VisibilityFlags required_visibility_flag;
-
-	switch (light_index)
-	{
-		case 0:
-		{
-			required_visibility_flag = VisibilityFlags::DIRECTIONAL_LIGHT_CASCADE_1;
-
-			break;
-		}
-
-		case 1:
-		{
-			required_visibility_flag = VisibilityFlags::DIRECTIONAL_LIGHT_CASCADE_2;
-
-			break;
-		}
-
-		case 2:
-		{
-			required_visibility_flag = VisibilityFlags::DIRECTIONAL_LIGHT_CASCADE_3;
-
-			break;
-		}
-
-		case 3:
-		{
-			required_visibility_flag = VisibilityFlags::DIRECTIONAL_LIGHT_CASCADE_4;
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
+	const VisibilityFlags required_visibility_flag{ VisibilityFlags::SHADOW_MAP_START << shadow_map_index };
 
 	//Gather static models.
 	{
@@ -619,7 +507,7 @@ void ShadowsSystem::GatherMaskedModelInputStream
 				MaskedModelPushConstantData push_constant_data;
 
 				push_constant_data._ModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				push_constant_data._LightMatrixIndex = light_index;
+				push_constant_data._LightMatrixIndex = shadow_map_index;
 				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
 
 				for (uint64 i{ 0 }; i < sizeof(MaskedModelPushConstantData); ++i)
@@ -668,7 +556,7 @@ void ShadowsSystem::GatherMaskedModelInputStream
 				MaskedModelPushConstantData push_constant_data;
 
 				push_constant_data._ModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				push_constant_data._LightMatrixIndex = light_index;
+				push_constant_data._LightMatrixIndex = shadow_map_index;
 				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
 
 				for (uint64 i{ 0 }; i < sizeof(MaskedModelPushConstantData); ++i)

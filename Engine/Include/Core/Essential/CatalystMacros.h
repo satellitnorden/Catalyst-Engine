@@ -151,6 +151,10 @@ FORCE_INLINE constexpr static NO_DISCARD ENUMERATION operator~(const ENUMERATION
 {																															\
 	return static_cast<ENUMERATION>(~UNDERLYING(enumeration));																\
 }																															\
+FORCE_INLINE constexpr static NO_DISCARD ENUMERATION operator<<(const ENUMERATION first, const uint64 second) NOEXCEPT		\
+{																															\
+	return static_cast<ENUMERATION>(UNDERLYING(first) << second);															\
+}																															\
 FORCE_INLINE constexpr static void operator|=(ENUMERATION &first, const ENUMERATION second) NOEXCEPT						\
 {																															\
 	first = first | second;																									\

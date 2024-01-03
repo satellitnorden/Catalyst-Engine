@@ -18,9 +18,9 @@ class ShadowsSystem final
 public:
 
 	/*
-	*	Directional light cascade class definition.
+	*	Shadow map data class defunition.
 	*/
-	class DirectionalLightCascade final
+	class ShadowMapData final
 	{
 
 	public:
@@ -47,35 +47,32 @@ public:
 	void PreRenderUpdate() NOEXCEPT;
 
 	/*
-	*	Returns whether or not directional light cascades exists.
+	*	Returns the number of shadow map data.
 	*/
-	FORCE_INLINE NO_DISCARD bool DirectionalLightCascadesExist() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD uint32 GetNumberOfShadowMapData() const NOEXCEPT
 	{
-		return _DirectionalLightCascadesExist;
+		return static_cast<uint32>(_ShadowMapData.Size());
 	}
 
 	/*
-	*	Returns the directional light cascade at the given index.
+	*	Returns the shadow map data at the given index.
 	*/
-	FORCE_INLINE NO_DISCARD const DirectionalLightCascade &GetDirectionalLightCascade(const uint8 index) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const ShadowMapData &GetShadowMapData(const uint8 index) const NOEXCEPT
 	{
-		return _DirectionalLightCascades[index];
+		return _ShadowMapData[index];
 	}
 
 private:
 
-	//Denotes whether or not directional light cascades exists.
-	bool _DirectionalLightCascadesExist{ false };
-
-	//The directional light cascades.
-	StaticArray<DirectionalLightCascade, 4> _DirectionalLightCascades;
+	//The shadow map data.
+	DynamicArray<ShadowMapData> _ShadowMapData;
 
 	/*
 	*	Gathers an opaque model input stream.
 	*/
 	void GatherOpaqueModelInputStream
 	(
-		const uint8 light_index,
+		const uint8 shadow_map_data_index,
 		RenderInputStream *const RESTRICT input_stream
 	) NOEXCEPT;
 
@@ -84,7 +81,7 @@ private:
 	*/
 	void GatherMaskedModelInputStream
 	(
-		const uint8 light_index,
+		const uint8 shadow_map_data_index,
 		RenderInputStream* const RESTRICT input_stream
 	) NOEXCEPT;
 

@@ -1,0 +1,17 @@
+//Shadow mapping header struct definition.
+struct ShadowMappingHeader
+{
+	uint _NumberOfShadowMapData;
+};
+
+//Shadow map data struct definition.
+struct ShadowMapData
+{
+	mat4 _WorldToLightMatrix;
+};
+
+StorageBuffer(ShadowMapping)
+{
+    ShadowMappingHeader SHADOW_MAPPING_HEADER;
+	ShadowMapData SHADOW_MAP_DATA[];
+};

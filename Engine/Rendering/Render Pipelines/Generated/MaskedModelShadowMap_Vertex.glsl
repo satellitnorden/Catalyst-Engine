@@ -185,16 +185,20 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-//Shadows header struct definition.
-struct ShadowsHeader
+//Shadow mapping header struct definition.
+struct ShadowMappingHeader
 {
-	//The directional light cascade distances.
-	vec4 _DirectionalLightCascadeDistances;
+	uint _NumberOfShadowMapData;
 };
-layout (std140, set = 1, binding = 0) buffer Shadows
+//Shadow map data struct definition.
+struct ShadowMapData
 {
-	layout (offset = 0) ShadowsHeader SHADOWS_HEADER;
-	layout (offset = 16) mat4[] WORLD_TO_LIGHT_MATRICES;
+	mat4 _WorldToLightMatrix;
+};
+layout (std140, set = 1, binding = 0) buffer ShadowMapping
+{
+	layout (offset = 0) ShadowMappingHeader SHADOW_MAPPING_HEADER;
+	layout (offset = 16) ShadowMapData SHADOW_MAP_DATA[];
 };
 
 layout (set = 1, binding = 1) uniform sampler SAMPLER;
@@ -213,7 +217,7 @@ layout (location = 0) out vec2 OutTextureCoordinate;
 
 void main()
 {
-    vec4 clip_position = WORLD_TO_LIGHT_MATRICES[LIGHT_MATRIX_INDEX] * MODEL_MATRIX * vec4(InPosition, 1.0f);
+    vec4 clip_position = SHADOW_MAP_DATA[LIGHT_MATRIX_INDEX]._WorldToLightMatrix * MODEL_MATRIX * vec4(InPosition, 1.0f);
     clip_position.z = max(clip_position.z, FLOAT32_EPSILON);
     OutTextureCoordinate = InTextureCoordinate;
 	gl_Position = clip_position;
