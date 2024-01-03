@@ -11,9 +11,7 @@ OutputRenderTarget(ShadowMap);
 RenderResolution(SHADOW_MAP);
 
 //Set the load/store operators.
-ColorLoadOperator(LOAD);
 ColorStoreOperator(STORE);
-DepthStencilLoadOperator(LOAD);
 DepthStencilStoreOperator(STORE);
 
 //Set the cull mode.

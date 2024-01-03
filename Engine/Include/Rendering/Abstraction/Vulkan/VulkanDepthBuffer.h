@@ -4,13 +4,25 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Rendering.
+#include <Rendering/Abstraction/Vulkan/VulkanImage.h>
+
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 
-class VulkanDepthBuffer final
+class VulkanDepthBuffer final : public VulkanImage
 {
 
 public:
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE VulkanDepthBuffer() NOEXCEPT
+	{
+		//Set the type.
+		_Type = Type::VULKAN_DEPTH_BUFFER;
+	}
 
 	/*
 	*	Initializes this Vulkan depth buffer.
@@ -23,33 +35,11 @@ public:
 	void Release() NOEXCEPT;
 
 	/*
-	*	Returns the image view for this Vulkan depth buffer.
-	*/
-	const VkImageView& GetImageView() const NOEXCEPT { return _VulkanImageView; }
-
-	/*
-	*	Returns the format of this Vulkan depth buffer.
-	*/
-	const VkFormat& GetFormat() const NOEXCEPT { return _Format; }
-
-	/*
 	*	Returns the sample count of this Vulkan depth buffer.
 	*/
-	const VkSampleCountFlagBits& GetSampleCount() const NOEXCEPT { return _SampleCount; }
+	const VkSampleCountFlagBits &GetSampleCount() const NOEXCEPT { return _SampleCount; }
 
 private:
-
-	//The Vulkan image.
-	VkImage _VulkanImage;
-
-	//The Vulkan device memory.
-	VkDeviceMemory _VulkanDeviceMemory;
-
-	//The Vulkan image view.
-	VkImageView _VulkanImageView;
-
-	//The format of this depth buffer.
-	VkFormat _Format;
 
 	//The sample count.
 	VkSampleCountFlagBits _SampleCount;

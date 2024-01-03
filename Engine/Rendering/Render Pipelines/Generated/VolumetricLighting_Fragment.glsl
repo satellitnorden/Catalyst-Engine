@@ -531,7 +531,7 @@ void main()
                             screen_space_occlusion = mix(1.0f, occlusion, screen_factor);
                         }
                         scattering *= screen_space_occlusion;
-                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / InverseSquare(extinction);
+                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / extinction;
                         volumetric_lighting += transmittance * scattering_integral;
                         break;
                     }

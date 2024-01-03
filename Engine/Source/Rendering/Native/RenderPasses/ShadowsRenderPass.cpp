@@ -131,7 +131,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	//Create the shadow map render targets.
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
-		RenderingSystem::Instance->CreateRenderTarget(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), TextureFormat::R_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_ShadowMapRenderTargets[i]);
+		RenderingSystem::Instance->CreateRenderTarget(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), TextureFormat::R_UINT16, SampleCount::SAMPLE_COUNT_1, &_ShadowMapRenderTargets[i]);
 	}
 
 	//Add the shadow map render targets to the global render data.
@@ -174,7 +174,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Add the pipelines.
-	SetNumberOfPipelines(_ClearShadowMapPipelines.Size() + _OpaqueModelShadowMapPipelines.Size() + _MaskedModelShadowMapPipelines.Size() + _TerrainShadowMapGraphicsPipelines.Size() + _InstancedOpaqueModelShadowsGraphicsPipelines.Size() + 2 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
+	SetNumberOfPipelines(_ClearShadowMapPipelines.Size() + _OpaqueModelShadowMapPipelines.Size() + _MaskedModelShadowMapPipelines.Size() + _InstancedOpaqueModelShadowsGraphicsPipelines.Size() + 2 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
 
 	//Add all pipelines.
 	for (uint8 i{ 0 }; i < 4; ++i)
@@ -190,11 +190,6 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
 		AddPipeline(&_MaskedModelShadowMapPipelines[i]);
-	}
-
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		AddPipeline(&_TerrainShadowMapGraphicsPipelines[i]);
 	}
 
 	for (uint8 i{ 0 }; i < 8; ++i)
@@ -245,11 +240,6 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 		parameters._InputStreamSubscriptions.Emplace(buffer);
 
 		_MaskedModelShadowMapPipelines[i].Initialize(parameters);
-	}
-
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		_TerrainShadowMapGraphicsPipelines[i].Initialize(_ShadowMapDepthBuffers[i], _ShadowMapRenderTargets[i]);
 	}
 
 	for (uint8 i{ 0 }; i < 4; ++i)
@@ -349,11 +339,6 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			_TerrainShadowMapGraphicsPipelines[i].Execute(current_shadow_uniform_data._WorldToLightMatrices[i]);
-		}
-
-		for (uint8 i{ 0 }; i < 4; ++i)
-		{
 			_InstancedOpaqueModelShadowsGraphicsPipelines[i].Execute(i, current_shadow_uniform_data._WorldToLightMatrices[i]);
 		}
 
@@ -371,11 +356,6 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
 			_ClearShadowMapPipelines[i].SetIncludeInRender(false);
-		}
-
-		for (uint8 i{ 0 }; i < 4; ++i)
-		{
-			_TerrainShadowMapGraphicsPipelines[i].SetIncludeInRender(false);
 		}
 
 		for (uint8 i{ 0 }; i < 8; ++i)
@@ -413,11 +393,6 @@ void ShadowsRenderPass::Terminate() NOEXCEPT
 	}
 
 	for (GraphicsRenderPipeline &pipeline : _MaskedModelShadowMapPipelines)
-	{
-		pipeline.Terminate();
-	}
-
-	for (TerrainShadowMapGraphicsPipeline &pipeline : _TerrainShadowMapGraphicsPipelines)
 	{
 		pipeline.Terminate();
 	}

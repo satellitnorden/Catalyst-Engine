@@ -353,5 +353,5 @@ void main()
     float hit_distance_reciprocal = 1.0f / hit_distance;
     float opacity = 1.0f - exp(-GetExtinctionAtPosition(CAMERA_WORLD_POSITION) * hit_distance);
     vec4 volumetric_lighting = texture(VolumetricLighting, InTextureCoordinate);
-	Scene = vec4(vec3(opacity),1.0f);
+	Scene = vec4(volumetric_lighting.rgb,opacity);
 }

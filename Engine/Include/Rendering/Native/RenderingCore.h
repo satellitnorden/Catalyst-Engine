@@ -581,6 +581,7 @@ enum class TextureFilter : uint8
 enum class TextureFormat : uint8
 {
 	R_UINT8,
+	R_UINT16,
 	RGB_UINT8,
 	RGBA_UINT8,
 	RG_FLOAT16,
