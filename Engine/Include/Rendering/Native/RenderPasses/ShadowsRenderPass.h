@@ -7,7 +7,6 @@
 //Rendering.
 #include <Rendering/Native/ShadowUniformData.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/InstancedOpaqueModelShadowsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/RasterizedShadowsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ShadowsSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/ShadowsRayTracingPipeline.h>
@@ -72,9 +71,6 @@ private:
 		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline"))
 	};
-
-	//The instanced opaque model shadows graphics pipelines.
-	StaticArray<InstancedOpaqueModelShadowsGraphicsPipeline, 8> _InstancedOpaqueModelShadowsGraphicsPipelines;
 
 	//The rasterized shadows graphics pipeline.
 	RasterizedShadowsGraphicsPipeline _RasterizedShadowsGraphicsPipeline;
