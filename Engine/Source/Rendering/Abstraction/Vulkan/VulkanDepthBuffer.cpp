@@ -9,10 +9,10 @@
 /*
 *	Initializes this Vulkan depth buffer.
 */
-void VulkanDepthBuffer::Initialize(const VkExtent2D extent, const VkSampleCountFlagBits sample_count) NOEXCEPT
+void VulkanDepthBuffer::Initialize(const VkExtent2D extent, const VkFormat format, const VkSampleCountFlagBits sample_count) NOEXCEPT
 {
 	//Find the most desirable depth buffer format.
-	_VulkanFormat = FindMostDesirableDepthBufferFormat();
+	_VulkanFormat = format;
 
 	//Set the image layout.
 	_VulkanImageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;

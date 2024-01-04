@@ -198,7 +198,7 @@ public:
 	/*
 	*	Creates and returns a depth buffer.
 	*/
-	RESTRICTED VulkanDepthBuffer *const RESTRICT CreateDepthBuffer(const VkExtent2D &extent, const VkSampleCountFlagBits sample_count) NOEXCEPT;
+	RESTRICTED VulkanDepthBuffer *const RESTRICT CreateDepthBuffer(const VkExtent2D &extent, const VkFormat format, const VkSampleCountFlagBits sample_count) NOEXCEPT;
 
 	/*
 	*	Destroys a depth buffer.

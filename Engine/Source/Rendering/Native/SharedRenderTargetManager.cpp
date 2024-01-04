@@ -158,7 +158,7 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_DEPTH_BUFFER)]._Identifier = HashString("SceneDepthBuffer");
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_DEPTH_BUFFER)]._Resolution = RenderingSystem::Instance->GetScaledResolution(0);
-	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_DEPTH_BUFFER)]._TextureFormat = static_cast<TextureFormat>(0);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_DEPTH_BUFFER)]._TextureFormat = TextureFormat::D_UINT24_S_UINT8;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_DEPTH_BUFFER)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_DEPTH_BUFFER)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = false;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_DEPTH_BUFFER)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
@@ -177,6 +177,7 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 				RenderingSystem::Instance->CreateDepthBuffer
 				(
 					_SharedRenderTargetInformations[i]._Resolution,
+					_SharedRenderTargetInformations[i]._TextureFormat,
 					SampleCount::SAMPLE_COUNT_1,
 					&_SharedRenderTargetInformations[i]._Handle
 				);
@@ -230,6 +231,7 @@ void SharedRenderTargetManager::OnSwitchRenderingPath(const RenderingPath new_re
 				RenderingSystem::Instance->CreateDepthBuffer
 				(
 					_SharedRenderTargetInformations[i]._Resolution,
+					_SharedRenderTargetInformations[i]._TextureFormat,
 					SampleCount::SAMPLE_COUNT_1,
 					&_SharedRenderTargetInformations[i]._Handle
 				);

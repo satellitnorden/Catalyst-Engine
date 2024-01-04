@@ -367,5 +367,6 @@ void main()
 		shadow_factor += float(shadow_map_depth < (actual_shadow_map_depth + 0.0f));
 	}
 	shadow_factor /= float(4);
+	shadow_factor = pow(shadow_factor, float(shadow_map_index + 1));
 	INTERMEDIATE_RGBA_FLOAT32_HALF_1 = vec4(shadow_factor,0.0f,0.0f,1.0f);
 }

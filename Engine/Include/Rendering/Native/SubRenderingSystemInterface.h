@@ -150,7 +150,7 @@ public:
 	/*
 	*	Creates a depth buffer.
 	*/
-	virtual void CreateDepthBuffer(const Resolution resolution, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT = 0;
+	virtual void CreateDepthBuffer(const Resolution resolution, const TextureFormat format, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT = 0;
 
 	/*
 	*	Destroys a depth buffer.

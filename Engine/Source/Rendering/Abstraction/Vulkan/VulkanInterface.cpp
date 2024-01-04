@@ -475,10 +475,10 @@ RESTRICTED VulkanCubeMapTexture *const RESTRICT VulkanInterface::CreateCubeMapTe
 /*
 *	Creates and returns a depth buffer.
 */
-RESTRICTED VulkanDepthBuffer *const RESTRICT VulkanInterface::CreateDepthBuffer(const VkExtent2D &extent, const VkSampleCountFlagBits sample_count) NOEXCEPT
+RESTRICTED VulkanDepthBuffer *const RESTRICT VulkanInterface::CreateDepthBuffer(const VkExtent2D &extent, const VkFormat format, const VkSampleCountFlagBits sample_count) NOEXCEPT
 {
 	VulkanDepthBuffer *const RESTRICT new_depth_buffer{ new (MemorySystem::Instance->TypeAllocate<VulkanDepthBuffer>()) VulkanDepthBuffer() };
-	new_depth_buffer->Initialize(extent, sample_count);
+	new_depth_buffer->Initialize(extent, format, sample_count);
 
 	{
 		SCOPED_LOCK(_VulkanDepthBuffersLock);

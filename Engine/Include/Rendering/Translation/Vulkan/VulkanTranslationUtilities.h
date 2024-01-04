@@ -261,6 +261,8 @@ public:
 			case TextureFormat::R_FLOAT32: return VkFormat::VK_FORMAT_R32_SFLOAT;
 			case TextureFormat::RG_FLOAT32: return VkFormat::VK_FORMAT_R32G32_SFLOAT;
 			case TextureFormat::RGBA_FLOAT32: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+			case TextureFormat::D_UINT24_S_UINT8: return VkFormat::VK_FORMAT_D24_UNORM_S8_UINT;
+			case TextureFormat::D_UINT16: return VkFormat::VK_FORMAT_D16_UNORM;
 
 			default:
 			{

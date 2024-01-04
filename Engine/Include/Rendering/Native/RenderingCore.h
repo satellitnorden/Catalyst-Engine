@@ -579,6 +579,7 @@ enum class TextureFilter : uint8
 //Enumeration covering all texture formats.
 enum class TextureFormat : uint8
 {
+	//General formats.
 	R_UINT8,
 	R_UINT16,
 	RGB_UINT8,
@@ -586,7 +587,11 @@ enum class TextureFormat : uint8
 	RG_FLOAT16,
 	R_FLOAT32,
 	RG_FLOAT32,
-	RGBA_FLOAT32
+	RGBA_FLOAT32,
+
+	//Depth formats.
+	D_UINT16,
+	D_UINT24_S_UINT8,
 };
 
 //Enumeration covering all texture usages.

@@ -289,7 +289,7 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 					_ShadowMapData.Emplace();
 					shadow_map_data = &_ShadowMapData[current_shadow_map_data_index];
 
-					RenderingSystem::Instance->CreateDepthBuffer(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), SampleCount::SAMPLE_COUNT_1, &shadow_map_data->_DepthBuffer);
+					RenderingSystem::Instance->CreateDepthBuffer(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), TextureFormat::D_UINT16, SampleCount::SAMPLE_COUNT_1, &shadow_map_data->_DepthBuffer);
 					RenderingSystem::Instance->CreateRenderTarget(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), TextureFormat::R_UINT16, SampleCount::SAMPLE_COUNT_1, &shadow_map_data->_RenderTarget);
 					shadow_map_data->_RenderTargetIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(shadow_map_data->_RenderTarget);
 				}

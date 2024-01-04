@@ -981,9 +981,9 @@ void RenderingSystem::SubmitCommandBuffer(const CommandBuffer *const RESTRICT co
 /*
 *	Creates a depth buffer.
 */
-void RenderingSystem::CreateDepthBuffer(const Resolution resolution, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
+void RenderingSystem::CreateDepthBuffer(const Resolution resolution, const TextureFormat format, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
 {
-	_SubRenderingSystem->CreateDepthBuffer(resolution, sample_count, handle);
+	_SubRenderingSystem->CreateDepthBuffer(resolution, format, sample_count, handle);
 }
 
 /*

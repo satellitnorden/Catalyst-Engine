@@ -1244,10 +1244,11 @@ void VulkanSubRenderingSystem::SubmitCommandBuffer(const CommandBuffer *const RE
 /*
 *	Creates a depth buffer.
 */
-void VulkanSubRenderingSystem::CreateDepthBuffer(const Resolution resolution, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateDepthBuffer(const Resolution resolution, const TextureFormat format, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the depth buffer.
 	*handle = static_cast<DepthBufferHandle>(VulkanInterface::Instance->CreateDepthBuffer(	VkExtent2D{ resolution._Width, resolution._Height },
+																							VulkanTranslationUtilities::GetVulkanFormat(format),
 																							VulkanTranslationUtilities::GetVulkanSampleCount(sample_count)));
 }
 

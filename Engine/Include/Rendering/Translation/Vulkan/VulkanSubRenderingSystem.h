@@ -128,7 +128,7 @@ public:
 	/*
 	*	Creates a depth buffer.
 	*/
-	void CreateDepthBuffer(const Resolution resolution, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT override;
+	void CreateDepthBuffer(const Resolution resolution, const TextureFormat format, const SampleCount sample_count, DepthBufferHandle *const RESTRICT handle) const NOEXCEPT override;
 
 	/*
 	*	Destroys a depth buffer.

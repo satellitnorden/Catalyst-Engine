@@ -27,7 +27,7 @@ public:
 	/*
 	*	Initializes this Vulkan depth buffer.
 	*/
-	void Initialize(const VkExtent2D extent, const VkSampleCountFlagBits sample_count) NOEXCEPT;
+	void Initialize(const VkExtent2D extent, const VkFormat format, const VkSampleCountFlagBits sample_count) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan depth buffer.
