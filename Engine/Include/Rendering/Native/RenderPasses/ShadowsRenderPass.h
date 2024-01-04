@@ -27,15 +27,6 @@ public:
 
 private:
 
-	//The shadow uniform data.
-	DynamicArray<ShadowUniformDataOld> _ShadowUniformData;
-
-	//The shadow uniform data buffers.
-	DynamicArray<BufferHandle> _ShadowUniformDataBuffers;
-
-	//The shadow uniform data render data tables.
-	DynamicArray<RenderDataTableHandle> _ShadowUniformDataRenderDataTables;
-
 	//Denotes if the shadow map pipelines is initialized.
 	StaticArray<bool, ShadowsSystem::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA> _ShadowMapPipelinesIsInitialized;
 

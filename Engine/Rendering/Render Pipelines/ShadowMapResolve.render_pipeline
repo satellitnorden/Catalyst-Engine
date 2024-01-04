@@ -72,8 +72,8 @@ Fragment
 	vec2 shadow_map_offsets[4];
 
 	{
-		vec4 blue_noise_texture_sample_1 = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
-		vec4 blue_noise_texture_sample_2 = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 1);
+		vec4 blue_noise_texture_sample_1 = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), 0);
+		vec4 blue_noise_texture_sample_2 = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), 1);
 
 		shadow_map_offsets[0] = blue_noise_texture_sample_1.xy * 2.0f - 1.0f;
 		shadow_map_offsets[1] = blue_noise_texture_sample_1.zw * 2.0f - 1.0f;
