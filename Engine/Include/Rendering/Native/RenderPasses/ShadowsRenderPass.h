@@ -8,7 +8,6 @@
 #include <Rendering/Native/ShadowUniformData.h>
 #include <Rendering/Native/ShadowsSystem.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/RasterizedShadowsGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ShadowsSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/ShadowsRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
@@ -127,8 +126,8 @@ private:
 		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline"))
 	};
 
-	//The rasterized shadows graphics pipeline.
-	RasterizedShadowsGraphicsPipeline _RasterizedShadowsGraphicsPipeline;
+	//The shadow map resolve pipeline.
+	GraphicsRenderPipeline _ShadowMapResolvePipeline{ HashString("ShadowMapResolve_RenderPipeline") };
 
 	//The shadows ray tracing pipeline.
 	ShadowsRayTracingPipeline _ShadowsRayTracingPipeline;

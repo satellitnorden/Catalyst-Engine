@@ -1,0 +1,99 @@
+//Declare storage buffer includes.
+IncludeStorageBuffer(ShadowMapping);
+
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(BlueNoise);
+IncludeShaderFunctionLibrary(Camera);
+
+//Declare input render targets.
+InputRenderTarget(SceneFeatures2Half /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(INTERMEDIATE_RGBA_FLOAT32_HALF_1);
+
+//Declare render resolution.
+RenderResolution(MAIN_HALF);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//Declare samplers.
+Sampler(SAMPLER /* Name */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+	#define SHADOW_MAP_OFFSET (1.0f / 1024.0f)
+
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample the scene features.
+    vec4 scene_features_2 = texture(SceneFeatures2Half, InScreenCoordinate);
+
+    //Calculate the world position.
+    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, scene_features_2.w);
+
+    //Calculate the shadow map index.
+	uint shadow_map_index = 0;
+	vec2 shadow_map_coordinate;
+	float shadow_map_depth;
+
+	for (; shadow_map_index < 4; ++shadow_map_index)
+	{
+		vec4 light_space_position = SHADOW_MAP_DATA[shadow_map_index]._WorldToLightMatrix * vec4(world_position, 1.0f);
+		shadow_map_coordinate = light_space_position.xy * 0.5f + 0.5f;
+		shadow_map_depth = light_space_position.z;
+
+		if (shadow_map_coordinate.x >= 0.0f
+            && shadow_map_coordinate.x <= 1.0f
+            && shadow_map_coordinate.y >= 0.0f
+            && shadow_map_coordinate.y <= 1.0f
+            && shadow_map_depth >= 0.0f
+            && shadow_map_depth <= 1.0f)
+		{
+			break;
+		}
+	}
+
+	vec2 shadow_map_offsets[4];
+
+	{
+		vec4 blue_noise_texture_sample_1 = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+		vec4 blue_noise_texture_sample_2 = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 1);
+
+		shadow_map_offsets[0] = blue_noise_texture_sample_1.xy * 2.0f - 1.0f;
+		shadow_map_offsets[1] = blue_noise_texture_sample_1.zw * 2.0f - 1.0f;
+		shadow_map_offsets[2] = blue_noise_texture_sample_2.xy * 2.0f - 1.0f;
+		shadow_map_offsets[3] = blue_noise_texture_sample_2.zw * 2.0f - 1.0f;
+	}
+
+	float shadow_factor = 0.0f;
+
+	for (uint i = 0; i < 4; ++i)
+	{
+		vec2 offset_shadow_map_coordinate = shadow_map_coordinate + shadow_map_offsets[i] * SHADOW_MAP_OFFSET;
+
+		float actual_shadow_map_depth = texture(sampler2D(TEXTURES[SHADOW_MAP_DATA[shadow_map_index]._ShadowMapTextureIndex], SAMPLER), offset_shadow_map_coordinate).x;
+
+		shadow_factor += float(shadow_map_depth < (actual_shadow_map_depth + 0.0f));
+	}
+
+	shadow_factor /= float(4);
+
+	//Output the fragment.
+	OutputFragment(INTERMEDIATE_RGBA_FLOAT32_HALF_1, vec4(shadow_factor, 0.0f, 0.0f, 1.0f));
+}

@@ -185,6 +185,30 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
+layout (std140, set = 1, binding = 0) uniform Camera
+{
+	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;
+	layout (offset = 64) mat4 WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
+	layout (offset = 192) mat4 INVERSE_WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 256) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;
+	layout (offset = 320) vec3 CAMERA_WORLD_POSITION;
+	layout (offset = 336) vec3 CAMERA_FORWARD_VECTOR;
+	layout (offset = 352) vec2 CURRENT_FRAME_JITTER;
+	layout (offset = 360) float NEAR_PLANE;
+	layout (offset = 364) float FAR_PLANE;
+};
+
+layout (std140, set = 1, binding = 1) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
+};
+
 //Shadow mapping header struct definition.
 struct ShadowMappingHeader
 {
@@ -196,23 +220,116 @@ struct ShadowMapData
 	mat4 _WorldToLightMatrix;
 	uint _ShadowMapTextureIndex;
 };
-layout (std430, set = 1, binding = 0) buffer ShadowMapping
+layout (std430, set = 1, binding = 2) buffer ShadowMapping
 {
 	layout (offset = 0) ShadowMappingHeader SHADOW_MAPPING_HEADER;
 	layout (offset = 16) ShadowMapData SHADOW_MAP_DATA[];
 };
 
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) mat4 MODEL_MATRIX;
-	layout (offset = 64) uint LIGHT_MATRIX_INDEX;
-};
+layout (set = 1, binding = 3) uniform sampler SAMPLER;
 
-layout (location = 0) in vec3 InPosition;
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    return texture(BLUE_NOISE_TEXTURES[(BLUE_NOISE_TEXTURE_INDEX + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1)], vec2(coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
+
+/*
+*   Linearizes a depth value.
+*/
+float LinearizeDepth(float depth)
+{
+    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
+}
+
+/*
+*   Calculates the view space position.
+*/
+vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position.xyz *= inverse_view_space_position_denominator;
+
+    return view_space_position.xyz;
+}
+
+/*
+*   Calculates the view space distance.
+*/
+float CalculateViewSpaceDistance(vec2 texture_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+
+    return view_space_position.z / view_space_position.w;
+}
+
+/*
+*   Calculates the world position.
+*/
+vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position *= inverse_view_space_position_denominator;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
+
+    return world_space_position.xyz;
+}
+
+/*
+*   Returns the current screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Returns the previous screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Calculates a screen position, including the (linearized) depth from the given world position.
+*/
+vec3 CalculateScreenPosition(vec3 world_position)
+{
+    vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+    float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
+    view_space_position.xyz *= view_space_position_coefficient_reciprocal;
+
+    view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
+    view_space_position.z = LinearizeDepth(view_space_position.z);
+    
+    return view_space_position.xyz;
+}
+
+layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2Half;
+
+layout (location = 0) out vec2 OutScreenCoordinate;
 
 void main()
 {
-    vec4 clip_position = SHADOW_MAP_DATA[LIGHT_MATRIX_INDEX]._WorldToLightMatrix * MODEL_MATRIX * vec4(InPosition, 1.0f);
-    clip_position.z = max(clip_position.z, FLOAT32_EPSILON);
-	gl_Position = clip_position;
+	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
+    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+	gl_Position = vec4(x,y,0.0f,1.0f);
 }

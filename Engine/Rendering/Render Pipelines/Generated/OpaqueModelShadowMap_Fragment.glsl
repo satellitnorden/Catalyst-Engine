@@ -196,6 +196,7 @@ struct ShadowMappingHeader
 struct ShadowMapData
 {
 	mat4 _WorldToLightMatrix;
+	uint _ShadowMapTextureIndex;
 };
 layout (std430, set = 1, binding = 0) buffer ShadowMapping
 {

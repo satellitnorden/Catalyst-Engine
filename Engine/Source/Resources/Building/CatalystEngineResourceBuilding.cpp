@@ -1268,17 +1268,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RasterizedShadowsFragmentShader";
-		parameters._ID = "RasterizedShadowsFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RasterizedShadowsFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RayTracedAmbientOcclusionRayGenerationShader";
 		parameters._ID = "RayTracedAmbientOcclusionRayGenerationShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedAmbientOcclusionRayGenerationShader.rgen";

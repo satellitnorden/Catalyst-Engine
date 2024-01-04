@@ -141,6 +141,16 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 				{
 					data->Emplace(((const byte *const RESTRICT)&shadow_map_data._WorldToLightMatrix)[i]);
 				}
+
+				for (uint64 i{ 0 }; i < sizeof(uint32); ++i)
+				{
+					data->Emplace(((const byte *const RESTRICT)&shadow_map_data._RenderTargetIndex)[i]);
+				}
+
+				for (uint64 i{ 0 }; i < 12; ++i)
+				{
+					data->Emplace(0);
+				}
 			}
 		},
 		this

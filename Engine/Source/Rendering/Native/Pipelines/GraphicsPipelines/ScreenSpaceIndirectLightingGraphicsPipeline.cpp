@@ -34,7 +34,7 @@ void ScreenSpaceIndirectLightingGraphicsPipeline::Initialize(const RenderingConf
 	{
 		case RenderingConfiguration::IndirectLightingQuality::LOW:
 		{
-			AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+			AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
 
 			break;
 		}
