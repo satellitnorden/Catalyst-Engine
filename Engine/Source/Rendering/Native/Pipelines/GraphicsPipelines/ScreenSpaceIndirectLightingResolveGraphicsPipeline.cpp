@@ -93,6 +93,9 @@ void ScreenSpaceIndirectLightingResolveGraphicsPipeline::Initialize(const Render
 	//Set the name.
 	SetName("Indirect Lighting Spatial Denoising");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

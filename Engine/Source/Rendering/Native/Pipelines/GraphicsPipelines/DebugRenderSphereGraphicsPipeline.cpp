@@ -106,6 +106,9 @@ void DebugRenderSphereGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Debug Render Sphere");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

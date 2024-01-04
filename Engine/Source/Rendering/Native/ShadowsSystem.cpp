@@ -15,7 +15,6 @@
 //Shadows systems constants.
 namespace ShadowsSystemConstants
 {
-	constexpr uint64 MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA{ 24 };
 	constexpr float32 DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 5.25f };
 	constexpr StaticArray<float32, 4> DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTORS
 	{
@@ -120,7 +119,7 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 	RenderingSystem::Instance->GetBufferManager()->RegisterStorageBuffer
 	(
 		HashString("ShadowMapping"),
-		sizeof(ShadowMappingHeaderData) + sizeof(ShadowMapData) * ShadowsSystemConstants::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA,
+		sizeof(ShadowMappingHeaderData) + sizeof(ShadowMapData) * MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA,
 		[](DynamicArray<byte> *const RESTRICT data, void *const RESTRICT arguments)
 		{
 			data->Clear();
@@ -256,8 +255,7 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 {
 	//Update the shadow map data.
-	_ShadowMapData.Clear();
-
+	uint32 current_shadow_map_data_index{ 0 };
 	const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
 	const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
 
@@ -274,35 +272,61 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				_ShadowMapData.Emplace();
-				ShadowMapData &new_shadow_map_data{ _ShadowMapData.Back() };
+				ShadowMapData *RESTRICT shadow_map_data;
 
-				new_shadow_map_data._WorldToLightMatrix = CalculateCascadeMatrix(CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetNearPlane() : cascade_distances[i - 1], cascade_distances[i]);
+				if (current_shadow_map_data_index >= _ShadowMapData.Size())
+				{
+					_ShadowMapData.Emplace();
+					shadow_map_data = &_ShadowMapData[current_shadow_map_data_index];
+
+					RenderingSystem::Instance->CreateDepthBuffer(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), SampleCount::SAMPLE_COUNT_1, &shadow_map_data->_DepthBuffer);
+					RenderingSystem::Instance->CreateRenderTarget(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), TextureFormat::R_UINT16, SampleCount::SAMPLE_COUNT_1, &shadow_map_data->_RenderTarget);
+					shadow_map_data->_RenderTargetIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(shadow_map_data->_RenderTarget);
+				}
+
+				else
+				{
+					shadow_map_data = &_ShadowMapData[current_shadow_map_data_index];
+				}
+
+				shadow_map_data->_WorldToLightMatrix = CalculateCascadeMatrix(CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetNearPlane() : cascade_distances[i - 1], cascade_distances[i]);
 
 				{
 					//Construct the frustum planes.
-					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[0][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] + new_shadow_map_data._WorldToLightMatrix._Matrix[j][0]; //Left.
-					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[1][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] - new_shadow_map_data._WorldToLightMatrix._Matrix[j][0]; //Right.
-					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[2][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] + new_shadow_map_data._WorldToLightMatrix._Matrix[j][1]; //Bottom.
-					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[3][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] - new_shadow_map_data._WorldToLightMatrix._Matrix[j][1]; //Top.
-					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[4][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] + new_shadow_map_data._WorldToLightMatrix._Matrix[j][2]; //Near.
-					for (uint8 j{ 4 }; j--;) new_shadow_map_data._Frustum._Planes[5][j] = new_shadow_map_data._WorldToLightMatrix._Matrix[j][3] - new_shadow_map_data._WorldToLightMatrix._Matrix[j][2]; //Far.
+					for (uint8 j{ 4 }; j--;) shadow_map_data->_Frustum._Planes[0][j] = shadow_map_data->_WorldToLightMatrix._Matrix[j][3] + shadow_map_data->_WorldToLightMatrix._Matrix[j][0]; //Left.
+					for (uint8 j{ 4 }; j--;) shadow_map_data->_Frustum._Planes[1][j] = shadow_map_data->_WorldToLightMatrix._Matrix[j][3] - shadow_map_data->_WorldToLightMatrix._Matrix[j][0]; //Right.
+					for (uint8 j{ 4 }; j--;) shadow_map_data->_Frustum._Planes[2][j] = shadow_map_data->_WorldToLightMatrix._Matrix[j][3] + shadow_map_data->_WorldToLightMatrix._Matrix[j][1]; //Bottom.
+					for (uint8 j{ 4 }; j--;) shadow_map_data->_Frustum._Planes[3][j] = shadow_map_data->_WorldToLightMatrix._Matrix[j][3] - shadow_map_data->_WorldToLightMatrix._Matrix[j][1]; //Top.
+					for (uint8 j{ 4 }; j--;) shadow_map_data->_Frustum._Planes[4][j] = shadow_map_data->_WorldToLightMatrix._Matrix[j][3] + shadow_map_data->_WorldToLightMatrix._Matrix[j][2]; //Near.
+					for (uint8 j{ 4 }; j--;) shadow_map_data->_Frustum._Planes[5][j] = shadow_map_data->_WorldToLightMatrix._Matrix[j][3] - shadow_map_data->_WorldToLightMatrix._Matrix[j][2]; //Far.
 
 					//Normalize the frustum planes.
 					for (uint8 j{ 0 }; j < 6; ++j)
 					{
-						const float32 length_reciprocal{ CatalystBaseMath::InverseSquareRoot(new_shadow_map_data._Frustum._Planes[j]._X * new_shadow_map_data._Frustum._Planes[j]._X + new_shadow_map_data._Frustum._Planes[j]._Y * new_shadow_map_data._Frustum._Planes[j]._Y + new_shadow_map_data._Frustum._Planes[j]._Z * new_shadow_map_data._Frustum._Planes[j]._Z) };
+						const float32 length_reciprocal{ CatalystBaseMath::InverseSquareRoot(shadow_map_data->_Frustum._Planes[j]._X * shadow_map_data->_Frustum._Planes[j]._X + shadow_map_data->_Frustum._Planes[j]._Y * shadow_map_data->_Frustum._Planes[j]._Y + shadow_map_data->_Frustum._Planes[j]._Z * shadow_map_data->_Frustum._Planes[j]._Z) };
 
-						new_shadow_map_data._Frustum._Planes[j]._X *= length_reciprocal;
-						new_shadow_map_data._Frustum._Planes[j]._Y *= length_reciprocal;
-						new_shadow_map_data._Frustum._Planes[j]._Z *= length_reciprocal;
-						new_shadow_map_data._Frustum._Planes[j]._W *= length_reciprocal;
+						shadow_map_data->_Frustum._Planes[j]._X *= length_reciprocal;
+						shadow_map_data->_Frustum._Planes[j]._Y *= length_reciprocal;
+						shadow_map_data->_Frustum._Planes[j]._Z *= length_reciprocal;
+						shadow_map_data->_Frustum._Planes[j]._W *= length_reciprocal;
 					}
 				}
 
-				new_shadow_map_data._Distance = cascade_distances[i];
+				shadow_map_data->_Distance = cascade_distances[i];
+
+				++current_shadow_map_data_index;
 			}
 		}
+	}
+
+	//Destroy old shadow map data.
+	while (current_shadow_map_data_index < _ShadowMapData.Size())
+	{
+		RenderingSystem::Instance->DestroyDepthBuffer(&_ShadowMapData.Back()._DepthBuffer);
+		RenderingSystem::Instance->DestroyRenderTarget(&_ShadowMapData.Back()._RenderTarget);
+		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_ShadowMapData.Back()._RenderTargetIndex);
+
+		_ShadowMapData.Pop();
 	}
 }
 

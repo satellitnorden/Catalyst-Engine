@@ -120,6 +120,9 @@ void UserInterfaceGraphicsPipeline::Initialize(const RenderTargetHandle render_t
 	//Set the name.
 	SetName("User Interface");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

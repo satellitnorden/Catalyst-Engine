@@ -63,6 +63,9 @@ void AmbientOcclusionRayTracingPipeline::Initialize(const RenderTargetHandle amb
 	//Set the name.
 	SetName("Ambient Occlusion");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

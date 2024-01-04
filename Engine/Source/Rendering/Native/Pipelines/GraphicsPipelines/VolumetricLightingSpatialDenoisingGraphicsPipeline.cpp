@@ -92,6 +92,9 @@ void VolumetricLightingSpatialDenoisingGraphicsPipeline::Initialize(const int32 
 	//Set the name.
 	SetName("Volumetric Lighting Spatial Denoising");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

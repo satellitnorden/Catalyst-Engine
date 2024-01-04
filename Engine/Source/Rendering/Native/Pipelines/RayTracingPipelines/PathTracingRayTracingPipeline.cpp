@@ -76,6 +76,9 @@ void PathTracingRayTracingPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Path Tracing");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

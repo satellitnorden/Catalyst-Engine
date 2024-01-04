@@ -146,6 +146,9 @@ void DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline::Initialize(const Depth
 	//Set the name.
 	SetName("Debug Render Axis Aligned Bounding Box 3D");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

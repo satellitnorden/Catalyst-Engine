@@ -91,6 +91,9 @@ void IndirectLightingApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Indirect Lighting Application");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

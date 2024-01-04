@@ -226,6 +226,9 @@ void ComputeRenderPipeline::Initialize(const ComputeRenderPipelineParameters &pa
 	//Set the name.
 	SetName(_RenderPipelineResource->_Header._ResourceName.Data());
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

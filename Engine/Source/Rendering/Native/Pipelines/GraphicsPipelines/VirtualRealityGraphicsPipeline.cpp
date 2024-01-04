@@ -84,6 +84,9 @@ void VirtualRealityGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Virtual Reality");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

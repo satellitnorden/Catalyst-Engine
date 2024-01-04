@@ -87,6 +87,9 @@ void DepthOfFieldApplicationGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Depth Of Field Application");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

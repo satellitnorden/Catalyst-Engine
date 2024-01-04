@@ -68,6 +68,9 @@ void ParticleSystemComputePipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Particle System");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

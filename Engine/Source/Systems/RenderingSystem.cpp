@@ -1213,17 +1213,6 @@ void RenderingSystem::CreateTextureCube(const TextureCubeData &data, TextureCube
 }
 
 /*
-*	Initializes a render pass.
-*/
-void RenderingSystem::InitializeRenderPass(RenderPass *const RESTRICT render_pass) NOEXCEPT
-{
-	for (Pipeline* const RESTRICT pipeline : render_pass->GetPipelines())
-	{
-		InitializePipeline(pipeline);
-	}
-}
-
-/*
 *	Initializes a pipeline
 */
 void RenderingSystem::InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT

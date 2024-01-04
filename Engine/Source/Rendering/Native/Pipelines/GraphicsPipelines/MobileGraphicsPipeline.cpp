@@ -126,6 +126,9 @@ void MobileGraphicsPipeline::Initialize(const DepthBufferHandle depth_buffer) NO
 	SetName("Mobile");
 #endif
 
+	//Finalize the pipeline.
+	FinalizePipeline();
+
 	//Create the sky vertex/index buffer.
 	{
 		constexpr StaticArray<Vector3<float32>, 3> VERTEX_POSITIONS

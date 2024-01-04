@@ -4,6 +4,9 @@
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 /*
 *	Resets this pipeline.
 */
@@ -147,4 +150,12 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 			break;
 		}
 	}
+}
+
+/*
+*	Finalizes this pipeline.
+*/
+void Pipeline::FinalizePipeline() NOEXCEPT
+{
+	RenderingSystem::Instance->InitializePipeline(this);
 }

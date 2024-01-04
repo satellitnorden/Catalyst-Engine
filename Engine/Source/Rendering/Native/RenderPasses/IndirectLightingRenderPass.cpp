@@ -237,7 +237,6 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 			RenderingSystem::Instance->TerminateRenderPass(this);
 
 			Initialize();
-			RenderingSystem::Instance->InitializeRenderPass(this);
 		}
 	}
 

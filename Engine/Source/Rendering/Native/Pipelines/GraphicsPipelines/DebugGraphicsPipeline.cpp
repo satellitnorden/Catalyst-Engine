@@ -87,6 +87,9 @@ void DebugGraphicsPipeline::Initialize(const uint32 mode, const RenderTargetHand
 	//Set the name.
 	SetName("Debug");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

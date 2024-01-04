@@ -224,7 +224,6 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 			&& _AmbientOcclusionMode != RenderingConfiguration::AmbientOcclusionMode::NONE)
 		{
 			Initialize();
-			RenderingSystem::Instance->InitializeRenderPass(this);
 		}
 
 		else if (previous_ambient_occlusion_mode != RenderingConfiguration::AmbientOcclusionMode::NONE

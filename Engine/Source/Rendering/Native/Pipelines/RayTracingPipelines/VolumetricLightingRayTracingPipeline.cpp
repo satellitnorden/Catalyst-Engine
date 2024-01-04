@@ -43,6 +43,9 @@ void VolumetricLightingRayTracingPipeline::Initialize(const RenderTargetHandle t
 	//Set the name.
 	SetName("Volumetric Lighting");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

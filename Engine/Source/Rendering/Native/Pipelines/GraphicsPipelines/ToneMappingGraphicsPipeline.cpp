@@ -87,6 +87,9 @@ void ToneMappingGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Tone Mapping");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

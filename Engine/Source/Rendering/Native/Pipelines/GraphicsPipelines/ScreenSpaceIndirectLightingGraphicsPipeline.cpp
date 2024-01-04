@@ -112,6 +112,9 @@ void ScreenSpaceIndirectLightingGraphicsPipeline::Initialize(const RenderingConf
 	//Set the name.
 	SetName("Screen Space Indirect Lighting");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

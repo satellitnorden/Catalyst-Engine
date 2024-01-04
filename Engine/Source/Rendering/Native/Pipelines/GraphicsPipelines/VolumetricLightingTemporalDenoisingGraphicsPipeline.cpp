@@ -70,6 +70,9 @@ void VolumetricLightingTemporalDenoisingGraphicsPipeline::Initialize(	const Rend
 	//Set the name.
 	SetName("Volumetric Lighting Temporal Denoising");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

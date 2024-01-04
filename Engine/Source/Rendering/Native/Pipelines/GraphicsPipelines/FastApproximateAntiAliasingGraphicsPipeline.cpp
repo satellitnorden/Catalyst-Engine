@@ -89,6 +89,9 @@ void FastApproximateAntiAliasingGraphicsPipeline::Initialize(	const bool passthr
 	//Set the name.
 	SetName("Fast Approximate Anti Aliasing");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

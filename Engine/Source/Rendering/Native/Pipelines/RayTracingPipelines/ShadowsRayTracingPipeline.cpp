@@ -46,6 +46,9 @@ void ShadowsRayTracingPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Shadows");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

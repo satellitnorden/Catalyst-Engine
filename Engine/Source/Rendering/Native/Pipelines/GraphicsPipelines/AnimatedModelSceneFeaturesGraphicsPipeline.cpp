@@ -138,6 +138,9 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	//Set the name.
 	SetName("Animated Model Scene Features");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

@@ -70,6 +70,9 @@ void SkyGraphicsPipeline::Initialize(const DepthBufferHandle depthBuffer) NOEXCE
 	//Set the name.
 	SetName("Sky");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

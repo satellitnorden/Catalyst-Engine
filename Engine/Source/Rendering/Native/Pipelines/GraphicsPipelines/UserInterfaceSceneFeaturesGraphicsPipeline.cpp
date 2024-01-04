@@ -122,6 +122,9 @@ void UserInterfaceSceneFeaturesGraphicsPipeline::Initialize(const DepthBufferHan
 	//Set the name.
 	SetName("User Interface Scene Features");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

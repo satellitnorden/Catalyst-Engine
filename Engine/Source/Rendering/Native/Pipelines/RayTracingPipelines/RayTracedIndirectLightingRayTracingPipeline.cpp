@@ -79,6 +79,9 @@ void RayTracedIndirectLightingRayTracingPipeline::Initialize(const RenderingConf
 	//Set the name.
 	SetName("Ray Traced Indirect Lighting");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

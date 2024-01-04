@@ -107,6 +107,9 @@ void PostProcessingGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Post Processing");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

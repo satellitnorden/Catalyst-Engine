@@ -98,6 +98,9 @@ void AmbientOcclusionSpatialDenoisingGraphicsPipeline::Initialize(const RenderTa
 	//Set the name.
 	SetName("Ambient Occlusion Spatial Denoising");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

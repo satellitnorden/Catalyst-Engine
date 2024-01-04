@@ -86,6 +86,9 @@ void ResampleGraphicsPipeline::Initialize(const RenderTargetHandle source, const
 	//Set the name.
 	SetName("Resample");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

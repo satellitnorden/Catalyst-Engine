@@ -533,11 +533,6 @@ public:
 	void CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
-	*	Initializes a render pass.
-	*/
-	void InitializeRenderPass(RenderPass *const RESTRICT render_pass) NOEXCEPT;
-
-	/*
 	*	Initializes a pipeline
 	*/
 	void InitializePipeline(Pipeline *const RESTRICT pipeline) const NOEXCEPT;

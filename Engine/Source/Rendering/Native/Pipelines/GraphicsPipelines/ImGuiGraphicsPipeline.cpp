@@ -118,6 +118,9 @@ void ImGuiGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("ImGui");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

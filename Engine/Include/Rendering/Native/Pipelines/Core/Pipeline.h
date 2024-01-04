@@ -166,6 +166,11 @@ protected:
 	*/
 	void ProcessInputStream(const RenderInputStream &input_stream, CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;
 
+	/*
+	*	Finalizes this pipeline.
+	*/
+	void FinalizePipeline() NOEXCEPT;
+
 private:
 
 	//The pipeline type.

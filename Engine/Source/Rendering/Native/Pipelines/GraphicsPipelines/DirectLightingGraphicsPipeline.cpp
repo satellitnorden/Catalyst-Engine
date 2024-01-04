@@ -86,6 +86,9 @@ void DirectLightingGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Direct Lighting");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

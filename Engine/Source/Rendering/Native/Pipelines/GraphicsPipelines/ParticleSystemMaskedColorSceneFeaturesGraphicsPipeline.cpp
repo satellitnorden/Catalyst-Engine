@@ -128,6 +128,9 @@ void ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline::Initialize(const De
 	//Set the name.
 	SetName("Particle System Masked Color Scene Features");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

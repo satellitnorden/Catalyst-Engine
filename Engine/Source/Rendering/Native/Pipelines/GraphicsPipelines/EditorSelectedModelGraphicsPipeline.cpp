@@ -113,6 +113,9 @@ void EditorSelectedModelGraphicsPipeline::Initialize(const DepthBufferHandle dep
 	//Set the name.
 	SetName("Editor Selected Model");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

@@ -89,6 +89,9 @@ void PathTracingDenoisingGraphicsPipeline::Initialize(const Direction direction,
 	//Set the name.
 	SetName("Path Tracing Denoising");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

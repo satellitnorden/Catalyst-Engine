@@ -17,6 +17,9 @@ class ShadowsSystem final
 
 public:
 
+	//Constants.
+	constexpr static uint64 MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA{ 24 };
+
 	/*
 	*	Shadow map data class defunition.
 	*/
@@ -33,6 +36,15 @@ public:
 
 		//The distance.
 		float32 _Distance;
+
+		//The depth buffer.
+		DepthBufferHandle _DepthBuffer;
+
+		//The render target.
+		RenderTargetHandle _RenderTarget;
+
+		//The render target index.
+		uint32 _RenderTargetIndex;
 
 	};
 

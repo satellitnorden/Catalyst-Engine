@@ -69,6 +69,9 @@ void IndirectLightingTemporalDenoisingGraphicsPipeline::Initialize(	const Render
 	//Set the name.
 	SetName("Indirect Lighting Temporal Denoising");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

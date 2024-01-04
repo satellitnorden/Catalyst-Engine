@@ -88,6 +88,9 @@ void DepthOfFieldBokehBlurGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Depth Of Field Bokeh Blur");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

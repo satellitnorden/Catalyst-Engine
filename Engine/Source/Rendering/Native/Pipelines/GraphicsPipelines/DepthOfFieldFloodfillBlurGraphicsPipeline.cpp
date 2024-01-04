@@ -93,6 +93,9 @@ void DepthOfFieldFloodfillBlurGraphicsPipeline::Initialize(	const RenderTargetHa
 	//Set the name.
 	SetName("Depth Of Field Floodfill Blur");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

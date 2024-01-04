@@ -88,6 +88,9 @@ void TemporalAntiAliasingGraphicsPipeline::Initialize(	const RenderTargetHandle 
 	//Set the name.
 	SetName("Temporal Anti Aliasing");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

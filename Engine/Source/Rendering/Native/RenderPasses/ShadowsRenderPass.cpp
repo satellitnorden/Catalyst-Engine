@@ -15,78 +15,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(ShadowsRenderPass);
 
-//Shadow render pass constants.
-namespace ShadowRenderPassConstants
-{
-	constexpr float32 SHADOW_MAP_VIEW_DISTANCE_FACTOR{ 1.0f };
-	constexpr float32 SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 5.25f };
-	constexpr StaticArray<float32, 4> SHADOW_MAP_CASCADE_DISTANCE_FACTORS
-	{
-		1.0f * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR,
-		1.0f * SHADOW_MAP_CASCADE_DISTANCE_FACTOR * SHADOW_MAP_CASCADE_DISTANCE_FACTOR,
-		1.0f * SHADOW_MAP_CASCADE_DISTANCE_FACTOR,
-		1.0f
-	};
-}
-
-/*
-*	Calculates a cascade matrix.
-*/
-FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const uint8 frustum_index, const Vector3<float32> &light_direction, const float32 cascade_start, const float32 cascade_end) NOEXCEPT
-{
-	//Cache the camera local_position.
-	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
-
-	//Set up the furstom corners.
-	const Vector3<float32> lower_left_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(0.0f, 0.0f)) };
-	const Vector3<float32> upper_left_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(0.0f, 1.0f)) };
-	const Vector3<float32> lower_right_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(1.0f, 0.0f)) };
-	const Vector3<float32> upper_right_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(1.0f, 1.0f)) };
-
-	StaticArray<Vector4<float32>, 8> frustum_corners;
-
-	frustum_corners[0] = Vector4<float32>(camera_local_position + lower_left_direction * cascade_start, 1.0f);
-	frustum_corners[1] = Vector4<float32>(camera_local_position + upper_left_direction * cascade_start, 1.0f);
-	frustum_corners[2] = Vector4<float32>(camera_local_position + lower_right_direction * cascade_start, 1.0f);
-	frustum_corners[3] = Vector4<float32>(camera_local_position + upper_right_direction * cascade_start, 1.0f);
-
-	frustum_corners[4] = Vector4<float32>(camera_local_position + lower_left_direction * cascade_end, 1.0f);
-	frustum_corners[5] = Vector4<float32>(camera_local_position + upper_left_direction * cascade_end, 1.0f);
-	frustum_corners[6] = Vector4<float32>(camera_local_position + lower_right_direction * cascade_end, 1.0f);
-	frustum_corners[7] = Vector4<float32>(camera_local_position + upper_right_direction * cascade_end, 1.0f);
-
-	//Construct the light matrix.
-	const Matrix4x4 light_matrix{ Matrix4x4::LookAt(VectorConstants::ZERO, light_direction, CatalystWorldCoordinateSpace::UP) };
-
-	//Calculate the light bounding box.
-	float32 minX{ FLOAT32_MAXIMUM };
-	float32 maxX{ -FLOAT32_MAXIMUM };
-	float32 minY{ FLOAT32_MAXIMUM };
-	float32 maxY{ -FLOAT32_MAXIMUM };
-	float32 minZ{ FLOAT32_MAXIMUM };
-	float32 maxZ{ -FLOAT32_MAXIMUM };
-
-	for (uint8 i{ 0 }; i < 8; ++i)
-	{
-		const Vector4<float32> light_space_corner{ light_matrix * frustum_corners[i] };
-
-		minX = CatalystBaseMath::Minimum<float32>(minX, light_space_corner._X);
-		maxX = CatalystBaseMath::Maximum<float32>(maxX, light_space_corner._X);
-		minY = CatalystBaseMath::Minimum<float32>(minY, light_space_corner._Y);
-		maxY = CatalystBaseMath::Maximum<float32>(maxY, light_space_corner._Y);
-		minZ = CatalystBaseMath::Minimum<float32>(minZ, light_space_corner._Z);
-		maxZ = CatalystBaseMath::Maximum<float32>(maxZ, light_space_corner._Z);
-	}
-
-	//Cache the view distance.
-	const float32 view_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
-
-	//Calculate the projection matrix.
-	const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX, maxX, minY, maxY, minZ, maxZ) };
-
-	return projection_matrix * light_matrix;
-}
-
 /*
 *	Default constructor.
 */
@@ -122,34 +50,8 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
-	//Create the shadow map depth buffers.
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		RenderingSystem::Instance->CreateDepthBuffer(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), SampleCount::SAMPLE_COUNT_1, &_ShadowMapDepthBuffers[i]);
-	}
-
-	//Create the shadow map render targets.
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		RenderingSystem::Instance->CreateRenderTarget(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution), TextureFormat::R_UINT16, SampleCount::SAMPLE_COUNT_1, &_ShadowMapRenderTargets[i]);
-	}
-
-	//Add the shadow map render targets to the global render data.
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		_ShadowMapRenderTargetIndices[i] = RenderingSystem::Instance->AddTextureToGlobalRenderData(_ShadowMapRenderTargets[i]);
-	}
-
 	//Allocate the appropriate size for the shadow uniform data and set initial values.
 	_ShadowUniformData.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
-
-	for (ShadowUniformDataOld &shadow_uniform_data : _ShadowUniformData)
-	{
-		for (uint8 i{ 0 }; i < 4; ++i)
-		{
-			shadow_uniform_data._ShadowMapRenderTargetIndices[i] = _ShadowMapRenderTargetIndices[i];
-		}
-	}
 
 	//Create the shadow uniform data buffers.
 	_ShadowUniformDataBuffers.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
@@ -201,6 +103,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Initialize all pipelines.
+	/*
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
 		GraphicsRenderPipelineParameters parameters;
@@ -236,6 +139,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 
 		_MaskedModelShadowMapPipelines[i].Initialize(parameters);
 	}
+	*/
 
 	_RasterizedShadowsGraphicsPipeline.Initialize();
 	_ShadowsRayTracingPipeline.Initialize();
@@ -265,39 +169,26 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 		return;
 	}
 
-	//Cache the view distance.
-	const float32 view_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
-
-	//Calculate the shadow map distances.
-	StaticArray<float32, 4> shadow_map_distances;
-
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		shadow_map_distances[i] = view_distance * ShadowRenderPassConstants::SHADOW_MAP_VIEW_DISTANCE_FACTOR * ShadowRenderPassConstants::SHADOW_MAP_CASCADE_DISTANCE_FACTORS[i];
-	}
-
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RASTERIZED)
 	{
-		//Calculate the world to light matrices.
-		const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
-		const LightComponent * RESTRICT component{ ComponentManager::GetLightLightComponents() };
+		//Cache the number of shadow map data.
+		const uint32 number_of_shadow_map_data{ RenderingSystem::Instance->GetShadowsSystem()->GetNumberOfShadowMapData() };
 
-		for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
+		//Update the shadow uniform data.
+		for (uint32 i{ 0 }; i < number_of_shadow_map_data; ++i)
 		{
-			if (component->_LightType == LightType::DIRECTIONAL)
-			{
-				for (uint8 i{ 0 }; i < 4; ++i)
-				{
-					current_shadow_uniform_data._WorldToLightMatrices[i] = CalculateCascadeMatrix(i, CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetNearPlane() : shadow_map_distances[i - 1], shadow_map_distances[i]);
-				}
-
-				break;
-			}
+			const ShadowsSystem::ShadowMapData &shadow_map_data{ RenderingSystem::Instance->GetShadowsSystem()->GetShadowMapData(i) };
+		
+			current_shadow_uniform_data._WorldToLightMatrices[i] = shadow_map_data._WorldToLightMatrix;
+			current_shadow_uniform_data._ShadowMapRenderTargetIndices[i] = shadow_map_data._RenderTargetIndex;
+			current_shadow_uniform_data._ShadowMapCascadeDistances[i] = shadow_map_data._Distance;
 		}
 
-		for (uint8 i{ 0 }; i < 4; ++i)
+		for (uint32 i{ number_of_shadow_map_data }; i < 4; ++i)
 		{
-			current_shadow_uniform_data._ShadowMapCascadeDistances[i] = shadow_map_distances[i];
+			current_shadow_uniform_data._WorldToLightMatrices[i] = Matrix4x4();
+			current_shadow_uniform_data._ShadowMapRenderTargetIndices[i] = 0;
+			current_shadow_uniform_data._ShadowMapCascadeDistances[i] = 0.0f;
 		}
 
 		//Upload the shadow uniform data.
@@ -306,20 +197,67 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 
 		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_shadow_uniform_data_buffer);
 
-		//Render all cascades.
-		for (uint8 i{ 0 }; i < 4; ++i)
+		//Execute all shadow map rendering.
+		for (uint32 i{ 0 }; i < number_of_shadow_map_data; ++i)
 		{
+			const ShadowsSystem::ShadowMapData &shadow_map_data{ RenderingSystem::Instance->GetShadowsSystem()->GetShadowMapData(i) };
+
+			if (!_ShadowMapPipelinesIsInitialized[i])
+			{
+				{
+					GraphicsRenderPipelineParameters parameters;
+
+					parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), shadow_map_data._DepthBuffer);
+					parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), shadow_map_data._RenderTarget);
+
+					_ClearShadowMapPipelines[i].Initialize(parameters);
+				}
+
+				{
+					GraphicsRenderPipelineParameters parameters;
+
+					parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), shadow_map_data._DepthBuffer);
+					parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), shadow_map_data._RenderTarget);
+					char buffer[64];
+					sprintf_s(buffer, "OpaqueModelsShadowMap%u", static_cast<uint32>(i));
+					parameters._InputStreamSubscriptions.Emplace(buffer);
+
+					_OpaqueModelShadowMapPipelines[i].Initialize(parameters);
+				}
+
+				{
+					GraphicsRenderPipelineParameters parameters;
+
+					parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), shadow_map_data._DepthBuffer);
+					parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), shadow_map_data._RenderTarget);
+					char buffer[64];
+					sprintf_s(buffer, "MaskedModelsShadowMap%u", static_cast<uint32>(i));
+					parameters._InputStreamSubscriptions.Emplace(buffer);
+
+					_MaskedModelShadowMapPipelines[i].Initialize(parameters);
+				}
+
+				_ShadowMapPipelinesIsInitialized[i] = true;
+			}
+
 			_ClearShadowMapPipelines[i].Execute();
-		}
-
-		for (uint8 i{ 0 }; i < 4; ++i)
-		{
 			_OpaqueModelShadowMapPipelines[i].Execute();
+			_MaskedModelShadowMapPipelines[i].Execute();
 		}
 
-		for (uint8 i{ 0 }; i < 4; ++i)
+		for (uint32 i{ number_of_shadow_map_data }; i < ShadowsSystem::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA; ++i)
 		{
-			_MaskedModelShadowMapPipelines[i].Execute();
+			if (_ShadowMapPipelinesIsInitialized[i])
+			{
+				_ClearShadowMapPipelines[i].Terminate();
+				_ClearShadowMapPipelines[i].SetIncludeInRender(false);
+				_OpaqueModelShadowMapPipelines[i].Terminate();
+				_OpaqueModelShadowMapPipelines[i].SetIncludeInRender(false);
+				_MaskedModelShadowMapPipelines[i].Terminate();
+				_MaskedModelShadowMapPipelines[i].SetIncludeInRender(false);
+
+				_ShadowMapPipelinesIsInitialized[i] = false;
+			}
 		}
 
 		_RasterizedShadowsGraphicsPipeline.Execute(current_shadow_uniform_data_render_data_table);
@@ -352,21 +290,6 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 void ShadowsRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	for (GraphicsRenderPipeline &pipeline : _ClearShadowMapPipelines)
-	{
-		pipeline.Terminate();
-	}
-
-	for (GraphicsRenderPipeline &pipeline : _OpaqueModelShadowMapPipelines)
-	{
-		pipeline.Terminate();
-	}
-
-	for (GraphicsRenderPipeline &pipeline : _MaskedModelShadowMapPipelines)
-	{
-		pipeline.Terminate();
-	}
-
 	_RasterizedShadowsGraphicsPipeline.Terminate();
 	_ShadowsRayTracingPipeline.Terminate();
 
@@ -393,22 +316,4 @@ void ShadowsRenderPass::Terminate() NOEXCEPT
 
 	//Clear the shadow uniform data.
 	_ShadowUniformData.Clear();
-
-	//Return the render target indices to the global render data.
-	for (const uint32 index : _ShadowMapRenderTargetIndices)
-	{
-		RenderingSystem::Instance->ReturnTextureToGlobalRenderData(index);
-	}
-
-	//Destroy the shadow map render targets.
-	for (RenderTargetHandle &render_target : _ShadowMapRenderTargets)
-	{
-		RenderingSystem::Instance->DestroyRenderTarget(&render_target);
-	}
-
-	//Destroy the shadow map depth buffers.
-	for (DepthBufferHandle &depth_buffer : _ShadowMapDepthBuffers)
-	{
-		RenderingSystem::Instance->DestroyDepthBuffer(&depth_buffer);
-	}
 }

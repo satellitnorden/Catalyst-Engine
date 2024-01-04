@@ -126,6 +126,9 @@ void ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline::Initialize(const De
 	//Set the name.
 	SetName("Particle System Masked Depth Scene Features");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

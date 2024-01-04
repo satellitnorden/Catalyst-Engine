@@ -68,6 +68,9 @@ void RasterizedShadowsGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Rasterized Shadows");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

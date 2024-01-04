@@ -11,9 +11,6 @@ void RenderPass::Initialize() NOEXCEPT
 {
 	//Call the initialization function.
 	_InitializationFunction();
-
-	//Initialize this render pass.
-	RenderingSystem::Instance->InitializeRenderPass(this);
 }
 
 /*

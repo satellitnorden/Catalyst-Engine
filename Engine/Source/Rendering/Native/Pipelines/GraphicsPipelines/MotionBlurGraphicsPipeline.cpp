@@ -82,6 +82,9 @@ void MotionBlurGraphicsPipeline::Initialize() NOEXCEPT
 	//Set the name.
 	SetName("Motion Blur");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

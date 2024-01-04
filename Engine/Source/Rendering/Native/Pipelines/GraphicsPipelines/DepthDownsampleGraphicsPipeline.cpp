@@ -91,6 +91,9 @@ void DepthDownsampleGraphicsPipeline::Initialize(	const uint8 mip_index,
 	//Set the name.
 	SetName("Depth Downsample");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*

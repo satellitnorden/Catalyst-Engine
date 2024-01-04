@@ -87,6 +87,9 @@ void ShadowsSpatialDenoisingGraphicsPipeline::Initialize(const RenderTargetHandl
 	//Set the name.
 	SetName("Shadows Spatial Denoising");
 #endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
 }
 
 /*
