@@ -151,8 +151,8 @@ Fragment
 
                         scattering *= screen_space_occlusion;
                         
-                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / extinction;
-                        //vec3 scattering_integral = (scattering - scattering * exp(-extinction)) / extinction;
+                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
+                        //vec3 scattering_integral = scattering * attenuation_factor / extinction;
                         volumetric_lighting += transmittance * scattering_integral;
                 
                         break;

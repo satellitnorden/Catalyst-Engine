@@ -46,6 +46,11 @@ public:
 		//The render target index.
 		uint32 _RenderTargetIndex;
 
+		////////////////////////////
+		// DIRECTIONAL LIGHT DATA //
+		////////////////////////////
+		Vector3<float32> _Direction;
+
 	};
 
 	/*

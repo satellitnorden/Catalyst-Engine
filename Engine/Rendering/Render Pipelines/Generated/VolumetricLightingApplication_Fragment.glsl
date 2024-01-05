@@ -291,7 +291,7 @@ float GetExtinctionAtPosition(vec3 position)
 {
 	#define BASE_EXTINCTION (0.000025f)
 
-	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+	return BASE_EXTINCTION * (1.0f - Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
 	#undef BASE_EXTINCTION
 }
@@ -323,7 +323,7 @@ float CalculateAttenuationInDirection(vec3 position, vec3 direction)
 */
 float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
 {
-	float G = 0.5f;
+	float G = 0.8f;
 	float dot_product = dot(outgoing_direction, -incoming_direction);
 
 	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
@@ -346,12 +346,18 @@ layout (location = 0) out vec4 Scene;
 
 void main()
 {
-    #define NUMBER_OF_SAMPLES (16)
+    #define NUMBER_OF_SAMPLES (4)
     float depth = texture(SceneFeatures2, InTextureCoordinate).w;
     vec3 world_position = CalculateWorldPosition(InTextureCoordinate, depth);
     float hit_distance = length(world_position - CAMERA_WORLD_POSITION);
     float hit_distance_reciprocal = 1.0f / hit_distance;
-    float opacity = 1.0f - exp(-GetExtinctionAtPosition(CAMERA_WORLD_POSITION) * hit_distance);
+    float opacity = 1.0f;
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    {
+        vec3 sample_position = mix(CAMERA_WORLD_POSITION, world_position, float(i) / float(NUMBER_OF_SAMPLES - 1));
+        opacity *= exp(-GetExtinctionAtPosition(sample_position) * (hit_distance / float(NUMBER_OF_SAMPLES)));
+    }
+    opacity = 1.0f - opacity;
     vec4 volumetric_lighting = texture(VolumetricLighting, InTextureCoordinate);
 	Scene = vec4(volumetric_lighting.rgb,opacity);
 }

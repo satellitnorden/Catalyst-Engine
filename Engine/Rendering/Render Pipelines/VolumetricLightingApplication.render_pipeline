@@ -44,7 +44,7 @@ Fragment
     InputParameter(vec2, InTextureCoordinate);
 
     //Constants.
-    #define NUMBER_OF_SAMPLES (16)
+    #define NUMBER_OF_SAMPLES (4)
 
     //Retrieve the depth.
     float depth = texture(SceneFeatures2, InTextureCoordinate).w;
@@ -57,7 +57,15 @@ Fragment
     float hit_distance_reciprocal = 1.0f / hit_distance;
 
     //Calculate the opacity.
-    float opacity = 1.0f - exp(-GetExtinctionAtPosition(CAMERA_WORLD_POSITION) * hit_distance);
+    float opacity = 1.0f;
+
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    {
+        vec3 sample_position = mix(CAMERA_WORLD_POSITION, world_position, float(i) / float(NUMBER_OF_SAMPLES - 1));
+        opacity *= exp(-GetExtinctionAtPosition(sample_position) * (hit_distance / float(NUMBER_OF_SAMPLES)));
+    }
+
+    opacity = 1.0f - opacity;
 
     //Sample the volumetric lighting.
     vec4 volumetric_lighting = texture(VolumetricLighting, InTextureCoordinate);

@@ -416,7 +416,7 @@ float GetExtinctionAtPosition(vec3 position)
 {
 	#define BASE_EXTINCTION (0.000025f)
 
-	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+	return BASE_EXTINCTION * (1.0f - Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
 	#undef BASE_EXTINCTION
 }
@@ -448,7 +448,7 @@ float CalculateAttenuationInDirection(vec3 position, vec3 direction)
 */
 float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
 {
-	float G = 0.5f;
+	float G = 0.8f;
 	float dot_product = dot(outgoing_direction, -incoming_direction);
 
 	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
@@ -531,7 +531,7 @@ void main()
                             screen_space_occlusion = mix(1.0f, occlusion, screen_factor);
                         }
                         scattering *= screen_space_occlusion;
-                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / extinction;
+                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
                         volumetric_lighting += transmittance * scattering_integral;
                         break;
                     }

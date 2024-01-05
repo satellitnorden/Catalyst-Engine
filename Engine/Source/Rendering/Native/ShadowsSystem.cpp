@@ -1,8 +1,14 @@
 //Header file.
 #include <Rendering/Native/ShadowsSystem.h>
 
+//Core.
+#include <Core/Algorithms/SortingAlgorithms.h>
+
 //Components.
 #include <Components/Core/ComponentManager.h>
+
+//Math.
+#include <Math/Core/CatalystGeometryMath.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
@@ -323,6 +329,7 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 				}
 
 				shadow_map_data->_Distance = cascade_distances[i];
+				shadow_map_data->_Direction = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation);
 
 				++current_shadow_map_data_index;
 			}
@@ -479,6 +486,18 @@ void ShadowsSystem::GatherMaskedModelInputStream
 	RenderInputStream *const RESTRICT input_stream
 ) NOEXCEPT
 {
+	//Set up the entry proxies.
+	struct EntryProxy final
+	{
+		RenderInputStreamEntry _Entry;
+		MaskedModelPushConstantData _PushConstantData;
+		float32 _Distance;
+	};
+
+	static DynamicArray<EntryProxy> entry_proxies;
+
+	entry_proxies.Clear();
+
 	//Clear the entries.
 	input_stream->_Entries.Clear();
 
@@ -525,29 +544,26 @@ void ShadowsSystem::GatherMaskedModelInputStream
 				const Mesh &mesh{ component->_ModelResource->_Meshes[i] };
 
 				//Add a new entry.
-				input_stream->_Entries.Emplace();
-				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+				entry_proxies.Emplace();
+				EntryProxy &new_entry{ entry_proxies.Back() };
 
-				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
-				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
-				new_entry._IndexBufferOffset = 0;
-				new_entry._InstanceBuffer = EMPTY_HANDLE;
-				new_entry._VertexCount = 0;
-				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
-				new_entry._InstanceCount = 0;
+				new_entry._Entry._PushConstantDataOffset = 0;
+				new_entry._Entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
+				new_entry._Entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._Entry._IndexBufferOffset = 0;
+				new_entry._Entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._Entry._VertexCount = 0;
+				new_entry._Entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
+				new_entry._Entry._InstanceCount = 0;
 
 				//Set up the push constant data.
-				MaskedModelPushConstantData push_constant_data;
+				new_entry._PushConstantData._ModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				new_entry._PushConstantData._LightMatrixIndex = shadow_map_index;
+				new_entry._PushConstantData._MaterialIndex = component->_MaterialResources[i]->_Index;
 
-				push_constant_data._ModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				push_constant_data._LightMatrixIndex = shadow_map_index;
-				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
-
-				for (uint64 i{ 0 }; i < sizeof(MaskedModelPushConstantData); ++i)
-				{
-					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
-				}
+				//Calculate the distance.
+				const Vector4<float32> clip_position{ _ShadowMapData[shadow_map_index]._WorldToLightMatrix * new_entry._PushConstantData._ModelMatrix * Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f) };
+				new_entry._Distance = clip_position._Z;
 			}
 		}
 	}
@@ -574,30 +590,54 @@ void ShadowsSystem::GatherMaskedModelInputStream
 				const Mesh &mesh{ component->_ModelResource->_Meshes[i] };
 
 				//Add a new entry.
-				input_stream->_Entries.Emplace();
-				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+				entry_proxies.Emplace();
+				EntryProxy &new_entry{ entry_proxies.Back() };
 
-				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
-				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
-				new_entry._IndexBufferOffset = 0;
-				new_entry._InstanceBuffer = EMPTY_HANDLE;
-				new_entry._VertexCount = 0;
-				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
-				new_entry._InstanceCount = 0;
+				new_entry._Entry._PushConstantDataOffset = 0;
+				new_entry._Entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
+				new_entry._Entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._Entry._IndexBufferOffset = 0;
+				new_entry._Entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._Entry._VertexCount = 0;
+				new_entry._Entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
+				new_entry._Entry._InstanceCount = 0;
 
 				//Set up the push constant data.
-				MaskedModelPushConstantData push_constant_data;
+				new_entry._PushConstantData._ModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				new_entry._PushConstantData._LightMatrixIndex = shadow_map_index;
+				new_entry._PushConstantData._MaterialIndex = component->_MaterialResources[i]->_Index;
 
-				push_constant_data._ModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				push_constant_data._LightMatrixIndex = shadow_map_index;
-				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
-
-				for (uint64 i{ 0 }; i < sizeof(MaskedModelPushConstantData); ++i)
-				{
-					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
-				}
+				//Calculate the distance.
+				const Vector4<float32> clip_position{ _ShadowMapData[shadow_map_index]._WorldToLightMatrix * new_entry._PushConstantData._ModelMatrix * Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f) };
+				new_entry._Distance = clip_position._Z;
 			}
+		}
+	}
+
+	//Perform a lazy sort on the entries.
+	if (entry_proxies.Size() > 1)
+	{
+		SortingAlgorithms::StandardSort<EntryProxy>
+		(
+			entry_proxies.Begin(),
+			entry_proxies.End(),
+			nullptr,
+			[](const void *const RESTRICT user_data, const EntryProxy *const RESTRICT first, const EntryProxy *const RESTRICT second)
+			{
+				return first->_Distance < second->_Distance;
+			}
+		);
+	}
+
+	//Actually add the entries.
+	for (const EntryProxy &entry_proxy : entry_proxies)
+	{
+		input_stream->_Entries.Emplace(entry_proxy._Entry);
+		input_stream->_Entries.Back()._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+
+		for (uint64 i{ 0 }; i < sizeof(MaskedModelPushConstantData); ++i)
+		{
+			input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&entry_proxy._PushConstantData)[i]);
 		}
 	}
 }

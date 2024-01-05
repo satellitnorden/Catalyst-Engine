@@ -549,7 +549,6 @@ void ResourceBuildingSystem::BuildModel(const ModelBuildParameters &parameters) 
 	else
 	{
 		//Read all model files into memory.
-		DynamicArray<ModelFile> model_files;
 		model_files.Upsize<true>(parameters._LevelOfDetails.Size());
 
 		for (uint64 i{ 0 }, size{ model_files.Size() }; i < size; ++i)
