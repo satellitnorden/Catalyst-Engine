@@ -98,7 +98,7 @@ Fragment
                 {
                     case LIGHT_TYPE_DIRECTIONAL:
                     {
-                        float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1);
+                        float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, FAR_PLANE * 2.0f);
                         vec3 scattering = light_radiance * SCATTERING * HenyeyGreensteinPhaseFunction(ray_direction, light._TransformData1) * light_attenuation;
                         
                         //Cast a screen space ray.
@@ -152,7 +152,6 @@ Fragment
                         scattering *= screen_space_occlusion;
                         
                         vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
-                        //vec3 scattering_integral = scattering * attenuation_factor / extinction;
                         volumetric_lighting += transmittance * scattering_integral;
                 
                         break;

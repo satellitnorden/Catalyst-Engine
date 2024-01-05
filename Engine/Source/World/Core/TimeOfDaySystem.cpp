@@ -22,90 +22,6 @@
 #include <Systems/EntitySystem.h>
 #include <Systems/WorldSystem.h>
 
-//Time of dat system constants.
-namespace TimeOfDaySystemConstants
-{
-	constexpr uint8 SKY_LOOKUP_SIZE{ 8 };
-	StaticArray<SkyGradient, SKY_LOOKUP_SIZE> SKY_GRADIENT_LOOKUP
-	{
-		//00.00.
-		SkyGradient(Vector3<float32>(static_cast<float32>(0), static_cast<float32>(0), static_cast<float32>(5)) / static_cast<float32>(UINT8_MAXIMUM), Vector3<float32>(static_cast<float32>(0), static_cast<float32>(0), static_cast<float32>(0)) / static_cast<float32>(UINT8_MAXIMUM)),
-
-		//03.00.
-		SkyGradient(Vector3<float32>(static_cast<float32>(0), static_cast<float32>(0), static_cast<float32>(5)) / static_cast<float32>(UINT8_MAXIMUM), Vector3<float32>(static_cast<float32>(0), static_cast<float32>(0), static_cast<float32>(0)) / static_cast<float32>(UINT8_MAXIMUM)),
-
-		//06.00.
-		SkyGradient(Vector3<float32>(static_cast<float32>(100), static_cast<float32>(175), static_cast<float32>(200)) / static_cast<float32>(UINT8_MAXIMUM), Vector3<float32>(static_cast<float32>(225), static_cast<float32>(225), static_cast<float32>(0)) / static_cast<float32>(UINT8_MAXIMUM)),
-
-		//09.00.
-		SkyGradient(Vector3<float32>(static_cast<float32>(75), static_cast<float32>(200), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM), Vector3<float32>(static_cast<float32>(125), static_cast<float32>(200), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM)),
-
-		//12.00.
-		SkyGradient(Vector3<float32>(static_cast<float32>(75), static_cast<float32>(200), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM), Vector3<float32>(static_cast<float32>(125), static_cast<float32>(200), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM)),
-		
-		//15.00.
-		SkyGradient(Vector3<float32>(static_cast<float32>(75), static_cast<float32>(200), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM), Vector3<float32>(static_cast<float32>(125), static_cast<float32>(200), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM)),
-
-		//18.00.
-		SkyGradient(Vector3<float32>(static_cast<float32>(125), static_cast<float32>(150), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM), Vector3<float32>(static_cast<float32>(250), static_cast<float32>(75), static_cast<float32>(25)) / static_cast<float32>(UINT8_MAXIMUM)),
-
-		//21.00.
-		SkyGradient(Vector3<float32>(static_cast<float32>(0), static_cast<float32>(0), static_cast<float32>(5)) / static_cast<float32>(UINT8_MAXIMUM), Vector3<float32>(static_cast<float32>(0), static_cast<float32>(0), static_cast<float32>(0)) / static_cast<float32>(UINT8_MAXIMUM))
-	};
-	StaticArray<float32, SKY_LOOKUP_SIZE> STAR_INTENSITY_LOOKUP
-	{
-		//00.00.
-		1.0f,
-
-		//03.00.
-		1.0f,
-
-		//06.00.
-		0.0f,
-
-		//09.00.
-		0.0f,
-
-		//12.00.
-		0.0f,
-
-		//15.00.
-		0.0f,
-
-		//18.00.
-		0.0f,
-
-		//21.00.
-		1.0f
-	};
-	StaticArray<Vector3<float32>, SKY_LOOKUP_SIZE> SKY_LIGHT_LUMINANCE_LOOKUP
-	{
-		//00.00.
-		Vector3<float32>(static_cast<float32>(175), static_cast<float32>(225), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM),
-
-		//03.00.
-		Vector3<float32>(static_cast<float32>(175), static_cast<float32>(225), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM),
-
-		//06.00
-		Vector3<float32>(static_cast<float32>(250), static_cast<float32>(250), static_cast<float32>(150)) / static_cast<float32>(UINT8_MAXIMUM),
-
-		//09.00
-		Vector3<float32>(static_cast<float32>(250), static_cast<float32>(250), static_cast<float32>(225)) / static_cast<float32>(UINT8_MAXIMUM),
-
-		//12.00
-		Vector3<float32>(static_cast<float32>(250), static_cast<float32>(250), static_cast<float32>(225)) / static_cast<float32>(UINT8_MAXIMUM),
-
-		//15.00
-		Vector3<float32>(static_cast<float32>(250), static_cast<float32>(250), static_cast<float32>(225)) / static_cast<float32>(UINT8_MAXIMUM),
-
-		//18.00
-		Vector3<float32>(static_cast<float32>(175), static_cast<float32>(225), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM),
-
-		//21.00.
-		Vector3<float32>(static_cast<float32>(175), static_cast<float32>(225), static_cast<float32>(250)) / static_cast<float32>(UINT8_MAXIMUM)
-	};
-}
-
 /*
 *	Terminates the time of day system.
 */
@@ -178,96 +94,11 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 		EntitySystem::Instance->RequestInitialization(_SkyLight, data, false);
 	}
 
-	//Set up the lookups.
-	{
-		{
-			Color upper_sky_color{ 0, 0, 20 };
-			upper_sky_color.ApplyGammaCorrection();
-			const Vector4<float32> upper_sky_color_unpacked{ upper_sky_color.Get() };
+	//Initialize the sky light curve.
+	InitializeSkyLightCurve();
 
-			Color lower_sky_color{ 0, 0, 5 };
-			lower_sky_color.ApplyGammaCorrection();
-			Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
-			lower_sky_color_unpacked = lower_sky_color_unpacked * lower_sky_color_unpacked;
-
-			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[0]._UpperSkyColor = Vector3<float32>(upper_sky_color_unpacked._R, upper_sky_color_unpacked._G, upper_sky_color_unpacked._B);
-			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[0]._LowerSkyColor = Vector3<float32>(lower_sky_color_unpacked._R, lower_sky_color_unpacked._G, lower_sky_color_unpacked._B);
-		}
-
-		{
-			Color upper_sky_color{ 100, 175, 200 };
-			upper_sky_color.ApplyGammaCorrection();
-			const Vector4<float32> upper_sky_color_unpacked{ upper_sky_color.Get() };
-
-			Color lower_sky_color{ 230, 225, 0 };
-			lower_sky_color.ApplyGammaCorrection();
-			Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
-			lower_sky_color_unpacked = lower_sky_color_unpacked * lower_sky_color_unpacked;
-
-			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[1]._UpperSkyColor = Vector3<float32>(upper_sky_color_unpacked._R, upper_sky_color_unpacked._G, upper_sky_color_unpacked._B);
-			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[1]._LowerSkyColor = Vector3<float32>(lower_sky_color_unpacked._R, lower_sky_color_unpacked._G, lower_sky_color_unpacked._B);
-		}
-
-		{
-			Color upper_sky_color{ 75, 200, 250 };
-			upper_sky_color.ApplyGammaCorrection();
-			const Vector4<float32> upper_sky_color_unpacked{ upper_sky_color.Get() };
-
-			Color lower_sky_color{ 125, 200, 250 };
-			lower_sky_color.ApplyGammaCorrection();
-			Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
-			lower_sky_color_unpacked = lower_sky_color_unpacked * lower_sky_color_unpacked;
-
-			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[2]._UpperSkyColor = Vector3<float32>(upper_sky_color_unpacked._R, upper_sky_color_unpacked._G, upper_sky_color_unpacked._B);
-			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[2]._LowerSkyColor = Vector3<float32>(lower_sky_color_unpacked._R, lower_sky_color_unpacked._G, lower_sky_color_unpacked._B);
-		}
-
-		{
-			Color upper_sky_color{ 125, 155, 250 };
-			upper_sky_color.ApplyGammaCorrection();
-			const Vector4<float32> upper_sky_color_unpacked{ upper_sky_color.Get() };
-
-			Color lower_sky_color{ 250, 70, 25 };
-			lower_sky_color.ApplyGammaCorrection();
-			Vector4<float32> lower_sky_color_unpacked{ lower_sky_color.Get() };
-			lower_sky_color_unpacked = lower_sky_color_unpacked * lower_sky_color_unpacked;
-
-			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[3]._UpperSkyColor = Vector3<float32>(upper_sky_color_unpacked._R, upper_sky_color_unpacked._G, upper_sky_color_unpacked._B);
-			TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[3]._LowerSkyColor = Vector3<float32>(lower_sky_color_unpacked._R, lower_sky_color_unpacked._G, lower_sky_color_unpacked._B);
-		}
-
-		{
-			Color color{ 175, 225, 250 };
-			color.ApplyGammaCorrection();
-			const Vector4<float32> color_unpacked{ color.Get() };
-
-			TimeOfDaySystemConstants::SKY_LIGHT_LUMINANCE_LOOKUP[0] = Vector3<float32>(color_unpacked._R, color_unpacked._G, color_unpacked._B);
-		}
-
-		{
-			Color color{ 250, 250, 150 };
-			color.ApplyGammaCorrection();
-			const Vector4<float32> color_unpacked{ color.Get() };
-
-			TimeOfDaySystemConstants::SKY_LIGHT_LUMINANCE_LOOKUP[1] = Vector3<float32>(color_unpacked._R, color_unpacked._G, color_unpacked._B);
-		}
-
-		{
-			Color color{ 250, 250, 225 };
-			color.ApplyGammaCorrection();
-			const Vector4<float32> color_unpacked{ color.Get() };
-
-			TimeOfDaySystemConstants::SKY_LIGHT_LUMINANCE_LOOKUP[2] = Vector3<float32>(color_unpacked._R, color_unpacked._G, color_unpacked._B);
-		}
-
-		{
-			Color color{ 250, 225, 100 };
-			color.ApplyGammaCorrection();
-			const Vector4<float32> color_unpacked{ color.Get() };
-
-			TimeOfDaySystemConstants::SKY_LIGHT_LUMINANCE_LOOKUP[3] = Vector3<float32>(color_unpacked._R, color_unpacked._G, color_unpacked._B);
-		}
-	}
+	//Initialize the sky gradient curve.
+	InitializeSkyGradientCurve();
 
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
@@ -282,6 +113,60 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 
 	//The time of day system is now enabled!
 	_Enabled = true;
+}
+
+/*
+*	Initializes the sky light curve.
+*/
+void TimeOfDaySystem::InitializeSkyLightCurve() NOEXCEPT
+{
+	uint64 current_index{ 0 };
+
+	#define ADD_CURVE_POINT(R, G, B, INTENSITY)												\
+	{																						\
+	_SkyLightCurve.SetValue(current_index++, Vector4<float32>(R, G, B, INTENSITY * 1.0f));	\
+	}
+
+	//00.00.
+	ADD_CURVE_POINT(0.5f, 0.75f, 1.0f, 2.0f);
+	//06.00.
+	ADD_CURVE_POINT(1.0f, 0.875f, 0.25f, 0.0f);
+	//12.00.
+	ADD_CURVE_POINT(1.0f, 0.875f, 0.5f, 32.0f);
+	//18.00.
+	ADD_CURVE_POINT(1.0f, 0.25f, 0.125f, 0.0f);
+
+	#undef ADD_CURVE_POINT
+}
+
+/*
+*	Initializes the sky gradient curve.
+*/
+void TimeOfDaySystem::InitializeSkyGradientCurve() NOEXCEPT
+{
+	uint64 current_index{ 0 };
+
+	#define ADD_CURVE_POINT(UPPER_R, UPPER_G, UPPER_B, LOWER_R, LOWER_G, LOWER_B, UPPER_MULTIPLIER, LOWER_MULTIPLIER)																						\
+	{																																																		\
+	Color upper{ static_cast<uint8>(UPPER_R), static_cast<uint8>(UPPER_G), static_cast<uint8>(UPPER_B) };																									\
+	Color lower{ static_cast<uint8>(LOWER_R), static_cast<uint8>(LOWER_G), static_cast<uint8>(LOWER_B) };																									\
+	upper.ApplyGammaCorrection();																																											\
+	lower.ApplyGammaCorrection();																																											\
+	const Vector4<float32> _upper{ upper.Get() };																																							\
+	const Vector4<float32> _lower{ lower.Get() };																																							\
+	_SkyGradientCurve.SetValue(current_index++, SkyGradient(Vector3<float32>(_upper._R, _upper._G, _upper._B) * UPPER_MULTIPLIER, Vector3<float32>(_lower._R, _lower._G, _lower._B) * LOWER_MULTIPLIER));	\
+	}
+
+	//00.00.
+	ADD_CURVE_POINT(50, 100, 250, 50, 100, 250, 0.125f, 0.125f * 0.125f);
+	//06.00.
+	ADD_CURVE_POINT(100, 225, 250, 250, 225, 100, 1.0f, 1.0f);
+	//12.00.
+	ADD_CURVE_POINT(100, 225, 250, 125, 250, 225, 4.0f, 2.0f);
+	//18.00.
+	ADD_CURVE_POINT(75, 125, 250, 250, 100, 100, 1.0f, 1.0f);
+	
+	#undef ADD_CURVE_POINT
 }
 
 /*
@@ -325,8 +210,8 @@ void TimeOfDaySystem::PreUpdate() NOEXCEPT
 void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 NIGHT_SKY_INTENSITY{ 6.0f };
-	constexpr float32 DAY_SKY_INTENSITY{ 24.0f };
+	constexpr float32 NIGHT_SKY_INTENSITY{ 8.0f };
+	constexpr float32 DAY_SKY_INTENSITY{ 32.0f };
 
 	//Need that sky light.
 	if (!_SkyLight->_Initialized)
@@ -372,54 +257,10 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 	//Set the sky light rotation.
 	_SkyLight->SetRotation(rotation);
 
-	//Update the sky light luminance.
-	{
-		//Calculate the indices and the alpha.
-		uint8 first_index;
-		uint8 second_index;
-		float32 alpha;
+	const Vector4<float32> current_sky_light_luminance{ _SkyLightCurve.Sample(_CurrentTimeOfDay / 24.0f) };
 
-		{
-			first_index = static_cast<uint8>((_CurrentTimeOfDay / 24.0f) * static_cast<float32>(TimeOfDaySystemConstants::SKY_LOOKUP_SIZE));
-			second_index = first_index == TimeOfDaySystemConstants::SKY_LOOKUP_SIZE - 1 ? 0 : first_index + 1;
-			alpha = CatalystBaseMath::Fractional((_CurrentTimeOfDay / 24.0f) * static_cast<float32>(TimeOfDaySystemConstants::SKY_LOOKUP_SIZE));
-		}
-
-		_SkyLight->SetColor(CatalystBaseMath::LinearlyInterpolate(TimeOfDaySystemConstants::SKY_LIGHT_LUMINANCE_LOOKUP[first_index], TimeOfDaySystemConstants::SKY_LIGHT_LUMINANCE_LOOKUP[second_index], alpha));
-
-		//Calculate the sky luminance alpha.
-		float32 sky_luminance_alpha;
-
-		if (_CurrentTimeOfDay < 6.0f)
-		{
-			sky_luminance_alpha = CatalystBaseMath::SmoothStep<1>(1.0f - (_CurrentTimeOfDay / 6.0f));
-		}
-
-		else if (_CurrentTimeOfDay < 12.0f)
-		{
-			sky_luminance_alpha = CatalystBaseMath::SmoothStep<1>((_CurrentTimeOfDay - 6.0f) / 6.0f);
-		}
-
-		else if (_CurrentTimeOfDay < 18.0f)
-		{
-			sky_luminance_alpha = CatalystBaseMath::SmoothStep<1>(1.0f - ((_CurrentTimeOfDay - 12.0f) / 6.0f));
-		}
-
-		else
-		{
-			sky_luminance_alpha = CatalystBaseMath::SmoothStep<1>((_CurrentTimeOfDay - 18.0f) / 6.0f);
-		}
-
-		if (_CurrentTimeOfDay >= 18.0f || _CurrentTimeOfDay < 6.0f)
-		{
-			_SkyLight->SetIntensity(NIGHT_SKY_INTENSITY * sky_luminance_alpha);
-		}
-
-		else
-		{
-			_SkyLight->SetIntensity(DAY_SKY_INTENSITY * sky_luminance_alpha);
-		}
-	}
+	_SkyLight->SetColor(Vector3<float32>(current_sky_light_luminance._R, current_sky_light_luminance._G, current_sky_light_luminance._B));
+	_SkyLight->SetIntensity(current_sky_light_luminance._W);
 }
 
 /*
@@ -436,17 +277,6 @@ void TimeOfDaySystem::UpdateSky() NOEXCEPT
 	//Set the sky intensity.
 	WorldSystem::Instance->GetSkySystem()->SetSkyIntensity(1.0f);
 
-	//Calculate the indices and the alpha.
-	uint8 first_index;
-	uint8 second_index;
-	float32 alpha;
-
-	{
-		first_index = static_cast<uint8>((_CurrentTimeOfDay / 24.0f) * static_cast<float32>(TimeOfDaySystemConstants::SKY_LOOKUP_SIZE));
-		second_index = first_index == TimeOfDaySystemConstants::SKY_LOOKUP_SIZE - 1 ? 0 : first_index + 1;
-		alpha = CatalystBaseMath::Fractional((_CurrentTimeOfDay / 24.0f) * static_cast<float32>(TimeOfDaySystemConstants::SKY_LOOKUP_SIZE));
-	}
-
-	WorldSystem::Instance->GetSkySystem()->SetSkyGradient(CatalystBaseMath::LinearlyInterpolate(TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[first_index], TimeOfDaySystemConstants::SKY_GRADIENT_LOOKUP[second_index], alpha));
-	WorldSystem::Instance->GetSkySystem()->SetStarIntensity(CatalystBaseMath::LinearlyInterpolate(TimeOfDaySystemConstants::STAR_INTENSITY_LOOKUP[first_index], TimeOfDaySystemConstants::STAR_INTENSITY_LOOKUP[second_index], alpha));
+	WorldSystem::Instance->GetSkySystem()->SetSkyGradient(_SkyGradientCurve.Sample(_CurrentTimeOfDay / 24.0f));
+	//WorldSystem::Instance->GetSkySystem()->SetStarIntensity(CatalystBaseMath::LinearlyInterpolate(TimeOfDaySystemConstants::STAR_INTENSITY_LOOKUP[first_index], TimeOfDaySystemConstants::STAR_INTENSITY_LOOKUP[second_index], alpha));
 } 

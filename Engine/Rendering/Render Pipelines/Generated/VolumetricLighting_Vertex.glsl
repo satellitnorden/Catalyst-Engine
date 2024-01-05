@@ -409,14 +409,44 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 #define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
 #define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
 
+float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
+
+float noise(vec3 p){
+    vec3 a = floor(p);
+    vec3 d = p - a;
+    d = d * d * (3.0 - 2.0 * d);
+
+    vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+    vec4 k1 = perm(b.xyxy);
+    vec4 k2 = perm(k1.xyxy + b.zzww);
+
+    vec4 c = k2 + a.zzzz;
+    vec4 k3 = perm(c);
+    vec4 k4 = perm(c + 1.0);
+
+    vec4 o1 = fract(k3 * (1.0 / 41.0));
+    vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+    vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+    vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+    return o4.y * d.y + o4.x * (1.0 - d.y);
+}
+
 /*
 *	Returns the extinction at the given position.
 */
 float GetExtinctionAtPosition(vec3 position)
 {
-	#define BASE_EXTINCTION (0.000025f)
+	#define BASE_EXTINCTION (0.00025f)
 
-	return BASE_EXTINCTION * (1.0f - Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+	vec3 noise_sample_position = position * 0.125f * 0.5f;
+	//noise_sample_position.x += float(FRAME) / 60.0f;
+	float noise_multiplier = mix(0.0f, 2.0f, noise(noise_sample_position));
+
+	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.125f * 0.125f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
 	#undef BASE_EXTINCTION
 }
@@ -424,23 +454,22 @@ float GetExtinctionAtPosition(vec3 position)
 /*
 *	Calculates the attenuation in the given direction.
 */
-float CalculateAttenuationInDirection(vec3 position, vec3 direction)
+float CalculateAttenuationInDirection(vec3 position, vec3 direction, float distance)
 {
 	#define NUMBER_OF_SAMPLES (4)
-	#define STEP_SIZE (128.0f)
 
 	float attenuation = 1.0f;
+	float step_size = distance / float(NUMBER_OF_SAMPLES);
 
 	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
 	{
-		vec3 sample_position = position + direction * float(i) * STEP_SIZE;
-		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * STEP_SIZE);
+		vec3 sample_position = position + direction * float(i) * step_size;
+		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * step_size);
 	}
 
 	return attenuation;
 	
 	#undef NUMBER_OF_SAMPLES
-	#undef STEP_SIZE
 }
 
 /*
@@ -448,7 +477,7 @@ float CalculateAttenuationInDirection(vec3 position, vec3 direction)
 */
 float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
 {
-	float G = 0.8f;
+	float G = 0.5f;
 	float dot_product = dot(outgoing_direction, -incoming_direction);
 
 	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));

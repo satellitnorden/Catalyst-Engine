@@ -6,7 +6,11 @@
 //Entities.
 #include <Entities/Types/LightEntity.h>
 
+//Math.
+#include <Math/General/Curve.h>
+
 //World.
+#include <World/Sky/SkyGradient.h>
 #include <World/TimeOfDay/TimeOfDayParameters.h>
 
 class TimeOfDaySystem final
@@ -51,8 +55,24 @@ private:
 	//The time of day parameters.
 	TimeOfDayParameters _TimeOfDayParameters;
 
+	//The sky light curve.
+	Curve<Vector4<float32>, 4> _SkyLightCurve;
+
+	//The sky gradient curve.
+	Curve<SkyGradient, 4> _SkyGradientCurve;
+
 	//The sky light.
 	LightEntity *RESTRICT _SkyLight;
+
+	/*
+	*	Initializes the sky light curve.
+	*/
+	void InitializeSkyLightCurve() NOEXCEPT;
+
+	/*
+	*	Initializes the sky gradient curve.
+	*/
+	void InitializeSkyGradientCurve() NOEXCEPT;
 
 	/*
 	*	Updates the time of day system during the pre update phase.
