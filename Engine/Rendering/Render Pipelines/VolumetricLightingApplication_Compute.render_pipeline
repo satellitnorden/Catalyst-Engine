@@ -1,0 +1,108 @@
+//Declare uniform buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+
+//Declare compute render targets.
+ComputeRenderTarget(VolumetricLighting, RGBA_FLOAT32);
+ComputeRenderTarget(SceneFeatures2, RGBA_FLOAT32);
+ComputeRenderTarget(SceneFeatures2Half, RGBA_FLOAT32);
+ComputeRenderTarget(Scene, RGBA_FLOAT32);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Noise);
+IncludeShaderFunctionLibrary(VolumetricLighting);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+
+//Subscribe to input streams.
+SubscribeToInputStream(ComputeEighth);
+
+//The compute shader.
+Compute
+{
+    //Declare the compute local size.
+    ComputeLocalSize(8, 8, 1);
+
+    //Constants.
+    #define NUMBER_OF_SAMPLES (4)
+
+    //Calculate the screen coordinate.
+    vec2 screen_coordinate = (vec2(COMPUTE_ID.xy) + vec2(0.5f)) * INVERSE_FULL_MAIN_RESOLUTION;
+
+    //Load the scene features.
+    vec4 scene_features_2 = ImageLoad(SceneFeatures2, ivec2(COMPUTE_ID.xy));
+
+    //Calculate the view distance at the current pixel.
+    float view_distance = CalculateViewSpaceDistance(screen_coordinate, scene_features_2.w);
+
+    //Retrieve the volumetric lighting.
+    vec4 volumetric_lighting;
+
+    {
+        ivec2 sample_coordinate_1 = ivec2(COMPUTE_ID.xy) / 2;
+        ivec2 sample_coordinate_2 = min(sample_coordinate_1 + ivec2(0, 1), ivec2(HALF_MAIN_RESOLUTION));
+        ivec2 sample_coordinate_3 = min(sample_coordinate_1 + ivec2(1, 0), ivec2(HALF_MAIN_RESOLUTION));
+        ivec2 sample_coordinate_4 = min(sample_coordinate_1 + ivec2(1, 1), ivec2(HALF_MAIN_RESOLUTION));
+        
+        vec4 volumetric_lighting_1 = ImageLoad(VolumetricLighting, sample_coordinate_1);
+        vec4 volumetric_lighting_2 = ImageLoad(VolumetricLighting, sample_coordinate_2);
+        vec4 volumetric_lighting_3 = ImageLoad(VolumetricLighting, sample_coordinate_3);
+        vec4 volumetric_lighting_4 = ImageLoad(VolumetricLighting, sample_coordinate_4);
+        
+        float depth_1 = ImageLoad(SceneFeatures2Half, sample_coordinate_1).w;
+        float depth_2 = ImageLoad(SceneFeatures2Half, sample_coordinate_2).w;
+        float depth_3 = ImageLoad(SceneFeatures2Half, sample_coordinate_3).w;
+        float depth_4 = ImageLoad(SceneFeatures2Half, sample_coordinate_4).w;
+
+        float view_distance_1 = CalculateViewSpaceDistance(vec2((sample_coordinate_1) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_1);
+        float view_distance_2 = CalculateViewSpaceDistance(vec2((sample_coordinate_2) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_2);
+        float view_distance_3 = CalculateViewSpaceDistance(vec2((sample_coordinate_3) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_3);
+        float view_distance_4 = CalculateViewSpaceDistance(vec2((sample_coordinate_4) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_4);
+        
+        float horizontal_weight = fract(screen_coordinate.x * HALF_MAIN_RESOLUTION.x);
+        float vertical_weight = fract(screen_coordinate.y * HALF_MAIN_RESOLUTION.y);
+
+        float weight_1 = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
+	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
+	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
+	    float weight_4 = horizontal_weight * vertical_weight;
+
+        weight_1 = max(weight_1 * exp(-abs(view_distance - view_distance_1) * 0.5f), FLOAT32_EPSILON);
+        weight_2 = max(weight_2 * exp(-abs(view_distance - view_distance_2) * 0.5f), FLOAT32_EPSILON);
+        weight_3 = max(weight_3 * exp(-abs(view_distance - view_distance_3) * 0.5f), FLOAT32_EPSILON);
+        weight_4 = max(weight_4 * exp(-abs(view_distance - view_distance_4) * 0.5f), FLOAT32_EPSILON);
+
+        float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
+
+	    weight_1 *= total_weight_reciprocal;
+	    weight_2 *= total_weight_reciprocal;
+	    weight_3 *= total_weight_reciprocal;
+        weight_4 *= total_weight_reciprocal;
+
+        volumetric_lighting =   volumetric_lighting_1 * weight_1
+                                + volumetric_lighting_2 * weight_2
+                                + volumetric_lighting_3 * weight_3
+                                + volumetric_lighting_4 * weight_4;
+    }
+
+    //Add some noise to the volumetric lighting so that the temporal anti aliasing pass has an easier time cleaning it up.
+    volumetric_lighting *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(COMPUTE_ID.xy), FRAME));
+
+    //Calculate the world position.
+    vec3 world_position = CalculateWorldPosition(screen_coordinate, scene_features_2.w);
+
+    //Calculate the hit distance.
+    float hit_distance = length(world_position - CAMERA_WORLD_POSITION);
+
+    //Load the scene.
+    vec3 scene = ImageLoad(Scene, ivec2(COMPUTE_ID.xy)).rgb;
+
+    //Mopify the scene.
+    scene = scene * volumetric_lighting.a + volumetric_lighting.rgb;
+
+    //Store the modified scene.
+    ImageStore(Scene, ivec2(COMPUTE_ID.xy), vec4(scene, 1.0f));
+}

@@ -21,8 +21,8 @@ ColorStoreOperator(STORE);
 
 //Set blend properties.
 BlendEnable();
-BlendColorSourceFactor(SOURCE_ALPHA);
-BlendColorDestinationFactor(ONE_MINUS_SOURCE_ALPHA);
+BlendColorSourceFactor(ONE);
+BlendColorDestinationFactor(SOURCE_ALPHA);
 BlendColorOperator(ADD);
 BlendAlphaSourceFactor(ONE);
 BlendAlphaDestinationFactor(ZERO);
@@ -64,8 +64,6 @@ Fragment
         vec3 sample_position = mix(CAMERA_WORLD_POSITION, world_position, float(i) / float(NUMBER_OF_SAMPLES - 1));
         opacity *= exp(-GetExtinctionAtPosition(sample_position) * (hit_distance / float(NUMBER_OF_SAMPLES)));
     }
-
-    opacity = 1.0f - opacity;
 
     //Sample the volumetric lighting.
     vec4 volumetric_lighting = texture(VolumetricLighting, InTextureCoordinate);

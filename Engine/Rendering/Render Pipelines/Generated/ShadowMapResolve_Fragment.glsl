@@ -329,7 +329,7 @@ layout (location = 0) out vec4 INTERMEDIATE_RGBA_FLOAT32_HALF_1;
 
 void main()
 {
-	#define SHADOW_MAP_OFFSET (1.0f / 1024.0f)
+	#define SHADOW_MAP_OFFSET (1.0f / 512.0f)
     vec4 scene_features_2 = texture(SceneFeatures2Half, InScreenCoordinate);
     vec3 world_position = CalculateWorldPosition(InScreenCoordinate, scene_features_2.w);
 	uint shadow_map_index = 0;
@@ -350,23 +350,22 @@ void main()
 			break;
 		}
 	}
-	vec2 shadow_map_offsets[4];
+	#define NUMBER_OF_SAMPLES (16)
+	vec2 shadow_map_offsets[NUMBER_OF_SAMPLES];
+	for (uint i = 0; i < NUMBER_OF_SAMPLES / 2; ++i)
 	{
-		vec4 blue_noise_texture_sample_1 = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
-		vec4 blue_noise_texture_sample_2 = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 1);
-		shadow_map_offsets[0] = blue_noise_texture_sample_1.xy * 2.0f - 1.0f;
-		shadow_map_offsets[1] = blue_noise_texture_sample_1.zw * 2.0f - 1.0f;
-		shadow_map_offsets[2] = blue_noise_texture_sample_2.xy * 2.0f - 1.0f;
-		shadow_map_offsets[3] = blue_noise_texture_sample_2.zw * 2.0f - 1.0f;
+		vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), i);
+		shadow_map_offsets[i * 2 + 0] = blue_noise_texture_sample.xy * 2.0f - 1.0f;
+		shadow_map_offsets[i * 2 + 1] = blue_noise_texture_sample.zw * 2.0f - 1.0f;
 	}
 	float shadow_factor = 0.0f;
-	for (uint i = 0; i < 4; ++i)
+	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
 	{
 		vec2 offset_shadow_map_coordinate = shadow_map_coordinate + shadow_map_offsets[i] * SHADOW_MAP_OFFSET;
 		float actual_shadow_map_depth = texture(sampler2D(TEXTURES[SHADOW_MAP_DATA[shadow_map_index]._ShadowMapTextureIndex], SAMPLER), offset_shadow_map_coordinate).x;
 		shadow_factor += float(shadow_map_depth < (actual_shadow_map_depth + 0.0f));
 	}
-	shadow_factor /= float(4);
+	shadow_factor /= float(NUMBER_OF_SAMPLES);
 	shadow_factor = pow(shadow_factor, float(shadow_map_index + 1));
 	INTERMEDIATE_RGBA_FLOAT32_HALF_1 = vec4(shadow_factor,0.0f,0.0f,1.0f);
 }

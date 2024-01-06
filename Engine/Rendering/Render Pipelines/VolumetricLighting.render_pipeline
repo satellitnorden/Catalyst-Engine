@@ -2,6 +2,7 @@
 IncludeUniformBuffer(Camera);
 IncludeUniformBuffer(General);
 IncludeUniformBuffer(RenderingConfiguration);
+IncludeUniformBuffer(World);
 
 //Declare storage buffer includes.
 IncludeStorageBuffer(Lighting);
@@ -41,7 +42,7 @@ Fragment
     InputParameter(vec2, InTextureCoordinate);
 
     //Constants.
-    #define SCATTERING (vec3(0.6f, 0.8f, 1.0f))
+    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f * 0.125f)
     #define NUMBER_OF_SAMPLES (8)
 
     //Load the scene features.
@@ -82,6 +83,15 @@ Fragment
         //Calculate the attenuation factor.
         float attenuation_factor = exp(-extinction * sample_hit_distance);
 
+        //Add ambient lighting.
+        {
+            //Go with an average of the sky color.
+            float ambient_attenuation = mix(CalculateAttenuationInDirection(sample_position, vec3(0.0f, 1.0f, 0.0f), FAR_PLANE), CalculateAttenuationInDirection(sample_position, vec3(0.0f, -1.0f, 0.0f), FAR_PLANE), 0.5f);
+            vec3 scattering = mix(UPPER_SKY_COLOR, LOWER_SKY_COLOR, 0.5f) * SCATTERING * (1.0f / (4.0f * 3.14f)) * ambient_attenuation;
+            vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
+            volumetric_lighting += transmittance * scattering_integral;
+        }
+
         //Iterate over all lights.
         for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
         {
@@ -98,7 +108,8 @@ Fragment
                 {
                     case LIGHT_TYPE_DIRECTIONAL:
                     {
-                        float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, FAR_PLANE * 2.0f);
+                        //float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, FAR_PLANE * 2.0f);
+                        float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, hit_distance);
                         vec3 scattering = light_radiance * SCATTERING * HenyeyGreensteinPhaseFunction(ray_direction, light._TransformData1) * light_attenuation;
                         
                         //Cast a screen space ray.
@@ -144,7 +155,7 @@ Fragment
                             }
 
                             //Bias the occlusion a bit.
-                            occlusion *= occlusion * occlusion * occlusion;
+                            occlusion *= occlusion * occlusion * occlusion * occlusion;
                             
                             screen_space_occlusion = mix(1.0f, occlusion, screen_factor);
                         }
@@ -165,5 +176,5 @@ Fragment
     }
 
     //Write the fragment.
-    OutputFragment(VolumetricLighting, vec4(volumetric_lighting, 1.0f - transmittance));
+    OutputFragment(VolumetricLighting, vec4(volumetric_lighting, transmittance));
 }

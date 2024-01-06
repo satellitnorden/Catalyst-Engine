@@ -36,7 +36,7 @@ IncludeCommonVertexShader(ViewportScreenCoordinate);
 //The fragment shader.
 Fragment
 {
-	#define SHADOW_MAP_OFFSET (1.0f / 1024.0f)
+	#define SHADOW_MAP_OFFSET (1.0f / 512.0f)
 
     //Declare input parameters.
     InputParameter(vec2, InScreenCoordinate);
@@ -69,21 +69,21 @@ Fragment
 		}
 	}
 
-	vec2 shadow_map_offsets[4];
+	#define NUMBER_OF_SAMPLES (16)
 
+	vec2 shadow_map_offsets[NUMBER_OF_SAMPLES];
+
+	for (uint i = 0; i < NUMBER_OF_SAMPLES / 2; ++i)
 	{
-		vec4 blue_noise_texture_sample_1 = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), 0);
-		vec4 blue_noise_texture_sample_2 = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), 1);
+		vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), i);
 
-		shadow_map_offsets[0] = blue_noise_texture_sample_1.xy * 2.0f - 1.0f;
-		shadow_map_offsets[1] = blue_noise_texture_sample_1.zw * 2.0f - 1.0f;
-		shadow_map_offsets[2] = blue_noise_texture_sample_2.xy * 2.0f - 1.0f;
-		shadow_map_offsets[3] = blue_noise_texture_sample_2.zw * 2.0f - 1.0f;
+		shadow_map_offsets[i * 2 + 0] = blue_noise_texture_sample.xy * 2.0f - 1.0f;
+		shadow_map_offsets[i * 2 + 1] = blue_noise_texture_sample.zw * 2.0f - 1.0f;
 	}
 
 	float shadow_factor = 0.0f;
 
-	for (uint i = 0; i < 4; ++i)
+	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
 	{
 		vec2 offset_shadow_map_coordinate = shadow_map_coordinate + shadow_map_offsets[i] * SHADOW_MAP_OFFSET;
 
@@ -92,7 +92,7 @@ Fragment
 		shadow_factor += float(shadow_map_depth < (actual_shadow_map_depth + 0.0f));
 	}
 
-	shadow_factor /= float(4);
+	shadow_factor /= float(NUMBER_OF_SAMPLES);
 
 	shadow_factor = pow(shadow_factor, float(shadow_map_index + 1));
 

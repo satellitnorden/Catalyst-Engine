@@ -209,28 +209,10 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
 };
 
-layout (std140, set = 1, binding = 2) uniform RenderingConfiguration
-{
-	layout (offset = 0) uint VOLUMETRIC_SHADOWS_MODE;
-};
-
-layout (std140, set = 1, binding = 3) uniform Wind
-{
-	layout (offset = 0) vec3 UPPER_SKY_COLOR;
-	layout (offset = 16) vec3 LOWER_SKY_COLOR;
-};
-
-//Lighting header struct definition.
-struct LightingHeader
-{
-	uint _NumberOfLights;
-	uint _MaximumNumberOfShadowCastingLights;	
-};
-layout (std430, set = 1, binding = 4) buffer Lighting
-{
-	layout (offset = 0) LightingHeader LIGHTING_HEADER;
-	layout (offset = 16) vec4[] LIGHT_DATA;
-};
+layout (set = 1, binding = 2, rgba32f) uniform image2D VolumetricLighting; 
+layout (set = 1, binding = 3, rgba32f) uniform image2D SceneFeatures2; 
+layout (set = 1, binding = 4, rgba32f) uniform image2D SceneFeatures2Half; 
+layout (set = 1, binding = 5, rgba32f) uniform image2D Scene; 
 
 /*
 *   Linearizes a depth value.
@@ -317,64 +299,6 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
-//Constants.
-#define LIGHT_TYPE_DIRECTIONAL (0)
-#define LIGHT_TYPE_POINT (1)
-#define LIGHT_TYPE_BOX (2)
-
-#define LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT (BIT(0))
-#define LIGHT_PROPERTY_VOLUMETRIC_BIT (BIT(1))
-#define LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT (BIT(2))
-
-/*
-*	Light struct definition.
-*/
-struct Light
-{
-	/*
-	*	First transform data.
-	*	Direction for directional lights, position for point lights, minimum world position for box lights.
-	*/
-	vec3 _TransformData1;
-
-	/*
-	*	Second transform data.
-	*	Maximum word position for box lights.
-	*/
-	vec3 _TransformData2;
-	vec3 _Color;
-	uint _LightType;
-	uint _LightProperties;
-	float _Intensity;
-	float _Radius;
-	float _Size;
-};
-
-/*
-*	Unpacks the light at the given index.
-*   Requies the Lighting storage buffer to be included.
-*/
-Light UnpackLight(uint index)
-{
-	Light light;
-
-  	vec4 light_data_1 = LIGHT_DATA[index * 4 + 0];
-  	vec4 light_data_2 = LIGHT_DATA[index * 4 + 1];
-  	vec4 light_data_3 = LIGHT_DATA[index * 4 + 2];
-  	vec4 light_data_4 = LIGHT_DATA[index * 4 + 3];
-
-  	light._TransformData1 = vec3(light_data_1.x, light_data_1.y, light_data_1.z);
-  	light._TransformData2 = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
-  	light._Color = vec3(light_data_2.z, light_data_2.w, light_data_3.x);
-  	light._LightType = floatBitsToUint(light_data_3.y);
-  	light._LightProperties = floatBitsToUint(light_data_3.z);
-  	light._Intensity = light_data_3.w;
-  	light._Radius = light_data_4.x;
-  	light._Size = light_data_4.y;
-
-	return light;
-}
-
 /*
 *   Hash function.
 */
@@ -409,11 +333,6 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 
 	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
 }
-
-//Constants.
-#define VOLUMETRIC_SHADOWS_MODE_NONE (0)
-#define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
-#define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
 
 /*
 *	Returns the extinction at the given position.
@@ -467,89 +386,61 @@ vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
 	return vec3(0.0f, 0.0f, 0.0f);
 }
 
-layout (location = 0) in vec2 InTextureCoordinate;
+layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-layout (set = 1, binding = 5) uniform sampler2D SceneFeatures2Half;
-
-layout (location = 0) out vec4 VolumetricLighting;
+uvec3 ComputeDimensions()
+{
+	return uvec3(8, 8, 1) * gl_NumWorkGroups;
+}
 
 void main()
 {
-    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f * 0.125f)
-    #define NUMBER_OF_SAMPLES (8)
-	vec4 scene_features_2 = texture(SceneFeatures2Half, InTextureCoordinate);
-    vec3 start_position = CAMERA_WORLD_POSITION;
-	vec3 world_position = CalculateWorldPosition(InTextureCoordinate, scene_features_2.w);
-	float hit_distance = length(world_position - start_position);
-	float hit_distance_reciprocal = 1.0f / hit_distance;
-	vec3 ray_direction = (world_position - start_position) * hit_distance_reciprocal;
-    float offset_distance = Square(1.0f / float(NUMBER_OF_SAMPLES)) * InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME) * hit_distance;
-    start_position += ray_direction * offset_distance;
-    hit_distance -= offset_distance;
-	vec3 volumetric_lighting = vec3(0.0f);
-    float transmittance = 1.0f;
-    float sample_alpha = 0.0f;
-    for (uint sample_index = 0; sample_index < NUMBER_OF_SAMPLES; ++sample_index)
+    #define NUMBER_OF_SAMPLES (4)
+    vec2 screen_coordinate = (vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) * INVERSE_FULL_MAIN_RESOLUTION;
+    vec4 scene_features_2 = imageLoad(SceneFeatures2, ivec2(gl_GlobalInvocationID.xy));
+    float view_distance = CalculateViewSpaceDistance(screen_coordinate, scene_features_2.w);
+    vec4 volumetric_lighting;
     {
-        float previous_sample_alpha = sample_alpha;
-        sample_alpha = Square(float(sample_index + 1) / float(NUMBER_OF_SAMPLES));
-        vec3 sample_position = mix(start_position, world_position, sample_alpha);
-        float sample_hit_distance = max(hit_distance * sample_alpha - hit_distance * previous_sample_alpha, FLOAT32_EPSILON);
-        float extinction = GetExtinctionAtPosition(sample_position);
-        float attenuation_factor = exp(-extinction * sample_hit_distance);
-        {
-            float ambient_attenuation = mix(CalculateAttenuationInDirection(sample_position, vec3(0.0f, 1.0f, 0.0f), FAR_PLANE), CalculateAttenuationInDirection(sample_position, vec3(0.0f, -1.0f, 0.0f), FAR_PLANE), 0.5f);
-            vec3 scattering = mix(UPPER_SKY_COLOR, LOWER_SKY_COLOR, 0.5f) * SCATTERING * (1.0f / (4.0f * 3.14f)) * ambient_attenuation;
-            vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
-            volumetric_lighting += transmittance * scattering_integral;
-        }
-        for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
-        {
-		    Light light = UnpackLight(i);
-            if (TEST_BIT(light._LightProperties, LIGHT_PROPERTY_VOLUMETRIC_BIT))
-            {
-                vec3 light_radiance = light._Color * light._Intensity;
-                switch (light._LightType)
-                {
-                    case LIGHT_TYPE_DIRECTIONAL:
-                    {
-                        float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, hit_distance);
-                        vec3 scattering = light_radiance * SCATTERING * HenyeyGreensteinPhaseFunction(ray_direction, light._TransformData1) * light_attenuation;
-                        float screen_space_occlusion = 1.0f;
-                        if (VOLUMETRIC_SHADOWS_MODE == VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE)
-                        {
-                            vec3 screen_space_position = CalculateScreenPosition(sample_position);
-                            vec3 screen_space_light_position;
-                            {
-                                vec3 light_world_position = (CAMERA_WORLD_POSITION + -light._TransformData1 * FAR_PLANE);
-                                vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(light_world_position, 1.0f);
-                                float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
-                                view_space_position.xyz *= view_space_position_coefficient_reciprocal;
-                                view_space_position.xy = clamp(view_space_position.xy, vec2(-1.0f), vec2(1.0f));
-                                view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
-                                view_space_position.z = LinearizeDepth(view_space_position.z);
-                                screen_space_light_position = view_space_position.xyz;
-                            }
-                            float screen_factor = max(dot(ray_direction, -light._TransformData1), 0.0f);
-                            float occlusion = 0.0f;
-                            for (uint sub_sample_index = 0; sub_sample_index < 4; ++sub_sample_index)
-                            {
-                                vec3 expected_screen_space_position = mix(screen_space_position, screen_space_light_position, InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME + 1 + sample_index + sub_sample_index));
-                                float sample_depth = LinearizeDepth(texture(SceneFeatures2Half, expected_screen_space_position.xy).w);
-                                occlusion += float(sample_depth < expected_screen_space_position.z) * 0.25f;
-                            }
-                            occlusion *= occlusion * occlusion * occlusion * occlusion;
-                            screen_space_occlusion = mix(1.0f, occlusion, screen_factor);
-                        }
-                        scattering *= screen_space_occlusion;
-                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
-                        volumetric_lighting += transmittance * scattering_integral;
-                        break;
-                    }
-                }
-            }
-        }
-        transmittance *= attenuation_factor;
+        ivec2 sample_coordinate_1 = ivec2(gl_GlobalInvocationID.xy) / 2;
+        ivec2 sample_coordinate_2 = min(sample_coordinate_1 + ivec2(0, 1), ivec2(HALF_MAIN_RESOLUTION));
+        ivec2 sample_coordinate_3 = min(sample_coordinate_1 + ivec2(1, 0), ivec2(HALF_MAIN_RESOLUTION));
+        ivec2 sample_coordinate_4 = min(sample_coordinate_1 + ivec2(1, 1), ivec2(HALF_MAIN_RESOLUTION));
+        vec4 volumetric_lighting_1 = imageLoad(VolumetricLighting, sample_coordinate_1);
+        vec4 volumetric_lighting_2 = imageLoad(VolumetricLighting, sample_coordinate_2);
+        vec4 volumetric_lighting_3 = imageLoad(VolumetricLighting, sample_coordinate_3);
+        vec4 volumetric_lighting_4 = imageLoad(VolumetricLighting, sample_coordinate_4);
+        float depth_1 = imageLoad(SceneFeatures2Half, sample_coordinate_1).w;
+        float depth_2 = imageLoad(SceneFeatures2Half, sample_coordinate_2).w;
+        float depth_3 = imageLoad(SceneFeatures2Half, sample_coordinate_3).w;
+        float depth_4 = imageLoad(SceneFeatures2Half, sample_coordinate_4).w;
+        float view_distance_1 = CalculateViewSpaceDistance(vec2((sample_coordinate_1) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_1);
+        float view_distance_2 = CalculateViewSpaceDistance(vec2((sample_coordinate_2) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_2);
+        float view_distance_3 = CalculateViewSpaceDistance(vec2((sample_coordinate_3) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_3);
+        float view_distance_4 = CalculateViewSpaceDistance(vec2((sample_coordinate_4) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_4);
+        float horizontal_weight = fract(screen_coordinate.x * HALF_MAIN_RESOLUTION.x);
+        float vertical_weight = fract(screen_coordinate.y * HALF_MAIN_RESOLUTION.y);
+        float weight_1 = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
+	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
+	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
+	    float weight_4 = horizontal_weight * vertical_weight;
+        weight_1 = max(weight_1 * exp(-abs(view_distance - view_distance_1) * 0.5f), FLOAT32_EPSILON);
+        weight_2 = max(weight_2 * exp(-abs(view_distance - view_distance_2) * 0.5f), FLOAT32_EPSILON);
+        weight_3 = max(weight_3 * exp(-abs(view_distance - view_distance_3) * 0.5f), FLOAT32_EPSILON);
+        weight_4 = max(weight_4 * exp(-abs(view_distance - view_distance_4) * 0.5f), FLOAT32_EPSILON);
+        float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
+	    weight_1 *= total_weight_reciprocal;
+	    weight_2 *= total_weight_reciprocal;
+	    weight_3 *= total_weight_reciprocal;
+        weight_4 *= total_weight_reciprocal;
+        volumetric_lighting =   volumetric_lighting_1 * weight_1
+                                + volumetric_lighting_2 * weight_2
+                                + volumetric_lighting_3 * weight_3
+                                + volumetric_lighting_4 * weight_4;
     }
-	VolumetricLighting = vec4(volumetric_lighting,transmittance);
+    volumetric_lighting *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(gl_GlobalInvocationID.xy), FRAME));
+    vec3 world_position = CalculateWorldPosition(screen_coordinate, scene_features_2.w);
+    float hit_distance = length(world_position - CAMERA_WORLD_POSITION);
+    vec3 scene = imageLoad(Scene, ivec2(gl_GlobalInvocationID.xy)).rgb;
+    scene = scene * volumetric_lighting.a + volumetric_lighting.rgb;
+    imageStore(Scene, ivec2(gl_GlobalInvocationID.xy), vec4(scene, 1.0f));
 }

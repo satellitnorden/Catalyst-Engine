@@ -5,6 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/Core/ComputeRenderPipeline.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingTemporalDenoisingGraphicsPipeline.h>
@@ -47,8 +48,14 @@ private:
 	//The volumetric lighting temporal denoising graphics pipelines.
 	StaticArray<VolumetricLightingTemporalDenoisingGraphicsPipeline, 2> _VolumetricLightingTemporalDenoisingGraphicsPipelines;
 
-	//The volumetric lighting application graphics pipeline.
-	GraphicsRenderPipeline _VolumetricLightingApplicationGraphicsPipeline{ HashString("VolumetricLightingApplication_RenderPipeline") };
+#define APPLICATION_COMPUTE (1)
+
+	//The volumetric lighting application pipeline.
+#if APPLICATION_COMPUTE
+	ComputeRenderPipeline _VolumetricLightingApplicationPipeline{ HashString("VolumetricLightingApplication_Compute_RenderPipeline") };
+#else
+	GraphicsRenderPipeline _VolumetricLightingApplicationPipeline{ HashString("VolumetricLightingApplication_RenderPipeline") };
+#endif
 
 	//The current temporal buffer index.
 	uint8 _CurrentTemporalBufferIndex{ 0 };

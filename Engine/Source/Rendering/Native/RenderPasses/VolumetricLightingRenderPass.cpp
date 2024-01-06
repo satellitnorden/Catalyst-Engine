@@ -74,7 +74,7 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
-	AddPipeline(&_VolumetricLightingApplicationGraphicsPipeline);
+	AddPipeline(&_VolumetricLightingApplicationPipeline);
 
 	//Initialize all pipelines.
 	{
@@ -100,13 +100,23 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 																		_VolumetricLightingTemporalBufferRenderTargets[0],
 																		_VolumetricLightingRenderTarget,
 																		_IntermediateVolumetricLightingRenderTarget);
+#if APPLICATION_COMPUTE
+	{
+		ComputeRenderPipelineParameters parameters;
+
+		parameters._ComputeRenderTargets.Emplace(HashString("VolumetricLighting"), _VolumetricLightingRenderTarget);
+
+		_VolumetricLightingApplicationPipeline.Initialize(parameters);
+	}
+#else
 	{
 		GraphicsRenderPipelineParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("VolumetricLighting"), _VolumetricLightingRenderTarget);
 
-		_VolumetricLightingApplicationGraphicsPipeline.Initialize(parameters);
+		_VolumetricLightingApplicationPipeline.Initialize(parameters);
 	}
+#endif
 }
 
 /*
@@ -141,7 +151,7 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 		_VolumetricLightingRayTracingPipeline.Execute();
 	}
 
-	if (!RenderingSystem::Instance->IsTakingScreenshot())
+	if (!RenderingSystem::Instance->IsTakingScreenshot() && false)
 	{
 		for (VolumetricLightingSpatialDenoisingGraphicsPipeline &pipeline : _VolumetricLightingSpatialDenoisingGraphicsPipelines)
 		{
@@ -179,7 +189,7 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 	//Update the current temporal buffer index.
 	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
 
-	_VolumetricLightingApplicationGraphicsPipeline.Execute();
+	_VolumetricLightingApplicationPipeline.Execute();
 }
 
 /*
@@ -201,5 +211,5 @@ void VolumetricLightingRenderPass::Terminate() NOEXCEPT
 		pipeline.Terminate();
 	}
 
-	_VolumetricLightingApplicationGraphicsPipeline.Terminate();
+	_VolumetricLightingApplicationPipeline.Terminate();
 }

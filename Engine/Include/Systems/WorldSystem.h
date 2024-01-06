@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/CatalystProjectConfiguration.h>
+#include <Core/General/Padding.h>
 
 //World.
 #include <World/Core/EnvironmentSystem.h>
@@ -112,6 +113,28 @@ public:
 
 private:
 
+	/*
+	*	World uniform data class definition.
+	*/
+	class WorldUniformData final
+	{
+
+	public:
+
+		//The upper sky gradient.
+		Vector3<float32> _UpperSkyColor;
+
+		//Some padding.
+		Padding<4> _Padding1;
+
+		//The lower sky gradient.
+		Vector3<float32> _LowerSkyColor;
+
+		//Some padding.
+		Padding<4> _Padding2;
+
+	};
+
 	//The world grid size.
 	float32 _WorldGridSize;
 
@@ -129,6 +152,9 @@ private:
 
 	//The wetness.
 	float _Wetness{ 0.0f };
+
+	//The world uniform data.
+	WorldUniformData _WorldUniformData;
 
 	/*
 	*	Updates the world system during the input update phase.

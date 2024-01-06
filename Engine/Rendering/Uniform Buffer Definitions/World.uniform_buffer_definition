@@ -1,0 +1,5 @@
+UniformBuffer(Wind)
+{
+    vec3 UPPER_SKY_COLOR;
+    vec3 LOWER_SKY_COLOR;
+};

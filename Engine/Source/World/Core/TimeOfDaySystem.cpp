@@ -132,7 +132,7 @@ void TimeOfDaySystem::InitializeSkyLightCurve() NOEXCEPT
 	//06.00.
 	ADD_CURVE_POINT(1.0f, 0.875f, 0.25f, 0.0f);
 	//12.00.
-	ADD_CURVE_POINT(1.0f, 0.875f, 0.5f, 32.0f);
+	ADD_CURVE_POINT(1.0f, 0.875f, 0.5f, 16.0f);
 	//18.00.
 	ADD_CURVE_POINT(1.0f, 0.25f, 0.125f, 0.0f);
 
@@ -146,15 +146,15 @@ void TimeOfDaySystem::InitializeSkyGradientCurve() NOEXCEPT
 {
 	uint64 current_index{ 0 };
 
-	#define ADD_CURVE_POINT(UPPER_R, UPPER_G, UPPER_B, LOWER_R, LOWER_G, LOWER_B, UPPER_MULTIPLIER, LOWER_MULTIPLIER)																						\
-	{																																																		\
-	Color upper{ static_cast<uint8>(UPPER_R), static_cast<uint8>(UPPER_G), static_cast<uint8>(UPPER_B) };																									\
-	Color lower{ static_cast<uint8>(LOWER_R), static_cast<uint8>(LOWER_G), static_cast<uint8>(LOWER_B) };																									\
-	upper.ApplyGammaCorrection();																																											\
-	lower.ApplyGammaCorrection();																																											\
-	const Vector4<float32> _upper{ upper.Get() };																																							\
-	const Vector4<float32> _lower{ lower.Get() };																																							\
-	_SkyGradientCurve.SetValue(current_index++, SkyGradient(Vector3<float32>(_upper._R, _upper._G, _upper._B) * UPPER_MULTIPLIER, Vector3<float32>(_lower._R, _lower._G, _lower._B) * LOWER_MULTIPLIER));	\
+	#define ADD_CURVE_POINT(UPPER_R, UPPER_G, UPPER_B, LOWER_R, LOWER_G, LOWER_B, UPPER_MULTIPLIER, LOWER_MULTIPLIER)																									\
+	{																																																					\
+	Color upper{ static_cast<uint8>(UPPER_R), static_cast<uint8>(UPPER_G), static_cast<uint8>(UPPER_B) };																												\
+	Color lower{ static_cast<uint8>(LOWER_R), static_cast<uint8>(LOWER_G), static_cast<uint8>(LOWER_B) };																												\
+	upper.ApplyGammaCorrection();																																														\
+	lower.ApplyGammaCorrection();																																														\
+	const Vector4<float32> _upper{ upper.Get() };																																										\
+	const Vector4<float32> _lower{ lower.Get() };																																										\
+	_SkyGradientCurve.SetValue(current_index++, SkyGradient(Vector3<float32>(_upper._R, _upper._G, _upper._B) * UPPER_MULTIPLIER * 1.0f, Vector3<float32>(_lower._R, _lower._G, _lower._B) * LOWER_MULTIPLIER * 1.0f));	\
 	}
 
 	//00.00.
@@ -162,7 +162,7 @@ void TimeOfDaySystem::InitializeSkyGradientCurve() NOEXCEPT
 	//06.00.
 	ADD_CURVE_POINT(100, 225, 250, 250, 225, 100, 1.0f, 1.0f);
 	//12.00.
-	ADD_CURVE_POINT(100, 225, 250, 125, 250, 225, 4.0f, 2.0f);
+	ADD_CURVE_POINT(100, 225, 250, 125, 250, 225, 1.0f, 1.0f);
 	//18.00.
 	ADD_CURVE_POINT(75, 125, 250, 250, 100, 100, 1.0f, 1.0f);
 	
