@@ -59,12 +59,12 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + 1 + _VolumetricLightingSpatialDenoisingGraphicsPipelines.Size() + _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() + 2);
+	SetNumberOfPipelines(1 + 1 + _VolumetricLightingSpatialDenoisingPipelines.Size() + _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() + 2);
 	
 	AddPipeline(&_VolumetricLightingGraphicsPipeline);
 	AddPipeline(&_VolumetricLightingRayTracingPipeline);
 
-	for (VolumetricLightingSpatialDenoisingGraphicsPipeline &pipeline : _VolumetricLightingSpatialDenoisingGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _VolumetricLightingSpatialDenoisingPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -86,12 +86,17 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	}
 
 	_VolumetricLightingRayTracingPipeline.Initialize(_VolumetricLightingRenderTarget);
-	_VolumetricLightingSpatialDenoisingGraphicsPipelines[0].Initialize(	1,
-																		_VolumetricLightingRenderTarget,
-																		_IntermediateVolumetricLightingRenderTarget);
-	_VolumetricLightingSpatialDenoisingGraphicsPipelines[1].Initialize(	2,
-																		_IntermediateVolumetricLightingRenderTarget,
-																		_VolumetricLightingRenderTarget);
+
+	for (uint64 i{ 0 }; i < _VolumetricLightingSpatialDenoisingPipelines.Size(); ++i)
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("InputVolumetricLighting"), CatalystBaseMath::IsEven(i) ? _VolumetricLightingRenderTarget : _IntermediateVolumetricLightingRenderTarget);
+		parameters._OutputRenderTargets.Emplace(HashString("OutputVolumetricLighting"), CatalystBaseMath::IsEven(i) ? _IntermediateVolumetricLightingRenderTarget : _VolumetricLightingRenderTarget);
+
+		_VolumetricLightingSpatialDenoisingPipelines[i].Initialize(parameters);
+	}
+
 	_VolumetricLightingTemporalDenoisingGraphicsPipelines[0].Initialize(_VolumetricLightingTemporalBufferRenderTargets[0],
 																		_VolumetricLightingTemporalBufferRenderTargets[1],
 																		_VolumetricLightingRenderTarget,
@@ -151,39 +156,25 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 		_VolumetricLightingRayTracingPipeline.Execute();
 	}
 
-	if (!RenderingSystem::Instance->IsTakingScreenshot() && false)
+	if (!RenderingSystem::Instance->IsTakingScreenshot())
 	{
-		for (VolumetricLightingSpatialDenoisingGraphicsPipeline &pipeline : _VolumetricLightingSpatialDenoisingGraphicsPipelines)
+		for (GraphicsRenderPipeline &pipeline : _VolumetricLightingSpatialDenoisingPipelines)
 		{
 			pipeline.Execute();
-		}
-
-		//Execute the current buffer, don't include the rest.
-		for (uint64 i{ 0 }, size{ _VolumetricLightingTemporalDenoisingGraphicsPipelines.Size() }; i < size; ++i)
-		{
-			if (i == _CurrentTemporalBufferIndex)
-			{
-				_VolumetricLightingTemporalDenoisingGraphicsPipelines[i].Execute();
-			}
-
-			else
-			{
-				_VolumetricLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
-			}
 		}
 	}
 	
 	else
 	{
-		for (VolumetricLightingSpatialDenoisingGraphicsPipeline &pipeline : _VolumetricLightingSpatialDenoisingGraphicsPipelines)
+		for (GraphicsRenderPipeline &pipeline : _VolumetricLightingSpatialDenoisingPipelines)
 		{
 			pipeline.SetIncludeInRender(false);
 		}
+	}
 
-		for (VolumetricLightingTemporalDenoisingGraphicsPipeline &pipeline : _VolumetricLightingTemporalDenoisingGraphicsPipelines)
-		{
-			pipeline.SetIncludeInRender(false);
-		}
+	for (VolumetricLightingTemporalDenoisingGraphicsPipeline& pipeline : _VolumetricLightingTemporalDenoisingGraphicsPipelines)
+	{
+		pipeline.SetIncludeInRender(false);
 	}
 
 	//Update the current temporal buffer index.
@@ -201,7 +192,7 @@ void VolumetricLightingRenderPass::Terminate() NOEXCEPT
 	_VolumetricLightingGraphicsPipeline.Terminate();
 	_VolumetricLightingRayTracingPipeline.Terminate();
 
-	for (VolumetricLightingSpatialDenoisingGraphicsPipeline &pipeline : _VolumetricLightingSpatialDenoisingGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _VolumetricLightingSpatialDenoisingPipelines)
 	{
 		pipeline.Terminate();
 	}

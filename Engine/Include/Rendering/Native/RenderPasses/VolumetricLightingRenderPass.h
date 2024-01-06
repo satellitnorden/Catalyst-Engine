@@ -7,7 +7,6 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/ComputeRenderPipeline.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingTemporalDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/VolumetricLightingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
@@ -42,8 +41,12 @@ private:
 	//The volumetric lighting ray tracing pipeline.
 	VolumetricLightingRayTracingPipeline _VolumetricLightingRayTracingPipeline;
 
-	//The volumetric lighting spatial denoising graphics pipelines.
-	StaticArray<VolumetricLightingSpatialDenoisingGraphicsPipeline, 2> _VolumetricLightingSpatialDenoisingGraphicsPipelines;
+	//The volumetric lighting spatial denoising pipelines.
+	StaticArray<GraphicsRenderPipeline, 2> _VolumetricLightingSpatialDenoisingPipelines
+	{
+		GraphicsRenderPipeline(HashString("VolumetricLightingSpatialDenoising_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("VolumetricLightingSpatialDenoising_RenderPipeline"))
+	};
 
 	//The volumetric lighting temporal denoising graphics pipelines.
 	StaticArray<VolumetricLightingTemporalDenoisingGraphicsPipeline, 2> _VolumetricLightingTemporalDenoisingGraphicsPipelines;

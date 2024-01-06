@@ -42,7 +42,7 @@ Fragment
     InputParameter(vec2, InTextureCoordinate);
 
     //Constants.
-    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f * 0.125f)
+    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
     #define NUMBER_OF_SAMPLES (8)
 
     //Load the scene features.

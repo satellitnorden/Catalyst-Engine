@@ -420,7 +420,7 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 */
 float GetExtinctionAtPosition(vec3 position)
 {
-	#define BASE_EXTINCTION (0.00000125f)
+	#define BASE_EXTINCTION (0.0000125f)
 
 	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
@@ -475,7 +475,7 @@ layout (location = 0) out vec4 VolumetricLighting;
 
 void main()
 {
-    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f * 0.125f)
+    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
     #define NUMBER_OF_SAMPLES (8)
 	vec4 scene_features_2 = texture(SceneFeatures2Half, InTextureCoordinate);
     vec3 start_position = CAMERA_WORLD_POSITION;

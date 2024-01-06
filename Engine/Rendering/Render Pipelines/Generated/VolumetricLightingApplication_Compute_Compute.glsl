@@ -339,7 +339,7 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 */
 float GetExtinctionAtPosition(vec3 position)
 {
-	#define BASE_EXTINCTION (0.00000125f)
+	#define BASE_EXTINCTION (0.0000125f)
 
 	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
@@ -388,14 +388,18 @@ vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
 
 layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
+uvec3 ComputeWorkGroupSize()
+{
+	return uvec3(8, 8, 1);
+}
+
 uvec3 ComputeDimensions()
 {
-	return uvec3(8, 8, 1) * gl_NumWorkGroups;
+	return ComputeWorkGroupSize() * gl_NumWorkGroups;
 }
 
 void main()
 {
-    #define NUMBER_OF_SAMPLES (4)
     vec2 screen_coordinate = (vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) * INVERSE_FULL_MAIN_RESOLUTION;
     vec4 scene_features_2 = imageLoad(SceneFeatures2, ivec2(gl_GlobalInvocationID.xy));
     float view_distance = CalculateViewSpaceDistance(screen_coordinate, scene_features_2.w);
@@ -423,10 +427,10 @@ void main()
 	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
 	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
 	    float weight_4 = horizontal_weight * vertical_weight;
-        weight_1 = max(weight_1 * exp(-abs(view_distance - view_distance_1) * 0.5f), FLOAT32_EPSILON);
-        weight_2 = max(weight_2 * exp(-abs(view_distance - view_distance_2) * 0.5f), FLOAT32_EPSILON);
-        weight_3 = max(weight_3 * exp(-abs(view_distance - view_distance_3) * 0.5f), FLOAT32_EPSILON);
-        weight_4 = max(weight_4 * exp(-abs(view_distance - view_distance_4) * 0.5f), FLOAT32_EPSILON);
+        weight_1 = max(weight_1 * exp(-abs(view_distance - view_distance_1)), FLOAT32_EPSILON);
+        weight_2 = max(weight_2 * exp(-abs(view_distance - view_distance_2)), FLOAT32_EPSILON);
+        weight_3 = max(weight_3 * exp(-abs(view_distance - view_distance_3)), FLOAT32_EPSILON);
+        weight_4 = max(weight_4 * exp(-abs(view_distance - view_distance_4)), FLOAT32_EPSILON);
         float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
 	    weight_1 *= total_weight_reciprocal;
 	    weight_2 *= total_weight_reciprocal;

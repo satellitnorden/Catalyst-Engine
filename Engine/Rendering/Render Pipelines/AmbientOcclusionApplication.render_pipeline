@@ -10,6 +10,7 @@ ComputeRenderTarget(SceneFeatures2Half, RGBA_FLOAT32);
 
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Noise);
 
 //Set the load/store operators.
 ColorLoadOperator(LOAD);
@@ -28,19 +29,19 @@ Compute
     uvec3 compute_dimensions = ComputeDimensions();
 
     //Calculate the screen coordinate.
-    vec2 screen_coordinate = (vec2(COMPUTE_ID.xy) + vec2(0.5f)) / vec2(compute_dimensions);
+    vec2 screen_coordinate = (vec2(COMPUTE_GLOBAL_ID.xy) + vec2(0.5f)) / vec2(compute_dimensions);
 
     //Calculate the view distance at the current pixel.
-    float view_distance = CalculateViewSpaceDistance(screen_coordinate, ImageLoad(SceneFeatures2, ivec2(COMPUTE_ID.xy)).w);
+    float view_distance = CalculateViewSpaceDistance(screen_coordinate, ImageLoad(SceneFeatures2, ivec2(COMPUTE_GLOBAL_ID.xy)).w);
 
     //Retrieve the ambient occlusion.
     float ambient_occlusion;
 
     {
-        ivec2 sample_coordinate_1 = ivec2(COMPUTE_ID.xy) / 2;
-        ivec2 sample_coordinate_2 = min(ivec2(COMPUTE_ID.xy) / 2 + ivec2(0, 1), ivec2(HALF_MAIN_RESOLUTION));
-        ivec2 sample_coordinate_3 = min(ivec2(COMPUTE_ID.xy) / 2 + ivec2(1, 0), ivec2(HALF_MAIN_RESOLUTION));
-        ivec2 sample_coordinate_4 = min(ivec2(COMPUTE_ID.xy) / 2 + ivec2(1, 1), ivec2(HALF_MAIN_RESOLUTION));
+        ivec2 sample_coordinate_1 = ivec2(COMPUTE_GLOBAL_ID.xy) / 2;
+        ivec2 sample_coordinate_2 = min(ivec2(COMPUTE_GLOBAL_ID.xy) / 2 + ivec2(0, 1), ivec2(HALF_MAIN_RESOLUTION));
+        ivec2 sample_coordinate_3 = min(ivec2(COMPUTE_GLOBAL_ID.xy) / 2 + ivec2(1, 0), ivec2(HALF_MAIN_RESOLUTION));
+        ivec2 sample_coordinate_4 = min(ivec2(COMPUTE_GLOBAL_ID.xy) / 2 + ivec2(1, 1), ivec2(HALF_MAIN_RESOLUTION));
         
         float ambient_occlusion_1 = ImageLoad(AmbientOcclusion, sample_coordinate_1).x;
         float ambient_occlusion_2 = ImageLoad(AmbientOcclusion, sample_coordinate_2).x;
@@ -65,12 +66,10 @@ Compute
 	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
 	    float weight_4 = horizontal_weight * vertical_weight;
 
-        #define VIEW_DISTANCE_POWER (4.0f)
-
-        weight_1 = max(weight_1 * pow(1.0f - abs(view_distance - view_distance_1), VIEW_DISTANCE_POWER), FLOAT32_EPSILON);
-        weight_2 = max(weight_2 * pow(1.0f - abs(view_distance - view_distance_2), VIEW_DISTANCE_POWER), FLOAT32_EPSILON);
-        weight_3 = max(weight_3 * pow(1.0f - abs(view_distance - view_distance_3), VIEW_DISTANCE_POWER), FLOAT32_EPSILON);
-        weight_4 = max(weight_4 * pow(1.0f - abs(view_distance - view_distance_4), VIEW_DISTANCE_POWER), FLOAT32_EPSILON);
+        weight_1 = max(weight_1 * exp(-abs(view_distance - view_distance_1)), FLOAT32_EPSILON);
+        weight_2 = max(weight_2 * exp(-abs(view_distance - view_distance_2)), FLOAT32_EPSILON);
+        weight_3 = max(weight_3 * exp(-abs(view_distance - view_distance_3)), FLOAT32_EPSILON);
+        weight_4 = max(weight_4 * exp(-abs(view_distance - view_distance_4)), FLOAT32_EPSILON);
 
         float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
 
@@ -88,12 +87,15 @@ Compute
     //Bias the ambient occlusion.
     ambient_occlusion = (ambient_occlusion * ambient_occlusion * ambient_occlusion * ambient_occlusion);
 
+    //Add some noise to the volumetric lighting so that the temporal anti aliasing pass has an easier time cleaning it up.
+    ambient_occlusion *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(COMPUTE_GLOBAL_ID.xy), FRAME));
+
     //Load the material properties.
-    vec4 material_properties = ImageLoad(SceneFeatures3, ivec2(COMPUTE_ID.xy));
+    vec4 material_properties = ImageLoad(SceneFeatures3, ivec2(COMPUTE_GLOBAL_ID.xy));
 
     //Modify the ambient occlusion term.
     material_properties.z *= ambient_occlusion;
 
     //Store the modified material properties.
-    ImageStore(SceneFeatures3, ivec2(COMPUTE_ID.xy), material_properties);
+    ImageStore(SceneFeatures3, ivec2(COMPUTE_GLOBAL_ID.xy), material_properties);
 }

@@ -209,11 +209,6 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
 };
 
-layout (set = 1, binding = 2, r8) uniform image2D AmbientOcclusion; 
-layout (set = 1, binding = 3, rgba32f) uniform image2D SceneFeatures2; 
-layout (set = 1, binding = 4, rgba8) uniform image2D SceneFeatures3; 
-layout (set = 1, binding = 5, rgba32f) uniform image2D SceneFeatures2Half; 
-
 /*
 *   Linearizes a depth value.
 */
@@ -299,99 +294,38 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
-/*
-*   Hash function.
-*/
-uint Hash(inout uint seed)
-{
-    seed = (seed ^ 61u) ^ (seed >> 16u);
-    seed *= 9u;
-    seed = seed ^ (seed >> 4u);
-    seed *= 0x27d4eb2du;
-    seed = seed ^ (seed >> 15u);
+layout (location = 0) in vec2 InScreenCoordinate;
 
-    return seed;
-}
+layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2Half;
+layout (set = 1, binding = 3) uniform sampler2D InputVolumetricLighting;
 
-/*
-*   Given a seed, returns a random number.
-*/
-float RandomFloat(inout uint seed)
-{
-    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
-}
-
-/*
-*	Returns the interleaved gradient noise for the given coordinate at the given frame.
-*/
-float InterleavedGradientNoise(uvec2 coordinate, uint frame)
-{
-	frame = frame % 64;
-
-	float x = float(coordinate.x) + 5.588238f * float(frame);
-	float y = float(coordinate.y) + 5.588238f * float(frame);
-
-	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
-}
-
-layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
-
-uvec3 ComputeWorkGroupSize()
-{
-	return uvec3(8, 8, 1);
-}
-
-uvec3 ComputeDimensions()
-{
-	return ComputeWorkGroupSize() * gl_NumWorkGroups;
-}
+layout (location = 0) out vec4 OutputVolumetricLighting;
 
 void main()
 {
-    uvec3 compute_dimensions = ComputeDimensions();
-    vec2 screen_coordinate = (vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(compute_dimensions);
-    float view_distance = CalculateViewSpaceDistance(screen_coordinate, imageLoad(SceneFeatures2, ivec2(gl_GlobalInvocationID.xy)).w);
-    float ambient_occlusion;
-    {
-        ivec2 sample_coordinate_1 = ivec2(gl_GlobalInvocationID.xy) / 2;
-        ivec2 sample_coordinate_2 = min(ivec2(gl_GlobalInvocationID.xy) / 2 + ivec2(0, 1), ivec2(HALF_MAIN_RESOLUTION));
-        ivec2 sample_coordinate_3 = min(ivec2(gl_GlobalInvocationID.xy) / 2 + ivec2(1, 0), ivec2(HALF_MAIN_RESOLUTION));
-        ivec2 sample_coordinate_4 = min(ivec2(gl_GlobalInvocationID.xy) / 2 + ivec2(1, 1), ivec2(HALF_MAIN_RESOLUTION));
-        float ambient_occlusion_1 = imageLoad(AmbientOcclusion, sample_coordinate_1).x;
-        float ambient_occlusion_2 = imageLoad(AmbientOcclusion, sample_coordinate_2).x;
-        float ambient_occlusion_3 = imageLoad(AmbientOcclusion, sample_coordinate_3).x;
-        float ambient_occlusion_4 = imageLoad(AmbientOcclusion, sample_coordinate_4).x;
-        float depth_1 = imageLoad(SceneFeatures2Half, sample_coordinate_1).w;
-        float depth_2 = imageLoad(SceneFeatures2Half, sample_coordinate_2).w;
-        float depth_3 = imageLoad(SceneFeatures2Half, sample_coordinate_3).w;
-        float depth_4 = imageLoad(SceneFeatures2Half, sample_coordinate_4).w;
-        float view_distance_1 = CalculateViewSpaceDistance(vec2((sample_coordinate_1) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_1);
-        float view_distance_2 = CalculateViewSpaceDistance(vec2((sample_coordinate_2) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_2);
-        float view_distance_3 = CalculateViewSpaceDistance(vec2((sample_coordinate_3) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_3);
-        float view_distance_4 = CalculateViewSpaceDistance(vec2((sample_coordinate_4) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_4);
-        float horizontal_weight = fract(screen_coordinate.x * HALF_MAIN_RESOLUTION.x);
-        float vertical_weight = fract(screen_coordinate.y * HALF_MAIN_RESOLUTION.y);
-        float weight_1 = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
-	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
-	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
-	    float weight_4 = horizontal_weight * vertical_weight;
-        weight_1 = max(weight_1 * exp(-abs(view_distance - view_distance_1)), FLOAT32_EPSILON);
-        weight_2 = max(weight_2 * exp(-abs(view_distance - view_distance_2)), FLOAT32_EPSILON);
-        weight_3 = max(weight_3 * exp(-abs(view_distance - view_distance_3)), FLOAT32_EPSILON);
-        weight_4 = max(weight_4 * exp(-abs(view_distance - view_distance_4)), FLOAT32_EPSILON);
-        float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
-	    weight_1 *= total_weight_reciprocal;
-	    weight_2 *= total_weight_reciprocal;
-	    weight_3 *= total_weight_reciprocal;
-	    weight_4 *= total_weight_reciprocal;
-        ambient_occlusion = ambient_occlusion_1 * weight_1
-                            + ambient_occlusion_2 * weight_2
-                            + ambient_occlusion_3 * weight_3
-                            + ambient_occlusion_4 * weight_4;
-   }
-    ambient_occlusion = (ambient_occlusion * ambient_occlusion * ambient_occlusion * ambient_occlusion);
-    ambient_occlusion *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(gl_GlobalInvocationID.xy), FRAME));
-    vec4 material_properties = imageLoad(SceneFeatures3, ivec2(gl_GlobalInvocationID.xy));
-    material_properties.z *= ambient_occlusion;
-    imageStore(SceneFeatures3, ivec2(gl_GlobalInvocationID.xy), material_properties);
+    float view_distance = CalculateViewSpaceDistance(InScreenCoordinate, texture(SceneFeatures2Half, InScreenCoordinate).w);
+	vec4 denoised_volumetric_lighting = vec4(0.0f);
+	float weight_sum = 0.0f;
+	for (int Y = -1; Y <= 1; Y += 1)
+	{
+		for (int X = -1; X <= 1; X += 1)
+		{
+			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_HALF_MAIN_RESOLUTION;
+			vec4 sample_volumetric_lighting = texture(InputVolumetricLighting, sample_coordinate);
+			float sample_view_distance = CalculateViewSpaceDistance(sample_coordinate, texture(SceneFeatures2Half, sample_coordinate).w);
+			/*
+			*	Calculate the sample weight based on certain criteria;
+			*	
+			*	1. Is the sample coordinate a valid screen coordinate?
+			*	2. How closely aligned are the view distances to each other?
+			*/
+			float sample_weight = 1.0f;
+			sample_weight *= float(ValidScreenCoordinate(sample_coordinate));
+			sample_weight *= exp(-abs(view_distance - sample_view_distance));
+			denoised_volumetric_lighting += sample_volumetric_lighting * sample_weight;
+			weight_sum += sample_weight;
+		}
+	}
+	denoised_volumetric_lighting = denoised_volumetric_lighting / weight_sum;
+	OutputVolumetricLighting = denoised_volumetric_lighting;
 }

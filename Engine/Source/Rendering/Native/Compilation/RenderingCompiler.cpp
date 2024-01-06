@@ -545,6 +545,15 @@ void GenerateComputeShader
 		uint32 _Depth;
 	};
 
+	/*
+	*	Compute shared memory struct definition.
+	*/
+	struct ComputeSharedMemory final
+	{
+		DynamicString _Type;
+		DynamicString _Name;
+	};
+
 	//Gather all the lines in the compute function.
 	DynamicArray<std::string> lines;
 	GatherShaderLines(file, lines);
@@ -570,6 +579,38 @@ void GenerateComputeShader
 			compute_local_size._Width = static_cast<uint32>(std::stoul(arguments[0].Data()));
 			compute_local_size._Height = static_cast<uint32>(std::stoul(arguments[1].Data()));
 			compute_local_size._Depth = static_cast<uint32>(std::stoul(arguments[2].Data()));
+
+			lines.EraseAt<true>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
+
+	//Retrieve the compute shared memory.
+	DynamicArray<ComputeSharedMemory> compute_shared_memory;
+
+	for (uint64 i{ 0 }; i < lines.Size();)
+	{
+		const size_t position{ lines[i].find("ComputeSharedMemory(") };
+
+		if (position != std::string::npos)
+		{
+			StaticArray<DynamicString, 2> arguments;
+
+			TextParsingUtilities::ParseFunctionArguments
+			(
+				lines[i].data(),
+				lines[i].length(),
+				arguments.Data()
+			);
+
+			compute_shared_memory.Emplace();
+
+			compute_shared_memory.Back()._Type = arguments[0];
+			compute_shared_memory.Back()._Name = arguments[1];
 
 			lines.EraseAt<true>(i);
 		}
@@ -740,10 +781,28 @@ void GenerateComputeShader
 		glsl_file << "layout (local_size_x = " << compute_local_size._Width << ", local_size_y = " << compute_local_size._Height << ", local_size_z = " << compute_local_size._Depth << ") in;" << std::endl;
 		glsl_file << std::endl;
 
+		//Write the shared memory.
+		if (!compute_shared_memory.Empty())
+		{
+			for (const ComputeSharedMemory &_compute_shared_memory : compute_shared_memory)
+			{
+				glsl_file << "shared " << _compute_shared_memory._Type.Data() << " " << _compute_shared_memory._Name.Data() << "[" << compute_local_size._Width << "][" << compute_local_size._Height << "][" << compute_local_size._Depth << "];" << std::endl;
+			}
+
+			glsl_file << std::endl;
+		}
+
+		//Generate the "ComputeWorkGroupSize()" function.
+		glsl_file << "uvec3 ComputeWorkGroupSize()" << std::endl;
+		glsl_file << "{" << std::endl;
+		glsl_file << "\treturn uvec3(" << compute_local_size._Width << ", " << compute_local_size._Height << ", " << compute_local_size._Depth << ");" << std::endl;
+		glsl_file << "}" << std::endl;
+		glsl_file << std::endl;
+
 		//Generate the "ComputeDimensions()" function.
 		glsl_file << "uvec3 ComputeDimensions()" << std::endl;
 		glsl_file << "{" << std::endl;
-		glsl_file << "\treturn uvec3(" << compute_local_size._Width << ", " << compute_local_size._Height << ", " << compute_local_size._Depth << ") * gl_NumWorkGroups;" << std::endl;
+		glsl_file << "\treturn ComputeWorkGroupSize() * gl_NumWorkGroups;" << std::endl;
 		glsl_file << "}" << std::endl;
 		glsl_file << std::endl;
 
@@ -756,14 +815,25 @@ void GenerateComputeShader
 			//Cache the line.
 			std::string& line{ glsl_lines[i] };
 
-			//Replace "COMPUTE_ID" with "gl_GlobalInvocationID".
+			//Replace "COMPUTE_GLOBAL_ID" with "gl_GlobalInvocationID".
 			{
-				size_t position{ line.find("COMPUTE_ID") };
+				size_t position{ line.find("COMPUTE_GLOBAL_ID") };
 
 				while (position != std::string::npos)
 				{
-					line.replace(position, strlen("COMPUTE_ID"), "gl_GlobalInvocationID");
-					position = line.find("COMPUTE_ID");
+					line.replace(position, strlen("COMPUTE_GLOBAL_ID"), "gl_GlobalInvocationID");
+					position = line.find("COMPUTE_GLOBAL_ID");
+				}
+			}
+
+			//Replace "COMPUTE_LOCAL_ID" with "gl_LocalInvocationID".
+			{
+				size_t position{ line.find("COMPUTE_LOCAL_ID") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("COMPUTE_LOCAL_ID"), "gl_LocalInvocationID");
+					position = line.find("COMPUTE_LOCAL_ID");
 				}
 			}
 
@@ -786,6 +856,17 @@ void GenerateComputeShader
 				{
 					line.replace(position, strlen("ImageStore"), "imageStore");
 					position = line.find("ImageStore");
+				}
+			}
+
+			//Replace "ComputeBarrier" with "barrier".
+			{
+				size_t position{ line.find("ComputeBarrier") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("ComputeBarrier"), "barrier");
+					position = line.find("ComputeBarrier");
 				}
 			}
 

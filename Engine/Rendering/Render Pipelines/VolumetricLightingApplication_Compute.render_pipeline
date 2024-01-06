@@ -26,14 +26,11 @@ Compute
     //Declare the compute local size.
     ComputeLocalSize(8, 8, 1);
 
-    //Constants.
-    #define NUMBER_OF_SAMPLES (4)
-
     //Calculate the screen coordinate.
-    vec2 screen_coordinate = (vec2(COMPUTE_ID.xy) + vec2(0.5f)) * INVERSE_FULL_MAIN_RESOLUTION;
+    vec2 screen_coordinate = (vec2(COMPUTE_GLOBAL_ID.xy) + vec2(0.5f)) * INVERSE_FULL_MAIN_RESOLUTION;
 
     //Load the scene features.
-    vec4 scene_features_2 = ImageLoad(SceneFeatures2, ivec2(COMPUTE_ID.xy));
+    vec4 scene_features_2 = ImageLoad(SceneFeatures2, ivec2(COMPUTE_GLOBAL_ID.xy));
 
     //Calculate the view distance at the current pixel.
     float view_distance = CalculateViewSpaceDistance(screen_coordinate, scene_features_2.w);
@@ -42,7 +39,7 @@ Compute
     vec4 volumetric_lighting;
 
     {
-        ivec2 sample_coordinate_1 = ivec2(COMPUTE_ID.xy) / 2;
+        ivec2 sample_coordinate_1 = ivec2(COMPUTE_GLOBAL_ID.xy) / 2;
         ivec2 sample_coordinate_2 = min(sample_coordinate_1 + ivec2(0, 1), ivec2(HALF_MAIN_RESOLUTION));
         ivec2 sample_coordinate_3 = min(sample_coordinate_1 + ivec2(1, 0), ivec2(HALF_MAIN_RESOLUTION));
         ivec2 sample_coordinate_4 = min(sample_coordinate_1 + ivec2(1, 1), ivec2(HALF_MAIN_RESOLUTION));
@@ -70,10 +67,10 @@ Compute
 	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
 	    float weight_4 = horizontal_weight * vertical_weight;
 
-        weight_1 = max(weight_1 * exp(-abs(view_distance - view_distance_1) * 0.5f), FLOAT32_EPSILON);
-        weight_2 = max(weight_2 * exp(-abs(view_distance - view_distance_2) * 0.5f), FLOAT32_EPSILON);
-        weight_3 = max(weight_3 * exp(-abs(view_distance - view_distance_3) * 0.5f), FLOAT32_EPSILON);
-        weight_4 = max(weight_4 * exp(-abs(view_distance - view_distance_4) * 0.5f), FLOAT32_EPSILON);
+        weight_1 = max(weight_1 * exp(-abs(view_distance - view_distance_1)), FLOAT32_EPSILON);
+        weight_2 = max(weight_2 * exp(-abs(view_distance - view_distance_2)), FLOAT32_EPSILON);
+        weight_3 = max(weight_3 * exp(-abs(view_distance - view_distance_3)), FLOAT32_EPSILON);
+        weight_4 = max(weight_4 * exp(-abs(view_distance - view_distance_4)), FLOAT32_EPSILON);
 
         float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
 
@@ -89,7 +86,7 @@ Compute
     }
 
     //Add some noise to the volumetric lighting so that the temporal anti aliasing pass has an easier time cleaning it up.
-    volumetric_lighting *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(COMPUTE_ID.xy), FRAME));
+    volumetric_lighting *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(COMPUTE_GLOBAL_ID.xy), FRAME));
 
     //Calculate the world position.
     vec3 world_position = CalculateWorldPosition(screen_coordinate, scene_features_2.w);
@@ -98,11 +95,11 @@ Compute
     float hit_distance = length(world_position - CAMERA_WORLD_POSITION);
 
     //Load the scene.
-    vec3 scene = ImageLoad(Scene, ivec2(COMPUTE_ID.xy)).rgb;
+    vec3 scene = ImageLoad(Scene, ivec2(COMPUTE_GLOBAL_ID.xy)).rgb;
 
     //Mopify the scene.
     scene = scene * volumetric_lighting.a + volumetric_lighting.rgb;
 
     //Store the modified scene.
-    ImageStore(Scene, ivec2(COMPUTE_ID.xy), vec4(scene, 1.0f));
+    ImageStore(Scene, ivec2(COMPUTE_GLOBAL_ID.xy), vec4(scene, 1.0f));
 }
