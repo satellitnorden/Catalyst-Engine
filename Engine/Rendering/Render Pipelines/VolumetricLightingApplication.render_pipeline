@@ -6,8 +6,8 @@ IncludeShaderFunctionLibrary(Camera);
 IncludeShaderFunctionLibrary(VolumetricLighting);
 
 //Declare input render targets.
-InputRenderTarget(SceneFeatures2 /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
-InputRenderTarget(VolumetricLighting /* Identifier */, Linear /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+InputRenderTarget(SceneFeatures2 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(VolumetricLighting /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
 OutputRenderTarget(Scene);

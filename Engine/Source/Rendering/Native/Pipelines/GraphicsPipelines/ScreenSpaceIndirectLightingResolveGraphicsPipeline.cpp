@@ -50,7 +50,7 @@ void ScreenSpaceIndirectLightingResolveGraphicsPipeline::Initialize(const Render
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(2);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_2));
 	AddOutputRenderTarget(temporal_reprojection_buffer);
 
 	//Add the render data table layouts.

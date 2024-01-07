@@ -7,8 +7,8 @@
 //Rendering.
 #include <Rendering/Native/RenderingConfiguration.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/FastApproximateAntiAliasingGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/TemporalAntiAliasingGraphicsPipeline.h>
 
 class ALIGN(8) AntiAliasingRenderPass final : public RenderPass
 {
@@ -46,8 +46,12 @@ private:
 	//The temporal anti aliasing render targets.
 	StaticArray<RenderTargetHandle, 2> _TemporalAntiAliasingRenderTargets;
 
-	//The temporal anti aliasing graphics pipelines.
-	StaticArray<TemporalAntiAliasingGraphicsPipeline, 2> _TemporalAntiAliasingGraphicsPipelines;
+	//The temporal anti aliasing pipelines.
+	StaticArray<GraphicsRenderPipeline, 2> _TemporalAntiAliasingPipelines
+	{
+		GraphicsRenderPipeline(HashString("TemporalAntiAliasing_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("TemporalAntiAliasing_RenderPipeline"))
+	};
 
 	//The current temporal anti aliasing buffer index.
 	uint8 _TemporalAntiAliasingCurrentBufferIndex{ 0 };

@@ -848,7 +848,7 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 		output_file.Write(&count, sizeof(uint64));
 
 		//Write the data.
-		output_file.Write(parameters._InputRenderTargets.Data(), sizeof(HashString) * parameters._InputRenderTargets.Size());
+		output_file.Write(parameters._InputRenderTargets.Data(), sizeof(Pair<HashString, SamplerProperties>) * parameters._InputRenderTargets.Size());
 	}
 
 	//Write the output depth buffer.

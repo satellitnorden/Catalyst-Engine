@@ -342,11 +342,6 @@ enum class RenderTarget : uint8
 	INTERMEDIATE_RGBA_UINT8,
 
 	/*
-	*	Intermediate render target.
-	*/
-	INTERMEDIATE_RGBA_FLOAT32_2,
-
-	/*
 	*	Intermediate render target at half resolution.
 	*/
 	INTERMEDIATE_RGBA_FLOAT32_HALF_2,
@@ -436,6 +431,11 @@ enum class SharedRenderTarget : uint8
 	*	Intermediate render target.
 	*/
 	INTERMEDIATE_RGBA_FLOAT32_1,
+
+	/*
+	*	Intermediate render target.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_2,
 
 	/*
 	*	Intermediate render target at half resolution.

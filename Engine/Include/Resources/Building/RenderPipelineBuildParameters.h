@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/HashString.h>
+#include <Core/General/Pair.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -49,7 +50,7 @@ public:
 	DynamicArray<HashString> _ComputeRenderTargets;
 
 	//The input render targets.
-	DynamicArray<HashString> _InputRenderTargets;
+	DynamicArray<Pair<HashString, SamplerProperties>> _InputRenderTargets;
 
 	//The output depth buffer.
 	HashString _OutputDepthBuffer;

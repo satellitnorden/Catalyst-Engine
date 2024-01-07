@@ -189,6 +189,22 @@ public:
 };
 
 /*
+*	Input render target class definition.
+*/
+class InputRenderTarget final
+{
+
+public:
+
+	//The name.
+	DynamicString _Name;
+
+	//The sample properties.
+	SamplerProperties _SamplerProperties;
+
+};
+
+/*
 *	Uniform buffer include class definition.
 */
 class UniformBufferInclude final
@@ -257,7 +273,7 @@ public:
 	DynamicArray<ComputeRenderTarget> _ComputeRenderTargets;
 
 	//The input render targets.
-	DynamicArray<DynamicString> _InputRenderTargets;
+	DynamicArray<InputRenderTarget> _InputRenderTargets;
 
 	//The output depth buffers.
 	DynamicString _OutputDepthBuffer;
@@ -769,9 +785,9 @@ void GenerateComputeShader
 		//Write the input render targets.
 		if (!render_pipeline_information._InputRenderTargets.Empty())
 		{
-			for (const DynamicString& input_render_target : render_pipeline_information._InputRenderTargets)
+			for (const InputRenderTarget &input_render_target : render_pipeline_information._InputRenderTargets)
 			{
-				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target.Data() << ";" << std::endl;
+				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target._Name.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;
@@ -1101,9 +1117,9 @@ void GenerateVertexShader
 		//Write the input render targets.
 		if (!render_pipeline_information._InputRenderTargets.Empty())
 		{
-			for (const DynamicString& input_render_target : render_pipeline_information._InputRenderTargets)
+			for (const InputRenderTarget &input_render_target : render_pipeline_information._InputRenderTargets)
 			{
-				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target.Data() << ";" << std::endl;
+				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target._Name.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;
@@ -1370,9 +1386,9 @@ void GenerateFragmentShader
 		//Write the input render targets.
 		if (!render_pipeline_information._InputRenderTargets.Empty())
 		{
-			for (const DynamicString &input_render_target : render_pipeline_information._InputRenderTargets)
+			for (const InputRenderTarget &input_render_target : render_pipeline_information._InputRenderTargets)
 			{
-				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target.Data() << ";" << std::endl;
+				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target._Name.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;
@@ -1689,16 +1705,82 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 				if (input_render_target_position != std::string::npos)
 				{
-					StaticArray<DynamicString, 4> input_render_target_strings;
+					StaticArray<DynamicString, 4> arguments;
 
 					TextParsingUtilities::ParseFunctionArguments
 					(
 						current_line.data(),
 						current_line.length(),
-						input_render_target_strings.Data()
+						arguments.Data()
 					);
 
-					render_pipeline_information._InputRenderTargets.Emplace(std::move(input_render_target_strings[0]));
+					render_pipeline_information._InputRenderTargets.Emplace();
+
+					InputRenderTarget &new_input_render_target{ render_pipeline_information._InputRenderTargets.Back() };
+
+					new_input_render_target._Name = arguments[0];
+
+					if (arguments[1] == "LINEAR")
+					{
+						new_input_render_target._SamplerProperties._MagnificationFilter = TextureFilter::LINEAR;
+					}
+
+					else if (arguments[1] == "NEAREST")
+					{
+						new_input_render_target._SamplerProperties._MagnificationFilter = TextureFilter::NEAREST;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					if (arguments[2] == "LINEAR")
+					{
+						new_input_render_target._SamplerProperties._MipmapMode = MipmapMode::LINEAR;
+					}
+
+					else if (arguments[2] == "NEAREST")
+					{
+						new_input_render_target._SamplerProperties._MipmapMode = MipmapMode::NEAREST;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					if (arguments[3] == "CLAMP_TO_BORDER")
+					{
+						new_input_render_target._SamplerProperties._AddressMode = AddressMode::CLAMP_TO_BORDER;
+					}
+
+					else if (arguments[3] == "CLAMP_TO_EDGE")
+					{
+						new_input_render_target._SamplerProperties._AddressMode = AddressMode::CLAMP_TO_EDGE;
+					}
+
+					else if (arguments[3] == "MIRROR_CLAMP_TO_EDGE")
+					{
+						new_input_render_target._SamplerProperties._AddressMode = AddressMode::MIRROR_CLAMP_TO_EDGE;
+					}
+
+					else if (arguments[3] == "MIRRORED_REPEAT")
+					{
+						new_input_render_target._SamplerProperties._AddressMode = AddressMode::MIRRORED_REPEAT;
+					}
+
+					else if (arguments[3] == "REPEAT")
+					{
+						new_input_render_target._SamplerProperties._AddressMode = AddressMode::REPEAT;
+					}
+
+					else
+					{
+						ASSERT(false, "Invalid argument!");
+					}
+
+					new_input_render_target._SamplerProperties._AnisotropicSamples = 0;
 
 					continue;
 				}
@@ -2924,9 +3006,9 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 		{
 			parameters._InputRenderTargets.Reserve(render_pipeline_information._InputRenderTargets.Size());
 
-			for (const DynamicString &input_render_target : render_pipeline_information._InputRenderTargets)
+			for (const InputRenderTarget &input_render_target : render_pipeline_information._InputRenderTargets)
 			{
-				parameters._InputRenderTargets.Emplace(HashString(input_render_target.Data()));
+				parameters._InputRenderTargets.Emplace(HashString(input_render_target._Name.Data()), input_render_target._SamplerProperties);
 			}
 		}
 

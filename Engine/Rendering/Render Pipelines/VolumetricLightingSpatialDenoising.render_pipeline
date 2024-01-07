@@ -6,8 +6,8 @@ IncludeUniformBuffer(General);
 IncludeShaderFunctionLibrary(Camera);
 
 //Declare input render targets.
-InputRenderTarget(SceneFeatures2Half /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
-InputRenderTarget(InputVolumetricLighting /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+InputRenderTarget(SceneFeatures2Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(InputVolumetricLighting /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
 OutputRenderTarget(OutputVolumetricLighting);

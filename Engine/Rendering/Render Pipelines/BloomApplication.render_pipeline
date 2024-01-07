@@ -1,5 +1,5 @@
 //Declare input render targets.
-InputRenderTarget(Scene /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+InputRenderTarget(Scene /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
 OutputRenderTarget(INTERMEDIATE_RGBA_FLOAT32_1);

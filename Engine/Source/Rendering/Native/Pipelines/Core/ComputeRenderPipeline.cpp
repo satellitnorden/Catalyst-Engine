@@ -63,7 +63,7 @@ void ComputeRenderPipeline::Initialize(const ComputeRenderPipelineParameters &pa
 				ASSERT(current_binding_index <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS");
 			}
 
-			for (const HashString input_render_target : _RenderPipelineResource->_InputRenderTargets)
+			for (const Pair<HashString, SamplerProperties> &input_render_target : _RenderPipelineResource->_InputRenderTargets)
 			{
 				bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::COMPUTE);
 			
@@ -128,7 +128,7 @@ void ComputeRenderPipeline::Initialize(const ComputeRenderPipelineParameters &pa
 				);
 			}
 
-			for (const HashString input_render_target : _RenderPipelineResource->_InputRenderTargets)
+			for (const Pair<HashString, SamplerProperties> &input_render_target : _RenderPipelineResource->_InputRenderTargets)
 			{
 				RenderTargetHandle render_target;
 
@@ -151,7 +151,7 @@ void ComputeRenderPipeline::Initialize(const ComputeRenderPipelineParameters &pa
 				//Otherwise, try the shared render target manager.
 				if (!found)
 				{
-					render_target = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(input_render_target);
+					render_target = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(input_render_target._First);
 				}
 
 				RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable
@@ -160,7 +160,7 @@ void ComputeRenderPipeline::Initialize(const ComputeRenderPipelineParameters &pa
 					0,
 					&render_data_table,
 					render_target,
-					RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)
+					RenderingSystem::Instance->GetSampler(input_render_target._Second)
 				);
 			}
 

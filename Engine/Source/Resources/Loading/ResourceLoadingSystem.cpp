@@ -390,7 +390,7 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 		if (length > 0)
 		{
 			data->_InputRenderTargets.Upsize<false>(length);
-			file->Read(data->_InputRenderTargets.Data(), sizeof(HashString) * data->_InputRenderTargets.Size());
+			file->Read(data->_InputRenderTargets.Data(), sizeof(Pair<HashString, SamplerProperties>) * data->_InputRenderTargets.Size());
 		}
 	}
 

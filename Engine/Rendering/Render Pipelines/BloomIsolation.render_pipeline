@@ -2,7 +2,7 @@
 IncludeUniformBuffer(PostProcessing);
 
 //Declare input render targets.
-InputRenderTarget(INTERMEDIATE_RGBA_FLOAT32_1 /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+InputRenderTarget(INTERMEDIATE_RGBA_FLOAT32_1 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
 OutputRenderTarget(Scene);

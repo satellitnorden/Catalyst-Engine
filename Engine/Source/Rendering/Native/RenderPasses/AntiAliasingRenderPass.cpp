@@ -59,7 +59,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 			(
 				RenderingSystem::Instance->GetRenderingConfiguration()->GetAntiAliasingMode() == RenderingConfiguration::AntiAliasingMode::NONE,
 				RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE),
-				RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_2)
+				RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_2)
 			);
 
 			AddPipeline(&_FastApproximateAntiAliasingGraphicsPipeline);
@@ -76,17 +76,24 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 			}
 
 			//Initialize and add the pipelines.
-			SetNumberOfPipelines(_TemporalAntiAliasingGraphicsPipelines.Size());
+			SetNumberOfPipelines(_TemporalAntiAliasingPipelines.Size());
 
-			_TemporalAntiAliasingGraphicsPipelines[0].Initialize(	_TemporalAntiAliasingRenderTargets[0],
-																	_TemporalAntiAliasingRenderTargets[1]);
-
-			_TemporalAntiAliasingGraphicsPipelines[1].Initialize(	_TemporalAntiAliasingRenderTargets[1],
-																	_TemporalAntiAliasingRenderTargets[0]);
-
-			for (TemporalAntiAliasingGraphicsPipeline& pipeline : _TemporalAntiAliasingGraphicsPipelines)
+			for (GraphicsRenderPipeline &pipeline : _TemporalAntiAliasingPipelines)
 			{
 				AddPipeline(&pipeline);
+			}
+
+			for (uint64 i{ 0 }; i < _TemporalAntiAliasingPipelines.Size(); ++i)
+			{
+				GraphicsRenderPipelineParameters parameters;
+
+				parameters._InputRenderTargets.Emplace(HashString("SceneNearest"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
+				parameters._InputRenderTargets.Emplace(HashString("SceneLinear"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
+				parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), CatalystBaseMath::IsEven(i) ? _TemporalAntiAliasingRenderTargets[0] : _TemporalAntiAliasingRenderTargets[1]);
+				
+				parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), CatalystBaseMath::IsEven(i) ? _TemporalAntiAliasingRenderTargets[1] : _TemporalAntiAliasingRenderTargets[0]);
+			
+				_TemporalAntiAliasingPipelines[i].Initialize(parameters);
 			}
 
 			break;
@@ -153,21 +160,21 @@ void AntiAliasingRenderPass::Execute() NOEXCEPT
 			}
 
 			//Execute the current buffer, don't include the rest.
-			for (uint64 i{ 0 }, size{ _TemporalAntiAliasingGraphicsPipelines.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ _TemporalAntiAliasingPipelines.Size() }; i < size; ++i)
 			{
 				if (i == _TemporalAntiAliasingCurrentBufferIndex)
 				{
-					_TemporalAntiAliasingGraphicsPipelines[i].Execute(weight_override, weight_override_weight);
+					_TemporalAntiAliasingPipelines[i].Execute();
 				}
 
 				else
 				{
-					_TemporalAntiAliasingGraphicsPipelines[i].SetIncludeInRender(false);
+					_TemporalAntiAliasingPipelines[i].SetIncludeInRender(false);
 				}
 			}
 
 			//Update the current buffer index.
-			_TemporalAntiAliasingCurrentBufferIndex = _TemporalAntiAliasingCurrentBufferIndex == _TemporalAntiAliasingGraphicsPipelines.Size() - 1 ? 0 : _TemporalAntiAliasingCurrentBufferIndex + 1;
+			_TemporalAntiAliasingCurrentBufferIndex = _TemporalAntiAliasingCurrentBufferIndex == _TemporalAntiAliasingPipelines.Size() - 1 ? 0 : _TemporalAntiAliasingCurrentBufferIndex + 1;
 
 			break;
 		}
@@ -200,7 +207,7 @@ void AntiAliasingRenderPass::Terminate() NOEXCEPT
 		case RenderingConfiguration::AntiAliasingMode::TEMPORAL:
 		{
 			//Terminate all pipelines.
-			for (TemporalAntiAliasingGraphicsPipeline& pipeline : _TemporalAntiAliasingGraphicsPipelines)
+			for (GraphicsRenderPipeline &pipeline : _TemporalAntiAliasingPipelines)
 			{
 				pipeline.Terminate();
 			}

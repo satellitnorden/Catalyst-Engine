@@ -3,9 +3,9 @@ IncludeUniformBuffer(Camera);
 IncludeUniformBuffer(General);
 
 //Declare input render targets.
-InputRenderTarget(PreviousTemporalBuffer /* Identifier */, Linear /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
-InputRenderTarget(InputAmbientOcclusion /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
-InputRenderTarget(SceneFeatures4Half /* Identifier */, Nearest /* Magnification Filter */, Nearest /* Mipmap Mode */, ClampToEdge /* Address Mode */);
+InputRenderTarget(PreviousTemporalBuffer /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(InputAmbientOcclusion /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures4Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
 OutputRenderTarget(CurrentTemporalBuffer);

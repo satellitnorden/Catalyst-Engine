@@ -31,7 +31,7 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 	{
 		//Create the render data table layout.
 		{
-			constexpr uint64 MAX_BINDINGS{ 6 };
+			constexpr uint64 MAX_BINDINGS{ 7 };
 
 			StaticArray<RenderDataTableLayoutBinding, MAX_BINDINGS> bindings;
 			uint32 current_binding_index{ 0 };
@@ -63,7 +63,7 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 				ASSERT(current_binding_index <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS");
 			}
 
-			for (const HashString input_render_target : _RenderPipelineResource->_InputRenderTargets)
+			for (const Pair<HashString, SamplerProperties> &input_render_target : _RenderPipelineResource->_InputRenderTargets)
 			{
 				bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT);
 			
@@ -119,16 +119,16 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 				);
 			}
 
-			for (const HashString input_render_target : _RenderPipelineResource->_InputRenderTargets)
+			for (const Pair<HashString, SamplerProperties> &input_render_target : _RenderPipelineResource->_InputRenderTargets)
 			{
 				RenderTargetHandle render_target;
 
 				//First check if we received an input render target in the parameters.
 				bool found{ false };
 
-				for (const Pair<HashString, RenderTargetHandle>& _input_render_target : parameters._InputRenderTargets)
+				for (const Pair<HashString, RenderTargetHandle> &_input_render_target : parameters._InputRenderTargets)
 				{
-					if (_input_render_target._First == input_render_target)
+					if (_input_render_target._First == input_render_target._First)
 					{
 						render_target = _input_render_target._Second;
 						found = true;
@@ -140,7 +140,7 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 				//Otherwise, try the shared render target manager.
 				if (!found)
 				{
-					render_target = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(input_render_target);
+					render_target = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(input_render_target._First);
 				}
 
 				RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable
@@ -149,7 +149,7 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 					0,
 					&render_data_table,
 					render_target,
-					RenderingSystem::Instance->GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)
+					RenderingSystem::Instance->GetSampler(input_render_target._Second)
 				);
 			}
 		}

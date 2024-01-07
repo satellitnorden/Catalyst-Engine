@@ -46,7 +46,7 @@ public:
 	DynamicArray<HashString> _ComputeRenderTargets;
 
 	//The input render targets.
-	DynamicArray<HashString> _InputRenderTargets;
+	DynamicArray<Pair<HashString, SamplerProperties>> _InputRenderTargets;
 
 	//The output depth buffer.
 	HashString _OutputDepthBuffer;
