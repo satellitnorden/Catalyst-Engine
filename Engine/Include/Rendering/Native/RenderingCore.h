@@ -337,11 +337,6 @@ enum class PipelineStageFlags : uint8
 enum class RenderTarget : uint8
 {
 	/*
-	*	Intermediate render target.
-	*/
-	INTERMEDIATE_RGBA_UINT8,
-
-	/*
 	*	Intermediate render target at half resolution.
 	*/
 	INTERMEDIATE_RGBA_FLOAT32_HALF_2,
