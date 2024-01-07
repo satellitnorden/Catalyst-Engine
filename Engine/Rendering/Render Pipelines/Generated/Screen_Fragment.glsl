@@ -187,12 +187,12 @@ bool ValidScreenCoordinate(vec2 X)
 
 layout (location = 0) in vec2 InTextureCoordinate;
 
-layout (set = 1, binding = 0) uniform sampler2D Scene;
+layout (set = 1, binding = 0) uniform sampler2D SceneLowDynamicRange2;
 
 layout (location = 0) out vec4 Screen;
 
 void main()
 {
-    vec4 scene_texture_sample = texture(Scene, InTextureCoordinate);
+    vec4 scene_texture_sample = texture(SceneLowDynamicRange2, InTextureCoordinate);
 	Screen = scene_texture_sample;
 }

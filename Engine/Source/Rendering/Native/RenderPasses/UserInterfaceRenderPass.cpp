@@ -51,7 +51,7 @@ void UserInterfaceRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_UserInterfaceGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_UserInterfaceGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
+	_UserInterfaceGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
 }
 
 /*

@@ -2,4 +2,5 @@ UniformBuffer(PostProcessing)
 {
     float BLOOM_THRESHOLD;
     float BLOOM_INTENSITY;
+    float MOTION_BLUR_INTENSITY;
 };

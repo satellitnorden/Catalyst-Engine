@@ -1,8 +1,6 @@
 #version 460
 
 #extension GL_ARB_separate_shader_objects : require
-layout (early_fragment_tests) in;
-
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -201,131 +199,65 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (set = 1, binding = 1) uniform sampler SAMPLER;
-
-/*
-*   Linearizes a depth value.
-*/
-float LinearizeDepth(float depth)
+layout (std140, set = 1, binding = 1) uniform General
 {
-    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
-}
-
-/*
-*   Calculates the view space position.
-*/
-vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
-{
-    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
-    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
-    view_space_position.xyz *= inverse_view_space_position_denominator;
-
-    return view_space_position.xyz;
-}
-
-/*
-*   Calculates the view space distance.
-*/
-float CalculateViewSpaceDistance(vec2 texture_coordinate, float depth)
-{
-    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
-
-    return view_space_position.z / view_space_position.w;
-}
-
-/*
-*   Calculates the world position.
-*/
-vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
-{
-    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
-    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
-    view_space_position *= inverse_view_space_position_denominator;
-    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
-
-    return world_space_position.xyz;
-}
-
-/*
-*   Returns the current screen coordinate with the given view matrix and world position.
-*/
-vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
-{
-  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
-  float denominator = 1.0f / view_space_position.w;
-  view_space_position.xy *= denominator;
-
-  return view_space_position.xy * 0.5f + 0.5f;
-}
-
-/*
-*   Returns the previous screen coordinate with the given view matrix and world position.
-*/
-vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
-{
-  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
-  float denominator = 1.0f / view_space_position.w;
-  view_space_position.xy *= denominator;
-
-  return view_space_position.xy * 0.5f + 0.5f;
-}
-
-/*
-*   Calculates a screen position, including the (linearized) depth from the given world position.
-*/
-vec3 CalculateScreenPosition(vec3 world_position)
-{
-    vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
-    float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
-    view_space_position.xyz *= view_space_position_coefficient_reciprocal;
-
-    view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
-    view_space_position.z = LinearizeDepth(view_space_position.z);
-    
-    return view_space_position.xyz;
-}
-
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) float HALF_WIDTH;
-	layout (offset = 20) float WHOLE_WIDTH;
-	layout (offset = 24) float HEIGHT;
-	layout (offset = 28) uint MATERIAL_INDEX;
-	layout (offset = 32) float START_FADE_IN_DISTANCE;
-	layout (offset = 36) float END_FADE_IN_DISTANCE;
-	layout (offset = 40) float START_FADE_OUT_DISTANCE;
-	layout (offset = 44) float END_FADE_OUT_DISTANCE;
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
 };
 
-layout (location = 0) in mat3 InTangentSpaceMatrix;
-layout (location = 3) in vec3 InWorldPosition;
-layout (location = 4) in vec2 InTextureCoordinate;
+layout (std140, set = 1, binding = 2) uniform PostProcessing
+{
+	layout (offset = 0) float BLOOM_THRESHOLD;
+	layout (offset = 4) float BLOOM_INTENSITY;
+	layout (offset = 8) float MOTION_BLUR_INTENSITY;
+};
 
-layout (location = 0) out vec4 SceneFeatures1;
-layout (location = 1) out vec4 SceneFeatures2;
-layout (location = 2) out vec4 SceneFeatures3;
-layout (location = 3) out vec4 SceneFeatures4;
-layout (location = 4) out vec4 Scene;
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    return texture(BLUE_NOISE_TEXTURES[(BLUE_NOISE_TEXTURE_INDEX + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1)], vec2(coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
+
+layout (location = 0) in vec2 InScreenCoordinate;
+
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4;
+layout (set = 1, binding = 4) uniform sampler2D SceneNearest;
+layout (set = 1, binding = 5) uniform sampler2D SceneLinear;
+
+layout (location = 0) out vec4 SceneLowDynamicRange1;
 
 void main()
 {
-    vec4 albedo_thickness;
-    EVALUATE_ALBEDO_THICKNESS(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, albedo_thickness);
-    vec4 normal_map_displacement;
-    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, normal_map_displacement);
-    vec4 material_properties;
-    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, material_properties);
-    vec3 shading_normal = normal_map_displacement.xyz * 2.0f - 1.0f;
-    shading_normal = InTangentSpaceMatrix * shading_normal;
-    shading_normal = normalize(shading_normal);
-    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) + CURRENT_FRAME_JITTER;
-	SceneFeatures1 = albedo_thickness;
-	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
-	SceneFeatures3 = material_properties;
-	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
-	Scene = vec4(albedo_thickness.rgb*material_properties[3]*MATERIALS[MATERIAL_INDEX]._EmissiveMultiplier,1.0f);
+    #define NUMBER_OF_SAMPLES (8)
+    vec2 velocity = texture(SceneFeatures4, InScreenCoordinate).xy;
+    vec2 blur_direction = velocity * -1.0f * MOTION_BLUR_INTENSITY;
+    float offsets[NUMBER_OF_SAMPLES];
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
+    {
+        vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), i);
+        offsets[i * 4 + 0] = blue_noise_texture_sample.x;
+        offsets[i * 4 + 1] = blue_noise_texture_sample.y;
+        offsets[i * 4 + 2] = blue_noise_texture_sample.z;
+        offsets[i * 4 + 3] = blue_noise_texture_sample.w;
+    }
+    vec3 blurred_scene = vec3(0.0f);
+    float weight = 0.0f;
+    {
+        for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+        {
+            vec2 sample_coordinate = InScreenCoordinate + blur_direction * offsets[i];
+            vec3 _sample = texture(SceneLinear, sample_coordinate).rgb;
+            float sample_weight = float(ValidScreenCoordinate(sample_coordinate));
+            blurred_scene += _sample * sample_weight;
+            weight += sample_weight;
+        }
+    }
+    blurred_scene /= float(weight);
+	SceneLowDynamicRange1 = vec4(blurred_scene,1.0f);
 }

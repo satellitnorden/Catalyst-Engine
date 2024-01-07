@@ -483,7 +483,7 @@ void main()
     float roughness_multiplier = mix(ROUGHNESS_MULTIPLIERS[X_index_1], ROUGHNESS_MULTIPLIERS[X_index_2], X_fractional);
     vec3 shading_normal = normalize(InNormal);
     shading_normal.xz *= gl_FrontFacing ? -1.0f : 1.0f;
-    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) + CURRENT_FRAME_JITTER;
 	SceneFeatures1 = vec4(albedo_thickness.rgb*albedo_multiplier,InThickness);
 	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
 	SceneFeatures3 = material_properties*vec4(roughness_multiplier,1.0f,InAmbientOcclusion,1.0f);

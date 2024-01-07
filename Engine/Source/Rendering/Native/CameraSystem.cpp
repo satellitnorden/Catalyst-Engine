@@ -29,13 +29,26 @@ void CameraSystem::Initialize() NOEXCEPT
 	_DefaultCamera = CreateCamera();
 }
 
+vec2 CalculateCurrentScreenCoordinate(Matrix4x4 &WORLD_TO_CLIP_MATRIX, vec3 world_position)
+{
+	vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+	float denominator = 1.0f / view_space_position.w;
+	view_space_position.x *= denominator;
+	view_space_position.y *= denominator;
+
+	view_space_position.x = view_space_position.x * 0.5f + 0.5f;
+	view_space_position.y = view_space_position.y * 0.5f + 0.5f;
+
+	return vec2(view_space_position.x, view_space_position.y);
+}
+
 /*
 *	Updates the camera system during the render update phase.
 */
 void CameraSystem::RenderUpdate() NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 JITTER_SAMPLE_MULTIPLIER{ 1.0f };
+	constexpr float32 JITTER_SAMPLE_MULTIPLIER{ 0.5f };
 	constexpr StaticArray<Vector2<float32>, 16> JITTER_SAMPLES
 	{
 		(Vector2<float32>(HaltonSequence::Generate(0, 3), HaltonSequence::Generate(1, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
@@ -117,6 +130,14 @@ void CameraSystem::RenderUpdate() NOEXCEPT
 
 	//Update the previous camera world transform.
 	_PreviousCameraWorldTransform = GetCurrentCamera()->GetWorldTransform();
+
+	vec2 _1 = CalculateCurrentScreenCoordinate(_CameraUniformData._WorldToClipMatrix, vec3(0.0f, 0.0f, 0.0f));
+	vec2 _2 = CalculateCurrentScreenCoordinate(_CameraUniformData._PreviousWorldToClipMatrix, vec3(0.0f, 0.0f, 0.0f));
+
+	vec2 _3 = _1 - _2 - _CameraUniformData._CurrentFrameJitter;
+	vec2 _4 = _1 - _2 + _CameraUniformData._CurrentFrameJitter;
+
+	int x = 0;
 }
 
 /*

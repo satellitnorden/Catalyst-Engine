@@ -381,7 +381,7 @@ void main()
     shading_normal = InTangentSpaceMatrix * shading_normal;
     shading_normal = normalize(shading_normal);
     shading_normal = gl_FrontFacing ? shading_normal : -shading_normal;
-    vec2 velocity = CalculateCurrentScreenCoordinate(InCurrentWorldPosition) - CalculatePreviousScreenCoordinate(InPreviousWorldPosition) - CURRENT_FRAME_JITTER;
+    vec2 velocity = CalculateCurrentScreenCoordinate(InCurrentWorldPosition) - CalculatePreviousScreenCoordinate(InPreviousWorldPosition) + CURRENT_FRAME_JITTER;
 	SceneFeatures1 = albedo_thickness;
 	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
 	SceneFeatures3 = material_properties;

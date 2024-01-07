@@ -56,7 +56,7 @@ void ImGuiGraphicsPipeline::Initialize() NOEXCEPT
 		SetIsRenderingDirectlyToScreen(false);
 
 		SetNumberOfOutputRenderTargets(1);
-		AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
+		AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
 	}
 
 	//Add the render data table layouts.

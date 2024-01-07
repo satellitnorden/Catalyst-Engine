@@ -185,7 +185,7 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (set = 1, binding = 0) uniform sampler2D Scene;
+layout (set = 1, binding = 0) uniform sampler2D SceneLowDynamicRange2;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 

@@ -47,7 +47,7 @@ Fragment
     vec3 world_position = CalculateWorldPosition(InScreenCoordinate, 0.0f);
 
     //Calculate the velocity.
-    vec2 velocity = InScreenCoordinate - CalculatePreviousScreenCoordinate(world_position) - CURRENT_FRAME_JITTER;
+    vec2 velocity = InScreenCoordinate - CalculatePreviousScreenCoordinate(world_position) + CURRENT_FRAME_JITTER;
 
     //Write the fragment.
     OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));

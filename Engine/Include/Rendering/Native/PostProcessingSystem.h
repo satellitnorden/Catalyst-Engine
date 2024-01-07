@@ -263,6 +263,9 @@ private:
 		//The bloom intensity.
 		float32 _BloomIntensity;
 
+		//The motion blur intensity.
+		float32 _MotionBlurIntensity{ 1.0f };
+
 	};
 
 	//The bloom threshold.

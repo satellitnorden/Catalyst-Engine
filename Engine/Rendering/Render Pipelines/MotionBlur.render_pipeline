@@ -1,0 +1,87 @@
+//Declare uniform buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+IncludeUniformBuffer(PostProcessing);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(BlueNoise);
+
+//Declare input render targets.
+InputRenderTarget(SceneFeatures4 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneNearest /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneLinear /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(SceneLowDynamicRange1);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Constants.
+    #define NUMBER_OF_SAMPLES (8)
+
+    //Retrieve the velocity.
+    vec2 velocity = texture(SceneFeatures4, InScreenCoordinate).xy;
+
+    //Calculate the blur direction.
+    vec2 blur_direction = velocity * -1.0f * MOTION_BLUR_INTENSITY;
+
+    //Calculate the offsets.
+    float offsets[NUMBER_OF_SAMPLES];
+
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
+    {
+        vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), i);
+        
+        offsets[i * 4 + 0] = blue_noise_texture_sample.x;
+        offsets[i * 4 + 1] = blue_noise_texture_sample.y;
+        offsets[i * 4 + 2] = blue_noise_texture_sample.z;
+        offsets[i * 4 + 3] = blue_noise_texture_sample.w;
+    }
+
+    //Blur the scene in the blur direction.
+    vec3 blurred_scene = vec3(0.0f);
+    float weight = 0.0f;
+
+    //Add a sample in the middle, to start with.
+    //blurred_scene += texture(SceneNearest, InScreenCoordinate).rgb;
+    //weight += 1.0f;
+
+    //if (MOTION_BLUR_INTENSITY > 0.0f)
+    {
+        for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+        {
+            vec2 sample_coordinate = InScreenCoordinate + blur_direction * offsets[i];
+            vec3 _sample = texture(SceneLinear, sample_coordinate).rgb;
+            float sample_weight = float(ValidScreenCoordinate(sample_coordinate));
+
+            blurred_scene += _sample * sample_weight;
+            weight += sample_weight;
+        }
+    }
+
+    //Normalize the blurred scene.
+    blurred_scene /= float(weight);
+
+    //Output the fragment.
+    OutputFragment(SceneLowDynamicRange1, vec4(blurred_scene, 1.0f));
+    //OutputFragment(SceneLowDynamicRange1, vec4(vec3(velocity, 0.0f) * 100.0f, 1.0f));
+}

@@ -106,7 +106,7 @@ Fragment
     shading_normal = normalize(shading_normal);
 
     //Calculate the velocity.
-    vec2 velocity = CalculateCurrentScreenCoordinate(InCurrentWorldPosition) - CalculatePreviousScreenCoordinate(InPreviousWorldPosition) - CURRENT_FRAME_JITTER;
+    vec2 velocity = CalculateCurrentScreenCoordinate(InCurrentWorldPosition) - CalculatePreviousScreenCoordinate(InPreviousWorldPosition) + CURRENT_FRAME_JITTER;
 
     //Output the fragments.
     OutputFragment(SceneFeatures1, albedo_thickness);

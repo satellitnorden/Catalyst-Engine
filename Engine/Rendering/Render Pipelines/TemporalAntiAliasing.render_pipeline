@@ -15,7 +15,7 @@ InputRenderTarget(PreviousTemporalBuffer /* Identifier */, LINEAR /* Magnificati
 
 //Declare output render targets.
 OutputRenderTarget(CurrentTemporalBuffer);
-OutputRenderTarget(INTERMEDIATE_RGBA_FLOAT32_2);
+OutputRenderTarget(SceneLowDynamicRange2);
 
 //Declare render resolution.
 RenderResolution(MAIN_FULL);
@@ -69,7 +69,7 @@ Fragment
 	}
 
 	//Calculate the previous screen coordinate.
-	vec2 previous_screen_coordinate = InScreenCoordinate - closest_velocity - CURRENT_FRAME_JITTER;
+	vec2 previous_screen_coordinate = InScreenCoordinate - closest_velocity;
 
 	//Sample the previous frame texture.
 	vec3 previous_frame = texture(PreviousTemporalBuffer, previous_screen_coordinate).rgb;
@@ -87,12 +87,12 @@ Fragment
 	previous_frame_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
 
 	//Sample the current frame.
-	vec3 current_frame = texture(SceneLinear, InScreenCoordinate - CURRENT_FRAME_JITTER).rgb;
+	vec3 current_frame = texture(SceneLinear, InScreenCoordinate + CURRENT_FRAME_JITTER).rgb;
 
 	//Blend the frames.
 	vec3 blended_frame = mix(current_frame, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
 
     //Output the fragments.
     OutputFragment(CurrentTemporalBuffer, vec4(blended_frame, 1.0f));
-    OutputFragment(INTERMEDIATE_RGBA_FLOAT32_2, vec4(blended_frame, 1.0f));
+    OutputFragment(SceneLowDynamicRange2, vec4(blended_frame, 1.0f));
 }

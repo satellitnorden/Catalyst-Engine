@@ -1,5 +1,5 @@
 //Declare input render targets.
-InputRenderTarget(Scene /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneLowDynamicRange2 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
 OutputRenderTarget(Screen);
@@ -26,7 +26,7 @@ Fragment
     InputParameter(vec2, InTextureCoordinate);
 
     //Sample the scene texture.
-    vec4 scene_texture_sample = texture(Scene, InTextureCoordinate);
+    vec4 scene_texture_sample = texture(SceneLowDynamicRange2, InTextureCoordinate);
 
     //Write the fragment.
     OutputFragment(Screen, scene_texture_sample);

@@ -115,11 +115,11 @@ enum class DefaultNativeRenderPassStage : uint8
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DEBUG_RENDERING,
 #endif
-	DEPTH_OF_FIELD,
-	MOTION_BLUR,
 	BLOOM,
 	TONE_MAPPING,
 	ANTI_ALIASING,
+	MOTION_BLUR,
+	DEPTH_OF_FIELD,
 	POST_PROCESSING,
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DEBUG,
@@ -413,14 +413,24 @@ enum class SharedRenderTarget : uint8
 	SCENE_FEATURES_4_HALF,
 
 	/*
-	*	Contains the final color for the scene.
+	*	Contains the final color for the scene, in high dynamic range.
 	*/
 	SCENE,
 
 	/*
-	*	Contains the final color for the previous scene.
+	*	Contains the final color for the previous scene, in high dynamic range.
 	*/
 	PREVIOUS_SCENE,
+
+	/*
+	*	Contains the final color for the scene, in low dynamic range.
+	*/
+	SCENE_LOW_DYNAMIC_RANGE_1,
+
+	/*
+	*	Contains the final color for the scene, in low dynamic range.
+	*/
+	SCENE_LOW_DYNAMIC_RANGE_2,
 
 	/*
 	*	Intermediate render target.

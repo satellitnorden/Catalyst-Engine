@@ -454,7 +454,7 @@ void main()
     final_material.normal_map = final_material.normal_map * 2.0f - 1.0f;
 	final_material.normal_map = normalize(final_material.normal_map);
 	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map);
-    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) + CURRENT_FRAME_JITTER;
 	SceneFeatures1 = vec4(final_material.albedo,1.0f);
 	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
 	SceneFeatures3 = final_material.material_properties;

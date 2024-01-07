@@ -26,4 +26,5 @@ void PostProcessingSystem::RenderUpdate() NOEXCEPT
 	//Update the post processing uniform data.
 	_PostProcessingUniformData._BloomThreshold = _BloomThreshold;
 	_PostProcessingUniformData._BloomIntensity = _BloomIntensity;
+	_PostProcessingUniformData._MotionBlurIntensity = _MotionBlurIntensity;
 }
