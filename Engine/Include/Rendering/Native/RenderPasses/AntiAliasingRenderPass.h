@@ -31,8 +31,8 @@ private:
 	//The current anti aliasing mode.
 	RenderingConfiguration::AntiAliasingMode _CurrentAntiAliasingMode{ RenderingConfiguration::AntiAliasingMode::NONE };
 
-	//The anti aliasing sharpen pipeline.
-	GraphicsRenderPipeline _AntiAliasingSharpenPipeline{ HashString("AntiAliasingSharpen_RenderPipeline") };
+	//The sharpen pipeline.
+	GraphicsRenderPipeline _SharpenPipeline{ HashString("LuminanceSharpen_RenderPipeline") };
 
 	//The passthrough pipeline.
 	GraphicsRenderPipeline _PassthroughPipeline{ HashString("Passthrough_RenderPipeline") };

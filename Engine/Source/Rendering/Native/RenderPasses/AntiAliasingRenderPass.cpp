@@ -46,6 +46,96 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
+	//Register the input stream(s).
+	{
+		struct AntiAliasingSharpenPushConstantData final
+		{
+			float32 _SharpenStrength;
+			float32 _SharpenClamp;
+		};
+
+		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+		(
+			HashString("AntiAliasingSharpen"),
+			DynamicArray<VertexInputAttributeDescription>(),
+			DynamicArray<VertexInputBindingDescription>(),
+			sizeof(AntiAliasingSharpenPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				//Clear the entries.
+				input_stream->_Entries.Clear();
+
+				//Clear the push constant data memory.
+				input_stream->_PushConstantDataMemory.Clear();
+
+				//Add an entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._VertexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBufferOffset = 0;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 3;
+				new_entry._IndexCount = 0;
+				new_entry._InstanceCount = 0;
+
+				//Set up the push constant data.
+				AntiAliasingSharpenPushConstantData push_constant_data;
+
+				switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAntiAliasingMode())
+				{
+					case RenderingConfiguration::AntiAliasingMode::NONE:
+					{
+						push_constant_data._SharpenStrength = 0.0f;
+						push_constant_data._SharpenClamp = 1.0f;
+
+						break;
+					}
+
+					case RenderingConfiguration::AntiAliasingMode::FAST_APPROXIMATE:
+					{
+						push_constant_data._SharpenStrength = 1.0f;
+						push_constant_data._SharpenClamp = 1.0f;
+
+						break;
+					}
+
+					case RenderingConfiguration::AntiAliasingMode::TEMPORAL:
+					{
+						push_constant_data._SharpenStrength = 2.0f;
+						push_constant_data._SharpenClamp = 1.0f;
+
+						break;
+					}
+
+					case RenderingConfiguration::AntiAliasingMode::FAST_APPROXIMATE_PLUS_TEMPORAL:
+					{
+						push_constant_data._SharpenStrength = 4.0f;
+						push_constant_data._SharpenClamp = 1.0f;
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
+				}
+
+				for (uint64 i{ 0 }; i < sizeof(AntiAliasingSharpenPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			},
+			RenderInputStream::Mode::DRAW,
+			nullptr
+		);
+	}
+
 	//Set up differently depending on the anti aliasing mode.
 	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetAntiAliasingMode())
 	{
@@ -101,7 +191,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 				AddPipeline(&pipeline);
 			}
 
-			AddPipeline(&_AntiAliasingSharpenPipeline);
+			AddPipeline(&_SharpenPipeline);
 
 			for (uint64 i{ 0 }; i < _TemporalAntiAliasingPipelines.Size(); ++i)
 			{
@@ -122,8 +212,9 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 
 				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
 				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
+				parameters._InputStreamSubscriptions.Emplace(HashString("AntiAliasingSharpen"));
 
-				_AntiAliasingSharpenPipeline.Initialize(parameters);
+				_SharpenPipeline.Initialize(parameters);
 			}
 
 			break;
@@ -147,7 +238,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 				AddPipeline(&pipeline);
 			}
 
-			AddPipeline(&_AntiAliasingSharpenPipeline);
+			AddPipeline(&_SharpenPipeline);
 			AddPipeline(&_PassthroughPipeline);
 
 			{
@@ -178,8 +269,9 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 
 				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
 				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
+				parameters._InputStreamSubscriptions.Emplace(HashString("AntiAliasingSharpen"));
 
-				_AntiAliasingSharpenPipeline.Initialize(parameters);
+				_SharpenPipeline.Initialize(parameters);
 			}
 
 			{
@@ -258,8 +350,8 @@ void AntiAliasingRenderPass::Execute() NOEXCEPT
 			//Update the current buffer index.
 			_TemporalAntiAliasingCurrentBufferIndex = _TemporalAntiAliasingCurrentBufferIndex == _TemporalAntiAliasingPipelines.Size() - 1 ? 0 : _TemporalAntiAliasingCurrentBufferIndex + 1;
 
-			//Execute the anti aliasing sharpen pipeline.
-			_AntiAliasingSharpenPipeline.Execute();
+			//Execute the sharpen pipeline.
+			_SharpenPipeline.Execute();
 
 			break;
 		}
@@ -286,8 +378,8 @@ void AntiAliasingRenderPass::Execute() NOEXCEPT
 			//Update the current buffer index.
 			_TemporalAntiAliasingCurrentBufferIndex = _TemporalAntiAliasingCurrentBufferIndex == _TemporalAntiAliasingPipelines.Size() - 1 ? 0 : _TemporalAntiAliasingCurrentBufferIndex + 1;
 
-			//Execute the anti aliasing sharpen pipeline.
-			_AntiAliasingSharpenPipeline.Execute();
+			//Execute the sharpen pipeline.
+			_SharpenPipeline.Execute();
 
 			//Execute the passthrough pipeline.
 			_PassthroughPipeline.Execute();
@@ -335,6 +427,8 @@ void AntiAliasingRenderPass::Terminate() NOEXCEPT
 				pipeline.Terminate();
 			}
 
+			_SharpenPipeline.Terminate();
+
 			//Destroy the temporal anti aliasing render targets.
 			for (RenderTargetHandle &render_target : _TemporalAntiAliasingRenderTargets)
 			{
@@ -354,7 +448,7 @@ void AntiAliasingRenderPass::Terminate() NOEXCEPT
 				pipeline.Terminate();
 			}
 
-			_AntiAliasingSharpenPipeline.Terminate();
+			_SharpenPipeline.Terminate();
 			_PassthroughPipeline.Terminate();
 
 			//Destroy the temporal anti aliasing render targets.

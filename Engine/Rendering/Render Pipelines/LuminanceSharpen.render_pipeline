@@ -1,0 +1,86 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(General);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(PostProcess);
+
+//Declare input render targets.
+InputRenderTarget(InputRenderTarget /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(OutputRenderTarget);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Declare push constant data.
+PushConstantData(float, SHARPEN_STRENGTH);
+PushConstantData(float, SHARPEN_CLAMP);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Constants.
+    #define LUMINANCE_COEFFICIENTS (vec3(0.2126f, 0.7152f, 0.0722f))
+
+    //Retrieve the original color.
+    vec3 original = texture(InputRenderTarget, InScreenCoordinate).rgb;
+
+    //Combine the sharpen strength and the luminance into one.
+    vec3 sharpen_strength_luminance = LUMINANCE_COEFFICIENTS * SHARPEN_STRENGTH;
+
+    //Calculate the blur.
+    vec3 blur = texture(InputRenderTarget, InScreenCoordinate + (INVERSE_FULL_MAIN_RESOLUTION / 3.0f)).rgb;
+    blur += texture(InputRenderTarget, InScreenCoordinate + (-INVERSE_FULL_MAIN_RESOLUTION / 3.0f)).rgb;
+
+    //Normalize.
+    blur *= 0.5f;
+
+    //Adjust to approximate the strength of the sampling pattern.
+    sharpen_strength_luminance *= 1.5f;
+
+    //Calculate the sharpen.
+    vec3 sharpen = original - blur;
+
+    //Adjust the strength of the sharpening and clamp.
+    vec4 sharpen_strength_luminance_clamp = vec4(sharpen_strength_luminance * (0.5f / SHARPEN_CLAMP), 0.5f);
+
+    //Calculate the luminance, adjust the strength, scale up and clamp.
+	float sharpen_luminance = clamp(dot(vec4(sharpen, 1.0f), sharpen_strength_luminance_clamp), 0.0f, 1.0f);
+
+    //Scale down.
+	sharpen_luminance = (SHARPEN_CLAMP * 2.0f) * sharpen_luminance - SHARPEN_CLAMP;
+
+    //Output the fragment.
+#if 0
+    vec3 output_fragment = vec3(0.0f);
+
+    if (FRAGMENT_COORDINATE.x > 960.0f)
+    {
+        output_fragment = original + sharpen_luminance;
+    }
+
+    else
+    {
+        output_fragment = original;
+    }
+
+    output_fragment *= min(abs(FRAGMENT_COORDINATE.x - 960.0f) * 0.25f, 1.0f);
+
+    OutputFragment(OutputRenderTarget, vec4(output_fragment, 1.0f));
+#else
+    OutputFragment(OutputRenderTarget, vec4(original + sharpen_luminance, 1.0f));
+#endif
+}

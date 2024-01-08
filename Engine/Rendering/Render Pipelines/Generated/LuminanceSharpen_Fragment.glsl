@@ -203,57 +203,44 @@ float PerceptualLuminance(vec3 fragment)
 	return sqrt(dot(fragment, vec3(0.299f, 0.587f, 0.114f)));
 }
 
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) float SHARPEN_STRENGTH;
+	layout (offset = 4) float SHARPEN_CLAMP;
+};
+
 layout (location = 0) in vec2 InScreenCoordinate;
 
 layout (set = 1, binding = 1) uniform sampler2D InputRenderTarget;
-layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2;
 
 layout (location = 0) out vec4 OutputRenderTarget;
 
 void main()
 {
-    vec3 samples[3][3];
-    float minimum_luminance = 1.0f;
-    float maximum_luminance = 0.0f;
-    for (int Y = -1; Y <= 1; ++Y)
-    {
-        for (int X = -1; X <= 1; ++X)
-        {
-            vec2 sample_coordinate = InScreenCoordinate + vec2(X, Y) * INVERSE_FULL_MAIN_RESOLUTION;
-            vec3 _sample = texture(InputRenderTarget, sample_coordinate).rgb;
-            samples[X + 1][Y + 1] = _sample;
-            float sample_luminance = PerceptualLuminance(_sample);
-            minimum_luminance = min(minimum_luminance, sample_luminance);
-            maximum_luminance = max(maximum_luminance, sample_luminance);
-        }
-    }
-    float sharpen_weight = (1.0f - (maximum_luminance - minimum_luminance));
-    sharpen_weight = smoothstep(0.9f, 1.0f, sharpen_weight);
-    float sharpen_kernel[3][3];
-    sharpen_kernel[0][0] = sharpen_kernel[0][2] = sharpen_kernel[2][0] = sharpen_kernel[2][2] = -0.5f * sharpen_weight;
-    sharpen_kernel[0][1] = sharpen_kernel[1][0] = sharpen_kernel[1][2] = sharpen_kernel[2][1] = -1.0f * sharpen_weight;
-    sharpen_kernel[1][1] = 6.0f * sharpen_weight + 1.0f;
-    vec3 sharpened_sample = vec3(0.0f);
-    for (int Y = -1; Y <= 1; ++Y)
-    {
-        for (int X = -1; X <= 1; ++X)
-        {
-            sharpened_sample += samples[X + 1][Y + 1] * sharpen_kernel[X + 1][Y + 1];
-        }
-    }
+    #define LUMINANCE_COEFFICIENTS (vec3(0.2126f, 0.7152f, 0.0722f))
+    vec3 original = texture(InputRenderTarget, InScreenCoordinate).rgb;
+    vec3 sharpen_strength_luminance = LUMINANCE_COEFFICIENTS * SHARPEN_STRENGTH;
+    vec3 blur = texture(InputRenderTarget, InScreenCoordinate + (INVERSE_FULL_MAIN_RESOLUTION / 3.0f)).rgb;
+    blur += texture(InputRenderTarget, InScreenCoordinate + (-INVERSE_FULL_MAIN_RESOLUTION / 3.0f)).rgb;
+    blur *= 0.5f;
+    sharpen_strength_luminance *= 1.5f;
+    vec3 sharpen = original - blur;
+    vec4 sharpen_strength_luminance_clamp = vec4(sharpen_strength_luminance * (0.5f / SHARPEN_CLAMP), 0.5f);
+	float sharpen_luminance = clamp(dot(vec4(sharpen, 1.0f), sharpen_strength_luminance_clamp), 0.0f, 1.0f);
+	sharpen_luminance = (SHARPEN_CLAMP * 2.0f) * sharpen_luminance - SHARPEN_CLAMP;
 #if 0
     vec3 output_fragment = vec3(0.0f);
     if (gl_FragCoord.x > 960.0f)
     {
-        output_fragment = sharpened_sample;
+        output_fragment = original + sharpen_luminance;
     }
     else
     {
-        output_fragment = texture(InputRenderTarget, InScreenCoordinate).rgb;
+        output_fragment = original;
     }
     output_fragment *= min(abs(gl_FragCoord.x - 960.0f) * 0.25f, 1.0f);
-	OutputRenderTarget = vec4(output_fragment,sharpen_weight);
+	OutputRenderTarget = vec4(output_fragment,1.0f);
 #else
-	OutputRenderTarget = vec4(sharpened_sample,sharpen_weight);
+	OutputRenderTarget = vec4(original+sharpen_luminance,1.0f);
 #endif
 }

@@ -71,6 +71,7 @@ FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const Vector3<float32> 
 	const Vector3<float32> upper_left_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(0.0f, 1.0f)) };
 	const Vector3<float32> lower_right_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(1.0f, 0.0f)) };
 	const Vector3<float32> upper_right_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(1.0f, 1.0f)) };
+	const Vector3<float32> straight_direction{ RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(0.5f, 0.5f)) };
 
 	StaticArray<Vector4<float32>, 8> frustum_corners;
 
@@ -84,8 +85,10 @@ FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const Vector3<float32> 
 	frustum_corners[6] = Vector4<float32>(camera_local_position + lower_right_direction * cascade_end, 1.0f);
 	frustum_corners[7] = Vector4<float32>(camera_local_position + upper_right_direction * cascade_end, 1.0f);
 
+	const Vector3<float32> center_position{ camera_local_position + straight_direction * CatalystBaseMath::LinearlyInterpolate(cascade_start, cascade_end, 0.5f) };
+
 	//Construct the light matrix.
-	const Matrix4x4 light_matrix{ Matrix4x4::LookAt(VectorConstants::ZERO, light_direction, CatalystWorldCoordinateSpace::UP) };
+	const Matrix4x4 light_matrix{ Matrix4x4::LookAt(center_position, center_position + light_direction, CatalystWorldCoordinateSpace::UP) };
 
 	//Calculate the light bounding box.
 	float32 minX{ FLOAT32_MAXIMUM };

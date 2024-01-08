@@ -203,8 +203,13 @@ float PerceptualLuminance(vec3 fragment)
 	return sqrt(dot(fragment, vec3(0.299f, 0.587f, 0.114f)));
 }
 
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) float SHARPEN_STRENGTH;
+	layout (offset = 4) float SHARPEN_CLAMP;
+};
+
 layout (set = 1, binding = 1) uniform sampler2D InputRenderTarget;
-layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 
