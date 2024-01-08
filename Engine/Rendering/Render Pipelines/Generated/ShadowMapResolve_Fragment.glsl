@@ -323,9 +323,9 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
-layout (location = 0) in vec2 InScreenCoordinate;
-
 layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2Half;
+
+layout (location = 0) in vec2 InScreenCoordinate;
 
 layout (location = 0) out vec4 INTERMEDIATE_RGBA_FLOAT32_HALF_1;
 

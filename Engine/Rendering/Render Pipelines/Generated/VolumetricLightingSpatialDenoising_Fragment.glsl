@@ -294,10 +294,10 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
-layout (location = 0) in vec2 InScreenCoordinate;
-
 layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2Half;
 layout (set = 1, binding = 3) uniform sampler2D InputVolumetricLighting;
+
+layout (location = 0) in vec2 InScreenCoordinate;
 
 layout (location = 0) out vec4 OutputVolumetricLighting;
 

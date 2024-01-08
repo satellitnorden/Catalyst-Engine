@@ -195,12 +195,12 @@ layout (std140, set = 1, binding = 0) uniform General
 	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
 };
 
-layout (location = 0) in vec2 InScreenCoordinate;
-
 layout (set = 1, binding = 1) uniform sampler2D SceneFeatures1;
 layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2;
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures3;
 layout (set = 1, binding = 4) uniform sampler2D SceneFeatures4;
+
+layout (location = 0) in vec2 InScreenCoordinate;
 
 layout (location = 0) out vec4 SceneFeatures1Half;
 layout (location = 1) out vec4 SceneFeatures2Half;

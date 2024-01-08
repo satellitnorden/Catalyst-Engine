@@ -381,9 +381,9 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 0) uint NUMBER_OF_SAMPLES;
 };
 
-layout (location = 0) in vec2 InScreenCoordinate;
-
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2Half;
+
+layout (location = 0) in vec2 InScreenCoordinate;
 
 layout (location = 0) out vec4 AmbientOcclusion;
 

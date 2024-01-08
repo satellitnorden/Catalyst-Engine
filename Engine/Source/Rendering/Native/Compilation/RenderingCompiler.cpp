@@ -113,7 +113,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 1
+#if 0
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -540,6 +540,147 @@ void CompileGLSLShader(const char *const RESTRICT file_path, const shaderc_shade
 }
 
 /*
+*	Inserts common things from the render pipeline information into a GLSL shader.
+*/
+void InsertRenderPipelineInformationToGLSL(const RenderPipelineInformation &render_pipeline_information, std::ofstream &glsl_file) NOEXCEPT
+{
+	//Remember the current resource binding.
+	uint32 resource_binding_index{ 0 };
+
+	//Insert any included uniform buffers.
+	if (!render_pipeline_information._UniformBufferIncludes.Empty())
+	{
+		for (const UniformBufferInclude &uniform_buffer_include : render_pipeline_information._UniformBufferIncludes)
+		{
+			GLSLCompilation::InsertBufferDefinition
+			(
+				glsl_file,
+				uniform_buffer_include._FilePath.Data(),
+				resource_binding_index++
+			);
+
+			glsl_file << std::endl;
+		}
+	}
+
+	//Insert any included storage buffers.
+	if (!render_pipeline_information._StorageBufferIncludes.Empty())
+	{
+		for (const StorageBufferInclude &storage_buffer_include : render_pipeline_information._StorageBufferIncludes)
+		{
+			GLSLCompilation::InsertBufferDefinition
+			(
+				glsl_file,
+				storage_buffer_include._FilePath.Data(),
+				resource_binding_index++
+			);
+
+			glsl_file << std::endl;
+		}
+	}
+
+	//Insert any samplers.
+	if (!render_pipeline_information._Samplers.Empty())
+	{
+		for (const Pair<DynamicString, SamplerProperties> &sampler : render_pipeline_information._Samplers)
+		{
+			glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler " << sampler._First.Data() << ";" << std::endl;
+		}
+
+		glsl_file << std::endl;
+	}
+
+	//Insert any compute render targets.
+	if (!render_pipeline_information._ComputeRenderTargets.Empty())
+	{
+		for (const ComputeRenderTarget &compute_render_target : render_pipeline_information._ComputeRenderTargets)
+		{
+			const char *RESTRICT format_string{ nullptr };
+
+			switch (compute_render_target._TextureFormat)
+			{
+				case TextureFormat::R_UINT8:
+				{
+					format_string = "r8";
+
+					break;
+				}
+
+				case TextureFormat::RGBA_UINT8:
+				{
+					format_string = "rgba8";
+
+					break;
+				}
+
+				case TextureFormat::RGBA_FLOAT32:
+				{
+					format_string = "rgba32f";
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ", " << format_string << ") uniform image2D " << compute_render_target._Name.Data() << "; " << std::endl;
+		}
+
+		glsl_file << std::endl;
+	}
+
+	//Insert any included shader function libraries.
+	if (!render_pipeline_information._ShaderFunctionLibraryIncludes.Empty())
+	{
+		for (const DynamicString &shader_function_library_include : render_pipeline_information._ShaderFunctionLibraryIncludes)
+		{
+			GLSLCompilation::InsertShaderFunctionLibrary
+			(
+				glsl_file,
+				shader_function_library_include.Data()
+			);
+
+			glsl_file << std::endl;
+		}
+	}
+
+	//Write the push constant data.
+	if (!render_pipeline_information._PushConstantDataValues.Empty())
+	{
+		uint64 current_offset{ 0 };
+
+		glsl_file << "layout (push_constant) uniform PushConstantData" << std::endl;
+		glsl_file << "{" << std::endl;
+
+		for (const PushConstantDataValue &push_constant_data_value : render_pipeline_information._PushConstantDataValues)
+		{
+			glsl_file << "\tlayout (offset = " << current_offset << ") " << push_constant_data_value._Type.Data() << " " << push_constant_data_value._Name.Data() << ";" << std::endl;
+			current_offset += GLSLCompilation::GetByteOffsetForType(push_constant_data_value._Type.Data());
+		}
+
+		glsl_file << "};" << std::endl;
+
+		glsl_file << std::endl;
+	}
+
+	//Write the input render targets.
+	if (!render_pipeline_information._InputRenderTargets.Empty())
+	{
+		for (const InputRenderTarget &input_render_target : render_pipeline_information._InputRenderTargets)
+		{
+			glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target._Name.Data() << ";" << std::endl;
+		}
+
+		glsl_file << std::endl;
+	}
+}
+
+/*
 *	Generates a compute shader.
 */
 void GenerateComputeShader
@@ -642,9 +783,6 @@ void GenerateComputeShader
 		//Make a copy of the lines.
 		DynamicArray<std::string> glsl_lines{ lines };
 
-		//Remember the current resource binding.
-		uint32 resource_binding_index{ 0 };
-
 		//Open the file.
 		char glsl_file_path[MAXIMUM_FILE_PATH_LENGTH];
 		sprintf_s(glsl_file_path, "%s\\%s_Compute.glsl", generated_file_path, shader_name.c_str());
@@ -661,137 +799,8 @@ void GenerateComputeShader
 		//Insert the global render data.
 		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
 
-		//Insert any included uniform buffers.
-		if (!render_pipeline_information._UniformBufferIncludes.Empty())
-		{
-			for (const UniformBufferInclude& uniform_buffer_include : render_pipeline_information._UniformBufferIncludes)
-			{
-				GLSLCompilation::InsertBufferDefinition
-				(
-					glsl_file,
-					uniform_buffer_include._FilePath.Data(),
-					resource_binding_index++
-				);
-
-				glsl_file << std::endl;
-			}
-		}
-
-		//Insert any included storage buffers.
-		if (!render_pipeline_information._StorageBufferIncludes.Empty())
-		{
-			for (const StorageBufferInclude& storage_buffer_include : render_pipeline_information._StorageBufferIncludes)
-			{
-				GLSLCompilation::InsertBufferDefinition
-				(
-					glsl_file,
-					storage_buffer_include._FilePath.Data(),
-					resource_binding_index++
-				);
-
-				glsl_file << std::endl;
-			}
-		}
-
-		//Insert any samplers.
-		if (!render_pipeline_information._Samplers.Empty())
-		{
-			for (const Pair<DynamicString, SamplerProperties>& sampler : render_pipeline_information._Samplers)
-			{
-				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler " << sampler._First.Data() << ";" << std::endl;
-			}
-
-			glsl_file << std::endl;
-		}
-
-		//Insert any compute render targets.
-		if (!render_pipeline_information._ComputeRenderTargets.Empty())
-		{
-			for (const ComputeRenderTarget &compute_render_target : render_pipeline_information._ComputeRenderTargets)
-			{
-				const char *RESTRICT format_string{ nullptr };
-
-				switch (compute_render_target._TextureFormat)
-				{
-					case TextureFormat::R_UINT8:
-					{
-						format_string = "r8";
-
-						break;
-					}
-
-					case TextureFormat::RGBA_UINT8:
-					{
-						format_string = "rgba8";
-
-						break;
-					}
-
-					case TextureFormat::RGBA_FLOAT32:
-					{
-						format_string = "rgba32f";
-
-						break;
-					}
-
-					default:
-					{
-						ASSERT(false, "Invalid case!");
-
-						break;
-					}
-				}
-
-				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ", " << format_string << ") uniform image2D " << compute_render_target._Name.Data() << "; " << std::endl;
-			}
-
-			glsl_file << std::endl;
-		}
-
-		//Insert any included shader function libraries.
-		if (!render_pipeline_information._ShaderFunctionLibraryIncludes.Empty())
-		{
-			for (const DynamicString& shader_function_library_include : render_pipeline_information._ShaderFunctionLibraryIncludes)
-			{
-				GLSLCompilation::InsertShaderFunctionLibrary
-				(
-					glsl_file,
-					shader_function_library_include.Data()
-				);
-
-				glsl_file << std::endl;
-			}
-		}
-
-		//Write the push constant data.
-		if (!render_pipeline_information._PushConstantDataValues.Empty())
-		{
-			uint64 current_offset{ 0 };
-
-			glsl_file << "layout (push_constant) uniform PushConstantData" << std::endl;
-			glsl_file << "{" << std::endl;
-
-			for (const PushConstantDataValue& push_constant_data_value : render_pipeline_information._PushConstantDataValues)
-			{
-				glsl_file << "\tlayout (offset = " << current_offset << ") " << push_constant_data_value._Type.Data() << " " << push_constant_data_value._Name.Data() << ";" << std::endl;
-				current_offset += GLSLCompilation::GetByteOffsetForType(push_constant_data_value._Type.Data());
-			}
-
-			glsl_file << "};" << std::endl;
-
-			glsl_file << std::endl;
-		}
-
-		//Write the input render targets.
-		if (!render_pipeline_information._InputRenderTargets.Empty())
-		{
-			for (const InputRenderTarget &input_render_target : render_pipeline_information._InputRenderTargets)
-			{
-				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target._Name.Data() << ";" << std::endl;
-			}
-
-			glsl_file << std::endl;
-		}
+		//Insert things from the render pipeline information.
+		InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file);
 
 		//Write the local size.
 		glsl_file << "layout (local_size_x = " << compute_local_size._Width << ", local_size_y = " << compute_local_size._Height << ", local_size_z = " << compute_local_size._Depth << ") in;" << std::endl;
@@ -1004,8 +1013,6 @@ void GenerateVertexShader
 		//Make a copy of the lines.
 		DynamicArray<std::string> glsl_lines{ lines };
 
-		//Remember the current resource binding.
-		uint32 resource_binding_index{ 0 };
 
 		//Open the file.
 		char glsl_file_path[MAXIMUM_FILE_PATH_LENGTH];
@@ -1023,82 +1030,8 @@ void GenerateVertexShader
 		//Insert the global render data.
 		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
 
-		//Insert any included uniform buffers.
-		if (!render_pipeline_information._UniformBufferIncludes.Empty())
-		{
-			for (const UniformBufferInclude &uniform_buffer_include : render_pipeline_information._UniformBufferIncludes)
-			{
-				GLSLCompilation::InsertBufferDefinition
-				(
-					glsl_file,
-					uniform_buffer_include._FilePath.Data(),
-					resource_binding_index++
-				);
-
-				glsl_file << std::endl;
-			}
-		}
-
-		//Insert any included storage buffers.
-		if (!render_pipeline_information._StorageBufferIncludes.Empty())
-		{
-			for (const StorageBufferInclude &storage_buffer_include : render_pipeline_information._StorageBufferIncludes)
-			{
-				GLSLCompilation::InsertBufferDefinition
-				(
-					glsl_file,
-					storage_buffer_include._FilePath.Data(),
-					resource_binding_index++
-				);
-
-				glsl_file << std::endl;
-			}
-		}
-
-		//Insert any samplers.
-		if (!render_pipeline_information._Samplers.Empty())
-		{
-			for (const Pair<DynamicString, SamplerProperties> &sampler : render_pipeline_information._Samplers)
-			{
-				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler " << sampler._First.Data() << ";" << std::endl;
-			}
-
-			glsl_file << std::endl;
-		}
-
-		//Insert any included shader function libraries.
-		if (!render_pipeline_information._ShaderFunctionLibraryIncludes.Empty())
-		{
-			for (const DynamicString &shader_function_library_include : render_pipeline_information._ShaderFunctionLibraryIncludes)
-			{
-				GLSLCompilation::InsertShaderFunctionLibrary
-				(
-					glsl_file,
-					shader_function_library_include.Data()
-				);
-
-				glsl_file << std::endl;
-			}
-		}
-
-		//Write the push constant data.
-		if (!render_pipeline_information._PushConstantDataValues.Empty())
-		{
-			uint64 current_offset{ 0 };
-
-			glsl_file << "layout (push_constant) uniform PushConstantData" << std::endl;
-			glsl_file << "{" << std::endl;
-
-			for (const PushConstantDataValue &push_constant_data_value : render_pipeline_information._PushConstantDataValues)
-			{
-				glsl_file << "\tlayout (offset = " << current_offset << ") " << push_constant_data_value._Type.Data() << " " << push_constant_data_value._Name.Data() << ";" << std::endl;
-				current_offset += GLSLCompilation::GetByteOffsetForType(push_constant_data_value._Type.Data());
-			}
-
-			glsl_file << "};" << std::endl;
-
-			glsl_file << std::endl;
-		}
+		//Insert things from the render pipeline information.
+		InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file);
 
 		//Write the input parameters.
 		if (!input_parameters.Empty())
@@ -1109,17 +1042,6 @@ void GenerateVertexShader
 			for (const Pair<DynamicString, DynamicString> &input_parameter : input_parameters)
 			{
 				glsl_file << "layout (location = " << location_index++ << ") in " << input_parameter._First.Data() << " " << input_parameter._Second.Data() << ";" << std::endl;
-			}
-
-			glsl_file << std::endl;
-		}
-
-		//Write the input render targets.
-		if (!render_pipeline_information._InputRenderTargets.Empty())
-		{
-			for (const InputRenderTarget &input_render_target : render_pipeline_information._InputRenderTargets)
-			{
-				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target._Name.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;
@@ -1264,9 +1186,6 @@ void GenerateFragmentShader
 		//Make a copy of the lines.
 		DynamicArray<std::string> glsl_lines{ lines };
 
-		//Remember the current resource binding.
-		uint32 resource_binding_index{ 0 };
-
 		//Open the file.
 		char glsl_file_path[MAXIMUM_FILE_PATH_LENGTH];
 		sprintf_s(glsl_file_path, "%s\\%s_Fragment.glsl", generated_file_path, shader_name.c_str());
@@ -1290,82 +1209,8 @@ void GenerateFragmentShader
 		//Insert the global render data.
 		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
 
-		//Insert any included uniform buffers.
-		if (!render_pipeline_information._UniformBufferIncludes.Empty())
-		{
-			for (const UniformBufferInclude &uniform_buffer_include : render_pipeline_information._UniformBufferIncludes)
-			{
-				GLSLCompilation::InsertBufferDefinition
-				(
-					glsl_file,
-					uniform_buffer_include._FilePath.Data(),
-					resource_binding_index++
-				);
-
-				glsl_file << std::endl;
-			}
-		}
-
-		//Insert any included storage buffers.
-		if (!render_pipeline_information._StorageBufferIncludes.Empty())
-		{
-			for (const StorageBufferInclude &storage_buffer_include : render_pipeline_information._StorageBufferIncludes)
-			{
-				GLSLCompilation::InsertBufferDefinition
-				(
-					glsl_file,
-					storage_buffer_include._FilePath.Data(),
-					resource_binding_index++
-				);
-
-				glsl_file << std::endl;
-			}
-		}
-
-		//Insert any samplers.
-		if (!render_pipeline_information._Samplers.Empty())
-		{
-			for (const Pair<DynamicString, SamplerProperties> &sampler : render_pipeline_information._Samplers)
-			{
-				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler " << sampler._First.Data() << ";" << std::endl;
-			}
-
-			glsl_file << std::endl;
-		}
-
-		//Insert any included shader function libraries.
-		if (!render_pipeline_information._ShaderFunctionLibraryIncludes.Empty())
-		{
-			for (const DynamicString &shader_function_library_include : render_pipeline_information._ShaderFunctionLibraryIncludes)
-			{
-				GLSLCompilation::InsertShaderFunctionLibrary
-				(
-					glsl_file,
-					shader_function_library_include.Data()
-				);
-
-				glsl_file << std::endl;
-			}
-		}
-
-		//Write the push constant data.
-		if (!render_pipeline_information._PushConstantDataValues.Empty())
-		{
-			uint64 current_offset{ 0 };
-
-			glsl_file << "layout (push_constant) uniform PushConstantData" << std::endl;
-			glsl_file << "{" << std::endl;
-
-			for (const PushConstantDataValue& push_constant_data_value : render_pipeline_information._PushConstantDataValues)
-			{
-				glsl_file << "\tlayout (offset = " << current_offset << ") " << push_constant_data_value._Type.Data() << " " << push_constant_data_value._Name.Data() << ";" << std::endl;
-				current_offset += GLSLCompilation::GetByteOffsetForType(push_constant_data_value._Type.Data());
-			}
-
-			glsl_file << "};" << std::endl;
-
-			glsl_file << std::endl;
-		}
+		//Insert things from the render pipeline information.
+		InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file);
 
 		//Write the input parameters.
 		if (!input_parameters.Empty())
@@ -1378,17 +1223,6 @@ void GenerateFragmentShader
 				glsl_file << "layout (location = " << location_index << ") in " << input_parameter._Type.Data() << " " << input_parameter._Name.Data() << ";" << std::endl;
 			
 				location_index += GLSLCompilation::GetLocationOffsetForType(input_parameter._Type.Data());
-			}
-
-			glsl_file << std::endl;
-		}
-
-		//Write the input render targets.
-		if (!render_pipeline_information._InputRenderTargets.Empty())
-		{
-			for (const InputRenderTarget &input_render_target : render_pipeline_information._InputRenderTargets)
-			{
-				glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << input_render_target._Name.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;

@@ -192,9 +192,9 @@ layout (std140, set = 1, binding = 0) uniform PostProcessing
 	layout (offset = 8) float MOTION_BLUR_INTENSITY;
 };
 
-layout (location = 0) in vec2 InScreenCoordinate;
-
 layout (set = 1, binding = 1) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_1;
+
+layout (location = 0) in vec2 InScreenCoordinate;
 
 layout (location = 0) out vec4 Scene;
 

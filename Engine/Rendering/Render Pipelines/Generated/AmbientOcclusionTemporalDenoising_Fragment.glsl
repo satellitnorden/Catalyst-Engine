@@ -209,11 +209,11 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
 };
 
-layout (location = 0) in vec2 InScreenCoordinate;
-
 layout (set = 1, binding = 2) uniform sampler2D PreviousTemporalBuffer;
 layout (set = 1, binding = 3) uniform sampler2D InputAmbientOcclusion;
 layout (set = 1, binding = 4) uniform sampler2D SceneFeatures4Half;
+
+layout (location = 0) in vec2 InScreenCoordinate;
 
 layout (location = 0) out vec4 CurrentTemporalBuffer;
 layout (location = 1) out vec4 OutputAmbientOcclusion;

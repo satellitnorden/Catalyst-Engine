@@ -467,9 +467,9 @@ vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
 	return vec3(0.0f, 0.0f, 0.0f);
 }
 
-layout (location = 0) in vec2 InTextureCoordinate;
-
 layout (set = 1, binding = 5) uniform sampler2D SceneFeatures2Half;
+
+layout (location = 0) in vec2 InTextureCoordinate;
 
 layout (location = 0) out vec4 VolumetricLighting;
 

@@ -224,11 +224,11 @@ vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
     return texture(BLUE_NOISE_TEXTURES[(BLUE_NOISE_TEXTURE_INDEX + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1)], vec2(coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
 }
 
-layout (location = 0) in vec2 InScreenCoordinate;
-
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4;
 layout (set = 1, binding = 4) uniform sampler2D SceneNearest;
 layout (set = 1, binding = 5) uniform sampler2D SceneLinear;
+
+layout (location = 0) in vec2 InScreenCoordinate;
 
 layout (location = 0) out vec4 SceneLowDynamicRange2;
 

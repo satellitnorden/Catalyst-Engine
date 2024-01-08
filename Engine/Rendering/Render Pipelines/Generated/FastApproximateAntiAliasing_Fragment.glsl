@@ -203,9 +203,9 @@ float PerceptualLuminance(vec3 fragment)
 	return sqrt(dot(fragment, vec3(0.299f, 0.587f, 0.114f)));
 }
 
-layout (location = 0) in vec2 InScreenCoordinate;
-
 layout (set = 1, binding = 1) uniform sampler2D InputRenderTarget;
+
+layout (location = 0) in vec2 InScreenCoordinate;
 
 layout (location = 0) out vec4 OutputRenderTarget;
 

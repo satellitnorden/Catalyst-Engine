@@ -209,9 +209,9 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 4) float SHARPEN_CLAMP;
 };
 
-layout (location = 0) in vec2 InScreenCoordinate;
-
 layout (set = 1, binding = 1) uniform sampler2D InputRenderTarget;
+
+layout (location = 0) in vec2 InScreenCoordinate;
 
 layout (location = 0) out vec4 OutputRenderTarget;
 

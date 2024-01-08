@@ -185,9 +185,9 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (location = 0) in vec2 InTextureCoordinate;
-
 layout (set = 1, binding = 0) uniform sampler2D Scene;
+
+layout (location = 0) in vec2 InTextureCoordinate;
 
 layout (location = 0) out vec4 INTERMEDIATE_RGBA_FLOAT32_1;
 
