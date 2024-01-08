@@ -58,10 +58,16 @@ struct MaskedModelPushConstantData
 	uint32 _MaterialIndex;
 };
 
+struct CascadeInformation final
+{
+	Matrix4x4 _WorldToLightMatrix;
+	float32 _DepthRange;
+};
+
 /*
 *	Calculates a cascade matrix.
 */
-FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const Vector3<float32> &light_direction, const float32 cascade_start, const float32 cascade_end) NOEXCEPT
+FORCE_INLINE NO_DISCARD CascadeInformation CalculateCascadeInformation(const Vector3<float32> &light_direction, const float32 cascade_start, const float32 cascade_end) NOEXCEPT
 {
 	//Cache the camera local_position.
 	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
@@ -116,7 +122,13 @@ FORCE_INLINE NO_DISCARD Matrix4x4 CalculateCascadeMatrix(const Vector3<float32> 
 	//Calculate the projection matrix.
 	const Matrix4x4 projection_matrix{ Matrix4x4::Orthographic(minX, maxX, minY, maxY, minZ, maxZ) };
 
-	return projection_matrix * light_matrix;
+	//Set up the information.
+	CascadeInformation information;
+
+	information._WorldToLightMatrix = projection_matrix * light_matrix;
+	information._DepthRange = maxZ - minZ;
+
+	return information;
 }
 
 /*
@@ -151,9 +163,27 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 					data->Emplace(((const byte *const RESTRICT)&shadow_map_data._WorldToLightMatrix)[i]);
 				}
 
+				for (uint64 i{ 0 }; i < sizeof(Vector3<float32>); ++i)
+				{
+					data->Emplace(((const byte *const RESTRICT)&shadow_map_data._Direction)[i]);
+				}
+
 				for (uint64 i{ 0 }; i < sizeof(uint32); ++i)
 				{
 					data->Emplace(((const byte *const RESTRICT)&shadow_map_data._RenderTargetIndex)[i]);
+				}
+
+				{
+					/*
+					*	This would work great if all the geometry was perfectly planar, but alas, it is not.
+					*	So increase it by some magic amount that seems to work fine. (:
+					*/
+					const float32 maximum_depth_bias{ shadow_map_data._DepthRange / static_cast<float32>(UINT16_MAXIMUM) };
+
+					for (uint64 i{ 0 }; i < sizeof(float32); ++i)
+					{
+						data->Emplace(((const byte *const RESTRICT)&maximum_depth_bias)[i]);
+					}
 				}
 
 				for (uint64 i{ 0 }; i < 12; ++i)
@@ -308,7 +338,10 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 					shadow_map_data = &_ShadowMapData[current_shadow_map_data_index];
 				}
 
-				shadow_map_data->_WorldToLightMatrix = CalculateCascadeMatrix(CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetNearPlane() : cascade_distances[i - 1], cascade_distances[i]);
+				const CascadeInformation cascade_information{ CalculateCascadeInformation(CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetNearPlane() : cascade_distances[i - 1], cascade_distances[i]) };
+
+				shadow_map_data->_WorldToLightMatrix = cascade_information._WorldToLightMatrix;
+				shadow_map_data->_DepthRange = cascade_information._DepthRange;
 
 				{
 					//Construct the frustum planes.

@@ -36,7 +36,7 @@ IncludeCommonVertexShader(ViewportScreenCoordinate);
 //The fragment shader.
 Fragment
 {
-	#define SHADOW_MAP_OFFSET (1.0f / 512.0f)
+	#define SHADOW_MAP_OFFSET (1.0f / 1024.0f)
 
     //Declare input parameters.
     InputParameter(vec2, InScreenCoordinate);
@@ -69,6 +69,9 @@ Fragment
 		}
 	}
 
+	//Calculate the depth bias.
+	float depth_bias = mix(FLOAT32_EPSILON, SHADOW_MAP_DATA[shadow_map_index]._MaximumDepthBias, max(dot(scene_features_2.xyz, -SHADOW_MAP_DATA[shadow_map_index]._Direction), 0.0f));
+
 	#define NUMBER_OF_SAMPLES (16)
 
 	vec2 shadow_map_offsets[NUMBER_OF_SAMPLES];
@@ -89,7 +92,7 @@ Fragment
 
 		float actual_shadow_map_depth = texture(sampler2D(TEXTURES[SHADOW_MAP_DATA[shadow_map_index]._ShadowMapTextureIndex], SAMPLER), offset_shadow_map_coordinate).x;
 
-		shadow_factor += float(shadow_map_depth < (actual_shadow_map_depth + 0.0f));
+		shadow_factor += float(shadow_map_depth < (actual_shadow_map_depth + depth_bias));
 	}
 
 	shadow_factor /= float(NUMBER_OF_SAMPLES);

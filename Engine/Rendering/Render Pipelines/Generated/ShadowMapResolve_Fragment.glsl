@@ -218,7 +218,9 @@ struct ShadowMappingHeader
 struct ShadowMapData
 {
 	mat4 _WorldToLightMatrix;
+	vec3 _Direction;
 	uint _ShadowMapTextureIndex;
+	float _MaximumDepthBias;
 };
 layout (std430, set = 1, binding = 2) buffer ShadowMapping
 {
@@ -329,7 +331,7 @@ layout (location = 0) out vec4 INTERMEDIATE_RGBA_FLOAT32_HALF_1;
 
 void main()
 {
-	#define SHADOW_MAP_OFFSET (1.0f / 512.0f)
+	#define SHADOW_MAP_OFFSET (1.0f / 1024.0f)
     vec4 scene_features_2 = texture(SceneFeatures2Half, InScreenCoordinate);
     vec3 world_position = CalculateWorldPosition(InScreenCoordinate, scene_features_2.w);
 	uint shadow_map_index = 0;
@@ -350,6 +352,7 @@ void main()
 			break;
 		}
 	}
+	float depth_bias = mix(FLOAT32_EPSILON, SHADOW_MAP_DATA[shadow_map_index]._MaximumDepthBias, max(dot(scene_features_2.xyz, -SHADOW_MAP_DATA[shadow_map_index]._Direction), 0.0f));
 	#define NUMBER_OF_SAMPLES (16)
 	vec2 shadow_map_offsets[NUMBER_OF_SAMPLES];
 	for (uint i = 0; i < NUMBER_OF_SAMPLES / 2; ++i)
@@ -363,7 +366,7 @@ void main()
 	{
 		vec2 offset_shadow_map_coordinate = shadow_map_coordinate + shadow_map_offsets[i] * SHADOW_MAP_OFFSET;
 		float actual_shadow_map_depth = texture(sampler2D(TEXTURES[SHADOW_MAP_DATA[shadow_map_index]._ShadowMapTextureIndex], SAMPLER), offset_shadow_map_coordinate).x;
-		shadow_factor += float(shadow_map_depth < (actual_shadow_map_depth + 0.0f));
+		shadow_factor += float(shadow_map_depth < (actual_shadow_map_depth + depth_bias));
 	}
 	shadow_factor /= float(NUMBER_OF_SAMPLES);
 	shadow_factor = pow(shadow_factor, float(shadow_map_index + 1));

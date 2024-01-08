@@ -189,6 +189,7 @@ layout (std140, set = 1, binding = 0) uniform PostProcessing
 {
 	layout (offset = 0) float BLOOM_THRESHOLD;
 	layout (offset = 4) float BLOOM_INTENSITY;
+	layout (offset = 8) float MOTION_BLUR_INTENSITY;
 };
 
 layout (set = 1, binding = 1) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_1;

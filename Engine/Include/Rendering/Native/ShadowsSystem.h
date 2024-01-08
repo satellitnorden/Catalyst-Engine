@@ -31,6 +31,9 @@ public:
 		//The world to light matrix.
 		Matrix4x4 _WorldToLightMatrix;
 
+		//The depth range.
+		float32 _DepthRange;
+
 		//The frustum.
 		Frustum _Frustum;
 
