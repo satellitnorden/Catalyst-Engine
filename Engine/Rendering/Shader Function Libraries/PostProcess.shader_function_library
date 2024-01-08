@@ -1,0 +1,7 @@
+/*
+*	Approximates the inverse gamma transformation of a fragment to determine it's perceptual luminance.
+*/
+float PerceptualLuminance(vec3 fragment)
+{
+	return sqrt(dot(fragment, vec3(0.299f, 0.587f, 0.114f)));
+}

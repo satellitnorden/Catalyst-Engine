@@ -29,7 +29,8 @@ public:
 	{
 		NONE,
 		FAST_APPROXIMATE,
-		TEMPORAL
+		TEMPORAL,
+		FAST_APPROXIMATE_PLUS_TEMPORAL
 	};
 
 	//Enumeration covering all indirect lighting modes.

@@ -427,10 +427,11 @@ void main()
 	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
 	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
 	    float weight_4 = horizontal_weight * vertical_weight;
-        weight_1 = max(weight_1 * exp(-abs(view_distance - view_distance_1)), FLOAT32_EPSILON);
-        weight_2 = max(weight_2 * exp(-abs(view_distance - view_distance_2)), FLOAT32_EPSILON);
-        weight_3 = max(weight_3 * exp(-abs(view_distance - view_distance_3)), FLOAT32_EPSILON);
-        weight_4 = max(weight_4 * exp(-abs(view_distance - view_distance_4)), FLOAT32_EPSILON);
+        #define VIEW_DISTANCE_WEIGHT (1.0f)
+        weight_1 = max(weight_1 * pow(exp(-abs(view_distance - view_distance_1)), VIEW_DISTANCE_WEIGHT), FLOAT32_EPSILON);
+        weight_2 = max(weight_2 * pow(exp(-abs(view_distance - view_distance_2)), VIEW_DISTANCE_WEIGHT), FLOAT32_EPSILON);
+        weight_3 = max(weight_3 * pow(exp(-abs(view_distance - view_distance_3)), VIEW_DISTANCE_WEIGHT), FLOAT32_EPSILON);
+        weight_4 = max(weight_4 * pow(exp(-abs(view_distance - view_distance_4)), VIEW_DISTANCE_WEIGHT), FLOAT32_EPSILON);
         float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
 	    weight_1 *= total_weight_reciprocal;
 	    weight_2 *= total_weight_reciprocal;

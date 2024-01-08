@@ -8,7 +8,6 @@
 #include <Rendering/Native/RenderingConfiguration.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/FastApproximateAntiAliasingGraphicsPipeline.h>
 
 class ALIGN(8) AntiAliasingRenderPass final : public RenderPass
 {
@@ -32,12 +31,18 @@ private:
 	//The current anti aliasing mode.
 	RenderingConfiguration::AntiAliasingMode _CurrentAntiAliasingMode{ RenderingConfiguration::AntiAliasingMode::NONE };
 
+	//The anti aliasing sharpen pipeline.
+	GraphicsRenderPipeline _AntiAliasingSharpenPipeline{ HashString("AntiAliasingSharpen_RenderPipeline") };
+
+	//The passthrough pipeline.
+	GraphicsRenderPipeline _PassthroughPipeline{ HashString("Passthrough_RenderPipeline") };
+
 	////////////////////////////////////
 	// FAST APPROXIMATE ANTI ALIASING //
 	////////////////////////////////////
 
-	//The fast approximate anti aliasing graphics pipeline.
-	FastApproximateAntiAliasingGraphicsPipeline _FastApproximateAntiAliasingGraphicsPipeline;
+	//The fast approximate anti aliasing pipeline.
+	GraphicsRenderPipeline _FastApproximateAntiAliasingPipeline{ HashString("FastApproximateAntiAliasing_RenderPipeline") };
 
 	////////////////////////////
 	// TEMPORAL ANTI ALIASING //

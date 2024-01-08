@@ -185,14 +185,15 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (location = 0) in vec2 InTextureCoordinate;
+layout (set = 1, binding = 0) uniform sampler2D InputRenderTarget;
 
-layout (set = 1, binding = 0) uniform sampler2D SceneLowDynamicRange1;
-
-layout (location = 0) out vec4 Screen;
+layout (location = 0) out vec2 OutScreenCoordinate;
 
 void main()
 {
-    vec4 scene_texture_sample = texture(SceneLowDynamicRange1, InTextureCoordinate);
-	Screen = scene_texture_sample;
+	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
+    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+	gl_Position = vec4(x,y,0.0f,1.0f);
 }

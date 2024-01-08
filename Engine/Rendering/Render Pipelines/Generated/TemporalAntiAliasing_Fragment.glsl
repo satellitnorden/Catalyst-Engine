@@ -333,7 +333,7 @@ layout (set = 1, binding = 5) uniform sampler2D SceneLinear;
 layout (set = 1, binding = 6) uniform sampler2D PreviousTemporalBuffer;
 
 layout (location = 0) out vec4 CurrentTemporalBuffer;
-layout (location = 1) out vec4 SceneLowDynamicRange2;
+layout (location = 1) out vec4 CurrentScene;
 
 void main()
 {
@@ -371,5 +371,5 @@ void main()
 	vec3 current_frame = texture(SceneLinear, InScreenCoordinate + CURRENT_FRAME_JITTER).rgb;
 	vec3 blended_frame = mix(current_frame, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
 	CurrentTemporalBuffer = vec4(blended_frame,1.0f);
-	SceneLowDynamicRange2 = vec4(blended_frame,1.0f);
+	CurrentScene = vec4(blended_frame,1.0f);
 }

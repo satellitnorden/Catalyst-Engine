@@ -185,14 +185,75 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (location = 0) in vec2 InTextureCoordinate;
+layout (std140, set = 1, binding = 0) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
+};
 
-layout (set = 1, binding = 0) uniform sampler2D SceneLowDynamicRange1;
+/*
+*	Approximates the inverse gamma transformation of a fragment to determine it's perceptual luminance.
+*/
+float PerceptualLuminance(vec3 fragment)
+{
+	return sqrt(dot(fragment, vec3(0.299f, 0.587f, 0.114f)));
+}
 
-layout (location = 0) out vec4 Screen;
+layout (location = 0) in vec2 InScreenCoordinate;
+
+layout (set = 1, binding = 1) uniform sampler2D InputRenderTarget;
+layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2;
+
+layout (location = 0) out vec4 OutputRenderTarget;
 
 void main()
 {
-    vec4 scene_texture_sample = texture(SceneLowDynamicRange1, InTextureCoordinate);
-	Screen = scene_texture_sample;
+    vec3 samples[3][3];
+    float minimum_luminance = 1.0f;
+    float maximum_luminance = 0.0f;
+    for (int Y = -1; Y <= 1; ++Y)
+    {
+        for (int X = -1; X <= 1; ++X)
+        {
+            vec2 sample_coordinate = InScreenCoordinate + vec2(X, Y) * INVERSE_FULL_MAIN_RESOLUTION;
+            vec3 _sample = texture(InputRenderTarget, sample_coordinate).rgb;
+            samples[X + 1][Y + 1] = _sample;
+            float sample_luminance = PerceptualLuminance(_sample);
+            minimum_luminance = min(minimum_luminance, sample_luminance);
+            maximum_luminance = max(maximum_luminance, sample_luminance);
+        }
+    }
+    float sharpen_weight = (1.0f - (maximum_luminance - minimum_luminance));
+    sharpen_weight = smoothstep(0.9f, 1.0f, sharpen_weight);
+    float sharpen_kernel[3][3];
+    sharpen_kernel[0][0] = sharpen_kernel[0][2] = sharpen_kernel[2][0] = sharpen_kernel[2][2] = -0.5f * sharpen_weight;
+    sharpen_kernel[0][1] = sharpen_kernel[1][0] = sharpen_kernel[1][2] = sharpen_kernel[2][1] = -1.0f * sharpen_weight;
+    sharpen_kernel[1][1] = 6.0f * sharpen_weight + 1.0f;
+    vec3 sharpened_sample = vec3(0.0f);
+    for (int Y = -1; Y <= 1; ++Y)
+    {
+        for (int X = -1; X <= 1; ++X)
+        {
+            sharpened_sample += samples[X + 1][Y + 1] * sharpen_kernel[X + 1][Y + 1];
+        }
+    }
+#if 0
+    vec3 output_fragment = vec3(0.0f);
+    if (gl_FragCoord.x > 960.0f)
+    {
+        output_fragment = sharpened_sample;
+    }
+    else
+    {
+        output_fragment = texture(InputRenderTarget, InScreenCoordinate).rgb;
+    }
+    output_fragment *= min(abs(gl_FragCoord.x - 960.0f) * 0.25f, 1.0f);
+	OutputRenderTarget = vec4(output_fragment,sharpen_weight);
+#else
+	OutputRenderTarget = vec4(sharpened_sample,sharpen_weight);
+#endif
 }

@@ -12,7 +12,7 @@ InputRenderTarget(SceneNearest /* Identifier */, NEAREST /* Magnification Filter
 InputRenderTarget(SceneLinear /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
-OutputRenderTarget(SceneLowDynamicRange1);
+OutputRenderTarget(SceneLowDynamicRange2);
 
 //Declare render resolution.
 RenderResolution(MAIN_FULL);
@@ -82,6 +82,5 @@ Fragment
     blurred_scene /= float(weight);
 
     //Output the fragment.
-    OutputFragment(SceneLowDynamicRange1, vec4(blurred_scene, 1.0f));
-    //OutputFragment(SceneLowDynamicRange1, vec4(vec3(velocity, 0.0f) * 100.0f, 1.0f));
+    OutputFragment(SceneLowDynamicRange2, vec4(blurred_scene, 1.0f));
 }

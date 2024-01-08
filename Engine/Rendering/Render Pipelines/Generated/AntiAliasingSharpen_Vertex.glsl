@@ -185,14 +185,34 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (location = 0) in vec2 InTextureCoordinate;
+layout (std140, set = 1, binding = 0) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
+};
 
-layout (set = 1, binding = 0) uniform sampler2D SceneLowDynamicRange1;
+/*
+*	Approximates the inverse gamma transformation of a fragment to determine it's perceptual luminance.
+*/
+float PerceptualLuminance(vec3 fragment)
+{
+	return sqrt(dot(fragment, vec3(0.299f, 0.587f, 0.114f)));
+}
 
-layout (location = 0) out vec4 Screen;
+layout (set = 1, binding = 1) uniform sampler2D InputRenderTarget;
+layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2;
+
+layout (location = 0) out vec2 OutScreenCoordinate;
 
 void main()
 {
-    vec4 scene_texture_sample = texture(SceneLowDynamicRange1, InTextureCoordinate);
-	Screen = scene_texture_sample;
+	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
+    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+	gl_Position = vec4(x,y,0.0f,1.0f);
 }

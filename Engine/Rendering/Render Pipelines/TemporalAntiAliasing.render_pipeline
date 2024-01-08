@@ -15,7 +15,7 @@ InputRenderTarget(PreviousTemporalBuffer /* Identifier */, LINEAR /* Magnificati
 
 //Declare output render targets.
 OutputRenderTarget(CurrentTemporalBuffer);
-OutputRenderTarget(SceneLowDynamicRange2);
+OutputRenderTarget(CurrentScene);
 
 //Declare render resolution.
 RenderResolution(MAIN_FULL);
@@ -94,5 +94,5 @@ Fragment
 
     //Output the fragments.
     OutputFragment(CurrentTemporalBuffer, vec4(blended_frame, 1.0f));
-    OutputFragment(SceneLowDynamicRange2, vec4(blended_frame, 1.0f));
+    OutputFragment(CurrentScene, vec4(blended_frame, 1.0f));
 }

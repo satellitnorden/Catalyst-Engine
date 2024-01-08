@@ -1,0 +1,250 @@
+//Declare uniform buffer includes.
+IncludeUniformBuffer(General);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(PostProcess);
+
+//Declare input render targets.
+InputRenderTarget(InputRenderTarget /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(OutputRenderTarget);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Constants.
+    #define EDGE_THRESHOLD_MINIMUM (0.0312f)
+    #define EDGE_THRESHOLD_MAXIMUM (0.125f)
+    #define ITERATIONS (12)
+    #define QUALITY(INDEX) (1.0f * float(INDEX) * 0.25f)
+    #define SUBPIXEL_QUALITY (0.75f)
+
+    //Sample the center color.
+    vec3 center_color = texture(InputRenderTarget, InScreenCoordinate).rgb;
+
+    //Calculate the center luminance.
+    float center_luminance = PerceptualLuminance(center_color);
+
+    //Calculate the luminance for the four direct neighbors.
+    float down_luminance = PerceptualLuminance(texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f, -1.0f) * INVERSE_FULL_MAIN_RESOLUTION).rgb);
+    float up_luminance = PerceptualLuminance(texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f, 1.0f) * INVERSE_FULL_MAIN_RESOLUTION).rgb);
+    float left_luminance = PerceptualLuminance(texture(InputRenderTarget, InScreenCoordinate + vec2(-1.0f, 0.0f) * INVERSE_FULL_MAIN_RESOLUTION).rgb);
+    float right_luminance = PerceptualLuminance(texture(InputRenderTarget, InScreenCoordinate + vec2(1.0f, 0.0f) * INVERSE_FULL_MAIN_RESOLUTION).rgb);
+
+    //Calculate the minimum/maximum luminance.
+    float minimum_luminance = min(center_luminance, min(min(down_luminance, up_luminance), min(left_luminance, right_luminance)));
+    float maximum_luminance = max(center_luminance, max(max(down_luminance, up_luminance), max(left_luminance, right_luminance)));
+
+    //Calculate the luminance range.
+    float luminance_range = maximum_luminance - minimum_luminance;
+
+    /*
+    //Should we even apply?
+    if (luminance_range < max(EDGE_THRESHOLD_MINIMUM, maximum_luminance * EDGE_THRESHOLD_MAXIMUM))
+    {
+        //Output the fragment.
+        OutputFragment(OutputRenderTarget, vec4(center_color, 1.0f));
+
+        return;
+    }
+    */
+    
+    //Calculate the luminance of the 4 remaining corners.
+    float down_left_luminance = PerceptualLuminance(texture(InputRenderTarget, InScreenCoordinate + vec2(-1.0f, -1.0f) * INVERSE_FULL_MAIN_RESOLUTION).rgb);
+    float up_right_luminance = PerceptualLuminance(texture(InputRenderTarget, InScreenCoordinate + vec2(1.0f, 1.0f) * INVERSE_FULL_MAIN_RESOLUTION).rgb);
+    float up_left_luminance = PerceptualLuminance(texture(InputRenderTarget, InScreenCoordinate + vec2(-1.0f, 1.0f) * INVERSE_FULL_MAIN_RESOLUTION).rgb);
+    float down_right_luminance = PerceptualLuminance(texture(InputRenderTarget, InScreenCoordinate + vec2(1.0f, -1.0f) * INVERSE_FULL_MAIN_RESOLUTION).rgb);
+
+    //Combine luminances for future computations.
+    float down_up_luminance = down_luminance + up_luminance;
+    float left_right_luminance = left_luminance + right_luminance;
+    
+    float left_corners_luminance = down_left_luminance + up_left_luminance;
+    float down_corners_luminance = down_left_luminance + down_right_luminance;
+    float right_corners_luminance = down_right_luminance + up_right_luminance;
+    float up_corners_luminance = up_right_luminance + up_left_luminance;
+
+    //Approximate the gradient along the horizontal and vertical axes.
+    float horizontal_edge =  abs(-2.0f * left_luminance + left_corners_luminance) + abs(-2.0f * center_luminance + down_up_luminance ) * 2.0f + abs(-2.0f * right_luminance + right_corners_luminance);
+    float vertical_edge = abs(-2.0f * up_luminance + up_corners_luminance) + abs(-2.0f * center_luminance + left_right_luminance) * 2.0 + abs(-2.0f * down_luminance + down_corners_luminance);
+
+    //Is this a horizontal edge?
+    bool is_horizontal_edge = horizontal_edge >= vertical_edge;
+
+    //Calculate the edge orientation.
+    float luminance_1 = is_horizontal_edge ? down_luminance : left_luminance;
+    float luminance_2 = is_horizontal_edge ? up_luminance : right_luminance;
+
+    float gradient_1 = luminance_1 - center_luminance;
+    float gradient_2 = luminance_2 - center_luminance;
+
+    bool is_1_steepest = abs(gradient_1) >= abs(gradient_2);
+
+    float scaled_gradient = 0.25f * max(abs(gradient_1), abs(gradient_2));
+
+    //Calculate the step length.
+    float step_length = is_horizontal_edge ? INVERSE_FULL_MAIN_RESOLUTION.y : INVERSE_FULL_MAIN_RESOLUTION.x;
+
+    //Average the luminance in the direction.
+    float local_average_luminance = 0.0f;
+
+    if (is_1_steepest)
+    {
+        step_length = -step_length;
+        local_average_luminance = 0.5f * (luminance_1 + center_luminance);
+    }
+
+    else
+    {
+        local_average_luminance = 0.5f * (luminance_2 + center_luminance);
+    }
+
+    //Shift the screen coordinate in the correct direction by half a texel.
+    vec2 current_screen_coordinate = InScreenCoordinate;
+
+    if (is_horizontal_edge)
+    {
+        current_screen_coordinate.y += step_length * 0.5f;
+    }
+
+    else
+    {
+        current_screen_coordinate.x += step_length * 0.5f;
+    }
+
+    //Explore the first iteration.
+    vec2 offset = is_horizontal_edge ? vec2(INVERSE_FULL_MAIN_RESOLUTION.x, 0.0f) : vec2(0.0f, INVERSE_FULL_MAIN_RESOLUTION.y);
+    
+    vec2 screen_coordinate_1 = current_screen_coordinate - offset;
+    vec2 screen_coordinate_2 = current_screen_coordinate + offset;
+
+    float end_luminance_1 = PerceptualLuminance(texture(InputRenderTarget, screen_coordinate_1).rgb);
+    float end_luminance_2 = PerceptualLuminance(texture(InputRenderTarget, screen_coordinate_2).rgb);
+    
+    end_luminance_1 -= local_average_luminance;
+    end_luminance_2 -= local_average_luminance;
+    
+    bool reached_1 = abs(end_luminance_1) >= scaled_gradient;
+    bool reached_2 = abs(end_luminance_2) >= scaled_gradient;
+
+    bool reached_both = reached_1 && reached_2;
+
+    if (!reached_1)
+    {
+        screen_coordinate_1 -= offset;
+    }
+
+    if (!reached_2)
+    {
+        screen_coordinate_2 += offset;
+    }
+
+    //Iterate.
+    if (!reached_both)
+    {
+        for (uint i = 2; i < ITERATIONS; ++i)
+        {
+            if (!reached_1)
+            {
+                end_luminance_1 = PerceptualLuminance(texture(InputRenderTarget, screen_coordinate_1).rgb);
+                end_luminance_1 = end_luminance_1 - local_average_luminance;
+            }
+
+            if (!reached_2)
+            {
+                end_luminance_2 = PerceptualLuminance(texture(InputRenderTarget, screen_coordinate_2).rgb);
+                end_luminance_2 = end_luminance_2 - local_average_luminance;
+            }
+
+            bool reached_1 = abs(end_luminance_1) >= scaled_gradient;
+            bool reached_2 = abs(end_luminance_2) >= scaled_gradient;
+
+            bool reached_both = reached_1 && reached_2;
+
+            if (!reached_1)
+            {
+                screen_coordinate_1 -= offset;
+            }
+
+            if (!reached_2)
+            {
+                screen_coordinate_2 += offset;
+            }
+
+            if (reached_both)
+            {
+                break;
+            }
+        }
+    }
+
+    //Calculate the distances.
+    float distance_1 = is_horizontal_edge ? (InScreenCoordinate.x - screen_coordinate_1.x) : (InScreenCoordinate.y - screen_coordinate_1.y);
+    float distance_2 = is_horizontal_edge ? (screen_coordinate_2.x - InScreenCoordinate.x) : (screen_coordinate_2.y - InScreenCoordinate.y);
+
+    //Calculate in which direction the biggest extremity is.
+    bool is_direction_1 = distance_1 < distance_2;
+    float final_distance = min(distance_1, distance_2);
+
+    //Calculate the edge thickness.
+    float edge_thickness = (distance_1 + distance_2);
+
+    //Calculate the texel offset.
+    float texel_offset = -final_distance / edge_thickness + 0.5f;
+
+    //Calculate the final offset.
+    bool is_center_luminance_smaller = center_luminance < local_average_luminance;
+    bool is_correct_variation = ((is_direction_1 ? end_luminance_1 : end_luminance_2) < 0.0f) != is_center_luminance_smaller;
+
+    float final_offset = is_correct_variation ? texel_offset : 0.0f;
+
+    //Do subpixel stuff.
+    {
+        float average_luminance = (1.0f / 12.0f) * (2.0f * (down_up_luminance + left_right_luminance) + left_corners_luminance + right_corners_luminance);
+
+        float sub_pixel_offset_1 = clamp(abs(average_luminance - center_luminance) / luminance_range, 0.0f, 1.0f);
+        float sub_pixel_offset_2 = (-2.0f * sub_pixel_offset_1 + 3.0f) * sub_pixel_offset_1 * sub_pixel_offset_1;
+
+        float sub_pixel_offset_final = sub_pixel_offset_2 * sub_pixel_offset_2 * SUBPIXEL_QUALITY;
+
+        final_offset = max(final_offset, sub_pixel_offset_final);
+    }
+
+    //Calculate the final screen coordinate.
+    vec2 final_screen_coordinate = InScreenCoordinate;
+
+    if (is_horizontal_edge)
+    {
+        final_screen_coordinate.y += final_offset * step_length;
+    }
+
+    else
+    {
+        final_screen_coordinate.x += final_offset * step_length;
+    }
+
+    //Sample the final color.
+    vec3 final_color = texture(InputRenderTarget, final_screen_coordinate).rgb;
+
+    //Output the fragment.
+    OutputFragment(OutputRenderTarget, vec4(final_color, 1.0f));
+}

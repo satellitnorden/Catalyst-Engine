@@ -230,7 +230,7 @@ layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4;
 layout (set = 1, binding = 4) uniform sampler2D SceneNearest;
 layout (set = 1, binding = 5) uniform sampler2D SceneLinear;
 
-layout (location = 0) out vec4 SceneLowDynamicRange1;
+layout (location = 0) out vec4 SceneLowDynamicRange2;
 
 void main()
 {
@@ -259,5 +259,5 @@ void main()
         }
     }
     blurred_scene /= float(weight);
-	SceneLowDynamicRange1 = vec4(blurred_scene,1.0f);
+	SceneLowDynamicRange2 = vec4(blurred_scene,1.0f);
 }
