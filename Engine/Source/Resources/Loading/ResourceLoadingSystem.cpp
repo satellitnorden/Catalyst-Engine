@@ -346,6 +346,36 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 		}
 	}
 
+	//Read the ray generation shader data.
+	{
+		bool has_data{ false };
+		file->Read(&has_data, sizeof(bool));
+
+		if (has_data)
+		{
+			uint64 data_size{ 0 };
+			file->Read(&data_size, sizeof(uint64));
+			data->_RayGenerationShaderData._GLSLData.Upsize<false>(data_size);
+
+			file->Read(data->_RayGenerationShaderData._GLSLData.Data(), data_size);
+		}
+	}
+
+	//Read the ray miss shader data.
+	{
+		bool has_data{ false };
+		file->Read(&has_data, sizeof(bool));
+
+		if (has_data)
+		{
+			uint64 data_size{ 0 };
+			file->Read(&data_size, sizeof(uint64));
+			data->_RayMissShaderData._GLSLData.Upsize<false>(data_size);
+
+			file->Read(data->_RayMissShaderData._GLSLData.Data(), data_size);
+		}
+	}
+
 	//Read the included uniform buffers.
 	{
 		uint64 number_of_included_uniform_buffers{ 0 };

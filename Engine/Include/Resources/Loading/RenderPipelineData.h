@@ -36,6 +36,12 @@ public:
 	//The fragment shader data.
 	ShaderData _FragmentShaderData;
 
+	//The ray generation shader data.
+	ShaderData _RayGenerationShaderData;
+
+	//The ray miss shader data.
+	ShaderData _RayMissShaderData;
+
 	//The included uniform buffers.
 	DynamicArray<HashString> _IncludedUniformBuffers;
 

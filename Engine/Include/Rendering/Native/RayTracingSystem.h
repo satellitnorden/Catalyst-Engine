@@ -24,6 +24,14 @@ public:
 	void RenderUpdate() NOEXCEPT;
 
 	/*
+	*	Returns the top level acceleration structure.
+	*/
+	FORCE_INLINE NO_DISCARD AccelerationStructureHandle GetTopLevelAccelerationStructure() const NOEXCEPT
+	{
+		return _TopLevelAccelerationStructure;
+	}
+
+	/*
 	*	Returns the render data table layout.
 	*/
 	FORCE_INLINE RenderDataTableLayoutHandle GetRenderDataTableLayout() NOEXCEPT

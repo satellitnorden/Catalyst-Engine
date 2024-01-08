@@ -238,6 +238,30 @@ void RenderInputManager::Initialize() NOEXCEPT
 		nullptr
 	);
 
+	//Register the "RayTracingViewportHalf" input stream.
+	RegisterInputStream
+	(
+		HashString("RayTracingViewportHalf"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		0,
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			if (input_stream->_Entries.Empty())
+			{
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._TraceRaysWidth = RenderingSystem::Instance->GetScaledResolution(1)._Width;
+				new_entry._TraceRaysHeight = RenderingSystem::Instance->GetScaledResolution(1)._Height;
+
+			}
+		},
+		RenderInputStream::Mode::TRACE_RAYS,
+		nullptr
+	);
+
 	//Register model input streams.
 	{
 		//Set up the required vertex input attribute/binding descriptions for models.

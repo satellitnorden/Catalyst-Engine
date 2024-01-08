@@ -337,6 +337,18 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_FragmentShaderData._GLSLData), ShaderStage::FRAGMENT, &resource->_FragmentShaderHandle);
 	}
 
+	//Create the ray generation shader.
+	if (!data->_RayGenerationShaderData._GLSLData.Empty())
+	{
+		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_RayGenerationShaderData._GLSLData), ShaderStage::RAY_GENERATION, &resource->_RayGenerationShaderHandle);
+	}
+
+	//Create the ray miss shader.
+	if (!data->_RayMissShaderData._GLSLData.Empty())
+	{
+		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_RayMissShaderData._GLSLData), ShaderStage::RAY_MISS, &resource->_RayMissShaderHandle);
+	}
+
 	//Copy the included buffers.
 	resource->_IncludedUniformBuffers = std::move(data->_IncludedUniformBuffers);
 	resource->_IncludedStorageBuffers = std::move(data->_IncludedStorageBuffers);

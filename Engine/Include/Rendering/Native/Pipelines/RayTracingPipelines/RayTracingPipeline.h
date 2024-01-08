@@ -24,18 +24,18 @@ public:
 	public:
 
 		//The closest hit shader.
-		ResourcePointer<ShaderResource> _ClosestHitShader;
+		ShaderHandle _ClosestHitShader;
 
 		//The any hit shader.
-		ResourcePointer<ShaderResource> _AnyHitShader;
+		ShaderHandle _AnyHitShader;
 
 		//The intersection shader.
-		ResourcePointer<ShaderResource> _IntersectionShader;
+		ShaderHandle _IntersectionShader;
 
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		FORCE_INLINE HitGroup(const ResourcePointer<ShaderResource> initial_closest_hit_shader, const ResourcePointer<ShaderResource> initial_any_hit_shader, const ResourcePointer<ShaderResource> initial_intersection_shader) NOEXCEPT
+		FORCE_INLINE HitGroup(const ShaderHandle initial_closest_hit_shader, const ShaderHandle initial_any_hit_shader, const ShaderHandle initial_intersection_shader) NOEXCEPT
 			:
 			_ClosestHitShader(initial_closest_hit_shader),
 			_AnyHitShader(initial_any_hit_shader),
@@ -54,7 +54,7 @@ public:
 	/*
 	*	Returns the ray generation shader.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<ShaderResource> GetRayGenerationShader() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD ShaderHandle GetRayGenerationShader() const NOEXCEPT
 	{
 		return _RayGenerationShader;
 	}
@@ -70,7 +70,7 @@ public:
 	/*
 	*	Returns the miss shaders.
 	*/
-	FORCE_INLINE NO_DISCARD const DynamicArray<ResourcePointer<ShaderResource>>& GetMissShaders() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const DynamicArray<ShaderHandle> &GetMissShaders() const NOEXCEPT
 	{
 		return _MissShaders;
 	}
@@ -85,7 +85,7 @@ protected:
 	/*
 	*	Sets the ray generation shader.
 	*/
-	FORCE_INLINE void SetRayGenerationShader(const ResourcePointer<ShaderResource> shader) NOEXCEPT
+	FORCE_INLINE void SetRayGenerationShader(const ShaderHandle shader) NOEXCEPT
 	{
 		_RayGenerationShader = shader;
 	}
@@ -101,7 +101,7 @@ protected:
 	/*
 	*	Adds a hit group.
 	*/
-	FORCE_INLINE void AddHitGroup(const ResourcePointer<ShaderResource> closest_hit_shader, const ResourcePointer<ShaderResource> any_hit_shader, const ResourcePointer<ShaderResource> intersection_shader) NOEXCEPT
+	FORCE_INLINE void AddHitGroup(const ShaderHandle closest_hit_shader, const ShaderHandle any_hit_shader, const ShaderHandle intersection_shader) NOEXCEPT
 	{
 		_HitGroups.Emplace(closest_hit_shader, any_hit_shader, intersection_shader);
 	}
@@ -117,7 +117,7 @@ protected:
 	/*
 	*	Adds a miss shader.
 	*/
-	FORCE_INLINE void AddMissShader(const ResourcePointer<ShaderResource> shader) NOEXCEPT
+	FORCE_INLINE void AddMissShader(const ShaderHandle shader) NOEXCEPT
 	{
 		_MissShaders.Emplace(shader);
 	}
@@ -125,12 +125,12 @@ protected:
 private:
 
 	//The ray generation shader.
-	ResourcePointer<ShaderResource> _RayGenerationShader;
+	ShaderHandle _RayGenerationShader;
 
 	//The hit groups.
 	DynamicArray<HitGroup> _HitGroups;
 
 	//The miss shaders.
-	DynamicArray<ResourcePointer<ShaderResource>> _MissShaders;
+	DynamicArray<ShaderHandle> _MissShaders;
 
 };

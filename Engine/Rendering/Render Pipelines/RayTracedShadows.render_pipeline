@@ -1,0 +1,83 @@
+//Declare uniform buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare storage buffer includes.
+IncludeStorageBuffer(Lighting);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Lighting);
+
+//Declare compute render targets.
+ComputeRenderTarget(SceneFeatures2Half, RGBA_FLOAT32);
+ComputeRenderTarget(Shadows, RGBA_FLOAT32);
+
+//Subscribe to input streams.
+SubscribeToInputStream(RayTracingViewportHalf);
+
+//The ray generation shader.
+RayGeneration
+{
+    //Declare payloads.
+    Payload(float, VISIBILITY);
+
+    //Calculate the screen coordinate.
+    vec2 screen_coordinate = (vec2(RAY_TRACING_ID.xy) + vec2(0.5f)) / vec2(RAY_TRACING_SIZE.xy);
+
+    //Sample the scene features.
+    vec4 scene_features_2 = ImageLoad(SceneFeatures2Half, ivec2(RAY_TRACING_ID.xy));
+
+    //Cache properties.
+    vec3 shading_normal = scene_features_2.xyz;
+    float depth = scene_features_2.w;
+
+    //Calculate the world position.
+    vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
+
+    //Calculate the shadows for all lights.
+    vec4 shadows = vec4(1.0f);
+    uint current_shadow_index = 0;
+
+    for (uint light_index = 0; light_index < LIGHTING_HEADER._NumberOfLights; ++light_index)
+    {
+        Light light = UnpackLight(light_index);
+
+        if (TEST_BIT(light._LightProperties, LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT))
+        {
+            switch (light._LightType)
+            {
+                case LIGHT_TYPE_DIRECTIONAL:
+                {
+                    //Reset the visibility.
+                    VISIBILITY = 0.0f;
+
+                    //Trace the ray!
+                    uint ray_tracing_flags =    RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT
+                                                | RAY_TRACING_FLAG_OPAQUE
+                                                | RAY_TRACING_FLAG_SKIP_CLOSEST_HIT;
+
+                    RayTrace(ray_tracing_flags, world_position, -light._TransformData1);
+
+                    //Write to the shadows.
+                    shadows[current_shadow_index++] = VISIBILITY;
+
+                    break;
+                }
+                
+            }
+        }
+    }
+
+    //Store the shadows.
+    ImageStore(Shadows, ivec2(RAY_TRACING_ID.xy), shadows);
+}
+
+//The ray miss shader.
+RayMiss
+{
+    //Declare payloads.
+    Payload(float, VISIBILITY);
+
+    //Set the visibility.
+    VISIBILITY = 1.0f;
+}

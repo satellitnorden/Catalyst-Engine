@@ -8,8 +8,8 @@
 #include <Rendering/Native/ShadowUniformData.h>
 #include <Rendering/Native/ShadowsSystem.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
+#include <Rendering/Native/Pipelines/Core/RayTracingRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ShadowsSpatialDenoisingGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/RayTracingPipelines/ShadowsRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) ShadowsRenderPass final : public RenderPass
@@ -120,8 +120,8 @@ private:
 	//The shadow map resolve pipeline.
 	GraphicsRenderPipeline _ShadowMapResolvePipeline{ HashString("ShadowMapResolve_RenderPipeline") };
 
-	//The shadows ray tracing pipeline.
-	ShadowsRayTracingPipeline _ShadowsRayTracingPipeline;
+	//The ray traced shadows pipeline.
+	RayTracingRenderPipeline _RayTracedShadowsPipeline{ HashString("RayTracedShadows_RenderPipeline") };
 
 	//The shadows spatial denoising graphics pipelines.
 	StaticArray<ShadowsSpatialDenoisingGraphicsPipeline, 2> _ShadowsSpatialDenoisingGraphicsPipelines;

@@ -52,24 +52,24 @@ void RayTracedIndirectLightingRayTracingPipeline::Initialize(const RenderingConf
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the ray generation shader.
-	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("RayTracedIndirectLightingRayGenerationShader")));
+	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("RayTracedIndirectLightingRayGenerationShader"))->_Handle);
 
 	//Set the number of hit groups.
 	SetNumberOfHitGroups(3);
 
 	//Add the terrain hit group.
-	AddHitGroup(ResourceSystem::Instance->GetShaderResource(HashString("TerrainRayClosestHitShader")), ResourcePointer<ShaderResource>(), ResourcePointer<ShaderResource>());
+	AddHitGroup(ResourceSystem::Instance->GetShaderResource(HashString("TerrainRayClosestHitShader"))->_Handle, EMPTY_HANDLE, EMPTY_HANDLE);
 
 	//Add the static models hit group.
-	AddHitGroup(ResourceSystem::Instance->GetShaderResource(HashString("StaticModelRayClosestHitShader")), ResourcePointer<ShaderResource>(), ResourcePointer<ShaderResource>());
+	AddHitGroup(ResourceSystem::Instance->GetShaderResource(HashString("StaticModelRayClosestHitShader"))->_Handle, EMPTY_HANDLE, EMPTY_HANDLE);
 
 	//Add the dynamic models hit group.
-	AddHitGroup(ResourceSystem::Instance->GetShaderResource(HashString("DynamicModelRayClosestHitShader")), ResourcePointer<ShaderResource>(), ResourcePointer<ShaderResource>());
+	AddHitGroup(ResourceSystem::Instance->GetShaderResource(HashString("DynamicModelRayClosestHitShader"))->_Handle, EMPTY_HANDLE, EMPTY_HANDLE);
 
 	//Add the miss shaders.
 	SetNumberOfMissShaders(2);
-	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("PathTracingRayMissShader")));
-	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("VisibilityRayMissShader")));
+	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("PathTracingRayMissShader"))->_Handle);
+	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("VisibilityRayMissShader"))->_Handle);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);

@@ -589,18 +589,18 @@ namespace VulkanSubRenderingSystemLogic
 			parameters._PushConstantRanges = pushConstantRanges.Data();
 		}
 
-		parameters._RayGenerationShaderModule = static_cast<VulkanShaderModule *const RESTRICT>(pipeline->GetRayGenerationShader()->_Handle);
+		parameters._RayGenerationShaderModule = static_cast<VulkanShaderModule *const RESTRICT>(pipeline->GetRayGenerationShader());
 
 		for (const RayTracingPipeline::HitGroup hit_group : pipeline->GetHitGroups())
 		{
-			parameters._HitGroups.Emplace(	hit_group._ClosestHitShader ? static_cast<const VulkanShaderModule *const RESTRICT>(hit_group._ClosestHitShader->_Handle) : nullptr,
-											hit_group._AnyHitShader ? static_cast<const VulkanShaderModule *const RESTRICT>(hit_group._AnyHitShader->_Handle) : nullptr,
-											hit_group._IntersectionShader ? static_cast<const VulkanShaderModule *const RESTRICT>(hit_group._IntersectionShader->_Handle) : nullptr);
+			parameters._HitGroups.Emplace(	hit_group._ClosestHitShader ? static_cast<const VulkanShaderModule *const RESTRICT>(hit_group._ClosestHitShader) : nullptr,
+											hit_group._AnyHitShader ? static_cast<const VulkanShaderModule *const RESTRICT>(hit_group._AnyHitShader) : nullptr,
+											hit_group._IntersectionShader ? static_cast<const VulkanShaderModule *const RESTRICT>(hit_group._IntersectionShader) : nullptr);
 		}
 
-		for (const ResourcePointer<ShaderResource> shader : pipeline->GetMissShaders())
+		for (const ShaderHandle shader : pipeline->GetMissShaders())
 		{
-			parameters._MissShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(shader->_Handle));
+			parameters._MissShaderModules.Emplace(static_cast<const VulkanShaderModule *const RESTRICT>(shader));
 		}
 
 		//Create the pipeline sub stage data.
@@ -621,7 +621,7 @@ namespace VulkanSubRenderingSystemLogic
 			shader_binding_table_size += shader_group_handle_size;
 		}
 
-		for (const ResourcePointer<ShaderResource> shader : pipeline->GetMissShaders())
+		for (const ShaderHandle shader : pipeline->GetMissShaders())
 		{
 			shader_binding_table_size += shader_group_handle_size;
 		}

@@ -53,11 +53,11 @@ void AmbientOcclusionRayTracingPipeline::Initialize(const RenderTargetHandle amb
 	AddPushConstantRange(ShaderStage::RAY_GENERATION, 0, sizeof(RayTracedAmbientOcclusionPushConstantData));
 
 	//Set the ray generation shader.
-	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("RayTracedAmbientOcclusionRayGenerationShader")));
+	SetRayGenerationShader(ResourceSystem::Instance->GetShaderResource(HashString("RayTracedAmbientOcclusionRayGenerationShader"))->_Handle);
 
 	//Add the miss shaders.
 	SetNumberOfMissShaders(1);
-	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("VisibilityRayMissShader")));
+	AddMissShader(ResourceSystem::Instance->GetShaderResource(HashString("VisibilityRayMissShader"))->_Handle);
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set the name.

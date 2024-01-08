@@ -70,7 +70,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	}
 
 	AddPipeline(&_ShadowMapResolvePipeline);
-	AddPipeline(&_ShadowsRayTracingPipeline);
+	AddPipeline(&_RayTracedShadowsPipeline);
 
 	for (ShadowsSpatialDenoisingGraphicsPipeline &pipeline : _ShadowsSpatialDenoisingGraphicsPipelines)
 	{
@@ -79,7 +79,15 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_ShadowMapResolvePipeline.Initialize();
-	_ShadowsRayTracingPipeline.Initialize();
+
+	{
+		RayTracingRenderPipelineParameters parameters;
+
+		parameters._ComputeRenderTargets.Emplace(HashString("Shadows"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+
+		_RayTracedShadowsPipeline.Initialize(parameters);
+	}
+
 	_ShadowsSpatialDenoisingGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
 															1,
 															RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
@@ -170,18 +178,20 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 		}
 
 		_ShadowMapResolvePipeline.Execute();
-		_ShadowsRayTracingPipeline.SetIncludeInRender(false);
+		_RayTracedShadowsPipeline.SetIncludeInRender(false);
 	}
 
 	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RAY_TRACED)
 	{
-		for (uint8 i{ 0 }; i < 4; ++i)
+		for (uint32 i{ 0 }; i < ShadowsSystem::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA; ++i)
 		{
 			_ClearShadowMapPipelines[i].SetIncludeInRender(false);
+			_OpaqueModelShadowMapPipelines[i].SetIncludeInRender(false);
+			_MaskedModelShadowMapPipelines[i].SetIncludeInRender(false);
 		}
 
 		_ShadowMapResolvePipeline.SetIncludeInRender(false);
-		_ShadowsRayTracingPipeline.Execute();
+		_RayTracedShadowsPipeline.Execute();
 	}
 
 	for (ShadowsSpatialDenoisingGraphicsPipeline &pipeline : _ShadowsSpatialDenoisingGraphicsPipelines)
@@ -212,7 +222,7 @@ void ShadowsRenderPass::Terminate() NOEXCEPT
 	}
 
 	_ShadowMapResolvePipeline.Terminate();
-	_ShadowsRayTracingPipeline.Terminate();
+	_RayTracedShadowsPipeline.Terminate();
 
 	for (ShadowsSpatialDenoisingGraphicsPipeline &pipeline : _ShadowsSpatialDenoisingGraphicsPipelines)
 	{

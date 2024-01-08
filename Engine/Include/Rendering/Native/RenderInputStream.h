@@ -37,6 +37,16 @@ public:
 			uint32 _DispatchDepth;
 		};
 
+		//'TRACE_RAYS' data.
+		struct
+		{
+			//The trace rays width.
+			uint32 _TraceRaysWidth;
+
+			//The trace rays height.
+			uint32 _TraceRaysHeight;
+		};
+
 		struct
 		{
 			//The vertex buffer.
@@ -104,7 +114,13 @@ public:
 		*	For each entry:
 		*	Should draw indexed with the vertex/index buffer and '_IndexCount', with '_InstanceCount' instances using '_InstanceBuffer'.
 		*/
-		DRAW_INDEXED_INSTANCED
+		DRAW_INDEXED_INSTANCED,
+
+		/*
+		*	For each entry:
+		*	Should trace rays with '_TraceRaysWidth' and '_TraceRaysHeight'.
+		*/
+		TRACE_RAYS
 	};
 
 	//The identifier.

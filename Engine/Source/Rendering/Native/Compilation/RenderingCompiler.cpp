@@ -542,7 +542,7 @@ void CompileGLSLShader(const char *const RESTRICT file_path, const shaderc_shade
 /*
 *	Inserts common things from the render pipeline information into a GLSL shader.
 */
-void InsertRenderPipelineInformationToGLSL(const RenderPipelineInformation &render_pipeline_information, std::ofstream &glsl_file) NOEXCEPT
+FORCE_INLINE uint32 InsertRenderPipelineInformationToGLSL(const RenderPipelineInformation &render_pipeline_information, std::ofstream &glsl_file) NOEXCEPT
 {
 	//Remember the current resource binding.
 	uint32 resource_binding_index{ 0 };
@@ -678,6 +678,8 @@ void InsertRenderPipelineInformationToGLSL(const RenderPipelineInformation &rend
 
 		glsl_file << std::endl;
 	}
+
+	return resource_binding_index;
 }
 
 /*
@@ -1300,6 +1302,346 @@ void GenerateFragmentShader
 
 		//Compile the GLSL shader.
 		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_fragment_shader, &parameters->_FragmentShaderData._GLSLData);
+	}
+}
+
+/*
+*	Generates a ray generation shader.
+*/
+void GenerateRayGenerationShader
+(
+	std::ifstream &file,
+	const char *const RESTRICT generated_file_path,
+	const std::string &shader_name,
+	const RenderPipelineInformation &render_pipeline_information,
+	RenderPipelineBuildParameters *const RESTRICT parameters
+) NOEXCEPT
+{
+	//Struct definitions.
+	struct Payload final
+	{
+		DynamicString _Type;
+		DynamicString _Name;
+	};
+
+	//Gather all the lines in the vertex function.
+	DynamicArray<std::string> lines;
+	GatherShaderLines(file, lines);
+
+	//Gather the payloads.
+	DynamicArray<Payload> payloads;
+
+	for (uint64 i{ 0 }; i < lines.Size();)
+	{
+		const size_t position{ lines[i].find("Payload(") };
+
+		if (position != std::string::npos)
+		{
+			StaticArray<DynamicString, 2> arguments;
+
+			TextParsingUtilities::ParseFunctionArguments
+			(
+				lines[i].data(),
+				lines[i].length(),
+				arguments.Data()
+			);
+
+			payloads.Emplace();
+			payloads.Back()._Type = std::move(arguments[0]);
+			payloads.Back()._Name = std::move(arguments[1]);
+
+			lines.EraseAt<true>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
+
+	//Write the GLSL file.
+	{
+		//Make a copy of the lines.
+		DynamicArray<std::string> glsl_lines{ lines };
+
+		//Open the file.
+		char glsl_file_path[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(glsl_file_path, "%s\\%s_RayGeneration.glsl", generated_file_path, shader_name.c_str());
+		std::ofstream glsl_file{ glsl_file_path };
+
+		//Write the version declaration.
+		glsl_file << "#version 460" << std::endl;
+
+		glsl_file << std::endl;
+
+		//Insert extensions.
+		GLSLCompilation::InsertExtensions(glsl_file);
+		GLSLCompilation::InsertRayTracingExtensions(glsl_file);
+
+		//Insert the global render data.
+		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
+
+		//Insert things from the render pipeline information.
+		const uint32 resource_binding_index{ InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file) };
+
+		//Insert ray tracing data.
+		GLSLCompilation::InsertRayTracingData(resource_binding_index, glsl_file);
+
+		//Write the payloads.
+		if (!payloads.Empty())
+		{
+			//Remember the current location index.
+			uint32 location_index{ 0 };
+
+			for (const Payload &payload : payloads)
+			{
+				glsl_file << "layout (location = " << location_index << ") rayPayloadNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
+
+				++location_index;
+			}
+
+			glsl_file << std::endl;
+		}
+
+		//Write the "void main()" line.
+		glsl_file << "void main()" << std::endl;
+
+		//Write the remaining lines.
+		for (uint64 i{ 0 }; i < glsl_lines.Size(); ++i)
+		{
+			//Cache the line.
+			std::string &line{ glsl_lines[i] };
+
+			//Replace "RAY_TRACING_ID" with "gl_LaunchIDNV".
+			{
+				size_t position{ line.find("RAY_TRACING_ID") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("RAY_TRACING_ID"), "gl_LaunchIDNV");
+					position = line.find("RAY_TRACING_ID");
+				}
+			}
+
+			//Replace "RAY_TRACING_SIZE" with "gl_LaunchSizeNV".
+			{
+				size_t position{ line.find("RAY_TRACING_SIZE") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("RAY_TRACING_SIZE"), "gl_LaunchSizeNV");
+					position = line.find("RAY_TRACING_SIZE");
+				}
+			}
+
+			//Replace "RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT" with "gl_RayFlagsTerminateOnFirstHitNV".
+			{
+				size_t position{ line.find("RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT"), "gl_RayFlagsTerminateOnFirstHitNV");
+					position = line.find("RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT");
+				}
+			}
+
+			//Replace "RAY_TRACING_FLAG_OPAQUE" with "gl_RayFlagsOpaqueNV".
+			{
+				size_t position{ line.find("RAY_TRACING_FLAG_OPAQUE") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("RAY_TRACING_FLAG_OPAQUE"), "gl_RayFlagsOpaqueNV");
+					position = line.find("RAY_TRACING_FLAG_OPAQUE");
+				}
+			}
+
+			//Replace "RAY_TRACING_FLAG_SKIP_CLOSEST_HIT" with "gl_RayFlagsSkipClosestHitShaderNV".
+			{
+				size_t position{ line.find("RAY_TRACING_FLAG_SKIP_CLOSEST_HIT") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("RAY_TRACING_FLAG_SKIP_CLOSEST_HIT"), "gl_RayFlagsSkipClosestHitShaderNV");
+					position = line.find("RAY_TRACING_FLAG_SKIP_CLOSEST_HIT");
+				}
+			}
+
+			//Replace "ImageLoad" with "imageLoad".
+			{
+				size_t position{ line.find("ImageLoad") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("ImageLoad"), "imageLoad");
+					position = line.find("ImageLoad");
+				}
+			}
+
+			//Replace "ImageStore" with "imageStore".
+			{
+				size_t position{ line.find("ImageStore") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("ImageStore"), "imageStore");
+					position = line.find("ImageStore");
+				}
+			}
+
+			//Process "RayTrace()" calls
+			{
+				size_t position{ line.find("RayTrace(") };
+
+				if (position != std::string::npos)
+				{
+					StaticArray<DynamicString, 3> arguments;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						line.data(),
+						line.length(),
+						arguments.Data()
+					);
+
+					line = "traceNV(TOP_LEVEL_ACCELERATION_STRUCTURE/*topLevel*/,";
+					line += arguments[0].Data();
+					line += "/*rayFlags*/, 0xff/*cullMask*/, 0/*sbtRecordOffset*/, 0/*sbtRecordStride*/, 0/*missIndex*/, ";
+					line += arguments[1].Data();
+					line += "/*origin*/, FLOAT32_EPSILON/*Tmin*/, ";
+					line += arguments[2].Data();
+					line += "/*direction*/, FLOAT32_MAXIMUM/*Tmax*/, 0/*payload*/);";
+				}
+			}
+
+			//Write the line.
+			glsl_file << line << std::endl;
+		}
+
+		//Close the file.
+		glsl_file.close();
+
+		//Compile the GLSL shader.
+		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_raygen_shader, &parameters->_RayGenerationShaderData._GLSLData);
+	}
+}
+
+/*
+*	Generates a ray miss shader.
+*/
+void GenerateRayMissShader
+(
+	std::ifstream &file,
+	const char *const RESTRICT generated_file_path,
+	const std::string &shader_name,
+	const RenderPipelineInformation &render_pipeline_information,
+	RenderPipelineBuildParameters *const RESTRICT parameters
+) NOEXCEPT
+{
+	//Struct definitions.
+	struct Payload final
+	{
+		DynamicString _Type;
+		DynamicString _Name;
+	};
+
+	//Gather all the lines in the vertex function.
+	DynamicArray<std::string> lines;
+	GatherShaderLines(file, lines);
+
+	//Gather the payloads.
+	DynamicArray<Payload> payloads;
+
+	for (uint64 i{ 0 }; i < lines.Size();)
+	{
+		const size_t position{ lines[i].find("Payload(") };
+
+		if (position != std::string::npos)
+		{
+			StaticArray<DynamicString, 2> arguments;
+
+			TextParsingUtilities::ParseFunctionArguments
+			(
+				lines[i].data(),
+				lines[i].length(),
+				arguments.Data()
+			);
+
+			payloads.Emplace();
+			payloads.Back()._Type = std::move(arguments[0]);
+			payloads.Back()._Name = std::move(arguments[1]);
+
+			lines.EraseAt<true>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
+
+	//Write the GLSL file.
+	{
+		//Make a copy of the lines.
+		DynamicArray<std::string> glsl_lines{ lines };
+
+		//Open the file.
+		char glsl_file_path[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(glsl_file_path, "%s\\%s_RayMiss.glsl", generated_file_path, shader_name.c_str());
+		std::ofstream glsl_file{ glsl_file_path };
+
+		//Write the version declaration.
+		glsl_file << "#version 460" << std::endl;
+
+		glsl_file << std::endl;
+
+		//Insert extensions.
+		GLSLCompilation::InsertExtensions(glsl_file);
+		GLSLCompilation::InsertRayTracingExtensions(glsl_file);
+
+		//Insert the global render data.
+		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
+
+		//Insert things from the render pipeline information.
+		const uint32 resource_binding_index{ InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file) };
+
+		//Insert ray tracing data.
+		GLSLCompilation::InsertRayTracingData(resource_binding_index, glsl_file);
+
+		//Write the payloads.
+		if (!payloads.Empty())
+		{
+			//Remember the current location index.
+			uint32 location_index{ 0 };
+
+			for (const Payload &payload : payloads)
+			{
+				glsl_file << "layout (location = " << location_index << ") rayPayloadInNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
+
+				++location_index;
+			}
+
+			glsl_file << std::endl;
+		}
+
+		//Write the "void main()" line.
+		glsl_file << "void main()" << std::endl;
+
+		//Write the remaining lines.
+		for (uint64 i{ 0 }; i < glsl_lines.Size(); ++i)
+		{
+			//Cache the line.
+			std::string &line{ glsl_lines[i] };
+
+			//Write the line.
+			glsl_file << line << std::endl;
+		}
+
+		//Close the file.
+		glsl_file.close();
+
+		//Compile the GLSL shader.
+		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_miss_shader, &parameters->_RayMissShaderData._GLSLData);
 	}
 }
 
@@ -2790,10 +3132,22 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 				GenerateVertexShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
 			}
 
-			//Is this the beginning of a vertex shader?
+			//Is this the beginning of a fragment shader?
 			else if (current_line == "Fragment")
 			{
 				GenerateFragmentShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
+			}
+
+			//Is this the beginning of a ray generation shader?
+			else if (current_line == "RayGeneration")
+			{
+				GenerateRayGenerationShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
+			}
+
+			//Is this the beginning of a ray miss shader?
+			else if (current_line == "RayMiss")
+			{
+				GenerateRayMissShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
 			}
 
 			else

@@ -26,6 +26,12 @@ public:
 	//The fragment shader handle.
 	ShaderHandle _FragmentShaderHandle{ EMPTY_HANDLE };
 
+	//The ray generation shader handle.
+	ShaderHandle _RayGenerationShaderHandle{ EMPTY_HANDLE };
+
+	//The ray miss shader handle.
+	ShaderHandle _RayMissShaderHandle{ EMPTY_HANDLE };
+
 	//The included uniform buffers.
 	DynamicArray<HashString> _IncludedUniformBuffers;
 

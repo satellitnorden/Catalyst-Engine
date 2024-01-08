@@ -143,6 +143,30 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 			break;
 		}
 
+		case RenderInputStream::Mode::TRACE_RAYS:
+		{
+			for (const RenderInputStreamEntry &entry : input_stream._Entries)
+			{
+				//Push constants.
+				if (input_stream._RequiredPushConstantDataSize != 0)
+				{
+					command_buffer->PushConstants
+					(
+						this,
+						ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS,
+						0,
+						static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
+						&input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
+					);
+				}
+
+				//Trace rays!
+				command_buffer->TraceRays(this, entry._TraceRaysWidth, entry._TraceRaysHeight);
+			}
+
+			break;
+		}
+
 		default:
 		{
 			ASSERT(false, "Invalid case!");
