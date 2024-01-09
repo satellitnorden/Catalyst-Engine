@@ -67,7 +67,4 @@ private:
 	//The render data tables.
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
-	//The top level acceleration structure binding index.
-	uint32 _TopLevelAccelerationStructureBindingIndex;
-
 };

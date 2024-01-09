@@ -122,14 +122,6 @@ namespace GLSLCompilation
 	}
 
 	/*
-	*	Inserts ray tracing data into the given file.
-	*/
-	FORCE_INLINE void InsertRayTracingData(const uint32 resource_binding_index, std::ofstream &output_file) NOEXCEPT
-	{
-		output_file << "layout (set = 1, binding = " << resource_binding_index << ") uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;" << std::endl;
-	}
-
-	/*
 	*	Insert the contents of a file into the given file.
 	*/
 	FORCE_INLINE void InsertFromFile

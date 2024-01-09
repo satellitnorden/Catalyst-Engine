@@ -612,44 +612,88 @@ namespace VulkanSubRenderingSystemLogic
 
 		//Create the shader binding table buffer.
 		const uint32 shader_group_handle_size{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
+		const uint32 shader_group_base_alignment{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupBaseAlignment };
+		const uint32 shader_group_handle_size_aligned{ CatalystBaseMath::RoundToNearestMultipleOf(shader_group_handle_size, shader_group_base_alignment) };
 
 		//Calculate the shader binding table size.
-		uint32 shader_binding_table_size{ shader_group_handle_size };
+		uint32 number_of_handles{ 0 };
 
-		for (const RayTracingPipeline::HitGroup hit_group : pipeline->GetHitGroups())
+		//Calculate the ray generation shader group.
+		const uint32 ray_generation_size{ shader_group_handle_size_aligned };
+		++number_of_handles;
+
+		//Calculate the hit shader groups.
+		const uint32 hit_shader_groups_size{ CatalystBaseMath::RoundToNearestMultipleOf(static_cast<uint32>(shader_group_handle_size * pipeline->GetHitGroups().Size()), shader_group_base_alignment) };
+		number_of_handles += static_cast<uint32>(pipeline->GetHitGroups().Size());
+
+		//Calculate the miss shadergroups.
+		const uint32 miss_shader_groups_size{ CatalystBaseMath::RoundToNearestMultipleOf(static_cast<uint32>(shader_group_handle_size * pipeline->GetMissShaders().Size()), shader_group_base_alignment) };
+		number_of_handles += static_cast<uint32>(pipeline->GetMissShaders().Size());
+
+		//Calculate the handles data size.
+		const uint32 handles_data_size{ shader_group_handle_size * number_of_handles };
+
+		//Retrieve the handles
+		uint8 *const RESTRICT handles_storage{ static_cast<uint8* const RESTRICT>(Memory::Allocate(handles_data_size)) };
+
+		VULKAN_ERROR_CHECK
+		(
+			vkGetRayTracingShaderGroupHandlesNV
+			(
+				VulkanInterface::Instance->GetLogicalDevice().Get(),
+				data->_Pipeline->GetPipeline(),
+				0,
+				number_of_handles,
+				handles_data_size,
+				handles_storage
+			)
+		);
+
+		//Calculate the shader binding table size.
+		const uint32 shader_binding_table_size{ ray_generation_size + hit_shader_groups_size + miss_shader_groups_size };
+
+		//Allocate data for the shader binding table handles.
+		uint8 *const RESTRICT shader_binding_table_handles_storage{ static_cast<uint8* const RESTRICT>(Memory::Allocate(shader_binding_table_size)) };
+
+		//Copy data into it.
+		uint64 current_offset{ 0 };
+		uint64 handle_index{ 0 };
+
+		Memory::Copy(&shader_binding_table_handles_storage[current_offset], &handles_storage[shader_group_handle_size * handle_index++], shader_group_handle_size);
+
+		current_offset = CatalystBaseMath::RoundToNearestMultipleOf(static_cast<uint32>(current_offset + shader_group_handle_size), shader_group_base_alignment);
+
+		for (uint64 i{ 0 }; i < pipeline->GetHitGroups().Size(); ++i)
 		{
-			shader_binding_table_size += shader_group_handle_size;
+			Memory::Copy(&shader_binding_table_handles_storage[current_offset], &handles_storage[shader_group_handle_size * handle_index++], shader_group_handle_size);
+			current_offset += shader_group_handle_size;
 		}
 
-		for (const ShaderHandle shader : pipeline->GetMissShaders())
+		current_offset = CatalystBaseMath::RoundToNearestMultipleOf(static_cast<uint32>(current_offset), shader_group_base_alignment);
+
+		for (uint64 i{ 0 }; i < pipeline->GetMissShaders().Size(); ++i)
 		{
-			shader_binding_table_size += shader_group_handle_size;
+			Memory::Copy(&shader_binding_table_handles_storage[current_offset], &handles_storage[shader_group_handle_size * handle_index++], shader_group_handle_size);
+			current_offset += shader_group_handle_size;
 		}
+
+		current_offset = CatalystBaseMath::RoundToNearestMultipleOf(static_cast<uint32>(current_offset), shader_group_base_alignment);
 
 		//Create the shader binding table buffer.
 		data->_ShaderBindingTableBuffer = VulkanInterface::Instance->CreateBuffer(shader_binding_table_size, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		//Upload the data to it.
-		uint8 *const RESTRICT shader_binding_table_storage{ static_cast<uint8 *const RESTRICT>(Memory::Allocate(shader_binding_table_size)) };
-
-		VULKAN_ERROR_CHECK(vkGetRayTracingShaderGroupHandlesNV(	VulkanInterface::Instance->GetLogicalDevice().Get(),
-																data->_Pipeline->GetPipeline(),
-																0,
-																shader_binding_table_size / shader_group_handle_size,
-																shader_binding_table_size,
-																shader_binding_table_storage));
-
-		void *const RESTRICT data_chunks[]{ shader_binding_table_storage };
+		void *const RESTRICT data_chunks[]{ shader_binding_table_handles_storage };
 		const uint64 data_sizes[]{ shader_binding_table_size };
 
 		data->_ShaderBindingTableBuffer->UploadData(data_chunks, data_sizes, 1);
 
-		Memory::Free(shader_binding_table_storage);
+		Memory::Free(handles_storage);
+		Memory::Free(shader_binding_table_handles_storage);
 
 		//Calculate the offsets/strides.
-		data->_HitShaderBindingOffset = shader_group_handle_size;
+		data->_HitShaderBindingOffset = ray_generation_size;
 		data->_HitShaderBindingStride = shader_group_handle_size;
-		data->_MissShaderBindingOffset = shader_group_handle_size + static_cast<uint32>(pipeline->GetHitGroups().Size()) * shader_group_handle_size;
+		data->_MissShaderBindingOffset = ray_generation_size + hit_shader_groups_size;
 		data->_MissShaderBindingStride = shader_group_handle_size;
 	}
 
@@ -732,7 +776,7 @@ namespace VulkanSubRenderingSystemLogic
 			//Check if any destruction data should be added to the async destruction queue.
 			for (uint64 i{ 0 }; i < VulkanSubRenderingSystemData::_DestructionQueue.Size();)
 			{
-				if (VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages() + 1)
+				if (VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages() + 2)
 				{
 					VulkanSubRenderingSystemData::_AsyncDestructionQueue.Emplace(VulkanSubRenderingSystemData::_DestructionQueue[i]);
 					VulkanSubRenderingSystemData::_DestructionQueue.EraseAt<false>(i);
@@ -1035,10 +1079,11 @@ SurfaceTransform VulkanSubRenderingSystem::GetCurrentSurfaceTransform() const NO
 *	Creates a bottom level acceleration structure.
 */
 void VulkanSubRenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle vertex_buffer,
-																	const uint32 number_of_vertices,
-																	const BufferHandle index_buffer,
-																	const uint32 number_of_indices,
-																	AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+																		const uint32 number_of_vertices,
+																		const BufferHandle index_buffer,
+																		const uint32 number_of_indices,
+																		const BottomLevelAccelerationStructureFlag flags,
+																		AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
 	if (IsRayTracingSupported())
 	{
@@ -1066,11 +1111,15 @@ void VulkanSubRenderingSystem::CreateBottomLevelAccelerationStructure(	const Buf
 		geometry.geometry.aabbs.numAABBs = 0;
 		geometry.geometry.aabbs.stride = 0;
 		geometry.geometry.aabbs.offset = 0;
-		geometry.flags = 0;
+		geometry.flags = VulkanTranslationUtilities::GetVulkanGeometryFlags(flags);
 
-		*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV,
-																			ArrayProxy<VulkanGeometryInstance>(),
-																			ArrayProxy<VkGeometryNV>(geometry));
+		*handle = VulkanInterface::Instance->CreateAccelerationStructure
+		(
+			VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV,
+			ArrayProxy<VulkanGeometryInstance>(),
+			ArrayProxy<VkGeometryNV>(geometry),
+			nullptr
+		);
 	}
 
 	else
@@ -1081,8 +1130,14 @@ void VulkanSubRenderingSystem::CreateBottomLevelAccelerationStructure(	const Buf
 
 /*
 *	Creates a top level acceleration structure.
+*	Can take an optional command buffer if one is created during a frame.
 */
-void VulkanSubRenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+void VulkanSubRenderingSystem::CreateTopLevelAccelerationStructure
+(
+	const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data,
+	AccelerationStructureHandle *const RESTRICT handle,
+	CommandBuffer *const RESTRICT command_buffer
+) NOEXCEPT
 {
 	if (IsRayTracingSupported())
 	{
@@ -1095,9 +1150,13 @@ void VulkanSubRenderingSystem::CreateTopLevelAccelerationStructure(const ArrayPr
 		}
 
 		//Create the acceleration structure.
-		*handle = VulkanInterface::Instance->CreateAccelerationStructure(	VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
-																			ArrayProxy<VulkanGeometryInstance>(geometry_instances, instance_data.Size()),
-																			ArrayProxy<VkGeometryNV>());
+		*handle = VulkanInterface::Instance->CreateAccelerationStructure
+		(
+			VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
+			ArrayProxy<VulkanGeometryInstance>(geometry_instances, instance_data.Size()),
+			ArrayProxy<VkGeometryNV>(),
+			command_buffer ? static_cast<VulkanCommandBuffer *const RESTRICT>(command_buffer->GetCommandBufferData()) : nullptr
+		);
 	}
 	
 	else

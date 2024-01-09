@@ -43,6 +43,13 @@
 #include <ThirdParty/imgui.h>
 #endif
 
+//Constants.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	#define RENDERING_PERFORMANCE_QUERY (1)
+#else
+	#define RENDERING_PERFORMANCE_QUERY (0)
+#endif
+
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
 
@@ -346,7 +353,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		_SubRenderingSystem->BeginFrame();
 	}
 
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if RENDERING_PERFORMANCE_QUERY
 	{
 		RenderingPerformanceData &current_performance_data{ _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()] };
 
@@ -448,13 +455,6 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		_MaterialSystem.RenderUpdate();
 	}
 
-	//Update the ray tracing system.
-	{
-		PROFILING_SCOPE(RenderingSystem_RayTracingSystem_RenderUpdate);
-
-		_RayTracingSystem.RenderUpdate();
-	}
-
 	//Update the virtual reality system.
 	{
 		PROFILING_SCOPE(RenderingSystem_VirtualRealitySystem_RenderUpdate);
@@ -483,16 +483,6 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		_BufferManager.RenderUpdate();
 	}
 
-	//Execute all render passes.
-	{
-		PROFILING_SCOPE(RenderingSystem_ExecuteAllRenderPasses);
-
-		for (RenderPass *const RESTRICT render_pass : _RenderPasses)
-		{
-			render_pass->Execute();
-		}
-	}
-
 	//Record the frame command buffer.
 	CommandBuffer *const RESTRICT frame_command_buffer{ GetGlobalCommandBuffer(CommandBufferLevel::PRIMARY) };
 
@@ -501,11 +491,36 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		frame_command_buffer->Begin(nullptr);
 
 		//Record all execute commands.
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if RENDERING_PERFORMANCE_QUERY
 		_GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._Names.Clear();
 
 		uint32 current_query_index{ 0 };
 #endif
+
+		//Update the ray tracing system.
+		{
+			PROFILING_SCOPE(RenderingSystem_RayTracingSystem_RenderUpdate);
+
+#if RENDERING_PERFORMANCE_QUERY
+			_GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._Names.Emplace("RayTracing_RenderUpdate");
+			frame_command_buffer->WriteBeginTimestamp(nullptr, _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._QueryPool, current_query_index++);
+#endif
+			_RayTracingSystem.RenderUpdate(frame_command_buffer);
+#if RENDERING_PERFORMANCE_QUERY
+			frame_command_buffer->WriteEndTimestamp(nullptr, _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._QueryPool, current_query_index++);
+#endif
+		}
+
+		//Execute all render passes.
+		{
+			PROFILING_SCOPE(RenderingSystem_ExecuteAllRenderPasses);
+
+			for (RenderPass *const RESTRICT render_pass : _RenderPasses)
+			{
+				render_pass->Execute();
+			}
+		}
+
 		for (RenderPass *const RESTRICT render_pass : _RenderPasses)
 		{
 			if (!render_pass->IsEnabled())
@@ -522,7 +537,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 					continue;
 				}
 
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if RENDERING_PERFORMANCE_QUERY
 				if (pipeline->GetName())
 				{
 					_GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._Names.Emplace(pipeline->GetName());
@@ -531,7 +546,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 #endif
 				frame_command_buffer->ExecuteCommands(pipeline, pipeline->GetCommandBuffer());
 
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if RENDERING_PERFORMANCE_QUERY
 				if (pipeline->GetName())
 				{
 					frame_command_buffer->WriteEndTimestamp(pipeline, _GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._QueryPool, current_query_index++);
@@ -845,17 +860,24 @@ void RenderingSystem::CreateBottomLevelAccelerationStructure(	const BufferHandle
 																const uint32 number_of_vertices,
 																const BufferHandle index_buffer,
 																const uint32 number_of_indices,
+																const BottomLevelAccelerationStructureFlag flags,
 																AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
-	_SubRenderingSystem->CreateBottomLevelAccelerationStructure(vertex_buffer, number_of_vertices, index_buffer, number_of_indices, handle);
+	_SubRenderingSystem->CreateBottomLevelAccelerationStructure(vertex_buffer, number_of_vertices, index_buffer, number_of_indices, flags, handle);
 }
 
 /*
 *	Creates a top level acceleration structure.
+*	Can take an optional command buffer if one is created during a frame.
 */
-void RenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+void RenderingSystem::CreateTopLevelAccelerationStructure
+(
+	const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data,
+	AccelerationStructureHandle *const RESTRICT handle,
+	CommandBuffer *const RESTRICT command_buffer
+) NOEXCEPT
 {
-	_SubRenderingSystem->CreateTopLevelAccelerationStructure(instance_data, handle);
+	_SubRenderingSystem->CreateTopLevelAccelerationStructure(instance_data, handle, command_buffer);
 }
 
 /*
@@ -1389,7 +1411,7 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 	_GlobalRenderData._RemoveGlobalTextureUpdates.Upsize<true>(number_of_framebuffers);
 	_GlobalRenderData._AddGlobalTextureUpdates.Upsize<true>(number_of_framebuffers);
 	_GlobalRenderData._GlobalCommandPoolData.Upsize<true>(number_of_framebuffers);
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if RENDERING_PERFORMANCE_QUERY
 	_GlobalRenderData._PerformanceData.Upsize<true>(number_of_framebuffers);
 #endif
 
@@ -1405,7 +1427,7 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 		//Bind the dynamic uniform data buffer to the render data table.
 		BindUniformBufferToRenderDataTable(0, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
 	
-#if !defined(CATALYST_CONFIGURATION_FINAL)
+#if RENDERING_PERFORMANCE_QUERY
 		CreateQueryPool(128, &_GlobalRenderData._PerformanceData[i]._QueryPool);
 #endif
 	}

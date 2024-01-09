@@ -236,6 +236,15 @@ enum class BlendOperator : uint8
 	MAX
 };
 
+//Enumeration covering all bottom level acceleration structure flags.
+enum class BottomLevelAccelerationStructureFlag : uint8
+{
+	NONE = 0,
+	OPAQUE = BIT(0)
+};
+
+ENUMERATION_BIT_OPERATIONS(BottomLevelAccelerationStructureFlag);
+
 //Enumeration covering all buffer usages.
 enum class BufferUsage : uint8
 {

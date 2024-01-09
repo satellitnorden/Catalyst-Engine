@@ -53,10 +53,9 @@ RayGeneration
 
                     //Trace the ray!
                     uint ray_tracing_flags =    RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT
-                                                | RAY_TRACING_FLAG_OPAQUE
                                                 | RAY_TRACING_FLAG_SKIP_CLOSEST_HIT;
 
-                    RayTrace(ray_tracing_flags, world_position, -light._TransformData1);
+                    TraceRay(ray_tracing_flags, world_position, -light._TransformData1);
 
                     //Write to the shadows.
                     shadows[current_shadow_index++] = VISIBILITY;

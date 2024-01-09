@@ -320,6 +320,7 @@ VkPresentModeKHR VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEP
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(_VulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &number_of_available_present_modes, available_present_modes.Data()));
 
 	//Find the most optimal present mode.
+	/*
 	for (const VkPresentModeKHR available_present_mode : available_present_modes)
 	{
 		if (available_present_mode == VkPresentModeKHR::VK_PRESENT_MODE_FIFO_RELAXED_KHR)
@@ -327,6 +328,7 @@ VkPresentModeKHR VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEP
 			return available_present_mode;
 		}
 	}
+	*/
 
 	return VkPresentModeKHR::VK_PRESENT_MODE_FIFO_KHR;
 }

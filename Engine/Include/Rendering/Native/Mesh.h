@@ -36,9 +36,6 @@ public:
 		//The index count.
 		uint32 _IndexCount;
 
-		//The bottom level acceleration structure.
-		AccelerationStructureHandle _BottomLevelAccelerationStructure;
-
 	};
 
 	//All the mesh level of details.

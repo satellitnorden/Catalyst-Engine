@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
@@ -13,14 +16,41 @@
 */
 void RayTracingSystem::PostInitialize()
 {
+	//Add the hit groups.
+	{
+		_HitGroups.Emplace();
+		RayTracingHitGroup &new_hit_group{ _HitGroups.Back() };
+
+		new_hit_group._Identifier = HashString("OpaqueModels");
+		new_hit_group._Index = static_cast<uint32>(_HitGroups.LastIndex());
+		new_hit_group._BottomLevelAccelerationStructureFlags = BottomLevelAccelerationStructureFlag::OPAQUE;
+	}
+
+	{
+		_HitGroups.Emplace();
+		RayTracingHitGroup &new_hit_group{ _HitGroups.Back() };
+
+		new_hit_group._Identifier = HashString("MaskedModels");
+		new_hit_group._Index = static_cast<uint32>(_HitGroups.LastIndex());
+		new_hit_group._BottomLevelAccelerationStructureFlags = BottomLevelAccelerationStructureFlag::NONE;
+	}
+
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
+
+	//Create the render data tables.
+	_RenderDataTables.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (RenderDataTableHandle &render_data_table : _RenderDataTables)
+	{
+		RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &render_data_table);
+	}
 }
 
 /*
 *	Updates the ray tracing system during the render update phase.
 */
-void RayTracingSystem::RenderUpdate() NOEXCEPT
+void RayTracingSystem::RenderUpdate(CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
 {
 	//No need to do anything if ray tracing isn't active.
 	if (!RenderingSystem::Instance->IsRayTracingActive())
@@ -28,27 +58,244 @@ void RayTracingSystem::RenderUpdate() NOEXCEPT
 		return;
 	}
 
-	//Remember if anything has been updated.
-	const bool anything_updated{ _DynamicModelsUpdated || _StaticModelsUpdated };
+	//Cache the current render data table.
+	RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
-	//Perform updates.
-	UpdateTerrain();
-	UpdateStaticModels();
-	UpdateDynamicModels();
-
-	//Rebuild the render data table.
-	if (anything_updated)
+	//Destroy the old top level acceleration structure, if it exists.
+	if (_TopLevelAccelerationStructure != EMPTY_HANDLE)
 	{
-		CreateRenderDataTable();
+		RenderingSystem::Instance->DestroyAccelerationStructure(&_TopLevelAccelerationStructure);
+	}
+
+	//Gather the instance data, and update the current render data table at the same time.
+	{
+		PROFILING_SCOPE(RayTracingSystem_GatherInstanceData);
+
+		_TopLevelAccelerationStructureInstanceData.Clear();
+
+		for (uint64 hit_group_index{ 0 }; hit_group_index < _HitGroups.Size(); ++hit_group_index)
+		{
+			RayTracingHitGroup &hit_group{ _HitGroups[hit_group_index] };
+
+			hit_group._Materialindices.Clear();
+
+			for (uint64 entry_index{ 0 }; entry_index < hit_group._Entries.Size(); ++entry_index)
+			{
+				const RayTracingHitGroup::Entry &entry{ hit_group._Entries[entry_index] };
+
+				_TopLevelAccelerationStructureInstanceData.Emplace(entry._InstanceData);
+
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(static_cast<uint32>(1 + hit_group_index * 3 + 0), static_cast<uint32>(entry_index), &current_render_data_table, entry._VertexBuffer);
+				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(static_cast<uint32>(1 + hit_group_index * 3 + 1), static_cast<uint32>(entry_index), &current_render_data_table, entry._IndexBuffer);
+			
+				hit_group._Materialindices.Emplace(entry._MaterialIndex);
+			}
+
+			//Does the material indices buffer need to be (re-)created?
+			if (hit_group._MaterialBufferIndicesCapacity < hit_group._Materialindices.Size())
+			{
+				if (hit_group._MaterialIndicesBuffer != EMPTY_HANDLE)
+				{
+					RenderingSystem::Instance->DestroyBuffer(&hit_group._MaterialIndicesBuffer);
+				}
+
+				RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * hit_group._Materialindices.Size(), BufferUsage::StorageBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &hit_group._MaterialIndicesBuffer);
+
+				const void *RESTRICT data_chunks[]{ hit_group._Materialindices.Data() };
+				const uint64 data_sizes[]{ sizeof(uint32) * hit_group._Materialindices.Size() };
+				RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &hit_group._MaterialIndicesBuffer);
+
+				hit_group._MaterialBufferIndicesCapacity = hit_group._Materialindices.Size();
+			}
+
+			if (!hit_group._Materialindices.Empty())
+			{
+ 				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(static_cast<uint32>(1 + hit_group_index * 3 + 2), 0, &current_render_data_table, hit_group._MaterialIndicesBuffer);
+			}
+		}
+	}
+
+	{
+		PROFILING_SCOPE(RayTracingSystem_BuildTopLevelAccelerationStructure);
+		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(_TopLevelAccelerationStructureInstanceData, &_TopLevelAccelerationStructure, command_buffer);
+	}
+
+	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &current_render_data_table, _TopLevelAccelerationStructure);
+}
+
+/*
+*	Returns the current render data table.
+*/
+NO_DISCARD RenderDataTableHandle RayTracingSystem::GetCurrentRenderDataTable() NOEXCEPT
+{
+	return _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()];
+}
+
+/*
+*	Callback for when an entity is initialized.
+*/
+void RayTracingSystem::OnEntityInitialized(const Entity *const RESTRICT entity) NOEXCEPT
+{
+	ASSERT(entity->_Type == EntityType::StaticModel, "Only static models supported for now!");
+
+	//Retrieve the component.
+	const StaticModelComponent &component{ ComponentManager::GetStaticModelStaticModelComponents()[entity->_ComponentsIndex] };
+
+	//Iterate through the meshes.
+	for (uint64 mesh_index{ 0 }, size{ component._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+	{
+		//Cache the mesh.
+		const Mesh &mesh{ component._ModelResource->_Meshes[mesh_index] };
+
+		//Cache the mesh level of detail.
+		const Mesh::MeshLevelOfDetail &mesh_level_of_detail{ mesh._MeshLevelOfDetails[0] };
+
+		//Decide which hit group this mesh goes in.
+		RayTracingHitGroup *RESTRICT hit_group;
+
+		if (component._MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED)
+		{
+			hit_group = GetHitGroup(HashString("MaskedModels"));
+		}
+
+		else
+		{
+			hit_group = GetHitGroup(HashString("OpaqueModels"));
+		}
+
+		//Calculate a unique identifier for this mesh.
+		char mesh_identifier_buffer[64];
+		sprintf_s(mesh_identifier_buffer, "%s_%llu", component._ModelResource->_Header._ResourceName.Data(), mesh_index);
+
+		const HashString mesh_identifier{ mesh_identifier_buffer };
+
+		//Retrieve or create the bottom level acceleration structure.
+		AccelerationStructureHandle bottom_level_acceleration_structure;
+
+		if (RayTracingHitGroup::SharedBottomLevelAccelerationStructure *const RESTRICT shared_bottom_level_acceleration_structure{ hit_group->_SharedBottomLevelAccelerationStructures.Find(mesh_identifier) })
+		{
+			bottom_level_acceleration_structure = shared_bottom_level_acceleration_structure->_BottomLevelAccelerationStructure;
+			++shared_bottom_level_acceleration_structure->_ReferenceCount;
+		}
+
+		else
+		{
+			RayTracingHitGroup::SharedBottomLevelAccelerationStructure new_shared_bottom_level_acceleration_structure;
+
+			RenderingSystem::Instance->CreateBottomLevelAccelerationStructure
+			(
+				mesh_level_of_detail._VertexBuffer,
+				static_cast<uint32>(mesh_level_of_detail._Vertices.Size()),
+				mesh_level_of_detail._IndexBuffer,
+				mesh_level_of_detail._IndexCount,
+				hit_group->_BottomLevelAccelerationStructureFlags,
+				&new_shared_bottom_level_acceleration_structure._BottomLevelAccelerationStructure
+			);
+
+			new_shared_bottom_level_acceleration_structure._ReferenceCount = 1;
+
+			hit_group->_SharedBottomLevelAccelerationStructures.Add(mesh_identifier, new_shared_bottom_level_acceleration_structure);
+
+			bottom_level_acceleration_structure = new_shared_bottom_level_acceleration_structure._BottomLevelAccelerationStructure;
+		}
+
+		//Add a new entry.
+		hit_group->_Entries.Emplace();
+		RayTracingHitGroup::Entry &new_entry{ hit_group->_Entries.Back() };
+
+		new_entry._Entity = entity;
+		new_entry._VertexBuffer = mesh_level_of_detail._VertexBuffer;
+		new_entry._IndexBuffer = mesh_level_of_detail._IndexBuffer;
+		new_entry._MaterialIndex = component._MaterialResources[mesh_index]->_Index;
+		new_entry._InstanceData._Transform = component._WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+		new_entry._InstanceData._BottomLevelAccelerationStructure = bottom_level_acceleration_structure;
+		new_entry._InstanceData._HitGroupIndex = hit_group->_Index;
+		new_entry._InstanceData._InstanceIndex = static_cast<uint32>(hit_group->_Entries.LastIndex());
 	}
 }
 
 /*
-*	Sets the terrain bottom level acceleration structure.
+*	Callback for when an entity is terminated.
 */
-void RayTracingSystem::SetTerrainBottomLevelAccelerationStructure(const AccelerationStructureHandle handle) NOEXCEPT
+void RayTracingSystem::OnEntityTerminated(const Entity *const RESTRICT entity) NOEXCEPT
 {
-	_TerrainBottomAccelerationStructure = handle;
+	ASSERT(entity->_Type == EntityType::StaticModel, "Only static models supported for now!");
+
+	//Retrieve the component.
+	const StaticModelComponent &component{ ComponentManager::GetStaticModelStaticModelComponents()[entity->_ComponentsIndex] };
+
+	//Iterate through the meshes.
+	for (uint64 mesh_index{ 0 }, size{ component._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+	{
+		//Decide which hit group this mesh is in.
+		RayTracingHitGroup *RESTRICT hit_group;
+
+		if (component._MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED)
+		{
+			hit_group = GetHitGroup(HashString("MaskedModels"));
+		}
+
+		else
+		{
+			hit_group = GetHitGroup(HashString("OpaqueModels"));
+		}
+
+		//Remove the entries associated with this entity.
+		for (uint64 i{ 0 }; i < hit_group->_Entries.Size();)
+		{
+			if (hit_group->_Entries[i]._Entity == entity)
+			{
+				hit_group->_Entries.EraseAt<false>(i);
+
+				if (i < hit_group->_Entries.Size())
+				{
+					hit_group->_Entries[i]._InstanceData._InstanceIndex = static_cast<uint32>(i);
+				}
+			}
+
+			else
+			{
+				++i;
+			}
+		}
+
+		//Calculate a unique identifier for this mesh.
+		char mesh_identifier_buffer[64];
+		sprintf_s(mesh_identifier_buffer, "%s_%llu", component._ModelResource->_Header._ResourceName.Data(), mesh_index);
+
+		const HashString mesh_identifier{ mesh_identifier_buffer };
+
+		//Decrement the reference count for the shared bottom level acceleration structures. Also, destroy them if they are no longer in use.
+		if (RayTracingHitGroup::SharedBottomLevelAccelerationStructure *const RESTRICT shared_bottom_level_acceleration_structure{ hit_group->_SharedBottomLevelAccelerationStructures.Find(mesh_identifier) })
+		{
+			--shared_bottom_level_acceleration_structure->_ReferenceCount;
+
+			if (shared_bottom_level_acceleration_structure->_ReferenceCount == 0)
+			{
+				RenderingSystem::Instance->DestroyAccelerationStructure(&shared_bottom_level_acceleration_structure->_BottomLevelAccelerationStructure);
+
+				hit_group->_SharedBottomLevelAccelerationStructures.Remove(mesh_identifier);
+			}
+		}
+	}
+}
+
+/*
+*	Returns the hit group with the given identifier.
+*/
+NO_DISCARD RayTracingHitGroup *const RESTRICT RayTracingSystem::GetHitGroup(const HashString identifier) NOEXCEPT
+{
+	for (RayTracingHitGroup &hit_group : _HitGroups)
+	{
+		if (hit_group._Identifier == identifier)
+		{
+			return &hit_group;
+		}
+	}
+
+	ASSERT(false, "Couldn't find hit group with identifier!");
+
+	return nullptr;
 }
 
 /*
@@ -57,264 +304,19 @@ void RayTracingSystem::SetTerrainBottomLevelAccelerationStructure(const Accelera
 void RayTracingSystem::CreateRenderDataTableLayout() NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MESHES{ 1'024 * 4 }; //TODO: Figure out a way to remove this.
-	constexpr uint32 MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MESHES{ 1'024 * 4 }; //TODO: Figure out a way to remove this.
+	constexpr uint32 MAXIMUM_NUMBER_OF_RAY_TRACED_MESHES{ 1'024 * 4 }; //TODO: Figure out a way to remove this.
 
 	//Create the render data table layout.
-	StaticArray<RenderDataTableLayoutBinding, 7> bindings
+	DynamicArray<RenderDataTableLayoutBinding> bindings;
+
+	bindings.Emplace(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS);
+
+	for (const RayTracingHitGroup &hit_group : _HitGroups)
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MESHES, ShaderStage::RAY_CLOSEST_HIT),
-		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_STATIC_MESHES, ShaderStage::RAY_CLOSEST_HIT),
-		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RAY_CLOSEST_HIT),
-		RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MESHES, ShaderStage::RAY_CLOSEST_HIT),
-		RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_DYNAMIC_MESHES, ShaderStage::RAY_CLOSEST_HIT),
-		RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RAY_CLOSEST_HIT)
-	};
+		bindings.Emplace(static_cast<uint32>(bindings.Size()), RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_MESHES, ShaderStage::RAY_ANY_HIT | ShaderStage::RAY_CLOSEST_HIT);
+		bindings.Emplace(static_cast<uint32>(bindings.Size()), RenderDataTableLayoutBinding::Type::StorageBuffer, MAXIMUM_NUMBER_OF_RAY_TRACED_MESHES, ShaderStage::RAY_ANY_HIT | ShaderStage::RAY_CLOSEST_HIT);
+		bindings.Emplace(static_cast<uint32>(bindings.Size()), RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::RAY_ANY_HIT | ShaderStage::RAY_CLOSEST_HIT);
+	}
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
-}
-
-/*
-*	Creates the render data tables.
-*/
-void RayTracingSystem::CreateRenderDataTable() NOEXCEPT
-{
-	//Destroy the old render data table, if necessary.
-	if (_RenderDataTable)
-	{
-		RenderingSystem::Instance->DestroyRenderDataTable(&_RenderDataTable);
-		_RenderDataTable = EMPTY_HANDLE;
-	}
-
-	//Create the render data table.
-	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
-
-	//Destroy the old top level acceleration structure, if necessary.
-	if (_TopLevelAccelerationStructure)
-	{
-		RenderingSystem::Instance->DestroyAccelerationStructure(&_TopLevelAccelerationStructure);
-		_TopLevelAccelerationStructure = EMPTY_HANDLE;
-	}
-
-	//Fill up the top level acceleration structure instance data.
-	_TopLevelAccelerationStructureInstanceData.Clear();
-
-	for (const TopLevelAccelerationStructureInstanceData &data : _DynamicModelTopLevelAccelerationStructureInstanceData)
-	{
-		_TopLevelAccelerationStructureInstanceData.Emplace(data);
-	}
-
-	for (const TopLevelAccelerationStructureInstanceData &data : _StaticModelTopLevelAccelerationStructureInstanceData)
-	{
-		_TopLevelAccelerationStructureInstanceData.Emplace(data);
-	}
-
-	//No need to create anything if there's nothing to trace against.
-	if (_TopLevelAccelerationStructureInstanceData.Empty())
-	{
-		return;
-	}
-
-	//Create the top level acceleration structure.
-	RenderingSystem::Instance->CreateTopLevelAccelerationStructure(_TopLevelAccelerationStructureInstanceData, &_TopLevelAccelerationStructure);
-
-	//Bind the top level acceleration structure to the render data tables.
-	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &_RenderDataTable, _TopLevelAccelerationStructure);
-	
-	//Bind all the static model data.
-	{
-		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-		uint32 mesh_counter{ 0 };
-
-		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
-		{
-			for (const Mesh &mesh : component->_ModelResource->_Meshes)
-			{
-				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(1, mesh_counter, &_RenderDataTable, mesh._MeshLevelOfDetails[0]._VertexBuffer);
-				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(2, mesh_counter, &_RenderDataTable, mesh._MeshLevelOfDetails[0]._IndexBuffer);
-
-				++mesh_counter;
-			}
-		}
-
-		if (_StaticModelsMaterialBuffer)
-		{
-			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(3, 0, &_RenderDataTable, _StaticModelsMaterialBuffer);
-		}
-	}
-
-	//Bind all the dynamic model data.
-	{
-		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
-		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-		uint32 mesh_counter{ 0 };
-
-		for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
-		{
-			for (const Mesh &mesh : component->_ModelResource->_Meshes)
-			{
-				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(4, mesh_counter, &_RenderDataTable, mesh._MeshLevelOfDetails[0]._VertexBuffer);
-				RenderingSystem::Instance->BindStorageBufferToRenderDataTable(5, mesh_counter, &_RenderDataTable, mesh._MeshLevelOfDetails[0]._IndexBuffer);
-
-				++mesh_counter;
-			}
-		}
-
-		if (_DynamicModelsMaterialBuffer)
-		{
-			RenderingSystem::Instance->BindStorageBufferToRenderDataTable(6, 0, &_RenderDataTable, _DynamicModelsMaterialBuffer);
-		}
-	}
-}
-
-/*
-*	Updates terrain.
-*/
-void RayTracingSystem::UpdateTerrain() NOEXCEPT
-{
-	//Add the terrain bottom level acceleration structure to the top level acceleration structure instance data.
-	if (_TerrainBottomAccelerationStructure)
-	{
-		_TopLevelAccelerationStructureInstanceData.Emplace(MatrixConstants::IDENTITY, _TerrainBottomAccelerationStructure, RenderingConstants::TERRAIN_HIT_GROUP_INDEX, 0);
-	}
-}
-
-/*
-*	Updates dynamic models.
-*/
-void RayTracingSystem::UpdateDynamicModels() NOEXCEPT
-{
-	//Don't update dynamic models if they haven't been updated. (:
-	if (!_DynamicModelsUpdated)
-	{
-		return;
-	}
-
-	//Reset whether or not stdynamicatic models have been updated.
-	_DynamicModelsUpdated = false;
-
-	//Clear the dynamic model top level acceleration instance data.
-	_DynamicModelTopLevelAccelerationStructureInstanceData.Clear();
-
-	//Destroy the old data.
-	if (_DynamicModelsMaterialBuffer)
-	{
-		RenderingSystem::Instance->DestroyBuffer(&_DynamicModelsMaterialBuffer);
-		_DynamicModelsMaterialBuffer = EMPTY_HANDLE;
-	}
-
-	//If there's no dynamic models left, no need to do anything.
-	if (ComponentManager::GetNumberOfDynamicModelComponents() == 0)
-	{
-		return;
-	}
-
-	//Gather the instances and the material indices.
-	_DynamicModelsMaterialindices.Clear();
-
-	const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
-	const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-	uint32 mesh_counter{ 0 };
-
-	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
-	{
-		for (uint64 j{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; j < size; ++j)
-		{
-			_DynamicModelsMaterialindices.Emplace(component->_MaterialResources[j]->_Index);
-		}
-
-		for (const Mesh &mesh : component->_ModelResource->_Meshes)
-		{
-			_DynamicModelTopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), mesh._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::DYNAMIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
-
-			++mesh_counter;
-		}
-	}
-
-	//If the capacity is more than double the size, downsize the material indices buffer a bit to save memory. (:
-	if (_DynamicModelsMaterialindices.Capacity() > _DynamicModelsMaterialindices.Size() * 2)
-	{
-		_DynamicModelsMaterialindices.Reserve(_DynamicModelsMaterialindices.Size());
-	}
-
-	//Create the dynamic models material buffer.
-	RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * _DynamicModelsMaterialindices.Size(), BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_DynamicModelsMaterialBuffer);
-
-	const void* RESTRICT data_chunks[]{ _DynamicModelsMaterialindices.Data() };
-	const uint64 data_sizes[]{ sizeof(uint32) * _DynamicModelsMaterialindices.Size() };
-	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_DynamicModelsMaterialBuffer);
-}
-
-/*
-*	Updates static models.
-*/
-void RayTracingSystem::UpdateStaticModels() NOEXCEPT
-{
-	//Don't update static models if they haven't been updated. (:
-	if (!_StaticModelsUpdated)
-	{
-		return;
-	}
-
-	//Reset whether or not static models have been updated.
-	_StaticModelsUpdated = false;
-
-	//Clear the static model top level acceleration instance data.
-	_StaticModelTopLevelAccelerationStructureInstanceData.Clear();
-
-	//Destroy the old data.
-	if (_StaticModelsMaterialBuffer)
-	{
-		RenderingSystem::Instance->DestroyBuffer(&_StaticModelsMaterialBuffer);
-		_StaticModelsMaterialBuffer = EMPTY_HANDLE;
-	}
-
-	//If there's no static models left, no need to do anything.
-	if (ComponentManager::GetNumberOfStaticModelComponents() == 0)
-	{
-		return;
-	}
-
-	//Gather the instances and the material indices.
-	_StaticModelsMaterialindices.Clear();
-
-	const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-	const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-	uint32 mesh_counter{ 0 };
-
-	for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
-	{
-		for (uint64 mesh_index{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
-		{
-			if (!TEST_BIT(component->_MeshesVisibleMask, BIT(mesh_index)))
-			{
-				continue;
-			}
-
-			_StaticModelsMaterialindices.Emplace(component->_MaterialResources[mesh_index]->_Index);
-
-			_StaticModelTopLevelAccelerationStructureInstanceData.Emplace(TopLevelAccelerationStructureInstanceData(component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()), component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure, RenderingConstants::STATIC_MODELS_HIT_GROUP_INDEX, mesh_counter));
-
-			++mesh_counter;
-		}
-	}
-
-	//If the capacity is more than double the size, downsize the material indices buffer a bit to save memory. (:
-	if (_StaticModelsMaterialindices.Capacity() > _StaticModelsMaterialindices.Size() * 2)
-	{
-		_StaticModelsMaterialindices.Reserve(_StaticModelsMaterialindices.Size());
-	}
-
-	//Create the static models material buffer.
-	RenderingSystem::Instance->CreateBuffer(sizeof(uint32) * _StaticModelsMaterialindices.Size(), BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &_StaticModelsMaterialBuffer);
-
-	const void* RESTRICT data_chunks[]{ _StaticModelsMaterialindices.Data() };
-	const uint64 data_sizes[]{ sizeof(uint32) * _StaticModelsMaterialindices.Size() };
-	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &_StaticModelsMaterialBuffer);
 }

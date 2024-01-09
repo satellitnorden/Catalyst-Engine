@@ -158,6 +158,23 @@ public:
 	}
 
 	/*
+	*	Removes the entry with the given key.
+	*/
+	void Remove(const KEY_TYPE &key) NOEXCEPT
+	{
+		for (uint64 i{ 0 }, size{ _Keys.Size() }; i < size; ++i)
+		{
+			if (_Keys[i] == key)
+			{
+				_Keys.EraseAt<false>(i);
+				_Values.EraseAt<false>(i);
+
+				return;
+			}
+		}
+	}
+
+	/*
 	*	Clears this hash table.
 	*/
 	FORCE_INLINE void Clear() NOEXCEPT

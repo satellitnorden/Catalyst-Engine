@@ -74,6 +74,25 @@ public:
 	void CommandBlitImage(VkImage source, VkImage destination) NOEXCEPT;
 
 	/*
+	*	Records a build acceleration structure command.
+	*/
+	void CommandBuildAccelerationStructure
+	(
+		const VkAccelerationStructureTypeNV type,
+		const uint32 instance_count,
+		const VkBuffer instance_buffer,
+		const uint32 geometry_count,
+		const VkGeometryNV *const RESTRICT geometries,
+		const VkAccelerationStructureNV acceleration_structure,
+		const VkBuffer scratch_buffer
+	) NOEXCEPT;
+
+	/*
+	*	Records a copy buffer command.
+	*/
+	void CommandCopyBuffer(const VkBuffer source, VkBuffer destination, const VkDeviceSize size) NOEXCEPT;
+
+	/*
 	*	Records a dispatch command.
 	*/
 	void CommandDispatch(const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT;

@@ -341,10 +341,16 @@ RESTRICTED Vulkan3DTexture* const RESTRICT VulkanInterface::Create3DTexture(cons
 /*
 *	Creates an acceleration structure.
 */
-RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const ArrayProxy<VulkanGeometryInstance> &instances, const ArrayProxy<VkGeometryNV> &geometry) NOEXCEPT
+RESTRICTED VulkanAccelerationStructure *const RESTRICT VulkanInterface::CreateAccelerationStructure
+(
+	const VkAccelerationStructureTypeNV type,
+	const ArrayProxy<VulkanGeometryInstance> &instances,
+	const ArrayProxy<VkGeometryNV> &geometry,
+	VulkanCommandBuffer *const RESTRICT command_buffer
+) NOEXCEPT
 {
 	VulkanAccelerationStructure* const RESTRICT new_acceleration_structure{ new (MemorySystem::Instance->TypeAllocate<VulkanAccelerationStructure>()) VulkanAccelerationStructure() };
-	new_acceleration_structure->Initialize(type, instances, geometry);
+	new_acceleration_structure->Initialize(type, instances, geometry, command_buffer);
 
 	{
 		SCOPED_LOCK(_VulkanAccelerationStructuresLock);

@@ -158,7 +158,13 @@ public:
 	/*
 	*	Creates an acceleration structure.
 	*/
-	RESTRICTED VulkanAccelerationStructure *const RESTRICT CreateAccelerationStructure(const VkAccelerationStructureTypeNV type, const ArrayProxy<VulkanGeometryInstance> &instances, const ArrayProxy<VkGeometryNV> &geometry) NOEXCEPT;
+	RESTRICTED VulkanAccelerationStructure *const RESTRICT CreateAccelerationStructure
+	(
+		const VkAccelerationStructureTypeNV type,
+		const ArrayProxy<VulkanGeometryInstance> &instances,
+		const ArrayProxy<VkGeometryNV> &geometry,
+		VulkanCommandBuffer *const RESTRICT command_buffer
+	) NOEXCEPT;
 
 	/*
 	*	Destroys an acceleration structure

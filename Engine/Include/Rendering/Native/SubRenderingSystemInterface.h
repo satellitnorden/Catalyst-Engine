@@ -100,12 +100,19 @@ public:
 														const uint32 number_of_vertices,
 														const BufferHandle index_buffer,
 														const uint32 number_of_indices,
+														const BottomLevelAccelerationStructureFlag flags,
 														AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT = 0;
 
 	/*
 	*	Creates a top level acceleration structure.
+	*	Can take an optional command buffer if one is created during a frame.
 	*/
-	virtual void CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT = 0;
+	virtual void CreateTopLevelAccelerationStructure
+	(
+		const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data,
+		AccelerationStructureHandle *const RESTRICT handle,
+		CommandBuffer *const RESTRICT command_buffer
+	) NOEXCEPT = 0;
 
 	/*
 	*	Destroys an acceleration structure.

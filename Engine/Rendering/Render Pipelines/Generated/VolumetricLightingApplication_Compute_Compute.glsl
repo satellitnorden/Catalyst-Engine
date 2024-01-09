@@ -413,6 +413,7 @@ void main()
         vec4 volumetric_lighting_2 = imageLoad(VolumetricLighting, sample_coordinate_2);
         vec4 volumetric_lighting_3 = imageLoad(VolumetricLighting, sample_coordinate_3);
         vec4 volumetric_lighting_4 = imageLoad(VolumetricLighting, sample_coordinate_4);
+        /*
         float depth_1 = imageLoad(SceneFeatures2Half, sample_coordinate_1).w;
         float depth_2 = imageLoad(SceneFeatures2Half, sample_coordinate_2).w;
         float depth_3 = imageLoad(SceneFeatures2Half, sample_coordinate_3).w;
@@ -421,12 +422,14 @@ void main()
         float view_distance_2 = CalculateViewSpaceDistance(vec2((sample_coordinate_2) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_2);
         float view_distance_3 = CalculateViewSpaceDistance(vec2((sample_coordinate_3) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_3);
         float view_distance_4 = CalculateViewSpaceDistance(vec2((sample_coordinate_4) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_4);
+        */
         float horizontal_weight = fract(screen_coordinate.x * HALF_MAIN_RESOLUTION.x);
         float vertical_weight = fract(screen_coordinate.y * HALF_MAIN_RESOLUTION.y);
         float weight_1 = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
 	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
 	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
 	    float weight_4 = horizontal_weight * vertical_weight;
+        /*
         #define VIEW_DISTANCE_WEIGHT (1.0f)
         weight_1 = max(weight_1 * pow(exp(-abs(view_distance - view_distance_1)), VIEW_DISTANCE_WEIGHT), FLOAT32_EPSILON);
         weight_2 = max(weight_2 * pow(exp(-abs(view_distance - view_distance_2)), VIEW_DISTANCE_WEIGHT), FLOAT32_EPSILON);
@@ -437,6 +440,7 @@ void main()
 	    weight_2 *= total_weight_reciprocal;
 	    weight_3 *= total_weight_reciprocal;
         weight_4 *= total_weight_reciprocal;
+        */
         volumetric_lighting =   volumetric_lighting_1 * weight_1
                                 + volumetric_lighting_2 * weight_2
                                 + volumetric_lighting_3 * weight_3

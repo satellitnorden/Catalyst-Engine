@@ -163,6 +163,58 @@ void VulkanCommandBuffer::CommandBlitImage(VkImage source, VkImage destination) 
 }
 
 /*
+*	Records a build acceleration structure command.
+*/
+void VulkanCommandBuffer::CommandBuildAccelerationStructure
+(
+	const VkAccelerationStructureTypeNV type,
+	const uint32 instance_count,
+	const VkBuffer instance_buffer,
+	const uint32 geometry_count,
+	const VkGeometryNV* const RESTRICT geometries,
+	const VkAccelerationStructureNV acceleration_structure,
+	const VkBuffer scratch_buffer
+) NOEXCEPT
+{
+	VkAccelerationStructureInfoNV acceleration_structure_info;
+
+	acceleration_structure_info.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV;
+	acceleration_structure_info.pNext = nullptr;
+	acceleration_structure_info.type = type;
+	acceleration_structure_info.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV;
+	acceleration_structure_info.instanceCount = instance_count;
+	acceleration_structure_info.geometryCount = geometry_count;
+	acceleration_structure_info.pGeometries = geometries;
+
+	vkCmdBuildAccelerationStructureNV
+	(
+		_VulkanCommandBuffer,
+		&acceleration_structure_info,
+		instance_buffer,
+		0,
+		VK_FALSE,
+		acceleration_structure,
+		VK_NULL_HANDLE,
+		scratch_buffer,
+		0
+	);
+}
+
+/*
+*	Records a copy buffer command.
+*/
+void VulkanCommandBuffer::CommandCopyBuffer(const VkBuffer source, VkBuffer destination, const VkDeviceSize size) NOEXCEPT
+{
+	VkBufferCopy bufferCopy;
+
+	bufferCopy.srcOffset = 0;
+	bufferCopy.dstOffset = 0;
+	bufferCopy.size = size;
+
+	vkCmdCopyBuffer(_VulkanCommandBuffer, source, destination, 1, &bufferCopy);
+}
+
+/*
 *	Records a dispatch command.
 */
 void VulkanCommandBuffer::CommandDispatch(const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT

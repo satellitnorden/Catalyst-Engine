@@ -293,6 +293,22 @@ public:
 	}
 
 	/*
+	*	Give bottom level acceleration structure flags, returns the corresponding Vulkan geometry flags.
+	*/
+	static VkGeometryFlagsKHR GetVulkanGeometryFlags(const BottomLevelAccelerationStructureFlag flags) NOEXCEPT
+	{
+		VkBufferUsageFlags out_flags{ 0 };
+
+#define MAPPING(FLAG, BIT) if (TEST_BIT(flags, FLAG)) out_flags |= BIT;
+
+		MAPPING(BottomLevelAccelerationStructureFlag::OPAQUE, VkGeometryFlagBitsKHR::VK_GEOMETRY_OPAQUE_BIT_KHR);
+
+#undef MAPPING
+
+		return out_flags;
+	}
+
+	/*
 	*	Given a top level acceleration structure instance data, convert it to a Vulkan geometry instance.
 	*/
 	static void GetVulkanGeometryInstance(const TopLevelAccelerationStructureInstanceData &data, VulkanGeometryInstance *const RESTRICT geometryInstance)

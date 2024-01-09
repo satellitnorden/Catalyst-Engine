@@ -113,7 +113,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 0
+#if 1
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -367,6 +367,17 @@ public:
 
 };
 
+//Rendering compiler constants.
+namespace RenderingCompilerConstants
+{
+	//TODO: Tie this into the ray tracing so there's only one definition of this.
+	StaticArray<DynamicString, 2> HIT_GROUPS
+	{
+		"OpaqueModels",
+		"MaskedModels"
+	};
+}
+
 /*
 *	Finds the file path for the common shader with the given name.
 */
@@ -449,6 +460,23 @@ void FindShaderFunctionLibraryFilePath(const char* const RESTRICT name, DynamicS
 	}
 
 	ASSERT(false, "Couldn't find shader function library file!");
+}
+
+/*
+*	Inserts ray tracing data into the given file.
+*/
+FORCE_INLINE void InsertRayTracingData(std::ofstream &output_file) NOEXCEPT
+{
+	uint32 current_resource_binding_index{ 0 };
+
+	output_file << "layout (set = 2, binding = " << current_resource_binding_index++ << ") uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;" << std::endl;
+
+	for (const DynamicString &hit_group : RenderingCompilerConstants::HIT_GROUPS)
+	{
+		output_file << "layout (set = 2, binding = " << current_resource_binding_index++ << ") buffer " << hit_group.Data() << "_VERTEX_DATA_BUFFER { vec4 " << hit_group.Data() << "_VERTEX_DATA[]; } " << hit_group.Data() << "_VERTEX_BUFFERS[4096];" << std::endl;
+		output_file << "layout (set = 2, binding = " << current_resource_binding_index++ << ") buffer " << hit_group.Data() << "_INDEX_DATA_BUFFER { uint " << hit_group.Data() << "_INDEX_DATA[]; } " << hit_group.Data() << "_INDEX_BUFFERS[4096];" << std::endl;
+		output_file << "layout (set = 2, binding = " << current_resource_binding_index++ << ") buffer " << hit_group.Data() << "_MATERIAL_BUFFER { layout (offset = 0) uvec4[] " << hit_group.Data() << "_MATERIAL_INDICES; };" << std::endl;
+	}
 }
 
 /*
@@ -1385,7 +1413,7 @@ void GenerateRayGenerationShader
 		const uint32 resource_binding_index{ InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file) };
 
 		//Insert ray tracing data.
-		GLSLCompilation::InsertRayTracingData(resource_binding_index, glsl_file);
+		InsertRayTracingData(glsl_file);
 
 		//Write the payloads.
 		if (!payloads.Empty())
@@ -1489,9 +1517,9 @@ void GenerateRayGenerationShader
 				}
 			}
 
-			//Process "RayTrace()" calls
+			//Process "TraceRay()" calls
 			{
-				size_t position{ line.find("RayTrace(") };
+				size_t position{ line.find("TraceRay(") };
 
 				if (position != std::string::npos)
 				{
@@ -1606,7 +1634,7 @@ void GenerateRayMissShader
 		const uint32 resource_binding_index{ InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file) };
 
 		//Insert ray tracing data.
-		GLSLCompilation::InsertRayTracingData(resource_binding_index, glsl_file);
+		InsertRayTracingData(glsl_file);
 
 		//Write the payloads.
 		if (!payloads.Empty())

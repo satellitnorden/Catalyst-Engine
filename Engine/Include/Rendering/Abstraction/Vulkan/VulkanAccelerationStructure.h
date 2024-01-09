@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
+#include <Rendering/Abstraction/Vulkan/VulkanCommandBufferAbstraction.h>
 #include <Rendering/Abstraction/Vulkan/VulkanBuffer.h>
 #include <Rendering/Abstraction/Vulkan/VulkanGeometryInstance.h>
 
@@ -17,7 +18,13 @@ public:
 	/*
 	*	Initializes this Vulkan acceleration structure.
 	*/
-	void Initialize(const VkAccelerationStructureTypeNV type, const ArrayProxy<VulkanGeometryInstance> &instances, const ArrayProxy<VkGeometryNV> &geometry) NOEXCEPT;
+	void Initialize
+	(
+		const VkAccelerationStructureTypeNV type,
+		const ArrayProxy<VulkanGeometryInstance> &instances,
+		const ArrayProxy<VkGeometryNV> &geometry,
+		VulkanCommandBuffer *const RESTRICT command_buffer
+	) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan acceleration structure.
@@ -27,23 +34,35 @@ public:
 	/*
 	*	Returns the underlying Vulkan acceleration structure.
 	*/
-	const VkAccelerationStructureNV& GetAccelerationStructure() const NOEXCEPT
+	const VkAccelerationStructureNV &GetAccelerationStructure() const NOEXCEPT
 	{
 		return _VulkanAccelerationStructure;
 	}
 
 private:
 
+	//The type.
+	VkAccelerationStructureTypeNV _Type;
+
 	//The underlying Vulkan acceleration structure.
 	VkAccelerationStructureNV _VulkanAccelerationStructure;
 
-	//The Vulkan device memory.
-	VkDeviceMemory _VulkanDeviceMemory;
+	//The acceleration structure memory allocation.
+	VmaAllocation _AccelerationStructureMemoryAllocation;
 
-	//The instance data buffer.
-	VulkanBuffer _InstanceDataBuffer;
+	//The acceleration structure memory allocation info.
+	VmaAllocationInfo _AccelerationStructureMemoryAllocationInfo;
 
-	//Denotes if this acceleration structure has instance data or not.
-	bool _HasInstanceData{ false };
+	//The number of instances.
+	uint32 _NumberOfInstances{ 0 };
+
+	//The instance data host buffer.
+	VulkanBuffer _InstanceDataHostBuffer;
+
+	//The instance data device buffer.
+	VulkanBuffer _InstanceDataDeviceBuffer;
+
+	//The scratch buffer.
+	VulkanBuffer _ScratchBuffer;
 
 };

@@ -94,11 +94,6 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 				ASSERT(current_binding_index <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS");
 			}
 
-			//Add the binding for the acceleration structure.
-			bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, shader_stages);
-
-			++current_binding_index;
-
 			RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), current_binding_index, &_RenderDataTableLayout);
 		}
 
@@ -214,8 +209,6 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 					render_target
 				);
 			}
-
-			_TopLevelAccelerationStructureBindingIndex = current_binding_index;
 		}
 	}
 
@@ -232,13 +225,15 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 	}
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(_UsesRenderDataTable ? 2 : 1);
+	SetNumberOfRenderDataTableLayouts(_UsesRenderDataTable ? 3 : 2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL_2));
 
 	if (_UsesRenderDataTable)
 	{
 		AddRenderDataTableLayout(_RenderDataTableLayout);
 	}
+
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTableLayout());
 
 	//Retrieve the input stream.
 	ASSERT(!_RenderPipelineResource->_InputStreamSubscriptions.Empty(), "Need at least one input stream subscription!");
@@ -309,15 +304,10 @@ void RayTracingRenderPipeline::Execute() NOEXCEPT
 	{
 		RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
-		const AccelerationStructureHandle acceleration_structure{ RenderingSystem::Instance->GetRayTracingSystem()->GetTopLevelAccelerationStructure() };
-
-		if (acceleration_structure != EMPTY_HANDLE)
-		{
-			RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(_TopLevelAccelerationStructureBindingIndex, 0, &current_render_data_table, acceleration_structure);
-		}
-
 		command_buffer->BindRenderDataTable(this, 1, current_render_data_table);
 	}
+
+	command_buffer->BindRenderDataTable(this, _UsesRenderDataTable ? 2 : 1, RenderingSystem::Instance->GetRayTracingSystem()->GetCurrentRenderDataTable());
 
 	//Go over the input streams.
 	for (const HashString input_stream_subscription : _RenderPipelineResource->_InputStreamSubscriptions)

@@ -37,6 +37,7 @@ void ResourceCreationSystem::CreateAnimatedModel(AnimatedModelData *const RESTRI
 																		static_cast<uint32>(data->_Vertices.Size()),
 																		resource->_IndexBuffer,
 																		static_cast<uint32>(data->_Indices.Size()),
+																		BottomLevelAccelerationStructureFlag::NONE,
 																		&resource->_BottomLevelAccelerationStructure);
 
 	//Copy the skeleton.
@@ -284,13 +285,6 @@ void ResourceCreationSystem::CreateModel(ModelData *const RESTRICT data, ModelRe
 			//Write the index count.
 			resource->_Meshes[i]._MeshLevelOfDetails[j]._IndexCount = static_cast<uint32>(resource->_Meshes[i]._MeshLevelOfDetails[j]._Indices.Size());
 		}
-
-		//Create the bottom level acceleration structure.
-		RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	resource->_Meshes[i]._MeshLevelOfDetails[0]._VertexBuffer,
-																			static_cast<uint32>(resource->_Meshes[i]._MeshLevelOfDetails[0]._Vertices.Size()),
-																			resource->_Meshes[i]._MeshLevelOfDetails[0]._IndexBuffer,
-																			static_cast<uint32>(resource->_Meshes[i]._MeshLevelOfDetails[0]._Indices.Size()),
-																			&resource->_Meshes[i]._MeshLevelOfDetails[0]._BottomLevelAccelerationStructure);
 	}
 
 	//Create the collision model, if there is one.

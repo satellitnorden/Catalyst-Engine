@@ -14,9 +14,20 @@ class VulkanBuffer final
 public:
 
 	/*
-	*	Returns the underlying Vulkan buffer.
+	*	Returns the underlying Vulkan buffer, const.
 	*/
-	const VkBuffer& Get() const NOEXCEPT { return _VulkanBuffer; }
+	const VkBuffer &Get() const NOEXCEPT
+	{
+		return _VulkanBuffer;
+	}
+
+	/*
+	*	Returns the underlying Vulkan buffer, non-const.
+	*/
+	VkBuffer &Get() NOEXCEPT
+	{
+		return _VulkanBuffer;
+	}
 
 	/*
 	*	Initializes this Vulkan buffer.

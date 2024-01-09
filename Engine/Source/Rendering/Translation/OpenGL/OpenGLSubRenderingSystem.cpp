@@ -89,6 +89,7 @@ void OpenGLSubRenderingSystem::CreateBottomLevelAccelerationStructure(	const Buf
 																		const uint32 number_of_vertices,
 																		const BufferHandle index_buffer,
 																		const uint32 number_of_indices,
+																		const BottomLevelAccelerationStructureFlag flags,
 																		AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
 {
 	
@@ -96,10 +97,16 @@ void OpenGLSubRenderingSystem::CreateBottomLevelAccelerationStructure(	const Buf
 
 /*
 *	Creates a top level acceleration structure.
+*	Can take an optional command buffer if one is created during a frame.
 */
-void OpenGLSubRenderingSystem::CreateTopLevelAccelerationStructure(const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data, AccelerationStructureHandle *const RESTRICT handle) NOEXCEPT
+void OpenGLSubRenderingSystem::CreateTopLevelAccelerationStructure
+(
+	const ArrayProxy<TopLevelAccelerationStructureInstanceData> &instance_data,
+	AccelerationStructureHandle *const RESTRICT handle,
+	CommandBuffer *const RESTRICT command_buffer
+) NOEXCEPT
 {
-	
+
 }
 
 /*

@@ -55,8 +55,8 @@ void StaticModelEntity::Initialize(EntityInitializationData *const RESTRICT data
 		PhysicsSystem::Instance->InitializeEntityPhysics(this);
 	}
 
-	//Report to the ray tracing system that static models have been updated.
-	RenderingSystem::Instance->GetRayTracingSystem()->ReportStaticModelsUpdated();
+	//Tell the ray tracing system.
+	RenderingSystem::Instance->GetRayTracingSystem()->OnEntityInitialized(this);
 }
 
 /*
@@ -70,11 +70,11 @@ void StaticModelEntity::Terminate() NOEXCEPT
 		PhysicsSystem::Instance->TerminateEntityPhysics(this);
 	}
 
+	//Tell the ray tracing system.
+	RenderingSystem::Instance->GetRayTracingSystem()->OnEntityTerminated(this);
+
 	//Return this entitiy's components index.
 	ComponentManager::ReturnStaticModelComponentsIndex(_ComponentsIndex);
-
-	//Report to the ray tracing system that static models have been updated.
-	RenderingSystem::Instance->GetRayTracingSystem()->ReportStaticModelsUpdated();
 }
 
 /*
@@ -121,9 +121,6 @@ void StaticModelEntity::SetModelResource(const ResourcePointer<ModelResource> re
 		PhysicsSystem::Instance->TerminateEntityPhysics(this);
 		PhysicsSystem::Instance->InitializeEntityPhysics(this);
 	}
-
-	//Report to the ray tracing system that static models have been updated.
-	RenderingSystem::Instance->GetRayTracingSystem()->ReportStaticModelsUpdated();
 }
 
 /*
@@ -141,9 +138,6 @@ void StaticModelEntity::SetMaterialResource(const uint8 index, const ResourcePoi
 {
 	//Set the material resource.
 	ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._MaterialResources[index] = resource;
-
-	//Report to the ray tracing system that static models have been updated.
-	RenderingSystem::Instance->GetRayTracingSystem()->ReportStaticModelsUpdated();
 }
 
 /*
@@ -153,9 +147,6 @@ void StaticModelEntity::ShowMesh(const uint8 mask) NOEXCEPT
 {
 	//Set the flag.
 	ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._MeshesVisibleMask |= mask;
-
-	//Report to the ray tracing system that static models have been updated.
-	RenderingSystem::Instance->GetRayTracingSystem()->ReportStaticModelsUpdated();
 }
 
 /*
@@ -181,9 +172,6 @@ void StaticModelEntity::HideMesh(const uint8 mask) NOEXCEPT
 {
 	//Set the flag.
 	ComponentManager::GetStaticModelStaticModelComponents()[_ComponentsIndex]._MeshesVisibleMask &= ~mask;
-
-	//Report to the ray tracing system that static models have been updated.
-	RenderingSystem::Instance->GetRayTracingSystem()->ReportStaticModelsUpdated();
 }
 
 /*
