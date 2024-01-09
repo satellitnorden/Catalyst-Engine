@@ -376,7 +376,7 @@ void CommandBuffer::WriteBeginTimestamp(const Pipeline *const RESTRICT pipeline,
 {
 	if (query_index == 0)
 	{
-		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandResetQueryPool(static_cast<const VulkanQueryPool *const RESTRICT>(query_pool)->Get());
+		reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandResetQueryPool(static_cast<const VulkanQueryPool *const RESTRICT>(query_pool)->Get(), static_cast<const VulkanQueryPool* const RESTRICT>(query_pool)->GetQueryCount());
 	}
 
 	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandWriteTimestamp(	VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
@@ -389,11 +389,6 @@ void CommandBuffer::WriteBeginTimestamp(const Pipeline *const RESTRICT pipeline,
 */
 void CommandBuffer::WriteEndTimestamp(const Pipeline *const RESTRICT pipeline, const QueryPoolHandle query_pool, const uint32 query_index) NOEXCEPT
 {
-	if (query_index == 0)
-	{
-		reinterpret_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData)->CommandResetQueryPool(static_cast<const VulkanQueryPool *const RESTRICT>(query_pool)->Get());
-	}
-
 	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandWriteTimestamp(	VkPipelineStageFlagBits::VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 																										static_cast<const VulkanQueryPool *const RESTRICT>(query_pool)->Get(),
 																										query_index);

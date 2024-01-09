@@ -100,9 +100,6 @@ void VulkanAccelerationStructure::Initialize
 	//Statics.
 	static thread_local VulkanCommandPool *const RESTRICT COMMAND_POOL{ VulkanInterface::Instance->CreateAsyncComputeCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
 
-	//TODO: Engine crashes without this. Doesn't seem to have a huge performance impact, but plz rewrite resource destruction code ASAP. :c
-	VulkanInterface::Instance->GetMainQueue()->WaitIdle();
-
 	//Set the type.
 	_Type = type;
 
@@ -118,8 +115,6 @@ void VulkanAccelerationStructure::Initialize
 
 	else
 	{
-		
-		
 		COMMAND_POOL->AllocatePrimaryCommandBuffer(temporary_command_buffer);
 		_command_buffer = &temporary_command_buffer;
 

@@ -738,5 +738,31 @@ public:
 		vkCmdPipelineBarrier(command_buffer->Get(), sourceStageMask, destinationStageMask, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 	}
 
+	/*
+	*	Returns if the given format has a stencil component.
+	*/
+	FORCE_INLINE static NO_DISCARD bool HasStencilComponent(const VkFormat format) NOEXCEPT
+	{
+		switch (format)
+		{
+			case VkFormat::VK_FORMAT_D24_UNORM_S8_UINT:
+			{
+				return true;
+			}
+
+			case VkFormat::VK_FORMAT_D16_UNORM:
+			{
+				return false;
+			}
+
+			default:
+			{
+				ASSERT(false, "Unknown format!");
+
+				return false;
+			}
+		}
+	}
+
 };
 #endif

@@ -84,9 +84,6 @@ namespace VulkanSubRenderingSystemData
 			TEXTURE_2D
 		};
 
-		//The number of frames since destruction was requested.
-		uint8 _Frames{ 0 };
-
 		//The type.
 		Type _Type;
 
@@ -109,8 +106,8 @@ namespace VulkanSubRenderingSystemData
 	//The Vulkan frame data.
 	VulkanFrameData _FrameData;
 
-	//The destruction queue.
-	DynamicArray<VulkanDestructionData> _DestructionQueue;
+	//The destruction queues.
+	DynamicArray<DynamicArray<VulkanDestructionData>> _DestructionQueues;
 
 	//The destruction queue lock.
 	AssertLock _DestructionQueueLock;
@@ -760,33 +757,24 @@ namespace VulkanSubRenderingSystemLogic
 	/*
 	*	Processes the destruction queue.
 	*/
-	void ProcessDestructionQueue() NOEXCEPT
+	void ProcessDestructionQueue(const uint8 framebuffer_index) NOEXCEPT
 	{
 		SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
 
-		//Update the frames of all destruction data.
-		for (uint64 i{ 0 }; i < VulkanSubRenderingSystemData::_DestructionQueue.Size(); ++i)
-		{
-			++VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames;
-		}
+		//Cache the current destruction queue.
+		DynamicArray<VulkanSubRenderingSystemData::VulkanDestructionData> &current_destruction_queue{ VulkanSubRenderingSystemData::_DestructionQueues[framebuffer_index] };
 
 		//Is the async destruction task ready?
 		if (VulkanSubRenderingSystemData::_AsycnDestructionTask.IsExecuted())
 		{
 			//Check if any destruction data should be added to the async destruction queue.
-			for (uint64 i{ 0 }; i < VulkanSubRenderingSystemData::_DestructionQueue.Size();)
+			for (uint64 i{ 0 }; i < current_destruction_queue.Size();)
 			{
-				if (VulkanSubRenderingSystemData::_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages() + 2)
-				{
-					VulkanSubRenderingSystemData::_AsyncDestructionQueue.Emplace(VulkanSubRenderingSystemData::_DestructionQueue[i]);
-					VulkanSubRenderingSystemData::_DestructionQueue.EraseAt<false>(i);
-				}
-
-				else
-				{
-					++i;
-				}
+				VulkanSubRenderingSystemData::_AsyncDestructionQueue.Emplace(current_destruction_queue[i]);
+				current_destruction_queue.EraseAt<false>(i);
 			}
+
+			current_destruction_queue.Clear();
 
 			if (!VulkanSubRenderingSystemData::_AsyncDestructionQueue.Empty())
 			{
@@ -877,6 +865,9 @@ void VulkanSubRenderingSystem::PreInitialize() NOEXCEPT
 
 	//Initialize the Vulkan frame data.
 	VulkanSubRenderingSystemData::_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages());
+
+	//Set up the destruction queues.
+	VulkanSubRenderingSystemData::_DestructionQueues.Upsize<true>(GetNumberOfFramebuffers());
 }
 
 /*
@@ -1173,7 +1164,7 @@ void VulkanSubRenderingSystem::DestroyAccelerationStructure(AccelerationStructur
 	//Put in a queue, destroy when no command buffer uses it anymore.
 	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
 
-	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE, *handle);
+	VulkanSubRenderingSystemData::_DestructionQueues[GetCurrentFramebufferIndex()].Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::ACCELERATION_STRUCTURE, *handle);
 }
 
 /*
@@ -1202,7 +1193,7 @@ void VulkanSubRenderingSystem::DestroyBuffer(BufferHandle *const RESTRICT handle
 	//Put in a queue, destroy when no command buffer uses it anymore.
 	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
 
-	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::BUFFER, *handle);
+	VulkanSubRenderingSystemData::_DestructionQueues[GetCurrentFramebufferIndex()].Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::BUFFER, *handle);
 }
 
 /*
@@ -1319,7 +1310,7 @@ void VulkanSubRenderingSystem::DestroyDepthBuffer(DepthBufferHandle *const RESTR
 	//Put in a queue, destroy when no command buffer uses it anymore.
 	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
 
-	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::DEPTH_BUFFER, *handle);
+	VulkanSubRenderingSystemData::_DestructionQueues[GetCurrentFramebufferIndex()].Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::DEPTH_BUFFER, *handle);
 }
 
 /*
@@ -1516,7 +1507,7 @@ void VulkanSubRenderingSystem::DestroyRenderDataTableLayout(RenderDataTableLayou
 	//Put in a queue, destroy when no command buffer uses it anymore.
 	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
 
-	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE_LAYOUT, *handle);
+	VulkanSubRenderingSystemData::_DestructionQueues[GetCurrentFramebufferIndex()].Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE_LAYOUT, *handle);
 }
 
 /*
@@ -1812,7 +1803,7 @@ void VulkanSubRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle *con
 	//Put in a queue, destroy when no command buffer uses it anymore.
 	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
 
-	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE, *handle);
+	VulkanSubRenderingSystemData::_DestructionQueues[GetCurrentFramebufferIndex()].Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_DATA_TABLE, *handle);
 }
 
 /*
@@ -1834,7 +1825,7 @@ void VulkanSubRenderingSystem::DestroyRenderTarget(RenderTargetHandle *const RES
 	//Put in a queue, destroy when no command buffer uses it anymore.
 	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
 
-	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_TARGET, *handle);
+	VulkanSubRenderingSystemData::_DestructionQueues[GetCurrentFramebufferIndex()].Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::RENDER_TARGET, *handle);
 }
 
 /*
@@ -1881,16 +1872,19 @@ void VulkanSubRenderingSystem::DestroyTexture2D(Texture2DHandle *const RESTRICT 
 	//Put in a queue, destroy when no command buffer uses it anymore.
 	SCOPED_LOCK(VulkanSubRenderingSystemData::_DestructionQueueLock);
 
-	for (VulkanSubRenderingSystemData::VulkanDestructionData& data : VulkanSubRenderingSystemData::_DestructionQueue)
+	for (const DynamicArray<VulkanSubRenderingSystemData::VulkanDestructionData> &destruction_queue : VulkanSubRenderingSystemData::_DestructionQueues)
 	{
-		if (data._Type == VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D
-			&& data._Handle == *handle)
+		for (const VulkanSubRenderingSystemData::VulkanDestructionData &data : destruction_queue)
 		{
-			ASSERT(false, "oh no");
+			if (data._Type == VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D
+				&& data._Handle == *handle)
+			{
+				ASSERT(false, "oh no");
+			}
 		}
 	}
 
-	VulkanSubRenderingSystemData::_DestructionQueue.Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D, *handle);
+	VulkanSubRenderingSystemData::_DestructionQueues[GetCurrentFramebufferIndex()].Emplace(VulkanSubRenderingSystemData::VulkanDestructionData::Type::TEXTURE_2D, *handle);
 }
 
 /*
@@ -2088,13 +2082,6 @@ void VulkanSubRenderingSystem::BeginFrame() NOEXCEPT
 		VulkanInterface::Instance->PreUpdate(VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore());
 	}
 
-	//Process the destruction queue.
-	{
-		PROFILING_SCOPE(VulkanSubRenderingSystem_ProcessDestructionQueue);
-
-		VulkanSubRenderingSystemLogic::ProcessDestructionQueue();
-	}
-
 	//Set the current frame.
 	{
 		PROFILING_SCOPE(VulkanSubRenderingSystem_SetCurrentFrame);
@@ -2114,6 +2101,13 @@ void VulkanSubRenderingSystem::BeginFrame() NOEXCEPT
 		PROFILING_SCOPE(VulkanSubRenderingSystem_ResetCurrentFence);
 
 		VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->Reset();
+	}
+
+	//Process the destruction queue.
+	{
+		PROFILING_SCOPE(VulkanSubRenderingSystem_ProcessDestructionQueue);
+
+		VulkanSubRenderingSystemLogic::ProcessDestructionQueue(GetCurrentFramebufferIndex());
 	}
 }
 

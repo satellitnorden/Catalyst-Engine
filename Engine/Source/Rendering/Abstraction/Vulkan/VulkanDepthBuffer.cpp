@@ -11,6 +11,9 @@
 */
 void VulkanDepthBuffer::Initialize(const VkExtent2D extent, const VkFormat format, const VkSampleCountFlagBits sample_count) NOEXCEPT
 {
+	//Cache if this format has a stencil component.
+	const bool has_stencil_component{ VulkanUtilities::HasStencilComponent(format) };
+
 	//Find the most desirable depth buffer format.
 	_VulkanFormat = format;
 
@@ -42,10 +45,10 @@ void VulkanDepthBuffer::Initialize(const VkExtent2D extent, const VkFormat forma
 	VULKAN_ERROR_CHECK(vmaCreateImage(VULKAN_MEMORY_ALLOCATOR, &image_info, &allocation_info, &_VulkanImage, &_Allocation, nullptr));
 
 	//Create the depth buffer image view!
-	VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_2D, _VulkanFormat, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, 1, 1, _VulkanImageView);
+	VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_2D, _VulkanFormat, VK_IMAGE_ASPECT_DEPTH_BIT | (has_stencil_component ? VK_IMAGE_ASPECT_STENCIL_BIT : 0), 1, 1, _VulkanImageView);
 
 	//Transition the image layout to a more appropriate layout.
-	VulkanUtilities::TransitionImageToLayout(VK_ACCESS_NONE, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1, 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, _VulkanImage);
+	VulkanUtilities::TransitionImageToLayout(VK_ACCESS_NONE, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_DEPTH_BIT | (has_stencil_component ? VK_IMAGE_ASPECT_STENCIL_BIT : 0), VK_IMAGE_LAYOUT_UNDEFINED, _VulkanImageLayout, 1, 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, _VulkanImage);
 }
 
 /*

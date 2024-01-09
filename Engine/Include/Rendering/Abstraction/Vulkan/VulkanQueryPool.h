@@ -32,6 +32,14 @@ public:
 	*/
 	void Reset() NOEXCEPT;
 
+	/*
+	*	Returns the query count.
+	*/
+	NO_DISCARD uint32 GetQueryCount() const NOEXCEPT
+	{
+		return _QueryCount;
+	}
+
 private:
 
 	//The underlying Vulkan query pool.

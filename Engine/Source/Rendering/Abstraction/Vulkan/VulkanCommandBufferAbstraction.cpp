@@ -316,9 +316,9 @@ void VulkanCommandBuffer::CommandResetEvent(const VkEvent event, const VkPipelin
 /*
 *	Records a reset query pool command.
 */
-void VulkanCommandBuffer::CommandResetQueryPool(const VkQueryPool query_pool) NOEXCEPT
+void VulkanCommandBuffer::CommandResetQueryPool(const VkQueryPool query_pool, const uint32 query_count) NOEXCEPT
 {
-	vkCmdResetQueryPool(_VulkanCommandBuffer, query_pool, 0, 2);
+	vkCmdResetQueryPool(_VulkanCommandBuffer, query_pool, 0, query_count);
 }
 
 /*

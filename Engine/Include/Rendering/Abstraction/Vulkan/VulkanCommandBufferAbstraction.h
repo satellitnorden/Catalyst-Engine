@@ -146,7 +146,7 @@ public:
 	/*
 	*	Records a reset query pool command.
 	*/
-	void CommandResetQueryPool(const VkQueryPool query_pool) NOEXCEPT;
+	void CommandResetQueryPool(const VkQueryPool query_pool, const uint32 query_count) NOEXCEPT;
 
 	/*
 	*	Records a set event command.
