@@ -1,6 +1,7 @@
 #version 460
 
 #extension GL_ARB_separate_shader_objects : require
+#extension GL_EXT_nonuniform_qualifier : require
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)

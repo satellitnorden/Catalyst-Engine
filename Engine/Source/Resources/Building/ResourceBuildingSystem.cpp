@@ -855,6 +855,36 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 		}
 	}
 
+	//Write the ray hit groups.
+	{
+		uint64 number_of_ray_hit_groups{ parameters._RayHitGroupShaderData.Size() };
+		output_file.Write(&number_of_ray_hit_groups, sizeof(uint64));
+
+		for (const RenderPipelineBuildParameters::RayHitGroupShaderData &ray_hit_group_shader_data : parameters._RayHitGroupShaderData)
+		{
+			if (!ray_hit_group_shader_data._RayAnyHitShaderData._GLSLData.Empty())
+			{
+				//Write that it has GLSL shader data.
+				const bool has_data{ true };
+				output_file.Write(&has_data, sizeof(bool));
+
+				//Write the data size.
+				const uint64 data_size{ ray_hit_group_shader_data._RayAnyHitShaderData._GLSLData.Size() };
+				output_file.Write(&data_size, sizeof(uint64));
+
+				//Write the data.
+				output_file.Write(ray_hit_group_shader_data._RayAnyHitShaderData._GLSLData.Data(), ray_hit_group_shader_data._RayAnyHitShaderData._GLSLData.Size());
+			}
+
+			else
+			{
+				//Write that it doesn't GLSL shader data.
+				const bool has_data{ false };
+				output_file.Write(&has_data, sizeof(bool));
+			}
+		}
+	}
+
 	//Write the included uniform buffers.
 	{
 		const uint64 number_of_included_uniform_buffers{ parameters._IncludedUniformBuffers.Size() };

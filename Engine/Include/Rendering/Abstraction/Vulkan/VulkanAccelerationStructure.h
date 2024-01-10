@@ -45,13 +45,16 @@ private:
 	VkAccelerationStructureTypeNV _Type;
 
 	//The underlying Vulkan acceleration structure.
-	VkAccelerationStructureNV _VulkanAccelerationStructure;
+	VkAccelerationStructureNV _VulkanAccelerationStructure{ VK_NULL_HANDLE };
 
 	//The acceleration structure memory allocation.
 	VmaAllocation _AccelerationStructureMemoryAllocation;
 
 	//The acceleration structure memory allocation info.
 	VmaAllocationInfo _AccelerationStructureMemoryAllocationInfo;
+
+	//The acceleration structure memory size.
+	VkDeviceSize _AccelerationStructureMemorySize{ 0 };
 
 	//The number of instances.
 	uint32 _NumberOfInstances{ 0 };
@@ -64,5 +67,8 @@ private:
 
 	//The scratch buffer.
 	VulkanBuffer _ScratchBuffer;
+
+	//The scratch buffer size.
+	VkDeviceSize _ScratchBufferSize{ 0 };
 
 };

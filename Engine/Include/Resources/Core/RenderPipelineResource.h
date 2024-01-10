@@ -17,6 +17,22 @@ class RenderPipelineResource final : public Resource
 
 public:
 
+	/*
+	*	Ray hit group shader data class definition.
+	*/
+	class RayHitGroupShaderData final
+	{
+
+	public:
+
+		//The identifier.
+		HashString _Identifier;
+
+		//The ray any hit shader handle
+		ShaderHandle _RayAnyHitShaderHandle{ EMPTY_HANDLE };
+
+	};
+
 	//The compute shader handle.
 	ShaderHandle _ComputeShaderHandle{ EMPTY_HANDLE };
 
@@ -31,6 +47,9 @@ public:
 
 	//The ray miss shader handle.
 	ShaderHandle _RayMissShaderHandle{ EMPTY_HANDLE };
+
+	//The ray hit group shader data.
+	DynamicArray<RayHitGroupShaderData> _RayHitGroupShaderData;
 
 	//The included uniform buffers.
 	DynamicArray<HashString> _IncludedUniformBuffers;

@@ -13,6 +13,7 @@
 //Systems.
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/TaskSystem.h>
 #include <Systems/WorldSystem.h>
 
 //Terrain.
@@ -557,7 +558,17 @@ void RenderInputManager::RenderUpdate() NOEXCEPT
 	//Run all gather functions.
 	for (RenderInputStream &input_stream : _InputStreams)
 	{
+#if 1
 		input_stream._GatherFunction(input_stream._UserData, &input_stream);
+#else
+		while (!input_stream._Task.IsExecuted())
+		{
+			TaskSystem::Instance->DoWork(Task::Priority::HIGH);
+		}
+
+		input_stream._Task._Arguments = &input_stream;
+		TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &input_stream._Task);
+#endif
 	}
 }
 
@@ -596,6 +607,18 @@ void RenderInputManager::RegisterInputStream
 	new_input_stream._GatherFunction = gather_function;
 	new_input_stream._Mode = mode;
 	new_input_stream._UserData = user_data;
+
+	//Set up the task.
+	new_input_stream._Task._Function = [](void *const RESTRICT arguments)
+	{
+		PROFILING_SCOPE(GatherInputStream);
+
+		RenderInputStream *const RESTRICT render_input_stream{ static_cast<RenderInputStream *const RESTRICT>(arguments) };
+
+		render_input_stream->_GatherFunction(render_input_stream->_UserData, render_input_stream);
+	};
+	new_input_stream._Task._Arguments = nullptr; //Filled in later.
+	new_input_stream._Task._ExecutableOnSameThread = false;
 }
 
 /*
@@ -607,6 +630,11 @@ NO_DISCARD const RenderInputStream &RenderInputManager::GetInputStream(const Has
 	{
 		if (input_stream._Identifier == identifier)
 		{
+			while (!input_stream._Task.IsExecuted())
+			{
+				TaskSystem::Instance->DoWork(Task::Priority::HIGH);
+			}
+
 			return input_stream;
 		}
 	}

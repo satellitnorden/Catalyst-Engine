@@ -32,6 +32,8 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 		shader_stages |= ShaderStage::RAY_MISS;
 	}
 
+	shader_stages |= ShaderStage::RAY_ANY_HIT;
+
 	//Set if this render pipeline needs a render data table.
 	_UsesRenderDataTable =	!_RenderPipelineResource->_IncludedUniformBuffers.Empty()
 							|| !_RenderPipelineResource->_IncludedStorageBuffers.Empty()
@@ -222,6 +224,17 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 	{
 		SetNumberOfMissShaders(1);
 		AddMissShader(_RenderPipelineResource->_RayMissShaderHandle);
+	}
+
+	//Add the hit groups.
+	if (!_RenderPipelineResource->_RayHitGroupShaderData.Empty())
+	{
+		SetNumberOfHitGroups(_RenderPipelineResource->_RayHitGroupShaderData.Size());
+
+		for (const RenderPipelineResource::RayHitGroupShaderData &ray_hit_group_shader_data : _RenderPipelineResource->_RayHitGroupShaderData)
+		{
+			AddHitGroup(EMPTY_HANDLE, ray_hit_group_shader_data._RayAnyHitShaderHandle, EMPTY_HANDLE);
+		}
 	}
 
 	//Add the render data table layouts.

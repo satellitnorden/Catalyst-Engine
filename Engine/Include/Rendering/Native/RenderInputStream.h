@@ -5,6 +5,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/HashString.h>
 
+//Concurrency.
+#include <Concurrency/Task.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
@@ -149,5 +152,8 @@ public:
 
 	//The push constant data memory.
 	DynamicArray<byte> _PushConstantDataMemory;
+
+	//The task.
+	Task _Task;
 
 };

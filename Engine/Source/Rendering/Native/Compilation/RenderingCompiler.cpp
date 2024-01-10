@@ -113,7 +113,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 1
+#if 0
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -356,6 +356,9 @@ public:
 	//The topology.
 	Topology _Topology{ Topology::TriangleList };
 
+	//The hit group names.
+	DynamicArray<DynamicString> _HitGroupNames;
+
 	//The push constant data values.
 	DynamicArray<PushConstantDataValue> _PushConstantDataValues;
 
@@ -473,8 +476,8 @@ FORCE_INLINE void InsertRayTracingData(std::ofstream &output_file) NOEXCEPT
 
 	for (const DynamicString &hit_group : RenderingCompilerConstants::HIT_GROUPS)
 	{
-		output_file << "layout (set = 2, binding = " << current_resource_binding_index++ << ") buffer " << hit_group.Data() << "_VERTEX_DATA_BUFFER { vec4 " << hit_group.Data() << "_VERTEX_DATA[]; } " << hit_group.Data() << "_VERTEX_BUFFERS[4096];" << std::endl;
-		output_file << "layout (set = 2, binding = " << current_resource_binding_index++ << ") buffer " << hit_group.Data() << "_INDEX_DATA_BUFFER { uint " << hit_group.Data() << "_INDEX_DATA[]; } " << hit_group.Data() << "_INDEX_BUFFERS[4096];" << std::endl;
+		output_file << "layout (set = 2, binding = " << current_resource_binding_index++ << ") buffer " << hit_group.Data() << "_VERTEX_DATA_BUFFER { vec4 " << hit_group.Data() << "_VERTEX_DATA[]; } " << hit_group.Data() << "_VERTEX_BUFFERS[];" << std::endl;
+		output_file << "layout (set = 2, binding = " << current_resource_binding_index++ << ") buffer " << hit_group.Data() << "_INDEX_DATA_BUFFER { uint " << hit_group.Data() << "_INDEX_DATA[]; } " << hit_group.Data() << "_INDEX_BUFFERS[];" << std::endl;
 		output_file << "layout (set = 2, binding = " << current_resource_binding_index++ << ") buffer " << hit_group.Data() << "_MATERIAL_BUFFER { layout (offset = 0) uvec4[] " << hit_group.Data() << "_MATERIAL_INDICES; };" << std::endl;
 	}
 }
@@ -570,7 +573,7 @@ void CompileGLSLShader(const char *const RESTRICT file_path, const shaderc_shade
 /*
 *	Inserts common things from the render pipeline information into a GLSL shader.
 */
-FORCE_INLINE uint32 InsertRenderPipelineInformationToGLSL(const RenderPipelineInformation &render_pipeline_information, std::ofstream &glsl_file) NOEXCEPT
+FORCE_INLINE void InsertRenderPipelineInformationToGLSL(const RenderPipelineInformation &render_pipeline_information, std::ofstream &glsl_file) NOEXCEPT
 {
 	//Remember the current resource binding.
 	uint32 resource_binding_index{ 0 };
@@ -706,8 +709,128 @@ FORCE_INLINE uint32 InsertRenderPipelineInformationToGLSL(const RenderPipelineIn
 
 		glsl_file << std::endl;
 	}
+}
 
-	return resource_binding_index;
+/*
+*	Inserts utility function for ray tracing hit shaders into the given file.
+*/
+FORCE_INLINE void InsertRayTracingHitShaderUtilityFunctions(const DynamicString &hit_group_name, std::ofstream &output_file) NOEXCEPT
+{
+	output_file << "hitAttributeNV vec3 HIT_ATTRIBUTE;" << std::endl;
+
+	output_file << std::endl;
+
+	output_file << "struct HitVertexInformation" << std::endl;
+	output_file << "{" << std::endl;
+	output_file << "\tvec3 _Position;" << std::endl;
+	output_file << "\tvec3 _Normal;" << std::endl;
+	output_file << "\tvec3 _Tangent;" << std::endl;
+	output_file << "\tvec2 _TextureCoordinate;" << std::endl;
+	output_file << "};" << std::endl;
+
+	output_file << std::endl;
+
+	output_file << "HitVertexInformation GetHitVertexInformation()" << std::endl;
+	output_file << "{" << std::endl;
+	output_file << "\tHitVertexInformation hit_vertex_information;" << std::endl;
+
+	for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
+	{
+		output_file << "\tuint vertex_index_" << vertex_index << " = " << hit_group_name.Data() << "_INDEX_BUFFERS[gl_InstanceCustomIndexNV]." << hit_group_name.Data() << "_INDEX_DATA[gl_PrimitiveID * 3 + " << vertex_index << "];" << std::endl;
+
+		for (uint32 vertex_data_index{ 0 }; vertex_data_index < 3; ++vertex_data_index)
+		{
+			output_file << "\tvec4 vertex_data_" << vertex_index << "_" << vertex_data_index << " = " << hit_group_name.Data() << "_VERTEX_BUFFERS[gl_InstanceCustomIndexNV]." << hit_group_name.Data() << "_VERTEX_DATA[3 * vertex_index_" << vertex_index << " + " << vertex_data_index << "];" << std::endl;
+		}
+	}
+
+	output_file << "\tvec3 barycentric_coordinates = vec3(1.0f - HIT_ATTRIBUTE.x - HIT_ATTRIBUTE.y, HIT_ATTRIBUTE.x, HIT_ATTRIBUTE.y);" << std::endl;
+
+	output_file << "\thit_vertex_information._Position = ";
+
+	for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
+	{
+		output_file << "vec3(vertex_data_" << vertex_index << "_0.x, vertex_data_" << vertex_index << "_0.y, vertex_data_" << vertex_index << "_0.z) * barycentric_coordinates[" << vertex_index << "]";
+
+		if (vertex_index < 2)
+		{
+			output_file << " + ";
+		}
+
+		else
+		{
+			output_file << ";" << std::endl;
+		}
+	}
+
+	output_file << "\thit_vertex_information._Position = gl_ObjectToWorldNV * vec4(hit_vertex_information._Normal, 1.0f);" << std::endl;
+
+	output_file << "\thit_vertex_information._Normal = ";
+
+	for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
+	{
+		output_file << "vec3(vertex_data_" << vertex_index << "_0.w, vertex_data_" << vertex_index << "_1.x, vertex_data_" << vertex_index << "_1.y) * barycentric_coordinates[" << vertex_index << "]";
+
+		if (vertex_index < 2)
+		{
+			output_file << " + ";
+		}
+
+		else
+		{
+			output_file << ";" << std::endl;
+		}
+	}
+
+	output_file << "\thit_vertex_information._Normal = normalize(gl_ObjectToWorldNV * vec4(hit_vertex_information._Normal, 0.0f));" << std::endl;
+
+	output_file << "\thit_vertex_information._Tangent = ";
+
+	for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
+	{
+		output_file << "vec3(vertex_data_" << vertex_index << "_1.z, vertex_data_" << vertex_index << "_1.w, vertex_data_" << vertex_index << "_2.x) * barycentric_coordinates[" << vertex_index << "]";
+
+		if (vertex_index < 2)
+		{
+			output_file << " + ";
+		}
+
+		else
+		{
+			output_file << ";" << std::endl;
+		}
+	}
+
+	output_file << "\thit_vertex_information._Tangent = normalize(gl_ObjectToWorldNV * vec4(hit_vertex_information._Tangent, 0.0f));" << std::endl;
+
+	output_file << "\thit_vertex_information._TextureCoordinate = ";
+
+	for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
+	{
+		output_file << "vec2(vertex_data_" << vertex_index << "_2.y, vertex_data_" << vertex_index << "_2.z) * barycentric_coordinates[" << vertex_index << "]";
+
+		if (vertex_index < 2)
+		{
+			output_file << " + ";
+		}
+
+		else
+		{
+			output_file << ";" << std::endl;
+		}
+	}
+
+	output_file << "\treturn hit_vertex_information;" << std::endl;
+	output_file << "}" << std::endl;
+
+	output_file << std::endl;
+
+	output_file << "uint GetHitMaterialIndex()" << std::endl;
+	output_file << "{" << std::endl;
+	output_file << "\treturn " << hit_group_name.Data() << "_MATERIAL_INDICES[gl_InstanceCustomIndexNV / 4][gl_InstanceCustomIndexNV & 3];" << std::endl;
+	output_file << "}" << std::endl;
+
+	output_file << std::endl;
 }
 
 /*
@@ -1410,7 +1533,7 @@ void GenerateRayGenerationShader
 		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
 
 		//Insert things from the render pipeline information.
-		const uint32 resource_binding_index{ InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file) };
+		InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file);
 
 		//Insert ray tracing data.
 		InsertRayTracingData(glsl_file);
@@ -1532,13 +1655,20 @@ void GenerateRayGenerationShader
 						arguments.Data()
 					);
 
-					line = "traceNV(TOP_LEVEL_ACCELERATION_STRUCTURE/*topLevel*/,";
-					line += arguments[0].Data();
-					line += "/*rayFlags*/, 0xff/*cullMask*/, 0/*sbtRecordOffset*/, 0/*sbtRecordStride*/, 0/*missIndex*/, ";
-					line += arguments[1].Data();
-					line += "/*origin*/, FLOAT32_EPSILON/*Tmin*/, ";
-					line += arguments[2].Data();
-					line += "/*direction*/, FLOAT32_MAXIMUM/*Tmax*/, 0/*payload*/);";
+					line = "traceNV\n";
+					line += "(\n";
+					line += "\tTOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/\n";
+					line += std::string("\t") + std::string(arguments[0].Data()) + ", /*rayFlags*/\n";
+					line += "\t0xff, /*cullMask*/\n";
+					line += "\t0, /*sbtRecordOffset*/\n";
+					line += "\t0, /*sbtRecordStride*/\n";
+					line += "\t0, /*missIndex*/\n";
+					line += std::string("\t") + std::string(arguments[1].Data()) + ", /*origin*/\n";
+					line += "\tFLOAT32_EPSILON, /*Tmin*/\n";
+					line += std::string("\t") + std::string(arguments[2].Data()) + ", /*direction*/\n";
+					line += "\tFLOAT32_MAXIMUM, /*Tmax*/\n";
+					line += "\t0 /*payload*/\n";
+					line += ");";
 				}
 			}
 
@@ -1631,7 +1761,7 @@ void GenerateRayMissShader
 		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
 
 		//Insert things from the render pipeline information.
-		const uint32 resource_binding_index{ InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file) };
+		InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file);
 
 		//Insert ray tracing data.
 		InsertRayTracingData(glsl_file);
@@ -1670,6 +1800,139 @@ void GenerateRayMissShader
 
 		//Compile the GLSL shader.
 		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_miss_shader, &parameters->_RayMissShaderData._GLSLData);
+	}
+}
+
+/*
+*	Generates a ray any hit shader.
+*/
+void GenerateRayAnyHitShader
+(
+	std::ifstream &file,
+	const char *const RESTRICT generated_file_path,
+	const std::string &shader_name,
+	const RenderPipelineInformation &render_pipeline_information,
+	RenderPipelineBuildParameters *const RESTRICT parameters
+) NOEXCEPT
+{
+	//Struct definitions.
+	struct Payload final
+	{
+		DynamicString _Type;
+		DynamicString _Name;
+	};
+
+	//Gather all the lines in the vertex function.
+	DynamicArray<std::string> lines;
+	GatherShaderLines(file, lines);
+
+	//Gather the payloads.
+	DynamicArray<Payload> payloads;
+
+	for (uint64 i{ 0 }; i < lines.Size();)
+	{
+		const size_t position{ lines[i].find("Payload(") };
+
+		if (position != std::string::npos)
+		{
+			StaticArray<DynamicString, 2> arguments;
+
+			TextParsingUtilities::ParseFunctionArguments
+			(
+				lines[i].data(),
+				lines[i].length(),
+				arguments.Data()
+			);
+
+			payloads.Emplace();
+			payloads.Back()._Type = std::move(arguments[0]);
+			payloads.Back()._Name = std::move(arguments[1]);
+
+			lines.EraseAt<true>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
+
+	//Write the GLSL file.
+	{
+		//Make a copy of the lines.
+		DynamicArray<std::string> glsl_lines{ lines };
+
+		//Open the file.
+		char glsl_file_path[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(glsl_file_path, "%s\\%s_RayAnyHit.glsl", generated_file_path, shader_name.c_str());
+		std::ofstream glsl_file{ glsl_file_path };
+
+		//Write the version declaration.
+		glsl_file << "#version 460" << std::endl;
+
+		glsl_file << std::endl;
+
+		//Insert extensions.
+		GLSLCompilation::InsertExtensions(glsl_file);
+		GLSLCompilation::InsertRayTracingExtensions(glsl_file);
+
+		//Insert the global render data.
+		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
+
+		//Insert things from the render pipeline information.
+		InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file);
+
+		//Insert ray tracing data.
+		InsertRayTracingData(glsl_file);
+
+		//Insert the ray traing hit shader utility functions.
+		InsertRayTracingHitShaderUtilityFunctions(render_pipeline_information._HitGroupNames.Back(), glsl_file);
+
+		//Write the payloads.
+		if (!payloads.Empty())
+		{
+			//Remember the current location index.
+			uint32 location_index{ 0 };
+
+			for (const Payload& payload : payloads)
+			{
+				glsl_file << "layout (location = " << location_index << ") rayPayloadInNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
+
+				++location_index;
+			}
+
+			glsl_file << std::endl;
+		}
+
+		//Write the "void main()" line.
+		glsl_file << "void main()" << std::endl;
+
+		//Write the remaining lines.
+		for (uint64 i{ 0 }; i < glsl_lines.Size(); ++i)
+		{
+			//Cache the line.
+			std::string &line{ glsl_lines[i] };
+
+			//Replace "IgnoreHit()" with "ignoreIntersectionNV()".
+			{
+				size_t position{ line.find("IgnoreHit()") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("IgnoreHit()"), "ignoreIntersectionNV()");
+					position = line.find("IgnoreHit()");
+				}
+			}
+
+			//Write the line.
+			glsl_file << line << std::endl;
+		}
+
+		//Close the file.
+		glsl_file.close();
+
+		//Compile the GLSL shader.
+		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_anyhit_shader, &parameters->_RayHitGroupShaderData.Back()._RayAnyHitShaderData._GLSLData);
 	}
 }
 
@@ -3148,6 +3411,31 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 				}
 			}
 
+			//Is this the beginning of a new hit group?
+			{
+				const size_t position{ current_line.find("HitGroup(") };
+
+				if (position != std::string::npos)
+				{
+					//Parse the argument.
+					DynamicString argument;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&argument
+					);
+
+					//Add the new hit group.
+					render_pipeline_information._HitGroupNames.Emplace(argument);
+					parameters._RayHitGroupShaderData.Emplace();
+					parameters._RayHitGroupShaderData.Back()._Identifier = HashString(argument.Data());
+
+					continue;
+				}
+			}
+
 			//Is this the beginning of a compute shader?
 			if (current_line == "Compute")
 			{
@@ -3176,6 +3464,12 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 			else if (current_line == "RayMiss")
 			{
 				GenerateRayMissShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
+			}
+
+			//Is this the beginning of a ray any hit shader?
+			else if (current_line == "RayAnyHit")
+			{
+				GenerateRayAnyHitShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
 			}
 
 			else

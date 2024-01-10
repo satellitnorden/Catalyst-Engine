@@ -401,7 +401,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE constexpr static NO_DISCARD TYPE RoundToNearestMultipleOf(const TYPE number, const TYPE multiple) NOEXCEPT
 	{
-		return ((number + multiple / 2) / multiple) * multiple;
+		return ((number + multiple - 1) / multiple) * multiple;
 	}
 
 	/*

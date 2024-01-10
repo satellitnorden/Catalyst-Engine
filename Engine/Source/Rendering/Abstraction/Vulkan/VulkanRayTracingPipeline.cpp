@@ -166,7 +166,7 @@ void VulkanRayTracingPipeline::CreateGroups(const VulkanRayTracingPipelineCreati
 	}
 
 	//Add the hit groups.
-	for (const VulkanRayTracingPipelineCreationParameters::VulkanHitGroup& hit_group : parameters._HitGroups)
+	for (const VulkanRayTracingPipelineCreationParameters::VulkanHitGroup &hit_group : parameters._HitGroups)
 	{
 		groups->Emplace();
 

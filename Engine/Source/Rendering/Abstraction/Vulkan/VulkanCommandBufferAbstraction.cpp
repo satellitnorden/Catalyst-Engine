@@ -176,28 +176,76 @@ void VulkanCommandBuffer::CommandBuildAccelerationStructure
 	const VkBuffer scratch_buffer
 ) NOEXCEPT
 {
-	VkAccelerationStructureInfoNV acceleration_structure_info;
+	{
+		VkMemoryBarrier memory_barrier = { };
 
-	acceleration_structure_info.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV;
-	acceleration_structure_info.pNext = nullptr;
-	acceleration_structure_info.type = type;
-	acceleration_structure_info.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV;
-	acceleration_structure_info.instanceCount = instance_count;
-	acceleration_structure_info.geometryCount = geometry_count;
-	acceleration_structure_info.pGeometries = geometries;
+		memory_barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+		memory_barrier.pNext = nullptr;
+		memory_barrier.srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+		memory_barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
 
-	vkCmdBuildAccelerationStructureNV
-	(
-		_VulkanCommandBuffer,
-		&acceleration_structure_info,
-		instance_buffer,
-		0,
-		VK_FALSE,
-		acceleration_structure,
-		VK_NULL_HANDLE,
-		scratch_buffer,
-		0
-	);
+		vkCmdPipelineBarrier
+		(
+			_VulkanCommandBuffer,
+			VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+			VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+			0,
+			1,
+			&memory_barrier,
+			0,
+			nullptr,
+			0,
+			nullptr
+		);
+	}
+
+	{
+		VkAccelerationStructureInfoNV acceleration_structure_info;
+
+		acceleration_structure_info.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV;
+		acceleration_structure_info.pNext = nullptr;
+		acceleration_structure_info.type = type;
+		acceleration_structure_info.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV;
+		acceleration_structure_info.instanceCount = instance_count;
+		acceleration_structure_info.geometryCount = geometry_count;
+		acceleration_structure_info.pGeometries = geometries;
+
+		vkCmdBuildAccelerationStructureNV
+		(
+			_VulkanCommandBuffer,
+			&acceleration_structure_info,
+			instance_buffer,
+			0,
+			VK_FALSE,
+			acceleration_structure,
+			VK_NULL_HANDLE,
+			scratch_buffer,
+			0
+		);
+	}
+
+	{
+		VkMemoryBarrier memory_barrier = { };
+
+		memory_barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+		memory_barrier.pNext = nullptr;
+		memory_barrier.srcAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR;
+		memory_barrier.dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR;
+
+		vkCmdPipelineBarrier
+		(
+			_VulkanCommandBuffer,
+			VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+			VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
+			0,
+			1,
+			&memory_barrier,
+			0,
+			nullptr,
+			0,
+			nullptr
+		);
+	}
 }
 
 /*

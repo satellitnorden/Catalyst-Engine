@@ -28,6 +28,22 @@ public:
 
 	};
 
+	/*
+	*	Ray hit group shader data class definition.
+	*/
+	class RayHitGroupShaderData final
+	{
+
+	public:
+
+		//The identifier.
+		HashString _Identifier;
+
+		//The ray any hit shader data.
+		ShaderData _RayAnyHitShaderData;
+
+	};
+
 	//The output file path.
 	const char *RESTRICT _Output{ nullptr };
 
@@ -45,6 +61,9 @@ public:
 
 	//The ray miss shader data.
 	ShaderData _RayMissShaderData;
+
+	//The ray hit group shader data.
+	DynamicArray<RayHitGroupShaderData> _RayHitGroupShaderData;
 
 	//The included uniform buffers.
 	DynamicArray<HashString> _IncludedUniformBuffers;

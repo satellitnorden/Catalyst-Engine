@@ -1,16 +1,21 @@
 //Declare uniform buffer includes.
 IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
 
 //Declare storage buffer includes.
 IncludeStorageBuffer(Lighting);
 
 //Declare shader function library includes.
+IncludeShaderFunctionLibrary(BlueNoise);
 IncludeShaderFunctionLibrary(Camera);
 IncludeShaderFunctionLibrary(Lighting);
 
 //Declare compute render targets.
 ComputeRenderTarget(SceneFeatures2Half, RGBA_FLOAT32);
 ComputeRenderTarget(Shadows, RGBA_FLOAT32);
+
+//Declare samplers.
+Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
 
 //Subscribe to input streams.
 SubscribeToInputStream(RayTracingViewportHalf);
@@ -55,7 +60,43 @@ RayGeneration
                     uint ray_tracing_flags =    RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT
                                                 | RAY_TRACING_FLAG_SKIP_CLOSEST_HIT;
 
-                    TraceRay(ray_tracing_flags, world_position, -light._TransformData1);
+                    //Calculate the direction.
+                    vec3 direction = -light._TransformData1;
+
+                    /*
+                    *   This assumes the directional light is representing a sun.
+                    *   The sun is on average 150 million kilometers away from the earth,
+                    *   with a radius of 696 340 kilometers.
+                    *   If we scale those values down a bit for floating point precision's sake,
+                    *   we can imagine a sphere offset in the directional light direction from the origin,
+                    *   and grab a random point in that sphere.
+                    */
+                    vec4 noise_sample = SampleBlueNoiseTexture(uvec2(RAY_TRACING_ID.xy), 0);
+                    vec3 sphere_position = world_position + direction;
+                    vec2 spherical_coordinates;
+
+                    {
+                       spherical_coordinates.x = acos(2 * noise_sample.x - 1.0f) - (PI / 2.0f);
+                       spherical_coordinates.y = 2 * PI * noise_sample.y;
+                    }
+
+                    vec3 random_point_on_sphere;
+
+                    {
+                        float cos_a = cos(spherical_coordinates.x);
+                        float cos_b = cos(spherical_coordinates.y);
+                        float sin_a = sin(spherical_coordinates.x);
+                        float sin_b = sin(spherical_coordinates.y);
+                    
+                        random_point_on_sphere = vec3(cos_a * cos_b, cos_a * sin_b, sin_a);
+                    }
+                    
+                    random_point_on_sphere = dot(random_point_on_sphere, direction) >= 0.0f ? random_point_on_sphere : -random_point_on_sphere;
+                    random_point_on_sphere *= 0.0046422666666667f;
+                    direction = normalize(sphere_position + random_point_on_sphere - world_position);
+
+                    //Trace the ray!
+                    TraceRay(ray_tracing_flags, world_position, direction);
 
                     //Write to the shadows.
                     shadows[current_shadow_index++] = VISIBILITY;
@@ -79,4 +120,30 @@ RayMiss
 
     //Set the visibility.
     VISIBILITY = 1.0f;
+}
+
+//Declare a new hit group.
+HitGroup(OpaqueModels);
+
+//Declare a new hit group.
+HitGroup(MaskedModels);
+
+//The ray any hit shader.
+RayAnyHit
+{
+    //Retrieve the hit vertex information.
+    HitVertexInformation hit_vertex_information = GetHitVertexInformation();
+
+    //Retrieve the hit material index.
+    uint hit_material_index = GetHitMaterialIndex();
+
+    //Evaluate the opacity.
+    float opacity;
+    EVALUATE_OPACITY(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, opacity);
+
+    //Check if this hit should be ignored.
+    if (opacity < 0.5f)
+    {
+        IgnoreHit();
+    }
 }

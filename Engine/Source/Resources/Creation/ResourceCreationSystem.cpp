@@ -343,6 +343,22 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_RayMissShaderData._GLSLData), ShaderStage::RAY_MISS, &resource->_RayMissShaderHandle);
 	}
 
+	//Create the ray hit groups.
+	if (!data->_RayHitGroupShaderData.Empty())
+	{
+		resource->_RayHitGroupShaderData.Upsize<true>(data->_RayHitGroupShaderData.Size());
+
+		for (uint64 ray_hit_group_index{ 0 }; ray_hit_group_index < data->_RayHitGroupShaderData.Size(); ++ray_hit_group_index)
+		{
+			resource->_RayHitGroupShaderData[ray_hit_group_index]._Identifier = data->_RayHitGroupShaderData[ray_hit_group_index]._Identifier;
+
+			if (!data->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderData._GLSLData.Empty())
+			{
+				RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderData._GLSLData), ShaderStage::RAY_ANY_HIT, &resource->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderHandle);
+			}
+		}
+	}
+
 	//Copy the included buffers.
 	resource->_IncludedUniformBuffers = std::move(data->_IncludedUniformBuffers);
 	resource->_IncludedStorageBuffers = std::move(data->_IncludedStorageBuffers);

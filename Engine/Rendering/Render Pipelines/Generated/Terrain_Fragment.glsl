@@ -1,6 +1,7 @@
 #version 460
 
 #extension GL_ARB_separate_shader_objects : require
+#extension GL_EXT_nonuniform_qualifier : require
 layout (early_fragment_tests) in;
 
 //Constants.

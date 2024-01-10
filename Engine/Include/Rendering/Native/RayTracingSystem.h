@@ -69,8 +69,8 @@ private:
 	//Container for all the top level acceleration structure instance data.
 	DynamicArray<TopLevelAccelerationStructureInstanceData> _TopLevelAccelerationStructureInstanceData;
 
-	//The top level acceleration structure.
-	AccelerationStructureHandle _TopLevelAccelerationStructure{ EMPTY_HANDLE };
+	//The top level acceleration structures.
+	DynamicArray<AccelerationStructureHandle> _TopLevelAccelerationStructures;
 
 	/*
 	*	Returns the hit group with the given identifier.

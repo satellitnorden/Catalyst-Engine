@@ -1140,14 +1140,31 @@ void VulkanSubRenderingSystem::CreateTopLevelAccelerationStructure
 			VulkanTranslationUtilities::GetVulkanGeometryInstance(instance_data[i], &geometry_instances[i]);
 		}
 
-		//Create the acceleration structure.
-		*handle = VulkanInterface::Instance->CreateAccelerationStructure
-		(
-			VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
-			ArrayProxy<VulkanGeometryInstance>(geometry_instances, instance_data.Size()),
-			ArrayProxy<VkGeometryNV>(),
-			command_buffer ? static_cast<VulkanCommandBuffer *const RESTRICT>(command_buffer->GetCommandBufferData()) : nullptr
-		);
+		//This might be a recreate, so check for that.
+		VulkanAccelerationStructure *const RESTRICT vulkan_acceleration_structure{ static_cast<VulkanAccelerationStructure *const RESTRICT>(*handle) };
+
+		if (vulkan_acceleration_structure)
+		{
+			vulkan_acceleration_structure->Initialize
+			(
+				VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
+				ArrayProxy<VulkanGeometryInstance>(geometry_instances, instance_data.Size()),
+				ArrayProxy<VkGeometryNV>(),
+				command_buffer ? static_cast<VulkanCommandBuffer* const RESTRICT>(command_buffer->GetCommandBufferData()) : nullptr
+			);
+		}
+
+		else
+		{
+			//Create the acceleration structure.
+			*handle = VulkanInterface::Instance->CreateAccelerationStructure
+			(
+				VkAccelerationStructureTypeNV::VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
+				ArrayProxy<VulkanGeometryInstance>(geometry_instances, instance_data.Size()),
+				ArrayProxy<VkGeometryNV>(),
+				command_buffer ? static_cast<VulkanCommandBuffer *const RESTRICT>(command_buffer->GetCommandBufferData()) : nullptr
+			);
+		}
 	}
 	
 	else

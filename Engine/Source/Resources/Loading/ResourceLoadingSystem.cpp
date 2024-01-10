@@ -376,6 +376,32 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 		}
 	}
 
+	//Read the ray hit group
+	{
+		uint64 number_of_ray_hit_groups{ 0 };
+		file->Read(&number_of_ray_hit_groups, sizeof(uint64));
+
+		if (number_of_ray_hit_groups > 0)
+		{
+			data->_RayHitGroupShaderData.Upsize<true>(number_of_ray_hit_groups);
+
+			for (uint64 ray_hit_group_index{ 0 }; ray_hit_group_index < number_of_ray_hit_groups; ++ray_hit_group_index)
+			{
+				bool has_data{ false };
+				file->Read(&has_data, sizeof(bool));
+
+				if (has_data)
+				{
+					uint64 data_size{ 0 };
+					file->Read(&data_size, sizeof(uint64));
+					data->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderData._GLSLData.Upsize<false>(data_size);
+
+					file->Read(data->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderData._GLSLData.Data(), data_size);
+				}
+			}
+		}
+	}
+
 	//Read the included uniform buffers.
 	{
 		uint64 number_of_included_uniform_buffers{ 0 };

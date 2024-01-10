@@ -121,46 +121,81 @@ void VulkanAccelerationStructure::Initialize
 		_command_buffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 	}
 
-	//Create the acceleration structure create info.
-	VkAccelerationStructureCreateInfoNV acceleration_structure_create_info;
-	VulkanAccelerationStructureLogic::CreateAccelerationStructureCreateInfo(type, static_cast<uint32>(instances.Size()), geometry, &acceleration_structure_create_info);
+	//Always recreate the acceleration structure, I guess.
+	{
+		//Destroy the old one, if one exists.
+		if (_VulkanAccelerationStructure != VK_NULL_HANDLE)
+		{
+			vkDestroyAccelerationStructureNV(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanAccelerationStructure, nullptr);
+		}
 
-	//Create the acceleration structure!
-	VULKAN_ERROR_CHECK(vkCreateAccelerationStructureNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &acceleration_structure_create_info, nullptr, &_VulkanAccelerationStructure));
+		//Create the acceleration structure create info.
+		VkAccelerationStructureCreateInfoNV acceleration_structure_create_info;
+		VulkanAccelerationStructureLogic::CreateAccelerationStructureCreateInfo(type, static_cast<uint32>(instances.Size()), geometry, &acceleration_structure_create_info);
+
+		//Create the acceleration structure!
+		VULKAN_ERROR_CHECK(vkCreateAccelerationStructureNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &acceleration_structure_create_info, nullptr, &_VulkanAccelerationStructure));
+	}
 
 	//Query the memory requirements.
 	VkMemoryRequirements memory_requirements;
 
 	VulkanAccelerationStructureLogic::GetMemoryRequirements(_VulkanAccelerationStructure, &memory_requirements);
 
-	//Allocate the acceleration structure memory.
-	VmaAllocationCreateInfo allocation_create_info = { };
+	//Re-allocate the acceleration structure memory, if necessary.
+	if (_AccelerationStructureMemorySize < memory_requirements.size)
+	{
+		//Free the old one, if one exists.
+		if (_AccelerationStructureMemorySize > 0)
+		{
+			vmaFreeMemory(VULKAN_MEMORY_ALLOCATOR, _AccelerationStructureMemoryAllocation);
+		}
 
-	allocation_create_info.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
-	allocation_create_info.requiredFlags = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+		//Allocate the acceleration structure memory.
+		VmaAllocationCreateInfo allocation_create_info = { };
 
-	vmaAllocateMemory(VULKAN_MEMORY_ALLOCATOR, &memory_requirements, &allocation_create_info, &_AccelerationStructureMemoryAllocation, &_AccelerationStructureMemoryAllocationInfo);
+		allocation_create_info.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
+		allocation_create_info.requiredFlags = VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+		vmaAllocateMemory(VULKAN_MEMORY_ALLOCATOR, &memory_requirements, &allocation_create_info, &_AccelerationStructureMemoryAllocation, &_AccelerationStructureMemoryAllocationInfo);
+	
+		//Set the acceleration structure memory size.
+		_AccelerationStructureMemorySize = memory_requirements.size;
+	}
 
 	//Bind the memory to the acceleration structure.
 	VulkanAccelerationStructureLogic::BindAccelerationStructureMemory(_VulkanAccelerationStructure, _AccelerationStructureMemoryAllocationInfo.deviceMemory, _AccelerationStructureMemoryAllocationInfo.offset);
 
 	//Create the instance data, if necessary.
+	if (_NumberOfInstances < instances.Size())
+	{
+		//Destroy the old ones, if they exist.
+		if (_NumberOfInstances > 0)
+		{
+			_InstanceDataHostBuffer.Release();
+			_InstanceDataDeviceBuffer.Release();
+		}
+
+		//Calculate the new instance capacity.
+		const uint64 new_instance_capacity{ CatalystBaseMath::RoundToNearestMultipleOf(instances.Size(), static_cast<uint64>(1024)) };
+
+		//Create the instance data buffers.
+		_InstanceDataHostBuffer.Initialize(sizeof(VulkanGeometryInstance) * new_instance_capacity, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		_InstanceDataDeviceBuffer.Initialize(sizeof(VulkanGeometryInstance) * new_instance_capacity, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+		//Set the number of instances.
+		_NumberOfInstances = static_cast<uint32>(new_instance_capacity);
+	}
+
+	//Upload the data to the instance buffer.
 	if (!instances.Empty())
 	{
-		//Create the instance data buffers.
-		_InstanceDataHostBuffer.Initialize(sizeof(VulkanGeometryInstance) * instances.Size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
 		const void *const RESTRICT data_chunks[]{ instances.Data() };
 		const uint64 data_sizes[]{ sizeof(VulkanGeometryInstance) * instances.Size() };
 
 		_InstanceDataHostBuffer.UploadData(data_chunks, data_sizes, 1);
 
-		_InstanceDataDeviceBuffer.Initialize(sizeof(VulkanGeometryInstance) * instances.Size(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
 		_command_buffer->CommandCopyBuffer(_InstanceDataHostBuffer.Get(), _InstanceDataDeviceBuffer.Get(), sizeof(VulkanGeometryInstance) * instances.Size());
-
-		//Set the number of instances.
-		_NumberOfInstances = static_cast<uint32>(instances.Size());
 	}
 
 	//Query the scratch memory requirements.
@@ -168,15 +203,30 @@ void VulkanAccelerationStructure::Initialize
 
 	VulkanAccelerationStructureLogic::GetScratchMemoryRequirements(_VulkanAccelerationStructure, &scratch_memory_requirements);
 
-	//Allocate the scratch buffer.
-	_ScratchBuffer.Initialize(scratch_memory_requirements.size, VkBufferUsageFlagBits::VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	//Re-allocate the scratch buffer, if necessary.
+	if (_ScratchBufferSize < scratch_memory_requirements.size)
+	{
+		//Destroy the old one, if one exists.
+		if (_ScratchBufferSize > 0)
+		{
+			_ScratchBuffer.Release();
+		}
+
+		//Calculate the new scratch capacity.
+		const uint64 new_scratch_capacity{ CatalystBaseMath::RoundToNearestMultipleOf(scratch_memory_requirements.size, static_cast<uint64>(1024)) };
+
+		_ScratchBuffer.Initialize(new_scratch_capacity, VkBufferUsageFlagBits::VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+		//Set the scratch buffer size.
+		_ScratchBufferSize = new_scratch_capacity;
+	}
 
 	//Record the build command!
 	_command_buffer->CommandBuildAccelerationStructure
 	(
 		_Type,
-		_NumberOfInstances,
-		_NumberOfInstances > 0 ? _InstanceDataDeviceBuffer.Get() : VK_NULL_HANDLE,
+		static_cast<uint32>(instances.Size()),
+		instances.Size() > 0 ? _InstanceDataDeviceBuffer.Get() : VK_NULL_HANDLE,
 		static_cast<uint32>(geometry.Size()),
 		geometry.Data(),
 		_VulkanAccelerationStructure,

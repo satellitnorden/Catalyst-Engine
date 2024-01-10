@@ -1,6 +1,7 @@
 #version 460
 
 #extension GL_ARB_separate_shader_objects : require
+#extension GL_EXT_nonuniform_qualifier : require
 #extension GL_NV_ray_tracing : require
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
@@ -200,20 +201,40 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
+layout (std140, set = 1, binding = 1) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
+};
+
 //Lighting header struct definition.
 struct LightingHeader
 {
 	uint _NumberOfLights;
 	uint _MaximumNumberOfShadowCastingLights;	
 };
-layout (std430, set = 1, binding = 1) buffer Lighting
+layout (std430, set = 1, binding = 2) buffer Lighting
 {
 	layout (offset = 0) LightingHeader LIGHTING_HEADER;
 	layout (offset = 16) vec4[] LIGHT_DATA;
 };
 
-layout (set = 1, binding = 2, rgba32f) uniform image2D SceneFeatures2Half; 
-layout (set = 1, binding = 3, rgba32f) uniform image2D Shadows; 
+layout (set = 1, binding = 3) uniform sampler SAMPLER;
+
+layout (set = 1, binding = 4, rgba32f) uniform image2D SceneFeatures2Half; 
+layout (set = 1, binding = 5, rgba32f) uniform image2D Shadows; 
+
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    return texture(BLUE_NOISE_TEXTURES[(BLUE_NOISE_TEXTURE_INDEX + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1)], vec2(coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
 
 /*
 *   Linearizes a depth value.
@@ -359,11 +380,11 @@ Light UnpackLight(uint index)
 }
 
 layout (set = 2, binding = 0) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;
-layout (set = 2, binding = 1) buffer OpaqueModels_VERTEX_DATA_BUFFER { vec4 OpaqueModels_VERTEX_DATA[]; } OpaqueModels_VERTEX_BUFFERS[4096];
-layout (set = 2, binding = 2) buffer OpaqueModels_INDEX_DATA_BUFFER { uint OpaqueModels_INDEX_DATA[]; } OpaqueModels_INDEX_BUFFERS[4096];
+layout (set = 2, binding = 1) buffer OpaqueModels_VERTEX_DATA_BUFFER { vec4 OpaqueModels_VERTEX_DATA[]; } OpaqueModels_VERTEX_BUFFERS[];
+layout (set = 2, binding = 2) buffer OpaqueModels_INDEX_DATA_BUFFER { uint OpaqueModels_INDEX_DATA[]; } OpaqueModels_INDEX_BUFFERS[];
 layout (set = 2, binding = 3) buffer OpaqueModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] OpaqueModels_MATERIAL_INDICES; };
-layout (set = 2, binding = 4) buffer MaskedModels_VERTEX_DATA_BUFFER { vec4 MaskedModels_VERTEX_DATA[]; } MaskedModels_VERTEX_BUFFERS[4096];
-layout (set = 2, binding = 5) buffer MaskedModels_INDEX_DATA_BUFFER { uint MaskedModels_INDEX_DATA[]; } MaskedModels_INDEX_BUFFERS[4096];
+layout (set = 2, binding = 4) buffer MaskedModels_VERTEX_DATA_BUFFER { vec4 MaskedModels_VERTEX_DATA[]; } MaskedModels_VERTEX_BUFFERS[];
+layout (set = 2, binding = 5) buffer MaskedModels_INDEX_DATA_BUFFER { uint MaskedModels_INDEX_DATA[]; } MaskedModels_INDEX_BUFFERS[];
 layout (set = 2, binding = 6) buffer MaskedModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] MaskedModels_MATERIAL_INDICES; };
 layout (location = 0) rayPayloadNV float VISIBILITY;
 
@@ -388,7 +409,47 @@ void main()
                     VISIBILITY = 0.0f;
                     uint ray_tracing_flags =    gl_RayFlagsTerminateOnFirstHitNV
                                                 | gl_RayFlagsSkipClosestHitShaderNV;
-traceNV(TOP_LEVEL_ACCELERATION_STRUCTURE/*topLevel*/,ray_tracing_flags/*rayFlags*/, 0xff/*cullMask*/, 0/*sbtRecordOffset*/, 0/*sbtRecordStride*/, 0/*missIndex*/, world_position/*origin*/, FLOAT32_EPSILON/*Tmin*/, -light._TransformData1/*direction*/, FLOAT32_MAXIMUM/*Tmax*/, 0/*payload*/);
+                    vec3 direction = -light._TransformData1;
+                    /*
+                    *   This assumes the directional light is representing a sun.
+                    *   The sun is on average 150 million kilometers away from the earth,
+                    *   with a radius of 696 340 kilometers.
+                    *   If we scale those values down a bit for floating point precision's sake,
+                    *   we can imagine a sphere offset in the directional light direction from the origin,
+                    *   and grab a random point in that sphere.
+                    */
+                    vec4 noise_sample = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);
+                    vec3 sphere_position = world_position + direction;
+                    vec2 spherical_coordinates;
+                    {
+                       spherical_coordinates.x = acos(2 * noise_sample.x - 1.0f) - (PI / 2.0f);
+                       spherical_coordinates.y = 2 * PI * noise_sample.y;
+                    }
+                    vec3 random_point_on_sphere;
+                    {
+                        float cos_a = cos(spherical_coordinates.x);
+                        float cos_b = cos(spherical_coordinates.y);
+                        float sin_a = sin(spherical_coordinates.x);
+                        float sin_b = sin(spherical_coordinates.y);
+                        random_point_on_sphere = vec3(cos_a * cos_b, cos_a * sin_b, sin_a);
+                    }
+                    random_point_on_sphere = dot(random_point_on_sphere, direction) >= 0.0f ? random_point_on_sphere : -random_point_on_sphere;
+                    random_point_on_sphere *= 0.0046422666666667f;
+                    direction = normalize(sphere_position + random_point_on_sphere - world_position);
+traceNV
+(
+	TOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/
+	ray_tracing_flags, /*rayFlags*/
+	0xff, /*cullMask*/
+	0, /*sbtRecordOffset*/
+	0, /*sbtRecordStride*/
+	0, /*missIndex*/
+	world_position, /*origin*/
+	FLOAT32_EPSILON, /*Tmin*/
+	direction, /*direction*/
+	FLOAT32_MAXIMUM, /*Tmax*/
+	0 /*payload*/
+);
                     shadows[current_shadow_index++] = VISIBILITY;
                     break;
                 }

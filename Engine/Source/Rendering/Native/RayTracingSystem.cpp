@@ -45,6 +45,15 @@ void RayTracingSystem::PostInitialize()
 	{
 		RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &render_data_table);
 	}
+
+	//Create the top level acceleration structures.
+	_TopLevelAccelerationStructures.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (AccelerationStructureHandle &top_level_acceleration_structure : _TopLevelAccelerationStructures)
+	{
+		top_level_acceleration_structure = EMPTY_HANDLE;
+		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(ArrayProxy<TopLevelAccelerationStructureInstanceData>(), &top_level_acceleration_structure, nullptr);
+	}
 }
 
 /*
@@ -61,11 +70,8 @@ void RayTracingSystem::RenderUpdate(CommandBuffer *const RESTRICT command_buffer
 	//Cache the current render data table.
 	RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
-	//Destroy the old top level acceleration structure, if it exists.
-	if (_TopLevelAccelerationStructure != EMPTY_HANDLE)
-	{
-		RenderingSystem::Instance->DestroyAccelerationStructure(&_TopLevelAccelerationStructure);
-	}
+	//Cache the current top level acceleration structure.
+	AccelerationStructureHandle &current_top_level_acceleration_structure{ _TopLevelAccelerationStructures[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
 	//Gather the instance data, and update the current render data table at the same time.
 	{
@@ -117,10 +123,10 @@ void RayTracingSystem::RenderUpdate(CommandBuffer *const RESTRICT command_buffer
 
 	{
 		PROFILING_SCOPE(RayTracingSystem_BuildTopLevelAccelerationStructure);
-		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(_TopLevelAccelerationStructureInstanceData, &_TopLevelAccelerationStructure, command_buffer);
+		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(_TopLevelAccelerationStructureInstanceData, &current_top_level_acceleration_structure, command_buffer);
 	}
 
-	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &current_render_data_table, _TopLevelAccelerationStructure);
+	RenderingSystem::Instance->BindAccelerationStructureToRenderDataTable(0, 0, &current_render_data_table, current_top_level_acceleration_structure);
 }
 
 /*
