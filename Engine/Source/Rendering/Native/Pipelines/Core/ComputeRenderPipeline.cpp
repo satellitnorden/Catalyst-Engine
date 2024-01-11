@@ -195,6 +195,8 @@ void ComputeRenderPipeline::Initialize(const ComputeRenderPipelineParameters &pa
 					&render_data_table,
 					render_target
 				);
+
+				_ComputeRenderTargets.Emplace(render_target);
 			}
 		}
 	}
@@ -275,12 +277,44 @@ void ComputeRenderPipeline::Execute() NOEXCEPT
 		command_buffer->BindRenderDataTable(this, 1, current_render_data_table);
 	}
 
+	//Insert memory barriers for the compute render targets.
+	for (const RenderTargetHandle compute_render_target : _ComputeRenderTargets)
+	{
+		command_buffer->ImageMemoryBarrier
+		(
+			this,
+			AccessFlags::COLOR_ATTACHMENT_WRITE,
+			AccessFlags::SHADER_READ,
+			ImageLayout::GENERAL,
+			ImageLayout::GENERAL,
+			compute_render_target,
+			PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT,
+			PipelineStageFlags::COMPUTE_SHADER
+		);
+	}
+
 	//Go over the input streams.
 	for (const HashString input_stream_subscription : _RenderPipelineResource->_InputStreamSubscriptions)
 	{
 		const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(input_stream_subscription) };
 
 		ProcessInputStream(input_stream, command_buffer);
+	}
+
+	//Insert memory barriers for the compute render targets.
+	for (const RenderTargetHandle compute_render_target : _ComputeRenderTargets)
+	{
+		command_buffer->ImageMemoryBarrier
+		(
+			this,
+			AccessFlags::SHADER_WRITE,
+			AccessFlags::SHADER_READ,
+			ImageLayout::GENERAL,
+			ImageLayout::GENERAL,
+			compute_render_target,
+			PipelineStageFlags::COMPUTE_SHADER,
+			PipelineStageFlags::FRAGMENT_SHADER
+		);
 	}
 	
 	//End the command buffer.

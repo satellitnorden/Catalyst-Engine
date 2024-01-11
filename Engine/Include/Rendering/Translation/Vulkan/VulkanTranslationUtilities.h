@@ -25,7 +25,20 @@ public:
 	*/
 	static VkAccessFlags GetVulkanAccessFlags(const AccessFlags access_flags) NOEXCEPT
 	{
-		return 0;
+		VkAccessFlags flags{ 0 };
+
+#define MAPPING(FLAG, BIT) if (TEST_BIT(access_flags, FLAG)) flags |= BIT;
+
+		MAPPING(AccessFlags::COLOR_ATTACHMENT_READ, VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_READ_BIT);
+		MAPPING(AccessFlags::COLOR_ATTACHMENT_WRITE, VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+		MAPPING(AccessFlags::SHADER_READ, VkAccessFlagBits::VK_ACCESS_SHADER_READ_BIT);
+		MAPPING(AccessFlags::SHADER_WRITE, VkAccessFlagBits::VK_ACCESS_SHADER_WRITE_BIT);
+		MAPPING(AccessFlags::MEMORY_READ, VkAccessFlagBits::VK_ACCESS_MEMORY_READ_BIT);
+		MAPPING(AccessFlags::MEMORY_WRITE, VkAccessFlagBits::VK_ACCESS_MEMORY_WRITE_BIT);
+
+#undef MAPPING
+
+		return flags;
 	}
 
 	/*
@@ -343,7 +356,25 @@ public:
 	*/
 	static VkImageLayout GetVulkanImageLayout(const ImageLayout image_layout) NOEXCEPT
 	{
-		return VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+		switch (image_layout)
+		{
+			case ImageLayout::UNDEFINED:
+			{
+				return VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+			}
+
+			case ImageLayout::GENERAL:
+			{
+				return VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
+			}
+
+			default:
+			{
+				ASSERT(false, "Unknown image layout!");
+
+				return VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+			}
+		}
 	}
 
 	/*
@@ -404,7 +435,18 @@ public:
 	*/
 	static VkPipelineStageFlags GetVulkanPipelineStageFlags(const PipelineStageFlags pipeline_stage_flags) NOEXCEPT
 	{
-		return 0;
+		VkPipelineStageFlags flags{ 0 };
+
+#define MAPPING(FLAG, BIT) if (TEST_BIT(pipeline_stage_flags, FLAG)) flags |= BIT;
+
+		MAPPING(PipelineStageFlags::FRAGMENT_SHADER, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+		MAPPING(PipelineStageFlags::COLOR_ATTACHMENT_OUTPUT, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+		MAPPING(PipelineStageFlags::COMPUTE_SHADER, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT);
+		MAPPING(PipelineStageFlags::RAY_TRACING_SHADER, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR);
+
+#undef MAPPING
+
+		return flags;
 	}
 
 	/*

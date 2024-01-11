@@ -193,8 +193,16 @@ enum class VirtualRealityNativeRenderPassStage : uint8
 //Enumeration covering all access flags.
 enum class AccessFlags : uint8
 {
-	NONE
+	NONE = 0,
+	SHADER_READ = BIT(0),
+	SHADER_WRITE = BIT(1),
+	COLOR_ATTACHMENT_READ = BIT(2),
+	COLOR_ATTACHMENT_WRITE = BIT(3),
+	MEMORY_READ = BIT(4),
+	MEMORY_WRITE = BIT(5)
 };
+
+ENUMERATION_BIT_OPERATIONS(AccessFlags);
 
 //Enumeration covering all attachment load operators.
 enum class AttachmentLoadOperator : uint8
@@ -309,7 +317,8 @@ enum class CullMode : uint8
 //Enumeration covering all image layouts.
 enum class ImageLayout : uint8
 {
-	NONE
+	UNDEFINED,
+	GENERAL
 };
 
 //Enumeration covering all memory properties.
@@ -339,8 +348,14 @@ ENUMERATION_BIT_OPERATIONS(ModelFlags);
 //Enumeration covering all pipeline stage flags.
 enum class PipelineStageFlags : uint8
 {
-	NONE
+	NONE = 0,
+	FRAGMENT_SHADER = BIT(0),
+	COLOR_ATTACHMENT_OUTPUT = BIT(1),
+	COMPUTE_SHADER = BIT(2),
+	RAY_TRACING_SHADER = BIT(3),
 };
+
+ENUMERATION_BIT_OPERATIONS(PipelineStageFlags);
 
 //Enumeration covering all render targets.
 enum class RenderTarget : uint8

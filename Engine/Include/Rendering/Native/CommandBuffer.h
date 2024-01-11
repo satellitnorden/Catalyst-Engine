@@ -100,7 +100,7 @@ public:
 	/*
 	*	Establishes an image memory barrier.
 	*/
-	void ImageMemoryBarrier(const Pipeline* const RESTRICT pipeline,
+	void ImageMemoryBarrier(const Pipeline *const RESTRICT pipeline,
 							const AccessFlags source_access_mask,
 							const AccessFlags destination_access_mask,
 							const ImageLayout old_layout,

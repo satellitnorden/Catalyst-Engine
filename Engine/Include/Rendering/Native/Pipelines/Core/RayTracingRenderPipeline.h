@@ -67,4 +67,7 @@ private:
 	//The render data tables.
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
+	//The compute render targets.
+	DynamicArray<RenderTargetHandle> _ComputeRenderTargets;
+
 };

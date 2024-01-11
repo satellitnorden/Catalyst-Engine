@@ -299,7 +299,7 @@ void CommandBuffer::ImageMemoryBarrier(	const Pipeline* const RESTRICT pipeline,
 										const PipelineStageFlags destination_stage_mask) NOEXCEPT
 {
 	//Record the command.
-	reinterpret_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData)->CommandImageMemoryBarrier
+	reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandImageMemoryBarrier
 	(
 		VulkanTranslationUtilities::GetVulkanAccessFlags(source_access_mask),
 		VulkanTranslationUtilities::GetVulkanAccessFlags(destination_access_mask),
