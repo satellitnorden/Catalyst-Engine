@@ -33,6 +33,14 @@ public:
 	}
 
 	/*
+	*	Returns the hit groups.
+	*/
+	FORCE_INLINE NO_DISCARD const DynamicArray<RayTracingHitGroup> &GetHitGroups() const NOEXCEPT
+	{
+		return _HitGroups;
+	}
+
+	/*
 	*	Returns the current render data table.
 	*/
 	NO_DISCARD RenderDataTableHandle GetCurrentRenderDataTable() NOEXCEPT;

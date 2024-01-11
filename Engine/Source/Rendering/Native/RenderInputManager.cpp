@@ -558,9 +558,6 @@ void RenderInputManager::RenderUpdate() NOEXCEPT
 	//Run all gather functions.
 	for (RenderInputStream &input_stream : _InputStreams)
 	{
-#if 1
-		input_stream._GatherFunction(input_stream._UserData, &input_stream);
-#else
 		while (!input_stream._Task.IsExecuted())
 		{
 			TaskSystem::Instance->DoWork(Task::Priority::HIGH);
@@ -568,7 +565,6 @@ void RenderInputManager::RenderUpdate() NOEXCEPT
 
 		input_stream._Task._Arguments = &input_stream;
 		TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &input_stream._Task);
-#endif
 	}
 }
 

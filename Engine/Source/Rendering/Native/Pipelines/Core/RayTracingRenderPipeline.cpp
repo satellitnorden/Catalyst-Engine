@@ -229,7 +229,29 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 	//Add the hit groups.
 	if (!_RenderPipelineResource->_RayHitGroupShaderData.Empty())
 	{
-		SetNumberOfHitGroups(_RenderPipelineResource->_RayHitGroupShaderData.Size());
+		SetNumberOfHitGroups(RenderingSystem::Instance->GetRayTracingSystem()->GetHitGroups().Size());
+
+		for (const RayTracingHitGroup &hit_group : RenderingSystem::Instance->GetRayTracingSystem()->GetHitGroups())
+		{
+			const RenderPipelineResource::RayHitGroupShaderData *RESTRICT ray_hit_group_shader_data{ nullptr };
+
+			for (const RenderPipelineResource::RayHitGroupShaderData &_ray_hit_group_shader_data : _RenderPipelineResource->_RayHitGroupShaderData)
+			{
+				if (_ray_hit_group_shader_data._Identifier == hit_group._Identifier)
+				{
+					ray_hit_group_shader_data = &_ray_hit_group_shader_data;
+
+					break;
+				}
+			}
+
+			AddHitGroup
+			(
+				EMPTY_HANDLE,
+				ray_hit_group_shader_data ? ray_hit_group_shader_data->_RayAnyHitShaderHandle : EMPTY_HANDLE,
+				EMPTY_HANDLE
+			);
+		}
 
 		for (const RenderPipelineResource::RayHitGroupShaderData &ray_hit_group_shader_data : _RenderPipelineResource->_RayHitGroupShaderData)
 		{

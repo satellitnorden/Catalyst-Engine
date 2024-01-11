@@ -530,7 +530,7 @@ void ShadowsSystem::GatherMaskedModelInputStream
 		float32 _Distance;
 	};
 
-	static DynamicArray<EntryProxy> entry_proxies;
+	static thread_local DynamicArray<EntryProxy> entry_proxies;
 
 	entry_proxies.Clear();
 

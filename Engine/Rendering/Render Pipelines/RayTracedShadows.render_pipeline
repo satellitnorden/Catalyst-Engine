@@ -123,9 +123,6 @@ RayMiss
 }
 
 //Declare a new hit group.
-HitGroup(OpaqueModels);
-
-//Declare a new hit group.
 HitGroup(MaskedModels);
 
 //The ray any hit shader.

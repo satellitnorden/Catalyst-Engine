@@ -387,6 +387,8 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 
 			for (uint64 ray_hit_group_index{ 0 }; ray_hit_group_index < number_of_ray_hit_groups; ++ray_hit_group_index)
 			{
+				file->Read(&data->_RayHitGroupShaderData[ray_hit_group_index]._Identifier, sizeof(HashString));
+
 				bool has_data{ false };
 				file->Read(&has_data, sizeof(bool));
 

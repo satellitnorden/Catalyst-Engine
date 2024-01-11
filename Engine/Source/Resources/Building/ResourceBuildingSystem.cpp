@@ -862,6 +862,10 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 
 		for (const RenderPipelineBuildParameters::RayHitGroupShaderData &ray_hit_group_shader_data : parameters._RayHitGroupShaderData)
 		{
+			//Write the identifier.
+			output_file.Write(&ray_hit_group_shader_data._Identifier, sizeof(HashString));
+
+			//Write the ray any hit shader data, if it exists.
 			if (!ray_hit_group_shader_data._RayAnyHitShaderData._GLSLData.Empty())
 			{
 				//Write that it has GLSL shader data.
