@@ -215,7 +215,7 @@ layout (std140, set = 1, binding = 1) uniform General
 */
 float LinearizeDepth(float depth)
 {
-    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
+    return ((FAR_PLANE * NEAR_PLANE) / (depth * (FAR_PLANE - NEAR_PLANE) + NEAR_PLANE));
 }
 
 /*
@@ -229,17 +229,6 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
     view_space_position.xyz *= inverse_view_space_position_denominator;
 
     return view_space_position.xyz;
-}
-
-/*
-*   Calculates the view space distance.
-*/
-float CalculateViewSpaceDistance(vec2 texture_coordinate, float depth)
-{
-    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
-
-    return view_space_position.z / view_space_position.w;
 }
 
 /*

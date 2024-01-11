@@ -215,7 +215,7 @@ layout (std140, set = 1, binding = 1) uniform General
 */
 float LinearizeDepth(float depth)
 {
-    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
+    return ((FAR_PLANE * NEAR_PLANE) / (depth * (FAR_PLANE - NEAR_PLANE) + NEAR_PLANE));
 }
 
 /*
@@ -229,17 +229,6 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
     view_space_position.xyz *= inverse_view_space_position_denominator;
 
     return view_space_position.xyz;
-}
-
-/*
-*   Calculates the view space distance.
-*/
-float CalculateViewSpaceDistance(vec2 texture_coordinate, float depth)
-{
-    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
-
-    return view_space_position.z / view_space_position.w;
 }
 
 /*
@@ -304,25 +293,25 @@ layout (location = 0) out vec4 OutputVolumetricLighting;
 
 void main()
 {
-    float view_distance = CalculateViewSpaceDistance(InScreenCoordinate, texture(SceneFeatures2Half, InScreenCoordinate).w);
+    float linearized_depth = LinearizeDepth(texture(SceneFeatures2Half, InScreenCoordinate).w);
 	vec4 denoised_volumetric_lighting = vec4(0.0f);
 	float weight_sum = 0.0f;
-	for (int Y = -1; Y <= 1; Y += 1)
+	for (int Y = -2; Y <= 2; ++Y)
 	{
-		for (int X = -1; X <= 1; X += 1)
+		for (int X = -2; X <= 2; ++X)
 		{
 			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_HALF_MAIN_RESOLUTION;
 			vec4 sample_volumetric_lighting = texture(InputVolumetricLighting, sample_coordinate);
-			float sample_view_distance = CalculateViewSpaceDistance(sample_coordinate, texture(SceneFeatures2Half, sample_coordinate).w);
+			float sample_linearized_depth = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate).w);
 			/*
 			*	Calculate the sample weight based on certain criteria;
 			*	
 			*	1. Is the sample coordinate a valid screen coordinate?
-			*	2. How closely aligned are the view distances to each other?
+			*	2. How closely aligned are the linearized depths to each other?
 			*/
 			float sample_weight = 1.0f;
 			sample_weight *= float(ValidScreenCoordinate(sample_coordinate));
-			sample_weight *= exp(-abs(view_distance - sample_view_distance));
+			sample_weight *= exp(-abs(linearized_depth - sample_linearized_depth));
 			denoised_volumetric_lighting += sample_volumetric_lighting * sample_weight;
 			weight_sum += sample_weight;
 		}

@@ -45,7 +45,7 @@ void DebugGraphicsPipeline::Initialize(const uint32 mode, const RenderTargetHand
 
 	//Add the output render targets.
 	SetNumberOfOutputRenderTargets(1);
-	AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
+	AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

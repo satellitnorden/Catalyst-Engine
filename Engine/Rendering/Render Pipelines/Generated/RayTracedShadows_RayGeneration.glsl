@@ -241,7 +241,7 @@ vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
 */
 float LinearizeDepth(float depth)
 {
-    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
+    return ((FAR_PLANE * NEAR_PLANE) / (depth * (FAR_PLANE - NEAR_PLANE) + NEAR_PLANE));
 }
 
 /*
@@ -255,17 +255,6 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
     view_space_position.xyz *= inverse_view_space_position_denominator;
 
     return view_space_position.xyz;
-}
-
-/*
-*   Calculates the view space distance.
-*/
-float CalculateViewSpaceDistance(vec2 texture_coordinate, float depth)
-{
-    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
-
-    return view_space_position.z / view_space_position.w;
 }
 
 /*
@@ -436,6 +425,7 @@ void main()
                     random_point_on_sphere = dot(random_point_on_sphere, direction) >= 0.0f ? random_point_on_sphere : -random_point_on_sphere;
                     random_point_on_sphere *= 0.0046422666666667f;
                     direction = normalize(sphere_position + random_point_on_sphere - world_position);
+                    float maximum_distance = FLOAT32_MAXIMUM;
 traceNV
 (
 	TOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/
@@ -447,7 +437,7 @@ traceNV
 	world_position, /*origin*/
 	FLOAT32_EPSILON, /*Tmin*/
 	direction, /*direction*/
-	FLOAT32_MAXIMUM, /*Tmax*/
+	maximum_distance, /*Tmax*/
 	0 /*payload*/
 );
                     shadows[current_shadow_index++] = VISIBILITY;

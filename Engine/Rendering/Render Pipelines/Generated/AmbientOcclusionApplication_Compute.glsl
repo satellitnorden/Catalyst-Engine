@@ -220,7 +220,7 @@ layout (set = 1, binding = 5, rgba32f) uniform image2D SceneFeatures2Half;
 */
 float LinearizeDepth(float depth)
 {
-    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
+    return ((FAR_PLANE * NEAR_PLANE) / (depth * (FAR_PLANE - NEAR_PLANE) + NEAR_PLANE));
 }
 
 /*
@@ -234,17 +234,6 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
     view_space_position.xyz *= inverse_view_space_position_denominator;
 
     return view_space_position.xyz;
-}
-
-/*
-*   Calculates the view space distance.
-*/
-float CalculateViewSpaceDistance(vec2 texture_coordinate, float depth)
-{
-    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
-
-    return view_space_position.z / view_space_position.w;
 }
 
 /*
@@ -351,7 +340,7 @@ void main()
 {
     uvec3 compute_dimensions = ComputeDimensions();
     vec2 screen_coordinate = (vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(compute_dimensions);
-    float view_distance = CalculateViewSpaceDistance(screen_coordinate, imageLoad(SceneFeatures2, ivec2(gl_GlobalInvocationID.xy)).w);
+    float depth = LinearizeDepth(imageLoad(SceneFeatures2, ivec2(gl_GlobalInvocationID.xy)).w);
     float ambient_occlusion;
     {
         ivec2 sample_coordinate_1 = ivec2(gl_GlobalInvocationID.xy) / 2;
@@ -362,29 +351,25 @@ void main()
         float ambient_occlusion_2 = imageLoad(AmbientOcclusion, sample_coordinate_2).x;
         float ambient_occlusion_3 = imageLoad(AmbientOcclusion, sample_coordinate_3).x;
         float ambient_occlusion_4 = imageLoad(AmbientOcclusion, sample_coordinate_4).x;
-        float depth_1 = imageLoad(SceneFeatures2Half, sample_coordinate_1).w;
-        float depth_2 = imageLoad(SceneFeatures2Half, sample_coordinate_2).w;
-        float depth_3 = imageLoad(SceneFeatures2Half, sample_coordinate_3).w;
-        float depth_4 = imageLoad(SceneFeatures2Half, sample_coordinate_4).w;
-        float view_distance_1 = CalculateViewSpaceDistance(vec2((sample_coordinate_1) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_1);
-        float view_distance_2 = CalculateViewSpaceDistance(vec2((sample_coordinate_2) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_2);
-        float view_distance_3 = CalculateViewSpaceDistance(vec2((sample_coordinate_3) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_3);
-        float view_distance_4 = CalculateViewSpaceDistance(vec2((sample_coordinate_4) + vec2(0.5f)) * INVERSE_HALF_MAIN_RESOLUTION, depth_4);
-        float horizontal_weight = fract(screen_coordinate.x * HALF_MAIN_RESOLUTION.x);
+        float depth_1 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_1).w);
+        float depth_2 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_2).w);
+        float depth_3 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_3).w);
+        float depth_4 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_4).w);
+         float horizontal_weight = fract(screen_coordinate.x * HALF_MAIN_RESOLUTION.x);
         float vertical_weight = fract(screen_coordinate.y * HALF_MAIN_RESOLUTION.y);
         float weight_1 = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
 	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
 	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
 	    float weight_4 = horizontal_weight * vertical_weight;
-        weight_1 = max(weight_1 * exp(-abs(view_distance - view_distance_1)), FLOAT32_EPSILON);
-        weight_2 = max(weight_2 * exp(-abs(view_distance - view_distance_2)), FLOAT32_EPSILON);
-        weight_3 = max(weight_3 * exp(-abs(view_distance - view_distance_3)), FLOAT32_EPSILON);
-        weight_4 = max(weight_4 * exp(-abs(view_distance - view_distance_4)), FLOAT32_EPSILON);
+        weight_1 = max(weight_1 * exp(-abs(depth - depth_1)), FLOAT32_EPSILON);
+        weight_2 = max(weight_2 * exp(-abs(depth - depth_2)), FLOAT32_EPSILON);
+        weight_3 = max(weight_3 * exp(-abs(depth - depth_3)), FLOAT32_EPSILON);
+        weight_4 = max(weight_4 * exp(-abs(depth - depth_4)), FLOAT32_EPSILON);
         float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
 	    weight_1 *= total_weight_reciprocal;
 	    weight_2 *= total_weight_reciprocal;
 	    weight_3 *= total_weight_reciprocal;
-	    weight_4 *= total_weight_reciprocal;
+        weight_4 *= total_weight_reciprocal;
         ambient_occlusion = ambient_occlusion_1 * weight_1
                             + ambient_occlusion_2 * weight_2
                             + ambient_occlusion_3 * weight_3

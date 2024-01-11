@@ -238,7 +238,7 @@ layout (std430, set = 1, binding = 4) buffer Lighting
 */
 float LinearizeDepth(float depth)
 {
-    return NEAR_PLANE * FAR_PLANE / (FAR_PLANE + depth * (NEAR_PLANE - FAR_PLANE));
+    return ((FAR_PLANE * NEAR_PLANE) / (depth * (FAR_PLANE - NEAR_PLANE) + NEAR_PLANE));
 }
 
 /*
@@ -252,17 +252,6 @@ vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
     view_space_position.xyz *= inverse_view_space_position_denominator;
 
     return view_space_position.xyz;
-}
-
-/*
-*   Calculates the view space distance.
-*/
-float CalculateViewSpaceDistance(vec2 texture_coordinate, float depth)
-{
-    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
-
-    return view_space_position.z / view_space_position.w;
 }
 
 /*
@@ -476,7 +465,7 @@ layout (location = 0) out vec4 VolumetricLighting;
 
 void main()
 {
-    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f * 0.125f)
+    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
     #define NUMBER_OF_SAMPLES (8)
 	vec4 scene_features_2 = texture(SceneFeatures2Half, InTextureCoordinate);
     vec3 start_position = CAMERA_WORLD_POSITION;
@@ -537,7 +526,7 @@ void main()
                             {
                                 vec3 expected_screen_space_position = mix(screen_space_position, screen_space_light_position, InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME + 1 + sample_index + sub_sample_index));
                                 float sample_depth = LinearizeDepth(texture(SceneFeatures2Half, expected_screen_space_position.xy).w);
-                                occlusion += float(sample_depth < expected_screen_space_position.z) * 0.25f;
+                                occlusion += float(sample_depth > expected_screen_space_position.z) * 0.25f;
                             }
                             occlusion *= occlusion * occlusion * occlusion * occlusion;
                             screen_space_occlusion = mix(1.0f, occlusion, screen_factor);
