@@ -226,8 +226,7 @@ vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
 }
 
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4;
-layout (set = 1, binding = 4) uniform sampler2D SceneNearest;
-layout (set = 1, binding = 5) uniform sampler2D SceneLinear;
+layout (set = 1, binding = 4) uniform sampler2D SceneLowDynamicRange1;
 
 layout (location = 0) in vec2 InScreenCoordinate;
 
@@ -247,18 +246,20 @@ void main()
         offsets[i * 4 + 2] = blue_noise_texture_sample.z;
         offsets[i * 4 + 3] = blue_noise_texture_sample.w;
     }
+    vec3 center_scene = texture(SceneLowDynamicRange1, InScreenCoordinate).rgb;
     vec3 blurred_scene = vec3(0.0f);
     float weight = 0.0f;
+    if (MOTION_BLUR_INTENSITY > 0.0f)
     {
         for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
         {
             vec2 sample_coordinate = InScreenCoordinate + blur_direction * offsets[i];
-            vec3 _sample = texture(SceneLinear, sample_coordinate).rgb;
+            vec3 _sample = texture(SceneLowDynamicRange1, sample_coordinate).rgb;
             float sample_weight = float(ValidScreenCoordinate(sample_coordinate));
             blurred_scene += _sample * sample_weight;
             weight += sample_weight;
         }
     }
-    blurred_scene /= float(weight);
+    blurred_scene = weight > 0.0f ? blurred_scene / float(weight) : center_scene;
 	SceneLowDynamicRange2 = vec4(blurred_scene,1.0f);
 }

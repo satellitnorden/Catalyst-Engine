@@ -51,14 +51,7 @@ void MotionBlurRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_MotionBlurPipeline);
 
 	//Initialize all pipelines.
-	{
-		GraphicsRenderPipelineParameters parameters;
-
-		parameters._InputRenderTargets.Emplace(HashString("SceneNearest"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
-		parameters._InputRenderTargets.Emplace(HashString("SceneLinear"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
-
-		_MotionBlurPipeline.Initialize(parameters);
-	}
+	_MotionBlurPipeline.Initialize();
 }
 
 /*

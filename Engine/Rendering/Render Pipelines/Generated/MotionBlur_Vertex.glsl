@@ -226,8 +226,7 @@ vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
 }
 
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4;
-layout (set = 1, binding = 4) uniform sampler2D SceneNearest;
-layout (set = 1, binding = 5) uniform sampler2D SceneLinear;
+layout (set = 1, binding = 4) uniform sampler2D SceneLowDynamicRange1;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 

@@ -8,8 +8,7 @@ IncludeShaderFunctionLibrary(BlueNoise);
 
 //Declare input render targets.
 InputRenderTarget(SceneFeatures4 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
-InputRenderTarget(SceneNearest /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
-InputRenderTarget(SceneLinear /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneLowDynamicRange1 /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
 OutputRenderTarget(SceneLowDynamicRange2);
@@ -57,20 +56,19 @@ Fragment
         offsets[i * 4 + 3] = blue_noise_texture_sample.w;
     }
 
+    //Sample the center scene.
+    vec3 center_scene = texture(SceneLowDynamicRange1, InScreenCoordinate).rgb;
+
     //Blur the scene in the blur direction.
     vec3 blurred_scene = vec3(0.0f);
     float weight = 0.0f;
 
-    //Add a sample in the middle, to start with.
-    //blurred_scene += texture(SceneNearest, InScreenCoordinate).rgb;
-    //weight += 1.0f;
-
-    //if (MOTION_BLUR_INTENSITY > 0.0f)
+    if (MOTION_BLUR_INTENSITY > 0.0f)
     {
         for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
         {
             vec2 sample_coordinate = InScreenCoordinate + blur_direction * offsets[i];
-            vec3 _sample = texture(SceneLinear, sample_coordinate).rgb;
+            vec3 _sample = texture(SceneLowDynamicRange1, sample_coordinate).rgb;
             float sample_weight = float(ValidScreenCoordinate(sample_coordinate));
 
             blurred_scene += _sample * sample_weight;
@@ -79,7 +77,7 @@ Fragment
     }
 
     //Normalize the blurred scene.
-    blurred_scene /= float(weight);
+    blurred_scene = weight > 0.0f ? blurred_scene / float(weight) : center_scene;
 
     //Output the fragment.
     OutputFragment(SceneLowDynamicRange2, vec4(blurred_scene, 1.0f));
