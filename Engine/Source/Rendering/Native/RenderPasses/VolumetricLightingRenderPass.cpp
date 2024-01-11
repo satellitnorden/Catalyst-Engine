@@ -105,7 +105,6 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 																		_VolumetricLightingTemporalBufferRenderTargets[0],
 																		_VolumetricLightingRenderTarget,
 																		_IntermediateVolumetricLightingRenderTarget);
-#if APPLICATION_COMPUTE
 	{
 		ComputeRenderPipelineParameters parameters;
 
@@ -113,15 +112,6 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 
 		_VolumetricLightingApplicationPipeline.Initialize(parameters);
 	}
-#else
-	{
-		GraphicsRenderPipelineParameters parameters;
-
-		parameters._InputRenderTargets.Emplace(HashString("VolumetricLighting"), _VolumetricLightingRenderTarget);
-
-		_VolumetricLightingApplicationPipeline.Initialize(parameters);
-	}
-#endif
 }
 
 /*

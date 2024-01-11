@@ -51,14 +51,8 @@ private:
 	//The volumetric lighting temporal denoising graphics pipelines.
 	StaticArray<VolumetricLightingTemporalDenoisingGraphicsPipeline, 2> _VolumetricLightingTemporalDenoisingGraphicsPipelines;
 
-#define APPLICATION_COMPUTE (1)
-
 	//The volumetric lighting application pipeline.
-#if APPLICATION_COMPUTE
-	ComputeRenderPipeline _VolumetricLightingApplicationPipeline{ HashString("VolumetricLightingApplication_Compute_RenderPipeline") };
-#else
-	GraphicsRenderPipeline _VolumetricLightingApplicationPipeline{ HashString("VolumetricLightingApplication_RenderPipeline") };
-#endif
+	ComputeRenderPipeline _VolumetricLightingApplicationPipeline{ HashString("VolumetricLightingApplication_RenderPipeline") };
 
 	//The current temporal buffer index.
 	uint8 _CurrentTemporalBufferIndex{ 0 };
