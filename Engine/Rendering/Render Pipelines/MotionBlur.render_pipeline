@@ -48,7 +48,7 @@ Fragment
 
     for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
     {
-        vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), i);
+        vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), i / 4);
         
         offsets[i * 4 + 0] = blue_noise_texture_sample.x;
         offsets[i * 4 + 1] = blue_noise_texture_sample.y;

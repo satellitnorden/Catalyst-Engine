@@ -207,7 +207,6 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
 	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
 	layout (offset = 32) uint FRAME;
-	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
 };
 
 layout (set = 1, binding = 2) uniform sampler SAMPLER;

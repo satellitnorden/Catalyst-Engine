@@ -660,9 +660,6 @@ private:
 		//The frame index.
 		uint32 _FrameIndex;
 
-		//The blue noise texture index.
-		uint32 _BlueNoiseTextureIndex;
-
 	};
 
 	/*

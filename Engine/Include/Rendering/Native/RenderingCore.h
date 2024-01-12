@@ -128,6 +128,7 @@ enum class DefaultNativeRenderPassStage : uint8
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	IMGUI,
 #endif
+	SCREENSHOT_ACCUMULATION,
 	SCREEN,
 
 	NUMBER_OF_STAGES

@@ -2,6 +2,7 @@
 
 #extension GL_ARB_separate_shader_objects : require
 #extension GL_EXT_nonuniform_qualifier : require
+#extension GL_NV_ray_tracing : require
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -211,13 +212,41 @@ layout (std140, set = 1, binding = 1) uniform General
 
 layout (std140, set = 1, binding = 2) uniform Wind
 {
-	layout (offset = 0) vec4 PREVIOUS_WIND_DIRECTION_SPEED;
-	layout (offset = 16) vec4 CURRENT_WIND_DIRECTION_SPEED;
-	layout (offset = 32) float PREVIOUS_WIND_TIME;
-	layout (offset = 36) float CURRENT_WIND_TIME;
+	layout (offset = 0) vec3 UPPER_SKY_COLOR;
+	layout (offset = 16) vec3 LOWER_SKY_COLOR;
 };
 
-layout (set = 1, binding = 3) uniform sampler SAMPLER;
+//Lighting header struct definition.
+struct LightingHeader
+{
+	uint _NumberOfLights;
+	uint _MaximumNumberOfShadowCastingLights;	
+};
+layout (std430, set = 1, binding = 3) buffer Lighting
+{
+	layout (offset = 0) LightingHeader LIGHTING_HEADER;
+	layout (offset = 16) vec4[] LIGHT_DATA;
+};
+
+layout (set = 1, binding = 4) uniform sampler SAMPLER;
+
+layout (set = 1, binding = 5, rgba32f) uniform image2D SceneFeatures2Half; 
+layout (set = 1, binding = 6, rgba32f) uniform image2D VolumetricLighting; 
+
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    uint offset_index = (FRAME + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1);
+
+    uvec2 offset_coordinate;
+
+    offset_coordinate.x = coordinate.x + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+    offset_coordinate.y = coordinate.y + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+
+    return texture(BLUE_NOISE_TEXTURES[offset_index], vec2(offset_coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
 
 /*
 *   Linearizes a depth value.
@@ -293,47 +322,62 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
-/*
-*	Evaluates tilt/bend. Returns the offset on the Z axis.
-*/
-float EvaluateTiltBend(float tilt, float bend, float normalized_height)
-{
-	float bend_alpha = bend >= 0.5f ? ((bend - 0.5f) * 2.0f) : (bend * 2.0f);
-	return mix(0.0f, tilt, mix(InverseSquare(normalized_height), Square(normalized_height), bend_alpha));
-}
+//Constants.
+#define LIGHT_TYPE_DIRECTIONAL (0)
+#define LIGHT_TYPE_POINT (1)
+#define LIGHT_TYPE_BOX (2)
+
+#define LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT (BIT(0))
+#define LIGHT_PROPERTY_VOLUMETRIC_BIT (BIT(1))
+#define LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT (BIT(2))
 
 /*
-*	Rotates the given vector around the yaw.
+*	Light struct definition.
 */
-vec3 RotateYaw(vec3 X, float angle)
+struct Light
 {
-	float sine = sin(angle);
-    float cosine = cos(angle);
+	/*
+	*	First transform data.
+	*	Direction for directional lights, position for point lights, minimum world position for box lights.
+	*/
+	vec3 _TransformData1;
 
-    float temp = X.x * cosine + X.z * sine;
-    X.z = -X.x * sine + X.z * cosine;
-    X.x = temp;
-
-    return X;
-}
+	/*
+	*	Second transform data.
+	*	Maximum word position for box lights.
+	*/
+	vec3 _TransformData2;
+	vec3 _Color;
+	uint _LightType;
+	uint _LightProperties;
+	float _Intensity;
+	float _Radius;
+	float _Size;
+};
 
 /*
-*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*	Unpacks the light at the given index.
+*   Requies the Lighting storage buffer to be included.
 */
-mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+Light UnpackLight(uint index)
 {
-    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
-    vec3 random_bitangent = cross(normal, random_tangent);
+	Light light;
 
-    return mat3(random_tangent, random_bitangent, normal);
-}
+  	vec4 light_data_1 = LIGHT_DATA[index * 4 + 0];
+  	vec4 light_data_2 = LIGHT_DATA[index * 4 + 1];
+  	vec4 light_data_3 = LIGHT_DATA[index * 4 + 2];
+  	vec4 light_data_4 = LIGHT_DATA[index * 4 + 3];
 
-/*
-*   Returns a smoothed number in the range 0.0f-1.0f.
-*/
-float SmoothStep(float number)
-{
-    return number * number * (3.0f - 2.0f * number);
+  	light._TransformData1 = vec3(light_data_1.x, light_data_1.y, light_data_1.z);
+  	light._TransformData2 = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
+  	light._Color = vec3(light_data_2.z, light_data_2.w, light_data_3.x);
+  	light._LightType = floatBitsToUint(light_data_3.y);
+  	light._LightProperties = floatBitsToUint(light_data_3.z);
+  	light._Intensity = light_data_3.w;
+  	light._Radius = light_data_4.x;
+  	light._Size = light_data_4.y;
+
+	return light;
 }
 
 /*
@@ -371,106 +415,160 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
 }
 
+//Constants.
+#define VOLUMETRIC_SHADOWS_MODE_NONE (0)
+#define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
+#define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
+
 /*
-*	Calculates wind displacement.
-*	Requires the Wind uniform buffer to be bound.
+*	Returns the extinction at the given position.
 */
-vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal, vec4 wind_direction_speed, float wind_time)
+float GetExtinctionAtPosition(vec3 position)
 {
-	//Calculate the displacement.
-	vec3 displacement = vec3(0.0f, 0.0f, 0.0f);
+	#define BASE_EXTINCTION (0.000125f)
 
-	//Add large scale motion.
-	displacement.x += (sin(world_position.x + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w;
-	displacement.z += (cos(world_position.z + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w;
+	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
-	//Add medium scale motion.
-	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.5f;
-	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.5f;
-
-	//Add small scale motion.
-	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.25f;
-	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.25f;
-
-	//Modify the displacement so it doesn't affect the bottom of the mesh.
-	displacement *= max(vertex_position.y * 0.125f, 0.0f);
-
-	//Return the displacement.
-	return displacement;
+	#undef BASE_EXTINCTION
 }
 
 /*
-*	Calculates previous wind displacement.
-*	Requires the Wind uniform buffer to be bound.
+*	Calculates the attenuation in the given direction.
 */
-vec3 CalculatePreviousWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
+float CalculateAttenuationInDirection(vec3 position, vec3 direction, float distance)
 {
-	return CalculateWindDisplacement(world_position, vertex_position, normal, PREVIOUS_WIND_DIRECTION_SPEED, PREVIOUS_WIND_TIME);
+	#define NUMBER_OF_SAMPLES (4)
+
+	float attenuation = 1.0f;
+	float step_size = distance / float(NUMBER_OF_SAMPLES);
+
+	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+	{
+		vec3 sample_position = position + direction * float(i) * step_size;
+		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * step_size);
+	}
+
+	return attenuation;
+	
+	#undef NUMBER_OF_SAMPLES
 }
 
 /*
-*	Calculates current wind displacement.
-*	Requires the Wind uniform buffer to be bound.
+*	The Henyey-Greenstein phase function.
 */
-vec3 CalculateCurrentWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
+float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
 {
-	return CalculateWindDisplacement(world_position, vertex_position, normal, CURRENT_WIND_DIRECTION_SPEED, CURRENT_WIND_TIME);
+	float G = 0.8f;
+	float dot_product = dot(outgoing_direction, -incoming_direction);
+
+	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
 }
 
-layout (push_constant) uniform PushConstantData
+/*
+*	Calculates the scattering with the given properties.
+*/
+vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
 {
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) uint MATERIAL_INDEX;
-	layout (offset = 20) float VERTEX_FACTOR;
-	layout (offset = 24) float THICKNESS;
-	layout (offset = 28) float HEIGHT;
-	layout (offset = 32) float TILT;
-	layout (offset = 36) float BEND;
-	layout (offset = 40) float FADE_OUT_DISTANCE;
-};
+	return vec3(0.0f, 0.0f, 0.0f);
+}
 
-layout (location = 0) in vec3 InPosition;
-layout (location = 1) in uint InSeed;
-
-layout (location = 0) out vec3 OutWorldPosition;
-layout (location = 1) out vec3 OutNormal;
-layout (location = 2) out float OutX;
-layout (location = 3) out float OutThickness;
-layout (location = 4) out float OutAmbientOcclusion;
+layout (set = 2, binding = 0) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;
+layout (set = 2, binding = 1) buffer OpaqueModels_VERTEX_DATA_BUFFER { vec4 OpaqueModels_VERTEX_DATA[]; } OpaqueModels_VERTEX_BUFFERS[];
+layout (set = 2, binding = 2) buffer OpaqueModels_INDEX_DATA_BUFFER { uint OpaqueModels_INDEX_DATA[]; } OpaqueModels_INDEX_BUFFERS[];
+layout (set = 2, binding = 3) buffer OpaqueModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] OpaqueModels_MATERIAL_INDICES; };
+layout (set = 2, binding = 4) buffer MaskedModels_VERTEX_DATA_BUFFER { vec4 MaskedModels_VERTEX_DATA[]; } MaskedModels_VERTEX_BUFFERS[];
+layout (set = 2, binding = 5) buffer MaskedModels_INDEX_DATA_BUFFER { uint MaskedModels_INDEX_DATA[]; } MaskedModels_INDEX_BUFFERS[];
+layout (set = 2, binding = 6) buffer MaskedModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] MaskedModels_MATERIAL_INDICES; };
+layout (location = 0) rayPayloadNV float VISIBILITY;
 
 void main()
 {
-    uint seed = InSeed;
-    float random_rotation = mix(-PI, PI, RandomFloat(seed));
-    float wind_influence = mix(0.75f, 1.25f, RandomFloat(seed));
-    float cull_value = RandomFloat(seed);
-    float distance_from_camera = length(InPosition - CAMERA_WORLD_POSITION);
-    float thickness = THICKNESS + (THICKNESS * 0.1f * distance_from_camera);
-    vec3 raw_vertex_position;
+    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
+    #define NUMBER_OF_SAMPLES (4)
+    #define SAMPLE_RECIPROCAL (1.0f / NUMBER_OF_SAMPLES)
+    #define HALF_SAMPLE_RECIPROCAL (SAMPLE_RECIPROCAL / 2)
+    vec3 start_position = CAMERA_WORLD_POSITION;
+    vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
+    vec4 scene_features_2 = imageLoad(SceneFeatures2Half, ivec2(gl_LaunchIDNV.xy));
+    float depth = scene_features_2.w;
+    vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
+    float hit_distance = length(world_position - start_position);
+	float hit_distance_reciprocal = 1.0f / hit_distance;
+	vec3 ray_direction = (world_position - start_position) * hit_distance_reciprocal;
+    float offsets[NUMBER_OF_SAMPLES];
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
     {
-        float odd_multiplier = float(gl_VertexIndex & 1) * 2.0f - 1.0f;
-        float height = float(gl_VertexIndex >> 1) * VERTEX_FACTOR;
-        raw_vertex_position = vec3(0.5f * odd_multiplier * (1.0f - Square(height)), height, 0.0f);
+        offsets[i] = HALF_SAMPLE_RECIPROCAL + SAMPLE_RECIPROCAL * float(i);
     }
-    vec3 vertex_position = raw_vertex_position * vec3(thickness, HEIGHT, 1.0f);
-    vertex_position.z = EvaluateTiltBend(TILT, BEND, raw_vertex_position.y);
-    vec3 bitangent = vec3(-1.0f, 0.0f, 0.0f);
-    vec3 next_position = vec3(vertex_position.x, vertex_position.y + 0.1f, EvaluateTiltBend(TILT, BEND, raw_vertex_position.y + 0.1f));
-    vec3 tangent = normalize(next_position - vertex_position);
-    vec3 normal = cross(bitangent, tangent);
-    normal.x += raw_vertex_position.x * 2.0f;
-    vertex_position = RotateYaw(vertex_position, random_rotation);
-    OutWorldPosition = InPosition + WORLD_GRID_DELTA + vertex_position;
-    OutNormal = RotateYaw(normal, random_rotation);
-    OutWorldPosition += CalculateCurrentWindDisplacement(OutWorldPosition, vertex_position, OutNormal) * wind_influence;
-    OutX = raw_vertex_position.x + 0.5f;
-    OutThickness = mix(0.75f, 0.0f, raw_vertex_position.y);
-    OutAmbientOcclusion = mix(0.0f, 1.0f, raw_vertex_position.y);
-#if 0
-    float distance_to_camera = length(CAMERA_WORLD_POSITION.xz - OutWorldPosition.xz);
-    OutWorldPosition.y = mix(OutWorldPosition.y - (HEIGHT * 0.5f), OutWorldPosition.y, min(distance_to_camera * 0.5f, 1.0f));
-#endif
-    float fade_opacity = clamp((distance_from_camera - (FADE_OUT_DISTANCE * 0.75f)) / (FADE_OUT_DISTANCE * 0.25f), 0.0f, 1.0f);
-    bool should_be_culled = cull_value > fade_opacity;
-	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f)*float(should_be_culled);
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
+    {
+        vec4 blue_noise_texture_sample = (SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i / 4) - 0.5f) * (SAMPLE_RECIPROCAL - FLOAT32_EPSILON);
+        offsets[i * 4 + 0] += blue_noise_texture_sample.x;
+        offsets[i * 4 + 1] += blue_noise_texture_sample.y;
+        offsets[i * 4 + 2] += blue_noise_texture_sample.z;
+        offsets[i * 4 + 3] += blue_noise_texture_sample.w;
+    }
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    {
+        offsets[i] *= offsets[i];
+    }
+	vec3 volumetric_lighting = vec3(0.0f);
+    float transmittance = 1.0f;
+    for (uint sample_index = 0; sample_index < NUMBER_OF_SAMPLES; ++sample_index)
+    {
+        float previous_offset = sample_index > 0 ? offsets[sample_index - 1] : 0.0f;
+        float current_offset = offsets[sample_index];
+        vec3 sample_position = mix(start_position, world_position, current_offset);
+        float sample_hit_distance = (hit_distance * current_offset) - (hit_distance * previous_offset);
+        float extinction = GetExtinctionAtPosition(sample_position);
+        float attenuation_factor = exp(-extinction * sample_hit_distance);
+        {
+            float ambient_attenuation = mix(CalculateAttenuationInDirection(sample_position, vec3(0.0f, 1.0f, 0.0f), FAR_PLANE), CalculateAttenuationInDirection(sample_position, vec3(0.0f, -1.0f, 0.0f), FAR_PLANE), 0.5f);
+            vec3 scattering = mix(UPPER_SKY_COLOR, LOWER_SKY_COLOR, 0.5f) * SCATTERING * (1.0f / (4.0f * 3.14f)) * ambient_attenuation;
+            vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
+            volumetric_lighting += transmittance * scattering_integral;
+        }
+        for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
+        {
+		    Light light = UnpackLight(i);
+            if (TEST_BIT(light._LightProperties, LIGHT_PROPERTY_VOLUMETRIC_BIT))
+            {
+                vec3 light_radiance = light._Color * light._Intensity;
+                switch (light._LightType)
+                {
+                    case LIGHT_TYPE_DIRECTIONAL:
+                    {
+                        float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, hit_distance);
+                        vec3 scattering = light_radiance * SCATTERING * HenyeyGreensteinPhaseFunction(ray_direction, light._TransformData1) * light_attenuation;
+                        {
+                            VISIBILITY = 0.0f;
+                            uint ray_tracing_flags =    gl_RayFlagsTerminateOnFirstHitNV
+                                                        | gl_RayFlagsSkipClosestHitShaderNV;
+                            vec3 direction = -light._TransformData1;
+traceNV
+(
+	TOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/
+	ray_tracing_flags, /*rayFlags*/
+	0xff, /*cullMask*/
+	0, /*sbtRecordOffset*/
+	0, /*sbtRecordStride*/
+	0, /*missIndex*/
+	sample_position, /*origin*/
+	FLOAT32_EPSILON * 2.0f, /*Tmin*/
+	direction, /*direction*/
+	FLOAT32_MAXIMUM, /*Tmax*/
+	0 /*payload*/
+);
+                        }
+                        scattering *= VISIBILITY;
+                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
+                        volumetric_lighting += transmittance * scattering_integral;
+                        break;
+                    }
+                }
+            }
+        }
+        transmittance *= attenuation_factor;
+    }
+    imageStore(VolumetricLighting, ivec2(gl_LaunchIDNV.xy), vec4(volumetric_lighting, transmittance));
 }

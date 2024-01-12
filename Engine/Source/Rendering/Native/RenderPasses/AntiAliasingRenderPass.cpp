@@ -303,6 +303,18 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 */
 void AntiAliasingRenderPass::Execute() NOEXCEPT
 {
+	if (RenderingSystem::Instance->IsTakingScreenshot())
+	{
+		SetEnabled(false);
+
+		return;
+	}
+
+	else
+	{
+		SetEnabled(true);
+	}
+
 	//Check anti aliasing mode.
 	if (_CurrentAntiAliasingMode != RenderingSystem::Instance->GetRenderingConfiguration()->GetAntiAliasingMode())
 	{

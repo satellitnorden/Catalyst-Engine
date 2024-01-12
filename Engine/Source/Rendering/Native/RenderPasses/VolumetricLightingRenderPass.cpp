@@ -85,7 +85,13 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 		_VolumetricLightingGraphicsPipeline.Initialize(parameters);
 	}
 
-	_VolumetricLightingRayTracingPipeline.Initialize(_VolumetricLightingRenderTarget);
+	{
+		RayTracingRenderPipelineParameters parameters;
+
+		parameters._ComputeRenderTargets.Emplace(HashString("VolumetricLighting"), _VolumetricLightingRenderTarget);
+
+		_VolumetricLightingRayTracingPipeline.Initialize(parameters);
+	}
 
 	for (uint64 i{ 0 }; i < _VolumetricLightingSpatialDenoisingPipelines.Size(); ++i)
 	{

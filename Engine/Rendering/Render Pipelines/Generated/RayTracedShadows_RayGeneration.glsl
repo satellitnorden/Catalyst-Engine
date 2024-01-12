@@ -208,7 +208,6 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
 	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
 	layout (offset = 32) uint FRAME;
-	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
 };
 
 //Lighting header struct definition.
@@ -233,7 +232,14 @@ layout (set = 1, binding = 5, rgba32f) uniform image2D Shadows;
 */
 vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
 {
-    return texture(BLUE_NOISE_TEXTURES[(BLUE_NOISE_TEXTURE_INDEX + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1)], vec2(coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+    uint offset_index = (FRAME + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1);
+
+    uvec2 offset_coordinate;
+
+    offset_coordinate.x = coordinate.x + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+    offset_coordinate.y = coordinate.y + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+
+    return texture(BLUE_NOISE_TEXTURES[offset_index], vec2(offset_coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
 }
 
 /*
@@ -435,7 +441,7 @@ traceNV
 	0, /*sbtRecordStride*/
 	0, /*missIndex*/
 	world_position, /*origin*/
-	FLOAT32_EPSILON, /*Tmin*/
+	FLOAT32_EPSILON * 2.0f, /*Tmin*/
 	direction, /*direction*/
 	maximum_distance, /*Tmax*/
 	0 /*payload*/

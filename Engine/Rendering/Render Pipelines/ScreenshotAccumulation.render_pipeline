@@ -1,0 +1,40 @@
+//Declare compute render targets.
+ComputeRenderTarget(AccumulationBuffer, RGBA_FLOAT32);
+ComputeRenderTarget(SceneLowDynamicRange1, RGBA_UINT8);
+
+//Declare push constant data.
+PushConstantData(uint, NUMBER_OF_SAMPLES);
+
+//Subscribe to input streams.
+SubscribeToInputStream(ScreenshotAccumulation);
+
+//The compute shader.
+Compute
+{
+    //Declare the compute local size.
+    ComputeLocalSize(8, 8, 1);
+
+    vec4 accumulation_buffer = ImageLoad(AccumulationBuffer, ivec2(COMPUTE_GLOBAL_ID.xy));
+    vec4 scene = ImageLoad(SceneLowDynamicRange1, ivec2(COMPUTE_GLOBAL_ID.xy));
+
+#if 0
+    if (NUMBER_OF_SAMPLES > 1)
+    {
+        vec4 blend = mix(scene, accumulation_buffer, 0.999f);
+
+        accumulation_buffer = blend;
+        scene = blend;
+    }
+
+    else
+    {
+        accumulation_buffer = scene;
+    }
+#else
+    accumulation_buffer = NUMBER_OF_SAMPLES > 1 ? accumulation_buffer + scene : scene;
+    scene = accumulation_buffer / float(NUMBER_OF_SAMPLES);
+#endif
+
+    ImageStore(AccumulationBuffer, ivec2(COMPUTE_GLOBAL_ID.xy), accumulation_buffer);
+    ImageStore(SceneLowDynamicRange1, ivec2(COMPUTE_GLOBAL_ID.xy), scene);
+}

@@ -2,6 +2,7 @@
 
 #extension GL_ARB_separate_shader_objects : require
 #extension GL_EXT_nonuniform_qualifier : require
+#extension GL_NV_ray_tracing : require
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -209,6 +210,44 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 32) uint FRAME;
 };
 
+layout (std140, set = 1, binding = 2) uniform Wind
+{
+	layout (offset = 0) vec3 UPPER_SKY_COLOR;
+	layout (offset = 16) vec3 LOWER_SKY_COLOR;
+};
+
+//Lighting header struct definition.
+struct LightingHeader
+{
+	uint _NumberOfLights;
+	uint _MaximumNumberOfShadowCastingLights;	
+};
+layout (std430, set = 1, binding = 3) buffer Lighting
+{
+	layout (offset = 0) LightingHeader LIGHTING_HEADER;
+	layout (offset = 16) vec4[] LIGHT_DATA;
+};
+
+layout (set = 1, binding = 4) uniform sampler SAMPLER;
+
+layout (set = 1, binding = 5, rgba32f) uniform image2D SceneFeatures2Half; 
+layout (set = 1, binding = 6, rgba32f) uniform image2D VolumetricLighting; 
+
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    uint offset_index = (FRAME + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1);
+
+    uvec2 offset_coordinate;
+
+    offset_coordinate.x = coordinate.x + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+    offset_coordinate.y = coordinate.y + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+
+    return texture(BLUE_NOISE_TEXTURES[offset_index], vec2(offset_coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
+
 /*
 *   Linearizes a depth value.
 */
@@ -283,49 +322,166 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
+//Constants.
+#define LIGHT_TYPE_DIRECTIONAL (0)
+#define LIGHT_TYPE_POINT (1)
+#define LIGHT_TYPE_BOX (2)
+
+#define LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT (BIT(0))
+#define LIGHT_PROPERTY_VOLUMETRIC_BIT (BIT(1))
+#define LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT (BIT(2))
+
 /*
-*	Constrains the the given sample, by clipping it against the minimum/maximum bounding volume.
+*	Light struct definition.
 */
-vec3 Constrain(vec3 _sample, vec3 minimum, vec3 maximum)
+struct Light
 {
-#if 0
-	return clamp(_sample, minimum, maximum);
-#else
-	vec3 p_clip = 0.5f * (maximum + minimum);
-	vec3 e_clip = 0.5f * (maximum - minimum);
+	/*
+	*	First transform data.
+	*	Direction for directional lights, position for point lights, minimum world position for box lights.
+	*/
+	vec3 _TransformData1;
 
-	vec3 v_clip = _sample - p_clip;
-	vec3 v_unit = v_clip / e_clip;
-	vec3 a_unit = abs(v_unit);
+	/*
+	*	Second transform data.
+	*	Maximum word position for box lights.
+	*/
+	vec3 _TransformData2;
+	vec3 _Color;
+	uint _LightType;
+	uint _LightProperties;
+	float _Intensity;
+	float _Radius;
+	float _Size;
+};
 
-	float ma_unit = max(a_unit.x, max(a_unit.y, a_unit.z));
+/*
+*	Unpacks the light at the given index.
+*   Requies the Lighting storage buffer to be included.
+*/
+Light UnpackLight(uint index)
+{
+	Light light;
 
-	if (ma_unit > 1.0f)
-	{
-		return p_clip + v_clip / ma_unit;
-	}
+  	vec4 light_data_1 = LIGHT_DATA[index * 4 + 0];
+  	vec4 light_data_2 = LIGHT_DATA[index * 4 + 1];
+  	vec4 light_data_3 = LIGHT_DATA[index * 4 + 2];
+  	vec4 light_data_4 = LIGHT_DATA[index * 4 + 3];
 
-	else
-	
-	{
-		return _sample;
-	}
-#endif
+  	light._TransformData1 = vec3(light_data_1.x, light_data_1.y, light_data_1.z);
+  	light._TransformData2 = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
+  	light._Color = vec3(light_data_2.z, light_data_2.w, light_data_3.x);
+  	light._LightType = floatBitsToUint(light_data_3.y);
+  	light._LightProperties = floatBitsToUint(light_data_3.z);
+  	light._Intensity = light_data_3.w;
+  	light._Radius = light_data_4.x;
+  	light._Size = light_data_4.y;
+
+	return light;
 }
 
-layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2;
-layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4;
-layout (set = 1, binding = 4) uniform sampler2D SceneNearest;
-layout (set = 1, binding = 5) uniform sampler2D SceneLinear;
-layout (set = 1, binding = 6) uniform sampler2D PreviousTemporalBuffer;
+/*
+*   Hash function.
+*/
+uint Hash(inout uint seed)
+{
+    seed = (seed ^ 61u) ^ (seed >> 16u);
+    seed *= 9u;
+    seed = seed ^ (seed >> 4u);
+    seed *= 0x27d4eb2du;
+    seed = seed ^ (seed >> 15u);
 
-layout (location = 0) out vec2 OutScreenCoordinate;
+    return seed;
+}
+
+/*
+*   Given a seed, returns a random number.
+*/
+float RandomFloat(inout uint seed)
+{
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*/
+float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+{
+	frame = frame % 64;
+
+	float x = float(coordinate.x) + 5.588238f * float(frame);
+	float y = float(coordinate.y) + 5.588238f * float(frame);
+
+	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+}
+
+//Constants.
+#define VOLUMETRIC_SHADOWS_MODE_NONE (0)
+#define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
+#define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
+
+/*
+*	Returns the extinction at the given position.
+*/
+float GetExtinctionAtPosition(vec3 position)
+{
+	#define BASE_EXTINCTION (0.000125f)
+
+	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.5f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+
+	#undef BASE_EXTINCTION
+}
+
+/*
+*	Calculates the attenuation in the given direction.
+*/
+float CalculateAttenuationInDirection(vec3 position, vec3 direction, float distance)
+{
+	#define NUMBER_OF_SAMPLES (4)
+
+	float attenuation = 1.0f;
+	float step_size = distance / float(NUMBER_OF_SAMPLES);
+
+	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+	{
+		vec3 sample_position = position + direction * float(i) * step_size;
+		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * step_size);
+	}
+
+	return attenuation;
+	
+	#undef NUMBER_OF_SAMPLES
+}
+
+/*
+*	The Henyey-Greenstein phase function.
+*/
+float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
+{
+	float G = 0.8f;
+	float dot_product = dot(outgoing_direction, -incoming_direction);
+
+	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
+}
+
+/*
+*	Calculates the scattering with the given properties.
+*/
+vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
+{
+	return vec3(0.0f, 0.0f, 0.0f);
+}
+
+layout (set = 2, binding = 0) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;
+layout (set = 2, binding = 1) buffer OpaqueModels_VERTEX_DATA_BUFFER { vec4 OpaqueModels_VERTEX_DATA[]; } OpaqueModels_VERTEX_BUFFERS[];
+layout (set = 2, binding = 2) buffer OpaqueModels_INDEX_DATA_BUFFER { uint OpaqueModels_INDEX_DATA[]; } OpaqueModels_INDEX_BUFFERS[];
+layout (set = 2, binding = 3) buffer OpaqueModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] OpaqueModels_MATERIAL_INDICES; };
+layout (set = 2, binding = 4) buffer MaskedModels_VERTEX_DATA_BUFFER { vec4 MaskedModels_VERTEX_DATA[]; } MaskedModels_VERTEX_BUFFERS[];
+layout (set = 2, binding = 5) buffer MaskedModels_INDEX_DATA_BUFFER { uint MaskedModels_INDEX_DATA[]; } MaskedModels_INDEX_BUFFERS[];
+layout (set = 2, binding = 6) buffer MaskedModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] MaskedModels_MATERIAL_INDICES; };
+layout (location = 0) rayPayloadInNV float VISIBILITY;
 
 void main()
 {
-	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
-    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
-    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
-    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
-	gl_Position = vec4(x,y,0.0f,1.0f);
+    VISIBILITY = 1.0f;
 }

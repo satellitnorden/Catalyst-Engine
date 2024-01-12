@@ -1,7 +1,6 @@
 //Declare uniform buffer includes.
 IncludeUniformBuffer(Camera);
 IncludeUniformBuffer(General);
-IncludeUniformBuffer(RenderingConfiguration);
 IncludeUniformBuffer(World);
 
 //Declare storage buffer includes.
@@ -15,48 +14,45 @@ IncludeShaderFunctionLibrary(Noise);
 IncludeShaderFunctionLibrary(RenderingConfiguration);
 IncludeShaderFunctionLibrary(VolumetricLighting);
 
-//Declare input render targets.
-InputRenderTarget(SceneFeatures2Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+//Declare compute render targets.
+ComputeRenderTarget(SceneFeatures2Half, RGBA_FLOAT32);
+ComputeRenderTarget(VolumetricLighting, RGBA_FLOAT32);
 
-//Declare output render targets.
-OutputRenderTarget(VolumetricLighting);
-
-//Declare render resolution.
-RenderResolution(MAIN_HALF);
-
-//Set the load/store operators.
-ColorStoreOperator(STORE);
-
-//Set the topology.
-Topology(TRIANGLE_FAN);
+//Declare samplers.
+Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
 
 //Subscribe to input streams.
-SubscribeToInputStream(Viewport);
+SubscribeToInputStream(RayTracingViewportHalf);
 
-//The vertex shader.
-IncludeCommonVertexShader(ViewportScreenCoordinate);
-
-//The fragment shader.
-Fragment
+//The ray generation shader.
+RayGeneration
 {
-    //Declare input parameters.
-    InputParameter(vec2, InTextureCoordinate);
+    //Declare payloads.
+    Payload(float, VISIBILITY);
 
     //Constants.
     #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
-    #define NUMBER_OF_SAMPLES (8)
+    #define NUMBER_OF_SAMPLES (4)
     #define SAMPLE_RECIPROCAL (1.0f / NUMBER_OF_SAMPLES)
     #define HALF_SAMPLE_RECIPROCAL (SAMPLE_RECIPROCAL / 2)
-
-    //Load the scene features.
-	vec4 scene_features_2 = texture(SceneFeatures2Half, InTextureCoordinate);
 
     //Calculate the start position.
     vec3 start_position = CAMERA_WORLD_POSITION;
 
-    //Retrieve all properties.
-	vec3 world_position = CalculateWorldPosition(InTextureCoordinate, scene_features_2.w);
-	float hit_distance = length(world_position - start_position);
+    //Calculate the screen coordinate.
+    vec2 screen_coordinate = (vec2(RAY_TRACING_ID.xy) + vec2(0.5f)) / vec2(RAY_TRACING_SIZE.xy);
+
+    //Sample the scene features.
+    vec4 scene_features_2 = ImageLoad(SceneFeatures2Half, ivec2(RAY_TRACING_ID.xy));
+
+    //Cache properties.
+    float depth = scene_features_2.w;
+
+    //Calculate the world position.
+    vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
+
+    //Calculate the hit distance.
+    float hit_distance = length(world_position - start_position);
 	float hit_distance_reciprocal = 1.0f / hit_distance;
 
     //Generate the ray direction.
@@ -73,7 +69,7 @@ Fragment
     //Jitter the offsets a bit.
     for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
     {
-        vec4 blue_noise_texture_sample = (SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), i / 4) - 0.5f) * (SAMPLE_RECIPROCAL - FLOAT32_EPSILON);
+        vec4 blue_noise_texture_sample = (SampleBlueNoiseTexture(uvec2(RAY_TRACING_ID.xy), i / 4) - 0.5f) * (SAMPLE_RECIPROCAL - FLOAT32_EPSILON);
         
         offsets[i * 4 + 0] += blue_noise_texture_sample.x;
         offsets[i * 4 + 1] += blue_noise_texture_sample.y;
@@ -134,55 +130,22 @@ Fragment
                         float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, hit_distance);
                         vec3 scattering = light_radiance * SCATTERING * HenyeyGreensteinPhaseFunction(ray_direction, light._TransformData1) * light_attenuation;
                         
-                        //Cast a screen space ray.
-                        float screen_space_occlusion = 1.0f;
-
-                        if (VOLUMETRIC_SHADOWS_MODE == VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE)
                         {
-                            //Calculate up the screen space position.
-                            vec3 screen_space_position = CalculateScreenPosition(sample_position);
+                            //Reset the visibility.
+                            VISIBILITY = 0.0f;
 
-                            //Calculate the screen space light position.
-                            vec3 screen_space_light_position;
+                            //Set up the ray tracing flags.
+                            uint ray_tracing_flags =    RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT
+                                                        | RAY_TRACING_FLAG_SKIP_CLOSEST_HIT;
 
-                            {
-                                vec3 light_world_position = (CAMERA_WORLD_POSITION + -light._TransformData1 * FAR_PLANE);
-                                vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(light_world_position, 1.0f);
-                                float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
-                                view_space_position.xyz *= view_space_position_coefficient_reciprocal;
+                            //Calculate the direction.
+                            vec3 direction = -light._TransformData1;
 
-                                view_space_position.xy = clamp(view_space_position.xy, vec2(-1.0f), vec2(1.0f));
-                                view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
-                                view_space_position.z = LinearizeDepth(view_space_position.z);
-    
-                                screen_space_light_position = view_space_position.xyz;
-                            }
-
-                            //Calculate the screen factor.
-                            float screen_factor = max(dot(ray_direction, -light._TransformData1), 0.0f);
-
-                            //Do a bunch of tests and accumulate the occlusion
-                            float occlusion = 0.0f;
-
-                            for (uint sub_sample_index = 0; sub_sample_index < 4; ++sub_sample_index)
-                            {
-                                //Calculate the expected screen space position.
-                                vec3 expected_screen_space_position = mix(screen_space_position, screen_space_light_position, InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), FRAME + 1 + sample_index + sub_sample_index));
-                        
-                                //Sample the depth.
-                                float sample_depth = LinearizeDepth(texture(SceneFeatures2Half, expected_screen_space_position.xy).w);
-                        
-                                //Set the occlusion.
-                                occlusion += float(sample_depth > expected_screen_space_position.z) * 0.25f;
-                            }
-
-                            //Bias the occlusion a bit.
-                            occlusion *= occlusion * occlusion * occlusion * occlusion;
-                            
-                            screen_space_occlusion = mix(1.0f, occlusion, screen_factor);
+                            //Trace the ray!
+                            TraceRay(ray_tracing_flags, sample_position, direction, FLOAT32_MAXIMUM);
                         }
 
-                        scattering *= screen_space_occlusion;
+                        scattering *= VISIBILITY;
                         
                         vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
                         volumetric_lighting += transmittance * scattering_integral;
@@ -197,6 +160,39 @@ Fragment
         transmittance *= attenuation_factor;
     }
 
-    //Write the fragment.
-    OutputFragment(VolumetricLighting, vec4(volumetric_lighting, transmittance));
+    //Store the volumetric lighting.
+    ImageStore(VolumetricLighting, ivec2(RAY_TRACING_ID.xy), vec4(volumetric_lighting, transmittance));
+}
+
+//The ray miss shader.
+RayMiss
+{
+    //Declare payloads.
+    Payload(float, VISIBILITY);
+
+    //Set the visibility.
+    VISIBILITY = 1.0f;
+}
+
+//Declare a new hit group.
+HitGroup(MaskedModels);
+
+//The ray any hit shader.
+RayAnyHit
+{
+    //Retrieve the hit vertex information.
+    HitVertexInformation hit_vertex_information = GetHitVertexInformation();
+
+    //Retrieve the hit material index.
+    uint hit_material_index = GetHitMaterialIndex();
+
+    //Evaluate the opacity.
+    float opacity;
+    EVALUATE_OPACITY(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, opacity);
+
+    //Check if this hit should be ignored.
+    if (opacity < 0.5f)
+    {
+        IgnoreHit();
+    }
 }

@@ -2,6 +2,7 @@
 #include <Rendering/Native/CameraSystem.h>
 
 //Math.
+#include <Math/Core/CatalystRandomMath.h>
 #include <Math/Noise/HaltonSequence.h>
 
 //Rendering.
@@ -65,11 +66,16 @@ void CameraSystem::RenderUpdate() NOEXCEPT
 	//Update the jitter.
 	Vector2<float32> current_jitter;
 
-	if ((RenderingSystem::Instance->GetRenderingConfiguration()->GetAntiAliasingMode() == RenderingConfiguration::AntiAliasingMode::TEMPORAL
-		|| RenderingSystem::Instance->GetRenderingConfiguration()->GetAntiAliasingMode() == RenderingConfiguration::AntiAliasingMode::FAST_APPROXIMATE_PLUS_TEMPORAL)
-		&& 
-		(RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::DEFAULT
-		|| RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::PATH_TRACING))
+	if (RenderingSystem::Instance->IsTakingScreenshot())
+	{
+		current_jitter = (Vector2<float32>(CatalystRandomMath::RandomFloat(), CatalystRandomMath::RandomFloat()) * 2.0f - 1.0f) * RenderingSystem::Instance->GetInverseScaledResolution(0);
+	}
+
+	else if (	(RenderingSystem::Instance->GetRenderingConfiguration()->GetAntiAliasingMode() == RenderingConfiguration::AntiAliasingMode::TEMPORAL
+				|| RenderingSystem::Instance->GetRenderingConfiguration()->GetAntiAliasingMode() == RenderingConfiguration::AntiAliasingMode::FAST_APPROXIMATE_PLUS_TEMPORAL)
+				&& 
+				(RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::DEFAULT
+				|| RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::PATH_TRACING))
 	{
 		current_jitter = JITTER_SAMPLES[_CurrentJitterIndex] * RenderingSystem::Instance->GetInverseScaledResolution(0);
 	}

@@ -207,7 +207,6 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
 	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
 	layout (offset = 32) uint FRAME;
-	layout (offset = 36) uint BLUE_NOISE_TEXTURE_INDEX;
 };
 
 layout (std140, set = 1, binding = 2) uniform RenderingConfiguration
@@ -232,6 +231,21 @@ layout (std430, set = 1, binding = 4) buffer Lighting
 	layout (offset = 0) LightingHeader LIGHTING_HEADER;
 	layout (offset = 16) vec4[] LIGHT_DATA;
 };
+
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    uint offset_index = (FRAME + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1);
+
+    uvec2 offset_coordinate;
+
+    offset_coordinate.x = coordinate.x + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+    offset_coordinate.y = coordinate.y + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+
+    return texture(BLUE_NOISE_TEXTURES[offset_index], vec2(offset_coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
 
 /*
 *   Linearizes a depth value.
@@ -467,24 +481,39 @@ void main()
 {
     #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
     #define NUMBER_OF_SAMPLES (8)
+    #define SAMPLE_RECIPROCAL (1.0f / NUMBER_OF_SAMPLES)
+    #define HALF_SAMPLE_RECIPROCAL (SAMPLE_RECIPROCAL / 2)
 	vec4 scene_features_2 = texture(SceneFeatures2Half, InTextureCoordinate);
     vec3 start_position = CAMERA_WORLD_POSITION;
 	vec3 world_position = CalculateWorldPosition(InTextureCoordinate, scene_features_2.w);
 	float hit_distance = length(world_position - start_position);
 	float hit_distance_reciprocal = 1.0f / hit_distance;
 	vec3 ray_direction = (world_position - start_position) * hit_distance_reciprocal;
-    float offset_distance = Square(1.0f / float(NUMBER_OF_SAMPLES)) * InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME) * hit_distance;
-    start_position += ray_direction * offset_distance;
-    hit_distance -= offset_distance;
+    float offsets[NUMBER_OF_SAMPLES];
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    {
+        offsets[i] = HALF_SAMPLE_RECIPROCAL + SAMPLE_RECIPROCAL * float(i);
+    }
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
+    {
+        vec4 blue_noise_texture_sample = (SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), i / 4) - 0.5f) * (SAMPLE_RECIPROCAL - FLOAT32_EPSILON);
+        offsets[i * 4 + 0] += blue_noise_texture_sample.x;
+        offsets[i * 4 + 1] += blue_noise_texture_sample.y;
+        offsets[i * 4 + 2] += blue_noise_texture_sample.z;
+        offsets[i * 4 + 3] += blue_noise_texture_sample.w;
+    }
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    {
+        offsets[i] *= offsets[i];
+    }
 	vec3 volumetric_lighting = vec3(0.0f);
     float transmittance = 1.0f;
-    float sample_alpha = 0.0f;
     for (uint sample_index = 0; sample_index < NUMBER_OF_SAMPLES; ++sample_index)
     {
-        float previous_sample_alpha = sample_alpha;
-        sample_alpha = Square(float(sample_index + 1) / float(NUMBER_OF_SAMPLES));
-        vec3 sample_position = mix(start_position, world_position, sample_alpha);
-        float sample_hit_distance = max(hit_distance * sample_alpha - hit_distance * previous_sample_alpha, FLOAT32_EPSILON);
+        float previous_offset = sample_index > 0 ? offsets[sample_index - 1] : 0.0f;
+        float current_offset = offsets[sample_index];
+        vec3 sample_position = mix(start_position, world_position, current_offset);
+        float sample_hit_distance = (hit_distance * current_offset) - (hit_distance * previous_offset);
         float extinction = GetExtinctionAtPosition(sample_position);
         float attenuation_factor = exp(-extinction * sample_hit_distance);
         {

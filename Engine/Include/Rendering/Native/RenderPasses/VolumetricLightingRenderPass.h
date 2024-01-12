@@ -7,8 +7,8 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/ComputeRenderPipeline.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
+#include <Rendering/Native/Pipelines/Core/RayTracingRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VolumetricLightingTemporalDenoisingGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/RayTracingPipelines/VolumetricLightingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) VolumetricLightingRenderPass final : public RenderPass
@@ -39,7 +39,7 @@ private:
 	GraphicsRenderPipeline _VolumetricLightingGraphicsPipeline{ HashString("VolumetricLighting_RenderPipeline") };
 
 	//The volumetric lighting ray tracing pipeline.
-	VolumetricLightingRayTracingPipeline _VolumetricLightingRayTracingPipeline;
+	RayTracingRenderPipeline _VolumetricLightingRayTracingPipeline{ HashString("RayTracedVolumetricLighting_RenderPipeline") };
 
 	//The volumetric lighting spatial denoising pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _VolumetricLightingSpatialDenoisingPipelines
