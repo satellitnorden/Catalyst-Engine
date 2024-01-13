@@ -330,7 +330,7 @@ void main()
 	float closest_depth = 0.0f;
 	vec2 closest_velocity = vec2(0.0f);
 	vec3 minimum = vec3(FLOAT32_MAXIMUM);
-	vec4 center = vec4(0.0f);
+	vec3 center = vec3(0.0f);
 	vec3 maximum = vec3(0.0f);
 	for (int Y = -3; Y <= 3; ++Y)
 	{
@@ -339,7 +339,7 @@ void main()
 			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_FULL_MAIN_RESOLUTION;
 			vec4 neighborhood_sample = texture(VolumetricLightingNearest, sample_coordinate);
 			minimum = min(minimum, neighborhood_sample.rgb);
-			center += neighborhood_sample * float(X == 0 && Y == 0);
+			center += neighborhood_sample.rgb * float(X == 0 && Y == 0);
 			maximum = max(maximum, neighborhood_sample.rgb);
 			float neighborhood_depth = texture(SceneFeatures2Half, sample_coordinate).w;
 			if (closest_depth < neighborhood_depth)
@@ -350,7 +350,7 @@ void main()
 		}
 	}
 	vec2 previous_screen_coordinate = InScreenCoordinate - closest_velocity;
-	vec4 previous_frame = texture(PreviousTemporalBuffer, previous_screen_coordinate);
+	vec3 previous_frame = texture(PreviousTemporalBuffer, previous_screen_coordinate).rgb;
 	previous_frame.rgb = Constrain(previous_frame.rgb, minimum, maximum);
 	/*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
@@ -359,8 +359,8 @@ void main()
 	*/
 	float previous_frame_weight = 1.0f;
 	previous_frame_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
-	vec4 blended_frame_1 = mix(texture(VolumetricLightingLinear, InScreenCoordinate - CURRENT_FRAME_JITTER), previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
-	vec4 blended_frame_2 = mix(center, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
-	CurrentTemporalBuffer = blended_frame_1;
-	CurrentVolumetricLighting = blended_frame_2;
+	vec3 blended_frame_1 = mix(texture(VolumetricLightingLinear, InScreenCoordinate - CURRENT_FRAME_JITTER).rgb, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
+	vec3 blended_frame_2 = mix(center, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
+	CurrentTemporalBuffer = vec4(blended_frame_1,1.0f);
+	CurrentVolumetricLighting = vec4(blended_frame_2,1.0f);
 }

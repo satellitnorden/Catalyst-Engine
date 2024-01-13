@@ -59,7 +59,7 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + 1 + _VolumetricLightingTemporalDenoisingPipelines.Size() + _VolumetricLightingSpatialDenoisingPipelines.Size() + 2);
+	SetNumberOfPipelines(1 + 1 + _VolumetricLightingTemporalDenoisingPipelines.Size() + _VolumetricLightingSpatialDenoisingPipelines.Size() + 1);
 	
 	AddPipeline(&_VolumetricLightingGraphicsPipeline);
 	AddPipeline(&_VolumetricLightingRayTracingPipeline);
@@ -192,8 +192,6 @@ void VolumetricLightingRenderPass::Execute() NOEXCEPT
 			pipeline.SetIncludeInRender(false);
 		}
 	}
-
-	
 
 	//Update the current temporal buffer index.
 	_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _VolumetricLightingTemporalDenoisingPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
