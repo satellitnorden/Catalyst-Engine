@@ -570,5 +570,5 @@ traceNV
         }
         transmittance *= attenuation_factor;
     }
-    imageStore(VolumetricLighting, ivec2(gl_LaunchIDNV.xy), vec4(volumetric_lighting, transmittance));
+    imageStore(VolumetricLighting, ivec2(gl_LaunchIDNV.xy), vec4(volumetric_lighting, 1.0f));
 }

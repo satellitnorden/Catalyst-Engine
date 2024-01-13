@@ -198,5 +198,5 @@ Fragment
     }
 
     //Write the fragment.
-    OutputFragment(VolumetricLighting, vec4(volumetric_lighting, transmittance));
+    OutputFragment(VolumetricLighting, vec4(volumetric_lighting, 1.0f));
 }

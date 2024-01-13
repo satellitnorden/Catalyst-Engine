@@ -2,8 +2,6 @@
 
 #extension GL_ARB_separate_shader_objects : require
 #extension GL_EXT_nonuniform_qualifier : require
-layout (early_fragment_tests) in;
-
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -211,16 +209,6 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 32) uint FRAME;
 };
 
-layout (std140, set = 1, binding = 2) uniform Wind
-{
-	layout (offset = 0) vec4 PREVIOUS_WIND_DIRECTION_SPEED;
-	layout (offset = 16) vec4 CURRENT_WIND_DIRECTION_SPEED;
-	layout (offset = 32) float PREVIOUS_WIND_TIME;
-	layout (offset = 36) float CURRENT_WIND_TIME;
-};
-
-layout (set = 1, binding = 3) uniform sampler SAMPLER;
-
 /*
 *   Linearizes a depth value.
 */
@@ -296,185 +284,83 @@ vec3 CalculateScreenPosition(vec3 world_position)
 }
 
 /*
-*	Evaluates tilt/bend. Returns the offset on the Z axis.
+*	Constrains the the given sample, by clipping it against the minimum/maximum bounding volume.
 */
-float EvaluateTiltBend(float tilt, float bend, float normalized_height)
+vec3 Constrain(vec3 _sample, vec3 minimum, vec3 maximum)
 {
-	float bend_alpha = bend >= 0.5f ? ((bend - 0.5f) * 2.0f) : (bend * 2.0f);
-	return mix(0.0f, tilt, mix(InverseSquare(normalized_height), Square(normalized_height), bend_alpha));
+#if 0
+	return clamp(_sample, minimum, maximum);
+#else
+	vec3 p_clip = 0.5f * (maximum + minimum);
+	vec3 e_clip = 0.5f * (maximum - minimum);
+
+	vec3 v_clip = _sample - p_clip;
+	vec3 v_unit = v_clip / e_clip;
+	vec3 a_unit = abs(v_unit);
+
+	float ma_unit = max(a_unit.x, max(a_unit.y, a_unit.z));
+
+	if (ma_unit > 1.0f)
+	{
+		return p_clip + v_clip / ma_unit;
+	}
+
+	else
+	
+	{
+		return _sample;
+	}
+#endif
 }
 
-/*
-*	Rotates the given vector around the yaw.
-*/
-vec3 RotateYaw(vec3 X, float angle)
-{
-	float sine = sin(angle);
-    float cosine = cos(angle);
+layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2Half;
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4Half;
+layout (set = 1, binding = 4) uniform sampler2D VolumetricLightingNearest;
+layout (set = 1, binding = 5) uniform sampler2D VolumetricLightingLinear;
+layout (set = 1, binding = 6) uniform sampler2D PreviousTemporalBuffer;
 
-    float temp = X.x * cosine + X.z * sine;
-    X.z = -X.x * sine + X.z * cosine;
-    X.x = temp;
+layout (location = 0) in vec2 InScreenCoordinate;
 
-    return X;
-}
-
-/*
-*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
-*/
-mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
-{
-    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
-    vec3 random_bitangent = cross(normal, random_tangent);
-
-    return mat3(random_tangent, random_bitangent, normal);
-}
-
-/*
-*   Returns a smoothed number in the range 0.0f-1.0f.
-*/
-float SmoothStep(float number)
-{
-    return number * number * (3.0f - 2.0f * number);
-}
-
-/*
-*   Hash function.
-*/
-uint Hash(inout uint seed)
-{
-    seed = (seed ^ 61u) ^ (seed >> 16u);
-    seed *= 9u;
-    seed = seed ^ (seed >> 4u);
-    seed *= 0x27d4eb2du;
-    seed = seed ^ (seed >> 15u);
-
-    return seed;
-}
-
-/*
-*   Given a seed, returns a random number.
-*/
-float RandomFloat(inout uint seed)
-{
-    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
-}
-
-/*
-*	Returns the interleaved gradient noise for the given coordinate at the given frame.
-*/
-float InterleavedGradientNoise(uvec2 coordinate, uint frame)
-{
-	frame = frame % 64;
-
-	float x = float(coordinate.x) + 5.588238f * float(frame);
-	float y = float(coordinate.y) + 5.588238f * float(frame);
-
-	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
-}
-
-/*
-*	Calculates wind displacement.
-*	Requires the Wind uniform buffer to be bound.
-*/
-vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal, vec4 wind_direction_speed, float wind_time)
-{
-	//Calculate the displacement.
-	vec3 displacement = vec3(0.0f, 0.0f, 0.0f);
-
-	//Add large scale motion.
-	displacement.x += (sin(world_position.x + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w;
-	displacement.z += (cos(world_position.z + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w;
-
-	//Add medium scale motion.
-	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.5f;
-	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.5f;
-
-	//Add small scale motion.
-	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.25f;
-	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.25f;
-
-	//Modify the displacement so it doesn't affect the bottom of the mesh.
-	displacement *= max(vertex_position.y * 0.125f, 0.0f);
-
-	//Return the displacement.
-	return displacement;
-}
-
-/*
-*	Calculates previous wind displacement.
-*	Requires the Wind uniform buffer to be bound.
-*/
-vec3 CalculatePreviousWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
-{
-	return CalculateWindDisplacement(world_position, vertex_position, normal, PREVIOUS_WIND_DIRECTION_SPEED, PREVIOUS_WIND_TIME);
-}
-
-/*
-*	Calculates current wind displacement.
-*	Requires the Wind uniform buffer to be bound.
-*/
-vec3 CalculateCurrentWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
-{
-	return CalculateWindDisplacement(world_position, vertex_position, normal, CURRENT_WIND_DIRECTION_SPEED, CURRENT_WIND_TIME);
-}
-
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) uint MATERIAL_INDEX;
-	layout (offset = 20) float VERTEX_FACTOR;
-	layout (offset = 24) float THICKNESS;
-	layout (offset = 28) float HEIGHT;
-	layout (offset = 32) float TILT;
-	layout (offset = 36) float BEND;
-	layout (offset = 40) float FADE_OUT_DISTANCE;
-};
-
-layout (location = 0) in vec3 InWorldPosition;
-layout (location = 1) in vec3 InNormal;
-layout (location = 2) in float InX;
-layout (location = 3) in float InThickness;
-layout (location = 4) in float InAmbientOcclusion;
-
-layout (location = 0) out vec4 SceneFeatures1;
-layout (location = 1) out vec4 SceneFeatures2;
-layout (location = 2) out vec4 SceneFeatures3;
-layout (location = 3) out vec4 SceneFeatures4;
+layout (location = 0) out vec4 CurrentTemporalBuffer;
+layout (location = 1) out vec4 CurrentVolumetricLighting;
 
 void main()
 {
-    float X_factor = InX * 5.0f;
-    uint X_index_1 = uint(X_factor);
-    uint X_index_2 = min(X_index_1 + 1, 4);
-    float X_fractional = fract(X_factor);
-    vec4 albedo_thickness;
-    EVALUATE_ALBEDO_THICKNESS(MATERIALS[MATERIAL_INDEX], vec2(0.0f, 0.0f), SAMPLER, albedo_thickness);
-    vec4 material_properties;
-    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], vec2(0.0f, 0.0f), SAMPLER, material_properties);
-    float ALBEDO_MULTIPLIERS[5] = float[5]
-    (
-        0.825f,
-        1.125f,
-        0.825f,
-        1.125f,
-        0.825f
-    );
-    float albedo_multiplier = mix(ALBEDO_MULTIPLIERS[X_index_1], ALBEDO_MULTIPLIERS[X_index_2], X_fractional);
-    float ROUGHNESS_MULTIPLIERS[5] = float[5]
-    (
-        1.0f,
-        0.75f,
-        1.0f,
-        0.75f,
-        1.0f
-    );
-    float roughness_multiplier = mix(ROUGHNESS_MULTIPLIERS[X_index_1], ROUGHNESS_MULTIPLIERS[X_index_2], X_fractional);
-    vec3 shading_normal = normalize(InNormal);
-    shading_normal.xz *= gl_FrontFacing ? -1.0f : 1.0f;
-    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
-	SceneFeatures1 = vec4(albedo_thickness.rgb*albedo_multiplier,InThickness);
-	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
-	SceneFeatures3 = material_properties*vec4(roughness_multiplier,1.0f,InAmbientOcclusion,1.0f);
-	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
+	#define FEEDBACK_FACTOR (0.9f)
+	float closest_depth = 0.0f;
+	vec2 closest_velocity = vec2(0.0f);
+	vec3 minimum = vec3(FLOAT32_MAXIMUM);
+	vec4 center = vec4(0.0f);
+	vec3 maximum = vec3(0.0f);
+	for (int Y = -3; Y <= 3; ++Y)
+	{
+		for (int X = -3; X <= 3; ++X)
+		{
+			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_FULL_MAIN_RESOLUTION;
+			vec4 neighborhood_sample = texture(VolumetricLightingNearest, sample_coordinate);
+			minimum = min(minimum, neighborhood_sample.rgb);
+			center += neighborhood_sample * float(X == 0 && Y == 0);
+			maximum = max(maximum, neighborhood_sample.rgb);
+			float neighborhood_depth = texture(SceneFeatures2Half, sample_coordinate).w;
+			if (closest_depth < neighborhood_depth)
+			{
+				closest_depth = neighborhood_depth;
+				closest_velocity = texture(SceneFeatures4Half, sample_coordinate).xy;
+			}
+		}
+	}
+	vec2 previous_screen_coordinate = InScreenCoordinate - closest_velocity;
+	vec4 previous_frame = texture(PreviousTemporalBuffer, previous_screen_coordinate);
+	previous_frame.rgb = Constrain(previous_frame.rgb, minimum, maximum);
+	/*
+	*	Calculate the weight between the current frame and the history depending on certain criteria.
+	*
+	*	1. Is the sample coordinate valid?
+	*/
+	float previous_frame_weight = 1.0f;
+	previous_frame_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
+	vec4 blended_frame_1 = mix(texture(VolumetricLightingLinear, InScreenCoordinate - CURRENT_FRAME_JITTER), previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
+	vec4 blended_frame_2 = mix(center, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
+	CurrentTemporalBuffer = blended_frame_1;
+	CurrentVolumetricLighting = blended_frame_2;
 }

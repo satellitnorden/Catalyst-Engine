@@ -391,31 +391,32 @@ void main()
 {
     vec2 screen_coordinate = (vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) * INVERSE_FULL_MAIN_RESOLUTION;
     vec4 scene_features_2 = imageLoad(SceneFeatures2, ivec2(gl_GlobalInvocationID.xy));
-    float depth = LinearizeDepth(scene_features_2.w);
-    vec4 volumetric_lighting;
+    float depth = scene_features_2.w;
+    float linearized_depth = LinearizeDepth(depth);
+    vec3 volumetric_lighting;
     {
         ivec2 sample_coordinate_1 = ivec2(gl_GlobalInvocationID.xy) / 2;
         ivec2 sample_coordinate_2 = min(sample_coordinate_1 + ivec2(0, 1), ivec2(HALF_MAIN_RESOLUTION));
         ivec2 sample_coordinate_3 = min(sample_coordinate_1 + ivec2(1, 0), ivec2(HALF_MAIN_RESOLUTION));
         ivec2 sample_coordinate_4 = min(sample_coordinate_1 + ivec2(1, 1), ivec2(HALF_MAIN_RESOLUTION));
-        vec4 volumetric_lighting_1 = imageLoad(VolumetricLighting, sample_coordinate_1);
-        vec4 volumetric_lighting_2 = imageLoad(VolumetricLighting, sample_coordinate_2);
-        vec4 volumetric_lighting_3 = imageLoad(VolumetricLighting, sample_coordinate_3);
-        vec4 volumetric_lighting_4 = imageLoad(VolumetricLighting, sample_coordinate_4);
-        float depth_1 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_1).w);
-        float depth_2 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_2).w);
-        float depth_3 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_3).w);
-        float depth_4 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_4).w);
+        vec3 volumetric_lighting_1 = imageLoad(VolumetricLighting, sample_coordinate_1).rgb;
+        vec3 volumetric_lighting_2 = imageLoad(VolumetricLighting, sample_coordinate_2).rgb;
+        vec3 volumetric_lighting_3 = imageLoad(VolumetricLighting, sample_coordinate_3).rgb;
+        vec3 volumetric_lighting_4 = imageLoad(VolumetricLighting, sample_coordinate_4).rgb;
+        float linearized_depth_1 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_1).w);
+        float linearized_depth_2 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_2).w);
+        float linearized_depth_3 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_3).w);
+        float linearized_depth_4 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_4).w);
         float horizontal_weight = fract(screen_coordinate.x * HALF_MAIN_RESOLUTION.x);
         float vertical_weight = fract(screen_coordinate.y * HALF_MAIN_RESOLUTION.y);
         float weight_1 = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
 	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
 	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
 	    float weight_4 = horizontal_weight * vertical_weight;
-        weight_1 = max(weight_1 * exp(-abs(depth - depth_1)), FLOAT32_EPSILON);
-        weight_2 = max(weight_2 * exp(-abs(depth - depth_2)), FLOAT32_EPSILON);
-        weight_3 = max(weight_3 * exp(-abs(depth - depth_3)), FLOAT32_EPSILON);
-        weight_4 = max(weight_4 * exp(-abs(depth - depth_4)), FLOAT32_EPSILON);
+        weight_1 = max(weight_1 * exp(-abs(depth - linearized_depth_1)), FLOAT32_EPSILON);
+        weight_2 = max(weight_2 * exp(-abs(depth - linearized_depth_2)), FLOAT32_EPSILON);
+        weight_3 = max(weight_3 * exp(-abs(depth - linearized_depth_3)), FLOAT32_EPSILON);
+        weight_4 = max(weight_4 * exp(-abs(depth - linearized_depth_4)), FLOAT32_EPSILON);
         float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
 	    weight_1 *= total_weight_reciprocal;
 	    weight_2 *= total_weight_reciprocal;
@@ -427,9 +428,17 @@ void main()
                                 + volumetric_lighting_4 * weight_4;
     }
     volumetric_lighting *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(gl_GlobalInvocationID.xy), FRAME));
-    vec3 world_position = CalculateWorldPosition(screen_coordinate, scene_features_2.w);
+    vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
     float hit_distance = length(world_position - CAMERA_WORLD_POSITION);
+    float transmittance = 1.0f;
+    for (uint i = 0; i < 4; ++i)
+    {
+        vec3 sample_position = mix(CAMERA_WORLD_POSITION, world_position, float(i) / 4);
+        float extinction = GetExtinctionAtPosition(sample_position);
+        float attenuation_factor = exp(-extinction * hit_distance * 0.25f);
+        transmittance *= attenuation_factor;
+    }
     vec3 scene = imageLoad(Scene, ivec2(gl_GlobalInvocationID.xy)).rgb;
-    scene = scene * volumetric_lighting.a + volumetric_lighting.rgb;
+    scene = scene * transmittance + volumetric_lighting;
     imageStore(Scene, ivec2(gl_GlobalInvocationID.xy), vec4(scene, 1.0f));
 }

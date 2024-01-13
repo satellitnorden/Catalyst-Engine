@@ -36,32 +36,31 @@ void CameraSystem::Initialize() NOEXCEPT
 void CameraSystem::RenderUpdate() NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 JITTER_SAMPLE_MULTIPLIER{ 0.5f };
 	constexpr StaticArray<Vector2<float32>, 16> JITTER_SAMPLES
 	{
-		(Vector2<float32>(HaltonSequence::Generate(0, 3), HaltonSequence::Generate(1, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(2, 3), HaltonSequence::Generate(3, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(4, 3), HaltonSequence::Generate(5, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(6, 3), HaltonSequence::Generate(7, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(8, 3), HaltonSequence::Generate(9, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(10, 3), HaltonSequence::Generate(11, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(12, 3), HaltonSequence::Generate(13, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(14, 3), HaltonSequence::Generate(15, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(16, 3), HaltonSequence::Generate(17, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(18, 3), HaltonSequence::Generate(19, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(20, 3), HaltonSequence::Generate(21, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(22, 3), HaltonSequence::Generate(23, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(24, 3), HaltonSequence::Generate(25, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(26, 3), HaltonSequence::Generate(27, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(28, 3), HaltonSequence::Generate(29, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER,
-		(Vector2<float32>(HaltonSequence::Generate(30, 3), HaltonSequence::Generate(31, 3)) * 2.0f - 1.0f) * JITTER_SAMPLE_MULTIPLIER
+		Vector2<float32>(HaltonSequence::Generate(1, 2), HaltonSequence::Generate(1, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(2, 2), HaltonSequence::Generate(2, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(3, 2), HaltonSequence::Generate(3, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(4, 2), HaltonSequence::Generate(4, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(5, 2), HaltonSequence::Generate(5, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(6, 2), HaltonSequence::Generate(6, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(7, 2), HaltonSequence::Generate(7, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(8, 2), HaltonSequence::Generate(8, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(9, 2), HaltonSequence::Generate(9, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(10, 2), HaltonSequence::Generate(10, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(11, 2), HaltonSequence::Generate(11, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(12, 2), HaltonSequence::Generate(12, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(13, 2), HaltonSequence::Generate(13, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(14, 2), HaltonSequence::Generate(14, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(15, 2), HaltonSequence::Generate(15, 3)) * 2.0f - 1.0f,
+		Vector2<float32>(HaltonSequence::Generate(16, 2), HaltonSequence::Generate(16, 3)) * 2.0f - 1.0f
 	};
 
 	//Calculate the previous camera/projection matrix.
 	const Matrix4x4 previous_camera_matrix{ Matrix4x4::LookAt(_PreviousCameraWorldTransform.GetRelativePosition(GetCurrentCamera()->GetWorldTransform().GetCell()), _PreviousCameraWorldTransform.GetRelativePosition(GetCurrentCamera()->GetWorldTransform().GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles())) };
 	Matrix4x4 previous_projection_matrix{ *GetCurrentCamera()->GetProjectionMatrix() };
-	previous_projection_matrix._Matrix[2]._X -= _CameraUniformData._CurrentFrameJitter._X;
-	previous_projection_matrix._Matrix[2]._Y -= _CameraUniformData._CurrentFrameJitter._Y;
+	previous_projection_matrix._Matrix[2]._X += _CameraUniformData._CurrentFrameJitter._X;
+	previous_projection_matrix._Matrix[2]._Y += _CameraUniformData._CurrentFrameJitter._Y;
 
 	//Update the jitter.
 	Vector2<float32> current_jitter;
@@ -99,7 +98,11 @@ void CameraSystem::RenderUpdate() NOEXCEPT
 	_CameraUniformData._CameraWorldPosition = GetCurrentCamera()->GetWorldTransform().GetLocalPosition();
 	_CameraUniformData._CameraForwardVector = GetCurrentCamera()->GetForwardVector();
 
-	_CameraUniformData._CurrentFrameJitter = current_jitter;
+	/*
+	*	Since we're jittering in NDC space, which is in the range [-1.0f, 1.0f],
+	*	halve it since we're using this in screen space.
+	*/
+	_CameraUniformData._CurrentFrameJitter = current_jitter * 0.5f;
 
 	_CameraUniformData._NearPlane = GetCurrentCamera()->GetNearPlane();
 	_CameraUniformData._FarPlane = GetCurrentCamera()->GetFarPlane();

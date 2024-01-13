@@ -283,6 +283,6 @@ layout (location = 0) out vec4 SceneFeatures4;
 void main()
 {
     vec3 world_position = CalculateWorldPosition(InScreenCoordinate, 0.0f);
-    vec2 velocity = InScreenCoordinate - CalculatePreviousScreenCoordinate(world_position) + CURRENT_FRAME_JITTER;
+    vec2 velocity = InScreenCoordinate - CalculatePreviousScreenCoordinate(world_position) - CURRENT_FRAME_JITTER;
 	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
 }

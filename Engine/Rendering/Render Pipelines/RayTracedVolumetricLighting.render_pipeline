@@ -161,7 +161,7 @@ RayGeneration
     }
 
     //Store the volumetric lighting.
-    ImageStore(VolumetricLighting, ivec2(RAY_TRACING_ID.xy), vec4(volumetric_lighting, transmittance));
+    ImageStore(VolumetricLighting, ivec2(RAY_TRACING_ID.xy), vec4(volumetric_lighting, 1.0f));
 }
 
 //The ray miss shader.

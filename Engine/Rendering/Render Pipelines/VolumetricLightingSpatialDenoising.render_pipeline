@@ -37,16 +37,16 @@ Fragment
     float linearized_depth = LinearizeDepth(texture(SceneFeatures2Half, InScreenCoordinate).w);
 
     //Sample neighboring fragments.
-	vec4 denoised_volumetric_lighting = vec4(0.0f);
+	vec3 denoised_volumetric_lighting = vec3(0.0f);
 	float weight_sum = 0.0f;
 
-	for (int Y = -2; Y <= 2; ++Y)
+	for (int Y = -1; Y <= 1; ++Y)
 	{
-		for (int X = -2; X <= 2; ++X)
+		for (int X = -1; X <= 1; ++X)
 		{
 			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_HALF_MAIN_RESOLUTION;
 
-			vec4 sample_volumetric_lighting = texture(InputVolumetricLighting, sample_coordinate);
+			vec3 sample_volumetric_lighting = texture(InputVolumetricLighting, sample_coordinate).rgb;
 			float sample_linearized_depth = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate).w);
 
 			/*
@@ -69,5 +69,5 @@ Fragment
 	denoised_volumetric_lighting = denoised_volumetric_lighting / weight_sum;
 
     //Write the fragment.
-    OutputFragment(OutputVolumetricLighting, denoised_volumetric_lighting);
+    OutputFragment(OutputVolumetricLighting, vec4(denoised_volumetric_lighting, 1.0f));
 }

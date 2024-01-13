@@ -570,5 +570,5 @@ void main()
         }
         transmittance *= attenuation_factor;
     }
-	VolumetricLighting = vec4(volumetric_lighting,transmittance);
+	VolumetricLighting = vec4(volumetric_lighting,1.0f);
 }

@@ -38,8 +38,8 @@ void Camera::UpdateProjectionMatrix() NOEXCEPT
 	_ProjectionMatrix = Matrix4x4::ReversePerspective(CatalystBaseMath::DegreesToRadians(_FieldOfView), RenderingSystem::Instance->GetFullAspectRatio(), _NearPlane, _FarPlane);
 
 	//Apply the jitter.
-	_ProjectionMatrix._Matrix[2]._X += _ProjectionMatrixJitter._X;
-	_ProjectionMatrix._Matrix[2]._Y += _ProjectionMatrixJitter._Y;
+	_ProjectionMatrix._Matrix[2]._X -= _ProjectionMatrixJitter._X;
+	_ProjectionMatrix._Matrix[2]._Y -= _ProjectionMatrixJitter._Y;
 
 	//Update the inverse projection matrix.
 	_InverseProjectionMatrix = _ProjectionMatrix;

@@ -357,7 +357,7 @@ void main()
 	*/
 	float previous_frame_weight = 1.0f;
 	previous_frame_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
-	vec3 current_frame = texture(SceneLinear, InScreenCoordinate + CURRENT_FRAME_JITTER).rgb;
+	vec3 current_frame = texture(SceneLinear, InScreenCoordinate - CURRENT_FRAME_JITTER).rgb;
 	vec3 blended_frame = mix(current_frame, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
 	CurrentTemporalBuffer = vec4(blended_frame,1.0f);
 	CurrentScene = vec4(blended_frame,1.0f);
