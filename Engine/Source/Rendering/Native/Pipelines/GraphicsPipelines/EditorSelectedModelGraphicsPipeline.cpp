@@ -38,11 +38,8 @@ void EditorSelectedModelGraphicsPipeline::Initialize(const DepthBufferHandle dep
 	ResetGraphicsPipeline();
 
 	//Set the shaders.
-	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorSelectedModelVertexShader")));
-	SetTessellationControlShader(ResourcePointer<ShaderResource>());
-	SetTessellationEvaluationShader(ResourcePointer<ShaderResource>());
-	SetGeometryShader(ResourcePointer<ShaderResource>());
-	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorSelectedModelFragmentShader")));
+	SetVertexShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorSelectedModelVertexShader"))->_Handle);
+	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorSelectedModelFragmentShader"))->_Handle);
 
 	//Set the depth buffer.
 	SetDepthBuffer(depth_buffer);

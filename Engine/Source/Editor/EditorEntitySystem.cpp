@@ -110,7 +110,7 @@ void EditorEntitySystem::Update() NOEXCEPT
 	if (!ImGui::IsAnyWindowHovered() && !ImGui::IsAnyItemHovered() && _IsCurrentlyCreatingEntity)
 	{
 		//Cache if the left mouse button is pressed.
-		const bool left_mouse_button_pressed{ InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED };
+		const bool left_mouse_button_pressed{ InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_Left == ButtonState::PRESSED };
 
 		if (left_mouse_button_pressed)
 		{
@@ -121,7 +121,7 @@ void EditorEntitySystem::Update() NOEXCEPT
 			Ray ray;
 
 			ray.SetOrigin(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
-			ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY)));
+			ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_CurrentX, InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_CurrentY)));
 
 			RaycastConfiguration configuration;
 

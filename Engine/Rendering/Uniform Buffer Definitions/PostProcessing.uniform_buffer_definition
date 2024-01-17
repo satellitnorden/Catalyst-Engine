@@ -1,6 +1,13 @@
 UniformBuffer(PostProcessing)
 {
+    vec4 TINT;
     float BLOOM_THRESHOLD;
     float BLOOM_INTENSITY;
+    float BRIGHTNESS;
+    float CONTRAST;
+    float CHROMATIC_ABERRATION_INTENSITY;
+    float FILM_GRAIN_INTENSITY;
+    float HORIZONTAL_BORDER;
     float MOTION_BLUR_INTENSITY;
+    float SATURATION;
 };

@@ -78,6 +78,21 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Initialize all pipelines.
+	for (uint8 i{ 0 }; i < ShadowsSystem::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA; ++i)
+	{
+		_ClearShadowMapPipelines[i].SetIncludeInRender(false);
+	}
+
+	for (uint8 i{ 0 }; i < ShadowsSystem::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA; ++i)
+	{
+		_OpaqueModelShadowMapPipelines[i].SetIncludeInRender(false);
+	}
+
+	for (uint8 i{ 0 }; i < ShadowsSystem::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA; ++i)
+	{
+		_MaskedModelShadowMapPipelines[i].SetIncludeInRender(false);
+	}
+
 	_ShadowMapResolvePipeline.Initialize();
 
 	{

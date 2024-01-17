@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/PostProcessingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) PostProcessingRenderPass final : public RenderPass
@@ -22,8 +22,11 @@ public:
 
 private:
 
-	//The post processing graphics pipeline.
-	PostProcessingGraphicsPipeline _PostProcessingGraphicsPipeline;
+	//The motion blur graphics pipeline.
+	GraphicsRenderPipeline _MotionBlurPipeline{ HashString("MotionBlur_RenderPipeline") };
+
+	//The post process pipeline.
+	GraphicsRenderPipeline _PostProcessPipeline{ HashString("PostProcess_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

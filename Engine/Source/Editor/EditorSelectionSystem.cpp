@@ -58,7 +58,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 	Ray ray;
 
 	ray.SetOrigin(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
-	ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY)));
+	ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_CurrentX, InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_CurrentY)));
 
 	if (_CurrentlySelectedEntityOverride)
 	{
@@ -71,14 +71,14 @@ void EditorSelectionSystem::Update() NOEXCEPT
 	else if (!ImGui::IsAnyWindowHovered() && !ImGui::IsAnyItemHovered() && !CatalystEditorSystem::Instance->GetEditorEntitySystem()->IsCurrentlyCreatingAnEntity())
 	{
 		//Cache if the left mouse button is pressed.
-		const bool left_mouse_button_pressed{ InputSystem::Instance->GetMouseState()->_Left == ButtonState::PRESSED };
+		const bool left_mouse_button_pressed{ InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_Left == ButtonState::PRESSED };
 
 		if (left_mouse_button_pressed)
 		{
 			Ray ray;
 
 			ray.SetOrigin(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
-			ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState()->_CurrentX, InputSystem::Instance->GetMouseState()->_CurrentY)));
+			ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_CurrentX, InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_CurrentY)));
 
 			RaycastConfiguration configuration;
 
@@ -132,7 +132,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 
 		//Add a button for destroying the entity.
 		if (ImGui::Button("Destroy Entity")
-			|| InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::Delete) == ButtonState::PRESSED)
+			|| InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::Delete) == ButtonState::PRESSED)
 		{
 			EntitySystem::Instance->RequestTermination(_CurrentlySelectedEntity);
 			EntitySystem::Instance->RequestDestruction(_CurrentlySelectedEntity);
@@ -146,8 +146,8 @@ void EditorSelectionSystem::Update() NOEXCEPT
 		}
 
 		//Add a button for duplication the entity.
-		const bool wants_to_duplicate{	(InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED_HELD)
-										&& (InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState()->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED_HELD) };
+		const bool wants_to_duplicate{	(InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED_HELD)
+										&& (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED_HELD) };
 		
 		Entity *RESTRICT duplicated_entity{ nullptr };
 
@@ -1109,7 +1109,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 	}
 
 	//Calculate which axes should be applied.
-	const KeyboardState *const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState() };
+	const KeyboardState *const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG) };
 
 	desired_position._X = keyboard_state->GetButtonState(KeyboardButton::X) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::X) == ButtonState::PRESSED_HELD ? desired_position._X : world_position._X;
 	desired_position._Y = keyboard_state->GetButtonState(KeyboardButton::Y) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::Y) == ButtonState::PRESSED_HELD ? desired_position._Y : world_position._Y;

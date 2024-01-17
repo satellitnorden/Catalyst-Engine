@@ -69,7 +69,7 @@ void EditorCameraSystem::Update() NOEXCEPT
 	}
 
 	//Cache the input state.
-	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState() };
+	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::DEBUG) };
 
 	//Cache if keyboard/mouse rotation should be updated.
 	const bool update_keyboard_mouse_rotation{ mouse_state->_Right == ButtonState::PRESSED || mouse_state->_Right == ButtonState::PRESSED_HELD };

@@ -211,22 +211,108 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 32) uint FRAME;
 };
 
-layout (std140, set = 1, binding = 2) uniform Wind
+layout (std140, set = 1, binding = 2) uniform PostProcessing
 {
-	layout (offset = 0) vec4 PREVIOUS_WIND_DIRECTION_SPEED;
-	layout (offset = 16) vec4 CURRENT_WIND_DIRECTION_SPEED;
-	layout (offset = 32) float PREVIOUS_WIND_TIME;
-	layout (offset = 36) float CURRENT_WIND_TIME;
+	layout (offset = 0) vec4 TINT;
+	layout (offset = 16) float BLOOM_THRESHOLD;
+	layout (offset = 20) float BLOOM_INTENSITY;
+	layout (offset = 24) float BRIGHTNESS;
+	layout (offset = 28) float CONTRAST;
+	layout (offset = 32) float CHROMATIC_ABERRATION_INTENSITY;
+	layout (offset = 36) float FILM_GRAIN_INTENSITY;
+	layout (offset = 40) float HORIZONTAL_BORDER;
+	layout (offset = 44) float MOTION_BLUR_INTENSITY;
+	layout (offset = 48) float SATURATION;
 };
 
-layout (set = 1, binding = 3) uniform sampler SAMPLER;
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    uint offset_index = (FRAME + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1);
 
-//Constants.
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_1 	(1 << 0)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_2 	(1 << 1)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_3 	(1 << 2)
-#define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_4 	(1 << 3)
-#define MODEL_FLAG_IS_VEGETATION 				(1 << 4)
+    uvec2 offset_coordinate;
+
+    offset_coordinate.x = coordinate.x + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+    offset_coordinate.y = coordinate.y + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+
+    return texture(BLUE_NOISE_TEXTURES[offset_index], vec2(offset_coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
+
+/*
+*   Linearizes a depth value.
+*/
+float LinearizeDepth(float depth)
+{
+    return ((FAR_PLANE * NEAR_PLANE) / (depth * (FAR_PLANE - NEAR_PLANE) + NEAR_PLANE));
+}
+
+/*
+*   Calculates the view space position.
+*/
+vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position.xyz *= inverse_view_space_position_denominator;
+
+    return view_space_position.xyz;
+}
+
+/*
+*   Calculates the world position.
+*/
+vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position *= inverse_view_space_position_denominator;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
+
+    return world_space_position.xyz;
+}
+
+/*
+*   Returns the current screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Returns the previous screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Calculates a screen position, including the (linearized) depth from the given world position.
+*/
+vec3 CalculateScreenPosition(vec3 world_position)
+{
+    vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+    float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
+    view_space_position.xyz *= view_space_position_coefficient_reciprocal;
+
+    view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
+    view_space_position.z = LinearizeDepth(view_space_position.z);
+    
+    return view_space_position.xyz;
+}
 
 /*
 *   Combines two hashes.
@@ -299,84 +385,94 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 }
 
 /*
-*	Calculates wind displacement.
-*	Requires the Wind uniform buffer to be bound.
+*	Approximates the inverse gamma transformation of a fragment to determine it's perceptual luminance.
 */
-vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal, vec4 wind_direction_speed, float wind_time)
+float PerceptualLuminance(vec3 fragment)
 {
-	//Calculate the displacement.
-	vec3 displacement = vec3(0.0f, 0.0f, 0.0f);
-
-	//Add large scale motion.
-	displacement.x += (sin(world_position.x + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w;
-	displacement.z += (cos(world_position.z + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w;
-
-	//Add medium scale motion.
-	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.5f;
-	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.5f;
-
-	//Add small scale motion.
-	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.25f;
-	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.25f;
-
-	//Modify the displacement so it doesn't affect the bottom of the mesh.
-	displacement *= max(vertex_position.y * 0.125f, 0.0f);
-
-	//Return the displacement.
-	return displacement;
+	return sqrt(dot(fragment, vec3(0.299f, 0.587f, 0.114f)));
 }
 
 /*
-*	Calculates previous wind displacement.
-*	Requires the Wind uniform buffer to be bound.
+*	Applies a vignette effect on the given fragment with the given parameters.
 */
-vec3 CalculatePreviousWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
+vec3 ApplyVignette(vec3 fragment, float edge_factor, float vignette_intensity)
 {
-	return CalculateWindDisplacement(world_position, vertex_position, normal, PREVIOUS_WIND_DIRECTION_SPEED, PREVIOUS_WIND_TIME);
+	return fragment * mix(1.0f - vignette_intensity, 1.0f, edge_factor);
 }
 
 /*
-*	Calculates current wind displacement.
-*	Requires the Wind uniform buffer to be bound.
+*	Applies brightness to the given fragment with the given parameters.
 */
-vec3 CalculateCurrentWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
+vec3 ApplyBrightness(vec3 fragment, float brightness)
 {
-	return CalculateWindDisplacement(world_position, vertex_position, normal, CURRENT_WIND_DIRECTION_SPEED, CURRENT_WIND_TIME);
+	return fragment + vec3(brightness - 1.0f);
 }
 
-layout (push_constant) uniform PushConstantData
+/*
+*	Applies contrast to the given fragment with the given parameters.
+*/
+vec3 ApplyContrast(vec3 fragment, float contrast)
 {
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) uint MODEL_FLAGS;
-	layout (offset = 20) float START_FADE_OUT_DISTANCE_SQUARED;
-	layout (offset = 24) float END_FADE_OUT_DISTANCE_SQUARED;
-	layout (offset = 28) uint MATERIAL_INDEX;
-};
+	return ((fragment - vec3(0.5f)) * contrast) + vec3(0.5f);
+}
 
-layout (location = 0) in vec3 InPosition;
-layout (location = 1) in vec3 InNormal;
-layout (location = 2) in vec2 InTextureCoordinate;
-layout (location = 3) in mat4 InTransformation;
+/*
+*	Applies saturation to the given fragment with the given parameters.
+*/
+vec3 ApplySaturation(vec3 fragment, float saturation)
+{
+	return mix(vec3(PerceptualLuminance(fragment)), fragment, saturation);
+}
 
-layout (location = 0) out vec2 OutTextureCoordinate;
-layout (location = 1) out float OutFadeOpacity;
+/*
+*	Applies tint to the given fragment with the given parameters.
+*/
+vec3 ApplyTint(vec3 fragment, vec3 tint_color, float tint_intensity)
+{
+	return mix(fragment, fragment * tint_color, tint_intensity);
+}
+
+/*
+*	Applies horizontal border to the given fragment with the given parameters.
+*/
+vec3 ApplyHorizontalBorder(vec3 fragment, vec2 screen_coordinate, float horizontal_border)
+{
+	return fragment * float(screen_coordinate.y >= horizontal_border && screen_coordinate.y <= (1.0f - horizontal_border));
+}
+
+layout (set = 1, binding = 3) uniform sampler2D InputRenderTarget;
+
+layout (location = 0) in vec2 InScreenCoordinate;
+
+layout (location = 0) out vec4 OutputRenderTarget;
 
 void main()
 {
-    OutTextureCoordinate = InTextureCoordinate;
-    vec3 world_position = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
-    if (START_FADE_OUT_DISTANCE_SQUARED < FLOAT32_MAXIMUM)
-	{
-		OutFadeOpacity = 1.0f - (clamp(LengthSquared3(world_position - CAMERA_WORLD_POSITION) - START_FADE_OUT_DISTANCE_SQUARED, 0.0f, END_FADE_OUT_DISTANCE_SQUARED - START_FADE_OUT_DISTANCE_SQUARED) / (END_FADE_OUT_DISTANCE_SQUARED - START_FADE_OUT_DISTANCE_SQUARED));
-	}
-	else
-	{
-		OutFadeOpacity = 1.0f;
-	}
-    if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
+    #define CHROMATIC_ABERRATION_RED_OFFSET (-0.0025f)
+    #define CHROMATIC_ABERRATION_GREEN_OFFSET (0.0025f)
+    #define CHROMATIC_ABERRATION_BLUE_OFFSET (0.0025f)
+    vec3 ray_direction = normalize(CalculateWorldPosition(InScreenCoordinate, 0.0f) - CAMERA_WORLD_POSITION);
+    float edge_factor = dot(CAMERA_FORWARD_VECTOR, ray_direction);
+    vec2 screen_direction = vec2(0.5f) - InScreenCoordinate;
+    vec3 post_processed_fragment;
+    post_processed_fragment.r = texture(InputRenderTarget, InScreenCoordinate + (vec2(CHROMATIC_ABERRATION_RED_OFFSET) * screen_direction * CHROMATIC_ABERRATION_INTENSITY)).r;
+    post_processed_fragment.g = texture(InputRenderTarget, InScreenCoordinate + (vec2(CHROMATIC_ABERRATION_GREEN_OFFSET) * screen_direction * CHROMATIC_ABERRATION_INTENSITY)).g;
+    post_processed_fragment.b = texture(InputRenderTarget, InScreenCoordinate + (vec2(CHROMATIC_ABERRATION_BLUE_OFFSET) * screen_direction * CHROMATIC_ABERRATION_INTENSITY)).b;
+    post_processed_fragment = ApplyVignette(post_processed_fragment, edge_factor, 1.0f);
+    post_processed_fragment = ApplyBrightness(post_processed_fragment, BRIGHTNESS);
+    post_processed_fragment = ApplyContrast(post_processed_fragment, CONTRAST);
+    post_processed_fragment = ApplySaturation(post_processed_fragment, SATURATION);
+    post_processed_fragment = ApplyTint(post_processed_fragment, TINT.rgb, TINT.a);
     {
-	    vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
-        world_position += CalculateCurrentWindDisplacement(world_position, InPosition, normal);
+        float film_grain = RandomFloat(uvec2(gl_FragCoord.xy), FRAME);
+        post_processed_fragment = mix(post_processed_fragment, vec3(film_grain), FILM_GRAIN_INTENSITY);
     }
-	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(world_position,1.0f);
+    {
+        vec4 blue_noise_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+        post_processed_fragment.r = saturate(post_processed_fragment.r + ((blue_noise_sample.r - 0.5f) / float(UINT8_MAXIMUM)));
+        post_processed_fragment.g = saturate(post_processed_fragment.g + ((blue_noise_sample.g - 0.5f) / float(UINT8_MAXIMUM)));
+        post_processed_fragment.b = saturate(post_processed_fragment.b + ((blue_noise_sample.b - 0.5f) / float(UINT8_MAXIMUM)));
+    }
+    post_processed_fragment = ApplyHorizontalBorder(post_processed_fragment, InScreenCoordinate, HORIZONTAL_BORDER);
+	OutputRenderTarget = vec4(post_processed_fragment,1.0f);
 }

@@ -47,11 +47,28 @@ void PostProcessingRenderPass::Initialize() NOEXCEPT
 	ResetRenderPass();
 
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
-	AddPipeline(&_PostProcessingGraphicsPipeline);
+	SetNumberOfPipelines(2);
+	AddPipeline(&_MotionBlurPipeline);
+	AddPipeline(&_PostProcessPipeline);
 
 	//Initialize all pipelines.
-	_PostProcessingGraphicsPipeline.Initialize();
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
+		parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
+	
+		_MotionBlurPipeline.Initialize(parameters);
+	}
+
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
+		parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
+
+		_PostProcessPipeline.Initialize(parameters);
+	}
 }
 
 /*
@@ -60,7 +77,8 @@ void PostProcessingRenderPass::Initialize() NOEXCEPT
 void PostProcessingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	_PostProcessingGraphicsPipeline.Execute();
+	_MotionBlurPipeline.Execute();
+	_PostProcessPipeline.Execute();
 }
 
 /*
@@ -69,5 +87,6 @@ void PostProcessingRenderPass::Execute() NOEXCEPT
 void PostProcessingRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	_PostProcessingGraphicsPipeline.Terminate();
+	_MotionBlurPipeline.Terminate();
+	_PostProcessPipeline.Terminate();
 }

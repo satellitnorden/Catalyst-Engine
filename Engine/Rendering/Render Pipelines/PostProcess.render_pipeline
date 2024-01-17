@@ -1,0 +1,99 @@
+//Declare uniform buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+IncludeUniformBuffer(PostProcessing);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(BlueNoise);
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Noise);
+IncludeShaderFunctionLibrary(PostProcess);
+
+//Declare input render targets.
+InputRenderTarget(InputRenderTarget /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(OutputRenderTarget);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Constants.
+    //#define CHROMATIC_ABERRATION_RED_OFFSET (0.009f)
+    //#define CHROMATIC_ABERRATION_GREEN_OFFSET (0.006f)
+    //#define CHROMATIC_ABERRATION_BLUE_OFFSET (-0.006f)
+    #define CHROMATIC_ABERRATION_RED_OFFSET (-0.0025f)
+    #define CHROMATIC_ABERRATION_GREEN_OFFSET (0.0025f)
+    #define CHROMATIC_ABERRATION_BLUE_OFFSET (0.0025f)
+
+    //Calculate the ray direction.
+    vec3 ray_direction = normalize(CalculateWorldPosition(InScreenCoordinate, 0.0f) - CAMERA_WORLD_POSITION);
+
+    //Calculate the edge factor.
+    float edge_factor = dot(CAMERA_FORWARD_VECTOR, ray_direction);
+
+    //Calculate the screen direction.
+    vec2 screen_direction = vec2(0.5f) - InScreenCoordinate;
+
+    //Sample with chromatic aberration.
+    vec3 post_processed_fragment;
+    
+    post_processed_fragment.r = texture(InputRenderTarget, InScreenCoordinate + (vec2(CHROMATIC_ABERRATION_RED_OFFSET) * screen_direction * CHROMATIC_ABERRATION_INTENSITY)).r;
+    post_processed_fragment.g = texture(InputRenderTarget, InScreenCoordinate + (vec2(CHROMATIC_ABERRATION_GREEN_OFFSET) * screen_direction * CHROMATIC_ABERRATION_INTENSITY)).g;
+    post_processed_fragment.b = texture(InputRenderTarget, InScreenCoordinate + (vec2(CHROMATIC_ABERRATION_BLUE_OFFSET) * screen_direction * CHROMATIC_ABERRATION_INTENSITY)).b;
+
+    //Apply vignette.
+    post_processed_fragment = ApplyVignette(post_processed_fragment, edge_factor, 1.0f);
+
+    //Apply brightness.
+    post_processed_fragment = ApplyBrightness(post_processed_fragment, BRIGHTNESS);
+
+    //Apply contrast.
+    post_processed_fragment = ApplyContrast(post_processed_fragment, CONTRAST);
+
+    //Apply saturation.
+    post_processed_fragment = ApplySaturation(post_processed_fragment, SATURATION);
+
+    //Apply tint.
+    post_processed_fragment = ApplyTint(post_processed_fragment, TINT.rgb, TINT.a);
+
+    //Apply film grain.
+    {
+        float film_grain = RandomFloat(uvec2(FRAGMENT_COORDINATE.xy), FRAME);
+   
+        post_processed_fragment = mix(post_processed_fragment, vec3(film_grain), FILM_GRAIN_INTENSITY);
+    }
+
+    //Apply dithering.
+    {
+        vec4 blue_noise_sample = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), 0);
+        
+        post_processed_fragment.r = saturate(post_processed_fragment.r + ((blue_noise_sample.r - 0.5f) / float(UINT8_MAXIMUM)));
+        post_processed_fragment.g = saturate(post_processed_fragment.g + ((blue_noise_sample.g - 0.5f) / float(UINT8_MAXIMUM)));
+        post_processed_fragment.b = saturate(post_processed_fragment.b + ((blue_noise_sample.b - 0.5f) / float(UINT8_MAXIMUM)));
+    }
+
+    //Apply horizontal border.
+    post_processed_fragment = ApplyHorizontalBorder(post_processed_fragment, InScreenCoordinate, HORIZONTAL_BORDER);
+
+    //Output the fragment.
+    OutputFragment(OutputRenderTarget, vec4(post_processed_fragment, 1.0f));
+}

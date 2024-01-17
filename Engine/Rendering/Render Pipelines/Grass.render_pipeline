@@ -87,7 +87,7 @@ Vertex
     float distance_from_camera = length(InPosition - CAMERA_WORLD_POSITION);
 
     //Sublty increase thickness based on distance from camera to make fields look fuller.
-    float thickness = THICKNESS + (THICKNESS * 0.1f * distance_from_camera);
+    float thickness = THICKNESS + (THICKNESS * 0.01f * distance_from_camera);
 
     //Generate the raw vertex position.
     vec3 raw_vertex_position;

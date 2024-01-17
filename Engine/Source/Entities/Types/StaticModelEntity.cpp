@@ -200,8 +200,9 @@ void StaticModelEntity::SetWorldTransform(const WorldTransform &new_world_transf
 		PhysicsSystem::Instance->UpdateEntityWorldTransform(this, new_world_transform);
 	}
 
-	//Report to the ray tracing system that static models have been updated.
-	RenderingSystem::Instance->GetRayTracingSystem()->ReportStaticModelsUpdated();
+	//Se-initialize ray tracing stuff.
+	RenderingSystem::Instance->GetRayTracingSystem()->OnEntityTerminated(this);
+	RenderingSystem::Instance->GetRayTracingSystem()->OnEntityInitialized(this);
 }
 #endif
 

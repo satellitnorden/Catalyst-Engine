@@ -5,3 +5,51 @@ float PerceptualLuminance(vec3 fragment)
 {
 	return sqrt(dot(fragment, vec3(0.299f, 0.587f, 0.114f)));
 }
+
+/*
+*	Applies a vignette effect on the given fragment with the given parameters.
+*/
+vec3 ApplyVignette(vec3 fragment, float edge_factor, float vignette_intensity)
+{
+	return fragment * mix(1.0f - vignette_intensity, 1.0f, edge_factor);
+}
+
+/*
+*	Applies brightness to the given fragment with the given parameters.
+*/
+vec3 ApplyBrightness(vec3 fragment, float brightness)
+{
+	return fragment + vec3(brightness - 1.0f);
+}
+
+/*
+*	Applies contrast to the given fragment with the given parameters.
+*/
+vec3 ApplyContrast(vec3 fragment, float contrast)
+{
+	return ((fragment - vec3(0.5f)) * contrast) + vec3(0.5f);
+}
+
+/*
+*	Applies saturation to the given fragment with the given parameters.
+*/
+vec3 ApplySaturation(vec3 fragment, float saturation)
+{
+	return mix(vec3(PerceptualLuminance(fragment)), fragment, saturation);
+}
+
+/*
+*	Applies tint to the given fragment with the given parameters.
+*/
+vec3 ApplyTint(vec3 fragment, vec3 tint_color, float tint_intensity)
+{
+	return mix(fragment, fragment * tint_color, tint_intensity);
+}
+
+/*
+*	Applies horizontal border to the given fragment with the given parameters.
+*/
+vec3 ApplyHorizontalBorder(vec3 fragment, vec2 screen_coordinate, float horizontal_border)
+{
+	return fragment * float(screen_coordinate.y >= horizontal_border && screen_coordinate.y <= (1.0f - horizontal_border));
+}

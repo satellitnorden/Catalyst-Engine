@@ -27,6 +27,8 @@
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
+#define saturate(X) clamp(X, 0.0f, 1.0f)
+
 /*
 *   Defines the bit at the specified index.
 */
@@ -211,9 +213,16 @@ layout (std140, set = 1, binding = 1) uniform General
 
 layout (std140, set = 1, binding = 2) uniform PostProcessing
 {
-	layout (offset = 0) float BLOOM_THRESHOLD;
-	layout (offset = 4) float BLOOM_INTENSITY;
-	layout (offset = 8) float MOTION_BLUR_INTENSITY;
+	layout (offset = 0) vec4 TINT;
+	layout (offset = 16) float BLOOM_THRESHOLD;
+	layout (offset = 20) float BLOOM_INTENSITY;
+	layout (offset = 24) float BRIGHTNESS;
+	layout (offset = 28) float CONTRAST;
+	layout (offset = 32) float CHROMATIC_ABERRATION_INTENSITY;
+	layout (offset = 36) float FILM_GRAIN_INTENSITY;
+	layout (offset = 40) float HORIZONTAL_BORDER;
+	layout (offset = 44) float MOTION_BLUR_INTENSITY;
+	layout (offset = 48) float SATURATION;
 };
 
 /*
@@ -232,7 +241,7 @@ vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
 }
 
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4;
-layout (set = 1, binding = 4) uniform sampler2D SceneLowDynamicRange1;
+layout (set = 1, binding = 4) uniform sampler2D InputRenderTarget;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 

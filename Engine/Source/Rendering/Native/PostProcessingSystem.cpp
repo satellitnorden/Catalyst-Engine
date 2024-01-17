@@ -24,7 +24,14 @@ void PostProcessingSystem::Initialize() NOEXCEPT
 void PostProcessingSystem::RenderUpdate() NOEXCEPT
 {
 	//Update the post processing uniform data.
+	_PostProcessingUniformData._Tint = Vector4<float32>(_TintColor, _TintIntensity);
 	_PostProcessingUniformData._BloomThreshold = _BloomThreshold;
 	_PostProcessingUniformData._BloomIntensity = _BloomIntensity;
+	_PostProcessingUniformData._Brightness = _Brightness;
+	_PostProcessingUniformData._Contrast = _Contrast;
+	_PostProcessingUniformData._ChromaticAberrationIntensity = _ChromaticAberrationIntensity;
+	_PostProcessingUniformData._FilmGrainIntensity = _FilmGrainIntensity;
+	_PostProcessingUniformData._HorizontalBorder = _HorizontalBorder;
 	_PostProcessingUniformData._MotionBlurIntensity = _MotionBlurIntensity;
+	_PostProcessingUniformData._Saturation = _Saturation;
 }

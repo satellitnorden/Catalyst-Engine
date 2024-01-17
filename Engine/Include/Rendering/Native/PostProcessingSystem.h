@@ -257,14 +257,35 @@ private:
 
 	public:
 
+		//The tint.
+		Vector4<float32> _Tint;
+
 		//The bloom threshold.
 		float32 _BloomThreshold;
 
 		//The bloom intensity.
 		float32 _BloomIntensity;
 
+		//The brightness.
+		float32 _Brightness;
+
+		//The contrast.
+		float32 _Contrast;
+
+		//The chromatic aberration intensity.
+		float32 _ChromaticAberrationIntensity;
+
+		//The film grain intensity.
+		float32 _FilmGrainIntensity;
+
+		//The horizontal border.
+		float32 _HorizontalBorder;
+
 		//The motion blur intensity.
-		float32 _MotionBlurIntensity{ 1.0f };
+		float32 _MotionBlurIntensity;
+
+		//The saturation.
+		float32 _Saturation;
 
 	};
 
@@ -287,7 +308,7 @@ private:
 	float32 _Contrast{ 1.0f };
 
 	//The chromatic aberration intensity.
-	float32 _ChromaticAberrationIntensity{ 0.0025f };
+	float32 _ChromaticAberrationIntensity{ 1.0f };
 
 	//The exposure.
 	float32 _Exposure{ 1.0f };

@@ -27,6 +27,8 @@
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
+#define saturate(X) clamp(X, 0.0f, 1.0f)
+
 /*
 *   Defines the bit at the specified index.
 */
@@ -337,17 +339,44 @@ float SmoothStep(float number)
 }
 
 /*
-*   Hash function.
+*   Combines two hashes.
 */
-uint Hash(inout uint seed)
+uint CombineHash(uint hash_1, uint hash_2)
 {
-    seed = (seed ^ 61u) ^ (seed >> 16u);
-    seed *= 9u;
-    seed = seed ^ (seed >> 4u);
-    seed *= 0x27d4eb2du;
-    seed = seed ^ (seed >> 15u);
+    return 3141592653 * hash_1 + hash_2;
+}
 
+/*
+*   Hash function taking a uint.
+*/
+uint Hash(uint seed)
+{
+    seed ^= seed >> 17;
+    seed *= 0xed5ad4bbU;
+    seed ^= seed >> 11;
+    seed *= 0xac4c1b51U;
+    seed ^= seed >> 15;
+    seed *= 0x31848babU;
+    seed ^= seed >> 14;
     return seed;
+}
+
+/*
+*   Hash function taking a uvec2.
+*/
+uint Hash2(uvec2 seed)
+{
+    return Hash(seed.x) ^ Hash(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
+    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
+    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
 }
 
 /*
@@ -356,6 +385,14 @@ uint Hash(inout uint seed)
 float RandomFloat(inout uint seed)
 {
     return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate and a seed, returns a random number.
+*/
+float RandomFloat(uvec2 coordinate, uint seed)
+{
+    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
 }
 
 /*
@@ -445,7 +482,7 @@ void main()
     float wind_influence = mix(0.75f, 1.25f, RandomFloat(seed));
     float cull_value = RandomFloat(seed);
     float distance_from_camera = length(InPosition - CAMERA_WORLD_POSITION);
-    float thickness = THICKNESS + (THICKNESS * 0.1f * distance_from_camera);
+    float thickness = THICKNESS + (THICKNESS * 0.01f * distance_from_camera);
     vec3 raw_vertex_position;
     {
         float odd_multiplier = float(gl_VertexIndex & 1) * 2.0f - 1.0f;

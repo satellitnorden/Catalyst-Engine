@@ -27,6 +27,8 @@
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
+#define saturate(X) clamp(X, 0.0f, 1.0f)
+
 /*
 *   Defines the bit at the specified index.
 */
@@ -188,9 +190,16 @@ bool ValidScreenCoordinate(vec2 X)
 
 layout (std140, set = 1, binding = 0) uniform PostProcessing
 {
-	layout (offset = 0) float BLOOM_THRESHOLD;
-	layout (offset = 4) float BLOOM_INTENSITY;
-	layout (offset = 8) float MOTION_BLUR_INTENSITY;
+	layout (offset = 0) vec4 TINT;
+	layout (offset = 16) float BLOOM_THRESHOLD;
+	layout (offset = 20) float BLOOM_INTENSITY;
+	layout (offset = 24) float BRIGHTNESS;
+	layout (offset = 28) float CONTRAST;
+	layout (offset = 32) float CHROMATIC_ABERRATION_INTENSITY;
+	layout (offset = 36) float FILM_GRAIN_INTENSITY;
+	layout (offset = 40) float HORIZONTAL_BORDER;
+	layout (offset = 44) float MOTION_BLUR_INTENSITY;
+	layout (offset = 48) float SATURATION;
 };
 
 layout (set = 1, binding = 1) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_1;

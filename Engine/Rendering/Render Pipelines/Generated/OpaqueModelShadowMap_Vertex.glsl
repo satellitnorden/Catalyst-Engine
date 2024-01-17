@@ -27,6 +27,8 @@
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
+#define saturate(X) clamp(X, 0.0f, 1.0f)
+
 /*
 *   Defines the bit at the specified index.
 */

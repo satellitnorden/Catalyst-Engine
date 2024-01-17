@@ -8,10 +8,10 @@ IncludeShaderFunctionLibrary(BlueNoise);
 
 //Declare input render targets.
 InputRenderTarget(SceneFeatures4 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
-InputRenderTarget(SceneLowDynamicRange1 /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(InputRenderTarget /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
-OutputRenderTarget(SceneLowDynamicRange2);
+OutputRenderTarget(OutputRenderTarget);
 
 //Declare render resolution.
 RenderResolution(MAIN_FULL);
@@ -57,7 +57,7 @@ Fragment
     }
 
     //Sample the center scene.
-    vec3 center_scene = texture(SceneLowDynamicRange1, InScreenCoordinate).rgb;
+    vec3 center_scene = texture(InputRenderTarget, InScreenCoordinate).rgb;
 
     //Blur the scene in the blur direction.
     vec3 blurred_scene = vec3(0.0f);
@@ -68,7 +68,7 @@ Fragment
         for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
         {
             vec2 sample_coordinate = InScreenCoordinate + blur_direction * offsets[i];
-            vec3 _sample = texture(SceneLowDynamicRange1, sample_coordinate).rgb;
+            vec3 _sample = texture(InputRenderTarget, sample_coordinate).rgb;
             float sample_weight = float(ValidScreenCoordinate(sample_coordinate));
 
             blurred_scene += _sample * sample_weight;
@@ -80,5 +80,5 @@ Fragment
     blurred_scene = weight > 0.0f ? blurred_scene / float(weight) : center_scene;
 
     //Output the fragment.
-    OutputFragment(SceneLowDynamicRange2, vec4(blurred_scene, 1.0f));
+    OutputFragment(OutputRenderTarget, vec4(blurred_scene, 1.0f));
 }
