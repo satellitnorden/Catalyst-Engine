@@ -461,9 +461,9 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 */
 float GetExtinctionAtPosition(vec3 position)
 {
-	#define BASE_EXTINCTION (0.0000125f)
+	#define BASE_EXTINCTION (0.000125f)
 
-	return mix(BASE_EXTINCTION, 0.0f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.125f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
 	#undef BASE_EXTINCTION
 }
@@ -516,7 +516,7 @@ layout (location = 0) out vec4 VolumetricLighting;
 
 void main()
 {
-    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
+    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f * 0.125f)
     #define NUMBER_OF_SAMPLES (8)
     #define SAMPLE_RECIPROCAL (1.0f / NUMBER_OF_SAMPLES)
     #define HALF_SAMPLE_RECIPROCAL (SAMPLE_RECIPROCAL / 2)

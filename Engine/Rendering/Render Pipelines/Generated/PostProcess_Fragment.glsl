@@ -467,12 +467,6 @@ void main()
         float film_grain = RandomFloat(uvec2(gl_FragCoord.xy), FRAME);
         post_processed_fragment = mix(post_processed_fragment, vec3(film_grain), FILM_GRAIN_INTENSITY);
     }
-    {
-        vec4 blue_noise_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
-        post_processed_fragment.r = saturate(post_processed_fragment.r + ((blue_noise_sample.r - 0.5f) / float(UINT8_MAXIMUM)));
-        post_processed_fragment.g = saturate(post_processed_fragment.g + ((blue_noise_sample.g - 0.5f) / float(UINT8_MAXIMUM)));
-        post_processed_fragment.b = saturate(post_processed_fragment.b + ((blue_noise_sample.b - 0.5f) / float(UINT8_MAXIMUM)));
-    }
     post_processed_fragment = ApplyHorizontalBorder(post_processed_fragment, InScreenCoordinate, HORIZONTAL_BORDER);
 	OutputRenderTarget = vec4(post_processed_fragment,1.0f);
 }

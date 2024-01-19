@@ -431,7 +431,7 @@ void main()
                         random_point_on_sphere = vec3(cos_a * cos_b, cos_a * sin_b, sin_a);
                     }
                     random_point_on_sphere = dot(random_point_on_sphere, direction) >= 0.0f ? random_point_on_sphere : -random_point_on_sphere;
-                    random_point_on_sphere *= 0.0046422666666667f;
+                    random_point_on_sphere *= 0.0046422666666667f * 0.125f;
                     direction = normalize(sphere_position + random_point_on_sphere - world_position);
                     float maximum_distance = FLOAT32_MAXIMUM;
 traceNV

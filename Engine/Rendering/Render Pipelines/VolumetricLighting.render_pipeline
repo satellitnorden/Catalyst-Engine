@@ -43,7 +43,7 @@ Fragment
     InputParameter(vec2, InTextureCoordinate);
 
     //Constants.
-    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
+    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f * 0.125f)
     #define NUMBER_OF_SAMPLES (8)
     #define SAMPLE_RECIPROCAL (1.0f / NUMBER_OF_SAMPLES)
     #define HALF_SAMPLE_RECIPROCAL (SAMPLE_RECIPROCAL / 2)

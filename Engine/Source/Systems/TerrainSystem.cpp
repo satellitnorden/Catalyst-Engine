@@ -183,8 +183,9 @@ void TerrainSystem::CheckSubdivision(TerrainComponent *const RESTRICT component,
 				child_node._AxisAlignedBoundingBox._Maximum = Vector3<float32>(child_node._Maximum._X, node->_AxisAlignedBoundingBox._Maximum._Y, child_node._Maximum._Y);
 
 				child_node._Position = TerrainQuadTreeUtilities::MiddlePoint(child_node);
-				child_node._MinimumHeightMapCoordinate = (child_node._Minimum + (Vector2<float32>(static_cast<float32>(component->_PatchSize))) * 0.5f) / static_cast<float32>(component->_PatchSize + 1);
-				child_node._MaximumHeightMapCoordinate = (child_node._Maximum + (Vector2<float32>(static_cast<float32>(component->_PatchSize))) * 0.5f) / static_cast<float32>(component->_PatchSize + 1);
+				const Vector2<float32> heightmap_coordinate_offset{ static_cast<float32>(component->_PatchSize) * 0.5f };
+				child_node._MinimumHeightMapCoordinate = (child_node._Minimum + heightmap_coordinate_offset) / static_cast<float32>(component->_PatchSize + 1);
+				child_node._MaximumHeightMapCoordinate = (child_node._Maximum + heightmap_coordinate_offset) / static_cast<float32>(component->_PatchSize + 1);
 				child_node._PatchSize = static_cast<float32>(component->_PatchSize) * patch_size_multiplier;
 			}
 		}

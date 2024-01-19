@@ -56,7 +56,7 @@ private:
 	TimeOfDayParameters _TimeOfDayParameters;
 
 	//The sky light curve.
-	Curve<Vector4<float32>, 4> _SkyLightCurve;
+	Curve<Vector4<float32>, 8> _SkyLightCurve;
 
 	//The sky gradient curve.
 	Curve<SkyGradient, 4> _SkyGradientCurve;
