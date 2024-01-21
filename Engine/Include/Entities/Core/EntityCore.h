@@ -24,7 +24,6 @@ class Entity;
 						ENTITY_TYPE(InstancedStaticModel)	\
 						ENTITY_TYPE(Light)					\
 						ENTITY_TYPE(ParticleSystem)			\
-						ENTITY_TYPE(Sound)					\
 						ENTITY_TYPE(Terrain)				\
 						ENTITY_TYPE(UserInterface)
 

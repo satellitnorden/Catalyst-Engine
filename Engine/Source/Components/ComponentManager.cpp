@@ -84,6 +84,5 @@ DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedImpostor, InstancedImpostorCompo
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedStaticModel, InstancedStaticModelComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
-DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Terrain, TerrainComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(UserInterface, UserInterfaceComponent);

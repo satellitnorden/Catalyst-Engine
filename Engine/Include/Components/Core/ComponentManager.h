@@ -13,7 +13,6 @@
 #include <Components/Transient/LightComponent.h>
 #include <Components/Transient/ParticleSystemComponent.h>
 #include <Components/Transient/ParticleSystemRenderComponent.h>
-#include <Components/Transient/SoundComponent.h>
 #include <Components/Transient/TerrainComponent.h>
 #include <Components/Transient/UserInterfaceComponent.h>
 
@@ -56,7 +55,6 @@ public:
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedStaticModel, InstancedStaticModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Sound, SoundComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Terrain, TerrainComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(UserInterface, UserInterfaceComponent);
 

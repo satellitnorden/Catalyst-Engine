@@ -9,7 +9,6 @@
 #include <Entities/Types/InstancedStaticModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>
-#include <Entities/Types/SoundEntity.h>
 #include <Entities/Types/TerrainEntity.h>
 #include <Entities/Types/UserInterfaceEntity.h>
 
