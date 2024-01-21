@@ -178,9 +178,6 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
 
-	//Cache the number of components.
-	const uint64 number_of_dynamic_model_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
-
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
 	SetCommandBuffer(command_buffer);
@@ -254,58 +251,6 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 
 				//Draw!
 				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[mesh_index]]._IndexCount, 1);
-			}
-		}
-	}
-
-	//Draw dynamic models.
-	if (number_of_dynamic_model_components > 0)
-	{
-		//Cache relevant data.
-		const DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-		//Wait for dynamic models culling to finish.
-		RenderingSystem::Instance->GetCullingSystem()->WaitForDynamicModelsCulling();
-
-		//Wait for dynamic models level of detail to finish.
-		LevelOfDetailSystem::Instance->WaitForDynamicModelsLevelOfDetail();
-
-		for (uint64 i = 0; i < number_of_dynamic_model_components; ++i, ++component)
-		{
-			//Skip this model depending on visibility.
-			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
-			{
-				continue;
-			}
-
-			//Draw all meshes.
-			for (uint64 mesh_index{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
-			{
-				//Skip this mesh depending on the material type.
-				if (component->_MaterialResources[mesh_index]->_Type != MaterialResource::Type::OPAQUE)
-				{
-					continue;
-				}
-
-				//Cache the mesh.
-				const Mesh& mesh{ component->_ModelResource->_Meshes[mesh_index] };
-
-				//Push constants.
-				MobilePushConstantData data;
-
-				data._ModelMatrix = component->_CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				data._SkyLightLuminance = sky_light_luminance;
-				data._MaterialIndex = component->_MaterialResources[mesh_index]->_Index;
-				data._MobilePass = UNDERLYING(MobilePass::MODEL);
-
-				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(MobilePushConstantData), &data);
-
-				//Bind the vertex/inder buffer.
-				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._VertexBuffer, &OFFSET);
-				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexBuffer, OFFSET);
-
-				//Draw!
-				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexCount, 1);
 			}
 		}
 	}

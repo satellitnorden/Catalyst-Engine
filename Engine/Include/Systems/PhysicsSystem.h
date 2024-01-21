@@ -91,11 +91,6 @@ public:
 	void InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
 
 	/*
-	*	Updates the world transform for the given entity.
-	*/
-	void UpdateEntityWorldTransform(Entity *const RESTRICT entity, const WorldTransform &world_transform) NOEXCEPT;
-
-	/*
 	*	Terminates the physics for the given entity.
 	*/
 	void TerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
@@ -185,11 +180,6 @@ private:
 	*	Initializes the sub-system physics for the given entity.
 	*/
 	void SubInitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
-
-	/*
-	*	Updates the sub-system world transform for the given entity.
-	*/
-	void SubUpdateEntityWorldTransform(Entity *const RESTRICT entity, const WorldTransform &world_transform) NOEXCEPT;
 
 	/*
 	*	Terminates the sub-system physics for the given entity.

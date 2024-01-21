@@ -22,14 +22,6 @@ public:
 	void PreRenderUpdate() NOEXCEPT;
 
 	/*
-	*	Waits for dynamic models culling to finish executing.
-	*/
-	FORCE_INLINE void WaitForDynamicModelsCulling() const NOEXCEPT
-	{
-		_DynamicModelsCullingTask.Wait<WaitMode::YIELD>();
-	}
-
-	/*
 	*	Waits for grass culling to finish executing.
 	*/
 	FORCE_INLINE void WaitForGrassCulling() const NOEXCEPT
@@ -63,9 +55,6 @@ public:
 
 private:
 
-	//The dynamic models culling task.
-	Task _DynamicModelsCullingTask;
-
 	//The grass culling task.
 	Task _GrassCullingTask;
 
@@ -77,11 +66,6 @@ private:
 
 	//The terrain culling task.
 	Task _TerrainCullingTask;
-
-	/*
-	*	Culls dynamic models.
-	*/
-	void CullDynamicModels() const NOEXCEPT;
 
 	/*
 	*	Culls grass.

@@ -94,6 +94,7 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 	//Rememder the index offset.
 	uint32 index_offset{ 0 };
 
+	/*
 	//Add dynamic model triangle and vertex data.
 	{
 		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
@@ -138,6 +139,7 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 			}
 		}
 	}
+	*/
 
 	/*
 	//Add static model triangle and vertex data.
@@ -684,6 +686,7 @@ NO_DISCARD bool WorldTracingSystem::DistanceRayModels(const Ray &ray, const floa
 		//Remember if there was a hit.
 		bool hit{ false };
 
+		/*
 		//Go through dynamic models.
 		{
 			const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
@@ -742,6 +745,7 @@ NO_DISCARD bool WorldTracingSystem::DistanceRayModels(const Ray &ray, const floa
 				}
 			}
 		}
+		*/
 
 		/*
 		//Go through static models.

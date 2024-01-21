@@ -132,15 +132,6 @@ void PhysicsSystem::InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXC
 }
 
 /*
-*	Updates the world transform for the given entity.
-*/
-void PhysicsSystem::UpdateEntityWorldTransform(Entity *const RESTRICT entity, const WorldTransform &world_transform) NOEXCEPT
-{
-	//Update the world transform for this entity.
-	SubUpdateEntityWorldTransform(entity, world_transform);
-}
-
-/*
 *	Terminates the physics for the given entity.
 */
 void PhysicsSystem::TerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT

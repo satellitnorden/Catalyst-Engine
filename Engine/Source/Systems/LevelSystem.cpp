@@ -2,10 +2,8 @@
 #include <Systems/LevelSystem.h>
 
 //Entities.
-#include <Entities/Creation/DynamicModelInitializationData.h>
 #include <Entities/Creation/LightInitializationData.h>
 #include <Entities/Creation/UserInterfaceInitializationData.h>
-#include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/UserInterfaceEntity.h>
 
@@ -32,28 +30,6 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 	{
 		switch (level_entry._Type)
 		{
-			case LevelEntry::Type::DYNAMIC_MODEL:
-			{
-				DynamicModelEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<DynamicModelEntity>() };
-				DynamicModelInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicModelInitializationData>() };
-
-				data->_Properties = EntityInitializationData::Property::NONE;
-				data->_InitialWorldTransform = level_entry._DynamicModelData._WorldTransform;
-				data->_ModelResource = ResourceSystem::Instance->GetModelResource(level_entry._DynamicModelData._ModelResourceIdentifier);
-
-				for (uint64 i{ 0 }, size{ level_entry._DynamicModelData._MaterialResourceIdentifiers.Size() }; i < size; ++i)
-				{
-					data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(level_entry._DynamicModelData._MaterialResourceIdentifiers[i]);
-				}
-
-				data->_ModelCollisionConfiguration = level_entry._DynamicModelData._ModelCollisionConfiguration;
-				data->_ModelSimulationConfiguration = level_entry._DynamicModelData._ModelSimulationConfiguration;
-
-				EntitySystem::Instance->RequestInitialization(entity, data, true);
-
-				break;
-			}
-
 			case LevelEntry::Type::LIGHT:
 			{
 				LightEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<LightEntity>() };

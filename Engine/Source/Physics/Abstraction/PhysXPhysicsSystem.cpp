@@ -10,7 +10,6 @@
 
 //Entities.
 #include <Entities/Creation/TerrainInitializationData.h>
-#include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/TerrainEntity.h>
 
 //Physics.
@@ -57,7 +56,8 @@ public:
 	FORCE_INLINE physx::PxQueryHitType::Enum preFilter(const physx::PxFilterData &filter_data, const physx::PxShape *const RESTRICT shape, const physx::PxRigidActor *const RESTRICT actor, physx::PxHitFlags &queryFlags) NOEXCEPT
 	{
 		const bool is_character{ actor->userData == nullptr };
-		const bool is_dynamic_model{ actor->userData && static_cast<Entity *const RESTRICT>(actor->userData)->_Type == EntityType::DynamicModel };
+		//const bool is_dynamic_model{ actor->userData && static_cast<Entity* const RESTRICT>(actor->userData)->_Type == EntityType::DynamicModel };
+		const bool is_dynamic_model{ false };
 		//const bool is_static_model{ actor->userData && static_cast<Entity *const RESTRICT>(actor->userData)->_Type == EntityType::StaticModel };
 		const bool is_static_model{ false };
 
@@ -84,25 +84,6 @@ private:
 
 	//The raycast configuration.
 	RaycastConfiguration _RaycastConfiguration;
-
-};
-
-/*
-*	Dynamic model entity data class definition.
-*/
-class DynamicModelEntityData final
-{
-
-public:
-
-	//The entity.
-	DynamicModelEntity *RESTRICT _Entity;
-
-	//The actor.
-	physx::PxRigidDynamic *RESTRICT _Actor;
-
-	//The translation offset.
-	Vector3<float32> _TranslationOffset;
 
 };
 
@@ -178,9 +159,6 @@ namespace PhysXPhysicsSystemData
 
 	//The controller manager.
 	physx::PxControllerManager *RESTRICT _ControllerManager{ nullptr };
-
-	//The dynamic model entity data.
-	DynamicArray<DynamicModelEntityData> _DynamicModelEntityData;
 
 	//The terrain entity data lock.
 	Spinlock _TerrainEntityDataLock;
@@ -301,9 +279,6 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 	//Update the time since last update.
 	PhysXPhysicsSystemData::_TimeSinceLastUpdate += delta_time;
 
-	//Should the physics be updated?
-	bool physics_was_updated{ false };
-
 	if (PhysXPhysicsSystemData::_TimeSinceLastUpdate >= PhysXPhysicsSystemConstants::UPDATE_FREQUENCY)
 	{
 		//Update the time since last update.
@@ -317,41 +292,6 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 
 			//Fetch the results.
 			PhysXPhysicsSystemData::_Scene->fetchResults(true);
-		}
-
-		//Physics was updated!
-		physics_was_updated = true;
-	}
-
-	if (physics_was_updated)
-	{
-		//Update all dynamic models.
-		for (const DynamicModelEntityData &data : PhysXPhysicsSystemData::_DynamicModelEntityData)
-		{
-			//Retrieve the position/rotation.
-			Vector3<float32> position;
-			Quaternion rotation;
-
-			{
-				physx::PxShape *RESTRICT shape;
-				data._Actor->getShapes(&shape, 1);
-				const physx::PxTransform translation_offset{ physx::PxVec3(data._TranslationOffset._X, data._TranslationOffset._Y, data._TranslationOffset._Z) };
-				const physx::PxTransform final_transform{ data._Actor->getGlobalPose() * shape->getLocalPose() * translation_offset };
-
-				Memory::Copy(&position, &final_transform.p, sizeof(Vector3<float32>));
-				Memory::Copy(&rotation, &final_transform.q, sizeof(Quaternion));
-			}
-
-			//Set up the new world transform.
-			WorldTransform new_world_transform;
-
-			new_world_transform.SetAbsolutePosition(position);
-
-			const EulerAngles euler_angles{ rotation.ToEulerAngles() };
-			new_world_transform.SetRotation(euler_angles);
-
-			//Set the world transform of the entity.
-			data._Entity->SetWorldTransform(new_world_transform);
 		}
 	}
 
@@ -702,143 +642,6 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 	//Which type is this entity?
 	switch (entity->_Type)
 	{
-		case EntityType::DynamicModel:
-		{
-			//Cache the component.
-			const DynamicModelComponent &component{ ComponentManager::GetDynamicModelDynamicModelComponents()[entity->_ComponentsIndex] };
-
-			//Check if collision is requested.
-			if (component._ModelCollisionConfiguration._Type == ModelCollisionType::NONE)
-			{
-				return;
-			}
-
-			//Set up the dynamic model entity data.
-			DynamicModelEntityData data;
-
-			//Set the entity.
-			data._Entity = static_cast<DynamicModelEntity *RESTRICT>(entity);
-
-			//Calculate the translation offset.
-			const AxisAlignedBoundingBox3D model_space_axis_aligned_bounding_box{ component._ModelResource->_ModelSpaceAxisAlignedBoundingBox };
-			AxisAlignedBoundingBox3D scaled_model_space_axis_aligned_bounding_box;
-			RenderingUtilities::TransformAxisAlignedBoundingBox(model_space_axis_aligned_bounding_box, Matrix4x4(VectorConstants::ZERO, EulerAngles(), Vector3<float32>(component._CurrentWorldTransform.GetScale())), &scaled_model_space_axis_aligned_bounding_box);
-			const Vector3<float32> translation_offset{ -AxisAlignedBoundingBox3D::CalculateCenter(scaled_model_space_axis_aligned_bounding_box) };
-
-			//Create the actor.
-			{
-				//Create the shape.
-				physx::PxShape *RESTRICT shape{ nullptr };
-
-				switch (component._ModelCollisionConfiguration._Type)
-				{
-					case ModelCollisionType::BOX:
-					{
-						const AxisAlignedBoundingBox3D local_axis_aligned_bounding_box{ component._WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox() };
-						const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
-						const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
-
-						{
-							SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
-							shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
-						}
-
-						break;
-					}
-
-					case ModelCollisionType::COLLISION_MODEL:
-					{
-						physx::PxBase *const RESTRICT mesh{ static_cast<physx::PxBase *const RESTRICT>(component._ModelResource->_CollisionModel) };
-
-						if (mesh->is<physx::PxTriangleMesh>())
-						{
-							physx::PxTriangleMesh *const RESTRICT triangle_mesh{ static_cast<physx::PxTriangleMesh *const RESTRICT>(component._ModelResource->_CollisionModel) };
-							const physx::PxTriangleMeshGeometry geometry{ triangle_mesh };
-
-							{
-								SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
-								shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
-							}
-						}
-
-						else if (mesh->is<physx::PxConvexMesh>())
-						{
-							physx::PxConvexMesh *const RESTRICT convex_mesh{ static_cast<physx::PxConvexMesh *const RESTRICT>(component._ModelResource->_CollisionModel) };
-							const physx::PxConvexMeshGeometry geometry{ convex_mesh };
-
-							{
-								SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
-								shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
-							}
-						}
-
-						else
-						{
-							ASSERT(false, "What happened here?");
-						}
-
-						break;
-					}
-
-					default:
-					{
-						ASSERT(false, "Invalid case!");
-					}
-				}
-
-				ASSERT(shape, "Couldn't create shape!");
-
-				//Set up the transform.
-				const Vector3<float32> absolute_world_position{ component._CurrentWorldTransform.GetAbsolutePosition() };
-				const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
-				const Quaternion rotation{ component._CurrentWorldTransform.GetRotation() };
-				physx::PxQuat physx_rotation;
-				physx_rotation.x = rotation._X;
-				physx_rotation.y = rotation._Y;
-				physx_rotation.z = rotation._Z;
-				physx_rotation.w = rotation._W;
-				const physx::PxTransform transform{ position, physx_rotation };
-
-				//Create the actor!
-				{
-					SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
-					data._Actor = PhysXPhysicsSystemData::_Physics->createRigidDynamic(transform);
-				}
-			
-				//Attach the shape.
-				data._Actor->attachShape(*shape);
-
-				//Set up the actor.
-				physx::PxRigidBodyExt::updateMassAndInertia(*data._Actor, component._ModelSimulationConfiguration._InitialMass);
-
-				if (!component._ModelSimulationConfiguration._InitialVelocity.IsZero())
-				{
-					const physx::PxVec3 phsyx_initial_velocity{ component._ModelSimulationConfiguration._InitialVelocity._X, component._ModelSimulationConfiguration._InitialVelocity._Y, component._ModelSimulationConfiguration._InitialVelocity._Z };
-					data._Actor->setLinearVelocity(phsyx_initial_velocity);
-				}
-
-				//Release the shape.
-				shape->release();
-			}
-
-			//Set the user data.
-			data._Actor->userData = entity;
-
-			//Add the actor to the scene.
-			{
-				SCOPED_LOCK(PhysXPhysicsSystemData::_SceneLock);
-				PhysXPhysicsSystemData::_Scene->addActor(*data._Actor);
-			}
-
-			//Set the translation offset.
-			data._TranslationOffset = translation_offset;
-
-			//Add the dynamic model entity data.
-			PhysXPhysicsSystemData::_DynamicModelEntityData.Emplace(data);
-
-			break;
-		}
-
 		case EntityType::Terrain:
 		{
 			//Find the data.
@@ -879,59 +682,6 @@ void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NO
 }
 
 /*
-*	Updates the sub-system world transform for the given entity.
-*/
-void PhysicsSystem::SubUpdateEntityWorldTransform(Entity *const RESTRICT entity, const WorldTransform &world_transform) NOEXCEPT
-{
-	//Don't update world transforms while physics is being updated.
-	if (PhysXPhysicsSystemData::_PhysicsIsUpdating)
-	{
-		return;
-	}
-
-	//Which type is this entity?
-	switch (entity->_Type)
-	{
-		case EntityType::DynamicModel:
-		{
-			//Find the actor.
-			physx::PxActor* RESTRICT actor{ nullptr };
-
-			for (const DynamicModelEntityData &data : PhysXPhysicsSystemData::_DynamicModelEntityData)
-			{
-				if (data._Entity == entity)
-				{
-					actor = data._Actor;
-
-					break;
-				}
-			}
-
-			ASSERT(actor, "Couldn't find the actor for this entity!");
-
-			//Set up the PhysX transform.
-			const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
-			const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
-			const Quaternion rotation{ world_transform.GetRotation() };
-			const physx::PxQuat physx_rotation{ rotation._X, rotation._Y, rotation._Z, rotation._W };
-			const physx::PxTransform physx_transform{ physx_position, physx_rotation };
-
-			//Set the global pose.
-			static_cast<physx::PxRigidBody *const RESTRICT>(actor)->setGlobalPose(physx_transform);
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
-}
-
-/*
 *	Terminates the sub-system physics for the given entity.
 */
 void PhysicsSystem::SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
@@ -939,35 +689,6 @@ void PhysicsSystem::SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOE
 	//Which type is this entity?
 	switch (entity->_Type)
 	{
-		case EntityType::DynamicModel:
-		{
-			//Cast to the type.
-			DynamicModelEntity *const RESTRICT dynamic_model_entity{ static_cast<DynamicModelEntity *const RESTRICT>(entity) };
-
-			//Find the dynamic model entity data.
-			for (uint64 i{ 0 }, size{ PhysXPhysicsSystemData::_DynamicModelEntityData.Size() }; i < size; ++i)
-			{
-				if (PhysXPhysicsSystemData::_DynamicModelEntityData[i]._Entity == entity)
-				{
-					//Remove the actor from the scene.
-					{
-						SCOPED_LOCK(PhysXPhysicsSystemData::_SceneLock);
-						PhysXPhysicsSystemData::_Scene->removeActor(*PhysXPhysicsSystemData::_DynamicModelEntityData[i]._Actor);
-					}
-
-					//Release the actor.
-					PhysXPhysicsSystemData::_DynamicModelEntityData[i]._Actor->release();
-
-					//Remove the dynamic model entity data.
-					PhysXPhysicsSystemData::_DynamicModelEntityData.EraseAt<false>(i);
-
-					break;
-				}
-			}
-
-			break;
-		}
-
 		case EntityType::Terrain:
 		{
 			//Cast to the type.
@@ -1048,14 +769,6 @@ void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &confi
 
 			switch (entity->_Type)
 			{
-				case EntityType::DynamicModel:
-				{
-					result->_Type = RaycastResult::Type::DYNAMIC_MODEL;
-					result->_DynamicModelRaycastResult._Entity = entity;
-
-					break;
-				}
-
 				case EntityType::Terrain:
 				{
 					result->_Type = RaycastResult::Type::TERRAIN;
@@ -1093,16 +806,6 @@ void PhysicsSystem::SubAddImpulse(const WorldPosition &world_position, const flo
 	//Calculate the PhysX position.
 	const Vector3<float32> absolute_world_position{ world_position.GetAbsolutePosition() };
 	const physx::PxVec3 physx_position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
-
-	//Apply impulses to all dynamic models.
-	for (const DynamicModelEntityData &data : PhysXPhysicsSystemData::_DynamicModelEntityData)
-	{
-		//Calculate the force magnitude.
-		const Vector3<float32> force_magnitude{ Vector3<float32>::Normalize(data._Entity->GetWorldTransform()->GetAbsolutePosition() - absolute_world_position) * force };
-		const physx::PxVec3 physx_force_magnitude{ force_magnitude._X, force_magnitude._Y, force_magnitude._Z };
-
-		physx::PxRigidBodyExt::addForceAtPos(*data._Actor, physx_force_magnitude, physx_position, physx::PxForceMode::Enum::eIMPULSE);
-	}
 }
 
 /*

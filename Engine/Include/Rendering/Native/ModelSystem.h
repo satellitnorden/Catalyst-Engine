@@ -4,9 +4,6 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-//Entities.
-#include <Entities/Types/DynamicModelEntity.h>
-
 //Rendering.
 #include <Rendering/Native/HighlightedModel.h>
 #include <Rendering/Native/RenderingCore.h>
