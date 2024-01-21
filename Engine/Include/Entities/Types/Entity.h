@@ -13,11 +13,18 @@ class Entity
 
 public:
 
-	//The type.
-	EntityType _Type{ EntityType::NumberOfEntityTypes };
+	//The entity identifier.
+	EntityIdentifier _EntityIdentifier;
 
 	//Denotes whether or not this entity is initialized.
 	bool _Initialized{ false };
+
+	///////////////
+	// OLD SETUP //
+	///////////////
+
+	//The type.
+	EntityType _Type{ EntityType::NumberOfEntityTypes };
 
 	//The components index for this entity.
 	uint64 _ComponentsIndex;

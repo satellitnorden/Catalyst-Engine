@@ -55,16 +55,6 @@ void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configurat
 	UpdatePhase::RENDER,
 	false,
 	false);
-
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
-	{
-		static_cast<WorldSystem *const RESTRICT>(arguments)->LogicUpdate();
-	},
-	this,
-	UpdatePhase::LOGIC,
-	UpdatePhase::PHYSICS,
-	false,
-	false);
 }
 
 /*
@@ -119,15 +109,6 @@ void WorldSystem::InputUpdate() NOEXCEPT
 }
 
 /*
-*	Updates the world system during the logic update phase.
-*/
-void WorldSystem::LogicUpdate() NOEXCEPT
-{
-	//Update all distance triggers.
-	UpdateDistanceTriggers();
-}
-
-/*
 *	Updates all particle systems.
 */
 void WorldSystem::UpdateParticleSystems() NOEXCEPT
@@ -167,60 +148,6 @@ void WorldSystem::UpdateParticleSystems() NOEXCEPT
 			component->_TimeSinceLastSpawn -= spawn_frequency_reciprocal;
 
 			++component->_NumberOfParticlesToSpawn;
-		}
-	}
-}
-
-/*
-*	Updates all distance triggers.
-*/
-void WorldSystem::UpdateDistanceTriggers() NOEXCEPT
-{
-	//Cache the camera position.
-	const Vector3<float> camera_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition() };
-
-	//Update all distance triggers.
-	const uint64 number_of_distance_trigger_components{ ComponentManager::GetNumberOfDistanceTriggerComponents() };
-	DistanceTriggerComponent* RESTRICT distance_trigger_component{ ComponentManager::GetDistanceTriggerDistanceTriggerComponents() };
-
-	for (uint64 i{ 0 }; i < number_of_distance_trigger_components; ++i, ++distance_trigger_component)
-	{
-		//Calculate the distance, squared, to the camera.
-		const float distance_squared{ Vector3<float>::LengthSquared(camera_position - distance_trigger_component->_Position) };
-
-		//Modify the state as needed.
-		switch (distance_trigger_component->_CurrentState)
-		{
-			case DistanceTriggerEntity::State::UNENTERED:
-			{
-				if (distance_squared <= distance_trigger_component->_TriggerDistanceSquared)
-				{
-					distance_trigger_component->_EnterFunction();
-
-					distance_trigger_component->_CurrentState = DistanceTriggerEntity::State::ENTERED;
-				}
-
-				break;
-			}
-
-			case DistanceTriggerEntity::State::ENTERED:
-			{
-				if (distance_squared > distance_trigger_component->_TriggerDistanceSquared)
-				{
-					distance_trigger_component->_ExitFunction();
-
-					distance_trigger_component->_CurrentState = DistanceTriggerEntity::State::UNENTERED;
-				}
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
 		}
 	}
 }

@@ -18,11 +18,6 @@ class ModelSystem final
 public:
 
 	/*
-	*	Initializes the model system.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
 	*	Post-initializes the model system.
 	*/
 	void PostInitialize() NOEXCEPT;
@@ -79,10 +74,5 @@ private:
 	*	Creates the render data tables.
 	*/
 	void CreateRenderDataTables() NOEXCEPT;
-
-	/*
-	*	Updates the model system during the input update phase.
-	*/
-	void InputUpdate() NOEXCEPT;
 
 };

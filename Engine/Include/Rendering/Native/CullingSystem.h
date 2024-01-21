@@ -54,14 +54,6 @@ public:
 	}
 
 	/*
-	*	Waits for static models culling to finish executing.
-	*/
-	FORCE_INLINE void WaitForStaticModelsCulling() const NOEXCEPT
-	{
-		_StaticModelsCullingTask.Wait<WaitMode::YIELD>();
-	}
-
-	/*
 	*	Waits for terrain culling to finish executing.
 	*/
 	FORCE_INLINE void WaitForTerrainCulling() const NOEXCEPT
@@ -82,9 +74,6 @@ private:
 
 	//The instanced impostors culling task.
 	Task _InstancedStaticModelsCullingTask;
-
-	//The static models culling task.
-	Task _StaticModelsCullingTask;
 
 	//The terrain culling task.
 	Task _TerrainCullingTask;
@@ -108,11 +97,6 @@ private:
 	*	Culls instanced static models.
 	*/
 	void CullInstancedStaticModels() const NOEXCEPT;
-
-	/*
-	*	Culls static models.
-	*/
-	void CullStaticModels() const NOEXCEPT;
 
 	/*
 	*	Culls terrain.

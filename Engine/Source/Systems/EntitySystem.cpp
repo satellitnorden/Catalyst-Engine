@@ -1,12 +1,17 @@
 //Header file.
 #include <Systems/EntitySystem.h>
 
+//Core.
+#include <Core/General/Time.h>
+
+//Components.
+#include <Components/Core/Component.h>
+
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
 
 //Entities.
 #include <Entities/Types/AnimatedModelEntity.h>
-#include <Entities/Types/DistanceTriggerEntity.h>
 #include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/GrassEntity.h>
 #include <Entities/Types/InstancedImpostorEntity.h>
@@ -14,13 +19,19 @@
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>
 #include <Entities/Types/SoundEntity.h>
-#include <Entities/Types/StaticModelEntity.h>
 #include <Entities/Types/TerrainEntity.h>
 #include <Entities/Types/UserInterfaceEntity.h>
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
+
+//Entity system constants.
+namespace EntitySystemConstants
+{
+	constexpr float32 MAXIMUM_CREATION_TIME{ 0.5f / 1000.0f };
+	constexpr float32 MAXIMUM_DESTRUCTION_TIME{ 1.0f / 1000.0f };
+}
 
 //Singleton definition.
 DEFINE_SINGLETON(EntitySystem);
@@ -41,7 +52,7 @@ void EntitySystem::Initialize() NOEXCEPT
 
 	_TerminationDestructionQueueLock.Lock();
 	_TerminationQueue.Reserve(1'024);
-	_DestructionQueue.Reserve(1'024);
+	_DestructionQueueOld.Reserve(1'024);
 	_TerminationDestructionQueueLock.Unlock();
 
 	//Register the update.
@@ -54,6 +65,60 @@ void EntitySystem::Initialize() NOEXCEPT
 	UpdatePhase::INPUT,
 	false,
 	false);
+}
+
+/*
+*	Creates a new entity.
+*/
+NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<Pair<HashString, void *const RESTRICT>> component_configurations) NOEXCEPT
+{
+	//Allocate the entity.
+	Entity *RESTRICT entity;
+	
+	{
+		SCOPED_LOCK(_AllocatorLock);
+
+		entity = static_cast<Entity *RESTRICT>(_Allocator.Allocate());
+	}
+
+	//Generate the entity identifier.
+	entity->_EntityIdentifier = GenerateEntityIdentifier();
+
+	//Reset whether or not this entity is initialized.
+	entity->_Initialized = false;
+
+	//Add it to the creation queue.
+	EntityCreationQueueItem queue_item;
+
+	queue_item._Entity = entity;
+	
+	queue_item._NumberOfComponentConfigurations = 0;
+
+	for (Pair<HashString, void *const RESTRICT> &component_configuration : component_configurations)
+	{
+		queue_item._ComponentConfigurations[queue_item._NumberOfComponentConfigurations]._First = component_configuration._First;
+		queue_item._ComponentConfigurations[queue_item._NumberOfComponentConfigurations]._Second = component_configuration._Second;
+
+		++queue_item._NumberOfComponentConfigurations;
+	}
+
+	_CreationQueue.Push(queue_item);
+
+	//Return the entity.
+	return entity;
+}
+
+/*
+*	Destroys an entity.
+*/
+void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Add it to the destruction queue.
+	EntityDestructionQueueItem queue_item;
+
+	queue_item._Entity = entity;
+
+	_DestructionQueue.Push(queue_item);
 }
 
 /*
@@ -99,7 +164,7 @@ void EntitySystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCEPT
 /*
 *	Destroys one entity.
 */
-void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
+void EntitySystem::DestroyEntityOld(Entity *const RESTRICT entity) NOEXCEPT
 {
 	ASSERT(!entity->_Initialized, "Destroying an initialized entity, this is bad!");
 
@@ -157,7 +222,7 @@ void EntitySystem::RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT
 	SCOPED_LOCK(_TerminationDestructionQueueLock);
 
 	//Add the data.
-	_DestructionQueue.Emplace(entity);
+	_DestructionQueueOld.Emplace(entity);
 }
 
 /*
@@ -229,10 +294,36 @@ void EntitySystem::DestroyAllEntities() NOEXCEPT
 }
 
 /*
+*	Generates a new entity identifier.
+*/
+NO_DISCARD EntityIdentifier EntitySystem::GenerateEntityIdentifier() NOEXCEPT
+{
+	SCOPED_LOCK(_EntityIdentifierLock);
+
+	if (!_EntityIdentifierFreeList.Empty())
+	{
+		const EntityIdentifier new_entity_identifier{ _EntityIdentifierFreeList.Back() };
+		_EntityIdentifierFreeList.Pop();
+		return new_entity_identifier;
+	}
+
+	else
+	{
+		return _EntityIdentifierCounter++;
+	}
+}
+
+/*
 *	Updates the entity system during the ENTITY update phase.
 */
 void EntitySystem::EntityUpdate() NOEXCEPT
 {
+	//Process the creation queue.
+	ProcessCreationQueue();
+
+	//Process the destruction queue.
+	ProcessDestructionQueue();
+
 	//Process the initialization queue.
 	ProcessInitializationQueue();
 
@@ -243,7 +334,7 @@ void EntitySystem::EntityUpdate() NOEXCEPT
 		ProcessTerminationQueue();
 
 		//Process the destruction queue.
-		ProcessDestructionQueue();
+		ProcessDestructionQueueOld();
 	}
 
 	//Process the automatic termination queue.
@@ -254,6 +345,98 @@ void EntitySystem::EntityUpdate() NOEXCEPT
 
 	//Process the duplication queue.
 	ProcessDuplicationQueue();
+}
+
+/*
+*	Processed the creation queue.
+*/
+void EntitySystem::ProcessCreationQueue() NOEXCEPT
+{
+	TimePoint start_time{ GetCurrentTimePoint() };
+	
+	while (start_time.GetSecondsSince() < EntitySystemConstants::MAXIMUM_CREATION_TIME)
+	{
+		if (EntityCreationQueueItem *const RESTRICT queue_item{ _CreationQueue.Pop() })
+		{
+			//Notify all components that a new entity was created.
+			for (Component *const RESTRICT component : AllComponents())
+			{
+				component->OnEntityCreated(queue_item->_Entity->_EntityIdentifier);
+			}
+
+			//Create all instances.
+			for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
+			{
+				Pair<HashString, void *RESTRICT> &component_configuration{ queue_item->_ComponentConfigurations[i] };
+
+				bool found_component{ false };
+
+				for (Component *const RESTRICT component : AllComponents())
+				{
+					if (component_configuration._First == component->_Identifier)
+					{
+						component->CreateInstance(queue_item->_Entity->_EntityIdentifier, component_configuration._Second);
+
+						found_component = true;
+
+						break;
+					}
+				}
+
+				ASSERT(found_component, "Couldn't find component!");
+			}
+
+			//This entity is now initialized. (:
+			queue_item->_Entity->_Initialized = true;
+		}
+
+		else
+		{
+			break;
+		}
+	}
+}
+
+/*
+*	Processed the destruction queue.
+*/
+void EntitySystem::ProcessDestructionQueue() NOEXCEPT
+{
+	TimePoint start_time{ GetCurrentTimePoint() };
+
+	while (start_time.GetSecondsSince() < EntitySystemConstants::MAXIMUM_DESTRUCTION_TIME)
+	{
+		if (EntityDestructionQueueItem *const RESTRICT queue_item{ _DestructionQueue.Pop() })
+		{
+			//Notify all components that this entity was destroyed.
+			for (Component *const RESTRICT component : AllComponents())
+			{
+				if (component->Has(queue_item->_Entity->_EntityIdentifier))
+				{
+					component->DestroyInstance(queue_item->_Entity->_EntityIdentifier);
+				}
+			}
+
+			//Add this entity's identifier to the free list.
+			{
+				SCOPED_LOCK(_EntityIdentifierLock);
+
+				_EntityIdentifierFreeList.Emplace(queue_item->_Entity->_EntityIdentifier);
+			}
+
+			//Free the memory for this entity.
+			{
+				SCOPED_LOCK(_AllocatorLock);
+
+				_Allocator.Free(queue_item->_Entity);
+			}
+		}
+
+		else
+		{
+			break;
+		}
+	}
 }
 
 /*
@@ -382,17 +565,17 @@ void EntitySystem::ProcessTerminationQueue() NOEXCEPT
 /*
 *	Processes the destruction queue.
 */
-void EntitySystem::ProcessDestructionQueue() NOEXCEPT
+void EntitySystem::ProcessDestructionQueueOld() NOEXCEPT
 {
 	//Destroy all entities.
-	for (uint64 i{ 0 }; i < _DestructionQueue.Size();)
+	for (uint64 i{ 0 }; i < _DestructionQueueOld.Size();)
 	{
-		if (!_DestructionQueue[i]->_Initialized
-			&& !_TerminationQueue.Exists(_DestructionQueue[i]))
+		if (!_DestructionQueueOld[i]->_Initialized
+			&& !_TerminationQueue.Exists(_DestructionQueueOld[i]))
 		{
-			DestroyEntity(_DestructionQueue[i]);
+			DestroyEntityOld(_DestructionQueueOld[i]);
 
-			_DestructionQueue.EraseAt<false>(i);
+			_DestructionQueueOld.EraseAt<false>(i);
 		}
 
 		else
@@ -436,7 +619,7 @@ void EntitySystem::ProcessAutomaticDestructionQueue() NOEXCEPT
 
 		if (!entity->_Initialized)
 		{
-			DestroyEntity(entity);
+			DestroyEntityOld(entity);
 
 			_AutomaticDestructionQueue.EraseAt<false>(i);
 		}

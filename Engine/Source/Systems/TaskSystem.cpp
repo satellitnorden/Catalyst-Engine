@@ -165,7 +165,7 @@ void TaskSystem::DoWork(const Task::Priority priority) NOEXCEPT
 	//Try to execute higher priority tasks first.
 	for (int16 i{ UNDERLYING(Task::Priority::NUMBER_OF_TASK_PRIORITIES) - 1 }; i >= UNDERLYING(priority); --i)
 	{
-		if (Task* const RESTRICT* const RESTRICT new_task{ _TaskQueues[i].Pop()})
+		if (Task *const RESTRICT *const RESTRICT new_task{ _TaskQueues[i].Pop()})
 		{
 			(*new_task)->Execute();
 			--_TasksInQueue[i];

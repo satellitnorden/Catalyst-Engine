@@ -139,6 +139,7 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 		}
 	}
 
+	/*
 	//Add static model triangle and vertex data.
 	{
 		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
@@ -183,6 +184,7 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 			}
 		}
 	}
+	*/
 
 	//Build the acceleration structure.
 	_AccelerationStructure.Build(8);
@@ -741,6 +743,7 @@ NO_DISCARD bool WorldTracingSystem::DistanceRayModels(const Ray &ray, const floa
 			}
 		}
 
+		/*
 		//Go through static models.
 		{
 			const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
@@ -799,6 +802,7 @@ NO_DISCARD bool WorldTracingSystem::DistanceRayModels(const Ray &ray, const floa
 				}
 			}
 		}
+		*/
 
 		//Return if there was a hit.
 		return hit;

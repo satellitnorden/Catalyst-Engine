@@ -25,8 +25,8 @@ public:
 
 	public:
 
-		//The entity.
-		const Entity *RESTRICT _Entity;
+		//The entity identifier.
+		EntityIdentifier _EntityIdentifier;
 
 		//The vertex buffer.
 		BufferHandle _VertexBuffer;

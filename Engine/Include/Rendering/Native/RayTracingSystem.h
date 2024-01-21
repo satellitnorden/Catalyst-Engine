@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Components.
+#include <Components/Components/StaticModelComponent.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
@@ -46,14 +49,14 @@ public:
 	NO_DISCARD RenderDataTableHandle GetCurrentRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Callback for when an entity is initialized.
+	*	Callback for when a static model instance is created.
 	*/
-	void OnEntityInitialized(const Entity *const RESTRICT entity) NOEXCEPT;
+	void OnStaticModelInstanceCreated(const EntityIdentifier entity_identifier, const StaticModelInstanceData &instance_data) NOEXCEPT;
 
 	/*
-	*	Callback for when an entity is terminated.
+	*	Callback for when a static model instance is destroyed.
 	*/
-	void OnEntityTerminated(const Entity *const RESTRICT entity) NOEXCEPT;
+	void OnStaticModelInstanceDestroyed(const EntityIdentifier entity_identifier, const StaticModelInstanceData &instance_data) NOEXCEPT;
 
 	/*
 	*	Returns if ray tracing data exists.

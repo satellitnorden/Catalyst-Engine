@@ -71,6 +71,49 @@ void PhysicsSystem::CreateCollisionModel(const CollisionModelData &collision_mod
 }
 
 /*
+*	Creates a model actor.
+*/
+void PhysicsSystem::CreateModelActor
+(
+	const WorldTransform &world_transform,
+	const ModelCollisionConfiguration &collision_configuration,
+	const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
+	const CollisionModelHandle collision_model,
+	const ModelSimulationConfiguration &simulation_configuration,
+	ActorHandle *const RESTRICT actor_handle
+) NOEXCEPT
+{
+	//Create the model actor on the sub-system.
+	SubCreateModelActor
+	(
+		world_transform,
+		collision_configuration,
+		world_space_axis_aligned_bounding_box,
+		collision_model,
+		simulation_configuration,
+		actor_handle
+	);
+}
+
+/*
+*	Destroys an actor.
+*/
+void PhysicsSystem::DestroyActor(ActorHandle *const RESTRICT actor_handle) NOEXCEPT
+{
+	//Destroy the actor on the sub-system.
+	SubDestroyActor(actor_handle);
+}
+
+/*
+*	Returns the world transform for the given actor.
+*/
+void PhysicsSystem::GetActorWorldTransform(const ActorHandle actor_handle, WorldTransform* const RESTRICT world_transform) NOEXCEPT
+{
+	//Retrieve the world transform from the sub-system.
+	SubGetActorWorldTransform(actor_handle, world_transform);
+}
+
+/*
 *	Preprocesses the physics for the given entity.
 */
 void PhysicsSystem::PreprocessEntityPhysics(Entity *const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT

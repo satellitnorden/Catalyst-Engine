@@ -3,6 +3,7 @@
 
 //Components.
 #include <Components/Core/ComponentManager.h>
+#include <Components/Components/StaticModelComponent.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -658,61 +659,54 @@ void RenderInputManager::GatherDepthModelInputStream
 
 	//Gather static models.
 	{
-		//Cache relevant data.
-		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-		//Wait for culling.
-		RenderingSystem::Instance->GetCullingSystem()->WaitForStaticModelsCulling();
-
 		//Wait for static models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
 
 		//Go through all components.
-		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		for (StaticModelInstanceData &instance_data : StaticModelComponent::Instance->InstanceData())
 		{
 			//Skip this model if it's not visible.
-			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
+			if (!TEST_BIT(instance_data._VisibilityFlags, VisibilityFlags::CAMERA))
 			{
 				continue;
 			}
 
 			//Go through all meshes.
-			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
-				if (component->_MaterialResources[i]->_Type != material_type)
+				if (instance_data._MaterialResources[i]->_Type != material_type)
 				{
 					continue;
 				}
 
 				//Skip this mesh depending on double sided-ness.
-				if (component->_MaterialResources[i]->_DoubleSided != double_sided)
+				if (instance_data._MaterialResources[i]->_DoubleSided != double_sided)
 				{
 					continue;
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ component->_ModelResource->_Meshes[i] };
+				const Mesh &mesh{ instance_data._ModelResource->_Meshes[i] };
 
 				//Add a new entry.
 				input_stream->_Entries.Emplace();
 				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
 
 				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
-				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._VertexBuffer;
+				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._IndexBuffer;
 				new_entry._IndexBufferOffset = 0;
 				new_entry._InstanceBuffer = EMPTY_HANDLE;
 				new_entry._VertexCount = 0;
-				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
+				new_entry._IndexCount = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._IndexCount;
 				new_entry._InstanceCount = 0;
 
 				//Set up the push constant data.
 				ModelDepthPushConstantData push_constant_data;
 
-				push_constant_data._ModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
+				push_constant_data._ModelMatrix = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				push_constant_data._MaterialIndex = instance_data._MaterialResources[i]->_Index;
 
 				for (uint64 i{ 0 }; i < sizeof(ModelDepthPushConstantData); ++i)
 				{
@@ -807,61 +801,55 @@ void RenderInputManager::GatherFullModelInputStream
 
 	//Gather static models.
 	{
-		//Cache relevant data.
-		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-		//Wait for culling.
-		RenderingSystem::Instance->GetCullingSystem()->WaitForStaticModelsCulling();
-
 		//Wait for static models level of detail to finish.
 		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
 
 		//Go through all components.
-		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		for (StaticModelInstanceData &instance_data : StaticModelComponent::Instance->InstanceData())
 		{
 			//Skip this model if it's not visible.
-			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
+			if (!TEST_BIT(instance_data._VisibilityFlags, VisibilityFlags::CAMERA))
 			{
 				continue;
 			}
 
 			//Go through all meshes.
-			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
-				if (component->_MaterialResources[i]->_Type != material_type)
+				if (instance_data._MaterialResources[i]->_Type != material_type)
 				{
 					continue;
 				}
 
 				//Skip this mesh depending on double sided-ness.
-				if (component->_MaterialResources[i]->_DoubleSided != double_sided)
+				if (instance_data._MaterialResources[i]->_DoubleSided != double_sided)
 				{
 					continue;
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ component->_ModelResource->_Meshes[i] };
+				const Mesh &mesh{ instance_data._ModelResource->_Meshes[i] };
 
 				//Add a new entry.
 				input_stream->_Entries.Emplace();
 				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
 
 				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._VertexBuffer;
-				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._VertexBuffer;
+				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._IndexBuffer;
 				new_entry._IndexBufferOffset = 0;
 				new_entry._InstanceBuffer = EMPTY_HANDLE;
 				new_entry._VertexCount = 0;
-				new_entry._IndexCount = mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[i]]._IndexCount;
+				new_entry._IndexCount = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._IndexCount;
 				new_entry._InstanceCount = 0;
 
 				//Set up the push constant data.
 				ModelFullPushConstantData push_constant_data;
 
-				push_constant_data._PreviousModelMatrix = push_constant_data._CurrentModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
+				push_constant_data._PreviousModelMatrix = instance_data._PreviousWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				push_constant_data._CurrentModelMatrix = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				push_constant_data._MaterialIndex = instance_data._MaterialResources[i]->_Index;
 
 				for (uint64 i{ 0 }; i < sizeof(ModelFullPushConstantData); ++i)
 				{

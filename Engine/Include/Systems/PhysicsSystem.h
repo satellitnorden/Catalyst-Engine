@@ -16,11 +16,14 @@
 #include <Physics/Native/CharacterController.h>
 #include <Physics/Native/CharacterControllerConfiguration.h>
 #include <Physics/Native/CollisionModelData.h>
+#include <Physics/Native/ModelCollisionConfiguration.h>
+#include <Physics/Native/ModelSimulationConfiguration.h>
 #include <Physics/Native/PhysicsCore.h>
 #include <Physics/Native/RaycastConfiguration.h>
 #include <Physics/Native/RaycastResult.h>
 
 //World.
+#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 #include <World/Core/WorldTransform.h>
 
 class ALIGN(8) PhysicsSystem final
@@ -53,6 +56,29 @@ public:
 	*	Creates a collision model.
 	*/
 	void CreateCollisionModel(const CollisionModelData &collision_model_data, CollisionModelHandle *const RESTRICT collision_model) NOEXCEPT;
+
+	/*
+	*	Creates a model actor.
+	*/
+	void CreateModelActor
+	(
+		const WorldTransform &world_transform,
+		const ModelCollisionConfiguration &collision_configuration,
+		const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
+		const CollisionModelHandle collision_model,
+		const ModelSimulationConfiguration &simulation_configuration,
+		ActorHandle *const RESTRICT actor_handle
+	) NOEXCEPT;
+
+	/*
+	*	Destroys an actor.
+	*/
+	void DestroyActor(ActorHandle *const RESTRICT actor_handle) NOEXCEPT;
+
+	/*
+	*	Returns the world transform for the given actor.
+	*/
+	void GetActorWorldTransform(const ActorHandle actor_handle, WorldTransform *const RESTRICT world_transform) NOEXCEPT;
 
 	/*
 	*	Preprocesses the physics for the given entity.
@@ -126,6 +152,29 @@ private:
 	*	Terminates the physics sub-system.
 	*/
 	void SubTerminate() NOEXCEPT;
+
+	/*
+	*	Creates a model actor on the sub-system.
+	*/
+	void SubCreateModelActor
+	(
+		const WorldTransform &world_transform,
+		const ModelCollisionConfiguration &collision_configuration,
+		const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
+		const CollisionModelHandle collision_model,
+		const ModelSimulationConfiguration &simulation_configuration,
+		ActorHandle *const RESTRICT actor_handle
+	) NOEXCEPT;
+
+	/*
+	*	Destroys an actor on the sub-system.
+	*/
+	void SubDestroyActor(ActorHandle *const RESTRICT actor_handle) NOEXCEPT;
+
+	/*
+	*	Returns the world transform for the given actor on the sub-system.
+	*/
+	void SubGetActorWorldTransform(const ActorHandle actor_handle, WorldTransform* const RESTRICT world_transform) NOEXCEPT;
 
 	/*
 	*	Preprocesses the sub-system physics for the given entity.

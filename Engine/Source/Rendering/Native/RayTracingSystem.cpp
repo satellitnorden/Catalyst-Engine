@@ -138,20 +138,15 @@ NO_DISCARD RenderDataTableHandle RayTracingSystem::GetCurrentRenderDataTable() N
 }
 
 /*
-*	Callback for when an entity is initialized.
+*	Callback for when a static model instance is created.
 */
-void RayTracingSystem::OnEntityInitialized(const Entity *const RESTRICT entity) NOEXCEPT
+void RayTracingSystem::OnStaticModelInstanceCreated(const EntityIdentifier entity_identifier, const StaticModelInstanceData &instance_data) NOEXCEPT
 {
-	ASSERT(entity->_Type == EntityType::StaticModel, "Only static models supported for now!");
-
-	//Retrieve the component.
-	const StaticModelComponent &component{ ComponentManager::GetStaticModelStaticModelComponents()[entity->_ComponentsIndex] };
-
 	//Iterate through the meshes.
-	for (uint64 mesh_index{ 0 }, size{ component._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+	for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 	{
 		//Cache the mesh.
-		const Mesh &mesh{ component._ModelResource->_Meshes[mesh_index] };
+		const Mesh &mesh{ instance_data._ModelResource->_Meshes[mesh_index] };
 
 		//Cache the mesh level of detail.
 		const Mesh::MeshLevelOfDetail &mesh_level_of_detail{ mesh._MeshLevelOfDetails[0] };
@@ -159,7 +154,7 @@ void RayTracingSystem::OnEntityInitialized(const Entity *const RESTRICT entity) 
 		//Decide which hit group this mesh goes in.
 		RayTracingHitGroup *RESTRICT hit_group;
 
-		if (component._MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED)
+		if (instance_data._MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED)
 		{
 			hit_group = GetHitGroup(HashString("MaskedModels"));
 		}
@@ -171,7 +166,7 @@ void RayTracingSystem::OnEntityInitialized(const Entity *const RESTRICT entity) 
 
 		//Calculate a unique identifier for this mesh.
 		char mesh_identifier_buffer[64];
-		sprintf_s(mesh_identifier_buffer, "%s_%llu", component._ModelResource->_Header._ResourceName.Data(), mesh_index);
+		sprintf_s(mesh_identifier_buffer, "%s_%llu", instance_data._ModelResource->_Header._ResourceName.Data(), mesh_index);
 
 		const HashString mesh_identifier{ mesh_identifier_buffer };
 
@@ -209,11 +204,11 @@ void RayTracingSystem::OnEntityInitialized(const Entity *const RESTRICT entity) 
 		hit_group->_Entries.Emplace();
 		RayTracingHitGroup::Entry &new_entry{ hit_group->_Entries.Back() };
 
-		new_entry._Entity = entity;
+		new_entry._EntityIdentifier = entity_identifier;
 		new_entry._VertexBuffer = mesh_level_of_detail._VertexBuffer;
 		new_entry._IndexBuffer = mesh_level_of_detail._IndexBuffer;
-		new_entry._MaterialIndex = component._MaterialResources[mesh_index]->_Index;
-		new_entry._InstanceData._Transform = component._WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+		new_entry._MaterialIndex = instance_data._MaterialResources[mesh_index]->_Index;
+		new_entry._InstanceData._Transform = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 		new_entry._InstanceData._BottomLevelAccelerationStructure = bottom_level_acceleration_structure;
 		new_entry._InstanceData._HitGroupIndex = hit_group->_Index;
 		new_entry._InstanceData._InstanceIndex = static_cast<uint32>(hit_group->_Entries.LastIndex());
@@ -221,22 +216,17 @@ void RayTracingSystem::OnEntityInitialized(const Entity *const RESTRICT entity) 
 }
 
 /*
-*	Callback for when an entity is terminated.
+*	Callback for when a static model instance is destroyed.
 */
-void RayTracingSystem::OnEntityTerminated(const Entity *const RESTRICT entity) NOEXCEPT
+void RayTracingSystem::OnStaticModelInstanceDestroyed(const EntityIdentifier entity_identifier, const StaticModelInstanceData &instance_data) NOEXCEPT
 {
-	ASSERT(entity->_Type == EntityType::StaticModel, "Only static models supported for now!");
-
-	//Retrieve the component.
-	const StaticModelComponent &component{ ComponentManager::GetStaticModelStaticModelComponents()[entity->_ComponentsIndex] };
-
 	//Iterate through the meshes.
-	for (uint64 mesh_index{ 0 }, size{ component._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+	for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 	{
 		//Decide which hit group this mesh is in.
 		RayTracingHitGroup *RESTRICT hit_group;
 
-		if (component._MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED)
+		if (instance_data._MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED)
 		{
 			hit_group = GetHitGroup(HashString("MaskedModels"));
 		}
@@ -249,7 +239,7 @@ void RayTracingSystem::OnEntityTerminated(const Entity *const RESTRICT entity) N
 		//Remove the entries associated with this entity.
 		for (uint64 i{ 0 }; i < hit_group->_Entries.Size();)
 		{
-			if (hit_group->_Entries[i]._Entity == entity)
+			if (hit_group->_Entries[i]._EntityIdentifier == entity_identifier)
 			{
 				hit_group->_Entries.EraseAt<false>(i);
 
@@ -267,7 +257,7 @@ void RayTracingSystem::OnEntityTerminated(const Entity *const RESTRICT entity) N
 
 		//Calculate a unique identifier for this mesh.
 		char mesh_identifier_buffer[64];
-		sprintf_s(mesh_identifier_buffer, "%s_%llu", component._ModelResource->_Header._ResourceName.Data(), mesh_index);
+		sprintf_s(mesh_identifier_buffer, "%s_%llu", instance_data._ModelResource->_Header._ResourceName.Data(), mesh_index);
 
 		const HashString mesh_identifier{ mesh_identifier_buffer };
 

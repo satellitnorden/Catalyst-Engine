@@ -3,6 +3,7 @@
 
 //Components.
 #include <Components/Core/ComponentManager.h>
+#include <Components/Components/StaticModelComponent.h>
 
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
@@ -113,37 +114,33 @@ void VirtualRealityGraphicsPipeline::Execute() NOEXCEPT
 
 	//Draw static models.
 	{
-		//Cache relevant data.
-		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-		const StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		for (StaticModelInstanceData &instance_data : StaticModelComponent::Instance->InstanceData())
 		{
 			//Draw all meshes.
-			for (uint64 mesh_index{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+			for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 			{
 				//Skip this mesh if it's hidden.
-				if (!TEST_BIT(component->_MeshesVisibleMask, BIT(mesh_index)))
+				if (!TEST_BIT(instance_data._MeshesVisibleMask, BIT(mesh_index)))
 				{
 					continue;
 				}
 
 				//Cache the mesh.
-				const Mesh& mesh{ component->_ModelResource->_Meshes[mesh_index] };
+				const Mesh &mesh{ instance_data._ModelResource->_Meshes[mesh_index] };
 
 				//Push constants.
 				VirtualRealityPushConstantData data;
 
-				data._ModelMatrix = component->_WorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				data._ModelMatrix = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(VirtualRealityPushConstantData), &data);
 
 				//Bind the vertex/inder buffer.
-				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._VertexBuffer, &OFFSET);
-				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexBuffer, OFFSET);
+				command_buffer->BindVertexBuffer(this, 0, mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[mesh_index]]._VertexBuffer, &OFFSET);
+				command_buffer->BindIndexBuffer(this, mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[mesh_index]]._IndexBuffer, OFFSET);
 
 				//Draw!
-				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._IndexCount, 1);
+				command_buffer->DrawIndexed(this, mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[mesh_index]]._IndexCount, 1);
 			}
 		}
 	}

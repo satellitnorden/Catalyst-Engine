@@ -3,6 +3,7 @@
 
 //Components.
 #include <Components/Core/ComponentManager.h>
+#include <Components/Components/StaticModelComponent.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -53,14 +54,6 @@ void CullingSystem::Initialize() NOEXCEPT
 	_InstancedStaticModelsCullingTask._Arguments = this;
 	_InstancedStaticModelsCullingTask._ExecutableOnSameThread = false;
 
-	//Initialize the static models culling task.
-	_StaticModelsCullingTask._Function = [](void *const RESTRICT arguments)
-	{
-		static_cast<CullingSystem *const RESTRICT>(arguments)->CullStaticModels();
-	};
-	_StaticModelsCullingTask._Arguments = this;
-	_StaticModelsCullingTask._ExecutableOnSameThread = false;
-
 	//Initialize the terrain culling task.
 	_TerrainCullingTask._Function = [](void *const RESTRICT arguments)
 	{
@@ -80,7 +73,6 @@ void CullingSystem::PreRenderUpdate() NOEXCEPT
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_GrassCullingTask);
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_InstancedImpostorsCullingTask);
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_InstancedStaticModelsCullingTask);
-	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_StaticModelsCullingTask);
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_TerrainCullingTask);
 }
 
@@ -256,49 +248,6 @@ void CullingSystem::CullInstancedStaticModels() const NOEXCEPT
 		if (component->_Visibility)
 		{
 			component->_Visibility = Culling::IsWithinFrustum(camera_relative_axis_aligned_bounding_box, *frustum);
-		}
-	}
-}
-
-/*
-*	Culls static models.
-*/
-void CullingSystem::CullStaticModels() const NOEXCEPT
-{
-	PROFILING_SCOPE(CullingSystem::CullStaticModels);
-
-	//Cache data that will be used.
-	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
-	const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
-
-	//Iterate over all patches and determine their visibility.
-	const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-	StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-	for (uint64 i{ 0 }; i < number_of_components; ++i, ++component)
-	{
-		//Reset the visibility flags.
-		component->_VisibilityFlags = static_cast<VisibilityFlags>(UINT8_MAXIMUM);
-
-		//Do camera culling.
-		{
-			//Do frustum culling.
-			if (!Culling::IsWithinFrustum(component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell), *frustum))
-			{
-				CLEAR_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA);
-			}
-		}
-		
-		//Do shadow map culling.
-		for (uint32 shadow_map_data_index{ 0 }; shadow_map_data_index < RenderingSystem::Instance->GetShadowsSystem()->GetNumberOfShadowMapData(); ++shadow_map_data_index)
-		{
-			const ShadowsSystem::ShadowMapData &shadow_map_data{ RenderingSystem::Instance->GetShadowsSystem()->GetShadowMapData(shadow_map_data_index) };
-		
-			//Do frustum culling.
-			if (!Culling::IsWithinFrustum(component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell), shadow_map_data._Frustum))
-			{
-				CLEAR_BIT(component->_VisibilityFlags, VisibilityFlags::SHADOW_MAP_START << shadow_map_data_index);
-			}
 		}
 	}
 }

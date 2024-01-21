@@ -162,18 +162,8 @@ private:
 	void InputUpdate() NOEXCEPT;
 
 	/*
-	*	Updates the world system during the logic update phase.
-	*/
-	void LogicUpdate() NOEXCEPT;
-
-	/*
 	*	Updates all particle systems.
 	*/
 	void UpdateParticleSystems() NOEXCEPT;
-
-	/*
-	*	Updates all distance triggers.
-	*/
-	void UpdateDistanceTriggers() NOEXCEPT;
 
 };

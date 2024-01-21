@@ -125,9 +125,6 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	_DebugRenderingSystem.Initialize();
 #endif
 
-	//Initialize the model system.
-	_ModelSystem.Initialize();
-
 	//Pre-initialize the sub rendering system.
 	_SubRenderingSystem->PreInitialize();
 

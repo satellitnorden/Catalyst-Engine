@@ -3,13 +3,21 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Type aliases.
+using EntityIdentifier = uint64;
+
+//Entity constants.
+namespace EntityConstants
+{
+	constexpr uint64 MAXIMUM_NUMBER_OF_COMPONENTS_PER_ENTITY{ 4 };
+}
+
 //Forward declarations.
 class AxisAlignedBoundingBox3D;
 class Entity;
 
 //Entity types.
 #define ENTITY_TYPES	ENTITY_TYPE(AnimatedModel)			\
-						ENTITY_TYPE(DistanceTrigger)		\
 						ENTITY_TYPE(DynamicModel)			\
 						ENTITY_TYPE(Grass)					\
 						ENTITY_TYPE(InstancedImpostor)		\
@@ -17,7 +25,6 @@ class Entity;
 						ENTITY_TYPE(Light)					\
 						ENTITY_TYPE(ParticleSystem)			\
 						ENTITY_TYPE(Sound)					\
-						ENTITY_TYPE(StaticModel)			\
 						ENTITY_TYPE(Terrain)				\
 						ENTITY_TYPE(UserInterface)
 

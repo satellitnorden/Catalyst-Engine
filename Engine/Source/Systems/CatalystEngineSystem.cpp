@@ -23,6 +23,7 @@
 #if defined(CATALYST_EDITOR)
 #include <Systems/CatalystEditorSystem.h>
 #endif
+#include <Systems/ComponentSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Systems/DebugSystem.h>
 #endif
@@ -88,6 +89,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #if defined(CATALYST_EDITOR)
 	CatalystEditorSystem::Instance->Initialize();
 #endif
+	ComponentSystem::Instance->Initialize();
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DebugSystem::Instance->Initialize();
 #endif
@@ -280,6 +282,15 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	}
 
 	/*
+	*	Pre-render update phase.
+	*/
+	{
+		PROFILING_SCOPE(UpdatePhase_PreRender);
+
+		UpdateIndividualPhase(UpdatePhase::PRE_RENDER);
+	}
+
+	/*
 	*	Render update phase.
 	*/
 	{
@@ -388,8 +399,8 @@ uint64 CatalystEngineSystem::RegisterUpdate(const UpdateFunction update_function
 	new_update_data->_Task._ExecutableOnSameThread = true;
 
 	//Add the update data to the appropriate start/end containers.
-	_StartUpdateData[UNDERLYING(start)].Emplace(new_update_data);
-	_EndUpdateData[UNDERLYING(end)].Emplace(new_update_data);
+	_StartUpdateData[BitIndex(UNDERLYING(start))].Emplace(new_update_data);
+	_EndUpdateData[BitIndex(UNDERLYING(end))].Emplace(new_update_data);
 
 	//Return the identifier.
 	return new_update_data->_Identifier;
@@ -476,7 +487,7 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 	if (_SingleThreaded)
 	{
 		//Execute the tasks for the update data that starts in this update phase.
-		for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
+		for (UpdateData *const RESTRICT update_data : _StartUpdateData[BitIndex(UNDERLYING(phase))])
 		{
 #if defined(CATALYST_EDITOR)
 			if (update_data->_OnlyUpdateInGame && !CatalystEditorSystem::Instance->IsInGame())
@@ -491,7 +502,7 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 	else
 	{
 		//Finish up the work that ends in this update phase.
-		bool all_done{ _EndUpdateData[UNDERLYING(phase)].Empty() };
+		bool all_done{ _EndUpdateData[BitIndex(UNDERLYING(phase))].Empty() };
 
 		while (!all_done)
 		{
@@ -499,29 +510,29 @@ void CatalystEngineSystem::UpdateIndividualPhase(const UpdatePhase phase) NOEXCE
 
 			all_done = true;
 
-			for (UpdateData *const RESTRICT update_data : _EndUpdateData[UNDERLYING(phase)])
+			for (UpdateData *const RESTRICT update_data : _EndUpdateData[BitIndex(UNDERLYING(phase))])
 			{
 				all_done &= update_data->_Task.IsExecuted();
 			}
 		}
 
 		//Execute the tasks for the update data that starts in this update phase.
-		for (UpdateData	*const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
+		for (UpdateData	*const RESTRICT update_data : _StartUpdateData[BitIndex(UNDERLYING(phase))])
 		{
 #if defined(CATALYST_EDITOR)
 			if (update_data->_OnlyUpdateInGame && !CatalystEditorSystem::Instance->IsInGame())
 			{
 				continue;
-	}
+			}
 #endif
 			if (!update_data->_RunOnMainThread)
 			{
 				TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &update_data->_Task);
 			}
-}
+		}
 
 		//Next, execute the tasks for the update data that starts in this update phase that needs to be run on the main thread.
-		for (UpdateData *const RESTRICT update_data : _StartUpdateData[UNDERLYING(phase)])
+		for (UpdateData *const RESTRICT update_data : _StartUpdateData[BitIndex(UNDERLYING(phase))])
 		{
 #if defined(CATALYST_EDITOR)
 			if (update_data->_OnlyUpdateInGame && !CatalystEditorSystem::Instance->IsInGame())

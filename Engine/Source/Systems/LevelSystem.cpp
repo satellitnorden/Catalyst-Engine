@@ -4,11 +4,9 @@
 //Entities.
 #include <Entities/Creation/DynamicModelInitializationData.h>
 #include <Entities/Creation/LightInitializationData.h>
-#include <Entities/Creation/StaticModelInitializationData.h>
 #include <Entities/Creation/UserInterfaceInitializationData.h>
 #include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/LightEntity.h>
-#include <Entities/Types/StaticModelEntity.h>
 #include <Entities/Types/UserInterfaceEntity.h>
 
 //Systems.
@@ -106,6 +104,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 				break;
 			}
 
+			/*
 			case LevelEntry::Type::STATIC_MODEL:
 			{
 				StaticModelEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<StaticModelEntity>() };
@@ -126,6 +125,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 
 				break;
 			}
+			*/
 
 			case LevelEntry::Type::USER_INTERFACE:
 			{

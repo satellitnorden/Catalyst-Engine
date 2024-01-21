@@ -62,50 +62,57 @@
 #include <Core/Essential/CatalystFunctions.h>
 
 //Enumeration covering all update phases.
-enum class UpdatePhase : uint8
+enum class UpdatePhase : uint16
 {
 	/*
 	*	During this update phase, certain systems are reset and prepared for the coming frame.
 	*/
-	PRE,
+	PRE = BIT(0),
 
 	/*
 	*	During this update phase, entities are initialized/terminated/destroyed.
 	*/
-	ENTITY,
+	ENTITY = BIT(1),
 
 	/*
 	*	During this update phase, input is retrieved from the platform.
 	*/
-	INPUT,
+	INPUT = BIT(2),
 
 	/*
 	*	During this update phase, user interface elements are updated.
 	*/
-	USER_INTERFACE,
+	USER_INTERFACE = BIT(3),
 
 	/*
 	*	During this update phase, game logic is simulated.
 	*/
-	LOGIC,
+	LOGIC = BIT(4),
 
 	/*
 	*	During this update phase, physics is simulated.
 	*/
-	PHYSICS,
+	PHYSICS = BIT(5),
+
+	/*
+	*	During this update phase, the game world is being prepared for rendering.
+	*/
+	PRE_RENDER = BIT(6),
 
 	/*
 	*	During this update phase, the game world is rendered.
 	*/
-	RENDER,
+	RENDER = BIT(7),
 
 	/*
-	*	During this update phase, certain systems clean up data that is no longer needed..
+	*	During this update phase, certain systems clean up data that is no longer needed.
 	*/
-	POST,
+	POST = BIT(8),
 
 	/*
 	*	The total number of update phases.
 	*/
-	NUMBER_OF_UPDATES_PHASES
+	NUMBER_OF_UPDATES_PHASES = 9
 };
+
+ENUMERATION_BIT_OPERATIONS(UpdatePhase);

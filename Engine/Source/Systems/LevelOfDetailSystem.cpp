@@ -3,6 +3,7 @@
 
 //Components.
 #include <Components/Core/ComponentManager.h>
+#include <Components/Components/StaticModelComponent.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -100,24 +101,21 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 	//Cache the camera world to clip matrix.
 	const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetViewMatrix() };
 
-	//Iterate over all static model components and calculate their level of detail.
-	const uint64 number_of_static_model_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-	StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-	for (uint64 component_index{ 0 }; component_index < number_of_static_model_components; ++component_index, ++component)
+	//Iterate over all static model instances and calculate their level of detail.
+	for (StaticModelInstanceData &instance_data : StaticModelComponent::Instance->InstanceData())
 	{
-		for (uint64 mesh_index{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+		for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 		{
 			//If the mesh used only has one level of detail, skip it.
-			if (component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails.Size() == 1)
+			if (instance_data._ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails.Size() == 1)
 			{
-				component->_LevelOfDetailIndices[mesh_index] = 0;
+				instance_data._LevelOfDetailIndices[mesh_index] = 0;
 
 				continue;
 			}
 
 			//Retrieve the relative axis aligned bounding box.
-			const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_world_transform.GetCell()) };
+			const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_world_transform.GetCell()) };
 
 			//Calculate the minimum/maximum screen coordinates from the corners of the relative axis aligned bounding box.
 			Vector2<float32> minimum_screen_coordinate{ FLOAT32_MAXIMUM, FLOAT32_MAXIMUM };
@@ -157,7 +155,7 @@ void LevelOfDetailSystem::LevelOfDetailStaticModels() const NOEXCEPT
 			screen_coverage = CatalystBaseMath::Bias(screen_coverage, _ScreenCoverageBias);
 
 			//Calculate the level of detail index.
-			component->_LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - screen_coverage) * static_cast<float32>(component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
+			instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - screen_coverage) * static_cast<float32>(instance_data._ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
 		}
 	}
 }

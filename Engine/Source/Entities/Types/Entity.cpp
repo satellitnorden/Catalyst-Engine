@@ -3,7 +3,6 @@
 
 //Entities.
 #include <Entities/Types/AnimatedModelEntity.h>
-#include <Entities/Types/DistanceTriggerEntity.h>
 #include <Entities/Types/DynamicModelEntity.h>
 #include <Entities/Types/GrassEntity.h>
 #include <Entities/Types/InstancedImpostorEntity.h>
@@ -11,7 +10,6 @@
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>
 #include <Entities/Types/SoundEntity.h>
-#include <Entities/Types/StaticModelEntity.h>
 #include <Entities/Types/TerrainEntity.h>
 #include <Entities/Types/UserInterfaceEntity.h>
 

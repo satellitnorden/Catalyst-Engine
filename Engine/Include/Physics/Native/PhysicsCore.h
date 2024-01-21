@@ -12,6 +12,7 @@ namespace PhysicsConstants
 /*
 *	Type aliases.
 */
+using ActorHandle = void *RESTRICT;
 using CollisionModelHandle = void *RESTRICT;
 
 //Enumeration covering all model collision types.
