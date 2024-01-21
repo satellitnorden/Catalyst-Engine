@@ -1,6 +1,9 @@
 //Header file.
 #include <Components/Components/StaticModelComponent.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
 #include <Rendering/Native/Culling.h>
 #include <Rendering/Native/RenderingUtilities.h>
@@ -9,6 +12,11 @@
 #include <Systems/PhysicsSystem.h>
 
 DEFINE_COMPONENT(StaticModelComponent, StaticModelGlobalData, StaticModelInitializationData, StaticModelInstanceData);
+
+NO_DISCARD bool StaticModelComponent::NeedsPreProcessing() const NOEXCEPT
+{
+	return false;
+}
 
 /*
 *	Creates an instance.
@@ -101,6 +109,8 @@ void StaticModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *
 
 void StaticModelComponent::Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT
 {
+	PROFILING_SCOPE(StaticModelComponent::Update);
+
 	switch (update_phase)
 	{
 		case UpdatePhase::PRE:

@@ -2,14 +2,53 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
-//Rendering.
-#include <Rendering/Native/RenderingCore.h>
+//Components.
+#include <Components/Core/Component.h>
+
+//Resources.
+#include <Resources/Core/ResourcePointer.h>
+#include <Resources/Core/MaterialResource.h>
 
 //World.
+#include <World/Core/WorldPosition.h>
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
-class GrassComponent final
+class GrassGlobalData final
+{
+
+};
+
+class GrassInitializationData final
+{
+
+public:
+
+	//The world positions.
+	DynamicArray<WorldPosition> _WorldPositions;
+
+	//The material resource.
+	ResourcePointer<MaterialResource> _MaterialResource;
+
+	//The thickness.
+	float32 _Thickness;
+
+	//The height.
+	float32 _Height;
+
+	//The tilt.
+	float32 _Tilt;
+
+	//The bend.
+	float32 _Bend;
+
+	//The fade out distance.
+	float32 _FadeOutDistance;
+
+};
+
+class GrassInstanceData final
 {
 
 public:
@@ -51,3 +90,5 @@ public:
 	uint8 _LevelOfDetail;
 
 };
+
+DECLARE_COMPONENT(GrassComponent, GrassGlobalData, GrassInitializationData, GrassInstanceData);

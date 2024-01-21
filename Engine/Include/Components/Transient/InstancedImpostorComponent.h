@@ -11,6 +11,9 @@
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
+//World.
+#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
+
 class InstancedImpostorComponent final
 {
 

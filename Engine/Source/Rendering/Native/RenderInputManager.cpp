@@ -3,6 +3,7 @@
 
 //Components.
 #include <Components/Core/ComponentManager.h>
+#include <Components/Components/GrassComponent.h>
 #include <Components/Components/StaticModelComponent.h>
 
 //Profiling.
@@ -1107,20 +1108,10 @@ void RenderInputManager::GatherGrassInputStream
 
 	//Gather grass.
 	{
-		//Cache relevant data.
-		const uint64 number_of_components{ ComponentManager::GetNumberOfGrassComponents() };
-		const GrassComponent *RESTRICT component{ ComponentManager::GetGrassGrassComponents() };
-
-		//Wait for culling.
-		RenderingSystem::Instance->GetCullingSystem()->WaitForGrassCulling();
-
-		//Wait for level of detaill.
-		LevelOfDetailSystem::Instance->WaitForGrassLevelOfDetail();
-
-		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		for (GrassInstanceData &instance_data : GrassComponent::Instance->InstanceData())
 		{
 			//Ignore if not visible.
-			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
+			if (!TEST_BIT(instance_data._VisibilityFlags, VisibilityFlags::CAMERA))
 			{
 				continue;
 			}
@@ -1133,28 +1124,28 @@ void RenderInputManager::GatherGrassInputStream
 			new_entry._VertexBuffer = EMPTY_HANDLE;
 			new_entry._IndexBuffer = EMPTY_HANDLE;
 			new_entry._IndexBufferOffset = 0;
-			new_entry._InstanceBuffer = component->_InstanceBuffer;
-			new_entry._VertexCount = GrassConstants::HIGHEST_VERTICES - (component->_LevelOfDetail * 2);
+			new_entry._InstanceBuffer = instance_data._InstanceBuffer;
+			new_entry._VertexCount = GrassConstants::HIGHEST_VERTICES - (instance_data._LevelOfDetail * 2);
 			new_entry._IndexCount = 0;
-			new_entry._InstanceCount = component->_NumberOfInstances;
+			new_entry._InstanceCount = instance_data._NumberOfInstances;
 
 			//Set up the push constant data.
 			GrassPushConstantData push_constant_data;
 
-			const Vector3<int32> delta{ component->_Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
+			const Vector3<int32> delta{ instance_data._Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
 
 			for (uint8 i{ 0 }; i < 3; ++i)
 			{
 				push_constant_data._WorldGridDelta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
 			}
 
-			push_constant_data._MaterialIndex = component->_MaterialResource->_Index;
+			push_constant_data._MaterialIndex = instance_data._MaterialResource->_Index;
 			push_constant_data._VertexFactor = 1.0f / static_cast<float32>((new_entry._VertexCount - 1) >> 1);
-			push_constant_data._Thickness = component->_Thickness;
-			push_constant_data._Height = component->_Height;
-			push_constant_data._Tilt = component->_Tilt;
-			push_constant_data._Bend = component->_Bend;
-			push_constant_data._FadeOutDistance = component->_FadeOutDistance;
+			push_constant_data._Thickness = instance_data._Thickness;
+			push_constant_data._Height = instance_data._Height;
+			push_constant_data._Tilt = instance_data._Tilt;
+			push_constant_data._Bend = instance_data._Bend;
+			push_constant_data._FadeOutDistance = instance_data._FadeOutDistance;
 
 			for (uint64 i{ 0 }; i < sizeof(GrassPushConstantData); ++i)
 			{

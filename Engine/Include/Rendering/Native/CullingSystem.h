@@ -22,14 +22,6 @@ public:
 	void PreRenderUpdate() NOEXCEPT;
 
 	/*
-	*	Waits for grass culling to finish executing.
-	*/
-	FORCE_INLINE void WaitForGrassCulling() const NOEXCEPT
-	{
-		_GrassCullingTask.Wait<WaitMode::YIELD>();
-	}
-
-	/*
 	*	Waits for instanced impostors culling to finish executing.
 	*/
 	FORCE_INLINE void WaitForInstancedImpostorsCulling() const NOEXCEPT
@@ -55,9 +47,6 @@ public:
 
 private:
 
-	//The grass culling task.
-	Task _GrassCullingTask;
-
 	//The instanced static models culling task.
 	Task _InstancedImpostorsCullingTask;
 
@@ -66,11 +55,6 @@ private:
 
 	//The terrain culling task.
 	Task _TerrainCullingTask;
-
-	/*
-	*	Culls grass.
-	*/
-	void CullGrass() const NOEXCEPT;
 
 	/*
 	*	Culls instanced impostors.

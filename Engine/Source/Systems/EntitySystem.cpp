@@ -12,7 +12,6 @@
 
 //Entities.
 #include <Entities/Types/AnimatedModelEntity.h>
-#include <Entities/Types/GrassEntity.h>
 #include <Entities/Types/InstancedImpostorEntity.h>
 #include <Entities/Types/InstancedStaticModelEntity.h>
 #include <Entities/Types/LightEntity.h>
@@ -406,6 +405,19 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 	{
 		if (EntityDestructionQueueItem *const RESTRICT queue_item{ _DestructionQueue.Pop() })
 		{
+			/*
+			*	If the entity isn't initialized yet, we have to assume it's somewhere in the creation queue.
+			*	Best we can do right now is just put it back into the queue at the end, and destroy it once initialized.
+			*	Return here to avoid being stuck in a loop the rest of the time-slice,
+			*	if the entity in question takes a long time to be created.
+			*/
+			if (!queue_item->_Entity->_Initialized)
+			{
+				_DestructionQueue.Push(*queue_item);
+
+				return;
+			}
+
 			//Notify all components that this entity was destroyed.
 			for (Component *const RESTRICT component : AllComponents())
 			{

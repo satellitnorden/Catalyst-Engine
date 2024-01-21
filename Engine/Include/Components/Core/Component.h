@@ -75,6 +75,11 @@ public:
 	}
 
 	/*
+	*	Returns if this component needs pre-processing.
+	*/
+	virtual NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT = 0;
+
+	/*
 	*	Creates an instance.
 	*/
 	virtual void CreateInstance(const EntityIdentifier entity, void *const RESTRICT initialization_data) NOEXCEPT = 0;
@@ -133,6 +138,7 @@ public:																																			\
 	{																																			\
 		AllComponents().Emplace(this);																											\
 	}																																			\
+	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;																				\
 	void CreateInstance(const EntityIdentifier entity, void *const RESTRICT initialization_data) NOEXCEPT override;								\
 	void DestroyInstance(const EntityIdentifier entity) NOEXCEPT override;																		\
 	FORCE_INLINE NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT override																	\
