@@ -10,7 +10,6 @@
 #include <Rendering/Native/Vertex.h>
 
 //Systems.
-#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/WorldSystem.h>
@@ -212,9 +211,6 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 
 	//Draw static models.
 	{
-		//Wait for static models level of detail to finish.
-		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
-
 		for (StaticModelInstanceData &instance_data : StaticModelComponent::Instance->InstanceData())
 		{
 			//Skip this model depending on visibility.

@@ -13,7 +13,6 @@
 #include <Rendering/Native/GrassCore.h>
 
 //Systems.
-#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/WorldSystem.h>
@@ -660,9 +659,6 @@ void RenderInputManager::GatherDepthModelInputStream
 
 	//Gather static models.
 	{
-		//Wait for static models level of detail to finish.
-		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
-
 		//Go through all components.
 		for (StaticModelInstanceData &instance_data : StaticModelComponent::Instance->InstanceData())
 		{
@@ -736,9 +732,6 @@ void RenderInputManager::GatherFullModelInputStream
 
 	//Gather static models.
 	{
-		//Wait for static models level of detail to finish.
-		LevelOfDetailSystem::Instance->WaitForStaticModelsLevelOfDetail();
-
 		//Go through all components.
 		for (StaticModelInstanceData &instance_data : StaticModelComponent::Instance->InstanceData())
 		{

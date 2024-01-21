@@ -30,7 +30,6 @@
 #include <Systems/DistributionSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/InputSystem.h>
-#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/LogSystem.h>
 #include <Systems/MemorySystem.h>
 #include <Systems/NetworkSystem.h>
@@ -96,7 +95,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	DistributionSystem::Instance->Initialize();
 	EntitySystem::Instance->Initialize();
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
-	LevelOfDetailSystem::Instance->Initialize();
 	LogSystem::Instance->Initialize();
 	MemorySystem::Instance->Initialize();
 	NetworkSystem::Instance->Initialize();
@@ -298,7 +296,6 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 		UpdateIndividualPhase(UpdatePhase::RENDER);
 
-		LevelOfDetailSystem::Instance->RenderUpdate();
 		RenderingSystem::Instance->RenderUpdate();
 	}
 
