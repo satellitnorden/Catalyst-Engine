@@ -78,7 +78,6 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 }
 
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);
-DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedImpostor, InstancedImpostorComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedStaticModel, InstancedStaticModelComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);

@@ -13,6 +13,9 @@
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/ModelFadeData.h>
 
+//World.
+#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
+
 class InstancedStaticModelComponent final
 {
 

@@ -12,7 +12,6 @@
 
 //Entities.
 #include <Entities/Types/AnimatedModelEntity.h>
-#include <Entities/Types/InstancedImpostorEntity.h>
 #include <Entities/Types/InstancedStaticModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>

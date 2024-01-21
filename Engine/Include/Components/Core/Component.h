@@ -145,11 +145,30 @@ public:																																			\
 	{																																			\
 		return _InstanceData.Size();																											\
 	}																																			\
-	void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT override;							\
-	void Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT override;							\
 	DynamicArray<INSTANCE_DATA_CLASS> &InstanceData() NOEXCEPT																					\
 	{																																			\
 		return _InstanceData;																													\
+	}																																			\
+	void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT override;							\
+	void Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT override;							\
+	void RemoveInstance(const EntityIdentifier entity) NOEXCEPT																					\
+	{																																			\
+		const uint64 instance_index{ _EntityToInstanceMappings[entity] };																		\
+		if (instance_index == _InstanceData.LastIndex())																						\
+		{																																		\
+			_InstanceData.Pop();																												\
+			_EntityIdentifiers.Pop();																											\
+			_EntityToInstanceMappings[entity] = UINT64_MAXIMUM;																					\
+		}																																		\
+																																				\
+		else																																	\
+		{																																		\
+			const EntityIdentifier moved_entity_identifier{ _EntityIdentifiers.Back() };														\
+			_InstanceData.EraseAt<false>(instance_index);																						\
+			_EntityIdentifiers.EraseAt<false>(instance_index);																					\
+			_EntityToInstanceMappings[entity] = UINT64_MAXIMUM;																					\
+			_EntityToInstanceMappings[moved_entity_identifier] = instance_index;																\
+		}																																		\
 	}																																			\
 private:																																		\
 	static Spinlock POOL_ALLOCATOR_LOCK;																										\

@@ -93,12 +93,8 @@ void StaticModelComponent::DestroyInstance(const EntityIdentifier entity) NOEXCE
 	//Tell the ray tracing system.
 	RenderingSystem::Instance->GetRayTracingSystem()->OnStaticModelInstanceDestroyed(entity, instance_data);
 
-	//Remove data.
-	const EntityIdentifier moved_entity_identifier{ _EntityIdentifiers.Back() };
-	_InstanceData.EraseAt<false>(instance_index);
-	_EntityIdentifiers.EraseAt<false>(instance_index);
-	_EntityToInstanceMappings[entity] = UINT64_MAXIMUM;
-	_EntityToInstanceMappings[moved_entity_identifier] = instance_index;
+	//Remove the instance.
+	RemoveInstance(entity);
 }
 
 void StaticModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT

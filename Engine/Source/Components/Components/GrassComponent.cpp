@@ -115,12 +115,14 @@ void GrassComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
 	//Cache the instance index.
 	const uint64 instance_index{ _EntityToInstanceMappings[entity] };
 
-	//Remove data.
-	const EntityIdentifier moved_entity_identifier{ _EntityIdentifiers.Back() };
-	_InstanceData.EraseAt<false>(instance_index);
-	_EntityIdentifiers.EraseAt<false>(instance_index);
-	_EntityToInstanceMappings[entity] = UINT64_MAXIMUM;
-	_EntityToInstanceMappings[moved_entity_identifier] = instance_index;
+	//Cache the instance data.
+	GrassInstanceData &instance_data{ _InstanceData[instance_index] };
+
+	//Destroy the instance buffer.
+	RenderingSystem::Instance->DestroyBuffer(&instance_data._InstanceBuffer);
+
+	//Remove the instance.
+	RemoveInstance(entity);
 }
 
 void GrassComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT

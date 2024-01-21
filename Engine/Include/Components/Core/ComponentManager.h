@@ -6,7 +6,6 @@
 
 //Components.
 #include <Components/Transient/AnimatedModelComponent.h>
-#include <Components/Transient/InstancedImpostorComponent.h>
 #include <Components/Transient/InstancedStaticModelComponent.h>
 #include <Components/Transient/LightComponent.h>
 #include <Components/Transient/ParticleSystemComponent.h>
@@ -47,7 +46,6 @@ class ComponentManager final
 public:
 
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedImpostor, InstancedImpostorComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedStaticModel, InstancedStaticModelComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);

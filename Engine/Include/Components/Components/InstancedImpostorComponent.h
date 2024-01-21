@@ -2,19 +2,53 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/Optional.h>
+#include <Core/Containers/DynamicArray.h>
 
-//Math.
-#include <Math/General/Vector.h>
+//Components.
+#include <Components/Core/Component.h>
 
 //Resources.
-#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ResourcePointer.h>
+#include <Resources/Core/MaterialResource.h>
 
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
+#include <World/Core/WorldPosition.h>
 
-class InstancedImpostorComponent final
+class InstancedImpostorGlobalData final
+{
+
+};
+
+class InstancedImpostorInitializationData final
+{
+
+public:
+
+	//The material resource.
+	ResourcePointer<MaterialResource> _MaterialResource;
+
+	//The dimensions.
+	Vector2<float32> _Dimensions;
+
+	//The start fade in distance.
+	float32 _StartFadeInDistance;
+
+	//The end fade in distance.
+	float32 _EndFadeInDistance;
+
+	//The start fade out distance.
+	float32 _StartFadeOutDistance;
+
+	//The end fade out distance.
+	float32 _EndFadeOutDistance;
+
+	//The world positions.
+	DynamicArray<WorldPosition> _WorldPositions;
+
+};
+
+class InstancedImpostorInstanceData final
 {
 
 public:
@@ -53,3 +87,5 @@ public:
 	VisibilityFlags _VisibilityFlags;
 
 };
+
+DECLARE_COMPONENT(InstancedImpostorComponent, InstancedImpostorGlobalData, InstancedImpostorInitializationData, InstancedImpostorInstanceData);

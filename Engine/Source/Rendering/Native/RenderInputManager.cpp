@@ -4,6 +4,7 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 #include <Components/Components/GrassComponent.h>
+#include <Components/Components/InstancedImpostorComponent.h>
 #include <Components/Components/StaticModelComponent.h>
 
 //Profiling.
@@ -895,17 +896,10 @@ void RenderInputManager::GatherInstancedImpostorInputStream
 
 	//Gather instanced static impostors.
 	{
-		//Cache relevant data.
-		const uint64 number_of_components{ ComponentManager::GetNumberOfInstancedImpostorComponents() };
-		const InstancedImpostorComponent *RESTRICT component{ ComponentManager::GetInstancedImpostorInstancedImpostorComponents() };
-	
-		//Wait for culling.
-		RenderingSystem::Instance->GetCullingSystem()->WaitForInstancedImpostorsCulling();
-
-		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		for (InstancedImpostorInstanceData &instance_data : InstancedImpostorComponent::Instance->InstanceData())
 		{
 			//Ignore if not visible.
-			if (!TEST_BIT(component->_VisibilityFlags, VisibilityFlags::CAMERA))
+			if (!TEST_BIT(instance_data._VisibilityFlags, VisibilityFlags::CAMERA))
 			{
 				continue;
 			}
@@ -918,29 +912,29 @@ void RenderInputManager::GatherInstancedImpostorInputStream
 			new_entry._VertexBuffer = EMPTY_HANDLE;
 			new_entry._IndexBuffer = EMPTY_HANDLE;
 			new_entry._IndexBufferOffset = 0;
-			new_entry._InstanceBuffer = component->_TransformationsBuffer;
+			new_entry._InstanceBuffer = instance_data._TransformationsBuffer;
 			new_entry._VertexCount = 4;
 			new_entry._IndexCount = 0;
-			new_entry._InstanceCount = component->_NumberOfTransformations;
+			new_entry._InstanceCount = instance_data._NumberOfTransformations;
 
 			//Set up the push constant data.
 			InstancedImpostorPushConstantData push_constant_data;
 
-			const Vector3<int32> delta{ component->_Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
+			const Vector3<int32> delta{ instance_data._Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
 
 			for (uint8 i{ 0 }; i < 3; ++i)
 			{
 				push_constant_data._WorldGridDelta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
 			}
 
-			push_constant_data._HalfWidth = component->_Dimensions._X * 0.5f;
-			push_constant_data._WholeWidth = component->_Dimensions._X;
-			push_constant_data._Height = component->_Dimensions._Y;
-			push_constant_data._MaterialIndex = component->_MaterialResource->_Index;
-			push_constant_data._StartFadeInDistance = component->_StartFadeInDistance;
-			push_constant_data._EndFadeInDistance = component->_EndFadeInDistance;
-			push_constant_data._StartFadeOutDistance = component->_StartFadeOutDistance;
-			push_constant_data._EndFadeOutDistance = component->_EndFadeOutDistance;
+			push_constant_data._HalfWidth = instance_data._Dimensions._X * 0.5f;
+			push_constant_data._WholeWidth = instance_data._Dimensions._X;
+			push_constant_data._Height = instance_data._Dimensions._Y;
+			push_constant_data._MaterialIndex = instance_data._MaterialResource->_Index;
+			push_constant_data._StartFadeInDistance = instance_data._StartFadeInDistance;
+			push_constant_data._EndFadeInDistance = instance_data._EndFadeInDistance;
+			push_constant_data._StartFadeOutDistance = instance_data._StartFadeOutDistance;
+			push_constant_data._EndFadeOutDistance = instance_data._EndFadeOutDistance;
 
 			for (uint64 i{ 0 }; i < sizeof(InstancedImpostorPushConstantData); ++i)
 			{
