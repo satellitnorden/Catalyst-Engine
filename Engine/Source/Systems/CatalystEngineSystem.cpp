@@ -41,7 +41,6 @@
 #include <Systems/ScriptSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
-#include <Systems/TerrainSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 #include <Systems/WorldSystem.h>
 
@@ -104,7 +103,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	ScriptSystem::Instance->Initialize();
 	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
 	TaskSystem::Instance->Initialize(_ProjectConfiguration._ConcurrencyConfiguration);
-	TerrainSystem::Instance->Initialize();
 	UserInterfaceSystem::Instance->Initialize();
 	WorldSystem::Instance->Initialize(_ProjectConfiguration._WorldConfiguration);
 

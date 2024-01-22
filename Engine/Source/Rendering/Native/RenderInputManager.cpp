@@ -7,6 +7,7 @@
 #include <Components/Components/InstancedImpostorComponent.h>
 #include <Components/Components/InstancedStaticModelComponent.h>
 #include <Components/Components/StaticModelComponent.h>
+#include <Components/Components/TerrainComponent.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -943,7 +944,7 @@ void RenderInputManager::GatherInstancedImpostorInputStream
 */
 FORCE_INLINE void GatherTerrainQuadTreeNode
 (
-	const TerrainComponent *const RESTRICT component,
+	const TerrainInstanceData &instance_data,
 	const TerrainQuadTreeNode &node,
 	RenderInputStream *const RESTRICT input_stream
 ) NOEXCEPT
@@ -952,7 +953,7 @@ FORCE_INLINE void GatherTerrainQuadTreeNode
 	{
 		for (const TerrainQuadTreeNode &child_node : node._ChildNodes)
 		{
-			GatherTerrainQuadTreeNode(component, child_node, input_stream);
+			GatherTerrainQuadTreeNode(instance_data, child_node, input_stream);
 		}
 	}
 
@@ -969,29 +970,29 @@ FORCE_INLINE void GatherTerrainQuadTreeNode
 		RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
 
 		new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-		new_entry._VertexBuffer = component->_Buffer;
-		new_entry._IndexBuffer = component->_Buffer;
-		new_entry._IndexBufferOffset = component->_IndexOffset;
+		new_entry._VertexBuffer = instance_data._Buffer;
+		new_entry._IndexBuffer = instance_data._Buffer;
+		new_entry._IndexBufferOffset = instance_data._IndexOffset;
 		new_entry._InstanceBuffer = EMPTY_HANDLE;
 		new_entry._VertexCount = 0;
-		new_entry._IndexCount = component->_IndexCount;
+		new_entry._IndexCount = instance_data._IndexCount;
 		new_entry._InstanceCount = 0;
 
 		//Set up the push constant data.
 		TerrainPushConstantData push_constant_data;
 
-		const Vector3<float32> component_world_position{ component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
+		const Vector3<float32> component_world_position{ instance_data._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
 		push_constant_data._WorldPosition = Vector2<float32>(component_world_position._X, component_world_position._Z) + node._Position;
 		push_constant_data._MinimumHeightMapCoordinate = node._MinimumHeightMapCoordinate;
 		push_constant_data._MaximumHeightMapCoordinate = node._MaximumHeightMapCoordinate;
 		push_constant_data._Borders = node._Borders;
-		push_constant_data._PatchResolutionReciprocal = 1.0f / static_cast<float32>(component->_BaseResolution - 2);
+		push_constant_data._PatchResolutionReciprocal = 1.0f / static_cast<float32>(instance_data._BaseResolution - 2);
 		push_constant_data._PatchSize = node._PatchSize;
-		push_constant_data._HeightMapTextureIndex = component->_HeightMapTextureIndex;
-		push_constant_data._NormalMapTextureIndex = component->_NormalMapTextureIndex;
-		push_constant_data._IndexMapTextureIndex = component->_IndexMapTextureIndex;
-		push_constant_data._BlendMapTextureIndex = component->_BlendMapTextureIndex;
-		push_constant_data._MapResolution = static_cast<float32>(component->_HeightMap.GetResolution());
+		push_constant_data._HeightMapTextureIndex = instance_data._HeightMapTextureIndex;
+		push_constant_data._NormalMapTextureIndex = instance_data._NormalMapTextureIndex;
+		push_constant_data._IndexMapTextureIndex = instance_data._IndexMapTextureIndex;
+		push_constant_data._BlendMapTextureIndex = instance_data._BlendMapTextureIndex;
+		push_constant_data._MapResolution = static_cast<float32>(instance_data._HeightMap.GetResolution());
 		push_constant_data._MapResolutionReciprocal = 1.0f / push_constant_data._MapResolution;
 
 		for (uint64 i{ 0 }; i < sizeof(TerrainPushConstantData); ++i)
@@ -1017,58 +1018,16 @@ void RenderInputManager::GatherTerrainInputStream
 
 	//Gather terrains.
 	{
-		//Cache relevant data.
-		const uint64 number_of_components{ ComponentManager::GetNumberOfTerrainComponents() };
-		const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainTerrainComponents() };
-
-		//Wait for culling.
-		RenderingSystem::Instance->GetCullingSystem()->WaitForTerrainCulling();
-
-		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		for (const TerrainInstanceData &instance_data : TerrainComponent::Instance->InstanceData())
 		{
 			//Is this terrain visible?
-			if (!component->_Visibility)
+			if (!instance_data._Visibility)
 			{
 				continue;
 			}
 
-#if 1
 			//Walk the quad tree.
-			GatherTerrainQuadTreeNode(component, component->_QuadTree._RootNode, input_stream);
-#else
-			//Add a new entry.
-			input_stream->_Entries.Emplace();
-			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
-
-			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-			new_entry._VertexBuffer = component->_Buffer;
-			new_entry._IndexBuffer = component->_Buffer;
-			new_entry._IndexBufferOffset = component->_IndexOffset;
-			new_entry._InstanceBuffer = EMPTY_HANDLE;
-			new_entry._VertexCount = 0;
-			new_entry._IndexCount = component->_IndexCount;
-			new_entry._InstanceCount = 0;
-
-			//Set up the push constant data.
-			TerrainPushConstantData push_constant_data;
-
-			const Vector3<float32> world_position{ component->_WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
-			push_constant_data._WorldPosition = Vector2<float32>(world_position._X, world_position._Z);
-			push_constant_data._MinimumHeightMapCoordinate = Vector2<float32>(0.0f, 0.0f);
-			push_constant_data._MaximumHeightMapCoordinate = Vector2<float32>(1.0f, 1.0f);
-			push_constant_data._PatchSize = static_cast<float32>(component->_PatchSize);
-			push_constant_data._HeightMapTextureIndex = component->_HeightMapTextureIndex;
-			push_constant_data._NormalMapTextureIndex = component->_NormalMapTextureIndex;
-			push_constant_data._IndexMapTextureIndex = component->_IndexMapTextureIndex;
-			push_constant_data._BlendMapTextureIndex = component->_BlendMapTextureIndex;
-			push_constant_data._MapResolution = static_cast<float32>(component->_HeightMap.GetResolution());
-			push_constant_data._MapResolutionReciprocal = 1.0f / push_constant_data._MapResolution;
-
-			for (uint64 i{ 0 }; i < sizeof(TerrainPushConstantData); ++i)
-			{
-				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
-			}
-#endif
+			GatherTerrainQuadTreeNode(instance_data, instance_data._QuadTree._RootNode, input_stream);
 		}
 	}
 }

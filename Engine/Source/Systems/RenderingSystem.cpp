@@ -35,7 +35,6 @@
 #endif
 #include <Systems/ResourceSystem.h>
 #include <Systems/TaskSystem.h>
-#include <Systems/TerrainSystem.h>
 #include <Systems/WorldSystem.h>
 
 //Third party.
@@ -282,9 +281,6 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 	//Initialize the camera system.
 	_CameraSystem.Initialize();
 
-	//Initialize the culling system.
-	_CullingSystem.Initialize();
-
 	//Post-initialize the lighting system.
 	_LightingSystem.PostInitialize();
 
@@ -393,13 +389,6 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		PROFILING_SCOPE(RenderingSystem_ShadowsSystem_PreRenderUpdate);
 
 		_ShadowsSystem.PreRenderUpdate();
-	}
-
-	//Update the culling system.
-	{
-		PROFILING_SCOPE(RenderingSystem_CullingSystem_PreRenderUpdate);
-
-		_CullingSystem.PreRenderUpdate();
 	}
 
 	//Update the camera system.

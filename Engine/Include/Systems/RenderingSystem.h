@@ -14,7 +14,6 @@
 //Rendering.
 #include <Rendering/Native/BufferManager.h>
 #include <Rendering/Native/CameraSystem.h>
-#include <Rendering/Native/CullingSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Rendering/Native/DebugRenderingSystem.h>
 #endif
@@ -246,14 +245,6 @@ public:
 	RESTRICTED NO_DISCARD CameraSystem *const RESTRICT GetCameraSystem() NOEXCEPT
 	{
 		return &_CameraSystem;
-	}
-
-	/*
-	*	Returns the culling system.
-	*/
-	RESTRICTED NO_DISCARD CullingSystem *const RESTRICT GetCullingSystem() NOEXCEPT
-	{
-		return &_CullingSystem;
 	}
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -741,9 +732,6 @@ private:
 
 	//The camera system.
 	CameraSystem _CameraSystem;
-
-	//The culling system.
-	CullingSystem _CullingSystem;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//The debug rendering system.

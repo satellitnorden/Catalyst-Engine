@@ -20,7 +20,6 @@ class Entity;
 #define ENTITY_TYPES	ENTITY_TYPE(AnimatedModel)			\
 						ENTITY_TYPE(Light)					\
 						ENTITY_TYPE(ParticleSystem)			\
-						ENTITY_TYPE(Terrain)				\
 						ENTITY_TYPE(UserInterface)
 
 //Enumeration covering all entity types.

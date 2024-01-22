@@ -6,7 +6,6 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
-#include <Systems/TerrainSystem.h>
 
 //Terrain.
 #include <Terrain/TerrainGeneralUtilities.h>
@@ -71,6 +70,20 @@ void PhysicsSystem::CreateCollisionModel(const CollisionModelData &collision_mod
 }
 
 /*
+*	Creates a height field actor.
+*/
+void PhysicsSystem::CreateHeightFieldActor
+(
+	const WorldPosition &world_position,
+	const Texture2D<float32> &height_field,
+	ActorHandle *const RESTRICT actor_handle
+) NOEXCEPT
+{
+	//Create the height field on the sub-system.
+	SubCreateHeightFieldActor(world_position, height_field, actor_handle);
+}
+
+/*
 *	Creates a model actor.
 */
 void PhysicsSystem::CreateModelActor
@@ -111,33 +124,6 @@ void PhysicsSystem::GetActorWorldTransform(const ActorHandle actor_handle, World
 {
 	//Retrieve the world transform from the sub-system.
 	SubGetActorWorldTransform(actor_handle, world_transform);
-}
-
-/*
-*	Preprocesses the physics for the given entity.
-*/
-void PhysicsSystem::PreprocessEntityPhysics(Entity *const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
-{
-	//Preprocess the sub-system physics for this entity.
-	SubPreprocessEntityPhysics(entity, data);
-}
-
-/*
-*	Initializes the physics for the given entity.
-*/
-void PhysicsSystem::InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
-{
-	//Initialize the sub-system physics for this entity.
-	SubInitializeEntityPhysics(entity);
-}
-
-/*
-*	Terminates the physics for the given entity.
-*/
-void PhysicsSystem::TerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
-{
-	//Terminate the sub-system physics for this entity.
-	SubTerminateEntityPhysics(entity);
 }
 
 /*

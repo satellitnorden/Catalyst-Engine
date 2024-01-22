@@ -22,6 +22,9 @@
 #include <Physics/Native/RaycastConfiguration.h>
 #include <Physics/Native/RaycastResult.h>
 
+//Rendering.
+#include <Rendering/Native/Texture2D.h>
+
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 #include <World/Core/WorldTransform.h>
@@ -58,6 +61,16 @@ public:
 	void CreateCollisionModel(const CollisionModelData &collision_model_data, CollisionModelHandle *const RESTRICT collision_model) NOEXCEPT;
 
 	/*
+	*	Creates a height field actor.
+	*/
+	void CreateHeightFieldActor
+	(
+		const WorldPosition &world_position,
+		const Texture2D<float32> &height_field,
+		ActorHandle *const RESTRICT actor_handle
+	) NOEXCEPT;
+
+	/*
 	*	Creates a model actor.
 	*/
 	void CreateModelActor
@@ -79,21 +92,6 @@ public:
 	*	Returns the world transform for the given actor.
 	*/
 	void GetActorWorldTransform(const ActorHandle actor_handle, WorldTransform *const RESTRICT world_transform) NOEXCEPT;
-
-	/*
-	*	Preprocesses the physics for the given entity.
-	*/
-	void PreprocessEntityPhysics(Entity *const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
-
-	/*
-	*	Initializes the physics for the given entity.
-	*/
-	void InitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
-
-	/*
-	*	Terminates the physics for the given entity.
-	*/
-	void TerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Creates a character controller.
@@ -149,6 +147,16 @@ private:
 	void SubTerminate() NOEXCEPT;
 
 	/*
+	*	Creates a height field actor on the sub-system.
+	*/
+	void SubCreateHeightFieldActor
+	(
+		const WorldPosition &world_position,
+		const Texture2D<float32> &height_field,
+		ActorHandle *const RESTRICT actor_handle
+	) NOEXCEPT;
+
+	/*
 	*	Creates a model actor on the sub-system.
 	*/
 	void SubCreateModelActor
@@ -170,21 +178,6 @@ private:
 	*	Returns the world transform for the given actor on the sub-system.
 	*/
 	void SubGetActorWorldTransform(const ActorHandle actor_handle, WorldTransform* const RESTRICT world_transform) NOEXCEPT;
-
-	/*
-	*	Preprocesses the sub-system physics for the given entity.
-	*/
-	void SubPreprocessEntityPhysics(Entity *const RESTRICT entity, EntityInitializationData *const RESTRICT data) NOEXCEPT;
-
-	/*
-	*	Initializes the sub-system physics for the given entity.
-	*/
-	void SubInitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
-
-	/*
-	*	Terminates the sub-system physics for the given entity.
-	*/
-	void SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Casts a sub-system ray.
