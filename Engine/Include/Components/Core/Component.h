@@ -15,6 +15,9 @@
 //Memory.
 #include <Memory/PoolAllocator.h>
 
+//Forward declarations.
+class ComponentInitializationData;
+
 /*
 *	Component update configuration class definition.
 */
@@ -80,9 +83,14 @@ public:
 	virtual NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT = 0;
 
 	/*
+	*	Preprocessed initialization data an instance.
+	*/
+	virtual void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
+
+	/*
 	*	Creates an instance.
 	*/
-	virtual void CreateInstance(const EntityIdentifier entity, void *const RESTRICT initialization_data) NOEXCEPT = 0;
+	virtual void CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
 
 	/*
 	*	Destroys an instance.
@@ -107,14 +115,33 @@ public:
 };
 
 /*
+*	Component initialization data class definition.
+*/
+class ComponentInitializationData
+{
+
+public:
+
+	//The component.
+	Component *RESTRICT _Component;
+
+};
+
+/*
 *	Returns all components.
 */
-NO_DISCARD DynamicArray<Component *RESTRICT> &AllComponents() NOEXCEPT;
+NO_DISCARD const DynamicArray<Component *RESTRICT> &AllComponents() NOEXCEPT;
+
+/*
+*	Adds a component to all component.
+*/
+void AddComponentToAllComponents(Component *const RESTRICT component) NOEXCEPT;
 
 /*
 *	Declares a component.
 */
 #define DECLARE_COMPONENT(COMPONENT_CLASS, GLOBAL_DATA_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_DATA_CLASS)									\
+static_assert(std::is_convertible<INITIALIZATION_DATA_CLASS*, ComponentInitializationData*>::value, "Incorrect inheritance");					\
 class ALIGN(8) COMPONENT_CLASS final : public Component																							\
 {																																				\
 public:																																			\
@@ -125,6 +152,7 @@ public:																																			\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																										\
 		INITIALIZATION_DATA_CLASS *const RESTRICT data{ static_cast<INITIALIZATION_DATA_CLASS *const RESTRICT>(POOL_ALLOCATOR.Allocate()) };	\
 		Memory::Set(data, 0, sizeof(INITIALIZATION_DATA_CLASS));																				\
+		data->_Component = COMPONENT_CLASS::Instance.Get();																						\
 		return data;																															\
 	}																																			\
 	FORCE_INLINE static void FreeInitializationData(INITIALIZATION_DATA_CLASS *const RESTRICT data) NOEXCEPT									\
@@ -136,10 +164,11 @@ public:																																			\
 		:																																		\
 		Component(HashString(#COMPONENT_CLASS))																									\
 	{																																			\
-		AllComponents().Emplace(this);																											\
+		AddComponentToAllComponents(this);																										\
 	}																																			\
 	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;																				\
-	void CreateInstance(const EntityIdentifier entity, void *const RESTRICT initialization_data) NOEXCEPT override;								\
+	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;											\
+	void CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;		\
 	void DestroyInstance(const EntityIdentifier entity) NOEXCEPT override;																		\
 	FORCE_INLINE NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT override																	\
 	{																																			\
@@ -160,7 +189,6 @@ public:																																			\
 			_EntityIdentifiers.Pop();																											\
 			_EntityToInstanceMappings[entity] = UINT64_MAXIMUM;																					\
 		}																																		\
-																																				\
 		else																																	\
 		{																																		\
 			const EntityIdentifier moved_entity_identifier{ _EntityIdentifiers.Back() };														\

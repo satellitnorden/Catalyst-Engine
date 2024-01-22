@@ -12,7 +12,6 @@
 
 //Entities.
 #include <Entities/Types/AnimatedModelEntity.h>
-#include <Entities/Types/InstancedStaticModelEntity.h>
 #include <Entities/Types/LightEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>
 #include <Entities/Types/TerrainEntity.h>
@@ -25,8 +24,8 @@
 //Entity system constants.
 namespace EntitySystemConstants
 {
-	constexpr float32 MAXIMUM_CREATION_TIME{ 0.5f / 1000.0f };
-	constexpr float32 MAXIMUM_DESTRUCTION_TIME{ 1.0f / 1000.0f };
+	constexpr float32 MAXIMUM_CREATION_TIME{ 0.25f / 1000.0f };
+	constexpr float32 MAXIMUM_DESTRUCTION_TIME{ 0.5f / 1000.0f };
 }
 
 //Singleton definition.
@@ -66,15 +65,15 @@ void EntitySystem::Initialize() NOEXCEPT
 /*
 *	Creates a new entity.
 */
-NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<Pair<HashString, void *const RESTRICT>> component_configurations) NOEXCEPT
+NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<ComponentInitializationData *const RESTRICT> component_configurations) NOEXCEPT
 {
 	//Allocate the entity.
 	Entity *RESTRICT entity;
 	
 	{
-		SCOPED_LOCK(_AllocatorLock);
+		SCOPED_LOCK(_EntityAllocatorLock);
 
-		entity = static_cast<Entity *RESTRICT>(_Allocator.Allocate());
+		entity = static_cast<Entity *RESTRICT>(_EntityAllocator.Allocate());
 	}
 
 	//Generate the entity identifier.
@@ -90,10 +89,9 @@ NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<Pair<Has
 	
 	queue_item._NumberOfComponentConfigurations = 0;
 
-	for (Pair<HashString, void *const RESTRICT> &component_configuration : component_configurations)
+	for (ComponentInitializationData *const RESTRICT &component_configuration : component_configurations)
 	{
-		queue_item._ComponentConfigurations[queue_item._NumberOfComponentConfigurations]._First = component_configuration._First;
-		queue_item._ComponentConfigurations[queue_item._NumberOfComponentConfigurations]._Second = component_configuration._Second;
+		queue_item._ComponentConfigurations[queue_item._NumberOfComponentConfigurations] = component_configuration;
 
 		++queue_item._NumberOfComponentConfigurations;
 	}
@@ -165,9 +163,9 @@ void EntitySystem::DestroyEntityOld(Entity *const RESTRICT entity) NOEXCEPT
 	ASSERT(!entity->_Initialized, "Destroying an initialized entity, this is bad!");
 
 	//The entity should already be terminated, so just deallocate the entity.
-	_AllocatorLock.Lock();
-	_Allocator.Free(entity);
-	_AllocatorLock.Unlock();
+	_EntityAllocatorLock.Lock();
+	_EntityAllocator.Free(entity);
+	_EntityAllocatorLock.Unlock();
 
 	//Remove the entity from the list of entities.
 	_EntitiesLock.Lock();
@@ -348,14 +346,103 @@ void EntitySystem::EntityUpdate() NOEXCEPT
 */
 void EntitySystem::ProcessCreationQueue() NOEXCEPT
 {
+	//Cache the start time.
 	TimePoint start_time{ GetCurrentTimePoint() };
 	
-	while (start_time.GetSecondsSince() < EntitySystemConstants::MAXIMUM_CREATION_TIME)
+	//Check the pre-processing queue.
+	for (uint64 i{ 0 }; i < _PreProcessingQueue.Size();)
 	{
-		if (EntityCreationQueueItem *const RESTRICT queue_item{ _CreationQueue.Pop() })
+		//Cache the queue item.
+		EntityPreProcessingQueueItem *const RESTRICT queue_item{ _PreProcessingQueue[i] };
+
+		//Check if pre-processing has finished.
+		if (queue_item->_Task.IsExecuted())
 		{
 			//Notify all components that a new entity was created.
 			for (Component *const RESTRICT component : AllComponents())
+			{
+				component->OnEntityCreated(queue_item->_CreationQueueItem._Entity->_EntityIdentifier);
+			}
+
+			//Create all instances.
+			for (uint64 i{ 0 }; i < queue_item->_CreationQueueItem._NumberOfComponentConfigurations; ++i)
+			{
+				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_CreationQueueItem._ComponentConfigurations[i] };
+				component_configuration->_Component->CreateInstance(queue_item->_CreationQueueItem._Entity->_EntityIdentifier, component_configuration);
+			}
+
+			//This entity is now initialized. (:
+			queue_item->_CreationQueueItem._Entity->_Initialized = true;
+
+			//Free the queue item.
+			_PreProcessingAllocator.Free(queue_item);
+
+			//Remove the queue item.
+			_PreProcessingQueue.EraseAt<false>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+
+		//Break if we've run over time.
+		if (start_time.GetSecondsSince() >= EntitySystemConstants::MAXIMUM_CREATION_TIME)
+		{
+			break;
+		}
+	}
+
+	//Check the creation queue.
+	while (EntityCreationQueueItem *const RESTRICT queue_item{ _CreationQueue.Pop() })
+	{
+		//Check if any component needs pre-processing.
+		bool any_componend_needs_pre_processing{ false };
+
+		for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
+		{
+			if (queue_item->_ComponentConfigurations[i]->_Component->NeedsPreProcessing())
+			{
+				any_componend_needs_pre_processing = true;
+
+				break;
+			}
+		}
+
+		//If any component needs pre-processing, launch a task for it.
+		if (any_componend_needs_pre_processing)
+		{
+			//Set up the queue item.
+			EntityPreProcessingQueueItem *const RESTRICT pre_processing_queue_item{ static_cast<EntityPreProcessingQueueItem *const RESTRICT>(_PreProcessingAllocator.Allocate()) };
+
+			pre_processing_queue_item->_CreationQueueItem = *queue_item;
+			pre_processing_queue_item->_Task._Function = [](void *const RESTRICT arguments)
+			{
+				EntityCreationQueueItem *const RESTRICT queue_item{ static_cast<EntityCreationQueueItem *const RESTRICT>(arguments) };
+
+				for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
+				{
+					if (queue_item->_ComponentConfigurations[i]->_Component->NeedsPreProcessing())
+					{
+						queue_item->_ComponentConfigurations[i]->_Component->PreProcess(queue_item->_ComponentConfigurations[i]);
+					}
+				}
+			};
+			pre_processing_queue_item->_Task._Arguments = &pre_processing_queue_item->_CreationQueueItem;
+			pre_processing_queue_item->_Task._ExecutableOnSameThread = false;
+
+			//Execute the task!
+			TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &pre_processing_queue_item->_Task);
+
+			//Add it to the queue.
+			_PreProcessingQueue.Emplace(pre_processing_queue_item);
+		}
+
+		//Otherwise, create the entity as usual!
+		else
+		{
+			//Notify all components that a new entity was created.
+			for (Component* const RESTRICT component : AllComponents())
 			{
 				component->OnEntityCreated(queue_item->_Entity->_EntityIdentifier);
 			}
@@ -363,30 +450,16 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 			//Create all instances.
 			for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
 			{
-				Pair<HashString, void *RESTRICT> &component_configuration{ queue_item->_ComponentConfigurations[i] };
-
-				bool found_component{ false };
-
-				for (Component *const RESTRICT component : AllComponents())
-				{
-					if (component_configuration._First == component->_Identifier)
-					{
-						component->CreateInstance(queue_item->_Entity->_EntityIdentifier, component_configuration._Second);
-
-						found_component = true;
-
-						break;
-					}
-				}
-
-				ASSERT(found_component, "Couldn't find component!");
+				ComponentInitializationData* RESTRICT component_configuration{ queue_item->_ComponentConfigurations[i] };
+				component_configuration->_Component->CreateInstance(queue_item->_Entity->_EntityIdentifier, component_configuration);
 			}
 
 			//This entity is now initialized. (:
 			queue_item->_Entity->_Initialized = true;
 		}
 
-		else
+		//Break if we've run over time.
+		if (start_time.GetSecondsSince() >= EntitySystemConstants::MAXIMUM_CREATION_TIME)
 		{
 			break;
 		}
@@ -435,9 +508,9 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 
 			//Free the memory for this entity.
 			{
-				SCOPED_LOCK(_AllocatorLock);
+				SCOPED_LOCK(_EntityAllocatorLock);
 
-				_Allocator.Free(queue_item->_Entity);
+				_EntityAllocator.Free(queue_item->_Entity);
 			}
 		}
 

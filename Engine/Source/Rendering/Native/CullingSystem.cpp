@@ -22,14 +22,6 @@
 */
 void CullingSystem::Initialize() NOEXCEPT
 {
-	//Initialize the instanced static models culling task.
-	_InstancedStaticModelsCullingTask._Function = [](void *const RESTRICT arguments)
-	{
-		static_cast<CullingSystem *const RESTRICT>(arguments)->CullInstancedStaticModels();
-	};
-	_InstancedStaticModelsCullingTask._Arguments = this;
-	_InstancedStaticModelsCullingTask._ExecutableOnSameThread = false;
-
 	//Initialize the terrain culling task.
 	_TerrainCullingTask._Function = [](void *const RESTRICT arguments)
 	{
@@ -45,49 +37,7 @@ void CullingSystem::Initialize() NOEXCEPT
 void CullingSystem::PreRenderUpdate() NOEXCEPT
 {
 	//Execute all tasks.
-	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_InstancedStaticModelsCullingTask);
 	TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &_TerrainCullingTask);
-}
-
-/*
-*	Culls instanced static models.
-*/
-void CullingSystem::CullInstancedStaticModels() const NOEXCEPT
-{
-	PROFILING_SCOPE(CullingSystem::CullInstancedStaticModels);
-
-	//Cache data that will be used.
-	const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
-	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
-	const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
-
-	//Iterate over all patches and determine their visibility.
-	const uint64 number_of_components{ ComponentManager::GetNumberOfInstancedStaticModelComponents() };
-	InstancedStaticModelComponent *RESTRICT component{ ComponentManager::GetInstancedStaticModelInstancedStaticModelComponents() };
-
-	for (uint64 i = 0; i < number_of_components; ++i, ++component)
-	{
-		//Set visibility to true.
-		component->_Visibility = true;
-
-		//Cache the camera relative axis aligned bounding box.
-		const AxisAlignedBoundingBox3D camera_relative_axis_aligned_bounding_box{ component->_WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell) };
-		
-		//Do distance culling.
-		if (component->_ModelFadeData.Valid())
-		{
-			const Vector3<float32> closest_position{ AxisAlignedBoundingBox3D::GetClosestPointInside(camera_relative_axis_aligned_bounding_box, camera_local_position) };
-			const float32 distance_squared{ Vector3<float32>::LengthSquared(camera_local_position - closest_position) };
-
-			component->_Visibility = distance_squared < (component->_ModelFadeData.Get()._EndFadeOutDistance * component->_ModelFadeData.Get()._EndFadeOutDistance);
-		}
-
-		//Do frustum culling.
-		if (component->_Visibility)
-		{
-			component->_Visibility = Culling::IsWithinFrustum(camera_relative_axis_aligned_bounding_box, *frustum);
-		}
-	}
 }
 
 /*

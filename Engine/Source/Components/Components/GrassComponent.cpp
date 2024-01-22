@@ -22,9 +22,17 @@ NO_DISCARD bool GrassComponent::NeedsPreProcessing() const NOEXCEPT
 }
 
 /*
+*	Preprocessed initialization data an instance.
+*/
+void GrassComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+{
+
+}
+
+/*
 *	Creates an instance.
 */
-void GrassComponent::CreateInstance(const EntityIdentifier entity, void *const RESTRICT initialization_data) NOEXCEPT
+void GrassComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	GrassInitializationData *const RESTRICT _initialization_data{ static_cast<GrassInitializationData *const RESTRICT>(initialization_data) };

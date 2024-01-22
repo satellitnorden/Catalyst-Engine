@@ -18,9 +18,17 @@ NO_DISCARD bool InstancedImpostorComponent::NeedsPreProcessing() const NOEXCEPT
 }
 
 /*
+*	Preprocessed initialization data an instance.
+*/
+void InstancedImpostorComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+{
+
+}
+
+/*
 *	Creates an instance.
 */
-void InstancedImpostorComponent::CreateInstance(const EntityIdentifier entity, void *const RESTRICT initialization_data) NOEXCEPT
+void InstancedImpostorComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	InstancedImpostorInitializationData *const RESTRICT _initialization_data{ static_cast<InstancedImpostorInitializationData *const RESTRICT>(initialization_data) };

@@ -5,6 +5,7 @@
 #include <Components/Core/ComponentManager.h>
 #include <Components/Components/GrassComponent.h>
 #include <Components/Components/InstancedImpostorComponent.h>
+#include <Components/Components/InstancedStaticModelComponent.h>
 #include <Components/Components/StaticModelComponent.h>
 
 //Profiling.
@@ -806,32 +807,25 @@ void RenderInputManager::GatherInstancedModelInputStream
 
 	//Gather instanced static models.
 	{
-		//Cache relevant data.
-		const uint64 number_of_components{ ComponentManager::GetNumberOfInstancedStaticModelComponents() };
-		const InstancedStaticModelComponent *RESTRICT component{ ComponentManager::GetInstancedStaticModelInstancedStaticModelComponents() };
-
-		//Wait for culling to finish.
-		RenderingSystem::Instance->GetCullingSystem()->WaitForInstancedStaticModelsCulling();
-
-		for (uint64 i = 0; i < number_of_components; ++i, ++component)
+		for (InstancedStaticModelInstanceData &instance_data : InstancedStaticModelComponent::Instance->InstanceData())
 		{
 			//Skip if not visible.
-			if (!component->_Visibility)
+			if (!instance_data._Visibility)
 			{
 				continue;
 			}
 
 			//Draw all meshes.
-			for (uint64 i{ 0 }, size{ component->_ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the double-sidedness.
-				if (component->_MaterialResources[i]->_DoubleSided != double_sided)
+				if (instance_data._MaterialResources[i]->_DoubleSided != double_sided)
 				{
 					continue;
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ component->_ModelResource->_Meshes[i] };
+				const Mesh &mesh{ instance_data._ModelResource->_Meshes[i] };
 
 				//Add a new entry.
 				input_stream->_Entries.Emplace();
@@ -841,27 +835,27 @@ void RenderInputManager::GatherInstancedModelInputStream
 				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[0]._VertexBuffer;
 				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[0]._IndexBuffer;
 				new_entry._IndexBufferOffset = 0;
-				new_entry._InstanceBuffer = component->_TransformationsBuffer;
+				new_entry._InstanceBuffer = instance_data._TransformationsBuffer;
 				new_entry._VertexCount = 0;
 				new_entry._IndexCount = mesh._MeshLevelOfDetails[0]._IndexCount;
-				new_entry._InstanceCount = component->_NumberOfTransformations;
+				new_entry._InstanceCount = instance_data._NumberOfTransformations;
 
 				//Set up the push constant data.
 				InstancedModelPushConstantData push_constant_data;
 
-				const Vector3<int32> delta{ component->_Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
+				const Vector3<int32> delta{ instance_data._Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
 
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
 					push_constant_data._WorldGridDelta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
 				}
 
-				push_constant_data._ModelFlags = static_cast<uint32>(component->_ModelFlags);
+				push_constant_data._ModelFlags = static_cast<uint32>(instance_data._ModelFlags);
 
-				if (component->_ModelFadeData.Valid())
+				if (instance_data._ModelFadeData.Valid())
 				{
-					push_constant_data._StartFadeOutDistanceSquared = component->_ModelFadeData.Get()._StartFadeOutDistance * component->_ModelFadeData.Get()._StartFadeOutDistance;
-					push_constant_data._EndFadeOutDistanceSquared = component->_ModelFadeData.Get()._EndFadeOutDistance * component->_ModelFadeData.Get()._EndFadeOutDistance;
+					push_constant_data._StartFadeOutDistanceSquared = instance_data._ModelFadeData.Get()._StartFadeOutDistance * instance_data._ModelFadeData.Get()._StartFadeOutDistance;
+					push_constant_data._EndFadeOutDistanceSquared = instance_data._ModelFadeData.Get()._EndFadeOutDistance * instance_data._ModelFadeData.Get()._EndFadeOutDistance;
 				}
 
 				else
@@ -869,7 +863,7 @@ void RenderInputManager::GatherInstancedModelInputStream
 					push_constant_data._StartFadeOutDistanceSquared = push_constant_data._EndFadeOutDistanceSquared = FLOAT32_MAXIMUM;
 				}
 
-				push_constant_data._MaterialIndex = component->_MaterialResources[i]->_Index;
+				push_constant_data._MaterialIndex = instance_data._MaterialResources[i]->_Index;
 
 				for (uint64 i{ 0 }; i < sizeof(InstancedModelPushConstantData); ++i)
 				{

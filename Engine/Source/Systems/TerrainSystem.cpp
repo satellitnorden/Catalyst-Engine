@@ -184,8 +184,30 @@ void TerrainSystem::CheckSubdivision(TerrainComponent *const RESTRICT component,
 
 				child_node._Position = TerrainQuadTreeUtilities::MiddlePoint(child_node);
 				const Vector2<float32> heightmap_coordinate_offset{ static_cast<float32>(component->_PatchSize) * 0.5f };
-				child_node._MinimumHeightMapCoordinate = (child_node._Minimum + heightmap_coordinate_offset) / static_cast<float32>(component->_PatchSize + 1);
-				child_node._MaximumHeightMapCoordinate = (child_node._Maximum + heightmap_coordinate_offset) / static_cast<float32>(component->_PatchSize + 1);
+				child_node._MinimumHeightMapCoordinate = (child_node._Minimum + heightmap_coordinate_offset) / static_cast<float32>(component->_PatchSize);
+				child_node._MaximumHeightMapCoordinate = (child_node._Maximum + heightmap_coordinate_offset) / static_cast<float32>(component->_PatchSize);
+
+				child_node._MinimumHeightMapCoordinate *= 1.0f - (1.0f / static_cast<float32>(component->_PatchSize));
+				child_node._MaximumHeightMapCoordinate *= 1.0f - (1.0f / static_cast<float32>(component->_PatchSize));
+
+				/*
+				const float32 minimum_heightmap_coordinate{ 0.0f };
+				const float32 maximum_heightmap_coordinate{ 1.0f - (1.0f / static_cast<float32>(component->_PatchSize)) };
+
+				ASSERT
+				(
+					child_node._MinimumHeightMapCoordinate._X >= minimum_heightmap_coordinate
+					&& child_node._MinimumHeightMapCoordinate._X <= maximum_heightmap_coordinate
+					&& child_node._MinimumHeightMapCoordinate._Y >= minimum_heightmap_coordinate
+					&& child_node._MinimumHeightMapCoordinate._Y <= maximum_heightmap_coordinate
+					&& child_node._MaximumHeightMapCoordinate._X >= minimum_heightmap_coordinate
+					&& child_node._MaximumHeightMapCoordinate._X <= maximum_heightmap_coordinate
+					&& child_node._MaximumHeightMapCoordinate._Y >= minimum_heightmap_coordinate
+					&& child_node._MaximumHeightMapCoordinate._Y <= maximum_heightmap_coordinate,
+					"oh no"
+				);
+				*/
+
 				child_node._PatchSize = static_cast<float32>(component->_PatchSize) * patch_size_multiplier;
 			}
 		}

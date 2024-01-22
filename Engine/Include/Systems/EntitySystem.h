@@ -4,8 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/ArrayProxy.h>
 #include <Core/Containers/DynamicArray.h>
-#include <Core/General/HashString.h>
-#include <Core/General/Pair.h>
+
+//Components.
+#include <Components/Core/Component.h>
 
 //Concurrency.
 #include <Concurrency/AtomicQueue.h>
@@ -50,7 +51,7 @@ public:
 	/*
 	*	Creates an entity.
 	*/
-	NO_DISCARD Entity *const RESTRICT CreateEntity(ArrayProxy<Pair<HashString, void *const RESTRICT>> component_configurations) NOEXCEPT;
+	NO_DISCARD Entity *const RESTRICT CreateEntity(ArrayProxy<ComponentInitializationData *const RESTRICT> component_configurations) NOEXCEPT;
 
 	/*
 	*	Destroys an entity.
@@ -144,7 +145,7 @@ private:
 		Entity *RESTRICT _Entity;
 
 		//The component configurations.
-		StaticArray<Pair<HashString, void *RESTRICT>, EntityConstants::MAXIMUM_NUMBER_OF_COMPONENTS_PER_ENTITY> _ComponentConfigurations;
+		StaticArray<ComponentInitializationData *RESTRICT, EntityConstants::MAXIMUM_NUMBER_OF_COMPONENTS_PER_ENTITY> _ComponentConfigurations;
 
 		//The number of component configurations.
 		uint64 _NumberOfComponentConfigurations;
@@ -164,11 +165,30 @@ private:
 
 	};
 
-	//The allocator lock.
-	Spinlock _AllocatorLock;
+	/*
+	*	Entity pre-processing queue item.
+	*/
+	class EntityPreProcessingQueueItem final
+	{
+
+	public:
+
+		//The creation queue item.
+		EntityCreationQueueItem _CreationQueueItem;
+
+		//The task.
+		Task _Task;
+
+	};
+
+	//The entity allocator lock.
+	Spinlock _EntityAllocatorLock;
 
 	//The allocator.
-	PoolAllocator<sizeof(Entity)> _Allocator;
+	PoolAllocator<sizeof(Entity)> _EntityAllocator;
+
+	//The pre-processing allocator.
+	PoolAllocator<sizeof(EntityPreProcessingQueueItem)> _PreProcessingAllocator;
 
 	//The entity identifier lock.
 	Spinlock _EntityIdentifierLock;
@@ -184,6 +204,9 @@ private:
 
 	//The destruction queue.
 	AtomicQueue<EntityDestructionQueueItem, 4'096, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DestructionQueue;
+
+	//The pre-processing queue.
+	DynamicArray<EntityPreProcessingQueueItem *RESTRICT> _PreProcessingQueue;
 
 	/*
 	*	Generates a new entity identifier.

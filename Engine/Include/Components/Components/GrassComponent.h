@@ -20,7 +20,7 @@ class GrassGlobalData final
 
 };
 
-class GrassInitializationData final
+class GrassInitializationData final : public ComponentInitializationData
 {
 
 public:

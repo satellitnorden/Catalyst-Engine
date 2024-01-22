@@ -6,9 +6,9 @@
 template <class CLASS, class... ARGUMENTS>
 RESTRICTED CLASS* const RESTRICT EntitySystem::CreateEntity(ARGUMENTS&&... arguments) NOEXCEPT
 {
-	_AllocatorLock.Lock();
-	void *const RESTRICT memory{ _Allocator.Allocate() };
-	_AllocatorLock.Unlock();
+	_EntityAllocatorLock.Lock();
+	void *const RESTRICT memory{ _EntityAllocator.Allocate() };
+	_EntityAllocatorLock.Unlock();
 
 	Memory::Set(memory, 0, sizeof(Entity));
 

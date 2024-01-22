@@ -22,14 +22,6 @@ public:
 	void PreRenderUpdate() NOEXCEPT;
 
 	/*
-	*	Waits for instanced static models culling to finish executing.
-	*/
-	FORCE_INLINE void WaitForInstancedStaticModelsCulling() const NOEXCEPT
-	{
-		_InstancedStaticModelsCullingTask.Wait<WaitMode::YIELD>();
-	}
-
-	/*
 	*	Waits for terrain culling to finish executing.
 	*/
 	FORCE_INLINE void WaitForTerrainCulling() const NOEXCEPT
@@ -39,16 +31,8 @@ public:
 
 private:
 
-	//The instanced impostors culling task.
-	Task _InstancedStaticModelsCullingTask;
-
 	//The terrain culling task.
 	Task _TerrainCullingTask;
-
-	/*
-	*	Culls instanced static models.
-	*/
-	void CullInstancedStaticModels() const NOEXCEPT;
 
 	/*
 	*	Culls terrain.

@@ -20,7 +20,7 @@ class InstancedImpostorGlobalData final
 
 };
 
-class InstancedImpostorInitializationData final
+class InstancedImpostorInitializationData final : public ComponentInitializationData
 {
 
 public:

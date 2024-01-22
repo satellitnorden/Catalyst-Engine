@@ -19,9 +19,17 @@ NO_DISCARD bool StaticModelComponent::NeedsPreProcessing() const NOEXCEPT
 }
 
 /*
+*	Preprocessed initialization data an instance.
+*/
+void StaticModelComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+{
+
+}
+
+/*
 *	Creates an instance.
 */
-void StaticModelComponent::CreateInstance(const EntityIdentifier entity, void *const RESTRICT initialization_data) NOEXCEPT
+void StaticModelComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	StaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<StaticModelInitializationData *const RESTRICT>(initialization_data) };

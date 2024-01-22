@@ -127,7 +127,9 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 	//Gather the update data.
 	_UpdateData.Clear();
 
-	for (Component *const RESTRICT component : AllComponents())
+	const DynamicArray<Component *RESTRICT> &all_components{ AllComponents() };
+
+	for (Component *const RESTRICT component : all_components)
 	{
 		ComponentUpdateConfiguration update_configuration;
 

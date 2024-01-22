@@ -187,34 +187,39 @@ public:
 	/*
 	*	Returns the texture value at the specified coordinates using linear sampling and the given address mode.
 	*/
-	const TYPE Sample(const Vector2<float> &coordinate, const AddressMode addressMode) const NOEXCEPT
+	const TYPE Sample(const Vector2<float32> &coordinate, const AddressMode addressMode) const NOEXCEPT
 	{
 		//Calculate the texel step.
 		const Vector2<float32> texel_step{ 1.0f / static_cast<float32>(_Width), 1.0f / static_cast<float32>(_Height) };
 
 		//Calculate the coordinates.
-		Vector2<float> lower_left_coordinate{ coordinate };
-		Vector2<float> upper_left_coordinate{ coordinate + Vector2<float>(0.0f, texel_step._Y) };
-		Vector2<float> upper_right_coordinate{ coordinate + Vector2<float>(texel_step._X, texel_step._Y) };
-		Vector2<float> lower_right_coordinate{ coordinate + Vector2<float>(texel_step._X, 0.0f) };
+		Vector2<float32> lower_left_coordinate{ coordinate };
+		Vector2<float32> upper_left_coordinate{ coordinate + Vector2<float32>(0.0f, texel_step._Y) };
+		Vector2<float32> lower_right_coordinate{ coordinate + Vector2<float32>(texel_step._X, 0.0f) };
+		Vector2<float32> upper_right_coordinate{ coordinate + Vector2<float32>(texel_step._X, texel_step._Y) };
 
 		//Apply the address mode.
 		ApplyAddressMode(addressMode, &lower_left_coordinate);
 		ApplyAddressMode(addressMode, &upper_left_coordinate);
-		ApplyAddressMode(addressMode, &upper_right_coordinate);
 		ApplyAddressMode(addressMode, &lower_right_coordinate);
+		ApplyAddressMode(addressMode, &upper_right_coordinate);
 
 		//Calculate the index coordinates.
-		const Vector2<uint32> lower_left_integer_coordinate{ static_cast<uint32>(lower_left_coordinate._X * static_cast<float32>(_Width)), static_cast<uint32>(lower_left_coordinate._Y * static_cast<float32>(_Height)) };
-		const Vector2<uint32> upper_left_integer_coordinate{ static_cast<uint32>(upper_left_coordinate._X * static_cast<float32>(_Width)), static_cast<uint32>(upper_left_coordinate._Y * static_cast<float32>(_Height)) };
-		const Vector2<uint32> upper_right_integer_coordinate{ static_cast<uint32>(upper_right_coordinate._X * static_cast<float32>(_Width)), static_cast<uint32>(upper_right_coordinate._Y * static_cast<float32>(_Height)) };
-		const Vector2<uint32> lower_right_integer_coordinate{ static_cast<uint32>(lower_right_coordinate._X * static_cast<float32>(_Width)), static_cast<uint32>(lower_right_coordinate._Y * static_cast<float32>(_Height)) };
+		Vector2<uint32> lower_left_integer_coordinate{ static_cast<uint32>(lower_left_coordinate._X * static_cast<float32>(_Width)), static_cast<uint32>(lower_left_coordinate._Y * static_cast<float32>(_Height)) };
+		Vector2<uint32> upper_left_integer_coordinate{ static_cast<uint32>(upper_left_coordinate._X * static_cast<float32>(_Width)), static_cast<uint32>(upper_left_coordinate._Y * static_cast<float32>(_Height)) };
+		Vector2<uint32> lower_right_integer_coordinate{ static_cast<uint32>(lower_right_coordinate._X * static_cast<float32>(_Width)), static_cast<uint32>(lower_right_coordinate._Y * static_cast<float32>(_Height)) };
+		Vector2<uint32> upper_right_integer_coordinate{ static_cast<uint32>(upper_right_coordinate._X * static_cast<float32>(_Width)), static_cast<uint32>(upper_right_coordinate._Y * static_cast<float32>(_Height)) };
+
+		lower_left_integer_coordinate = Vector2<uint32>::Minimum(lower_left_integer_coordinate, Vector2<uint32>(_Width - 1, _Height - 1));
+		upper_left_integer_coordinate = Vector2<uint32>::Minimum(upper_left_integer_coordinate, Vector2<uint32>(_Width - 1, _Height - 1));
+		lower_right_integer_coordinate = Vector2<uint32>::Minimum(lower_right_integer_coordinate, Vector2<uint32>(_Width - 1, _Height - 1));
+		upper_right_integer_coordinate = Vector2<uint32>::Minimum(upper_right_integer_coordinate, Vector2<uint32>(_Width - 1, _Height - 1));
 
 		//Sample the values.
-		const TYPE& lower_left_value{ _Data[(lower_left_integer_coordinate._Y * _Width) + lower_left_integer_coordinate._X] };
-		const TYPE& upper_left_value{ _Data[(upper_left_integer_coordinate._Y * _Width) + upper_left_integer_coordinate._X] };
-		const TYPE& upper_right_value{ _Data[(upper_right_integer_coordinate._Y * _Width) + upper_right_integer_coordinate._X] };
-		const TYPE& lower_right_value{ _Data[(lower_right_integer_coordinate._Y * _Width) + lower_right_integer_coordinate._X] };
+		const TYPE &lower_left_value{ _Data[(lower_left_integer_coordinate._Y * _Width) + lower_left_integer_coordinate._X] };
+		const TYPE &upper_left_value{ _Data[(upper_left_integer_coordinate._Y * _Width) + upper_left_integer_coordinate._X] };
+		const TYPE &lower_right_value{ _Data[(lower_right_integer_coordinate._Y * _Width) + lower_right_integer_coordinate._X] };
+		const TYPE &upper_right_value{ _Data[(upper_right_integer_coordinate._Y * _Width) + upper_right_integer_coordinate._X] };
 
 		//Calculate the blend values.
 		const float32 horizontal_blend{ CatalystBaseMath::Fractional(lower_left_coordinate._X * static_cast<float32>(_Width)) };

@@ -26,7 +26,7 @@ class StaticModelGlobalData final
 
 };
 
-class StaticModelInitializationData final
+class StaticModelInitializationData final : public ComponentInitializationData
 {
 
 public:
