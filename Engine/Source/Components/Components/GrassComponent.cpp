@@ -116,6 +116,15 @@ void GrassComponent::CreateInstance(const EntityIdentifier entity, ComponentInit
 }
 
 /*
+*	Runs after all components have created their instance for the given entity.
+*	Useful if there is some setup needed involving multiple components.
+*/
+void GrassComponent::PostCreateInstance(const EntityIdentifier) NOEXCEPT
+{
+
+}
+
+/*
 *	Destroys an instance.
 */
 void GrassComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT

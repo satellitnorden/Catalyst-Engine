@@ -131,9 +131,6 @@ void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT in
 		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &_initialization_data->_PreprocessedData._BlendMapTexture);
 		_initialization_data->_PreprocessedData._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_initialization_data->_PreprocessedData._BlendMapTexture);
 	}
-
-	//Preprocess the entity physics.
-	//PhysicsSystem::Instance->PreprocessEntityPhysics(this, data);
 }
 
 /*
@@ -191,6 +188,15 @@ void TerrainComponent::CreateInstance(const EntityIdentifier entity, ComponentIn
 		instance_data._HeightMap,
 		&instance_data._PhysicsActorHandle
 	);
+}
+
+/*
+*	Runs after all components have created their instance for the given entity.
+*	Useful if there is some setup needed involving multiple components.
+*/
+void TerrainComponent::PostCreateInstance(const EntityIdentifier) NOEXCEPT
+{
+
 }
 
 /*

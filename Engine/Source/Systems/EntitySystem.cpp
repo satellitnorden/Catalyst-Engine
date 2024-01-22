@@ -357,10 +357,11 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 		//Check if pre-processing has finished.
 		if (queue_item->_Task.IsExecuted())
 		{
-			//Notify all components that a new entity was created.
-			for (Component *const RESTRICT component : AllComponents())
+			//Notify all components that an instance is about to be created.
+			for (uint64 i{ 0 }; i < queue_item->_CreationQueueItem._NumberOfComponentConfigurations; ++i)
 			{
-				component->OnEntityCreated(queue_item->_CreationQueueItem._Entity->_EntityIdentifier);
+				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_CreationQueueItem._ComponentConfigurations[i] };
+				component_configuration->_Component->PreCreateInstance(queue_item->_CreationQueueItem._Entity->_EntityIdentifier);
 			}
 
 			//Create all instances.
@@ -368,6 +369,13 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 			{
 				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_CreationQueueItem._ComponentConfigurations[i] };
 				component_configuration->_Component->CreateInstance(queue_item->_CreationQueueItem._Entity->_EntityIdentifier, component_configuration);
+			}
+
+			//Notify all components that all instances has been created.
+			for (uint64 i{ 0 }; i < queue_item->_CreationQueueItem._NumberOfComponentConfigurations; ++i)
+			{
+				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_CreationQueueItem._ComponentConfigurations[i] };
+				component_configuration->_Component->PostCreateInstance(queue_item->_CreationQueueItem._Entity->_EntityIdentifier);
 			}
 
 			//This entity is now initialized. (:
@@ -440,10 +448,25 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 		//Otherwise, create the entity as usual!
 		else
 		{
-			//Notify all components that a new entity was created.
-			for (Component* const RESTRICT component : AllComponents())
+			//Notify all components that an instance is about to be created.
+			for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
 			{
-				component->OnEntityCreated(queue_item->_Entity->_EntityIdentifier);
+				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations[i] };
+				component_configuration->_Component->PreCreateInstance(queue_item->_Entity->_EntityIdentifier);
+			}
+
+			//Create all instances.
+			for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
+			{
+				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations[i] };
+				component_configuration->_Component->CreateInstance(queue_item->_Entity->_EntityIdentifier, component_configuration);
+			}
+
+			//Notify all components that all instances has been created.
+			for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
+			{
+				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations[i] };
+				component_configuration->_Component->PostCreateInstance(queue_item->_Entity->_EntityIdentifier);
 			}
 
 			//Create all instances.

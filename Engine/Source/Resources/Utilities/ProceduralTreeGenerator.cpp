@@ -467,7 +467,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 	output->_Indices.Emplace();
 	DynamicArray<Vector3<float32>> crown_point_cloud;
 
-	for (uint32 i{ 0 }; i < 256; ++i)
+	for (uint32 i{ 0 }; i < 128; ++i)
 	{
 		//Pick a random vertex to spawn on.
 		const uint64 random_candidate_index{ CatalystRandomMath::RandomIntegerInRange<uint64>(0, crown_branch_candidates.LastIndex()) };

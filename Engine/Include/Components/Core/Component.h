@@ -59,25 +59,6 @@ public:
 	}
 
 	/*
-	*	Callback for when a new entity is create.
-	*/
-	FORCE_INLINE void OnEntityCreated(const EntityIdentifier entity) NOEXCEPT
-	{
-		for (uint64 i{ _EntityToInstanceMappings.Size() }; i <= entity; ++i)
-		{
-			_EntityToInstanceMappings.Emplace(UINT64_MAXIMUM);
-		}
-	}
-
-	/*
-	*	Returns if the given entity has this component.
-	*/
-	FORCE_INLINE NO_DISCARD bool Has(const EntityIdentifier entity) NOEXCEPT
-	{
-		return _EntityToInstanceMappings[entity] != UINT64_MAXIMUM;
-	}
-
-	/*
 	*	Returns if this component needs pre-processing.
 	*/
 	virtual NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT = 0;
@@ -88,14 +69,39 @@ public:
 	virtual void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
 
 	/*
+	*	Runs before an instance is created.
+	*/
+	FORCE_INLINE void PreCreateInstance(const EntityIdentifier entity) NOEXCEPT
+	{
+		for (uint64 i{ _EntityToInstanceMappings.Size() }; i <= entity; ++i)
+		{
+			_EntityToInstanceMappings.Emplace(UINT64_MAXIMUM);
+		}
+	}
+
+	/*
 	*	Creates an instance.
 	*/
 	virtual void CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
 
 	/*
+	*	Runs after all components have created their instance for the given entity.
+	*	Useful if there is some setup needed involving multiple components.
+	*/
+	virtual void PostCreateInstance(const EntityIdentifier) NOEXCEPT = 0;
+
+	/*
 	*	Destroys an instance.
 	*/
 	virtual void DestroyInstance(const EntityIdentifier entity) NOEXCEPT = 0;
+
+	/*
+	*	Returns if the given entity has this component.
+	*/
+	FORCE_INLINE NO_DISCARD bool Has(const EntityIdentifier entity) NOEXCEPT
+	{
+		return entity < _EntityToInstanceMappings.Size() && _EntityToInstanceMappings[entity] != UINT64_MAXIMUM;
+	}
 
 	/*
 	*	Returns the number of instances.
@@ -169,6 +175,7 @@ public:																																			\
 	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;																				\
 	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;											\
 	void CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;		\
+	void PostCreateInstance(const EntityIdentifier) NOEXCEPT override;																			\
 	void DestroyInstance(const EntityIdentifier entity) NOEXCEPT override;																		\
 	FORCE_INLINE NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT override																	\
 	{																																			\
