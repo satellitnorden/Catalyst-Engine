@@ -131,7 +131,8 @@ void VirtualRealityGraphicsPipeline::Execute() NOEXCEPT
 				//Push constants.
 				VirtualRealityPushConstantData data;
 
-				data._ModelMatrix = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				ASSERT(false, "This code is not ready. :x");
+				//data._ModelMatrix = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(VirtualRealityPushConstantData), &data);
 

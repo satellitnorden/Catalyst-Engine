@@ -7,6 +7,7 @@
 //Components.
 #include <Components/Core/ComponentManager.h>
 #include <Components/Components/StaticModelComponent.h>
+#include <Components/Components/WorldTransformComponent.h>
 
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
@@ -410,44 +411,48 @@ void ShadowsSystem::GatherOpaqueModelInputStream
 
 	//Gather static models.
 	{
-		//Go through all components.
-		for (StaticModelInstanceData &instance_data : StaticModelComponent::Instance->InstanceData())
+		//Go through all instances.
+		for (uint64 instance_index{ 0 }; instance_index < StaticModelComponent::Instance->NumberOfInstances(); ++instance_index)
 		{
+			const EntityIdentifier entity_identifier{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
+			const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity_identifier) };
+			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity_identifier) };
+
 			//Skip this model if it's not visible.
-			if (!TEST_BIT(instance_data._VisibilityFlags, required_visibility_flag))
+			if (!TEST_BIT(static_model_instance_data._VisibilityFlags, required_visibility_flag))
 			{
 				continue;
 			}
 
 			//Go through all meshes.
-			for (uint64 i{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ static_model_instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
-				if (instance_data._MaterialResources[i]->_Type != MaterialResource::Type::OPAQUE)
+				if (static_model_instance_data._MaterialResources[i]->_Type != MaterialResource::Type::OPAQUE)
 				{
 					continue;
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ instance_data._ModelResource->_Meshes[i] };
+				const Mesh &mesh{ static_model_instance_data._ModelResource->_Meshes[i] };
 
 				//Add a new entry.
 				input_stream->_Entries.Emplace();
 				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
 
 				new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._VertexBuffer;
-				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._VertexBuffer = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._VertexBuffer;
+				new_entry._IndexBuffer = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._IndexBuffer;
 				new_entry._IndexBufferOffset = 0;
 				new_entry._InstanceBuffer = EMPTY_HANDLE;
 				new_entry._VertexCount = 0;
-				new_entry._IndexCount = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._IndexCount;
+				new_entry._IndexCount = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._IndexCount;
 				new_entry._InstanceCount = 0;
 
 				//Set up the push constant data.
 				OpaqueModelPushConstantData push_constant_data;
 
-				push_constant_data._ModelMatrix = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				push_constant_data._ModelMatrix = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 				push_constant_data._LightMatrixIndex = shadow_map_index;
 
 				for (uint64 i{ 0 }; i < sizeof(OpaqueModelPushConstantData); ++i)
@@ -497,44 +502,48 @@ void ShadowsSystem::GatherMaskedModelInputStream
 
 	//Gather static models.
 	{
-		//Go through all components.
-		for (StaticModelInstanceData &instance_data : StaticModelComponent::Instance->InstanceData())
+		//Go through all instances.
+		for (uint64 instance_index{ 0 }; instance_index < StaticModelComponent::Instance->NumberOfInstances(); ++instance_index)
 		{
+			const EntityIdentifier entity_identifier{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
+			const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity_identifier) };
+			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity_identifier) };
+
 			//Skip this model if it's not visible.
-			if (!TEST_BIT(instance_data._VisibilityFlags, required_visibility_flag))
+			if (!TEST_BIT(static_model_instance_data._VisibilityFlags, required_visibility_flag))
 			{
 				continue;
 			}
 
 			//Go through all meshes.
-			for (uint64 i{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ static_model_instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
-				if (instance_data._MaterialResources[i]->_Type != MaterialResource::Type::MASKED)
+				if (static_model_instance_data._MaterialResources[i]->_Type != MaterialResource::Type::MASKED)
 				{
 					continue;
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ instance_data._ModelResource->_Meshes[i] };
+				const Mesh &mesh{ static_model_instance_data._ModelResource->_Meshes[i] };
 
 				//Add a new entry.
 				entry_proxies.Emplace();
 				EntryProxy &new_entry{ entry_proxies.Back() };
 
 				new_entry._Entry._PushConstantDataOffset = 0;
-				new_entry._Entry._VertexBuffer = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._VertexBuffer;
-				new_entry._Entry._IndexBuffer = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._IndexBuffer;
+				new_entry._Entry._VertexBuffer = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._VertexBuffer;
+				new_entry._Entry._IndexBuffer = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._IndexBuffer;
 				new_entry._Entry._IndexBufferOffset = 0;
 				new_entry._Entry._InstanceBuffer = EMPTY_HANDLE;
 				new_entry._Entry._VertexCount = 0;
-				new_entry._Entry._IndexCount = mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[i]]._IndexCount;
+				new_entry._Entry._IndexCount = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._IndexCount;
 				new_entry._Entry._InstanceCount = 0;
 
 				//Set up the push constant data.
-				new_entry._PushConstantData._ModelMatrix = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				new_entry._PushConstantData._ModelMatrix = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 				new_entry._PushConstantData._LightMatrixIndex = shadow_map_index;
-				new_entry._PushConstantData._MaterialIndex = instance_data._MaterialResources[i]->_Index;
+				new_entry._PushConstantData._MaterialIndex = static_model_instance_data._MaterialResources[i]->_Index;
 
 				//Calculate the distance.
 				const Vector4<float32> clip_position{ _ShadowMapData[shadow_map_index]._WorldToLightMatrix * new_entry._PushConstantData._ModelMatrix * Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f) };

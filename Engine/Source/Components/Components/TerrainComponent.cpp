@@ -194,7 +194,7 @@ void TerrainComponent::CreateInstance(const EntityIdentifier entity, ComponentIn
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void TerrainComponent::PostCreateInstance(const EntityIdentifier) NOEXCEPT
+void TerrainComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
 {
 
 }

@@ -1,6 +1,9 @@
 //Header file.
 #include <Components/Components/StaticModelComponent.h>
 
+//Components.
+#include <Components/Components/WorldTransformComponent.h>
+
 //Profiling.
 #include <Profiling/Profiling.h>
 
@@ -37,11 +40,6 @@ void StaticModelComponent::CreateInstance(const EntityIdentifier entity, Compone
 	StaticModelInstanceData &instance_data{ _InstanceData.Back() };
 
 	instance_data._ModelResource = _initialization_data->_ModelResource;
-	instance_data._PreviousWorldTransform = instance_data._CurrentWorldTransform = _initialization_data->_InitialWorldTransform;
-	AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(instance_data._ModelResource->_ModelSpaceAxisAlignedBoundingBox, _initialization_data->_InitialWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
 	instance_data._MaterialResources = _initialization_data->_MaterialResources;
 	instance_data._ModelCollisionConfiguration = _initialization_data->_ModelCollisionConfiguration;
 	instance_data._ModelSimulationConfiguration = _initialization_data->_ModelSimulationConfiguration;
@@ -50,44 +48,48 @@ void StaticModelComponent::CreateInstance(const EntityIdentifier entity, Compone
 	//Free the initialization data.
 	FreeInitializationData(_initialization_data);
 
-	//Create the actor.
-	if (instance_data._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
-	{
-		instance_data._PhysicsActorHandle = nullptr;
-
-		PhysicsSystem::Instance->CreateModelActor
-		(
-			instance_data._CurrentWorldTransform,
-			instance_data._ModelCollisionConfiguration,
-			instance_data._WorldSpaceAxisAlignedBoundingBox,
-			instance_data._ModelResource->_CollisionModel,
-			instance_data._ModelSimulationConfiguration,
-			&instance_data._PhysicsActorHandle
-		);
-	}
-
-	else
-	{
-		instance_data._PhysicsActorHandle = nullptr;
-	}
-
 	//Tell the ray tracing system.
 	RenderingSystem::Instance->GetRayTracingSystem()->OnStaticModelInstanceCreated(entity, _InstanceData.Back());
-
-	//Add the entity identifier.
-	_EntityIdentifiers.Emplace(entity);
-
-	//Add the entity to instance mapping.
-	_EntityToInstanceMappings[entity] = _InstanceData.LastIndex();
 }
 
 /*
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void StaticModelComponent::PostCreateInstance(const EntityIdentifier) NOEXCEPT
+void StaticModelComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
 {
+	ASSERT(WorldTransformComponent::Instance->Has(entity), "Static model component needs a world transform component!");
 
+	//Cache the instance data.
+	const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
+	StaticModelInstanceData &static_model_instance_data{ InstanceData(entity) };
+
+	//Calculate the world space axis aligned bounding box.
+	AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
+	RenderingUtilities::TransformAxisAlignedBoundingBox(static_model_instance_data._ModelResource->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+	static_model_instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
+	static_model_instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
+
+	//Create the physics actor.
+	if (static_model_instance_data._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
+	{
+		static_model_instance_data._PhysicsActorHandle = nullptr;
+
+		PhysicsSystem::Instance->CreateModelActor
+		(
+			world_transform_instance_data._CurrentWorldTransform,
+			static_model_instance_data._ModelCollisionConfiguration,
+			static_model_instance_data._WorldSpaceAxisAlignedBoundingBox,
+			static_model_instance_data._ModelResource->_CollisionModel,
+			static_model_instance_data._ModelSimulationConfiguration,
+			&static_model_instance_data._PhysicsActorHandle
+		);
+	}
+
+	else
+	{
+		static_model_instance_data._PhysicsActorHandle = nullptr;
+	}
 }
 
 /*
@@ -116,7 +118,7 @@ void StaticModelComponent::DestroyInstance(const EntityIdentifier entity) NOEXCE
 
 void StaticModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
-	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE | UpdatePhase::PRE_RENDER;
+	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
 	update_configuration->_BatchSize = 64;
 }
 
@@ -126,21 +128,6 @@ void StaticModelComponent::Update(const UpdatePhase update_phase, const uint64 s
 
 	switch (update_phase)
 	{
-		case UpdatePhase::PRE:
-		{
-			//Iterate over the instances.
-			for (uint64 instance_index{ start_index }; instance_index < end_index; ++instance_index)
-			{
-				//Cache the instance data.
-				StaticModelInstanceData &instance_data{ _InstanceData[instance_index] };
-
-				//Update the previous world transform.
-				instance_data._PreviousWorldTransform = instance_data._CurrentWorldTransform;
-			}
-			
-			break;
-		}
-
 		case UpdatePhase::PRE_RENDER:
 		{
 			//Cache data that will be used.
@@ -158,7 +145,8 @@ void StaticModelComponent::Update(const UpdatePhase update_phase, const uint64 s
 				//Update the world transform is this static model instance is physics-simulated.
 				if (instance_data._PhysicsActorHandle && instance_data._ModelSimulationConfiguration._SimulatePhysics)
 				{
-					PhysicsSystem::Instance->GetActorWorldTransform(instance_data._PhysicsActorHandle, &instance_data._CurrentWorldTransform);
+					WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(InstanceToEntity(instance_index)) };
+					PhysicsSystem::Instance->GetActorWorldTransform(instance_data._PhysicsActorHandle, &world_transform_instance_data._CurrentWorldTransform);
 				}
 
 				//Do culling.

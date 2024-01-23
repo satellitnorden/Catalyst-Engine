@@ -101,7 +101,7 @@ void InstancedStaticModelComponent::CreateInstance(const EntityIdentifier entity
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void InstancedStaticModelComponent::PostCreateInstance(const EntityIdentifier) NOEXCEPT
+void InstancedStaticModelComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
 {
 
 }

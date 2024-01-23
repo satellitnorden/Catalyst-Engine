@@ -2,7 +2,7 @@
 #include <Rendering/Native/RayTracingSystem.h>
 
 //Components.
-#include <Components/Core/ComponentManager.h>
+#include <Components/Components/WorldTransformComponent.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -208,7 +208,7 @@ void RayTracingSystem::OnStaticModelInstanceCreated(const EntityIdentifier entit
 		new_entry._VertexBuffer = mesh_level_of_detail._VertexBuffer;
 		new_entry._IndexBuffer = mesh_level_of_detail._IndexBuffer;
 		new_entry._MaterialIndex = instance_data._MaterialResources[mesh_index]->_Index;
-		new_entry._InstanceData._Transform = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+		new_entry._InstanceData._Transform = WorldTransformComponent::Instance->InstanceData(entity_identifier)._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 		new_entry._InstanceData._BottomLevelAccelerationStructure = bottom_level_acceleration_structure;
 		new_entry._InstanceData._HitGroupIndex = hit_group->_Index;
 		new_entry._InstanceData._InstanceIndex = static_cast<uint32>(hit_group->_Entries.LastIndex());

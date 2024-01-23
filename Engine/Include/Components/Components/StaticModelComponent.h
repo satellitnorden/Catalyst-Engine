@@ -18,7 +18,6 @@
 #include <Resources/Core/ResourcePointer.h>
 
 //World.
-#include <World/Core/WorldTransform.h>
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
 class StaticModelGlobalData final
@@ -30,9 +29,6 @@ class StaticModelInitializationData final : public ComponentInitializationData
 {
 
 public:
-
-	//The initial world transform.
-	WorldTransform _InitialWorldTransform;
 
 	//The model resource.
 	ResourcePointer<ModelResource> _ModelResource;
@@ -55,12 +51,6 @@ public:
 
 	//The model resource.
 	ResourcePointer<ModelResource> _ModelResource;
-
-	//The previous world transform.
-	WorldTransform _PreviousWorldTransform;
-
-	//The current world transform.
-	WorldTransform _CurrentWorldTransform;
 
 	//The world space axis aligned bounding box.
 	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;

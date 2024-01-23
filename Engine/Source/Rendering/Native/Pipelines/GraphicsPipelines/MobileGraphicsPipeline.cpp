@@ -234,7 +234,8 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 				//Push constants.
 				MobilePushConstantData data;
 
-				data._ModelMatrix = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+				ASSERT(false, "This code is not ready. :x");
+				//data._ModelMatrix = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 				data._SkyLightLuminance = sky_light_luminance;
 				data._MaterialIndex = instance_data._MaterialResources[mesh_index]->_Index;
 				data._MobilePass = UNDERLYING(MobilePass::MODEL);

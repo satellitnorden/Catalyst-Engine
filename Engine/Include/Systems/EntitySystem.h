@@ -51,7 +51,7 @@ public:
 	/*
 	*	Creates an entity.
 	*/
-	NO_DISCARD Entity *const RESTRICT CreateEntity(ArrayProxy<ComponentInitializationData *const RESTRICT> component_configurations) NOEXCEPT;
+	NO_DISCARD Entity *const RESTRICT CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT> component_configurations) NOEXCEPT;
 
 	/*
 	*	Destroys an entity.

@@ -46,7 +46,10 @@ public:
 	HashString _Identifier;
 
 	//The entity to instance mappings.
-	DynamicArray<EntityIdentifier> _EntityToInstanceMappings;
+	DynamicArray<uint64> _EntityToInstanceMappings;
+
+	//The instance to entity mappings.
+	DynamicArray<EntityIdentifier> _InstanceToEntityMappings;
 
 	/*
 	*	Default constructor.
@@ -77,6 +80,9 @@ public:
 		{
 			_EntityToInstanceMappings.Emplace(UINT64_MAXIMUM);
 		}
+
+		_EntityToInstanceMappings[entity] = _InstanceToEntityMappings.Size();
+		_InstanceToEntityMappings.Emplace(entity);
 	}
 
 	/*
@@ -88,7 +94,7 @@ public:
 	*	Runs after all components have created their instance for the given entity.
 	*	Useful if there is some setup needed involving multiple components.
 	*/
-	virtual void PostCreateInstance(const EntityIdentifier) NOEXCEPT = 0;
+	virtual void PostCreateInstance(const EntityIdentifier entity) NOEXCEPT = 0;
 
 	/*
 	*	Destroys an instance.
@@ -101,6 +107,22 @@ public:
 	FORCE_INLINE NO_DISCARD bool Has(const EntityIdentifier entity) NOEXCEPT
 	{
 		return entity < _EntityToInstanceMappings.Size() && _EntityToInstanceMappings[entity] != UINT64_MAXIMUM;
+	}
+
+	/*
+	*	Returns the instance index for the given entity.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 EntityToInstance(const EntityIdentifier entity) const NOEXCEPT
+	{
+		return _EntityToInstanceMappings[entity];
+	}
+
+	/*
+	*	Returns the entity index for the given instance index.
+	*/
+	FORCE_INLINE NO_DISCARD EntityIdentifier InstanceToEntity(const uint64 instance_index) const NOEXCEPT
+	{
+		return _InstanceToEntityMappings[instance_index];
 	}
 
 	/*
@@ -153,7 +175,7 @@ class ALIGN(8) COMPONENT_CLASS final : public Component																							\
 public:																																			\
 	DECLARE_SINGLETON(COMPONENT_CLASS);																											\
 	static GLOBAL_DATA_CLASS GLOBAL_DATA;																										\
-	FORCE_INLINE static INITIALIZATION_DATA_CLASS *const RESTRICT AllocateInitializationData() NOEXCEPT											\
+	FORCE_INLINE INITIALIZATION_DATA_CLASS *const RESTRICT AllocateInitializationData() NOEXCEPT												\
 	{																																			\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																										\
 		INITIALIZATION_DATA_CLASS *const RESTRICT data{ static_cast<INITIALIZATION_DATA_CLASS *const RESTRICT>(POOL_ALLOCATOR.Allocate()) };	\
@@ -161,7 +183,7 @@ public:																																			\
 		data->_Component = COMPONENT_CLASS::Instance.Get();																						\
 		return data;																															\
 	}																																			\
-	FORCE_INLINE static void FreeInitializationData(INITIALIZATION_DATA_CLASS *const RESTRICT data) NOEXCEPT									\
+	FORCE_INLINE void FreeInitializationData(INITIALIZATION_DATA_CLASS *const RESTRICT data) NOEXCEPT											\
 	{																																			\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																										\
 		POOL_ALLOCATOR.Free(data);																												\
@@ -175,32 +197,36 @@ public:																																			\
 	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;																				\
 	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;											\
 	void CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;		\
-	void PostCreateInstance(const EntityIdentifier) NOEXCEPT override;																			\
+	void PostCreateInstance(const EntityIdentifier entity) NOEXCEPT override;																	\
 	void DestroyInstance(const EntityIdentifier entity) NOEXCEPT override;																		\
 	FORCE_INLINE NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT override																	\
 	{																																			\
 		return _InstanceData.Size();																											\
 	}																																			\
-	DynamicArray<INSTANCE_DATA_CLASS> &InstanceData() NOEXCEPT																					\
+	FORCE_INLINE NO_DISCARD DynamicArray<INSTANCE_DATA_CLASS> &InstanceData() NOEXCEPT															\
 	{																																			\
 		return _InstanceData;																													\
 	}																																			\
+	FORCE_INLINE NO_DISCARD INSTANCE_DATA_CLASS &InstanceData(const EntityIdentifier entity) NOEXCEPT											\
+	{																																			\
+		return _InstanceData[EntityToInstance(entity)];																							\
+	}																																			\
 	void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT override;							\
 	void Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT override;							\
-	void RemoveInstance(const EntityIdentifier entity) NOEXCEPT																					\
+	FORCE_INLINE void RemoveInstance(const EntityIdentifier entity) NOEXCEPT																	\
 	{																																			\
 		const uint64 instance_index{ _EntityToInstanceMappings[entity] };																		\
 		if (instance_index == _InstanceData.LastIndex())																						\
 		{																																		\
 			_InstanceData.Pop();																												\
-			_EntityIdentifiers.Pop();																											\
+			_InstanceToEntityMappings.Pop();																									\
 			_EntityToInstanceMappings[entity] = UINT64_MAXIMUM;																					\
 		}																																		\
 		else																																	\
 		{																																		\
-			const EntityIdentifier moved_entity_identifier{ _EntityIdentifiers.Back() };														\
+			const EntityIdentifier moved_entity_identifier{ _InstanceToEntityMappings.Back() };													\
 			_InstanceData.EraseAt<false>(instance_index);																						\
-			_EntityIdentifiers.EraseAt<false>(instance_index);																					\
+			_InstanceToEntityMappings.EraseAt<false>(instance_index);																			\
 			_EntityToInstanceMappings[entity] = UINT64_MAXIMUM;																					\
 			_EntityToInstanceMappings[moved_entity_identifier] = instance_index;																\
 		}																																		\
@@ -209,7 +235,6 @@ private:																																		\
 	static Spinlock POOL_ALLOCATOR_LOCK;																										\
 	static PoolAllocator<sizeof(INITIALIZATION_DATA_CLASS)> POOL_ALLOCATOR;																		\
 	DynamicArray<INSTANCE_DATA_CLASS> _InstanceData;																							\
-	DynamicArray<EntityIdentifier> _EntityIdentifiers;																							\
 };																																				\
 
 /*

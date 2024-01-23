@@ -64,7 +64,7 @@ void EntitySystem::Initialize() NOEXCEPT
 /*
 *	Creates a new entity.
 */
-NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<ComponentInitializationData *const RESTRICT> component_configurations) NOEXCEPT
+NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT> component_configurations) NOEXCEPT
 {
 	//Allocate the entity.
 	Entity *RESTRICT entity;
@@ -467,13 +467,6 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 			{
 				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations[i] };
 				component_configuration->_Component->PostCreateInstance(queue_item->_Entity->_EntityIdentifier);
-			}
-
-			//Create all instances.
-			for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
-			{
-				ComponentInitializationData* RESTRICT component_configuration{ queue_item->_ComponentConfigurations[i] };
-				component_configuration->_Component->CreateInstance(queue_item->_Entity->_EntityIdentifier, component_configuration);
 			}
 
 			//This entity is now initialized. (:
