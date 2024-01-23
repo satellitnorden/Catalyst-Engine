@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/Padding.h>
 
-//Components.
-#include <Components/Transient/LightComponent.h>
+//Entities.
+#include <Entities/Core/EntityCore.h>
 
 //Lighting.
 #include <Lighting/LightingCore.h>
@@ -79,7 +79,7 @@ public:
 	/*
 	*	Copy by LightComponent constructor.
 	*/
-	ShaderLightComponent(const LightComponent& light_component) NOEXCEPT;
+	ShaderLightComponent(const EntityIdentifier entity) NOEXCEPT;
 
 };
 

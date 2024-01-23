@@ -80,14 +80,14 @@ enum class UpdatePhase : uint16
 	INPUT = BIT(2),
 
 	/*
-	*	During this update phase, user interface elements are updated.
+	*	During this update phase, gameplay logic is simulated.
 	*/
-	USER_INTERFACE = BIT(3),
+	GAMEPLAY = BIT(3),
 
 	/*
-	*	During this update phase, game logic is simulated.
+	*	During this update phase, user interface elements are updated.
 	*/
-	LOGIC = BIT(4),
+	USER_INTERFACE = BIT(4),
 
 	/*
 	*	During this update phase, physics is simulated.

@@ -71,7 +71,7 @@ void DebugSystem::Initialize() NOEXCEPT
 		},
 		this,
 		UpdatePhase::USER_INTERFACE,
-		UpdatePhase::LOGIC,
+		UpdatePhase::PHYSICS,
 		false,
 		false
 	);

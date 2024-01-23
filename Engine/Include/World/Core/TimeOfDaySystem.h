@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Entities.
-#include <Entities/Types/LightEntity.h>
+#include <Entities/Types/Entity.h>
 
 //Math.
 #include <Math/General/Curve.h>
@@ -62,7 +62,7 @@ private:
 	Curve<SkyGradient, 4> _SkyGradientCurve;
 
 	//The sky light.
-	LightEntity *RESTRICT _SkyLight;
+	Entity *RESTRICT _SkyLight;
 
 	/*
 	*	Initializes the sky light curve.

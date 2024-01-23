@@ -13,7 +13,6 @@
 #include <Rendering/Native/Pipelines/ComputePipelines/ParticleSystemComputePipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) SceneFeaturesRenderPass final : public RenderPass
@@ -68,9 +67,6 @@ private:
 
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;
-
-	//The user interface scene features graphics pipeline.
-	UserInterfaceSceneFeaturesGraphicsPipeline _UserInterfaceSceneFeaturesGraphicsPipeline;
 
 #if defined(CATALYST_EDITOR)
 	//The editor selected model graphics pipeline.

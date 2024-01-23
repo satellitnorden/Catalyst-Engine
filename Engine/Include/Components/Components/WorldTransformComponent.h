@@ -9,7 +9,7 @@
 //World.
 #include <World/Core/WorldTransform.h>
 
-class WorldTransformGlobalData final
+class WorldTransformSharedData final
 {
 
 };
@@ -37,4 +37,4 @@ public:
 
 };
 
-DECLARE_COMPONENT(WorldTransformComponent, WorldTransformGlobalData, WorldTransformInitializationData, WorldTransformInstanceData);
+DECLARE_COMPONENT(WorldTransformComponent, WorldTransformSharedData, WorldTransformInitializationData, WorldTransformInstanceData);

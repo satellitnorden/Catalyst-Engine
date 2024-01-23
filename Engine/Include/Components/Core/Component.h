@@ -62,6 +62,11 @@ public:
 	}
 
 	/*
+	*	Initializes this component.
+	*/
+	virtual void Initialize() NOEXCEPT = 0;
+
+	/*
 	*	Returns if this component needs pre-processing.
 	*/
 	virtual NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT = 0;
@@ -168,13 +173,17 @@ void AddComponentToAllComponents(Component *const RESTRICT component) NOEXCEPT;
 /*
 *	Declares a component.
 */
-#define DECLARE_COMPONENT(COMPONENT_CLASS, GLOBAL_DATA_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_DATA_CLASS)									\
+#define DECLARE_COMPONENT(COMPONENT_CLASS, SHARED_DATA_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_DATA_CLASS)									\
 static_assert(std::is_convertible<INITIALIZATION_DATA_CLASS*, ComponentInitializationData*>::value, "Incorrect inheritance");					\
 class ALIGN(8) COMPONENT_CLASS final : public Component																							\
 {																																				\
 public:																																			\
 	DECLARE_SINGLETON(COMPONENT_CLASS);																											\
-	static GLOBAL_DATA_CLASS GLOBAL_DATA;																										\
+	void Initialize() NOEXCEPT override;																										\
+	FORCE_INLINE NO_DISCARD SHARED_DATA_CLASS &SharedData() NOEXCEPT																			\
+	{																																			\
+		return _SharedData;																														\
+	}																																			\
 	FORCE_INLINE INITIALIZATION_DATA_CLASS *const RESTRICT AllocateInitializationData() NOEXCEPT												\
 	{																																			\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																										\
@@ -232,8 +241,9 @@ public:																																			\
 		}																																		\
 	}																																			\
 private:																																		\
-	static Spinlock POOL_ALLOCATOR_LOCK;																										\
-	static PoolAllocator<sizeof(INITIALIZATION_DATA_CLASS)> POOL_ALLOCATOR;																		\
+	SHARED_DATA_CLASS _SharedData;																												\
+	Spinlock POOL_ALLOCATOR_LOCK;																												\
+	PoolAllocator<sizeof(INITIALIZATION_DATA_CLASS)> POOL_ALLOCATOR;																			\
 	DynamicArray<INSTANCE_DATA_CLASS> _InstanceData;																							\
 };																																				\
 
@@ -243,6 +253,3 @@ private:																																		\
 */
 #define DEFINE_COMPONENT(COMPONENT_CLASS, GLOBAL_DATA_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_CLASS)	\
 DEFINE_SINGLETON(COMPONENT_CLASS);																		\
-GLOBAL_DATA_CLASS COMPONENT_CLASS::GLOBAL_DATA;															\
-Spinlock COMPONENT_CLASS::POOL_ALLOCATOR_LOCK;															\
-PoolAllocator<sizeof(INITIALIZATION_DATA_CLASS)> COMPONENT_CLASS::POOL_ALLOCATOR;						\

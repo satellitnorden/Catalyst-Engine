@@ -3,13 +3,40 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Components.
+#include <Components/Core/Component.h>
+
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
-class AnimatedModelComponent final
+//World.
+#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
+
+class AnimatedModelSharedData final
+{
+
+};
+
+class AnimatedModelInitializationData final : public ComponentInitializationData
+{
+
+public:
+
+	//The animated model resource.
+	ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
+
+	//The material resource.
+	ResourcePointer<MaterialResource> _MaterialResource;
+
+	//The initial animation resource.
+	ResourcePointer<AnimationResource> _InitialAnimationResource;
+
+};
+
+class AnimatedModelInstanceData final
 {
 
 public:
@@ -21,13 +48,7 @@ public:
 	ResourcePointer<MaterialResource> _MaterialResource;
 
 	//The world space axis aligned bounding box.
-	AxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
-
-	//The previous world transform.
-	Matrix4x4 _PreviousWorldTransform;
-
-	//The current world transform.
-	Matrix4x4 _CurrentWorldTransform;
+	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
 
 	//The current animated model resource.
 	ResourcePointer<AnimationResource> _CurrentAnimationResource;
@@ -42,3 +63,5 @@ public:
 	DynamicArray<RenderDataTableHandle> _AnimationDataRenderDataTables;
 
 };
+
+DECLARE_COMPONENT(AnimatedModelComponent, AnimatedModelSharedData, AnimatedModelInitializationData, AnimatedModelInstanceData);

@@ -20,7 +20,7 @@
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
-class StaticModelGlobalData final
+class StaticModelSharedData final
 {
 
 };
@@ -78,4 +78,4 @@ public:
 
 };
 
-DECLARE_COMPONENT(StaticModelComponent, StaticModelGlobalData, StaticModelInitializationData, StaticModelInstanceData);
+DECLARE_COMPONENT(StaticModelComponent, StaticModelSharedData, StaticModelInitializationData, StaticModelInstanceData);

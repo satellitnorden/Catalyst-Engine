@@ -10,7 +10,15 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-DEFINE_COMPONENT(InstancedImpostorComponent, InstancedImpostorGlobalData, InstancedImpostorInitializationData, InstancedImpostorInstanceData);
+DEFINE_COMPONENT(InstancedImpostorComponent, InstancedImpostorSharedData, InstancedImpostorInitializationData, InstancedImpostorInstanceData);
+
+/*
+*	Initializes this component.
+*/
+void InstancedImpostorComponent::Initialize() NOEXCEPT
+{
+
+}
 
 NO_DISCARD bool InstancedImpostorComponent::NeedsPreProcessing() const NOEXCEPT
 {

@@ -13,6 +13,7 @@
 
 //Rendering.
 #include <Rendering/Native/ParticleInstanceData.h>
+#include <Rendering/Native/RenderingCore.h>
 
 //World.
 #include <World/Core/WorldPosition.h>

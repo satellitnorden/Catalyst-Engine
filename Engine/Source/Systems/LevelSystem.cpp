@@ -1,12 +1,6 @@
 //Header file.
 #include <Systems/LevelSystem.h>
 
-//Entities.
-#include <Entities/Creation/LightInitializationData.h>
-#include <Entities/Creation/UserInterfaceInitializationData.h>
-#include <Entities/Types/LightEntity.h>
-#include <Entities/Types/UserInterfaceEntity.h>
-
 //Systems.
 #include <Systems/EntitySystem.h>
 #include <Systems/ResourceSystem.h>
@@ -30,6 +24,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 	{
 		switch (level_entry._Type)
 		{
+			/*
 			case LevelEntry::Type::LIGHT:
 			{
 				LightEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<LightEntity>() };
@@ -79,6 +74,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 
 				break;
 			}
+			*/
 
 			/*
 			case LevelEntry::Type::STATIC_MODEL:
@@ -103,6 +99,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 			}
 			*/
 
+			/*
 			case LevelEntry::Type::USER_INTERFACE:
 			{
 				UserInterfaceEntity *const RESTRICT entity{ EntitySystem::Instance->CreateEntity<UserInterfaceEntity>() };
@@ -122,6 +119,7 @@ void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXC
 
 				break;
 			}
+			*/
 
 			default:
 			{

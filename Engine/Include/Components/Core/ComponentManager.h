@@ -5,11 +5,8 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Components.
-#include <Components/Transient/AnimatedModelComponent.h>
-#include <Components/Transient/LightComponent.h>
 #include <Components/Transient/ParticleSystemComponent.h>
 #include <Components/Transient/ParticleSystemRenderComponent.h>
-#include <Components/Transient/UserInterfaceComponent.h>
 
 /*
 *	Declares an entity class with one component.
@@ -43,9 +40,6 @@ class ComponentManager final
 
 public:
 
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(UserInterface, UserInterfaceComponent);
 
 };

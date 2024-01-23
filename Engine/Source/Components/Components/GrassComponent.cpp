@@ -14,7 +14,15 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-DEFINE_COMPONENT(GrassComponent, GrassGlobalData, GrassInitializationData, GrassInstanceData);
+DEFINE_COMPONENT(GrassComponent, GrassSharedData, GrassInitializationData, GrassInstanceData);
+
+/*
+*	Initializes this component.
+*/
+void GrassComponent::Initialize() NOEXCEPT
+{
+
+}
 
 NO_DISCARD bool GrassComponent::NeedsPreProcessing() const NOEXCEPT
 {

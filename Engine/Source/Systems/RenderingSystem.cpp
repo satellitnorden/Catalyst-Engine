@@ -5,7 +5,7 @@
 #include <Core/General/CatalystProjectConfiguration.h>
 
 //Components.
-#include <Components/Core/ComponentManager.h>
+#include <Components/Components/LightComponent.h>
 
 //Entities.
 #include <Entities/Types/Entity.h>
@@ -1722,15 +1722,12 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._SkyLightDirection = CatalystWorldCoordinateSpace::DOWN;
 
 	{
-		const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
-		const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
-
-		for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
+		for (const LightInstanceData &instance_data : LightComponent::Instance->InstanceData())
 		{
-			if (component->_LightType == LightType::DIRECTIONAL)
+			if (instance_data._LightType == LightType::DIRECTIONAL)
 			{
-				_DynamicUniformData._SkyLightRadiance = Vector4<float32>(component->_Color, component->_Intensity);
-				_DynamicUniformData._SkyLightDirection = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation);
+				_DynamicUniformData._SkyLightRadiance = Vector4<float32>(instance_data._Color, instance_data._Intensity);
+				_DynamicUniformData._SkyLightDirection = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(instance_data._DirectionalLightData._Rotation);
 
 				break;
 			}

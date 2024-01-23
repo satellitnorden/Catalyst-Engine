@@ -5,7 +5,7 @@
 #include <Core/General/Padding.h>
 
 //Components.
-#include <Components/Core/ComponentManager.h>
+#include <Components/Components/LightComponent.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -55,7 +55,7 @@ void LightingSystem::PostInitialize() NOEXCEPT
 
 			LightHeaderData header_data;
 
-			header_data._NumberOfLights = static_cast<uint32>(ComponentManager::GetNumberOfLightComponents());
+			header_data._NumberOfLights = static_cast<uint32>(LightComponent::Instance->NumberOfInstances());
 			header_data._MaximumNumberOfShadowCastingLights = LightingConstants::MAXIMUM_NUMBER_OF_SHADOW_CASTING_LIGHTS;
 
 			for (uint64 i{ 0 }; i < sizeof(LightHeaderData); ++i)
@@ -81,7 +81,7 @@ void LightingSystem::PostInitialize() NOEXCEPT
 void LightingSystem::RenderUpdate() NOEXCEPT
 {
 	//Cache relevant data.
-	const uint32 number_of_lights{ static_cast<uint32>(ComponentManager::GetNumberOfLightComponents()) };
+	const uint32 number_of_lights{ static_cast<uint32>(LightComponent::Instance->NumberOfInstances()) };
 
 	//Update the current render data table.
 	RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
@@ -107,11 +107,9 @@ void LightingSystem::RenderUpdate() NOEXCEPT
 		//Update the shader light components.
 		_ShaderLightComponents.Clear();
 		
-		const LightComponent *RESTRICT light_component{ ComponentManager::GetLightLightComponents() };
-
-		for (uint64 i{ 0 }; i < number_of_lights; ++i, ++light_component)
+		for (uint64 i{ 0 }; i < number_of_lights; ++i)
 		{
-			_ShaderLightComponents.Emplace(*light_component);
+			_ShaderLightComponents.Emplace(LightComponent::Instance->InstanceToEntity(i));
 		}
 
 		//Fill in the header data.

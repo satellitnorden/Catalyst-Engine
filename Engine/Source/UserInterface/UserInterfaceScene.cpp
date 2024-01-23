@@ -1,9 +1,6 @@
 ﻿//Header file.
 #include <UserInterface/UserInterfaceScene.h>
 
-//Entities.
-#include <Entities/Types/UserInterfaceEntity.h>
-
 //Math.
 #include <Math/Core/CatalystgeometryMath.h>
 
@@ -1056,6 +1053,7 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 	output._Position = Vector2<float32>(0.0f, 0.0f);
 	output._Pressed = false;
 
+	/*
 	if (_Entity != nullptr)
 	{
 		//Construct the ray.
@@ -1117,6 +1115,7 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 	}
 
 	else
+	*/
 	{
 		switch (output._InputDeviceType)
 		{

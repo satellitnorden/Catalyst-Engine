@@ -416,6 +416,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray& ray) NOEXCEPT
 			Vector3<float32> sky_light_radiance{ 0.0f, 0.0f, 0.0f };
 			Vector3<float32> sky_light_direction{ 0.0f, -1.0f, 0.0f };
 
+			/*
 			{
 				const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
 				const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
@@ -431,6 +432,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray& ray) NOEXCEPT
 					}
 				}
 			}
+			*/
 
 			return CatalystAtmosphericScattering::CalculateAtmosphericScattering(ray._Origin, ray._Direction, sky_light_radiance, sky_light_direction) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
 		}
@@ -493,6 +495,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 		}
 
 		//Add direct lighting.
+		/*
 		{
 			const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
 			const LightComponent *RESTRICT component{ ComponentManager::GetLightLightComponents() };
@@ -612,6 +615,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 				}
 			}
 		}
+		*/
 
 		//Add indirect lighting.
 		{

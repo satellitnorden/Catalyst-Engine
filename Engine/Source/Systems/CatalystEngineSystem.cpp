@@ -251,21 +251,21 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	}
 
 	/*
+	*	Gameplay update phase.
+	*/
+	{
+		PROFILING_SCOPE(UpdatePhase_Gameplay);
+
+		UpdateIndividualPhase(UpdatePhase::GAMEPLAY);
+	}
+
+	/*
 	*	User interface update phase.
 	*/
 	{
 		PROFILING_SCOPE(UpdatePhase_UserInterface);
 
 		UpdateIndividualPhase(UpdatePhase::USER_INTERFACE);
-	}
-
-	/*
-	*	Logic update phase.
-	*/
-	{
-		PROFILING_SCOPE(UpdatePhase_Logic);
-
-		UpdateIndividualPhase(UpdatePhase::LOGIC);
 	}
 
 	/*

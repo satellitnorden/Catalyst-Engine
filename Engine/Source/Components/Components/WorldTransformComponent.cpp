@@ -4,7 +4,15 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
-DEFINE_COMPONENT(WorldTransformComponent, WorldTransformGlobalData, WorldTransformInitializationData, WorldTransformInstanceData);
+DEFINE_COMPONENT(WorldTransformComponent, WorldTransformSharedData, WorldTransformInitializationData, WorldTransformInstanceData);
+
+/*
+*	Initializes this component.
+*/
+void WorldTransformComponent::Initialize() NOEXCEPT
+{
+
+}
 
 NO_DISCARD bool WorldTransformComponent::NeedsPreProcessing() const NOEXCEPT
 {

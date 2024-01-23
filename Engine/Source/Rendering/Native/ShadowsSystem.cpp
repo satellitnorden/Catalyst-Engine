@@ -5,7 +5,7 @@
 #include <Core/Algorithms/SortingAlgorithms.h>
 
 //Components.
-#include <Components/Core/ComponentManager.h>
+#include <Components/Components/LightComponent.h>
 #include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
@@ -307,12 +307,10 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 {
 	//Update the shadow map data.
 	uint32 current_shadow_map_data_index{ 0 };
-	const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
-	const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
 
-	for (uint64 i{ 0 }; i < number_of_light_components; ++i, ++component)
+	for (const LightInstanceData &instance_data : LightComponent::Instance->InstanceData())
 	{
-		if (component->_LightType == LightType::DIRECTIONAL)
+		if (instance_data._LightType == LightType::DIRECTIONAL)
 		{
 			Vector4<float32> cascade_distances;
 
@@ -340,7 +338,7 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 					shadow_map_data = &_ShadowMapData[current_shadow_map_data_index];
 				}
 
-				const CascadeInformation cascade_information{ CalculateCascadeInformation(CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation), i == 0 ? RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetNearPlane() : cascade_distances[i - 1], cascade_distances[i]) };
+				const CascadeInformation cascade_information{ CalculateCascadeInformation(CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(instance_data._DirectionalLightData._Rotation), i == 0 ? RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetNearPlane() : cascade_distances[i - 1], cascade_distances[i]) };
 
 				shadow_map_data->_WorldToLightMatrix = cascade_information._WorldToLightMatrix;
 				shadow_map_data->_DepthRange = cascade_information._DepthRange;
@@ -367,7 +365,7 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 				}
 
 				shadow_map_data->_Distance = cascade_distances[i];
-				shadow_map_data->_Direction = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation);
+				shadow_map_data->_Direction = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(instance_data._DirectionalLightData._Rotation);
 
 				++current_shadow_map_data_index;
 			}

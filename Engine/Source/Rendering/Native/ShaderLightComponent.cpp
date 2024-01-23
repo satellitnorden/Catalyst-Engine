@@ -1,6 +1,10 @@
 //Header file.
 #include <Rendering/Native/ShaderLightComponent.h>
 
+//Components.
+#include <Components/Components/LightComponent.h>
+#include <Components/Components/WorldTransformComponent.h>
+
 //Math.
 #include <Math/Core/CatalystCoordinateSpaces.h>
 
@@ -10,24 +14,28 @@
 /*
 *	Copy by LightComponent constructor.
 */
-ShaderLightComponent::ShaderLightComponent(const LightComponent& light_component) NOEXCEPT
+ShaderLightComponent::ShaderLightComponent(const EntityIdentifier entity) NOEXCEPT
 {
-	switch (light_component._LightType)
+	const LightInstanceData &light_instance_data{ LightComponent::Instance->InstanceData(entity) };
+
+	switch (light_instance_data._LightType)
 	{
 		case LightType::DIRECTIONAL:
 		{
-			_Direction = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(light_component._Rotation);
+			_Direction = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(light_instance_data._DirectionalLightData._Rotation);
 
 			break;
 		}
 
 		case LightType::POINT:
 		{
-			_WorldPosition = light_component._WorldPosition.GetRelativePosition(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell());
+			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
+			_WorldPosition = world_transform_instance_data._CurrentWorldTransform.GetRelativePosition(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell());
 
 			break;
 		}
 
+		/*
 		case LightType::BOX:
 		{
 			_MinimumWorldPosition = light_component._MinimumWorldPosition.GetRelativePosition(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell());
@@ -35,12 +43,13 @@ ShaderLightComponent::ShaderLightComponent(const LightComponent& light_component
 
 			break;
 		}
+		*/
 	}
 
-	_Color = light_component._Color;
-	_LightType = static_cast<uint32>(light_component._LightType);
-	_LightProperties = light_component._LightProperties;
-	_Intensity = light_component._Intensity;
-	_Radius = light_component._Radius;
-	_Size = light_component._Size;
+	_Color = light_instance_data._Color;
+	_LightType = static_cast<uint32>(light_instance_data._LightType);
+	_LightProperties = light_instance_data._LightProperties;
+	_Intensity = light_instance_data._Intensity;
+	_Radius = light_instance_data._PointLightData._Radius;
+	_Size = light_instance_data._PointLightData._Size;
 }

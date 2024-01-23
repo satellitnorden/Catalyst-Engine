@@ -13,6 +13,12 @@ DEFINE_SINGLETON(ComponentSystem);
 */
 void ComponentSystem::Initialize() NOEXCEPT
 {
+	//Initialize all components.
+	for (Component *const RESTRICT component : AllComponents())
+	{
+		component->Initialize();
+	}
+
 	//Register all updates.
 	CatalystEngineSystem::Instance->RegisterUpdate
 	(
@@ -35,6 +41,19 @@ void ComponentSystem::Initialize() NOEXCEPT
 		},
 		this,
 		UpdatePhase::INPUT,
+		UpdatePhase::GAMEPLAY,
+		true,
+		true
+	);
+
+	CatalystEngineSystem::Instance->RegisterUpdate
+	(
+		[](void *const RESTRICT arguments)
+		{
+			static_cast<ComponentSystem *const RESTRICT>(arguments)->UpdateComponents(UpdatePhase::GAMEPLAY);
+		},
+		this,
+		UpdatePhase::GAMEPLAY,
 		UpdatePhase::USER_INTERFACE,
 		true,
 		true
@@ -48,19 +67,6 @@ void ComponentSystem::Initialize() NOEXCEPT
 		},
 		this,
 		UpdatePhase::USER_INTERFACE,
-		UpdatePhase::LOGIC,
-		true,
-		true
-	);
-
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			static_cast<ComponentSystem *const RESTRICT>(arguments)->UpdateComponents(UpdatePhase::LOGIC);
-		},
-		this,
-		UpdatePhase::LOGIC,
 		UpdatePhase::PHYSICS,
 		true,
 		true
@@ -127,9 +133,7 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 	//Gather the update data.
 	_UpdateData.Clear();
 
-	const DynamicArray<Component *RESTRICT> &all_components{ AllComponents() };
-
-	for (Component *const RESTRICT component : all_components)
+	for (Component *const RESTRICT component : AllComponents())
 	{
 		ComponentUpdateConfiguration update_configuration;
 

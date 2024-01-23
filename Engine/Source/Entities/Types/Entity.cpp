@@ -2,10 +2,7 @@
 #include <Entities/Types/Entity.h>
 
 //Entities.
-#include <Entities/Types/AnimatedModelEntity.h>
-#include <Entities/Types/LightEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>
-#include <Entities/Types/UserInterfaceEntity.h>
 
 /*
 *	Returns the preprocessing parameters.

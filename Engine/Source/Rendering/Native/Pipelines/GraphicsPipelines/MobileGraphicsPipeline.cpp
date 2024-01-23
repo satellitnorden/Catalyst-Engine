@@ -194,6 +194,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 	//Cache the sky light luminance.
 	Vector3<float32> sky_light_luminance{ VectorConstants::ZERO };
 
+	/*
 	{
 		const uint64 number_of_light_components{ ComponentManager::GetNumberOfLightComponents() };
 		const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
@@ -208,6 +209,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 			}
 		}
 	}
+	*/
 
 	//Draw static models.
 	{

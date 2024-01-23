@@ -5,7 +5,8 @@
 #include <Animation/AnimatedVertex.h>
 
 //Components.
-#include <Components/Core/ComponentManager.h>
+#include <Components/Components/AnimatedModelComponent.h>
+#include <Components/Components/WorldTransformComponent.h>
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
@@ -14,6 +15,7 @@
 #include <Systems/AnimationSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/WorldSystem.h>
 
 /*
 *	Vertex push constant data definition.
@@ -151,11 +153,11 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
 
-	//Iterate over all model components and draw them all.
-	const uint64 numberOfAnimatedModelComponents{ ComponentManager::GetNumberOfAnimatedModelComponents() };
+	//Iterate over all animated model instances and render them all.
+	const uint64 number_of_instances{ AnimatedModelComponent::Instance->NumberOfInstances() };
 
 	//If there's none to render - render none.
-	if (numberOfAnimatedModelComponents == 0)
+	if (number_of_instances == 0)
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -176,20 +178,23 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	//Bind the render data tables.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
-	//Draw all animated models
-	const AnimatedModelComponent *RESTRICT component{ ComponentManager::GetAnimatedModelAnimatedModelComponents() };
-
-	for (uint64 i = 0; i < numberOfAnimatedModelComponents; ++i, ++component)
+	//Render all animated model instances
+	for (uint64 instance_index{ 0 }; instance_index < number_of_instances; ++instance_index)
 	{
+		//Cache data.
+		const EntityIdentifier entity_identifier{ AnimatedModelComponent::Instance->InstanceToEntity(instance_index) };
+		const AnimatedModelInstanceData &animated_model_instance_data{ AnimatedModelComponent::Instance->InstanceData(entity_identifier) };
+		const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity_identifier) };
+
 		//Bind the vertex/inder buffer.
-		command_buffer->BindVertexBuffer(this, 0, component->_AnimatedModelResource->_VertexBuffer, &OFFSET);
-		command_buffer->BindIndexBuffer(this, component->_AnimatedModelResource->_IndexBuffer, OFFSET);
+		command_buffer->BindVertexBuffer(this, 0, animated_model_instance_data._AnimatedModelResource->_VertexBuffer, &OFFSET);
+		command_buffer->BindIndexBuffer(this, animated_model_instance_data._AnimatedModelResource->_IndexBuffer, OFFSET);
 
 		//Push constants.
 		VertexPushConstantData vertexData;
 
-		vertexData._PreviousModelMatrix = component->_PreviousWorldTransform;
-		vertexData._CurrentModelMatrix = component->_CurrentWorldTransform;
+		vertexData._PreviousModelMatrix = world_transform_instance_data._PreviousWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+		vertexData._CurrentModelMatrix = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 
 		command_buffer->PushConstants(this, ShaderStage::VERTEX, 0, sizeof(VertexPushConstantData), &vertexData);
 
@@ -204,9 +209,9 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		command_buffer->PushConstants(this, ShaderStage::FRAGMENT, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 		//Bind the aimation data render data table.
-		command_buffer->BindRenderDataTable(this, 1, component->_AnimationDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);
+		command_buffer->BindRenderDataTable(this, 1, animated_model_instance_data._AnimationDataRenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);
 
-		command_buffer->DrawIndexed(this, component->_AnimatedModelResource->_IndexCount, 1);
+		command_buffer->DrawIndexed(this, animated_model_instance_data._AnimatedModelResource->_IndexCount, 1);
 	}
 
 	//End the command buffer.

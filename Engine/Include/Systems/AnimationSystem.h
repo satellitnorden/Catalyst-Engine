@@ -8,7 +8,7 @@
 #include <Rendering/Native/RenderingCore.h>
 
 //Forward declarations.
-class AnimatedModelComponent;
+class AnimatedModelInstanceData;
 class Bone;
 
 class ALIGN(8) AnimationSystem final
@@ -53,7 +53,7 @@ private:
 	/*
 	*	Updates an animated model.
 	*/
-	void UpdateAnimatedModel(const float32 delta_time, AnimatedModelComponent *const RESTRICT component) NOEXCEPT;
+	void UpdateAnimatedModel(const float32 delta_time, AnimatedModelInstanceData &instance_data) NOEXCEPT;
 
 	/*
 	*	Finds the bone index of the animated model with the given name.

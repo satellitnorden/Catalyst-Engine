@@ -17,10 +17,7 @@ class AxisAlignedBoundingBox3D;
 class Entity;
 
 //Entity types.
-#define ENTITY_TYPES	ENTITY_TYPE(AnimatedModel)			\
-						ENTITY_TYPE(Light)					\
-						ENTITY_TYPE(ParticleSystem)			\
-						ENTITY_TYPE(UserInterface)
+#define ENTITY_TYPES	ENTITY_TYPE(ParticleSystem)
 
 //Enumeration covering all entity types.
 enum class EntityType : uint8

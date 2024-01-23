@@ -77,7 +77,4 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 	_ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.EraseAt<false>(componentsIndex);														\
 }
 
-DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(AnimatedModel, AnimatedModelComponent);
-DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Light, LightComponent);
 DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
-DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(UserInterface, UserInterfaceComponent);

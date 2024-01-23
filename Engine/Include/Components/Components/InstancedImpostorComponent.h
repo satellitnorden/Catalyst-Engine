@@ -15,7 +15,7 @@
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 #include <World/Core/WorldPosition.h>
 
-class InstancedImpostorGlobalData final
+class InstancedImpostorSharedData final
 {
 
 };
@@ -88,4 +88,4 @@ public:
 
 };
 
-DECLARE_COMPONENT(InstancedImpostorComponent, InstancedImpostorGlobalData, InstancedImpostorInitializationData, InstancedImpostorInstanceData);
+DECLARE_COMPONENT(InstancedImpostorComponent, InstancedImpostorSharedData, InstancedImpostorInitializationData, InstancedImpostorInstanceData);

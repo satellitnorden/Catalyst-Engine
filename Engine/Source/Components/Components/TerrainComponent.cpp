@@ -17,7 +17,15 @@
 #include <Terrain/TerrainVertex.h>
 #include <Terrain/TerrainQuadTreeUtilities.h>
 
-DEFINE_COMPONENT(TerrainComponent, TerrainGlobalData, TerrainInitializationData, TerrainInstanceData);
+DEFINE_COMPONENT(TerrainComponent, TerrainSharedData, TerrainInitializationData, TerrainInstanceData);
+
+/*
+*	Initializes this component.
+*/
+void TerrainComponent::Initialize() NOEXCEPT
+{
+
+}
 
 NO_DISCARD bool TerrainComponent::NeedsPreProcessing() const NOEXCEPT
 {

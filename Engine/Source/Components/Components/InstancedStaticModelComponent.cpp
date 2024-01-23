@@ -8,7 +8,15 @@
 #include <Rendering/Native/Culling.h>
 #include <Rendering/Native/RenderingUtilities.h>
 
-DEFINE_COMPONENT(InstancedStaticModelComponent, InstancedStaticModelGlobalData, InstancedStaticModelInitializationData, InstancedStaticModelInstanceData);
+DEFINE_COMPONENT(InstancedStaticModelComponent, InstancedStaticModelSharedData, InstancedStaticModelInitializationData, InstancedStaticModelInstanceData);
+
+/*
+*	Initializes this component.
+*/
+void InstancedStaticModelComponent::Initialize() NOEXCEPT
+{
+
+}
 
 NO_DISCARD bool InstancedStaticModelComponent::NeedsPreProcessing() const NOEXCEPT
 {

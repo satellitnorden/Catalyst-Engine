@@ -68,7 +68,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 
 	AddPipeline(&_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
-	AddPipeline(&_UserInterfaceSceneFeaturesGraphicsPipeline);
 #if defined(CATALYST_EDITOR)
 	AddPipeline(&_EditorSelectedModelGraphicsPipeline);
 #endif
@@ -91,7 +90,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
-	_UserInterfaceSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 #if defined(CATALYST_EDITOR)
 	_EditorSelectedModelGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 #endif
@@ -120,7 +118,6 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Execute();
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();
-	_UserInterfaceSceneFeaturesGraphicsPipeline.Execute();
 #if defined(CATALYST_EDITOR)
 	_EditorSelectedModelGraphicsPipeline.Execute();
 #endif
@@ -148,7 +145,6 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 
 	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Terminate();
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Terminate();
-	_UserInterfaceSceneFeaturesGraphicsPipeline.Terminate();
 #if defined(CATALYST_EDITOR)
 	_EditorSelectedModelGraphicsPipeline.Terminate();
 #endif

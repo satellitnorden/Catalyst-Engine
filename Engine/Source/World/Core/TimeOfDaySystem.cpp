@@ -1,12 +1,12 @@
 //Header file.
 #include <World/Core/TimeOfDaySystem.h>
 
+//Components.
+#include <Components/Components/LightComponent.h>
+
 //File.
 #include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
-
-//Entities.
-#include <Entities/Creation/LightInitializationData.h>
 
 //Math.
 #include <Math/Core/CatalystCoordinateSpaces.h>
@@ -79,19 +79,16 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 
 	//Create the sky light.
 	{
-		_SkyLight = EntitySystem::Instance->CreateEntity<LightEntity>();
-		LightInitializationData* const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<LightInitializationData>() };
+		LightInitializationData *const RESTRICT data{ LightComponent::Instance->AllocateInitializationData() };
 
-		data->_Properties = EntityInitializationData::Property::NONE;
-		data->_Rotation = EulerAngles();
+		data->_DirectionalLightData._Rotation = EulerAngles();
 		data->_Color = VectorConstants::ONE;
 		data->_LightType = LightType::DIRECTIONAL;
 		data->_LightProperties = CatalystShaderConstants::LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT | CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_BIT | CatalystShaderConstants::LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT;
 		data->_Intensity = 1.0f;
-		data->_Radius = 0.0f;
-		data->_Size = 0.0f;
 
-		EntitySystem::Instance->RequestInitialization(_SkyLight, data, false);
+		ComponentInitializationData *RESTRICT component_configuration{ data };
+		_SkyLight = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT>(component_configuration));
 	}
 
 	//Initialize the sky light curve.
@@ -262,13 +259,16 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 		rotation._Pitch = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
 	}
 
+	//Cache the instance data.
+	LightInstanceData &instance_data{ LightComponent::Instance->InstanceData(_SkyLight->_EntityIdentifier) };
+
 	//Set the sky light rotation.
-	_SkyLight->SetRotation(rotation);
+	instance_data._DirectionalLightData._Rotation = rotation;
 
 	const Vector4<float32> current_sky_light_luminance{ _SkyLightCurve.Sample(_CurrentTimeOfDay / 24.0f) };
 
-	_SkyLight->SetColor(Vector3<float32>(current_sky_light_luminance._R, current_sky_light_luminance._G, current_sky_light_luminance._B));
-	_SkyLight->SetIntensity(current_sky_light_luminance._W);
+	instance_data._Color = Vector3<float32>(current_sky_light_luminance._R, current_sky_light_luminance._G, current_sky_light_luminance._B);
+	instance_data._Intensity = current_sky_light_luminance._W;
 }
 
 /*
