@@ -52,21 +52,11 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 #endif
 	);
 
-	AddPipeline(&_ParticleSystemComputePipeline);
-
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines1)
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
 
-	AddPipeline(&_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline);
-
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
-	{
-		AddPipeline(&pipeline);
-	}
-
-	AddPipeline(&_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
 #if defined(CATALYST_EDITOR)
 	AddPipeline(&_EditorSelectedModelGraphicsPipeline);
@@ -74,21 +64,11 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_VelocityGraphicsPipeline);
 
 	//Initialize all pipelines.
-	_ParticleSystemComputePipeline.Initialize();
-
-	for (GraphicsRenderPipeline& pipeline : _GraphicsRenderPipelines1)
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
 	{
 		pipeline.Initialize();
 	}
 
-	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
-
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
-	{
-		pipeline.Initialize();
-	}
-	
-	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 #if defined(CATALYST_EDITOR)
 	_EditorSelectedModelGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
@@ -102,21 +82,11 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 void SceneFeaturesRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	_ParticleSystemComputePipeline.Execute();
-
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines1)
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
 	{
 		pipeline.Execute();
 	}
 
-	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Execute();
-
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
-	{
-		pipeline.Execute();
-	}
-
-	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Execute();
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();
 #if defined(CATALYST_EDITOR)
 	_EditorSelectedModelGraphicsPipeline.Execute();
@@ -130,20 +100,11 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines1)
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
 	{
 		pipeline.Terminate();
 	}
 
-	_ParticleSystemComputePipeline.Terminate();
-	_ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.Terminate();
-
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines2)
-	{
-		pipeline.Terminate();
-	}
-
-	_ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.Terminate();
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Terminate();
 #if defined(CATALYST_EDITOR)
 	_EditorSelectedModelGraphicsPipeline.Terminate();

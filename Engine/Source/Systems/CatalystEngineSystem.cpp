@@ -4,9 +4,6 @@
 //Core.
 #include <Core/General/DeltaTimer.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Concurrency.
 #include <Concurrency/ConcurrencyCore.h>
 
@@ -34,7 +31,6 @@
 #include <Systems/MemorySystem.h>
 #include <Systems/NetworkSystem.h>
 #include <Systems/PhysicsSystem.h>
-#include <Systems/PlacementSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/SaveSystem.h>

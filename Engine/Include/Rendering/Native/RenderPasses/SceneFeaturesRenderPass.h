@@ -10,9 +10,6 @@
 #if defined(CATALYST_EDITOR)
 #include <Rendering/Native/Pipelines/GraphicsPipelines/EditorSelectedModelGraphicsPipeline.h>
 #endif
-#include <Rendering/Native/Pipelines/ComputePipelines/ParticleSystemComputePipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) SceneFeaturesRenderPass final : public RenderPass
@@ -30,27 +27,15 @@ public:
 
 private:
 
-	//The particle system compute pipeline.
-	ParticleSystemComputePipeline _ParticleSystemComputePipeline;
-
-	//The graphics render pipelines 1.
-	StaticArray<GraphicsRenderPipeline, 6> _GraphicsRenderPipelines1
+	//The graphics render pipelines.
+	StaticArray<GraphicsRenderPipeline, 15> _GraphicsRenderPipelines
 	{
 		GraphicsRenderPipeline(HashString("Clear_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelDepthSingleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelDepthDoubleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("InstancedModelDepthSingleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("InstancedModelDepthDoubleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("InstancedImpostorDepth_RenderPipeline"))
-	};
-
-	//The particle system masked depth graphics pipeline.
-	ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline _ParticleSystemMaskedDepthSceneFeaturesGraphicsPipeline;
-
-	//The graphics render pipelines 2.
-	StaticArray<GraphicsRenderPipeline, 9> _GraphicsRenderPipelines2
-	{
-
+		GraphicsRenderPipeline(HashString("InstancedImpostorDepth_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("Grass_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("OpaqueModelSingleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("OpaqueModelDoubleSided_RenderPipeline")),
@@ -61,9 +46,6 @@ private:
 		GraphicsRenderPipeline(HashString("InstancedImpostorColor_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("Terrain_RenderPipeline"))
 	};
-
-	//The particle system masked color graphics pipeline.
-	ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline _ParticleSystemMaskedColorSceneFeaturesGraphicsPipeline;
 
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;

@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/ShadowsRenderPass.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Rendering.
 #include <Rendering/Native/NativeRenderPassManager.h>
 #include <Rendering/Native/RenderingUtilities.h>

@@ -14,7 +14,7 @@ DEFINE_SINGLETON(LevelSystem);
 void LevelSystem::LoadLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT
 {
 	//Destroy all entities.
-	EntitySystem::Instance->DestroyAllEntities();
+	//EntitySystem::Instance->DestroyAllEntities();
 
 	//Set the current level.
 	_CurrentLevel = resource;

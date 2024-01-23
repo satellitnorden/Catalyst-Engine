@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/PathTracingDenoisingGraphicsPipeline.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 

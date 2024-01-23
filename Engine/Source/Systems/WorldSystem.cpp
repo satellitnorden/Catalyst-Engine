@@ -1,9 +1,6 @@
 //Header file.
 #include <Systems/WorldSystem.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
@@ -40,17 +37,6 @@ void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configurat
 		&_WorldUniformData,
 		sizeof(WorldUniformData)
 	);
-
-	//Register the updates.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
-	{
-		static_cast<WorldSystem *const RESTRICT>(arguments)->InputUpdate();
-	},
-	this,
-	UpdatePhase::INPUT,
-	UpdatePhase::RENDER,
-	false,
-	false);
 }
 
 /*
@@ -91,59 +77,4 @@ NO_DISCARD const Vector3<int32> &WorldSystem::GetCurrentWorldGridCell() const NO
 {
 	//This should probably be cached somehow, but let's just ask the current camera for now. (:
 	return RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell();
-}
-
-/*
-*	Updates the world system during the input update phase.
-*/
-void WorldSystem::InputUpdate() NOEXCEPT
-{
-	PROFILING_SCOPE(WorldSystem_InputUpdate);
-
-	//Update all particle systems.
-	UpdateParticleSystems();
-}
-
-/*
-*	Updates all particle systems.
-*/
-void WorldSystem::UpdateParticleSystems() NOEXCEPT
-{
-	//Cache the delta time.
-	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
-
-	//Update all particle systems.
-	const uint64 number_of_particle_system_components{ ComponentManager::GetNumberOfParticleSystemComponents() };
-	ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemComponents() };
-	ParticleSystemRenderComponent *RESTRICT render_component{ ComponentManager::GetParticleSystemParticleSystemRenderComponents() };
-
-	for (uint64 i{ 0 }; i < number_of_particle_system_components; ++i, ++component, ++render_component)
-	{
-		//Update the time since the last particle spawned.
-		component->_TimeSinceLastSpawn += delta_time;
-
-		//Update the first particle index to spawn.
-		component->_FirstParticleIndexToSpawn = component->_FirstParticleIndexToSpawn + component->_NumberOfParticlesToSpawn;
-
-		//Wrap around.
-		if (TEST_BIT(component->_ParticleSystemProperties, ParticleSystemEntity::Property::LOOPING))
-		{
-			while (component->_FirstParticleIndexToSpawn >= component->_NumberOfInstances)
-			{
-				component->_FirstParticleIndexToSpawn -= component->_NumberOfInstances;
-			}
-		}
-
-		//Calculate the number of particles to spawn this update.
-		component->_NumberOfParticlesToSpawn = 0;
-
-		const float32 spawn_frequency_reciprocal{ 1.0f / component->_SpawnFrequency };
-
-		while (component->_TimeSinceLastSpawn >= spawn_frequency_reciprocal)
-		{
-			component->_TimeSinceLastSpawn -= spawn_frequency_reciprocal;
-
-			++component->_NumberOfParticlesToSpawn;
-		}
-	}
 }

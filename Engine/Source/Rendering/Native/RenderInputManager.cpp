@@ -2,7 +2,6 @@
 #include <Rendering/Native/RenderInputManager.h>
 
 //Components.
-#include <Components/Core/ComponentManager.h>
 #include <Components/Components/GrassComponent.h>
 #include <Components/Components/InstancedImpostorComponent.h>
 #include <Components/Components/InstancedStaticModelComponent.h>

@@ -2,7 +2,6 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/MobileGraphicsPipeline.h>
 
 //Components.
-#include <Components/Core/ComponentManager.h>
 #include <Components/Components/StaticModelComponent.h>
 
 //Rendering.

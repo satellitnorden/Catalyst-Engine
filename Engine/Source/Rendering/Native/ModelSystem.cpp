@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/ModelSystem.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Profiling.
 #include <Profiling/Profiling.h>
 

@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracedIndirectLightingRayTracingPipeline.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Lighting.
 #include <Lighting/LightingCore.h>
 

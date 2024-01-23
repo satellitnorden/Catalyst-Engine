@@ -66,6 +66,21 @@ class ParticleSystemInitializationData final : public ComponentInitializationDat
 
 public:
 
+	//The minimum size.
+	Vector2<float32> _MinimumSize;
+
+	//The maximum size.
+	Vector2<float32> _MaximumSize;
+
+	//The minimum lifetime.
+	float32 _MinimumLifetime;
+
+	//The maximum lifetime.
+	float32 _MaximumLifetime;
+
+	//The spawn rate.
+	float32 _SpawnRate;
+
 
 };
 
@@ -76,6 +91,24 @@ class ParticleSystemInstanceData final
 {
 
 public:
+
+	//The minimum size.
+	Vector2<float32> _MinimumSize;
+
+	//The maximum size.
+	Vector2<float32> _MaximumSize;
+
+	//The minimum lifetime.
+	float32 _MinimumLifetime;
+
+	//The maximum lifetime.
+	float32 _MaximumLifetime;
+
+	//The spawn rate.
+	float32 _SpawnRate;
+
+	//The time since the last particle spawn.
+	float32 _TimeSinceLastParticleSpawn;
 
 	//The instances.
 	DynamicArray<ParticleInstance> _Instances;

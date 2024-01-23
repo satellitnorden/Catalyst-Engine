@@ -2,9 +2,6 @@
 //Header file.
 #include <Rendering/Translation/Vulkan/VulkanSubRenderingSystem.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Concurrency.
 #include <Concurrency/AssertLock.h>
 #include <Concurrency/ScopedLock.h>

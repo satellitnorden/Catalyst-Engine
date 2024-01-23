@@ -156,14 +156,4 @@ private:
 	//The world uniform data.
 	WorldUniformData _WorldUniformData;
 
-	/*
-	*	Updates the world system during the input update phase.
-	*/
-	void InputUpdate() NOEXCEPT;
-
-	/*
-	*	Updates all particle systems.
-	*/
-	void UpdateParticleSystems() NOEXCEPT;
-
 };

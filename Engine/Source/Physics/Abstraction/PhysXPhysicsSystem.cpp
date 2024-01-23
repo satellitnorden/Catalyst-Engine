@@ -2,9 +2,6 @@
 //Header file.
 #include <Systems/PhysicsSystem.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Concurrency.
 #include <Concurrency/Task.h>
 

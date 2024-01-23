@@ -1,9 +1,6 @@
 //Header file.
 #include <Systems/WorldTracingSystem.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Math.
 #include <Math/Core/CatalystCoordinateSpaces.h>
 #include <Math/Core/CatalystGeometryMath.h>

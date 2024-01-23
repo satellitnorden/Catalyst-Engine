@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/SkyGraphicsPipeline.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Math.
 #include <Math/Core/CatalystCoordinateSpaces.h>
 
