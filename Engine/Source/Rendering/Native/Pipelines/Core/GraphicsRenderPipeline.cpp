@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 
@@ -48,6 +51,8 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 			for (const HashString included_storage_buffer : _RenderPipelineResource->_IncludedStorageBuffers)
 			{
 				bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT);
+
+				_StorageBufferIncludes.Emplace(included_storage_buffer, current_binding_index);
 
 				++current_binding_index;
 
@@ -343,6 +348,8 @@ void GraphicsRenderPipeline::Execute() NOEXCEPT
 		}
 	}
 
+	PROFILING_SCOPE_DYNAMIC(_RenderPipelineResource->_Header._ResourceName.Data());
+
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
 	SetCommandBuffer(command_buffer);
@@ -359,6 +366,18 @@ void GraphicsRenderPipeline::Execute() NOEXCEPT
 	if (_UsesRenderDataTable)
 	{
 		RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+
+		//Storage buffers might be re-created to grow/shrink capacity, so re-bind them.
+		for (const Pair<HashString, uint32> &storage_buffer_include : _StorageBufferIncludes)
+		{
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable
+			(
+				storage_buffer_include._Second,
+				0,
+				&current_render_data_table,
+				RenderingSystem::Instance->GetBufferManager()->GetStorageBuffer(storage_buffer_include._First, RenderingSystem::Instance->GetCurrentFramebufferIndex())
+			);
+		}
 
 		command_buffer->BindRenderDataTable(this, 1, current_render_data_table);
 	}

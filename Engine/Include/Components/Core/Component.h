@@ -26,10 +26,30 @@ class ComponentUpdateConfiguration final
 
 public:
 
+	//Enumeration covering all modes.
+	enum class Mode : uint8
+	{
+		/*
+		*	Will update instances in batches of '_BatchSize'.
+		*/
+		BATCH,
+
+		/*
+		*	Will update each instance in parallel, based on how many sub instances each instance has.
+		*/
+		SUB_INSTANCE
+	};
+
 	//The update phase mask.
 	UpdatePhase _UpdatePhaseMask{ static_cast<UpdatePhase>(0) };
 
-	//The batch size.
+	//The mode.
+	Mode _Mode;
+
+	/*
+	*	The batch size.
+	*	Only used then '_Mode' is set to Mode::BATCH.
+	*/
 	uint64 _BatchSize;
 
 };
@@ -65,6 +85,11 @@ public:
 	*	Initializes this component.
 	*/
 	virtual void Initialize() NOEXCEPT = 0;
+
+	/*
+	*	Post-Initializes this component.
+	*/
+	virtual void PostInitialize() NOEXCEPT = 0;
 
 	/*
 	*	Returns if this component needs pre-processing.
@@ -136,6 +161,11 @@ public:
 	virtual NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT = 0;
 
 	/*
+	*	Returns the number of sub-instances for the given instance.
+	*/
+	virtual NO_DISCARD uint64 NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT = 0;
+
+	/*
 	*	Returns the update configuration.
 	*/
 	virtual void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT = 0;
@@ -143,7 +173,18 @@ public:
 	/*
 	*	Updates this component.
 	*/
-	virtual void Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT = 0;
+	virtual void Update
+	(
+		const UpdatePhase update_phase,
+		const uint64 start_instance_index,
+		const uint64 end_instance_index,
+		const uint64 sub_instance_index
+	) NOEXCEPT = 0;
+
+	/*
+	*	Runs after the given update phase.
+	*/
+	virtual void PostUpdate(const UpdatePhase update_phase) NOEXCEPT = 0;
 
 };
 
@@ -180,6 +221,7 @@ class ALIGN(8) COMPONENT_CLASS final : public Component																							\
 public:																																			\
 	DECLARE_SINGLETON(COMPONENT_CLASS);																											\
 	void Initialize() NOEXCEPT override;																										\
+	void PostInitialize() NOEXCEPT override;																									\
 	FORCE_INLINE NO_DISCARD SHARED_DATA_CLASS &SharedData() NOEXCEPT																			\
 	{																																			\
 		return _SharedData;																														\
@@ -212,6 +254,7 @@ public:																																			\
 	{																																			\
 		return _InstanceData.Size();																											\
 	}																																			\
+	NO_DISCARD uint64 NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT override;												\
 	FORCE_INLINE NO_DISCARD DynamicArray<INSTANCE_DATA_CLASS> &InstanceData() NOEXCEPT															\
 	{																																			\
 		return _InstanceData;																													\
@@ -221,7 +264,14 @@ public:																																			\
 		return _InstanceData[EntityToInstance(entity)];																							\
 	}																																			\
 	void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT override;							\
-	void Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT override;							\
+	void Update																																	\
+	(																																			\
+		const UpdatePhase update_phase,																											\
+		const uint64 start_instance_index,																										\
+		const uint64 end_instance_index,																										\
+		const uint64 sub_instance_index																											\
+	) NOEXCEPT override;																														\
+	void PostUpdate(const UpdatePhase update_phase) NOEXCEPT override;																			\
 	FORCE_INLINE void RemoveInstance(const EntityIdentifier entity) NOEXCEPT																	\
 	{																																			\
 		const uint64 instance_index{ _EntityToInstanceMappings[entity] };																		\

@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/BufferManager.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -29,8 +32,37 @@ void BufferManager::RenderUpdate() NOEXCEPT
 	//Upload data to all storage buffers.
 	for (RegisteredStorageBuffer &registered_storage_buffer : _RegisteredStorageBuffers)
 	{
-		BufferHandle& current_buffer{ registered_storage_buffer._Buffers[current_framebuffer_index] };
+		//Cache the current data.
+		BufferHandle &current_buffer{ registered_storage_buffer._Buffers[current_framebuffer_index] };
+		uint64 &current_buffer_capacity{ registered_storage_buffer._BufferCapacities[current_framebuffer_index] };
+
+		//Retrieve the data.
 		registered_storage_buffer._StorageBufferFunction(&registered_storage_buffer._Data, registered_storage_buffer._Arguments);
+
+		//Skip if there's no data.
+		if (registered_storage_buffer._Data.Empty())
+		{
+			continue;
+		}
+
+		/*
+		*	Re-create the buffer if necessary.
+		*	TODO: Shrink if necessary.
+		*/
+		if (current_buffer_capacity < registered_storage_buffer._Data.Size())
+		{
+			RenderingSystem::Instance->DestroyBuffer(&current_buffer);
+
+			RenderingSystem::Instance->CreateBuffer
+			(
+				registered_storage_buffer._Data.Size(),
+				BufferUsage::StorageBuffer,
+				MemoryProperty::HostCoherent | MemoryProperty::HostVisible,
+				&current_buffer
+			);
+
+			current_buffer_capacity = registered_storage_buffer._Data.Size();
+		}
 
 		const void *const RESTRICT data{ registered_storage_buffer._Data.Data() };
 		const uint64 data_size{ registered_storage_buffer._Data.Size() };
@@ -83,7 +115,7 @@ void BufferManager::RegisterUniformBuffer
 void BufferManager::RegisterStorageBuffer
 (
 	const HashString identifier,
-	const uint64 initial_size,
+	const uint64 initial_capacity,
 	const StorageBufferFunction storage_buffer_function,
 	void *const RESTRICT arguments
 ) NOEXCEPT
@@ -102,11 +134,18 @@ void BufferManager::RegisterStorageBuffer
 	{
 		RenderingSystem::Instance->CreateBuffer
 		(
-			initial_size,
+			initial_capacity,
 			BufferUsage::StorageBuffer,
 			MemoryProperty::HostCoherent | MemoryProperty::HostVisible,
 			&buffer
 		);
+	}
+
+	new_registered_storage_buffer._BufferCapacities.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+	for (uint64 &buffer_capacity : new_registered_storage_buffer._BufferCapacities)
+	{
+		buffer_capacity = initial_capacity;
 	}
 }
 
@@ -133,7 +172,9 @@ NO_DISCARD BufferHandle BufferManager::GetUniformBuffer(const HashString identif
 */
 NO_DISCARD BufferHandle BufferManager::GetStorageBuffer(const HashString identifier, const uint8 framebuffer_index) NOEXCEPT
 {
-	for (RegisteredStorageBuffer  registered_storage_buffer : _RegisteredStorageBuffers)
+	PROFILING_SCOPE("BufferManager::GetStorageBuffer");
+
+	for (RegisteredStorageBuffer &registered_storage_buffer : _RegisteredStorageBuffers)
 	{
 		if (registered_storage_buffer._Identifier == identifier)
 		{

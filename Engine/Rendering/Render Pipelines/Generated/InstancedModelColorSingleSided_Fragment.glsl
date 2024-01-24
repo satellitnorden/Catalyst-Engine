@@ -301,23 +301,31 @@ vec3 CalculateScreenPosition(vec3 world_position)
 */
 vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal, vec4 wind_direction_speed, float wind_time)
 {
+	//Calculate the wind influence at this point.
+	float wind_influence = 0.0f;
+
+	{
+		float amplitude = 1.0f;
+		float frequency = 1.0f;
+		float vertex_influence = 0.0f;
+
+		for (uint i = 0; i < 4; ++i)
+		{
+			wind_influence += (sin((world_position.x + world_position.y + world_position.z + ((vertex_position.x + vertex_position.y + vertex_position.z) * vertex_influence) + wind_time) * wind_direction_speed.w * frequency) * 0.5f + 0.5f) * amplitude;
+
+			amplitude *= 0.5f;
+			frequency *= 2.0f;
+			vertex_influence += 0.125f;
+		}
+	}
+
 	//Calculate the displacement.
-	vec3 displacement = vec3(0.0f, 0.0f, 0.0f);
-
-	//Add large scale motion.
-	displacement.x += (sin(world_position.x + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w;
-	displacement.z += (cos(world_position.z + world_position.y + vertex_position.y + wind_time) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w;
-
-	//Add medium scale motion.
-	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.5f;
-	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 2.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.5f;
-
-	//Add small scale motion.
-	displacement.x += (sin((world_position.x + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.x * wind_direction_speed.w * 0.25f;
-	displacement.z += (cos((world_position.z + world_position.y + vertex_position.y + wind_time) * 4.0f) + 0.75f) * wind_direction_speed.z * wind_direction_speed.w * 0.25f;
+	vec3 displacement;
+	displacement.xz = wind_direction_speed.xz * wind_direction_speed.w * wind_influence;
+	displacement.y = -wind_influence * 0.5f;
 
 	//Modify the displacement so it doesn't affect the bottom of the mesh.
-	displacement *= max(vertex_position.y * 0.125f, 0.0f);
+	displacement *= max(vertex_position.y * 0.25f, 0.0f);
 
 	//Return the displacement.
 	return displacement;

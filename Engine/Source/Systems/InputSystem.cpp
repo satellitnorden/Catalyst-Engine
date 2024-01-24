@@ -66,14 +66,14 @@ void InputSystem::ShowCursor(const InputLayer input_layer) const NOEXCEPT
 */
 void InputSystem::InputUpdate() NOEXCEPT
 {
-	PROFILING_SCOPE(InputSystem_InputUpdate);
+	PROFILING_SCOPE("InputSystem_InputUpdate");
 
 	//Remember the old input state.
 	const InputState old_input_state{ _InputState };
 
 	//Update the gamepad states.
 	{
-		PROFILING_SCOPE(InputSystem_InputUpdate_UpdateGamepadStates);
+		PROFILING_SCOPE("InputSystem_InputUpdate_UpdateGamepadStates");
 
 		for (uint8 i{ 0 }; i < CatalystBaseMath::Minimum<uint8>(_NumberOfSupportedGamepads, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS); ++i)
 		{
@@ -83,28 +83,28 @@ void InputSystem::InputUpdate() NOEXCEPT
 
 	//Update the keyboard state.
 	{
-		PROFILING_SCOPE(InputSystem_InputUpdate_UpdateKeyboardState);
+		PROFILING_SCOPE("InputSystem_InputUpdate_UpdateKeyboardState");
 
 		UpdateKeyboardState();
 	}
 
 	//Update the mouse state.
 	{
-		PROFILING_SCOPE(InputSystem_InputUpdate_UpdateMouseState);
+		PROFILING_SCOPE("InputSystem_InputUpdate_UpdateMouseState");
 
 		UpdateMouseState();
 	}
 
 	//Update the touch state.
 	{
-		PROFILING_SCOPE(InputSystem_InputUpdate_UpdateTouchState);
+		PROFILING_SCOPE("InputSystem_InputUpdate_UpdateTouchState");
 
 		UpdateTouchState();
 	}
 
 	//Determine the last updated input device type.
 	{
-		PROFILING_SCOPE(InputSystem_InputUpdate_DetermineLastUpdatedInputDeviceType);
+		PROFILING_SCOPE("InputSystem_InputUpdate_DetermineLastUpdatedInputDeviceType");
 
 		//Did the gamepad state change?
 		if (!Memory::Compare(&old_input_state._GamepadStates, &_InputState._GamepadStates, sizeof(_InputState._GamepadStates)))

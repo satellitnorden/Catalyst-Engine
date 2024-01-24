@@ -57,7 +57,7 @@ namespace CatalystEngineSystemData
 */
 void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initial_project_configuration) NOEXCEPT
 {
-	PROFILING_SCOPE(CatalystEngineSystem_Initialize);
+	PROFILING_SCOPE("CatalystEngineSystem_Initialize");
 
 	//Initialize the current thread's index.
 	Concurrency::CurrentThread::InitializeIndex();
@@ -146,6 +146,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 	//Post-initialize all systems.
 	AnimationSystem::Instance->PostInitialize();
+	ComponentSystem::Instance->PostInitialize();
 	RenderingSystem::Instance->PostInitialize();
 	WorldSystem::Instance->PostInitialize();
 
@@ -173,7 +174,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 bool CatalystEngineSystem::Update() NOEXCEPT
 {
 	PROFILING_FRAME();
-	PROFILING_SCOPE(CatalystEngineSystem_Update);
+	PROFILING_SCOPE("CatalystEngineSystem_Update");
 
 	//Define constants.
 	constexpr float32 MAXIMUM_DELTA_TIME{ 0.1f };
@@ -223,7 +224,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Pre update phase.
 	*/
 	{
-		PROFILING_SCOPE(UpdatePhase_Pre);
+		PROFILING_SCOPE("UpdatePhase_Pre");
 
 		UpdateIndividualPhase(UpdatePhase::PRE);
 	}
@@ -232,7 +233,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Entity update phase.
 	*/
 	{
-		PROFILING_SCOPE(UpdatePhase_Entity);
+		PROFILING_SCOPE("UpdatePhase_Entity");
 
 		UpdateIndividualPhase(UpdatePhase::ENTITY);
 	}
@@ -241,7 +242,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Input update phase.
 	*/
 	{
-		PROFILING_SCOPE(UpdatePhase_Input);
+		PROFILING_SCOPE("UpdatePhase_Input");
 
 		UpdateIndividualPhase(UpdatePhase::INPUT);
 	}
@@ -250,7 +251,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Gameplay update phase.
 	*/
 	{
-		PROFILING_SCOPE(UpdatePhase_Gameplay);
+		PROFILING_SCOPE("UpdatePhase_Gameplay");
 
 		UpdateIndividualPhase(UpdatePhase::GAMEPLAY);
 	}
@@ -259,7 +260,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	User interface update phase.
 	*/
 	{
-		PROFILING_SCOPE(UpdatePhase_UserInterface);
+		PROFILING_SCOPE("UpdatePhase_UserInterface");
 
 		UpdateIndividualPhase(UpdatePhase::USER_INTERFACE);
 	}
@@ -268,7 +269,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Physics update phase.
 	*/
 	{
-		PROFILING_SCOPE(UpdatePhase_Physics);
+		PROFILING_SCOPE("UpdatePhase_Physics");
 
 		UpdateIndividualPhase(UpdatePhase::PHYSICS);
 	}
@@ -277,7 +278,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Pre-render update phase.
 	*/
 	{
-		PROFILING_SCOPE(UpdatePhase_PreRender);
+		PROFILING_SCOPE("UpdatePhase_PreRender");
 
 		UpdateIndividualPhase(UpdatePhase::PRE_RENDER);
 	}
@@ -286,7 +287,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Render update phase.
 	*/
 	{
-		PROFILING_SCOPE(UpdatePhase_Render);
+		PROFILING_SCOPE("UpdatePhase_Render");
 
 		UpdateIndividualPhase(UpdatePhase::RENDER);
 
@@ -297,7 +298,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Post update phase.
 	*/
 	{
-		PROFILING_SCOPE(UpdatePhase_Post);
+		PROFILING_SCOPE("UpdatePhase_Post");
 
 		UpdateIndividualPhase(UpdatePhase::POST);
 	}
@@ -306,7 +307,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	*	Sequential update phase.
 	*/
 	{
-		PROFILING_SCOPE(UpdatePhase_Sequential);
+		PROFILING_SCOPE("UpdatePhase_Sequential");
 
 		UpdateSequentially();
 	}
@@ -323,7 +324,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 */
 void CatalystEngineSystem::Terminate() NOEXCEPT
 {
-	PROFILING_SCOPE(CatalystEngineSystem_Terminate);
+	PROFILING_SCOPE("CatalystEngineSystem_Terminate");
 
 	//Flush the logs before termination.
 	LogSystem::Instance->Flush();

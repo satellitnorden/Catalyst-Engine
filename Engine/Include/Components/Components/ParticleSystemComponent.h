@@ -2,12 +2,65 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Padding.h>
 
 //Components.
 #include <Components/Core/Component.h>
 
 //World.
 #include <World/Core/WorldPosition.h>
+
+/*
+*	Particle emitter class definition.
+*/
+class ParticleEmitter final
+{
+
+public:
+
+	//Enumeration covering all emit modes.
+	enum class EmitMode : uint8
+	{
+		/*
+		*	Picks random positions in a sphere of '_SphereMode._Radius' radius.
+		*/
+		SPHERE
+	};
+
+	//The emit mode.
+	EmitMode _EmitMode;
+
+	union
+	{
+		struct
+		{
+			//The radius.
+			float32 _Radius;
+		} _SphereMode;
+	};
+
+	//The minimum velocity.
+	Vector3<float32> _MinimumVelocity;
+
+	//The maximum velocity.
+	Vector3<float32> _MaximumVelocity;
+
+	//The minimum size.
+	Vector2<float32> _MinimumSize;
+
+	//The maximum size.
+	Vector2<float32> _MaximumSize;
+
+	//The minimum lifetime.
+	float32 _MinimumLifetime;
+
+	//The maximum lifetime.
+	float32 _MaximumLifetime;
+
+	//The spawn rate.
+	float32 _SpawnRate;
+
+};
 
 /*
 *	Particle instance class definition.
@@ -19,6 +72,9 @@ public:
 
 	//The world position.
 	WorldPosition _WorldPosition;
+
+	//The velocity.
+	Vector3<float32> _Velocity;
 
 	//The size.
 	Vector2<float32> _Size;
@@ -48,6 +104,9 @@ public:
 	//The normalized age.
 	float32 _NormalizedAge;
 
+	//Padding.
+	Padding<8> _Padding;
+
 };
 
 /*
@@ -55,6 +114,11 @@ public:
 */
 class ParticleSystemSharedData final
 {
+
+public:
+
+	//The packed instancs.
+	DynamicArray<ParticlePackedInstance> _PackedInstances;
 
 };
 
@@ -66,20 +130,8 @@ class ParticleSystemInitializationData final : public ComponentInitializationDat
 
 public:
 
-	//The minimum size.
-	Vector2<float32> _MinimumSize;
-
-	//The maximum size.
-	Vector2<float32> _MaximumSize;
-
-	//The minimum lifetime.
-	float32 _MinimumLifetime;
-
-	//The maximum lifetime.
-	float32 _MaximumLifetime;
-
-	//The spawn rate.
-	float32 _SpawnRate;
+	//The emitter.
+	ParticleEmitter _Emitter;
 
 
 };
@@ -92,20 +144,8 @@ class ParticleSystemInstanceData final
 
 public:
 
-	//The minimum size.
-	Vector2<float32> _MinimumSize;
-
-	//The maximum size.
-	Vector2<float32> _MaximumSize;
-
-	//The minimum lifetime.
-	float32 _MinimumLifetime;
-
-	//The maximum lifetime.
-	float32 _MaximumLifetime;
-
-	//The spawn rate.
-	float32 _SpawnRate;
+	//The emitter.
+	ParticleEmitter _Emitter;
 
 	//The time since the last particle spawn.
 	float32 _TimeSinceLastParticleSpawn;
@@ -115,6 +155,12 @@ public:
 
 	//The packed instancs.
 	DynamicArray<ParticlePackedInstance> _PackedInstances;
+
+	//The start instance index.
+	uint32 _StartInstanceIndex;
+
+	//The number of instances.
+	uint32 _NumberOfInstances;
 
 };
 

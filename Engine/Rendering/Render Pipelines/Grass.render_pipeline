@@ -123,7 +123,7 @@ Vertex
     OutNormal = RotateYaw(normal, random_rotation);
 
     //Apply the wind displacement.
-    OutWorldPosition += CalculateCurrentWindDisplacement(OutWorldPosition, vertex_position, OutNormal) * wind_influence;
+    OutWorldPosition += CalculateCurrentWindDisplacement(InPosition, vertex_position, OutNormal) * wind_influence;
 
     //Output data to the fragment shader.
     OutX = raw_vertex_position.x + 0.5f;

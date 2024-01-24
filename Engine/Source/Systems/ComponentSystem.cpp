@@ -126,6 +126,18 @@ void ComponentSystem::Initialize() NOEXCEPT
 }
 
 /*
+*	Post-initializes the component system.
+*/
+void ComponentSystem::PostInitialize() NOEXCEPT
+{
+	//Post-initialize all components.
+	for (Component *const RESTRICT component : AllComponents())
+	{
+		component->PostInitialize();
+	}
+}
+
+/*
 *	Updates components for the given update phase.
 */
 void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
@@ -187,6 +199,19 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 			all_done &= update_data._Task.IsExecuted();
 		}
 	}
+
+	//Run the post update.
+	for (Component *const RESTRICT component : AllComponents())
+	{
+		ComponentUpdateConfiguration update_configuration;
+
+		component->GetUpdateConfiguration(&update_configuration);
+
+		if (TEST_BIT(update_configuration._UpdatePhaseMask, update_phase))
+		{
+			component->PostUpdate(update_phase);
+		}
+	}
 }
 
 /*
@@ -194,5 +219,5 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 */
 void ComponentSystem::UpdateComponent(const UpdateData &update_data) NOEXCEPT
 {
-	update_data._Component->Update(update_data._UpdatePhase, update_data._StartIndex, update_data._EndIndex);
+	update_data._Component->Update(update_data._UpdatePhase, update_data._StartIndex, update_data._EndIndex, 0);
 }

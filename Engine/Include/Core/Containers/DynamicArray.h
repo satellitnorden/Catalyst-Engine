@@ -534,6 +534,90 @@ public:
 	}
 
 	/*
+	*	Resizes this dynamic array.
+	*	Takes as a template argument whether or not to destruct/construct old/new objects after the resize.
+	*/
+	template <bool DESTRUCT_CONSTRUCT>
+	FORCE_INLINE void Resize(const uint64 new_size) NOEXCEPT
+	{
+		ASSERT(false, "Intentionally unimplemented!");
+	}
+
+	/*
+	*	Resizes this dynamic array.
+	*	Takes as a template argument whether or not to destruct/construct old/new objects after the resize.
+	*/
+	template<>
+	FORCE_INLINE void Resize<false>(const uint64 new_size) NOEXCEPT
+	{
+		//Do we need to allocate more capacity?
+		if (new_size > _Capacity)
+		{
+			//Allocate the new array.
+			TYPE *const RESTRICT new_array{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * new_size)) };
+
+			if (_Array)
+			{
+				//Move over all objects from the old array to the new array.
+				Memory::Copy(new_array, _Array, sizeof(TYPE) * _Size);
+
+				//Free the old array.
+				Memory::Free(_Array);
+			}
+
+			//Update the array and the capacity.
+			_Array = new_array;
+			_Capacity = new_size;
+		}
+
+		//Set the size.
+		_Size = new_size;
+	}
+
+	/*
+	*	Resizes this dynamic array.
+	*	Takes as a template argument whether or not to destruct/construct old/new objects after the resize.
+	*/
+	template<>
+	FORCE_INLINE void Resize<true>(const uint64 new_size) NOEXCEPT
+	{
+		//Do we need to allocate more capacity?
+		if (new_size > _Capacity)
+		{
+			//Allocate the new array.
+			TYPE *const RESTRICT new_array{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * new_size)) };
+
+			if (_Array)
+			{
+				//Move over all objects from the old array to the new array.
+				Memory::Copy(new_array, _Array, sizeof(TYPE) * _Size);
+
+				//Free the old array.
+				Memory::Free(_Array);
+			}
+
+			//Update the array and the capacity.
+			_Array = new_array;
+			_Capacity = new_size;
+		}
+
+		//Default destruct the old objects.
+		for (uint64 i{ new_size }; i < _Size; ++i)
+		{
+			delete (&_Array[i]) TYPE();
+		}
+
+		//Default construct the new objects.
+		for (uint64 i{ _Size }; i < new_size; ++i)
+		{
+			new (&_Array[i]) TYPE();
+		}
+
+		//Set the size.
+		_Size = new_size;
+	}
+
+	/*
 	*	Upsizes this dynamic array.
 	*/
 	template <bool CONSTRUCT>

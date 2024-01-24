@@ -1,0 +1,4 @@
+StorageBuffer(Particles)
+{
+	vec4[] PARTICLES;
+};

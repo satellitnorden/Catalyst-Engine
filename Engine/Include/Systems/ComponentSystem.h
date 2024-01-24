@@ -30,6 +30,11 @@ public:
 	*/
 	void Initialize() NOEXCEPT;
 
+	/*
+	*	Post-initializes the component system.
+	*/
+	void PostInitialize() NOEXCEPT;
+
 private:
 
 	/*

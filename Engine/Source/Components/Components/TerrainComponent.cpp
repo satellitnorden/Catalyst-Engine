@@ -27,6 +27,14 @@ void TerrainComponent::Initialize() NOEXCEPT
 
 }
 
+/*
+*	Post-initializes this component.
+*/
+void TerrainComponent::PostInitialize() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool TerrainComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return true;
@@ -235,9 +243,18 @@ void TerrainComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
 	RemoveInstance(entity);
 }
 
+/*
+*	Returns the number of sub-instances for the given instance.
+*/
+NO_DISCARD uint64 TerrainComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
+{
+	return 1;
+}
+
 void TerrainComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
+	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 1;
 }
 
@@ -495,9 +512,18 @@ void CullTerrainQuadTreeNode
 	}
 }
 
-void TerrainComponent::Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT
+/*
+*	Updates this component.
+*/
+void TerrainComponent::Update
+(
+	const UpdatePhase update_phase,
+	const uint64 start_instance_index,
+	const uint64 end_instance_index,
+	const uint64 sub_instance_index
+) NOEXCEPT
 {
-	PROFILING_SCOPE(TerrainComponent::Update);
+	PROFILING_SCOPE("TerrainComponent::Update");
 
 	switch (update_phase)
 	{
@@ -509,7 +535,7 @@ void TerrainComponent::Update(const UpdatePhase update_phase, const uint64 start
 			const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
 
 			//Iterate over the instances.
-			for (uint64 instance_index{ start_index }; instance_index < end_index; ++instance_index)
+			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
 			{
 				//Cache the instance data.
 				TerrainInstanceData &instance_data{ _InstanceData[instance_index] };
@@ -562,4 +588,12 @@ void TerrainComponent::Update(const UpdatePhase update_phase, const uint64 start
 			break;
 		}
 	}
+}
+
+/*
+*	Runs after the given update phase.
+*/
+void TerrainComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }

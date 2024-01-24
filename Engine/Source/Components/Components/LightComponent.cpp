@@ -14,6 +14,14 @@ void LightComponent::Initialize() NOEXCEPT
 
 }
 
+/*
+*	Post-initializes this component.
+*/
+void LightComponent::PostInitialize() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool LightComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;
@@ -82,15 +90,33 @@ void LightComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
 	RemoveInstance(entity);
 }
 
+/*
+*	Returns the number of sub-instances for the given instance.
+*/
+NO_DISCARD uint64 LightComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
+{
+	return 1;
+}
+
 void LightComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
 	update_configuration->_UpdatePhaseMask = static_cast<UpdatePhase>(0);
+	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 0;
 }
 
-void LightComponent::Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT
+/*
+*	Updates this component.
+*/
+void LightComponent::Update
+(
+	const UpdatePhase update_phase,
+	const uint64 start_instance_index,
+	const uint64 end_instance_index,
+	const uint64 sub_instance_index
+) NOEXCEPT
 {
-	PROFILING_SCOPE(LightComponent::Update);
+	PROFILING_SCOPE("LightComponent::Update");
 
 	/*
 	switch (update_phase)
@@ -103,4 +129,12 @@ void LightComponent::Update(const UpdatePhase update_phase, const uint64 start_i
 		}
 	}
 	*/
+}
+
+/*
+*	Runs after the given update phase.
+*/
+void LightComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }

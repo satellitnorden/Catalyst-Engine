@@ -1,0 +1,132 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare storage buffer includes.
+IncludeStorageBuffer(Particles);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Math);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(SceneFeatures1);
+OutputRenderTarget(SceneFeatures2);
+OutputRenderTarget(SceneFeatures3);
+OutputRenderTarget(SceneFeatures4);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the cull mode.
+CullMode(NONE);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER);
+DepthTestEnable();
+DepthWriteEnable();
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(REPLACE);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(ALWAYS);
+StencilCompareMask(0);
+StencilWriteMask(1);
+StencilReferenceMask(1);
+
+//Set the topology.
+Topology(TRIANGLE_STRIP);
+
+//Declare push constant data.
+PushConstantData(uint, START_INDEX);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Particles);
+
+//The vertex shader.
+Vertex
+{
+    //Declare output parameters.
+    OutputParameter(vec3, OutWorldPosition);
+    OutputParameter(vec3, OutNormal);
+    OutputParameter(vec2, OutTextureCoordinate);
+    OutputParameter(float, OutNormalizedAge);
+
+    //Unpack the particle data.
+    vec4 particle_data_1 = PARTICLES[(START_INDEX + INSTANCE_INDEX) * 2 + 0];
+    vec4 particle_data_2 = PARTICLES[(START_INDEX + INSTANCE_INDEX) * 2 + 1];
+
+    vec3 particle_position = particle_data_1.xyz;
+    vec2 particle_size = vec2(particle_data_1.w, particle_data_2.x);
+    vec2 half_particle_size = particle_size * 0.5f;
+    float particle_normalized_age = particle_data_2.y;
+
+    //Calculate the forward vector.
+    vec3 forward_vector = normalize(CAMERA_WORLD_POSITION - particle_position);
+
+    //Calculate the tangent space matrix.
+    mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(forward_vector, vec3(0.0f, 1.0f, 0.0f));
+
+    //Set up the right/up vector.
+    vec3 right_vector = tangent_space_matrix[0];
+    vec3 up_vector = tangent_space_matrix[1];
+
+    //Calculate the world position.
+    OutWorldPosition = particle_position;
+
+    OutWorldPosition += right_vector * mix(-half_particle_size.x, half_particle_size.x, float(VERTEX_INDEX & 1));
+    OutWorldPosition += up_vector * mix(-half_particle_size.y, half_particle_size.y, float(VERTEX_INDEX > 1));
+
+    //Calculate the normal.
+    OutNormal = forward_vector;
+
+    //Calculate the texture coordinate.
+    OutTextureCoordinate.x = float(VERTEX_INDEX & 1);
+    OutTextureCoordinate.y = float(VERTEX_INDEX > 1);
+
+    //Set the normalized age.
+    OutNormalizedAge = particle_normalized_age;
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec3, InWorldPosition);
+    InputParameter(vec3, InNormal);
+    InputParameter(vec2, InTextureCoordinate);
+    InputParameter(float, InNormalizedAge);
+
+    //Calculate the opacity.
+    float opacity = 1.0f - (length(InTextureCoordinate - vec2(0.5)) * 2.0f);
+
+    //Apply the normalized age.
+    opacity *= smoothstep(0.0f, 0.1f, InNormalizedAge);
+    opacity *= 1.0f - smoothstep(0.9f, 1.0f, InNormalizedAge);
+
+    //Discard maybe.
+    if (opacity < 0.5f)
+    {
+        discard;
+    }
+
+    //Calculate the velocity.
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+
+    //Output the fragments.
+    OutputFragment(SceneFeatures1, vec4(0.5f, 0.5f, 0.5f, opacity));
+    OutputFragment(SceneFeatures2, vec4(InNormal, gl_FragCoord.z));
+    OutputFragment(SceneFeatures3, vec4(1.0f, 0.0f, 1.0f, 0.0f));
+    OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
+}

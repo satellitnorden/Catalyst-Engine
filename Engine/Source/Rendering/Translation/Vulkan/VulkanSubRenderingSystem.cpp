@@ -2084,42 +2084,42 @@ void VulkanSubRenderingSystem::BeginFrame() NOEXCEPT
 {
 	//Begin the frame for the platform.
 	{
-		PROFILING_SCOPE(VulkanSubRenderingSystem_BeginFrame);
+		PROFILING_SCOPE("VulkanSubRenderingSystem_BeginFrame");
 
 		VulkanPlatform::BeginFrame();
 	}
 
 	//Pre-update the Vulkan interface.
 	{
-		PROFILING_SCOPE(VulkanSubRenderingSystem_VulkanInterface_PreUpdate);
+		PROFILING_SCOPE("VulkanSubRenderingSystem_VulkanInterface_PreUpdate");
 
 		VulkanInterface::Instance->PreUpdate(VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore());
 	}
 
 	//Set the current frame.
 	{
-		PROFILING_SCOPE(VulkanSubRenderingSystem_SetCurrentFrame);
+		PROFILING_SCOPE("VulkanSubRenderingSystem_SetCurrentFrame");
 
 		VulkanSubRenderingSystemData::_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
 	}
 
 	//Wait for the current fence to finish.
 	{
-		PROFILING_SCOPE(VulkanSubRenderingSystem_WaitForCurrentFence);
+		PROFILING_SCOPE("VulkanSubRenderingSystem_WaitForCurrentFence");
 
 		VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->WaitFor();
 	}
 
 	//Reset the current fence.
 	{
-		PROFILING_SCOPE(VulkanSubRenderingSystem_ResetCurrentFence);
+		PROFILING_SCOPE("VulkanSubRenderingSystem_ResetCurrentFence");
 
 		VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->Reset();
 	}
 
 	//Process the destruction queue.
 	{
-		PROFILING_SCOPE(VulkanSubRenderingSystem_ProcessDestructionQueue);
+		PROFILING_SCOPE("VulkanSubRenderingSystem_ProcessDestructionQueue");
 
 		VulkanSubRenderingSystemLogic::ProcessDestructionQueue(GetCurrentFramebufferIndex());
 	}

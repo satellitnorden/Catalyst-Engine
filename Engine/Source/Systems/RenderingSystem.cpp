@@ -340,7 +340,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 
 	//Tell the sub rendering to begin the frame.
 	{
-		PROFILING_SCOPE(RenderingSystem_BeginFrame);
+		PROFILING_SCOPE("RenderingSystem_BeginFrame");
 
 		_SubRenderingSystem->BeginFrame();
 	}
@@ -386,84 +386,84 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 
 	//Update the shadows system.
 	{
-		PROFILING_SCOPE(RenderingSystem_ShadowsSystem_PreRenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_ShadowsSystem_PreRenderUpdate");
 
 		_ShadowsSystem.PreRenderUpdate();
 	}
 
 	//Update the camera system.
 	{
-		PROFILING_SCOPE(RenderingSystem_CameraSystem_RenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_CameraSystem_RenderUpdate");
 
 		_CameraSystem.RenderUpdate();
 	}
 
 	//Update the post processing system.
 	{
-		PROFILING_SCOPE(RenderingSystem_PostProcessingSystem_RenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_PostProcessingSystem_RenderUpdate");
 
 		_PostProcessingSystem.RenderUpdate();
 	}
 
 	//Update the rendering configuration.
 	{
-		PROFILING_SCOPE(RenderingSystem_RenderingConfiguration_RenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_RenderingConfiguration_RenderUpdate");
 
 		_RenderingConfiguration.Update();
 	}
 
 	//Update the world system.
 	{
-		PROFILING_SCOPE(RenderingSystem_WorldSystem_RenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_WorldSystem_RenderUpdate");
 
 		WorldSystem::Instance->RenderUpdate();
 	}
 
 	//Update the global render data.
 	{
-		PROFILING_SCOPE(RenderingSystem_UpdateGlobalRenderData);
+		PROFILING_SCOPE("RenderingSystem_UpdateGlobalRenderData");
 
 		UpdateGlobalRenderData();
 	}
 
 	//Update the lighting system.
 	{
-		PROFILING_SCOPE(RenderingSystem_LightingSystem_RenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_LightingSystem_RenderUpdate");
 
 		_LightingSystem.RenderUpdate();
 	}
 
 	//Update the material system.
 	{
-		PROFILING_SCOPE(RenderingSystem_MaterialSystem_RenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_MaterialSystem_RenderUpdate");
 
 		_MaterialSystem.RenderUpdate();
 	}
 
 	//Update the virtual reality system.
 	{
-		PROFILING_SCOPE(RenderingSystem_VirtualRealitySystem_RenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_VirtualRealitySystem_RenderUpdate");
 
 		_VirtualRealitySystem.RenderUpdate();
 	}
 
 	//This shouldn't really be here, but let's have it here for now...
 	{
-		PROFILING_SCOPE(RenderingSystem_AnimationSystem_RenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_AnimationSystem_RenderUpdate");
 
 		AnimationSystem::Instance->RenderUpdate();
 	}
 
 	//Update the render input manager.
 	{
-		PROFILING_SCOPE(RenderingSystem_RenderInputManager_RenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_RenderInputManager_RenderUpdate");
 
 		_RenderInputManager.RenderUpdate();
 	}
 
 	//Update the buffer manager.
 	{
-		PROFILING_SCOPE(RenderingSystem_BufferManager_RenderUpdate);
+		PROFILING_SCOPE("RenderingSystem_BufferManager_RenderUpdate");
 
 		_BufferManager.RenderUpdate();
 	}
@@ -484,7 +484,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 
 		//Update the ray tracing system.
 		{
-			PROFILING_SCOPE(RenderingSystem_RayTracingSystem_RenderUpdate);
+			PROFILING_SCOPE("RenderingSystem_RayTracingSystem_RenderUpdate");
 
 #if RENDERING_PERFORMANCE_QUERY
 			_GlobalRenderData._PerformanceData[GetCurrentFramebufferIndex()]._Names.Emplace("RayTracing_RenderUpdate");
@@ -498,7 +498,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 
 		//Execute all render passes.
 		{
-			PROFILING_SCOPE(RenderingSystem_ExecuteAllRenderPasses);
+			PROFILING_SCOPE("RenderingSystem_ExecuteAllRenderPasses");
 
 			for (RenderPass *const RESTRICT render_pass : _RenderPasses)
 			{
@@ -548,7 +548,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 
 	//Tell the sub rendering system to end the frame.
 	{
-		PROFILING_SCOPE(RenderingSystem_SubRenderingSystem_EndFrame);
+		PROFILING_SCOPE("RenderingSystem_SubRenderingSystem_EndFrame");
 
 		_SubRenderingSystem->EndFrame(frame_command_buffer);
 	}
@@ -1107,6 +1107,8 @@ void RenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const u
 */
 void RenderingSystem::BindStorageBufferToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const BufferHandle buffer) const NOEXCEPT
 {
+	PROFILING_SCOPE("RenderingSystem::BindStorageBufferToRenderDataTable");
+
 	_SubRenderingSystem->BindStorageBufferToRenderDataTable(binding, array_element, handle, buffer);
 }
 

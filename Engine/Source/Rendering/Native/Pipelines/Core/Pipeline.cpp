@@ -90,7 +90,10 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 					&input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
 				);
 
-				command_buffer->BindVertexBuffer(this, 0, entry._InstanceBuffer, &OFFSET);
+				if (entry._InstanceBuffer != EMPTY_HANDLE)
+				{
+					command_buffer->BindVertexBuffer(this, 0, entry._InstanceBuffer, &OFFSET);
+				}
 
 				command_buffer->Draw(this, entry._VertexCount, entry._InstanceCount);
 			}

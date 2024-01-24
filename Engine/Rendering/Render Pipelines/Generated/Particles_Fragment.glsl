@@ -202,24 +202,10 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (std140, set = 1, binding = 1) uniform General
+layout (std430, set = 1, binding = 1) buffer Particles
 {
-	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
-	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
-	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
-	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
-	layout (offset = 32) uint FRAME;
+	layout (offset = 0) vec4[] PARTICLES;
 };
-
-layout (std140, set = 1, binding = 2) uniform Wind
-{
-	layout (offset = 0) vec4 PREVIOUS_WIND_DIRECTION_SPEED;
-	layout (offset = 16) vec4 CURRENT_WIND_DIRECTION_SPEED;
-	layout (offset = 32) float PREVIOUS_WIND_TIME;
-	layout (offset = 36) float CURRENT_WIND_TIME;
-};
-
-layout (set = 1, binding = 3) uniform sampler SAMPLER;
 
 /*
 *   Linearizes a depth value.
@@ -296,15 +282,6 @@ vec3 CalculateScreenPosition(vec3 world_position)
 }
 
 /*
-*	Evaluates tilt/bend. Returns the offset on the Z axis.
-*/
-float EvaluateTiltBend(float tilt, float bend, float normalized_height)
-{
-	float bend_alpha = bend >= 0.5f ? ((bend - 0.5f) * 2.0f) : (bend * 2.0f);
-	return mix(0.0f, tilt, mix(InverseSquare(normalized_height), Square(normalized_height), bend_alpha));
-}
-
-/*
 *	Rotates the given vector around the yaw.
 */
 vec3 RotateYaw(vec3 X, float angle)
@@ -338,184 +315,33 @@ float SmoothStep(float number)
     return number * number * (3.0f - 2.0f * number);
 }
 
-/*
-*   Combines two hashes.
-*/
-uint CombineHash(uint hash_1, uint hash_2)
-{
-    return 3141592653 * hash_1 + hash_2;
-}
-
-/*
-*   Hash function taking a uint.
-*/
-uint Hash(uint seed)
-{
-    seed ^= seed >> 17;
-    seed *= 0xed5ad4bbU;
-    seed ^= seed >> 11;
-    seed *= 0xac4c1b51U;
-    seed ^= seed >> 15;
-    seed *= 0x31848babU;
-    seed ^= seed >> 14;
-    return seed;
-}
-
-/*
-*   Hash function taking a uvec2.
-*/
-uint Hash2(uvec2 seed)
-{
-    return Hash(seed.x) ^ Hash(seed.y);
-}
-
-/*
-*   Hash function taking a uvec3.
-*/
-uint Hash3(uvec3 seed)
-{
-    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
-    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
-    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
-}
-
-/*
-*   Given a seed, returns a random number.
-*/
-float RandomFloat(inout uint seed)
-{
-    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
-}
-
-/*
-*   Given a coordinate and a seed, returns a random number.
-*/
-float RandomFloat(uvec2 coordinate, uint seed)
-{
-    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
-}
-
-/*
-*	Returns the interleaved gradient noise for the given coordinate at the given frame.
-*/
-float InterleavedGradientNoise(uvec2 coordinate, uint frame)
-{
-	frame = frame % 64;
-
-	float x = float(coordinate.x) + 5.588238f * float(frame);
-	float y = float(coordinate.y) + 5.588238f * float(frame);
-
-	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
-}
-
-/*
-*	Calculates wind displacement.
-*	Requires the Wind uniform buffer to be bound.
-*/
-vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal, vec4 wind_direction_speed, float wind_time)
-{
-	//Calculate the wind influence at this point.
-	float wind_influence = 0.0f;
-
-	{
-		float amplitude = 1.0f;
-		float frequency = 1.0f;
-		float vertex_influence = 0.0f;
-
-		for (uint i = 0; i < 4; ++i)
-		{
-			wind_influence += (sin((world_position.x + world_position.y + world_position.z + ((vertex_position.x + vertex_position.y + vertex_position.z) * vertex_influence) + wind_time) * wind_direction_speed.w * frequency) * 0.5f + 0.5f) * amplitude;
-
-			amplitude *= 0.5f;
-			frequency *= 2.0f;
-			vertex_influence += 0.125f;
-		}
-	}
-
-	//Calculate the displacement.
-	vec3 displacement;
-	displacement.xz = wind_direction_speed.xz * wind_direction_speed.w * wind_influence;
-	displacement.y = -wind_influence * 0.5f;
-
-	//Modify the displacement so it doesn't affect the bottom of the mesh.
-	displacement *= max(vertex_position.y * 0.25f, 0.0f);
-
-	//Return the displacement.
-	return displacement;
-}
-
-/*
-*	Calculates previous wind displacement.
-*	Requires the Wind uniform buffer to be bound.
-*/
-vec3 CalculatePreviousWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
-{
-	return CalculateWindDisplacement(world_position, vertex_position, normal, PREVIOUS_WIND_DIRECTION_SPEED, PREVIOUS_WIND_TIME);
-}
-
-/*
-*	Calculates current wind displacement.
-*	Requires the Wind uniform buffer to be bound.
-*/
-vec3 CalculateCurrentWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal)
-{
-	return CalculateWindDisplacement(world_position, vertex_position, normal, CURRENT_WIND_DIRECTION_SPEED, CURRENT_WIND_TIME);
-}
-
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) uint MATERIAL_INDEX;
-	layout (offset = 20) float VERTEX_FACTOR;
-	layout (offset = 24) float THICKNESS;
-	layout (offset = 28) float HEIGHT;
-	layout (offset = 32) float TILT;
-	layout (offset = 36) float BEND;
-	layout (offset = 40) float FADE_OUT_DISTANCE;
+	layout (offset = 0) uint START_INDEX;
 };
 
-layout (location = 0) in vec3 InPosition;
-layout (location = 1) in uint InSeed;
+layout (location = 0) in vec3 InWorldPosition;
+layout (location = 1) in vec3 InNormal;
+layout (location = 2) in vec2 InTextureCoordinate;
+layout (location = 3) in float InNormalizedAge;
 
-layout (location = 0) out vec3 OutWorldPosition;
-layout (location = 1) out vec3 OutNormal;
-layout (location = 2) out float OutX;
-layout (location = 3) out float OutThickness;
-layout (location = 4) out float OutAmbientOcclusion;
+layout (location = 0) out vec4 SceneFeatures1;
+layout (location = 1) out vec4 SceneFeatures2;
+layout (location = 2) out vec4 SceneFeatures3;
+layout (location = 3) out vec4 SceneFeatures4;
 
 void main()
 {
-    uint seed = InSeed;
-    float random_rotation = mix(-PI, PI, RandomFloat(seed));
-    float wind_influence = mix(0.75f, 1.25f, RandomFloat(seed));
-    float cull_value = RandomFloat(seed);
-    float distance_from_camera = length(InPosition - CAMERA_WORLD_POSITION);
-    float thickness = THICKNESS + (THICKNESS * 0.01f * distance_from_camera);
-    vec3 raw_vertex_position;
+    float opacity = 1.0f - (length(InTextureCoordinate - vec2(0.5)) * 2.0f);
+    opacity *= smoothstep(0.0f, 0.1f, InNormalizedAge);
+    opacity *= 1.0f - smoothstep(0.9f, 1.0f, InNormalizedAge);
+    if (opacity < 0.5f)
     {
-        float odd_multiplier = float(gl_VertexIndex & 1) * 2.0f - 1.0f;
-        float height = float(gl_VertexIndex >> 1) * VERTEX_FACTOR;
-        raw_vertex_position = vec3(0.5f * odd_multiplier * (1.0f - Square(height)), height, 0.0f);
+        discard;
     }
-    vec3 vertex_position = raw_vertex_position * vec3(thickness, HEIGHT, 1.0f);
-    vertex_position.z = EvaluateTiltBend(TILT, BEND, raw_vertex_position.y);
-    vec3 bitangent = vec3(-1.0f, 0.0f, 0.0f);
-    vec3 next_position = vec3(vertex_position.x, vertex_position.y + 0.1f, EvaluateTiltBend(TILT, BEND, raw_vertex_position.y + 0.1f));
-    vec3 tangent = normalize(next_position - vertex_position);
-    vec3 normal = cross(bitangent, tangent);
-    normal.x += raw_vertex_position.x * 2.0f;
-    vertex_position = RotateYaw(vertex_position, random_rotation);
-    OutWorldPosition = InPosition + WORLD_GRID_DELTA + vertex_position;
-    OutNormal = RotateYaw(normal, random_rotation);
-    OutWorldPosition += CalculateCurrentWindDisplacement(InPosition, vertex_position, OutNormal) * wind_influence;
-    OutX = raw_vertex_position.x + 0.5f;
-    OutThickness = mix(0.75f, 0.0f, raw_vertex_position.y);
-    OutAmbientOcclusion = mix(0.0f, 1.0f, raw_vertex_position.y);
-#if 0
-    float distance_to_camera = length(CAMERA_WORLD_POSITION.xz - OutWorldPosition.xz);
-    OutWorldPosition.y = mix(OutWorldPosition.y - (HEIGHT * 0.5f), OutWorldPosition.y, min(distance_to_camera * 0.5f, 1.0f));
-#endif
-    float fade_opacity = clamp((distance_from_camera - (FADE_OUT_DISTANCE * 0.75f)) / (FADE_OUT_DISTANCE * 0.25f), 0.0f, 1.0f);
-    bool should_be_culled = cull_value > fade_opacity;
-	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f)*float(should_be_culled);
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+	SceneFeatures1 = vec4(0.5f,0.5f,0.5f,opacity);
+	SceneFeatures2 = vec4(InNormal,gl_FragCoord.z);
+	SceneFeatures3 = vec4(1.0f,0.0f,1.0f,0.0f);
+	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
 }

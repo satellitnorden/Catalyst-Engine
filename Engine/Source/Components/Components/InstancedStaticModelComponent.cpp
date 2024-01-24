@@ -18,6 +18,14 @@ void InstancedStaticModelComponent::Initialize() NOEXCEPT
 
 }
 
+/*
+*	Post-initializes this component.
+*/
+void InstancedStaticModelComponent::PostInitialize() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool InstancedStaticModelComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return true;
@@ -132,15 +140,33 @@ void InstancedStaticModelComponent::DestroyInstance(const EntityIdentifier entit
 	RemoveInstance(entity);
 }
 
+/*
+*	Returns the number of sub-instances for the given instance.
+*/
+NO_DISCARD uint64 InstancedStaticModelComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
+{
+	return 1;
+}
+
 void InstancedStaticModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
+	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 64;
 }
 
-void InstancedStaticModelComponent::Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT
+/*
+*	Updates this component.
+*/
+void InstancedStaticModelComponent::Update
+(
+	const UpdatePhase update_phase,
+	const uint64 start_instance_index,
+	const uint64 end_instance_index,
+	const uint64 sub_instance_index
+) NOEXCEPT
 {
-	PROFILING_SCOPE(InstancedStaticModelComponent::Update);
+	PROFILING_SCOPE("InstancedStaticModelComponent::Update");
 
 	switch (update_phase)
 	{
@@ -152,7 +178,7 @@ void InstancedStaticModelComponent::Update(const UpdatePhase update_phase, const
 			const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
 
 			//Iterate over the instances.
-			for (uint64 instance_index{ start_index }; instance_index < end_index; ++instance_index)
+			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
 			{
 				//Cache the instance data.
 				InstancedStaticModelInstanceData &instance_data{ _InstanceData[instance_index] };
@@ -192,4 +218,12 @@ void InstancedStaticModelComponent::Update(const UpdatePhase update_phase, const
 			break;
 		}
 	}
+}
+
+/*
+*	Runs after the given update phase.
+*/
+void InstancedStaticModelComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }

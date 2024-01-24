@@ -77,6 +77,9 @@ private:
 	//The render data tables.
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
+	//The storage buffer includes.
+	DynamicArray<Pair<HashString, uint32>> _StorageBufferIncludes;
+
 	//The input stream subscriptions.
 	DynamicArray<HashString> _InputStreamSubscriptions;
 

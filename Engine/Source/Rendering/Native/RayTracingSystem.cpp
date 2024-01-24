@@ -75,7 +75,7 @@ void RayTracingSystem::RenderUpdate(CommandBuffer *const RESTRICT command_buffer
 
 	//Gather the instance data, and update the current render data table at the same time.
 	{
-		PROFILING_SCOPE(RayTracingSystem_GatherInstanceData);
+		PROFILING_SCOPE("RayTracingSystem_GatherInstanceData");
 
 		_TopLevelAccelerationStructureInstanceData.Clear();
 
@@ -122,7 +122,7 @@ void RayTracingSystem::RenderUpdate(CommandBuffer *const RESTRICT command_buffer
 	}
 
 	{
-		PROFILING_SCOPE(RayTracingSystem_BuildTopLevelAccelerationStructure);
+		PROFILING_SCOPE("RayTracingSystem_BuildTopLevelAccelerationStructure");
 		RenderingSystem::Instance->CreateTopLevelAccelerationStructure(_TopLevelAccelerationStructureInstanceData, &current_top_level_acceleration_structure, command_buffer);
 	}
 

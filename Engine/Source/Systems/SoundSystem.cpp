@@ -726,7 +726,7 @@ void SoundSystem::Mix() NOEXCEPT
 	//Return if the game is shutting down.
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
-		PROFILING_SCOPE(SoundSystem_Mix);
+		PROFILING_SCOPE("SoundSystem_Mix");
 
 		//Remember the start of the update.
 		const std::chrono::steady_clock::time_point start_of_update{ std::chrono::steady_clock::now() };

@@ -37,7 +37,7 @@ public:
 	void RegisterStorageBuffer
 	(
 		const HashString identifier,
-		const uint64 initial_size,
+		const uint64 initial_capacity,
 		const StorageBufferFunction storage_buffer_function,
 		void *const RESTRICT arguments
 	) NOEXCEPT;
@@ -86,6 +86,9 @@ private:
 
 		//The buffers.
 		DynamicArray<BufferHandle> _Buffers;
+
+		//The buffer capacities.
+		DynamicArray<uint64> _BufferCapacities;
 
 		//The identifier.
 		HashString _Identifier;

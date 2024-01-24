@@ -40,6 +40,22 @@ public:
 		return _CurrentRenderDataTable;
 	}
 
+	/*
+	*	Returns the wind direction.
+	*/
+	FORCE_INLINE NO_DISCARD const Vector3<float32> &GetWindDirection() const NOEXCEPT
+	{
+		return _WindDirection;
+	}
+
+	/*
+	*	Returns the wind speed.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetWindSpeed() const NOEXCEPT
+	{
+		return _WindSpeed;
+	}
+
 private:
 
 	/*

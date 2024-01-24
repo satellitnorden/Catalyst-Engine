@@ -113,7 +113,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 0
+#if 1
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -1242,6 +1242,17 @@ void GenerateVertexShader
 					{
 						line.replace(position, strlen("VERTEX_INDEX"), "gl_VertexIndex");
 						position = line.find("VERTEX_INDEX");
+					}
+				}
+
+				//Replace "INSTANCE_INDEX" with "gl_InstanceIndex".
+				{
+					size_t position{ line.find("INSTANCE_INDEX") };
+
+					while (position != std::string::npos)
+					{
+						line.replace(position, strlen("INSTANCE_INDEX"), "gl_InstanceIndex");
+						position = line.find("INSTANCE_INDEX");
 					}
 				}
 

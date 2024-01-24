@@ -20,6 +20,14 @@ void InstancedImpostorComponent::Initialize() NOEXCEPT
 
 }
 
+/*
+*	Post-initializes this component.
+*/
+void InstancedImpostorComponent::PostInitialize() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool InstancedImpostorComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;
@@ -134,15 +142,33 @@ void InstancedImpostorComponent::DestroyInstance(const EntityIdentifier entity) 
 	RemoveInstance(entity);
 }
 
+/*
+*	Returns the number of sub-instances for the given instance.
+*/
+NO_DISCARD uint64 InstancedImpostorComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
+{
+	return 1;
+}
+
 void InstancedImpostorComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
+	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 64;
 }
 
-void InstancedImpostorComponent::Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT
+/*
+*	Updates this component.
+*/
+void InstancedImpostorComponent::Update
+(
+	const UpdatePhase update_phase,
+	const uint64 start_instance_index,
+	const uint64 end_instance_index,
+	const uint64 sub_instance_index
+) NOEXCEPT
 {
-	PROFILING_SCOPE(InstancedImpostorComponent::Update);
+	PROFILING_SCOPE("InstancedImpostorComponent::Update");
 
 	switch (update_phase)
 	{
@@ -154,7 +180,7 @@ void InstancedImpostorComponent::Update(const UpdatePhase update_phase, const ui
 			const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
 
 			//Iterate over the instances.
-			for (uint64 instance_index{ start_index }; instance_index < end_index; ++instance_index)
+			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
 			{
 				//Cache the instance data.
 				InstancedImpostorInstanceData &instance_data{ _InstanceData[instance_index] };
@@ -199,4 +225,12 @@ void InstancedImpostorComponent::Update(const UpdatePhase update_phase, const ui
 			break;
 		}
 	}
+}
+
+/*
+*	Runs after the given update phase.
+*/
+void InstancedImpostorComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }

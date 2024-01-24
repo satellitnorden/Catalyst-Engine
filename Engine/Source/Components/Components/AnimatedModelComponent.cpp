@@ -27,6 +27,14 @@ void AnimatedModelComponent::Initialize() NOEXCEPT
 
 }
 
+/*
+*	Post-initializes this component.
+*/
+void AnimatedModelComponent::PostInitialize() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool AnimatedModelComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;
@@ -124,13 +132,31 @@ void AnimatedModelComponent::DestroyInstance(const EntityIdentifier entity) NOEX
 	RemoveInstance(entity);
 }
 
+/*
+*	Returns the number of sub-instances for the given instance.
+*/
+NO_DISCARD uint64 AnimatedModelComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
+{
+	return 1;
+}
+
 void AnimatedModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
+	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 64;
 }
 
-void AnimatedModelComponent::Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT
+/*
+*	Updates this component.
+*/
+void AnimatedModelComponent::Update
+(
+	const UpdatePhase update_phase,
+	const uint64 start_instance_index,
+	const uint64 end_instance_index,
+	const uint64 sub_instance_index
+) NOEXCEPT
 {
 	/*
 	PROFILING_SCOPE(StaticModelComponent::Update);
@@ -264,4 +290,12 @@ void AnimatedModelComponent::Update(const UpdatePhase update_phase, const uint64
 		}
 	}
 	*/
+}
+
+/*
+*	Runs after the given update phase.
+*/
+void AnimatedModelComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }

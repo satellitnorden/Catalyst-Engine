@@ -24,6 +24,14 @@ void StaticModelComponent::Initialize() NOEXCEPT
 
 }
 
+/*
+*	Post-initializes this component.
+*/
+void StaticModelComponent::PostInitialize() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool StaticModelComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;
@@ -124,15 +132,33 @@ void StaticModelComponent::DestroyInstance(const EntityIdentifier entity) NOEXCE
 	RemoveInstance(entity);
 }
 
+/*
+*	Returns the number of sub-instances for the given instance.
+*/
+NO_DISCARD uint64 StaticModelComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
+{
+	return 1;
+}
+
 void StaticModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
+	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 64;
 }
 
-void StaticModelComponent::Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT
+/*
+*	Updates this component.
+*/
+void StaticModelComponent::Update
+(
+	const UpdatePhase update_phase,
+	const uint64 start_instance_index,
+	const uint64 end_instance_index,
+	const uint64 sub_instance_index
+) NOEXCEPT
 {
-	PROFILING_SCOPE(StaticModelComponent::Update);
+	PROFILING_SCOPE("StaticModelComponent::Update");
 
 	switch (update_phase)
 	{
@@ -145,7 +171,7 @@ void StaticModelComponent::Update(const UpdatePhase update_phase, const uint64 s
 			const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
 
 			//Iterate over the instances.
-			for (uint64 instance_index{ start_index }; instance_index < end_index; ++instance_index)
+			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
 			{
 				//Cache the instance data.
 				StaticModelInstanceData &instance_data{ _InstanceData[instance_index] };
@@ -262,4 +288,12 @@ void StaticModelComponent::Update(const UpdatePhase update_phase, const uint64 s
 			break;
 		}
 	}
+}
+
+/*
+*	Runs after the given update phase.
+*/
+void StaticModelComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }

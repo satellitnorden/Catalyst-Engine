@@ -14,6 +14,14 @@ void WorldTransformComponent::Initialize() NOEXCEPT
 
 }
 
+/*
+*	Post-initializes this component.
+*/
+void WorldTransformComponent::PostInitialize() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool WorldTransformComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;
@@ -62,22 +70,40 @@ void WorldTransformComponent::DestroyInstance(const EntityIdentifier entity) NOE
 	RemoveInstance(entity);
 }
 
+/*
+*	Returns the number of sub-instances for the given instance.
+*/
+NO_DISCARD uint64 WorldTransformComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
+{
+	return 1;
+}
+
 void WorldTransformComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE;
+	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 258;
 }
 
-void WorldTransformComponent::Update(const UpdatePhase update_phase, const uint64 start_index, const uint64 end_index) NOEXCEPT
+/*
+*	Updates this component.
+*/
+void WorldTransformComponent::Update
+(
+	const UpdatePhase update_phase,
+	const uint64 start_instance_index,
+	const uint64 end_instance_index,
+	const uint64 sub_instance_index
+) NOEXCEPT
 {
-	PROFILING_SCOPE(WorldTransformComponent::Update);
+	PROFILING_SCOPE("WorldTransformComponent::Update");
 
 	switch (update_phase)
 	{
 		case UpdatePhase::PRE:
 		{
 			//Iterate over the instances.
-			for (uint64 instance_index{ start_index }; instance_index < end_index; ++instance_index)
+			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
 			{
 				//Cache the instance data.
 				WorldTransformInstanceData &instance_data{ _InstanceData[instance_index] };
@@ -96,4 +122,12 @@ void WorldTransformComponent::Update(const UpdatePhase update_phase, const uint6
 			break;
 		}
 	}
+}
+
+/*
+*	Runs after the given update phase.
+*/
+void WorldTransformComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }
