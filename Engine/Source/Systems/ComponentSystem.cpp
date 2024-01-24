@@ -157,21 +157,65 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 
 			if (number_of_instances > 0)
 			{
-				for (uint64 batch_start_index{ 0 }; batch_start_index < number_of_instances; batch_start_index += update_configuration._BatchSize)
+				switch (update_configuration._Mode)
 				{
-					_UpdateData.Emplace();
-					UpdateData &update_data{ _UpdateData.Back() };
-
-					update_data._Task._Function = [](void *const RESTRICT arguments)
+					case ComponentUpdateConfiguration::Mode::BATCH:
 					{
-						ComponentSystem::Instance->UpdateComponent(*static_cast<const UpdateData *const RESTRICT>(arguments));
-					};
-					update_data._Task._Arguments = nullptr; //Will be filled in later.
-					update_data._Task._ExecutableOnSameThread = false;
-					update_data._Component = component;
-					update_data._UpdatePhase = update_phase;
-					update_data._StartIndex = batch_start_index;
-					update_data._EndIndex = batch_start_index + CatalystBaseMath::Minimum<uint64>(update_configuration._BatchSize, number_of_instances - batch_start_index);
+						for (uint64 batch_start_index{ 0 }; batch_start_index < number_of_instances; batch_start_index += update_configuration._BatchSize)
+						{
+							_UpdateData.Emplace();
+							UpdateData& update_data{ _UpdateData.Back() };
+
+							update_data._Task._Function = [](void *const RESTRICT arguments)
+							{
+								ComponentSystem::Instance->UpdateComponent(*static_cast<const UpdateData *const RESTRICT>(arguments));
+							};
+							update_data._Task._Arguments = nullptr; //Will be filled in later.
+							update_data._Task._ExecutableOnSameThread = false;
+							update_data._Component = component;
+							update_data._UpdatePhase = update_phase;
+							update_data._StartIndex = batch_start_index;
+							update_data._EndIndex = batch_start_index + CatalystBaseMath::Minimum<uint64>(update_configuration._BatchSize, number_of_instances - batch_start_index);
+							update_data._SubInstanceIndex = 0;
+						}
+
+						break;
+					}
+
+					case ComponentUpdateConfiguration::Mode::SUB_INSTANCE:
+					{
+						for (uint64 instance_index{ 0 }; instance_index < number_of_instances; ++instance_index)
+						{
+							const uint64 number_of_sub_instances{ component->NumberOfSubInstances(instance_index) };
+
+							for (uint64 sub_instance_index{ 0 }; sub_instance_index < number_of_sub_instances; ++sub_instance_index)
+							{
+								_UpdateData.Emplace();
+								UpdateData& update_data{ _UpdateData.Back() };
+
+								update_data._Task._Function = [](void *const RESTRICT arguments)
+								{
+									ComponentSystem::Instance->UpdateComponent(*static_cast<const UpdateData *const RESTRICT>(arguments));
+								};
+								update_data._Task._Arguments = nullptr; //Will be filled in later.
+								update_data._Task._ExecutableOnSameThread = false;
+								update_data._Component = component;
+								update_data._UpdatePhase = update_phase;
+								update_data._StartIndex = instance_index;
+								update_data._EndIndex = instance_index + 1;
+								update_data._SubInstanceIndex = sub_instance_index;
+							}
+						}
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
 				}
 			}
 		}
@@ -219,5 +263,5 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 */
 void ComponentSystem::UpdateComponent(const UpdateData &update_data) NOEXCEPT
 {
-	update_data._Component->Update(update_data._UpdatePhase, update_data._StartIndex, update_data._EndIndex, 0);
+	update_data._Component->Update(update_data._UpdatePhase, update_data._StartIndex, update_data._EndIndex, update_data._SubInstanceIndex);
 }

@@ -60,6 +60,9 @@ private:
 		//The end index.
 		uint64 _EndIndex;
 
+		//The sub instance index.
+		uint64 _SubInstanceIndex;
+
 	};
 
 	//The update data.

@@ -69,16 +69,32 @@ void ParticleSystemComponent::PreProcess(ComponentInitializationData *const REST
 */
 void ParticleSystemComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
+	//Define constants.
+	constexpr uint32 MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER{ 512 };
+
 	//Set up the instance data.
 	ParticleSystemInitializationData *const RESTRICT _initialization_data{ static_cast<ParticleSystemInitializationData *const RESTRICT>(initialization_data) };
 	_InstanceData.Emplace();
 	ParticleSystemInstanceData &instance_data{ _InstanceData.Back() };
 
-	//Copy data.
-	Memory::Copy(&instance_data._Emitter, &_initialization_data->_Emitter, sizeof(ParticleEmitter));
+	//Add the sub emitters.
+	const uint32 number_of_sub_emitters{ CatalystBaseMath::Maximum<uint32>(_initialization_data->_Emitter._SpawnRate / MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER, 1) };
+	
+	for (uint32 sub_emitter_index{ 0 }; sub_emitter_index < number_of_sub_emitters; ++sub_emitter_index)
+	{
+		//Add the new sub emitter.
+		instance_data._SubEmitters.Emplace();
+		ParticleSubEmitter &new_sub_emitter{ instance_data._SubEmitters.Back() };
 
-	//Reset the time since the last particle spawn.
-	instance_data._TimeSinceLastParticleSpawn = 0.0f;
+		//Copy data.
+		Memory::Copy(&new_sub_emitter._Emitter, &_initialization_data->_Emitter, sizeof(ParticleEmitter));
+
+		//Modify the spawn rate.
+		new_sub_emitter._Emitter._SpawnRate = CatalystBaseMath::Maximum<uint32>(_initialization_data->_Emitter._SpawnRate / number_of_sub_emitters, 1);
+
+		//Reset the time since the last particle spawn.
+		new_sub_emitter._TimeSinceLastParticleSpawn = 0.0f;
+	}
 
 	//Free the initialization data.
 	FreeInitializationData(_initialization_data);
@@ -107,14 +123,13 @@ void ParticleSystemComponent::DestroyInstance(const EntityIdentifier entity) NOE
 */
 NO_DISCARD uint64 ParticleSystemComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
 {
-	return 1;
+	return _InstanceData[instance_index]._SubEmitters.Size();
 }
 
 void ParticleSystemComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
-	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = 1;
+	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::SUB_INSTANCE;
 }
 
 /*
@@ -148,28 +163,35 @@ void ParticleSystemComponent::Update
 				const EntityIdentifier entity{ InstanceToEntity(instance_index) };
 				ParticleSystemInstanceData &particle_system_instance_data{ _InstanceData[instance_index] };
 				const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
+				
+				//Cache the sub emitter.
+				ParticleSubEmitter &sub_emitter{ particle_system_instance_data._SubEmitters[sub_instance_index] };
 
 				//Check spawning of new particles.
 				{
+					PROFILING_SCOPE("Spawn New Particles");
+
 					//Update the time since the last particle spawn.
-					particle_system_instance_data._TimeSinceLastParticleSpawn += delta_time;
+					sub_emitter._TimeSinceLastParticleSpawn += delta_time;
 
 					//Spawn new particles.
-					while (particle_system_instance_data._TimeSinceLastParticleSpawn >= particle_system_instance_data._Emitter._SpawnRate)
+					const float32 spawn_rate_reciprocal{ 1.0f / static_cast<float32>(sub_emitter._Emitter._SpawnRate) };
+
+					while (sub_emitter._TimeSinceLastParticleSpawn >= spawn_rate_reciprocal)
 					{
 						//Create the new particle instance.
-						particle_system_instance_data._Instances.Emplace();
-						ParticleInstance &new_particle_instance{ particle_system_instance_data._Instances.Back() };
+						sub_emitter._Instances.Emplace();
+						ParticleInstance &new_particle_instance{ sub_emitter._Instances.Back() };
 
 						//Randomize the world position.
-						switch (particle_system_instance_data._Emitter._EmitMode)
+						switch (sub_emitter._Emitter._EmitMode)
 						{
 							case ParticleEmitter::EmitMode::SPHERE:
 							{
 								new_particle_instance._WorldPosition = WorldPosition
 								(
 									world_transform_instance_data._CurrentWorldTransform.GetCell(),
-									world_transform_instance_data._CurrentWorldTransform.GetLocalPosition() + CatalystRandomMath::RandomPointInSphere(particle_system_instance_data._Emitter._SphereMode._Radius)
+									world_transform_instance_data._CurrentWorldTransform.GetLocalPosition() + CatalystRandomMath::RandomPointInSphere(sub_emitter._Emitter._SphereMode._Radius)
 								);
 
 								break;
@@ -186,87 +208,93 @@ void ParticleSystemComponent::Update
 						//Randomize the velocity.
 						new_particle_instance._Velocity = Vector3<float32>
 						(
-							CatalystRandomMath::RandomFloatInRange(particle_system_instance_data._Emitter._MinimumVelocity._X, particle_system_instance_data._Emitter._MaximumVelocity._X),
-							CatalystRandomMath::RandomFloatInRange(particle_system_instance_data._Emitter._MinimumVelocity._Y, particle_system_instance_data._Emitter._MaximumVelocity._Y),
-							CatalystRandomMath::RandomFloatInRange(particle_system_instance_data._Emitter._MinimumVelocity._Z, particle_system_instance_data._Emitter._MaximumVelocity._Z)
+							CatalystRandomMath::RandomFloatInRange(sub_emitter._Emitter._MinimumVelocity._X, sub_emitter._Emitter._MaximumVelocity._X),
+							CatalystRandomMath::RandomFloatInRange(sub_emitter._Emitter._MinimumVelocity._Y, sub_emitter._Emitter._MaximumVelocity._Y),
+							CatalystRandomMath::RandomFloatInRange(sub_emitter._Emitter._MinimumVelocity._Z, sub_emitter._Emitter._MaximumVelocity._Z)
 						);
 
 						//Randomize the size.
-						new_particle_instance._Size = CatalystBaseMath::LinearlyInterpolate(particle_system_instance_data._Emitter._MinimumSize, particle_system_instance_data._Emitter._MaximumSize, CatalystRandomMath::RandomFloat());
+						new_particle_instance._Size = CatalystBaseMath::LinearlyInterpolate(sub_emitter._Emitter._MinimumSize, sub_emitter._Emitter._MaximumSize, CatalystRandomMath::RandomFloat());
 
 						//Set the age.
 						new_particle_instance._Age = 0.0f;
 
 						//Randomize the lifetime.
-						new_particle_instance._Lifetime = CatalystRandomMath::RandomFloatInRange(particle_system_instance_data._Emitter._MinimumLifetime, particle_system_instance_data._Emitter._MaximumLifetime);
+						new_particle_instance._Lifetime = CatalystRandomMath::RandomFloatInRange(sub_emitter._Emitter._MinimumLifetime, sub_emitter._Emitter._MaximumLifetime);
 					
 						//Update the time since the last particle spawn.
-						particle_system_instance_data._TimeSinceLastParticleSpawn -= particle_system_instance_data._Emitter._SpawnRate;
+						sub_emitter._TimeSinceLastParticleSpawn -= spawn_rate_reciprocal;
 					}
 				}
 
 				//Update all instances.
-				particle_system_instance_data._PackedInstances.Clear();
+				sub_emitter._PackedInstances.Clear();
 
-				for (uint64 _instance_index{ 0 }; _instance_index < particle_system_instance_data._Instances.Size();)
 				{
-					ParticleInstance &instance{ particle_system_instance_data._Instances[_instance_index] };
+					PROFILING_SCOPE("Simulate Particles");
 
-					//Update the age.
-					instance._Age += delta_time;
-
-					if (instance._Age < instance._Lifetime)
+					for (uint64 _instance_index{ 0 }; _instance_index < sub_emitter._Instances.Size();)
 					{
-						//Update the position based on the velocity.
+						ParticleInstance &instance{ sub_emitter._Instances[_instance_index] };
+
+						//Update the age.
+						instance._Age += delta_time;
+
+						if (instance._Age < instance._Lifetime)
 						{
-							Vector3<float32> local_position{ instance._WorldPosition.GetLocalPosition() };
+							//Update the position based on the velocity.
+							{
+								Vector3<float32> local_position{ instance._WorldPosition.GetLocalPosition() };
 
-							local_position += instance._Velocity * delta_time;
+								local_position += instance._Velocity * delta_time;
 
-							instance._WorldPosition.SetLocalPosition(local_position);
-						}
+								instance._WorldPosition.SetLocalPosition(local_position);
+							}
 
-						//Calculate the camera relative position.
-						const Vector3<float32> camera_relative_position{ instance._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
+							//Calculate the camera relative position.
+							const Vector3<float32> camera_relative_position{ instance._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
 
-						//Calculate modifiers.
-						float32 size_modifier{ 1.0f };
+							//Calculate modifiers.
+							float32 size_modifier{ 1.0f };
 
 #if 1
-						//Apply wind.
-						{
-							Vector3<float32> local_position{ instance._WorldPosition.GetLocalPosition() };
+							//Apply wind.
+							{
+								Vector3<float32> local_position{ instance._WorldPosition.GetLocalPosition() };
 
-							local_position += WorldSystem::Instance->GetWindSystem()->GetWindDirection() * WorldSystem::Instance->GetWindSystem()->GetWindSpeed() * 0.5f * delta_time;
+								local_position += WorldSystem::Instance->GetWindSystem()->GetWindDirection() * WorldSystem::Instance->GetWindSystem()->GetWindSpeed() * 0.5f * delta_time;
 
-							instance._WorldPosition.SetLocalPosition(local_position);
-						}
+								instance._WorldPosition.SetLocalPosition(local_position);
+							}
 #endif
 
-						//Modify the size based on the distance to the camera.
-						{
-							const float32 distance_to_camera{ Vector3<float32>::Length(camera_relative_position - camera_local_position) };
+							//Modify the size based on the distance to the camera.
+							{
+								const float32 distance_to_camera{ Vector3<float32>::Length(camera_relative_position - camera_local_position) };
 
-							size_modifier = CatalystBaseMath::Minimum<float32>(distance_to_camera / 16.0f, 1.0f);
+								size_modifier = CatalystBaseMath::Minimum<float32>(distance_to_camera / 16.0f, 1.0f);
+							}
+
+							//Do _very_ simple culling.
+							if (Vector3<float32>::DotProduct(camera_forward_vector, camera_relative_position - camera_local_position) > 0.0f)
+							{
+								sub_emitter._PackedInstances.Emplace();
+								ParticlePackedInstance& packed_instance{ sub_emitter._PackedInstances.Back() };
+
+								packed_instance._WorldPosition = camera_relative_position;
+								packed_instance._Size = instance._Size * size_modifier;
+								packed_instance._NormalizedAge = instance._Age / instance._Lifetime;
+							}
+
+							++_instance_index;
 						}
 
-						//Do _very_ simple culling.
-						if (Vector3<float32>::DotProduct(camera_forward_vector, camera_relative_position - camera_local_position) > 0.0f)
+						else
 						{
-							particle_system_instance_data._PackedInstances.Emplace();
-							ParticlePackedInstance &packed_instance{ particle_system_instance_data._PackedInstances.Back() };
+							PROFILING_SCOPE("Remove Particle");
 
-							packed_instance._WorldPosition = camera_relative_position;
-							packed_instance._Size = instance._Size * size_modifier;
-							packed_instance._NormalizedAge = instance._Age / instance._Lifetime;
+							sub_emitter._Instances.EraseAt<false>(_instance_index);
 						}
-
-						++_instance_index;
-					}
-
-					else
-					{
-						particle_system_instance_data._Instances.EraseAt<false>(_instance_index);
 					}
 				}
 			}
@@ -296,7 +324,10 @@ void ParticleSystemComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEP
 
 	for (const ParticleSystemInstanceData &instance_data : InstanceData())
 	{
-		number_of_packed_instances += instance_data._PackedInstances.Size();
+		for (const ParticleSubEmitter &sub_emitter : instance_data._SubEmitters)
+		{
+			number_of_packed_instances += sub_emitter._PackedInstances.Size();
+		}
 	}
 
 	//Don't do anything if there's nothing to do. (:
@@ -309,15 +340,22 @@ void ParticleSystemComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEP
 	_SharedData._PackedInstances.Resize<false>(number_of_packed_instances);
 
 	//Copy over the packed instances.
-	uint64 instance_counter{ 0 };
+	uint32 instance_counter{ 0 };
 
 	for (ParticleSystemInstanceData &instance_data : InstanceData())
 	{
-		Memory::Copy(&_SharedData._PackedInstances[instance_counter], instance_data._PackedInstances.Data(), sizeof(ParticlePackedInstance) * instance_data._PackedInstances.Size());
-		
 		instance_data._StartInstanceIndex = static_cast<uint32>(instance_counter);
-		instance_data._NumberOfInstances = static_cast<uint32>(instance_data._PackedInstances.Size());
 
-		instance_counter += instance_data._PackedInstances.Size();
+		for (const ParticleSubEmitter &sub_emitter : instance_data._SubEmitters)
+		{
+			if (!sub_emitter._PackedInstances.Empty())
+			{
+				Memory::Copy(&_SharedData._PackedInstances[instance_counter], sub_emitter._PackedInstances.Data(), sizeof(ParticlePackedInstance) * sub_emitter._PackedInstances.Size());
+			
+				instance_counter += static_cast<uint32>(sub_emitter._PackedInstances.Size());
+			}
+		}
+
+		instance_data._NumberOfInstances = instance_counter - instance_data._StartInstanceIndex;
 	}
 }

@@ -1145,7 +1145,7 @@ void RenderInputManager::GatherParticlesInputStream
 	{
 		for (ParticleSystemInstanceData &instance_data : ParticleSystemComponent::Instance->InstanceData())
 		{
-			if (instance_data._PackedInstances.Empty())
+			if (instance_data._StartInstanceIndex && instance_data._NumberOfInstances)
 			{
 				continue;
 			}
