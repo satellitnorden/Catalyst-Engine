@@ -7,6 +7,7 @@
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 #include <Math/Geometry/Capsule.h>
+#include <Math/Geometry/Circle.h>
 #include <Math/Geometry/LineSegment2D.h>
 #include <Math/Geometry/Plane.h>
 #include <Math/Geometry/Ray.h>
@@ -83,6 +84,14 @@ public:
 
 		//Return the cosinus hemisphere coordinate.
 		return Vector3<float32>(CatalystBaseMath::Cosine(phi) * sin_theta, CatalystBaseMath::Sine(phi) * sin_theta, cos_theta);
+	}
+
+	/*
+	*	Performs a circle-circle overlap. Returns if there was an overlap.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD bool CircleCircleOverlap(const Circle &A, const Circle &B) NOEXCEPT
+	{
+		return Vector2<float32>::Length(A._Position - B._Position) <= (A._Radius + B._Radius);
 	}
 
 	/*
