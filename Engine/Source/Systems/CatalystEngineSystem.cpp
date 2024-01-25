@@ -121,24 +121,24 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 #if defined(CATALYST_PLATFORM_WINDOWS)
 	#if defined(CATALYST_CONFIGURATION_FINAL)
-		ResourceSystem::Instance->LoadResourceCollection("EngineResources\\CatalystEngineBaseResourceCollection_0.crc");
+		ResourceSystem::Instance->LoadResourceCollection("EngineContent\\CatalystEngineBaseResourceCollection_0.crc");
 
 		#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
-			ResourceSystem::Instance->LoadResourceCollection("EngineResources\\CatalystEngineEnvironmentResourceCollection_0.crc");
+			ResourceSystem::Instance->LoadResourceCollection("EngineContent\\CatalystEngineEnvironmentResourceCollection_0.crc");
 		#endif
 
 		#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
-			ResourceSystem::Instance->LoadResourceCollection("EngineResources\\CatalystEngineExtraResourceCollection_0.crc");
+			ResourceSystem::Instance->LoadResourceCollection("EngineContent\\CatalystEngineExtraResourceCollection_0.crc");
 		#endif
 	#else
-		ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineBaseResourceCollection_0.crc");
+		ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineBaseResourceCollection_0.crc");
 
 		#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
-			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineEnvironmentResourceCollection_0.crc");
+			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEnvironmentResourceCollection_0.crc");
 		#endif
 
 		#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
-			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Final\\CatalystEngineExtraResourceCollection_0.crc");
+			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineExtraResourceCollection_0.crc");
 		#endif
 	#endif
 		

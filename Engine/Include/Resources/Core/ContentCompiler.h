@@ -25,7 +25,6 @@ public:
 	*	Returns if new content was compiled.
 	*/
 	NO_DISCARD bool RunEngine() NOEXCEPT;
-
 	/*
 	*	Runs the content compiler for game.
 	*	Returns if new content was compiled.
@@ -50,28 +49,28 @@ private:
 	/*
 	*	Parses a Material from the given file.
 	*/
-	void ParseMaterial(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT;
+	void ParseMaterial(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
 
 	/*
 	*	Parses a Model from the given file.
 	*/
-	void ParseModel(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT;
+	void ParseModel(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
 
 	/*
 	*	Parses a Texture2D from the given file.
 	*/
-	void ParseTexture2D(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT;
+	void ParseTexture2D(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
 
 	/*
 	*	Parses a procedural tree model from the given file.
 	*/
-	void ParseProceduralTreeModel(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT;
+	void ParseProceduralTreeModel(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
 
 
 	/*
 	*	Parses an Impostor Material from the given file.
 	*/
-	void ParseImpostorMaterial(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT;
+	void ParseImpostorMaterial(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
 
 };
 #endif

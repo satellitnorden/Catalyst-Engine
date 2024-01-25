@@ -25,9 +25,9 @@
 #include <Systems/ResourceSystem.h>
 
 //Constants.
-#define ENGINE_CONTENT_DEFINITIONS "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Content Definitions"
-#define ENGINE_INTERMEDIATE "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate"
-#define ENGINE_RAW "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw"
+#define ENGINE_CONTENT_DEFINITIONS "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Content Definitions"
+#define ENGINE_INTERMEDIATE "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate"
+#define ENGINE_RAW "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Raw"
 #define GAME_CONTENT_DEFINITIONS "..\\..\\..\\Content\\Content Definitions"
 #define GAME_INTERMEDIATE "..\\..\\..\\Content\\Intermediate"
 #define GAME_RAW "..\\..\\..\\Content\\Raw"
@@ -263,6 +263,7 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 	struct DelayedCompile final
 	{
 		DelayedCompileType _Type;
+		DynamicString _Package;
 		std::string _Name;
 		std::string _FilePath;
 	};
@@ -317,56 +318,66 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 		//Open the file.
 		std::ifstream file{ file_path };
 
-		//Retrieve the content type.
-		std::string content_type;
+		//Remember the package.
+		DynamicString package;
 
-		if (!std::getline(file, content_type))
-		{
-			ASSERT(false, "Couldn't retrieve content type for " << file_path.data());
-		}
-
-		//Check if this should always compile.
+		//Remember if this should always compile.
 		bool always_compile{ false };
 
-		if (content_type == "ALWAYS_COMPILE")
-		{
-			always_compile = true;
+		//Iterate over the lines.
+		std::string current_line;
 
-			if (!std::getline(file, content_type))
+		while (std::getline(file, current_line))
+		{
+			if (current_line.find("PACKAGE") != std::string::npos)
 			{
-				ASSERT(false, "Couldn't retrieve content type for " << file_path.data());
+				StaticArray<DynamicString, 2> arguments;
+
+				TextParsingUtilities::ParseSpaceSeparatedArguments
+				(
+					current_line.data(),
+					current_line.length(),
+					arguments.Data()
+				);
+
+				package = arguments[1];
 			}
-		}
 
-		if (content_type == "MATERIAL")
-		{
-			ParseMaterial(compilation_domain, content_cache, name, file);
-		}
+			else if (current_line == "ALWAYS_COMPILE")
+			{
+				always_compile = true;
+			}
 
-		else if (content_type == "MODEL")
-		{
-			ParseModel(compilation_domain, content_cache, name, file);
-		}
+			else if (current_line == "MATERIAL")
+			{
+				ParseMaterial(compilation_domain, content_cache, name, package, file);
+			}
 
-		else if (content_type == "TEXTURE_2D")
-		{
-			ParseTexture2D(compilation_domain, content_cache, name, file);
-		}
+			else if (current_line == "MODEL")
+			{
+				ParseModel(compilation_domain, content_cache, name, package, file);
+			}
 
-		else if (content_type == "PROCEDURAL_TREE_MODEL")
-		{
-			ParseProceduralTreeModel(compilation_domain, content_cache, name, file);
-		}
+			else if (current_line == "TEXTURE_2D")
+			{
+				ParseTexture2D(compilation_domain, content_cache, name, package, file);
+			}
 
-		else if (content_type == "IMPOSTOR_MATERIAL")
-		{
-			//Impostor materials depends on other resources, so delay the compile.
-			delayed_compiles.Emplace(DelayedCompile{ DelayedCompileType::IMPOSTOR_MATERIAL, name, file_path });
-		}
+			else if (current_line == "PROCEDURAL_TREE_MODEL")
+			{
+				ParseProceduralTreeModel(compilation_domain, content_cache, name, package, file);
+			}
 
-		else
-		{
-			ASSERT(false, "Unknown type " << content_type.data());
+			else if (current_line == "IMPOSTOR_MATERIAL")
+			{
+				//Impostor materials depends on other resources, so delay the compile.
+				delayed_compiles.Emplace(DelayedCompile{ DelayedCompileType::IMPOSTOR_MATERIAL, package, name, file_path });
+			}
+
+			else
+			{
+				ASSERT(false, "Unknown line " << current_line.data());
+			}
 		}
 
 		//Close the file.
@@ -390,7 +401,7 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 			case DelayedCompileType::IMPOSTOR_MATERIAL:
 			{
 				std::ifstream file{ delayed_compile._FilePath };
-				ParseImpostorMaterial(compilation_domain, content_cache, delayed_compile._Name, file);
+				ParseImpostorMaterial(compilation_domain, content_cache, delayed_compile._Name, delayed_compile._Package, file);
 				file.close();
 
 				break;
@@ -411,7 +422,7 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 /*
 *	Parses a Material from the given file.
 */
-void ContentCompiler::ParseMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT
+void ContentCompiler::ParseMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
@@ -573,7 +584,7 @@ void ContentCompiler::ParseMaterial(const CompilationDomain compilation_domain, 
 /*
 *	Parses a Model from the given file.
 */
-void ContentCompiler::ParseModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT
+void ContentCompiler::ParseModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
@@ -582,14 +593,14 @@ void ContentCompiler::ParseModel(const CompilationDomain compilation_domain, Con
 	{
 		case CompilationDomain::ENGINE:
 		{
-			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\Models");
+			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\%s\\Models", package.Length() > 0 ? package.Data() : "");
 
 			break;
 		}
 
 		case CompilationDomain::GAME:
 		{
-			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\Models");
+			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\%s\\Models", package.Length() > 0 ? package.Data() : "");
 
 			break;
 		}
@@ -628,7 +639,7 @@ void ContentCompiler::ParseModel(const CompilationDomain compilation_domain, Con
 
 	//Read all of the lines.
 	std::string line;
-	StaticArray<DynamicString, 5> arguments;
+	StaticArray<DynamicString, 2> arguments;
 
 	while (std::getline(file, line))
 	{
@@ -673,7 +684,7 @@ void ContentCompiler::ParseModel(const CompilationDomain compilation_domain, Con
 /*
 *	Parses a Texture2D from the given file.
 */
-void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT
+void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
@@ -935,7 +946,7 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 /*
 *	Parses a procedural tree model from the given file.
 */
-void ContentCompiler::ParseProceduralTreeModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT
+void ContentCompiler::ParseProceduralTreeModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
@@ -1056,7 +1067,7 @@ NO_DISCARD ResourcePointer<Texture2DResource> LoadTexture2DResource(const char *
 /*
 *	Parses an Impostor Material from the given file.
 */
-void ContentCompiler::ParseImpostorMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, std::ifstream &file) NOEXCEPT
+void ContentCompiler::ParseImpostorMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
