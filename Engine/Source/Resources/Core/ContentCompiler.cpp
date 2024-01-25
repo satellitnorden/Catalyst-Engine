@@ -431,14 +431,14 @@ void ContentCompiler::ParseMaterial(const CompilationDomain compilation_domain, 
 	{
 		case CompilationDomain::ENGINE:
 		{
-			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\Materials");
+			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\%s\\Materials", package.Length() > 0 ? package.Data() : "");
 
 			break;
 		}
 
 		case CompilationDomain::GAME:
 		{
-			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\Materials");
+			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\%s\\Materials", package.Length() > 0 ? package.Data() : "");
 
 			break;
 		}
