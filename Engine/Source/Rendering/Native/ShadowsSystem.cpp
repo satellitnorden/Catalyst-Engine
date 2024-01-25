@@ -180,7 +180,7 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 					*	This would work great if all the geometry was perfectly planar, but alas, it is not.
 					*	So increase it by some magic amount that seems to work fine. (:
 					*/
-					const float32 maximum_depth_bias{ shadow_map_data._DepthRange / static_cast<float32>(UINT16_MAXIMUM) };
+					const float32 maximum_depth_bias{ shadow_map_data._DepthRange / static_cast<float32>(UINT16_MAXIMUM) * 4.0f };
 
 					for (uint64 i{ 0 }; i < sizeof(float32); ++i)
 					{
