@@ -492,7 +492,6 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		texture_2d_build_parameters._ApplyGammaCorrection = true;
 		texture_2d_build_parameters._TransformFunction = nullptr;
 		texture_2d_build_parameters._BaseMipmapLevel = 0;
-		texture_2d_build_parameters._MipmapLevels = 2;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
 	}
@@ -524,7 +523,6 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		texture_2d_build_parameters._ApplyGammaCorrection = true;
 		texture_2d_build_parameters._TransformFunction = nullptr;
 		texture_2d_build_parameters._BaseMipmapLevel = 0;
-		texture_2d_build_parameters._MipmapLevels = 2;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
 	}
@@ -556,7 +554,6 @@ void ResourceBuildingUtilities::BuildImpostorMaterial(const BuildImpostorMateria
 		texture_2d_build_parameters._ApplyGammaCorrection = true;
 		texture_2d_build_parameters._TransformFunction = nullptr;
 		texture_2d_build_parameters._BaseMipmapLevel = 0;
-		texture_2d_build_parameters._MipmapLevels = 2;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
 	}

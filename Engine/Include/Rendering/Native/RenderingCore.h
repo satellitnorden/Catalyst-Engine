@@ -598,6 +598,30 @@ enum class MipmapMode : uint8
 	NEAREST
 };
 
+//Enumeration covering all mipmap generation modes.
+enum class MipmapGenerationMode : uint8
+{
+	/*
+	*	Will not generate mipmaps for this mode.
+	*/
+	NONE,
+
+	/*
+	*	Will just do a blend of all 4 source texels.
+	*/
+	DEFAULT,
+
+	/*
+	*	Will take the maximum of the 4 source texels.
+	*/
+	MAXIMUM,
+
+	/*
+	*	Will do a blend of all 4 source texels, but normalize them afterwards.
+	*/
+	NORMAL_MAP
+};
+
 //Enumeration covering all texture filters.
 enum class TextureFilter : uint8
 {

@@ -169,37 +169,100 @@ public:
 	*	Generates a mipchain out of the given texture.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE static void GenerateMipChain(const Texture2D<TYPE> &input_texture, const uint8 levels, DynamicArray<Texture2D<TYPE>> *const RESTRICT output_textures) NOEXCEPT
+	FORCE_INLINE static void GenerateMipChain(const Texture2D<TYPE> &input_texture, const MipmapGenerationMode mipmap_generation_mode, DynamicArray<Texture2D<TYPE>> *const RESTRICT output_textures) NOEXCEPT
 	{
-		//Upsize the output textures accordingly.
-		output_textures->template Upsize<true>(levels);
+		/*
+		*	Defines the lowest mip resolution that we generate.
+		*	At this resolution, 4096 NxN textures at 4 bytes each equals roughly 1MB,
+		*	which is what we can keep loaded at all times.
+		*/
+		constexpr uint32 LOWEST_MIP_RESOLUTION{ 8 };
 
 		//Copy the original mip level.
-		output_textures->At(0) = input_texture;
+		output_textures->Emplace(input_texture);
 
 		//Generate all mip levels.
-		for (uint8 i{ 1 }; i < levels; ++i)
+		uint32 current_width{ input_texture.GetWidth() };
+		uint32 current_height{ input_texture.GetHeight() };
+
+		while (current_width > LOWEST_MIP_RESOLUTION && current_height > LOWEST_MIP_RESOLUTION)
 		{
 			//Cache stuff.
-			const uint32 previous_width{ output_textures->At(i - 1).GetWidth() };
-			const uint32 previous_height{ output_textures->At(i - 1).GetHeight() };
-			const uint32 current_width{ CatalystBaseMath::Maximum<uint32>(output_textures->At(i - 1).GetWidth() >> 1, 1) };
-			const uint32 current_height{ CatalystBaseMath::Maximum<uint32>(output_textures->At(i - 1).GetHeight() >> 1, 1) };
+			const uint32 new_width{ current_width >> 1 };
+			const uint32 new_height{ current_height >> 1 };
 
 			//Initialize this mip level.
-			output_textures->At(i).Initialize(current_width, current_height);
+			output_textures->Emplace();
+			output_textures->Back().Initialize(new_width, new_height);
 
-			for (uint32 Y{ 0 }; Y < output_textures->At(i).GetHeight(); ++Y)
+			for (uint32 Y{ 0 }; Y < output_textures->Back().GetHeight(); ++Y)
 			{
-				for (uint32 X{ 0 }; X < output_textures->At(i).GetWidth(); ++X)
+				for (uint32 X{ 0 }; X < output_textures->Back().GetWidth(); ++X)
 				{
+					//Gather the source texels.
+					StaticArray<TYPE, 4> source_texels;
+
+					source_texels[0] = output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 0, Y * 2 + 0);
+					source_texels[1] = output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 0, Y * 2 + 1);
+					source_texels[2] = output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 1, Y * 2 + 0);
+					source_texels[3] = output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 1, Y * 2 + 1);
+
+					//Blend depending on the mipmap generation mode.
+					switch (mipmap_generation_mode)
+					{
+						case MipmapGenerationMode::NONE:
+						{
+							ASSERT(false, "Shouldn't have called this function. (:");
+
+							break;
+						}
+
+						case MipmapGenerationMode::DEFAULT:
+						{
+							output_textures->Back().At(X, Y) =	source_texels[0] * 0.25f
+																+ source_texels[1] * 0.25f
+																+ source_texels[2] * 0.25f
+																+ source_texels[3] * 0.25f;
+
+							break;
+						}
+
+						case MipmapGenerationMode::MAXIMUM:
+						{
+							output_textures->Back().At(X, Y) = CatalystBaseMath::Maximum<TYPE>(CatalystBaseMath::Maximum<TYPE>(source_texels[0], source_texels[1]), CatalystBaseMath::Maximum<TYPE>(source_texels[2], source_texels[3]));
+
+							break;
+						}
+
+						case MipmapGenerationMode::NORMAL_MAP:
+						{
+							output_textures->Back().At(X, Y) =	source_texels[0] * 0.25f
+																+ source_texels[1] * 0.25f
+																+ source_texels[2] * 0.25f
+																+ source_texels[3] * 0.25f;
+
+							//TODO: Normalize after blend.
+
+							break;
+						}
+
+						default:
+						{
+							ASSERT(false, "Invalid case!");
+
+							break;
+						}
+					}
 					//Retrieve the value at this texel.
-					output_textures->At(i).At(X, Y) = output_textures->At(i - 1).At(X * 2 + 0, Y * 2 + 0) * 0.25f;
-					output_textures->At(i).At(X, Y) += output_textures->At(i - 1).At(X * 2 + 0, Y * 2 + 1) * 0.25f;
-					output_textures->At(i).At(X, Y) += output_textures->At(i - 1).At(X * 2 + 1, Y * 2 + 0) * 0.25f;
-					output_textures->At(i).At(X, Y) += output_textures->At(i - 1).At(X * 2 + 1, Y * 2 + 1) * 0.25f;
+					output_textures->Back().At(X, Y) = output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 0, Y * 2 + 0) * 0.25f;
+					output_textures->Back().At(X, Y) += output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 0, Y * 2 + 1) * 0.25f;
+					output_textures->Back().At(X, Y) += output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 1, Y * 2 + 0) * 0.25f;
+					output_textures->Back().At(X, Y) += output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 1, Y * 2 + 1) * 0.25f;
 				}
 			}
+
+			current_width = new_width;
+			current_height = new_height;
 		}
 	}
 

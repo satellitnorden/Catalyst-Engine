@@ -160,7 +160,6 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	constexpr int32 PADDING_BETWEEN_CHARACTERS{ INTERNAL_FONT_RESOLUTION / 4 };
 	constexpr uint8 BASE_MIP_LEVEL{ 4 };
 	constexpr uint8 EXTRA_MIP_LEVELS{ 3 };
-	constexpr uint8 MIP_CHAIN_LEVELS{ BASE_MIP_LEVEL + 1 + EXTRA_MIP_LEVELS };
 	constexpr uint8 TOTAL_NUMBER_OF_MIPMAP_LEVELS{ 1 + EXTRA_MIP_LEVELS };
 
 	//What should the resource be called?
@@ -345,14 +344,14 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	//Generate the mip chain for the final master textures.
 	DynamicArray<Texture2D<float32>> final_master_textures;
 
-	RenderingUtilities::GenerateMipChain(master_texture, MIP_CHAIN_LEVELS, &final_master_textures);
+	RenderingUtilities::GenerateMipChain(master_texture, MipmapGenerationMode::DEFAULT, &final_master_textures);
 
 	//Convert the mip chain into byte textures.
 	DynamicArray<Texture2D<byte>> final_final_master_textures;
 
-	final_final_master_textures.Upsize<true>(MIP_CHAIN_LEVELS);
+	final_final_master_textures.Upsize<true>(final_master_textures.Size());
 
-	for (uint8 i{ 0 }; i < MIP_CHAIN_LEVELS; ++i)
+	for (uint8 i{ 0 }; i < final_master_textures.Size(); ++i)
 	{
 		final_final_master_textures[i].Initialize(final_master_textures[i].GetWidth(), final_master_textures[i].GetHeight());
 
@@ -2100,7 +2099,15 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	//Generate the mip chain.
 	DynamicArray<Texture2D<Vector4<float32>>> mip_chain;
 
-	RenderingUtilities::GenerateMipChain(composite_texture,	parameters._BaseMipmapLevel + parameters._MipmapLevels, &mip_chain);
+	if (parameters._MipmapGenerationMode != MipmapGenerationMode::NONE)
+	{
+		RenderingUtilities::GenerateMipChain(composite_texture, parameters._MipmapGenerationMode, &mip_chain);
+	}
+
+	else
+	{
+		mip_chain.Emplace(composite_texture);
+	}
 
 	//Create the output textures.
 	DynamicArray<Texture2D<Vector4<uint8>>> output_textures;
@@ -2135,7 +2142,8 @@ void ResourceBuildingSystem::BuildTexture2D(const Texture2DBuildParameters &para
 	file.Write(&header, sizeof(ResourceHeader));
 
 	//Write the number of mipmap levels to the file.
-	file.Write(&parameters._MipmapLevels, sizeof(uint8));
+	const uint8 mipmap_levels{ static_cast<uint8>(output_textures.Size() - parameters._BaseMipmapLevel)};
+	file.Write(&mipmap_levels, sizeof(uint8));
 
 	//Write the width and height of the texture to the file.
 	const uint32 output_width{ output_textures[parameters._BaseMipmapLevel].GetWidth() };

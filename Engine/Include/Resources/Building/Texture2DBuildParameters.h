@@ -111,7 +111,7 @@ public:
 	//The base mipmap level.
 	uint8 _BaseMipmapLevel{ 0 };
 
-	//The number of mipmap levels.
-	uint8 _MipmapLevels{ 1 };
+	//The mipmap generation mode.
+	MipmapGenerationMode _MipmapGenerationMode{ MipmapGenerationMode::DEFAULT };
 
 };

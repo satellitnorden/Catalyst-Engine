@@ -732,7 +732,6 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 	parameters._ApplyGammaCorrection = false;
 	parameters._TransformFunction = nullptr;
 	parameters._BaseMipmapLevel = 0;
-	parameters._MipmapLevels = 1;
 
 	//Declare some buffers that is needed to retain data.
 	char file_1_buffer[MAXIMUM_FILE_PATH_LENGTH];
@@ -895,9 +894,32 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 			parameters._BaseMipmapLevel = static_cast<uint8>(std::stoul(arguments[1].Data()));
 		}
 
-		else if (arguments[0] == "MIPMAP_LEVELS")
+		else if (arguments[0] == "MIPMAP_GENERATION_MODE")
 		{
-			parameters._MipmapLevels = static_cast<uint8>(std::stoul(arguments[1].Data()));
+			if (arguments[1] == "NONE")
+			{
+				parameters._MipmapGenerationMode = MipmapGenerationMode::NONE;
+			}
+
+			else if (arguments[1] == "DEFAULT")
+			{
+				parameters._MipmapGenerationMode = MipmapGenerationMode::DEFAULT;
+			}
+
+			else if (arguments[1] == "MAXIMUM")
+			{
+				parameters._MipmapGenerationMode = MipmapGenerationMode::MAXIMUM;
+			}
+
+			else if (arguments[1] == "NORMAL_MAP")
+			{
+				parameters._MipmapGenerationMode = MipmapGenerationMode::NORMAL_MAP;
+			}
+
+			else
+			{
+				ASSERT(false, "Couldn't parse argument " << arguments[1].Data());
+			}
 		}
 
 		else
@@ -1548,7 +1570,6 @@ void ContentCompiler::ParseImpostorMaterial(const CompilationDomain compilation_
 		texture_2d_build_parameters._ApplyGammaCorrection = false;
 		texture_2d_build_parameters._TransformFunction = nullptr;
 		texture_2d_build_parameters._BaseMipmapLevel = 0;
-		texture_2d_build_parameters._MipmapLevels = 2;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
 	}
@@ -1579,7 +1600,6 @@ void ContentCompiler::ParseImpostorMaterial(const CompilationDomain compilation_
 		texture_2d_build_parameters._ApplyGammaCorrection = false;
 		texture_2d_build_parameters._TransformFunction = nullptr;
 		texture_2d_build_parameters._BaseMipmapLevel = 0;
-		texture_2d_build_parameters._MipmapLevels = 2;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
 	}
@@ -1610,7 +1630,6 @@ void ContentCompiler::ParseImpostorMaterial(const CompilationDomain compilation_
 		texture_2d_build_parameters._ApplyGammaCorrection = false;
 		texture_2d_build_parameters._TransformFunction = nullptr;
 		texture_2d_build_parameters._BaseMipmapLevel = 0;
-		texture_2d_build_parameters._MipmapLevels = 2;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
 	}
@@ -1641,7 +1660,6 @@ void ContentCompiler::ParseImpostorMaterial(const CompilationDomain compilation_
 		texture_2d_build_parameters._ApplyGammaCorrection = true;
 		texture_2d_build_parameters._TransformFunction = nullptr;
 		texture_2d_build_parameters._BaseMipmapLevel = 0;
-		texture_2d_build_parameters._MipmapLevels = 2;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_2d_build_parameters);
 	}

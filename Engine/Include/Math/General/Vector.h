@@ -1533,6 +1533,19 @@ public:
 
 };
 
+//Template specializations.
+template<>
+FORCE_INLINE constexpr static NO_DISCARD Vector4<float32> CatalystBaseMath::Maximum<Vector4<float32>>(const Vector4<float32> first, const Vector4<float32> second) NOEXCEPT
+{
+	return Vector4<float32>
+	(
+		CatalystBaseMath::Maximum<float32>(first._X, second._X),
+		CatalystBaseMath::Maximum<float32>(first._Y, second._Y),
+		CatalystBaseMath::Maximum<float32>(first._Z, second._Z),
+		CatalystBaseMath::Maximum<float32>(first._W, second._W)
+	);
+}
+
 //Vector constants.
 namespace VectorConstants
 {

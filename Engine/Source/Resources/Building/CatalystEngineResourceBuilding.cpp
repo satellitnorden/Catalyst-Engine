@@ -2584,7 +2584,6 @@ void CatalystEngineResourceBuilding::BuildDefaultTexture2D() NOEXCEPT
 	parameters._ApplyGammaCorrection = false;
 	parameters._TransformFunction = nullptr;
 	parameters._BaseMipmapLevel = 0;
-	parameters._MipmapLevels = 1;
 
 	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 }

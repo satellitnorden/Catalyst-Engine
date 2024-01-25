@@ -589,6 +589,30 @@ void ResourceLoadingSystem::LoadTexture2D(BinaryFile<BinaryFileMode::IN> *const 
 	//Read the height.
 	file->Read(&data->_Height, sizeof(uint32));
 
+#if 1
+	{
+		//Define constants.
+		constexpr uint32 MAXIMUM_RESOLUTION{ 1'024 };
+
+		//Calculate the read offset.
+		uint64 read_offset{ 0 };
+
+		//For now, only read textures up to NxN until texture streaming arrives. (:
+		while (data->_MipmapLevels > 1 && data->_Width > MAXIMUM_RESOLUTION && data->_Height > MAXIMUM_RESOLUTION)
+		{
+			read_offset += data->_Width * data->_Height * 4;
+
+			--data->_MipmapLevels;
+
+			data->_Width /= 2;
+			data->_Height /= 2;
+		}
+
+		//Skip!
+		file->Skip(read_offset);
+	}
+#endif
+
 	//Read the data.
 	data->_Data.Upsize<true>(data->_MipmapLevels);
 
