@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
+#include <Math/Core/CatalystBaseMath.h>
 
 class ValueNoise final
 {
@@ -50,6 +50,6 @@ private:
 	*/
 	static float Random(const float X, const float Y) NOEXCEPT
 	{
-		return CatalystBaseMath::Fractional(CatalystBaseMath::SineRadians(X * 12.9898f + Y * 78.233f) * 43'758.545312f);
+		return CatalystBaseMath::Fractional(CatalystBaseMath::Sine(X * 12.9898f + Y * 78.233f) * 43'758.545312f);
 	}
 };

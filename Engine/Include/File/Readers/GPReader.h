@@ -157,7 +157,7 @@ public:
 	*/
 	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, Tablature *const RESTRICT tablature) NOEXCEPT
 	{
-		PROFILING_SCOPE(GPReader_Read);
+		PROFILING_SCOPE("GPReader_Read");
 
 		//Set up the temporary data.
 		TemporaryData temporary_data;

@@ -35,35 +35,48 @@ void PhysicsSystem::SubTerminate() NOEXCEPT
 }
 
 /*
-*	Initializes the sub-system physics for the given entity.
-*/
-void PhysicsSystem::SubPreprocessEntityPhysics(Entity *const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
+	*	Creates a height field actor on the sub-system.
+	*/
+void PhysicsSystem::SubCreateHeightFieldActor
+(
+	const WorldPosition &world_position,
+	const Texture2D<float32> &height_field,
+	ActorHandle *const RESTRICT actor_handle
+) NOEXCEPT
 {
 
 }
 
 /*
-*	Initializes the sub-system physics for the given entity.
+*	Creates a model actor on the sub-system.
 */
-void PhysicsSystem::SubInitializeEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
+void PhysicsSystem::SubCreateModelActor
+(
+	const WorldTransform &world_transform,
+	const ModelCollisionConfiguration &collision_configuration,
+	const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
+	const CollisionModelHandle collision_model,
+	const ModelSimulationConfiguration &simulation_configuration,
+	ActorHandle *const RESTRICT actor_handle
+) NOEXCEPT
 {
-	
+
 }
 
 /*
-*	Updates the sub-system world transform for the given entity.
+*	Destroys an actor on the sub-system.
 */
-void PhysicsSystem::SubUpdateEntityWorldTransform(Entity *const RESTRICT entity, const WorldTransform &world_transform) NOEXCEPT
+void PhysicsSystem::SubDestroyActor(ActorHandle *const RESTRICT actor_handle) NOEXCEPT
 {
-	
+
 }
 
 /*
-*	Terminates the sub-system physics for the given entity.
+*	Returns the world transform for the given actor on the sub-system.
 */
-void PhysicsSystem::SubTerminateEntityPhysics(Entity *const RESTRICT entity) NOEXCEPT
+void PhysicsSystem::SubGetActorWorldTransform(const ActorHandle actor_handle, WorldTransform *const RESTRICT world_transform) NOEXCEPT
 {
-	
+
 }
 
 /*
