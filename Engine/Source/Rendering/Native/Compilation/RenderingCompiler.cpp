@@ -2022,7 +2022,7 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 		//Fill in the output.
 		char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(output_buffer, "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Render Pipelines\\%s_RenderPipeline", render_pipeline_name.data());
+		sprintf_s(output_buffer, "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Base\\Render Pipelines\\%s_RenderPipeline", render_pipeline_name.data());
 
 		parameters._Output = output_buffer;
 

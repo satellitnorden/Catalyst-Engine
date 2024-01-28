@@ -34,6 +34,11 @@ public:
 	~UserInterfaceText() NOEXCEPT;
 
 	/*
+	*	Sets the position.
+	*/
+	void SetPosition(const Vector2<float32> &position) NOEXCEPT;
+
+	/*
 	*	Sets the text.
 	*/
 	void SetText(const char *const RESTRICT text) NOEXCEPT;

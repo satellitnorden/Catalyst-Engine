@@ -57,6 +57,7 @@ namespace CatalystEngineSystemData
 */
 void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initial_project_configuration) NOEXCEPT
 {
+	PROFILING_FRAME();
 	PROFILING_SCOPE("CatalystEngineSystem_Initialize");
 
 	//Initialize the current thread's index.
@@ -77,7 +78,10 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 
 	//Initialize the platform.
-	CatalystPlatform::Initialize();
+	{
+		PROFILING_SCOPE("CatalystPlatform::Initialize();");
+		CatalystPlatform::Initialize();
+	}
 
 	//Initialize all systems.
 #if defined(CATALYST_EDITOR)
@@ -95,7 +99,12 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	NetworkSystem::Instance->Initialize();
 	PhysicsSystem::Instance->Initialize();
 	SaveSystem::Instance->Initialize();
-	RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
+
+	{
+		PROFILING_SCOPE("RenderingSystem::Instance->Initialize();");
+		RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
+	}
+	
 	ScriptSystem::Instance->Initialize();
 	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
 	TaskSystem::Instance->Initialize(_ProjectConfiguration._ConcurrencyConfiguration);
@@ -103,8 +112,11 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	WorldSystem::Instance->Initialize(_ProjectConfiguration._WorldConfiguration);
 
 	//Initialize the game system.
-	_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
-
+	{
+		PROFILING_SCOPE("Initialize Game");
+		_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
+	}
+	
 	//Register the Catalyst Engine resource collection. 
 #if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	ResourceSystem::Instance->LoadResourceCollection("CatalystEngineBaseResourceCollection_0.crc");

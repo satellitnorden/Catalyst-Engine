@@ -59,6 +59,23 @@ UserInterfaceText::~UserInterfaceText() NOEXCEPT
 }
 
 /*
+*	Sets the position.
+*/
+void UserInterfaceText::SetPosition(const Vector2<float32>& position) NOEXCEPT
+{
+	const Vector2<float32> half_extents{ (_Maximum - _Minimum) * 0.5f };
+
+	_Minimum = position - half_extents;
+	_Maximum = position + half_extents;
+
+	if (_Primitive)
+	{
+		_Primitive->_Minimum = _Minimum;
+		_Primitive->_Maximum = _Maximum;
+	}
+}
+
+/*
 *	Sets the text.
 */
 void UserInterfaceText::SetText(const char *const RESTRICT text) NOEXCEPT

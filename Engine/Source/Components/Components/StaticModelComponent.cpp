@@ -165,7 +165,7 @@ void StaticModelComponent::Update
 		case UpdatePhase::PRE_RENDER:
 		{
 			//Cache data that will be used.
-			const WorldTransform  camera_world_transform{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform() };
+			const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform() };
 			const Vector3<int32> camera_cell{ camera_world_transform.GetCell() };
 			const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetViewMatrix() };
 			const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };

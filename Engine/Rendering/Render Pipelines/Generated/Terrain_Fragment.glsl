@@ -319,7 +319,7 @@ float SmoothStep(float number)
 
 //Constants.
 #define TERRAIN_MINIMUM_DISPLACEMENT (0.001f)
-#define BIAS_DISPLACEMENT(X) (X * X * X * X * X * X * X * X)
+#define BIAS_DISPLACEMENT(X) (X * X * X * X)
 
 /*
 *   Terrain material struct definition.

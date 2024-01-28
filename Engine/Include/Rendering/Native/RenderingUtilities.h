@@ -104,19 +104,21 @@ public:
 	/*
 	*	Calculates the screen coordinate of a position.
 	*/
-	FORCE_INLINE static Vector2<float> CalculateScreenCoordinate(const Matrix4x4 &view_matrix, const Vector3<float>& position) NOEXCEPT
+	FORCE_INLINE static Vector2<float32> CalculateScreenCoordinate(const Matrix4x4 &view_matrix, const Vector3<float32>& position) NOEXCEPT
 	{
-		Vector4<float> view_space_coordinate{ view_matrix * Vector4<float>(position, 1.0f) };
+		Vector4<float32> view_space_coordinate{ view_matrix * Vector4<float32>(position, 1.0f) };
 
-		const float inverse_denominator{ 1.0f / view_space_coordinate._W };
+		const float32 inverse_denominator{ 1.0f / view_space_coordinate._W };
 
 		view_space_coordinate._X *= inverse_denominator;
 		view_space_coordinate._Y *= inverse_denominator;
 
+		view_space_coordinate._Y *= -1.0f;
+
 		view_space_coordinate._X = view_space_coordinate._X * 0.5f + 0.5f;
 		view_space_coordinate._Y = view_space_coordinate._Y * 0.5f + 0.5f;
 
-		return Vector2<float>(view_space_coordinate._X, view_space_coordinate._Y);
+		return Vector2<float32>(view_space_coordinate._X, view_space_coordinate._Y);
 	}
 
 	/*

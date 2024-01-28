@@ -72,8 +72,9 @@ namespace TextParsingUtilities
 	*	Parses function arguments in the given output array.
 	*	For example, if the string is "Function(Argument_1, Argument_2);",
 	*	the given output array would be filled with the strings "Argument_1" and "Argument_2".
+	*	Returns the number of arguments parsed
 	*/
-	FORCE_INLINE void ParseFunctionArguments
+	FORCE_INLINE uint64 ParseFunctionArguments
 	(
 		const char *const RESTRICT string,
 		const uint64 string_length,
@@ -149,6 +150,8 @@ namespace TextParsingUtilities
 				currently_parsing_argument = true;
 			}
 		}
+
+		return current_argument_index;
 	}
 
 	/*
