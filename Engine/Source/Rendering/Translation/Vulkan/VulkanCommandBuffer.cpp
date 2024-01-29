@@ -147,7 +147,7 @@ void CommandBuffer::BindVertexBuffer(const Pipeline *const RESTRICT pipeline, co
 void CommandBuffer::BlitImage(const Pipeline *const RESTRICT pipeline, const OpaqueHandle source, const OpaqueHandle target) NOEXCEPT
 {
 	VulkanImage *const RESTRICT source_image{ static_cast<VulkanImage* const RESTRICT>(source) };
-	VulkanImage *const RESTRICT target_image{ static_cast<VulkanImage* const RESTRICT>(source) };
+	VulkanImage *const RESTRICT target_image{ static_cast<VulkanImage* const RESTRICT>(target) };
 
 	static_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData)->CommandBlitImage(source_image->GetImage(), target_image->GetImage());
 }

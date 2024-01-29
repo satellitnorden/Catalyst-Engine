@@ -1,0 +1,59 @@
+/*
+*	Calculates the water height at the given position.
+*/
+float WaterHeightAtPosition(vec3 world_position)
+{
+	//Constants.
+	#define AMPLITUDE (0.5f)
+
+	//Cache the current time. Assume 60 FPS for now.
+	float current_time = float(FRAME) / 60.0f;
+
+	//Accumulate the height.
+	float water_height = 0.0f;
+
+	{
+		float sum = 0.0f;
+		float amplitude = 0.25f;
+		float frequency = 0.125f;
+		
+		float direction_seed = 0.0f;
+		vec2 direction;
+
+		for (uint i = 0; i < 8; ++i)
+		{
+			//"Randomize" the direction for every wave.
+			direction = normalize(vec2(cos(direction_seed), sin(direction_seed)));
+			direction_seed += 1253.2131f;
+
+			//Calculate the wave coordinate.
+			float wave_coordinate = world_position.x * direction.x + world_position.z * direction.y;
+
+			//Calculate the wave length.
+			float wave_length = 2.0f / frequency;
+
+			water_height += amplitude * sin(wave_coordinate * wave_length + current_time * (2.0f / wave_length));
+			sum += amplitude;
+			amplitude *= 0.5f;
+			frequency *= 2.0f;
+		}
+
+		water_height /= sum;
+	}
+
+	//Return the wave height.
+	return water_height;
+}
+
+/*
+*	Calculates the water height at the given position.
+*/
+vec3 WaterNormalAtPosition(vec3 world_position)
+{
+	float left = WaterHeightAtPosition(world_position + vec3(-1.0f, 0.0f, 0.0f));
+	float right = WaterHeightAtPosition(world_position + vec3(1.0f, 0.0f, 0.0f));
+	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -1.0f));
+	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 1.0f));
+
+	return normalize(vec3(left - right, 2.0f, down - up));
+}

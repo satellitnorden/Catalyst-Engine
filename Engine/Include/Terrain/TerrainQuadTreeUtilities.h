@@ -37,7 +37,7 @@ public:
 	/*
 	*	Given a node and a position, returns if the node should be combined.
 	*/
-	FORCE_INLINE static NO_DISCARD bool ShouldBeCombined(const TerrainInstanceData &instance_data, const TerrainQuadTreeNode& node, const Vector3<float32>& position) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool ShouldBeCombined(const uint32 patch_size, const uint8 maximum_subdivision_steps, const TerrainQuadTreeNode& node, const Vector3<float32>& position) NOEXCEPT
 	{
 		if (node.IsSubdivided() && node._ChildNodes.Data()->IsSubdivided())
 		{
@@ -49,27 +49,27 @@ public:
 			const Vector2<float32> middle_point{ MiddlePoint(node) };
 			const float32 length{ CatalystBaseMath::Maximum<float32>(CatalystBaseMath::Absolute(middle_point._X - position._X), CatalystBaseMath::Absolute(middle_point._Y - position._Z)) };
 
-			return	node._Depth > instance_data._MaximumSubdivisionSteps
-					|| length > static_cast<float32>(instance_data._PatchSize) * PatchSizeMultiplier(node);
+			return	node._Depth > maximum_subdivision_steps
+					|| length > static_cast<float32>(patch_size) * PatchSizeMultiplier(node);
 		}
 	}
 
 	/*
 	*	Given a node and a position, returns if the node should be subdivided.
 	*/
-	FORCE_INLINE static NO_DISCARD bool ShouldBeSubdivided(const TerrainInstanceData &instance_data, const TerrainQuadTreeNode &node, const Vector3<float32> &position) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool ShouldBeSubdivided(const uint32 patch_size, const uint8 maximum_subdivision_steps, const TerrainQuadTreeNode &node, const Vector3<float32> &position) NOEXCEPT
 	{
 		const Vector2<float32> middle_point{ MiddlePoint(node) };
 		const float32 length{ CatalystBaseMath::Maximum<float32>(CatalystBaseMath::Absolute(middle_point._X - position._X), CatalystBaseMath::Absolute(middle_point._Y - position._Z)) };
 
-		return	node._Depth < instance_data._MaximumSubdivisionSteps
-				&& length <= static_cast<float32>(instance_data._PatchSize) * PatchSizeMultiplier(node);
+		return	node._Depth < maximum_subdivision_steps
+				&& length <= static_cast<float32>(patch_size) * PatchSizeMultiplier(node);
 	}
 
 	/*
 	*	Given a terrain component and a node, returning the neighboring nodes in the order upper, right, lower, left.
 	*/
-	FORCE_INLINE static void NeighboringNodes(const TerrainInstanceData &instance_data, const TerrainQuadTreeNode &node, StaticArray<const TerrainQuadTreeNode *RESTRICT, 4> *const RESTRICT neighboring_nodes) NOEXCEPT
+	FORCE_INLINE static void NeighboringNodes(const uint32 patch_size, const TerrainQuadTreeNode &root_node, const TerrainQuadTreeNode &node, StaticArray<const TerrainQuadTreeNode *RESTRICT, 4> *const RESTRICT neighboring_nodes) NOEXCEPT
 	{
 		//Calculate the middle point of the node.
 		const Vector2<float32> middle_point{ MiddlePoint(node) };
@@ -80,16 +80,16 @@ public:
 		//Calculate the positions.
 		const StaticArray<const Vector2<float32>, 4> positions
 		{
-			middle_point + Vector2<float32>(-static_cast<float32>(instance_data._PatchSize) * patch_size_multiplier, 0.0f),
-			middle_point + Vector2<float32>(0.0f, -static_cast<float32>(instance_data._PatchSize) * patch_size_multiplier),
-			middle_point + Vector2<float32>(static_cast<float32>(instance_data._PatchSize) * patch_size_multiplier, 0.0f),
-			middle_point + Vector2<float32>(0.0f, static_cast<float32>(instance_data._PatchSize) * patch_size_multiplier),
+			middle_point + Vector2<float32>(-static_cast<float32>(patch_size) * patch_size_multiplier, 0.0f),
+			middle_point + Vector2<float32>(0.0f, -static_cast<float32>(patch_size) * patch_size_multiplier),
+			middle_point + Vector2<float32>(static_cast<float32>(patch_size) * patch_size_multiplier, 0.0f),
+			middle_point + Vector2<float32>(0.0f, static_cast<float32>(patch_size) * patch_size_multiplier),
 		};
 
 		//Find the node with the highest depth for each position.
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			neighboring_nodes->At(i) = FindHighestNode(instance_data._QuadTree._RootNode, positions[i]);
+			neighboring_nodes->At(i) = FindHighestNode(root_node, positions[i]);
 		}
 	}
 

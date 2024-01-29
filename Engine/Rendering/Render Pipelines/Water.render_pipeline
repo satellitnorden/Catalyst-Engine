@@ -1,0 +1,229 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+IncludeUniformBuffer(Wind);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(WaterSimulation);
+
+//Declare input render targets.
+InputRenderTarget(SceneFeatures1Input /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures2Input /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(SceneFeatures1);
+OutputRenderTarget(SceneFeatures2);
+OutputRenderTarget(SceneFeatures3);
+OutputRenderTarget(SceneFeatures4);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the cull mode.
+CullMode(BACK);
+
+//Set the load/store operators.
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER);
+DepthTestEnable();
+DepthWriteEnable();
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(REPLACE);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(ALWAYS);
+StencilCompareMask(0);
+StencilWriteMask(1);
+StencilReferenceMask(1);
+
+//Set the topology.
+Topology(TRIANGLE_LIST);
+
+//Declare push constant data.
+PushConstantData(vec2, WORLD_POSITION);
+PushConstantData(uint, BORDERS);
+PushConstantData(float, PATCH_RESOLUTION_RECIPROCAL);
+PushConstantData(float, PATCH_SIZE);
+PushConstantData(uint, TEXTURE_INDEX);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Water);
+
+//Declare samplers.
+Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec2, InPosition);
+    InputParameter(uint, InBorders);
+
+    //Declare output parameters.
+    OutputParameter(vec3, OutWorldPosition);
+
+    //Cache the current time. Assume 60 FPS for now.
+	float current_time = float(FRAME) / 60.0f * 0.125f * 0.125f;
+
+    //Calculate the stitched position.
+    vec2 stitched_position = InPosition;
+
+    //Apply the first layer of stiching.
+    {
+	    float is_left_multiplier = float((InBorders & BIT(0)) & (BORDERS & BIT(0)));
+    	float is_right_multiplier = float((InBorders & BIT(2)) & (BORDERS & BIT(2)));
+	    float vertical_offset = min(is_left_multiplier + is_right_multiplier, 1.0f);
+
+        float is_down_multiplier = float((InBorders & BIT(4)) & (BORDERS & BIT(4)));
+    	float is_up_multiplier = float((InBorders & BIT(6)) & (BORDERS & BIT(6)));
+	    float horizontal_offset = min(is_down_multiplier + is_up_multiplier, 1.0f);
+
+	    stitched_position.y -= PATCH_RESOLUTION_RECIPROCAL * vertical_offset;
+	    stitched_position.x -= PATCH_RESOLUTION_RECIPROCAL * horizontal_offset;
+    }
+
+    //Apply the second layer of stiching.
+    {
+	    float is_left_multiplier = float((InBorders & BIT(1)) & (BORDERS & BIT(1)));
+    	float is_right_multiplier = float((InBorders & BIT(3)) & (BORDERS & BIT(3)));
+	    float vertical_offset = min(is_left_multiplier + is_right_multiplier, 1.0f);
+
+        float is_down_multiplier = float((InBorders & BIT(5)) & (BORDERS & BIT(5)));
+    	float is_up_multiplier = float((InBorders & BIT(7)) & (BORDERS & BIT(7)));
+	    float horizontal_offset = min(is_down_multiplier + is_up_multiplier, 1.0f);
+
+	    stitched_position.y -= (PATCH_RESOLUTION_RECIPROCAL * 2.0f) * vertical_offset;
+	    stitched_position.x -= (PATCH_RESOLUTION_RECIPROCAL * 2.0f) * horizontal_offset;
+    }
+
+    //Calculate the world position.
+    OutWorldPosition.x = WORLD_POSITION.x + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.x);
+    OutWorldPosition.y = 0.0f;
+    OutWorldPosition.z = WORLD_POSITION.y + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
+
+    //Calculate the height.
+    {
+        float water_texture_sample_1 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), OutWorldPosition.xz * 0.125f + vec2(-current_time, 0.0f)).x;
+        float water_texture_sample_2 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), OutWorldPosition.xz * 0.25f + vec2(current_time, 0.0f)).y;
+        float water_texture_sample_3 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), OutWorldPosition.xz * 0.5f + vec2(0.0f, -current_time)).z;
+        float water_texture_sample_4 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), OutWorldPosition.xz * 1.0f + vec2(0.0f, current_time)).w;
+
+        float height =  (water_texture_sample_1 * 1.0f
+                        + water_texture_sample_2 * 0.5f
+                        + water_texture_sample_3 * 0.25f
+                        + water_texture_sample_4 * 0.125f)
+                        / 1.875f;
+
+        OutWorldPosition.y += height * 2.0f;
+    }
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec3, InWorldPosition);
+
+    //Constants.
+    #define WATER_ALBEDO (vec3(0.0f, 0.125f * 0.25f, 0.5f * 0.5f))
+
+    //Cache the current time. Assume 60 FPS for now.
+	float current_time = float(FRAME) / 60.0f * 0.125f * 0.125f;
+
+    //Calculate the tangent.
+    vec3 tangent;
+
+    {
+        vec2 sample_position = InWorldPosition.xz + vec2(1.0f, 0.0f);
+
+        float water_texture_sample_1 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.125f + vec2(-current_time, 0.0f)).x;
+        float water_texture_sample_2 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.25f + vec2(current_time, 0.0f)).y;
+        float water_texture_sample_3 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.5f + vec2(0.0f, -current_time)).z;
+        float water_texture_sample_4 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 1.0f + vec2(0.0f, current_time)).w;
+
+        float height =  (water_texture_sample_1 * 1.0f
+                        + water_texture_sample_2 * 0.5f
+                        + water_texture_sample_3 * 0.25f
+                        + water_texture_sample_4 * 0.125f)
+                        / 1.875f;
+
+        tangent = normalize((InWorldPosition + vec3(1.0f, height * 1.0f, 0.0f)) - InWorldPosition);
+    }
+
+    //Calculate the bitangent.
+    vec3 bitangent;
+
+    {
+        vec2 sample_position = InWorldPosition.xz + vec2(0.0f, 1.0f);
+
+        float water_texture_sample_1 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.125f + vec2(-current_time, 0.0f)).x;
+        float water_texture_sample_2 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.25f + vec2(current_time, 0.0f)).y;
+        float water_texture_sample_3 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.5f + vec2(0.0f, -current_time)).z;
+        float water_texture_sample_4 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 1.0f + vec2(0.0f, current_time)).w;
+
+        float height =  (water_texture_sample_1 * 1.0f
+                        + water_texture_sample_2 * 0.5f
+                        + water_texture_sample_3 * 0.25f
+                        + water_texture_sample_4 * 0.125f)
+                        / 1.875f;
+
+        bitangent = normalize((InWorldPosition + vec3(0.0f, height * 1.0f, 1.0f)) - InWorldPosition);
+    }
+
+    //Calculate the water normal.
+    vec3 water_normal = cross(bitangent, tangent);
+
+    //Calculate the screen coordinate.
+    vec2 screen_coordinate = (vec2(FRAGMENT_COORDINATE.xy) + 0.5f) * INVERSE_FULL_MAIN_RESOLUTION;
+
+    //Sample scene features 2.
+    vec4 scene_features_2 = texture(SceneFeatures2Input, screen_coordinate);
+
+    //Calculate the surface depth.
+    float surface_depth = LinearizeDepth(FRAGMENT_COORDINATE.z);
+
+    //Calculate the underwater depth.
+    float underwater_depth = LinearizeDepth(scene_features_2.w);
+
+    //Calculate the underwater weight.
+    float underwater_weight = exp(-(underwater_depth - surface_depth) * 0.125f * 0.25f);
+
+    //Offset the screen coordinate a bit based on the normal.
+    //screen_coordinate += water_normal.xz * 0.25f;
+
+    //Sample scene features 1.
+    vec4 scene_features_1 = texture(SceneFeatures1Input, screen_coordinate);
+
+    //Retrieve the underwater albedo.
+    vec3 underwater_albedo = scene_features_1.rgb;
+
+    //Darken the underwater albedo a bit.
+    underwater_albedo *= 0.5f;
+
+    //Darken the albedo even further.
+    underwater_albedo *= underwater_weight;
+
+    //Calculate the final albedo.
+    vec3 final_albedo = mix(WATER_ALBEDO, underwater_albedo, underwater_weight);
+
+    //Calculate the velocity.
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+
+    //Output the fragments.
+    OutputFragment(SceneFeatures1, vec4(final_albedo, 0.0f));
+    OutputFragment(SceneFeatures2, vec4(water_normal, gl_FragCoord.z));
+    OutputFragment(SceneFeatures3, vec4(FLOAT32_EPSILON, 0.0f, 1.0f, 0.0f));
+    OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
+}

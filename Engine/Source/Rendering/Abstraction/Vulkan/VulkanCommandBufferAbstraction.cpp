@@ -151,15 +151,15 @@ void VulkanCommandBuffer::CommandBlitImage(VkImage source, VkImage destination) 
 	image_blit.srcSubresource.baseArrayLayer = 0;
 	image_blit.srcSubresource.layerCount = 1;
 	image_blit.srcOffsets[0] = VkOffset3D{ 0, 0, 0 };
-	image_blit.srcOffsets[1] = VkOffset3D{ 0, 0, 0 };
+	image_blit.srcOffsets[1] = VkOffset3D{ 1920, 1080, 1 };
 	image_blit.dstSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
 	image_blit.dstSubresource.mipLevel = 0;
 	image_blit.dstSubresource.baseArrayLayer = 0;
 	image_blit.dstSubresource.layerCount = 1;
 	image_blit.dstOffsets[0] = VkOffset3D{ 0, 0, 0 };
-	image_blit.dstOffsets[1] = VkOffset3D{ 0, 0, 0 };
+	image_blit.dstOffsets[1] = VkOffset3D{ 1920, 1080, 1 };
 
-	vkCmdBlitImage(_VulkanCommandBuffer, source, VkImageLayout::VK_IMAGE_LAYOUT_GENERAL, destination, VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, 1, &image_blit, VkFilter::VK_FILTER_NEAREST);
+	vkCmdBlitImage(_VulkanCommandBuffer, source, VkImageLayout::VK_IMAGE_LAYOUT_GENERAL, destination, VkImageLayout::VK_IMAGE_LAYOUT_GENERAL, 1, &image_blit, VkFilter::VK_FILTER_NEAREST);
 }
 
 /*

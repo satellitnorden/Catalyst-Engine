@@ -1,5 +1,5 @@
 //Header file.
-#include <Components/Components/TerrainComponent.h>
+#include <Components/Components/WaterComponent.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -8,7 +8,6 @@
 #include <Rendering/Native/Culling.h>
 
 //Systems.
-#include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
@@ -17,12 +16,12 @@
 #include <Terrain/TerrainVertex.h>
 #include <Terrain/TerrainQuadTreeUtilities.h>
 
-DEFINE_COMPONENT(TerrainComponent, TerrainSharedData, TerrainInitializationData, TerrainInstanceData);
+DEFINE_COMPONENT(WaterComponent, WaterSharedData, WaterInitializationData, WaterInstanceData);
 
 /*
 *	Initializes this component.
 */
-void TerrainComponent::Initialize() NOEXCEPT
+void WaterComponent::Initialize() NOEXCEPT
 {
 
 }
@@ -30,12 +29,12 @@ void TerrainComponent::Initialize() NOEXCEPT
 /*
 *	Post-initializes this component.
 */
-void TerrainComponent::PostInitialize() NOEXCEPT
+void WaterComponent::PostInitialize() NOEXCEPT
 {
 
 }
 
-NO_DISCARD bool TerrainComponent::NeedsPreProcessing() const NOEXCEPT
+NO_DISCARD bool WaterComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return true;
 }
@@ -43,30 +42,21 @@ NO_DISCARD bool TerrainComponent::NeedsPreProcessing() const NOEXCEPT
 /*
 *	Preprocessed initialization data an instance.
 */
-void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void WaterComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Cache the initialization data.
-	TerrainInitializationData *const RESTRICT _initialization_data{ static_cast<TerrainInitializationData *const RESTRICT>(initialization_data) };
+	WaterInitializationData *const RESTRICT _initialization_data{ static_cast<WaterInitializationData *const RESTRICT>(initialization_data) };
 
 	//Calculate the world space axis aligned bounding box.
 	AxisAlignedBoundingBox3D axis_aligned_bounding_box;
 
 	axis_aligned_bounding_box._Minimum._X = -(static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Minimum._Y = _initialization_data->_WorldPosition.GetLocalPosition()._Y;
 	axis_aligned_bounding_box._Minimum._Z = -(static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
 
 	axis_aligned_bounding_box._Maximum._X = (static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Maximum._Y = _initialization_data->_WorldPosition.GetLocalPosition()._Y;
 	axis_aligned_bounding_box._Maximum._Z = (static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
-
-	for (uint32 Y{ 0 }; Y < _initialization_data->_HeightMap.GetResolution(); ++Y)
-	{
-		for (uint32 X{ 0 }; X < _initialization_data->_HeightMap.GetResolution(); ++X)
-		{
-			const float32 height{ _initialization_data->_HeightMap.At(X, Y) };
-
-			axis_aligned_bounding_box._Minimum._Y = CatalystBaseMath::Minimum<float32>(axis_aligned_bounding_box._Minimum._Y, height);
-			axis_aligned_bounding_box._Maximum._Y = CatalystBaseMath::Maximum<float32>(axis_aligned_bounding_box._Maximum._Y, height);
-		}
-	}
 
 	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Minimum);
 	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Maximum);
@@ -82,7 +72,7 @@ void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT in
 		&indices
 	);
 
-	StaticArray<void *RESTRICT, 2> buffer_data;
+	StaticArray<void* RESTRICT, 2> buffer_data;
 
 	buffer_data[0] = vertices.Data();
 	buffer_data[1] = indices.Data();
@@ -97,91 +87,28 @@ void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT in
 
 	_initialization_data->_PreprocessedData._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
 	_initialization_data->_PreprocessedData._IndexCount = static_cast<uint32>(indices.Size());
-
-	//Create the height map texture.
-	{
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_initialization_data->_HeightMap), TextureFormat::R_FLOAT32, TextureUsage::NONE, false), &_initialization_data->_PreprocessedData._HeightMapTexture);
-		_initialization_data->_PreprocessedData._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_initialization_data->_PreprocessedData._HeightMapTexture);
-	}
-
-	//Create the normal map texture.
-	{
-		Texture2D<Vector4<uint8>> converted_normal_map_texture{ _initialization_data->_NormalMap.GetResolution() };
-
-		for (uint32 Y{ 0 }; Y < converted_normal_map_texture.GetResolution(); ++Y)
-		{
-			for (uint32 X{ 0 }; X < converted_normal_map_texture.GetResolution(); ++X)
-			{
-				const Vector3<float32> &actual_normal{ _initialization_data->_NormalMap.At(X, Y) };
-
-				for (uint8 i{ 0 }; i < 3; ++i)
-				{
-					converted_normal_map_texture.At(X, Y)[i] = static_cast<uint8>((actual_normal[i] * 0.5f + 0.5f) * static_cast<float32>(UINT8_MAXIMUM));
-				}
-			}
-		}
-
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_normal_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &_initialization_data->_PreprocessedData._NormalMapTexture);
-		_initialization_data->_PreprocessedData._NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_initialization_data->_PreprocessedData._NormalMapTexture);
-	}
-
-	//Create the index map texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_initialization_data->_IndexMap), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &_initialization_data->_PreprocessedData._IndexMapTexture);
-	_initialization_data->_PreprocessedData._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_initialization_data->_PreprocessedData._IndexMapTexture);
-
-	//Create the blend map texture.
-	{
-		Texture2D<Vector4<uint8>> converted_blend_map_texture{ _initialization_data->_NormalMap.GetResolution() };
-
-		for (uint32 Y{ 0 }; Y < converted_blend_map_texture.GetResolution(); ++Y)
-		{
-			for (uint32 X{ 0 }; X < converted_blend_map_texture.GetResolution(); ++X)
-			{
-				for (uint8 i{ 0 }; i < 4; ++i)
-				{
-					converted_blend_map_texture.At(X, Y)[i] = static_cast<uint8>(_initialization_data->_BlendMap.At(X, Y)[i] * static_cast<float32>(UINT8_MAXIMUM));
-				}
-			}
-		}
-
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &_initialization_data->_PreprocessedData._BlendMapTexture);
-		_initialization_data->_PreprocessedData._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_initialization_data->_PreprocessedData._BlendMapTexture);
-	}
 }
 
 /*
 *	Creates an instance.
 */
-void TerrainComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void WaterComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
-	TerrainInitializationData *const RESTRICT _initialization_data{ static_cast<TerrainInitializationData *const RESTRICT>(initialization_data) };
+	WaterInitializationData *const RESTRICT _initialization_data{ static_cast<WaterInitializationData *const RESTRICT>(initialization_data) };
 	_InstanceData.Emplace();
-	TerrainInstanceData &instance_data{ _InstanceData.Back() };
-
-	ASSERT(_initialization_data->_HeightMap.GetWidth() == _initialization_data->_HeightMap.GetHeight(), "Terrain height map width and height doesn't match - This isn't okay.");
+	WaterInstanceData &instance_data{ _InstanceData.Back() };
 
 	instance_data._WorldPosition = _initialization_data->_WorldPosition;
 	instance_data._WorldSpaceAxisAlignedBoundingBox = _initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
 	instance_data._PatchSize = _initialization_data->_PatchSize;
-	instance_data._HeightMap = std::move(_initialization_data->_HeightMap);
-	instance_data._NormalMap = std::move(_initialization_data->_NormalMap);
-	instance_data._IndexMap = std::move(_initialization_data->_IndexMap);
-	instance_data._BlendMap = std::move(_initialization_data->_BlendMap);
 	instance_data._BaseResolution = _initialization_data->_BaseResolution;
 	instance_data._MaximumSubdivisionSteps = _initialization_data->_MaximumSubdivisionSteps;
 
 	instance_data._Buffer = _initialization_data->_PreprocessedData._Buffer;
 	instance_data._IndexOffset = _initialization_data->_PreprocessedData._IndexOffset;
 	instance_data._IndexCount = _initialization_data->_PreprocessedData._IndexCount;
-	instance_data._HeightMapTexture = _initialization_data->_PreprocessedData._HeightMapTexture;
-	instance_data._HeightMapTextureIndex = _initialization_data->_PreprocessedData._HeightMapTextureIndex;
-	instance_data._NormalMapTexture = _initialization_data->_PreprocessedData._NormalMapTexture;
-	instance_data._NormalMapTextureIndex = _initialization_data->_PreprocessedData._NormalMapTextureIndex;
-	instance_data._IndexMapTexture = _initialization_data->_PreprocessedData._IndexMapTexture;
-	instance_data._IndexMapTextureIndex = _initialization_data->_PreprocessedData._IndexMapTextureIndex;
-	instance_data._BlendMapTexture = _initialization_data->_PreprocessedData._BlendMapTexture;
-	instance_data._BlendMapTextureIndex = _initialization_data->_PreprocessedData._BlendMapTextureIndex;
+	instance_data._Texture = _initialization_data->_Texture;
 
 	instance_data._QuadTree._RootNode._Depth = 0;
 	instance_data._QuadTree._RootNode._Borders = 0;
@@ -196,21 +123,13 @@ void TerrainComponent::CreateInstance(const EntityIdentifier entity, ComponentIn
 
 	//Free the initialization data.
 	FreeInitializationData(_initialization_data);
-
-	//Create the physics actor.
-	PhysicsSystem::Instance->CreateHeightFieldActor
-	(
-		instance_data._WorldPosition,
-		instance_data._HeightMap,
-		&instance_data._PhysicsActorHandle
-	);
 }
 
 /*
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void TerrainComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
+void WaterComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
 {
 
 }
@@ -218,26 +137,16 @@ void TerrainComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEP
 /*
 *	Destroys an instance.
 */
-void TerrainComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
+void WaterComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
 {
 	//Cache the instance index.
 	const uint64 instance_index{ _EntityToInstanceMappings[entity] };
 
 	//Cache the instance data.
-	TerrainInstanceData &instance_data{ _InstanceData[instance_index] };
+	WaterInstanceData &instance_data{ _InstanceData[instance_index] };
 
 	//Destroy stuff.
 	RenderingSystem::Instance->DestroyBuffer(&instance_data._Buffer);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(instance_data._HeightMapTextureIndex);
-	RenderingSystem::Instance->DestroyTexture2D(&instance_data._HeightMapTexture);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(instance_data._NormalMapTextureIndex);
-	RenderingSystem::Instance->DestroyTexture2D(&instance_data._NormalMapTexture);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(instance_data._IndexMapTextureIndex);
-	RenderingSystem::Instance->DestroyTexture2D(&instance_data._IndexMapTexture);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(instance_data._BlendMapTextureIndex);
-	RenderingSystem::Instance->DestroyTexture2D(&instance_data._BlendMapTexture);
-
-	PhysicsSystem::Instance->DestroyActor(&instance_data._PhysicsActorHandle);
 
 	//Remove the instance.
 	RemoveInstance(entity);
@@ -246,12 +155,12 @@ void TerrainComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
 /*
 *	Returns the number of sub-instances for the given instance.
 */
-NO_DISCARD uint64 TerrainComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
+NO_DISCARD uint64 WaterComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
 {
 	return 1;
 }
 
-void TerrainComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
+void WaterComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
@@ -261,7 +170,7 @@ void TerrainComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *cons
 /*
 *	Checks combination of a node.
 */
-void CheckCombination(TerrainInstanceData &instance_data, const Vector3<float32> &camera_position, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+void CheckCombination(WaterInstanceData &instance_data, const Vector3<float32> &camera_position, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->IsSubdivided())
@@ -284,7 +193,7 @@ void CheckCombination(TerrainInstanceData &instance_data, const Vector3<float32>
 /*
 *	Checks subdivisions of a node.
 */
-void CheckSubdivision(TerrainInstanceData &instance_data, const Vector3<float32> &camera_position, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+void CheckSubdivision(WaterInstanceData &instance_data, const Vector3<float32> &camera_position, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->IsSubdivided())
@@ -394,7 +303,7 @@ void CheckSubdivision(TerrainInstanceData &instance_data, const Vector3<float32>
 /*
 *	Calculates borders for the given node.
 */
-void CalculateBorders(TerrainInstanceData &instance_data, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+void CalculateBorders(WaterInstanceData &instance_data, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//If this node is subdivided, calculate new borders for it's child nodes.
 	if (node->IsSubdivided())
@@ -480,21 +389,21 @@ void CalculateBorders(TerrainInstanceData &instance_data, TerrainQuadTreeNode *c
 }
 
 /*
-*	Culls a single terrain quad tree node.
+*	Culls a single water quad tree node.
 */
-void CullTerrainQuadTreeNode
+void CullWaterQuadTreeNode
 (
-	const Vector3<float32>& world_grid_delta,
-	const Frustum* const RESTRICT frustum,
-	TerrainQuadTreeNode* const RESTRICT node
+	const Vector3<float32> &world_grid_delta,
+	const Frustum *const RESTRICT frustum,
+	TerrainQuadTreeNode *const RESTRICT node
 ) NOEXCEPT
 {
 	//If this node is subdivided, cull each child node.
 	if (node->IsSubdivided())
 	{
-		for (TerrainQuadTreeNode& child_node : node->_ChildNodes)
+		for (TerrainQuadTreeNode &child_node : node->_ChildNodes)
 		{
-			CullTerrainQuadTreeNode(world_grid_delta, frustum, &child_node);
+			CullWaterQuadTreeNode(world_grid_delta, frustum, &child_node);
 		}
 	}
 
@@ -515,7 +424,7 @@ void CullTerrainQuadTreeNode
 /*
 *	Updates this component.
 */
-void TerrainComponent::Update
+void WaterComponent::Update
 (
 	const UpdatePhase update_phase,
 	const uint64 start_instance_index,
@@ -523,7 +432,7 @@ void TerrainComponent::Update
 	const uint64 sub_instance_index
 ) NOEXCEPT
 {
-	PROFILING_SCOPE("TerrainComponent::Update");
+	PROFILING_SCOPE("WaterComponent::Update");
 
 	switch (update_phase)
 	{
@@ -538,7 +447,7 @@ void TerrainComponent::Update
 			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
 			{
 				//Cache the instance data.
-				TerrainInstanceData &instance_data{ _InstanceData[instance_index] };
+				WaterInstanceData &instance_data{ _InstanceData[instance_index] };
 
 				//Process the quad tree.
 				{
@@ -573,7 +482,7 @@ void TerrainComponent::Update
 						}
 
 						//Start at the root node.
-						CullTerrainQuadTreeNode(world_grid_delta, frustum, &instance_data._QuadTree._RootNode);
+						CullWaterQuadTreeNode(world_grid_delta, frustum, &instance_data._QuadTree._RootNode);
 					}
 				}
 			}
@@ -593,7 +502,7 @@ void TerrainComponent::Update
 /*
 *	Runs after the given update phase.
 */
-void TerrainComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
+void WaterComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
 {
 
 }

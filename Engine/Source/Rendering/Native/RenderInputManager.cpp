@@ -8,6 +8,7 @@
 #include <Components/Components/ParticleSystemComponent.h>
 #include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/TerrainComponent.h>
+#include <Components/Components/WaterComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
 //Profiling.
@@ -76,6 +77,15 @@ struct TerrainPushConstantData
 	uint32 _BlendMapTextureIndex;
 	float32 _MapResolution;
 	float32 _MapResolutionReciprocal;
+};
+
+struct WaterPushConstantData
+{
+	Vector2<float32> _WorldPosition;
+	uint32 _Borders;
+	float32 _PatchResolutionReciprocal;
+	float32 _PatchSize;
+	uint32 _TextureIndex;
 };
 
 struct GrassPushConstantData
@@ -524,6 +534,33 @@ void RenderInputManager::Initialize() NOEXCEPT
 			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
 			{
 				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherTerrainInputStream(input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED,
+			this
+		);
+	}
+
+	//Register the water input stream.
+	{
+		//Set up the required vertex input attribute/binding descriptions for models.
+		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
+
+		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(TerrainVertex, _Position)));
+		required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32UnsignedInt, static_cast<uint32>(offsetof(TerrainVertex, _Borders)));
+
+		DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
+
+		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(TerrainVertex)), VertexInputBindingDescription::InputRate::Vertex);
+
+		RegisterInputStream
+		(
+			HashString("Water"),
+			required_vertex_input_attribute_descriptions,
+			required_vertex_input_binding_descriptions,
+			sizeof(WaterPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherWaterInputStream(input_stream);
 			},
 			RenderInputStream::Mode::DRAW_INDEXED,
 			this
@@ -1060,6 +1097,92 @@ void RenderInputManager::GatherTerrainInputStream
 
 			//Walk the quad tree.
 			GatherTerrainQuadTreeNode(instance_data, instance_data._QuadTree._RootNode, input_stream);
+		}
+	}
+}
+
+/*
+*	Gathers a water quad tree node.
+*/
+FORCE_INLINE void GatherWaterQuadTreeNode
+(
+	const WaterInstanceData &instance_data,
+	const TerrainQuadTreeNode &node,
+	RenderInputStream *const RESTRICT input_stream
+) NOEXCEPT
+{
+	if (node.IsSubdivided())
+	{
+		for (const TerrainQuadTreeNode &child_node : node._ChildNodes)
+		{
+			GatherWaterQuadTreeNode(instance_data, child_node, input_stream);
+		}
+	}
+
+	else
+	{
+		//Ignore this node if it not visible.
+		if (!node._Visible)
+		{
+			return;
+		}
+
+		//Add a new entry.
+		input_stream->_Entries.Emplace();
+		RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+		new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+		new_entry._VertexBuffer = instance_data._Buffer;
+		new_entry._IndexBuffer = instance_data._Buffer;
+		new_entry._IndexBufferOffset = instance_data._IndexOffset;
+		new_entry._InstanceBuffer = EMPTY_HANDLE;
+		new_entry._VertexCount = 0;
+		new_entry._IndexCount = instance_data._IndexCount;
+		new_entry._InstanceCount = 0;
+
+		//Set up the push constant data.
+		WaterPushConstantData push_constant_data;
+
+		const Vector3<float32> component_world_position{ instance_data._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
+		push_constant_data._WorldPosition = Vector2<float32>(component_world_position._X, component_world_position._Z) + node._Position;
+		push_constant_data._Borders = node._Borders;
+		push_constant_data._PatchResolutionReciprocal = 1.0f / static_cast<float32>(instance_data._BaseResolution - 2);
+		push_constant_data._PatchSize = node._PatchSize;
+		push_constant_data._TextureIndex = instance_data._Texture->_Index;
+
+		for (uint64 i{ 0 }; i < sizeof(WaterPushConstantData); ++i)
+		{
+			input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+		}
+	}
+}
+
+/*
+*	Gathers a water input stream.
+*/
+void RenderInputManager::GatherWaterInputStream
+(
+	RenderInputStream *const RESTRICT input_stream
+) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Gather terrains.
+	{
+		for (const WaterInstanceData &instance_data : WaterComponent::Instance->InstanceData())
+		{
+			//Is this terrain visible?
+			if (!instance_data._Visibility)
+			{
+				continue;
+			}
+
+			//Walk the quad tree.
+			GatherWaterQuadTreeNode(instance_data, instance_data._QuadTree._RootNode, input_stream);
 		}
 	}
 }

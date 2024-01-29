@@ -94,6 +94,14 @@ private:
 	) NOEXCEPT;
 
 	/*
+	*	Gathers a water input stream.
+	*/
+	void GatherWaterInputStream
+	(
+		RenderInputStream *const RESTRICT input_stream
+	) NOEXCEPT;
+
+	/*
 	*	Gathers a grass input stream.
 	*/
 	void GatherGrassInputStream
