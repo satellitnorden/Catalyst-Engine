@@ -372,6 +372,8 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 			{
 				//Impostor materials depends on other resources, so delay the compile.
 				delayed_compiles.Emplace(DelayedCompile{ DelayedCompileType::IMPOSTOR_MATERIAL, package, name, file_path });
+
+				break;
 			}
 
 			else

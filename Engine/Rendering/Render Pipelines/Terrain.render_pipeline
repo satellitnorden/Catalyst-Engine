@@ -58,8 +58,8 @@ PushConstantData(float, MAP_RESOLUTION);
 PushConstantData(float, MAP_RESOLUTION_RECIPROCAL);
 
 //Declare samplers.
-Sampler(HEIGHT_MAP_SAMPLER /* Name */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
-Sampler(NORMAL_MAP_SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
+Sampler(HEIGHT_MAP_SAMPLER /* Name */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
+Sampler(NORMAL_MAP_SAMPLER /* Name */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
 Sampler(INDEX_BLEND_MAP_SAMPLER /* Name */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
 Sampler(MATERIAL_SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
 
@@ -113,18 +113,46 @@ Vertex
 
     //Calculate the world position.
     OutWorldPosition.x = WORLD_POSITION.x + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.x);
-    OutWorldPosition.y = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate).x;
+    OutWorldPosition.y = 0.0f;
     OutWorldPosition.z = WORLD_POSITION.y + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
+
+    //Sample the heightmap.
+    {
+        float height_1 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).x;
+        float height_2 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).x;
+        float height_3 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).x;
+        float height_4 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).x;
+    
+        float blend_1 = mix(height_1, height_2, fract(height_map_coordinate.y * MAP_RESOLUTION));
+	    float blend_2 = mix(height_3, height_4, fract(height_map_coordinate.y * MAP_RESOLUTION));
+
+	    float final_height = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
+
+        OutWorldPosition.y = final_height;
+    }
+    
+    //Sample the normal map.
+    vec3 normal;
+
+    {
+        vec3 normal_1 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_2 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_3 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_4 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+    
+        vec3 blend_1 = mix(normal_1, normal_2, fract(height_map_coordinate.y * MAP_RESOLUTION));
+	    vec3 blend_2 = mix(normal_3, normal_4, fract(height_map_coordinate.y * MAP_RESOLUTION));
+
+	    normal = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
+        normal = normal * 2.0f - 1.0f;
+        normal = normalize(normal);
+    }
 
     //Calculate the heightmap texture coordinate.
     OutHeightMapTextureCoordinate = height_map_coordinate;
 
     //Calculate the material texture coordinate.
     vec2 material_texture_coordinate = OutWorldPosition.xz * 0.5f;
-
-    //Sample the normal.
-    vec3 normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), OutHeightMapTextureCoordinate).xyz;
-    normal = normal * 2.0f - 1.0f;
 
     //Apply displacement.
     {
@@ -196,7 +224,7 @@ Vertex
 	    float final_displacement = mix(blend_1, blend_2, fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION));
 
         //Apply the displacement!
-        OutWorldPosition += normal * mix(-0.125f, 0.375f, final_displacement); //Slight bias for upward displacement.
+        OutWorldPosition += normal * mix(-0.125f, 0.25f, final_displacement); //Slight bias for upward displacement.
     }
 
     //Output the position.
@@ -209,10 +237,23 @@ Fragment
     //Declare input parameters.
     InputParameter(vec3, InWorldPosition);
     InputParameter(vec2, InHeightMapTextureCoordinate);
+    
+    //Sample the normal map.
+    vec3 normal;
 
-    //Sample the normal.
-    vec3 normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate).xyz;
-    normal = normal * 2.0f - 1.0f;
+    {
+        vec3 normal_1 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_2 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_3 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_4 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+    
+        vec3 blend_1 = mix(normal_1, normal_2, fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+	    vec3 blend_2 = mix(normal_3, normal_4, fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+
+	    normal = mix(blend_1, blend_2, fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION));
+        normal = normal * 2.0f - 1.0f;
+        normal = normalize(normal);
+    }
 
     mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(normal, vec3(0.0f, 0.0f, 1.0f));
 

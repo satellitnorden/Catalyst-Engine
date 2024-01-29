@@ -180,7 +180,7 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 					*	This would work great if all the geometry was perfectly planar, but alas, it is not.
 					*	So increase it by some magic amount that seems to work fine. (:
 					*/
-					const float32 maximum_depth_bias{ shadow_map_data._DepthRange / static_cast<float32>(UINT16_MAXIMUM) * 4.0f };
+					const float32 maximum_depth_bias{ shadow_map_data._DepthRange / static_cast<float32>(UINT16_MAXIMUM) * 8.0f };
 
 					for (uint64 i{ 0 }; i < sizeof(float32); ++i)
 					{
@@ -305,6 +305,9 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 */
 void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 {
+	//Cache the view distance.
+	const float32 view_distance{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance };
+
 	//Update the shadow map data.
 	uint32 current_shadow_map_data_index{ 0 };
 
@@ -362,6 +365,9 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 						shadow_map_data->_Frustum._Planes[j]._Z *= length_reciprocal;
 						shadow_map_data->_Frustum._Planes[j]._W *= length_reciprocal;
 					}
+
+					//Pull the near frustum plane back so that it includes everything that could potentially cast a shadow.
+					shadow_map_data->_Frustum._Planes[4]._W = view_distance;
 				}
 
 				shadow_map_data->_Distance = cascade_distances[i];

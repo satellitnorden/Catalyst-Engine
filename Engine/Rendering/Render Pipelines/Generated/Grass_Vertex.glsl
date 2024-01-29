@@ -489,7 +489,8 @@ void main()
     float random_rotation = mix(-PI, PI, RandomFloat(seed));
     float wind_influence = mix(0.75f, 1.25f, RandomFloat(seed));
     float cull_value = RandomFloat(seed);
-    float distance_from_camera = length(InPosition - CAMERA_WORLD_POSITION);
+    OutWorldPosition = InPosition + WORLD_GRID_DELTA;
+    float distance_from_camera = length(OutWorldPosition - CAMERA_WORLD_POSITION);
     float thickness = THICKNESS + (THICKNESS * 0.01f * distance_from_camera);
     vec3 raw_vertex_position;
     {
@@ -505,12 +506,12 @@ void main()
     vec3 normal = cross(bitangent, tangent);
     normal.x += raw_vertex_position.x * 2.0f;
     vertex_position = RotateYaw(vertex_position, random_rotation);
-    OutWorldPosition = InPosition + WORLD_GRID_DELTA + vertex_position;
+    OutWorldPosition += vertex_position;
     OutNormal = RotateYaw(normal, random_rotation);
     OutWorldPosition += CalculateCurrentWindDisplacement(InPosition, vertex_position, OutNormal) * wind_influence;
     OutX = raw_vertex_position.x + 0.5f;
     OutThickness = mix(0.75f, 0.0f, raw_vertex_position.y);
-    OutAmbientOcclusion = mix(0.0f, 1.0f, raw_vertex_position.y);
+    OutAmbientOcclusion = mix(0.5f, 1.0f, raw_vertex_position.y);
 #if 0
     float distance_to_camera = length(CAMERA_WORLD_POSITION.xz - OutWorldPosition.xz);
     OutWorldPosition.y = mix(OutWorldPosition.y - (HEIGHT * 0.5f), OutWorldPosition.y, min(distance_to_camera * 0.5f, 1.0f));

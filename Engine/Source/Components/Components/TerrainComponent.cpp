@@ -382,8 +382,10 @@ void CheckSubdivision(TerrainInstanceData &instance_data, const Vector3<float32>
 				child_node._MinimumHeightMapCoordinate = (child_node._Minimum + heightmap_coordinate_offset) / static_cast<float32>(instance_data._PatchSize);
 				child_node._MaximumHeightMapCoordinate = (child_node._Maximum + heightmap_coordinate_offset) / static_cast<float32>(instance_data._PatchSize);
 
-				child_node._MinimumHeightMapCoordinate *= 1.0f - (1.0f / static_cast<float32>(instance_data._PatchSize));
-				child_node._MaximumHeightMapCoordinate *= 1.0f - (1.0f / static_cast<float32>(instance_data._PatchSize));
+				const float32 heightmap_coordinate_padding{ 1.0f / static_cast<float32>(instance_data._PatchSize) };
+
+				child_node._MinimumHeightMapCoordinate *= 1.0f - heightmap_coordinate_padding;
+				child_node._MaximumHeightMapCoordinate *= 1.0f - heightmap_coordinate_padding;
 
 				child_node._PatchSize = static_cast<float32>(instance_data._PatchSize) * patch_size_multiplier;
 			}
@@ -407,6 +409,12 @@ void CalculateBorders(TerrainInstanceData &instance_data, TerrainQuadTreeNode *c
 
 	else
 	{
+		/*
+		*	TODO: When we can't find a neighboring node, put up a request to find one on other terrain components,
+		*	and process them real quick in the post update.
+		*	For now, assume that there's a depth difference of 1, should be right most of the time.
+		*/
+
 		//Retrieve the neighboring nodes.
 		StaticArray<const TerrainQuadTreeNode *RESTRICT, 4> neighboring_nodes;
 		TerrainQuadTreeUtilities::NeighboringNodes(instance_data._PatchSize, instance_data._QuadTree._RootNode, *node, &neighboring_nodes);
@@ -416,7 +424,7 @@ void CalculateBorders(TerrainInstanceData &instance_data, TerrainQuadTreeNode *c
 
 		//Left.
 		{
-			const int32 delta{ neighboring_nodes[0] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboring_nodes[0]->_Depth) : 0 };
+			const int32 delta{ neighboring_nodes[0] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboring_nodes[0]->_Depth) : 1 };
 
 			if (delta >= 1)
 			{
@@ -431,7 +439,7 @@ void CalculateBorders(TerrainInstanceData &instance_data, TerrainQuadTreeNode *c
 
 		//Right.
 		{
-			const int32 delta{ neighboring_nodes[2] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboring_nodes[2]->_Depth) : 0 };
+			const int32 delta{ neighboring_nodes[2] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboring_nodes[2]->_Depth) : 1 };
 
 			if (delta >= 1)
 			{
@@ -446,7 +454,7 @@ void CalculateBorders(TerrainInstanceData &instance_data, TerrainQuadTreeNode *c
 
 		//Down.
 		{
-			const int32 delta{ neighboring_nodes[1] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboring_nodes[1]->_Depth) : 0 };
+			const int32 delta{ neighboring_nodes[1] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboring_nodes[1]->_Depth) : 1 };
 
 			if (delta >= 1)
 			{
@@ -461,7 +469,7 @@ void CalculateBorders(TerrainInstanceData &instance_data, TerrainQuadTreeNode *c
 
 		//Up.
 		{
-			const int32 delta{ neighboring_nodes[3] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboring_nodes[3]->_Depth) : 0 };
+			const int32 delta{ neighboring_nodes[3] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboring_nodes[3]->_Depth) : 1 };
 
 			if (delta >= 1)
 			{
@@ -543,7 +551,12 @@ void TerrainComponent::Update
 				//Process the quad tree.
 				{
 					//Calculate the camera relative position.
+#if 0 //A good position for the two layers of stitching, useful for debugging. (:
+					const WorldPosition fake_camera_world_position{ Vector3<int32>(0, 0, 0), Vector3<float32>(8.0f, 0.0f, 8.0f) };
+					const Vector3<float32> camera_relative_position{ fake_camera_world_position.GetRelativePosition(instance_data._WorldPosition.GetCell()) };
+#else
 					const Vector3<float32> camera_relative_position{ camera_world_position.GetRelativePosition(instance_data._WorldPosition.GetCell()) };
+#endif
 				
 					//Check combination.
 					CheckCombination(instance_data, camera_relative_position, &instance_data._QuadTree._RootNode);

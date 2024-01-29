@@ -371,8 +371,18 @@ layout (location = 3) out vec4 SceneFeatures4;
 
 void main()
 {
-    vec3 normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate).xyz;
-    normal = normal * 2.0f - 1.0f;
+    vec3 normal;
+    {
+        vec3 normal_1 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_2 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_3 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_4 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 blend_1 = mix(normal_1, normal_2, fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+	    vec3 blend_2 = mix(normal_3, normal_4, fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+	    normal = mix(blend_1, blend_2, fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION));
+        normal = normal * 2.0f - 1.0f;
+        normal = normalize(normal);
+    }
     mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(normal, vec3(0.0f, 0.0f, 1.0f));
     vec2 material_texture_coordinate = InWorldPosition.xz * 0.5f;
     TerrainMaterial terrain_materials[4];

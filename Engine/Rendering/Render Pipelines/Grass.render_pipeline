@@ -83,8 +83,11 @@ Vertex
     float wind_influence = mix(0.75f, 1.25f, RandomFloat(seed));
     float cull_value = RandomFloat(seed);
 
+    //Calculate the world position.
+    OutWorldPosition = InPosition + WORLD_GRID_DELTA;
+
     //Calculate the distance to the camera.
-    float distance_from_camera = length(InPosition - CAMERA_WORLD_POSITION);
+    float distance_from_camera = length(OutWorldPosition - CAMERA_WORLD_POSITION);
 
     //Sublty increase thickness based on distance from camera to make fields look fuller.
     float thickness = THICKNESS + (THICKNESS * 0.01f * distance_from_camera);
@@ -116,8 +119,8 @@ Vertex
     //Rotate the vertex position.
     vertex_position = RotateYaw(vertex_position, random_rotation);
 
-    //Calculate the world position.
-    OutWorldPosition = InPosition + WORLD_GRID_DELTA + vertex_position;
+    //Add the vertex position.
+    OutWorldPosition += vertex_position;
 
     //Rotate the normal.
     OutNormal = RotateYaw(normal, random_rotation);
@@ -128,7 +131,7 @@ Vertex
     //Output data to the fragment shader.
     OutX = raw_vertex_position.x + 0.5f;
     OutThickness = mix(0.75f, 0.0f, raw_vertex_position.y);
-    OutAmbientOcclusion = mix(0.0f, 1.0f, raw_vertex_position.y);
+    OutAmbientOcclusion = mix(0.5f, 1.0f, raw_vertex_position.y);
 
 #if 0
     //Apply very simple trample. (:

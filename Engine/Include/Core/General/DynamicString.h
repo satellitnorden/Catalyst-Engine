@@ -25,14 +25,23 @@ public:
 	*/
 	FORCE_INLINE DynamicString(const DynamicString &other) NOEXCEPT
 	{
-		//Set the length of this string.
-		_Length = other.Length();
+		if (other._String)
+		{
+			//Set the length of this string.
+			_Length = other.Length();
 
-		//Allocate sufficient memory for the underlying string.
-		_String = static_cast<char *RESTRICT>(Memory::Allocate(_Length + 1));
+			//Allocate sufficient memory for the underlying string.
+			_String = static_cast<char *RESTRICT>(Memory::Allocate(_Length + 1));
 
-		//Copy the contents of the other string.
-		Memory::Copy(_String, other._String, _Length + 1);
+			//Copy the contents of the other string.
+			Memory::Copy(_String, other._String, _Length + 1);
+		}
+
+		else
+		{
+			_String = nullptr;
+			_Length = 0;
+		}
 	}
 
 	/*

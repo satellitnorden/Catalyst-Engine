@@ -1055,7 +1055,7 @@ FORCE_INLINE void GatherTerrainQuadTreeNode
 		push_constant_data._MinimumHeightMapCoordinate = node._MinimumHeightMapCoordinate;
 		push_constant_data._MaximumHeightMapCoordinate = node._MaximumHeightMapCoordinate;
 		push_constant_data._Borders = node._Borders;
-		push_constant_data._PatchResolutionReciprocal = 1.0f / static_cast<float32>(instance_data._BaseResolution - 2);
+		push_constant_data._PatchResolutionReciprocal = 1.0f / static_cast<float32>(instance_data._BaseResolution);
 		push_constant_data._PatchSize = node._PatchSize;
 		push_constant_data._HeightMapTextureIndex = instance_data._HeightMapTextureIndex;
 		push_constant_data._NormalMapTextureIndex = instance_data._NormalMapTextureIndex;
@@ -1146,7 +1146,7 @@ FORCE_INLINE void GatherWaterQuadTreeNode
 		const Vector3<float32> component_world_position{ instance_data._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
 		push_constant_data._WorldPosition = Vector2<float32>(component_world_position._X, component_world_position._Z) + node._Position;
 		push_constant_data._Borders = node._Borders;
-		push_constant_data._PatchResolutionReciprocal = 1.0f / static_cast<float32>(instance_data._BaseResolution - 2);
+		push_constant_data._PatchResolutionReciprocal = 1.0f / static_cast<float32>(instance_data._BaseResolution);
 		push_constant_data._PatchSize = node._PatchSize;
 		push_constant_data._TextureIndex = instance_data._Texture->_Index;
 
