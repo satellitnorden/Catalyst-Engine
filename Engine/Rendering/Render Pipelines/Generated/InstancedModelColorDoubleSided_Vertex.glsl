@@ -313,7 +313,7 @@ vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 n
 
 			amplitude *= 0.5f;
 			frequency *= 2.0f;
-			vertex_influence += 0.125f;
+			vertex_influence += 0.25f;
 		}
 	}
 
@@ -377,8 +377,8 @@ void main()
     OutTextureCoordinate = InTextureCoordinate;
     if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
     {
-        OutPreviousWorldPosition += CalculatePreviousWindDisplacement(OutPreviousWorldPosition, InPosition, normal);
-        OutCurrentWorldPosition += CalculateCurrentWindDisplacement(OutCurrentWorldPosition, InPosition, normal);
+        OutPreviousWorldPosition += CalculatePreviousWindDisplacement(InTransformation[3].xyz, InPosition, normal);
+        OutCurrentWorldPosition += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, normal);
     }
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutCurrentWorldPosition,1.0f);
 }

@@ -87,7 +87,7 @@ Vertex
 	    vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
 
         //Apply the wind displacement.
-        world_position += CalculateCurrentWindDisplacement(world_position, InPosition, normal);
+        world_position += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, normal);
     }
 
     //Output the position.

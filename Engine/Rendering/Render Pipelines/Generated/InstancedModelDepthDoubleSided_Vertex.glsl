@@ -318,7 +318,7 @@ vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 n
 
 			amplitude *= 0.5f;
 			frequency *= 2.0f;
-			vertex_influence += 0.125f;
+			vertex_influence += 0.25f;
 		}
 	}
 
@@ -384,7 +384,7 @@ void main()
     if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
     {
 	    vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
-        world_position += CalculateCurrentWindDisplacement(world_position, InPosition, normal);
+        world_position += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, normal);
     }
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(world_position,1.0f);
 }
