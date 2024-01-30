@@ -168,7 +168,7 @@ private:
 	};
 
 	//The border offset.
-	float32 _BorderOffset;
+	float32 _BorderOffset{ 0.0f };
 
 };
 

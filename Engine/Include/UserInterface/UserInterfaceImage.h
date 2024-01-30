@@ -36,6 +36,11 @@ public:
 	void SetPosition(const Vector2<float32> &position) NOEXCEPT;
 
 	/*
+	*	Sets the half extents.
+	*/
+	void SetHalfExtents(const Vector2<float32> &half_extents) NOEXCEPT;
+
+	/*
 	*	Sets the material.
 	*/
 	void SetMaterial(const UserInterfaceMaterial &value) NOEXCEPT;

@@ -319,7 +319,11 @@ enum class CullMode : uint8
 enum class ImageLayout : uint8
 {
 	UNDEFINED,
-	GENERAL
+	GENERAL,
+	COLOR_ATTACHMENT_OPTIMAL,
+	DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+	DEPTH_STENCIL_READ_ONLY_OPTIMAL,
+	SHADER_READ_ONLY_OPTIMAL
 };
 
 //Enumeration covering all memory properties.

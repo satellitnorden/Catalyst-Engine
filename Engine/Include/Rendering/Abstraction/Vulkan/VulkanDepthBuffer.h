@@ -37,17 +37,12 @@ public:
 	/*
 	*	Returns the sample count of this Vulkan depth buffer.
 	*/
-	const VkSampleCountFlagBits &GetSampleCount() const NOEXCEPT { return _SampleCount; }
+	const VkSampleCountFlagBits GetSampleCount() const NOEXCEPT { return _SampleCount; }
 
 private:
 
 	//The sample count.
 	VkSampleCountFlagBits _SampleCount;
-
-	/*
-	*	Finds and returns the most desirable format for the depth buffer.
-	*/
-	VkFormat FindMostDesirableDepthBufferFormat() const NOEXCEPT;
 
 };
 #endif

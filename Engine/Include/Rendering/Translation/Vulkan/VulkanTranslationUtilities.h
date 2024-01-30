@@ -368,6 +368,26 @@ public:
 				return VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
 			}
 
+			case ImageLayout::COLOR_ATTACHMENT_OPTIMAL:
+			{
+				return VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			}
+
+			case ImageLayout::DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+			{
+				return VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			}
+
+			case ImageLayout::DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+			{
+				return VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+			}
+
+			case ImageLayout::SHADER_READ_ONLY_OPTIMAL:
+			{
+				return VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			}
+
 			default:
 			{
 				ASSERT(false, "Unknown image layout!");
