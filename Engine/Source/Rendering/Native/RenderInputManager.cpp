@@ -726,9 +726,9 @@ void RenderInputManager::GatherDepthModelInputStream
 		//Go through all instances.
 		for (uint64 instance_index{ 0 }; instance_index < StaticModelComponent::Instance->NumberOfInstances(); ++instance_index)
 		{
-			const EntityIdentifier entity_identifier{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
-			const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity_identifier) };
-			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity_identifier) };
+			const Entity *const RESTRICT entity{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
+			const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity) };
+			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
 
 			//Skip this model if it's not visible.
 			if (!TEST_BIT(static_model_instance_data._VisibilityFlags, VisibilityFlags::CAMERA))
@@ -803,9 +803,9 @@ void RenderInputManager::GatherFullModelInputStream
 		//Go through all instances.
 		for (uint64 instance_index{ 0 }; instance_index < StaticModelComponent::Instance->NumberOfInstances(); ++instance_index)
 		{
-			const EntityIdentifier entity_identifier{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
-			const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity_identifier) };
-			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity_identifier) };
+			const Entity *const RESTRICT entity{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
+			const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity) };
+			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
 
 			//Skip this model if it's not visible.
 			if (!TEST_BIT(static_model_instance_data._VisibilityFlags, VisibilityFlags::CAMERA))

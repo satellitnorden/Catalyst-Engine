@@ -48,7 +48,7 @@ void GrassComponent::PreProcess(ComponentInitializationData *const RESTRICT init
 /*
 *	Creates an instance.
 */
-void GrassComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void GrassComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	GrassInitializationData *const RESTRICT _initialization_data{ static_cast<GrassInitializationData *const RESTRICT>(initialization_data) };
@@ -135,7 +135,7 @@ void GrassComponent::CreateInstance(const EntityIdentifier entity, ComponentInit
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void GrassComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
+void GrassComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -143,10 +143,10 @@ void GrassComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
 /*
 *	Destroys an instance.
 */
-void GrassComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
+void GrassComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Cache the instance index.
-	const uint64 instance_index{ _EntityToInstanceMappings[entity] };
+	const uint64 instance_index{ EntityToInstance(entity) };
 
 	//Cache the instance data.
 	GrassInstanceData &instance_data{ _InstanceData[instance_index] };

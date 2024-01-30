@@ -10,7 +10,7 @@
 #include <Concurrency/ScopedLock.h>
 
 //Entities.
-#include <Entities/Core/EntityCore.h>
+#include <Entities/Types/Entity.h>
 
 //Memory.
 #include <Memory/PoolAllocator.h>
@@ -69,7 +69,7 @@ public:
 	DynamicArray<uint64> _EntityToInstanceMappings;
 
 	//The instance to entity mappings.
-	DynamicArray<EntityIdentifier> _InstanceToEntityMappings;
+	DynamicArray<const Entity *RESTRICT> _InstanceToEntityMappings;
 
 	/*
 	*	Default constructor.
@@ -104,53 +104,53 @@ public:
 	/*
 	*	Runs before an instance is created.
 	*/
-	FORCE_INLINE void PreCreateInstance(const EntityIdentifier entity) NOEXCEPT
+	FORCE_INLINE void PreCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
 	{
-		for (uint64 i{ _EntityToInstanceMappings.Size() }; i <= entity; ++i)
+		for (uint64 i{ _EntityToInstanceMappings.Size() }; i <= entity->_EntityIdentifier; ++i)
 		{
 			_EntityToInstanceMappings.Emplace(UINT64_MAXIMUM);
 		}
 
-		_EntityToInstanceMappings[entity] = _InstanceToEntityMappings.Size();
+		_EntityToInstanceMappings[entity->_EntityIdentifier] = _InstanceToEntityMappings.Size();
 		_InstanceToEntityMappings.Emplace(entity);
 	}
 
 	/*
 	*	Creates an instance.
 	*/
-	virtual void CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
+	virtual void CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
 
 	/*
 	*	Runs after all components have created their instance for the given entity.
 	*	Useful if there is some setup needed involving multiple components.
 	*/
-	virtual void PostCreateInstance(const EntityIdentifier entity) NOEXCEPT = 0;
+	virtual void PostCreateInstance(const Entity* const RESTRICT entity) NOEXCEPT = 0;
 
 	/*
 	*	Destroys an instance.
 	*/
-	virtual void DestroyInstance(const EntityIdentifier entity) NOEXCEPT = 0;
+	virtual void DestroyInstance(const Entity* const RESTRICT entity) NOEXCEPT = 0;
 
 	/*
 	*	Returns if the given entity has this component.
 	*/
-	FORCE_INLINE NO_DISCARD bool Has(const EntityIdentifier entity) NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool Has(const Entity* const RESTRICT entity) NOEXCEPT
 	{
-		return entity < _EntityToInstanceMappings.Size() && _EntityToInstanceMappings[entity] != UINT64_MAXIMUM;
+		return entity->_EntityIdentifier < _EntityToInstanceMappings.Size() && _EntityToInstanceMappings[entity->_EntityIdentifier] != UINT64_MAXIMUM;
 	}
 
 	/*
 	*	Returns the instance index for the given entity.
 	*/
-	FORCE_INLINE NO_DISCARD uint64 EntityToInstance(const EntityIdentifier entity) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD uint64 EntityToInstance(const Entity *const RESTRICT entity) const NOEXCEPT
 	{
-		return _EntityToInstanceMappings[entity];
+		return _EntityToInstanceMappings[entity->_EntityIdentifier];
 	}
 
 	/*
 	*	Returns the entity index for the given instance index.
 	*/
-	FORCE_INLINE NO_DISCARD EntityIdentifier InstanceToEntity(const uint64 instance_index) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const Entity *const RESTRICT InstanceToEntity(const uint64 instance_index) const NOEXCEPT
 	{
 		return _InstanceToEntityMappings[instance_index];
 	}
@@ -247,9 +247,9 @@ public:																																			\
 	}																																			\
 	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;																				\
 	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;											\
-	void CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;		\
-	void PostCreateInstance(const EntityIdentifier entity) NOEXCEPT override;																	\
-	void DestroyInstance(const EntityIdentifier entity) NOEXCEPT override;																		\
+	void CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;\
+	void PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT override;																\
+	void DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT override;																\
 	FORCE_INLINE NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT override																	\
 	{																																			\
 		return _InstanceData.Size();																											\
@@ -259,7 +259,7 @@ public:																																			\
 	{																																			\
 		return _InstanceData;																													\
 	}																																			\
-	FORCE_INLINE NO_DISCARD INSTANCE_DATA_CLASS &InstanceData(const EntityIdentifier entity) NOEXCEPT											\
+	FORCE_INLINE NO_DISCARD INSTANCE_DATA_CLASS &InstanceData(const Entity *const RESTRICT entity) NOEXCEPT										\
 	{																																			\
 		return _InstanceData[EntityToInstance(entity)];																							\
 	}																																			\
@@ -272,22 +272,22 @@ public:																																			\
 		const uint64 sub_instance_index																											\
 	) NOEXCEPT override;																														\
 	void PostUpdate(const UpdatePhase update_phase) NOEXCEPT override;																			\
-	FORCE_INLINE void RemoveInstance(const EntityIdentifier entity) NOEXCEPT																	\
+	FORCE_INLINE void RemoveInstance(const Entity *const RESTRICT entity) NOEXCEPT																\
 	{																																			\
-		const uint64 instance_index{ _EntityToInstanceMappings[entity] };																		\
+		const uint64 instance_index{ _EntityToInstanceMappings[entity->_EntityIdentifier] };													\
 		if (instance_index == _InstanceData.LastIndex())																						\
 		{																																		\
 			_InstanceData.Pop();																												\
 			_InstanceToEntityMappings.Pop();																									\
-			_EntityToInstanceMappings[entity] = UINT64_MAXIMUM;																					\
+			_EntityToInstanceMappings[entity->_EntityIdentifier] = UINT64_MAXIMUM;																\
 		}																																		\
 		else																																	\
 		{																																		\
-			const EntityIdentifier moved_entity_identifier{ _InstanceToEntityMappings.Back() };													\
+			const Entity *const RESTRICT moved_entity{ _InstanceToEntityMappings.Back() };														\
 			_InstanceData.EraseAt<false>(instance_index);																						\
 			_InstanceToEntityMappings.EraseAt<false>(instance_index);																			\
-			_EntityToInstanceMappings[entity] = UINT64_MAXIMUM;																					\
-			_EntityToInstanceMappings[moved_entity_identifier] = instance_index;																\
+			_EntityToInstanceMappings[entity->_EntityIdentifier] = UINT64_MAXIMUM;																\
+			_EntityToInstanceMappings[moved_entity->_EntityIdentifier] = instance_index;														\
 		}																																		\
 	}																																			\
 private:																																		\

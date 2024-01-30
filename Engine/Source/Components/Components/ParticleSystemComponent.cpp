@@ -67,7 +67,7 @@ void ParticleSystemComponent::PreProcess(ComponentInitializationData *const REST
 /*
 *	Creates an instance.
 */
-void ParticleSystemComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void ParticleSystemComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Define constants.
 	constexpr uint32 MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER{ 512 };
@@ -104,7 +104,7 @@ void ParticleSystemComponent::CreateInstance(const EntityIdentifier entity, Comp
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void ParticleSystemComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
+void ParticleSystemComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 	ASSERT(WorldTransformComponent::Instance->Has(entity), "Particle system component needs a world transform component!");
 }
@@ -112,7 +112,7 @@ void ParticleSystemComponent::PostCreateInstance(const EntityIdentifier entity) 
 /*
 *	Destroys an instance.
 */
-void ParticleSystemComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
+void ParticleSystemComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Remove the instance.
 	RemoveInstance(entity);
@@ -160,7 +160,7 @@ void ParticleSystemComponent::Update
 			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
 			{
 				//Cache the instance data.
-				const EntityIdentifier entity{ InstanceToEntity(instance_index) };
+				const Entity *const RESTRICT entity{ InstanceToEntity(instance_index) };
 				ParticleSystemInstanceData &particle_system_instance_data{ _InstanceData[instance_index] };
 				const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
 				

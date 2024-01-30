@@ -44,7 +44,7 @@ void InstancedImpostorComponent::PreProcess(ComponentInitializationData *const R
 /*
 *	Creates an instance.
 */
-void InstancedImpostorComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void InstancedImpostorComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	InstancedImpostorInitializationData *const RESTRICT _initialization_data{ static_cast<InstancedImpostorInitializationData *const RESTRICT>(initialization_data) };
@@ -119,7 +119,7 @@ void InstancedImpostorComponent::CreateInstance(const EntityIdentifier entity, C
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void InstancedImpostorComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
+void InstancedImpostorComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -127,10 +127,10 @@ void InstancedImpostorComponent::PostCreateInstance(const EntityIdentifier entit
 /*
 *	Destroys an instance.
 */
-void InstancedImpostorComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
+void InstancedImpostorComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Cache the instance index.
-	const uint64 instance_index{ _EntityToInstanceMappings[entity] };
+	const uint64 instance_index{ EntityToInstance(entity) };
 
 	//Cache the instance data.
 	InstancedImpostorInstanceData &instance_data{ _InstanceData[instance_index] };

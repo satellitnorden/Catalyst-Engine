@@ -147,21 +147,21 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 			for (uint64 i{ 0 }; i < queue_item->_CreationQueueItem._NumberOfComponentConfigurations; ++i)
 			{
 				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_CreationQueueItem._ComponentConfigurations[i] };
-				component_configuration->_Component->PreCreateInstance(queue_item->_CreationQueueItem._Entity->_EntityIdentifier);
+				component_configuration->_Component->PreCreateInstance(queue_item->_CreationQueueItem._Entity);
 			}
 
 			//Create all instances.
 			for (uint64 i{ 0 }; i < queue_item->_CreationQueueItem._NumberOfComponentConfigurations; ++i)
 			{
 				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_CreationQueueItem._ComponentConfigurations[i] };
-				component_configuration->_Component->CreateInstance(queue_item->_CreationQueueItem._Entity->_EntityIdentifier, component_configuration);
+				component_configuration->_Component->CreateInstance(queue_item->_CreationQueueItem._Entity, component_configuration);
 			}
 
 			//Notify all components that all instances has been created.
 			for (uint64 i{ 0 }; i < queue_item->_CreationQueueItem._NumberOfComponentConfigurations; ++i)
 			{
 				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_CreationQueueItem._ComponentConfigurations[i] };
-				component_configuration->_Component->PostCreateInstance(queue_item->_CreationQueueItem._Entity->_EntityIdentifier);
+				component_configuration->_Component->PostCreateInstance(queue_item->_CreationQueueItem._Entity);
 			}
 
 			//This entity is now initialized. (:
@@ -238,21 +238,21 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 			for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
 			{
 				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations[i] };
-				component_configuration->_Component->PreCreateInstance(queue_item->_Entity->_EntityIdentifier);
+				component_configuration->_Component->PreCreateInstance(queue_item->_Entity);
 			}
 
 			//Create all instances.
 			for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
 			{
 				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations[i] };
-				component_configuration->_Component->CreateInstance(queue_item->_Entity->_EntityIdentifier, component_configuration);
+				component_configuration->_Component->CreateInstance(queue_item->_Entity, component_configuration);
 			}
 
 			//Notify all components that all instances has been created.
 			for (uint64 i{ 0 }; i < queue_item->_NumberOfComponentConfigurations; ++i)
 			{
 				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations[i] };
-				component_configuration->_Component->PostCreateInstance(queue_item->_Entity->_EntityIdentifier);
+				component_configuration->_Component->PostCreateInstance(queue_item->_Entity);
 			}
 
 			//This entity is now initialized. (:
@@ -294,9 +294,9 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 			//Notify all components that this entity was destroyed.
 			for (Component *const RESTRICT component : AllComponents())
 			{
-				if (component->Has(queue_item->_Entity->_EntityIdentifier))
+				if (component->Has(queue_item->_Entity))
 				{
-					component->DestroyInstance(queue_item->_Entity->_EntityIdentifier);
+					component->DestroyInstance(queue_item->_Entity);
 				}
 			}
 

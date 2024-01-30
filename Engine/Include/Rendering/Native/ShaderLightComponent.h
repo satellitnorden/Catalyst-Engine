@@ -5,7 +5,7 @@
 #include <Core/General/Padding.h>
 
 //Entities.
-#include <Entities/Core/EntityCore.h>
+#include <Entities/Types/Entity.h>
 
 //Lighting.
 #include <Lighting/LightingCore.h>
@@ -79,7 +79,7 @@ public:
 	/*
 	*	Copy by LightComponent constructor.
 	*/
-	ShaderLightComponent(const EntityIdentifier entity) NOEXCEPT;
+	ShaderLightComponent(const Entity *const RESTRICT entity) NOEXCEPT;
 
 };
 

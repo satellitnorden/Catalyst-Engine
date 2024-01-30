@@ -152,7 +152,7 @@ void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT in
 /*
 *	Creates an instance.
 */
-void TerrainComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void TerrainComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	TerrainInitializationData *const RESTRICT _initialization_data{ static_cast<TerrainInitializationData *const RESTRICT>(initialization_data) };
@@ -210,7 +210,7 @@ void TerrainComponent::CreateInstance(const EntityIdentifier entity, ComponentIn
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void TerrainComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
+void TerrainComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -218,10 +218,10 @@ void TerrainComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEP
 /*
 *	Destroys an instance.
 */
-void TerrainComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
+void TerrainComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Cache the instance index.
-	const uint64 instance_index{ _EntityToInstanceMappings[entity] };
+	const uint64 instance_index{ EntityToInstance(entity) };
 
 	//Cache the instance data.
 	TerrainInstanceData &instance_data{ _InstanceData[instance_index] };

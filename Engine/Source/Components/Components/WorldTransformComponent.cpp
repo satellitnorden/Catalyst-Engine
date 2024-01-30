@@ -38,7 +38,7 @@ void WorldTransformComponent::PreProcess(ComponentInitializationData *const REST
 /*
 *	Creates an instance.
 */
-void WorldTransformComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void WorldTransformComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	WorldTransformInitializationData *const RESTRICT _initialization_data{ static_cast<WorldTransformInitializationData*const RESTRICT>(initialization_data) };
@@ -56,7 +56,7 @@ void WorldTransformComponent::CreateInstance(const EntityIdentifier entity, Comp
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void WorldTransformComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
+void WorldTransformComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -64,7 +64,7 @@ void WorldTransformComponent::PostCreateInstance(const EntityIdentifier entity) 
 /*
 *	Destroys an instance.
 */
-void WorldTransformComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
+void WorldTransformComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Remove the instance.
 	RemoveInstance(entity);

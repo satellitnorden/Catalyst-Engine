@@ -260,7 +260,7 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 	}
 
 	//Cache the instance data.
-	LightInstanceData &instance_data{ LightComponent::Instance->InstanceData(_SkyLight->_EntityIdentifier) };
+	LightInstanceData &instance_data{ LightComponent::Instance->InstanceData(_SkyLight) };
 
 	//Set the sky light rotation.
 	instance_data._DirectionalLightData._Rotation = rotation;

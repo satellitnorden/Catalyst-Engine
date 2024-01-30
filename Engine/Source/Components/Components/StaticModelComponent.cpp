@@ -48,7 +48,7 @@ void StaticModelComponent::PreProcess(ComponentInitializationData *const RESTRIC
 /*
 *	Creates an instance.
 */
-void StaticModelComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void StaticModelComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	StaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<StaticModelInitializationData *const RESTRICT>(initialization_data) };
@@ -72,7 +72,7 @@ void StaticModelComponent::CreateInstance(const EntityIdentifier entity, Compone
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void StaticModelComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
+void StaticModelComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 	ASSERT(WorldTransformComponent::Instance->Has(entity), "Static model component needs a world transform component!");
 
@@ -111,10 +111,10 @@ void StaticModelComponent::PostCreateInstance(const EntityIdentifier entity) NOE
 /*
 *	Destroys an instance.
 */
-void StaticModelComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
+void StaticModelComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Cache the instance index.
-	const uint64 instance_index{ _EntityToInstanceMappings[entity] };
+	const uint64 instance_index{ EntityToInstance(entity) };
 
 	//Cache the instance data.
 	StaticModelInstanceData &instance_data{ _InstanceData[instance_index] };

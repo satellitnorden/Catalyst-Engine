@@ -140,7 +140,7 @@ NO_DISCARD RenderDataTableHandle RayTracingSystem::GetCurrentRenderDataTable() N
 /*
 *	Callback for when a static model instance is created.
 */
-void RayTracingSystem::OnStaticModelInstanceCreated(const EntityIdentifier entity_identifier, const StaticModelInstanceData &instance_data) NOEXCEPT
+void RayTracingSystem::OnStaticModelInstanceCreated(const Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT
 {
 	//Iterate through the meshes.
 	for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
@@ -204,11 +204,11 @@ void RayTracingSystem::OnStaticModelInstanceCreated(const EntityIdentifier entit
 		hit_group->_Entries.Emplace();
 		RayTracingHitGroup::Entry &new_entry{ hit_group->_Entries.Back() };
 
-		new_entry._EntityIdentifier = entity_identifier;
+		new_entry._EntityIdentifier = entity->_EntityIdentifier;
 		new_entry._VertexBuffer = mesh_level_of_detail._VertexBuffer;
 		new_entry._IndexBuffer = mesh_level_of_detail._IndexBuffer;
 		new_entry._MaterialIndex = instance_data._MaterialResources[mesh_index]->_Index;
-		new_entry._InstanceData._Transform = WorldTransformComponent::Instance->InstanceData(entity_identifier)._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+		new_entry._InstanceData._Transform = WorldTransformComponent::Instance->InstanceData(entity)._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 		new_entry._InstanceData._BottomLevelAccelerationStructure = bottom_level_acceleration_structure;
 		new_entry._InstanceData._HitGroupIndex = hit_group->_Index;
 		new_entry._InstanceData._InstanceIndex = static_cast<uint32>(hit_group->_Entries.LastIndex());
@@ -218,7 +218,7 @@ void RayTracingSystem::OnStaticModelInstanceCreated(const EntityIdentifier entit
 /*
 *	Callback for when a static model instance is destroyed.
 */
-void RayTracingSystem::OnStaticModelInstanceDestroyed(const EntityIdentifier entity_identifier, const StaticModelInstanceData &instance_data) NOEXCEPT
+void RayTracingSystem::OnStaticModelInstanceDestroyed(const Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT
 {
 	//Iterate through the meshes.
 	for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
@@ -239,7 +239,7 @@ void RayTracingSystem::OnStaticModelInstanceDestroyed(const EntityIdentifier ent
 		//Remove the entries associated with this entity.
 		for (uint64 i{ 0 }; i < hit_group->_Entries.Size();)
 		{
-			if (hit_group->_Entries[i]._EntityIdentifier == entity_identifier)
+			if (hit_group->_Entries[i]._EntityIdentifier == entity->_EntityIdentifier)
 			{
 				hit_group->_Entries.EraseAt<false>(i);
 

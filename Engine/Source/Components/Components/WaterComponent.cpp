@@ -92,7 +92,7 @@ void WaterComponent::PreProcess(ComponentInitializationData *const RESTRICT init
 /*
 *	Creates an instance.
 */
-void WaterComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void WaterComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	WaterInitializationData *const RESTRICT _initialization_data{ static_cast<WaterInitializationData *const RESTRICT>(initialization_data) };
@@ -129,7 +129,7 @@ void WaterComponent::CreateInstance(const EntityIdentifier entity, ComponentInit
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void WaterComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
+void WaterComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -137,10 +137,10 @@ void WaterComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
 /*
 *	Destroys an instance.
 */
-void WaterComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
+void WaterComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Cache the instance index.
-	const uint64 instance_index{ _EntityToInstanceMappings[entity] };
+	const uint64 instance_index{ EntityToInstance(entity) };
 
 	//Cache the instance data.
 	WaterInstanceData &instance_data{ _InstanceData[instance_index] };
