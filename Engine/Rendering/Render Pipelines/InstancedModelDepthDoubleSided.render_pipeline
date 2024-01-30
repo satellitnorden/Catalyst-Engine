@@ -83,11 +83,8 @@ Vertex
     //Apply model flags.
     if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
     {
-        //Calculate the normal.
-	    vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
-
         //Apply the wind displacement.
-        world_position += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, normal);
+        world_position += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, vec3(0.0f));
     }
 
     //Output the position.

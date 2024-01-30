@@ -31,6 +31,11 @@ public:
 	~UserInterfaceImage() NOEXCEPT;
 
 	/*
+	*	Sets the position.
+	*/
+	void SetPosition(const Vector2<float32> &position) NOEXCEPT;
+
+	/*
 	*	Sets the material.
 	*/
 	void SetMaterial(const UserInterfaceMaterial &value) NOEXCEPT;

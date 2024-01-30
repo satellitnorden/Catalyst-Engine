@@ -359,9 +359,8 @@ layout (push_constant) uniform PushConstantData
 };
 
 layout (location = 0) in mat3 InTangentSpaceMatrix;
-layout (location = 3) in vec3 InPreviousWorldPosition;
-layout (location = 4) in vec3 InCurrentWorldPosition;
-layout (location = 5) in vec2 InTextureCoordinate;
+layout (location = 3) in vec3 InWorldPosition;
+layout (location = 4) in vec2 InTextureCoordinate;
 
 layout (location = 0) out vec4 SceneFeatures1;
 layout (location = 1) out vec4 SceneFeatures2;
@@ -381,7 +380,7 @@ void main()
     shading_normal = InTangentSpaceMatrix * shading_normal;
     shading_normal = normalize(shading_normal);
     shading_normal = gl_FrontFacing ? shading_normal : -shading_normal;
-    vec2 velocity = CalculateCurrentScreenCoordinate(InCurrentWorldPosition) - CalculatePreviousScreenCoordinate(InPreviousWorldPosition) - CURRENT_FRAME_JITTER;
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
 	SceneFeatures1 = albedo_thickness;
 	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
 	SceneFeatures3 = material_properties;

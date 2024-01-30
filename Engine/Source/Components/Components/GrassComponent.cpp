@@ -170,7 +170,7 @@ void GrassComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const 
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = 64;
+	update_configuration->_BatchSize = 128;
 }
 
 /*

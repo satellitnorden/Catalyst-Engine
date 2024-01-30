@@ -6,6 +6,9 @@
 //Math.
 #include <Math/General/Vector.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 //User interface.
 #include <UserInterface/UserInterfaceCore.h>
 
@@ -25,5 +28,19 @@ public:
 
 	//The opacity.
 	float32 _Opacity;
+
+	/*
+	*	Corrects for aspect ratio.
+	*/
+	FORCE_INLINE void CorrectForAspectRatio() NOEXCEPT
+	{
+		const Vector2<float32> center{ CatalystBaseMath::LinearlyInterpolate(_Minimum, _Maximum, 0.5f) };
+		Vector2<float32> half_extents{ (_Maximum - _Minimum) * 0.5f };
+
+		half_extents._X /= RenderingSystem::Instance->GetScaledAspectRatio();
+
+		_Minimum = center - half_extents;
+		_Maximum = center + half_extents;
+	}
 
 };

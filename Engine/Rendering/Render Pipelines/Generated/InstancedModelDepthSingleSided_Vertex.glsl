@@ -383,8 +383,7 @@ void main()
 	}
     if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
     {
-	    vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
-        world_position += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, normal);
+        world_position += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, vec3(0.0f));
     }
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(world_position,1.0f);
 }

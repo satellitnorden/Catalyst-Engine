@@ -363,9 +363,8 @@ layout (location = 3) in vec2 InTextureCoordinate;
 layout (location = 4) in mat4 InTransformation;
 
 layout (location = 0) out mat3 OutTangentSpaceMatrix;
-layout (location = 3) out vec3 OutPreviousWorldPosition;
-layout (location = 4) out vec3 OutCurrentWorldPosition;
-layout (location = 5) out vec2 OutTextureCoordinate;
+layout (location = 3) out vec3 OutWorldPosition;
+layout (location = 4) out vec2 OutTextureCoordinate;
 
 void main()
 {
@@ -373,12 +372,11 @@ void main()
     vec3 bitangent = normalize(vec3(InTransformation * vec4(cross(InNormal, InTangent), 0.0f)));
     vec3 normal = normalize(vec3(InTransformation * vec4(InNormal, 0.0f)));
     OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
-    OutPreviousWorldPosition = OutCurrentWorldPosition = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
+    OutWorldPosition = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
     OutTextureCoordinate = InTextureCoordinate;
     if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
     {
-        OutPreviousWorldPosition += CalculatePreviousWindDisplacement(InTransformation[3].xyz, InPosition, normal);
-        OutCurrentWorldPosition += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, normal);
+        OutWorldPosition += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, vec3(0.0f));
     }
-	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutCurrentWorldPosition,1.0f);
+	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

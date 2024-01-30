@@ -61,8 +61,7 @@ Vertex
 
     //Declare output parameters.
     OutputParameter(mat3, OutTangentSpaceMatrix);
-    OutputParameter(vec3, OutPreviousWorldPosition);
-    OutputParameter(vec3, OutCurrentWorldPosition);
+    OutputParameter(vec3, OutWorldPosition);
     OutputParameter(vec2, OutTextureCoordinate);
 
     //Calculate the tangent space matrix.
@@ -72,19 +71,18 @@ Vertex
 
     //Write data for the fragment shader.
     OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
-    OutPreviousWorldPosition = OutCurrentWorldPosition = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
+    OutWorldPosition = vec3(InTransformation * vec4(InPosition, 1.0f)) + WORLD_GRID_DELTA;
     OutTextureCoordinate = InTextureCoordinate;
     
     //Apply model flags.
     if (TEST_BIT(MODEL_FLAGS, MODEL_FLAG_IS_VEGETATION))
     {
         //Apply the wind displacement.
-        OutPreviousWorldPosition += CalculatePreviousWindDisplacement(InTransformation[3].xyz, InPosition, normal);
-        OutCurrentWorldPosition += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, normal);
+        OutWorldPosition += CalculateCurrentWindDisplacement(InTransformation[3].xyz, InPosition, vec3(0.0f));
     }
 
     //Output the position.
-    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutCurrentWorldPosition, 1.0f));
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
 }
 
 //The fragment shader.
@@ -92,8 +90,7 @@ Fragment
 {
     //Declare input parameters.
     InputParameter(mat3, InTangentSpaceMatrix);
-    InputParameter(vec3, InPreviousWorldPosition);
-    InputParameter(vec3, InCurrentWorldPosition);
+    InputParameter(vec3, InWorldPosition);
     InputParameter(vec2, InTextureCoordinate);
 
     //Evaluate the material.
@@ -110,7 +107,7 @@ Fragment
     shading_normal = normalize(shading_normal);
 
     //Calculate the velocity.
-    vec2 velocity = CalculateCurrentScreenCoordinate(InCurrentWorldPosition) - CalculatePreviousScreenCoordinate(InPreviousWorldPosition) - CURRENT_FRAME_JITTER;
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
 
     //Output the fragments.
     OutputFragment(SceneFeatures1, albedo_thickness);

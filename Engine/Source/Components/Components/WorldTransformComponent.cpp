@@ -82,7 +82,7 @@ void WorldTransformComponent::GetUpdateConfiguration(ComponentUpdateConfiguratio
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE;
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = 258;
+	update_configuration->_BatchSize = 512;
 }
 
 /*

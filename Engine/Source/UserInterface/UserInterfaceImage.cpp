@@ -35,6 +35,8 @@ UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
 
 		_Primitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
 	}
+
+	_Primitive->CorrectForAspectRatio();
 }
 
 /*
@@ -44,6 +46,17 @@ UserInterfaceImage::~UserInterfaceImage() NOEXCEPT
 {
 	//Destroy the primitive.
 	UserInterfaceSystem::Instance->DestroyUserInterfacePrimitive(_Primitive);
+}
+
+/*
+*	Sets the position.
+*/
+void UserInterfaceImage::SetPosition(const Vector2<float32>& position) NOEXCEPT
+{
+	const Vector2<float32> half_extents{ (_Primitive->_Maximum - _Primitive->_Minimum) * 0.5f };
+
+	_Primitive->_Minimum = position - half_extents;
+	_Primitive->_Maximum = position + half_extents;
 }
 
 /*
