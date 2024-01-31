@@ -487,7 +487,6 @@ void main()
 {
     uint seed = InSeed;
     float random_rotation = mix(-PI, PI, RandomFloat(seed));
-    float wind_influence = mix(0.75f, 1.25f, RandomFloat(seed));
     float cull_value = RandomFloat(seed);
     OutWorldPosition = InPosition + WORLD_GRID_DELTA;
     float distance_from_camera = length(OutWorldPosition - CAMERA_WORLD_POSITION);
@@ -508,14 +507,10 @@ void main()
     vertex_position = RotateYaw(vertex_position, random_rotation);
     OutWorldPosition += vertex_position;
     OutNormal = RotateYaw(normal, random_rotation);
-    OutWorldPosition += CalculateCurrentWindDisplacement(InPosition, vertex_position, OutNormal) * wind_influence;
+    OutWorldPosition += CalculateCurrentWindDisplacement(InPosition, vertex_position, OutNormal);
     OutX = raw_vertex_position.x + 0.5f;
     OutThickness = mix(0.75f, 0.0f, raw_vertex_position.y);
     OutAmbientOcclusion = mix(0.5f, 1.0f, raw_vertex_position.y);
-#if 0
-    float distance_to_camera = length(CAMERA_WORLD_POSITION.xz - OutWorldPosition.xz);
-    OutWorldPosition.y = mix(OutWorldPosition.y - (HEIGHT * 0.5f), OutWorldPosition.y, min(distance_to_camera * 0.5f, 1.0f));
-#endif
     float fade_opacity = clamp((distance_from_camera - (FADE_OUT_DISTANCE * 0.75f)) / (FADE_OUT_DISTANCE * 0.25f), 0.0f, 1.0f);
     bool should_be_culled = cull_value > fade_opacity;
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f)*float(should_be_culled);

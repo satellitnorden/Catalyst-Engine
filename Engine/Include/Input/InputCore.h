@@ -15,7 +15,8 @@ namespace InputConstants
 enum class InputLayer : uint8
 {
 	GAME = BIT(0),
-	DEBUG = BIT(1)
+	USER_INTERFACE = BIT(1),
+	DEBUG = BIT(2)
 };
 
 ENUMERATION_BIT_OPERATIONS(InputLayer);

@@ -80,7 +80,6 @@ Vertex
     //Calculate random properties.
     uint seed = InSeed;
     float random_rotation = mix(-PI, PI, RandomFloat(seed));
-    float wind_influence = mix(0.75f, 1.25f, RandomFloat(seed));
     float cull_value = RandomFloat(seed);
 
     //Calculate the world position.
@@ -126,18 +125,12 @@ Vertex
     OutNormal = RotateYaw(normal, random_rotation);
 
     //Apply the wind displacement.
-    OutWorldPosition += CalculateCurrentWindDisplacement(InPosition, vertex_position, OutNormal) * wind_influence;
+    OutWorldPosition += CalculateCurrentWindDisplacement(InPosition, vertex_position, OutNormal);
 
     //Output data to the fragment shader.
     OutX = raw_vertex_position.x + 0.5f;
     OutThickness = mix(0.75f, 0.0f, raw_vertex_position.y);
     OutAmbientOcclusion = mix(0.5f, 1.0f, raw_vertex_position.y);
-
-#if 0
-    //Apply very simple trample. (:
-    float distance_to_camera = length(CAMERA_WORLD_POSITION.xz - OutWorldPosition.xz);
-    OutWorldPosition.y = mix(OutWorldPosition.y - (HEIGHT * 0.5f), OutWorldPosition.y, min(distance_to_camera * 0.5f, 1.0f));
-#endif
 
     //Check if this instance should be culled.
     float fade_opacity = clamp((distance_from_camera - (FADE_OUT_DISTANCE * 0.75f)) / (FADE_OUT_DISTANCE * 0.25f), 0.0f, 1.0f);

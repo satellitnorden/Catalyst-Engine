@@ -35,8 +35,6 @@ UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
 
 		_Primitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
 	}
-
-	_Primitive->CorrectForAspectRatio();
 }
 
 /*
@@ -68,7 +66,13 @@ void UserInterfaceImage::SetHalfExtents(const Vector2<float32> &half_extents) NO
 
 	_Primitive->_Minimum = center - half_extents;
 	_Primitive->_Maximum = center + half_extents;
+}
 
+/*
+*	Corrects for aspect ratio.
+*/
+void UserInterfaceImage::CorrectForAspectRatio() NOEXCEPT
+{
 	_Primitive->CorrectForAspectRatio();
 }
 

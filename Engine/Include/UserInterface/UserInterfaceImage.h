@@ -41,6 +41,11 @@ public:
 	void SetHalfExtents(const Vector2<float32> &half_extents) NOEXCEPT;
 
 	/*
+	*	Corrects for aspect ratio.
+	*/
+	void CorrectForAspectRatio() NOEXCEPT;
+
+	/*
 	*	Sets the material.
 	*/
 	void SetMaterial(const UserInterfaceMaterial &value) NOEXCEPT;
