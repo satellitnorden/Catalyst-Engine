@@ -51,7 +51,7 @@ void AnimatedModelComponent::PreProcess(ComponentInitializationData *const RESTR
 /*
 *	Creates an instance.
 */
-void AnimatedModelComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void AnimatedModelComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	AnimatedModelInitializationData *const RESTRICT _initialization_data{ static_cast<AnimatedModelInitializationData *const RESTRICT>(initialization_data) };
@@ -93,7 +93,7 @@ void AnimatedModelComponent::CreateInstance(const EntityIdentifier entity, Compo
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void AnimatedModelComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
+void AnimatedModelComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 	ASSERT(WorldTransformComponent::Instance->Has(entity), "Animated model component needs a world transform component!");
 
@@ -111,10 +111,10 @@ void AnimatedModelComponent::PostCreateInstance(const EntityIdentifier entity) N
 /*
 *	Destroys an instance.
 */
-void AnimatedModelComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
+void AnimatedModelComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Cache the instance index.
-	const uint64 instance_index{ _EntityToInstanceMappings[entity] };
+	const uint64 instance_index{ EntityToInstance(entity) };
 
 	//Cache the instance data.
 	AnimatedModelInstanceData &instance_data{ _InstanceData[instance_index] };
@@ -145,6 +145,14 @@ void AnimatedModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 64;
+}
+
+/*
+*	Runs before the given update phase.
+*/
+void AnimatedModelComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }
 
 /*

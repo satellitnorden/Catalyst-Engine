@@ -38,7 +38,7 @@ void LightComponent::PreProcess(ComponentInitializationData *const RESTRICT init
 /*
 *	Creates an instance.
 */
-void LightComponent::CreateInstance(const EntityIdentifier entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void LightComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	LightInitializationData *const RESTRICT _initialization_data{ static_cast<LightInitializationData *const RESTRICT>(initialization_data) };
@@ -76,7 +76,7 @@ void LightComponent::CreateInstance(const EntityIdentifier entity, ComponentInit
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void LightComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
+void LightComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -84,7 +84,7 @@ void LightComponent::PostCreateInstance(const EntityIdentifier entity) NOEXCEPT
 /*
 *	Destroys an instance.
 */
-void LightComponent::DestroyInstance(const EntityIdentifier entity) NOEXCEPT
+void LightComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Remove the instance.
 	RemoveInstance(entity);
@@ -103,6 +103,14 @@ void LightComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const 
 	update_configuration->_UpdatePhaseMask = static_cast<UpdatePhase>(0);
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 0;
+}
+
+/*
+*	Runs before the given update phase.
+*/
+void LightComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }
 
 /*

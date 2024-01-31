@@ -79,7 +79,7 @@ public:
 	/*
 	*	Copy by LightComponent constructor.
 	*/
-	ShaderLightComponent(const Entity *const RESTRICT entity) NOEXCEPT;
+	ShaderLightComponent(Entity *const RESTRICT entity) NOEXCEPT;
 
 };
 

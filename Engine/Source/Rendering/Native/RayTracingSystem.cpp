@@ -140,7 +140,7 @@ NO_DISCARD RenderDataTableHandle RayTracingSystem::GetCurrentRenderDataTable() N
 /*
 *	Callback for when a static model instance is created.
 */
-void RayTracingSystem::OnStaticModelInstanceCreated(const Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT
+void RayTracingSystem::OnStaticModelInstanceCreated(Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT
 {
 	//Iterate through the meshes.
 	for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
@@ -218,7 +218,7 @@ void RayTracingSystem::OnStaticModelInstanceCreated(const Entity *const RESTRICT
 /*
 *	Callback for when a static model instance is destroyed.
 */
-void RayTracingSystem::OnStaticModelInstanceDestroyed(const Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT
+void RayTracingSystem::OnStaticModelInstanceDestroyed(Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT
 {
 	//Iterate through the meshes.
 	for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)

@@ -38,7 +38,7 @@ void WorldTransformComponent::PreProcess(ComponentInitializationData *const REST
 /*
 *	Creates an instance.
 */
-void WorldTransformComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void WorldTransformComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	WorldTransformInitializationData *const RESTRICT _initialization_data{ static_cast<WorldTransformInitializationData*const RESTRICT>(initialization_data) };
@@ -56,7 +56,7 @@ void WorldTransformComponent::CreateInstance(const Entity *const RESTRICT entity
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void WorldTransformComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
+void WorldTransformComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -64,7 +64,7 @@ void WorldTransformComponent::PostCreateInstance(const Entity *const RESTRICT en
 /*
 *	Destroys an instance.
 */
-void WorldTransformComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
+void WorldTransformComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Remove the instance.
 	RemoveInstance(entity);
@@ -83,6 +83,14 @@ void WorldTransformComponent::GetUpdateConfiguration(ComponentUpdateConfiguratio
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE;
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 512;
+}
+
+/*
+*	Runs before the given update phase.
+*/
+void WorldTransformComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }
 
 /*

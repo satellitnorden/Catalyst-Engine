@@ -92,7 +92,7 @@ void WaterComponent::PreProcess(ComponentInitializationData *const RESTRICT init
 /*
 *	Creates an instance.
 */
-void WaterComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void WaterComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	WaterInitializationData *const RESTRICT _initialization_data{ static_cast<WaterInitializationData *const RESTRICT>(initialization_data) };
@@ -129,7 +129,7 @@ void WaterComponent::CreateInstance(const Entity *const RESTRICT entity, Compone
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void WaterComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
+void WaterComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -137,7 +137,7 @@ void WaterComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOE
 /*
 *	Destroys an instance.
 */
-void WaterComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
+void WaterComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Cache the instance index.
 	const uint64 instance_index{ EntityToInstance(entity) };
@@ -165,6 +165,14 @@ void WaterComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const 
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 1;
+}
+
+/*
+*	Runs before the given update phase.
+*/
+void WaterComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }
 
 /*

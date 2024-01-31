@@ -44,7 +44,7 @@ void InstancedImpostorComponent::PreProcess(ComponentInitializationData *const R
 /*
 *	Creates an instance.
 */
-void InstancedImpostorComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void InstancedImpostorComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	InstancedImpostorInitializationData *const RESTRICT _initialization_data{ static_cast<InstancedImpostorInitializationData *const RESTRICT>(initialization_data) };
@@ -119,7 +119,7 @@ void InstancedImpostorComponent::CreateInstance(const Entity *const RESTRICT ent
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void InstancedImpostorComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
+void InstancedImpostorComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -127,7 +127,7 @@ void InstancedImpostorComponent::PostCreateInstance(const Entity *const RESTRICT
 /*
 *	Destroys an instance.
 */
-void InstancedImpostorComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
+void InstancedImpostorComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Cache the instance index.
 	const uint64 instance_index{ EntityToInstance(entity) };
@@ -155,6 +155,14 @@ void InstancedImpostorComponent::GetUpdateConfiguration(ComponentUpdateConfigura
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 128;
+}
+
+/*
+*	Runs before the given update phase.
+*/
+void InstancedImpostorComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }
 
 /*

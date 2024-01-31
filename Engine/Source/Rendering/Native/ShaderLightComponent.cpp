@@ -14,7 +14,7 @@
 /*
 *	Copy by LightComponent constructor.
 */
-ShaderLightComponent::ShaderLightComponent(const Entity *const RESTRICT entity) NOEXCEPT
+ShaderLightComponent::ShaderLightComponent(Entity *const RESTRICT entity) NOEXCEPT
 {
 	const LightInstanceData &light_instance_data{ LightComponent::Instance->InstanceData(entity) };
 

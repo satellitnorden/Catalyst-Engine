@@ -152,7 +152,7 @@ void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT in
 /*
 *	Creates an instance.
 */
-void TerrainComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void TerrainComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	TerrainInitializationData *const RESTRICT _initialization_data{ static_cast<TerrainInitializationData *const RESTRICT>(initialization_data) };
@@ -210,7 +210,7 @@ void TerrainComponent::CreateInstance(const Entity *const RESTRICT entity, Compo
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void TerrainComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
+void TerrainComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -218,7 +218,7 @@ void TerrainComponent::PostCreateInstance(const Entity *const RESTRICT entity) N
 /*
 *	Destroys an instance.
 */
-void TerrainComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
+void TerrainComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Cache the instance index.
 	const uint64 instance_index{ EntityToInstance(entity) };
@@ -256,6 +256,14 @@ void TerrainComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *cons
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 1;
+}
+
+/*
+*	Runs before the given update phase.
+*/
+void TerrainComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }
 
 /*

@@ -48,7 +48,7 @@ void GrassComponent::PreProcess(ComponentInitializationData *const RESTRICT init
 /*
 *	Creates an instance.
 */
-void GrassComponent::CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	//Set up the instance data.
 	GrassInitializationData *const RESTRICT _initialization_data{ static_cast<GrassInitializationData *const RESTRICT>(initialization_data) };
@@ -135,7 +135,7 @@ void GrassComponent::CreateInstance(const Entity *const RESTRICT entity, Compone
 *	Runs after all components have created their instance for the given entity.
 *	Useful if there is some setup needed involving multiple components.
 */
-void GrassComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
+void GrassComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 
 }
@@ -143,7 +143,7 @@ void GrassComponent::PostCreateInstance(const Entity *const RESTRICT entity) NOE
 /*
 *	Destroys an instance.
 */
-void GrassComponent::DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT
+void GrassComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Cache the instance index.
 	const uint64 instance_index{ EntityToInstance(entity) };
@@ -171,6 +171,14 @@ void GrassComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const 
 	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = 128;
+}
+
+/*
+*	Runs before the given update phase.
+*/
+void GrassComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+
 }
 
 /*

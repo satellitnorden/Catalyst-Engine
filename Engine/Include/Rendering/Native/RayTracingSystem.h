@@ -51,12 +51,12 @@ public:
 	/*
 	*	Callback for when a static model instance is created.
 	*/
-	void OnStaticModelInstanceCreated(const Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT;
+	void OnStaticModelInstanceCreated(Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT;
 
 	/*
 	*	Callback for when a static model instance is destroyed.
 	*/
-	void OnStaticModelInstanceDestroyed(const Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT;
+	void OnStaticModelInstanceDestroyed(Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT;
 
 	/*
 	*	Returns if ray tracing data exists.

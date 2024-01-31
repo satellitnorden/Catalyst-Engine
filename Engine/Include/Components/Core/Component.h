@@ -69,7 +69,7 @@ public:
 	DynamicArray<uint64> _EntityToInstanceMappings;
 
 	//The instance to entity mappings.
-	DynamicArray<const Entity *RESTRICT> _InstanceToEntityMappings;
+	DynamicArray<Entity *RESTRICT> _InstanceToEntityMappings;
 
 	/*
 	*	Default constructor.
@@ -104,7 +104,7 @@ public:
 	/*
 	*	Runs before an instance is created.
 	*/
-	FORCE_INLINE void PreCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT
+	FORCE_INLINE void PreCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
 	{
 		for (uint64 i{ _EntityToInstanceMappings.Size() }; i <= entity->_EntityIdentifier; ++i)
 		{
@@ -118,23 +118,23 @@ public:
 	/*
 	*	Creates an instance.
 	*/
-	virtual void CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
+	virtual void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
 
 	/*
 	*	Runs after all components have created their instance for the given entity.
 	*	Useful if there is some setup needed involving multiple components.
 	*/
-	virtual void PostCreateInstance(const Entity* const RESTRICT entity) NOEXCEPT = 0;
+	virtual void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT = 0;
 
 	/*
 	*	Destroys an instance.
 	*/
-	virtual void DestroyInstance(const Entity* const RESTRICT entity) NOEXCEPT = 0;
+	virtual void DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT = 0;
 
 	/*
 	*	Returns if the given entity has this component.
 	*/
-	FORCE_INLINE NO_DISCARD bool Has(const Entity* const RESTRICT entity) NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool Has(Entity *const RESTRICT entity) NOEXCEPT
 	{
 		return entity->_EntityIdentifier < _EntityToInstanceMappings.Size() && _EntityToInstanceMappings[entity->_EntityIdentifier] != UINT64_MAXIMUM;
 	}
@@ -142,7 +142,7 @@ public:
 	/*
 	*	Returns the instance index for the given entity.
 	*/
-	FORCE_INLINE NO_DISCARD uint64 EntityToInstance(const Entity *const RESTRICT entity) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD uint64 EntityToInstance(Entity *const RESTRICT entity) const NOEXCEPT
 	{
 		return _EntityToInstanceMappings[entity->_EntityIdentifier];
 	}
@@ -150,7 +150,7 @@ public:
 	/*
 	*	Returns the entity index for the given instance index.
 	*/
-	FORCE_INLINE NO_DISCARD const Entity *const RESTRICT InstanceToEntity(const uint64 instance_index) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD Entity *const RESTRICT InstanceToEntity(const uint64 instance_index) const NOEXCEPT
 	{
 		return _InstanceToEntityMappings[instance_index];
 	}
@@ -169,6 +169,11 @@ public:
 	*	Returns the update configuration.
 	*/
 	virtual void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT = 0;
+
+	/*
+	*	Runs before the given update phase.
+	*/
+	virtual void PreUpdate(const UpdatePhase update_phase) NOEXCEPT = 0;
 
 	/*
 	*	Updates this component.
@@ -247,9 +252,9 @@ public:																																			\
 	}																																			\
 	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;																				\
 	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;											\
-	void CreateInstance(const Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;\
-	void PostCreateInstance(const Entity *const RESTRICT entity) NOEXCEPT override;																\
-	void DestroyInstance(const Entity *const RESTRICT entity) NOEXCEPT override;																\
+	void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;		\
+	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;																	\
+	void DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT override;																		\
 	FORCE_INLINE NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT override																	\
 	{																																			\
 		return _InstanceData.Size();																											\
@@ -259,11 +264,12 @@ public:																																			\
 	{																																			\
 		return _InstanceData;																													\
 	}																																			\
-	FORCE_INLINE NO_DISCARD INSTANCE_DATA_CLASS &InstanceData(const Entity *const RESTRICT entity) NOEXCEPT										\
+	FORCE_INLINE NO_DISCARD INSTANCE_DATA_CLASS &InstanceData(Entity *const RESTRICT entity) NOEXCEPT											\
 	{																																			\
 		return _InstanceData[EntityToInstance(entity)];																							\
 	}																																			\
 	void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT override;							\
+	void PreUpdate(const UpdatePhase update_phase) NOEXCEPT override;																			\
 	void Update																																	\
 	(																																			\
 		const UpdatePhase update_phase,																											\
@@ -272,7 +278,7 @@ public:																																			\
 		const uint64 sub_instance_index																											\
 	) NOEXCEPT override;																														\
 	void PostUpdate(const UpdatePhase update_phase) NOEXCEPT override;																			\
-	FORCE_INLINE void RemoveInstance(const Entity *const RESTRICT entity) NOEXCEPT																\
+	FORCE_INLINE void RemoveInstance(Entity *const RESTRICT entity) NOEXCEPT																	\
 	{																																			\
 		const uint64 instance_index{ _EntityToInstanceMappings[entity->_EntityIdentifier] };													\
 		if (instance_index == _InstanceData.LastIndex())																						\
@@ -283,7 +289,7 @@ public:																																			\
 		}																																		\
 		else																																	\
 		{																																		\
-			const Entity *const RESTRICT moved_entity{ _InstanceToEntityMappings.Back() };														\
+			Entity *const RESTRICT moved_entity{ _InstanceToEntityMappings.Back() };															\
 			_InstanceData.EraseAt<false>(instance_index);																						\
 			_InstanceToEntityMappings.EraseAt<false>(instance_index);																			\
 			_EntityToInstanceMappings[entity->_EntityIdentifier] = UINT64_MAXIMUM;																\

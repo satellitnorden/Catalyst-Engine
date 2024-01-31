@@ -145,6 +145,19 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 	//Gather the update data.
 	_UpdateData.Clear();
 
+	//Run the pre update.
+	for (Component *const RESTRICT component : AllComponents())
+	{
+		ComponentUpdateConfiguration update_configuration;
+
+		component->GetUpdateConfiguration(&update_configuration);
+
+		if (TEST_BIT(update_configuration._UpdatePhaseMask, update_phase))
+		{
+			component->PreUpdate(update_phase);
+		}
+	}
+
 	for (Component *const RESTRICT component : AllComponents())
 	{
 		ComponentUpdateConfiguration update_configuration;

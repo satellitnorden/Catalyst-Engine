@@ -182,9 +182,9 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	for (uint64 instance_index{ 0 }; instance_index < number_of_instances; ++instance_index)
 	{
 		//Cache data.
-		const Entity *const RESTRICT entity_identifier{ AnimatedModelComponent::Instance->InstanceToEntity(instance_index) };
-		const AnimatedModelInstanceData &animated_model_instance_data{ AnimatedModelComponent::Instance->InstanceData(entity_identifier) };
-		const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity_identifier) };
+		Entity *const RESTRICT entity{ AnimatedModelComponent::Instance->InstanceToEntity(instance_index) };
+		const AnimatedModelInstanceData &animated_model_instance_data{ AnimatedModelComponent::Instance->InstanceData(entity) };
+		const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
 
 		//Bind the vertex/inder buffer.
 		command_buffer->BindVertexBuffer(this, 0, animated_model_instance_data._AnimatedModelResource->_VertexBuffer, &OFFSET);

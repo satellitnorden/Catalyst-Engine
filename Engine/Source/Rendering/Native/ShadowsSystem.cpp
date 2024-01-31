@@ -418,7 +418,7 @@ void ShadowsSystem::GatherOpaqueModelInputStream
 		//Go through all instances.
 		for (uint64 instance_index{ 0 }; instance_index < StaticModelComponent::Instance->NumberOfInstances(); ++instance_index)
 		{
-			const Entity *const RESTRICT entity{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
+			Entity *const RESTRICT entity{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
 			const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity) };
 			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
 
@@ -509,7 +509,7 @@ void ShadowsSystem::GatherMaskedModelInputStream
 		//Go through all instances.
 		for (uint64 instance_index{ 0 }; instance_index < StaticModelComponent::Instance->NumberOfInstances(); ++instance_index)
 		{
-			const Entity *const RESTRICT entity{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
+			Entity *const RESTRICT entity{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
 			const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity) };
 			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
 
