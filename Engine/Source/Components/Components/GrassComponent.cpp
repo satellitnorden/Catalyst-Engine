@@ -56,68 +56,70 @@ void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 	GrassInstanceData &instance_data{ _InstanceData.Back() };
 
 	//Copy the data.
-	ASSERT(!_initialization_data->_WorldPositions.Empty(), "Trying to add grass entity without any positions!");
+	ASSERT(!_initialization_data->_GrassInstances.Empty(), "Trying to add grass component without any instances!");
 
-	//Calculate the cell.
-	Vector3<float32> average_cell{ 0.0f, 0.0f, 0.0f };
-
-	for (const WorldPosition &world_position : _initialization_data->_WorldPositions)
-	{
-		for (uint8 i{ 0 }; i < 3; ++i)
-		{
-			average_cell[i] += static_cast<float32>(world_position.GetCell()[i]);
-		}
-	}
-
-	average_cell /= static_cast<float32>(_initialization_data->_WorldPositions.Size());
-
-	for (uint8 i{ 0 }; i < 3; ++i)
-	{
-		instance_data._Cell[i] = CatalystBaseMath::Round<int32>(average_cell[i]);
-	}
+	//Set the world grid cell.
+	instance_data._WorldGridCell = _initialization_data->_WorldGridCell;
 
 	//Calculate the axis aligned bounding box.
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum.SetCell(instance_data._Cell);
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum.SetCell(instance_data._Cell);
+	instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum.SetCell(instance_data._WorldGridCell);
+	instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum.SetCell(instance_data._WorldGridCell);
 
 	Vector3<float32> minimum{ FLOAT32_MAXIMUM };
 	Vector3<float32> maximum{ -FLOAT32_MAXIMUM };
 
-	for (const WorldPosition &world_position : _initialization_data->_WorldPositions)
+	for (const GrassInstance &grass_instance : _initialization_data->_GrassInstances)
 	{
-		const Vector3<float32> relative_position{ world_position.GetRelativePosition(instance_data._Cell) };
-
-		minimum = Vector3<float32>::Minimum(minimum, relative_position);
-		maximum = Vector3<float32>::Maximum(maximum, relative_position);
+		minimum = Vector3<float32>::Minimum(minimum, grass_instance._Position);
+		maximum = Vector3<float32>::Maximum(maximum, grass_instance._Position);
 	}
 
 	instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum.SetLocalPosition(minimum);
 	instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum.SetLocalPosition(maximum);
 
-	struct GrassInstance final
+	//Pack the grass instances.
+	struct PackedGrassInstance final
 	{
-		Vector3<float32> _Position;
-		uint32 _Seed;
+		uint32 _InstanceData1;
+		uint32 _InstanceData2;
 	};
 
-	DynamicArray<GrassInstance> instances;
-	instances.Reserve(_initialization_data->_WorldPositions.Size());
+	DynamicArray<PackedGrassInstance> packed_instances;
+	packed_instances.Reserve(_initialization_data->_GrassInstances.Size());
 
-	for (const WorldPosition &world_position : _initialization_data->_WorldPositions)
+	for (const GrassInstance &grass_instance : _initialization_data->_GrassInstances)
 	{
-		instances.Emplace();
-		GrassInstance &new_grass_instance{ instances.Back() };
+		packed_instances.Emplace();
+		PackedGrassInstance &new_packed_grass_instance{ packed_instances.Back() };
 
-		new_grass_instance._Position = world_position.GetRelativePosition(instance_data._Cell);
-		new_grass_instance._Seed = CatalystRandomMath::RandomIntegerInRange<uint32>(0, UINT32_MAXIMUM);
+		const Vector3<float32> normalized_position
+		{
+			CatalystBaseMath::Scale(grass_instance._Position._X, minimum._X, maximum._X, 0.0f, 1.0f),
+			CatalystBaseMath::Scale(grass_instance._Position._Y, minimum._Y, maximum._Y, 0.0f, 1.0f),
+			CatalystBaseMath::Scale(grass_instance._Position._Z, minimum._Z, maximum._Z, 0.0f, 1.0f)
+		};
+
+		const Vector3<uint16> quantized_position
+		{
+			static_cast<uint16>(normalized_position._X * static_cast<float32>(UINT16_MAXIMUM)),
+			static_cast<uint16>(normalized_position._Y * static_cast<float32>(UINT16_MAXIMUM)),
+			static_cast<uint16>(normalized_position._Z * static_cast<float32>(UINT16_MAXIMUM))
+		};
+
+		const float32 normalized_rotation{ CatalystBaseMath::Scale(grass_instance._Rotation, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI, 0.0f, 1.0f) };
+
+		const uint16 quantized_rotation{ static_cast<uint16>(normalized_rotation * static_cast<float32>(UINT16_MAXIMUM)) };
+
+		new_packed_grass_instance._InstanceData1 = (static_cast<uint32>(quantized_position._X)) | (static_cast<uint32>(quantized_position._Y) << 16);
+		new_packed_grass_instance._InstanceData2 = (static_cast<uint32>(quantized_position._Z)) | (static_cast<uint32>(quantized_rotation) << 16);
 	}
 
-	const void *RESTRICT positions_data[]{ instances.Data() };
-	const uint64 positions_data_sizes[]{ sizeof(GrassInstance) * instances.Size() };
+	const void *RESTRICT positions_data[]{ packed_instances.Data() };
+	const uint64 positions_data_sizes[]{ sizeof(PackedGrassInstance) * packed_instances.Size() };
 	RenderingSystem::Instance->CreateBuffer(positions_data_sizes[0], BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &instance_data._InstanceBuffer);
 	RenderingSystem::Instance->UploadDataToBuffer(positions_data, positions_data_sizes, 1, &instance_data._InstanceBuffer);
 
-	instance_data._NumberOfInstances = static_cast<uint32>(instances.Size());
+	instance_data._NumberOfInstances = static_cast<uint32>(packed_instances.Size());
 
 	//Copy other properties.
 	instance_data._MaterialResource = _initialization_data->_MaterialResource;

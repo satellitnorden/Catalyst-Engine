@@ -19,6 +19,8 @@
 
 #define FLOAT32_MAXIMUM (3.402823466e+38F)
 #define UINT8_MAXIMUM (0xff)
+#define UINT16_MAXIMUM (0xffff)
+#define UINT16_RECIPROCAL (1.525902189669642e-5f)
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
@@ -465,17 +467,19 @@ vec3 CalculateCurrentWindDisplacement(vec3 world_position, vec3 vertex_position,
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) uint MATERIAL_INDEX;
-	layout (offset = 20) float VERTEX_FACTOR;
-	layout (offset = 24) float THICKNESS;
-	layout (offset = 28) float HEIGHT;
-	layout (offset = 32) float TILT;
-	layout (offset = 36) float BEND;
-	layout (offset = 40) float FADE_OUT_DISTANCE;
+	layout (offset = 16) vec3 MINIMUM;
+	layout (offset = 32) vec3 MAXIMUM;
+	layout (offset = 48) uint MATERIAL_INDEX;
+	layout (offset = 52) float VERTEX_FACTOR;
+	layout (offset = 56) float THICKNESS;
+	layout (offset = 60) float HEIGHT;
+	layout (offset = 64) float TILT;
+	layout (offset = 68) float BEND;
+	layout (offset = 72) float FADE_OUT_DISTANCE;
 };
 
-layout (location = 0) in vec3 InPosition;
-layout (location = 1) in uint InSeed;
+layout (location = 0) in uint InInstanceData1;
+layout (location = 1) in uint InInstanceData2;
 
 layout (location = 0) out vec3 OutWorldPosition;
 layout (location = 1) out vec3 OutNormal;
@@ -485,10 +489,12 @@ layout (location = 4) out float OutAmbientOcclusion;
 
 void main()
 {
-    uint seed = InSeed;
-    float random_rotation = mix(-PI, PI, RandomFloat(seed));
-    float cull_value = RandomFloat(seed);
-    OutWorldPosition = InPosition + WORLD_GRID_DELTA;
+    vec3 instance_position;
+    instance_position.x = mix(MINIMUM.x, MAXIMUM.x, float(InInstanceData1 & 0xffff) * UINT16_RECIPROCAL);
+    instance_position.y = mix(MINIMUM.y, MAXIMUM.y, float(InInstanceData1 >> 16) * UINT16_RECIPROCAL);
+    instance_position.z = mix(MINIMUM.z, MAXIMUM.z, float(InInstanceData2 & 0xffff) * UINT16_RECIPROCAL);
+    float instance_rotation = mix(-PI, PI, float(InInstanceData2 >> 16) * UINT16_RECIPROCAL);
+    OutWorldPosition = instance_position + WORLD_GRID_DELTA;
     float distance_from_camera = length(OutWorldPosition - CAMERA_WORLD_POSITION);
     float thickness = THICKNESS + (THICKNESS * 0.01f * distance_from_camera);
     vec3 raw_vertex_position;
@@ -504,14 +510,16 @@ void main()
     vec3 tangent = normalize(next_position - vertex_position);
     vec3 normal = cross(bitangent, tangent);
     normal.x += raw_vertex_position.x * 2.0f;
-    vertex_position = RotateYaw(vertex_position, random_rotation);
+    vertex_position = RotateYaw(vertex_position, instance_rotation);
     OutWorldPosition += vertex_position;
-    OutNormal = RotateYaw(normal, random_rotation);
-    OutWorldPosition += CalculateCurrentWindDisplacement(InPosition, vertex_position, OutNormal);
+    OutNormal = RotateYaw(normal, instance_rotation);
+    OutWorldPosition += CalculateCurrentWindDisplacement(instance_position, vertex_position, OutNormal);
     OutX = raw_vertex_position.x + 0.5f;
     OutThickness = mix(0.75f, 0.0f, raw_vertex_position.y);
     OutAmbientOcclusion = mix(0.5f, 1.0f, raw_vertex_position.y);
+    uint seed = gl_InstanceIndex;
+    float cull_value = RandomFloat(seed);
     float fade_opacity = clamp((distance_from_camera - (FADE_OUT_DISTANCE * 0.75f)) / (FADE_OUT_DISTANCE * 0.25f), 0.0f, 1.0f);
     bool should_be_culled = cull_value > fade_opacity;
-	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f)*float(should_be_culled);
+	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition*float(should_be_culled),1.0f);
 }

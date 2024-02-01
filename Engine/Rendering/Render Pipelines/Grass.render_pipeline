@@ -49,6 +49,8 @@ Topology(TRIANGLE_STRIP);
 
 //Declare push constant data.
 PushConstantData(vec3, WORLD_GRID_DELTA);
+PushConstantData(vec3, MINIMUM);
+PushConstantData(vec3, MAXIMUM);
 PushConstantData(uint, MATERIAL_INDEX);
 PushConstantData(float, VERTEX_FACTOR);
 PushConstantData(float, THICKNESS);
@@ -67,8 +69,8 @@ SubscribeToInputStream(Grass);
 Vertex
 {
     //Declare input parameters.
-    InputParameter(vec3, InPosition);
-    InputParameter(uint, InSeed);
+    InputParameter(uint, InInstanceData1);
+    InputParameter(uint, InInstanceData2);
 
     //Declare output parameters.
     OutputParameter(vec3, OutWorldPosition);
@@ -77,13 +79,17 @@ Vertex
     OutputParameter(float, OutThickness);
     OutputParameter(float, OutAmbientOcclusion);
 
-    //Calculate random properties.
-    uint seed = InSeed;
-    float random_rotation = mix(-PI, PI, RandomFloat(seed));
-    float cull_value = RandomFloat(seed);
+    //Unpack the instance data.
+    vec3 instance_position;
+    
+    instance_position.x = mix(MINIMUM.x, MAXIMUM.x, float(InInstanceData1 & 0xffff) * UINT16_RECIPROCAL);
+    instance_position.y = mix(MINIMUM.y, MAXIMUM.y, float(InInstanceData1 >> 16) * UINT16_RECIPROCAL);
+    instance_position.z = mix(MINIMUM.z, MAXIMUM.z, float(InInstanceData2 & 0xffff) * UINT16_RECIPROCAL);
+
+    float instance_rotation = mix(-PI, PI, float(InInstanceData2 >> 16) * UINT16_RECIPROCAL);
 
     //Calculate the world position.
-    OutWorldPosition = InPosition + WORLD_GRID_DELTA;
+    OutWorldPosition = instance_position + WORLD_GRID_DELTA;
 
     //Calculate the distance to the camera.
     float distance_from_camera = length(OutWorldPosition - CAMERA_WORLD_POSITION);
@@ -116,21 +122,25 @@ Vertex
     normal.x += raw_vertex_position.x * 2.0f;
 
     //Rotate the vertex position.
-    vertex_position = RotateYaw(vertex_position, random_rotation);
+    vertex_position = RotateYaw(vertex_position, instance_rotation);
 
     //Add the vertex position.
     OutWorldPosition += vertex_position;
 
     //Rotate the normal.
-    OutNormal = RotateYaw(normal, random_rotation);
+    OutNormal = RotateYaw(normal, instance_rotation);
 
     //Apply the wind displacement.
-    OutWorldPosition += CalculateCurrentWindDisplacement(InPosition, vertex_position, OutNormal);
+    OutWorldPosition += CalculateCurrentWindDisplacement(instance_position, vertex_position, OutNormal);
 
     //Output data to the fragment shader.
     OutX = raw_vertex_position.x + 0.5f;
     OutThickness = mix(0.75f, 0.0f, raw_vertex_position.y);
     OutAmbientOcclusion = mix(0.5f, 1.0f, raw_vertex_position.y);
+
+    //Calculate random properties.
+    uint seed = INSTANCE_INDEX;
+    float cull_value = RandomFloat(seed);
 
     //Check if this instance should be culled.
     float fade_opacity = clamp((distance_from_camera - (FADE_OUT_DISTANCE * 0.75f)) / (FADE_OUT_DISTANCE * 0.25f), 0.0f, 1.0f);
@@ -138,7 +148,7 @@ Vertex
     bool should_be_culled = cull_value > fade_opacity;
 
     //Output the position.
-    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f) * float(should_be_culled));
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition * float(should_be_culled), 1.0f));
 }
 
 //The fragment shader.

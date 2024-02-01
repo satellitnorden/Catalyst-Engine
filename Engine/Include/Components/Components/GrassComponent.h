@@ -7,6 +7,9 @@
 //Components.
 #include <Components/Core/Component.h>
 
+//Rendering.
+#include <Rendering/Native/GrassCore.h>
+
 //Resources.
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/MaterialResource.h>
@@ -25,8 +28,11 @@ class GrassInitializationData final : public ComponentInitializationData
 
 public:
 
-	//The world positions.
-	DynamicArray<WorldPosition> _WorldPositions;
+	//The world grid cell.
+	Vector3<int32> _WorldGridCell;
+
+	//The grass instances.
+	DynamicArray<GrassInstance> _GrassInstances;
 
 	//The material resource.
 	ResourcePointer<MaterialResource> _MaterialResource;
@@ -53,8 +59,8 @@ class GrassInstanceData final
 
 public:
 
-	//The cell.
-	Vector3<int32> _Cell;
+	//The world grid cell.
+	Vector3<int32> _WorldGridCell;
 
 	//The world space axis aligned bounding box.
 	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;

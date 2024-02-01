@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderInputManager.h>
 
+//Core.
+#include <Core/Algorithms/SortingAlgorithms.h>
+
 //Components.
 #include <Components/Components/GrassComponent.h>
 #include <Components/Components/InstancedImpostorComponent.h>
@@ -92,6 +95,10 @@ struct GrassPushConstantData
 {
 	Vector3<float32> _WorldGridDelta;
 	Padding<4> _Padding1;
+	Vector3<float32> _Minimum;
+	Padding<4> _Padding2;
+	Vector3<float32> _Maximum;
+	Padding<4> _Padding3;
 	uint32 _MaterialIndex;
 	float32 _VertexFactor;
 	float32 _Thickness;
@@ -572,12 +579,12 @@ void RenderInputManager::Initialize() NOEXCEPT
 		//Set up the required vertex input attribute/binding descriptions for models.
 		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
 
-		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, 0);
-		required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32UnsignedInt, 0);
+		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32UnsignedInt, 0);
+		required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32UnsignedInt, static_cast<uint32>(sizeof(uint32) * 1));
 
 		DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
 
-		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vector4<float32>)), VertexInputBindingDescription::InputRate::Instance);
+		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(uint32) * 2), VertexInputBindingDescription::InputRate::Instance);
 
 		RegisterInputStream
 		(
@@ -1201,52 +1208,78 @@ void RenderInputManager::GatherGrassInputStream
 	//Clear the push constant data memory.
 	input_stream->_PushConstantDataMemory.Clear();
 
+	//Cache camera properties.
+	const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
+
 	//Gather grass.
+	for (GrassInstanceData &instance_data : GrassComponent::Instance->InstanceData())
 	{
-		for (GrassInstanceData &instance_data : GrassComponent::Instance->InstanceData())
+		//Ignore if not visible.
+		if (!TEST_BIT(instance_data._VisibilityFlags, VisibilityFlags::CAMERA))
 		{
-			//Ignore if not visible.
-			if (!TEST_BIT(instance_data._VisibilityFlags, VisibilityFlags::CAMERA))
-			{
-				continue;
-			}
-
-			//Add a new entry.
-			input_stream->_Entries.Emplace();
-			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
-
-			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-			new_entry._VertexBuffer = EMPTY_HANDLE;
-			new_entry._IndexBuffer = EMPTY_HANDLE;
-			new_entry._IndexBufferOffset = 0;
-			new_entry._InstanceBuffer = instance_data._InstanceBuffer;
-			new_entry._VertexCount = GrassConstants::HIGHEST_VERTICES - (instance_data._LevelOfDetail * 2);
-			new_entry._IndexCount = 0;
-			new_entry._InstanceCount = instance_data._NumberOfInstances;
-
-			//Set up the push constant data.
-			GrassPushConstantData push_constant_data;
-
-			const Vector3<int32> delta{ instance_data._Cell - WorldSystem::Instance->GetCurrentWorldGridCell() };
-
-			for (uint8 i{ 0 }; i < 3; ++i)
-			{
-				push_constant_data._WorldGridDelta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
-			}
-
-			push_constant_data._MaterialIndex = instance_data._MaterialResource->_Index;
-			push_constant_data._VertexFactor = 1.0f / static_cast<float32>((new_entry._VertexCount - 1) >> 1);
-			push_constant_data._Thickness = instance_data._Thickness;
-			push_constant_data._Height = instance_data._Height;
-			push_constant_data._Tilt = instance_data._Tilt;
-			push_constant_data._Bend = instance_data._Bend;
-			push_constant_data._FadeOutDistance = instance_data._FadeOutDistance;
-
-			for (uint64 i{ 0 }; i < sizeof(GrassPushConstantData); ++i)
-			{
-				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
-			}
+			continue;
 		}
+
+		//Add a new entry.
+		input_stream->_Entries.Emplace();
+		RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+		new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+		new_entry._VertexBuffer = EMPTY_HANDLE;
+		new_entry._IndexBuffer = EMPTY_HANDLE;
+		new_entry._IndexBufferOffset = 0;
+		new_entry._InstanceBuffer = instance_data._InstanceBuffer;
+		new_entry._VertexCount = GrassConstants::HIGHEST_VERTICES - (instance_data._LevelOfDetail * 2);
+		new_entry._IndexCount = 0;
+		new_entry._InstanceCount = instance_data._NumberOfInstances;
+
+		//Calculate the sort value.
+		{
+			const AxisAlignedBoundingBox3D camera_relative_axis_aligned_bounding_box{ instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(WorldSystem::Instance->GetCurrentWorldGridCell()) };
+			const Vector3<float32> closest_point{ AxisAlignedBoundingBox3D::GetClosestPointInside(camera_relative_axis_aligned_bounding_box, camera_local_position) };
+
+			new_entry._SortValue = Vector3<float32>::LengthSquared(closest_point - camera_local_position);
+		}
+
+		//Set up the push constant data.
+		GrassPushConstantData push_constant_data;
+
+		const Vector3<int32> delta{ instance_data._WorldGridCell - WorldSystem::Instance->GetCurrentWorldGridCell() };
+
+		for (uint8 i{ 0 }; i < 3; ++i)
+		{
+			push_constant_data._WorldGridDelta[i] = static_cast<float32>(delta[i]) * WorldSystem::Instance->GetWorldGridSize();
+		}
+
+		push_constant_data._Minimum = instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum.GetLocalPosition();
+		push_constant_data._Maximum = instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum.GetLocalPosition();
+		push_constant_data._MaterialIndex = instance_data._MaterialResource->_Index;
+		push_constant_data._VertexFactor = 1.0f / static_cast<float32>((new_entry._VertexCount - 1) >> 1);
+		push_constant_data._Thickness = instance_data._Thickness;
+		push_constant_data._Height = instance_data._Height;
+		push_constant_data._Tilt = instance_data._Tilt;
+		push_constant_data._Bend = instance_data._Bend;
+		push_constant_data._FadeOutDistance = instance_data._FadeOutDistance;
+
+		for (uint64 i{ 0 }; i < sizeof(GrassPushConstantData); ++i)
+		{
+			input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+		}
+	}
+
+	//Sort.
+	if (!input_stream->_Entries.Empty())
+	{
+		SortingAlgorithms::StandardSort<RenderInputStreamEntry>
+		(
+			input_stream->_Entries.Begin(),
+			input_stream->_Entries.End(),
+			nullptr,
+			[](const void *const RESTRICT user_data, const RenderInputStreamEntry *const RESTRICT first, const RenderInputStreamEntry *const RESTRICT second)
+			{
+				return first->_SortValue < second->_SortValue;
+			}
+		);
 	}
 }
 

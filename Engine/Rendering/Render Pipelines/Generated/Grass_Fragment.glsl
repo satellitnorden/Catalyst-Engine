@@ -21,6 +21,8 @@ layout (early_fragment_tests) in;
 
 #define FLOAT32_MAXIMUM (3.402823466e+38F)
 #define UINT8_MAXIMUM (0xff)
+#define UINT16_MAXIMUM (0xffff)
+#define UINT16_RECIPROCAL (1.525902189669642e-5f)
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
@@ -467,13 +469,15 @@ vec3 CalculateCurrentWindDisplacement(vec3 world_position, vec3 vertex_position,
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec3 WORLD_GRID_DELTA;
-	layout (offset = 16) uint MATERIAL_INDEX;
-	layout (offset = 20) float VERTEX_FACTOR;
-	layout (offset = 24) float THICKNESS;
-	layout (offset = 28) float HEIGHT;
-	layout (offset = 32) float TILT;
-	layout (offset = 36) float BEND;
-	layout (offset = 40) float FADE_OUT_DISTANCE;
+	layout (offset = 16) vec3 MINIMUM;
+	layout (offset = 32) vec3 MAXIMUM;
+	layout (offset = 48) uint MATERIAL_INDEX;
+	layout (offset = 52) float VERTEX_FACTOR;
+	layout (offset = 56) float THICKNESS;
+	layout (offset = 60) float HEIGHT;
+	layout (offset = 64) float TILT;
+	layout (offset = 68) float BEND;
+	layout (offset = 72) float FADE_OUT_DISTANCE;
 };
 
 layout (location = 0) in vec3 InWorldPosition;

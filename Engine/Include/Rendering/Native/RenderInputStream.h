@@ -74,8 +74,10 @@ public:
 			uint32 _InstanceCount;
 		};
 	};
-	
 
+	//The sort value.
+	float32 _SortValue;
+	
 };
 
 /*
