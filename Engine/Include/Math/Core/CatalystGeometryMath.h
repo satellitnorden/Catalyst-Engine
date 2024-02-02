@@ -91,7 +91,10 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool CircleCircleOverlap(const Circle &A, const Circle &B) NOEXCEPT
 	{
-		return Vector2<float32>::Length(A._Position - B._Position) <= (A._Radius + B._Radius);
+		const float32 distance_squared{ Vector2<float32>::LengthSquared(A._Position - B._Position) };
+		const float32 radii{ A._Radius + B._Radius };
+		const float32 radii_squared{ radii * radii };
+		return distance_squared <= radii_squared;
 	}
 
 	/*

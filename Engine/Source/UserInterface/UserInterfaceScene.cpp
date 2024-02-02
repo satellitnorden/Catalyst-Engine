@@ -745,7 +745,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 	}
 
 	//Cache the input data.
-	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState(InputLayer::GAME) };
+	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState(InputLayer::USER_INTERFACE) };
 
 	//Retrieve the cursor state.
 	const CursorState cursor_state{ RetrieveCursorState() };
@@ -1122,16 +1122,16 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 			case InputDeviceType::KEYBOARD:
 			case InputDeviceType::MOUSE:
 			{
-				output._Position = Vector2<float32>(InputSystem::Instance->GetMouseState(InputLayer::GAME)->_CurrentX, InputSystem::Instance->GetMouseState(InputLayer::GAME)->_CurrentY);
-				output._Pressed = InputSystem::Instance->GetMouseState(InputLayer::GAME)->_Left == ButtonState::PRESSED;
+				output._Position = Vector2<float32>(InputSystem::Instance->GetMouseState(InputLayer::USER_INTERFACE)->_CurrentX, InputSystem::Instance->GetMouseState(InputLayer::USER_INTERFACE)->_CurrentY);
+				output._Pressed = InputSystem::Instance->GetMouseState(InputLayer::USER_INTERFACE)->_Left == ButtonState::PRESSED;
 
 				break;
 			}
 
 			case InputDeviceType::TOUCH:
 			{
-				output._Position = Vector2<float32>(InputSystem::Instance->GetTouchState(InputLayer::GAME)->_FingerStates[0]._CurrentX, InputSystem::Instance->GetTouchState(InputLayer::GAME)->_FingerStates[0]._CurrentY);
-				output._Pressed = InputSystem::Instance->GetTouchState(InputLayer::GAME)->_FingerStates[0]._ButtonState == ButtonState::PRESSED;
+				output._Position = Vector2<float32>(InputSystem::Instance->GetTouchState(InputLayer::USER_INTERFACE)->_FingerStates[0]._CurrentX, InputSystem::Instance->GetTouchState(InputLayer::USER_INTERFACE)->_FingerStates[0]._CurrentY);
+				output._Pressed = InputSystem::Instance->GetTouchState(InputLayer::USER_INTERFACE)->_FingerStates[0]._ButtonState == ButtonState::PRESSED;
 
 				break;
 			}
