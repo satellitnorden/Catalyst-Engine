@@ -75,7 +75,24 @@ NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<Componen
 		++queue_item._NumberOfComponentConfigurations;
 	}
 
+	//If the creation queue is full, process items if we're on the main thread, otherwise hold off a bit.
+	while (_NumberOfItemsInCreationQueue >= CREATION_QUEUE_THRESHOLD)
+	{
+		if (Concurrency::CurrentThread::IsMainThread())
+		{
+			//ASSERT(false, "Implement this!");
+		}
+
+		else
+		{
+			Concurrency::CurrentThread::SleepFor(1'000'000);
+		}
+	}
+
 	_CreationQueue.Push(queue_item);
+
+	//Increment the number of items in the creation queue.
+	++_NumberOfItemsInCreationQueue;
 
 	//Return the entity.
 	return entity;
@@ -189,6 +206,9 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 	//Check the creation queue.
 	while (EntityCreationQueueItem *const RESTRICT queue_item{ _CreationQueue.Pop() })
 	{
+		//Decrement the number of items in the creation queue.
+		--_NumberOfItemsInCreationQueue;
+
 		//Check if any component needs pre-processing.
 		bool any_componend_needs_pre_processing{ false };
 

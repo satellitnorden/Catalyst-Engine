@@ -127,4 +127,22 @@ namespace SoundUtilities
 		return calculated_note_duration;
 	}
 
+	/*
+	*	Performs a crossfade between two sources, and returns the weights for each source.
+	*/
+	FORCE_INLINE void Crossfade(const float32 alpha, float32 *const RESTRICT A, float32 *const RESTRICT B) NOEXCEPT
+	{
+		//Define constants.
+		constexpr float32 CONSTANT{ 1.4186f };
+
+		//Do the calculation.
+		const float32 one_minus_alpha{ 1.0f - alpha };
+		const float32 _A{ alpha * one_minus_alpha };
+		const float32 _B{ _A * (1.0f + (CONSTANT * _A)) };
+		const float32 _C{ _B + alpha };
+		const float32 _D{ _B + one_minus_alpha };
+		*A = _C * _C;
+		*B = _D * _D;
+	}
+
 }
