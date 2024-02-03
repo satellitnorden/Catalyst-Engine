@@ -136,9 +136,6 @@ void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 	instance_data._Tilt = _initialization_data->_Tilt;
 	instance_data._Bend = _initialization_data->_Bend;
 	instance_data._FadeOutDistance = _initialization_data->_FadeOutDistance;
-
-	//Free the initialization data.
-	FreeInitializationData(_initialization_data);
 }
 
 /*

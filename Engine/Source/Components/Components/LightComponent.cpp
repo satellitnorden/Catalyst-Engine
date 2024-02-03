@@ -75,9 +75,6 @@ void LightComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 	instance_data._LightType = _initialization_data->_LightType;
 	instance_data._LightProperties = _initialization_data->_LightProperties;
 	instance_data._Intensity = _initialization_data->_Intensity;
-
-	//Free the initialization data.
-	FreeInitializationData(_initialization_data);
 }
 
 /*

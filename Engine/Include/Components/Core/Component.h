@@ -97,6 +97,11 @@ public:
 	virtual void Terminate() NOEXCEPT = 0;
 
 	/*
+	*	Frees initialization data.
+	*/
+	virtual void FreeInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
+
+	/*
 	*	Returns if this component needs pre-processing.
 	*/
 	virtual NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT = 0;
@@ -209,6 +214,9 @@ public:
 	//The component.
 	Component *RESTRICT _Component;
 
+	//The next component initialization data.
+	ComponentInitializationData *RESTRICT _NextComponentInitializationData;
+
 };
 
 /*
@@ -245,7 +253,7 @@ public:																																			\
 		data->_Component = COMPONENT_CLASS::Instance.Get();																						\
 		return data;																															\
 	}																																			\
-	FORCE_INLINE void FreeInitializationData(INITIALIZATION_DATA_CLASS *const RESTRICT data) NOEXCEPT											\
+	FORCE_INLINE void FreeInitializationData(ComponentInitializationData *const RESTRICT data) NOEXCEPT override								\
 	{																																			\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																										\
 		POOL_ALLOCATOR.Free(data);																												\

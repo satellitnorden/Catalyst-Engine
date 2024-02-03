@@ -118,9 +118,6 @@ void InstancedImpostorComponent::CreateInstance(Entity *const RESTRICT entity, C
 	RenderingSystem::Instance->UploadDataToBuffer(transformation_data, transformation_data_sizes, 1, &instance_data._TransformationsBuffer);
 
 	instance_data._NumberOfTransformations = static_cast<uint32>(transformations.Size());
-
-	//Free the initialization data.
-	FreeInitializationData(_initialization_data);
 }
 
 /*

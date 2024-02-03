@@ -103,9 +103,6 @@ void ParticleSystemComponent::CreateInstance(Entity *const RESTRICT entity, Comp
 		//Reset the time since the last particle spawn.
 		new_sub_emitter._TimeSinceLastParticleSpawn = 0.0f;
 	}
-
-	//Free the initialization data.
-	FreeInitializationData(_initialization_data);
 }
 
 /*

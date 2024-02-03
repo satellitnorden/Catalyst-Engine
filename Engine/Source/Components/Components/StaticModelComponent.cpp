@@ -69,9 +69,6 @@ void StaticModelComponent::CreateInstance(Entity *const RESTRICT entity, Compone
 	instance_data._ModelSimulationConfiguration = _initialization_data->_ModelSimulationConfiguration;
 	instance_data._MeshesVisibleMask = UINT8_MAXIMUM;
 
-	//Free the initialization data.
-	FreeInitializationData(_initialization_data);
-
 	//Tell the ray tracing system.
 	RenderingSystem::Instance->GetRayTracingSystem()->OnStaticModelInstanceCreated(entity, _InstanceData.Back());
 }

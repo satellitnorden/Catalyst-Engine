@@ -202,9 +202,6 @@ void TerrainComponent::CreateInstance(Entity *const RESTRICT entity, ComponentIn
 	instance_data._QuadTree._RootNode._MaximumHeightMapCoordinate = Vector2<float32>(1.0f);
 	instance_data._QuadTree._RootNode._PatchSize = static_cast<float32>(instance_data._PatchSize);
 
-	//Free the initialization data.
-	FreeInitializationData(_initialization_data);
-
 	//Create the physics actor.
 	PhysicsSystem::Instance->CreateHeightFieldActor
 	(

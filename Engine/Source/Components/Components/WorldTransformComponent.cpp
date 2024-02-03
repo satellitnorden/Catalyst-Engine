@@ -55,9 +55,6 @@ void WorldTransformComponent::CreateInstance(Entity *const RESTRICT entity, Comp
 
 	//Copy data.
 	instance_data._PreviousWorldTransform = instance_data._CurrentWorldTransform = _initialization_data->_WorldTransform;
-
-	//Free the initialization data.
-	FreeInitializationData(_initialization_data);
 }
 
 /*

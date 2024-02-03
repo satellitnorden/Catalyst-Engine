@@ -116,9 +116,6 @@ void InstancedStaticModelComponent::CreateInstance(Entity *const RESTRICT entity
 	instance_data._NumberOfTransformations = _initialization_data->_PreprocessedData._NumberOfTransformations;
 	instance_data._ModelFlags = _initialization_data->_ModelFlags;
 	instance_data._ModelFadeData = _initialization_data->_ModelFadeData;
-
-	//Free the initialization data.
-	FreeInitializationData(_initialization_data);
 }
 
 /*

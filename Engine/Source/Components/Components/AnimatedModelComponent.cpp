@@ -90,11 +90,7 @@ void AnimatedModelComponent::CreateInstance(Entity *const RESTRICT entity, Compo
 
 		RenderingSystem::Instance->CreateRenderDataTable(AnimationSystem::Instance->GetAnimationDataRenderDataTableLayout(), &instance_data._AnimationDataRenderDataTables[i]);
 		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &instance_data._AnimationDataRenderDataTables[i], instance_data._AnimationDataBuffers[i]);
-
 	}
-
-	//Free the initialization data.
-	FreeInitializationData(_initialization_data);
 }
 
 /*

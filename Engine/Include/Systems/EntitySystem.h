@@ -71,10 +71,7 @@ private:
 		Entity *RESTRICT _Entity;
 
 		//The component configurations.
-		StaticArray<ComponentInitializationData *RESTRICT, EntityConstants::MAXIMUM_NUMBER_OF_COMPONENTS_PER_ENTITY> _ComponentConfigurations;
-
-		//The number of component configurations.
-		uint64 _NumberOfComponentConfigurations;
+		ComponentInitializationData *RESTRICT _ComponentConfigurations;
 
 	};
 
@@ -148,12 +145,12 @@ private:
 	void EntityUpdate() NOEXCEPT;
 
 	/*
-	*	Processed the creation queue.
+	*	Processes the creation queue.
 	*/
 	void ProcessCreationQueue() NOEXCEPT;
 
 	/*
-	*	Processed the destruction queue.
+	*	Processes the destruction queue.
 	*/
 	void ProcessDestructionQueue() NOEXCEPT;
 
