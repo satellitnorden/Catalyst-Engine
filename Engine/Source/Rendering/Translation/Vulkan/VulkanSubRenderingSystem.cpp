@@ -54,8 +54,8 @@
 
 //Third party.
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-#include <ThirdParty/imgui.h>
-#include <ThirdParty/imgui_impl_vulkan.h>
+#include <ThirdParty/ImGui/imgui.h>
+#include <ThirdParty/ImGui/imgui_impl_vulkan.h>
 #endif
 
 //Vulkan rendering system data.
@@ -909,28 +909,7 @@ void VulkanSubRenderingSystem::PostInitialize() NOEXCEPT
 		}
 
 		//Create the fonts texture.
-		{
-			CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::PRIMARY) };
-			VkCommandBuffer vulkan_command_buffer{ static_cast<VulkanCommandBuffer *const RESTRICT>(command_buffer->GetCommandBufferData())->Get() };
-
-			VkCommandBufferBeginInfo begin_info = {};
-			begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-			vkBeginCommandBuffer(vulkan_command_buffer, &begin_info);
-
-			ImGui_ImplVulkan_CreateFontsTexture(vulkan_command_buffer);
-
-			VkSubmitInfo end_info = {};
-			end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-			end_info.commandBufferCount = 1;
-			end_info.pCommandBuffers = &vulkan_command_buffer;
-			vkEndCommandBuffer(vulkan_command_buffer);
-
-			vkQueueSubmit(VulkanInterface::Instance->GetMainQueue()->Get(), 1, &end_info, VK_NULL_HANDLE);
-			vkDeviceWaitIdle(VulkanInterface::Instance->GetLogicalDevice().Get());
-
-			ImGui_ImplVulkan_DestroyFontUploadObjects();
-		}
+		ImGui_ImplVulkan_CreateFontsTexture();
 	}
 #endif
 }

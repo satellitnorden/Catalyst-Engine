@@ -8,7 +8,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(DebugSystem);
@@ -325,7 +325,7 @@ void DebugSystem::UpdateIO() NOEXCEPT
 	io.KeyMap[ImGuiKey_Space] = UNDERLYING(KeyboardButton::Spacebar);
 	io.KeyMap[ImGuiKey_Enter] = UNDERLYING(KeyboardButton::Enter);
 	io.KeyMap[ImGuiKey_Escape] = UNDERLYING(KeyboardButton::Escape);
-	io.KeyMap[ImGuiKey_KeyPadEnter] = UNDERLYING(KeyboardButton::Enter);
+	io.KeyMap[ImGuiKey_KeypadEnter] = UNDERLYING(KeyboardButton::Enter);
 	io.KeyMap[ImGuiKey_A] = UNDERLYING(KeyboardButton::A);
 	io.KeyMap[ImGuiKey_C] = UNDERLYING(KeyboardButton::C);
 	io.KeyMap[ImGuiKey_V] = UNDERLYING(KeyboardButton::V);

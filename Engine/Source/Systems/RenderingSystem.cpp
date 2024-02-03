@@ -39,7 +39,7 @@
 
 //Third party.
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 #endif
 
 //Constants.

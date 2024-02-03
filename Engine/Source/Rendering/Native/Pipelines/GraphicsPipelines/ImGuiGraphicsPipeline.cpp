@@ -11,8 +11,8 @@
 #include <Systems/ResourceSystem.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
-#include <ThirdParty/imgui_internal.h>
+#include <ThirdParty/ImGui/imgui.h>
+#include <ThirdParty/ImGui/imgui_internal.h>
 
 /*
 *	ImGui vertex push constant data definition.
