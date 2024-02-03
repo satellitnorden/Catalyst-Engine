@@ -9,9 +9,6 @@
 //Resources.
 #include <Resources/Core/SoundResource.h>
 
-//Third party.
-#include <ThirdParty/AudioFile.h>
-
 class OGGWriter final
 {
 

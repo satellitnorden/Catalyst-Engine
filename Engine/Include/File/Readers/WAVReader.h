@@ -200,7 +200,7 @@ private:
 #include <Resources/Core/SoundResource.h>
 
 //Third party.
-#include <ThirdParty/AudioFile.h>
+#include <ThirdParty/AudioFile/AudioFile.h>
 
 class WAVReader final
 {
