@@ -92,6 +92,11 @@ public:
 	virtual void PostInitialize() NOEXCEPT = 0;
 
 	/*
+	*	Terminates this component.
+	*/
+	virtual void Terminate() NOEXCEPT = 0;
+
+	/*
 	*	Returns if this component needs pre-processing.
 	*/
 	virtual NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT = 0;
@@ -227,6 +232,7 @@ public:																																			\
 	DECLARE_SINGLETON(COMPONENT_CLASS);																											\
 	void Initialize() NOEXCEPT override;																										\
 	void PostInitialize() NOEXCEPT override;																									\
+	void Terminate() NOEXCEPT override;																											\
 	FORCE_INLINE NO_DISCARD SHARED_DATA_CLASS &SharedData() NOEXCEPT																			\
 	{																																			\
 		return _SharedData;																														\

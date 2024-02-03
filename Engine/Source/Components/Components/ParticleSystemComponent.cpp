@@ -51,6 +51,14 @@ void ParticleSystemComponent::PostInitialize() NOEXCEPT
 	);
 }
 
+/*
+*	Terminates this component.
+*/
+void ParticleSystemComponent::Terminate() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool ParticleSystemComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;

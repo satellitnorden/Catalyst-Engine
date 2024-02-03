@@ -32,6 +32,14 @@ void StaticModelComponent::PostInitialize() NOEXCEPT
 
 }
 
+/*
+*	Terminates this component.
+*/
+void StaticModelComponent::Terminate() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool StaticModelComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;

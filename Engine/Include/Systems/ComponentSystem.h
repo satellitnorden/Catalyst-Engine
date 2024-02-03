@@ -35,6 +35,11 @@ public:
 	*/
 	void PostInitialize() NOEXCEPT;
 
+	/*
+	*	Terminates the component system.
+	*/
+	void Terminate() NOEXCEPT;
+
 private:
 
 	/*

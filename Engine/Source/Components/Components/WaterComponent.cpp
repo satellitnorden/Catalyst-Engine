@@ -34,6 +34,14 @@ void WaterComponent::PostInitialize() NOEXCEPT
 
 }
 
+/*
+*	Terminates this component.
+*/
+void WaterComponent::Terminate() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool WaterComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return true;

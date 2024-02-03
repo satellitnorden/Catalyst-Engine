@@ -35,6 +35,14 @@ void AnimatedModelComponent::PostInitialize() NOEXCEPT
 
 }
 
+/*
+*	Terminates this component.
+*/
+void AnimatedModelComponent::Terminate() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool AnimatedModelComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;

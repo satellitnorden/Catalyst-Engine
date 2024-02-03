@@ -32,6 +32,14 @@ void GrassComponent::PostInitialize() NOEXCEPT
 
 }
 
+/*
+*	Terminates this component.
+*/
+void GrassComponent::Terminate() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool GrassComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;

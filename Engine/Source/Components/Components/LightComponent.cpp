@@ -22,6 +22,14 @@ void LightComponent::PostInitialize() NOEXCEPT
 
 }
 
+/*
+*	Terminates this component.
+*/
+void LightComponent::Terminate() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool LightComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;

@@ -138,6 +138,18 @@ void ComponentSystem::PostInitialize() NOEXCEPT
 }
 
 /*
+*	Terminates the component system.
+*/
+void ComponentSystem::Terminate() NOEXCEPT
+{
+	//Terminate all components.
+	for (Component *const RESTRICT component : AllComponents())
+	{
+		component->Terminate();
+	}
+}
+
+/*
 *	Updates components for the given update phase.
 */
 void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT

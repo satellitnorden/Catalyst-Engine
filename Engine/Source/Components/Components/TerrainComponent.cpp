@@ -35,6 +35,14 @@ void TerrainComponent::PostInitialize() NOEXCEPT
 
 }
 
+/*
+*	Terminates this component.
+*/
+void TerrainComponent::Terminate() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool TerrainComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return true;

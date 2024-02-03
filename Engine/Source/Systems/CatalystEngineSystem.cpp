@@ -341,9 +341,6 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	//Flush the logs before termination.
 	LogSystem::Instance->Flush();
 
-	//Pre-terminate all systems.
-	SaveSystem::Instance->PreTerminate();
-
 	//Signal to other systems that the game should terminate.
 	_ShouldTerminate = true;
 
@@ -357,6 +354,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 #if defined(CATALYST_EDITOR)
 	CatalystEditorSystem::Instance->Terminate();
 #endif
+	ComponentSystem::Instance->Terminate();
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DebugSystem::Instance->Terminate();
 #endif
@@ -365,6 +363,9 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	ResourceSystem::Instance->Terminate();
 	SoundSystem::Instance->Terminate();
 	WorldSystem::Instance->Terminate();
+
+	//Terminate the save system here, since other system's terminations might have queued up saves.
+	SaveSystem::Instance->Terminate();
 
 	//Terminate the rendering system last, currently it might cause crashes, so make sure systems that save to disk do that first at least as to not lose data.
 	RenderingSystem::Instance->Terminate();

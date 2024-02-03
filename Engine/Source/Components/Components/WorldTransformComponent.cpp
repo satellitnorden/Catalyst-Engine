@@ -22,6 +22,14 @@ void WorldTransformComponent::PostInitialize() NOEXCEPT
 
 }
 
+/*
+*	Terminates this component.
+*/
+void WorldTransformComponent::Terminate() NOEXCEPT
+{
+
+}
+
 NO_DISCARD bool WorldTransformComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;

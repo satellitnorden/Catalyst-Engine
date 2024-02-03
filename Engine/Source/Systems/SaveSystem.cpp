@@ -58,9 +58,9 @@ void SaveSystem::SequentialUpdate() NOEXCEPT
 }
 
 /*
-*	Pre-terminates the save system.
+*	Terminates the save system.
 */
-void SaveSystem::PreTerminate() NOEXCEPT
+void SaveSystem::Terminate() NOEXCEPT
 {
 	//Save all save entries.
 	_ProcessLoadsMask = 0;

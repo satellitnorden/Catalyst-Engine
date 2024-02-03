@@ -38,9 +38,9 @@ public:
 	void SequentialUpdate() NOEXCEPT;
 
 	/*
-	*	Pre-terminates the save system.
+	*	Terminates the save system.
 	*/
-	void PreTerminate() NOEXCEPT;
+	void Terminate() NOEXCEPT;
 
 	/*
 	*	Registers a save entry.
