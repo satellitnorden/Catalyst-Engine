@@ -10,7 +10,7 @@
 #include <Rendering/Native/Texture2D.h>
 
 //Third Party.
-#include <ThirdParty/lodepng.h>
+#include <ThirdParty/lodepng/lodepng.h>
 
 namespace PNGWriter
 {
