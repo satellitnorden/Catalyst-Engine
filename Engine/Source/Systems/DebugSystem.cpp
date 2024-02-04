@@ -78,9 +78,9 @@ void DebugSystem::Initialize() NOEXCEPT
 }
 
 /*
-*	Terminates the debug system.
+*	Post-terminates the debug system.
 */
-void DebugSystem::Terminate() NOEXCEPT
+void DebugSystem::PostTerminate() NOEXCEPT
 {
 	//Shut down ImGui.
 	ImGui::DestroyContext();

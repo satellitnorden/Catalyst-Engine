@@ -355,11 +355,9 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	CatalystEditorSystem::Instance->Terminate();
 #endif
 	ComponentSystem::Instance->Terminate();
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	DebugSystem::Instance->Terminate();
-#endif
 	DistributionSystem::Instance->Terminate();
 	PhysicsSystem::Instance->Terminate();
+	RenderingSystem::Instance->Terminate();
 	ResourceSystem::Instance->Terminate();
 	SoundSystem::Instance->Terminate();
 	WorldSystem::Instance->Terminate();
@@ -367,11 +365,13 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	//Terminate the save system here, since other system's terminations might have queued up saves.
 	SaveSystem::Instance->Terminate();
 
-	//Terminate the rendering system last, currently it might cause crashes, so make sure systems that save to disk do that first at least as to not lose data.
-	RenderingSystem::Instance->Terminate();
-
 	//Terminate the platform.
 	CatalystPlatform::Terminate();
+
+	//Post-terminate all systems.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	DebugSystem::Instance->PostTerminate();
+#endif
 }
 
 /*

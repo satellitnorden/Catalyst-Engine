@@ -47,9 +47,9 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Terminates the debug system.
+	*	Post-terminates the debug system.
 	*/
-	void Terminate() NOEXCEPT;
+	void PostTerminate() NOEXCEPT;
 
 	/*
 	*	Registers a debug window.
