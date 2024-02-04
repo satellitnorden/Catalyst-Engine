@@ -1,0 +1,5 @@
+PACKAGE Base
+ALWAYS_COMPILE
+FONT
+
+FILE ..\..\..\..\Catalyst-Engine\Engine\Content\Raw\Fonts\OpenSans-Regular.ttf

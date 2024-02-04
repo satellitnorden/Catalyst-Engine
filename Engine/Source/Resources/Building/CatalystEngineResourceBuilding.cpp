@@ -40,7 +40,6 @@
 
 #define BUILD_ENGINE_BASE (0)
 #define BUILD_ENGINE_CLOUD_TEXTURE (0)
-#define BUILD_ENGINE_FONTS (0)
 #define BUILD_ENGINE_OCEAN_TEXTURE (0)
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES (0)
 #define BUILD_ENGINE_SHADERS (0)
@@ -117,18 +116,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE
 	BuildCloudTexture();
-#endif
-
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_FONTS
-	{
-		FontBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Base\\Catalyst_Engine_Default_Font";
-		parameters._ID = "Catalyst_Engine_Default_Font";
-		parameters._File = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Raw\\Fonts\\Kiona-Regular.ttf";
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildFont(parameters);
-	}
 #endif
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_OCEAN_TEXTURE
@@ -1549,7 +1536,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 
 	if (BUILD_ENGINE_ALL
 		|| BUILD_ENGINE_BASE
-		|| BUILD_ENGINE_FONTS
 		|| BUILD_ENGINE_BLUE_NOISE_TEXTURES
 		|| BUILD_ENGINE_SHADERS
 		|| BUILD_ENGINE_DEFAULT_SKY_TEXTURE

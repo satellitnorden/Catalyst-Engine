@@ -44,7 +44,7 @@ void UserInterfaceScene::OnActivated() NOEXCEPT
 	SetHorizontalSubdivision(33);
 	SetVerticalSubdivision(33);
 
-	_FontResource = ResourceSystem::Instance->GetFontResource(HashString("Catalyst_Engine_Default_Font"));
+	_FontResource = ResourceSystem::Instance->GetFontResource(HashString("Default"));
 
 	_ButtonIdleMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f));
 	_ButtonIdleMaterial.SetBorderOffset(0.0f);
@@ -77,7 +77,7 @@ void UserInterfaceScene::OnActivated() NOEXCEPT
 
 	_ProgressBarTopMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
 
-	_TextScale = 0.015f;
+	_TextScale = 0.02'50f;
 }
 
 /*

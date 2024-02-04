@@ -348,6 +348,11 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 				always_compile = true;
 			}
 
+			else if (current_line == "FONT")
+			{
+				ParseFont(compilation_domain, content_cache, name, package, file);
+			}
+
 			else if (current_line == "MATERIAL")
 			{
 				ParseMaterial(compilation_domain, content_cache, name, package, file);
@@ -419,6 +424,87 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 	}
 
 	return new_content_compiled;
+}
+
+/*
+*	Parses a Font from the given file.
+*/
+void ContentCompiler::ParseFont(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
+{
+	//Calculate the intermediate directory.
+	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
+
+	switch (compilation_domain)
+	{
+		case CompilationDomain::ENGINE:
+		{
+			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\%s\\Fonts", package.Length() > 0 ? package.Data() : "");
+
+			break;
+		}
+
+		case CompilationDomain::GAME:
+		{
+			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\%s\\Fonts", package.Length() > 0 ? package.Data() : "");
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Create the directory, if it doesn't exist.
+	File::CreateDirectory(intermediate_directory);
+
+	//Set up the build parameters.
+	FontBuildParameters parameters;
+
+	//Set the output.
+	char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+	sprintf_s(output_buffer, "%s\\%s", intermediate_directory, name.data());
+	parameters._Output = output_buffer;
+
+	//Set the id.
+	parameters._ID = name.data();
+
+	//Read all of the lines.
+	std::string line;
+	StaticArray<DynamicString, 2> arguments;
+
+	while (std::getline(file, line))
+	{
+		//Skip lines with only whitespace.
+		if (TextParsingUtilities::OnlyWhitespace(line.data(), line.length()))
+		{
+			continue;
+		}
+
+		//Parse the arguments.
+		TextParsingUtilities::ParseSpaceSeparatedArguments
+		(
+			line.data(),
+			line.length(),
+			arguments.Data()
+		);
+
+		if (arguments[0] == "FILE")
+		{
+			parameters._File = arguments[1].Data();
+		}
+
+		else
+		{
+			ASSERT(false, "Couldn't parse argument " << arguments[0]);
+		}
+	}
+
+	//Build!
+	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildFont(parameters);
 }
 
 /*

@@ -6,6 +6,7 @@
 
 //Math.
 #include <Math/General/Vector.h>
+#include <Math/Geometry/AxisAlignedBoundingBox2D.h>
 
 //Resources.
 #include <Resources/Core/Resource.h>
@@ -29,17 +30,14 @@ public:
 		//The size.
 		Vector2<float32> _Size;
 
-		//The bearing.
-		Vector2<float32> _Bearing;
+		//The offset.
+		Vector2<float32> _Offset;
+
+		//The texture bounds.
+		AxisAlignedBoundingBox2D _TextureBounds;
 
 		//The advance.
 		float32 _Advance;
-
-		//The texture width offset start.
-		float32 _TextureWidthOffsetStart;
-
-		//The texture width offset end.
-		float32 _TextureWidthOffsetEnd;
 
 	};
 

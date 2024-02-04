@@ -117,4 +117,12 @@ private:
 		RenderInputStream *const RESTRICT input_stream
 	) NOEXCEPT;
 
+	/*
+	*	Gathers a user interface text input stream.
+	*/
+	void GatherUserInterfaceTextInputStream
+	(
+		RenderInputStream *const RESTRICT input_stream
+	) NOEXCEPT;
+
 };

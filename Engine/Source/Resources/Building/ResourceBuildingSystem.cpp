@@ -22,6 +22,7 @@
 #include <File/Readers/MP4Reader.h>
 #include <File/Readers/PNGReader.h>
 #include <File/Readers/WAVReader.h>
+#include <File/Writers/PNGWriter.h>
 
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
@@ -45,9 +46,9 @@
 #include <Systems/TaskSystem.h>
 
 //Third party.
-#include <ThirdParty/freetype/freetype.h>
 #include <ThirdParty/stb_image.h>
 #include <ThirdParty/stb_image_resize.h>
+#include <ThirdParty/stb_truetype/stb_truetype.h>
 #include <ThirdParty/vulkan/shaderc/shaderc.h>
 
 /*
@@ -156,11 +157,8 @@ void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &para
 void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 INTERNAL_FONT_RESOLUTION{ 1'024 };
-	constexpr int32 PADDING_BETWEEN_CHARACTERS{ INTERNAL_FONT_RESOLUTION / 4 };
-	constexpr uint8 BASE_MIP_LEVEL{ 4 };
-	constexpr uint8 EXTRA_MIP_LEVELS{ 3 };
-	constexpr uint8 TOTAL_NUMBER_OF_MIPMAP_LEVELS{ 1 + EXTRA_MIP_LEVELS };
+	constexpr uint32 PADDING{ 4 };
+	constexpr uint32 PIXEL_HEIGHT{ 64 };
 
 	//What should the resource be called?
 	DynamicString file_name{ parameters._Output };
@@ -173,217 +171,187 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 	const ResourceHeader header{ ResourceConstants::FONT_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
 	file.Write(&header, sizeof(ResourceHeader));
 
-	//Initialize the FreeType library.
-	FT_Library free_type_library;
+	//Open the font file.
+	BinaryFile<BinaryFileMode::IN> font_file{ parameters._File };
 
-	if (FT_Init_FreeType(&free_type_library))
+	//Create the buffer.
+	byte *const RESTRICT buffer{ static_cast<byte *const RESTRICT>(Memory::Allocate(font_file.Size())) };
+	font_file.Read(buffer, font_file.Size());
+
+	//Close the font file.
+	font_file.Close();
+
+	//Initialize the font.
+	stbtt_fontinfo font_info;
+	stbtt_InitFont(&font_info, buffer, stbtt_GetFontOffsetForIndex(buffer, 0));
+
+	//Calculate the pixel height scale.
+	const float32 pixel_height_scale{ stbtt_ScaleForPixelHeight(&font_info, PIXEL_HEIGHT) };
+
+	//Calculate the bitmap width/height.
+	uint32 bitmap_width;
+	uint32 bitmap_height;
+
 	{
-		ASSERT(false, "Failed to initialie the FreeType library!");
-	}
-
-	//Load the face.
-	FT_Face free_type_face;
-
-	if (FT_New_Face(free_type_library, parameters._File, 0, &free_type_face))
-	{
-		ASSERT(false, "Failed to load the FreeType face!");
-	}
-
-	//Set the maximum font size.
-	FT_Set_Pixel_Sizes(free_type_face, 0, INTERNAL_FONT_RESOLUTION - PADDING_BETWEEN_CHARACTERS);
-
-	//Determine the width of the master texture.
-	uint32 master_texture_width{ 0 };
-
-	for (int8 i{ 0 }; i < FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
-	{
-		if (FT_Load_Char(free_type_face, i, FT_LOAD_RENDER))
+		//Do a run to calculate the needed width of the bitmap.
+		uint32 needed_width{ 0 };
+		
+		for (uint8 i{ 0 }; i < FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
 		{
-			ASSERT(false, "Failed to load the FreeType character!");
-		}
+			//Retrieve the glyph SDF.
+			int32 width;
+			int32 height;
+			int32 x_offset;
+			int32 y_offset;
 
-		ASSERT(free_type_face->glyph->bitmap.width <= INTERNAL_FONT_RESOLUTION - PADDING_BETWEEN_CHARACTERS && free_type_face->glyph->bitmap.rows <= INTERNAL_FONT_RESOLUTION  - PADDING_BETWEEN_CHARACTERS, "Something went wrong here!");
-
-		const Vector2<uint32> character_dimensions{ free_type_face->glyph->bitmap.width, free_type_face->glyph->bitmap.rows };
-
-		//Skip this character the dimensions are zero.
-		if (character_dimensions._X == 0 || character_dimensions._Y == 0)
-		{
-			master_texture_width += PADDING_BETWEEN_CHARACTERS;
-
-			continue;
-		}
-
-		master_texture_width += free_type_face->glyph->bitmap.width + PADDING_BETWEEN_CHARACTERS + PADDING_BETWEEN_CHARACTERS;
-	}
-
-	//Round the master texture width up to the nearest power of 2.
-	master_texture_width = CatalystBaseMath::RoundUpToNearestPowerOfTwo(master_texture_width);
-
-	//Initialize the master texture.
-	Texture2D<float32> master_texture{ master_texture_width, INTERNAL_FONT_RESOLUTION };
-	uint32 current_width_offset{ PADDING_BETWEEN_CHARACTERS / 2 };
-
-	Memory::Set(master_texture.Data(), 0, master_texture.GetWidth() * master_texture.GetHeight());
-
-	//Load all characters.
-	for (int8 i{ 0 }; i < FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
-	{
-		LOG_INFORMATION("Calculating character %i of %i", static_cast<int32>(i + 1), static_cast<int32>(FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS));
-
-		if (FT_Load_Char(free_type_face, i, FT_LOAD_RENDER))
-		{
-			ASSERT(false, "Failed to load the FreeType character!");
-		}
-
-		//Write the character description to the file.
-		FontResource::CharacterDescription character_description;
-
-		character_description._Size._X = static_cast<float32>(free_type_face->glyph->bitmap.width + PADDING_BETWEEN_CHARACTERS) / static_cast<float32>(INTERNAL_FONT_RESOLUTION - PADDING_BETWEEN_CHARACTERS);
-		character_description._Size._Y = static_cast<float32>(free_type_face->glyph->bitmap.rows + PADDING_BETWEEN_CHARACTERS) / static_cast<float32>(INTERNAL_FONT_RESOLUTION - PADDING_BETWEEN_CHARACTERS);
-		character_description._Bearing._X = static_cast<float32>(free_type_face->glyph->bitmap_left) / static_cast<float32>(INTERNAL_FONT_RESOLUTION - PADDING_BETWEEN_CHARACTERS);
-		character_description._Bearing._Y = static_cast<float32>(free_type_face->glyph->bitmap_top) / static_cast<float32>(INTERNAL_FONT_RESOLUTION - PADDING_BETWEEN_CHARACTERS);
-		character_description._Advance = static_cast<float32>(free_type_face->glyph->advance.x >> 6) / static_cast<float32>(INTERNAL_FONT_RESOLUTION - PADDING_BETWEEN_CHARACTERS);
-		character_description._TextureWidthOffsetStart = static_cast<float32>(current_width_offset) / static_cast<float32>(master_texture_width);
-		character_description._TextureWidthOffsetEnd = static_cast<float32>(current_width_offset + PADDING_BETWEEN_CHARACTERS / 2 + free_type_face->glyph->bitmap.width + PADDING_BETWEEN_CHARACTERS / 2) / static_cast<float32>(master_texture_width);
-
-		file.Write(&character_description, sizeof(FontResource::CharacterDescription));
-
-		//Write the character dimensions.
-		const Vector2<uint32> character_dimensions{ free_type_face->glyph->bitmap.width, free_type_face->glyph->bitmap.rows };
-
-		//Skip this character the dimensions are zero.
-		if (character_dimensions._X == 0 || character_dimensions._Y == 0)
-		{
-			current_width_offset += PADDING_BETWEEN_CHARACTERS;
-
-			continue;
-		}
-
-		//Find the signed distance for all pixels.
-		for (int32 Y{ 0 }; Y < static_cast<int32>(character_dimensions._Y) + PADDING_BETWEEN_CHARACTERS; ++Y)
-		{
-			for (int32 X{ 0 }; X < static_cast<int32>(character_dimensions._X) + PADDING_BETWEEN_CHARACTERS; ++X)
+			uint8 *const RESTRICT glyph_sdf
 			{
-				//Calculate the coordinate for the glyph buffer.
-				const Vector2<int32> glyph_coordinate{ X - PADDING_BETWEEN_CHARACTERS / 2, Y - PADDING_BETWEEN_CHARACTERS / 2 };
+				stbtt_GetCodepointSDF
+				(
+					&font_info,
+					pixel_height_scale,
+					i,
+					PADDING,
+					127,
+					127.0f / static_cast<float32>(PADDING / 2),
+					&width,
+					&height,
+					&x_offset,
+					&y_offset
+				)
+			};
 
-				//Find the current pixel value.
-				uint8 current_pixel_value;
+			//Guess this can happen. :x
+			if (!glyph_sdf)
+			{
+				continue;
+			}
 
-				//If the sub coordinate is out of range, the pixel is assumed to be black.
-				if (glyph_coordinate._X < 0
-					|| static_cast<uint32>(glyph_coordinate._X) >= character_dimensions._X
-					|| glyph_coordinate._Y < 0
-					|| static_cast<uint32>(glyph_coordinate._Y) >= character_dimensions._Y)
+			//Update the needed width.
+			needed_width += width;
+
+			//Free the glyph data.
+			stbtt_FreeSDF(glyph_sdf, nullptr);
+		}
+
+		//Set the bitmap width/height.
+		bitmap_width = needed_width;
+		bitmap_height = PIXEL_HEIGHT;
+	}
+
+	//Set up the bitmap.
+	Texture2D<uint8> bitmap{ bitmap_width, bitmap_height };
+
+	//Clear it. Feels safer. :x
+	Memory::Set(bitmap.Data(), 0, bitmap.GetWidth() * bitmap.GetHeight());
+
+	{
+		//The current X.
+		uint32 current_x{ 0 };
+
+		//Writes all the glyphs for the bitmap.
+		for (uint8 i{ 0 }; i < FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
+		{
+			//Retrieve the glyph SDF.
+			int32 width{ 0 };
+			int32 height{ 0 };
+			int32 x_offset{ 0 };
+			int32 y_offset{ 0 };
+
+			uint8 *const RESTRICT glyph_sdf
+			{
+				stbtt_GetCodepointSDF
+				(
+					&font_info,
+					pixel_height_scale,
+					i,
+					PADDING,
+					127,
+					127.0f / static_cast<float32>(PADDING),
+					&width,
+					&height,
+					&x_offset,
+					&y_offset
+				)
+			};
+
+			//Retrieve the bounding box for the glyph.
+			Vector2<int32> glyph_minimum;
+			Vector2<int32> glyph_maximum;
+			stbtt_GetCodepointBox(&font_info, i, &glyph_minimum._X, &glyph_minimum._Y, &glyph_maximum._X, &glyph_maximum._Y);
+
+			//Retrieve the advance.
+			int32 advance;
+			stbtt_GetCodepointHMetrics(&font_info, i, &advance, nullptr);
+
+			//Write the character description to the file.
+			FontResource::CharacterDescription character_description;
+
+			character_description._Size._X = static_cast<float32>(width) / static_cast<float32>(PIXEL_HEIGHT);
+			character_description._Size._Y = static_cast<float32>(height) / static_cast<float32>(PIXEL_HEIGHT);
+			character_description._Offset._X = static_cast<float32>(glyph_minimum._X) * pixel_height_scale / static_cast<float32>(PIXEL_HEIGHT);
+			character_description._Offset._Y = static_cast<float32>(glyph_minimum._Y) * pixel_height_scale / static_cast<float32>(PIXEL_HEIGHT);
+			character_description._TextureBounds._Minimum._X = static_cast<float32>(current_x) / static_cast<float32>(bitmap_width);
+			character_description._TextureBounds._Minimum._Y = static_cast<float32>(0) / static_cast<float32>(bitmap_width);
+			character_description._TextureBounds._Maximum._X = static_cast<float32>(current_x + width) / static_cast<float32>(bitmap_width);
+			character_description._TextureBounds._Maximum._Y = static_cast<float32>(height) / static_cast<float32>(bitmap_height);
+			character_description._Advance = static_cast<float32>(advance) * pixel_height_scale / static_cast<float32>(PIXEL_HEIGHT);
+
+			file.Write(&character_description, sizeof(FontResource::CharacterDescription));
+
+			//Guess this can happen. :x
+			if (!glyph_sdf)
+			{
+				continue;
+			}
+
+			//Write into the bitmap.
+			for (uint32 Y{ 0 }; Y < height; ++Y)
+			{
+				for (uint32 X{ 0 }; X < width; ++X)
 				{
-					current_pixel_value = 0;
+					bitmap.At(current_x + X, Y) = glyph_sdf[X + ((height - 1 - Y) * width)];
 				}
+			}
 
-				else
-				{
-					current_pixel_value = free_type_face->glyph->bitmap.buffer[glyph_coordinate._X + (glyph_coordinate._Y * character_dimensions._X)] > 0 ? static_cast<uint8>(1) : static_cast<uint8>(0);
-				}
+			//Update the current X.
+			current_x += width;
 
-				//Find the closest distance to the pixel with an opposite value of the one currently at.
-				float32 closest_distance{ FLOAT32_MAXIMUM };
+			//Free the glyph data.
+			stbtt_FreeSDF(glyph_sdf, nullptr);
+		}
+	}
 
-				for (int32 sub_y{ Y - (PADDING_BETWEEN_CHARACTERS / 2) }; sub_y < Y + (PADDING_BETWEEN_CHARACTERS / 2); ++sub_y)
-				{
-					for (int32 sub_x{ X - (PADDING_BETWEEN_CHARACTERS / 2) }; sub_x < X + (PADDING_BETWEEN_CHARACTERS / 2); ++sub_x)
-					{
-						//Calculate the coordinate for the glyph buffer.
-						const Vector2<int32> glyph_coordinate{ sub_x - PADDING_BETWEEN_CHARACTERS / 2, sub_y - PADDING_BETWEEN_CHARACTERS / 2 };
+	//Write it out, for debug purposes.
+	{
+		Texture2D<Vector4<float32>> debug_texture{ bitmap.GetWidth(), bitmap.GetHeight() };
 
-						//Retrieve the value for the sample pixel.
-						uint8 sample_pixel_value;
-
-						if (glyph_coordinate._X < 0
-							|| static_cast<uint32>(glyph_coordinate._X) >= character_dimensions._X
-							|| glyph_coordinate._Y < 0
-							|| static_cast<uint32>(glyph_coordinate._Y) >= character_dimensions._Y)
-						{
-							sample_pixel_value = 0;
-						}
-
-						else
-						{
-							sample_pixel_value = free_type_face->glyph->bitmap.buffer[glyph_coordinate._X + (glyph_coordinate._Y * character_dimensions._X)] > 0 ? static_cast<uint8>(1) : static_cast<uint8>(0);
-						}
-
-						//If the sample pixel value is different from the current pixel value, test it's length.
-						if (current_pixel_value != sample_pixel_value)
-						{
-							const float32 distance_to_sample_pixel{ Vector2<float32>::LengthSquared(Vector2<float32>(static_cast<float32>(sub_x), static_cast<float32>(sub_y)) - Vector2<float32>(static_cast<float32>(X), static_cast<float32>(Y))) };
-
-							if (closest_distance >= distance_to_sample_pixel)
-							{
-								closest_distance = distance_to_sample_pixel;
-							}
-						}
-					}
-				}
-
-				//Perform the square root on the distance.
-				closest_distance = CatalystBaseMath::SquareRoot(closest_distance);
-
-				//Negate the distance if the current pixel value is inside the character.
-				closest_distance = current_pixel_value == 1 ? -closest_distance : closest_distance;
-
-				//Normalize the closest distance.
-				closest_distance = 1.0f - (CatalystBaseMath::Clamp<float32>(closest_distance / static_cast<float32>(PADDING_BETWEEN_CHARACTERS / 2), -1.0f, 1.0f) * 0.5f + 0.5f);
-
-				//Write the normalized distance to the master texture.
-				master_texture.At(X + current_width_offset, Y) = closest_distance;
+		for (uint32 Y{ 0 }; Y < bitmap.GetHeight(); ++Y)
+		{
+			for (uint32 X{ 0 }; X < bitmap.GetWidth(); ++X)
+			{
+				const float32 value{ static_cast<float32>(bitmap.At(X, Y)) / static_cast<float32>(UINT8_MAXIMUM) };
+				debug_texture.At(X, Y) = Vector4<float32>(value, value, value, 1.0f);
 			}
 		}
 
-		current_width_offset += PADDING_BETWEEN_CHARACTERS / 2 + free_type_face->glyph->bitmap.width + PADDING_BETWEEN_CHARACTERS;
+		PNGWriter::Write(debug_texture, "Font_Debug.png");
 	}
 
-	//Generate the mip chain for the final master textures.
-	DynamicArray<Texture2D<float32>> final_master_textures;
-
-	RenderingUtilities::GenerateMipChain(master_texture, MipmapGenerationMode::DEFAULT, &final_master_textures);
-
-	//Convert the mip chain into byte textures.
-	DynamicArray<Texture2D<byte>> final_final_master_textures;
-
-	final_final_master_textures.Upsize<true>(final_master_textures.Size());
-
-	for (uint8 i{ 0 }; i < final_master_textures.Size(); ++i)
-	{
-		final_final_master_textures[i].Initialize(final_master_textures[i].GetWidth(), final_master_textures[i].GetHeight());
-
-		for (uint32 Y{ 0 }; Y < final_final_master_textures[i].GetHeight(); ++Y)
-		{
-			for (uint32 X{ 0 }; X < final_final_master_textures[i].GetWidth(); ++X)
-			{
-				//Retrieve the value at this texel.
-				final_final_master_textures[i].At(X, Y) = static_cast<uint8>(final_master_textures[i].At(X, Y) * static_cast<float32>(UINT8_MAXIMUM));
-			}
-		}
-	}
-
-	//Write the master texture dimensions to the file.
-	const uint32 final_master_texture_width{ final_final_master_textures[BASE_MIP_LEVEL].GetWidth() };
-	file.Write(&final_master_texture_width, sizeof(uint32));
-	const uint32 final_master_texture_height{ final_final_master_textures[BASE_MIP_LEVEL].GetHeight() };
-	file.Write(&final_master_texture_height, sizeof(uint32));
+	//Write the bitmap dimensions to the file.
+	file.Write(&bitmap_width, sizeof(uint32));
+	file.Write(&bitmap_height, sizeof(uint32));
 
 	//Write the number of mipmap levels to the file.
-	file.Write(&TOTAL_NUMBER_OF_MIPMAP_LEVELS, sizeof(uint8));
+	constexpr uint8 NUMBER_OF_MIPMAP_LEVELS{ 1 };
+	file.Write(&NUMBER_OF_MIPMAP_LEVELS, sizeof(uint8));
 
-	//Write all the mip levels of the master texture to the file.
-	for (uint8 i{ 0 }; i < TOTAL_NUMBER_OF_MIPMAP_LEVELS; ++i)
+	//Write all the mip levels of the bitmap to the file.
+	for (uint8 i{ 0 }; i < NUMBER_OF_MIPMAP_LEVELS; ++i)
 	{
 		//Write the master texture data to the file.
-		file.Write(final_final_master_textures[BASE_MIP_LEVEL + i].Data(), final_final_master_textures[BASE_MIP_LEVEL + i].GetWidth() * final_final_master_textures[BASE_MIP_LEVEL + i].GetHeight());
+		file.Write(bitmap.Data(), bitmap.GetWidth() * bitmap.GetHeight());
 	}
-
-	//Free FreeType's resources.
-	FT_Done_Face(free_type_face);
-	FT_Done_FreeType(free_type_library);
 
 	//Close the file.
 	file.Close();

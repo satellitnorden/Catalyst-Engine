@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -24,6 +25,9 @@ private:
 
 	//The user interface graphics pipeline.
 	UserInterfaceGraphicsPipeline _UserInterfaceGraphicsPipeline;
+
+	//The user interface text render pipeline.
+	GraphicsRenderPipeline _UserInterfaceTextRenderPipeline{ HashString("UserInterfaceText_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

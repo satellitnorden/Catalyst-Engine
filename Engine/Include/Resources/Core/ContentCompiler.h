@@ -47,6 +47,11 @@ private:
 	NO_DISCARD bool ParseContentDefinitionsInDirectory(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const char *const RESTRICT directory_path) NOEXCEPT;
 
 	/*
+	*	Parses a Font from the given file.
+	*/
+	void ParseFont(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
+
+	/*
 	*	Parses a Material from the given file.
 	*/
 	void ParseMaterial(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;

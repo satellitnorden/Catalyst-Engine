@@ -190,6 +190,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 
 			case UserInterfacePrimitiveType::TEXT:
 			{
+				/*
 				const TextUserInterfacePrimitive *const RESTRICT type_primitive{ static_cast<const TextUserInterfacePrimitive *const RESTRICT>(primitive) };
 
 				//Calculate the aligned minimum/maximum.
@@ -282,6 +283,7 @@ void UserInterfaceGraphicsPipeline::Execute() NOEXCEPT
 						current_offset_X += type_primitive->_FontResource->_CharacterDescriptions[character]._Advance * type_primitive->_Scale;
 					}
 				}
+				*/
 
 				break;
 			}

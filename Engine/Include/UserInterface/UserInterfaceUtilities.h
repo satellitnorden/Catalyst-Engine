@@ -23,8 +23,8 @@ namespace UserInterfaceUtilities
 	/*
 	*	Calculates an aligned bounding box for text.
 	*/
-	FORCE_INLINE static void CalculateAlignedBoundingBox(	const Vector2<float32>& original_minimum,
-															const Vector2<float32>& original_maximum,
+	FORCE_INLINE static void CalculateAlignedBoundingBox(	const Vector2<float32> &original_minimum,
+															const Vector2<float32> &original_maximum,
 															ResourcePointer<FontResource> font_resource,
 															const DynamicString &text,
 															const float32 scale,
@@ -33,6 +33,102 @@ namespace UserInterfaceUtilities
 															Vector2<float32> *const RESTRICT new_minimum,
 															Vector2<float32> *const RESTRICT new_maximum) NOEXCEPT
 	{
+		*new_minimum = original_minimum;
+		*new_maximum = original_maximum;
+#if 1
+		//Calculate the aspect ratio reciprocal.
+		const float32 aspect_ratio_reciprocal{ 1.0f / RenderingSystem::Instance->GetFullAspectRatio() };
+
+		//Use the character 'A' as a baseline height.
+		const float32 baseline_height{ font_resource->_CharacterDescriptions['A']._Size._Y * scale };
+
+		//Calculate the original center.
+		const Vector2<float32> original_center{ CatalystBaseMath::LinearlyInterpolate(original_minimum, original_maximum, 0.5f) };
+
+		//Calculate the horizontal/vertical extent.
+		const float32 horizontal_extent{ original_maximum._X - original_minimum._X };
+		const float32 vertical_extent{ original_maximum._Y - original_minimum._Y };
+
+		//Calculate the bounding box for the text.
+		Vector2<float32> text_minimum{ 0.0f, original_center._Y - (baseline_height * 0.5f) };
+		Vector2<float32> text_maximum{ 0.0f, original_center._Y + (baseline_height * 0.5f) };
+
+		for (uint64 i{ 0 }, length{ text.Length() }; i < length; ++i)
+		{
+			//Cache the chartacter.
+			const char character{ text[i] };
+
+			//Advance the maximum on the X axis..
+			text_maximum._X += font_resource->_CharacterDescriptions[character]._Advance * scale * aspect_ratio_reciprocal;
+		}
+
+		//Calculate the text horizontal/vertical extent.
+		const float32 text_horizontal_extent{ text_maximum._X - text_minimum._X };
+		const float32 text_vertical_extent{ text_maximum._Y - text_minimum._Y };
+
+		//Calculate the new minimum/maximum.
+		switch (horizontal_alignment)
+		{
+			case TextHorizontalAlignment::LEFT:
+			{
+				new_minimum->_X = original_minimum._X;
+				new_maximum->_X = original_minimum._X + text_maximum._X;
+
+				break;
+			}
+
+			case TextHorizontalAlignment::CENTER:
+			{
+				const float32 factor{ (horizontal_extent - text_horizontal_extent) * 0.5f };
+				new_minimum->_X = original_minimum._X + factor;
+				new_maximum->_X = original_maximum._X - factor;
+
+				break;
+			}
+
+			case TextHorizontalAlignment::RIGHT:
+			{
+				new_minimum->_X = original_maximum._X - text_maximum._X;
+				new_maximum->_X = original_maximum._X;
+
+				break;
+			}
+		}
+
+		switch (vertical_alignment)
+		{
+			case TextVerticalAlignment::TOP:
+			{
+				new_minimum->_Y = original_maximum._Y - baseline_height;
+				new_maximum->_Y = original_maximum._Y;
+
+				break;
+			}
+
+			case TextVerticalAlignment::CENTER:
+			{
+				const float32 factor{ (vertical_extent - text_vertical_extent) * 0.5f };
+				new_minimum->_Y = original_minimum._Y + factor;
+				new_maximum->_Y = original_maximum._Y - factor;
+
+				break;
+			}
+
+			case TextVerticalAlignment::BOTTOM:
+			{
+				new_minimum->_Y = original_minimum._Y;
+				new_maximum->_Y = original_minimum._Y + baseline_height;
+
+				break;
+			}
+		}
+#else
+		//Use the character 'A' as a baseline height.
+		const float32 baseline_height{ font_resource->_CharacterDescriptions['A']._Size._Y };
+
+		//Calculate the aspect ratio reciprocal.
+		const float32 aspect_ratio_reciprocal{ 1.0f / RenderingSystem::Instance->GetFullAspectRatio() };
+
 		//Calculate the horizontal/vertical extent.
 		const float32 horizontal_extent{ original_maximum._X - original_minimum._X };
 		const float32 vertical_extent{ original_maximum._Y - original_minimum._Y };
@@ -52,8 +148,8 @@ namespace UserInterfaceUtilities
 			Vector2<float32> character_minimum;
 			Vector2<float32> character_maximum;
 
-			character_minimum._X = original_minimum._X + current_offset_X + font_resource->_CharacterDescriptions[character]._Bearing._X * scale;
-			character_minimum._Y = original_minimum._Y - (font_resource->_CharacterDescriptions[character]._Size._Y + font_resource->_CharacterDescriptions[character]._Bearing._Y) * scale;
+			character_minimum._X = original_minimum._X + current_offset_X;
+			character_minimum._Y = original_minimum._Y - (font_resource->_CharacterDescriptions[character]._Size._Y + font_resource->_CharacterDescriptions[character]._Offset) * scale;
 
 			character_maximum._X = character_minimum._X + font_resource->_CharacterDescriptions[character]._Size._X * scale;
 			character_maximum._Y = character_minimum._Y + font_resource->_CharacterDescriptions[character]._Size._Y * scale;
@@ -125,6 +221,7 @@ namespace UserInterfaceUtilities
 				break;
 			}
 		}
+#endif
 	}
 
 	/*
