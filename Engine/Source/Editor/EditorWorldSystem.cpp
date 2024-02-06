@@ -18,7 +18,7 @@
 #include <Systems/WorldSystem.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 
 /*
 *	Updates the editor world system.

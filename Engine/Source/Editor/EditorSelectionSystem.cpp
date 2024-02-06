@@ -2,18 +2,9 @@
 //Header file.
 #include <Editor/EditorSelectionSystem.h>
 
-//Componens.
-#include <Components/Core/ComponentManager.h>
-
 //Editor.
 #include <Editor/EditorCore.h>
 #include <Editor/EditorUtilities.h>
-
-//Entities.
-#include <Entities/Types/DynamicModelEntity.h>
-#include <Entities/Types/StaticModelEntity.h>
-#include <Entities/Types/LightEntity.h>
-#include <Entities/Types/UserInterfaceEntity.h>
 
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
@@ -32,8 +23,7 @@
 #include <Systems/UserInterfaceSystem.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
-#include <ThirdParty/imgui_internal.h>
+#include <ThirdParty/ImGui/imgui.h>
 
 /*
 *	Initializes the editor selection system.
@@ -67,6 +57,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 		_CurrentlySelectedEntityOverride = nullptr;
 	}
 
+#if 0
 	//Cast a ray from the mouse position and forward to determine a new selected entity.
 	else if (!ImGui::IsAnyWindowHovered() && !ImGui::IsAnyItemHovered() && !CatalystEditorSystem::Instance->GetEditorEntitySystem()->IsCurrentlyCreatingAnEntity())
 	{
@@ -123,9 +114,11 @@ void EditorSelectionSystem::Update() NOEXCEPT
 			}
 		}
 	}
+#endif
 
 	if (_CurrentlySelectedEntity && _CurrentlySelectedEntity->_Initialized)
 	{
+		/*
 		//Display a screen with this entities properties.
 		ImGui::Begin("Selected Entity", nullptr, EditorConstants::WINDOW_FLAGS);
 		EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_RIGHT, Vector2<float32>(-EditorConstants::GENERAL_WINDOW_WIDTH, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
@@ -968,6 +961,7 @@ void EditorSelectionSystem::Update() NOEXCEPT
 		{
 			SetCurrentlySelectedEntity(duplicated_entity);
 		}
+		*/
 	}
 
 	//Transform the currently selected entity.
@@ -991,6 +985,7 @@ void EditorSelectionSystem::SetCurrentlySelectedEntity(Entity *const RESTRICT en
 */
 void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 {
+	/*
 	if (!_CurrentlySelectedEntity || !_CurrentlySelectedEntity->_Initialized)
 	{
 		return;
@@ -1182,6 +1177,7 @@ void EditorSelectionSystem::TransformCurrentlySelectedEntity(const Ray& ray)
 			break;
 		}
 	}
+	*/
 }
 
 /*

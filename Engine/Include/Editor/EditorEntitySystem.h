@@ -32,9 +32,6 @@ private:
 
 	//Denotes whether or not the user is currently creating an entity.
 	bool _IsCurrentlyCreatingEntity{ false };
-	
-	//The entity type currently being created.
-	EntityType _EntityTypeBeingCreated;
 
 	/*
 	*	Creates a new entity at the given position.

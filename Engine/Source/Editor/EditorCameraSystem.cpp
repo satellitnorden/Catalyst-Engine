@@ -12,7 +12,7 @@
 #include <Systems/InputSystem.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 
 /*
 *	Initializes the editor camera system.

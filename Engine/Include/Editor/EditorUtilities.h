@@ -11,12 +11,10 @@
 #include <UserInterface/UserInterfaceCore.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 
 namespace EditorUtilities
 {
-
-	//Enumeration covering all Window anchor
 
 	/*
 	*	Sets the window position and size based on the given (normalized) parameters.

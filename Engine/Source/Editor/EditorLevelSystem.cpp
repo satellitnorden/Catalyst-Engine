@@ -2,9 +2,6 @@
 //Header file.
 #include <Editor/EditorLevelSystem.h>
 
-//Components.
-#include <Components/Core/ComponentManager.h>
-
 //Editor.
 #include <Editor/EditorCore.h>
 #include <Editor/EditorUtilities.h>
@@ -18,7 +15,7 @@
 #include <Systems/ResourceSystem.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 
 /*
 *	Updates the editor level system.
@@ -261,6 +258,7 @@ void EditorLevelSystem::AddCurrentLevelWindow() NOEXCEPT
 
 	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::TOP_RIGHT, Vector2<float32>(-EditorConstants::GENERAL_WINDOW_WIDTH, -0.5f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
+	/*
 	//List all dynamic model entities.
 	{
 		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
@@ -328,6 +326,7 @@ void EditorLevelSystem::AddCurrentLevelWindow() NOEXCEPT
 			}
 		}
 	}
+	*/
 
 	ImGui::End();
 }
@@ -337,6 +336,7 @@ void EditorLevelSystem::AddCurrentLevelWindow() NOEXCEPT
 */
 void EditorLevelSystem::GatherLevelEntries(DynamicArray<LevelEntry> *const RESTRICT output) const NOEXCEPT
 {
+	/*
 	//Add all dynamic model entities.
 	{
 		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
@@ -464,5 +464,6 @@ void EditorLevelSystem::GatherLevelEntries(DynamicArray<LevelEntry> *const RESTR
 			output->Emplace(level_entry);
 		}
 	}
+	*/
 }
 #endif

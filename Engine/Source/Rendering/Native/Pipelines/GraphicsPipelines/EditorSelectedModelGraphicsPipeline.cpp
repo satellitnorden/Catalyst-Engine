@@ -2,10 +2,6 @@
 //Header file.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/EditorSelectedModelGraphicsPipeline.h>
 
-//Entities.
-#include <Entities/Types/DynamicModelEntity.h>
-#include <Entities/Types/StaticModelEntity.h>
-
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
 #include <Rendering/Native/Vertex.h>
@@ -147,6 +143,7 @@ void EditorSelectedModelGraphicsPipeline::Execute() NOEXCEPT
 	//Retrieve the currently selected entity.
 	const Entity *const RESTRICT currently_selected_entity{ CatalystEditorSystem::Instance->GetEditorSelectionSystem()->GetCurrentlySelectedEntity() };
 
+	/*
 	if (currently_selected_entity && currently_selected_entity->_Initialized)
 	{
 		switch (currently_selected_entity->_Type)
@@ -210,6 +207,7 @@ void EditorSelectedModelGraphicsPipeline::Execute() NOEXCEPT
 			}
 		}
 	}
+	*/
 
 	//End the command buffer.
 	command_buffer->End(this);

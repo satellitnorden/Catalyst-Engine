@@ -18,7 +18,7 @@
 #include <Systems/ResourceSystem.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 #include <ThirdParty/tiny_gltf.h>
 
 /*
@@ -1267,7 +1267,6 @@ void EditorResourcesSystem::AddCreateTexture2DResourceWindow() NOEXCEPT
 			parameters._ApplyGammaCorrection = _CreateTexture2DResourceData._ApplyGammaCorrection;
 			parameters._TransformFunction = nullptr;
 			parameters._BaseMipmapLevel = static_cast<uint8>(_CreateTexture2DResourceData._BaseMipmapLevel);
-			parameters._MipmapLevels = static_cast<uint8>(_CreateTexture2DResourceData._NumberOfMipmapLevels);
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 		}
@@ -1468,7 +1467,6 @@ void EditorResourcesSystem::AddCreateQuixelMaterialResourceWindow() NOEXCEPT
 			parameters._ApplyGammaCorrection = true;
 			parameters._TransformFunction = nullptr;
 			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
-			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 
@@ -1503,7 +1501,6 @@ void EditorResourcesSystem::AddCreateQuixelMaterialResourceWindow() NOEXCEPT
 			parameters._ApplyGammaCorrection = false;
 			parameters._TransformFunction = nullptr;
 			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
-			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 
@@ -1538,7 +1535,6 @@ void EditorResourcesSystem::AddCreateQuixelMaterialResourceWindow() NOEXCEPT
 			parameters._ApplyGammaCorrection = false;
 			parameters._TransformFunction = nullptr;
 			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
-			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 
@@ -1810,7 +1806,6 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			parameters._ApplyGammaCorrection = true;
 			parameters._TransformFunction = nullptr;
 			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
-			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 
@@ -1845,7 +1840,6 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			parameters._ApplyGammaCorrection = false;
 			parameters._TransformFunction = nullptr;
 			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
-			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 
@@ -1880,7 +1874,6 @@ void EditorResourcesSystem::AddCreateQuixelModelResourceWindow() NOEXCEPT
 			parameters._ApplyGammaCorrection = false;
 			parameters._TransformFunction = nullptr;
 			parameters._BaseMipmapLevel = temporary_data._BaseMipmapLevel;
-			parameters._MipmapLevels = temporary_data._NumberOfMipmapLevels;
 
 			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 
@@ -2553,21 +2546,6 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					texture_parameters._TransformFunction = nullptr;
 					texture_parameters._BaseMipmapLevel = 0;
 
-					{
-						uint8 mipmap_levels{ 1 };
-						uint32 width{ static_cast<uint32>(image.width) };
-						uint32 height{ static_cast<uint32>(image.height) };
-
-						while (width > 4 && height > 4)
-						{
-							++mipmap_levels;
-							width >>= 1;
-							height >>= 1;
-						}
-
-						texture_parameters._MipmapLevels = mipmap_levels;
-					}
-
 					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
 					
 					{
@@ -2665,21 +2643,6 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					};
 					texture_parameters._BaseMipmapLevel = 0;
 
-					{
-						uint8 mipmap_levels{ 1 };
-						uint32 width{ static_cast<uint32>(image.width) };
-						uint32 height{ static_cast<uint32>(image.height) };
-
-						while (width > 4 && height > 4)
-						{
-							++mipmap_levels;
-							width >>= 1;
-							height >>= 1;
-						}
-
-						texture_parameters._MipmapLevels = mipmap_levels;
-					}
-
 					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
 
 					{
@@ -2755,21 +2718,6 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 					texture_parameters._ApplyGammaCorrection = false;
 					texture_parameters._TransformFunction = nullptr;
 					texture_parameters._BaseMipmapLevel = 0;
-					
-					{
-						uint8 mipmap_levels{ 1 };
-						uint32 width{ static_cast<uint32>(image.width) };
-						uint32 height{ static_cast<uint32>(image.height) };
-
-						while (width > 4 && height > 4)
-						{
-							++mipmap_levels;
-							width >>= 1;
-							height >>= 1;
-						}
-
-						texture_parameters._MipmapLevels = mipmap_levels;
-					}
 
 					ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
 
@@ -2847,21 +2795,6 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 						texture_parameters._ApplyGammaCorrection = true;
 						texture_parameters._TransformFunction = nullptr;
 						texture_parameters._BaseMipmapLevel = 0;
-
-						{
-							uint8 mipmap_levels{ 1 };
-							uint32 width{ static_cast<uint32>(image.width) };
-							uint32 height{ static_cast<uint32>(image.height) };
-
-							while (width > 4 && height > 4)
-							{
-								++mipmap_levels;
-								width >>= 1;
-								height >>= 1;
-							}
-
-							texture_parameters._MipmapLevels = mipmap_levels;
-						}
 
 						ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(texture_parameters);
 

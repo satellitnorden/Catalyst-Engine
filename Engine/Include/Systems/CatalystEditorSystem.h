@@ -134,9 +134,9 @@ private:
 	EditorSelectionSystem _EditorSelectionSystem;
 
 	/*
-	*	Updates the Catalyst editor system during the LOGIC update phase.
+	*	Updates the Catalyst editor system during the GAMEPLAY update phase.
 	*/
-	void LogicUpdate() NOEXCEPT;
+	void GameplayUpdate() NOEXCEPT;
 
 	/*
 	*	Sets whether or not the engine is in game right now.

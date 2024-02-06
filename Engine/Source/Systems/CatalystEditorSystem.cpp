@@ -16,7 +16,7 @@
 #include <Systems/ResourceSystem.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(CatalystEditorSystem);
@@ -35,11 +35,11 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void *const RESTRICT arguments)
 	{
-		static_cast<CatalystEditorSystem *const RESTRICT>(arguments)->LogicUpdate();
+		static_cast<CatalystEditorSystem *const RESTRICT>(arguments)->GameplayUpdate();
 	},
 	this,
-	UpdatePhase::LOGIC,
-	UpdatePhase::PHYSICS,
+	UpdatePhase::GAMEPLAY,
+	UpdatePhase::USER_INTERFACE,
 	true,
 	false);
 }
@@ -54,9 +54,9 @@ void CatalystEditorSystem::Terminate() NOEXCEPT
 }
 
 /*
-*	Updates the Catalyst editor system during the LOGIC update phase.
+*	Updates the Catalyst editor system during the GAMEPLAY update phase.
 */
-void CatalystEditorSystem::LogicUpdate() NOEXCEPT
+void CatalystEditorSystem::GameplayUpdate() NOEXCEPT
 {
 	if (_IsInGame)
 	{

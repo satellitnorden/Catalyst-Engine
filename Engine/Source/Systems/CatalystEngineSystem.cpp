@@ -26,6 +26,9 @@
 #endif
 #include <Systems/DistributionSystem.h>
 #include <Systems/EntitySystem.h>
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <Systems/ImGuiSystem.h>
+#endif
 #include <Systems/InputSystem.h>
 #include <Systems/LogSystem.h>
 #include <Systems/MemorySystem.h>
@@ -93,6 +96,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 	DistributionSystem::Instance->Initialize();
 	EntitySystem::Instance->Initialize();
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	ImGuiSystem::Instance->Initialize();
+#endif
 	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
 	LogSystem::Instance->Initialize();
 	MemorySystem::Instance->Initialize();
@@ -370,7 +376,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 
 	//Post-terminate all systems.
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	DebugSystem::Instance->PostTerminate();
+	ImGuiSystem::Instance->PostTerminate();
 #endif
 }
 

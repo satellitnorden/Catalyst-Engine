@@ -47,11 +47,6 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Post-terminates the debug system.
-	*/
-	void PostTerminate() NOEXCEPT;
-
-	/*
 	*	Registers a debug window.
 	*/
 	void RegisterDebugWindow
@@ -102,11 +97,6 @@ private:
 	*	Updates the debug system.
 	*/
 	void Update() NOEXCEPT;
-
-	/*
-	*	Updates IO.
-	*/
-	void UpdateIO() NOEXCEPT;
 
 	/*
 	*	Draws the debug window.

@@ -11,7 +11,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 
 /*
 *	Updates the editor post-processing system.

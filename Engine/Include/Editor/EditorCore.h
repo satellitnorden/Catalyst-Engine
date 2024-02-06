@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 
 //Editor constants.
 namespace EditorConstants

@@ -6,16 +6,6 @@
 #include <Editor/EditorCore.h>
 #include <Editor/EditorUtilities.h>
 
-//Entities.
-#include <Entities/Creation/DynamicModelInitializationData.h>
-#include <Entities/Creation/LightInitializationData.h>
-#include <Entities/Creation/StaticModelInitializationData.h>
-#include <Entities/Creation/UserInterfaceInitializationData.h>
-#include <Entities/Types/DynamicModelEntity.h>
-#include <Entities/Types/LightEntity.h>
-#include <Entities/Types/StaticModelEntity.h>
-#include <Entities/Types/UserInterfaceEntity.h>
-
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 
@@ -28,7 +18,7 @@
 #include <Systems/ResourceSystem.h>
 
 //Third party.
-#include <ThirdParty/imgui.h>
+#include <ThirdParty/ImGui/imgui.h>
 
 /*
 *	Updates the editor entity system.
@@ -47,6 +37,7 @@ void EditorEntitySystem::Update() NOEXCEPT
 	ImGui::Begin("Entities", nullptr, EditorConstants::WINDOW_FLAGS);
 	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
 
+	/*
 	//Add the button for creating a dynamic model entity.
 	if (ImGui::Button("Create Dynamic Model Entity"))
 	{
@@ -58,55 +49,11 @@ void EditorEntitySystem::Update() NOEXCEPT
 		else
 		{
 			_IsCurrentlyCreatingEntity = true;
-			_EntityTypeBeingCreated = EntityType::DynamicModel;
 		}
 	}
+	*/
 
-	//Add the button for creating a light entity.
-	if (ImGui::Button("Create Light Entity"))
-	{
-		if (_IsCurrentlyCreatingEntity)
-		{
-			_IsCurrentlyCreatingEntity = false;
-		}
-
-		else
-		{
-			_IsCurrentlyCreatingEntity = true;
-			_EntityTypeBeingCreated = EntityType::Light;
-		}
-	}
-
-	//Add the button for creating a static model entity.
-	if (ImGui::Button("Create Static Model Entity"))
-	{
-		if (_IsCurrentlyCreatingEntity)
-		{
-			_IsCurrentlyCreatingEntity = false;
-		}
-
-		else
-		{
-			_IsCurrentlyCreatingEntity = true;
-			_EntityTypeBeingCreated = EntityType::StaticModel;
-		}
-	}
-
-	//Add the button for creating a user interface entity.
-	if (ImGui::Button("Create User Interface Entity"))
-	{
-		if (_IsCurrentlyCreatingEntity)
-		{
-			_IsCurrentlyCreatingEntity = false;
-		}
-
-		else
-		{
-			_IsCurrentlyCreatingEntity = true;
-			_EntityTypeBeingCreated = EntityType::UserInterface;
-		}
-	}
-
+#if 0
 	if (!ImGui::IsAnyWindowHovered() && !ImGui::IsAnyItemHovered() && _IsCurrentlyCreatingEntity)
 	{
 		//Cache if the left mouse button is pressed.
@@ -150,6 +97,7 @@ void EditorEntitySystem::Update() NOEXCEPT
 			_IsCurrentlyCreatingEntity = false;
 		}
 	}
+#endif
 
 	ImGui::End();
 }
@@ -159,6 +107,7 @@ void EditorEntitySystem::Update() NOEXCEPT
 */
 void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 {
+	/*
 	switch (_EntityTypeBeingCreated)
 	{
 		case EntityType::DynamicModel:
@@ -257,5 +206,6 @@ void EditorEntitySystem::CreateEntity(const Vector3<float32> &position)
 			break;
 		}
 	}
+	*/
 }
 #endif
