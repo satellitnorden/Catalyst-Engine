@@ -45,15 +45,6 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 }
 
 /*
-*	Terminates the Catalyst editor system.
-*/
-void CatalystEditorSystem::Terminate() NOEXCEPT
-{
-	//Shut down ImGui.
-	ImGui::DestroyContext();
-}
-
-/*
 *	Updates the Catalyst editor system during the GAMEPLAY update phase.
 */
 void CatalystEditorSystem::GameplayUpdate() NOEXCEPT

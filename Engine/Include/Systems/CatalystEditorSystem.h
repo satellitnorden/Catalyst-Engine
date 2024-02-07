@@ -49,11 +49,6 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Terminates the Catalyst editor system.
-	*/
-	void Terminate() NOEXCEPT;
-
-	/*
 	*	Returns if the editor is in a game.
 	*/
 	FORCE_INLINE NO_DISCARD bool IsInGame() const NOEXCEPT

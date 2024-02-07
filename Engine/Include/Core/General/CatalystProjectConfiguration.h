@@ -28,14 +28,34 @@ public:
 	DynamicString _ProjectName;
 
 	/*
-	*	The initialization function.
+	*	The common initialize function.
 	*/
-	void(*_InitializationFunction)();
+	void(*_CommonInitializeFunction)();
 
 	/*
-	*	The post-initialization function.
+	*	The editor initialize function.
 	*/
-	void(*_PostInitializationFunction)();
+	void(*_EditorInitializeFunction)();
+
+	/*
+	*	The game initialize function.
+	*/
+	void(*_GameInitializeFunction)();
+
+	/*
+	*	The common post initialize function.
+	*/
+	void(*_CommonPostInitializeFunction)();
+
+	/*
+	*	The editor post initialize function.
+	*/
+	void(*_EditorPostInitializeFunction)();
+
+	/*
+	*	The game post initialize function.
+	*/
+	void(*_GamePostInitializeFunction)();
 
 	/*
 	*	The start game function.
@@ -48,9 +68,9 @@ public:
 	void(*_EndGameFunction)();
 
 	/*
-	*	The post update function.
+	*	The terminate function.
 	*/
-	void(*_TerminationFunction)();
+	void(*_TerminateFunction)();
 
 	/*
 	*	Default constructor.

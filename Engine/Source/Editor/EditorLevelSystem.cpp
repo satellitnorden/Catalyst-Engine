@@ -22,11 +22,13 @@
 */
 void EditorLevelSystem::Update() NOEXCEPT
 {
+	/*
 	//Add the contextual window.
 	AddContextualWindow();
 
 	//Add the current level window.
 	AddCurrentLevelWindow();
+	*/
 }
 
 /*

@@ -3,6 +3,9 @@
 #include <Systems/ImGuiSystem.h>
 
 //Systems.
+#if defined(CATALYST_EDITOR)
+#include <Systems/CatalystEditorSystem.h>
+#endif
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -61,6 +64,30 @@ void ImGuiSystem::Initialize() NOEXCEPT
 		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 	}
+
+	//Set up the editor window data.
+	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._Minimum = Vector2<float32>(0.8f, 0.5f);
+	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._Maximum = Vector2<float32>(1.0f, 1.0f);
+	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._WindowCallback = nullptr;
+
+	//Set up the game window data.
+	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._Minimum = Vector2<float32>(0.8f, 0.0f);
+	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._Maximum = Vector2<float32>(1.0f, 1.0f);
+	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._WindowCallback = nullptr;
+
+	//Register the update.
+	CatalystEngineSystem::Instance->RegisterUpdate
+	(
+		[](void *const RESTRICT arguments)
+		{
+			static_cast<ImGuiSystem *const RESTRICT>(arguments)->UserInterfaceUpdate();
+		},
+		this,
+		UpdatePhase::USER_INTERFACE,
+		UpdatePhase::PHYSICS,
+		true,
+		false
+	);
 }
 
 /*
@@ -246,5 +273,54 @@ void ImGuiSystem::OnInputAvailable() NOEXCEPT
 
 	//Begin the new ImGui frame.
 	ImGui::NewFrame();
+}
+
+/*
+*	Updates during the USER_INTERFACE update phase.
+*/
+void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
+{
+	//Update window data.
+#if defined(CATALYST_EDITOR)
+	if (!CatalystEditorSystem::Instance->IsInGame())
+	{
+		for (WindowData &window_data : _EditorWindowData)
+		{
+			if (window_data._WindowCallback)
+			{
+				window_data._WindowCallback(window_data._Minimum, window_data._Maximum);
+			}
+
+			else
+			{
+				EmptyWindowCallback(window_data._Minimum, window_data._Maximum);
+			}
+		}
+	}
+
+	else
+#endif
+	{
+		for (WindowData &window_data : _GameWindowData)
+		{
+			if (window_data._WindowCallback)
+			{
+				window_data._WindowCallback(window_data._Minimum, window_data._Maximum);
+			}
+
+			else
+			{
+				EmptyWindowCallback(window_data._Minimum, window_data._Maximum);
+			}
+		}
+	}
+}
+
+/*
+*	Empty window callback.
+*/
+void ImGuiSystem::EmptyWindowCallback(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
+{
+
 }
 #endif

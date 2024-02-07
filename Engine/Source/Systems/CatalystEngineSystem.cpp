@@ -120,7 +120,12 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Initialize the game system.
 	{
 		PROFILING_SCOPE("Initialize Game");
-		_ProjectConfiguration._GeneralConfiguration._InitializationFunction();
+		_ProjectConfiguration._GeneralConfiguration._CommonInitializeFunction();
+#if defined(CATALYST_EDITOR)
+		_ProjectConfiguration._GeneralConfiguration._EditorInitializeFunction();
+#else
+		_ProjectConfiguration._GeneralConfiguration._GameInitializeFunction();
+#endif
 	}
 	
 	//Register the Catalyst Engine resource collection. 
@@ -169,7 +174,12 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	WorldSystem::Instance->PostInitialize();
 
 	//Post-initialize the game system.
-	_ProjectConfiguration._GeneralConfiguration._PostInitializationFunction();
+	_ProjectConfiguration._GeneralConfiguration._CommonPostInitializeFunction();
+#if defined(CATALYST_EDITOR)
+	_ProjectConfiguration._GeneralConfiguration._EditorPostInitializeFunction();
+#else
+	_ProjectConfiguration._GeneralConfiguration._GamePostInitializeFunction();
+#endif
 
 #if !defined(CATALYST_EDITOR)
 	//If this is a pure game build, start the game immediately.
@@ -351,15 +361,12 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	_ShouldTerminate = true;
 
 	//Terminate the game system.
-	_ProjectConfiguration._GeneralConfiguration._TerminationFunction();
+	_ProjectConfiguration._GeneralConfiguration._TerminateFunction();
 
 	//Terminate the task system first so that all asynchronous tasks are finished before releasing anything else.
 	TaskSystem::Instance->Terminate();
 
 	//Terminate all systems.
-#if defined(CATALYST_EDITOR)
-	CatalystEditorSystem::Instance->Terminate();
-#endif
 	ComponentSystem::Instance->Terminate();
 	DistributionSystem::Instance->Terminate();
 	PhysicsSystem::Instance->Terminate();
