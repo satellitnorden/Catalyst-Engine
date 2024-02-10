@@ -98,7 +98,7 @@ public:
 	/*
 	*	Subsript operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD VALUE_TYPE& operator[](const KEY_TYPE key)
+	FORCE_INLINE NO_DISCARD VALUE_TYPE &operator[](const KEY_TYPE key)
 	{
 		//First, see if the object exists in the map.
 		if (VALUE_TYPE *RESTRICT object{ Find(key) })

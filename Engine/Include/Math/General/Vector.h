@@ -109,6 +109,14 @@ public:
 	}
 
 	/*
+	*	Given a vector, return it's unit vector counterpart.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD Vector2 Normalize(const Vector2 &vector) NOEXCEPT
+	{
+		return vector.Normalized();
+	}
+
+	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE constexpr Vector2() NOEXCEPT
@@ -382,6 +390,17 @@ public:
 
 		_X *= inverse_length;
 		_Y *= inverse_length;
+	}
+
+	/*
+	*	Returns a normalized version of this vector.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD Vector2 Normalized() const NOEXCEPT
+	{
+		Vector2 copy{ *this };
+		copy.Normalize();
+
+		return copy;
 	}
 
 	/*

@@ -20,6 +20,7 @@ public:
 	enum class EditorWindow : uint8
 	{
 		TOP_RIGHT,
+		BOTTOM_RIGHT,
 
 		NUMBER_OF_EDITOR_WINDOWS
 	};
