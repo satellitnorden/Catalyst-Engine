@@ -934,7 +934,10 @@ void VulkanSubRenderingSystem::Terminate() NOEXCEPT
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Shut down ImGui.
-	ImGui_ImplVulkan_Shutdown();
+	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::CUSTOM)
+	{
+		ImGui_ImplVulkan_Shutdown();
+	}
 #endif
 
 	//Release the Vulkan interface.

@@ -9,6 +9,7 @@
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Systems/ImGuiSystem.h>
 #endif
+#include <Systems/RenderingSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(InputSystem);
@@ -136,6 +137,9 @@ void InputSystem::InputUpdate() NOEXCEPT
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Let the ImGui system know input is available.
-	ImGuiSystem::Instance->OnInputAvailable();
+	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::CUSTOM)
+	{
+		ImGuiSystem::Instance->OnInputAvailable();
+	}
 #endif
 }

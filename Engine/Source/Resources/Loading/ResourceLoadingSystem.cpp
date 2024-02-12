@@ -122,6 +122,7 @@ void ResourceLoadingSystem::LoadFont(BinaryFile<BinaryFileMode::IN> *const RESTR
 */
 void ResourceLoadingSystem::LoadLevel(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, LevelData *const RESTRICT data) NOEXCEPT
 {
+	/*
 	//Read the number of level entries.
 	uint64 number_of_level_entries;
 	file->Read(&number_of_level_entries, sizeof(uint64));
@@ -204,6 +205,7 @@ void ResourceLoadingSystem::LoadLevel(BinaryFile<BinaryFileMode::IN> *const REST
 			}
 		}
 	}
+	*/
 }
 
 /*

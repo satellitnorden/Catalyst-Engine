@@ -2831,6 +2831,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 			}
 		}
 
+		/*
 		//Finally, create the level!
 		{
 			//Build the level.
@@ -2885,6 +2886,7 @@ void EditorResourcesSystem::AddCreateLevelResourceFromGLTFWindow() NOEXCEPT
 				ResourceSystem::Instance->LoadResource(load_buffer);
 			}
 		}
+		*/
 	}
 
 	ImGui::End();

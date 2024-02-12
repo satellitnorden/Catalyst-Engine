@@ -280,6 +280,14 @@ void ImGuiSystem::OnInputAvailable() NOEXCEPT
 }
 
 /*
+*	Registers an editor window.
+*/
+void ImGuiSystem::RegisterEditorWindow(const EditorWindow window, const WindowCallback callback) NOEXCEPT
+{
+	_EditorWindowData[UNDERLYING(window)]._WindowCallback = callback;
+}
+
+/*
 *	Updates during the USER_INTERFACE update phase.
 */
 void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
@@ -292,7 +300,11 @@ void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
 		{
 			if (window_data._WindowCallback)
 			{
-				window_data._WindowCallback(window_data._Minimum, window_data._Maximum);
+				if (!window_data._WindowCallback(window_data._Minimum, window_data._Maximum))
+				{
+					window_data._WindowCallback = nullptr;
+					EmptyWindowCallback(window_data._Minimum, window_data._Maximum);
+				}
 			}
 
 			else
@@ -309,7 +321,11 @@ void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
 		{
 			if (window_data._WindowCallback)
 			{
-				window_data._WindowCallback(window_data._Minimum, window_data._Maximum);
+				if (!window_data._WindowCallback(window_data._Minimum, window_data._Maximum))
+				{
+					window_data._WindowCallback = nullptr;
+					EmptyWindowCallback(window_data._Minimum, window_data._Maximum);
+				}
 			}
 
 			else

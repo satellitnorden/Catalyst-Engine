@@ -59,6 +59,11 @@ public:
 	*/
 	void OnInputAvailable() NOEXCEPT;
 
+	/*
+	*	Registers an editor window.
+	*/
+	void RegisterEditorWindow(const EditorWindow window, const WindowCallback callback) NOEXCEPT;
+
 private:
 	
 	/*

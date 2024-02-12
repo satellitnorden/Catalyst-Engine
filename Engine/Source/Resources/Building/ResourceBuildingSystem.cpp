@@ -362,6 +362,7 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 */
 void ResourceBuildingSystem::BuildLevel(const LevelBuildParameters &parameters) NOEXCEPT
 {
+	/*
 	//What should the output file path name be?
 	DynamicString output_file_path_name{ parameters._OutputFilePath };
 	output_file_path_name += ".cr";
@@ -463,6 +464,7 @@ void ResourceBuildingSystem::BuildLevel(const LevelBuildParameters &parameters) 
 
 	//Close the output file.
 	output_file.Close();
+	*/
 }
 
 /*

@@ -3,7 +3,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/DynamicString.h>
+#include <Core/Containers/DynamicArray.h>
 
 //World.
 #include <World/Level/LevelEntry.h>
@@ -28,46 +28,18 @@ public:
 	*/
 	void EndGame() NOEXCEPT;
 
+	/*
+	*	Creates an entity.
+	*/
+	void CreateEntity() NOEXCEPT;
+
 private:
 
-	//Denotes if the user is currently opening a level.
-	bool _IsCurrentlyOpeningLevel{ false };
+	//The name counter.
+	uint32 _NameCounter{ 0 };
 
-	//The current level name.
-	DynamicString _CurrentLevelName;
-
-	//The current level entries.
-	DynamicArray<LevelEntry> _CurrentLevelEntries;
-
-	/*
-	*	Called then the "New Level" button is pressed.
-	*/
-	void NewLevel() NOEXCEPT;
-
-	/*
-	*	Called then the "Open Level" button is pressed.
-	*/
-	void OpenLevel() NOEXCEPT;
-
-	/*
-	*	Called then the "Save Level" button is pressed.
-	*/
-	void SaveLevel() NOEXCEPT;
-
-	/*
-	*	Adds the contextual window.
-	*/
-	void AddContextualWindow();
-
-	/*
-	*	Adds the current level window.
-	*/
-	void AddCurrentLevelWindow() NOEXCEPT;
-
-	/*
-	*	Gathers the level entries.
-	*/
-	void GatherLevelEntries(DynamicArray<LevelEntry> *const RESTRICT output) const NOEXCEPT;
+	//The level entries.
+	DynamicArray<LevelEntry> _LevelEntries;
 
 };
 
