@@ -40,15 +40,15 @@ Fragment
 	float minimum_ambient_occlusion = 1.0f;
 	float maximum_ambient_occlusion = 0.0f;
 
-	for (int x = -1; x <= 1; ++x)
+	for (int Y = -1; Y <= 1; ++Y)
 	{
-		for (int y = -1; y <= 1; ++y)
+		for (int X = -1; X <= 1; ++X)
 		{
-			vec2 sample_coordinate = InScreenCoordinate + vec2(float(x), float(y)) * INVERSE_HALF_MAIN_RESOLUTION;
+			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_HALF_MAIN_RESOLUTION;
 		
 			float neighborhood_sample = texture(InputAmbientOcclusion, sample_coordinate).x;
 
-            current_ambient_occlusion += neighborhood_sample * float(x == 0 && y == 0);
+            current_ambient_occlusion += neighborhood_sample * float(X == 0 && Y == 0);
 			minimum_ambient_occlusion = min(minimum_ambient_occlusion, neighborhood_sample);
 			maximum_ambient_occlusion = max(maximum_ambient_occlusion, neighborhood_sample);
 		}

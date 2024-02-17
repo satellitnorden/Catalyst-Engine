@@ -86,21 +86,21 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 				{
 					case RenderingConfiguration::AmbientOcclusionQuality::LOW:
 					{
-						push_constant_data._NumberOfSamples = 4;
+						push_constant_data._NumberOfSamples = 3;
 
 						break;
 					}
 
 					case RenderingConfiguration::AmbientOcclusionQuality::MEDIUM:
 					{
-						push_constant_data._NumberOfSamples = 8;
+						push_constant_data._NumberOfSamples = 6;
 
 						break;
 					}
 
 					case RenderingConfiguration::AmbientOcclusionQuality::HIGH:
 					{
-						push_constant_data._NumberOfSamples = 16;
+						push_constant_data._NumberOfSamples = 12;
 
 						break;
 					}
@@ -123,6 +123,95 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 		);
 	}
 
+	{
+		struct AmbientOcclusionSpatialDenoisingPushConstantData final
+		{
+			uint32 _Direction;
+		};
+
+		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+		(
+			HashString("AmbientOcclusionHorizontalSpatialDenoising"),
+			DynamicArray<VertexInputAttributeDescription>(),
+			DynamicArray<VertexInputBindingDescription>(),
+			sizeof(AmbientOcclusionSpatialDenoisingPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				//Clear the entries.
+				input_stream->_Entries.Clear();
+
+				//Clear the push constant data memory.
+				input_stream->_PushConstantDataMemory.Clear();
+
+				//Add an entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._VertexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBufferOffset = 0;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 3;
+				new_entry._IndexCount = 0;
+				new_entry._InstanceCount = 0;
+
+				//Set up the push constant data.
+				AmbientOcclusionSpatialDenoisingPushConstantData push_constant_data;
+
+				push_constant_data._Direction = 0;
+
+				for (uint64 i{ 0 }; i < sizeof(AmbientOcclusionSpatialDenoisingPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			},
+			RenderInputStream::Mode::DRAW,
+			nullptr
+		);
+
+		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+		(
+			HashString("AmbientOcclusionVerticalSpatialDenoising"),
+			DynamicArray<VertexInputAttributeDescription>(),
+			DynamicArray<VertexInputBindingDescription>(),
+			sizeof(AmbientOcclusionSpatialDenoisingPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				//Clear the entries.
+				input_stream->_Entries.Clear();
+
+				//Clear the push constant data memory.
+				input_stream->_PushConstantDataMemory.Clear();
+
+				//Add an entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._VertexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBufferOffset = 0;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 3;
+				new_entry._IndexCount = 0;
+				new_entry._InstanceCount = 0;
+
+				//Set up the push constant data.
+				AmbientOcclusionSpatialDenoisingPushConstantData push_constant_data;
+
+				push_constant_data._Direction = 1;
+
+				for (uint64 i{ 0 }; i < sizeof(AmbientOcclusionSpatialDenoisingPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			},
+			RenderInputStream::Mode::DRAW,
+			nullptr
+		);
+	}
+
 	//Create the ambient occlusion render target.
 	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::R_UINT8, SampleCount::SAMPLE_COUNT_1, &_AmbientOcclusionRenderTarget);
 
@@ -136,8 +225,9 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + 1 + _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size() + _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(3 + _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size() + _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() + 1);
 	AddPipeline(&_ScreenSpaceAmbientOcclusionGraphicsPipeline);
+	AddPipeline(&_HorizonBasedAmbientOcclusionGraphicsPipeline);
 	AddPipeline(&_AmbientOcclusionRayTracingPipeline);
 
 	for (GraphicsRenderPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
@@ -145,7 +235,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
-	for (AmbientOcclusionSpatialDenoisingGraphicsPipeline& pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -159,6 +249,14 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 		parameters._OutputRenderTargets.Emplace(HashString("AmbientOcclusion"), _AmbientOcclusionRenderTarget);
 
 		_ScreenSpaceAmbientOcclusionGraphicsPipeline.Initialize(parameters);
+	}
+
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._OutputRenderTargets.Emplace(HashString("AmbientOcclusion"), _AmbientOcclusionRenderTarget);
+
+		_HorizonBasedAmbientOcclusionGraphicsPipeline.Initialize(parameters);
 	}
 
 	_AmbientOcclusionRayTracingPipeline.Initialize(_AmbientOcclusionRenderTarget);
@@ -187,16 +285,15 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 		_AmbientOcclusionTemporalDenoisingGraphicsPipelines[1].Initialize(parameters);
 	}
 
-	for (uint64 i{ 0 }; i < _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size(); i += 2)
+	for (uint64 i{ 0 }; i < _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size(); ++i)
 	{
-		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 0].Initialize(	_IntermediateAmbientOcclusionRenderTarget,
-																				static_cast<int32>(i / 2 + 1),
-																				0,
-																				_AmbientOcclusionRenderTarget);
-		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i + 1].Initialize(	_AmbientOcclusionRenderTarget,
-																				static_cast<int32>(i / 2 + 1),
-																				1,
-																				_IntermediateAmbientOcclusionRenderTarget);
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("InputAmbientOcclusion"), i == 0 ? _IntermediateAmbientOcclusionRenderTarget : _AmbientOcclusionRenderTarget);
+		parameters._OutputRenderTargets.Emplace(HashString("OutputAmbientOcclusion"), i == 0 ? _AmbientOcclusionRenderTarget : _IntermediateAmbientOcclusionRenderTarget);
+		parameters._InputStreamSubscriptions.Emplace(i == 0 ? HashString("AmbientOcclusionHorizontalSpatialDenoising") : HashString("AmbientOcclusionVerticalSpatialDenoising"));
+		
+		_AmbientOcclusionSpatialDenoisingGraphicsPipelines[i].Initialize(parameters);
 	}
 
 	{
@@ -251,12 +348,21 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::SCREEN_SPACE)
 	{
 		_ScreenSpaceAmbientOcclusionGraphicsPipeline.Execute();
+		_HorizonBasedAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
+		_AmbientOcclusionRayTracingPipeline.SetIncludeInRender(false);
+	}
+
+	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::HORIZON_BASED)
+	{
+		_ScreenSpaceAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
+		_HorizonBasedAmbientOcclusionGraphicsPipeline.Execute();
 		_AmbientOcclusionRayTracingPipeline.SetIncludeInRender(false);
 	}
 
 	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED)
 	{
 		_ScreenSpaceAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
+		_HorizonBasedAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
 		_AmbientOcclusionRayTracingPipeline.Execute();
 	}
 
@@ -279,7 +385,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 		//Update the current buffer index.
 		_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
 
-		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+		for (GraphicsRenderPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 		{
 			pipeline.Execute();
 		}
@@ -292,7 +398,7 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 			pipeline.SetIncludeInRender(false);
 		}
 
-		for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+		for (GraphicsPipeline&pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 		{
 			pipeline.SetIncludeInRender(false);
 		}
@@ -310,12 +416,12 @@ void AmbientOcclusionRenderPass::Terminate() NOEXCEPT
 	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Terminate();
 	_AmbientOcclusionRayTracingPipeline.Terminate();
 
-	for (AmbientOcclusionSpatialDenoisingGraphicsPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 	{
 		pipeline.Terminate();
 	}
 
-	for (GraphicsRenderPipeline&pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
 	{
 		pipeline.Terminate();
 	}

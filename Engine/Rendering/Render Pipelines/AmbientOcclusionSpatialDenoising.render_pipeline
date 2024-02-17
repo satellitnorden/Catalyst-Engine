@@ -1,0 +1,74 @@
+//Declare uniform buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Math);
+
+//Declare input render targets.
+InputRenderTarget(SceneFeatures2Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(InputAmbientOcclusion /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(OutputAmbientOcclusion);
+
+//Declare render resolution.
+RenderResolution(MAIN_HALF);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Declare push constant data.
+PushConstantData(uint, DIRECTION);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Constants.
+    #define AMBIENT_OCCLUSION_RADIUS (1.0f)
+
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Retrieve the linearized depth.
+    float linearized_depth = LinearizeDepth(texture(SceneFeatures2Half, InScreenCoordinate).w);
+
+    //Sample neighboring fragments.
+	float denoised_ambient_occlusion = 0.0f;
+	float weight_sum = 0.0f;
+
+	for (int X = -1; X <= 1; ++X)
+	{
+		vec2 sample_coordinate = InScreenCoordinate + vec2(float(X) * float(DIRECTION), float(X) * float(DIRECTION ^ 1)) * INVERSE_HALF_MAIN_RESOLUTION;
+
+		float sample_ambient_occlusion = texture(InputAmbientOcclusion, sample_coordinate).x;
+		float sample_linearized_depth = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate).w);
+
+		/*
+		*	Calculate the sample weight based on certain criteria;
+		*	
+		*	1. Is the sample coordinate a valid screen coordinate?
+		*	2. How closely aligned are the linearized depths to each other?
+		*/
+		float sample_weight = 1.0f;
+
+		sample_weight *= float(ValidScreenCoordinate(sample_coordinate));
+		sample_weight *= SmoothStep(1.0f - (min(abs(linearized_depth - sample_linearized_depth), AMBIENT_OCCLUSION_RADIUS) / AMBIENT_OCCLUSION_RADIUS));
+
+		denoised_ambient_occlusion += sample_ambient_occlusion * sample_weight;
+		weight_sum += sample_weight;
+	}
+	
+	//Normalize the denoised ambient occlusion. 
+	denoised_ambient_occlusion = denoised_ambient_occlusion / weight_sum;
+
+    //Write the fragment.
+    OutputFragment(OutputAmbientOcclusion, vec4(denoised_ambient_occlusion));
+}

@@ -7,7 +7,6 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/ComputeRenderPipeline.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AmbientOcclusionSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/RayTracingPipelines/AmbientOcclusionRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/RenderingConfiguration.h>
@@ -42,6 +41,9 @@ private:
 	//The screen space ambient occlusion graphics pipeline.
 	GraphicsRenderPipeline _ScreenSpaceAmbientOcclusionGraphicsPipeline{ HashString("ScreenSpaceAmbientOcclusion_RenderPipeline") };
 
+	//The horizon based ambient occlusion graphics pipeline.
+	GraphicsRenderPipeline _HorizonBasedAmbientOcclusionGraphicsPipeline{ HashString("HorizonBasedAmbientOcclusion_RenderPipeline") };
+
 	//The ambient occlusion ray tracing pipeline.
 	AmbientOcclusionRayTracingPipeline _AmbientOcclusionRayTracingPipeline;
 
@@ -53,7 +55,11 @@ private:
 	};
 
 	//The ambient occlusion spatial denoising graphics pipelines.
-	StaticArray<AmbientOcclusionSpatialDenoisingGraphicsPipeline, 2> _AmbientOcclusionSpatialDenoisingGraphicsPipelines;
+	StaticArray<GraphicsRenderPipeline, 2> _AmbientOcclusionSpatialDenoisingGraphicsPipelines
+	{
+		GraphicsRenderPipeline(HashString("AmbientOcclusionSpatialDenoising_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("AmbientOcclusionSpatialDenoising_RenderPipeline"))
+	};
 
 	//The ambient occlusion application graphics pipeline.
 	ComputeRenderPipeline _AmbientOcclusionApplicationGraphicsPipeline{ HashString("AmbientOcclusionApplication_RenderPipeline") };

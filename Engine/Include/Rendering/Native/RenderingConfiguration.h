@@ -13,6 +13,7 @@ public:
 	{
 		NONE,
 		SCREEN_SPACE,
+		HORIZON_BASED,
 		RAY_TRACED
 	};
 

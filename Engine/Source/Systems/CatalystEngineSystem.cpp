@@ -341,7 +341,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	}
 
 	//Post-update the frame pacer.
-	//_FramePacer.PostUpdate(preferred_refresh_rate);
+	_FramePacer.PostUpdate(preferred_refresh_rate);
 
 	//Return if the game should be terminated.
 	return !_ShouldTerminate;

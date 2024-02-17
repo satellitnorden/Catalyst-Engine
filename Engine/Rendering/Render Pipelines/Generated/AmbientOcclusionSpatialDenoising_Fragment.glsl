@@ -213,47 +213,149 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 32) uint FRAME;
 };
 
-layout (set = 1, binding = 2) uniform sampler2D PreviousTemporalBuffer;
+/*
+*   Linearizes a depth value.
+*/
+float LinearizeDepth(float depth)
+{
+    return ((FAR_PLANE * NEAR_PLANE) / (depth * (FAR_PLANE - NEAR_PLANE) + NEAR_PLANE));
+}
+
+/*
+*   Calculates the view space position.
+*/
+vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position.xyz *= inverse_view_space_position_denominator;
+
+    return view_space_position.xyz;
+}
+
+/*
+*   Calculates the world position.
+*/
+vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position *= inverse_view_space_position_denominator;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
+
+    return world_space_position.xyz;
+}
+
+/*
+*   Returns the current screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Returns the previous screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Calculates a screen position, including the (linearized) depth from the given world position.
+*/
+vec3 CalculateScreenPosition(vec3 world_position)
+{
+    vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+    float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
+    view_space_position.xyz *= view_space_position_coefficient_reciprocal;
+
+    view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
+    view_space_position.z = LinearizeDepth(view_space_position.z);
+    
+    return view_space_position.xyz;
+}
+
+/*
+*	Rotates the given vector around the yaw.
+*/
+vec3 RotateYaw(vec3 X, float angle)
+{
+	float sine = sin(angle);
+    float cosine = cos(angle);
+
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
+
+    return X;
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}
+
+/*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) uint DIRECTION;
+};
+
+layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2Half;
 layout (set = 1, binding = 3) uniform sampler2D InputAmbientOcclusion;
-layout (set = 1, binding = 4) uniform sampler2D SceneFeatures4Half;
 
 layout (location = 0) in vec2 InScreenCoordinate;
 
-layout (location = 0) out vec4 CurrentTemporalBuffer;
-layout (location = 1) out vec4 OutputAmbientOcclusion;
+layout (location = 0) out vec4 OutputAmbientOcclusion;
 
 void main()
 {
-    /*
-    *   Calculate the minimum/maximum ambient occlusion values in the neighborhood of the current frame.
-    *   Also retrieve the current ambient occlusion here.
-    */
-    float current_ambient_occlusion = 0.0f;
-	float minimum_ambient_occlusion = 1.0f;
-	float maximum_ambient_occlusion = 0.0f;
-	for (int Y = -1; Y <= 1; ++Y)
+    #define AMBIENT_OCCLUSION_RADIUS (1.0f)
+    float linearized_depth = LinearizeDepth(texture(SceneFeatures2Half, InScreenCoordinate).w);
+	float denoised_ambient_occlusion = 0.0f;
+	float weight_sum = 0.0f;
+	for (int X = -1; X <= 1; ++X)
 	{
-		for (int X = -1; X <= 1; ++X)
-		{
-			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_HALF_MAIN_RESOLUTION;
-			float neighborhood_sample = texture(InputAmbientOcclusion, sample_coordinate).x;
-            current_ambient_occlusion += neighborhood_sample * float(X == 0 && Y == 0);
-			minimum_ambient_occlusion = min(minimum_ambient_occlusion, neighborhood_sample);
-			maximum_ambient_occlusion = max(maximum_ambient_occlusion, neighborhood_sample);
-		}
+		vec2 sample_coordinate = InScreenCoordinate + vec2(float(X) * float(DIRECTION), float(X) * float(DIRECTION ^ 1)) * INVERSE_HALF_MAIN_RESOLUTION;
+		float sample_ambient_occlusion = texture(InputAmbientOcclusion, sample_coordinate).x;
+		float sample_linearized_depth = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate).w);
+		/*
+		*	Calculate the sample weight based on certain criteria;
+		*	
+		*	1. Is the sample coordinate a valid screen coordinate?
+		*	2. How closely aligned are the linearized depths to each other?
+		*/
+		float sample_weight = 1.0f;
+		sample_weight *= float(ValidScreenCoordinate(sample_coordinate));
+		sample_weight *= SmoothStep(1.0f - (min(abs(linearized_depth - sample_linearized_depth), AMBIENT_OCCLUSION_RADIUS) / AMBIENT_OCCLUSION_RADIUS));
+		denoised_ambient_occlusion += sample_ambient_occlusion * sample_weight;
+		weight_sum += sample_weight;
 	}
-    vec2 previous_screen_coordinate = InScreenCoordinate - texture(SceneFeatures4Half, InScreenCoordinate).xy;
-    float previous_ambient_occlusion = texture(PreviousTemporalBuffer, previous_screen_coordinate).x;
-    previous_ambient_occlusion = clamp(previous_ambient_occlusion, minimum_ambient_occlusion, maximum_ambient_occlusion);
-    /*
-	*	Calculate the weight between the current frame and the history depending on certain criteria.
-	*
-	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
-	*/
-	float previous_sample_weight = 1.0f;
-	previous_sample_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
-    previous_sample_weight *= 0.9f;
-    float blended_ambient_occlusion = mix(current_ambient_occlusion, previous_ambient_occlusion, previous_sample_weight);
-	CurrentTemporalBuffer = vec4(blended_ambient_occlusion);
-	OutputAmbientOcclusion = vec4(blended_ambient_occlusion);
+	denoised_ambient_occlusion = denoised_ambient_occlusion / weight_sum;
+	OutputAmbientOcclusion = vec4(denoised_ambient_occlusion);
 }

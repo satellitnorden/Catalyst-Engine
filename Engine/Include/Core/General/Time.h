@@ -19,6 +19,14 @@ public:
 		return static_cast<float64>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - _TimePoint).count()) / 1'000'000'000.0;
 	}
 
+	/*
+	*	Adds seconds.
+	*/
+	FORCE_INLINE void AddSeconds(const float64 value) NOEXCEPT
+	{
+		_TimePoint += std::chrono::nanoseconds(static_cast<uint64>(value * 1'000'000'000));
+	}
+
 private:
 
 	//The underlying timepoint.

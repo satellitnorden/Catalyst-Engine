@@ -2,6 +2,10 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Time.h>
+
+//Concurrency.
+#include <Concurrency/ConcurrencyCore.h>
 
 class FramePacer final
 {
@@ -13,8 +17,8 @@ public:
 	*/
 	FORCE_INLINE void Initialize() NOEXCEPT
 	{
-		//Retrieve the next frame value.
-		_NextFrame = std::chrono::steady_clock::now();
+		//Retrieve the current time point.
+		_CurrentTimePoint = GetCurrentTimePoint();
 	}
 
 	/*
@@ -24,17 +28,23 @@ public:
 	{
 		if (desired_refresh_rate > 0.0f)
 		{
-			//Update the next frame value.
-			_NextFrame += std::chrono::milliseconds(static_cast<uint64>(1.0f / static_cast<float64>(desired_refresh_rate) * 1'000));
+			//Calculate the refresh rate reciprocal.
+			const float32 refresh_rate_reciprocal{ 1.0f / desired_refresh_rate };
 
-			//Sleep until the next frame.
-			std::this_thread::sleep_until(_NextFrame);
+			//We can't rely on sleep here, because it's too unreliable.Instead, yield until the next frame.
+			while (_CurrentTimePoint.GetSecondsSince() < refresh_rate_reciprocal)
+			{
+				Concurrency::CurrentThread::Yield();
+			}
+
+			//Update the current time point.
+			_CurrentTimePoint.AddSeconds(refresh_rate_reciprocal);
 		}
 	}
 
 private:
 
-	//The next frame.
-	std::chrono::steady_clock::time_point _NextFrame;
+	//The current time point.
+	TimePoint _CurrentTimePoint;
 
 };

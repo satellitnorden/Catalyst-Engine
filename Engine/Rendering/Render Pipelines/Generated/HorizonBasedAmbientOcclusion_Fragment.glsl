@@ -213,10 +213,25 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 32) uint FRAME;
 };
 
-layout (set = 1, binding = 2, r8) uniform image2D AmbientOcclusion; 
-layout (set = 1, binding = 3, rgba32f) uniform image2D SceneFeatures2; 
-layout (set = 1, binding = 4, rgba8) uniform image2D SceneFeatures3; 
-layout (set = 1, binding = 5, rgba32f) uniform image2D SceneFeatures2Half; 
+layout (std140, set = 1, binding = 2) uniform HammersleyHemisphereSamples
+{
+	layout (offset = 0) vec4 HAMMERSLEY_COSINUS_SAMPLES[64];
+};
+
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    uint offset_index = (FRAME + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1);
+
+    uvec2 offset_coordinate;
+
+    offset_coordinate.x = coordinate.x + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+    offset_coordinate.y = coordinate.y + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+
+    return texture(BLUE_NOISE_TEXTURES[offset_index], vec2(offset_coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
 
 /*
 *   Linearizes a depth value.
@@ -293,6 +308,40 @@ vec3 CalculateScreenPosition(vec3 world_position)
 }
 
 /*
+*	Rotates the given vector around the yaw.
+*/
+vec3 RotateYaw(vec3 X, float angle)
+{
+	float sine = sin(angle);
+    float cosine = cos(angle);
+
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
+
+    return X;
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}
+
+/*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
 *   Combines two hashes.
 */
 uint CombineHash(uint hash_1, uint hash_2)
@@ -362,60 +411,47 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
 }
 
-layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
-
-uvec3 ComputeWorkGroupSize()
+layout (push_constant) uniform PushConstantData
 {
-	return uvec3(8, 8, 1);
-}
+	layout (offset = 0) uint NUMBER_OF_SAMPLES;
+};
 
-uvec3 ComputeDimensions()
-{
-	return ComputeWorkGroupSize() * gl_NumWorkGroups;
-}
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2Half;
+
+layout (location = 0) in vec2 InScreenCoordinate;
+
+layout (location = 0) out vec4 AmbientOcclusion;
 
 void main()
 {
-    uvec3 compute_dimensions = ComputeDimensions();
-    vec2 screen_coordinate = (vec2(gl_GlobalInvocationID.xy) + vec2(0.5f)) / vec2(compute_dimensions);
-    float depth = LinearizeDepth(imageLoad(SceneFeatures2, ivec2(gl_GlobalInvocationID.xy)).w);
-    float ambient_occlusion;
+    #define AMBIENT_OCCLUSION_RADIUS (1.0f)
+    vec4 scene_features_2 = texture(SceneFeatures2Half, InScreenCoordinate);
+    vec3 normal = scene_features_2.xyz;
+    float depth = scene_features_2.w;
+    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
+	vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), 0);
+	uint random_hemisphere_sample_start_index = uint(noise_texture_sample.w * 64.0f);
+    mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
+	float ambient_occlusion = 0.0f;
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
     {
-        ivec2 sample_coordinate_1 = ivec2(gl_GlobalInvocationID.xy) / 2;
-        ivec2 sample_coordinate_2 = min(ivec2(gl_GlobalInvocationID.xy) / 2 + ivec2(0, 1), ivec2(HALF_MAIN_RESOLUTION));
-        ivec2 sample_coordinate_3 = min(ivec2(gl_GlobalInvocationID.xy) / 2 + ivec2(1, 0), ivec2(HALF_MAIN_RESOLUTION));
-        ivec2 sample_coordinate_4 = min(ivec2(gl_GlobalInvocationID.xy) / 2 + ivec2(1, 1), ivec2(HALF_MAIN_RESOLUTION));
-        float ambient_occlusion_1 = imageLoad(AmbientOcclusion, sample_coordinate_1).x;
-        float ambient_occlusion_2 = imageLoad(AmbientOcclusion, sample_coordinate_2).x;
-        float ambient_occlusion_3 = imageLoad(AmbientOcclusion, sample_coordinate_3).x;
-        float ambient_occlusion_4 = imageLoad(AmbientOcclusion, sample_coordinate_4).x;
-        float depth_1 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_1).w);
-        float depth_2 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_2).w);
-        float depth_3 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_3).w);
-        float depth_4 = LinearizeDepth(imageLoad(SceneFeatures2Half, sample_coordinate_4).w);
-         float horizontal_weight = fract(screen_coordinate.x * HALF_MAIN_RESOLUTION.x);
-        float vertical_weight = fract(screen_coordinate.y * HALF_MAIN_RESOLUTION.y);
-        float weight_1 = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
-	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
-	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
-	    float weight_4 = horizontal_weight * vertical_weight;
-        weight_1 = max(weight_1 * exp(-abs(depth - depth_1)), FLOAT32_EPSILON);
-        weight_2 = max(weight_2 * exp(-abs(depth - depth_2)), FLOAT32_EPSILON);
-        weight_3 = max(weight_3 * exp(-abs(depth - depth_3)), FLOAT32_EPSILON);
-        weight_4 = max(weight_4 * exp(-abs(depth - depth_4)), FLOAT32_EPSILON);
-        float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
-	    weight_1 *= total_weight_reciprocal;
-	    weight_2 *= total_weight_reciprocal;
-	    weight_3 *= total_weight_reciprocal;
-        weight_4 *= total_weight_reciprocal;
-        ambient_occlusion = ambient_occlusion_1 * weight_1
-                            + ambient_occlusion_2 * weight_2
-                            + ambient_occlusion_3 * weight_3
-                            + ambient_occlusion_4 * weight_4;
-   }
-    ambient_occlusion = (ambient_occlusion * ambient_occlusion * ambient_occlusion * ambient_occlusion);
-    ambient_occlusion *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(gl_GlobalInvocationID.xy), FRAME));
-    vec4 material_properties = imageLoad(SceneFeatures3, ivec2(gl_GlobalInvocationID.xy));
-    material_properties.z *= ambient_occlusion;
-    imageStore(SceneFeatures3, ivec2(gl_GlobalInvocationID.xy), material_properties);
+        vec4 random_hemisphere_sample = HAMMERSLEY_COSINUS_SAMPLES[(random_hemisphere_sample_start_index + i) & 63];
+        vec3 random_hemisphere_direction = random_hemisphere_sample.xyz;
+        float random_hemisphere_length = random_hemisphere_sample.w;
+		vec3 random_direction = random_rotation * random_hemisphere_direction;
+		random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
+		vec3 sample_position = world_position + random_direction * InterleavedGradientNoise(uvec2(gl_FragCoord.xy), i) * AMBIENT_OCCLUSION_RADIUS;
+		vec4 sample_view_space_position = WORLD_TO_CLIP_MATRIX * vec4(sample_position, 1.0f);
+		float sample_screen_coordinate_inverse_denominator = 1.0f / sample_view_space_position.w;
+		vec2 sample_screen_coordinate = sample_view_space_position.xy * sample_screen_coordinate_inverse_denominator * 0.5f + 0.5f;
+        float expected_depth = LinearizeDepth(sample_view_space_position.z * sample_screen_coordinate_inverse_denominator);
+		float sample_depth = texture(SceneFeatures2Half, sample_screen_coordinate).w;
+        float linearized_sample_depth = LinearizeDepth(sample_depth);
+        vec3 sample_world_position = CalculateWorldPosition(sample_screen_coordinate, sample_depth);
+        vec3 sample_direction = normalize(sample_world_position - world_position);
+		float distance_falloff = SmoothStep(1.0f - (min(abs(expected_depth - linearized_sample_depth), AMBIENT_OCCLUSION_RADIUS) / AMBIENT_OCCLUSION_RADIUS));
+        ambient_occlusion += max(dot(sample_direction, normal), 0.0f) * distance_falloff;
+    }
+	ambient_occlusion = 1.0f - (ambient_occlusion / float(NUMBER_OF_SAMPLES));
+	AmbientOcclusion = vec4(ambient_occlusion);
 }
