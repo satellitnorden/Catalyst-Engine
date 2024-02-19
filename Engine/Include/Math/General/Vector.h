@@ -1341,7 +1341,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	FORCE_INLINE TYPE& operator[](const uint64 index)  NOEXCEPT
+	FORCE_INLINE constexpr TYPE &operator[](const uint64 index)  NOEXCEPT
 	{
 		return _Data[index];
 	}

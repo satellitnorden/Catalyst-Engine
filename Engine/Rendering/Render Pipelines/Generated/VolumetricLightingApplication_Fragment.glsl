@@ -288,48 +288,183 @@ vec3 CalculateScreenPosition(vec3 world_position)
 }
 
 /*
-*	Constrains the the given sample, by clipping it against the minimum/maximum bounding volume.
+*   Combines two hashes.
 */
-vec3 Constrain(vec3 _sample, vec3 minimum, vec3 maximum)
+uint CombineHash(uint hash_1, uint hash_2)
 {
-#if 0
-	return clamp(_sample, minimum, maximum);
-#else
-	vec3 p_clip = 0.5f * (maximum + minimum);
-	vec3 e_clip = 0.5f * (maximum - minimum);
-
-	vec3 v_clip = _sample - p_clip;
-	vec3 v_unit = v_clip / e_clip;
-	vec3 a_unit = abs(v_unit);
-
-	float ma_unit = max(a_unit.x, max(a_unit.y, a_unit.z));
-
-	if (ma_unit > 1.0f)
-	{
-		return p_clip + v_clip / ma_unit;
-	}
-
-	else
-	
-	{
-		return _sample;
-	}
-#endif
+    return 3141592653 * hash_1 + hash_2;
 }
 
-layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2;
-layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4;
-layout (set = 1, binding = 4) uniform sampler2D SceneNearest;
-layout (set = 1, binding = 5) uniform sampler2D SceneLinear;
-layout (set = 1, binding = 6) uniform sampler2D PreviousTemporalBuffer;
+/*
+*   Hash function taking a uint.
+*/
+uint Hash(uint seed)
+{
+    seed ^= seed >> 17;
+    seed *= 0xed5ad4bbU;
+    seed ^= seed >> 11;
+    seed *= 0xac4c1b51U;
+    seed ^= seed >> 15;
+    seed *= 0x31848babU;
+    seed ^= seed >> 14;
+    return seed;
+}
 
-layout (location = 0) out vec2 OutScreenCoordinate;
+/*
+*   Hash function taking a uvec2.
+*/
+uint Hash2(uvec2 seed)
+{
+    return Hash(seed.x) ^ Hash(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
+    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
+    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
+}
+
+/*
+*   Given a seed, returns a random number.
+*/
+float RandomFloat(inout uint seed)
+{
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate and a seed, returns a random number.
+*/
+float RandomFloat(uvec2 coordinate, uint seed)
+{
+    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*/
+float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+{
+	frame = frame % 64;
+
+	float x = float(coordinate.x) + 5.588238f * float(frame);
+	float y = float(coordinate.y) + 5.588238f * float(frame);
+
+	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+}
+
+/*
+*	Returns the extinction at the given position.
+*/
+float GetExtinctionAtPosition(vec3 position)
+{
+	#define BASE_EXTINCTION (0.00125f)
+
+	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.125f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
+
+	#undef BASE_EXTINCTION
+}
+
+/*
+*	Calculates the attenuation in the given direction.
+*/
+float CalculateAttenuationInDirection(vec3 position, vec3 direction, float distance)
+{
+	#define NUMBER_OF_SAMPLES (4)
+
+	float attenuation = 1.0f;
+	float step_size = distance / float(NUMBER_OF_SAMPLES);
+
+	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+	{
+		vec3 sample_position = position + direction * float(i) * step_size;
+		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * step_size);
+	}
+
+	return attenuation;
+	
+	#undef NUMBER_OF_SAMPLES
+}
+
+/*
+*	The Henyey-Greenstein phase function.
+*/
+float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
+{
+	float G = 0.8f;
+	float dot_product = dot(outgoing_direction, -incoming_direction);
+
+	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
+}
+
+/*
+*	Calculates the scattering with the given properties.
+*/
+vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
+{
+	return vec3(0.0f, 0.0f, 0.0f);
+}
+
+layout (set = 1, binding = 2) uniform sampler2D VolumetricLighting;
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2;
+layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2Half;
+
+layout (location = 0) in vec2 InScreenCoordinate;
+
+layout (location = 0) out vec4 Scene;
 
 void main()
 {
-	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
-    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
-    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
-    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
-	gl_Position = vec4(x,y,0.0f,1.0f);
+    vec4 scene_features_2 = texture(SceneFeatures2, InScreenCoordinate);
+    float depth = scene_features_2.w;
+    float linearized_depth = LinearizeDepth(depth);
+    vec3 volumetric_lighting;
+    {
+        vec2 sample_coordinate_1 = InScreenCoordinate;
+        vec2 sample_coordinate_2 = InScreenCoordinate + vec2(0.0f, 1.0f) * INVERSE_HALF_MAIN_RESOLUTION;
+        vec2 sample_coordinate_3 = InScreenCoordinate + vec2(1.0f, 0.0f) * INVERSE_HALF_MAIN_RESOLUTION;
+        vec2 sample_coordinate_4 = InScreenCoordinate + vec2(1.0f, 1.0f) * INVERSE_HALF_MAIN_RESOLUTION;
+        vec3 volumetric_lighting_1 = texture(VolumetricLighting, sample_coordinate_1).rgb;
+        vec3 volumetric_lighting_2 = texture(VolumetricLighting, sample_coordinate_2).rgb;
+        vec3 volumetric_lighting_3 = texture(VolumetricLighting, sample_coordinate_3).rgb;
+        vec3 volumetric_lighting_4 = texture(VolumetricLighting, sample_coordinate_4).rgb;
+        float linearized_depth_1 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_1).w);
+        float linearized_depth_2 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_2).w);
+        float linearized_depth_3 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_3).w);
+        float linearized_depth_4 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_4).w);
+        float horizontal_weight = fract(InScreenCoordinate.x * HALF_MAIN_RESOLUTION.x);
+        float vertical_weight = fract(InScreenCoordinate.y * HALF_MAIN_RESOLUTION.y);
+        float weight_1 = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
+	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
+	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
+	    float weight_4 = horizontal_weight * vertical_weight;
+        weight_1 = max(weight_1 * exp(-abs(depth - linearized_depth_1)), FLOAT32_EPSILON);
+        weight_2 = max(weight_2 * exp(-abs(depth - linearized_depth_2)), FLOAT32_EPSILON);
+        weight_3 = max(weight_3 * exp(-abs(depth - linearized_depth_3)), FLOAT32_EPSILON);
+        weight_4 = max(weight_4 * exp(-abs(depth - linearized_depth_4)), FLOAT32_EPSILON);
+        float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
+	    weight_1 *= total_weight_reciprocal;
+	    weight_2 *= total_weight_reciprocal;
+	    weight_3 *= total_weight_reciprocal;
+        weight_4 *= total_weight_reciprocal;
+        volumetric_lighting =   volumetric_lighting_1 * weight_1
+                                + volumetric_lighting_2 * weight_2
+                                + volumetric_lighting_3 * weight_3
+                                + volumetric_lighting_4 * weight_4;
+    }
+    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
+    float hit_distance = length(world_position - CAMERA_WORLD_POSITION);
+    float transmittance = 1.0f;
+    for (uint i = 0; i < 4; ++i)
+    {
+        vec3 sample_position = mix(CAMERA_WORLD_POSITION, world_position, float(i) / 4);
+        float extinction = GetExtinctionAtPosition(sample_position);
+        float attenuation_factor = exp(-extinction * hit_distance * 0.25f);
+        transmittance *= attenuation_factor;
+    }
+	Scene = vec4(volumetric_lighting,transmittance);
 }

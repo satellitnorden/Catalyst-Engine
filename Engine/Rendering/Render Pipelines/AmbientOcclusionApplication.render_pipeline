@@ -82,7 +82,7 @@ Compute
     //Bias the ambient occlusion.
     ambient_occlusion = (ambient_occlusion * ambient_occlusion * ambient_occlusion * ambient_occlusion);
 
-    //Add some noise to the volumetric lighting so that the temporal anti aliasing pass has an easier time cleaning it up.
+    //Add some noise to the ambient occlusion so that the temporal anti aliasing pass has an easier time cleaning it up.
     ambient_occlusion *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(COMPUTE_GLOBAL_ID.xy), FRAME));
 
     //Load the material properties.

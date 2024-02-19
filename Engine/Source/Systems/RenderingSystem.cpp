@@ -1573,8 +1573,8 @@ void RenderingSystem::InitializeHammersleyHemisphereSamplesUniformBuffer() NOEXC
 	{
 		for (uint8 j{ 0 }; j < 8; ++j)
 		{
-			hemisphere_samples[counter] = Vector4<float32>(HammersleySequence::CalculateCoordinateHemisphereCosinus(i + j * 8 + 1, 65), HammersleySequence::RadicalInverse(counter + 1));
-			_HammersleyHemisphereSamplesUniformData._HammersleyCosinusSamples[counter] = hemisphere_samples[counter];
+			_HammersleyHemisphereSamplesUniformData._HammersleyCosinusSamples[counter] = Vector4<float32>(HammersleySequence::CalculateCoordinateHemisphereCosinus(i + j * 8 + 1, 65), HammersleySequence::RadicalInverse(counter + 1));
+			_HammersleyHemisphereSamplesUniformData._HammersleyUniformSamples[counter] = Vector4<float32>(HammersleySequence::CalculateCoordinateHemisphereUniform(i + j * 8 + 1, 65), HammersleySequence::RadicalInverse(counter + 1));
 
 			++counter;
 		}

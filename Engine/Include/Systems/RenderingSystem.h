@@ -664,6 +664,9 @@ private:
 		//The hammersley cosinus samples.
 		StaticArray<Vector4<float32>, 64> _HammersleyCosinusSamples;
 
+		//The hammersley uniform samples.
+		StaticArray<Vector4<float32>, 64> _HammersleyUniformSamples;
+
 	};
 
 	//The configuration.

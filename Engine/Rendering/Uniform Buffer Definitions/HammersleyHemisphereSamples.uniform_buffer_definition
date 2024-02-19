@@ -1,4 +1,5 @@
 UniformBuffer(HammersleyHemisphereSamples)
 {
     vec4 HAMMERSLEY_COSINUS_SAMPLES[64];
+    vec4 HAMMERSLEY_UNIFORM_SAMPLES[64];
 };

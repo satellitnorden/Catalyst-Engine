@@ -216,6 +216,7 @@ layout (std140, set = 1, binding = 1) uniform General
 layout (std140, set = 1, binding = 2) uniform HammersleyHemisphereSamples
 {
 	layout (offset = 0) vec4 HAMMERSLEY_COSINUS_SAMPLES[64];
+	layout (offset = 16) vec4 HAMMERSLEY_UNIFORM_SAMPLES[64];
 };
 
 /*

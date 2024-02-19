@@ -19,6 +19,8 @@
 
 #define FLOAT32_MAXIMUM (3.402823466e+38F)
 #define UINT8_MAXIMUM (0xff)
+#define UINT16_MAXIMUM (0xffff)
+#define UINT16_RECIPROCAL (1.525902189669642e-5f)
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
@@ -214,6 +216,7 @@ layout (std140, set = 1, binding = 1) uniform General
 layout (std140, set = 1, binding = 2) uniform HammersleyHemisphereSamples
 {
 	layout (offset = 0) vec4 HAMMERSLEY_COSINUS_SAMPLES[64];
+	layout (offset = 16) vec4 HAMMERSLEY_UNIFORM_SAMPLES[64];
 };
 
 /*

@@ -65,18 +65,22 @@ Fragment
     for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
     {
         //Retrieve the random hemisphere sample.
-        vec4 random_hemisphere_sample = HAMMERSLEY_COSINUS_SAMPLES[(random_hemisphere_sample_start_index + i) & 63];
-        vec3 random_hemisphere_direction = random_hemisphere_sample.xyz;
-        float random_hemisphere_length = random_hemisphere_sample.w;
+        vec4 random_hemisphere_sample = HAMMERSLEY_UNIFORM_SAMPLES[(random_hemisphere_sample_start_index + i) & 63];
+        
+        //Set the random direction.
+        vec3 random_direction = random_hemisphere_sample.xyz;
 
-        //Rotate the random direction.
-		vec3 random_direction = random_rotation * random_hemisphere_direction;
+        //Apply the random rotation.
+        random_direction = random_rotation * random_direction;
 
 		//Flip the direction, if needed.
 		random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
 
+        //Set the random length.
+        float random_length = InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), i);
+
 		//Calculate the sample position.
-		vec3 sample_position = world_position + random_direction * InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), i) * AMBIENT_OCCLUSION_RADIUS;
+		vec3 sample_position = world_position + random_direction * random_length * AMBIENT_OCCLUSION_RADIUS;
 
 		//Calculate the sample screen coordinate.
 		vec4 sample_view_space_position = WORLD_TO_CLIP_MATRIX * vec4(sample_position, 1.0f);
@@ -99,8 +103,9 @@ Fragment
 		//Calculate the distance falloff.
 		float distance_falloff = SmoothStep(1.0f - (min(abs(expected_depth - linearized_sample_depth), AMBIENT_OCCLUSION_RADIUS) / AMBIENT_OCCLUSION_RADIUS));
 
-		//If the expected hit distance is greater then the sample hit distance, there is occlusion.
-        ambient_occlusion += max(dot(sample_direction, normal), 0.0f) * distance_falloff;
+		//Calculate the sample ambient occlusion.
+        float sample_ambient_occlusion = max(dot(sample_direction, normal), 0.0f) * distance_falloff;
+        ambient_occlusion += sample_ambient_occlusion;
     }
 
     //Normalize the ambient occlusion.

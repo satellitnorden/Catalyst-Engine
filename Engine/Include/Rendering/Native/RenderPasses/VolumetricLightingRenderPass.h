@@ -55,7 +55,7 @@ private:
 	};
 
 	//The volumetric lighting application pipeline.
-	ComputeRenderPipeline _VolumetricLightingApplicationPipeline{ HashString("VolumetricLightingApplication_RenderPipeline") };
+	GraphicsRenderPipeline _VolumetricLightingApplicationPipeline{ HashString("VolumetricLightingApplication_RenderPipeline") };
 
 	//The current temporal buffer index.
 	uint8 _CurrentTemporalBufferIndex{ 0 };

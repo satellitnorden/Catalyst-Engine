@@ -118,9 +118,9 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	}
 
 	{
-		ComputeRenderPipelineParameters parameters;
+		GraphicsRenderPipelineParameters parameters;
 
-		parameters._ComputeRenderTargets.Emplace(HashString("VolumetricLighting"), _IntermediateVolumetricLightingRenderTarget);
+		parameters._InputRenderTargets.Emplace(HashString("VolumetricLighting"), _IntermediateVolumetricLightingRenderTarget);
 
 		_VolumetricLightingApplicationPipeline.Initialize(parameters);
 	}

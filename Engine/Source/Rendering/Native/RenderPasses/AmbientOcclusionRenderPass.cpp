@@ -86,21 +86,21 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 				{
 					case RenderingConfiguration::AmbientOcclusionQuality::LOW:
 					{
-						push_constant_data._NumberOfSamples = 3;
+						push_constant_data._NumberOfSamples = 4;
 
 						break;
 					}
 
 					case RenderingConfiguration::AmbientOcclusionQuality::MEDIUM:
 					{
-						push_constant_data._NumberOfSamples = 6;
+						push_constant_data._NumberOfSamples = 8;
 
 						break;
 					}
 
 					case RenderingConfiguration::AmbientOcclusionQuality::HIGH:
 					{
-						push_constant_data._NumberOfSamples = 12;
+						push_constant_data._NumberOfSamples = 16;
 
 						break;
 					}

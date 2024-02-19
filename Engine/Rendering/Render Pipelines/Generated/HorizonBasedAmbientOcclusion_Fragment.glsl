@@ -216,6 +216,7 @@ layout (std140, set = 1, binding = 1) uniform General
 layout (std140, set = 1, binding = 2) uniform HammersleyHemisphereSamples
 {
 	layout (offset = 0) vec4 HAMMERSLEY_COSINUS_SAMPLES[64];
+	layout (offset = 16) vec4 HAMMERSLEY_UNIFORM_SAMPLES[64];
 };
 
 /*
@@ -435,12 +436,12 @@ void main()
 	float ambient_occlusion = 0.0f;
     for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
     {
-        vec4 random_hemisphere_sample = HAMMERSLEY_COSINUS_SAMPLES[(random_hemisphere_sample_start_index + i) & 63];
-        vec3 random_hemisphere_direction = random_hemisphere_sample.xyz;
-        float random_hemisphere_length = random_hemisphere_sample.w;
-		vec3 random_direction = random_rotation * random_hemisphere_direction;
+        vec4 random_hemisphere_sample = HAMMERSLEY_UNIFORM_SAMPLES[(random_hemisphere_sample_start_index + i) & 63];
+        vec3 random_direction = random_hemisphere_sample.xyz;
+        random_direction = random_rotation * random_direction;
 		random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
-		vec3 sample_position = world_position + random_direction * InterleavedGradientNoise(uvec2(gl_FragCoord.xy), i) * AMBIENT_OCCLUSION_RADIUS;
+        float random_length = InterleavedGradientNoise(uvec2(gl_FragCoord.xy), i);
+		vec3 sample_position = world_position + random_direction * random_length * AMBIENT_OCCLUSION_RADIUS;
 		vec4 sample_view_space_position = WORLD_TO_CLIP_MATRIX * vec4(sample_position, 1.0f);
 		float sample_screen_coordinate_inverse_denominator = 1.0f / sample_view_space_position.w;
 		vec2 sample_screen_coordinate = sample_view_space_position.xy * sample_screen_coordinate_inverse_denominator * 0.5f + 0.5f;
@@ -450,7 +451,8 @@ void main()
         vec3 sample_world_position = CalculateWorldPosition(sample_screen_coordinate, sample_depth);
         vec3 sample_direction = normalize(sample_world_position - world_position);
 		float distance_falloff = SmoothStep(1.0f - (min(abs(expected_depth - linearized_sample_depth), AMBIENT_OCCLUSION_RADIUS) / AMBIENT_OCCLUSION_RADIUS));
-        ambient_occlusion += max(dot(sample_direction, normal), 0.0f) * distance_falloff;
+        float sample_ambient_occlusion = max(dot(sample_direction, normal), 0.0f) * distance_falloff;
+        ambient_occlusion += sample_ambient_occlusion;
     }
 	ambient_occlusion = 1.0f - (ambient_occlusion / float(NUMBER_OF_SAMPLES));
 	AmbientOcclusion = vec4(ambient_occlusion);

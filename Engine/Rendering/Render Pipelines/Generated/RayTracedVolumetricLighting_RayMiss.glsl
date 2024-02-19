@@ -20,6 +20,8 @@
 
 #define FLOAT32_MAXIMUM (3.402823466e+38F)
 #define UINT8_MAXIMUM (0xff)
+#define UINT16_MAXIMUM (0xffff)
+#define UINT16_RECIPROCAL (1.525902189669642e-5f)
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
@@ -462,7 +464,7 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 */
 float GetExtinctionAtPosition(vec3 position)
 {
-	#define BASE_EXTINCTION (0.000125f)
+	#define BASE_EXTINCTION (0.00125f)
 
 	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.125f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
 
