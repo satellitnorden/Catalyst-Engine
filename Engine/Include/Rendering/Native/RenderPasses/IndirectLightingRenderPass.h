@@ -5,7 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingApplicationGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/IndirectLightingTemporalDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ScreenSpaceIndirectLightingGraphicsPipeline.h>
@@ -92,8 +92,8 @@ private:
 	//The current temporal buffer index.
 	uint8 _CurrentTemporalBufferIndex{ 0 };
 
-	//The indirect lighting application graphics pipeline.
-	IndirectLightingApplicationGraphicsPipeline _IndirectLightingApplicationGraphicsPipeline;
+	//The indirect lighting pipeline.
+	GraphicsRenderPipeline _IndirectLightingPipeline{ HashString("IndirectLighting_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

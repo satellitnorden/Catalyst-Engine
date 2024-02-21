@@ -141,7 +141,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 		}
 	}
 
-	AddPipeline(&_IndirectLightingApplicationGraphicsPipeline);
+	AddPipeline(&_IndirectLightingPipeline);
 
 	//Initialize all pipelines.
 	if (_CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
@@ -211,7 +211,7 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 																			_TemporalIndirectLightingBuffers[0]);
 	}
 
-	_IndirectLightingApplicationGraphicsPipeline.Initialize();
+	_IndirectLightingPipeline.Initialize();
 }
 
 /*
@@ -283,7 +283,7 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 		}
 	}
 
-	_IndirectLightingApplicationGraphicsPipeline.Execute();
+	_IndirectLightingPipeline.Execute();
 
 	//Update the current buffer index.
 	_CurrentTemporalBufferIndex ^= static_cast<uint8>(1);
@@ -320,7 +320,7 @@ void IndirectLightingRenderPass::Terminate() NOEXCEPT
 		}
 	}
 
-	_IndirectLightingApplicationGraphicsPipeline.Terminate();
+	_IndirectLightingPipeline.Terminate();
 
 	//Destroy the previous scene mip chain.
 	for (uint64 i{ 1 }; i < _PreviousSceneMipChain.Size(); ++i)

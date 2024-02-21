@@ -358,7 +358,7 @@ private:
 		//Allocate the acceleration structure memory.
 		_AccelerationStructureMemory = Memory::Allocate(_BuildData->_NumberBytesNeededForVertexData + _BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
 
-		LOG_INFORMATION("Acceleration structure memory usage: %ull", _BuildData->_NumberBytesNeededForVertexData + _BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
+		LOG_INFORMATION("Acceleration structure memory usage: %llu", _BuildData->_NumberBytesNeededForVertexData + _BuildData->_NumberBytesNeededForTriangleData + _BuildData->_NumberOfBytesNeededForNodes);
 
 		//Copy the vertex data to the acceleration structure memory.
 		Memory::Copy(_AccelerationStructureMemory, _BuildData->_VertexData.Data(), _BuildData->_NumberBytesNeededForVertexData);
@@ -398,35 +398,35 @@ private:
 		AxisAlignedBoundingBox3D second;
 
 		{
-			const float x_axis{ box._Maximum._X - box._Minimum._X };
-			const float y_axis{ box._Maximum._Y - box._Minimum._Y };
-			const float z_axis{ box._Maximum._Z - box._Minimum._Z };
+			const float32 x_axis{ box._Maximum._X - box._Minimum._X };
+			const float32 y_axis{ box._Maximum._Y - box._Minimum._Y };
+			const float32 z_axis{ box._Maximum._Z - box._Minimum._Z };
 
-			if (x_axis > y_axis&& x_axis > z_axis) //X axis is the longest.
+			if (x_axis > y_axis && x_axis > z_axis) //X axis is the longest.
 			{
-				first._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
-				first._Maximum = Vector3<float>(box._Minimum._X + (x_axis * 0.5f), box._Maximum._Y, box._Maximum._Z);
+				first._Minimum = Vector3<float32>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
+				first._Maximum = Vector3<float32>(box._Minimum._X + (x_axis * 0.5f), box._Maximum._Y, box._Maximum._Z);
 
-				second._Minimum = Vector3<float>(box._Minimum._X + (x_axis * 0.5f), box._Minimum._Y, box._Minimum._Z);
-				second._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
+				second._Minimum = Vector3<float32>(box._Minimum._X + (x_axis * 0.5f), box._Minimum._Y, box._Minimum._Z);
+				second._Maximum = Vector3<float32>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
 			}
 
 			else if (y_axis > z_axis) //Y axis is the longest.
 			{
-				first._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
-				first._Maximum = Vector3<float>(box._Maximum._X, box._Minimum._Y + (y_axis * 0.5f), box._Maximum._Z);
+				first._Minimum = Vector3<float32>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
+				first._Maximum = Vector3<float32>(box._Maximum._X, box._Minimum._Y + (y_axis * 0.5f), box._Maximum._Z);
 
-				second._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y + (y_axis * 0.5f), box._Minimum._Z);
-				second._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
+				second._Minimum = Vector3<float32>(box._Minimum._X, box._Minimum._Y + (y_axis * 0.5f), box._Minimum._Z);
+				second._Maximum = Vector3<float32>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
 			}
 
 			else //Z axis is the longest.
 			{
-				first._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
-				first._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Minimum._Z + (z_axis * 0.5f));
+				first._Minimum = Vector3<float32>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z);
+				first._Maximum = Vector3<float32>(box._Maximum._X, box._Maximum._Y, box._Minimum._Z + (z_axis * 0.5f));
 
-				second._Minimum = Vector3<float>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z + (z_axis * 0.5f));
-				second._Maximum = Vector3<float>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
+				second._Minimum = Vector3<float32>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z + (z_axis * 0.5f));
+				second._Maximum = Vector3<float32>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z);
 			}
 		}
 
@@ -458,7 +458,7 @@ private:
 			triangle._Vertices[2] = _BuildData->_VertexData[triangle_data._Indices[2]]._Position;
 
 			//Calculate the center of the triangle.
-			const Vector3<float> triangle_center{ Triangle::CalculateCenter(triangle) };
+			const Vector3<float32> triangle_center{ Triangle::CalculateCenter(triangle) };
 
 			//Decide which axis aligned bounding box this triangle data should go into, based on the triangle center.
 			if (first.IsInside(triangle_center))
@@ -488,10 +488,6 @@ private:
 				}
 			}
 		}
-
-		//Shrink the allocated size to fit.
-		nodes[0]._TriangleData.Reserve(nodes[0]._TriangleData.Size());
-		nodes[1]._TriangleData.Reserve(nodes[1]._TriangleData.Size());
 
 		//Destroy the original nodes triangles.
 		node->_HasTriangles = false;
@@ -560,11 +556,11 @@ private:
 		{
 			box->Invalidate();
 
-			for (uint64 i{ 0 }; i < node->_TriangleDataSize; ++i)
+			for (uint64 triangle_index{ 0 }; triangle_index < node->_TriangleDataSize; ++triangle_index)
 			{
-				for (uint8 j{ 0 }; j < 3; ++j)
+				for (uint8 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
 				{
-					box->Expand(_VertexDataMemory[node->_TriangleDataMemory[i]._Indices[j]]._Position);
+					box->Expand(_VertexDataMemory[node->_TriangleDataMemory[triangle_index]._Indices[vertex_index]]._Position);
 				}
 			}
 		}
@@ -712,6 +708,11 @@ private:
 		{
 			for (uint8 i{ 0 }; i < 2; ++i)
 			{
+				if (!node._AxisAlignedBoundingBoxes[i].IsValid())
+				{
+					continue;
+				}
+
 				//Check first if this box is close enough.
 				const Vector3<float32> closest_point
 				{
@@ -727,8 +728,7 @@ private:
 
 				float intersection_distance_temporary{ FLOAT_MAXIMUM };
 
-				if (node._AxisAlignedBoundingBoxes[i].IsValid()
-					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary)
+				if ( CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary)
 					&& intersection_distance_temporary < maximum_distance)
 				{
 					if (TraceShadow(ray, maximum_distance, node._Nodes[i]))
