@@ -382,35 +382,33 @@ void main()
 {
     #define WATER_ALBEDO (vec3(0.0f, 0.125f * 0.25f, 0.5f * 0.5f))
 	float current_time = float(FRAME) / 60.0f * 0.125f * 0.125f;
-    vec3 tangent;
+    float right_height;
     {
         vec2 sample_position = InWorldPosition.xz + vec2(1.0f, 0.0f);
         float water_texture_sample_1 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.125f + vec2(-current_time, 0.0f)).x;
         float water_texture_sample_2 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.25f + vec2(current_time, 0.0f)).y;
         float water_texture_sample_3 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.5f + vec2(0.0f, -current_time)).z;
         float water_texture_sample_4 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 1.0f + vec2(0.0f, current_time)).w;
-        float height =  (water_texture_sample_1 * 1.0f
+        right_height =  (water_texture_sample_1 * 1.0f
                         + water_texture_sample_2 * 0.5f
                         + water_texture_sample_3 * 0.25f
                         + water_texture_sample_4 * 0.125f)
-                        / 1.875f;
-        tangent = normalize((InWorldPosition + vec3(1.0f, height * 1.0f, 0.0f)) - InWorldPosition);
+                        / 1.875f * 2.0f;
     }
-    vec3 bitangent;
+    float up_height;
     {
         vec2 sample_position = InWorldPosition.xz + vec2(0.0f, 1.0f);
         float water_texture_sample_1 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.125f + vec2(-current_time, 0.0f)).x;
         float water_texture_sample_2 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.25f + vec2(current_time, 0.0f)).y;
         float water_texture_sample_3 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.5f + vec2(0.0f, -current_time)).z;
         float water_texture_sample_4 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 1.0f + vec2(0.0f, current_time)).w;
-        float height =  (water_texture_sample_1 * 1.0f
+        up_height =     (water_texture_sample_1 * 1.0f
                         + water_texture_sample_2 * 0.5f
                         + water_texture_sample_3 * 0.25f
                         + water_texture_sample_4 * 0.125f)
-                        / 1.875f;
-        bitangent = normalize((InWorldPosition + vec3(0.0f, height * 1.0f, 1.0f)) - InWorldPosition);
+                        / 1.875f * 2.0f;
     }
-    vec3 water_normal = cross(bitangent, tangent);
+    vec3 water_normal = normalize(vec3(InWorldPosition.y - right_height, 1.0f, InWorldPosition.y - up_height));
     vec2 screen_coordinate = (vec2(gl_FragCoord.xy) + 0.5f) * INVERSE_FULL_MAIN_RESOLUTION;
     vec4 scene_features_2 = texture(SceneFeatures2Input, screen_coordinate);
     float surface_depth = LinearizeDepth(gl_FragCoord.z);
@@ -424,6 +422,6 @@ void main()
     vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
 	SceneFeatures1 = vec4(final_albedo,0.0f);
 	SceneFeatures2 = vec4(water_normal,gl_FragCoord.z);
-	SceneFeatures3 = vec4(FLOAT32_EPSILON,0.0f,1.0f,0.0f);
+	SceneFeatures3 = vec4(0.125f,0.0f,1.0f,0.0f);
 	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
 }

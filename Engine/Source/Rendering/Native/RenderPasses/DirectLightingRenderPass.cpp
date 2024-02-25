@@ -47,10 +47,10 @@ void DirectLightingRenderPass::Initialize() NOEXCEPT
 
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(&_DirectLightingGraphicsPipeline);
+	AddPipeline(&_DirectLightingPipeline);
 
 	//Initialize all pipelines.
-	_DirectLightingGraphicsPipeline.Initialize();
+	_DirectLightingPipeline.Initialize();
 }
 
 /*
@@ -59,7 +59,7 @@ void DirectLightingRenderPass::Initialize() NOEXCEPT
 void DirectLightingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	_DirectLightingGraphicsPipeline.Execute();
+	_DirectLightingPipeline.Execute();
 }
 
 /*
@@ -68,5 +68,5 @@ void DirectLightingRenderPass::Execute() NOEXCEPT
 void DirectLightingRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	_DirectLightingGraphicsPipeline.Terminate();
+	_DirectLightingPipeline.Terminate();
 }

@@ -8,7 +8,7 @@
 #include <Lighting/LightingCore.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DirectLightingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) DirectLightingRenderPass final : public RenderPass
@@ -26,8 +26,8 @@ public:
 
 private:
 
-	//The direct lighting graphics pipeline.
-	DirectLightingGraphicsPipeline _DirectLightingGraphicsPipeline;
+	//The direct lighting pipeline.
+	GraphicsRenderPipeline _DirectLightingPipeline{ HashString("DirectLighting_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

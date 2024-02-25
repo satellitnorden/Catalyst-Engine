@@ -2,14 +2,19 @@
 IncludeUniformBuffer(Camera);
 IncludeUniformBuffer(World);
 
+//Declare storage buffer includes.
+IncludeStorageBuffer(Lighting);
+
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Lighting);
 IncludeShaderFunctionLibrary(PhysicallyBasedLighting);
 
 //Declare input render targets.
 InputRenderTarget(SceneFeatures1 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures2 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures3 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(INTERMEDIATE_RGBA_FLOAT32_HALF_1 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output depth buffer.
 OutputDepthBuffer(SceneDepthBuffer);
@@ -81,23 +86,44 @@ Fragment
     //Calculate the view direction.
     vec3 view_direction = normalize(CAMERA_WORLD_POSITION - world_position);
 
-    //Calculate the incoming indirect light.
-    vec3 incoming_indirect_light = mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, max(dot(normal, vec3(0.0f, 1.0f, 0.0f)), 0.0f));
+    //Calculate the lighting.
+    vec3 lighting = vec3(0.0f);
 
-    //Calculate the indirect lighting.
-    vec3 indirect_lighting = CalculateIndirectLighting
-    (
-        view_direction,
-        albedo,
-        normal,
-        roughness,
-        metallic,
-        ambient_occlusion,
-        thickness,
-        incoming_indirect_light,
-        incoming_indirect_light
-    );
+    //Iterate over all lights.
+    for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
+    {
+        //Unpack the light.
+	    Light light = UnpackLight(i);
+
+        //Calculate the light radiance.
+        vec3 light_radiance = light._Color * light._Intensity;
+
+        switch (light._LightType)
+        {
+            case LIGHT_TYPE_DIRECTIONAL:
+            {
+                //Retrieve the shadow factor.
+                float shadow_factor = texture(INTERMEDIATE_RGBA_FLOAT32_HALF_1, InScreenCoordinate).x;
+
+                //Add direct light.
+                lighting += CalculateDirectLighting
+                (
+                    view_direction,
+                    albedo,
+                    normal,
+                    roughness,
+                    metallic,
+                    ambient_occlusion,
+                    thickness,
+                    light._TransformData1,
+                    light_radiance
+                ) * shadow_factor * ambient_occlusion;
+
+                break;
+            }
+        }
+    }
 
     //Output the fragment.
-    OutputFragment(Scene, vec4(indirect_lighting, 1.0f));
+    OutputFragment(Scene, vec4(lighting, 1.0f));
 }

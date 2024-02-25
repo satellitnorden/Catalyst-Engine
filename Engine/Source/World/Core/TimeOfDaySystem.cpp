@@ -131,11 +131,11 @@ void TimeOfDaySystem::InitializeSkyLightCurve() NOEXCEPT
 	//06.00.
 	ADD_CURVE_POINT(1.0f, 0.875f, 0.25f, 0.0f);
 	//06.00.
-	ADD_CURVE_POINT(1.0f, 0.875f, 0.375f, 16.0f);
+	ADD_CURVE_POINT(1.0f, 0.875f, 0.375f, 12.0f);
 	//12.00.
-	ADD_CURVE_POINT(1.0f, 0.875f, 0.5f, 24.0f);
+	ADD_CURVE_POINT(1.0f, 0.875f, 0.5f, 16.0f);
 	//15.00.
-	ADD_CURVE_POINT(1.0f, 0.875f, 0.375f, 16.0f);
+	ADD_CURVE_POINT(1.0f, 0.875f, 0.375f, 12.0f);
 	//18.00.
 	ADD_CURVE_POINT(1.0f, 0.25f, 0.125f, 0.0f);
 	//03.00.

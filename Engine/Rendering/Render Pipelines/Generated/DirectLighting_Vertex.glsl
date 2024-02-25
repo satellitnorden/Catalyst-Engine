@@ -2,8 +2,6 @@
 
 #extension GL_ARB_separate_shader_objects : require
 #extension GL_EXT_nonuniform_qualifier : require
-layout (early_fragment_tests) in;
-
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -212,6 +210,18 @@ layout (std140, set = 1, binding = 1) uniform Wind
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
 };
 
+//Lighting header struct definition.
+struct LightingHeader
+{
+	uint _NumberOfLights;
+	uint _MaximumNumberOfShadowCastingLights;	
+};
+layout (std430, set = 1, binding = 2) buffer Lighting
+{
+	layout (offset = 0) LightingHeader LIGHTING_HEADER;
+	layout (offset = 16) vec4[] LIGHT_DATA;
+};
+
 /*
 *   Linearizes a depth value.
 */
@@ -284,6 +294,64 @@ vec3 CalculateScreenPosition(vec3 world_position)
     view_space_position.z = LinearizeDepth(view_space_position.z);
     
     return view_space_position.xyz;
+}
+
+//Constants.
+#define LIGHT_TYPE_DIRECTIONAL (0)
+#define LIGHT_TYPE_POINT (1)
+#define LIGHT_TYPE_BOX (2)
+
+#define LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT (BIT(0))
+#define LIGHT_PROPERTY_VOLUMETRIC_BIT (BIT(1))
+#define LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT (BIT(2))
+
+/*
+*	Light struct definition.
+*/
+struct Light
+{
+	/*
+	*	First transform data.
+	*	Direction for directional lights, position for point lights, minimum world position for box lights.
+	*/
+	vec3 _TransformData1;
+
+	/*
+	*	Second transform data.
+	*	Maximum word position for box lights.
+	*/
+	vec3 _TransformData2;
+	vec3 _Color;
+	uint _LightType;
+	uint _LightProperties;
+	float _Intensity;
+	float _Radius;
+	float _Size;
+};
+
+/*
+*	Unpacks the light at the given index.
+*   Requies the Lighting storage buffer to be included.
+*/
+Light UnpackLight(uint index)
+{
+	Light light;
+
+  	vec4 light_data_1 = LIGHT_DATA[index * 4 + 0];
+  	vec4 light_data_2 = LIGHT_DATA[index * 4 + 1];
+  	vec4 light_data_3 = LIGHT_DATA[index * 4 + 2];
+  	vec4 light_data_4 = LIGHT_DATA[index * 4 + 3];
+
+  	light._TransformData1 = vec3(light_data_1.x, light_data_1.y, light_data_1.z);
+  	light._TransformData2 = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
+  	light._Color = vec3(light_data_2.z, light_data_2.w, light_data_3.x);
+  	light._LightType = floatBitsToUint(light_data_3.y);
+  	light._LightProperties = floatBitsToUint(light_data_3.z);
+  	light._Intensity = light_data_3.w;
+  	light._Radius = light_data_4.x;
+  	light._Size = light_data_4.y;
+
+	return light;
 }
 
 ////////////
@@ -571,41 +639,18 @@ vec3 CalculateIndirectLighting
 	return (diffuse_component * diffuse_irradiance * ambient_occlusion) + (specular_component * specular_irradiance * mix(ambient_occlusion, 1.0f, 0.5f));
 }
 
-layout (set = 1, binding = 2) uniform sampler2D SceneFeatures1;
-layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2;
-layout (set = 1, binding = 4) uniform sampler2D SceneFeatures3;
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures1;
+layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2;
+layout (set = 1, binding = 5) uniform sampler2D SceneFeatures3;
+layout (set = 1, binding = 6) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_HALF_1;
 
-layout (location = 0) in vec2 InScreenCoordinate;
-
-layout (location = 0) out vec4 Scene;
+layout (location = 0) out vec2 OutScreenCoordinate;
 
 void main()
 {
-    vec4 scene_features_1 = texture(SceneFeatures1, InScreenCoordinate);
-    vec4 scene_features_2 = texture(SceneFeatures2, InScreenCoordinate);
-    vec4 scene_features_3 = texture(SceneFeatures3, InScreenCoordinate);
-    vec3 albedo = scene_features_1.rgb;
-    float thickness = scene_features_1.w;
-    vec3 normal = scene_features_2.xyz;
-    float depth = scene_features_2.w;
-    float roughness = scene_features_3.x;
-    float metallic = scene_features_3.y;
-    float ambient_occlusion = scene_features_3.z;
-    float emissive = scene_features_3.w;
-    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
-    vec3 view_direction = normalize(CAMERA_WORLD_POSITION - world_position);
-    vec3 incoming_indirect_light = mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, max(dot(normal, vec3(0.0f, 1.0f, 0.0f)), 0.0f));
-    vec3 indirect_lighting = CalculateIndirectLighting
-    (
-        view_direction,
-        albedo,
-        normal,
-        roughness,
-        metallic,
-        ambient_occlusion,
-        thickness,
-        incoming_indirect_light,
-        incoming_indirect_light
-    );
-	Scene = vec4(indirect_lighting,1.0f);
+	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
+    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+	gl_Position = vec4(x,y,0.0f,1.0f);
 }
