@@ -1,0 +1,4 @@
+UniformBuffer(Water)
+{
+    vec2 WATER_OFFSETS[4];
+};

@@ -27,6 +27,9 @@ void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configurat
 	//Set the world grid size.
 	_WorldGridSize = configuration._WorldGridSize;
 
+	//Initialize the water system.
+	_WaterSystem.Initialize();
+
 	//Initialize the wind system.
 	_WindSystem.Initialize();
 
@@ -65,6 +68,9 @@ void WorldSystem::RenderUpdate() NOEXCEPT
 	//Update the world uniform data.
 	_WorldUniformData._UpperSkyColor = _SkySystem.GetSkyGradient()._UpperSkyColor;
 	_WorldUniformData._LowerSkyColor = _SkySystem.GetSkyGradient()._LowerSkyColor;
+
+	//Update the water system.
+	_WaterSystem.RenderUpdate();
 
 	//Update the wind system.
 	_WindSystem.RenderUpdate();

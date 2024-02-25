@@ -215,7 +215,12 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 32) uint FRAME;
 };
 
-layout (std140, set = 1, binding = 2) uniform Wind
+layout (std140, set = 1, binding = 2) uniform Water
+{
+	layout (offset = 0) vec2 WATER_OFFSETS[4];
+};
+
+layout (std140, set = 1, binding = 3) uniform Wind
 {
 	layout (offset = 0) vec4 PREVIOUS_WIND_DIRECTION_SPEED;
 	layout (offset = 16) vec4 CURRENT_WIND_DIRECTION_SPEED;
@@ -223,7 +228,7 @@ layout (std140, set = 1, binding = 2) uniform Wind
 	layout (offset = 36) float CURRENT_WIND_TIME;
 };
 
-layout (set = 1, binding = 3) uniform sampler SAMPLER;
+layout (set = 1, binding = 4) uniform sampler SAMPLER;
 
 /*
 *   Linearizes a depth value.
@@ -302,59 +307,31 @@ vec3 CalculateScreenPosition(vec3 world_position)
 /*
 *	Calculates the water height at the given position.
 */
-float WaterHeightAtPosition(vec3 world_position)
+float WaterHeightAtPosition(vec3 world_position, uint texture_index, float current_time)
 {
-	//Constants.
-	#define AMPLITUDE (0.5f)
+    #define AMPLITUDE (1.0f)
 
-	//Cache the current time. Assume 60 FPS for now.
-	float current_time = float(FRAME) / 60.0f;
+	float water_texture_sample_1 = texture(sampler2D(TEXTURES[texture_index], SAMPLER), world_position.xz * 0.125f + WATER_OFFSETS[0]).x;
+    float water_texture_sample_2 = texture(sampler2D(TEXTURES[texture_index], SAMPLER), world_position.xz * 0.25f + WATER_OFFSETS[1]).y;
+    float water_texture_sample_3 = texture(sampler2D(TEXTURES[texture_index], SAMPLER), world_position.xz * 0.5f + WATER_OFFSETS[2]).z;
+    float water_texture_sample_4 = texture(sampler2D(TEXTURES[texture_index], SAMPLER), world_position.xz * 1.0f + WATER_OFFSETS[3]).w;
 
-	//Accumulate the height.
-	float water_height = 0.0f;
-
-	{
-		float sum = 0.0f;
-		float amplitude = 0.25f;
-		float frequency = 0.125f;
-		
-		float direction_seed = 0.0f;
-		vec2 direction;
-
-		for (uint i = 0; i < 8; ++i)
-		{
-			//"Randomize" the direction for every wave.
-			direction = normalize(vec2(cos(direction_seed), sin(direction_seed)));
-			direction_seed += 1253.2131f;
-
-			//Calculate the wave coordinate.
-			float wave_coordinate = world_position.x * direction.x + world_position.z * direction.y;
-
-			//Calculate the wave length.
-			float wave_length = 2.0f / frequency;
-
-			water_height += amplitude * sin(wave_coordinate * wave_length + current_time * (2.0f / wave_length));
-			sum += amplitude;
-			amplitude *= 0.5f;
-			frequency *= 2.0f;
-		}
-
-		water_height /= sum;
-	}
-
-	//Return the wave height.
-	return water_height;
+    return  (water_texture_sample_1 * 1.0f
+            + water_texture_sample_2 * 0.5f
+            + water_texture_sample_3 * 0.25f
+            + water_texture_sample_4 * 0.125f)
+            / 1.875f * AMPLITUDE;
 }
 
 /*
 *	Calculates the water height at the given position.
 */
-vec3 WaterNormalAtPosition(vec3 world_position)
+vec3 WaterNormalAtPosition(vec3 world_position, uint texture_index, float current_time)
 {
-	float left = WaterHeightAtPosition(world_position + vec3(-1.0f, 0.0f, 0.0f));
-	float right = WaterHeightAtPosition(world_position + vec3(1.0f, 0.0f, 0.0f));
-	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -1.0f));
-	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 1.0f));
+	float left = WaterHeightAtPosition(world_position + vec3(-1.0f, 0.0f, 0.0f), texture_index, current_time);
+	float right = WaterHeightAtPosition(world_position + vec3(1.0f, 0.0f, 0.0f), texture_index, current_time);
+	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -1.0f), texture_index, current_time);
+	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 1.0f), texture_index, current_time);
 
 	return normalize(vec3(left - right, 2.0f, down - up));
 }
@@ -368,8 +345,8 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 20) uint TEXTURE_INDEX;
 };
 
-layout (set = 1, binding = 4) uniform sampler2D SceneFeatures1Input;
-layout (set = 1, binding = 5) uniform sampler2D SceneFeatures2Input;
+layout (set = 1, binding = 5) uniform sampler2D SceneFeatures1Input;
+layout (set = 1, binding = 6) uniform sampler2D SceneFeatures2Input;
 
 layout (location = 0) in vec3 InWorldPosition;
 
@@ -381,39 +358,14 @@ layout (location = 3) out vec4 SceneFeatures4;
 void main()
 {
     #define WATER_ALBEDO (vec3(0.0f, 0.125f * 0.25f, 0.5f * 0.5f))
-	float current_time = float(FRAME) / 60.0f * 0.125f * 0.125f;
-    float right_height;
-    {
-        vec2 sample_position = InWorldPosition.xz + vec2(1.0f, 0.0f);
-        float water_texture_sample_1 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.125f + vec2(-current_time, 0.0f)).x;
-        float water_texture_sample_2 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.25f + vec2(current_time, 0.0f)).y;
-        float water_texture_sample_3 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.5f + vec2(0.0f, -current_time)).z;
-        float water_texture_sample_4 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 1.0f + vec2(0.0f, current_time)).w;
-        right_height =  (water_texture_sample_1 * 1.0f
-                        + water_texture_sample_2 * 0.5f
-                        + water_texture_sample_3 * 0.25f
-                        + water_texture_sample_4 * 0.125f)
-                        / 1.875f * 2.0f;
-    }
-    float up_height;
-    {
-        vec2 sample_position = InWorldPosition.xz + vec2(0.0f, 1.0f);
-        float water_texture_sample_1 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.125f + vec2(-current_time, 0.0f)).x;
-        float water_texture_sample_2 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.25f + vec2(current_time, 0.0f)).y;
-        float water_texture_sample_3 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.5f + vec2(0.0f, -current_time)).z;
-        float water_texture_sample_4 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 1.0f + vec2(0.0f, current_time)).w;
-        up_height =     (water_texture_sample_1 * 1.0f
-                        + water_texture_sample_2 * 0.5f
-                        + water_texture_sample_3 * 0.25f
-                        + water_texture_sample_4 * 0.125f)
-                        / 1.875f * 2.0f;
-    }
-    vec3 water_normal = normalize(vec3(InWorldPosition.y - right_height, 1.0f, InWorldPosition.y - up_height));
+	float current_time = float(FRAME) / 60.0f * 0.125f * 0.25f;
+    vec3 water_normal = WaterNormalAtPosition(InWorldPosition, TEXTURE_INDEX, current_time);
     vec2 screen_coordinate = (vec2(gl_FragCoord.xy) + 0.5f) * INVERSE_FULL_MAIN_RESOLUTION;
     vec4 scene_features_2 = texture(SceneFeatures2Input, screen_coordinate);
     float surface_depth = LinearizeDepth(gl_FragCoord.z);
     float underwater_depth = LinearizeDepth(scene_features_2.w);
     float underwater_weight = exp(-(underwater_depth - surface_depth) * 0.125f * 0.25f);
+    screen_coordinate += water_normal.xz * 0.25f;
     vec4 scene_features_1 = texture(SceneFeatures1Input, screen_coordinate);
     vec3 underwater_albedo = scene_features_1.rgb;
     underwater_albedo *= 0.5f;
@@ -422,6 +374,6 @@ void main()
     vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
 	SceneFeatures1 = vec4(final_albedo,0.0f);
 	SceneFeatures2 = vec4(water_normal,gl_FragCoord.z);
-	SceneFeatures3 = vec4(0.125f,0.0f,1.0f,0.0f);
+	SceneFeatures3 = vec4(0.0f,0.0f,1.0f,0.0f);
 	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
 }

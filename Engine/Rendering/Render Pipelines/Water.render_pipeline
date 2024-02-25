@@ -1,6 +1,7 @@
 //Declare unifom buffer includes.
 IncludeUniformBuffer(Camera);
 IncludeUniformBuffer(General);
+IncludeUniformBuffer(Water);
 IncludeUniformBuffer(Wind);
 
 //Declare shader function library includes.
@@ -72,7 +73,7 @@ Vertex
     OutputParameter(vec3, OutWorldPosition);
 
     //Cache the current time. Assume 60 FPS for now.
-	float current_time = float(FRAME) / 60.0f * 0.125f * 0.125f;
+	float current_time = float(FRAME) / 60.0f * 0.125f * 0.25f;
 
     //Calculate the stitched position.
     vec2 stitched_position = InPosition;
@@ -111,20 +112,7 @@ Vertex
     OutWorldPosition.z = WORLD_POSITION.y + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
 
     //Calculate the height.
-    {
-        float water_texture_sample_1 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), OutWorldPosition.xz * 0.125f + vec2(-current_time, 0.0f)).x;
-        float water_texture_sample_2 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), OutWorldPosition.xz * 0.25f + vec2(current_time, 0.0f)).y;
-        float water_texture_sample_3 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), OutWorldPosition.xz * 0.5f + vec2(0.0f, -current_time)).z;
-        float water_texture_sample_4 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), OutWorldPosition.xz * 1.0f + vec2(0.0f, current_time)).w;
-
-        float height =  (water_texture_sample_1 * 1.0f
-                        + water_texture_sample_2 * 0.5f
-                        + water_texture_sample_3 * 0.25f
-                        + water_texture_sample_4 * 0.125f)
-                        / 1.875f;
-
-        OutWorldPosition.y += height * 2.0f;
-    }
+    OutWorldPosition.y += WaterHeightAtPosition(OutWorldPosition, TEXTURE_INDEX, current_time);
 
     //Output the position.
     OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
@@ -140,46 +128,10 @@ Fragment
     #define WATER_ALBEDO (vec3(0.0f, 0.125f * 0.25f, 0.5f * 0.5f))
 
     //Cache the current time. Assume 60 FPS for now.
-	float current_time = float(FRAME) / 60.0f * 0.125f * 0.125f;
-
-    //Calculate the right height.
-    float right_height;
-
-    {
-        vec2 sample_position = InWorldPosition.xz + vec2(1.0f, 0.0f);
-
-        float water_texture_sample_1 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.125f + vec2(-current_time, 0.0f)).x;
-        float water_texture_sample_2 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.25f + vec2(current_time, 0.0f)).y;
-        float water_texture_sample_3 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.5f + vec2(0.0f, -current_time)).z;
-        float water_texture_sample_4 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 1.0f + vec2(0.0f, current_time)).w;
-
-        right_height =  (water_texture_sample_1 * 1.0f
-                        + water_texture_sample_2 * 0.5f
-                        + water_texture_sample_3 * 0.25f
-                        + water_texture_sample_4 * 0.125f)
-                        / 1.875f * 2.0f;
-    }
-
-    //Calculate the up height.
-    float up_height;
-
-    {
-        vec2 sample_position = InWorldPosition.xz + vec2(0.0f, 1.0f);
-
-        float water_texture_sample_1 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.125f + vec2(-current_time, 0.0f)).x;
-        float water_texture_sample_2 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.25f + vec2(current_time, 0.0f)).y;
-        float water_texture_sample_3 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 0.5f + vec2(0.0f, -current_time)).z;
-        float water_texture_sample_4 = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), sample_position * 1.0f + vec2(0.0f, current_time)).w;
-
-        up_height =     (water_texture_sample_1 * 1.0f
-                        + water_texture_sample_2 * 0.5f
-                        + water_texture_sample_3 * 0.25f
-                        + water_texture_sample_4 * 0.125f)
-                        / 1.875f * 2.0f;
-    }
+	float current_time = float(FRAME) / 60.0f * 0.125f * 0.25f;
 
     //Calculate the water normal.
-    vec3 water_normal = normalize(vec3(InWorldPosition.y - right_height, 1.0f, InWorldPosition.y - up_height));
+    vec3 water_normal = WaterNormalAtPosition(InWorldPosition, TEXTURE_INDEX, current_time);
 
     //Calculate the screen coordinate.
     vec2 screen_coordinate = (vec2(FRAGMENT_COORDINATE.xy) + 0.5f) * INVERSE_FULL_MAIN_RESOLUTION;
@@ -197,7 +149,7 @@ Fragment
     float underwater_weight = exp(-(underwater_depth - surface_depth) * 0.125f * 0.25f);
 
     //Offset the screen coordinate a bit based on the normal.
-    //screen_coordinate += water_normal.xz * 0.25f;
+    screen_coordinate += water_normal.xz * 0.25f;
 
     //Sample scene features 1.
     vec4 scene_features_1 = texture(SceneFeatures1Input, screen_coordinate);
@@ -220,6 +172,6 @@ Fragment
     //Output the fragments.
     OutputFragment(SceneFeatures1, vec4(final_albedo, 0.0f));
     OutputFragment(SceneFeatures2, vec4(water_normal, gl_FragCoord.z));
-    OutputFragment(SceneFeatures3, vec4(0.125f, 0.0f, 1.0f, 0.0f));
+    OutputFragment(SceneFeatures3, vec4(0.0f, 0.0f, 1.0f, 0.0f));
     OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
 }

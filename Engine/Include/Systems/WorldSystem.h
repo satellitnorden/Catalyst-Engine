@@ -9,6 +9,7 @@
 #include <World/Core/EnvironmentSystem.h>
 #include <World/Core/SkySystem.h>
 #include <World/Core/TimeOfDaySystem.h>
+#include <World/Core/WaterSystem.h>
 #include <World/Core/WindSystem.h>
 
 //Forward declarations.
@@ -88,6 +89,14 @@ public:
 	}
 
 	/*
+	*	Returns the water system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD WaterSystem *const RESTRICT GetWaterSystem() NOEXCEPT
+	{
+		return &_WaterSystem;
+	}
+
+	/*
 	*	Returns the wind system.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD WindSystem *const RESTRICT GetWindSystem() NOEXCEPT
@@ -146,6 +155,9 @@ private:
 
 	//The time of day system.
 	TimeOfDaySystem _TimeOfDaySystem;
+
+	//The water system.
+	WaterSystem _WaterSystem;
 
 	//The wind system.
 	WindSystem _WindSystem;
