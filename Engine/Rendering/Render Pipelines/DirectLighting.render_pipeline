@@ -116,7 +116,8 @@ Fragment
                     ambient_occlusion,
                     thickness,
                     light._TransformData1,
-                    light_radiance
+                    light_radiance,
+                    0
                 ) * shadow_factor * ambient_occlusion;
 
                 break;

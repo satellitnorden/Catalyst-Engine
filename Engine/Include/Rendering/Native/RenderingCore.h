@@ -105,7 +105,6 @@ enum class RenderingPath : uint8
 enum class DefaultNativeRenderPassStage : uint8
 {
 	SCENE_FEATURES,
-	WATER,
 	POST_SCENE_FEATURES,
 	SHADOWS,
 	AMBIENT_OCCLUSION,
@@ -113,6 +112,7 @@ enum class DefaultNativeRenderPassStage : uint8
 	INDIRECT_LIGHTING,
 	SKY,
 	VOLUMETRIC_LIGHTING,
+	WATER,
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DEBUG_RENDERING,
 #endif

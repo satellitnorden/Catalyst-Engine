@@ -22,11 +22,8 @@ public:
 
 private:
 
-	//The scene features 1 render target.
-	RenderTargetHandle _SceneFeatures1RenderTarget;
-
-	//The scene features 2 render target.
-	RenderTargetHandle _SceneFeatures2RenderTarget;
+	//The scene render target.
+	RenderTargetHandle _SceneRenderTarget;
 
 	//The water render pipeline.
 	GraphicsRenderPipeline _WaterRenderPipeline{ HashString("Water_RenderPipeline") };

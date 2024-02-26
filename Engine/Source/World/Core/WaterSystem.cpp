@@ -29,7 +29,7 @@ void WaterSystem::Initialize() NOEXCEPT
 void WaterSystem::RenderUpdate() NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 SCALE{ 0.125f * 0.125f };
+	constexpr float32 SCALE{ 0.125f * 0.5f };
 
 	//Cache the delta time.
 	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };

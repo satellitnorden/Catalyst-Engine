@@ -51,11 +51,8 @@ void WaterRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
-	//Create the scene features 1 render target.
-	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_UINT8, SampleCount::SAMPLE_COUNT_1, &_SceneFeatures1RenderTarget);
-
-	//Create the scene features 2 render target.
-	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_SceneFeatures2RenderTarget);
+	//Create the scene render target.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_SceneRenderTarget);
 
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
@@ -66,8 +63,7 @@ void WaterRenderPass::Initialize() NOEXCEPT
 	{
 		GraphicsRenderPipelineParameters parameters;
 
-		parameters._InputRenderTargets.Emplace(HashString("SceneFeatures1Input"), _SceneFeatures1RenderTarget);
-		parameters._InputRenderTargets.Emplace(HashString("SceneFeatures2Input"), _SceneFeatures2RenderTarget);
+		parameters._InputRenderTargets.Emplace(HashString("SceneInput"), _SceneRenderTarget);
 
 		_WaterRenderPipeline.Initialize(parameters);
 	}
@@ -82,16 +78,8 @@ void WaterRenderPass::PreRecord(CommandBuffer *const RESTRICT command_buffer) NO
 	command_buffer->BlitImage
 	(
 		nullptr,
-		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1),
-		_SceneFeatures1RenderTarget
-	);
-
-	//Blit the scene features 2 render target.
-	command_buffer->BlitImage
-	(
-		nullptr,
-		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2),
-		_SceneFeatures2RenderTarget
+		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE),
+		_SceneRenderTarget
 	);
 }
 

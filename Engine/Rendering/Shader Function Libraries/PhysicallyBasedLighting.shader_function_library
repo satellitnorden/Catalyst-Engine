@@ -117,6 +117,14 @@ vec3 FresnelIndirect(vec3 surface_color, float outgoing_angle)
 }
 
 /*
+*	The lambert diffuse function.
+*/
+vec3 LambertDiffuse(vec3 albedo)
+{
+	return albedo / PI;
+}
+
+/*
 *	The disney diffuse function.
 *	Inspired by: https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf
 */
@@ -169,7 +177,8 @@ vec3 CalculateDirectLighting
 	float ambient_occlusion,
 	float thickness,
 	vec3 radiance_direction,
-	vec3 radiance
+	vec3 radiance,
+	uint flags
 )
 {
 	//Calculate the microsurface normal.
@@ -197,7 +206,9 @@ vec3 CalculateDirectLighting
 	vec3 diffuse_component;
 
 	{
-		diffuse_component = DisneyDiffuse(albedo, roughness, difference_angle, radiance_angle, outgoing_angle) * (1.0f - fresnel) * (1.0f - metallic);
+		diffuse_component = DisneyDiffuse(albedo, roughness, difference_angle, radiance_angle, outgoing_angle);
+
+		diffuse_component *= (1.0f - fresnel) * (1.0f - metallic);
 	}
 
 	//Calculate the specular component.
@@ -215,7 +226,7 @@ vec3 CalculateDirectLighting
 	weakening_factor = mix(weakening_factor * 0.5f + 0.5f, max(weakening_factor, 0.0f), thickness);
 
 	//return (diffuse_component + specular_component) * radiance * weakening_factor;
-	return (diffuse_component + specular_component) * radiance * weakening_factor;
+	return diffuse_component * radiance * weakening_factor;
 }
 
 ///////////////////////

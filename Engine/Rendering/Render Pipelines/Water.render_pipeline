@@ -2,24 +2,25 @@
 IncludeUniformBuffer(Camera);
 IncludeUniformBuffer(General);
 IncludeUniformBuffer(Water);
-IncludeUniformBuffer(Wind);
+IncludeUniformBuffer(World);
+
+//Declare storage buffer includes.
+IncludeStorageBuffer(Lighting);
 
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Lighting);
 IncludeShaderFunctionLibrary(WaterSimulation);
 
 //Declare input render targets.
-InputRenderTarget(SceneFeatures1Input /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
-InputRenderTarget(SceneFeatures2Input /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures2 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneInput /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output depth buffer.
 OutputDepthBuffer(SceneDepthBuffer);
 
 //Declare output render targets.
-OutputRenderTarget(SceneFeatures1);
-OutputRenderTarget(SceneFeatures2);
-OutputRenderTarget(SceneFeatures3);
-OutputRenderTarget(SceneFeatures4);
+OutputRenderTarget(Scene);
 
 //Declare render resolution.
 RenderResolution(MAIN_FULL);
@@ -72,9 +73,6 @@ Vertex
     //Declare output parameters.
     OutputParameter(vec3, OutWorldPosition);
 
-    //Cache the current time. Assume 60 FPS for now.
-	float current_time = float(FRAME) / 60.0f * 0.125f * 0.25f;
-
     //Calculate the stitched position.
     vec2 stitched_position = InPosition;
 
@@ -112,7 +110,7 @@ Vertex
     OutWorldPosition.z = WORLD_POSITION.y + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
 
     //Calculate the height.
-    OutWorldPosition.y += WaterHeightAtPosition(OutWorldPosition, TEXTURE_INDEX, current_time);
+    OutWorldPosition.y += WaterHeightAtPosition(OutWorldPosition, TEXTURE_INDEX);
 
     //Output the position.
     OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
@@ -125,19 +123,19 @@ Fragment
     InputParameter(vec3, InWorldPosition);
 
     //Constants.
-    #define WATER_ALBEDO (vec3(0.0f, 0.125f * 0.25f, 0.5f * 0.5f))
+    #define WATER_ALBEDO (vec3(0.0f, 0.25f, 0.25f))
 
-    //Cache the current time. Assume 60 FPS for now.
-	float current_time = float(FRAME) / 60.0f * 0.125f * 0.25f;
+    //Calculate the view direction.
+    vec3 view_direction = normalize(CAMERA_WORLD_POSITION - InWorldPosition);
 
     //Calculate the water normal.
-    vec3 water_normal = WaterNormalAtPosition(InWorldPosition, TEXTURE_INDEX, current_time);
+    vec3 water_normal = WaterNormalAtPosition(InWorldPosition, TEXTURE_INDEX);
 
     //Calculate the screen coordinate.
     vec2 screen_coordinate = (vec2(FRAGMENT_COORDINATE.xy) + 0.5f) * INVERSE_FULL_MAIN_RESOLUTION;
 
     //Sample scene features 2.
-    vec4 scene_features_2 = texture(SceneFeatures2Input, screen_coordinate);
+    vec4 scene_features_2 = texture(SceneFeatures2, screen_coordinate);
 
     //Calculate the surface depth.
     float surface_depth = LinearizeDepth(FRAGMENT_COORDINATE.z);
@@ -146,32 +144,58 @@ Fragment
     float underwater_depth = LinearizeDepth(scene_features_2.w);
 
     //Calculate the underwater weight.
-    float underwater_weight = exp(-(underwater_depth - surface_depth) * 0.125f * 0.25f);
+    float underwater_weight = exp(-(underwater_depth - surface_depth) * 0.125f * 0.125f);
 
     //Offset the screen coordinate a bit based on the normal.
-    screen_coordinate += water_normal.xz * 0.25f;
+    screen_coordinate += water_normal.xz * (1.0f - underwater_weight) * 0.125f;
 
-    //Sample scene features 1.
-    vec4 scene_features_1 = texture(SceneFeatures1Input, screen_coordinate);
+    //Retrieve the underwater scene.
+    vec3 underwater_scene = texture(SceneInput, screen_coordinate).rgb;
 
-    //Retrieve the underwater albedo.
-    vec3 underwater_albedo = scene_features_1.rgb;
+    //Darken the underwater scene a bit.
+    underwater_scene *= 0.8f;
 
-    //Darken the underwater albedo a bit.
-    underwater_albedo *= 0.5f;
+    //Calculate the water scene.
+    vec3 water_scene = vec3(0.0f);
 
-    //Darken the albedo even further.
-    underwater_albedo *= underwater_weight;
+    //Add some ambient lighting from the sky.
+    {
+        float sky_alpha = dot(water_normal, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f;
+        vec3 sky_radiance = mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, sky_alpha);
+        water_scene += sky_radiance * WATER_ALBEDO;
+    }
 
-    //Calculate the final albedo.
-    vec3 final_albedo = mix(WATER_ALBEDO, underwater_albedo, underwater_weight);
+    //Add some lighting.
+    for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
+    {
+        //Unpack the light.
+        Light light = UnpackLight(i);
 
-    //Calculate the velocity.
-    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+        //Calculate the light radiance.
+        vec3 light_radiance = light._Color * light._Intensity;
 
-    //Output the fragments.
-    OutputFragment(SceneFeatures1, vec4(final_albedo, 0.0f));
-    OutputFragment(SceneFeatures2, vec4(water_normal, gl_FragCoord.z));
-    OutputFragment(SceneFeatures3, vec4(0.0f, 0.0f, 1.0f, 0.0f));
-    OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
+        switch (light._LightType)
+        {
+            case LIGHT_TYPE_DIRECTIONAL:
+            {
+                //Retrieve the direction.
+                vec3 light_direction = -light._TransformData1;
+
+                //Calculate the halfway vector.
+                vec3 halfway_vector = normalize(view_direction + light_direction);
+
+                //Add to the scene!
+                water_scene += light_radiance * WATER_ALBEDO * max(dot(water_normal, light_direction), 0.0f) * 0.125f; //Diffuse.
+                water_scene += light_radiance * pow(max(dot(water_normal, halfway_vector), 0.0f), 128.0f); //Specular.
+
+                break;
+            }
+        }
+    }
+
+    //Calculate the final scene.
+    vec3 final_scene = mix(water_scene, underwater_scene, underwater_weight);
+
+    //Output the fragment.
+    OutputFragment(Scene, vec4(final_scene, 1.0f));
 }

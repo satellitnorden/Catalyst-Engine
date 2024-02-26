@@ -220,13 +220,23 @@ layout (std140, set = 1, binding = 2) uniform Water
 
 layout (std140, set = 1, binding = 3) uniform Wind
 {
-	layout (offset = 0) vec4 PREVIOUS_WIND_DIRECTION_SPEED;
-	layout (offset = 16) vec4 CURRENT_WIND_DIRECTION_SPEED;
-	layout (offset = 32) float PREVIOUS_WIND_TIME;
-	layout (offset = 36) float CURRENT_WIND_TIME;
+	layout (offset = 0) vec3 UPPER_SKY_COLOR;
+	layout (offset = 16) vec3 LOWER_SKY_COLOR;
 };
 
-layout (set = 1, binding = 4) uniform sampler SAMPLER;
+//Lighting header struct definition.
+struct LightingHeader
+{
+	uint _NumberOfLights;
+	uint _MaximumNumberOfShadowCastingLights;	
+};
+layout (std430, set = 1, binding = 4) buffer Lighting
+{
+	layout (offset = 0) LightingHeader LIGHTING_HEADER;
+	layout (offset = 16) vec4[] LIGHT_DATA;
+};
+
+layout (set = 1, binding = 5) uniform sampler SAMPLER;
 
 /*
 *   Linearizes a depth value.
@@ -302,10 +312,68 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
+//Constants.
+#define LIGHT_TYPE_DIRECTIONAL (0)
+#define LIGHT_TYPE_POINT (1)
+#define LIGHT_TYPE_BOX (2)
+
+#define LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT (BIT(0))
+#define LIGHT_PROPERTY_VOLUMETRIC_BIT (BIT(1))
+#define LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT (BIT(2))
+
+/*
+*	Light struct definition.
+*/
+struct Light
+{
+	/*
+	*	First transform data.
+	*	Direction for directional lights, position for point lights, minimum world position for box lights.
+	*/
+	vec3 _TransformData1;
+
+	/*
+	*	Second transform data.
+	*	Maximum word position for box lights.
+	*/
+	vec3 _TransformData2;
+	vec3 _Color;
+	uint _LightType;
+	uint _LightProperties;
+	float _Intensity;
+	float _Radius;
+	float _Size;
+};
+
+/*
+*	Unpacks the light at the given index.
+*   Requies the Lighting storage buffer to be included.
+*/
+Light UnpackLight(uint index)
+{
+	Light light;
+
+  	vec4 light_data_1 = LIGHT_DATA[index * 4 + 0];
+  	vec4 light_data_2 = LIGHT_DATA[index * 4 + 1];
+  	vec4 light_data_3 = LIGHT_DATA[index * 4 + 2];
+  	vec4 light_data_4 = LIGHT_DATA[index * 4 + 3];
+
+  	light._TransformData1 = vec3(light_data_1.x, light_data_1.y, light_data_1.z);
+  	light._TransformData2 = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
+  	light._Color = vec3(light_data_2.z, light_data_2.w, light_data_3.x);
+  	light._LightType = floatBitsToUint(light_data_3.y);
+  	light._LightProperties = floatBitsToUint(light_data_3.z);
+  	light._Intensity = light_data_3.w;
+  	light._Radius = light_data_4.x;
+  	light._Size = light_data_4.y;
+
+	return light;
+}
+
 /*
 *	Calculates the water height at the given position.
 */
-float WaterHeightAtPosition(vec3 world_position, uint texture_index, float current_time)
+float WaterHeightAtPosition(vec3 world_position, uint texture_index)
 {
     #define AMPLITUDE (1.0f)
 
@@ -324,14 +392,14 @@ float WaterHeightAtPosition(vec3 world_position, uint texture_index, float curre
 /*
 *	Calculates the water height at the given position.
 */
-vec3 WaterNormalAtPosition(vec3 world_position, uint texture_index, float current_time)
+vec3 WaterNormalAtPosition(vec3 world_position, uint texture_index)
 {
-	float left = WaterHeightAtPosition(world_position + vec3(-1.0f, 0.0f, 0.0f), texture_index, current_time);
-	float right = WaterHeightAtPosition(world_position + vec3(1.0f, 0.0f, 0.0f), texture_index, current_time);
-	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -1.0f), texture_index, current_time);
-	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 1.0f), texture_index, current_time);
+	float left = WaterHeightAtPosition(world_position + vec3(-0.25f, 0.0f, 0.0f), texture_index);
+	float right = WaterHeightAtPosition(world_position + vec3(0.25f, 0.0f, 0.0f), texture_index);
+	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -0.25f), texture_index);
+	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 0.25f), texture_index);
 
-	return normalize(vec3(left - right, 2.0f, down - up));
+	return normalize(vec3(left - right, 0.5f, down - up));
 }
 
 layout (push_constant) uniform PushConstantData
@@ -343,8 +411,8 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 20) uint TEXTURE_INDEX;
 };
 
-layout (set = 1, binding = 5) uniform sampler2D SceneFeatures1Input;
-layout (set = 1, binding = 6) uniform sampler2D SceneFeatures2Input;
+layout (set = 1, binding = 6) uniform sampler2D SceneFeatures2;
+layout (set = 1, binding = 7) uniform sampler2D SceneInput;
 
 layout (location = 0) in vec2 InPosition;
 layout (location = 1) in uint InBorders;
@@ -353,7 +421,6 @@ layout (location = 0) out vec3 OutWorldPosition;
 
 void main()
 {
-	float current_time = float(FRAME) / 60.0f * 0.125f * 0.25f;
     vec2 stitched_position = InPosition;
     {
 	    float is_left_multiplier = float((InBorders & BIT(0)) & (BORDERS & BIT(0)));
@@ -378,6 +445,6 @@ void main()
     OutWorldPosition.x = WORLD_POSITION.x + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.x);
     OutWorldPosition.y = 0.0f;
     OutWorldPosition.z = WORLD_POSITION.y + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
-    OutWorldPosition.y += WaterHeightAtPosition(OutWorldPosition, TEXTURE_INDEX, current_time);
+    OutWorldPosition.y += WaterHeightAtPosition(OutWorldPosition, TEXTURE_INDEX);
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

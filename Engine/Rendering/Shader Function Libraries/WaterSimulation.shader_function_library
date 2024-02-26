@@ -1,7 +1,7 @@
 /*
 *	Calculates the water height at the given position.
 */
-float WaterHeightAtPosition(vec3 world_position, uint texture_index, float current_time)
+float WaterHeightAtPosition(vec3 world_position, uint texture_index)
 {
     #define AMPLITUDE (1.0f)
 
@@ -20,12 +20,12 @@ float WaterHeightAtPosition(vec3 world_position, uint texture_index, float curre
 /*
 *	Calculates the water height at the given position.
 */
-vec3 WaterNormalAtPosition(vec3 world_position, uint texture_index, float current_time)
+vec3 WaterNormalAtPosition(vec3 world_position, uint texture_index)
 {
-	float left = WaterHeightAtPosition(world_position + vec3(-1.0f, 0.0f, 0.0f), texture_index, current_time);
-	float right = WaterHeightAtPosition(world_position + vec3(1.0f, 0.0f, 0.0f), texture_index, current_time);
-	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -1.0f), texture_index, current_time);
-	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 1.0f), texture_index, current_time);
+	float left = WaterHeightAtPosition(world_position + vec3(-0.25f, 0.0f, 0.0f), texture_index);
+	float right = WaterHeightAtPosition(world_position + vec3(0.25f, 0.0f, 0.0f), texture_index);
+	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -0.25f), texture_index);
+	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 0.25f), texture_index);
 
-	return normalize(vec3(left - right, 2.0f, down - up));
+	return normalize(vec3(left - right, 0.5f, down - up));
 }
