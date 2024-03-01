@@ -1200,6 +1200,16 @@ void RenderingSystem::CreateTextureCube(const TextureCubeData &data, TextureCube
 	_SubRenderingSystem->CreateTextureCube(data, handle);
 }
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Creates an ImGui texture.
+*/
+NO_DISCARD ImTextureID RenderingSystem::CreateImGuiTexture(const Texture2DHandle texture) NOEXCEPT
+{
+	return _SubRenderingSystem->CreateImGuiTexture(texture);
+}
+#endif
+
 /*
 *	Initializes a pipeline
 */

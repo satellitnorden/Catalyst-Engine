@@ -18,6 +18,7 @@
 */
 void EditorPostProcessingSystem::Update() NOEXCEPT
 {
+	/*
 	//Is the current contextual window RENDERING?
 	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() != CatalystEditorSystem::ContextualWindow::POST_PROCESSING)
 	{
@@ -116,5 +117,6 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 
 	//End the window.
 	ImGui::End();
+	*/
 }
 #endif

@@ -1557,6 +1557,17 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	}
 #endif
 
+	if (new_content_was_compiled)
+	{
+		ResourceCollectionBuildParameters parameters;
+
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEditorResourceCollection";
+		parameters._Folder = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Editor";
+		parameters._MaximumFileSize = 1'000'000'000;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(parameters);
+	}
+
 	//Terminate the task system so that it can be re-initialized with the proper arguments.
 	TaskSystem::Instance->Terminate();
 }

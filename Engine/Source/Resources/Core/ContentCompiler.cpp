@@ -781,14 +781,14 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 	{
 		case CompilationDomain::ENGINE:
 		{
-			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\Textures");
+			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\%s\\Textures", package.Length() > 0 ? package.Data() : "");
 
 			break;
 		}
 
 		case CompilationDomain::GAME:
 		{
-			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\Textures");
+			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\%s\\Textures", package.Length() > 0 ? package.Data() : "");
 
 			break;
 		}

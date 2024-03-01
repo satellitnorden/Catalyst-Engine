@@ -14,6 +14,11 @@
 //Resources.
 #include <Resources/Loading/TextureCubeData.h>
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+//Third party.
+#include <ThirdParty/ImGui/imgui.h>
+#endif
+
 class SubRenderingSystemInterface
 {
 
@@ -296,6 +301,13 @@ public:
 	*	Creates a texture cube.
 	*/
 	virtual void CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT = 0;
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Creates an ImGui texture.
+	*/
+	virtual NO_DISCARD ImTextureID CreateImGuiTexture(const Texture2DHandle texture) NOEXCEPT = 0;
+#endif
 
 	/*
 	*	Initializes a pipeline

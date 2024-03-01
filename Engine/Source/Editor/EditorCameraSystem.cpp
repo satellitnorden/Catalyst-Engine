@@ -28,6 +28,7 @@ void EditorCameraSystem::Initialize() NOEXCEPT
 */
 void EditorCameraSystem::Update() NOEXCEPT
 {
+	/*
 	//Is the current contextual window CAMERA?
 	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() == CatalystEditorSystem::ContextualWindow::CAMERA)
 	{
@@ -67,6 +68,7 @@ void EditorCameraSystem::Update() NOEXCEPT
 
 		ImGui::End();
 	}
+	*/
 
 	//Cache the input state.
 	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::DEBUG) };

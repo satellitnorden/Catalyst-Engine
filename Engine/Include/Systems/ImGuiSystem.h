@@ -19,6 +19,7 @@ public:
 	//Enumeration covering all editor windows.
 	enum class EditorWindow : uint8
 	{
+		TOP_BAR,
 		TOP_RIGHT,
 		BOTTOM_RIGHT,
 
@@ -64,6 +65,18 @@ public:
 	*/
 	void RegisterEditorWindow(const EditorWindow window, const WindowCallback callback) NOEXCEPT;
 
+	/*
+	*	Utility function for beginning an ImGui window.
+	*/
+	void BeginWindow
+	(
+		const char *const RESTRICT name,
+		const Vector2<float32> minimum,
+		const Vector2<float32> maximum,
+		const bool show_title_bar = true,
+		const bool enable_menu_bar = false
+	) NOEXCEPT;
+
 private:
 	
 	/*
@@ -99,7 +112,7 @@ private:
 	/*
 	*	Empty window callback.
 	*/
-	void EmptyWindowCallback(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
+	void EmptyWindowCallback(const uint32 value, const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
 
 };
 #endif

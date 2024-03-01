@@ -66,8 +66,12 @@ void ImGuiSystem::Initialize() NOEXCEPT
 	}
 
 	//Set up the editor window data.
+	_EditorWindowData[UNDERLYING(EditorWindow::TOP_BAR)]._Minimum = Vector2<float32>(0.0f, 0.9f);
+	_EditorWindowData[UNDERLYING(EditorWindow::TOP_BAR)]._Maximum = Vector2<float32>(1.0f, 1.0f);
+	_EditorWindowData[UNDERLYING(EditorWindow::TOP_BAR)]._WindowCallback = nullptr;
+
 	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._Minimum = Vector2<float32>(0.8f, 0.5f);
-	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._Maximum = Vector2<float32>(1.0f, 1.0f);
+	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._Maximum = Vector2<float32>(1.0f, 0.9f);
 	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._WindowCallback = nullptr;
 
 	_EditorWindowData[UNDERLYING(EditorWindow::BOTTOM_RIGHT)]._Minimum = Vector2<float32>(0.8f, 0.0f);
@@ -288,6 +292,66 @@ void ImGuiSystem::RegisterEditorWindow(const EditorWindow window, const WindowCa
 }
 
 /*
+*	Utility function for beginning an ImGui window.
+*/
+void ImGuiSystem::BeginWindow
+(
+	const char *const RESTRICT name,
+	const Vector2<float32> minimum,
+	const Vector2<float32> maximum,
+	const bool show_title_bar,
+	const bool enable_menu_bar
+) NOEXCEPT
+{
+	//Calculate the window flags.
+	ImGuiWindowFlags window_flags = 0;
+
+	//Remove title bar if requested.
+	if (!show_title_bar)
+	{
+		window_flags |= ImGuiWindowFlags_NoTitleBar;
+	}
+
+	//Always no resize.
+	window_flags |= ImGuiWindowFlags_NoResize;
+
+	//Always no move.
+	window_flags |= ImGuiWindowFlags_NoMove;
+
+	//Always no collapse.
+	window_flags |= ImGuiWindowFlags_NoCollapse;
+
+	//Enable menu bar, if requested.
+	if (enable_menu_bar)
+	{
+		window_flags |= ImGuiWindowFlags_MenuBar;
+	}
+
+	//Begin the window!
+	ImGui::Begin
+	(
+		name ? name : "EMPTY",
+		nullptr,
+		window_flags
+	);
+
+	//Retrieve the window resolution.
+	const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
+
+	//Calculate the window position.
+	Vector2<float32> window_position{ window_resolution._X * minimum._X, window_resolution._Y * (1.0f - maximum._Y) };
+
+	//Calculate the window size.
+	Vector2<float32> window_size{ window_resolution._X * (maximum._X - minimum._X), window_resolution._Y * (maximum._Y - minimum._Y) };
+
+	//Set the window position and size.
+	ImGui::SetWindowPos(ImVec2(window_position._X, window_position._Y));
+	ImGui::SetWindowSize(ImVec2(window_size._X, window_size._Y));
+	//ImGui::SetWindowPos(ImVec2(64, 128));
+	//ImGui::SetWindowSize(ImVec2(1920, 64));
+}
+
+/*
 *	Updates during the USER_INTERFACE update phase.
 */
 void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
@@ -296,20 +360,22 @@ void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
 #if defined(CATALYST_EDITOR)
 	if (!CatalystEditorSystem::Instance->IsInGame())
 	{
-		for (WindowData &window_data : _EditorWindowData)
+		for (uint32 window_data_index{ 0 }; window_data_index < static_cast<uint32>(_EditorWindowData.Size()); ++window_data_index)
 		{
+			WindowData &window_data{ _EditorWindowData[window_data_index] };
+
 			if (window_data._WindowCallback)
 			{
 				if (!window_data._WindowCallback(window_data._Minimum, window_data._Maximum))
 				{
 					window_data._WindowCallback = nullptr;
-					EmptyWindowCallback(window_data._Minimum, window_data._Maximum);
+					EmptyWindowCallback(window_data_index, window_data._Minimum, window_data._Maximum);
 				}
 			}
 
 			else
 			{
-				EmptyWindowCallback(window_data._Minimum, window_data._Maximum);
+				EmptyWindowCallback(window_data_index, window_data._Minimum, window_data._Maximum);
 			}
 		}
 	}
@@ -317,20 +383,16 @@ void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
 	else
 #endif
 	{
-		for (WindowData &window_data : _GameWindowData)
+		for (uint32 window_data_index{ 0 }; window_data_index < static_cast<uint32>(_GameWindowData.Size()); ++window_data_index)
 		{
+			WindowData &window_data{ _GameWindowData[window_data_index] };
+
 			if (window_data._WindowCallback)
 			{
 				if (!window_data._WindowCallback(window_data._Minimum, window_data._Maximum))
 				{
 					window_data._WindowCallback = nullptr;
-					EmptyWindowCallback(window_data._Minimum, window_data._Maximum);
 				}
-			}
-
-			else
-			{
-				EmptyWindowCallback(window_data._Minimum, window_data._Maximum);
 			}
 		}
 	}
@@ -339,8 +401,12 @@ void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
 /*
 *	Empty window callback.
 */
-void ImGuiSystem::EmptyWindowCallback(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
+void ImGuiSystem::EmptyWindowCallback(const uint32 value, const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
+	char buffer[16];
+	sprintf_s(buffer, "WINDOW %u", value);
 
+	BeginWindow(buffer, minimum, maximum, false);
+	ImGui::End();
 }
 #endif

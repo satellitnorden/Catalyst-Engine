@@ -530,6 +530,13 @@ public:
 	*/
 	void CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT;
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Creates an ImGui texture.
+	*/
+	NO_DISCARD ImTextureID CreateImGuiTexture(const Texture2DHandle texture) NOEXCEPT;
+#endif
+
 	/*
 	*	Initializes a pipeline
 	*/

@@ -25,6 +25,7 @@
 */
 void EditorEntitySystem::Update() NOEXCEPT
 {
+	/*
 	//Is the current contextual window ENTITIES?
 	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() != CatalystEditorSystem::ContextualWindow::ENTITIES)
 	{
@@ -36,6 +37,7 @@ void EditorEntitySystem::Update() NOEXCEPT
 	//Add the entities window.
 	ImGui::Begin("Entities", nullptr, EditorConstants::WINDOW_FLAGS);
 	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
+	*/
 
 	/*
 	//Add the button for creating a dynamic model entity.
@@ -99,7 +101,7 @@ void EditorEntitySystem::Update() NOEXCEPT
 	}
 #endif
 
-	ImGui::End();
+	//ImGui::End();
 }
 
 /*

@@ -163,6 +163,10 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 		#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
 			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineExtraResourceCollection_0.crc");
 		#endif
+
+		#if defined(CATALYST_EDITOR)
+			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEditorResourceCollection_0.crc");
+		#endif
 	#endif
 		
 #endif
@@ -172,6 +176,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	ComponentSystem::Instance->PostInitialize();
 	RenderingSystem::Instance->PostInitialize();
 	WorldSystem::Instance->PostInitialize();
+#if defined(CATALYST_EDITOR)
+	CatalystEditorSystem::Instance->PostInitialize();
+#endif
 
 	//Post-initialize the game system.
 	_ProjectConfiguration._GeneralConfiguration._CommonPostInitializeFunction();

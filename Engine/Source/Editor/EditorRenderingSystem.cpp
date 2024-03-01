@@ -21,6 +21,7 @@
 */
 void EditorRenderingSystem::Update() NOEXCEPT
 {
+	/*
 	//Is the current contextual window RENDERING?
 	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() != CatalystEditorSystem::ContextualWindow::RENDERING)
 	{
@@ -435,5 +436,6 @@ void EditorRenderingSystem::Update() NOEXCEPT
 	}
 
 	ImGui::End();
+	*/
 }
 #endif

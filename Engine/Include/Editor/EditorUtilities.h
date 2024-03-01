@@ -83,5 +83,6 @@ namespace EditorUtilities
 		ImGui::SetWindowPos(ImVec2(window_position._X, window_position._Y));
 		ImGui::SetWindowSize(ImVec2(window_size._X, window_size._Y));
 	}
+
 }
 #endif

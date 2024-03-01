@@ -1916,6 +1916,23 @@ void VulkanSubRenderingSystem::CreateTextureCube(const TextureCubeData &data, Te
 	*handle = static_cast<TextureCubeHandle>(VulkanInterface::Instance->CreateCubeMapTexture(data._Data, data._Resolution, data._Resolution));
 }
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Creates an ImGui texture.
+*/
+NO_DISCARD ImTextureID VulkanSubRenderingSystem::CreateImGuiTexture(const Texture2DHandle texture) NOEXCEPT
+{
+	//Retrieve the sample.
+	const VulkanSampler *const RESTRICT sampler{ static_cast<const VulkanSampler *const RESTRICT>(RenderingSystem::Instance->GetSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::LINEAR, AddressMode::CLAMP_TO_EDGE, 0))) };
+
+	//Cast to Vulkan image.
+	const VulkanImage *const RESTRICT vulkan_image{ static_cast<const VulkanImage *const RESTRICT>(texture) };
+
+	//Create the texture!
+	return ImGui_ImplVulkan_AddTexture(sampler->Get(), vulkan_image->GetImageView(), vulkan_image->GetImageLayout());
+}
+#endif
+
 /*
 *	Initializes a pipeline
 */

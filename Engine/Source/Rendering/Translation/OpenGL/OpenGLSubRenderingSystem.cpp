@@ -400,6 +400,16 @@ void OpenGLSubRenderingSystem::CreateTextureCube(const TextureCubeData &data, Te
 
 }
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Creates an ImGui texture.
+*/
+NO_DISCARD ImTextureID OpenGLSubRenderingSystem::CreateImGuiTexture(const Texture2DHandle texture) NOEXCEPT
+{
+	return ImTextureID();
+}
+#endif
+
 /*
 *	Initializes a pipeline
 */

@@ -26,6 +26,7 @@
 */
 void EditorResourcesSystem::Update() NOEXCEPT
 {
+	/*
 	//Is the current contextual window RESOURCES?
 	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() != CatalystEditorSystem::ContextualWindow::RESOURCES)
 	{
@@ -182,6 +183,7 @@ void EditorResourcesSystem::Update() NOEXCEPT
 	}
 
 	ImGui::End();
+	*/
 }
 
 /*

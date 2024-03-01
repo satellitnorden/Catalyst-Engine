@@ -25,6 +25,7 @@
 */
 void EditorWorldSystem::Update() NOEXCEPT
 {
+	/*
 	//Is the current contextual window WORLD?
 	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() != CatalystEditorSystem::ContextualWindow::WORLD)
 	{
@@ -98,5 +99,6 @@ void EditorWorldSystem::Update() NOEXCEPT
 
 	//End the window.
 	ImGui::End();
+	*/
 }
 #endif

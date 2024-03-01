@@ -5,6 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Editor.
+#include <Editor/EditorCore.h>
 #include <Editor/EditorCameraSystem.h>
 #include <Editor/EditorEntitySystem.h>
 #include <Editor/EditorLevelSystem.h>
@@ -14,6 +15,9 @@
 #include <Editor/EditorSelectionSystem.h>
 #include <Editor/EditorWorldSystem.h>
 
+//Third party.
+#include <ThirdParty/ImGui/imgui.h>
+
 class ALIGN(8) CatalystEditorSystem final
 {
 
@@ -21,19 +25,6 @@ public:
 
 	//Singleton declaration.
 	DECLARE_SINGLETON(CatalystEditorSystem);
-
-	//Enumeration covering all contextual windows.
-	enum class ContextualWindow : uint8
-	{
-		NONE,
-		CAMERA,
-		ENTITIES,
-		LEVEL,
-		POST_PROCESSING,
-		RENDERING,
-		RESOURCES,
-		WORLD
-	};
 
 	/*
 	*	Default constructor.
@@ -49,6 +40,11 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
+	*	Post initializes the Catalyst editor system.
+	*/
+	void PostInitialize() NOEXCEPT;
+
+	/*
 	*	Returns if the editor is in a game.
 	*/
 	FORCE_INLINE NO_DISCARD bool IsInGame() const NOEXCEPT
@@ -56,13 +52,6 @@ public:
 		return _IsInGame;
 	}
 
-	/*
-	*	Returns the current contextual window.
-	*/
-	FORCE_INLINE NO_DISCARD ContextualWindow GetCurrentContextualWindow() const NOEXCEPT
-	{
-		return _CurrentContextualWindow;
-	}
 
 	/*
 	*	Returns the editor camera system.
@@ -101,9 +90,6 @@ private:
 	//Denotes if the editor is in a game.
 	bool _IsInGame{ false };
 
-	//The current contextual window.
-	ContextualWindow _CurrentContextualWindow{ ContextualWindow::NONE };
-
 	//The editor camera system.
 	EditorCameraSystem _EditorCameraSystem;
 
@@ -127,6 +113,9 @@ private:
 
 	//The editor selection system.
 	EditorSelectionSystem _EditorSelectionSystem;
+
+	//The editor icons.
+	StaticArray<ImTextureID, UNDERLYING(EditorIcon::NUMBER_OF_EDITOR_ICONS)> _EditorIcons;
 
 	/*
 	*	Updates the Catalyst editor system during the GAMEPLAY update phase.
@@ -159,9 +148,9 @@ private:
 	void UpdateNotInGame() NOEXCEPT;
 
 	/*
-	*	Adds the main window.
+	*	The top bar update.
 	*/
-	void AddMainWindow() NOEXCEPT;
+	NO_DISCARD bool TopBarUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
 
 };
 #endif

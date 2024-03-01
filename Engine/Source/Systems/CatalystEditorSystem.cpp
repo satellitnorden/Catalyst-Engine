@@ -11,12 +11,10 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/ImGuiSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
-
-//Third party.
-#include <ThirdParty/ImGui/imgui.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(CatalystEditorSystem);
@@ -33,15 +31,37 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	_EditorSelectionSystem.Initialize();
 
 	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void *const RESTRICT arguments)
-	{
-		static_cast<CatalystEditorSystem *const RESTRICT>(arguments)->GameplayUpdate();
-	},
-	this,
-	UpdatePhase::GAMEPLAY,
-	UpdatePhase::USER_INTERFACE,
-	true,
-	false);
+	CatalystEngineSystem::Instance->RegisterUpdate
+	(
+		[](void *const RESTRICT arguments)
+		{
+			static_cast<CatalystEditorSystem *const RESTRICT>(arguments)->GameplayUpdate();
+		},
+		this,
+		UpdatePhase::GAMEPLAY,
+		UpdatePhase::USER_INTERFACE,
+		true,
+		false
+	);
+}
+
+/*
+*	Post initializes the Catalyst editor system.
+*/
+void CatalystEditorSystem::PostInitialize() NOEXCEPT
+{
+	//Create all editor icons.
+	_EditorIcons[UNDERLYING(EditorIcon::PLAY)] = RenderingSystem::Instance->CreateImGuiTexture(ResourceSystem::Instance->GetTexture2DResource(HashString("Editor_Play_Icon"))->_Texture2DHandle);
+
+	//Register for the top bar editor window.
+	ImGuiSystem::Instance->RegisterEditorWindow
+	(
+		ImGuiSystem::EditorWindow::TOP_BAR,
+		[](const Vector2<float32> minimum, const Vector2<float32> maximum)
+		{
+			return CatalystEditorSystem::Instance->TopBarUpdate(minimum, maximum);
+		}
+	);
 }
 
 /*
@@ -140,9 +160,6 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 	//Always show the cursor.
 	CatalystPlatform::ShowCursor();
 
-	//Add the main window.
-	AddMainWindow();
-
 	//Update the editor camera system.
 	_EditorCameraSystem.Update();
 
@@ -169,145 +186,44 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 }
 
 /*
-*	Adds the main window.
+*	The top bar update.
 */
-void CatalystEditorSystem::AddMainWindow() NOEXCEPT
+NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
-	//Add the main window.
-	ImGui::Begin("Catalyst Editor", nullptr, EditorConstants::WINDOW_FLAGS);
-	EditorUtilities::SetWindowPositionAndSize(WindowAnchor::TOP_LEFT, Vector2<float32>(0.0f, -0.5f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
+	//Begin the window.
+	ImGuiSystem::Instance->BeginWindow("Editor Top Bar", minimum, maximum, false, true);
 
-	//Add the enter game button.
-	if (ImGui::Button("Enter Game"))
+	//Main menu.
 	{
-		SetIsInGame(true);
+		//Add the menu.
+		ImGui::BeginMenuBar();
+
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Exit"))
+			{
+				CatalystEngineSystem::Instance->SetShouldTerminate();
+			}
+
+			ImGui::EndMenu();
+		}
+
+		//End the menu.
+		ImGui::EndMenuBar();
 	}
 
-	//Opens the camera window.
-	if (_CurrentContextualWindow == ContextualWindow::CAMERA)
+	//Add the "Play" button.
 	{
-		if (ImGui::Button("Camera"))
+		if (ImGui::ImageButton(_EditorIcons[UNDERLYING(EditorIcon::PLAY)], ImVec2(62.0f, 62.0f)))
 		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
+			SetIsInGame(true);
 		}
 	}
 
-	else
-	{
-		if (ImGui::Button("Camera"))
-		{
-			_CurrentContextualWindow = ContextualWindow::CAMERA;
-		}
-	}
-
-	//Opens the entities window.
-	if (_CurrentContextualWindow == ContextualWindow::ENTITIES)
-	{
-		if (ImGui::Button("Entities"))
-		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
-		}
-	}
-
-	else
-	{
-		if (ImGui::Button("Entities"))
-		{
-			_CurrentContextualWindow = ContextualWindow::ENTITIES;
-		}
-	}
-
-	//Opens the level window.
-	if (_CurrentContextualWindow == ContextualWindow::LEVEL)
-	{
-		if (ImGui::Button("Level"))
-		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
-		}
-	}
-
-	else
-	{
-		if (ImGui::Button("Level"))
-		{
-			_CurrentContextualWindow = ContextualWindow::LEVEL;
-		}
-	}
-
-	//Opens the post-processing window.
-	if (_CurrentContextualWindow == ContextualWindow::POST_PROCESSING)
-	{
-		if (ImGui::Button("Post-Processing"))
-		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
-		}
-	}
-
-	else
-	{
-		if (ImGui::Button("Post-Processing"))
-		{
-			_CurrentContextualWindow = ContextualWindow::POST_PROCESSING;
-		}
-	}
-
-	//Opens the rendering window.
-	if (_CurrentContextualWindow == ContextualWindow::RENDERING)
-	{
-		if (ImGui::Button("Rendering"))
-		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
-		}
-	}
-
-	else
-	{
-		if (ImGui::Button("Rendering"))
-		{
-			_CurrentContextualWindow = ContextualWindow::RENDERING;
-		}
-	}
-
-	//Opens the resources window.
-	if (_CurrentContextualWindow == ContextualWindow::RESOURCES)
-	{
-		if (ImGui::Button("Resources"))
-		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
-		}
-	}
-
-	else
-	{
-		if (ImGui::Button("Resources"))
-		{
-			_CurrentContextualWindow = ContextualWindow::RESOURCES;
-		}
-	}
-
-	//Opens the worlds window.
-	if (_CurrentContextualWindow == ContextualWindow::WORLD)
-	{
-		if (ImGui::Button("World"))
-		{
-			_CurrentContextualWindow = ContextualWindow::NONE;
-		}
-	}
-
-	else
-	{
-		if (ImGui::Button("World"))
-		{
-			_CurrentContextualWindow = ContextualWindow::WORLD;
-		}
-	}
-
-	//Add the "Exit" button.
-	if (ImGui::Button("Exit"))
-	{
-		CatalystEngineSystem::Instance->SetShouldTerminate();
-	}
-
+	//End the window.
 	ImGui::End();
+
+	//This window should always be shown.
+	return true;
 }
 #endif
