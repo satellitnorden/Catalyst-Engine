@@ -17,6 +17,7 @@ namespace EditorConstants
 enum class EditorIcon : uint8
 {
 	PLAY,
+	CREATE,
 
 	NUMBER_OF_EDITOR_ICONS
 };

@@ -70,6 +70,14 @@ public:
 	}
 
 	/*
+	*	Returns the editor level system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD EditorLevelSystem *const RESTRICT GetEditorLevelSystem() NOEXCEPT
+	{
+		return &_EditorLevelSystem;
+	}
+
+	/*
 	*	Returns the editor post-processing system.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD EditorPostProcessingSystem *const RESTRICT GetEditorPostProcessingSystem() NOEXCEPT

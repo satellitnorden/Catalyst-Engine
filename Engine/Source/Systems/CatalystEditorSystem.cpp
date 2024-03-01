@@ -52,6 +52,7 @@ void CatalystEditorSystem::PostInitialize() NOEXCEPT
 {
 	//Create all editor icons.
 	_EditorIcons[UNDERLYING(EditorIcon::PLAY)] = RenderingSystem::Instance->CreateImGuiTexture(ResourceSystem::Instance->GetTexture2DResource(HashString("Editor_Play_Icon"))->_Texture2DHandle);
+	_EditorIcons[UNDERLYING(EditorIcon::CREATE)] = RenderingSystem::Instance->CreateImGuiTexture(ResourceSystem::Instance->GetTexture2DResource(HashString("Editor_Create_Icon"))->_Texture2DHandle);
 
 	//Register for the top bar editor window.
 	ImGuiSystem::Instance->RegisterEditorWindow
@@ -62,6 +63,9 @@ void CatalystEditorSystem::PostInitialize() NOEXCEPT
 			return CatalystEditorSystem::Instance->TopBarUpdate(minimum, maximum);
 		}
 	);
+
+	//Post initialize sub-systems.
+	_EditorLevelSystem.PostInitialize();
 }
 
 /*
@@ -110,7 +114,7 @@ void CatalystEditorSystem::SetIsInGame(const bool value) NOEXCEPT
 */
 void CatalystEditorSystem::StartGame() NOEXCEPT
 {
-	_EditorLevelSystem.StartGame();
+	
 }
 
 /*
@@ -118,7 +122,7 @@ void CatalystEditorSystem::StartGame() NOEXCEPT
 */
 void CatalystEditorSystem::EndGame() NOEXCEPT
 {
-	_EditorLevelSystem.EndGame();
+	
 }
 
 /*
@@ -162,12 +166,6 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 
 	//Update the editor camera system.
 	_EditorCameraSystem.Update();
-
-	//Update the editor entity system.
-	_EditorEntitySystem.Update();
-
-	//Update the editor level system.
-	_EditorLevelSystem.Update();
 
 	//Update the editor post-processing system.
 	_EditorPostProcessingSystem.Update();
@@ -213,11 +211,18 @@ NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimu
 	}
 
 	//Add the "Play" button.
+	if (ImGui::ImageButton(_EditorIcons[UNDERLYING(EditorIcon::PLAY)], ImVec2(62.0f, 62.0f)))
 	{
-		if (ImGui::ImageButton(_EditorIcons[UNDERLYING(EditorIcon::PLAY)], ImVec2(62.0f, 62.0f)))
-		{
-			SetIsInGame(true);
-		}
+		SetIsInGame(true);
+	}
+
+	//Layout thing horizontally for the top bar.
+	ImGui::SameLine();
+
+	//Add the "Create" button.
+	if (ImGui::ImageButton(_EditorIcons[UNDERLYING(EditorIcon::CREATE)], ImVec2(62.0f, 62.0f)))
+	{
+		_EditorLevelSystem.CreateEntity();
 	}
 
 	//End the window.

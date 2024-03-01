@@ -5,6 +5,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Math.
+#include <Math/General/Vector.h>
+
 //World.
 #include <World/Level/LevelEntry.h>
 
@@ -14,19 +17,9 @@ class EditorLevelSystem final
 public:
 
 	/*
-	*	Updates the editor level system.
+	*	Post initializes the editor level system.
 	*/
-	void Update() NOEXCEPT;
-
-	/*
-	*	Starts the game.
-	*/
-	void StartGame() NOEXCEPT;
-
-	/*
-	*	Ends the game.
-	*/
-	void EndGame() NOEXCEPT;
+	void PostInitialize() NOEXCEPT;
 
 	/*
 	*	Creates an entity.
@@ -40,6 +33,16 @@ private:
 
 	//The level entries.
 	DynamicArray<LevelEntry> _LevelEntries;
+
+	/*
+	*	The top right window update.
+	*/
+	NO_DISCARD bool TopRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
+
+	/*
+	*	The bottom right window update.
+	*/
+	NO_DISCARD bool BottomRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
 
 };
 

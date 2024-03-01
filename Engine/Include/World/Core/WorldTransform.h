@@ -263,6 +263,11 @@ public:
 	*/
 	NO_DISCARD Matrix4x4 ToRelativeMatrix4x4(const Vector3<int32>& cell) const NOEXCEPT;
 
+	/*
+	*	Returns the forward vector.
+	*/
+	NO_DISCARD Vector3<float32> GetForwardVector() const NOEXCEPT;
+
 private:
 
 	//The world position.
