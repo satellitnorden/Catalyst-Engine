@@ -13,11 +13,6 @@
 #include <Math/General/EulerAngles.h>
 #include <Math/General/Vector.h>
 
-class LightSharedData final
-{
-
-};
-
 class LightInitializationData final : public ComponentInitializationData
 {
 
@@ -100,4 +95,4 @@ public:
 
 };
 
-DECLARE_COMPONENT(LightComponent, LightSharedData, LightInitializationData, LightInstanceData);
+DECLARE_COMPONENT(LightComponent, LightInitializationData, LightInstanceData);

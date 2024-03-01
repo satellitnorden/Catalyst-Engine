@@ -1,0 +1,4 @@
+PACKAGE Editor
+TEXTURE_CUBE
+
+FILE ..\..\..\..\Catalyst-Engine\Engine\Content\Raw\Editor\Textures\Editor_Sky.hdr

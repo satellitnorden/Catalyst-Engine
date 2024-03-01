@@ -232,7 +232,7 @@ void AddComponentToAllComponents(Component *const RESTRICT component) NOEXCEPT;
 /*
 *	Declares a component.
 */
-#define DECLARE_COMPONENT(COMPONENT_CLASS, SHARED_DATA_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_DATA_CLASS)									\
+#define DECLARE_COMPONENT(COMPONENT_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_DATA_CLASS, ...)									\
 static_assert(std::is_convertible<INITIALIZATION_DATA_CLASS*, ComponentInitializationData*>::value, "Incorrect inheritance");					\
 class ALIGN(8) COMPONENT_CLASS final : public Component																							\
 {																																				\
@@ -241,10 +241,6 @@ public:																																			\
 	void Initialize() NOEXCEPT override;																										\
 	void PostInitialize() NOEXCEPT override;																									\
 	void Terminate() NOEXCEPT override;																											\
-	FORCE_INLINE NO_DISCARD SHARED_DATA_CLASS &SharedData() NOEXCEPT																			\
-	{																																			\
-		return _SharedData;																														\
-	}																																			\
 	FORCE_INLINE INITIALIZATION_DATA_CLASS *const RESTRICT AllocateInitializationData() NOEXCEPT												\
 	{																																			\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																										\
@@ -311,10 +307,11 @@ public:																																			\
 		}																																		\
 	}																																			\
 private:																																		\
-	SHARED_DATA_CLASS _SharedData;																												\
 	Spinlock POOL_ALLOCATOR_LOCK;																												\
 	PoolAllocator<sizeof(INITIALIZATION_DATA_CLASS)> POOL_ALLOCATOR;																			\
 	DynamicArray<INSTANCE_DATA_CLASS> _InstanceData;																							\
+																																				\
+__VA_ARGS__																																		\
 };																																				\
 
 /*

@@ -79,6 +79,19 @@ NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> m
 	//Begin the window.
 	ImGuiSystem::Instance->BeginWindow("Editor Level Top Right", minimum, maximum, false, false);
 
+	//List all level entries.
+	for (uint64 i{ 0 }; i < _LevelEntries.Size(); ++i)
+	{
+		const LevelEntry &level_entry{ _LevelEntries[i] };
+
+		const uint64 name_length{ StringUtilities::StringLength(level_entry._Name.Data()) };
+
+		if (ImGui::Selectable(name_length == 0 ? "EMPTY" : level_entry._Name.Data(), _SelectedLevelEntryIndex == i))
+		{
+			_SelectedLevelEntryIndex = i;
+		}
+	}
+
 	//End the window.
 	ImGui::End();
 
@@ -93,6 +106,15 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 {
 	//Begin the window.
 	ImGuiSystem::Instance->BeginWindow("Editor Level Bottom Right", minimum, maximum, false, false);
+
+	//Set up stuff for the selected level entry.
+	if (_SelectedLevelEntryIndex != UINT64_MAXIMUM)
+	{
+		LevelEntry &selected_level_entry{ _LevelEntries[_SelectedLevelEntryIndex] };
+
+		//Add a text input for the name.
+		ImGui::InputText("Name", selected_level_entry._Name.Data(), selected_level_entry._Name.Size());
+	}
 
 	//End the window.
 	ImGui::End();

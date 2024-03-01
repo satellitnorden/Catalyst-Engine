@@ -33,9 +33,25 @@ public:
 	}
 
 	/*
-	*	Returns the underlying data.
+	*	Returns the size.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const char* const RESTRICT Data() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD uint64 Size() const NOEXCEPT
+	{
+		return SIZE;
+	}
+
+	/*
+	*	Returns the underlying data, const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT Data() const NOEXCEPT
+	{
+		return _Data.Data();
+	}
+
+	/*
+	*	Returns the underlying data, mutable.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD char *const RESTRICT Data() NOEXCEPT
 	{
 		return _Data.Data();
 	}

@@ -7,7 +7,6 @@
 //Editor.
 #include <Editor/EditorCore.h>
 #include <Editor/EditorCameraSystem.h>
-#include <Editor/EditorEntitySystem.h>
 #include <Editor/EditorLevelSystem.h>
 #include <Editor/EditorPostProcessingSystem.h>
 #include <Editor/EditorRenderingSystem.h>
@@ -62,14 +61,6 @@ public:
 	}
 
 	/*
-	*	Returns the editor entity system.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD EditorEntitySystem *const RESTRICT GetEditorEntitySystem() NOEXCEPT
-	{
-		return &_EditorEntitySystem;
-	}
-
-	/*
 	*	Returns the editor level system.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD EditorLevelSystem *const RESTRICT GetEditorLevelSystem() NOEXCEPT
@@ -100,9 +91,6 @@ private:
 
 	//The editor camera system.
 	EditorCameraSystem _EditorCameraSystem;
-
-	//The editor entity system.
-	EditorEntitySystem _EditorEntitySystem;
 
 	//The editor level system.
 	EditorLevelSystem _EditorLevelSystem;

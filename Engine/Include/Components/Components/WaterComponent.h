@@ -16,11 +16,6 @@
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
-class WaterSharedData final
-{
-
-};
-
 class WaterInitializationData final : public ComponentInitializationData
 {
 
@@ -108,4 +103,4 @@ public:
 
 };
 
-DECLARE_COMPONENT(WaterComponent, WaterSharedData, WaterInitializationData, WaterInstanceData);
+DECLARE_COMPONENT(WaterComponent, WaterInitializationData, WaterInstanceData);

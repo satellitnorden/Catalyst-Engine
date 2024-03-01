@@ -15,11 +15,6 @@
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
-class AnimatedModelSharedData final
-{
-
-};
-
 class AnimatedModelInitializationData final : public ComponentInitializationData
 {
 
@@ -64,4 +59,4 @@ public:
 
 };
 
-DECLARE_COMPONENT(AnimatedModelComponent, AnimatedModelSharedData, AnimatedModelInitializationData, AnimatedModelInstanceData);
+DECLARE_COMPONENT(AnimatedModelComponent, AnimatedModelInitializationData, AnimatedModelInstanceData);

@@ -15,6 +15,7 @@
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/WorldSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(CatalystEditorSystem);
@@ -66,6 +67,10 @@ void CatalystEditorSystem::PostInitialize() NOEXCEPT
 
 	//Post initialize sub-systems.
 	_EditorLevelSystem.PostInitialize();
+
+	//Set up default world parameters.
+	WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Enabled = false;
+	WorldSystem::Instance->GetSkySystem()->SetSkyTexture(ResourceSystem::Instance->GetTextureCubeResource(HashString("Editor_Sky")));
 }
 
 /*

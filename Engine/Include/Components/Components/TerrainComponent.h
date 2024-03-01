@@ -19,11 +19,6 @@
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
-class TerrainSharedData final
-{
-
-};
-
 class TerrainInitializationData final : public ComponentInitializationData
 {
 
@@ -180,4 +175,4 @@ public:
 
 };
 
-DECLARE_COMPONENT(TerrainComponent, TerrainSharedData, TerrainInitializationData, TerrainInstanceData);
+DECLARE_COMPONENT(TerrainComponent, TerrainInitializationData, TerrainInstanceData);

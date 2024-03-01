@@ -67,10 +67,14 @@ private:
 	void ParseTexture2D(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
 
 	/*
+	*	Parses a TextureCube from the given file.
+	*/
+	void ParseTextureCube(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
+
+	/*
 	*	Parses a procedural tree model from the given file.
 	*/
 	void ParseProceduralTreeModel(const CompilationDomain compilation_domain, class ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
-
 
 	/*
 	*	Parses an Impostor Material from the given file.

@@ -176,4 +176,16 @@ public:
 
 };
 
-DECLARE_COMPONENT(ParticleSystemComponent, ParticleSystemSharedData, ParticleSystemInitializationData, ParticleSystemInstanceData);
+DECLARE_COMPONENT
+(
+	ParticleSystemComponent,
+	ParticleSystemInitializationData,
+	ParticleSystemInstanceData,
+public:
+	FORCE_INLINE NO_DISCARD ParticleSystemSharedData &SharedData() NOEXCEPT
+	{
+		return _SharedData;
+	}
+private:
+	ParticleSystemSharedData _SharedData;
+);

@@ -34,6 +34,9 @@ private:
 	//The level entries.
 	DynamicArray<LevelEntry> _LevelEntries;
 
+	//The selected level entry index.
+	uint64 _SelectedLevelEntryIndex{ UINT64_MAXIMUM };
+
 	/*
 	*	The top right window update.
 	*/

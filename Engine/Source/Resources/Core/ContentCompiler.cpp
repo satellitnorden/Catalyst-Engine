@@ -368,6 +368,11 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 				ParseTexture2D(compilation_domain, content_cache, name, package, file);
 			}
 
+			else if (current_line == "TEXTURE_CUBE")
+			{
+				ParseTextureCube(compilation_domain, content_cache, name, package, file);
+			}
+
 			else if (current_line == "PROCEDURAL_TREE_MODEL")
 			{
 				ParseProceduralTreeModel(compilation_domain, content_cache, name, package, file);
@@ -1029,6 +1034,98 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 
 	//Build!
 	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
+}
+
+/*
+*	Parses a Texture Cube from the given file.
+*/
+void ContentCompiler::ParseTextureCube(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
+{
+	//Calculate the intermediate directory.
+	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
+
+	switch (compilation_domain)
+	{
+		case CompilationDomain::ENGINE:
+		{
+			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\%s\\Textures", package.Length() > 0 ? package.Data() : "");
+
+			break;
+		}
+
+		case CompilationDomain::GAME:
+		{
+			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\%s\\Textures", package.Length() > 0 ? package.Data() : "");
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Create the directory, if it doesn't exist.
+	File::CreateDirectory(intermediate_directory);
+
+	//Set up the build parameters.
+	TextureCubeBuildParameters parameters;
+
+	//Set the output.
+	char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
+	sprintf_s(output_buffer, "%s\\%s", intermediate_directory, name.data());
+	parameters._Output = output_buffer;
+
+	//Set the id.
+	parameters._ID = name.data();
+
+	//Set some default parameters.
+	parameters._File = nullptr;
+	parameters._DefaultResolution = 0;
+	parameters._ProceduralFunction = nullptr;
+	parameters._ProceduralFunctionUserData = nullptr;
+	parameters._ProceduralFunctionSuperSample = false;
+
+	//Declare some buffers that is needed to retain data.
+	char file_buffer[MAXIMUM_FILE_PATH_LENGTH];
+
+	//Read all of the lines.
+	std::string line;
+	StaticArray<DynamicString, 2> arguments;
+
+	while (std::getline(file, line))
+	{
+		//Skip lines with only whitespace.
+		if (TextParsingUtilities::OnlyWhitespace(line.data(), line.length()))
+		{
+			continue;
+		}
+
+		//Parse the arguments.
+		TextParsingUtilities::ParseSpaceSeparatedArguments
+		(
+			line.data(),
+			line.length(),
+			arguments.Data()
+		);
+
+		if (arguments[0] == "FILE")
+		{
+			sprintf_s(file_buffer, "%s", arguments[1].Data());
+			parameters._File = file_buffer;
+		}
+
+		else
+		{
+			ASSERT(false, "Couldn't parse argument " << arguments[0].Data());
+		}
+	}
+
+	//Build!
+	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTextureCube(parameters);
 }
 
 /*

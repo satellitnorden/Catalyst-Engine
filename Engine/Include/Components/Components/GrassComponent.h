@@ -18,11 +18,6 @@
 #include <World/Core/WorldPosition.h>
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 
-class GrassSharedData final
-{
-
-};
-
 class GrassInitializationData final : public ComponentInitializationData
 {
 
@@ -97,4 +92,4 @@ public:
 
 };
 
-DECLARE_COMPONENT(GrassComponent, GrassSharedData, GrassInitializationData, GrassInstanceData);
+DECLARE_COMPONENT(GrassComponent, GrassInitializationData, GrassInstanceData);
