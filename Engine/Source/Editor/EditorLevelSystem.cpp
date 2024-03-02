@@ -12,6 +12,7 @@
 #include <Systems/ImGuiSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/ResourceSystem.h>
 
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
@@ -41,6 +42,51 @@ FORCE_INLINE NO_DISCARD bool TextInputWidget(const char *const RESTRICT label, c
 	if (ImGui::InputText("##TEXT_INPUT", text, text_size))
 	{
 		changed = true;
+	}
+
+	ImGui::PopItemWidth();
+
+	ImGui::PopStyleVar();
+	ImGui::Columns(1);
+
+	//Pop the ID:
+	ImGui::PopID();
+
+	//Return if there was a change!
+	return changed;
+}
+
+/*
+*	Creates a custom model resource widget. Returns if there was a change.
+*/
+FORCE_INLINE NO_DISCARD bool ModelResourceWidget(const char *const RESTRICT label, ResourcePointer<ModelResource> *const RESTRICT model_resource) NOEXCEPT
+{
+	//Push the ID.
+	ImGui::PushID(label);
+
+	//Set up the widget. Keep track of if anything changed.
+	bool changed{ false };
+
+	ImGui::Columns(2);
+
+	ImGui::SetColumnWidth(0, 64.0f);
+	ImGui::Text(label);
+	ImGui::NextColumn();
+
+	ImGui::PushMultiItemsWidths(1, 256.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+	if (ImGui::BeginCombo("##MODEL_RESOURCE", (*model_resource)->_Header._ResourceName.Data()))
+	{
+		for (ModelResource *const RESTRICT _model_resource : ResourceSystem::Instance->GetAllModelResources().ValueIterator())
+		{
+			if (ImGui::Selectable(_model_resource->_Header._ResourceName.Data()))
+			{
+				(*model_resource) = ResourcePointer<ModelResource>(_model_resource);
+			}
+		}
+
+		ImGui::EndCombo();
 	}
 
 	ImGui::PopItemWidth();
@@ -520,6 +566,15 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					{
 						switch (editable_field._Type)
 						{
+							case ComponentEditableField::Type::MODEL_RESOURCE:
+							{
+								ResourcePointer<ModelResource> *const RESTRICT model_resource{ component->EditableFieldData<ResourcePointer<ModelResource>>(selected_level_entry._Entity, editable_field) };
+
+								ModelResourceWidget(editable_field._Name, model_resource);
+
+								break;
+							}
+
 							default:
 							{
 								ASSERT(false, "Invalid case!");

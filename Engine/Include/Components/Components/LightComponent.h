@@ -95,4 +95,11 @@ public:
 
 };
 
-DECLARE_COMPONENT(LightComponent, LightInitializationData, LightInstanceData);
+DECLARE_COMPONENT
+(
+	LightComponent,
+	LightInitializationData,
+	LightInstanceData,
+public:
+	void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
+);

@@ -22,7 +22,8 @@ DEFINE_COMPONENT(StaticModelComponent, StaticModelInitializationData, StaticMode
 */
 void StaticModelComponent::Initialize() NOEXCEPT
 {
-
+	//Add the editable fields.
+	_EditableFields.Emplace("Model", ComponentEditableField::Type::MODEL_RESOURCE, offsetof(StaticModelInstanceData, _ModelResource));
 }
 
 /*
@@ -46,7 +47,12 @@ void StaticModelComponent::DefaultInitializationData(ComponentInitializationData
 	StaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<StaticModelInitializationData* const RESTRICT>(initialization_data) };
 
 	_initialization_data->_ModelResource = ResourceSystem::Instance->GetModelResource(HashString("Cube"));
-	_initialization_data->_MaterialResources[0] = ResourceSystem::Instance->GetMaterialResource(HashString("Default"));
+
+	for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
+	{
+		_initialization_data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(HashString("Default"));
+	}
+	
 	_initialization_data->_ModelCollisionConfiguration._Type = ModelCollisionType::NONE;
 	_initialization_data->_ModelSimulationConfiguration._SimulatePhysics = false;
 }
