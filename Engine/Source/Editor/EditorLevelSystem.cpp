@@ -264,7 +264,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		{
 			ImGui::BeginMenuBar();
 
-			if (ImGui::BeginMenu("Add"))
+			if (ImGui::BeginMenu("Add Component"))
 			{
 				for (Component *const RESTRICT component : AllComponents())
 				{
