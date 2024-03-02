@@ -13,8 +13,9 @@
 
 //Systems.
 #include <Systems/PhysicsSystem.h>
+#include <Systems/ResourceSystem.h>
 
-DEFINE_COMPONENT(StaticModelComponent, StaticModelSharedData, StaticModelInitializationData, StaticModelInstanceData);
+DEFINE_COMPONENT(StaticModelComponent, StaticModelInitializationData, StaticModelInstanceData);
 
 /*
 *	Initializes this component.
@@ -38,6 +39,16 @@ void StaticModelComponent::PostInitialize() NOEXCEPT
 void StaticModelComponent::Terminate() NOEXCEPT
 {
 
+}
+
+void StaticModelComponent::DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+{
+	StaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<StaticModelInitializationData* const RESTRICT>(initialization_data) };
+
+	_initialization_data->_ModelResource = ResourceSystem::Instance->GetModelResource(HashString("Default"));
+	_initialization_data->_MaterialResources[0] = ResourceSystem::Instance->GetMaterialResource(HashString("Default"));
+	_initialization_data->_ModelCollisionConfiguration._Type = ModelCollisionType::NONE;
+	_initialization_data->_ModelSimulationConfiguration._SimulatePhysics = false;
 }
 
 NO_DISCARD bool StaticModelComponent::NeedsPreProcessing() const NOEXCEPT

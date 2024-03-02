@@ -49,6 +49,11 @@ public:
 	NO_DISCARD Entity *const RESTRICT CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT> component_configurations) NOEXCEPT;
 
 	/*
+	*	Adds a component to the given entity.
+	*/
+	void AddComponentToEntity(Entity *const RESTRICT entity, ComponentInitializationData *RESTRICT component_configuration) NOEXCEPT;
+
+	/*
 	*	Destroys an entity.
 	*/
 	void DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT;

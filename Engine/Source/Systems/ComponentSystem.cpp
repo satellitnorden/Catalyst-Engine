@@ -30,7 +30,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 		UpdatePhase::PRE,
 		UpdatePhase::ENTITY,
 		true,
-		true
+		false
 	);
 
 	CatalystEngineSystem::Instance->RegisterUpdate
@@ -43,7 +43,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 		UpdatePhase::INPUT,
 		UpdatePhase::GAMEPLAY,
 		true,
-		true
+		false
 	);
 
 	CatalystEngineSystem::Instance->RegisterUpdate
@@ -56,7 +56,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 		UpdatePhase::GAMEPLAY,
 		UpdatePhase::USER_INTERFACE,
 		true,
-		true
+		false
 	);
 
 	CatalystEngineSystem::Instance->RegisterUpdate
@@ -69,7 +69,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 		UpdatePhase::USER_INTERFACE,
 		UpdatePhase::PHYSICS,
 		true,
-		true
+		false
 	);
 
 	CatalystEngineSystem::Instance->RegisterUpdate
@@ -82,7 +82,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 		UpdatePhase::PHYSICS,
 		UpdatePhase::PRE_RENDER,
 		true,
-		true
+		false
 	);
 
 	CatalystEngineSystem::Instance->RegisterUpdate
@@ -95,7 +95,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 		UpdatePhase::PRE_RENDER,
 		UpdatePhase::RENDER,
 		true,
-		true
+		false
 	);
 
 	CatalystEngineSystem::Instance->RegisterUpdate
@@ -108,7 +108,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 		UpdatePhase::RENDER,
 		UpdatePhase::POST,
 		true,
-		true
+		false
 	);
 
 	CatalystEngineSystem::Instance->RegisterUpdate
@@ -121,7 +121,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 		UpdatePhase::POST,
 		UpdatePhase::PRE,
 		true,
-		true
+		false
 	);
 }
 

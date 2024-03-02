@@ -13,7 +13,9 @@
 template <typename TYPE>
 FORCE_INLINE static NO_DISCARD TYPE *const RESTRICT AdvancePointer(TYPE *const RESTRICT pointer, const uint64 number_of_bytes) NOEXCEPT
 {
-	return static_cast<TYPE *const RESTRICT>(static_cast<byte *const RESTRICT>(pointer) + number_of_bytes);
+	byte *RESTRICT byte_pointer{ static_cast<byte *const RESTRICT>(static_cast<void *const RESTRICT>(pointer)) };
+	byte_pointer += number_of_bytes;
+	return static_cast<TYPE *const RESTRICT>(static_cast<void *const RESTRICT>(byte_pointer));
 }
 
 /*

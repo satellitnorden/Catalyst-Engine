@@ -10,7 +10,7 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-DEFINE_COMPONENT(InstancedImpostorComponent, InstancedImpostorSharedData, InstancedImpostorInitializationData, InstancedImpostorInstanceData);
+DEFINE_COMPONENT(InstancedImpostorComponent, InstancedImpostorInitializationData, InstancedImpostorInstanceData);
 
 /*
 *	Initializes this component.

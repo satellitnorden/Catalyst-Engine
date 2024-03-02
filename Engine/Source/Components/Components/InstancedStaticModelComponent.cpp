@@ -8,7 +8,7 @@
 #include <Rendering/Native/Culling.h>
 #include <Rendering/Native/RenderingUtilities.h>
 
-DEFINE_COMPONENT(InstancedStaticModelComponent, InstancedStaticModelSharedData, InstancedStaticModelInitializationData, InstancedStaticModelInstanceData);
+DEFINE_COMPONENT(InstancedStaticModelComponent, InstancedStaticModelInitializationData, InstancedStaticModelInstanceData);
 
 /*
 *	Initializes this component.

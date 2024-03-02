@@ -14,7 +14,7 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-DEFINE_COMPONENT(GrassComponent, GrassSharedData, GrassInitializationData, GrassInstanceData);
+DEFINE_COMPONENT(GrassComponent, GrassInitializationData, GrassInstanceData);
 
 /*
 *	Initializes this component.

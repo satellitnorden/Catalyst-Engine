@@ -4,7 +4,7 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
-DEFINE_COMPONENT(LightComponent, LightSharedData, LightInitializationData, LightInstanceData);
+DEFINE_COMPONENT(LightComponent, LightInitializationData, LightInstanceData);
 
 /*
 *	Initializes this component.

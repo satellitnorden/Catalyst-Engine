@@ -184,7 +184,6 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	RegisterClassEx(&windowInfo);
 #endif
 
-#if !defined(CATALYST_EDITOR)
 	if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._InitialFullScreen)
 	{
 		Resolution resolution;
@@ -213,7 +212,6 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	}
 
 	else
-#endif
 	{
 		char window_name_buffer[256];
 

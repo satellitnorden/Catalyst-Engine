@@ -4,14 +4,15 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
-DEFINE_COMPONENT(WorldTransformComponent, WorldTransformSharedData, WorldTransformInitializationData, WorldTransformInstanceData);
+DEFINE_COMPONENT(WorldTransformComponent, WorldTransformInitializationData, WorldTransformInstanceData);
 
 /*
 *	Initializes this component.
 */
 void WorldTransformComponent::Initialize() NOEXCEPT
 {
-
+	//Add the editable fields.
+	_EditableFields.Emplace("WorldTransform", ComponentEditableField::Type::WORLD_TRANSFORM, offsetof(WorldTransformInstanceData, _CurrentWorldTransform));
 }
 
 /*

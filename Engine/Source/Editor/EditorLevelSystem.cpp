@@ -60,7 +60,7 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 	StaticArray<ComponentInitializationData *RESTRICT, 1> component_configurations;
 
 	{
-		WorldTransformInitializationData *const RESTRICT data{ WorldTransformComponent::Instance->AllocateInitializationData() };
+		WorldTransformInitializationData *const RESTRICT data{ WorldTransformComponent::Instance->AllocateDerivedInitializationData() };
 
 		data->_WorldTransform = WorldTransform();
 
@@ -105,15 +105,110 @@ NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> m
 NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
 	//Begin the window.
-	ImGuiSystem::Instance->BeginWindow("Editor Level Bottom Right", minimum, maximum, false, false);
+	ImGuiSystem::Instance->BeginWindow("Editor Level Bottom Right", minimum, maximum, false, true);
 
 	//Set up stuff for the selected level entry.
 	if (_SelectedLevelEntryIndex != UINT64_MAXIMUM)
 	{
+		//Cache the selected level entry.
 		LevelEntry &selected_level_entry{ _LevelEntries[_SelectedLevelEntryIndex] };
+
+		//Add the menu bar.
+		{
+			ImGui::BeginMenuBar();
+
+			if (ImGui::BeginMenu("Add"))
+			{
+				for (Component *const RESTRICT component : AllComponents())
+				{
+					if (component->Has(selected_level_entry._Entity))
+					{
+						continue;
+					}
+
+					if (ImGui::MenuItem(component->Name()))
+					{
+						ComponentInitializationData *const RESTRICT initialization_data{ component->AllocateInitializationData() };
+						EntitySystem::Instance->AddComponentToEntity(selected_level_entry._Entity, initialization_data);
+					}
+				}
+				
+				ImGui::EndMenu();
+			}
+
+			//End the menu.
+			ImGui::EndMenuBar();
+		}
 
 		//Add a text input for the name.
 		ImGui::InputText("Name", selected_level_entry._Name.Data(), selected_level_entry._Name.Size());
+
+		/*
+		*	Alright, this is crude, but right now, just iterate over all components,
+		*	check if this entity has that, and expose the editable fields.
+		*/
+		for (Component *const RESTRICT component : AllComponents())
+		{
+			if (component->Has(selected_level_entry._Entity))
+			{
+				if (ImGui::CollapsingHeader(component->Name()))
+				{
+					//Add widgets for all editable fields.
+					for (const ComponentEditableField &editable_field : component->_EditableFields)
+					{
+						switch (editable_field._Type)
+						{
+							case ComponentEditableField::Type::WORLD_TRANSFORM:
+							{
+								WorldTransform *const RESTRICT world_transform{ component->EditableFieldData<WorldTransform>(selected_level_entry._Entity, editable_field) };
+
+								//Add a header.
+								ImGui::Text("World Transform");
+
+								//Add position widget.
+								{
+									Vector3<float32> position{ world_transform->GetAbsolutePosition() };
+
+									if (ImGui::DragFloat3("Position", position._Data))
+									{
+										world_transform->SetAbsolutePosition(position);
+									}
+								}
+
+								//Add rotation widget.
+								{
+									EulerAngles rotation{ world_transform->GetRotation().ToEulerAngles()};
+
+									if (ImGui::DragFloat3("Rotation", rotation._Data))
+									{
+										world_transform->SetRotation(rotation);
+									}
+								}
+
+								//Add scale widget.
+								{
+									float32 scale{ world_transform->GetScale()};
+
+									if (ImGui::DragFloat("Scale", &scale))
+									{
+										world_transform->SetScale(scale);
+									}
+								}
+
+								break;
+							}
+
+							default:
+							{
+								ASSERT(false, "Invalid case!");
+
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	//End the window.

@@ -19,6 +19,47 @@
 class ComponentInitializationData;
 
 /*
+*	Component editable field class definition.
+*/
+class ComponentEditableField final
+{
+
+public:
+
+	//Enumeration covering all types.
+	enum class Type : uint8
+	{
+		WORLD_TRANSFORM
+	};
+
+	//The name.
+	const char *const RESTRICT _Name;
+
+	//The identifier.
+	uint64 _Identifier;
+
+	//The type.
+	Type _Type;
+
+	//The offset, in bytes, into the instance data object.
+	uint64 _Offset;
+
+	/*
+	*	Constructor.
+	*/
+	FORCE_INLINE ComponentEditableField(const char *const RESTRICT name, const Type type, const uint64 offset) NOEXCEPT
+		:
+		_Name(name),
+		_Identifier(HashAlgorithms::MurmurHash64(name, StringUtilities::StringLength(name))),
+		_Type(type),
+		_Offset(offset)
+	{
+
+	}
+
+};
+
+/*
 *	Component update configuration class definition.
 */
 class ComponentUpdateConfiguration final
@@ -71,6 +112,9 @@ public:
 	//The instance to entity mappings.
 	DynamicArray<Entity *RESTRICT> _InstanceToEntityMappings;
 
+	//The editable fields.
+	DynamicArray<ComponentEditableField> _EditableFields;
+
 	/*
 	*	Default constructor.
 	*/
@@ -95,6 +139,19 @@ public:
 	*	Terminates this component.
 	*/
 	virtual void Terminate() NOEXCEPT = 0;
+
+	/*
+	*	Allocations initialization data.
+	*/
+	virtual NO_DISCARD ComponentInitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT = 0;
+
+	/*
+	*	Sets default values for initialization data.
+	*/
+	FORCE_INLINE virtual void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Frees initialization data.
@@ -144,7 +201,7 @@ public:
 	/*
 	*	Returns if the given entity has this component.
 	*/
-	FORCE_INLINE NO_DISCARD bool Has(Entity *const RESTRICT entity) NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool Has(Entity *const RESTRICT entity) const NOEXCEPT
 	{
 		return entity->_EntityIdentifier < _EntityToInstanceMappings.Size() && _EntityToInstanceMappings[entity->_EntityIdentifier] != UINT64_MAXIMUM;
 	}
@@ -201,6 +258,27 @@ public:
 	*/
 	virtual void PostUpdate(const UpdatePhase update_phase) NOEXCEPT = 0;
 
+	/*
+	*	Returns the editable field data.
+	*/
+	template <typename TYPE>
+	NO_DISCARD TYPE *const RESTRICT EditableFieldData(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
+	{
+		return static_cast<TYPE *const RESTRICT>(SubEditableFieldData(entity, editable_field));
+	}
+
+	/*
+	*	Returns the name of this component.
+	*/
+	virtual NO_DISCARD const char *const RESTRICT Name() const NOEXCEPT = 0;
+
+protected:
+
+	/*
+	*	Sub-editable field data function.
+	*/
+	virtual NO_DISCARD void *const RESTRICT SubEditableFieldData(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT = 0;
+
 };
 
 /*
@@ -241,13 +319,18 @@ public:																																			\
 	void Initialize() NOEXCEPT override;																										\
 	void PostInitialize() NOEXCEPT override;																									\
 	void Terminate() NOEXCEPT override;																											\
-	FORCE_INLINE INITIALIZATION_DATA_CLASS *const RESTRICT AllocateInitializationData() NOEXCEPT												\
+	FORCE_INLINE INITIALIZATION_DATA_CLASS *const RESTRICT AllocateDerivedInitializationData() NOEXCEPT											\
 	{																																			\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																										\
 		INITIALIZATION_DATA_CLASS *const RESTRICT data{ static_cast<INITIALIZATION_DATA_CLASS *const RESTRICT>(POOL_ALLOCATOR.Allocate()) };	\
 		Memory::Set(data, 0, sizeof(INITIALIZATION_DATA_CLASS));																				\
+		DefaultInitializationData(data);																										\
 		data->_Component = COMPONENT_CLASS::Instance.Get();																						\
 		return data;																															\
+	}																																			\
+	FORCE_INLINE NO_DISCARD ComponentInitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT override							\
+	{																																			\
+		return AllocateDerivedInitializationData();																								\
 	}																																			\
 	FORCE_INLINE void FreeInitializationData(ComponentInitializationData *const RESTRICT data) NOEXCEPT override								\
 	{																																			\
@@ -306,6 +389,19 @@ public:																																			\
 			_EntityToInstanceMappings[moved_entity->_EntityIdentifier] = instance_index;														\
 		}																																		\
 	}																																			\
+	FORCE_INLINE NO_DISCARD void *const RESTRICT SubEditableFieldData																			\
+	(																																			\
+		Entity *const RESTRICT entity,																											\
+		const ComponentEditableField &editable_field																							\
+	) NOEXCEPT override																															\
+	{																																			\
+		INSTANCE_DATA_CLASS &instance_data{ InstanceData(entity) };																				\
+		return AdvancePointer(&instance_data, editable_field._Offset);																			\
+	}																																			\
+	FORCE_INLINE NO_DISCARD const char *const RESTRICT Name() const NOEXCEPT override															\
+	{																																			\
+		return #COMPONENT_CLASS;																												\
+	}																																			\
 private:																																		\
 	Spinlock POOL_ALLOCATOR_LOCK;																												\
 	PoolAllocator<sizeof(INITIALIZATION_DATA_CLASS)> POOL_ALLOCATOR;																			\
@@ -318,5 +414,5 @@ __VA_ARGS__																																		\
 *	Defines a component.
 *	This needs to be in ONE, and only ONE .cpp file.
 */
-#define DEFINE_COMPONENT(COMPONENT_CLASS, GLOBAL_DATA_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_CLASS)	\
-DEFINE_SINGLETON(COMPONENT_CLASS);																		\
+#define DEFINE_COMPONENT(COMPONENT_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_CLASS)	\
+DEFINE_SINGLETON(COMPONENT_CLASS);														\

@@ -17,7 +17,7 @@
 #include <Terrain/TerrainVertex.h>
 #include <Terrain/TerrainQuadTreeUtilities.h>
 
-DEFINE_COMPONENT(TerrainComponent, TerrainSharedData, TerrainInitializationData, TerrainInstanceData);
+DEFINE_COMPONENT(TerrainComponent, TerrainInitializationData, TerrainInstanceData);
 
 /*
 *	Initializes this component.

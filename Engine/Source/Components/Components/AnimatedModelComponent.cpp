@@ -17,7 +17,7 @@
 #include <Systems/AnimationSystem.h>
 #include <Systems/RenderingSystem.h>
 
-DEFINE_COMPONENT(AnimatedModelComponent, AnimatedModelSharedData, AnimatedModelInitializationData, AnimatedModelInstanceData);
+DEFINE_COMPONENT(AnimatedModelComponent, AnimatedModelInitializationData, AnimatedModelInstanceData);
 
 /*
 *	Initializes this component.

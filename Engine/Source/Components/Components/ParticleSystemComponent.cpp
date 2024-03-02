@@ -15,7 +15,7 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
-DEFINE_COMPONENT(ParticleSystemComponent, ParticleSystemSharedData, ParticleSystemInitializationData, ParticleSystemInstanceData);
+DEFINE_COMPONENT(ParticleSystemComponent, ParticleSystemInitializationData, ParticleSystemInstanceData);
 
 /*
 *	Initializes this component.

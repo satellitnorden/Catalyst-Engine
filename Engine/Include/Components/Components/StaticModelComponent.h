@@ -73,4 +73,11 @@ public:
 
 };
 
-DECLARE_COMPONENT(StaticModelComponent, StaticModelInitializationData, StaticModelInstanceData);
+DECLARE_COMPONENT
+(
+	StaticModelComponent,
+	StaticModelInitializationData,
+	StaticModelInstanceData,
+public:
+	void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
+);
