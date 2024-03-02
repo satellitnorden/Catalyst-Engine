@@ -133,6 +133,9 @@ layout (std140, set = 0, binding = 1) uniform GlobalMaterials
 //The blue noise textures.
 layout (set = 0, binding = 2) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
 
+//The sky texture.
+layout (set = 0, binding = 3) uniform samplerCube SKY_TEXTURE;
+
 /*
 *	Returns the square of the given number.
 */

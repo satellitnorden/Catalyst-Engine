@@ -68,6 +68,8 @@ void WorldSystem::RenderUpdate() NOEXCEPT
 	//Update the world uniform data.
 	_WorldUniformData._UpperSkyColor = _SkySystem.GetSkyGradient()._UpperSkyColor;
 	_WorldUniformData._LowerSkyColor = _SkySystem.GetSkyGradient()._LowerSkyColor;
+	_WorldUniformData._SkyMode = static_cast<uint32>(_SkySystem.GetSkyMode());
+	_WorldUniformData._MaximumSkyTextureMipLevel = _SkySystem.GetSkyTexture() ? static_cast<float32>(_SkySystem.GetSkyTexture()->_MipmapLevels) : 0.0f;
 
 	//Update the water system.
 	_WaterSystem.RenderUpdate();

@@ -1,0 +1,36 @@
+//Constants.
+#define SKY_MODE_ATMOSPHERIC_SCATTERING (0)
+#define SKY_MODE_GRADIENT (1)
+#define SKY_MODE_TEXTURE (2)
+
+/*
+*	Samples the sky.
+*	Requires the "World" uniform buffer to be bound.
+*/
+vec3 SampleSky(vec3 direction, float mip_level)
+{
+	switch (SKY_MODE)
+	{
+		case SKY_MODE_ATMOSPHERIC_SCATTERING:
+		{
+			//Oh no!
+			return vec3(0.0f);
+		}
+
+		case SKY_MODE_GRADIENT:
+		{
+			return mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f);
+		}
+
+		case SKY_MODE_TEXTURE:
+		{
+			return textureLod(SKY_TEXTURE, direction, mip_level).rgb;
+		}
+	
+		default:
+		{
+			//Oh no!
+			return vec3(0.0f);
+		}
+	}
+}

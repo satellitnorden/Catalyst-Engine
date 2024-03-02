@@ -142,6 +142,12 @@ private:
 		//Some padding.
 		Padding<4> _Padding2;
 
+		//The sky mode.
+		uint32 _SkyMode;
+
+		//The maximum sky texture mip level.
+		float32 _MaximumSkyTextureMipLevel;
+
 	};
 
 	//The world grid size.
