@@ -9,10 +9,12 @@
 #include <Systems/CatalystEditorSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/ImGuiSystem.h>
+#include <Systems/RenderingSystem.h>
 
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
 #include <ThirdParty/ImGui/imgui_internal.h>
+#include <ThirdParty/ImGuizmo/ImGuizmo.h>
 
 /*
 *	Creates a custom text input widget. Returns if there was a change.
@@ -345,7 +347,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 								//Add scale widget.
 								{
 									//Retrieve the scale.
-									float32 scale{ world_transform->GetScale()};
+									float32 scale{ world_transform->GetScale() };
 
 									//Add the transform widget.
 									const bool changed{ TransformWidget("Scale", &scale, 1, 1.0f, 0.01f) };
@@ -369,6 +371,58 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 						}
 					}
 				}
+			}
+		}
+
+		//Add a Gizmo for the world transform!
+		{
+			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_level_entry._Entity, WorldTransformComponent::Instance->_EditableFields[0])};
+
+			Matrix4x4 transformation_matrix;
+
+			{
+				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
+				EulerAngles rotation{ world_transform->GetRotation().ToEulerAngles() };
+				Vector3<float32> scale{ world_transform->GetScale() };
+
+				ImGuizmo::RecomposeMatrixFromComponents(&position._X, &rotation._Roll, &scale._X, &transformation_matrix._11);
+			}
+
+			const Matrix4x4 *const RESTRICT view_matrix{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetCameraMatrix() };
+			Matrix4x4 projection_matrix{ *RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetProjectionMatrix() };
+
+			//Unjitter.
+			{
+				const Vector2<float32> &projection_matrix_jitter{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetProjectionMatrixJitter() };
+
+				projection_matrix._Matrix[2]._X += projection_matrix_jitter._X;
+				projection_matrix._Matrix[2]._Y += projection_matrix_jitter._Y;
+			}
+
+			//Flip Y.
+			projection_matrix._Matrix[1]._Y *= -1.0f;
+
+			const bool was_manipulated
+			{
+				ImGuizmo::Manipulate
+				(
+					&view_matrix->_11,
+					&projection_matrix._11,
+					ImGuizmo::OPERATION::TRANSLATE,
+					ImGuizmo::MODE::WORLD,
+					&transformation_matrix._11
+				)
+			};
+
+			if (was_manipulated)
+			{
+				Vector3<float32> position;
+				EulerAngles rotation;
+				Vector3<float32> scale;
+
+				ImGuizmo::DecomposeMatrixToComponents(&transformation_matrix._11, &position._X, &rotation._Roll, &scale._X);
+
+				world_transform->SetAbsolutePosition(position);
 			}
 		}
 	}

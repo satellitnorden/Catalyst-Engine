@@ -12,6 +12,9 @@
 
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
+#if defined(CATALYST_EDITOR)
+#include <ThirdParty/ImGuizmo/ImGuizmo.h>
+#endif
 
 //Singleton definition.
 DEFINE_SINGLETON(ImGuiSystem);
@@ -96,6 +99,27 @@ void ImGuiSystem::Initialize() NOEXCEPT
 		true,
 		false
 	);
+
+#if defined(CATALYST_EDITOR)
+	//Set up ImGuizmo.
+	ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
+
+	{
+		ImGuizmo::Style &style{ ImGuizmo::GetStyle() };
+
+		style.Colors[ImGuizmo::COLOR::DIRECTION_X] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+		style.Colors[ImGuizmo::COLOR::DIRECTION_Y] = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+		style.Colors[ImGuizmo::COLOR::DIRECTION_Z] = ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+		style.Colors[ImGuizmo::COLOR::PLANE_X] = ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+		style.Colors[ImGuizmo::COLOR::PLANE_Y] = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+		style.Colors[ImGuizmo::COLOR::PLANE_Z] = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+		style.Colors[ImGuizmo::COLOR::SELECTION] = ImVec4(1.0f, 0.25f, 0.0f, 1.0f);
+
+		style.TranslationLineThickness = 2.0f;
+		style.TranslationLineArrowSize = 8.0f;
+		style.HatchedAxisLineThickness = 0.0f;
+	}
+#endif
 }
 
 /*
@@ -281,6 +305,12 @@ void ImGuiSystem::OnInputAvailable() NOEXCEPT
 
 	//Begin the new ImGui frame.
 	ImGui::NewFrame();
+
+#if defined(CATALYST_EDITOR)
+	//Update ImGuizmo.
+	ImGuizmo::SetRect(0.0f, 0.0f, io.DisplaySize.x, io.DisplaySize.y);
+	ImGuizmo::BeginFrame();
+#endif
 }
 
 /*
