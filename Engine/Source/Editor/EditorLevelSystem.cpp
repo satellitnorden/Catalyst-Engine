@@ -12,6 +12,153 @@
 
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
+#include <ThirdParty/ImGui/imgui_internal.h>
+
+/*
+*	Creates a custom text input widget. Returns if there was a change.
+*/
+FORCE_INLINE NO_DISCARD bool TextInputWidget(const char *const RESTRICT label, char *const RESTRICT text, const uint64 text_size) NOEXCEPT
+{
+	//Push the ID.
+	ImGui::PushID(label);
+
+	//Set up the widget. Keep track of if anything changed.
+	bool changed{ false };
+
+	ImGui::Columns(2);
+
+	ImGui::SetColumnWidth(0, 64.0f);
+	ImGui::Text(label);
+	ImGui::NextColumn();
+
+	ImGui::PushMultiItemsWidths(1, 256.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+	if (ImGui::InputText("##TEXT_INPUT", text, text_size))
+	{
+		changed = true;
+	}
+
+	ImGui::PopItemWidth();
+
+	ImGui::PopStyleVar();
+	ImGui::Columns(1);
+
+	//Pop the ID:
+	ImGui::PopID();
+
+	//Return if there was a change!
+	return changed;
+}
+
+/*
+*	Creates a custom widget for stuff like position/rotation/scale. Returns if there was a change.
+*/
+FORCE_INLINE NO_DISCARD bool TransformWidget
+(
+	const char *const RESTRICT label,
+	float32 *const RESTRICT data,
+	const uint64 data_size,
+	const float32 reset_value,
+	const float32 drag_speed
+) NOEXCEPT
+{
+	//Push the ID.
+	ImGui::PushID(label);
+
+	//Set up the widget. Keep track of if anything changed.
+	bool changed{ false };
+
+	ImGui::Columns(2);
+
+	ImGui::SetColumnWidth(0, 64.0f);
+	ImGui::Text(label);
+	ImGui::NextColumn();
+
+	ImGui::PushMultiItemsWidths(data_size, ImGui::CalcItemWidth());
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+	const float32 line_height{ GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f };
+	const ImVec2 button_size{ line_height + 3.0f, line_height };
+
+	if (data_size >= 1)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.15f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.2f, 0.2f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8f, 0.1f, 0.15f, 1.0f));
+		if (ImGui::Button("X", button_size))
+		{
+			data[0] = reset_value;
+
+			changed = true;
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();
+
+		if (ImGui::DragFloat("##X", &data[0], drag_speed))
+		{
+			changed = true;
+		}
+
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+	}
+	
+	if (data_size >= 2)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.3f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.8f, 0.3f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
+		if (ImGui::Button("Y", button_size))
+		{
+			data[1] = reset_value;
+
+			changed = true;
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();
+
+		if (ImGui::DragFloat("##Y", &data[1], drag_speed))
+		{
+			changed = true;
+		}
+
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+	}
+
+	if (data_size >= 3)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.25f, 0.8f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.1f, 0.35f, 0.9f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.25f, 0.8f, 1.0f));
+		if (ImGui::Button("Z", button_size))
+		{
+			data[2] = 0.0f;
+
+			changed = true;
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();
+
+		if (ImGui::DragFloat("##Z", &data[2], drag_speed))
+		{
+			changed = true;
+		}
+
+		ImGui::PopItemWidth();
+	}
+
+	ImGui::PopStyleVar();
+	ImGui::Columns(1);
+
+	ImGui::PopID();
+
+	return changed;
+}
 
 /*
 *	Post initializes the editor level system.
@@ -141,7 +288,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		}
 
 		//Add a text input for the name.
-		ImGui::InputText("Name", selected_level_entry._Name.Data(), selected_level_entry._Name.Size());
+		TextInputWidget("Name", selected_level_entry._Name.Data(), selected_level_entry._Name.Size());
 
 		/*
 		*	Alright, this is crude, but right now, just iterate over all components,
@@ -167,9 +314,14 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 								//Add position widget.
 								{
+									//Retrieve the position.
 									Vector3<float32> position{ world_transform->GetAbsolutePosition() };
 
-									if (ImGui::DragFloat3("Position", position._Data))
+									//Add the transform widget.
+									const bool changed{ TransformWidget("Position", &position._X, 3, 0.0f, 0.01f) };
+
+									//Update the position if anything changed.
+									if (changed)
 									{
 										world_transform->SetAbsolutePosition(position);
 									}
@@ -177,9 +329,14 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 								//Add rotation widget.
 								{
+									//Retrieve the rotation.
 									EulerAngles rotation{ world_transform->GetRotation().ToEulerAngles()};
 
-									if (ImGui::DragFloat3("Rotation", rotation._Data))
+									//Add the transform widget.
+									const bool changed{ TransformWidget("Rotation", &rotation._Roll, 3, 0.0f, 0.01f) };
+
+									//Update the rotation if anything changed.
+									if (changed)
 									{
 										world_transform->SetRotation(rotation);
 									}
@@ -187,9 +344,14 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 								//Add scale widget.
 								{
+									//Retrieve the scale.
 									float32 scale{ world_transform->GetScale()};
 
-									if (ImGui::DragFloat("Scale", &scale))
+									//Add the transform widget.
+									const bool changed{ TransformWidget("Scale", &scale, 1, 1.0f, 0.01f) };
+
+									//Update the scale if anything changed.
+									if (changed)
 									{
 										world_transform->SetScale(scale);
 									}
