@@ -54,6 +54,7 @@ void CatalystEditorSystem::PostInitialize() NOEXCEPT
 	//Create all editor icons.
 	_EditorIcons[UNDERLYING(EditorIcon::PLAY)] = RenderingSystem::Instance->CreateImGuiTexture(ResourceSystem::Instance->GetTexture2DResource(HashString("Editor_Play_Icon"))->_Texture2DHandle);
 	_EditorIcons[UNDERLYING(EditorIcon::CREATE)] = RenderingSystem::Instance->CreateImGuiTexture(ResourceSystem::Instance->GetTexture2DResource(HashString("Editor_Create_Icon"))->_Texture2DHandle);
+	_EditorIcons[UNDERLYING(EditorIcon::TRANSLATE)] = RenderingSystem::Instance->CreateImGuiTexture(ResourceSystem::Instance->GetTexture2DResource(HashString("Editor_Translate_Icon"))->_Texture2DHandle);
 
 	//Register for the top bar editor window.
 	ImGuiSystem::Instance->RegisterEditorWindow
@@ -229,6 +230,17 @@ NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimu
 	{
 		_EditorLevelSystem.CreateEntity();
 	}
+
+	/*
+	//Layout thing horizontally for the top bar.
+	ImGui::SameLine();
+
+	//Add the "Create" button.
+	if (ImGui::ImageButton(_EditorIcons[UNDERLYING(EditorIcon::TRANSLATE)], ImVec2(62.0f, 62.0f)))
+	{
+		
+	}
+	*/
 
 	//End the window.
 	ImGui::End();

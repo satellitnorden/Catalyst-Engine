@@ -1660,7 +1660,7 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 void ResourceBuildingSystem::BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint8 MIPMAP_LEVELS{ 3 };
+	constexpr uint8 MIPMAP_LEVELS{ 8 };
 	constexpr uint32 BASE_RESOLUTION{ 512 };
 	constexpr StaticArray<Vector2<float32>, 4> SUPER_SAMPLE_OFFSETS
 	{

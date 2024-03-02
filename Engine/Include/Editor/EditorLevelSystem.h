@@ -28,6 +28,14 @@ public:
 
 private:
 
+	//Enumeration covering all gizmo modes.
+	enum class GizmoMode : uint8
+	{
+		TRANSLATE,
+		ROTATE,
+		SCALE
+	};
+
 	//The name counter.
 	uint32 _NameCounter{ 0 };
 
@@ -36,6 +44,9 @@ private:
 
 	//The selected level entry index.
 	uint64 _SelectedLevelEntryIndex{ UINT64_MAXIMUM };
+
+	//The current Gizmo mode.
+	GizmoMode _CurrentGizmoMode{ GizmoMode::TRANSLATE };
 
 	/*
 	*	The top right window update.

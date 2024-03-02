@@ -1,0 +1,4 @@
+PACKAGE Base
+MODEL
+
+LEVEL_OF_DETAIL ..\..\..\..\Catalyst-Engine\Engine\Content\Raw\Models\Plane.fbx

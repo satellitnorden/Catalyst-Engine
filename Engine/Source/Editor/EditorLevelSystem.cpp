@@ -3,12 +3,14 @@
 #include <Editor/EditorLevelSystem.h>
 
 //Components.
+#include <Components/Components/EditorDataComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
 //Systems.
 #include <Systems/CatalystEditorSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/ImGuiSystem.h>
+#include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Third party.
@@ -77,7 +79,7 @@ FORCE_INLINE NO_DISCARD bool TransformWidget
 	ImGui::Text(label);
 	ImGui::NextColumn();
 
-	ImGui::PushMultiItemsWidths(data_size, ImGui::CalcItemWidth());
+	ImGui::PushMultiItemsWidths(static_cast<uint32>(data_size), ImGui::CalcItemWidth());
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
 
 	const float32 line_height{ GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f };
@@ -205,15 +207,21 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 		new_level_entry._Name = buffer;
 	}
 
-	//Add components (entities created in the editor always have a world transform component, for now).
-	StaticArray<ComponentInitializationData *RESTRICT, 1> component_configurations;
+	//Add components (entities created in the editor always have editor data and world transform components).
+	StaticArray<ComponentInitializationData *RESTRICT, 2> component_configurations;
+
+	{
+		EditorDataInitializationData *const RESTRICT data{ EditorDataComponent::Instance->AllocateDerivedInitializationData() };
+
+		component_configurations[0] = data;
+	}
 
 	{
 		WorldTransformInitializationData *const RESTRICT data{ WorldTransformComponent::Instance->AllocateDerivedInitializationData() };
 
 		data->_WorldTransform = WorldTransform();
 
-		component_configurations[0] = data;
+		component_configurations[1] = data;
 	}
 
 	//Create the entity!
@@ -253,6 +261,22 @@ NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> m
 */
 NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
+	//Update the Gizmo mode.
+	if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::ONE) == ButtonState::PRESSED)
+	{
+		_CurrentGizmoMode = GizmoMode::TRANSLATE;
+	}
+
+	else if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::TWO) == ButtonState::PRESSED)
+	{
+		_CurrentGizmoMode = GizmoMode::ROTATE;
+	}
+
+	else if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::THREE) == ButtonState::PRESSED)
+	{
+		_CurrentGizmoMode = GizmoMode::SCALE;
+	}
+
 	//Begin the window.
 	ImGuiSystem::Instance->BeginWindow("Editor Level Bottom Right", minimum, maximum, false, true);
 
@@ -261,6 +285,9 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 	{
 		//Cache the selected level entry.
 		LevelEntry &selected_level_entry{ _LevelEntries[_SelectedLevelEntryIndex] };
+
+		//Retrieve the editor data.
+		EditorDataInstanceData &editor_data{ EditorDataComponent::Instance->InstanceData(selected_level_entry._Entity) };
 
 		//Add the menu bar.
 		{
@@ -292,98 +319,95 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		//Add a text input for the name.
 		TextInputWidget("Name", selected_level_entry._Name.Data(), selected_level_entry._Name.Size());
 
-		/*
-		*	Alright, this is crude, but right now, just iterate over all components,
-		*	check if this entity has that, and expose the editable fields.
-		*/
-		for (Component *const RESTRICT component : AllComponents())
+		//Add widgets for the world transform component.
+		if (ImGui::CollapsingHeader(WorldTransformComponent::Instance->Name()))
 		{
-			if (component->Has(selected_level_entry._Entity))
+			//Retrieve the editable field.
+			const ComponentEditableField &editable_field{ WorldTransformComponent::Instance->_EditableFields[0] };
+
+			ASSERT(editable_field._Type == ComponentEditableField::Type::WORLD_TRANSFORM, "What happened here?");
+
+			//Retrieve the world transform.
+			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_level_entry._Entity, editable_field) };
+
+			//Add a header.
+			ImGui::Text("World Transform");
+
+			//Add position widget.
 			{
-				if (ImGui::CollapsingHeader(component->Name()))
+				//Retrieve the position.
+				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
+
+				//Add the transform widget.
+				const bool changed{ TransformWidget("Position", &position._X, 3, 0.0f, 0.01f) };
+
+				//Update the position if anything changed.
+				if (changed)
 				{
-					//Add widgets for all editable fields.
-					for (const ComponentEditableField &editable_field : component->_EditableFields)
+					world_transform->SetAbsolutePosition(position);
+				}
+			}
+
+			//Add rotation widget.
+			{
+				//Retrieve the rotation.
+				EulerAngles rotation{ editor_data._Rotation };
+
+				//Convert to degrees.
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					rotation[i] = CatalystBaseMath::RadiansToDegrees(rotation[i]);
+				}
+
+				//Add the transform widget.
+				const bool changed{ TransformWidget("Rotation", &rotation._Roll, 3, 0.0f, 0.1f) };
+
+				//Update the rotation if anything changed.
+				if (changed)
+				{
+					//Convert to radians.
+					for (uint8 i{ 0 }; i < 3; ++i)
 					{
-						switch (editable_field._Type)
-						{
-							case ComponentEditableField::Type::WORLD_TRANSFORM:
-							{
-								WorldTransform *const RESTRICT world_transform{ component->EditableFieldData<WorldTransform>(selected_level_entry._Entity, editable_field) };
-
-								//Add a header.
-								ImGui::Text("World Transform");
-
-								//Add position widget.
-								{
-									//Retrieve the position.
-									Vector3<float32> position{ world_transform->GetAbsolutePosition() };
-
-									//Add the transform widget.
-									const bool changed{ TransformWidget("Position", &position._X, 3, 0.0f, 0.01f) };
-
-									//Update the position if anything changed.
-									if (changed)
-									{
-										world_transform->SetAbsolutePosition(position);
-									}
-								}
-
-								//Add rotation widget.
-								{
-									//Retrieve the rotation.
-									EulerAngles rotation{ world_transform->GetRotation().ToEulerAngles()};
-
-									//Add the transform widget.
-									const bool changed{ TransformWidget("Rotation", &rotation._Roll, 3, 0.0f, 0.01f) };
-
-									//Update the rotation if anything changed.
-									if (changed)
-									{
-										world_transform->SetRotation(rotation);
-									}
-								}
-
-								//Add scale widget.
-								{
-									//Retrieve the scale.
-									float32 scale{ world_transform->GetScale() };
-
-									//Add the transform widget.
-									const bool changed{ TransformWidget("Scale", &scale, 1, 1.0f, 0.01f) };
-
-									//Update the scale if anything changed.
-									if (changed)
-									{
-										world_transform->SetScale(scale);
-									}
-								}
-
-								break;
-							}
-
-							default:
-							{
-								ASSERT(false, "Invalid case!");
-
-								break;
-							}
-						}
+						rotation[i] = CatalystBaseMath::DegreesToRadians(rotation[i]);
 					}
+
+					editor_data._Rotation = rotation;
+					world_transform->SetRotation(rotation);
+				}
+			}
+
+			//Add scale widget.
+			{
+				//Retrieve the scale.
+				float32 scale{ world_transform->GetScale() };
+
+				//Add the transform widget.
+				const bool changed{ TransformWidget("Scale", &scale, 1, 1.0f, 0.01f) };
+
+				//Update the scale if anything changed.
+				if (changed)
+				{
+					world_transform->SetScale(scale);
 				}
 			}
 		}
 
 		//Add a Gizmo for the world transform!
 		{
-			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_level_entry._Entity, WorldTransformComponent::Instance->_EditableFields[0])};
+			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_level_entry._Entity, WorldTransformComponent::Instance->_EditableFields[0]) };
 
 			Matrix4x4 transformation_matrix;
 
 			{
 				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
-				EulerAngles rotation{ world_transform->GetRotation().ToEulerAngles() };
+				EulerAngles rotation{ editor_data._Rotation };
 				Vector3<float32> scale{ world_transform->GetScale() };
+
+				//Rotation reported in degrees, so convert.
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					rotation[i] = CatalystBaseMath::RadiansToDegrees(rotation[i]);
+				}
 
 				ImGuizmo::RecomposeMatrixFromComponents(&position._X, &rotation._Roll, &scale._X, &transformation_matrix._11);
 			}
@@ -393,7 +417,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 			//Unjitter.
 			{
-				const Vector2<float32> &projection_matrix_jitter{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetProjectionMatrixJitter() };
+				const Vector2<float32>& projection_matrix_jitter{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetProjectionMatrixJitter() };
 
 				projection_matrix._Matrix[2]._X += projection_matrix_jitter._X;
 				projection_matrix._Matrix[2]._Y += projection_matrix_jitter._Y;
@@ -402,13 +426,47 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 			//Flip Y.
 			projection_matrix._Matrix[1]._Y *= -1.0f;
 
+			//Determine the operation.
+			ImGuizmo::OPERATION operation;
+
+			switch (_CurrentGizmoMode)
+			{
+				case GizmoMode::TRANSLATE:
+				{
+					operation = ImGuizmo::OPERATION::TRANSLATE;
+
+					break;
+				}
+
+				case GizmoMode::ROTATE:
+				{
+					operation = ImGuizmo::OPERATION::ROTATE;
+
+					break;
+				}
+
+				case GizmoMode::SCALE:
+				{
+					operation = ImGuizmo::OPERATION::SCALE_Y;
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
 			const bool was_manipulated
 			{
 				ImGuizmo::Manipulate
 				(
 					&view_matrix->_11,
 					&projection_matrix._11,
-					ImGuizmo::OPERATION::TRANSLATE,
+					operation,
 					ImGuizmo::MODE::WORLD,
 					&transformation_matrix._11
 				)
@@ -422,7 +480,55 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 				ImGuizmo::DecomposeMatrixToComponents(&transformation_matrix._11, &position._X, &rotation._Roll, &scale._X);
 
+				//Rotation is reported in degrees, so convert to radians.
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					rotation[i] = CatalystBaseMath::DegreesToRadians(rotation[i]);
+				}
+
 				world_transform->SetAbsolutePosition(position);
+				editor_data._Rotation = rotation;
+				world_transform->SetRotation(rotation);
+
+				if (_CurrentGizmoMode == GizmoMode::SCALE)
+				{	
+					//As the scale is uniform, just use the X axis for now.
+					world_transform->SetScale(scale._Y);
+				}
+			}
+		}
+
+		/*
+		*	Alright, this is crude, but right now, just iterate over all components,
+		*	check if this entity has that, and expose the editable fields.
+		*/
+		for (Component *const RESTRICT component : AllComponents())
+		{
+			//Ignore editor data and world transform components, as they are always implicitly added.
+			if (component == WorldTransformComponent::Instance.Get()
+				|| component == EditorDataComponent::Instance.Get())
+			{
+				continue;
+			}
+
+			if (component->Has(selected_level_entry._Entity))
+			{
+				if (ImGui::CollapsingHeader(component->Name()))
+				{
+					//Add widgets for all editable fields.
+					for (const ComponentEditableField &editable_field : component->_EditableFields)
+					{
+						switch (editable_field._Type)
+						{
+							default:
+							{
+								ASSERT(false, "Invalid case!");
+
+								break;
+							}
+						}
+					}
+				}
 			}
 		}
 	}

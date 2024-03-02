@@ -45,7 +45,7 @@ void StaticModelComponent::DefaultInitializationData(ComponentInitializationData
 {
 	StaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<StaticModelInitializationData* const RESTRICT>(initialization_data) };
 
-	_initialization_data->_ModelResource = ResourceSystem::Instance->GetModelResource(HashString("Default"));
+	_initialization_data->_ModelResource = ResourceSystem::Instance->GetModelResource(HashString("Cube"));
 	_initialization_data->_MaterialResources[0] = ResourceSystem::Instance->GetMaterialResource(HashString("Default"));
 	_initialization_data->_ModelCollisionConfiguration._Type = ModelCollisionType::NONE;
 	_initialization_data->_ModelSimulationConfiguration._SimulatePhysics = false;
@@ -199,11 +199,11 @@ void StaticModelComponent::Update
 			{
 				//Cache the instance data.
 				StaticModelInstanceData &instance_data{ _InstanceData[instance_index] };
+				WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(InstanceToEntity(instance_index)) };
 
 				//Update the world transform is this static model instance is physics-simulated.
 				if (instance_data._PhysicsActorHandle && instance_data._ModelSimulationConfiguration._SimulatePhysics)
 				{
-					WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(InstanceToEntity(instance_index)) };
 					PhysicsSystem::Instance->GetActorWorldTransform(instance_data._PhysicsActorHandle, &world_transform_instance_data._CurrentWorldTransform);
 				}
 
@@ -299,6 +299,13 @@ void StaticModelComponent::Update
 						//Calculate the level of detail index.
 						instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - screen_coverage) * static_cast<float32>(instance_data._ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
 					}
+
+					//Update the world space axis aligned bounding box.
+					AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
+					RenderingUtilities::TransformAxisAlignedBoundingBox(instance_data._ModelResource->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+					instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
+					instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
+
 				}
 			}
 

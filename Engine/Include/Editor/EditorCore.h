@@ -18,6 +18,7 @@ enum class EditorIcon : uint8
 {
 	PLAY,
 	CREATE,
+	TRANSLATE,
 
 	NUMBER_OF_EDITOR_ICONS
 };

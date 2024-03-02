@@ -186,6 +186,24 @@ public:
 	*/
 	FORCE_INLINE void FromEulerAngles(const EulerAngles &angles) NOEXCEPT
 	{
+		const Vector3<float32> cosine
+		{
+			CatalystBaseMath::Cosine(angles._Roll * 0.5f),
+			CatalystBaseMath::Cosine(angles._Yaw * 0.5f),
+			CatalystBaseMath::Cosine(angles._Pitch * 0.5f),
+		};
+		const Vector3<float32> sine
+		{
+			CatalystBaseMath::Sine(angles._Roll * 0.5f),
+			CatalystBaseMath::Sine(angles._Yaw * 0.5f),
+			CatalystBaseMath::Sine(angles._Pitch * 0.5f),
+		};
+
+		_X = sine._X * cosine._Y * cosine._Z - cosine._X * sine._Y * sine._Z;
+		_Y = cosine._X * sine._Y * cosine._Z + sine._X * cosine._Y * sine._Z;
+		_Z = cosine._X * cosine._Y * sine._Z - sine._X * sine._Y * cosine._Z;
+		_W = cosine._X * cosine._Y * cosine._Z + sine._X * sine._Y * sine._Z;
+
 		*this = Quaternion(Vector3<float32>(1.0f, 0.0f, 0.0f), angles._Roll) * Quaternion(Vector3<float32>(0.0f, 1.0f, 0.0f), angles._Yaw) * Quaternion(Vector3<float32>(0.0f, 0.0f, 1.0f), angles._Pitch);
 	}
 
