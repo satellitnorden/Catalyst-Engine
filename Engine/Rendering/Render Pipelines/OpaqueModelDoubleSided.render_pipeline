@@ -105,6 +105,9 @@ Fragment
     shading_normal = InTangentSpaceMatrix * shading_normal;
     shading_normal = normalize(shading_normal);
 
+    //Flip the normal, if necessary.
+    shading_normal = FRAGMENT_FRONT_FACING ? shading_normal : -shading_normal;
+
     //Calculate the velocity.
     vec2 velocity = CalculateCurrentScreenCoordinate(InCurrentWorldPosition) - CalculatePreviousScreenCoordinate(InPreviousWorldPosition) - CURRENT_FRAME_JITTER;
 

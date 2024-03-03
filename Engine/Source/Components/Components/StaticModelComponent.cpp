@@ -23,7 +23,12 @@ DEFINE_COMPONENT(StaticModelComponent, StaticModelInitializationData, StaticMode
 void StaticModelComponent::Initialize() NOEXCEPT
 {
 	//Add the editable fields.
-	_EditableFields.Emplace("Model", ComponentEditableField::Type::MODEL_RESOURCE, offsetof(StaticModelInstanceData, _ModelResource));
+	AddEditableModelResourceField
+	(
+		"Model",
+		offsetof(StaticModelInitializationData, _ModelResource),
+		offsetof(StaticModelInstanceData, _ModelResource)
+	);
 }
 
 /*
@@ -85,9 +90,6 @@ void StaticModelComponent::CreateInstance(Entity *const RESTRICT entity, Compone
 	instance_data._ModelCollisionConfiguration = _initialization_data->_ModelCollisionConfiguration;
 	instance_data._ModelSimulationConfiguration = _initialization_data->_ModelSimulationConfiguration;
 	instance_data._MeshesVisibleMask = UINT8_MAXIMUM;
-
-	//Tell the ray tracing system.
-	RenderingSystem::Instance->GetRayTracingSystem()->OnStaticModelInstanceCreated(entity, _InstanceData.Back());
 }
 
 /*
@@ -107,6 +109,9 @@ void StaticModelComponent::PostCreateInstance(Entity *const RESTRICT entity) NOE
 	RenderingUtilities::TransformAxisAlignedBoundingBox(static_model_instance_data._ModelResource->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
 	static_model_instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
 	static_model_instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
+
+	//Tell the ray tracing system.
+	RenderingSystem::Instance->GetRayTracingSystem()->OnStaticModelInstanceCreated(entity, _InstanceData.Back());
 
 	//Create the physics actor.
 	if (static_model_instance_data._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)

@@ -246,12 +246,7 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 	LevelEntry &new_level_entry{ _LevelEntries.Back() };
 
 	//Generate a name.
-	{
-		char buffer[128];
-		sprintf_s(buffer, "Entity_%u", _NameCounter++);
-
-		new_level_entry._Name = buffer;
-	}
+	GenerateEntityName(new_level_entry._Name.Data(), new_level_entry._Name.Size());
 
 	//Add components (entities created in the editor always have editor data and world transform components).
 	StaticArray<ComponentInitializationData *RESTRICT, 2> component_configurations;
@@ -272,6 +267,14 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 
 	//Create the entity!
 	new_level_entry._Entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT>(component_configurations));
+}
+
+/*
+*	Generates an entity name.
+*/
+void EditorLevelSystem::GenerateEntityName(char* const RESTRICT buffer, const uint64 buffer_size) NOEXCEPT
+{
+	sprintf_s(buffer, buffer_size, "Entity_%u", _NameCounter++);
 }
 
 /*
@@ -365,11 +368,19 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		//Add a text input for the name.
 		TextInputWidget("Name", selected_level_entry._Name.Data(), selected_level_entry._Name.Size());
 
+		//Add a duplicate button.
+		bool should_duplicate{ false };
+
+		if (ImGui::Button("Duplicate"))
+		{
+			should_duplicate = true;
+		}
+
 		//Add widgets for the world transform component.
 		if (ImGui::CollapsingHeader(WorldTransformComponent::Instance->Name()))
 		{
 			//Retrieve the editable field.
-			const ComponentEditableField &editable_field{ WorldTransformComponent::Instance->_EditableFields[0] };
+			const ComponentEditableField &editable_field{ WorldTransformComponent::Instance->EditableFields()[0]};
 
 			ASSERT(editable_field._Type == ComponentEditableField::Type::WORLD_TRANSFORM, "What happened here?");
 
@@ -440,7 +451,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 		//Add a Gizmo for the world transform!
 		{
-			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_level_entry._Entity, WorldTransformComponent::Instance->_EditableFields[0]) };
+			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_level_entry._Entity, WorldTransformComponent::Instance->EditableFields()[0]) };
 
 			Matrix4x4 transformation_matrix;
 
@@ -562,7 +573,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				if (ImGui::CollapsingHeader(component->Name()))
 				{
 					//Add widgets for all editable fields.
-					for (const ComponentEditableField &editable_field : component->_EditableFields)
+					for (const ComponentEditableField &editable_field : component->EditableFields())
 					{
 						switch (editable_field._Type)
 						{
@@ -586,6 +597,12 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				}
 			}
 		}
+
+		//Duplicate the entity, if requested.
+		if (should_duplicate)
+		{
+			DuplicateEntity(selected_level_entry._Entity);
+		}
 	}
 
 	//End the window.
@@ -593,5 +610,46 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 	//This window should always be shown.
 	return true;
+}
+
+/*
+*	Duplicates an entry.
+*/
+void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Add a new level entry.
+	_LevelEntries.Emplace();
+	LevelEntry &new_level_entry{ _LevelEntries.Back() };
+
+	GenerateEntityName(new_level_entry._Name.Data(), new_level_entry._Name.Size());
+
+	//Duplicate component configurations.
+	DynamicArray<ComponentInitializationData *RESTRICT> component_configurations;
+
+	for (Component *const RESTRICT component : AllComponents())
+	{
+		if (component->Has(entity))
+		{
+			ComponentInitializationData *RESTRICT component_configuration{ component->AllocateInitializationData() };
+
+			for (const ComponentEditableField &editable_field : component->EditableFields())
+			{
+				ApplyEditableFieldToInitializationData
+				(
+					editable_field,
+					component->EditableFieldData<void>(entity, editable_field),
+					component_configuration
+				);
+			}
+
+			component_configurations.Emplace(component_configuration);
+		}
+	}
+
+	//Create the entity!
+	new_level_entry._Entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT>(component_configurations));
+
+	//Set the new selected level entry index.
+	_SelectedLevelEntryIndex = _LevelEntries.LastIndex();
 }
 #endif

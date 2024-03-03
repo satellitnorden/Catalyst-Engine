@@ -12,7 +12,12 @@ DEFINE_COMPONENT(WorldTransformComponent, WorldTransformInitializationData, Worl
 void WorldTransformComponent::Initialize() NOEXCEPT
 {
 	//Add the editable fields.
-	_EditableFields.Emplace("WorldTransform", ComponentEditableField::Type::WORLD_TRANSFORM, offsetof(WorldTransformInstanceData, _CurrentWorldTransform));
+	AddEditableWorldTransformField
+	(
+		"WorldTransform",
+		offsetof(WorldTransformInitializationData, _WorldTransform),
+		offsetof(WorldTransformInstanceData, _CurrentWorldTransform)
+	);
 }
 
 /*

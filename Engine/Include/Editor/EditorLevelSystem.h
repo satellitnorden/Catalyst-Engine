@@ -49,6 +49,11 @@ private:
 	GizmoMode _CurrentGizmoMode{ GizmoMode::TRANSLATE };
 
 	/*
+	*	Generates an entity name.
+	*/
+	void GenerateEntityName(char *const RESTRICT buffer, const uint64 buffer_size) NOEXCEPT;
+
+	/*
 	*	The top right window update.
 	*/
 	NO_DISCARD bool TopRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
@@ -57,6 +62,11 @@ private:
 	*	The bottom right window update.
 	*/
 	NO_DISCARD bool BottomRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
+
+	/*
+	*	Duplicates an entry.
+	*/
+	void DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT;
 
 };
 

@@ -12,7 +12,6 @@
 #include <Editor/EditorRenderingSystem.h>
 #include <Editor/EditorResourcesSystem.h>
 #include <Editor/EditorSelectionSystem.h>
-#include <Editor/EditorWorldSystem.h>
 
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
@@ -103,9 +102,6 @@ private:
 
 	//The editor resources system.
 	EditorResourcesSystem _EditorResourcesSystem;
-
-	//The editor world system.
-	EditorWorldSystem _EditorWorldSystem;
 
 	//The editor selection system.
 	EditorSelectionSystem _EditorSelectionSystem;

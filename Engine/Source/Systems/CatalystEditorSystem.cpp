@@ -182,9 +182,6 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 	//Update the editor resources system.
 	_EditorResourcesSystem.Update();
 
-	//Update the editor world system.
-	_EditorWorldSystem.Update();
-
 	//Update the editor selection system.
 	_EditorSelectionSystem.Update();
 }

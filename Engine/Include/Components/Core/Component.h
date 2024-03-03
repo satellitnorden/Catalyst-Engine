@@ -5,6 +5,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/HashString.h>
 
+//Components.
+#include <Components/Core/ComponentEditableField.h>
+
 //Concurrency.
 #include <Concurrency/Spinlock.h>
 #include <Concurrency/ScopedLock.h>
@@ -17,48 +20,6 @@
 
 //Forward declarations.
 class ComponentInitializationData;
-
-/*
-*	Component editable field class definition.
-*/
-class ComponentEditableField final
-{
-
-public:
-
-	//Enumeration covering all types.
-	enum class Type : uint8
-	{
-		MODEL_RESOURCE,
-		WORLD_TRANSFORM
-	};
-
-	//The name.
-	const char *const RESTRICT _Name;
-
-	//The identifier.
-	uint64 _Identifier;
-
-	//The type.
-	Type _Type;
-
-	//The offset, in bytes, into the instance data object.
-	uint64 _Offset;
-
-	/*
-	*	Constructor.
-	*/
-	FORCE_INLINE ComponentEditableField(const char *const RESTRICT name, const Type type, const uint64 offset) NOEXCEPT
-		:
-		_Name(name),
-		_Identifier(HashAlgorithms::MurmurHash64(name, StringUtilities::StringLength(name))),
-		_Type(type),
-		_Offset(offset)
-	{
-
-	}
-
-};
 
 /*
 *	Component update configuration class definition.
@@ -112,9 +73,6 @@ public:
 
 	//The instance to entity mappings.
 	DynamicArray<Entity *RESTRICT> _InstanceToEntityMappings;
-
-	//The editable fields.
-	DynamicArray<ComponentEditableField> _EditableFields;
 
 	/*
 	*	Default constructor.
@@ -273,12 +231,45 @@ public:
 	*/
 	virtual NO_DISCARD const char *const RESTRICT Name() const NOEXCEPT = 0;
 
+	/*
+	*	Returns the editable fields.
+	*/
+	FORCE_INLINE NO_DISCARD const DynamicArray<ComponentEditableField> &EditableFields() const NOEXCEPT
+	{
+		return _EditableFields;
+	}
+
 protected:
 
 	/*
 	*	Sub-editable field data function.
 	*/
 	virtual NO_DISCARD void *const RESTRICT SubEditableFieldData(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT = 0;
+
+	/*
+	*	Adds an editable world transform field.
+	*/
+	void AddEditableWorldTransformField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
+	*	Adds an editable model resource field.
+	*/
+	void AddEditableModelResourceField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+private:
+
+	//The editable fields.
+	DynamicArray<ComponentEditableField> _EditableFields;
 
 };
 
@@ -397,7 +388,7 @@ public:																																			\
 	) NOEXCEPT override																															\
 	{																																			\
 		INSTANCE_DATA_CLASS &instance_data{ InstanceData(entity) };																				\
-		return AdvancePointer(&instance_data, editable_field._Offset);																			\
+		return AdvancePointer(&instance_data, editable_field._InstanceDataOffset);																\
 	}																																			\
 	FORCE_INLINE NO_DISCARD const char *const RESTRICT Name() const NOEXCEPT override															\
 	{																																			\
