@@ -325,6 +325,14 @@ public:
 		return _Texture3DResources;
 	}
 
+	/*
+	*	Returns all resources.
+	*/
+	FORCE_INLINE NO_DISCARD const DynamicArray<Resource *RESTRICT> &GetAllResources() const NOEXCEPT
+	{
+		return _AllResources;
+	}
+
 private:
 
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
@@ -379,6 +387,9 @@ private:
 
 	//Container for all texture 3D resources.
 	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;
+
+	//Container for all resources.
+	DynamicArray<Resource *RESTRICT> _AllResources;
 
 	/*
 	*	Loads a resource collection from the given binary file.

@@ -383,6 +383,9 @@ void ResourceBuildingSystem::BuildLevel(const LevelBuildParameters &parameters) 
 	//Write all the level entries to the output file.
 	for (const LevelEntry &level_entry : parameters._LevelEntries)
 	{
+		//Write the name.
+		output_file.Write(level_entry._Name.Data(), level_entry._Name.Size());
+
 		//Count the number of component entries.
 		uint64 number_of_component_entries{ 0 };
 

@@ -14,6 +14,7 @@
 #include <Systems/EntitySystem.h>
 #include <Systems/ImGuiSystem.h>
 #include <Systems/InputSystem.h>
+#include <Systems/LevelSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 
@@ -306,7 +307,37 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 */
 void EditorLevelSystem::LoadLevel() NOEXCEPT
 {
+	//Request browsing for the level.
+	CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
+	(
+		"Select Level",
+		ResourceConstants::LEVEL_TYPE_IDENTIFIER,
+		[](Resource *const RESTRICT resource, void *const RESTRICT arguments)
+		{
+			CatalystEditorSystem::Instance->GetEditorLevelSystem()->LoadLevelInternal(resource);
+		},
+		nullptr
+	);
+}
 
+/*
+*	Loads a level internally.
+*/
+void EditorLevelSystem::LoadLevelInternal(Resource *const RESTRICT level_resource) NOEXCEPT
+{
+	//Destroy all entities.
+	EntitySystem::Instance->DestroyAllEntities();
+
+	//Clear the level entries.
+	_LevelEntries.Clear();
+
+	//Spawn the level.
+	LevelSystem::Instance->SpawnLevel
+	(
+		WorldTransform(),
+		ResourcePointer<LevelResource>(static_cast<LevelResource *const RESTRICT>(level_resource)),
+		&_LevelEntries
+	);
 }
 
 /*
@@ -323,7 +354,7 @@ void EditorLevelSystem::GenerateEntityName(char* const RESTRICT buffer, const ui
 NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
 	//Begin the window.
-	ImGuiSystem::Instance->BeginWindow("Editor Level Top Right", minimum, maximum, false, false);
+	ImGuiSystem::Instance->BeginWindow("Editor Level Top Right", minimum, maximum, false, false, false, false);
 
 	//List all level entries.
 	for (uint64 i{ 0 }; i < _LevelEntries.Size(); ++i)
@@ -367,7 +398,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 	}
 
 	//Begin the window.
-	ImGuiSystem::Instance->BeginWindow("Editor Level Bottom Right", minimum, maximum, false, true);
+	ImGuiSystem::Instance->BeginWindow("Editor Level Bottom Right", minimum, maximum, false, false, false, true);
 
 	//Set up stuff for the selected level entry.
 	if (_SelectedLevelEntryIndex != UINT64_MAXIMUM)

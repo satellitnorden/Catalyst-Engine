@@ -53,6 +53,7 @@ NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<Componen
 		SCOPED_LOCK(_EntityAllocatorLock);
 
 		entity = static_cast<Entity *RESTRICT>(_EntityAllocator.Allocate());
+		_Entities.Emplace(entity);
 	}
 
 	//Generate the entity identifier.
@@ -149,6 +150,18 @@ void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 	queue_item._Entity = entity;
 
 	_DestructionQueue.Push(queue_item);
+}
+
+/*
+*	Destroys all entities.
+*/
+void EntitySystem::DestroyAllEntities() NOEXCEPT
+{
+	//Add them all to the queue.
+	for (Entity *const RESTRICT entity : _Entities)
+	{
+		DestroyEntity(entity);
+	}
 }
 
 /*
@@ -426,6 +439,7 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 				SCOPED_LOCK(_EntityAllocatorLock);
 
 				_EntityAllocator.Free(queue_item->_Entity);
+				_Entities.Emplace(queue_item->_Entity);
 			}
 		}
 

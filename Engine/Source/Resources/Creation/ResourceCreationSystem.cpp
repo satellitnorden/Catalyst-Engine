@@ -125,6 +125,7 @@ void ResourceCreationSystem::CreateLevel(LevelData *const RESTRICT data, LevelRe
 		resource->_LevelEntries.Emplace();
 		LevelResource::LevelEntry &new_level_entry{ resource->_LevelEntries.Back() };
 
+		new_level_entry._Name = level_entry._Name;
 		new_level_entry._ComponentEntries.Reserve(level_entry._ComponentEntries.Size());
 
 		for (const LevelData::LevelEntry::ComponentEntry &component_entry : level_entry._ComponentEntries)

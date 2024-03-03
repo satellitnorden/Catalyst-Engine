@@ -123,6 +123,7 @@ NO_DISCARD ResourcePointer<AnimatedModelResource> ResourceSystem::FindOrCreateAn
 		AnimatedModelResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<AnimatedModelResource>()) AnimatedModelResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_AnimatedModelResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<AnimatedModelResource>(new_resource);
 	}
@@ -160,6 +161,7 @@ NO_DISCARD ResourcePointer<AnimationResource> ResourceSystem::FindOrCreateAnimat
 		AnimationResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<AnimationResource>()) AnimationResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_AnimationResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<AnimationResource>(new_resource);
 	}
@@ -197,6 +199,7 @@ NO_DISCARD ResourcePointer<FontResource> ResourceSystem::FindOrCreateFontResourc
 		FontResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<FontResource>()) FontResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_FontResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<FontResource>(new_resource);
 	}
@@ -234,6 +237,7 @@ NO_DISCARD ResourcePointer<LevelResource> ResourceSystem::FindOrCreateLevelResou
 		LevelResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<LevelResource>()) LevelResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_LevelResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<LevelResource>(new_resource);
 	}
@@ -271,6 +275,7 @@ NO_DISCARD ResourcePointer<MaterialResource> ResourceSystem::FindOrCreateMateria
 		MaterialResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<MaterialResource>()) MaterialResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_MaterialResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<MaterialResource>(new_resource);
 	}
@@ -308,6 +313,7 @@ NO_DISCARD ResourcePointer<ModelResource> ResourceSystem::FindOrCreateModelResou
 		ModelResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<ModelResource>()) ModelResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_ModelResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<ModelResource>(new_resource);
 	}
@@ -345,6 +351,7 @@ NO_DISCARD ResourcePointer<RawDataResource> ResourceSystem::FindOrCreateRawDataR
 		RawDataResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<RawDataResource>()) RawDataResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_RawDataResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<RawDataResource>(new_resource);
 	}
@@ -382,6 +389,7 @@ NO_DISCARD ResourcePointer<RenderPipelineResource> ResourceSystem::FindOrCreateR
 		RenderPipelineResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<RenderPipelineResource>()) RenderPipelineResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_RenderPipelineResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<RenderPipelineResource>(new_resource);
 	}
@@ -419,6 +427,7 @@ NO_DISCARD ResourcePointer<ShaderResource> ResourceSystem::FindOrCreateShaderRes
 		ShaderResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<ShaderResource>()) ShaderResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_ShaderResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<ShaderResource>(new_resource);
 	}
@@ -456,6 +465,7 @@ NO_DISCARD ResourcePointer<SoundResource> ResourceSystem::FindOrCreateSoundResou
 		SoundResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<SoundResource>()) SoundResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_SoundResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<SoundResource>(new_resource);
 	}
@@ -493,6 +503,7 @@ NO_DISCARD ResourcePointer<TextureCubeResource> ResourceSystem::FindOrCreateText
 		TextureCubeResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<TextureCubeResource>()) TextureCubeResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_TextureCubeResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<TextureCubeResource>(new_resource);
 	}
@@ -530,6 +541,7 @@ NO_DISCARD ResourcePointer<VideoResource> ResourceSystem::FindOrCreateVideoResou
 		VideoResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<VideoResource>()) VideoResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_VideoResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<VideoResource>(new_resource);
 	}
@@ -566,8 +578,8 @@ NO_DISCARD ResourcePointer<Texture2DResource> ResourceSystem::FindOrCreateTextur
 		//If the resource couldn't be found, create it.
 		Texture2DResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<Texture2DResource>()) Texture2DResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
-		new_resource->_Header._ResourceIdentifier = identifier;
 		_Texture2DResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<Texture2DResource>(new_resource);
 	}
@@ -605,6 +617,7 @@ NO_DISCARD ResourcePointer<Texture3DResource> ResourceSystem::FindOrCreateTextur
 		Texture3DResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<Texture3DResource>()) Texture3DResource() };
 		new_resource->_Header._ResourceIdentifier = identifier;
 		_Texture3DResources.Add(identifier, new_resource);
+		_AllResources.Emplace(new_resource);
 
 		return ResourcePointer<Texture3DResource>(new_resource);
 	}
@@ -653,6 +666,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<AnimatedModelResource>()) AnimatedModelResource();
 			_AnimatedModelResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -690,6 +704,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<AnimationResource>()) AnimationResource();
 			_AnimationResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -727,6 +742,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<FontResource>()) FontResource();
 			_FontResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -764,6 +780,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<LevelResource>()) LevelResource();
 			_LevelResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -801,6 +818,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<MaterialResource>()) MaterialResource();
 			_MaterialResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -838,6 +856,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<ModelResource>()) ModelResource();
 			_ModelResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -875,6 +894,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<RawDataResource>()) RawDataResource();
 			_RawDataResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -912,6 +932,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<RenderPipelineResource>()) RenderPipelineResource();
 			_RenderPipelineResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -949,6 +970,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<ShaderResource>()) ShaderResource();
 			_ShaderResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -986,6 +1008,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<SoundResource>()) SoundResource();
 			_SoundResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -1023,6 +1046,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<TextureCubeResource>()) TextureCubeResource();
 			_TextureCubeResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -1060,6 +1084,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<Texture2DResource>()) Texture2DResource();
 			_Texture2DResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -1097,6 +1122,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<Texture3DResource>()) Texture3DResource();
 			_Texture3DResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.
@@ -1134,6 +1160,7 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 		{
 			new_resource = new (MemorySystem::Instance->TypeAllocate<VideoResource>()) VideoResource();
 			_VideoResources.Add(header._ResourceIdentifier, new_resource);
+			_AllResources.Emplace(new_resource);
 		}
 
 		//Set the resource header.

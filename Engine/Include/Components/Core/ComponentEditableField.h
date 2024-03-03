@@ -80,7 +80,7 @@ void SerializeEditableField
 /*
 *	Deserializes a component editable field to the given initialization data.
 */
-void DeserializeEditableField
+NO_DISCARD uint64 DeserializeEditableField
 (
 	const ComponentEditableField &editable_field,
 	const void *const RESTRICT data,

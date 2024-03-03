@@ -22,6 +22,7 @@ public:
 		TOP_BAR,
 		TOP_RIGHT,
 		BOTTOM_RIGHT,
+		FLOATING_1,
 
 		NUMBER_OF_EDITOR_WINDOWS
 	};
@@ -74,6 +75,8 @@ public:
 		const Vector2<float32> minimum,
 		const Vector2<float32> maximum,
 		const bool show_title_bar = true,
+		const bool enable_resize = false,
+		const bool enable_move = false,
 		const bool enable_menu_bar = false
 	) NOEXCEPT;
 
@@ -108,11 +111,6 @@ private:
 	*	Updates during the USER_INTERFACE update phase.
 	*/
 	void UserInterfaceUpdate() NOEXCEPT;
-
-	/*
-	*	Empty window callback.
-	*/
-	void EmptyWindowCallback(const uint32 value, const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
 
 };
 #endif

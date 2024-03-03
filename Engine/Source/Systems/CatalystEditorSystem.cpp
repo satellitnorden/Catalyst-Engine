@@ -192,7 +192,7 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
 	//Begin the window.
-	ImGuiSystem::Instance->BeginWindow("Editor Top Bar", minimum, maximum, false, true);
+	ImGuiSystem::Instance->BeginWindow("Editor Top Bar", minimum, maximum, false, false, false, true);
 
 	//Main menu.
 	{

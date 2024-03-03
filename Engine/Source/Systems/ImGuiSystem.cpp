@@ -81,6 +81,10 @@ void ImGuiSystem::Initialize() NOEXCEPT
 	_EditorWindowData[UNDERLYING(EditorWindow::BOTTOM_RIGHT)]._Maximum = Vector2<float32>(1.0f, 0.5f);
 	_EditorWindowData[UNDERLYING(EditorWindow::BOTTOM_RIGHT)]._WindowCallback = nullptr;
 
+	_EditorWindowData[UNDERLYING(EditorWindow::FLOATING_1)]._Minimum = Vector2<float32>(0.25f, 0.25f);
+	_EditorWindowData[UNDERLYING(EditorWindow::FLOATING_1)]._Maximum = Vector2<float32>(0.75f, 0.75f);
+	_EditorWindowData[UNDERLYING(EditorWindow::FLOATING_1)]._WindowCallback = nullptr;
+
 	//Set up the game window data.
 	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._Minimum = Vector2<float32>(0.8f, 0.0f);
 	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._Maximum = Vector2<float32>(1.0f, 1.0f);
@@ -330,6 +334,8 @@ void ImGuiSystem::BeginWindow
 	const Vector2<float32> minimum,
 	const Vector2<float32> maximum,
 	const bool show_title_bar,
+	const bool enable_resize,
+	const bool enable_move,
 	const bool enable_menu_bar
 ) NOEXCEPT
 {
@@ -343,10 +349,16 @@ void ImGuiSystem::BeginWindow
 	}
 
 	//Always no resize.
-	window_flags |= ImGuiWindowFlags_NoResize;
+	if (!enable_resize)
+	{
+		window_flags |= ImGuiWindowFlags_NoResize;
+	}
 
 	//Always no move.
-	window_flags |= ImGuiWindowFlags_NoMove;
+	if (!enable_move)
+	{
+		window_flags |= ImGuiWindowFlags_NoMove;
+	}
 
 	//Always no collapse.
 	window_flags |= ImGuiWindowFlags_NoCollapse;
@@ -399,13 +411,7 @@ void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
 				if (!window_data._WindowCallback(window_data._Minimum, window_data._Maximum))
 				{
 					window_data._WindowCallback = nullptr;
-					EmptyWindowCallback(window_data_index, window_data._Minimum, window_data._Maximum);
 				}
-			}
-
-			else
-			{
-				EmptyWindowCallback(window_data_index, window_data._Minimum, window_data._Maximum);
 			}
 		}
 	}
@@ -426,17 +432,5 @@ void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
 			}
 		}
 	}
-}
-
-/*
-*	Empty window callback.
-*/
-void ImGuiSystem::EmptyWindowCallback(const uint32 value, const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
-{
-	char buffer[16];
-	sprintf_s(buffer, "WINDOW %u", value);
-
-	BeginWindow(buffer, minimum, maximum, false);
-	ImGui::End();
 }
 #endif

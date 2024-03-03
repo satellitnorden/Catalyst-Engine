@@ -58,6 +58,11 @@ public:
 	*/
 	void DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT;
 
+	/*
+	*	Destroys all entities.
+	*/
+	void DestroyAllEntities() NOEXCEPT;
+
 private:
 
 	//Constants.
@@ -138,6 +143,9 @@ private:
 
 	//The pre-processing queue.
 	DynamicArray<EntityPreProcessingQueueItem *RESTRICT> _PreProcessingQueue;
+
+	//Container for all entities.
+	DynamicArray<Entity *const RESTRICT> _Entities;
 
 	/*
 	*	Generates a new entity identifier.

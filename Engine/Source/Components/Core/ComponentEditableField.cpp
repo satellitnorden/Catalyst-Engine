@@ -8,6 +8,9 @@
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/ModelResource.h>
 
+//Systems.
+#include <Systems/ResourceSystem.h>
+
 //World.
 #include <World/Core/WorldTransform.h>
 
@@ -105,12 +108,49 @@ void SerializeEditableField
 /*
 *	Deserializes a component editable field to the given initialization data.
 */
-void DeserializeEditableField
+NO_DISCARD uint64 DeserializeEditableField
 (
 	const ComponentEditableField &editable_field,
 	const void *const RESTRICT data,
 	ComponentInitializationData *const RESTRICT initialization_data
 ) NOEXCEPT
-{
+{	
+	//Retrieve the data.
+	void *const RESTRICT _data{ AdvancePointer(initialization_data, editable_field._InitializationDataOffset) };
 
+	switch (editable_field._Type)
+	{
+		case ComponentEditableField::Type::MODEL_RESOURCE:
+		{
+			//Cast the data.
+			ResourcePointer<ModelResource> *const RESTRICT destination{ static_cast<ResourcePointer<ModelResource> *const RESTRICT>(_data) };
+			const HashString *const RESTRICT source{ static_cast<const HashString *const RESTRICT>(data) };
+
+			//Write the data.
+			(*destination) = ResourceSystem::Instance->GetModelResource(*source);
+
+			//Return the advance.
+			return sizeof(HashString);
+		}
+
+		case ComponentEditableField::Type::WORLD_TRANSFORM:
+		{
+			//Cast the data.
+			WorldTransform *const RESTRICT destination{ static_cast<WorldTransform *const RESTRICT>(_data) };
+			const WorldTransform *const RESTRICT source{ static_cast<const WorldTransform *const RESTRICT>(data) };
+
+			//Write the data.
+			*destination = *source;
+
+			//Return the advance.
+			return sizeof(WorldTransform);
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			return 0;
+		}
+	}
 }

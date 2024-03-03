@@ -7,6 +7,7 @@
 //Editor.
 #include <Editor/EditorCore.h>
 #include <Editor/EditorCameraSystem.h>
+#include <Editor/EditorContentBrowser.h>
 #include <Editor/EditorLevelSystem.h>
 #include <Editor/EditorPostProcessingSystem.h>
 #include <Editor/EditorRenderingSystem.h>
@@ -50,13 +51,20 @@ public:
 		return _IsInGame;
 	}
 
-
 	/*
 	*	Returns the editor camera system.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD EditorCameraSystem *const RESTRICT GetEditorCameraSystem() NOEXCEPT
 	{
 		return &_EditorCameraSystem;
+	}
+
+	/*
+	*	Returns the editor content browser.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD EditorContentBrowser *const RESTRICT GetEditorContentBrowser() NOEXCEPT
+	{
+		return &_EditorContentBrowser;
 	}
 
 	/*
@@ -90,6 +98,9 @@ private:
 
 	//The editor camera system.
 	EditorCameraSystem _EditorCameraSystem;
+
+	//The editor content browser.
+	EditorContentBrowser _EditorContentBrowser;
 
 	//The editor level system.
 	EditorLevelSystem _EditorLevelSystem;

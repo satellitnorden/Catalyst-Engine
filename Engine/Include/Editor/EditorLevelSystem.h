@@ -11,6 +11,9 @@
 //World.
 #include <World/Level/LevelEntry.h>
 
+//Forward declarations.
+class Resource;
+
 class EditorLevelSystem final
 {
 
@@ -57,6 +60,11 @@ private:
 
 	//The current Gizmo mode.
 	GizmoMode _CurrentGizmoMode{ GizmoMode::TRANSLATE };
+
+	/*
+	*	Loads a level internally.
+	*/
+	void LoadLevelInternal(Resource *const RESTRICT level_resource) NOEXCEPT;
 
 	/*
 	*	Generates an entity name.

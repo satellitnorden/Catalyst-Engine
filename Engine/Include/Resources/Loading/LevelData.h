@@ -37,6 +37,9 @@ public:
 
 		};
 
+		//The name.
+		StaticString<128> _Name;
+
 		//The component entries.
 		DynamicArray<ComponentEntry> _ComponentEntries;
 

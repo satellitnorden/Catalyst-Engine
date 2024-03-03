@@ -136,6 +136,9 @@ void ResourceLoadingSystem::LoadLevel(BinaryFile<BinaryFileMode::IN> *const REST
 		data->_LevelEntries.Emplace();
 		LevelData::LevelEntry &new_level_entry{ data->_LevelEntries.Back() };
 
+		//Read the name.
+		file->Read(new_level_entry._Name.Data(), new_level_entry._Name.Size());
+
 		//Read the number of component entries.
 		uint64 number_of_component_entries;
 		file->Read(&number_of_component_entries, sizeof(uint64));

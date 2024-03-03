@@ -3,12 +3,13 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Entities.
-#include <Entities/Types/Entity.h>
-
 //Resources.
 #include <Resources/Core/LevelResource.h>
 #include <Resources/Core/ResourcePointer.h>
+
+//World.
+#include <World/Core/WorldTransform.h>
+#include <World/Level/LevelEntry.h>
 
 class ALIGN(8) LevelSystem final
 {
@@ -27,26 +28,13 @@ public:
 	}
 
 	/*
-	*	Loads a level.
+	*	Spawns a level.
 	*/
-	void LoadLevel(const ResourcePointer<LevelResource> resource) NOEXCEPT;
-
-	/*
-	*	Returns the current level.
-	*/
-	NO_DISCARD ResourcePointer<LevelResource> GetCurrentLevel() const NOEXCEPT
-	{
-		return _CurrentLevel;
-	}
-
-	/*
-	*	Resets the current level.
-	*/
-	void ResetCurrentLevel() NOEXCEPT;
-
-private:
-
-	//The current level.
-	ResourcePointer<LevelResource> _CurrentLevel;
+	void SpawnLevel
+	(
+		const WorldTransform &world_transform,
+		const ResourcePointer<LevelResource> level_resource,
+		DynamicArray<LevelEntry> *const RESTRICT level_entries
+	) NOEXCEPT;
 
 };

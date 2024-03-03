@@ -63,7 +63,7 @@ public:
 		}
 
 		//Copy the value.
-		Memory::Copy(_Array, &value, SIZE_OF_TYPE);
+		Memory::Copy(&_Array[_Size], &value, SIZE_OF_TYPE);
 
 		//Update the size.
 		_Size += SIZE_OF_TYPE;
@@ -72,7 +72,7 @@ public:
 	/*
 	*	Reads from this stream archive at the given position.
 	*/
-	FORCE_INLINE NO_DISCARD const byte *const RESTRICT Read(const uint64 position) NOEXCEPT
+	FORCE_INLINE NO_DISCARD const byte *const RESTRICT Read(const uint64 position) const NOEXCEPT
 	{
 		return &_Array[position];
 	}
