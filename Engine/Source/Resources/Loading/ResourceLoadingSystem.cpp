@@ -122,7 +122,6 @@ void ResourceLoadingSystem::LoadFont(BinaryFile<BinaryFileMode::IN> *const RESTR
 */
 void ResourceLoadingSystem::LoadLevel(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, LevelData *const RESTRICT data) NOEXCEPT
 {
-	/*
 	//Read the number of level entries.
 	uint64 number_of_level_entries;
 	file->Read(&number_of_level_entries, sizeof(uint64));
@@ -131,81 +130,43 @@ void ResourceLoadingSystem::LoadLevel(BinaryFile<BinaryFileMode::IN> *const REST
 	data->_LevelEntries.Reserve(number_of_level_entries);
 
 	//Read the level entries.
-	for (uint64 i{ 0 }; i < number_of_level_entries; ++i)
+	for (uint64 level_entry_index{ 0 }; level_entry_index < number_of_level_entries; ++level_entry_index)
 	{
 		//Add the new level entry.
 		data->_LevelEntries.Emplace();
-		LevelEntry &new_level_entry{ data->_LevelEntries.Back() };
+		LevelData::LevelEntry &new_level_entry{ data->_LevelEntries.Back() };
 
-		//Read the type.
-		file->Read(&new_level_entry._Type, sizeof(LevelEntry::Type));
+		//Read the number of component entries.
+		uint64 number_of_component_entries;
+		file->Read(&number_of_component_entries, sizeof(uint64));
 
-		//Read the version.
-		file->Read(&new_level_entry._Version, sizeof(uint64));
+		//Reserve the appropriate amount of memory.
+		new_level_entry._ComponentEntries.Reserve(number_of_component_entries);
 
-		//Read the data.
-		switch (new_level_entry._Type)
+		for (uint64 component_entry_index{ 0 }; component_entry_index < number_of_component_entries; ++component_entry_index)
 		{
-			case LevelEntry::Type::DYNAMIC_MODEL:
-			{
-				file->Read(&new_level_entry._DynamicModelData._WorldTransform, sizeof(WorldTransform));
-				file->Read(&new_level_entry._DynamicModelData._ModelResourceIdentifier, sizeof(HashString));
+			//Add the new component entry.
+			new_level_entry._ComponentEntries.Emplace();
+			LevelData::LevelEntry::ComponentEntry &new_component_entry{ new_level_entry._ComponentEntries.Back() };
 
-				{
-					uint64 number_of_material_resource_identifiers;
-					file->Read(&number_of_material_resource_identifiers, sizeof(uint64));
+			//Read the component identifier.
+			file->Read(&new_component_entry._ComponentIdentifier, sizeof(HashString));
 
-					new_level_entry._DynamicModelData._MaterialResourceIdentifiers.Upsize<false>(number_of_material_resource_identifiers);
-				}
+			//Read the number of editable fields.
+			file->Read(&new_component_entry._NumberOfEditableFields, sizeof(uint64));
 
-				file->Read(new_level_entry._DynamicModelData._MaterialResourceIdentifiers.Data(), sizeof(HashString) * new_level_entry._DynamicModelData._MaterialResourceIdentifiers.Size());
-				file->Read(&new_level_entry._DynamicModelData._ModelCollisionConfiguration, sizeof(ModelCollisionConfiguration));
-				file->Read(&new_level_entry._DynamicModelData._ModelSimulationConfiguration, sizeof(ModelSimulationConfiguration));
-
-				break;
-			}
-
-			case LevelEntry::Type::LIGHT:
-			{
-				file->Read(&new_level_entry._LightData, sizeof(LevelEntry::LightData));
-
-				break;
-			}
-
-			case LevelEntry::Type::STATIC_MODEL:
-			{
-				file->Read(&new_level_entry._StaticModelData._WorldTransform, sizeof(WorldTransform));
-				file->Read(&new_level_entry._StaticModelData._ModelResourceIdentifier, sizeof(HashString));
-
-				{
-					uint64 number_of_material_resource_identifiers;
-					file->Read(&number_of_material_resource_identifiers, sizeof(uint64));
-
-					new_level_entry._StaticModelData._MaterialResourceIdentifiers.Upsize<false>(number_of_material_resource_identifiers);
-				}
-
-				file->Read(new_level_entry._StaticModelData._MaterialResourceIdentifiers.Data(), sizeof(HashString) * new_level_entry._StaticModelData._MaterialResourceIdentifiers.Size());
-				file->Read(&new_level_entry._StaticModelData._ModelCollisionConfiguration, sizeof(ModelCollisionConfiguration));
-
-				break;
-			}
-
-			case LevelEntry::Type::USER_INTERFACE:
-			{
-				file->Read(&new_level_entry._UserInterfaceData, sizeof(LevelEntry::UserInterfaceData));
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
+			//Read the field data position.
+			file->Read(&new_component_entry._FieldDataPosition, sizeof(uint64));
 		}
 	}
-	*/
+
+	//Read the stream archive size.
+	uint64 stream_archive_size;
+	file->Read(&stream_archive_size, sizeof(uint64));
+
+	//Read into the stream archive.
+	data->_StreamArchive.Resize(stream_archive_size);
+	file->Read(data->_StreamArchive.Data(), stream_archive_size);
 }
 
 /*

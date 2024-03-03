@@ -6,6 +6,9 @@
 #include <Components/Components/EditorDataComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
+//File.
+#include <File/Core/FileCore.h>
+
 //Systems.
 #include <Systems/CatalystEditorSystem.h>
 #include <Systems/EntitySystem.h>
@@ -243,22 +246,22 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 {
 	//Add a new level entry.
 	_LevelEntries.Emplace();
-	LevelEntry &new_level_entry{ _LevelEntries.Back() };
+	LevelEntry& new_level_entry{ _LevelEntries.Back() };
 
 	//Generate a name.
 	GenerateEntityName(new_level_entry._Name.Data(), new_level_entry._Name.Size());
 
 	//Add components (entities created in the editor always have editor data and world transform components).
-	StaticArray<ComponentInitializationData *RESTRICT, 2> component_configurations;
+	StaticArray<ComponentInitializationData* RESTRICT, 2> component_configurations;
 
 	{
-		EditorDataInitializationData *const RESTRICT data{ EditorDataComponent::Instance->AllocateDerivedInitializationData() };
+		EditorDataInitializationData* const RESTRICT data{ EditorDataComponent::Instance->AllocateDerivedInitializationData() };
 
 		component_configurations[0] = data;
 	}
 
 	{
-		WorldTransformInitializationData *const RESTRICT data{ WorldTransformComponent::Instance->AllocateDerivedInitializationData() };
+		WorldTransformInitializationData* const RESTRICT data{ WorldTransformComponent::Instance->AllocateDerivedInitializationData() };
 
 		data->_WorldTransform = WorldTransform();
 
@@ -266,7 +269,44 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 	}
 
 	//Create the entity!
-	new_level_entry._Entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT>(component_configurations));
+	new_level_entry._Entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData * RESTRICT>(component_configurations));
+}
+
+/*
+*	Saves the current level.
+*/
+void EditorLevelSystem::SaveLevel() NOEXCEPT
+{
+	DynamicString chosen_file;
+
+	if (File::BrowseForFile(true, &chosen_file))
+	{
+		//Figre out the name.
+		std::string name;
+
+		{
+			const std::string file_path{ chosen_file.Data() };
+			const size_t last_slash_position{ file_path.find_last_of("\\") };
+			name = file_path.substr(last_slash_position + 1, file_path.length() - last_slash_position - 1);
+		}
+
+		//Build the level!
+		LevelBuildParameters parameters;
+
+		parameters._OutputFilePath = chosen_file.Data();
+		parameters._Identifier = name.c_str();
+		parameters._LevelEntries = _LevelEntries;
+
+		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildLevel(parameters);
+	}
+}
+
+/*
+*	Loads a level
+*/
+void EditorLevelSystem::LoadLevel() NOEXCEPT
+{
+
 }
 
 /*

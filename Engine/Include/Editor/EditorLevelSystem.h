@@ -26,6 +26,16 @@ public:
 	*/
 	void CreateEntity() NOEXCEPT;
 
+	/*
+	*	Saves the current level.
+	*/
+	void SaveLevel() NOEXCEPT;
+
+	/*
+	*	Loads a level
+	*/
+	void LoadLevel() NOEXCEPT;
+
 private:
 
 	//Enumeration covering all gizmo modes.

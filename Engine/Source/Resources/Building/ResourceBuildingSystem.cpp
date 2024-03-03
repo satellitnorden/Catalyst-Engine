@@ -362,7 +362,6 @@ void ResourceBuildingSystem::BuildFont(const FontBuildParameters &parameters) NO
 */
 void ResourceBuildingSystem::BuildLevel(const LevelBuildParameters &parameters) NOEXCEPT
 {
-	/*
 	//What should the output file path name be?
 	DynamicString output_file_path_name{ parameters._OutputFilePath };
 	output_file_path_name += ".cr";
@@ -378,93 +377,68 @@ void ResourceBuildingSystem::BuildLevel(const LevelBuildParameters &parameters) 
 	const uint64 number_of_level_entries{ parameters._LevelEntries.Size() };
 	output_file.Write(&number_of_level_entries, sizeof(uint64));
 
+	//Set up the stream archive.
+	StreamArchive stream_archive;
+
 	//Write all the level entries to the output file.
 	for (const LevelEntry &level_entry : parameters._LevelEntries)
 	{
-		//Write the type.
-		output_file.Write(&level_entry._Type, sizeof(LevelEntry::Type));
+		//Count the number of component entries.
+		uint64 number_of_component_entries{ 0 };
 
-		switch (level_entry._Type)
+		for (const Component *const RESTRICT component : AllComponents())
 		{
-			case LevelEntry::Type::DYNAMIC_MODEL:
+			if (component->Has(level_entry._Entity))
 			{
-				//Write the version.
-				constexpr uint64 VERSION{ LevelEntry::DynamicModelData::CURRENT_VERSION };
-				output_file.Write(&VERSION, sizeof(uint64));
+				++number_of_component_entries;
+			}
+		}
 
-				//Write the data.
-				output_file.Write(&level_entry._DynamicModelData._WorldTransform, sizeof(WorldTransform));
-				output_file.Write(&level_entry._DynamicModelData._ModelResourceIdentifier, sizeof(HashString));
+		//Write the number of component entries to the output file.
+		output_file.Write(&number_of_component_entries, sizeof(uint64));
 
+		//Write all the field entries.
+		for (Component *const RESTRICT component : AllComponents())
+		{
+			if (component->Has(level_entry._Entity))
+			{
+				//Write the component identifier.
+				output_file.Write(&component->_Identifier, sizeof(HashString));
+
+				//Retrieve the editable fields.
+				const DynamicArray<ComponentEditableField> &editable_fields{ component->EditableFields() };
+
+				//Write the number of editable fields.
+				const uint64 number_of_editable_fields{ editable_fields.Size() };
+				output_file.Write(&number_of_editable_fields, sizeof(uint64));
+
+				//Write the field data position.
+				const uint64 field_data_position{ stream_archive.Size() };
+				output_file.Write(&field_data_position, sizeof(uint64));
+
+				for (const ComponentEditableField &editable_field : editable_fields)
 				{
-					const uint64 number_of_material_resource_identifiers{ level_entry._DynamicModelData._MaterialResourceIdentifiers.Size() };
-					output_file.Write(&number_of_material_resource_identifiers, sizeof(uint64));
+					SerializeEditableField
+					(
+						editable_field,
+						component,
+						level_entry._Entity,
+						&stream_archive
+					);
 				}
-
-				output_file.Write(level_entry._DynamicModelData._MaterialResourceIdentifiers.Data(), sizeof(HashString) * level_entry._DynamicModelData._MaterialResourceIdentifiers.Size());
-				output_file.Write(&level_entry._DynamicModelData._ModelCollisionConfiguration, sizeof(ModelCollisionConfiguration));
-				output_file.Write(&level_entry._DynamicModelData._ModelSimulationConfiguration, sizeof(ModelSimulationConfiguration));
-
-				break;
-			}
-
-			case LevelEntry::Type::LIGHT:
-			{
-				//Write the version.
-				constexpr uint64 VERSION{ LevelEntry::LightData::CURRENT_VERSION };
-				output_file.Write(&VERSION, sizeof(uint64));
-
-				//Write the data.
-				output_file.Write(&level_entry._LightData, sizeof(LevelEntry::LightData));
-
-				break;
-			}
-
-			case LevelEntry::Type::STATIC_MODEL:
-			{
-				//Write the version.
-				constexpr uint64 VERSION{ LevelEntry::StaticModelData::CURRENT_VERSION };
-				output_file.Write(&VERSION, sizeof(uint64));
-
-				//Write the data.
-				output_file.Write(&level_entry._StaticModelData._WorldTransform, sizeof(WorldTransform));
-				output_file.Write(&level_entry._StaticModelData._ModelResourceIdentifier, sizeof(HashString));
-
-				{
-					const uint64 number_of_material_resource_identifiers{ level_entry._StaticModelData._MaterialResourceIdentifiers.Size() };
-					output_file.Write(&number_of_material_resource_identifiers, sizeof(uint64));
-				}
-
-				output_file.Write(level_entry._StaticModelData._MaterialResourceIdentifiers.Data(), sizeof(HashString) * level_entry._StaticModelData._MaterialResourceIdentifiers.Size());
-				output_file.Write(&level_entry._StaticModelData._ModelCollisionConfiguration, sizeof(ModelCollisionConfiguration));
-
-				break;
-			}
-
-			case LevelEntry::Type::USER_INTERFACE:
-			{
-				//Write the version.
-				constexpr uint64 VERSION{ LevelEntry::UserInterfaceData::CURRENT_VERSION };
-				output_file.Write(&VERSION, sizeof(uint64));
-
-				//Write the data.
-				output_file.Write(&level_entry._UserInterfaceData, sizeof(LevelEntry::UserInterfaceData));
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
 			}
 		}
 	}
 
+	//Write the stream archive size.
+	const uint64 stream_archive_size{ stream_archive.Size() };
+	output_file.Write(&stream_archive_size, sizeof(uint64));
+
+	//Write the stream archive.
+	output_file.Write(stream_archive.Data(), stream_archive.Size());
+
 	//Close the output file.
 	output_file.Close();
-	*/
 }
 
 /*

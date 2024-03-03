@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Algorithms/HashAlgorithms.h>
+#include <Core/Containers/StreamArchive.h>
 #include <Core/Utilities/StringUtilities.h>
 
 //Entities.
@@ -66,25 +67,14 @@ void ApplyEditableFieldToInitializationData
 ) NOEXCEPT;
 
 /*
-*	Applies an editable field to an entity.
-*/
-void ApplyEditableFieldToEntity
-(
-	const ComponentEditableField &editable_field,
-	const Component *const RESTRICT component,
-	const Entity *const RESTRICT entity,
-	const void *const RESTRICT data
-) NOEXCEPT;
-
-/*
-*	Serializes a component editable field to the given file.
+*	Serializes a component editable field to the given stream archive.
 */
 void SerializeEditableField
 (
 	const ComponentEditableField &editable_field,
-	const Component *const RESTRICT component,
-	const Entity *const RESTRICT entity,
-	BinaryFile<BinaryFileMode::OUT> *const RESTRICT file
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	StreamArchive *const RESTRICT stream_archive
 ) NOEXCEPT;
 
 /*

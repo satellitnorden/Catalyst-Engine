@@ -53,31 +53,53 @@ void ApplyEditableFieldToInitializationData
 }
 
 /*
-*	Applies an editable field to an entity.
-*/
-void ApplyEditableFieldToEntity
-(
-	const ComponentEditableField &editable_field,
-	const Component *const RESTRICT component,
-	const Entity *const RESTRICT entity,
-	const void *const RESTRICT data
-) NOEXCEPT
-{
-
-}
-
-/*
-*	Serializes a component editable field to the given file.
+*	Serializes a component editable field to the given stream archive.
 */
 void SerializeEditableField
 (
 	const ComponentEditableField &editable_field,
-	const Component *const RESTRICT component,
-	const Entity *const RESTRICT entity,
-	BinaryFile<BinaryFileMode::OUT>* const RESTRICT file
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	StreamArchive *const RESTRICT stream_archive
 ) NOEXCEPT
 {
+	//Write the editable field identifier.
+	stream_archive->Write(editable_field._Identifier);
 
+	//Retrieve the data.
+	const void *const RESTRICT data{ component->EditableFieldData<void>(entity, editable_field) };
+
+	switch (editable_field._Type)
+	{
+		case ComponentEditableField::Type::MODEL_RESOURCE:
+		{
+			//Cast the data.
+			const ResourcePointer<ModelResource> *const RESTRICT _data{ static_cast<const ResourcePointer<ModelResource> *const RESTRICT>(data) };
+
+			//Can't really serialize a pointer, so serialize the resource identifier.
+			stream_archive->Write((*_data)->_Header._ResourceIdentifier);
+
+			break;
+		}
+
+		case ComponentEditableField::Type::WORLD_TRANSFORM:
+		{
+			//Cast the data.
+			const WorldTransform *const RESTRICT _data{ static_cast<const WorldTransform *const RESTRICT>(data) };
+
+			//This can just be copied directly.
+			stream_archive->Write(*_data);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
 }
 
 /*

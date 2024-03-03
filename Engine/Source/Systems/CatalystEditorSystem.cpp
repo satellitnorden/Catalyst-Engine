@@ -201,6 +201,16 @@ NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimu
 
 		if (ImGui::BeginMenu("File"))
 		{
+			if (ImGui::MenuItem("Save Level"))
+			{
+				_EditorLevelSystem.SaveLevel();
+			}
+
+			if (ImGui::MenuItem("Load Level"))
+			{
+				_EditorLevelSystem.LoadLevel();
+			}
+
 			if (ImGui::MenuItem("Exit"))
 			{
 				CatalystEngineSystem::Instance->SetShouldTerminate();
