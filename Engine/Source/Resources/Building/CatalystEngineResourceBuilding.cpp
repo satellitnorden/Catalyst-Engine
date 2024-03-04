@@ -24,10 +24,10 @@
 #include <Rendering/Native/Texture2D.h>
 
 //Resources.
-#include <Resources/Core/ContentCompiler.h>
 #include <Resources/Core/ResourcesCore.h>
 
 //Systems.
+#include <Systems/ContentSystem.h>
 #include <Systems/MemorySystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/TaskSystem.h>
@@ -64,8 +64,8 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 
 	TaskSystem::Instance->Initialize(concurrency_configuration);
 
-	//Run the content compiler.
-	const bool new_content_was_compiled{ ContentCompiler::Instance->RunEngine() };
+	//Compile for engine.
+	const bool new_content_was_compiled{ ContentSystem::Instance->CompileEngine() };
 
 	//Run the rendering compiler.
 	const bool new_rendering_data_was_compiled{ RenderingCompiler::Instance->Run() };

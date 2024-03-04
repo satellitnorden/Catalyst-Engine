@@ -1,11 +1,15 @@
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 //Header file.
-#include <Resources/Core/ContentCompiler.h>
+#include <Systems/ContentSystem.h>
 
 //Core.
 #include <Core/Algorithms/HashAlgorithms.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/Time.h>
+
+//Content.
+#include <Content/Core/ContentCache.h>
+#include <Content/AssetCompilers/ScriptAssetCompiler.h>
 
 //File.
 #include <File/Core/FileCore.h>
@@ -25,177 +29,55 @@
 #include <Systems/ResourceSystem.h>
 
 //Constants.
+#define ENGINE_ASSETS "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets"
 #define ENGINE_CONTENT_DEFINITIONS "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Content Definitions"
 #define ENGINE_INTERMEDIATE "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate"
 #define ENGINE_RAW "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Raw"
+#define GAME_ASSETS "..\\..\\..\\Content\\Assets"
 #define GAME_CONTENT_DEFINITIONS "..\\..\\..\\Content\\Content Definitions"
 #define GAME_INTERMEDIATE "..\\..\\..\\Content\\Intermediate"
 #define GAME_RAW "..\\..\\..\\Content\\Raw"
 
 //Singleton definition.
-DEFINE_SINGLETON(ContentCompiler);
+DEFINE_SINGLETON(ContentSystem);
 
 /*
 *	Content cache class definition.
 */
-class ContentCache final
-{
 
-public:
-
-	//The current version.
-	constexpr static uint64 CURRENT_VERSION{ 1 };
-
-	/*
-	*	Entry class definition.
-	*/
-	class Entry final
-	{
-
-	public:
-
-		//The identifier.
-		uint64 _Identifier;
-
-		//The last write time.
-		std::filesystem::file_time_type _LastWriteTime;
-
-	};
-
-	//The version.
-	uint64 _Version;
-
-	//The entries.
-	DynamicArray<Entry> _Entries;
-
-	/*
-	*	Default constructor.
-	*/
-	FORCE_INLINE ContentCache(const char *const RESTRICT file_path) NOEXCEPT
-	{
-		if (!File::Exists(file_path))
-		{
-			return;
-		}
-
-		//Read the file.
-		BinaryFile<BinaryFileMode::IN> file{ file_path };
-
-		//Read the version.
-		uint64 version;
-		file.Read(&version, sizeof(uint64));
-
-		//If this is not the current version, disregard.
-		if (version != CURRENT_VERSION)
-		{
-			file.Close();
-
-			return;
-		}
-
-		//Read the number of entries.
-		uint64 number_of_entries;
-		file.Read(&number_of_entries, sizeof(uint64));
-
-		_Entries.Upsize<false>(number_of_entries);
-
-		//Read the entries.
-		for (Entry &entry : _Entries)
-		{
-			file.Read(&entry, sizeof(Entry));
-		}
-
-		//Close the file.
-		file.Close();
-	}
-
-	/*
-	*	Returns if the given identifier with the given last write time needs a recompile.
-	*/
-	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
-	{
-#if 0
-		return true;
-#else
-		for (Entry &entry : _Entries)
-		{
-			if (entry._Identifier == identifier)
-			{
-				if (entry._LastWriteTime < last_write_time)
-				{
-					return true;
-				}
-
-				else
-				{
-					return false;
-				}
-			}
-		}
-
-		_Entries.Emplace();
-		Entry &new_entry{ _Entries.Back() };
-
-		new_entry._Identifier = identifier;
-		new_entry._LastWriteTime = last_write_time;
-
-		return true;
-#endif
-	}
-
-	/*
-	*	Updates the last write time for the given identifier.
-	*/
-	FORCE_INLINE void UpdateLastWriteTime(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
-	{
-		for (Entry& entry : _Entries)
-		{
-			if (entry._Identifier == identifier)
-			{
-				entry._LastWriteTime = last_write_time;
-
-				break;
-			}
-		}
-	}
-
-	/*
-	*	Writes this shader cache.
-	*/
-	FORCE_INLINE void Write(const char* const RESTRICT file_path) NOEXCEPT
-	{
-		//Open the file.
-		BinaryFile<BinaryFileMode::OUT> file{ file_path };
-
-		//Write the version.
-		const uint64 version{ CURRENT_VERSION };
-		file.Write(&version, sizeof(uint64));
-
-		//Write the number of entries.
-		const uint64 number_of_entries{ _Entries.Size() };
-		file.Write(&number_of_entries, sizeof(uint64));
-
-		//Write the entries.
-		for (const Entry &entry : _Entries)
-		{
-			file.Write(&entry._Identifier, sizeof(uint64));
-			file.Write(&entry._LastWriteTime, sizeof(std::filesystem::file_time_type));
-		}
-
-		//Close the file.
-		file.Close();
-	}
-
-};
 
 /*
-*	Runs the resource compiler for engine.
-*	Returns if new resources were compiled.
+*	Initializes the content system.
 */
-NO_DISCARD bool ContentCompiler::RunEngine() NOEXCEPT
+void ContentSystem::Initialize() NOEXCEPT
+{
+	//Register the native asset compilers.
+	RegisterAssetCompiler(HashString("script"), ScriptAssetCompiler::Instance.Get());
+}
+
+/*
+*	Registers an asset compiler.
+*/
+void ContentSystem::RegisterAssetCompiler(const HashString asset_identifier, AssetCompiler *const RESTRICT asset_compiler) NOEXCEPT
+{
+	//Add the compiler.
+	_AssetCompilers.Add(asset_identifier, asset_compiler);
+}
+
+/*
+*	Compiles the content for engine.
+*	Returns if new content was compiled.
+*/
+NO_DISCARD bool ContentSystem::CompileEngine() NOEXCEPT
 {
 	//Cache the start time.
 	const TimePoint start_time{ GetCurrentTimePoint() };
+
+	//Call PreCompile() on all asset compilers.
+	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
+	{
+		asset_compiler->PreCompile(CompilationDomain::ENGINE);
+	}
 
 	//Remember if new content was compiled.
 	bool new_content_compiled{ false };
@@ -207,11 +89,20 @@ NO_DISCARD bool ContentCompiler::RunEngine() NOEXCEPT
 		sprintf_s(content_cache_file_path, "%s\\ContentCache.content_cache", ENGINE_CONTENT_DEFINITIONS);
 		ContentCache content_cache{ content_cache_file_path };
 
+		//Scan assets.
+		new_content_compiled |= ScanAssetsInDirectory(CompilationDomain::ENGINE, &content_cache, ENGINE_ASSETS);
+
 		//Parse the content definitions.
 		new_content_compiled |= ParseContentDefinitionsInDirectory(CompilationDomain::ENGINE, &content_cache, ENGINE_CONTENT_DEFINITIONS);
 
 		//Write the content cache.
 		content_cache.Write(content_cache_file_path);
+	}
+
+	//Call PostCompile() on all asset compilers.
+	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
+	{
+		asset_compiler->PostCompile(CompilationDomain::ENGINE);
 	}
 
 	LOG_INFORMATION("Content Compiler Engine took %f seconds.", start_time.GetSecondsSince());
@@ -220,13 +111,19 @@ NO_DISCARD bool ContentCompiler::RunEngine() NOEXCEPT
 }
 
 /*
-*	Runs the resource compiler for game.
-*	Returns if new resources were compiled.
+*	Compiles the content for game.
+*	Returns if new content was compiled.
 */
-NO_DISCARD bool ContentCompiler::RunGame() NOEXCEPT
+NO_DISCARD bool ContentSystem::CompileGame() NOEXCEPT
 {
 	//Cache the start time.
 	const TimePoint start_time{ GetCurrentTimePoint() };
+
+	//Call PreCompile() on all asset compilers.
+	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
+	{
+		asset_compiler->PreCompile(CompilationDomain::GAME);
+	}
 
 	//Remember if new content was compiled.
 	bool new_content_compiled{ false };
@@ -238,11 +135,20 @@ NO_DISCARD bool ContentCompiler::RunGame() NOEXCEPT
 		sprintf_s(content_cache_file_path, "%s\\ContentCache.content_cache", GAME_CONTENT_DEFINITIONS);
 		ContentCache content_cache{ content_cache_file_path };
 
+		//Scan assets.
+		new_content_compiled |= ScanAssetsInDirectory(CompilationDomain::GAME, &content_cache, GAME_ASSETS);
+
 		//Parse the content definitions.
 		new_content_compiled |= ParseContentDefinitionsInDirectory(CompilationDomain::GAME, &content_cache, GAME_CONTENT_DEFINITIONS);
 
 		//Write the content cache.
 		content_cache.Write(content_cache_file_path);
+	}
+
+	//Call PostCompile() on all asset compilers.
+	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
+	{
+		asset_compiler->PostCompile(CompilationDomain::GAME);
 	}
 
 	LOG_INFORMATION("Content Compiler Game took %f seconds.", start_time.GetSecondsSince());
@@ -251,10 +157,97 @@ NO_DISCARD bool ContentCompiler::RunGame() NOEXCEPT
 }
 
 /*
+*	Scans assets in the given directory.
+*	Returns if new content was compiled.
+*/
+NO_DISCARD bool ContentSystem::ScanAssetsInDirectory(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const char *const RESTRICT directory_path) NOEXCEPT
+{
+	//Remember if new content was compiled.
+	bool new_content_compiled{ false };
+
+	//Scan the directory!
+	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
+	{
+		//Scan recursively if this is a directory.
+		if (entry.is_directory())
+		{
+			new_content_compiled |= ScanAssetsInDirectory(compilation_domain, content_cache, entry.path().u8string().data());
+
+			continue;
+		}
+
+		//Cache the file path string.
+		const std::string file_path{ entry.path().string() };
+
+		//Calculate the identifier.
+		const uint64 identifier{ HashAlgorithms::MurmurHash64(file_path.data(), sizeof(char) * file_path.length()) };
+
+		//Retrieve the last write time.
+		const std::filesystem::file_time_type last_write_time{ std::filesystem::last_write_time(file_path) };
+
+		//Figure out the extension.
+		std::string extension;
+
+		{
+			const size_t last_dot_position{ file_path.find_last_of(".") };
+			extension = file_path.substr(last_dot_position + 1, std::string::npos);
+		}
+
+		//Figure out the name.
+		std::string name;
+
+		{
+			const size_t last_slash_position{ file_path.find_last_of("\\") };
+			name = file_path.substr(last_slash_position + 1, file_path.length() - last_slash_position - strlen(extension.c_str()) - 2);
+		}
+
+		//Find the asset compiler for this file type.
+		AssetCompiler* RESTRICT asset_compiler;
+
+		{
+			AssetCompiler* const RESTRICT* const RESTRICT _asset_compiler{ _AssetCompilers.Find(HashString(extension.c_str())) };
+			asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
+		}
+
+		//Couldn't find an asset compiler, ignore!
+		if (!asset_compiler)
+		{
+			continue;
+		}
+
+		//Check if it needs a recompile.
+		if (!TEST_BIT(asset_compiler->_Flags, AssetCompiler::Flags::ALWAYS_COMPILE) && !content_cache->NeedsRecompile(identifier, last_write_time))
+		{
+			continue;
+		}
+
+		LOG_INFORMATION("Compiling %s", file_path.data());
+
+		//Set up the compile context.
+		AssetCompiler::CompileContext compile_context;
+
+		compile_context._CompilationDomain = compilation_domain;
+		compile_context._Identifier = identifier;
+		compile_context._LastWriteTime = last_write_time;
+		compile_context._FilePath = file_path.c_str();
+		compile_context._Name = name.c_str();
+		compile_context._ContentCache = content_cache;
+
+		//Compile!
+		asset_compiler->Compile(compile_context);
+
+		//Update the last write time.
+		content_cache->UpdateLastWriteTime(identifier, last_write_time);
+	}
+
+	return new_content_compiled;
+}
+
+/*
 *	Parses content definitions in the given directory.
 *	Returns if new content was compiled.
 */
-NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const char *const RESTRICT directory_path) NOEXCEPT
+NO_DISCARD bool ContentSystem::ParseContentDefinitionsInDirectory(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const char *const RESTRICT directory_path) NOEXCEPT
 {
 	enum class DelayedCompileType : uint8
 	{
@@ -434,7 +427,7 @@ NO_DISCARD bool ContentCompiler::ParseContentDefinitionsInDirectory(const Compil
 /*
 *	Parses a Font from the given file.
 */
-void ContentCompiler::ParseFont(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
+void ContentSystem::ParseFont(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
@@ -515,7 +508,7 @@ void ContentCompiler::ParseFont(const CompilationDomain compilation_domain, Cont
 /*
 *	Parses a Material from the given file.
 */
-void ContentCompiler::ParseMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
+void ContentSystem::ParseMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
@@ -677,7 +670,7 @@ void ContentCompiler::ParseMaterial(const CompilationDomain compilation_domain, 
 /*
 *	Parses a Model from the given file.
 */
-void ContentCompiler::ParseModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
+void ContentSystem::ParseModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
@@ -777,7 +770,7 @@ void ContentCompiler::ParseModel(const CompilationDomain compilation_domain, Con
 /*
 *	Parses a Texture2D from the given file.
 */
-void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
+void ContentSystem::ParseTexture2D(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
@@ -1039,7 +1032,7 @@ void ContentCompiler::ParseTexture2D(const CompilationDomain compilation_domain,
 /*
 *	Parses a Texture Cube from the given file.
 */
-void ContentCompiler::ParseTextureCube(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
+void ContentSystem::ParseTextureCube(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
@@ -1131,7 +1124,7 @@ void ContentCompiler::ParseTextureCube(const CompilationDomain compilation_domai
 /*
 *	Parses a procedural tree model from the given file.
 */
-void ContentCompiler::ParseProceduralTreeModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
+void ContentSystem::ParseProceduralTreeModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
@@ -1252,7 +1245,7 @@ NO_DISCARD ResourcePointer<Texture2DResource> LoadTexture2DResource(const char *
 /*
 *	Parses an Impostor Material from the given file.
 */
-void ContentCompiler::ParseImpostorMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
+void ContentSystem::ParseImpostorMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];

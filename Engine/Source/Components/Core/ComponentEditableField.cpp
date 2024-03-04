@@ -26,6 +26,16 @@ void ApplyEditableFieldToInitializationData
 {
 	switch (editable_field._Type)
 	{
+		case ComponentEditableField::Type::MATERIAL_RESOURCE:
+		{
+			ResourcePointer<MaterialResource> *const RESTRICT destination{ (ResourcePointer<MaterialResource> *const RESTRICT)AdvancePointer(initialization_data, editable_field._InitializationDataOffset) };
+			const ResourcePointer<MaterialResource> *const RESTRICT source{ static_cast<const ResourcePointer<MaterialResource> *const RESTRICT>(data) };
+
+			(*destination) = (*source);
+
+			break;
+		}
+
 		case ComponentEditableField::Type::MODEL_RESOURCE:
 		{
 			ResourcePointer<ModelResource> *const RESTRICT destination{ (ResourcePointer<ModelResource> *const RESTRICT)AdvancePointer(initialization_data, editable_field._InitializationDataOffset) };
@@ -74,6 +84,17 @@ void SerializeEditableField
 
 	switch (editable_field._Type)
 	{
+		case ComponentEditableField::Type::MATERIAL_RESOURCE:
+		{
+			//Cast the data.
+			const ResourcePointer<MaterialResource> *const RESTRICT _data{ static_cast<const ResourcePointer<MaterialResource> *const RESTRICT>(data) };
+
+			//Can't really serialize a pointer, so serialize the resource identifier.
+			stream_archive->Write((*_data)->_Header._ResourceIdentifier);
+
+			break;
+		}
+
 		case ComponentEditableField::Type::MODEL_RESOURCE:
 		{
 			//Cast the data.
@@ -120,6 +141,19 @@ NO_DISCARD uint64 DeserializeEditableField
 
 	switch (editable_field._Type)
 	{
+		case ComponentEditableField::Type::MATERIAL_RESOURCE:
+		{
+			//Cast the data.
+			ResourcePointer<MaterialResource> *const RESTRICT destination{ static_cast<ResourcePointer<MaterialResource> *const RESTRICT>(_data) };
+			const HashString *const RESTRICT source{ static_cast<const HashString *const RESTRICT>(data) };
+
+			//Write the data.
+			(*destination) = ResourceSystem::Instance->GetMaterialResource(*source);
+
+			//Return the advance.
+			return sizeof(HashString);
+		}
+
 		case ComponentEditableField::Type::MODEL_RESOURCE:
 		{
 			//Cast the data.

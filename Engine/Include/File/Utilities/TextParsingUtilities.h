@@ -78,7 +78,8 @@ namespace TextParsingUtilities
 	(
 		const char *const RESTRICT string,
 		const uint64 string_length,
-		DynamicString *const RESTRICT output_arguments
+		DynamicString *const RESTRICT output_arguments,
+		uint64 *const RESTRICT end_position = nullptr
 	) NOEXCEPT
 	{
 		char buffer[128];
@@ -122,6 +123,11 @@ namespace TextParsingUtilities
 			if (string[i] == ')')
 			{
 				--parantheses_depth;
+
+				if (end_position && parantheses_depth == 0)
+				{
+					*end_position = i;
+				}
 			}
 
 			//Add to the buffer if we're currently parsing an argument.

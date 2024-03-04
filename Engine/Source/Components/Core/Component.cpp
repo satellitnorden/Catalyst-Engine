@@ -2,9 +2,9 @@
 #include <Components/Core/Component.h>
 
 /*
-*	Adds an editable world transform field.
+*	Adds an editable material resource field.
 */
-void Component::AddEditableWorldTransformField
+void Component::AddEditableMaterialResourceField
 (
 	const char *const RESTRICT name,
 	const uint64 initialization_data_offset,
@@ -15,7 +15,7 @@ void Component::AddEditableWorldTransformField
 
 	editable_field._Name = name;
 	editable_field._Identifier = HashAlgorithms::MurmurHash64(name, StringUtilities::StringLength(name));
-	editable_field._Type = ComponentEditableField::Type::WORLD_TRANSFORM;
+	editable_field._Type = ComponentEditableField::Type::MATERIAL_RESOURCE;
 	editable_field._InitializationDataOffset = initialization_data_offset;
 	editable_field._InstanceDataOffset = instance_data_offset;
 
@@ -37,6 +37,27 @@ void Component::AddEditableModelResourceField
 	editable_field._Name = name;
 	editable_field._Identifier = HashAlgorithms::MurmurHash64(name, StringUtilities::StringLength(name));
 	editable_field._Type = ComponentEditableField::Type::MODEL_RESOURCE;
+	editable_field._InitializationDataOffset = initialization_data_offset;
+	editable_field._InstanceDataOffset = instance_data_offset;
+
+	_EditableFields.Emplace(editable_field);
+}
+
+/*
+*	Adds an editable world transform field.
+*/
+void Component::AddEditableWorldTransformField
+(
+	const char *const RESTRICT name,
+	const uint64 initialization_data_offset,
+	const uint64 instance_data_offset
+) NOEXCEPT
+{
+	ComponentEditableField editable_field;
+
+	editable_field._Name = name;
+	editable_field._Identifier = HashAlgorithms::MurmurHash64(name, StringUtilities::StringLength(name));
+	editable_field._Type = ComponentEditableField::Type::WORLD_TRANSFORM;
 	editable_field._InitializationDataOffset = initialization_data_offset;
 	editable_field._InstanceDataOffset = instance_data_offset;
 

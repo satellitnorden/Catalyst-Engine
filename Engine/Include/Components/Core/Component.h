@@ -247,9 +247,9 @@ protected:
 	virtual NO_DISCARD void *const RESTRICT SubEditableFieldData(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT = 0;
 
 	/*
-	*	Adds an editable world transform field.
+	*	Adds an editable material resource field.
 	*/
-	void AddEditableWorldTransformField
+	void AddEditableMaterialResourceField
 	(
 		const char *const RESTRICT name,
 		const uint64 initialization_data_offset,
@@ -260,6 +260,16 @@ protected:
 	*	Adds an editable model resource field.
 	*/
 	void AddEditableModelResourceField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
+	*	Adds an editable world transform field.
+	*/
+	void AddEditableWorldTransformField
 	(
 		const char *const RESTRICT name,
 		const uint64 initialization_data_offset,

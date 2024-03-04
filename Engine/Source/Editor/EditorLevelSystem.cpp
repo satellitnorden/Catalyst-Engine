@@ -61,48 +61,59 @@ FORCE_INLINE NO_DISCARD bool TextInputWidget(const char *const RESTRICT label, c
 }
 
 /*
+*	Creates a custom material resource widget. Returns if there was a change.
+*/
+FORCE_INLINE NO_DISCARD bool MaterialResourceWidget(const char *const RESTRICT label, ResourcePointer<MaterialResource> *const RESTRICT material_resource) NOEXCEPT
+{
+	char buffer[256];
+	sprintf_s(buffer, "%s: %s", label, (*material_resource)->_Header._ResourceName.Data());
+
+	if (ImGui::Selectable(buffer))
+	{
+		CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
+		(
+			"Select Material",
+			ResourceConstants::MATERIAL_TYPE_IDENTIFIER,
+			[](Resource *const RESTRICT resource, void *const RESTRICT arguments)
+			{
+				ResourcePointer<MaterialResource> *const RESTRICT material_resource{ static_cast<ResourcePointer<MaterialResource> *const RESTRICT>(arguments) };
+
+				(*material_resource) = ResourcePointer<MaterialResource>((MaterialResource *const RESTRICT)resource);
+			},
+			material_resource
+		);
+	}
+
+	//Eh.
+	return false;
+}
+
+/*
 *	Creates a custom model resource widget. Returns if there was a change.
 */
 FORCE_INLINE NO_DISCARD bool ModelResourceWidget(const char *const RESTRICT label, ResourcePointer<ModelResource> *const RESTRICT model_resource) NOEXCEPT
 {
-	//Push the ID.
-	ImGui::PushID(label);
+	char buffer[256];
+	sprintf_s(buffer, "%s: %s", label, (*model_resource)->_Header._ResourceName.Data());
 
-	//Set up the widget. Keep track of if anything changed.
-	bool changed{ false };
-
-	ImGui::Columns(2);
-
-	ImGui::SetColumnWidth(0, 64.0f);
-	ImGui::Text(label);
-	ImGui::NextColumn();
-
-	ImGui::PushMultiItemsWidths(1, 256.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
-
-	if (ImGui::BeginCombo("##MODEL_RESOURCE", (*model_resource)->_Header._ResourceName.Data()))
+	if (ImGui::Selectable(buffer))
 	{
-		for (ModelResource *const RESTRICT _model_resource : ResourceSystem::Instance->GetAllModelResources().ValueIterator())
-		{
-			if (ImGui::Selectable(_model_resource->_Header._ResourceName.Data()))
+		CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
+		(
+			"Select Model",
+			ResourceConstants::MODEL_TYPE_IDENTIFIER,
+			[](Resource *const RESTRICT resource, void *const RESTRICT arguments)
 			{
-				(*model_resource) = ResourcePointer<ModelResource>(_model_resource);
-			}
-		}
-
-		ImGui::EndCombo();
+				ResourcePointer<ModelResource> *const RESTRICT model_resource{ static_cast<ResourcePointer<ModelResource> *const RESTRICT>(arguments) };
+			
+				(*model_resource) = ResourcePointer<ModelResource>((ModelResource *const RESTRICT)resource);
+			},
+			model_resource
+		);
 	}
 
-	ImGui::PopItemWidth();
-
-	ImGui::PopStyleVar();
-	ImGui::Columns(1);
-
-	//Pop the ID:
-	ImGui::PopID();
-
-	//Return if there was a change!
-	return changed;
+	//Eh.
+	return false;
 }
 
 /*
@@ -648,6 +659,15 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					{
 						switch (editable_field._Type)
 						{
+							case ComponentEditableField::Type::MATERIAL_RESOURCE:
+							{
+								ResourcePointer<MaterialResource> *const RESTRICT material_resource{ component->EditableFieldData<ResourcePointer<MaterialResource>>(selected_level_entry._Entity, editable_field) };
+
+								MaterialResourceWidget(editable_field._Name, material_resource);
+
+								break;
+							}
+
 							case ComponentEditableField::Type::MODEL_RESOURCE:
 							{
 								ResourcePointer<ModelResource> *const RESTRICT model_resource{ component->EditableFieldData<ResourcePointer<ModelResource>>(selected_level_entry._Entity, editable_field) };

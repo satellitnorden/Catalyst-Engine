@@ -21,6 +21,7 @@
 #include <Systems/CatalystEditorSystem.h>
 #endif
 #include <Systems/ComponentSystem.h>
+#include <Systems/ContentSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Systems/DebugSystem.h>
 #endif
@@ -91,6 +92,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CatalystEditorSystem::Instance->Initialize();
 #endif
 	ComponentSystem::Instance->Initialize();
+	ContentSystem::Instance->Initialize();
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DebugSystem::Instance->Initialize();
 #endif
