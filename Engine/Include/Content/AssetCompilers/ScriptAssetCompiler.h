@@ -36,6 +36,11 @@ public:
 	*/
 	void PostCompile(const CompilationDomain compilation_domain) NOEXCEPT override;
 
+	/*
+	*	Adds an extra include.
+	*/
+	void AddExtraInclude(const char *const RESTRICT extra_include) NOEXCEPT;
+
 private:
 
 	/*
@@ -65,6 +70,9 @@ private:
 
 	//The script data.
 	DynamicArray<ScriptData> _ScriptData;
+
+	//The extra includes.
+	DynamicArray<DynamicString> _ExtraIncludes;
 
 	/*
 	*	Generates the source file.

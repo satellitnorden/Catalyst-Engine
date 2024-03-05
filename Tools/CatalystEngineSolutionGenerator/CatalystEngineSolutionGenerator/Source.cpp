@@ -144,10 +144,44 @@ void PrintOptions()
 }
 
 /*
+*	Generates common.
+*/
+void GenerateCommon(const GeneralParameters &general_parameters)
+{
+	//Define constants.
+	constexpr const char *const DIRECTORY_PATH{ "..\\Code\\Include\\Generated" };
+
+	//If the generated script file doesn't exist, add it.
+	char buffer[256];
+	sprintf_s(buffer, "%s\\Script.Generated.h", DIRECTORY_PATH);
+
+	if (!std::filesystem::exists(buffer))
+	{
+		std::filesystem::create_directory(DIRECTORY_PATH);
+
+		std::ofstream file{ buffer };
+
+		file << "#pragma once" << std::endl;
+		file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
+		file << "#include <Scripting/ScriptContext.h>" << std::endl;
+		file << "enum class ScriptIdentifier : uint8 { NONE };" << std::endl;
+		file << "FORCE_INLINE uint64 GetRequiredDataSize(const ScriptIdentifier script_identifier) { return 0; }" << std::endl;
+		file << "FORCE_INLINE void InitializeScript(const ScriptIdentifier script_identifier, ScriptContext &script_context) { }" << std::endl;
+		file << "FORCE_INLINE void UpdateScript(const ScriptIdentifier script_identifier, ScriptContext &script_context) { }" << std::endl;
+		file << "FORCE_INLINE void TerminateScript(const ScriptIdentifier script_identifier, ScriptContext &script_context) { }" << std::endl;
+
+		file.close();
+	}
+}
+
+/*
 *	Generates Android.
 */
 void GenerateAndroid(const GeneralParameters& general_parameters, const AndroidParameters& platform_parameters)
 {
+	//Generate common.
+	GenerateCommon(general_parameters);
+
 	//Cache the lower case versions of developer_name and project_name.
 	std::string lower_developer_name{ general_parameters._DeveloperNameNoSpaces };
 	std::transform(lower_developer_name.begin(), lower_developer_name.end(), lower_developer_name.begin(), [](unsigned char character) { return std::tolower(character); });
@@ -594,6 +628,9 @@ void GenerateAndroid(const GeneralParameters& general_parameters, const AndroidP
 */
 void GenerateOculusQuest(const GeneralParameters& general_parameters, const OculusQuestParameters& platform_parameters)
 {
+	//Generate common.
+	GenerateCommon(general_parameters);
+
 	//Cache the lower case versions of developer_name and project_name.
 	std::string lower_developer_name{ general_parameters._DeveloperNameNoSpaces };
 	std::transform(lower_developer_name.begin(), lower_developer_name.end(), lower_developer_name.begin(), [](unsigned char character) { return std::tolower(character); });
@@ -864,6 +901,9 @@ void GenerateOculusQuest(const GeneralParameters& general_parameters, const Ocul
 */
 void GenerateWin64(const GeneralParameters& general_parameters, const Win64Parameters& platform_parameters)
 {
+	//Generate common.
+	GenerateCommon(general_parameters);
+
 	//Remember the error code for filesystem functions.
 	std::error_code error_code;
 

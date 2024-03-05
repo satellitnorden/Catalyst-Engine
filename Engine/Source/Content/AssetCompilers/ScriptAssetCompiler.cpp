@@ -91,6 +91,14 @@ void ScriptAssetCompiler::PostCompile(const CompilationDomain compilation_domain
 }
 
 /*
+*	Adds an extra include.
+*/
+void ScriptAssetCompiler::AddExtraInclude(const char *const RESTRICT extra_include) NOEXCEPT
+{
+	_ExtraIncludes.Emplace(extra_include);
+}
+
+/*
 *	Generates the source file.
 */
 void ScriptAssetCompiler::GenerateSourceFile(const CompilationDomain compilation_domain) NOEXCEPT
@@ -156,12 +164,34 @@ void ScriptAssetCompiler::GenerateSourceFile(const CompilationDomain compilation
 	file << "#include <Generated/Script.Generated.h>" << std::endl;
 	file << std::endl;
 
+	file << "//Math." << std::endl;
+	file << "#include <Math/General/Vector.h>" << std::endl;
+	file << std::endl;
+
 	file << "//Scripting." << std::endl;
 	file << "#include <Scripting/ScriptCore.h>" << std::endl;
 	file << "#include <Scripting/ScriptNodes.h>" << std::endl;
 	file << std::endl;
 
+	if (!_ExtraIncludes.Empty())
+	{
+		for (const DynamicString &extra_include : _ExtraIncludes)
+		{
+			file << "#include <" << extra_include.Data() << ">" << std::endl;
+		}
+
+		file << std::endl;
+	}
+
+	//Disable some warnings.
+	file << "DISABLE_WARNING(4244)" << std::endl;
+	file << std::endl;
+
 	file << "#if SCRIPTS_ENABLED" << std::endl;
+	file << std::endl;
+
+	//Add some type aliases.
+	file << "#define Vector3 Vector3<float32>" << std::endl;
 	file << std::endl;
 
 	for (ScriptData &script_data : _ScriptData)
