@@ -30,6 +30,7 @@
 //Systems.
 #include <Systems/AnimationSystem.h>
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/ContentSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Systems/DebugSystem.h>
 #endif
@@ -1630,11 +1631,11 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 	{
 		//Create the identifier.
 		char buffer[32];
-		sprintf_s(buffer, "Blue_Noise_%u_Texture2D", i);
+		sprintf_s(buffer, "Blue_Noise_%u", i);
 		const HashString identifier{ buffer };
 
 		//Retrieve the texture 2D handle.
-		const Texture2DHandle texture_2D_handle{ ResourceSystem::Instance->GetTexture2DResource(identifier)->_Texture2DHandle };
+		const Texture2DHandle texture_2D_handle{ ContentSystem::Instance->GetAsset<Texture2DAsset>(identifier)->_Texture2DHandle };
 
 		//Bind the texture to the global render data tables.
 		for (uint8 j{ 0 }; j < GetNumberOfFramebuffers(); ++j)

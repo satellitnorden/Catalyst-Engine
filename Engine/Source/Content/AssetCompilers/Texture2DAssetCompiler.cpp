@@ -827,7 +827,7 @@ void Texture2DAssetCompiler::CompileInternal(Texture2DCompileData *const RESTRIC
 
 	if (compile_data->_Collection)
 	{
-		sprintf_s(collection_directory_path, "%s\\%s\\%s", GetCompiledDirectoryPath(compile_data->_CompilationDomain), compile_data->_Collection ? compile_data->_Collection.Data() : "", compile_data->_Collection.Data());
+		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_data->_CompilationDomain), compile_data->_Collection.Data());
 	}
 
 	else

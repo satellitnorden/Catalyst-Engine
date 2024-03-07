@@ -39,9 +39,6 @@
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
 
-//Resources.
-#include <Resources/Core/Texture2DResource.h>
-
 //World.
 #include <World/Core/WorldTransform.h>
 

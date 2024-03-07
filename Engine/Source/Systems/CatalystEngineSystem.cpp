@@ -158,6 +158,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 			ResourceSystem::Instance->LoadResourceCollection("EngineContent\\CatalystEngineExtraResourceCollection_0.crc");
 		#endif
 	#else
+		ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Base");
 		ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineBaseResourceCollection_0.crc");
 
 		#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
@@ -169,7 +170,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 		#endif
 
 		#if defined(CATALYST_EDITOR)
-			ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\Editor");
+			ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Editor");
 			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEditorResourceCollection_0.crc");
 		#endif
 	#endif
