@@ -76,6 +76,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Set whether or not to run the engine single-threaded.
 	_SingleThreaded = _ProjectConfiguration._ConcurrencyConfiguration._NumberOfTaskExecutors.Valid() && _ProjectConfiguration._ConcurrencyConfiguration._NumberOfTaskExecutors.Get() == 0;
 
+	//Initialize the content system here already, since we might be compiling assets first up.
+	ContentSystem::Instance->Initialize();
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Build the Catalyst Engine resources.
 	CatalystEngineResourceBuilding::BuildResources(_ProjectConfiguration);
@@ -92,7 +95,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	CatalystEditorSystem::Instance->Initialize();
 #endif
 	ComponentSystem::Instance->Initialize();
-	ContentSystem::Instance->Initialize();
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DebugSystem::Instance->Initialize();
 #endif
@@ -167,6 +169,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 		#endif
 
 		#if defined(CATALYST_EDITOR)
+			ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\Editor");
 			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEditorResourceCollection_0.crc");
 		#endif
 	#endif

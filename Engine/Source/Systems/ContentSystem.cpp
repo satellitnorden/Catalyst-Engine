@@ -10,6 +10,7 @@
 //Content.
 #include <Content/Core/ContentCache.h>
 #include <Content/AssetCompilers/ScriptAssetCompiler.h>
+#include <Content/AssetCompilers/Texture2DAssetCompiler.h>
 
 //File.
 #include <File/Core/FileCore.h>
@@ -20,6 +21,12 @@
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
 
+//Memory.
+#include <Memory/PoolAllocator.h>
+
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Resources.
 #include <Resources/Utilities/ProceduralTreeGenerator.h>
 #include <Resources/Utilities/ResourceBuildingUtilities.h>
@@ -27,6 +34,7 @@
 //Systems.
 #include <Systems/LogSystem.h>
 #include <Systems/ResourceSystem.h>
+#include <Systems/TaskSystem.h>
 
 //Constants.
 #define ENGINE_ASSETS "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets"
@@ -42,26 +50,25 @@
 DEFINE_SINGLETON(ContentSystem);
 
 /*
-*	Content cache class definition.
-*/
-
-
-/*
 *	Initializes the content system.
 */
 void ContentSystem::Initialize() NOEXCEPT
 {
 	//Register the native asset compilers.
-	RegisterAssetCompiler(HashString("script"), ScriptAssetCompiler::Instance.Get());
+	RegisterAssetCompiler(ScriptAssetCompiler::Instance.Get());
+	RegisterAssetCompiler(Texture2DAssetCompiler::Instance.Get());
 }
 
 /*
 *	Registers an asset compiler.
 */
-void ContentSystem::RegisterAssetCompiler(const HashString asset_identifier, AssetCompiler *const RESTRICT asset_compiler) NOEXCEPT
+void ContentSystem::RegisterAssetCompiler(AssetCompiler *const RESTRICT asset_compiler) NOEXCEPT
 {
 	//Add the compiler.
-	_AssetCompilers.Add(asset_identifier, asset_compiler);
+	_AssetCompilers.Add(asset_compiler->AssetTypeIdentifier(), asset_compiler);
+
+	//Also add en entry into the assets.
+	_Assets.Add(asset_compiler->AssetTypeIdentifier(), HashTable<HashString, Asset *RESTRICT>());
 }
 
 /*
@@ -90,7 +97,7 @@ NO_DISCARD bool ContentSystem::CompileEngine() NOEXCEPT
 		ContentCache content_cache{ content_cache_file_path };
 
 		//Scan assets.
-		new_content_compiled |= ScanAssetsInDirectory(CompilationDomain::ENGINE, &content_cache, ENGINE_ASSETS);
+		new_content_compiled |= ScanAssetsInDirectory(CompilationDomain::ENGINE, &content_cache, ENGINE_ASSETS, nullptr);
 
 		//Parse the content definitions.
 		new_content_compiled |= ParseContentDefinitionsInDirectory(CompilationDomain::ENGINE, &content_cache, ENGINE_CONTENT_DEFINITIONS);
@@ -99,13 +106,31 @@ NO_DISCARD bool ContentSystem::CompileEngine() NOEXCEPT
 		content_cache.Write(content_cache_file_path);
 	}
 
+	//Wait for all tasks to finish.
+	bool all_tasks_finished{ _Tasks.Empty() };
+
+	while (!all_tasks_finished)
+	{
+		TaskSystem::Instance->DoWork(Task::Priority::LOW);
+
+		all_tasks_finished = true;
+
+		for (const Task *const RESTRICT task : _Tasks)
+		{
+			all_tasks_finished &= task->IsExecuted();
+		}
+	}
+
+	//Clear the tasks.
+	_Tasks.Clear();
+
 	//Call PostCompile() on all asset compilers.
 	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
 	{
 		asset_compiler->PostCompile(CompilationDomain::ENGINE);
 	}
 
-	LOG_INFORMATION("Content Compiler Engine took %f seconds.", start_time.GetSecondsSince());
+	LOG_INFORMATION("ContentSystem::CompileEngine took %f seconds.", start_time.GetSecondsSince());
 
 	return new_content_compiled;
 }
@@ -136,7 +161,7 @@ NO_DISCARD bool ContentSystem::CompileGame() NOEXCEPT
 		ContentCache content_cache{ content_cache_file_path };
 
 		//Scan assets.
-		new_content_compiled |= ScanAssetsInDirectory(CompilationDomain::GAME, &content_cache, GAME_ASSETS);
+		new_content_compiled |= ScanAssetsInDirectory(CompilationDomain::GAME, &content_cache, GAME_ASSETS, nullptr);
 
 		//Parse the content definitions.
 		new_content_compiled |= ParseContentDefinitionsInDirectory(CompilationDomain::GAME, &content_cache, GAME_CONTENT_DEFINITIONS);
@@ -145,22 +170,82 @@ NO_DISCARD bool ContentSystem::CompileGame() NOEXCEPT
 		content_cache.Write(content_cache_file_path);
 	}
 
+	//Wait for all tasks to finish.
+	bool all_tasks_finished{ _Tasks.Empty() };
+
+	while (!all_tasks_finished)
+	{
+		TaskSystem::Instance->DoWork(Task::Priority::LOW);
+
+		all_tasks_finished = true;
+
+		for (const Task *const RESTRICT task : _Tasks)
+		{
+			all_tasks_finished &= task->IsExecuted();
+		}
+	}
+
+	//Clear the tasks.
+	_Tasks.Clear();
+
 	//Call PostCompile() on all asset compilers.
 	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
 	{
 		asset_compiler->PostCompile(CompilationDomain::GAME);
 	}
 
-	LOG_INFORMATION("Content Compiler Game took %f seconds.", start_time.GetSecondsSince());
+	LOG_INFORMATION("ContentSystem::CompileGame took %f seconds.", start_time.GetSecondsSince());
 
 	return new_content_compiled;
+}
+
+/*
+*	Loads assets from the given directory path.
+*/
+void ContentSystem::LoadAssets(const char *const RESTRICT directory_path) NOEXCEPT
+{
+	//Iterateover the items in the directory.
+	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
+	{
+		//Cache the file path.
+		const std::string file_path{ entry.path().u8string() };
+
+		//Scan recursively if this is a directory.
+		if (entry.is_directory())
+		{
+			LoadAssets(file_path.c_str());
+
+			continue;
+		}
+
+		//Retrieve the file extension.
+		const File::Extension file_extension{ File::GetExtension(file_path.c_str()) };
+
+		//Is this an asset?
+		if (file_extension == File::Extension::CA)
+		{
+			LoadAsset(file_path.c_str());
+		}
+
+		//Is this an asset collection?
+		else if (file_extension == File::Extension::CAC)
+		{
+			//TODO!
+		}
+	}
 }
 
 /*
 *	Scans assets in the given directory.
 *	Returns if new content was compiled.
 */
-NO_DISCARD bool ContentSystem::ScanAssetsInDirectory(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const char *const RESTRICT directory_path) NOEXCEPT
+NO_DISCARD bool ContentSystem::ScanAssetsInDirectory
+(
+	const CompilationDomain compilation_domain,
+	ContentCache *const RESTRICT content_cache,
+	const char *const RESTRICT directory_path,
+	const char *const RESTRICT collection
+) NOEXCEPT
 {
 	//Remember if new content was compiled.
 	bool new_content_compiled{ false };
@@ -171,7 +256,24 @@ NO_DISCARD bool ContentSystem::ScanAssetsInDirectory(const CompilationDomain com
 		//Scan recursively if this is a directory.
 		if (entry.is_directory())
 		{
-			new_content_compiled |= ScanAssetsInDirectory(compilation_domain, content_cache, entry.path().u8string().data());
+			//Cache the directory path.
+			const std::string _directory_path{ entry.path().u8string() };
+
+			//Check if this should be a collection.
+			const char *RESTRICT _collection{ collection };
+
+			//If we already have a package, no need to check for a new one.
+			if (!_collection)
+			{
+				const size_t position{ _directory_path.find("COLLECTION ") };
+
+				if (position != std::string::npos)
+				{
+					_collection = &_directory_path[position + strlen("COLLECTION ")];
+				}
+			}
+
+			new_content_compiled |= ScanAssetsInDirectory(compilation_domain, content_cache, entry.path().u8string().data(), _collection);
 
 			continue;
 		}
@@ -229,9 +331,12 @@ NO_DISCARD bool ContentSystem::ScanAssetsInDirectory(const CompilationDomain com
 		compile_context._CompilationDomain = compilation_domain;
 		compile_context._Identifier = identifier;
 		compile_context._LastWriteTime = last_write_time;
+		compile_context._Collection = collection;
 		compile_context._FilePath = file_path.c_str();
 		compile_context._Name = name.c_str();
 		compile_context._ContentCache = content_cache;
+		compile_context._TaskAllocator = &_TaskAllocator;
+		compile_context._Tasks = &_Tasks;
 
 		//Compile!
 		asset_compiler->Compile(compile_context);
@@ -241,6 +346,64 @@ NO_DISCARD bool ContentSystem::ScanAssetsInDirectory(const CompilationDomain com
 	}
 
 	return new_content_compiled;
+}
+
+/*
+*	Load a single asset from the given file path.
+*/
+void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
+{
+	//Load the file into a stream archive.
+	StreamArchive stream_archive;
+
+	{
+		PROFILING_SCOPE("Create stream archive");
+
+		BinaryFile<BinaryFileMode::IN> file{ file_path };
+
+		stream_archive.Resize(file.Size());
+		file.Read(stream_archive.Data(), file.Size());
+
+		file.Close();
+	}
+
+	//Read the asset header.
+	AssetHeader asset_header;
+
+	Memory::Copy(&asset_header, stream_archive.Read(0), sizeof(AssetHeader));
+
+	//Find the asset compiler for this asset type.
+	AssetCompiler *RESTRICT asset_compiler;
+
+	{
+		AssetCompiler *const RESTRICT *const RESTRICT _asset_compiler{ _AssetCompilers.Find(asset_header._AssetTypeIdentifier) };
+		asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
+	}
+
+	//Couldn't find an asset compiler, ignore!
+	if (!asset_compiler)
+	{
+		ASSERT(false, "Couldn't find asset compiler!");
+
+		return;
+	}
+
+	//Set up the load context.
+	AssetCompiler::LoadContext load_context;
+
+	load_context._AssetHeader = asset_header;
+	load_context._StreamArchive = &stream_archive;
+	load_context._StreamArchivePosition = sizeof(AssetHeader);
+	load_context._TaskAllocator = &_TaskAllocator;
+	load_context._Tasks = &_Tasks;
+
+	//Load!
+	Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };
+
+	//Add it to the list of assets.
+	HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_compiler->AssetTypeIdentifier()) };
+
+	assets->Add(asset_header._AssetIdentifier, new_asset);
 }
 
 /*
@@ -354,11 +517,6 @@ NO_DISCARD bool ContentSystem::ParseContentDefinitionsInDirectory(const Compilat
 			else if (current_line == "MODEL")
 			{
 				ParseModel(compilation_domain, content_cache, name, package, file);
-			}
-
-			else if (current_line == "TEXTURE_2D")
-			{
-				ParseTexture2D(compilation_domain, content_cache, name, package, file);
 			}
 
 			else if (current_line == "TEXTURE_CUBE")
@@ -765,268 +923,6 @@ void ContentSystem::ParseModel(const CompilationDomain compilation_domain, Conte
 
 	//Build!
 	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
-}
-
-/*
-*	Parses a Texture2D from the given file.
-*/
-void ContentSystem::ParseTexture2D(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
-{
-	//Calculate the intermediate directory.
-	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
-
-	switch (compilation_domain)
-	{
-		case CompilationDomain::ENGINE:
-		{
-			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\%s\\Textures", package.Length() > 0 ? package.Data() : "");
-
-			break;
-		}
-
-		case CompilationDomain::GAME:
-		{
-			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\%s\\Textures", package.Length() > 0 ? package.Data() : "");
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
-
-	//Create the directory, if it doesn't exist.
-	File::CreateDirectory(intermediate_directory);
-
-	//Set up the build parameters.
-	Texture2DBuildParameters parameters;
-
-	//Set the output.
-	char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(output_buffer, "%s\\%s", intermediate_directory, name.data());
-	parameters._Output = output_buffer;
-
-	//Set the id.
-	parameters._ID = name.data();
-
-	//Set some default parameters.
-	parameters._DefaultWidth = 0;
-	parameters._DefaultHeight = 0;
-	parameters._File1 = nullptr;
-	parameters._File2 = nullptr;
-	parameters._File3 = nullptr;
-	parameters._File4 = nullptr;
-	parameters._Default = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
-	parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::RED);
-	parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
-	parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
-	parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
-	parameters._Tint = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
-	parameters._ApplyGammaCorrection = false;
-	parameters._TransformFunction = nullptr;
-	parameters._BaseMipmapLevel = 0;
-
-	//Declare some buffers that is needed to retain data.
-	char file_1_buffer[MAXIMUM_FILE_PATH_LENGTH];
-	char file_2_buffer[MAXIMUM_FILE_PATH_LENGTH];
-	char file_3_buffer[MAXIMUM_FILE_PATH_LENGTH];
-	char file_4_buffer[MAXIMUM_FILE_PATH_LENGTH];
-
-	//Read all of the lines.
-	std::string line;
-	StaticArray<DynamicString, 5> arguments;
-
-	while (std::getline(file, line))
-	{
-		//Skip lines with only whitespace.
-		if (TextParsingUtilities::OnlyWhitespace(line.data(), line.length()))
-		{
-			continue;
-		}
-
-		//Parse the arguments.
-		TextParsingUtilities::ParseSpaceSeparatedArguments
-		(
-			line.data(),
-			line.length(),
-			arguments.Data()
-		);
-
-		if (arguments[0] == "FILE_1")
-		{
-			sprintf_s(file_1_buffer, "%s", arguments[1].Data());
-			parameters._File1 = file_1_buffer;
-		}
-
-		else if (arguments[0] == "FILE_2")
-		{
-			sprintf_s(file_2_buffer, "%s", arguments[1].Data());
-			parameters._File2 = file_2_buffer;
-		}
-
-		else if (arguments[0] == "FILE_3")
-		{
-			sprintf_s(file_3_buffer, "%s", arguments[1].Data());
-			parameters._File3 = file_3_buffer;
-		}
-
-		else if (arguments[0] == "FILE_4")
-		{
-			sprintf_s(file_4_buffer, "%s", arguments[1].Data());
-			parameters._File4 = file_4_buffer;
-		}
-
-		else if (arguments[0] == "DEFAULT")
-		{
-			for (uint8 i{ 0 }; i < 4; ++i)
-			{
-				parameters._Default[i] = std::stof(arguments[1 + i].Data());
-			}
-		}
-
-		else if (arguments[0] == "CHANNEL_MAPPING")
-		{
-			Texture2DBuildParameters::ChannelMapping *RESTRICT channel_mapping{ nullptr };
-
-			if (arguments[1] == "RED")
-			{
-				channel_mapping = &parameters._ChannelMappings[0];
-			}
-
-			else if (arguments[1] == "GREEN")
-			{
-				channel_mapping = &parameters._ChannelMappings[1];
-			}
-
-			else if (arguments[1] == "BLUE")
-			{
-				channel_mapping = &parameters._ChannelMappings[2];
-			}
-
-			else if (arguments[1] == "ALPHA")
-			{
-				channel_mapping = &parameters._ChannelMappings[3];
-			}
-
-			else
-			{
-				ASSERT(false, "Couldn't parse argument " << arguments[1].Data());
-			}
-
-			if (arguments[2] == "FILE_1")
-			{
-				channel_mapping->_File = Texture2DBuildParameters::File::FILE_1;
-			}
-
-			else if (arguments[2] == "FILE_2")
-			{
-				channel_mapping->_File = Texture2DBuildParameters::File::FILE_2;
-			}
-
-			else if (arguments[2] == "FILE_3")
-			{
-				channel_mapping->_File = Texture2DBuildParameters::File::FILE_3;
-			}
-
-			else if (arguments[2] == "FILE_4")
-			{
-				channel_mapping->_File = Texture2DBuildParameters::File::FILE_4;
-			}
-
-			else if (arguments[2] == "DEFAULT")
-			{
-				channel_mapping->_File = Texture2DBuildParameters::File::DEFAULT;
-			}
-
-			else
-			{
-				ASSERT(false, "Couldn't parse argument " << arguments[2].Data());
-			}
-
-			if (arguments[3] == "RED")
-			{
-				channel_mapping->_Channel = Texture2DBuildParameters::Channel::RED;
-			}
-
-			else if (arguments[3] == "GREEN")
-			{
-				channel_mapping->_Channel = Texture2DBuildParameters::Channel::GREEN;
-			}
-
-			else if (arguments[3] == "BLUE")
-			{
-				channel_mapping->_Channel = Texture2DBuildParameters::Channel::BLUE;
-			}
-
-			else if (arguments[3] == "ALPHA")
-			{
-				channel_mapping->_Channel = Texture2DBuildParameters::Channel::ALPHA;
-			}
-
-			else
-			{
-				ASSERT(false, "Couldn't parse argument " << arguments[3].Data());
-			}
-		}
-
-		else if (arguments[0] == "TINT")
-		{
-			for (uint8 i{ 0 }; i < 4; ++i)
-			{
-				parameters._Tint[i] = std::stof(arguments[1 + i].Data());
-			}
-			}
-
-		else if (arguments[0] == "APPLY_GAMMA_CORRECTION")
-		{
-			parameters._ApplyGammaCorrection = true;
-		}
-
-		else if (arguments[0] == "BASE_MIPMAP_LEVEL")
-		{
-			parameters._BaseMipmapLevel = static_cast<uint8>(std::stoul(arguments[1].Data()));
-		}
-
-		else if (arguments[0] == "MIPMAP_GENERATION_MODE")
-		{
-			if (arguments[1] == "NONE")
-			{
-				parameters._MipmapGenerationMode = MipmapGenerationMode::NONE;
-			}
-
-			else if (arguments[1] == "DEFAULT")
-			{
-				parameters._MipmapGenerationMode = MipmapGenerationMode::DEFAULT;
-			}
-
-			else if (arguments[1] == "MAXIMUM")
-			{
-				parameters._MipmapGenerationMode = MipmapGenerationMode::MAXIMUM;
-			}
-
-			else if (arguments[1] == "NORMAL_MAP")
-			{
-				parameters._MipmapGenerationMode = MipmapGenerationMode::NORMAL_MAP;
-			}
-
-			else
-			{
-				ASSERT(false, "Couldn't parse argument " << arguments[1].Data());
-			}
-		}
-
-		else
-		{
-			ASSERT(false, "Couldn't parse argument " << arguments[0].Data());
-		}
-	}
-
-	//Build!
-	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 }
 
 /*
@@ -1466,22 +1362,22 @@ void ContentSystem::ParseImpostorMaterial(const CompilationDomain compilation_do
 
 			if (material_resource->_AlbedoThicknessComponent._Type == MaterialResource::MaterialResourceComponent::Type::TEXTURE)
 			{
-				albedo_thickness_textures.Back() = LoadTexture2DResource(buffer, material_resource->_AlbedoThicknessComponent._TextureResource->_Header._ResourceIdentifier);
+				albedo_thickness_textures.Back() = LoadTexture2DResource(buffer, material_resource->_AlbedoThicknessComponent._Texture->_Header._AssetIdentifier);
 			}
 
 			if (material_resource->_NormalMapDisplacementComponent._Type == MaterialResource::MaterialResourceComponent::Type::TEXTURE)
 			{
-				normal_map_displacement_textures.Back() = LoadTexture2DResource(buffer, material_resource->_NormalMapDisplacementComponent._TextureResource->_Header._ResourceIdentifier);
+				normal_map_displacement_textures.Back() = LoadTexture2DResource(buffer, material_resource->_NormalMapDisplacementComponent._Texture->_Header._AssetIdentifier);
 			}
 
 			if (material_resource->_MaterialPropertiesComponent._Type == MaterialResource::MaterialResourceComponent::Type::TEXTURE)
 			{
-				material_properties_textures.Back() = LoadTexture2DResource(buffer, material_resource->_MaterialPropertiesComponent._TextureResource->_Header._ResourceIdentifier);
+				material_properties_textures.Back() = LoadTexture2DResource(buffer, material_resource->_MaterialPropertiesComponent._Texture->_Header._AssetIdentifier);
 			}
 
 			if (material_resource->_OpacityComponent._Type == MaterialResource::MaterialResourceComponent::Type::TEXTURE)
 			{
-				opacity_textures.Back() = LoadTexture2DResource(buffer, material_resource->_OpacityComponent._TextureResource->_Header._ResourceIdentifier);
+				opacity_textures.Back() = LoadTexture2DResource(buffer, material_resource->_OpacityComponent._Texture->_Header._AssetIdentifier);
 			}
 		}
 	}

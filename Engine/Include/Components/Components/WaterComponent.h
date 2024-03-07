@@ -6,9 +6,9 @@
 //Components.
 #include <Components/Core/Component.h>
 
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/Texture2DResource.h>
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/Texture2DAsset.h>
 
 //Terrain.
 #include <Terrain/TerrainQuadTree.h>
@@ -56,7 +56,7 @@ public:
 	uint8 _MaximumSubdivisionSteps;
 
 	//The texture.
-	ResourcePointer<Texture2DResource> _Texture;
+	AssetPointer<Texture2DAsset> _Texture;
 
 	//The preprocessed data.
 	PreprocessedData _PreprocessedData;
@@ -93,7 +93,7 @@ public:
 	uint32 _IndexCount;
 
 	//The texture.
-	ResourcePointer<Texture2DResource> _Texture;
+	AssetPointer<Texture2DAsset> _Texture;
 
 	//Denotes whether or not this terrain is visible.
 	bool _Visibility;

@@ -111,7 +111,7 @@ public:
 			case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 			{
 				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE);
-				_AlbedoThickness = resource->_AlbedoThicknessComponent._TextureResource->_Index;
+				_AlbedoThickness = resource->_AlbedoThicknessComponent._Texture->_Index;
 
 				break;
 			}
@@ -137,7 +137,7 @@ public:
 			case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 			{
 				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE);
-				_NormalMapDisplacement = resource->_NormalMapDisplacementComponent._TextureResource->_Index;
+				_NormalMapDisplacement = resource->_NormalMapDisplacementComponent._Texture->_Index;
 
 				break;
 			}
@@ -163,7 +163,7 @@ public:
 			case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 			{
 				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE);
-				_MaterialProperties = resource->_MaterialPropertiesComponent._TextureResource->_Index;
+				_MaterialProperties = resource->_MaterialPropertiesComponent._Texture->_Index;
 
 				break;
 			}
@@ -189,7 +189,7 @@ public:
 			case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 			{
 				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_OPACITY_TEXTURE);
-				_Opacity = resource->_OpacityComponent._TextureResource->_Index;
+				_Opacity = resource->_OpacityComponent._Texture->_Index;
 
 				break;
 			}

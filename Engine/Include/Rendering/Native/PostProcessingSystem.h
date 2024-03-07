@@ -4,9 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/Optional.h>
 
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/Texture2DResource.h>
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/Texture2DAsset.h>
 
 class PostProcessingSystem final
 {
@@ -216,19 +216,19 @@ public:
 	}
 
 	/*
-	*	Returns the color grading texture resource.
+	*	Returns the color grading texture.
 	*/
-	FORCE_INLINE NO_DISCARD ResourcePointer<Texture2DResource> GetColorGradingTextureResource() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD AssetPointer<Texture2DAsset> GetColorGradingTexture() const NOEXCEPT
 	{
-		return _ColorGradingTextureResource;
+		return _ColorGradingTexture;
 	}
 
 	/*
-	*	Sets the color grading texture resource.
+	*	Sets the color grading texture.
 	*/
-	FORCE_INLINE void SetColorGradingTextureResource(const ResourcePointer<Texture2DResource> resource) NOEXCEPT
+	FORCE_INLINE void SetColorGradingTexture(const AssetPointer<Texture2DAsset> asset) NOEXCEPT
 	{
-		_ColorGradingTextureResource = resource;
+		_ColorGradingTexture = asset;
 	}
 
 	/*
@@ -325,8 +325,8 @@ private:
 	//The saturation.
 	float32 _Saturation{ 1.0f };
 
-	//The color grading texture resource.
-	ResourcePointer<Texture2DResource> _ColorGradingTextureResource;
+	//The color grading texture.
+	AssetPointer<Texture2DAsset> _ColorGradingTexture;
 
 	//The temporal anti aliasing weight override.
 	Optional<float32> _TemporalAntiAliasingWeightOverride;

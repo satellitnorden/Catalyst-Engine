@@ -13,6 +13,8 @@ namespace File
 	//Enumeration covering all extensions.
 	enum class Extension : uint8
 	{
+		CA,
+		CAC,
 		CR,
 		CRC,
 		FBX,
@@ -86,6 +88,16 @@ namespace File
 		if (!dot_position)
 		{
 			return Extension::UNKNOWN;
+		}
+
+		if (strcmp(dot_position, ".ca") == 0)
+		{
+			return Extension::CA;
+		}
+
+		if (strcmp(dot_position, ".cac") == 0)
+		{
+			return Extension::CAC;
 		}
 
 		if (strcmp(dot_position, ".cr") == 0)

@@ -75,7 +75,7 @@ public:
 				texture_coordinate += vertex_data[i]._UserData._TextureCoordinate * barycentric_coordinates[i];
 			}
 
-			const Vector4<float32> color{ vertex_data[0]._UserData._MaterialResource->_OpacityComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::REPEAT) };
+			const Vector4<float32> color{ Sample(vertex_data[0]._UserData._MaterialResource->_OpacityComponent._Texture->_Texture2D, texture_coordinate) };
 
 			return color[0] >= 0.5f;
 		}
@@ -252,7 +252,7 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 
 				case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 				{
-					const Vector4<float32> color{ vertex_data[0]._UserData._MaterialResource->_AlbedoThicknessComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::REPEAT) };
+					const Vector4<float32> color{ Sample(vertex_data[0]._UserData._MaterialResource->_AlbedoThicknessComponent._Texture->_Texture2D, texture_coordinate) };
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
@@ -312,7 +312,7 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 
 						case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 						{
-							normal_map_displacement = vertex_data[0]._UserData._MaterialResource->_NormalMapDisplacementComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::REPEAT);
+							normal_map_displacement = Sample(vertex_data[0]._UserData._MaterialResource->_NormalMapDisplacementComponent._Texture->_Texture2D, texture_coordinate);
 
 							break;
 						}
@@ -346,7 +346,7 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 
 				case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 				{
-					material_properties = vertex_data[0]._UserData._MaterialResource->_MaterialPropertiesComponent._TextureResource->_Texture2D.Sample(texture_coordinate, AddressMode::REPEAT);
+					material_properties = Sample(vertex_data[0]._UserData._MaterialResource->_MaterialPropertiesComponent._Texture->_Texture2D, texture_coordinate);
 
 					break;
 				}

@@ -115,7 +115,7 @@ void ToneMappingGraphicsPipeline::Execute() NOEXCEPT
 	ToneMappingPushConstantData data;
 
 	data._Exposure = RenderingSystem::Instance->GetPostProcessingSystem()->GetExposure();
-	data._ColorGradingTextureIndex = RenderingSystem::Instance->GetPostProcessingSystem()->GetColorGradingTextureResource() ? RenderingSystem::Instance->GetPostProcessingSystem()->GetColorGradingTextureResource()->_Index : UINT32_MAXIMUM;
+	data._ColorGradingTextureIndex = RenderingSystem::Instance->GetPostProcessingSystem()->GetColorGradingTexture() ? RenderingSystem::Instance->GetPostProcessingSystem()->GetColorGradingTexture()->_Index : UINT32_MAXIMUM;
 
 	command_buffer->PushConstants(this, ShaderStage::FRAGMENT, 0, sizeof(ToneMappingPushConstantData), &data);
 

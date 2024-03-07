@@ -11,6 +11,7 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/ContentSystem.h>
 #include <Systems/ImGuiSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -52,9 +53,9 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 void CatalystEditorSystem::PostInitialize() NOEXCEPT
 {
 	//Create all editor icons.
-	_EditorIcons[UNDERLYING(EditorIcon::PLAY)] = RenderingSystem::Instance->CreateImGuiTexture(ResourceSystem::Instance->GetTexture2DResource(HashString("Editor_Play_Icon"))->_Texture2DHandle);
-	_EditorIcons[UNDERLYING(EditorIcon::CREATE)] = RenderingSystem::Instance->CreateImGuiTexture(ResourceSystem::Instance->GetTexture2DResource(HashString("Editor_Create_Icon"))->_Texture2DHandle);
-	_EditorIcons[UNDERLYING(EditorIcon::TRANSLATE)] = RenderingSystem::Instance->CreateImGuiTexture(ResourceSystem::Instance->GetTexture2DResource(HashString("Editor_Translate_Icon"))->_Texture2DHandle);
+	_EditorIcons[UNDERLYING(EditorIcon::PLAY)] = RenderingSystem::Instance->CreateImGuiTexture(ContentSystem::Instance->GetAsset<Texture2DAsset>(HashString("Editor_Play_Icon"))->_Texture2DHandle);
+	_EditorIcons[UNDERLYING(EditorIcon::CREATE)] = RenderingSystem::Instance->CreateImGuiTexture(ContentSystem::Instance->GetAsset<Texture2DAsset>(HashString("Editor_Create_Icon"))->_Texture2DHandle);
+	_EditorIcons[UNDERLYING(EditorIcon::TRANSLATE)] = RenderingSystem::Instance->CreateImGuiTexture(ContentSystem::Instance->GetAsset<Texture2DAsset>(HashString("Editor_Translate_Icon"))->_Texture2DHandle);
 
 	//Register for the top bar editor window.
 	ImGuiSystem::Instance->RegisterEditorWindow
@@ -178,9 +179,6 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 
 	//Update the editor rendering system.
 	_EditorRenderingSystem.Update();
-
-	//Update the editor resources system.
-	_EditorResourcesSystem.Update();
 
 	//Update the editor selection system.
 	_EditorSelectionSystem.Update();

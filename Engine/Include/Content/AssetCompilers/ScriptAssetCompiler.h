@@ -22,6 +22,22 @@ public:
 	ScriptAssetCompiler() NOEXCEPT;
 
 	/*
+	*	Returns the asset type identifier.
+	*/
+	FORCE_INLINE NO_DISCARD HashString AssetTypeIdentifier() const NOEXCEPT override
+	{
+		return HashString("Script");
+	}
+
+	/*
+	*	Returns the current version.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 CurrentVersion() const NOEXCEPT override
+	{
+		return 1;
+	}
+
+	/*
 	*	Runs before compilation in the specified domain has finished.
 	*/
 	void PreCompile(const CompilationDomain compilation_domain) NOEXCEPT override;
@@ -35,6 +51,16 @@ public:
 	*	Runs after compilation in the specified domain has finished.
 	*/
 	void PostCompile(const CompilationDomain compilation_domain) NOEXCEPT override;
+
+	/*
+	*	Loads a single asset with the given load context.
+	*/
+	FORCE_INLINE NO_DISCARD Asset *const RESTRICT Load(const LoadContext& load_context) NOEXCEPT override
+	{
+		ASSERT(false, "This should never be called!");
+
+		return nullptr;
+	}
 
 	/*
 	*	Adds an extra include.

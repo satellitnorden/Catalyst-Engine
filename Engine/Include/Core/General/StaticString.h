@@ -16,10 +16,7 @@ public:
 	*/
 	FORCE_INLINE constexpr StaticString() NOEXCEPT
 	{
-		constexpr char EMPTY_STRING[]{ "" };
-		constexpr uint64 EMPTY_STRING_LENGTH{ StringUtilities::StringLength(EMPTY_STRING) };
-
-		Memory::Copy(_Data.Data(), EMPTY_STRING, EMPTY_STRING_LENGTH + 1);
+		_Data[0] = '\0';
 	}
 
 	/*
@@ -30,6 +27,14 @@ public:
 		const uint64 string_length{ StringUtilities::StringLength(string) };
 
 		Memory::Copy(_Data.Data(), string, string_length + 1);
+	}
+	
+	/*
+	*	Bool operator overload.
+	*/
+	FORCE_INLINE constexpr operator bool() const NOEXCEPT
+	{
+		return _Data[0] != '\0';
 	}
 
 	/*

@@ -11,7 +11,6 @@
 #include <Editor/EditorLevelSystem.h>
 #include <Editor/EditorPostProcessingSystem.h>
 #include <Editor/EditorRenderingSystem.h>
-#include <Editor/EditorResourcesSystem.h>
 #include <Editor/EditorSelectionSystem.h>
 
 //Third party.
@@ -110,9 +109,6 @@ private:
 
 	//The editor rendering system.
 	EditorRenderingSystem _EditorRenderingSystem;
-
-	//The editor resources system.
-	EditorResourcesSystem _EditorResourcesSystem;
 
 	//The editor selection system.
 	EditorSelectionSystem _EditorSelectionSystem;

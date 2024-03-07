@@ -45,6 +45,23 @@ public:
 	}
 
 	/*
+	*	Reads from this stream archive at the given position.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE void Read(TYPE *const RESTRICT destination, const uint64 size, const uint64 position) const NOEXCEPT
+	{
+		Memory::Copy(destination, &_Array[position], size);
+	}
+
+	/*
+	*	Reads from this stream archive at the given position.
+	*/
+	FORCE_INLINE NO_DISCARD const byte *const RESTRICT Read(const uint64 position) const NOEXCEPT
+	{
+		return &_Array[position];
+	}
+
+	/*
 	*	Writes to this stream archive.
 	*/
 	template <typename TYPE>
@@ -67,14 +84,6 @@ public:
 
 		//Update the size.
 		_Size += SIZE_OF_TYPE;
-	}
-
-	/*
-	*	Reads from this stream archive at the given position.
-	*/
-	FORCE_INLINE NO_DISCARD const byte *const RESTRICT Read(const uint64 position) const NOEXCEPT
-	{
-		return &_Array[position];
 	}
 
 	/*

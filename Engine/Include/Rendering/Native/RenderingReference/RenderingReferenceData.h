@@ -63,9 +63,6 @@ public:
 	//The progress information.
 	TextUserInterfacePrimitive *RESTRICT _ProgressInformation;
 
-	//The textures.
-	StaticArray<const Texture2DResource *RESTRICT, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _Textures;
-
 	//The terrain acceleration structure.
 	AccelerationStructure<byte> _TerrainAccelerationStructure;
 
@@ -77,11 +74,7 @@ public:
 	*/
 	FORCE_INLINE RenderingReferenceData() NOEXCEPT
 	{
-		//Fill in the textures.
-		for (const Texture2DResource *const RESTRICT texture_2d_resource : ResourceSystem::Instance->GetAllTexture2DResources().ValueIterator())
-		{
-			_Textures[texture_2d_resource->_Index] = texture_2d_resource;
-		}
+		
 	}
 
 };

@@ -3,13 +3,15 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/Texture2DAsset.h>
+
 //Rendering.
 #include <Rendering/Native/Color.h>
 
 //Resources.
 #include <Resources/Core/Resource.h>
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/Texture2DResource.h>
 
 class MaterialResource final : public Resource
 {
@@ -60,8 +62,8 @@ public:
 			//The color.
 			Color _Color;
 
-			//The texture resource
-			ResourcePointer<Texture2DResource> _TextureResource;
+			//The texture
+			AssetPointer<Texture2DAsset> _Texture;
 		};
 
 		/*

@@ -2,6 +2,7 @@
 #include <Resources/Creation/ResourceCreationSystem.h>
 
 //Systems.
+#include <Systems/ContentSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
@@ -174,7 +175,7 @@ void ResourceCreationSystem::CreateMaterial(MaterialData* const RESTRICT data, M
 		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 		{
 			resource->_AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			resource->_AlbedoThicknessComponent._TextureResource = ResourceSystem::Instance->FindOrCreateTexture2DResource(data->_AlbedoThicknessComponent._TextureResourceIdentifier);
+			resource->_AlbedoThicknessComponent._Texture = ContentSystem::Instance->GetAsset<Texture2DAsset>(data->_AlbedoThicknessComponent._TextureResourceIdentifier);
 
 			break;
 		}
@@ -201,7 +202,7 @@ void ResourceCreationSystem::CreateMaterial(MaterialData* const RESTRICT data, M
 		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 		{
 			resource->_NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			resource->_NormalMapDisplacementComponent._TextureResource = ResourceSystem::Instance->FindOrCreateTexture2DResource(data->_NormalMapDisplacementComponent._TextureResourceIdentifier);
+			resource->_NormalMapDisplacementComponent._Texture = ContentSystem::Instance->GetAsset<Texture2DAsset>(data->_NormalMapDisplacementComponent._TextureResourceIdentifier);
 
 			break;
 		}
@@ -228,7 +229,7 @@ void ResourceCreationSystem::CreateMaterial(MaterialData* const RESTRICT data, M
 		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 		{
 			resource->_MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			resource->_MaterialPropertiesComponent._TextureResource = ResourceSystem::Instance->FindOrCreateTexture2DResource(data->_MaterialPropertiesComponent._TextureResourceIdentifier);
+			resource->_MaterialPropertiesComponent._Texture = ContentSystem::Instance->GetAsset<Texture2DAsset>(data->_MaterialPropertiesComponent._TextureResourceIdentifier);
 
 			break;
 		}
@@ -255,7 +256,7 @@ void ResourceCreationSystem::CreateMaterial(MaterialData* const RESTRICT data, M
 		case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
 		{
 			resource->_OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			resource->_OpacityComponent._TextureResource = ResourceSystem::Instance->FindOrCreateTexture2DResource(data->_OpacityComponent._TextureResourceIdentifier);
+			resource->_OpacityComponent._Texture = ContentSystem::Instance->GetAsset<Texture2DAsset>(data->_OpacityComponent._TextureResourceIdentifier);
 
 			break;
 		}

@@ -159,6 +159,19 @@ public:
 	}
 
 	/*
+	*	Destroys this texture.
+	*/
+	FORCE_INLINE void Destroy() NOEXCEPT
+	{
+		//Reset the width/height.
+		_Width = 0;
+		_Height = 0;
+
+		//Destroy the data.
+		_Data.Destroy();
+	}
+
+	/*
 	*	Returns the texture data, const.
 	*/
 	RESTRICTED const TYPE* Data() const NOEXCEPT { return _Data.Data(); }
@@ -310,3 +323,74 @@ private:
 	}
 
 };
+
+/*
+*	Specialized function for sampling Texture2D<Vector4<byte>> texures with bilinear filtering.
+*/
+FORCE_INLINE NO_DISCARD Vector4<float32> Sample(const Texture2D<Vector4<byte>> &texture, const Vector2<float32> &coordinate) NOEXCEPT
+{
+	//Cache the width/height.
+	const uint32 width{ texture.GetWidth() };
+	const uint32 height{ texture.GetHeight() };
+
+	//Calculate the coordinates.
+	Vector2<uint32> lower_left_coordinate{ static_cast<uint32>(coordinate._X * static_cast<float32>(width)) , static_cast<uint32>(coordinate._Y * static_cast<float32>(height)) };
+	Vector2<uint32> upper_left_coordinate{ lower_left_coordinate._X, CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1) };
+	Vector2<uint32> lower_right_coordinate{ CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1), lower_left_coordinate._Y };
+	Vector2<uint32> upper_right_coordinate{ CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1), CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1) };
+
+	//Sample the values.
+	Vector4<float32> lower_left_value;
+
+	{
+		const Vector4<byte> &_lower_left_value{ texture.At(lower_left_coordinate._X, lower_left_coordinate._Y) };
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			lower_left_value[i] = static_cast<float32>(_lower_left_value[i]) / static_cast<float32>(BYTE_MAXIMUM);
+		}
+	}
+
+	Vector4<float32> upper_left_value;
+
+	{
+		const Vector4<byte> &_upper_left_value{ texture.At(upper_left_coordinate._X, upper_left_coordinate._Y) };
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			upper_left_value[i] = static_cast<float32>(_upper_left_value[i]) / static_cast<float32>(BYTE_MAXIMUM);
+		}
+	}
+
+	Vector4<float32> lower_right_value;
+
+	{
+		const Vector4<byte> &_lower_right_value{ texture.At(lower_right_coordinate._X, lower_right_coordinate._Y) };
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			lower_right_value[i] = static_cast<float32>(_lower_right_value[i]) / static_cast<float32>(BYTE_MAXIMUM);
+		}
+	}
+
+	Vector4<float32> upper_right_value;
+
+	{
+		const Vector4<byte> &_upper_right_value{ texture.At(upper_right_coordinate._X, upper_right_coordinate._Y) };
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			upper_right_value[i] = static_cast<float32>(_upper_right_value[i]) / static_cast<float32>(BYTE_MAXIMUM);
+		}
+	}
+
+	//Calculate the blend values.
+	const float32 horizontal_blend{ CatalystBaseMath::Fractional(coordinate._X * static_cast<float32>(width)) };
+	const float32 vertical_blend{ CatalystBaseMath::Fractional(coordinate._Y * static_cast<float32>(height)) };
+
+	//Perform the blends.
+	const Vector4<float32> blend_1{ CatalystBaseMath::LinearlyInterpolate<Vector4<float32>>(lower_left_value, lower_right_value, horizontal_blend) };
+	const Vector4<float32> blend_2{ CatalystBaseMath::LinearlyInterpolate<Vector4<float32>>(upper_left_value, upper_right_value, horizontal_blend) };
+
+	return static_cast<Vector4<float32>>(CatalystBaseMath::LinearlyInterpolate<Vector4<float32>>(blend_1, blend_2, vertical_blend));
+}
