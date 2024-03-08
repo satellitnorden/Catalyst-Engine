@@ -1,5 +1,8 @@
 #pragma once
 
+//Third party.
+#include <ThirdParty/mio/mio.hpp>
+
 /*
 *	Template specialization for the IN binary file mode.
 */
@@ -20,11 +23,19 @@ public:
 	BinaryFile(const char *const RESTRICT file_path) NOEXCEPT
 		:
 		_FilePath(file_path),
-		_FileStream(file_path, std::ios::in | std::ios::binary | std::ios::ate)
+		_CurrentPosition(0)
 	{
-		//Save the size.
-		_Size = static_cast<uint64>(_FileStream.tellg());
-		_FileStream.seekg(0);
+		//Map the file.
+		std::error_code error;
+		_Map.map(std::string(file_path), 0, mio::map_entire_file, error);
+
+		ASSERT(!error, error.message());
+
+		//Retrieve the size.
+		_Size = static_cast<uint64>(_Map.mapped_length());
+
+		//Retrieve the data.
+		_Data = _Map.data();
 	}
 
 	/*
@@ -32,7 +43,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD operator bool() NOEXCEPT
 	{
-		return static_cast<bool>(_FileStream);
+		return _Map.is_mapped();
 	}
 
 	/*
@@ -56,7 +67,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD uint64 GetCurrentPosition() NOEXCEPT
 	{
-		return static_cast<uint64>(_FileStream.tellg());
+		return _CurrentPosition;
 	}
 
 	/*
@@ -64,7 +75,7 @@ public:
 	*/
 	FORCE_INLINE void SetCurrentPosition(const uint64 position) NOEXCEPT
 	{
-		_FileStream.seekg(static_cast<std::streampos>(position));
+		_CurrentPosition = position;
 	}
 
 	/*
@@ -73,7 +84,8 @@ public:
 	template <bool FLIP_ENDIAN = false>
 	FORCE_INLINE void Read(void *const RESTRICT output, const uint64 size) NOEXCEPT
 	{
-		_FileStream.read(static_cast<char *const RESTRICT>(output), size);
+		Memory::Copy(output, &_Data[_CurrentPosition], size);
+		_CurrentPosition += size;
 	}
 
 	/*
@@ -107,7 +119,8 @@ public:
 	*/
 	FORCE_INLINE void Close() NOEXCEPT
 	{
-		_FileStream.close();
+		//Unmap.
+		_Map.unmap();
 	}
 
 private:
@@ -115,11 +128,17 @@ private:
 	//The file path.
 	const char *RESTRICT _FilePath;
 
-	//The underlying file stream.
-	std::ifstream _FileStream;
+	//The map.
+	mio::ummap_source _Map;
 
 	//The size of the file stream.
 	uint64 _Size;
+
+	//The data.
+	const byte *RESTRICT _Data;
+
+	//The current position.
+	uint64 _CurrentPosition;
 
 };
 
