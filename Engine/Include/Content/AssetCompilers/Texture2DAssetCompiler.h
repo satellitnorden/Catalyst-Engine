@@ -66,8 +66,30 @@ private:
 
 	};
 
+	/*
+	*	Texture 2D load data class definition.
+	*/
+	class Texture2DLoadData final
+	{
+
+	public:
+
+		//The stream archive position.
+		uint64 _StreamArchivePosition;
+
+		//The stream archive.
+		StreamArchive *RESTRICT _StreamArchive;
+
+		//The asset.
+		Texture2DAsset *RESTRICT _Asset;
+
+	};
+
 	//The compile data allocator.
 	PoolAllocator<sizeof(Texture2DCompileData)> _CompileDataAllocator;
+
+	//The load data allocator.
+	PoolAllocator<sizeof(Texture2DLoadData)> _LoadDataAllocator;
 
 	//The asset allocator.
 	PoolAllocator<sizeof(Texture2DAsset)> _AssetAllocator;
@@ -76,5 +98,10 @@ private:
 	*	Compiles internally.
 	*/
 	void CompileInternal(Texture2DCompileData *const RESTRICT compile_data) NOEXCEPT;
+
+	/*
+	*	Loads internally.
+	*/
+	void LoadInternal(Texture2DLoadData *const RESTRICT load_data) NOEXCEPT;
 
 };

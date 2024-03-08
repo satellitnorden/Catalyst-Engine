@@ -183,6 +183,8 @@ void Texture2DAssetCompiler::Compile(const CompileContext &compile_context) NOEX
 	compile_context._Tasks->Emplace(task);
 }
 
+#define ASYNC_LOAD (1)
+
 /*
 *	Loads a single asset with the given load context.
 */
@@ -191,67 +193,40 @@ NO_DISCARD Asset *const RESTRICT Texture2DAssetCompiler::Load(const LoadContext 
 	//Allocate the asset.
 	Texture2DAsset *const RESTRICT new_asset{ new (_AssetAllocator.Allocate()) Texture2DAsset() };
 
-	//Set the asset header.
-	new_asset->_Header = load_context._AssetHeader;
+#if ASYNC_LOAD
+	//Set up the load data.
+	Texture2DLoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) Texture2DLoadData() };
 
-	//Read the data.
-	uint64 stream_archive_position{ load_context._StreamArchivePosition };
+	load_data->_StreamArchivePosition = load_context._StreamArchivePosition;
+	load_data->_StreamArchive = load_context._StreamArchive;
+	load_data->_Asset = new_asset;
 
-	//Read the number of mip levels.
-	uint8 number_of_mip_levels;
-	load_context._StreamArchive->Read(&number_of_mip_levels, sizeof(uint8), stream_archive_position);
-	stream_archive_position += sizeof(uint8);
+	//Set up the task.
+	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(load_context._TaskAllocator->Allocate()) };
 
-	//Read the width/height.
-	uint32 width;
-	load_context._StreamArchive->Read(&width, sizeof(uint32), stream_archive_position);
-	stream_archive_position += sizeof(uint32);
-
-	uint32 height;
-	load_context._StreamArchive->Read(&height, sizeof(uint32), stream_archive_position);
-	stream_archive_position += sizeof(uint32);
-
-	//Read the data.
-	DynamicArray<DynamicArray<byte>> data;
-	data.Upsize<true>(number_of_mip_levels);
-
-	for (uint8 mip_index{ 0 }; mip_index < number_of_mip_levels; ++mip_index)
+	task->_Function = [](void *const RESTRICT arguments)
 	{
-		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) };
-		data[mip_index].Upsize<false>(mip_size);
-		load_context._StreamArchive->Read(data[mip_index].Data(), mip_size, stream_archive_position);
-		stream_archive_position += mip_size;
-	}
+		Texture2DAssetCompiler::Instance->LoadInternal(static_cast<Texture2DLoadData*const RESTRICT>(arguments));
+	};
+	task->_Arguments = load_data;
+	task->_ExecutableOnSameThread = true;
 
-	//Create the texture.
-	{
-		PROFILING_SCOPE("Texture2DAssetCompiler::Load::CreateTexture2D");
+	//Execute the task!
+	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
 
-		RenderingSystem::Instance->CreateTexture2D
-		(
-			TextureData
-			(
-				TextureDataContainer
-				(
-					data,
-					width,
-					height,
-					4
-				),
-				TextureFormat::RGBA_UINT8,
-				TextureUsage::NONE,
-				false
-			),
-			&new_asset->_Texture2DHandle
-		);
-	}
+	//Add the task to the list.
+	load_context._Tasks->Emplace(task);
+#else
+	//Set up the load data.
+	Texture2DLoadData load_data;
 
-	//Add the texture to global render data.
-	new_asset->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(new_asset->_Texture2DHandle);
+	load_data._StreamArchivePosition = load_context._StreamArchivePosition;
+	load_data._StreamArchive = load_context._StreamArchive;
+	load_data._Asset = new_asset;
 
-	//Create the texture 2D.
-	new_asset->_Texture2D.Initialize(width, height);
-	Memory::Copy(new_asset->_Texture2D.Data(), data[0].Data(), width * height * sizeof(Vector4<byte>));
+	//Load!
+	LoadInternal(&load_data);
+#endif
 
 	//Return the new asset!
 	return new_asset;
@@ -876,4 +851,69 @@ void Texture2DAssetCompiler::CompileInternal(Texture2DCompileData *const RESTRIC
 	output_file.Close();
 
 	LOG_INFORMATION("Finished compiling %s", compile_data->_Name.Data());
+}
+
+/*
+*	Loads internally.
+*/
+void Texture2DAssetCompiler::LoadInternal(Texture2DLoadData *const RESTRICT load_data) NOEXCEPT
+{
+	//Read the data.
+	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
+
+	//Read the number of mip levels.
+	uint8 number_of_mip_levels;
+	load_data->_StreamArchive->Read(&number_of_mip_levels, sizeof(uint8), stream_archive_position);
+	stream_archive_position += sizeof(uint8);
+
+	//Read the width/height.
+	uint32 width;
+	load_data->_StreamArchive->Read(&width, sizeof(uint32), stream_archive_position);
+	stream_archive_position += sizeof(uint32);
+
+	uint32 height;
+	load_data->_StreamArchive->Read(&height, sizeof(uint32), stream_archive_position);
+	stream_archive_position += sizeof(uint32);
+
+	//Read the data.
+	DynamicArray<DynamicArray<byte>> data;
+	data.Upsize<true>(number_of_mip_levels);
+
+	for (uint8 mip_index{ 0 }; mip_index < number_of_mip_levels; ++mip_index)
+	{
+		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) };
+		data[mip_index].Upsize<false>(mip_size);
+		load_data->_StreamArchive->Read(data[mip_index].Data(), mip_size, stream_archive_position);
+		stream_archive_position += mip_size;
+	}
+
+	//Create the texture.
+	{
+		PROFILING_SCOPE("Texture2DAssetCompiler::Load::CreateTexture2D");
+
+		RenderingSystem::Instance->CreateTexture2D
+		(
+			TextureData
+			(
+				TextureDataContainer
+				(
+					data,
+					width,
+					height,
+					4
+				),
+				TextureFormat::RGBA_UINT8,
+				TextureUsage::NONE,
+				false
+			),
+			&load_data->_Asset->_Texture2DHandle
+		);
+	}
+
+	//Add the texture to global render data.
+	load_data->_Asset->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(load_data->_Asset->_Texture2DHandle);
+
+	//Create the texture 2D.
+	load_data->_Asset->_Texture2D.Initialize(width, height);
+	Memory::Copy(load_data->_Asset->_Texture2D.Data(), data[0].Data(), width * height * sizeof(Vector4<byte>));
 }

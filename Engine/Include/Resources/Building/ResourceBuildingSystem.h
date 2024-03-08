@@ -16,7 +16,6 @@
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
 #include <Resources/Building/ShaderBuildParameters.h>
 #include <Resources/Building/SoundBuildParameters.h>
-#include <Resources/Building/Texture2DBuildParameters.h>
 #include <Resources/Building/Texture3DBuildParameters.h>
 #include <Resources/Building/TextureCubeBuildParameters.h>
 #include <Resources/Building/VideoBuildParameters.h>
@@ -85,11 +84,6 @@ public:
 	*	Builds a texture cube
 	*/
 	void BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Builds a texture 2D.
-	*/
-	void BuildTexture2D(const Texture2DBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a texture 3D.

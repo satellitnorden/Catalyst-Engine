@@ -17,7 +17,6 @@
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
-#include <Resources/Core/Texture2DResource.h>
 #include <Resources/Core/Texture3DResource.h>
 #include <Resources/Core/TextureCubeResource.h>
 #include <Resources/Core/VideoResource.h>
@@ -290,24 +289,6 @@ public:
 	}
 
 	/*
-	*	Returns the texture 2D resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<Texture2DResource> GetTexture2DResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the texture 2D resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<Texture2DResource> FindOrCreateTexture2DResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all texture cube 2D.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, Texture2DResource *RESTRICT> &GetAllTexture2DResources() const NOEXCEPT
-	{
-		return _Texture2DResources;
-	}
-
-	/*
 	*	Returns the texture 3D resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT;
@@ -381,9 +362,6 @@ private:
 
 	//Container for all video resources.
 	HashTable<HashString, VideoResource *RESTRICT> _VideoResources;
-
-	//Container for all texture 2D resources.
-	HashTable<HashString, Texture2DResource *RESTRICT> _Texture2DResources;
 
 	//Container for all texture 3D resources.
 	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;

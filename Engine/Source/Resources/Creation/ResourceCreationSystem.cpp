@@ -468,34 +468,6 @@ void ResourceCreationSystem::CreateSound(SoundData *const RESTRICT data, SoundRe
 }
 
 /*
-*	Creates a texture 2D.
-*/
-void ResourceCreationSystem::CreateTexture2D(Texture2DData *const RESTRICT data, Texture2DResource *const RESTRICT resource) NOEXCEPT
-{
-	//Create the texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_Data, data->_Width, data->_Height, 4), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &resource->_Texture2DHandle);
-
-	//Add the texture to the global render data.
-	resource->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(resource->_Texture2DHandle);
-
-	//Create the texture 2D.
-	resource->_Texture2D.Initialize(data->_Width, data->_Height);
-
-	for (uint32 Y{ 0 }; Y < data->_Height; ++Y)
-	{
-		for (uint32 X{ 0 }; X < data->_Width; ++X)
-		{
-			uint64 source_texture_index{ (X + (Y * data->_Width)) * 4 };
-
-			resource->_Texture2D.At(X, Y)._X = static_cast<float32>(data->_Data[0][source_texture_index++]) / static_cast<float32>(UINT8_MAXIMUM);
-			resource->_Texture2D.At(X, Y)._Y = static_cast<float32>(data->_Data[0][source_texture_index++]) / static_cast<float32>(UINT8_MAXIMUM);
-			resource->_Texture2D.At(X, Y)._Z = static_cast<float32>(data->_Data[0][source_texture_index++]) / static_cast<float32>(UINT8_MAXIMUM);
-			resource->_Texture2D.At(X, Y)._W = static_cast<float32>(data->_Data[0][source_texture_index++]) / static_cast<float32>(UINT8_MAXIMUM);
-		}
-	}
-}
-
-/*
 *	Creates a texture 3D.
 */
 void ResourceCreationSystem::CreateTexture3D(Texture3DData *const RESTRICT data, Texture3DResource *const RESTRICT resource) NOEXCEPT

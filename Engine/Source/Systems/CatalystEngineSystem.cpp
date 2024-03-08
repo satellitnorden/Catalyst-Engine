@@ -159,7 +159,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 		#endif
 	#else
 		ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Base");
-		ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineBaseResourceCollection_0.crc");
+		ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Base");
 
 		#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
 			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEnvironmentResourceCollection_0.crc");
@@ -171,7 +171,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 		#if defined(CATALYST_EDITOR)
 			ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Editor");
-			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEditorResourceCollection_0.crc");
+			ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermedate\\Editor");
 		#endif
 	#endif
 		

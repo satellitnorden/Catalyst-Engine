@@ -26,19 +26,9 @@ namespace CatalystEngineResourceBuilding
 	void BuildCloudTexture() NOEXCEPT;
 
 	/*
-	*	Builds the ocean texture.
-	*/
-	void BuildOceanTexture() NOEXCEPT;
-
-	/*
 	*	Builds the default sky texture.
 	*/
 	void BuildDefaultSkyTexture() NOEXCEPT;
-
-	/*
-	*	Builds the default texture 2D.
-	*/
-	void BuildDefaultTexture2D() NOEXCEPT;
 
 	/*
 	*	Builds the default texture 3D.

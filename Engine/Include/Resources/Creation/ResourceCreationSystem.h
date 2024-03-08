@@ -17,7 +17,6 @@
 #include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
-#include <Resources/Core/Texture2DResource.h>
 #include <Resources/Core/Texture3DResource.h>
 #include <Resources/Core/TextureCubeResource.h>
 #include <Resources/Core/VideoResource.h>
@@ -90,11 +89,6 @@ public:
 	*	Creates a sound.
 	*/
 	void CreateSound(SoundData *const RESTRICT data, SoundResource *const RESTRICT resource) NOEXCEPT;
-
-	/*
-	*	Creates a texture 2D.
-	*/
-	void CreateTexture2D(Texture2DData *const RESTRICT data, Texture2DResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a texture 3D.

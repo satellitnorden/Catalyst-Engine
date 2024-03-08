@@ -40,11 +40,9 @@
 
 #define BUILD_ENGINE_BASE (0)
 #define BUILD_ENGINE_CLOUD_TEXTURE (0)
-#define BUILD_ENGINE_OCEAN_TEXTURE (0)
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES (0)
 #define BUILD_ENGINE_SHADERS (0)
 #define BUILD_ENGINE_DEFAULT_SKY_TEXTURE (0)
-#define BUILD_ENGINE_DEFAULT_TEXTURE_2D (0)
 #define BUILD_ENGINE_DEFAULT_TEXTURE_3D (0)
 #define BUILD_ENGINE_MATERIALS (0)
 #define BUILD_ENGINE_STAR_TEXTURE (0)
@@ -118,16 +116,8 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	BuildCloudTexture();
 #endif
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_OCEAN_TEXTURE
-	BuildOceanTexture();
-#endif
-
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_DEFAULT_SKY_TEXTURE
 	BuildDefaultSkyTexture();
-#endif
-
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_DEFAULT_TEXTURE_2D
-	BuildDefaultTexture2D();
 #endif
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_DEFAULT_TEXTURE_3D
@@ -1517,7 +1507,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		|| BUILD_ENGINE_BLUE_NOISE_TEXTURES
 		|| BUILD_ENGINE_SHADERS
 		|| BUILD_ENGINE_DEFAULT_SKY_TEXTURE
-		|| BUILD_ENGINE_DEFAULT_TEXTURE_2D
 		|| BUILD_ENGINE_DEFAULT_TEXTURE_3D
 		|| BUILD_ENGINE_MATERIALS 
 		|| BUILD_ENGINE_RESOURCE_COLLECTIONS
@@ -1702,135 +1691,6 @@ void CatalystEngineResourceBuilding::BuildCloudTexture() NOEXCEPT
 }
 
 /*
-*	Builds the ocean texture.
-*/
-void CatalystEngineResourceBuilding::BuildOceanTexture() NOEXCEPT
-{
-	//Defone constants.
-	constexpr uint32 OCEAN_TEXTURE_RESOLUTION{ 64 };
-	constexpr uint32 OCEAN_TEXTURE_LAYER_0_POINTS{ 64 };
-
-	//Generate the points for the layers.
-	StaticArray<DynamicArray<Vector2<float>>, 4> points;
-
-	for (uint8 i{ 0 }; i < 4; ++i)
-	{
-		const uint32 cloud_layer_points{ OCEAN_TEXTURE_LAYER_0_POINTS << i };
-
-		points[i].Reserve(cloud_layer_points * 27);
-
-		for (uint32 j{ 0 }; j < cloud_layer_points; ++j)
-		{
-			points[i].Emplace(	CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f),
-								CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f));
-		}
-	}
-
-	//Copy the first N points to the sides of the cube.
-	for (int8 X{ static_cast<int8>(-1) }; X <= 1; ++X)
-	{
-		for (int8 Y{ static_cast<int8>(-1) }; Y <= 1; ++Y)
-		{
-			if (X == 0 && Y == 0)
-			{
-				continue;
-			}
-
-			for (uint8 i{ 0 }; i < 4; ++i)
-			{
-				const uint32 cloud_layer_points{ OCEAN_TEXTURE_LAYER_0_POINTS << i };
-
-				for (uint32 j{ 0 }; j < cloud_layer_points; ++j)
-				{
-					const Vector2<float> offset{ static_cast<float>(X), static_cast<float>(Y) };
-					points[i].Emplace(points[i][j] + offset);
-				}
-			}
-		}
-	}
-
-	//Create the temporary texture.
-	Texture2D<Vector4<float>> temporary_texture{ OCEAN_TEXTURE_RESOLUTION };
-
-	//Keep track of the longest distances.
-	StaticArray<float, 4> longest_distances{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
-
-	for (uint32 X{ 0 }; X < OCEAN_TEXTURE_RESOLUTION; ++X)
-	{
-		for (uint32 Y{ 0 }; Y < OCEAN_TEXTURE_RESOLUTION; ++Y)
-		{
-			//Calcualte the position in the texture.
-			const Vector2<float> position{	static_cast<float>(X) / static_cast<float>(OCEAN_TEXTURE_RESOLUTION),
-											static_cast<float>(Y) / static_cast<float>(OCEAN_TEXTURE_RESOLUTION) };
-
-			for (uint8 i{ 0 }; i < 4; ++i)
-			{
-				//Find the closest distance.
-				float closest_distance{ FLOAT_MAXIMUM };
-
-				for (const Vector2<float>& point : points[i])
-				{
-					const float distance{ Vector2<float>::Length(position - point) };
-					closest_distance = CatalystBaseMath::Minimum<float>(closest_distance, distance);
-				}
-
-				//Write to the texture.
-				temporary_texture.At(X, Y)[i] = closest_distance;
-
-				//Update the longest distance.
-				longest_distances[i] = CatalystBaseMath::Maximum<float>(longest_distances[i], closest_distance);
-			}
-		}
-	}
-
-	//Create the final texture.
-	Texture2D<Vector4<byte>> final_texture{ OCEAN_TEXTURE_RESOLUTION };
-
-	for (uint32 X{ 0 }; X < OCEAN_TEXTURE_RESOLUTION; ++X)
-	{
-		for (uint32 Y{ 0 }; Y < OCEAN_TEXTURE_RESOLUTION; ++Y)
-		{
-			//Get the distances at the current position.
-			Vector4<float> distances{ temporary_texture.At(X, Y) };
-
-			//Normalize the distances.
-			for (uint8 i{ 0 }; i < 4; ++i)
-			{
-				distances[i] /= longest_distances[i];
-			}
-
-			//Convert it into byte.
-			final_texture.At(X, Y) = Vector4<byte>(static_cast<byte>(distances[0] * UINT8_MAXIMUM), static_cast<byte>(distances[1] * UINT8_MAXIMUM), static_cast<byte>(distances[2] * UINT8_MAXIMUM), static_cast<byte>(distances[3] * UINT8_MAXIMUM));
-		}
-	}
-
-	//What should the file be called?
-	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Environment\\Ocean_Texture2D" };
-	file_name += ".cr";
-
-	//Open the file to be written to.
-	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
-
-	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER, HashString("Ocean_Texture2D"), "Ocean_Texture2D" };
-	file.Write(&header, sizeof(ResourceHeader));
-
-	//Write the number of mipmap levels to the file.
-	constexpr uint8 MIPMAP_LEVELS{ 1 };
-	file.Write(&MIPMAP_LEVELS, sizeof(uint8));
-
-	//Write the width and height of the texture to the file.
-	file.Write(&OCEAN_TEXTURE_RESOLUTION, sizeof(uint32));
-	file.Write(&OCEAN_TEXTURE_RESOLUTION, sizeof(uint32));
-
-	//Write the texture data to the file.
-	file.Write(final_texture.Data(), OCEAN_TEXTURE_RESOLUTION * OCEAN_TEXTURE_RESOLUTION * 4);
-
-	//Cloe the file.
-	file.Close();
-}
-
-/*
 *	Builds the default sky texture.
 */
 void CatalystEngineResourceBuilding::BuildDefaultSkyTexture() NOEXCEPT
@@ -1862,34 +1722,6 @@ void CatalystEngineResourceBuilding::BuildDefaultSkyTexture() NOEXCEPT
 
 	//Close the file.
 	file.Close();
-}
-
-/*
-*	Builds the default texture 3D.
-*/
-void CatalystEngineResourceBuilding::BuildDefaultTexture2D() NOEXCEPT
-{
-	//Create the texture.
-	Texture2DBuildParameters parameters;
-
-	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Catalyst_Engine_Default_Texture_2D";
-	parameters._ID = "Catalyst_Engine_Default_Texture_2D";
-	parameters._DefaultWidth = 1;
-	parameters._DefaultHeight = 1;
-	parameters._File1 = nullptr;
-	parameters._File2 = nullptr;
-	parameters._File3 = nullptr;
-	parameters._File4 = nullptr;
-	parameters._Default = Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f);
-	parameters._ChannelMappings[0] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::RED);
-	parameters._ChannelMappings[1] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::GREEN);
-	parameters._ChannelMappings[2] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::BLUE);
-	parameters._ChannelMappings[3] = Texture2DBuildParameters::ChannelMapping(Texture2DBuildParameters::File::DEFAULT, Texture2DBuildParameters::Channel::ALPHA);
-	parameters._ApplyGammaCorrection = false;
-	parameters._TransformFunction = nullptr;
-	parameters._BaseMipmapLevel = 0;
-
-	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture2D(parameters);
 }
 
 /*

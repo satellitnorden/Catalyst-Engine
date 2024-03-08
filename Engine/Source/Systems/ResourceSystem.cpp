@@ -553,44 +553,6 @@ NO_DISCARD ResourcePointer<VideoResource> ResourceSystem::FindOrCreateVideoResou
 }
 
 /*
-*	Returns the texture 2D resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<Texture2DResource> ResourceSystem::GetTexture2DResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	Texture2DResource *const RESTRICT *const RESTRICT resource{ _Texture2DResources.Find(identifier) };
-
-	ASSERT(resource, "Couldn't find resource!");
-
-	return resource ? ResourcePointer<Texture2DResource>(*resource) : ResourcePointer<Texture2DResource>();
-}
-
-/*
-*	Returns or creates the texture 2D resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<Texture2DResource> ResourceSystem::FindOrCreateTexture2DResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	Texture2DResource *const RESTRICT *const RESTRICT resource{ _Texture2DResources.Find(identifier) };
-
-	if (!resource)
-	{
-		//If the resource couldn't be found, create it.
-		Texture2DResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<Texture2DResource>()) Texture2DResource() };
-		new_resource->_Header._ResourceIdentifier = identifier;
-		_Texture2DResources.Add(identifier, new_resource);
-		_AllResources.Emplace(new_resource);
-
-		return ResourcePointer<Texture2DResource>(new_resource);
-	}
-
-	else
-	{
-		return ResourcePointer<Texture2DResource>(*resource);
-	}
-}
-
-/*
 *	Returns the texture 3D resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<Texture3DResource> ResourceSystem::GetTexture3DResource(const HashString identifier) NOEXCEPT
@@ -1062,44 +1024,6 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 		//Create the resource.
 		_ResourceCreationSystem.CreateTextureCube(&data, new_resource);
-
-		//Register that the resource is now loaded.
-		new_resource->_LoadState = ResourceLoadState::LOADED;
-	}
-
-	else if (header._TypeIdentifier == ResourceConstants::TEXTURE_2D_TYPE_IDENTIFIER)
-	{
-		/*
-		*	Find or allocate the new resource.
-		*	The resource might have been created already by other dependant resources, but not loaded yet.
-		*/
-		Texture2DResource* RESTRICT new_resource;
-
-		if (Texture2DResource* const RESTRICT* const RESTRICT found_resource{ _Texture2DResources.Find(header._ResourceIdentifier) })
-		{
-			new_resource = *found_resource;
-		}
-
-		else
-		{
-			new_resource = new (MemorySystem::Instance->TypeAllocate<Texture2DResource>()) Texture2DResource();
-			_Texture2DResources.Add(header._ResourceIdentifier, new_resource);
-			_AllResources.Emplace(new_resource);
-		}
-
-		//Set the resource header.
-		new_resource->_Header = header;
-
-		//Set the file path and file offset.
-		new_resource->_FilePath = file->GetFilePath();
-		new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
-
-		//Load the resource.
-		Texture2DData data;
-		_ResourceLoadingSystem.LoadTexture2D(file, &data);
-
-		//Create the resource.
-		_ResourceCreationSystem.CreateTexture2D(&data, new_resource);
 
 		//Register that the resource is now loaded.
 		new_resource->_LoadState = ResourceLoadState::LOADED;

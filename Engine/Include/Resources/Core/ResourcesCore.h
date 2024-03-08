@@ -36,7 +36,6 @@ namespace ResourceConstants
 	const extern HashString SHADER_TYPE_IDENTIFIER;
 	const extern HashString SOUND_TYPE_IDENTIFIER;
 	const extern HashString TEXTURE_CUBE_TYPE_IDENTIFIER;
-	const extern HashString TEXTURE_2D_TYPE_IDENTIFIER;
 	const extern HashString TEXTURE_3D_TYPE_IDENTIFIER;
 	const extern HashString VIDEO_TYPE_IDENTIFIER;
 }

@@ -12,6 +12,9 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Core/AssetPointer.h>
 
+//File.
+#include <File/Core/BinaryFile.h>
+
 //Forward declarations.
 class ContentCache;
 
@@ -115,9 +118,19 @@ private:
 	) NOEXCEPT;
 
 	/*
+	*	Creates asset collections from the given directory path.
+	*/
+	void CreateAssetCollections(const char *const RESTRICT directory_path, BinaryFile<BinaryFileMode::OUT> *const RESTRICT file) NOEXCEPT;
+
+	/*
 	*	Load a single asset from the given file path.
 	*/
 	void LoadAsset(const char *const RESTRICT file_path) NOEXCEPT;
+
+	/*
+	*	Load a single asset collection from the given file path.
+	*/
+	void LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT;
 
 	/*
 	*	Parses content definitions in the given directory.

@@ -12,7 +12,6 @@
 
 //Content.
 #include <Content/Core/ContentCore.h>
-#include <Content/Core/AssetHeader.h>
 
 //Memory.
 #include <Memory/PoolAllocator.h>
@@ -88,9 +87,6 @@ public:
 	{
 
 	public:
-
-		//The asset header.
-		AssetHeader _AssetHeader;
 
 		//The stream archive.
 		StreamArchive *RESTRICT _StreamArchive;

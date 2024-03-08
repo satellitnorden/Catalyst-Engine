@@ -14,7 +14,6 @@
 
 //File.
 #include <File/Core/FileCore.h>
-#include <File/Core/BinaryFile.h>
 #include <File/Utilities/TextParsingUtilities.h>
 #include <File/Writers/PNGWriter.h>
 
@@ -38,10 +37,12 @@
 
 //Constants.
 #define ENGINE_ASSETS "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets"
+#define ENGINE_COMPILED "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled"
 #define ENGINE_CONTENT_DEFINITIONS "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Content Definitions"
 #define ENGINE_INTERMEDIATE "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate"
 #define ENGINE_RAW "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Raw"
 #define GAME_ASSETS "..\\..\\..\\Content\\Assets"
+#define GAME_COMPILED "..\\..\\..\\Content\\Compiled"
 #define GAME_CONTENT_DEFINITIONS "..\\..\\..\\Content\\Content Definitions"
 #define GAME_INTERMEDIATE "..\\..\\..\\Content\\Intermediate"
 #define GAME_RAW "..\\..\\..\\Content\\Raw"
@@ -132,6 +133,12 @@ NO_DISCARD bool ContentSystem::CompileEngine() NOEXCEPT
 
 	LOG_INFORMATION("ContentSystem::CompileEngine took %f seconds.", start_time.GetSecondsSince());
 
+	//Create asset collections if new content was compiled.
+	if (new_content_compiled)
+	{
+		CreateAssetCollections(ENGINE_COMPILED, nullptr);
+	}
+
 	return new_content_compiled;
 }
 
@@ -196,6 +203,12 @@ NO_DISCARD bool ContentSystem::CompileGame() NOEXCEPT
 
 	LOG_INFORMATION("ContentSystem::CompileGame took %f seconds.", start_time.GetSecondsSince());
 
+	//Create asset collections if new content was compiled.
+	if (new_content_compiled)
+	{
+		CreateAssetCollections(GAME_COMPILED, nullptr);
+	}
+
 	return new_content_compiled;
 }
 
@@ -204,7 +217,7 @@ NO_DISCARD bool ContentSystem::CompileGame() NOEXCEPT
 */
 void ContentSystem::LoadAssets(const char *const RESTRICT directory_path) NOEXCEPT
 {
-	//Iterateover the items in the directory.
+	//Iterate over the items in the directory.
 	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
 		//Cache the file path.
@@ -230,7 +243,7 @@ void ContentSystem::LoadAssets(const char *const RESTRICT directory_path) NOEXCE
 		//Is this an asset collection?
 		else if (file_extension == File::Extension::CAC)
 		{
-			//TODO!
+			LoadAssetCollection(file_path.c_str());
 		}
 	}
 }
@@ -349,6 +362,83 @@ NO_DISCARD bool ContentSystem::ScanAssetsInDirectory
 }
 
 /*
+*	Creates asset collections from the given directory path.
+*/
+void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_path, BinaryFile<BinaryFileMode::OUT> *const RESTRICT file) NOEXCEPT
+{
+	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
+	{
+		//If this is a collection directory, create the file.
+		if (entry.is_directory())
+		{
+			//Cache the directory path.
+			const std::string _directory_path{ entry.path().u8string() };
+
+			//Determine the sub-directory path.
+			std::string sub_directory_path{ _directory_path };
+
+			{
+				const size_t position{ _directory_path.find_last_of('\\') };
+
+				if (position != std::string::npos)
+				{
+					sub_directory_path = _directory_path.substr(position + 1);
+				}
+			}
+
+			//Check for colletions.
+			const size_t position{ sub_directory_path.find("COLLECTION ") };
+
+			if (position != std::string::npos)
+			{
+				//Determine out the collection name.
+				const std::string collection_name{ &sub_directory_path[position + strlen("COLLECTION ")] };
+
+				//Determine the collection path.
+				char collection_path[MAXIMUM_FILE_PATH_LENGTH];
+				sprintf_s(collection_path, "%s\\..\\Collections\\%s.cac", directory_path, collection_name.c_str());
+
+				//Set up the file.
+				BinaryFile<BinaryFileMode::OUT> _file{ collection_path };
+				
+				//Call recursively!
+				CreateAssetCollections(_directory_path.c_str(), &_file);
+
+				//Close the file.
+				_file.Close();
+			}
+
+			else
+			{
+				//Call recursively!
+				CreateAssetCollections(_directory_path.c_str(), file);
+			}
+
+			continue;
+		}
+
+		//Cache the file path.
+		const std::string file_path{ entry.path().u8string() };
+
+		//Open the input file.
+		BinaryFile<BinaryFileMode::IN> input_file{ file_path.c_str() };
+
+		//Write the file size.
+		const uint64 file_size{ input_file.Size() };
+		file->Write(&file_size, sizeof(uint64));
+
+		//Write the data
+		DynamicArray<byte> input_buffer;
+		input_buffer.Upsize<false>(file_size);
+		input_file.Read(input_buffer.Data(), file_size);
+		file->Write(input_buffer.Data(), file_size);
+
+		//Close the input file.
+		input_file.Close();
+	}
+}
+
+/*
 *	Load a single asset from the given file path.
 */
 void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
@@ -357,12 +447,19 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 	StreamArchive stream_archive;
 
 	{
-		PROFILING_SCOPE("Create stream archive");
+		PROFILING_SCOPE("ContentSystem::LoadAsset::CreateStreamArchive");
 
 		BinaryFile<BinaryFileMode::IN> file{ file_path };
 
-		stream_archive.Resize(file.Size());
-		file.Read(stream_archive.Data(), file.Size());
+		{
+			PROFILING_SCOPE("ContentSystem::LoadAsset::AllocateStreamArchive");
+			stream_archive.Resize(file.Size());
+		}
+		
+		{
+			PROFILING_SCOPE("ContentSystem::LoadAsset::ReadStreamArchive");
+			file.Read(stream_archive.Data(), file.Size());
+		}
 
 		file.Close();
 	}
@@ -391,7 +488,6 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 	//Set up the load context.
 	AssetCompiler::LoadContext load_context;
 
-	load_context._AssetHeader = asset_header;
 	load_context._StreamArchive = &stream_archive;
 	load_context._StreamArchivePosition = sizeof(AssetHeader);
 	load_context._TaskAllocator = &_TaskAllocator;
@@ -400,10 +496,135 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 	//Load!
 	Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };
 
+	//Copy the asset header.
+	Memory::Copy(&new_asset->_Header, &asset_header, sizeof(AssetHeader));
+
 	//Add it to the list of assets.
 	HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_compiler->AssetTypeIdentifier()) };
 
 	assets->Add(asset_header._AssetIdentifier, new_asset);
+
+	//Wait for all tasks to finish.
+	bool all_tasks_finished{ _Tasks.Empty() };
+
+	while (!all_tasks_finished)
+	{
+		TaskSystem::Instance->DoWork(Task::Priority::LOW);
+
+		all_tasks_finished = true;
+
+		for (const Task *const RESTRICT task : _Tasks)
+		{
+			all_tasks_finished &= task->IsExecuted();
+		}
+	}
+
+	//Clear the tasks.
+	_Tasks.Clear();
+}
+
+/*
+*	Load a single asset collection from the given file path.
+*/
+void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT
+{
+	//Load the file into a stream archive.
+	StreamArchive stream_archive;
+
+	{
+		PROFILING_SCOPE("ContentSystem::LoadAssetCollection::CreateStreamArchive");
+
+		BinaryFile<BinaryFileMode::IN> file{ file_path };
+
+		{
+			PROFILING_SCOPE("ContentSystem::LoadAssetCollection::AllocateStreamArchive");
+			stream_archive.Resize(file.Size());
+		}
+
+		{
+			PROFILING_SCOPE("ContentSystem::LoadAssetCollection::ReadStreamArchive");
+			file.Read(stream_archive.Data(), file.Size());
+		}
+
+		file.Close();
+	}
+
+	//Read the whole file.
+	uint64 stream_archive_position{ 0 };
+
+	while (stream_archive_position < stream_archive.Size())
+	{
+		//Remember the original stream archive position.
+		const uint64 original_stream_archive_position{ stream_archive_position };
+
+		//Read the file size.
+		uint64 file_size{ 0 };
+		stream_archive.Read(&file_size, sizeof(uint64), stream_archive_position);
+		stream_archive_position += sizeof(uint64);
+
+		//Read the asset header.
+		AssetHeader asset_header;
+		stream_archive.Read(&asset_header, sizeof(AssetHeader), stream_archive_position);
+		stream_archive_position += sizeof(AssetHeader);
+
+		//Find the asset compiler for this asset type.
+		AssetCompiler *RESTRICT asset_compiler;
+
+		{
+			AssetCompiler *const RESTRICT *const RESTRICT _asset_compiler{ _AssetCompilers.Find(asset_header._AssetTypeIdentifier) };
+			asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
+		}
+
+		//Couldn't find an asset compiler, ignore!
+		if (!asset_compiler)
+		{
+			ASSERT(false, "Couldn't find asset compiler!");
+
+			stream_archive_position = original_stream_archive_position + file_size + sizeof(uint64);
+
+			continue;
+		}
+
+		//Set up the load context.
+		AssetCompiler::LoadContext load_context;
+
+		load_context._StreamArchive = &stream_archive;
+		load_context._StreamArchivePosition = stream_archive_position;
+		load_context._TaskAllocator = &_TaskAllocator;
+		load_context._Tasks = &_Tasks;
+
+		//Load!
+		Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };
+
+		//Copy the asset header.
+		Memory::Copy(&new_asset->_Header, &asset_header, sizeof(AssetHeader));
+
+		//Add it to the list of assets.
+		HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_compiler->AssetTypeIdentifier()) };
+
+		assets->Add(asset_header._AssetIdentifier, new_asset);
+
+		//Advance the stream archive position.
+		stream_archive_position = original_stream_archive_position + file_size + sizeof(uint64);
+	}
+
+	//Wait for all tasks to finish.
+	bool all_tasks_finished{ _Tasks.Empty() };
+
+	while (!all_tasks_finished)
+	{
+		TaskSystem::Instance->DoWork(Task::Priority::LOW);
+
+		all_tasks_finished = true;
+
+		for (const Task *const RESTRICT task : _Tasks)
+		{
+			all_tasks_finished &= task->IsExecuted();
+		}
+	}
+
+	//Clear the tasks.
+	_Tasks.Clear();
 }
 
 /*
@@ -1112,8 +1333,9 @@ void ContentSystem::ParseProceduralTreeModel(const CompilationDomain compilation
 /*
 *	Loads the texture 2D with the given identifier.
 */
-NO_DISCARD ResourcePointer<Texture2DResource> LoadTexture2DResource(const char *const RESTRICT directory_path, const HashString identifier) NOEXCEPT
+NO_DISCARD AssetPointer<Texture2DAsset> LoadTexture2DResource(const char *const RESTRICT directory_path, const HashString identifier) NOEXCEPT
 {
+#if 0
 	/*
 	*	This is a bit tricky, best we can do right now is search in a specific path,
 	*	hash the names of the files, and see if they match.
@@ -1134,8 +1356,8 @@ NO_DISCARD ResourcePointer<Texture2DResource> LoadTexture2DResource(const char *
 	}
 
 	ASSERT(false, "Couldn't find resource!");
-
-	return ResourcePointer<Texture2DResource>();
+#endif
+	return AssetPointer<Texture2DAsset>();
 }
 
 /*
@@ -1143,6 +1365,7 @@ NO_DISCARD ResourcePointer<Texture2DResource> LoadTexture2DResource(const char *
 */
 void ContentSystem::ParseImpostorMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
 {
+#if 0
 	//Calculate the intermediate directory.
 	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
 
@@ -1313,10 +1536,10 @@ void ContentSystem::ParseImpostorMaterial(const CompilationDomain compilation_do
 	}
 
 	//Load all textures for all materials.
-	DynamicArray<ResourcePointer<Texture2DResource>> albedo_thickness_textures;
-	DynamicArray<ResourcePointer<Texture2DResource>> normal_map_displacement_textures;
-	DynamicArray<ResourcePointer<Texture2DResource>> material_properties_textures;
-	DynamicArray<ResourcePointer<Texture2DResource>> opacity_textures;
+	DynamicArray<AssetPointer<Texture2DAsset>> albedo_thickness_textures;
+	DynamicArray<AssetPointer<Texture2DAsset>> normal_map_displacement_textures;
+	DynamicArray<AssetPointer<Texture2DAsset>> material_properties_textures;
+	DynamicArray<AssetPointer<Texture2DAsset>> opacity_textures;
 
 	{
 		/*
@@ -1469,9 +1692,9 @@ void ContentSystem::ParseImpostorMaterial(const CompilationDomain compilation_do
 
 							if (opacity_textures[mesh_index])
 							{
-								const Vector4<float32> mask_value{ opacity_textures[mesh_index]->_Texture2D.Sample(texture_coordinate, AddressMode::CLAMP_TO_EDGE) };
+								//const Vector4<float32> mask_value{ opacity_textures[mesh_index]->_Texture2D.Sample(texture_coordinate, AddressMode::CLAMP_TO_EDGE) };
 
-								was_really_a_hit = mask_value[0] >= 0.5f;
+								//was_really_a_hit = mask_value[0] >= 0.5f;
 							}
 
 							if (was_really_a_hit)
@@ -1491,7 +1714,7 @@ void ContentSystem::ParseImpostorMaterial(const CompilationDomain compilation_do
 			if (intersection_distance != FLOAT32_MAXIMUM)
 			{
 				//Fill in the textures.
-				impostor_albedo_texture.At(X, Y) = albedo_thickness_textures[intersected_mesh_index]->_Texture2D.Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE);
+				//impostor_albedo_texture.At(X, Y) = albedo_thickness_textures[intersected_mesh_index]->_Texture2D.Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE);
 				impostor_opacity_texture.At(X, Y) = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
 
 				//Calculate the normal
@@ -1502,33 +1725,33 @@ void ContentSystem::ParseImpostorMaterial(const CompilationDomain compilation_do
 					tangent_space_matrix._Matrix[1] = Vector3<float32>::Normalize(tangent_space_matrix._Matrix[1]);
 					tangent_space_matrix._Matrix[2] = Vector3<float32>::Normalize(tangent_space_matrix._Matrix[2]);
 
-					const Vector4<float32> normal_map_displacement_sample{ normal_map_displacement_textures[intersected_mesh_index]->_Texture2D.Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE) };
-					Vector3<float32> normal_map_sample{ normal_map_displacement_sample._X, normal_map_displacement_sample._Y, normal_map_displacement_sample._Z };
+					//const Vector4<float32> normal_map_displacement_sample{ normal_map_displacement_textures[intersected_mesh_index]->_Texture2D.Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE) };
+					//Vector3<float32> normal_map_sample{ normal_map_displacement_sample._X, normal_map_displacement_sample._Y, normal_map_displacement_sample._Z };
 
-					normal_map_sample._X = normal_map_sample._X * 2.0f - 1.0f;
-					normal_map_sample._Y = normal_map_sample._Y * 2.0f - 1.0f;
-					normal_map_sample._Z = normal_map_sample._Z * 2.0f - 1.0f;
+					//normal_map_sample._X = normal_map_sample._X * 2.0f - 1.0f;
+					//normal_map_sample._Y = normal_map_sample._Y * 2.0f - 1.0f;
+					//normal_map_sample._Z = normal_map_sample._Z * 2.0f - 1.0f;
 
-					normal_map_sample.Normalize();
+					//normal_map_sample.Normalize();
 
-					Vector3<float32> surface_normal{ tangent_space_matrix * normal_map_sample };
+					//Vector3<float32> surface_normal{ tangent_space_matrix * normal_map_sample };
 
-					surface_normal *= -1.0f;
+					//surface_normal *= -1.0f;
 
-					surface_normal.Normalize();
+					//surface_normal.Normalize();
 
 					//Flip the normal if we hit the backside.
-					if (Vector3<float32>::DotProduct(ray._Direction, surface_normal) < 0.0f)
-					{
-						surface_normal *= -1.0f;
-					}
+					//if (Vector3<float32>::DotProduct(ray._Direction, surface_normal) < 0.0f)
+					//{
+					//	surface_normal *= -1.0f;
+					//}
 
-					surface_normal._X = surface_normal._X * 0.5f + 0.5f;
-					surface_normal._Y = surface_normal._Y * 0.5f + 0.5f;
-					surface_normal._Z = surface_normal._Z * 0.5f + 0.5f;
+					//surface_normal._X = surface_normal._X * 0.5f + 0.5f;
+					//surface_normal._Y = surface_normal._Y * 0.5f + 0.5f;
+					//surface_normal._Z = surface_normal._Z * 0.5f + 0.5f;
 
-					impostor_normal_map_texture.At(X, Y) = Vector4<float32>(surface_normal, 0.5f);
-					impostor_material_properties_texture.At(X, Y) = material_properties_textures[intersected_mesh_index]->_Texture2D.Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE);
+					//impostor_normal_map_texture.At(X, Y) = Vector4<float32>(surface_normal, 0.5f);
+					//impostor_material_properties_texture.At(X, Y) = material_properties_textures[intersected_mesh_index]->_Texture2D.Sample(intersected_texture_coordinate, AddressMode::CLAMP_TO_EDGE);
 				}
 			}
 
@@ -1789,5 +2012,6 @@ void ContentSystem::ParseImpostorMaterial(const CompilationDomain compilation_do
 	}
 
 	//TODO: Unload the resources. (:
+#endif
 }
 #endif
