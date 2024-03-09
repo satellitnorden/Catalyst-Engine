@@ -133,13 +133,15 @@ NO_DISCARD bool ContentSystem::CompileEngine() NOEXCEPT
 		asset_compiler->PostCompile(CompilationDomain::ENGINE);
 	}
 
-	LOG_INFORMATION("ContentSystem::CompileEngine took %f seconds.", start_time.GetSecondsSince());
-
 	//Create asset collections if new content was compiled.
 	if (new_content_compiled)
 	{
+		PROFILING_SCOPE("ContentSystem::CreateAssetCollections");
+
 		CreateAssetCollections(ENGINE_COMPILED, nullptr);
 	}
+
+	LOG_INFORMATION("ContentSystem::CompileEngine took %f seconds.", start_time.GetSecondsSince());
 
 	return new_content_compiled;
 }
@@ -203,13 +205,15 @@ NO_DISCARD bool ContentSystem::CompileGame() NOEXCEPT
 		asset_compiler->PostCompile(CompilationDomain::GAME);
 	}
 
-	LOG_INFORMATION("ContentSystem::CompileGame took %f seconds.", start_time.GetSecondsSince());
-
 	//Create asset collections if new content was compiled.
 	if (new_content_compiled)
 	{
+		PROFILING_SCOPE("ContentSystem::CreateAssetCollections");
+
 		CreateAssetCollections(GAME_COMPILED, nullptr);
 	}
+
+	LOG_INFORMATION("ContentSystem::CompileGame took %f seconds.", start_time.GetSecondsSince());
 
 	return new_content_compiled;
 }
@@ -614,17 +618,27 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 	}
 
 	//Wait for all tasks to finish.
-	bool all_tasks_finished{ _Tasks.Empty() };
+	uint64 number_of_tasks_left{ _Tasks.Size() };
 
-	while (!all_tasks_finished)
+	while (number_of_tasks_left > 0)
 	{
-		TaskSystem::Instance->DoWork(Task::Priority::LOW);
+		uint64 _number_of_tasks_left{ 0 };
 
-		all_tasks_finished = true;
+		TaskSystem::Instance->DoWork(Task::Priority::LOW);
 
 		for (const Task *const RESTRICT task : _Tasks)
 		{
-			all_tasks_finished &= task->IsExecuted();
+			if (!task->IsExecuted())
+			{
+				++_number_of_tasks_left;
+			}
+		}
+
+		if (number_of_tasks_left != _number_of_tasks_left)
+		{
+			number_of_tasks_left = _number_of_tasks_left;
+
+			LOG_INFORMATION("Number of ascynhronous compile tasks left: %llu", number_of_tasks_left);
 		}
 	}
 

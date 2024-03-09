@@ -237,7 +237,7 @@ NO_DISCARD Asset *const RESTRICT Texture2DAssetCompiler::Load(const LoadContext 
 */
 void Texture2DAssetCompiler::CompileInternal(Texture2DCompileData *const RESTRICT compile_data) NOEXCEPT
 {
-	LOG_INFORMATION("Starting compiling %s", compile_data->_Name.Data());
+	PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal");
 
 	//Set up the parameters.
 	Texture2DParameters parameters;
@@ -849,8 +849,6 @@ void Texture2DAssetCompiler::CompileInternal(Texture2DCompileData *const RESTRIC
 
 	//Close the output file.
 	output_file.Close();
-
-	LOG_INFORMATION("Finished compiling %s", compile_data->_Name.Data());
 }
 
 /*
@@ -858,6 +856,8 @@ void Texture2DAssetCompiler::CompileInternal(Texture2DCompileData *const RESTRIC
 */
 void Texture2DAssetCompiler::LoadInternal(Texture2DLoadData *const RESTRICT load_data) NOEXCEPT
 {
+	PROFILING_SCOPE("Texture2DAssetCompiler::LoadInternal");
+
 	//Read the data.
 	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
 

@@ -136,7 +136,7 @@ NO_DISCARD Asset *const RESTRICT ModelAssetCompiler::Load(const LoadContext &loa
 */
 void ModelAssetCompiler::CompileInternal(ModelCompileData *const RESTRICT compile_data) NOEXCEPT
 {
-	LOG_INFORMATION("Starting compiling %s", compile_data->_Name.Data());
+	PROFILING_SCOPE("ModelAssetCompiler::CompileInternal");
 
 	//Set up the parameters.
 	ModelParameters parameters;
@@ -337,8 +337,6 @@ void ModelAssetCompiler::CompileInternal(ModelCompileData *const RESTRICT compil
 
 	//Close the output file.
 	output_file.Close();
-
-	LOG_INFORMATION("Finished compiling %s", compile_data->_Name.Data());
 }
 
 /*
@@ -346,6 +344,8 @@ void ModelAssetCompiler::CompileInternal(ModelCompileData *const RESTRICT compil
 */
 void ModelAssetCompiler::LoadInternal(ModelLoadData *const RESTRICT load_data) NOEXCEPT
 {
+	PROFILING_SCOPE("ModelAssetCompiler::LoadInternal");
+
 	//Read the data.
 	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
 
