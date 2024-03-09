@@ -6,11 +6,16 @@
 #include <Components/Components/EditorDataComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/ModelAsset.h>
+
 //File.
 #include <File/Core/FileCore.h>
 
 //Systems.
 #include <Systems/CatalystEditorSystem.h>
+#include <Systems/ContentSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/ImGuiSystem.h>
 #include <Systems/InputSystem.h>
@@ -65,6 +70,7 @@ FORCE_INLINE NO_DISCARD bool TextInputWidget(const char *const RESTRICT label, c
 */
 FORCE_INLINE NO_DISCARD bool MaterialResourceWidget(const char *const RESTRICT label, ResourcePointer<MaterialResource> *const RESTRICT material_resource) NOEXCEPT
 {
+	/*
 	char buffer[256];
 	sprintf_s(buffer, "%s: %s", label, (*material_resource)->_Header._ResourceName.Data());
 
@@ -83,32 +89,33 @@ FORCE_INLINE NO_DISCARD bool MaterialResourceWidget(const char *const RESTRICT l
 			material_resource
 		);
 	}
+	*/
 
 	//Eh.
 	return false;
 }
 
 /*
-*	Creates a custom model resource widget. Returns if there was a change.
+*	Creates a custom model asset widget. Returns if there was a change.
 */
-FORCE_INLINE NO_DISCARD bool ModelResourceWidget(const char *const RESTRICT label, ResourcePointer<ModelResource> *const RESTRICT model_resource) NOEXCEPT
+FORCE_INLINE NO_DISCARD bool ModelAssetWidget(const char *const RESTRICT label, AssetPointer<ModelAsset> *const RESTRICT model_asset) NOEXCEPT
 {
 	char buffer[256];
-	sprintf_s(buffer, "%s: %s", label, (*model_resource)->_Header._ResourceName.Data());
+	sprintf_s(buffer, "%s: %s", label, (*model_asset)->_Header._AssetName.Data());
 
 	if (ImGui::Selectable(buffer))
 	{
 		CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
 		(
 			"Select Model",
-			ResourceConstants::MODEL_TYPE_IDENTIFIER,
-			[](Resource *const RESTRICT resource, void *const RESTRICT arguments)
+			ModelAsset::TYPE_IDENTIFIER,
+			[](Asset *const RESTRICT asset, void *const RESTRICT arguments)
 			{
-				ResourcePointer<ModelResource> *const RESTRICT model_resource{ static_cast<ResourcePointer<ModelResource> *const RESTRICT>(arguments) };
+				AssetPointer<ModelAsset> *const RESTRICT model_resource{ static_cast<AssetPointer<ModelAsset> *const RESTRICT>(arguments) };
 			
-				(*model_resource) = ResourcePointer<ModelResource>((ModelResource *const RESTRICT)resource);
+				(*model_resource) = AssetPointer<ModelAsset>((ModelAsset *const RESTRICT)asset);
 			},
-			model_resource
+			model_asset
 		);
 	}
 
@@ -318,6 +325,7 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 */
 void EditorLevelSystem::LoadLevel() NOEXCEPT
 {
+	/*
 	//Request browsing for the level.
 	CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
 	(
@@ -329,6 +337,7 @@ void EditorLevelSystem::LoadLevel() NOEXCEPT
 		},
 		nullptr
 	);
+	*/
 }
 
 /*
@@ -668,11 +677,11 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 								break;
 							}
 
-							case ComponentEditableField::Type::MODEL_RESOURCE:
+							case ComponentEditableField::Type::MODEL_ASSET:
 							{
-								ResourcePointer<ModelResource> *const RESTRICT model_resource{ component->EditableFieldData<ResourcePointer<ModelResource>>(selected_level_entry._Entity, editable_field) };
+								AssetPointer<ModelAsset> *const RESTRICT model_resource{ component->EditableFieldData<AssetPointer<ModelAsset>>(selected_level_entry._Entity, editable_field) };
 
-								ModelResourceWidget(editable_field._Name, model_resource);
+								ModelAssetWidget(editable_field._Name, model_resource);
 
 								break;
 							}

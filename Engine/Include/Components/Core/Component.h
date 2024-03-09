@@ -257,9 +257,9 @@ protected:
 	) NOEXCEPT;
 
 	/*
-	*	Adds an editable model resource field.
+	*	Adds an editable model asset field.
 	*/
-	void AddEditableModelResourceField
+	void AddEditableModelAssetField
 	(
 		const char *const RESTRICT name,
 		const uint64 initialization_data_offset,

@@ -7,6 +7,10 @@
 //Components.
 #include <Components/Core/Component.h>
 
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/ModelAsset.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/ModelFadeData.h>
@@ -14,7 +18,6 @@
 //Resources.
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/MaterialResource.h>
-#include <Resources/Core/ModelResource.h>
 
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
@@ -50,8 +53,8 @@ public:
 	//The world transforms.
 	DynamicArray<WorldTransform> _WorldTransforms;
 
-	//The model resource.
-	ResourcePointer<ModelResource> _ModelResource;
+	//The model.
+	AssetPointer<ModelAsset> _Model;
 
 	//The material resources.
 	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
@@ -75,8 +78,8 @@ public:
 	//The world space axis aligned bounding box.
 	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
 
-	//The model resource.
-	ResourcePointer<ModelResource> _ModelResource;
+	//The model.
+	AssetPointer<ModelAsset> _Model;
 
 	//The material resources.
 	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;

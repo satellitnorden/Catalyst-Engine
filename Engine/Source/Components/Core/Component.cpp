@@ -23,9 +23,9 @@ void Component::AddEditableMaterialResourceField
 }
 
 /*
-*	Adds an editable model resource field.
+*	Adds an editable model asset field.
 */
-void Component::AddEditableModelResourceField
+void Component::AddEditableModelAssetField
 (
 	const char *const RESTRICT name,
 	const uint64 initialization_data_offset,
@@ -36,7 +36,7 @@ void Component::AddEditableModelResourceField
 
 	editable_field._Name = name;
 	editable_field._Identifier = HashAlgorithms::MurmurHash64(name, StringUtilities::StringLength(name));
-	editable_field._Type = ComponentEditableField::Type::MODEL_RESOURCE;
+	editable_field._Type = ComponentEditableField::Type::MODEL_ASSET;
 	editable_field._InitializationDataOffset = initialization_data_offset;
 	editable_field._InstanceDataOffset = instance_data_offset;
 

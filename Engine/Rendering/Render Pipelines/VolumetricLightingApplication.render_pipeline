@@ -120,8 +120,6 @@ Fragment
         transmittance *= attenuation_factor;
     }
 
-    transmittance = 1.0f - min(length(volumetric_lighting), 1.0f);
-
     //Output the fragment.
     OutputFragment(Scene, vec4(volumetric_lighting, 1.0f));
 }

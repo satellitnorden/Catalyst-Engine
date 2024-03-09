@@ -28,7 +28,7 @@ public:
 	enum class Type : uint8
 	{
 		MATERIAL_RESOURCE,
-		MODEL_RESOURCE,
+		MODEL_ASSET,
 		WORLD_TRANSFORM
 	};
 

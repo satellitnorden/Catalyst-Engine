@@ -863,17 +863,14 @@ void Texture2DAssetCompiler::LoadInternal(Texture2DLoadData *const RESTRICT load
 
 	//Read the number of mip levels.
 	uint8 number_of_mip_levels;
-	load_data->_StreamArchive->Read(&number_of_mip_levels, sizeof(uint8), stream_archive_position);
-	stream_archive_position += sizeof(uint8);
+	load_data->_StreamArchive->Read(&number_of_mip_levels, sizeof(uint8), &stream_archive_position);
 
 	//Read the width/height.
 	uint32 width;
-	load_data->_StreamArchive->Read(&width, sizeof(uint32), stream_archive_position);
-	stream_archive_position += sizeof(uint32);
+	load_data->_StreamArchive->Read(&width, sizeof(uint32), &stream_archive_position);
 
 	uint32 height;
-	load_data->_StreamArchive->Read(&height, sizeof(uint32), stream_archive_position);
-	stream_archive_position += sizeof(uint32);
+	load_data->_StreamArchive->Read(&height, sizeof(uint32), &stream_archive_position);
 
 	//Read the data.
 	DynamicArray<DynamicArray<byte>> data;
@@ -883,8 +880,7 @@ void Texture2DAssetCompiler::LoadInternal(Texture2DLoadData *const RESTRICT load
 	{
 		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) };
 		data[mip_index].Upsize<false>(mip_size);
-		load_data->_StreamArchive->Read(data[mip_index].Data(), mip_size, stream_archive_position);
-		stream_archive_position += mip_size;
+		load_data->_StreamArchive->Read(data[mip_index].Data(), mip_size, &stream_archive_position);
 	}
 
 	//Create the texture.

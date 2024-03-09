@@ -19,6 +19,17 @@ public:
 	{
 
 	}
+
+	/*
+	*	Default destructor.
+	*/
+	FORCE_INLINE ~StreamArchive() NOEXCEPT
+	{
+		if (_Array)
+		{
+			Memory::Free(_Array);
+		}
+	}
 	
 	/*
 	*	Returns the underlying data, const.
@@ -45,33 +56,32 @@ public:
 	}
 
 	/*
-	*	Reads from this stream archive at the given position.
+	*	Returns the capacity.
 	*/
-	template <typename TYPE>
-	FORCE_INLINE void Read(TYPE *const RESTRICT destination, const uint64 size, const uint64 position) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD uint64 Capacity() const NOEXCEPT
 	{
-		Memory::Copy(destination, &_Array[position], size);
+		return _Capacity;
 	}
 
 	/*
 	*	Reads from this stream archive at the given position.
+	*	Updates the position.
 	*/
-	FORCE_INLINE NO_DISCARD const byte *const RESTRICT Read(const uint64 position) const NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE void Read(TYPE *const RESTRICT destination, const uint64 size, uint64 *const RESTRICT position) const NOEXCEPT
 	{
-		return &_Array[position];
+		Memory::Copy(destination, &_Array[*position], size);
+
+		*position += size;
 	}
 
 	/*
 	*	Writes to this stream archive.
 	*/
-	template <typename TYPE>
-	FORCE_INLINE void Write(const TYPE &value) NOEXCEPT
+	FORCE_INLINE void Write(const void *const RESTRICT source, const uint64 size) NOEXCEPT
 	{
-		//Define constants.
-		constexpr uint64 SIZE_OF_TYPE{ sizeof(TYPE) };
-
 		//Calculate the needed memory.
-		const uint64 needed_memory{ _Size + SIZE_OF_TYPE };
+		const uint64 needed_memory{ _Size + size };
 
 		//Re-allocate if we need more memory.
 		if (_Capacity < needed_memory)
@@ -80,10 +90,10 @@ public:
 		}
 
 		//Copy the value.
-		Memory::Copy(&_Array[_Size], &value, SIZE_OF_TYPE);
+		Memory::Copy(&_Array[_Size], source, size);
 
 		//Update the size.
-		_Size += SIZE_OF_TYPE;
+		_Size += size;
 	}
 
 	/*

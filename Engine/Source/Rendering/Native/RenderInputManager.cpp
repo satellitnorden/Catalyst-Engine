@@ -771,7 +771,7 @@ void RenderInputManager::GatherDepthModelInputStream
 			}
 
 			//Go through all meshes.
-			for (uint64 i{ 0 }, size{ static_model_instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ static_model_instance_data._Model->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
 				if (static_model_instance_data._MaterialResources[i]->_Type != material_type)
@@ -786,7 +786,7 @@ void RenderInputManager::GatherDepthModelInputStream
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ static_model_instance_data._ModelResource->_Meshes[i] };
+				const Mesh &mesh{ static_model_instance_data._Model->_Meshes[i] };
 
 				//Add a new entry.
 				input_stream->_Entries.Emplace();
@@ -848,7 +848,7 @@ void RenderInputManager::GatherFullModelInputStream
 			}
 
 			//Go through all meshes.
-			for (uint64 i{ 0 }, size{ static_model_instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ static_model_instance_data._Model->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
 				if (static_model_instance_data._MaterialResources[i]->_Type != material_type)
@@ -863,7 +863,7 @@ void RenderInputManager::GatherFullModelInputStream
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ static_model_instance_data._ModelResource->_Meshes[i] };
+				const Mesh &mesh{ static_model_instance_data._Model->_Meshes[i] };
 
 				//Add a new entry.
 				input_stream->_Entries.Emplace();
@@ -920,7 +920,7 @@ void RenderInputManager::GatherInstancedModelInputStream
 			}
 
 			//Draw all meshes.
-			for (uint64 i{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ instance_data._Model->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the double-sidedness.
 				if (instance_data._MaterialResources[i]->_DoubleSided != double_sided)
@@ -929,7 +929,7 @@ void RenderInputManager::GatherInstancedModelInputStream
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ instance_data._ModelResource->_Meshes[i] };
+				const Mesh &mesh{ instance_data._Model->_Meshes[i] };
 
 				//Add a new entry.
 				input_stream->_Entries.Emplace();

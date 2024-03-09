@@ -429,7 +429,7 @@ void ShadowsSystem::GatherOpaqueModelInputStream
 			}
 
 			//Go through all meshes.
-			for (uint64 i{ 0 }, size{ static_model_instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ static_model_instance_data._Model->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
 				if (static_model_instance_data._MaterialResources[i]->_Type != MaterialResource::Type::OPAQUE)
@@ -438,7 +438,7 @@ void ShadowsSystem::GatherOpaqueModelInputStream
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ static_model_instance_data._ModelResource->_Meshes[i] };
+				const Mesh &mesh{ static_model_instance_data._Model->_Meshes[i] };
 
 				//Add a new entry.
 				input_stream->_Entries.Emplace();
@@ -520,7 +520,7 @@ void ShadowsSystem::GatherMaskedModelInputStream
 			}
 
 			//Go through all meshes.
-			for (uint64 i{ 0 }, size{ static_model_instance_data._ModelResource->_Meshes.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ static_model_instance_data._Model->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
 				if (static_model_instance_data._MaterialResources[i]->_Type != MaterialResource::Type::MASKED)
@@ -529,7 +529,7 @@ void ShadowsSystem::GatherMaskedModelInputStream
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ static_model_instance_data._ModelResource->_Meshes[i] };
+				const Mesh &mesh{ static_model_instance_data._Model->_Meshes[i] };
 
 				//Add a new entry.
 				entry_proxies.Emplace();

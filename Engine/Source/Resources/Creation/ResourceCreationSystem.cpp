@@ -280,58 +280,6 @@ void ResourceCreationSystem::CreateMaterial(MaterialData* const RESTRICT data, M
 }
 
 /*
-*	Creates a model.
-*/
-void ResourceCreationSystem::CreateModel(ModelData *const RESTRICT data, ModelResource *const RESTRICT resource) NOEXCEPT
-{
-	//Copy the model space axis aligned bounding box.
-	resource->_ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
-
-	resource->_Meshes.Upsize<true>(data->_NumberOfMeshes);
-
-	for (uint64 i{ 0 }; i < data->_NumberOfMeshes; ++i)
-	{
-		resource->_Meshes[i]._MeshLevelOfDetails.Upsize<true>(data->_NumberOfLevelfDetails);
-
-		for (uint64 j{ 0 }; j < data->_NumberOfLevelfDetails; ++j)
-		{
-			//Copy the vertices/indices.
-			resource->_Meshes[i]._MeshLevelOfDetails[j]._Vertices = std::move(data->_Vertices[i][j]);
-			resource->_Meshes[i]._MeshLevelOfDetails[j]._Indices = std::move(data->_Indices[i][j]);
-
-			//Create the buffers.
-			{
-				const void* const RESTRICT dataChunks[]{ resource->_Meshes[i]._MeshLevelOfDetails[j]._Vertices.Data() };
-				const uint64 dataSizes[]{ sizeof(Vertex) * resource->_Meshes[i]._MeshLevelOfDetails[j]._Vertices.Size() };
-				RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &resource->_Meshes[i]._MeshLevelOfDetails[j]._VertexBuffer);
-				RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &resource->_Meshes[i]._MeshLevelOfDetails[j]._VertexBuffer);
-			}
-
-			{
-				const void* const RESTRICT dataChunks[]{ resource->_Meshes[i]._MeshLevelOfDetails[j]._Indices.Data() };
-				const uint64 dataSizes[]{ sizeof(uint32) * resource->_Meshes[i]._MeshLevelOfDetails[j]._Indices.Size() };
-				RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &resource->_Meshes[i]._MeshLevelOfDetails[j]._IndexBuffer);
-				RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &resource->_Meshes[i]._MeshLevelOfDetails[j]._IndexBuffer);
-			}
-
-			//Write the index count.
-			resource->_Meshes[i]._MeshLevelOfDetails[j]._IndexCount = static_cast<uint32>(resource->_Meshes[i]._MeshLevelOfDetails[j]._Indices.Size());
-		}
-	}
-
-	//Create the collision model, if there is one.
-	if (data->_CollisionModelData._Type != CollisionModelData::Type::NONE)
-	{
-		PhysicsSystem::Instance->CreateCollisionModel(data->_CollisionModelData, &resource->_CollisionModel);
-	}
-
-	else
-	{
-		resource->_CollisionModel = nullptr;
-	}
-}
-
-/*
 *	Creates a raw data.
 */
 void ResourceCreationSystem::CreateRawData(RawDataData *const RESTRICT data, RawDataResource *const RESTRICT resource) NOEXCEPT

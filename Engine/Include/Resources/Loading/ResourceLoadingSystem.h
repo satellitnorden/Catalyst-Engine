@@ -14,12 +14,10 @@
 #include <Resources/Loading/FontData.h>
 #include <Resources/Loading/LevelData.h>
 #include <Resources/Loading/MaterialData.h>
-#include <Resources/Loading/ModelData.h>
 #include <Resources/Loading/RawDataData.h>
 #include <Resources/Loading/RenderPipelineData.h>
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
-#include <Resources/Loading/Texture2DData.h>
 #include <Resources/Loading/Texture3DData.h>
 #include <Resources/Loading/TextureCubeData.h>
 #include <Resources/Loading/VideoData.h>
@@ -58,11 +56,6 @@ public:
 	void LoadMaterial(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, MaterialData *const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Given a file, load model data.
-	*/
-	void LoadModel(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, ModelData *const RESTRICT data) NOEXCEPT;
-
-	/*
 	*	Given a file, load raw data data.
 	*/
 	void LoadRawData(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RawDataData *const RESTRICT data) NOEXCEPT;
@@ -81,11 +74,6 @@ public:
 	*	Given a file, load sound data.
 	*/
 	void LoadSound(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, SoundData *const RESTRICT data) NOEXCEPT;
-
-	/*
-	*	Given a file, load texture 2D data.
-	*/
-	void LoadTexture2D(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, Texture2DData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load texture 3D data.

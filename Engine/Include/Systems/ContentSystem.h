@@ -62,19 +62,6 @@ public:
 	void LoadAssets(const char *const RESTRICT directory_path) NOEXCEPT;
 
 	/*
-	*	Returns if the asset with the given asset identifier exists.
-	*/
-	template <typename TYPE>
-	FORCE_INLINE NO_DISCARD bool AssetExists(const HashString asset_identifier) const NOEXCEPT
-	{
-		HashTable<HashString, Asset* RESTRICT>* const RESTRICT assets{ _Assets.Find(TYPE::TYPE_IDENTIFIER) };
-
-		ASSERT(assets, "Couldn't find asset list for type!");
-
-		return assets->Find(asset_identifier) != nullptr;
-	}
-
-	/*
 	*	Returns the asset with the given asset identifier.
 	*/
 	template <typename TYPE>
@@ -89,6 +76,18 @@ public:
 		ASSERT(asset, "Couldn't find asset!");
 
 		return AssetPointer<TYPE>(static_cast<TYPE *const RESTRICT>(*asset));
+	}
+
+	/*
+	*	Returns all assets of the given asset type.
+	*/
+	FORCE_INLINE NO_DISCARD const HashTable<HashString, Asset *RESTRICT> &GetAllAssetsOfType(const HashString asset_type_identifier) NOEXCEPT
+	{
+		HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_type_identifier) };
+
+		ASSERT(assets, "Couldn't find asset list for type!");
+
+		return *assets;
 	}
 
 private:
@@ -147,11 +146,6 @@ private:
 	*	Parses a Material from the given file.
 	*/
 	void ParseMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
-
-	/*
-	*	Parses a Model from the given file.
-	*/
-	void ParseModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
 
 	/*
 	*	Parses a TextureCube from the given file.

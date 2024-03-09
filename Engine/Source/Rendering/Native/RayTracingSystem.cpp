@@ -143,10 +143,10 @@ NO_DISCARD RenderDataTableHandle RayTracingSystem::GetCurrentRenderDataTable() N
 void RayTracingSystem::OnStaticModelInstanceCreated(Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT
 {
 	//Iterate through the meshes.
-	for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+	for (uint64 mesh_index{ 0 }, size{ instance_data._Model->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 	{
 		//Cache the mesh.
-		const Mesh &mesh{ instance_data._ModelResource->_Meshes[mesh_index] };
+		const Mesh &mesh{ instance_data._Model->_Meshes[mesh_index] };
 
 		//Cache the mesh level of detail.
 		const Mesh::MeshLevelOfDetail &mesh_level_of_detail{ mesh._MeshLevelOfDetails[0] };
@@ -166,7 +166,7 @@ void RayTracingSystem::OnStaticModelInstanceCreated(Entity *const RESTRICT entit
 
 		//Calculate a unique identifier for this mesh.
 		char mesh_identifier_buffer[64];
-		sprintf_s(mesh_identifier_buffer, "%s_%llu", instance_data._ModelResource->_Header._ResourceName.Data(), mesh_index);
+		sprintf_s(mesh_identifier_buffer, "%s_%llu", instance_data._Model->_Header._AssetName.Data(), mesh_index);
 
 		const HashString mesh_identifier{ mesh_identifier_buffer };
 
@@ -221,7 +221,7 @@ void RayTracingSystem::OnStaticModelInstanceCreated(Entity *const RESTRICT entit
 void RayTracingSystem::OnStaticModelInstanceDestroyed(Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT
 {
 	//Iterate through the meshes.
-	for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+	for (uint64 mesh_index{ 0 }, size{ instance_data._Model->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 	{
 		//Decide which hit group this mesh is in.
 		RayTracingHitGroup *RESTRICT hit_group;
@@ -257,7 +257,7 @@ void RayTracingSystem::OnStaticModelInstanceDestroyed(Entity *const RESTRICT ent
 
 		//Calculate a unique identifier for this mesh.
 		char mesh_identifier_buffer[64];
-		sprintf_s(mesh_identifier_buffer, "%s_%llu", instance_data._ModelResource->_Header._ResourceName.Data(), mesh_index);
+		sprintf_s(mesh_identifier_buffer, "%s_%llu", instance_data._Model->_Header._AssetName.Data(), mesh_index);
 
 		const HashString mesh_identifier{ mesh_identifier_buffer };
 

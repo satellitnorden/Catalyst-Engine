@@ -9,6 +9,7 @@
 
 //Content.
 #include <Content/Core/ContentCache.h>
+#include <Content/AssetCompilers/ModelAssetCompiler.h>
 #include <Content/AssetCompilers/ScriptAssetCompiler.h>
 #include <Content/AssetCompilers/Texture2DAssetCompiler.h>
 
@@ -55,7 +56,8 @@ DEFINE_SINGLETON(ContentSystem);
 */
 void ContentSystem::Initialize() NOEXCEPT
 {
-	//Register the native asset compilers.
+	//Register the native asset compilers
+	RegisterAssetCompiler(ModelAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(ScriptAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(Texture2DAssetCompiler::Instance.Get());
 }
@@ -356,6 +358,9 @@ NO_DISCARD bool ContentSystem::ScanAssetsInDirectory
 
 		//Update the last write time.
 		content_cache->UpdateLastWriteTime(identifier, last_write_time);
+
+		//New content was compiled!
+		new_content_compiled = true;
 	}
 
 	return new_content_compiled;
@@ -464,10 +469,12 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 		file.Close();
 	}
 
+	//Set up the stream archive position.
+	uint64 stream_archive_position{ 0 };
+
 	//Read the asset header.
 	AssetHeader asset_header;
-
-	Memory::Copy(&asset_header, stream_archive.Read(0), sizeof(AssetHeader));
+	stream_archive.Read(&asset_header, sizeof(AssetHeader), &stream_archive_position);
 
 	//Find the asset compiler for this asset type.
 	AssetCompiler *RESTRICT asset_compiler;
@@ -489,7 +496,7 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 	AssetCompiler::LoadContext load_context;
 
 	load_context._StreamArchive = &stream_archive;
-	load_context._StreamArchivePosition = sizeof(AssetHeader);
+	load_context._StreamArchivePosition = stream_archive_position;
 	load_context._TaskAllocator = &_TaskAllocator;
 	load_context._Tasks = &_Tasks;
 
@@ -559,13 +566,11 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 
 		//Read the file size.
 		uint64 file_size{ 0 };
-		stream_archive.Read(&file_size, sizeof(uint64), stream_archive_position);
-		stream_archive_position += sizeof(uint64);
+		stream_archive.Read(&file_size, sizeof(uint64), &stream_archive_position);
 
 		//Read the asset header.
 		AssetHeader asset_header;
-		stream_archive.Read(&asset_header, sizeof(AssetHeader), stream_archive_position);
-		stream_archive_position += sizeof(AssetHeader);
+		stream_archive.Read(&asset_header, sizeof(AssetHeader), &stream_archive_position);
 
 		//Find the asset compiler for this asset type.
 		AssetCompiler *RESTRICT asset_compiler;
@@ -733,11 +738,6 @@ NO_DISCARD bool ContentSystem::ParseContentDefinitionsInDirectory(const Compilat
 			else if (current_line == "MATERIAL")
 			{
 				ParseMaterial(compilation_domain, content_cache, name, package, file);
-			}
-
-			else if (current_line == "MODEL")
-			{
-				ParseModel(compilation_domain, content_cache, name, package, file);
 			}
 
 			else if (current_line == "TEXTURE_CUBE")
@@ -1047,106 +1047,6 @@ void ContentSystem::ParseMaterial(const CompilationDomain compilation_domain, Co
 }
 
 /*
-*	Parses a Model from the given file.
-*/
-void ContentSystem::ParseModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
-{
-	//Calculate the intermediate directory.
-	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
-
-	switch (compilation_domain)
-	{
-		case CompilationDomain::ENGINE:
-		{
-			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\%s\\Models", package.Length() > 0 ? package.Data() : "");
-
-			break;
-		}
-
-		case CompilationDomain::GAME:
-		{
-			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\%s\\Models", package.Length() > 0 ? package.Data() : "");
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
-
-	//Create the directory, if it doesn't exist.
-	File::CreateDirectory(intermediate_directory);
-
-	//Set up the build parameters.
-	ModelBuildParameters parameters;
-
-	//Set the output.
-	char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(output_buffer, "%s\\%s", intermediate_directory, name.data());
-	parameters._Output = output_buffer;
-
-	//Set the resource identifier.
-	parameters._ResourceIdentifier = name.data();
-
-	//Set some default parameters.
-	parameters._Transformation = Matrix4x4();
-	parameters._TextureCoordinateMultiplier = 1.0f;
-	parameters._TexturCoordinateRotation = 0.0f;
-	parameters._ProceduralFunction = nullptr;
-	parameters._CollisionModelFilePath = nullptr;
-	
-	//Some strings will need to be persistent until building, so cache those.
-	DynamicArray<DynamicString> persistent_strings;
-
-	//Read all of the lines.
-	std::string line;
-	StaticArray<DynamicString, 2> arguments;
-
-	while (std::getline(file, line))
-	{
-		//Skip lines with only whitespace.
-		if (TextParsingUtilities::OnlyWhitespace(line.data(), line.length()))
-		{
-			continue;
-		}
-
-		//Parse the arguments.
-		TextParsingUtilities::ParseSpaceSeparatedArguments
-		(
-			line.data(),
-			line.length(),
-			arguments.Data()
-		);
-
-		if (arguments[0] == "LEVEL_OF_DETAIL")
-		{
-			persistent_strings.Emplace();
-			persistent_strings.Back() = arguments[1];
-			parameters._LevelOfDetails.Emplace(persistent_strings.Back().Data());
-		}
-
-		else if (arguments[0] == "COLLISION")
-		{
-			persistent_strings.Emplace();
-			persistent_strings.Back() = arguments[1];
-			parameters._CollisionModelFilePath = persistent_strings.Back().Data();
-		}
-
-		else
-		{
-			ASSERT(false, "Couldn't parse argument " << arguments[0].Data());
-		}
-	}
-
-	//Build!
-	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
-}
-
-/*
 *	Parses a Texture Cube from the given file.
 */
 void ContentSystem::ParseTextureCube(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
@@ -1283,6 +1183,7 @@ void ContentSystem::ParseProceduralTreeModel(const CompilationDomain compilation
 	
 	ProceduralTreeGenerator::GenerateTree(procedural_tree_generator_parameters, &procedural_tree_generator_output);
 
+	/*
 	//Set up the build parameters.
 	ModelBuildParameters parameters;
 
@@ -1328,6 +1229,7 @@ void ContentSystem::ParseProceduralTreeModel(const CompilationDomain compilation
 
 	//Build!
 	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildModel(parameters);
+	*/
 }
 
 /*

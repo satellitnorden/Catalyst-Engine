@@ -12,7 +12,6 @@
 #include <Resources/Core/FontResource.h>
 #include <Resources/Core/LevelResource.h>
 #include <Resources/Core/MaterialResource.h>
-#include <Resources/Core/ModelResource.h>
 #include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ShaderResource.h>
@@ -25,12 +24,10 @@
 #include <Resources/Loading/FontData.h>
 #include <Resources/Loading/LevelData.h>
 #include <Resources/Loading/MaterialData.h>
-#include <Resources/Loading/ModelData.h>
 #include <Resources/Loading/RawDataData.h>
 #include <Resources/Loading/RenderPipelineData.h>
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
-#include <Resources/Loading/Texture2DData.h>
 #include <Resources/Loading/Texture3DData.h>
 #include <Resources/Loading/TextureCubeData.h>
 #include <Resources/Loading/VideoData.h>
@@ -64,11 +61,6 @@ public:
 	*	Creates a material.
 	*/
 	void CreateMaterial(MaterialData *const RESTRICT data, MaterialResource *const RESTRICT resource) NOEXCEPT;
-
-	/*
-	*	Creates a model.
-	*/
-	void CreateModel(ModelData *const RESTRICT data, ModelResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a raw data.

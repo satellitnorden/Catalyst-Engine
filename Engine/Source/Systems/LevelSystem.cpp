@@ -49,8 +49,8 @@ void LevelSystem::SpawnLevel
 			for (uint64 editable_field_index{ 0 }; editable_field_index < component_entry._NumberOfEditableFields; ++editable_field_index)
 			{
 				//Read the editable field identifier.
-				const uint64 editable_field_identifier{ *((const uint64 *const RESTRICT)level_resource->_StreamArchive.Read(field_data_position)) };
-				field_data_position += sizeof(uint64);
+				uint64 editable_field_identifier;
+				level_resource->_StreamArchive.Read(&editable_field_identifier, sizeof(uint64), &field_data_position);
 
 				//Find the editable field.
 				const ComponentEditableField *RESTRICT editable_field{ nullptr };
@@ -75,7 +75,7 @@ void LevelSystem::SpawnLevel
 				field_data_position += DeserializeEditableField
 				(
 					*editable_field,
-					level_resource->_StreamArchive.Read(field_data_position),
+					&level_resource->_StreamArchive.Data()[field_data_position],
 					component_configuration
 				);
 			}

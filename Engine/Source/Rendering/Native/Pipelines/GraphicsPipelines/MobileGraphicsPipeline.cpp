@@ -221,7 +221,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 			}
 
 			//Draw all meshes.
-			for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+			for (uint64 mesh_index{ 0 }, size{ instance_data._Model->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 			{
 				//Skip this mesh if it's hidden.
 				if (!TEST_BIT(instance_data._MeshesVisibleMask, BIT(mesh_index)))
@@ -230,7 +230,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 				}
 
 				//Cache the mesh.
-				const Mesh &mesh{ instance_data._ModelResource->_Meshes[mesh_index] };
+				const Mesh &mesh{ instance_data._Model->_Meshes[mesh_index] };
 
 				//Push constants.
 				MobilePushConstantData data;

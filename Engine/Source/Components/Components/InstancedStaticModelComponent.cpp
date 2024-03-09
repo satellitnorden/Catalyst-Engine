@@ -80,7 +80,7 @@ void InstancedStaticModelComponent::PreProcess(ComponentInitializationData *cons
 		transformations.Emplace(transformation);
 
 		AxisAlignedBoundingBox3D transformation_axis_aligned_bounding_box;
-		RenderingUtilities::TransformAxisAlignedBoundingBox(_initialization_data->_ModelResource->_ModelSpaceAxisAlignedBoundingBox, transformation, &transformation_axis_aligned_bounding_box);
+		RenderingUtilities::TransformAxisAlignedBoundingBox(_initialization_data->_Model->_ModelSpaceAxisAlignedBoundingBox, transformation, &transformation_axis_aligned_bounding_box);
 
 		axis_aligned_bounding_box.Expand(transformation_axis_aligned_bounding_box);
 	}
@@ -109,7 +109,7 @@ void InstancedStaticModelComponent::CreateInstance(Entity *const RESTRICT entity
 	InstancedStaticModelInstanceData &instance_data{ _InstanceData.Back() };
 
 	instance_data._WorldSpaceAxisAlignedBoundingBox = _initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
-	instance_data._ModelResource = _initialization_data->_ModelResource;
+	instance_data._Model = _initialization_data->_Model;
 	instance_data._MaterialResources = _initialization_data->_MaterialResources;
 	instance_data._Cell = _initialization_data->_PreprocessedData._Cell;
 	instance_data._TransformationsBuffer = _initialization_data->_PreprocessedData._TransformationsBuffer;

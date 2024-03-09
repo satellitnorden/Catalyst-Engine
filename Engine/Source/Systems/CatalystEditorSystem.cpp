@@ -72,7 +72,7 @@ void CatalystEditorSystem::PostInitialize() NOEXCEPT
 
 	//Set up default world parameters.
 	WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Enabled = false;
-	WorldSystem::Instance->GetSkySystem()->SetSkyTexture(ResourceSystem::Instance->GetTextureCubeResource(HashString("Editor_Sky")));
+	//WorldSystem::Instance->GetSkySystem()->SetSkyTexture(ResourceSystem::Instance->GetTextureCubeResource(HashString("Editor_Sky")));
 }
 
 /*

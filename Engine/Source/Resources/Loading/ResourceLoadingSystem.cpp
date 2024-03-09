@@ -182,71 +182,6 @@ void ResourceLoadingSystem::LoadMaterial(BinaryFile<BinaryFileMode::IN> *const R
 }
 
 /*
-*	Given a file, load model data.
-*/
-void ResourceLoadingSystem::LoadModel(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, ModelData *const RESTRICT data) NOEXCEPT
-{
-	//Read the axis-aligned bounding box
-	file->Read(&data->_AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3D));
-
-	//Read the number of meshes.
-	file->Read(&data->_NumberOfMeshes, sizeof(uint64));
-
-	//Read the number of level of details.
-	file->Read(&data->_NumberOfLevelfDetails, sizeof(uint64));
-
-	data->_Vertices.Upsize<true>(data->_NumberOfMeshes);
-	data->_Indices.Upsize<true>(data->_NumberOfMeshes);
-
-	for (uint64 i{ 0 }; i < data->_NumberOfMeshes; ++i)
-	{
-		data->_Vertices[i].Upsize<true>(data->_NumberOfLevelfDetails);
-		data->_Indices[i].Upsize<true>(data->_NumberOfLevelfDetails);
-
-		for (uint64 j{ 0 }; j < data->_NumberOfLevelfDetails; ++j)
-		{
-			//Read the number of vertices.
-			uint64 number_of_vertices;
-			file->Read(&number_of_vertices, sizeof(uint64));
-
-			//Read the vertices.
-			data->_Vertices[i][j].Upsize<false>(number_of_vertices);
-			file->Read(data->_Vertices[i][j].Data(), sizeof(Vertex) * number_of_vertices);
-
-			//Read the number of indices.
-			uint64 number_of_indices;
-			file->Read(&number_of_indices, sizeof(uint64));
-
-			//Read the indices.
-			data->_Indices[i][j].Upsize<false>(number_of_indices);
-			file->Read(data->_Indices[i][j].Data(), sizeof(uint32) * number_of_indices);
-		}
-	}
-
-	//Read if there exists a collision model.
-	bool collision_model_exists;
-	file->Read(&collision_model_exists, sizeof(bool));
-
-	//Read the collision model data.
-	if (collision_model_exists)
-	{
-		file->Read(&data->_CollisionModelData._Type, sizeof(CollisionModelData::Type));
-
-		uint64 collision_model_data_size;
-		file->Read(&collision_model_data_size, sizeof(uint64));
-
-		data->_CollisionModelData._Data.Upsize<false>(collision_model_data_size);
-
-		file->Read(data->_CollisionModelData._Data.Data(), collision_model_data_size);
-	}
-
-	else
-	{
-		data->_CollisionModelData._Type = CollisionModelData::Type::NONE;
-	}
-}
-
-/*
 *	Given a file, load raw data data.
 */
 void ResourceLoadingSystem::LoadRawData(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RawDataData* const RESTRICT data) NOEXCEPT
@@ -538,57 +473,6 @@ void ResourceLoadingSystem::LoadSound(BinaryFile<BinaryFileMode::IN> *const REST
 		channel.Upsize<false>(number_of_samples);
 
 		file->Read(channel.Data(), sizeof(int16) * number_of_samples);
-	}
-}
-
-/*
-*	Given a file, load texture 2D data.
-*/
-void ResourceLoadingSystem::LoadTexture2D(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, Texture2DData *const RESTRICT data) NOEXCEPT
-{
-	//Read the number of mipmap levels.
-	file->Read(&data->_MipmapLevels, sizeof(uint8));
-
-	//Read the width.
-	file->Read(&data->_Width, sizeof(uint32));
-
-	//Read the height.
-	file->Read(&data->_Height, sizeof(uint32));
-
-#if 1
-	{
-		//Define constants.
-		constexpr uint32 MAXIMUM_RESOLUTION{ 1'024 };
-
-		//Calculate the read offset.
-		uint64 read_offset{ 0 };
-
-		//For now, only read textures up to NxN until texture streaming arrives. (:
-		while (data->_MipmapLevels > 1 && data->_Width > MAXIMUM_RESOLUTION && data->_Height > MAXIMUM_RESOLUTION)
-		{
-			read_offset += data->_Width * data->_Height * 4;
-
-			--data->_MipmapLevels;
-
-			data->_Width /= 2;
-			data->_Height /= 2;
-		}
-
-		//Skip!
-		file->Skip(read_offset);
-	}
-#endif
-
-	//Read the data.
-	data->_Data.Upsize<true>(data->_MipmapLevels);
-
-	for (uint8 i{ 0 }; i < data->_MipmapLevels; ++i)
-	{
-		const uint64 textureSize{ (data->_Width >> i) * (data->_Height >> i) * 4 };
-
-		data->_Data[i].Upsize<false>(textureSize);
-
-		file->Read(data->_Data[i].Data(), textureSize);
 	}
 }
 

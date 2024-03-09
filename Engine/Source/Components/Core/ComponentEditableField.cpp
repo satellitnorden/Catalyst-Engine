@@ -4,11 +4,12 @@
 //Components.
 #include <Components/Core/Component.h>
 
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/ModelResource.h>
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/ModelAsset.h>
 
 //Systems.
+#include <Systems/ContentSystem.h>
 #include <Systems/ResourceSystem.h>
 
 //World.
@@ -36,10 +37,10 @@ void ApplyEditableFieldToInitializationData
 			break;
 		}
 
-		case ComponentEditableField::Type::MODEL_RESOURCE:
+		case ComponentEditableField::Type::MODEL_ASSET:
 		{
-			ResourcePointer<ModelResource> *const RESTRICT destination{ (ResourcePointer<ModelResource> *const RESTRICT)AdvancePointer(initialization_data, editable_field._InitializationDataOffset) };
-			const ResourcePointer<ModelResource> *const RESTRICT source{ static_cast<const ResourcePointer<ModelResource> *const RESTRICT>(data) };
+			AssetPointer<ModelAsset> *const RESTRICT destination{ (AssetPointer<ModelAsset> *const RESTRICT)AdvancePointer(initialization_data, editable_field._InitializationDataOffset) };
+			const AssetPointer<ModelAsset> *const RESTRICT source{ static_cast<const AssetPointer<ModelAsset> *const RESTRICT>(data) };
 
 			(*destination) = (*source);
 
@@ -77,7 +78,7 @@ void SerializeEditableField
 ) NOEXCEPT
 {
 	//Write the editable field identifier.
-	stream_archive->Write(editable_field._Identifier);
+	stream_archive->Write(&editable_field._Identifier, sizeof(uint64));
 
 	//Retrieve the data.
 	const void *const RESTRICT data{ component->EditableFieldData<void>(entity, editable_field) };
@@ -90,18 +91,18 @@ void SerializeEditableField
 			const ResourcePointer<MaterialResource> *const RESTRICT _data{ static_cast<const ResourcePointer<MaterialResource> *const RESTRICT>(data) };
 
 			//Can't really serialize a pointer, so serialize the resource identifier.
-			stream_archive->Write((*_data)->_Header._ResourceIdentifier);
+			stream_archive->Write(&(*_data)->_Header._ResourceIdentifier, sizeof(HashString));
 
 			break;
 		}
 
-		case ComponentEditableField::Type::MODEL_RESOURCE:
+		case ComponentEditableField::Type::MODEL_ASSET:
 		{
 			//Cast the data.
-			const ResourcePointer<ModelResource> *const RESTRICT _data{ static_cast<const ResourcePointer<ModelResource> *const RESTRICT>(data) };
+			const AssetPointer<ModelAsset> *const RESTRICT _data{ static_cast<const AssetPointer<ModelAsset> *const RESTRICT>(data) };
 
 			//Can't really serialize a pointer, so serialize the resource identifier.
-			stream_archive->Write((*_data)->_Header._ResourceIdentifier);
+			stream_archive->Write(&(*_data)->_Header._AssetIdentifier, sizeof(HashString));
 
 			break;
 		}
@@ -112,7 +113,7 @@ void SerializeEditableField
 			const WorldTransform *const RESTRICT _data{ static_cast<const WorldTransform *const RESTRICT>(data) };
 
 			//This can just be copied directly.
-			stream_archive->Write(*_data);
+			stream_archive->Write(_data, sizeof(WorldTransform));
 
 			break;
 		}
@@ -154,14 +155,14 @@ NO_DISCARD uint64 DeserializeEditableField
 			return sizeof(HashString);
 		}
 
-		case ComponentEditableField::Type::MODEL_RESOURCE:
+		case ComponentEditableField::Type::MODEL_ASSET:
 		{
 			//Cast the data.
-			ResourcePointer<ModelResource> *const RESTRICT destination{ static_cast<ResourcePointer<ModelResource> *const RESTRICT>(_data) };
+			AssetPointer<ModelAsset> *const RESTRICT destination{ static_cast<AssetPointer<ModelAsset> *const RESTRICT>(_data) };
 			const HashString *const RESTRICT source{ static_cast<const HashString *const RESTRICT>(data) };
 
 			//Write the data.
-			(*destination) = ResourceSystem::Instance->GetModelResource(*source);
+			(*destination) = ContentSystem::Instance->GetAsset<ModelAsset>(*source);
 
 			//Return the advance.
 			return sizeof(HashString);

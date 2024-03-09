@@ -469,6 +469,5 @@ void main()
         float attenuation_factor = exp(-extinction * hit_distance * 0.25f);
         transmittance *= attenuation_factor;
     }
-    transmittance = 1.0f - min(length(volumetric_lighting), 1.0f);
 	Scene = vec4(volumetric_lighting,1.0f);
 }

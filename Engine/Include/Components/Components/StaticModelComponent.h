@@ -7,6 +7,10 @@
 //Components.
 #include <Components/Core/Component.h>
 
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/ModelAsset.h>
+
 //Physics.
 #include <Physics/Native/PhysicsCore.h>
 #include <Physics/Native/ModelCollisionConfiguration.h>
@@ -14,7 +18,6 @@
 
 //Resources.
 #include <Resources/Core/MaterialResource.h>
-#include <Resources/Core/ModelResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
 //World.
@@ -25,8 +28,8 @@ class StaticModelInitializationData final : public ComponentInitializationData
 
 public:
 
-	//The model resource.
-	ResourcePointer<ModelResource> _ModelResource;
+	//The model.
+	AssetPointer<ModelAsset> _Model;
 
 	//The material resources.
 	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
@@ -44,8 +47,8 @@ class StaticModelInstanceData final
 
 public:
 
-	//The model resource.
-	ResourcePointer<ModelResource> _ModelResource;
+	//The model.
+	AssetPointer<ModelAsset> _Model;
 
 	//The world space axis aligned bounding box.
 	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;

@@ -171,7 +171,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 		#if defined(CATALYST_EDITOR)
 			ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Editor");
-			ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermedate\\Editor");
 		#endif
 	#endif
 		

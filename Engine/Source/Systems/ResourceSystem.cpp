@@ -287,44 +287,6 @@ NO_DISCARD ResourcePointer<MaterialResource> ResourceSystem::FindOrCreateMateria
 }
 
 /*
-*	Returns the model resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<ModelResource> ResourceSystem::GetModelResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	ModelResource *const RESTRICT *const RESTRICT resource{ _ModelResources.Find(identifier) };
-
-	ASSERT(resource, "Couldn't find resource!");
-
-	return resource ? ResourcePointer<ModelResource>(*resource) : ResourcePointer<ModelResource>();
-}
-
-/*
-*	Returns or creates the model resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<ModelResource> ResourceSystem::FindOrCreateModelResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	ModelResource *const RESTRICT *const RESTRICT resource{ _ModelResources.Find(identifier) };
-
-	if (!resource)
-	{
-		//If the resource couldn't be found, create it.
-		ModelResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<ModelResource>()) ModelResource() };
-		new_resource->_Header._ResourceIdentifier = identifier;
-		_ModelResources.Add(identifier, new_resource);
-		_AllResources.Emplace(new_resource);
-
-		return ResourcePointer<ModelResource>(new_resource);
-	}
-
-	else
-	{
-		return ResourcePointer<ModelResource>(*resource);
-	}
-}
-
-/*
 *	Returns the raw data resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<RawDataResource> ResourceSystem::GetRawDataResource(const HashString identifier) NOEXCEPT
@@ -796,44 +758,6 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 		//Create the resource.
 		_ResourceCreationSystem.CreateMaterial(&data, new_resource);
-
-		//Register that the resource is now loaded.
-		new_resource->_LoadState = ResourceLoadState::LOADED;
-	}
-
-	else if (header._TypeIdentifier == ResourceConstants::MODEL_TYPE_IDENTIFIER)
-	{
-		/*
-		*	Find or allocate the new resource.
-		*	The resource might have been created already by other dependant resources, but not loaded yet.
-		*/
-		ModelResource* RESTRICT new_resource;
-
-		if (ModelResource* const RESTRICT* const RESTRICT found_resource{ _ModelResources.Find(header._ResourceIdentifier) })
-		{
-			new_resource = *found_resource;
-		}
-
-		else
-		{
-			new_resource = new (MemorySystem::Instance->TypeAllocate<ModelResource>()) ModelResource();
-			_ModelResources.Add(header._ResourceIdentifier, new_resource);
-			_AllResources.Emplace(new_resource);
-		}
-
-		//Set the resource header.
-		new_resource->_Header = header;
-
-		//Set the file path and file offset.
-		new_resource->_FilePath = file->GetFilePath();
-		new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
-
-		//Load the resource.
-		ModelData data;
-		_ResourceLoadingSystem.LoadModel(file, &data);
-
-		//Create the resource.
-		_ResourceCreationSystem.CreateModel(&data, new_resource);
 
 		//Register that the resource is now loaded.
 		new_resource->_LoadState = ResourceLoadState::LOADED;

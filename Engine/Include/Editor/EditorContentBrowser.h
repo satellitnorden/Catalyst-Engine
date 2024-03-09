@@ -10,10 +10,10 @@
 #include <Math/General/Vector.h>
 
 //Forward declarations.
-class Resource;
+class Asset;
 
 //Type aliases.
-using ContentBrowserCallbackFunction = void(*)(Resource *const RESTRICT resource, void *const RESTRICT arguments);
+using ContentBrowserCallbackFunction = void(*)(Asset *const RESTRICT asset, void *const RESTRICT arguments);
 
 class EditorContentBrowser final
 {
@@ -26,21 +26,21 @@ public:
 	void Request
 	(
 		const char *const RESTRICT prompt,
-		const HashString resource_identifier,
+		const HashString asset_tyoe_identifier,
 		const ContentBrowserCallbackFunction callback_function,
 		void *const RESTRICT user_data
 	) NOEXCEPT;
 
 private:
 
-	//The filtered resources.
-	DynamicArray<Resource *const RESTRICT> _FilteredResources;
+	//The filtered assets.
+	DynamicArray<Asset *const RESTRICT> _FilteredAssets;
 
 	//The prompt.
 	const char *RESTRICT _Prompt;
 
-	//The resource identifier.
-	HashString _ResourceIdentifier;
+	//The asset type identifier.
+	HashString _AssetTypeIdentifier;
 
 	//The callback function.
 	ContentBrowserCallbackFunction _CallbackFunction;

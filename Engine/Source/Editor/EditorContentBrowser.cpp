@@ -4,8 +4,8 @@
 
 //Systems.
 #include <Systems/CatalystEditorSystem.h>
+#include <Systems/ContentSystem.h>
 #include <Systems/ImGuiSystem.h>
-#include <Systems/ResourceSystem.h>
 
 /*
 *	Request browsing for an asset.
@@ -13,26 +13,23 @@
 void EditorContentBrowser::Request
 (
 	const char *const RESTRICT prompt,
-	const HashString resource_identifier,
+	const HashString asset_type_identifier,
 	const ContentBrowserCallbackFunction callback_function,
 	void *const RESTRICT user_data
 ) NOEXCEPT
 {
 	//Set the data.
 	_Prompt = prompt;
-	_ResourceIdentifier = resource_identifier;
+	_AssetTypeIdentifier = asset_type_identifier;
 	_CallbackFunction = callback_function;
 	_UserData = user_data;
 
-	//Set up the filtered resources.
-	_FilteredResources.Clear();
+	//Set up the filtered assets.
+	_FilteredAssets.Clear();
 
-	for (Resource *const RESTRICT resource : ResourceSystem::Instance->GetAllResources())
+	for (Asset *const RESTRICT asset : ContentSystem::Instance->GetAllAssetsOfType(_AssetTypeIdentifier).ValueIterator())
 	{
-		if (resource->_Header._TypeIdentifier == _ResourceIdentifier)
-		{
-			_FilteredResources.Emplace(resource);
-		}
+		_FilteredAssets.Emplace(asset);
 	}
 
 	//Register for the floating 1 editor window.
@@ -66,12 +63,12 @@ NO_DISCARD bool EditorContentBrowser::UpdateFloatingWindow(const Vector2<float32
 		false
 	);
 
-	//Add buttons for all filtered resources.
-	for (Resource *const RESTRICT resource : _FilteredResources)
+	//Add buttons for all filtered assets.
+	for (Asset *const RESTRICT asset : _FilteredAssets)
 	{
-		if (ImGui::Selectable(resource->_Header._ResourceName.Data()))
+		if (ImGui::Selectable(asset->_Header._AssetName.Data()))
 		{
-			_CallbackFunction(resource, _UserData);
+			_CallbackFunction(asset, _UserData);
 
 			_ShouldBeOpen = false;
 

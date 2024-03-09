@@ -12,6 +12,7 @@
 #include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
+#include <Systems/ContentSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/ResourceSystem.h>
 
@@ -23,11 +24,11 @@ DEFINE_COMPONENT(StaticModelComponent, StaticModelInitializationData, StaticMode
 void StaticModelComponent::Initialize() NOEXCEPT
 {
 	//Add the editable fields.
-	AddEditableModelResourceField
+	AddEditableModelAssetField
 	(
 		"Model",
-		offsetof(StaticModelInitializationData, _ModelResource),
-		offsetof(StaticModelInstanceData, _ModelResource)
+		offsetof(StaticModelInitializationData, _Model),
+		offsetof(StaticModelInstanceData, _Model)
 	);
 
 	AddEditableMaterialResourceField
@@ -65,7 +66,7 @@ void StaticModelComponent::DefaultInitializationData(ComponentInitializationData
 {
 	StaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<StaticModelInitializationData* const RESTRICT>(initialization_data) };
 
-	_initialization_data->_ModelResource = ResourceSystem::Instance->GetModelResource(HashString("Cube"));
+	_initialization_data->_Model = ContentSystem::Instance->GetAsset<ModelAsset>(HashString("Cube"));
 
 	for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
 	{
@@ -99,7 +100,7 @@ void StaticModelComponent::CreateInstance(Entity *const RESTRICT entity, Compone
 	_InstanceData.Emplace();
 	StaticModelInstanceData &instance_data{ _InstanceData.Back() };
 
-	instance_data._ModelResource = _initialization_data->_ModelResource;
+	instance_data._Model = _initialization_data->_Model;
 	instance_data._MaterialResources = _initialization_data->_MaterialResources;
 	instance_data._ModelCollisionConfiguration = _initialization_data->_ModelCollisionConfiguration;
 	instance_data._ModelSimulationConfiguration = _initialization_data->_ModelSimulationConfiguration;
@@ -120,7 +121,7 @@ void StaticModelComponent::PostCreateInstance(Entity *const RESTRICT entity) NOE
 
 	//Calculate the world space axis aligned bounding box.
 	AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(static_model_instance_data._ModelResource->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+	RenderingUtilities::TransformAxisAlignedBoundingBox(static_model_instance_data._Model->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
 	static_model_instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
 	static_model_instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
 
@@ -137,7 +138,7 @@ void StaticModelComponent::PostCreateInstance(Entity *const RESTRICT entity) NOE
 			world_transform_instance_data._CurrentWorldTransform,
 			static_model_instance_data._ModelCollisionConfiguration,
 			static_model_instance_data._WorldSpaceAxisAlignedBoundingBox,
-			static_model_instance_data._ModelResource->_CollisionModel,
+			static_model_instance_data._Model->_CollisionModel,
 			static_model_instance_data._ModelSimulationConfiguration,
 			&static_model_instance_data._PhysicsActorHandle
 		);
@@ -274,10 +275,10 @@ void StaticModelComponent::Update
 				//Do level of detail.
 				if (visible)
 				{
-					for (uint64 mesh_index{ 0 }, size{ instance_data._ModelResource->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+					for (uint64 mesh_index{ 0 }, size{ instance_data._Model->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 					{
 						//If the mesh used only has one level of detail, skip it.
-						if (instance_data._ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails.Size() == 1)
+						if (instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() == 1)
 						{
 							instance_data._LevelOfDetailIndices[mesh_index] = 0;
 
@@ -322,12 +323,12 @@ void StaticModelComponent::Update
 						const float32 screen_coverage{ CatalystBaseMath::Minimum<float32>((maximum_screen_coordinate._X - minimum_screen_coordinate._X) * (maximum_screen_coordinate._Y - minimum_screen_coordinate._Y), 1.0f) };
 
 						//Calculate the level of detail index.
-						instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - screen_coverage) * static_cast<float32>(instance_data._ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
+						instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - screen_coverage) * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
 					}
 
 					//Update the world space axis aligned bounding box.
 					AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
-					RenderingUtilities::TransformAxisAlignedBoundingBox(instance_data._ModelResource->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+					RenderingUtilities::TransformAxisAlignedBoundingBox(instance_data._Model->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
 					instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
 					instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
 

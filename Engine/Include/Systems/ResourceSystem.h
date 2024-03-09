@@ -11,7 +11,6 @@
 #include <Resources/Core/FontResource.h>
 #include <Resources/Core/LevelResource.h>
 #include <Resources/Core/MaterialResource.h>
-#include <Resources/Core/ModelResource.h>
 #include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ResourcePointer.h>
@@ -179,16 +178,6 @@ public:
 	}
 
 	/*
-	*	Returns the model resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<ModelResource> GetModelResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the model resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<ModelResource> FindOrCreateModelResource(const HashString identifier) NOEXCEPT;
-
-	/*
 	*	Returns the raw data resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<RawDataResource> GetRawDataResource(const HashString identifier) NOEXCEPT;
@@ -207,14 +196,6 @@ public:
 	*	Returns or creates the render pipeline resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<RenderPipelineResource> FindOrCreateRenderPipelineResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all model resources.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, ModelResource *RESTRICT> &GetAllModelResources() const NOEXCEPT
-	{
-		return _ModelResources;
-	}
 
 	/*
 	*	Returns the shader resource with the given identifier.
@@ -341,9 +322,6 @@ private:
 
 	//Container for all material resources.
 	HashTable<HashString, MaterialResource *RESTRICT> _MaterialResources;
-
-	//Container for all model resources.
-	HashTable<HashString, ModelResource *RESTRICT> _ModelResources;
 
 	//Container for all raw data resources.
 	HashTable<HashString, RawDataResource *RESTRICT> _RawDataResources;

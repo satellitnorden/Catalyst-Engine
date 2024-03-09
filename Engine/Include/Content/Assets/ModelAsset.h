@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Content.
+#include <Content/Core/Asset.h>
+
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 
@@ -13,13 +16,13 @@
 //Rendering.
 #include <Rendering/Native/Mesh.h>
 
-//Resources.
-#include <Resources/Core/Resource.h>
-
-class ModelResource final : public Resource
+class ModelAsset final : public Asset
 {
 
 public:
+
+	//The type identifier.
+	static HashString TYPE_IDENTIFIER;
 
 	//The model space axis-aligned bounding box.
 	AxisAlignedBoundingBox3D _ModelSpaceAxisAlignedBoundingBox;
