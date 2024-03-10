@@ -247,9 +247,9 @@ protected:
 	virtual NO_DISCARD void *const RESTRICT SubEditableFieldData(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT = 0;
 
 	/*
-	*	Adds an editable material resource field.
+	*	Adds an editable asset resource field.
 	*/
-	void AddEditableMaterialResourceField
+	void AddEditableMaterialAssetField
 	(
 		const char *const RESTRICT name,
 		const uint64 initialization_data_offset,

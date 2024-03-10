@@ -528,9 +528,6 @@ void MaterialAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOE
 {
 	PROFILING_SCOPE("MaterialAssetCompiler::LoadInternal");
 
-	//Reset the asset.
-	Memory::Set(load_data->_Asset, 0, sizeof(MaterialAsset));
-
 	//Read the data.
 	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
 

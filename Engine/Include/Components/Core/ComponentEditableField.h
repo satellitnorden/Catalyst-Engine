@@ -27,7 +27,7 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
-		MATERIAL_RESOURCE,
+		MATERIAL_ASSET,
 		MODEL_ASSET,
 		WORLD_TRANSFORM
 	};

@@ -27,7 +27,7 @@ void ApplyEditableFieldToInitializationData
 {
 	switch (editable_field._Type)
 	{
-		case ComponentEditableField::Type::MATERIAL_RESOURCE:
+		case ComponentEditableField::Type::MATERIAL_ASSET:
 		{
 			AssetPointer<MaterialAsset> *const RESTRICT destination{ (AssetPointer<MaterialAsset> *const RESTRICT)AdvancePointer(initialization_data, editable_field._InitializationDataOffset) };
 			const AssetPointer<MaterialAsset> *const RESTRICT source{ static_cast<const AssetPointer<MaterialAsset> *const RESTRICT>(data) };
@@ -85,7 +85,7 @@ void SerializeEditableField
 
 	switch (editable_field._Type)
 	{
-		case ComponentEditableField::Type::MATERIAL_RESOURCE:
+		case ComponentEditableField::Type::MATERIAL_ASSET:
 		{
 			//Cast the data.
 			const AssetPointer<MaterialAsset> *const RESTRICT _data{ static_cast<const AssetPointer<MaterialAsset> *const RESTRICT>(data) };
@@ -142,7 +142,7 @@ NO_DISCARD uint64 DeserializeEditableField
 
 	switch (editable_field._Type)
 	{
-		case ComponentEditableField::Type::MATERIAL_RESOURCE:
+		case ComponentEditableField::Type::MATERIAL_ASSET:
 		{
 			//Cast the data.
 			AssetPointer<MaterialAsset> *const RESTRICT destination{ static_cast<AssetPointer<MaterialAsset> *const RESTRICT>(_data) };

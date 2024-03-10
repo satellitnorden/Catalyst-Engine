@@ -2,9 +2,9 @@
 #include <Components/Core/Component.h>
 
 /*
-*	Adds an editable material resource field.
+*	Adds an editable material asset field.
 */
-void Component::AddEditableMaterialResourceField
+void Component::AddEditableMaterialAssetField
 (
 	const char *const RESTRICT name,
 	const uint64 initialization_data_offset,
@@ -15,7 +15,7 @@ void Component::AddEditableMaterialResourceField
 
 	editable_field._Name = name;
 	editable_field._Identifier = HashAlgorithms::MurmurHash64(name, StringUtilities::StringLength(name));
-	editable_field._Type = ComponentEditableField::Type::MATERIAL_RESOURCE;
+	editable_field._Type = ComponentEditableField::Type::MATERIAL_ASSET;
 	editable_field._InitializationDataOffset = initialization_data_offset;
 	editable_field._InstanceDataOffset = instance_data_offset;
 

@@ -31,14 +31,14 @@ void StaticModelComponent::Initialize() NOEXCEPT
 		offsetof(StaticModelInstanceData, _Model)
 	);
 
-	AddEditableMaterialResourceField
+	AddEditableMaterialAssetField
 	(
 		"Material 1",
 		offsetof(StaticModelInitializationData, _Materials) + sizeof(AssetPointer<MaterialAsset>) * 0,
 		offsetof(StaticModelInstanceData, _Materials) + sizeof(AssetPointer<MaterialAsset>) * 0
 	);
 
-	AddEditableMaterialResourceField
+	AddEditableMaterialAssetField
 	(
 		"Material 2",
 		offsetof(StaticModelInitializationData, _Materials) + sizeof(AssetPointer<MaterialAsset>) * 1,

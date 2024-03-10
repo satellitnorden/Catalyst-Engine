@@ -8,6 +8,7 @@
 
 //Content.
 #include <Content/Core/AssetPointer.h>
+#include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
 
 //File.
@@ -66,30 +67,28 @@ FORCE_INLINE NO_DISCARD bool TextInputWidget(const char *const RESTRICT label, c
 }
 
 /*
-*	Creates a custom material resource widget. Returns if there was a change.
+*	Creates a custom material asset widget. Returns if there was a change.
 */
-FORCE_INLINE NO_DISCARD bool MaterialResourceWidget(const char *const RESTRICT label, ResourcePointer<MaterialResource> *const RESTRICT material_resource) NOEXCEPT
+FORCE_INLINE NO_DISCARD bool MaterialAssetWidget(const char *const RESTRICT label, AssetPointer<MaterialAsset> *const RESTRICT asset) NOEXCEPT
 {
-	/*
 	char buffer[256];
-	sprintf_s(buffer, "%s: %s", label, (*material_resource)->_Header._ResourceName.Data());
+	sprintf_s(buffer, "%s: %s", label, (*asset)->_Header._AssetName.Data());
 
 	if (ImGui::Selectable(buffer))
 	{
 		CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
 		(
 			"Select Material",
-			ResourceConstants::MATERIAL_TYPE_IDENTIFIER,
-			[](Resource *const RESTRICT resource, void *const RESTRICT arguments)
+			MaterialAsset::TYPE_IDENTIFIER,
+			[](Asset *const RESTRICT asset, void *const RESTRICT arguments)
 			{
-				ResourcePointer<MaterialResource> *const RESTRICT material_resource{ static_cast<ResourcePointer<MaterialResource> *const RESTRICT>(arguments) };
+				AssetPointer<MaterialAsset> *const RESTRICT material_asset{ static_cast<AssetPointer<MaterialAsset> *const RESTRICT>(arguments) };
 
-				(*material_resource) = ResourcePointer<MaterialResource>((MaterialResource *const RESTRICT)resource);
+				(*material_asset) = AssetPointer<MaterialAsset>((MaterialAsset *const RESTRICT)asset);
 			},
-			material_resource
+			asset
 		);
 	}
-	*/
 
 	//Eh.
 	return false;
@@ -668,20 +667,20 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					{
 						switch (editable_field._Type)
 						{
-							case ComponentEditableField::Type::MATERIAL_RESOURCE:
+							case ComponentEditableField::Type::MATERIAL_ASSET:
 							{
-								ResourcePointer<MaterialResource> *const RESTRICT material_resource{ component->EditableFieldData<ResourcePointer<MaterialResource>>(selected_level_entry._Entity, editable_field) };
+								AssetPointer<MaterialAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<MaterialAsset>>(selected_level_entry._Entity, editable_field) };
 
-								MaterialResourceWidget(editable_field._Name, material_resource);
+								MaterialAssetWidget(editable_field._Name, asset);
 
 								break;
 							}
 
 							case ComponentEditableField::Type::MODEL_ASSET:
 							{
-								AssetPointer<ModelAsset> *const RESTRICT model_resource{ component->EditableFieldData<AssetPointer<ModelAsset>>(selected_level_entry._Entity, editable_field) };
+								AssetPointer<ModelAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<ModelAsset>>(selected_level_entry._Entity, editable_field) };
 
-								ModelAssetWidget(editable_field._Name, model_resource);
+								ModelAssetWidget(editable_field._Name, asset);
 
 								break;
 							}
