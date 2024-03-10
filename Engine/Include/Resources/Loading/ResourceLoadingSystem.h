@@ -13,7 +13,6 @@
 #include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/FontData.h>
 #include <Resources/Loading/LevelData.h>
-#include <Resources/Loading/MaterialData.h>
 #include <Resources/Loading/RawDataData.h>
 #include <Resources/Loading/RenderPipelineData.h>
 #include <Resources/Loading/ShaderData.h>
@@ -49,11 +48,6 @@ public:
 	*	Given a file, load level data.
 	*/
 	void LoadLevel(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, LevelData *const RESTRICT data) NOEXCEPT;
-
-	/*
-	*	Given a file, load material data.
-	*/
-	void LoadMaterial(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, MaterialData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load raw data data.

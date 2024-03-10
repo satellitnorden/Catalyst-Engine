@@ -4,45 +4,46 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Content.
+#include <Content/Core/Asset.h>
 #include <Content/Core/AssetPointer.h>
 #include <Content/Assets/Texture2DAsset.h>
 
 //Rendering.
 #include <Rendering/Native/Color.h>
 
-//Resources.
-#include <Resources/Core/Resource.h>
-
-class MaterialResource final : public Resource
+class MaterialAsset final : public Asset
 {
 
 public:
+
+	//The type identifier.
+	static HashString TYPE_IDENTIFIER;
 
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
 		/*
-		*	Visual entities with a masked material will use the opacity color/texture as the mask.
+		*	A masked material will use the opacity component as the mask.
 		*	Will usually run in a depth pass and a color pass.
 		*/
 		MASKED,
 
 		/*
-		*	Visual entities with an opaque material will just use the albedo, normal map and material properties textures.
+		*	An opaque material will just use the albedo, normal map and material properties components.
 		*/
 		OPAQUE,
 
 		/*
-		*	Visual entities with a translucent material will use the opacity color/texture as the opacity.
+		*	A translucent material will use the opacity color/texture as the opacity.
 		*	Will usually run in a depth pass and a color pass.
 		*/
 		TRANSLUCENT
 	};
 
 	/*
-	*	Material resource component class definition.
+	*	Component class definition.
 	*/
-	class MaterialResourceComponent final
+	class Component final
 	{
 
 	public:
@@ -62,6 +63,7 @@ public:
 			//The color.
 			Color _Color;
 
+
 			//The texture
 			AssetPointer<Texture2DAsset> _Texture;
 		};
@@ -69,17 +71,20 @@ public:
 		/*
 		*	Default constructor.
 		*/
-		FORCE_INLINE MaterialResourceComponent() NOEXCEPT
+		FORCE_INLINE Component() NOEXCEPT
 		{
-
+			
 		}
 
 		/*
 		*	Default destructor.
 		*/
-		FORCE_INLINE ~MaterialResourceComponent() NOEXCEPT
+		FORCE_INLINE ~Component() NOEXCEPT
 		{
-
+			if (_Type == Type::TEXTURE)
+			{
+				_Texture.~AssetPointer();
+			}
 		}
 
 	};
@@ -94,25 +99,25 @@ public:
 	*	The albedo/thickness component.
 	*	Expects the albedo to be in the RGB channels, and the thickness to be in the A channel.
 	*/
-	MaterialResourceComponent _AlbedoThicknessComponent;
+	Component _AlbedoThicknessComponent;
 
 	/*
 	*	The normal map/displacement component.
 	*	Expects the (tangent space) normal to be in the RGB channels, and the displacement in the A channel.
 	*/
-	MaterialResourceComponent _NormalMapDisplacementComponent;
+	Component _NormalMapDisplacementComponent;
 
 	/*
 	*	The material properties component.
 	*	Expects the roughness to be in the R channel, the metallic in the G channel, the ambient occlusion in the B channel and the emissive in the A channel.
 	*/
-	MaterialResourceComponent _MaterialPropertiesComponent;
+	Component _MaterialPropertiesComponent;
 
 	/*
 	*	The opacity component.
 	*	Expects the opacity to be in the R channel.
 	*/
-	MaterialResourceComponent _OpacityComponent;
+	Component _OpacityComponent;
 
 	//The emissive multiplier.
 	float32 _EmissiveMultiplier;

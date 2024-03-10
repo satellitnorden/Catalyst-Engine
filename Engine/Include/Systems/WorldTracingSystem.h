@@ -5,6 +5,10 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
 
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/MaterialAsset.h>
+
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 #include <Math/Geometry/Ray.h>
@@ -13,10 +17,6 @@
 #include <Rendering/Native/AccelerationStructure.h>
 #include <Rendering/Native/SurfaceDescription.h>
 #include <Rendering/Native/Vertex.h>
-
-//Resources.
-#include <Resources/Core/MaterialResource.h>
-#include <Resources/Core/ResourcePointer.h>
 
 class ALIGN(8) WorldTracingSystem final
 {
@@ -84,8 +84,8 @@ private:
 			STATIC_MODEL
 		};
 
-		//The material resource.
-		ResourcePointer<MaterialResource> _MaterialResource;
+		//The material.
+		AssetPointer<MaterialAsset> _Material;
 
 		//The normal.
 		Vector3<float32> _Normal;

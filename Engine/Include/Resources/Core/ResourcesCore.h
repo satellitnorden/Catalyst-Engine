@@ -29,7 +29,6 @@ namespace ResourceConstants
 	const extern HashString ANIMATION_TYPE_IDENTIFIER;
 	const extern HashString FONT_TYPE_IDENTIFIER;
 	const extern HashString LEVEL_TYPE_IDENTIFIER;
-	const extern HashString MATERIAL_TYPE_IDENTIFIER;
 	const extern HashString RAW_DATA_TYPE_IDENTIFIER;
 	const extern HashString RENDER_PIPELINE_TYPE_IDENTIFIER;
 	const extern HashString SHADER_TYPE_IDENTIFIER;

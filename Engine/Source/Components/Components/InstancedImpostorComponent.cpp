@@ -59,7 +59,7 @@ void InstancedImpostorComponent::CreateInstance(Entity *const RESTRICT entity, C
 	_InstanceData.Emplace();
 	InstancedImpostorInstanceData &instance_data{ _InstanceData.Back() };
 
-	instance_data._MaterialResource = _initialization_data->_MaterialResource;
+	instance_data._Material = _initialization_data->_Material;
 	instance_data._Dimensions = _initialization_data->_Dimensions;
 	instance_data._StartFadeInDistance = _initialization_data->_StartFadeInDistance;
 	instance_data._EndFadeInDistance = _initialization_data->_EndFadeInDistance;

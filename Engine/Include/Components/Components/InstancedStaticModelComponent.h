@@ -9,15 +9,12 @@
 
 //Content.
 #include <Content/Core/AssetPointer.h>
+#include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/ModelFadeData.h>
-
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/MaterialResource.h>
 
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
@@ -56,8 +53,8 @@ public:
 	//The model.
 	AssetPointer<ModelAsset> _Model;
 
-	//The material resources.
-	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
+	//The materials.
+	StaticArray<AssetPointer<MaterialAsset>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _Materials;
 
 	//The model flags.
 	ModelFlags _ModelFlags;
@@ -81,8 +78,8 @@ public:
 	//The model.
 	AssetPointer<ModelAsset> _Model;
 
-	//The material resources.
-	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
+	//The materials.
+	StaticArray<AssetPointer<MaterialAsset>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _Materials;
 
 	//The cell.
 	Vector3<int32> _Cell;

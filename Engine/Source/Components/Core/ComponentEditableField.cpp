@@ -6,11 +6,11 @@
 
 //Content.
 #include <Content/Core/AssetPointer.h>
+#include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
 
 //Systems.
 #include <Systems/ContentSystem.h>
-#include <Systems/ResourceSystem.h>
 
 //World.
 #include <World/Core/WorldTransform.h>
@@ -29,8 +29,8 @@ void ApplyEditableFieldToInitializationData
 	{
 		case ComponentEditableField::Type::MATERIAL_RESOURCE:
 		{
-			ResourcePointer<MaterialResource> *const RESTRICT destination{ (ResourcePointer<MaterialResource> *const RESTRICT)AdvancePointer(initialization_data, editable_field._InitializationDataOffset) };
-			const ResourcePointer<MaterialResource> *const RESTRICT source{ static_cast<const ResourcePointer<MaterialResource> *const RESTRICT>(data) };
+			AssetPointer<MaterialAsset> *const RESTRICT destination{ (AssetPointer<MaterialAsset> *const RESTRICT)AdvancePointer(initialization_data, editable_field._InitializationDataOffset) };
+			const AssetPointer<MaterialAsset> *const RESTRICT source{ static_cast<const AssetPointer<MaterialAsset> *const RESTRICT>(data) };
 
 			(*destination) = (*source);
 
@@ -88,10 +88,10 @@ void SerializeEditableField
 		case ComponentEditableField::Type::MATERIAL_RESOURCE:
 		{
 			//Cast the data.
-			const ResourcePointer<MaterialResource> *const RESTRICT _data{ static_cast<const ResourcePointer<MaterialResource> *const RESTRICT>(data) };
+			const AssetPointer<MaterialAsset> *const RESTRICT _data{ static_cast<const AssetPointer<MaterialAsset> *const RESTRICT>(data) };
 
 			//Can't really serialize a pointer, so serialize the resource identifier.
-			stream_archive->Write(&(*_data)->_Header._ResourceIdentifier, sizeof(HashString));
+			stream_archive->Write(&(*_data)->_Header._AssetIdentifier, sizeof(HashString));
 
 			break;
 		}
@@ -145,11 +145,11 @@ NO_DISCARD uint64 DeserializeEditableField
 		case ComponentEditableField::Type::MATERIAL_RESOURCE:
 		{
 			//Cast the data.
-			ResourcePointer<MaterialResource> *const RESTRICT destination{ static_cast<ResourcePointer<MaterialResource> *const RESTRICT>(_data) };
+			AssetPointer<MaterialAsset> *const RESTRICT destination{ static_cast<AssetPointer<MaterialAsset> *const RESTRICT>(_data) };
 			const HashString *const RESTRICT source{ static_cast<const HashString *const RESTRICT>(data) };
 
 			//Write the data.
-			(*destination) = ResourceSystem::Instance->GetMaterialResource(*source);
+			(*destination) = ContentSystem::Instance->GetAsset<MaterialAsset>(*source);
 
 			//Return the advance.
 			return sizeof(HashString);

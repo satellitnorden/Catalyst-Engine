@@ -249,44 +249,6 @@ NO_DISCARD ResourcePointer<LevelResource> ResourceSystem::FindOrCreateLevelResou
 }
 
 /*
-*	Returns the material resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<MaterialResource> ResourceSystem::GetMaterialResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	MaterialResource *const RESTRICT *const RESTRICT resource{ _MaterialResources.Find(identifier) };
-
-	ASSERT(resource, "Couldn't find resource!");
-
-	return resource ? ResourcePointer<MaterialResource>(*resource) : ResourcePointer<MaterialResource>();
-}
-
-/*
-*	Returns or creates the material resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<MaterialResource> ResourceSystem::FindOrCreateMaterialResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	MaterialResource *const RESTRICT *const RESTRICT resource{ _MaterialResources.Find(identifier) };
-
-	if (!resource)
-	{
-		//If the resource couldn't be found, create it.
-		MaterialResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<MaterialResource>()) MaterialResource() };
-		new_resource->_Header._ResourceIdentifier = identifier;
-		_MaterialResources.Add(identifier, new_resource);
-		_AllResources.Emplace(new_resource);
-
-		return ResourcePointer<MaterialResource>(new_resource);
-	}
-
-	else
-	{
-		return ResourcePointer<MaterialResource>(*resource);
-	}
-}
-
-/*
 *	Returns the raw data resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<RawDataResource> ResourceSystem::GetRawDataResource(const HashString identifier) NOEXCEPT
@@ -720,44 +682,6 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 		//Create the resource.
 		_ResourceCreationSystem.CreateLevel(&data, new_resource);
-
-		//Register that the resource is now loaded.
-		new_resource->_LoadState = ResourceLoadState::LOADED;
-	}
-
-	else if (header._TypeIdentifier == ResourceConstants::MATERIAL_TYPE_IDENTIFIER)
-	{
-		/*
-		*	Find or allocate the new resource.
-		*	The resource might have been created already by other dependant resources, but not loaded yet.
-		*/
-		MaterialResource* RESTRICT new_resource;
-
-		if (MaterialResource* const RESTRICT* const RESTRICT found_resource{ _MaterialResources.Find(header._ResourceIdentifier) })
-		{
-			new_resource = *found_resource;
-		}
-
-		else
-		{
-			new_resource = new (MemorySystem::Instance->TypeAllocate<MaterialResource>()) MaterialResource();
-			_MaterialResources.Add(header._ResourceIdentifier, new_resource);
-			_AllResources.Emplace(new_resource);
-		}
-
-		//Set the resource header.
-		new_resource->_Header = header;
-
-		//Set the file path and file offset.
-		new_resource->_FilePath = file->GetFilePath();
-		new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
-
-		//Load the resource.
-		MaterialData data;
-		_ResourceLoadingSystem.LoadMaterial(file, &data);
-
-		//Create the resource.
-		_ResourceCreationSystem.CreateMaterial(&data, new_resource);
 
 		//Register that the resource is now loaded.
 		new_resource->_LoadState = ResourceLoadState::LOADED;

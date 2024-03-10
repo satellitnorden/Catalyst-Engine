@@ -327,7 +327,7 @@ void RenderInputManager::Initialize() NOEXCEPT
 			sizeof(ModelFullPushConstantData),
 			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
 			{
-				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialResource::Type::OPAQUE, false, input_stream);
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialAsset::Type::OPAQUE, false, input_stream);
 			},
 			RenderInputStream::Mode::DRAW_INDEXED,
 			this
@@ -341,7 +341,7 @@ void RenderInputManager::Initialize() NOEXCEPT
 			sizeof(ModelFullPushConstantData),
 			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
 			{
-				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialResource::Type::OPAQUE, true, input_stream);
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialAsset::Type::OPAQUE, true, input_stream);
 			},
 			RenderInputStream::Mode::DRAW_INDEXED,
 			this
@@ -365,7 +365,7 @@ void RenderInputManager::Initialize() NOEXCEPT
 				sizeof(ModelDepthPushConstantData),
 				[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
 				{
-					static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherDepthModelInputStream(MaterialResource::Type::MASKED, false, input_stream);
+					static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherDepthModelInputStream(MaterialAsset::Type::MASKED, false, input_stream);
 				},
 				RenderInputStream::Mode::DRAW_INDEXED,
 				this
@@ -379,7 +379,7 @@ void RenderInputManager::Initialize() NOEXCEPT
 				sizeof(ModelDepthPushConstantData),
 				[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
 				{
-					static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherDepthModelInputStream(MaterialResource::Type::MASKED, true, input_stream);
+					static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherDepthModelInputStream(MaterialAsset::Type::MASKED, true, input_stream);
 				},
 				RenderInputStream::Mode::DRAW_INDEXED,
 				this
@@ -394,7 +394,7 @@ void RenderInputManager::Initialize() NOEXCEPT
 			sizeof(ModelFullPushConstantData),
 			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
 			{
-				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialResource::Type::MASKED, false, input_stream);
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialAsset::Type::MASKED, false, input_stream);
 			},
 			RenderInputStream::Mode::DRAW_INDEXED,
 			this
@@ -408,7 +408,7 @@ void RenderInputManager::Initialize() NOEXCEPT
 			sizeof(ModelFullPushConstantData),
 			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
 			{
-				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialResource::Type::MASKED, true, input_stream);
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherFullModelInputStream(MaterialAsset::Type::MASKED, true, input_stream);
 			},
 			RenderInputStream::Mode::DRAW_INDEXED,
 			this
@@ -744,7 +744,7 @@ NO_DISCARD const RenderInputStream &RenderInputManager::GetInputStream(const Has
 */
 void RenderInputManager::GatherDepthModelInputStream
 (
-	const MaterialResource::Type material_type,
+	const MaterialAsset::Type material_type,
 	const bool double_sided,
 	RenderInputStream *const RESTRICT input_stream
 ) NOEXCEPT
@@ -774,13 +774,13 @@ void RenderInputManager::GatherDepthModelInputStream
 			for (uint64 i{ 0 }, size{ static_model_instance_data._Model->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
-				if (static_model_instance_data._MaterialResources[i]->_Type != material_type)
+				if (static_model_instance_data._Materials[i]->_Type != material_type)
 				{
 					continue;
 				}
 
 				//Skip this mesh depending on double sided-ness.
-				if (static_model_instance_data._MaterialResources[i]->_DoubleSided != double_sided)
+				if (static_model_instance_data._Materials[i]->_DoubleSided != double_sided)
 				{
 					continue;
 				}
@@ -805,7 +805,7 @@ void RenderInputManager::GatherDepthModelInputStream
 				ModelDepthPushConstantData push_constant_data;
 
 				push_constant_data._ModelMatrix = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				push_constant_data._MaterialIndex = static_model_instance_data._MaterialResources[i]->_Index;
+				push_constant_data._MaterialIndex = static_model_instance_data._Materials[i]->_Index;
 
 				for (uint64 i{ 0 }; i < sizeof(ModelDepthPushConstantData); ++i)
 				{
@@ -821,7 +821,7 @@ void RenderInputManager::GatherDepthModelInputStream
 */
 void RenderInputManager::GatherFullModelInputStream
 (
-	const MaterialResource::Type material_type,
+	const MaterialAsset::Type material_type,
 	const bool double_sided,
 	RenderInputStream *const RESTRICT input_stream
 ) NOEXCEPT
@@ -851,13 +851,13 @@ void RenderInputManager::GatherFullModelInputStream
 			for (uint64 i{ 0 }, size{ static_model_instance_data._Model->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
-				if (static_model_instance_data._MaterialResources[i]->_Type != material_type)
+				if (static_model_instance_data._Materials[i]->_Type != material_type)
 				{
 					continue;
 				}
 
 				//Skip this mesh depending on double sided-ness.
-				if (static_model_instance_data._MaterialResources[i]->_DoubleSided != double_sided)
+				if (static_model_instance_data._Materials[i]->_DoubleSided != double_sided)
 				{
 					continue;
 				}
@@ -883,7 +883,7 @@ void RenderInputManager::GatherFullModelInputStream
 
 				push_constant_data._PreviousModelMatrix = world_transform_instance_data._PreviousWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 				push_constant_data._CurrentModelMatrix = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-				push_constant_data._MaterialIndex = static_model_instance_data._MaterialResources[i]->_Index;
+				push_constant_data._MaterialIndex = static_model_instance_data._Materials[i]->_Index;
 
 				for (uint64 i{ 0 }; i < sizeof(ModelFullPushConstantData); ++i)
 				{
@@ -923,7 +923,7 @@ void RenderInputManager::GatherInstancedModelInputStream
 			for (uint64 i{ 0 }, size{ instance_data._Model->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the double-sidedness.
-				if (instance_data._MaterialResources[i]->_DoubleSided != double_sided)
+				if (instance_data._Materials[i]->_DoubleSided != double_sided)
 				{
 					continue;
 				}
@@ -967,7 +967,7 @@ void RenderInputManager::GatherInstancedModelInputStream
 					push_constant_data._StartFadeOutDistanceSquared = push_constant_data._EndFadeOutDistanceSquared = FLOAT32_MAXIMUM;
 				}
 
-				push_constant_data._MaterialIndex = instance_data._MaterialResources[i]->_Index;
+				push_constant_data._MaterialIndex = instance_data._Materials[i]->_Index;
 
 				for (uint64 i{ 0 }; i < sizeof(InstancedModelPushConstantData); ++i)
 				{
@@ -1028,7 +1028,7 @@ void RenderInputManager::GatherInstancedImpostorInputStream
 			push_constant_data._HalfWidth = instance_data._Dimensions._X * 0.5f;
 			push_constant_data._WholeWidth = instance_data._Dimensions._X;
 			push_constant_data._Height = instance_data._Dimensions._Y;
-			push_constant_data._MaterialIndex = instance_data._MaterialResource->_Index;
+			push_constant_data._MaterialIndex = instance_data._Material->_Index;
 			push_constant_data._StartFadeInDistance = instance_data._StartFadeInDistance;
 			push_constant_data._EndFadeInDistance = instance_data._EndFadeInDistance;
 			push_constant_data._StartFadeOutDistance = instance_data._StartFadeOutDistance;
@@ -1280,7 +1280,7 @@ void RenderInputManager::GatherGrassInputStream
 
 		push_constant_data._Minimum = instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum.GetLocalPosition();
 		push_constant_data._Maximum = instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum.GetLocalPosition();
-		push_constant_data._MaterialIndex = instance_data._MaterialResource->_Index;
+		push_constant_data._MaterialIndex = instance_data._Material->_Index;
 		push_constant_data._VertexFactor = 1.0f / static_cast<float32>((new_entry._VertexCount - 1) >> 1);
 		push_constant_data._Thickness = instance_data._Thickness;
 		push_constant_data._Height = instance_data._Height;

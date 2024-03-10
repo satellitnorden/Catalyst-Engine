@@ -7,9 +7,9 @@
 //Components.
 #include <Components/Core/Component.h>
 
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/MaterialResource.h>
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/MaterialAsset.h>
 
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
@@ -20,8 +20,8 @@ class InstancedImpostorInitializationData final : public ComponentInitialization
 
 public:
 
-	//The material resource.
-	ResourcePointer<MaterialResource> _MaterialResource;
+	//The material.
+	AssetPointer<MaterialAsset> _Material;
 
 	//The dimensions.
 	Vector2<float32> _Dimensions;
@@ -48,8 +48,8 @@ class InstancedImpostorInstanceData final
 
 public:
 
-	//The material resource.
-	ResourcePointer<MaterialResource> _MaterialResource;
+	//The material.
+	AssetPointer<MaterialAsset> _Material;
 
 	//The dimensions.
 	Vector2<float32> _Dimensions;

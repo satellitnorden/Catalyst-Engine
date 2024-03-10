@@ -34,15 +34,15 @@ void StaticModelComponent::Initialize() NOEXCEPT
 	AddEditableMaterialResourceField
 	(
 		"Material 1",
-		offsetof(StaticModelInitializationData, _MaterialResources) + sizeof(ResourcePointer<MaterialResource>) * 0,
-		offsetof(StaticModelInstanceData, _MaterialResources) + sizeof(ResourcePointer<MaterialResource>) * 0
+		offsetof(StaticModelInitializationData, _Materials) + sizeof(AssetPointer<MaterialAsset>) * 0,
+		offsetof(StaticModelInstanceData, _Materials) + sizeof(AssetPointer<MaterialAsset>) * 0
 	);
 
 	AddEditableMaterialResourceField
 	(
 		"Material 2",
-		offsetof(StaticModelInitializationData, _MaterialResources) + sizeof(ResourcePointer<MaterialResource>) * 1,
-		offsetof(StaticModelInstanceData, _MaterialResources) + sizeof(ResourcePointer<MaterialResource>) * 1
+		offsetof(StaticModelInitializationData, _Materials) + sizeof(AssetPointer<MaterialAsset>) * 1,
+		offsetof(StaticModelInstanceData, _Materials) + sizeof(AssetPointer<MaterialAsset>) * 1
 	);
 }
 
@@ -70,7 +70,7 @@ void StaticModelComponent::DefaultInitializationData(ComponentInitializationData
 
 	for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
 	{
-		_initialization_data->_MaterialResources[i] = ResourceSystem::Instance->GetMaterialResource(HashString("Default"));
+		_initialization_data->_Materials[i] = ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"));
 	}
 	
 	_initialization_data->_ModelCollisionConfiguration._Type = ModelCollisionType::NONE;
@@ -101,7 +101,7 @@ void StaticModelComponent::CreateInstance(Entity *const RESTRICT entity, Compone
 	StaticModelInstanceData &instance_data{ _InstanceData.Back() };
 
 	instance_data._Model = _initialization_data->_Model;
-	instance_data._MaterialResources = _initialization_data->_MaterialResources;
+	instance_data._Materials = _initialization_data->_Materials;
 	instance_data._ModelCollisionConfiguration = _initialization_data->_ModelCollisionConfiguration;
 	instance_data._ModelSimulationConfiguration = _initialization_data->_ModelSimulationConfiguration;
 	instance_data._MeshesVisibleMask = UINT8_MAXIMUM;

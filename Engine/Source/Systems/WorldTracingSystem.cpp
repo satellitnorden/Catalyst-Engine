@@ -46,9 +46,9 @@ public:
 			acceleration_structure.GetVertexData(index_3)
 		};
 
-		if (vertex_data[0]._UserData._MaterialResource->_OpacityComponent._Type == MaterialResource::MaterialResourceComponent::Type::COLOR)
+		if (vertex_data[0]._UserData._Material->_OpacityComponent._Type == MaterialAsset::Component::Type::COLOR)
 		{
-			return vertex_data[0]._UserData._MaterialResource->_OpacityComponent._Color.Get()[0] >= 0.5f;
+			return vertex_data[0]._UserData._Material->_OpacityComponent._Color.Get()[0] >= 0.5f;
 		}
 
 		else
@@ -75,7 +75,7 @@ public:
 				texture_coordinate += vertex_data[i]._UserData._TextureCoordinate * barycentric_coordinates[i];
 			}
 
-			const Vector4<float32> color{ Sample(vertex_data[0]._UserData._MaterialResource->_OpacityComponent._Texture->_Texture2D, texture_coordinate) };
+			const Vector4<float32> color{ Sample(vertex_data[0]._UserData._Material->_OpacityComponent._Texture->_Texture2D, texture_coordinate) };
 
 			return color[0] >= 0.5f;
 		}
@@ -236,11 +236,11 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 			}
 
 			//Fill in the albedo.
-			switch (vertex_data[0]._UserData._MaterialResource->_AlbedoThicknessComponent._Type)
+			switch (vertex_data[0]._UserData._Material->_AlbedoThicknessComponent._Type)
 			{
-				case MaterialResource::MaterialResourceComponent::Type::COLOR:
+				case MaterialAsset::Component::Type::COLOR:
 				{
-					const Vector4<float32> color{ vertex_data[0]._UserData._MaterialResource->_AlbedoThicknessComponent._Color.Get() };
+					const Vector4<float32> color{ vertex_data[0]._UserData._Material->_AlbedoThicknessComponent._Color.Get() };
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
@@ -250,9 +250,9 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 					break;
 				}
 
-				case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+				case MaterialAsset::Component::Type::TEXTURE:
 				{
-					const Vector4<float32> color{ Sample(vertex_data[0]._UserData._MaterialResource->_AlbedoThicknessComponent._Texture->_Texture2D, texture_coordinate) };
+					const Vector4<float32> color{ Sample(vertex_data[0]._UserData._Material->_AlbedoThicknessComponent._Texture->_Texture2D, texture_coordinate) };
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
@@ -301,18 +301,18 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 				{
 					Vector4<float32> normal_map_displacement;
 
-					switch (vertex_data[0]._UserData._MaterialResource->_NormalMapDisplacementComponent._Type)
+					switch (vertex_data[0]._UserData._Material->_NormalMapDisplacementComponent._Type)
 					{
-						case MaterialResource::MaterialResourceComponent::Type::COLOR:
+						case MaterialAsset::Component::Type::COLOR:
 						{
-							normal_map_displacement = vertex_data[0]._UserData._MaterialResource->_NormalMapDisplacementComponent._Color.Get();
+							normal_map_displacement = vertex_data[0]._UserData._Material->_NormalMapDisplacementComponent._Color.Get();
 
 							break;
 						}
 
-						case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+						case MaterialAsset::Component::Type::TEXTURE:
 						{
-							normal_map_displacement = Sample(vertex_data[0]._UserData._MaterialResource->_NormalMapDisplacementComponent._Texture->_Texture2D, texture_coordinate);
+							normal_map_displacement = Sample(vertex_data[0]._UserData._Material->_NormalMapDisplacementComponent._Texture->_Texture2D, texture_coordinate);
 
 							break;
 						}
@@ -335,18 +335,18 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 			//Fill in the material properties.
 			Vector4<float32> material_properties;
 
-			switch (vertex_data[0]._UserData._MaterialResource->_MaterialPropertiesComponent._Type)
+			switch (vertex_data[0]._UserData._Material->_MaterialPropertiesComponent._Type)
 			{
-				case MaterialResource::MaterialResourceComponent::Type::COLOR:
+				case MaterialAsset::Component::Type::COLOR:
 				{
-					material_properties = vertex_data[0]._UserData._MaterialResource->_MaterialPropertiesComponent._Color.Get();
+					material_properties = vertex_data[0]._UserData._Material->_MaterialPropertiesComponent._Color.Get();
 
 					break;
 				}
 
-				case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+				case MaterialAsset::Component::Type::TEXTURE:
 				{
-					material_properties = Sample(vertex_data[0]._UserData._MaterialResource->_MaterialPropertiesComponent._Texture->_Texture2D, texture_coordinate);
+					material_properties = Sample(vertex_data[0]._UserData._Material->_MaterialPropertiesComponent._Texture->_Texture2D, texture_coordinate);
 
 					break;
 				}
@@ -362,7 +362,7 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 			surface_description->_Roughness = material_properties[0];
 			surface_description->_Metallic = material_properties[1];
 			surface_description->_AmbientOcclusion = material_properties[2];
-			surface_description->_Emissive = material_properties[3] * vertex_data[0]._UserData._MaterialResource->_EmissiveMultiplier;
+			surface_description->_Emissive = material_properties[3] * vertex_data[0]._UserData._Material->_EmissiveMultiplier;
 		}
 
 		return true;

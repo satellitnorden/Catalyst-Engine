@@ -142,6 +142,14 @@ public:
 	*/
 	virtual NO_DISCARD Asset *const RESTRICT Load(const LoadContext &load_context) NOEXCEPT = 0;
 
+	/*
+	*	Runs after load.
+	*/
+	FORCE_INLINE virtual void PostLoad() NOEXCEPT
+	{
+
+	}
+
 protected:
 
 	/*

@@ -154,7 +154,7 @@ void RayTracingSystem::OnStaticModelInstanceCreated(Entity *const RESTRICT entit
 		//Decide which hit group this mesh goes in.
 		RayTracingHitGroup *RESTRICT hit_group;
 
-		if (instance_data._MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED)
+		if (instance_data._Materials[mesh_index]->_Type == MaterialAsset::Type::MASKED)
 		{
 			hit_group = GetHitGroup(HashString("MaskedModels"));
 		}
@@ -207,7 +207,7 @@ void RayTracingSystem::OnStaticModelInstanceCreated(Entity *const RESTRICT entit
 		new_entry._EntityIdentifier = entity->_EntityIdentifier;
 		new_entry._VertexBuffer = mesh_level_of_detail._VertexBuffer;
 		new_entry._IndexBuffer = mesh_level_of_detail._IndexBuffer;
-		new_entry._MaterialIndex = instance_data._MaterialResources[mesh_index]->_Index;
+		new_entry._MaterialIndex = instance_data._Materials[mesh_index]->_Index;
 		new_entry._InstanceData._Transform = WorldTransformComponent::Instance->InstanceData(entity)._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 		new_entry._InstanceData._BottomLevelAccelerationStructure = bottom_level_acceleration_structure;
 		new_entry._InstanceData._HitGroupIndex = hit_group->_Index;
@@ -226,7 +226,7 @@ void RayTracingSystem::OnStaticModelInstanceDestroyed(Entity *const RESTRICT ent
 		//Decide which hit group this mesh is in.
 		RayTracingHitGroup *RESTRICT hit_group;
 
-		if (instance_data._MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED)
+		if (instance_data._Materials[mesh_index]->_Type == MaterialAsset::Type::MASKED)
 		{
 			hit_group = GetHitGroup(HashString("MaskedModels"));
 		}

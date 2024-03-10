@@ -68,7 +68,7 @@ void AnimatedModelComponent::CreateInstance(Entity *const RESTRICT entity, Compo
 
 	//Copy data.
 	instance_data._AnimatedModelResource = _initialization_data->_AnimatedModelResource;
-	instance_data._MaterialResource = _initialization_data->_MaterialResource;
+	//instance_data._MaterialResource = _initialization_data->_MaterialResource;
 	instance_data._CurrentAnimationResource = _initialization_data->_InitialAnimationResource;
 
 	//Create the animation data buffers and render data tables.

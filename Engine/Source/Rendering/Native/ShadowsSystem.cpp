@@ -432,7 +432,7 @@ void ShadowsSystem::GatherOpaqueModelInputStream
 			for (uint64 i{ 0 }, size{ static_model_instance_data._Model->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
-				if (static_model_instance_data._MaterialResources[i]->_Type != MaterialResource::Type::OPAQUE)
+				if (static_model_instance_data._Materials[i]->_Type != MaterialAsset::Type::OPAQUE)
 				{
 					continue;
 				}
@@ -523,7 +523,7 @@ void ShadowsSystem::GatherMaskedModelInputStream
 			for (uint64 i{ 0 }, size{ static_model_instance_data._Model->_Meshes.Size() }; i < size; ++i)
 			{
 				//Skip this mesh depending on the material type.
-				if (static_model_instance_data._MaterialResources[i]->_Type != MaterialResource::Type::MASKED)
+				if (static_model_instance_data._Materials[i]->_Type != MaterialAsset::Type::MASKED)
 				{
 					continue;
 				}
@@ -547,7 +547,7 @@ void ShadowsSystem::GatherMaskedModelInputStream
 				//Set up the push constant data.
 				new_entry._PushConstantData._ModelMatrix = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 				new_entry._PushConstantData._LightMatrixIndex = shadow_map_index;
-				new_entry._PushConstantData._MaterialIndex = static_model_instance_data._MaterialResources[i]->_Index;
+				new_entry._PushConstantData._MaterialIndex = static_model_instance_data._Materials[i]->_Index;
 
 				//Calculate the distance.
 				const Vector4<float32> clip_position{ _ShadowMapData[shadow_map_index]._WorldToLightMatrix * new_entry._PushConstantData._ModelMatrix * Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f) };

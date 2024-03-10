@@ -4,8 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/Padding.h>
 
-//Resources.
-#include <Resources/Core/MaterialResource.h>
+//Content.
+#include <Content/Assets/MaterialAsset.h>
 
 class ShaderMaterial final
 {
@@ -64,26 +64,26 @@ public:
 	/*
 	*	Constructor taking a material resource.
 	*/
-	FORCE_INLINE ShaderMaterial(const MaterialResource *const RESTRICT resource) NOEXCEPT
+	FORCE_INLINE ShaderMaterial(const MaterialAsset *const RESTRICT material) NOEXCEPT
 	{
 		//The first 3 bits in _Properties are reserved to encode the type, so set that first.
-		switch (resource->_Type)
+		switch (material->_Type)
 		{
-			case MaterialResource::Type::MASKED:
+			case MaterialAsset::Type::MASKED:
 			{
 				_Properties = CatalystShaderConstants::MATERIAL_PROPERTY_TYPE_MASKED;
 
 				break;
 			}
 
-			case MaterialResource::Type::OPAQUE:
+			case MaterialAsset::Type::OPAQUE:
 			{
 				_Properties = CatalystShaderConstants::MATERIAL_PROPERTY_TYPE_OPAQUE;
 
 				break;
 			}
 
-			case MaterialResource::Type::TRANSLUCENT:
+			case MaterialAsset::Type::TRANSLUCENT:
 			{
 				_Properties = CatalystShaderConstants::MATERIAL_PROPERTY_TYPE_TRANSLUCENT;
 
@@ -99,19 +99,19 @@ public:
 		}
 
 		//Set the albedo/thickness.
-		switch (resource->_AlbedoThicknessComponent._Type)
+		switch (material->_AlbedoThicknessComponent._Type)
 		{
-			case MaterialResource::MaterialResourceComponent::Type::COLOR:
+			case MaterialAsset::Component::Type::COLOR:
 			{
-				_AlbedoThickness = *resource->_AlbedoThicknessComponent._Color.Data();
+				_AlbedoThickness = *material->_AlbedoThicknessComponent._Color.Data();
 
 				break;
 			}
 
-			case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+			case MaterialAsset::Component::Type::TEXTURE:
 			{
 				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE);
-				_AlbedoThickness = resource->_AlbedoThicknessComponent._Texture->_Index;
+				_AlbedoThickness = material->_AlbedoThicknessComponent._Texture->_Index;
 
 				break;
 			}
@@ -125,19 +125,19 @@ public:
 		}
 
 		//Set the normal map/displacement.
-		switch (resource->_NormalMapDisplacementComponent._Type)
+		switch (material->_NormalMapDisplacementComponent._Type)
 		{
-			case MaterialResource::MaterialResourceComponent::Type::COLOR:
+			case MaterialAsset::Component::Type::COLOR:
 			{
-				_NormalMapDisplacement = *resource->_NormalMapDisplacementComponent._Color.Data();
+				_NormalMapDisplacement = *material->_NormalMapDisplacementComponent._Color.Data();
 
 				break;
 			}
 
-			case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+			case MaterialAsset::Component::Type::TEXTURE:
 			{
 				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE);
-				_NormalMapDisplacement = resource->_NormalMapDisplacementComponent._Texture->_Index;
+				_NormalMapDisplacement = material->_NormalMapDisplacementComponent._Texture->_Index;
 
 				break;
 			}
@@ -151,19 +151,19 @@ public:
 		}
 
 		//Set the material properties.
-		switch (resource->_MaterialPropertiesComponent._Type)
+		switch (material->_MaterialPropertiesComponent._Type)
 		{
-			case MaterialResource::MaterialResourceComponent::Type::COLOR:
+			case MaterialAsset::Component::Type::COLOR:
 			{
-				_MaterialProperties = *resource->_MaterialPropertiesComponent._Color.Data();
+				_MaterialProperties = *material->_MaterialPropertiesComponent._Color.Data();
 
 				break;
 			}
 
-			case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+			case MaterialAsset::Component::Type::TEXTURE:
 			{
 				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE);
-				_MaterialProperties = resource->_MaterialPropertiesComponent._Texture->_Index;
+				_MaterialProperties = material->_MaterialPropertiesComponent._Texture->_Index;
 
 				break;
 			}
@@ -177,19 +177,19 @@ public:
 		}
 
 		//Set the opacity.
-		switch (resource->_OpacityComponent._Type)
+		switch (material->_OpacityComponent._Type)
 		{
-			case MaterialResource::MaterialResourceComponent::Type::COLOR:
+			case MaterialAsset::Component::Type::COLOR:
 			{
-				_Opacity = *resource->_OpacityComponent._Color.Data();
+				_Opacity = *material->_OpacityComponent._Color.Data();
 
 				break;
 			}
 
-			case MaterialResource::MaterialResourceComponent::Type::TEXTURE:
+			case MaterialAsset::Component::Type::TEXTURE:
 			{
 				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_OPACITY_TEXTURE);
-				_Opacity = resource->_OpacityComponent._Texture->_Index;
+				_Opacity = material->_OpacityComponent._Texture->_Index;
 
 				break;
 			}
@@ -203,7 +203,7 @@ public:
 		}
 
 		//Copy the emissive multiplier.
-		_EmissiveMultiplier = resource->_EmissiveMultiplier;
+		_EmissiveMultiplier = material->_EmissiveMultiplier;
 	}
 
 };

@@ -173,15 +173,6 @@ void ResourceLoadingSystem::LoadLevel(BinaryFile<BinaryFileMode::IN> *const REST
 }
 
 /*
-*	Given a file, load material data.
-*/
-void ResourceLoadingSystem::LoadMaterial(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, MaterialData* const RESTRICT data) NOEXCEPT
-{
-	//Just read the data. (:
-	file->Read(data, sizeof(MaterialData));
-}
-
-/*
 *	Given a file, load raw data data.
 */
 void ResourceLoadingSystem::LoadRawData(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RawDataData* const RESTRICT data) NOEXCEPT

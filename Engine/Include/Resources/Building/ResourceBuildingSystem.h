@@ -9,7 +9,6 @@
 #include <Resources/Building/AnimationBuildParameters.h>
 #include <Resources/Building/FontBuildParameters.h>
 #include <Resources/Building/LevelBuildParameters.h>
-#include <Resources/Building/MaterialBuildParameters.h>
 #include <Resources/Building/RawDataBuildParameters.h>
 #include <Resources/Building/RenderPipelineBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
@@ -48,11 +47,6 @@ public:
 	*	Builds a level.
 	*/
 	void BuildLevel(const LevelBuildParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Builds a material.
-	*/
-	void BuildMaterial(const MaterialBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a raw data.

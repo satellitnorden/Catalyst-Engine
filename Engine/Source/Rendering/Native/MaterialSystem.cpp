@@ -18,7 +18,7 @@ MaterialSystem::MaterialSystem() NOEXCEPT
 	//Reset all material resources.
 	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)
 	{
-		_MaterialResources[i] = nullptr;
+		_Materials[i] = nullptr;
 	}
 }
 
@@ -49,9 +49,9 @@ void MaterialSystem::RenderUpdate() NOEXCEPT
 	//Update all shader materials.
 	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)
 	{
-		if (_MaterialResources[i])
+		if (_Materials[i])
 		{
-			_ShaderMaterials[i] = ShaderMaterial(_MaterialResources[i]);
+			_ShaderMaterials[i] = ShaderMaterial(_Materials[i]);
 		}
 
 		else
@@ -71,7 +71,7 @@ void MaterialSystem::RenderUpdate() NOEXCEPT
 /*
 *	Registers a material.
 */
-NO_DISCARD uint32 MaterialSystem::RegisterMaterial(const MaterialResource *const RESTRICT resource) NOEXCEPT
+NO_DISCARD uint32 MaterialSystem::RegisterMaterial(const MaterialAsset *const RESTRICT material) NOEXCEPT
 {
 	//Find the first free index.
 	uint32 index{ UINT32_MAXIMUM };
@@ -89,8 +89,8 @@ NO_DISCARD uint32 MaterialSystem::RegisterMaterial(const MaterialResource *const
 
 	ASSERT(index != UINT32_MAXIMUM, "Couldn't find a free material slot, increase maximum number of materials!");
 
-	//Add the material resources.
-	_MaterialResources[index] = resource;
+	//Add the material.
+	_Materials[index] = material;
 
 	//Return the index.
 	return index;

@@ -12,37 +12,31 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	PoolAllocator() NOEXCEPT
+	FORCE_INLINE PoolAllocator() NOEXCEPT
+		:
+		_Root(nullptr)
 	{
-		//Allocate a new node that will be the root node.
-		_Root = static_cast<PoolAllocatorNode *const RESTRICT>(Memory::Allocate(sizeof(PoolAllocatorNode)));
-
-		//Reset the new node.
-		_Root->_Active = static_cast<uint64>(0);
-		_Root->_Next = nullptr;
+		
 	}
 
 	/*
 	*	Default destructor.
 	*/
-	~PoolAllocator() NOEXCEPT
+	FORCE_INLINE ~PoolAllocator() NOEXCEPT
 	{
-		//Deallocate all nodes.
-		PoolAllocatorNode *RESTRICT next{ _Root };
-
-		do
-		{
-			PoolAllocatorNode *RESTRICT previous{ next };
-			next = next->_Next;
-			Memory::Free(previous);
-		} while (next);
+		Reset();
 	}
 
 	/*
 	*	Allocates memory.
 	*/
-	RESTRICTED NO_DISCARD void *const RESTRICT Allocate() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD void *const RESTRICT Allocate() NOEXCEPT
 	{
+		if (!_Root)
+		{
+			InitializeRoot();
+		}
+
 		PoolAllocatorNode *RESTRICT current{ _Root };
 
 		for (;;)
@@ -76,7 +70,7 @@ public:
 	/*
 	*	Frees memory.
 	*/
-	void Free(void *const RESTRICT memory) NOEXCEPT
+	FORCE_INLINE void Free(void *const RESTRICT memory) NOEXCEPT
 	{
 		PoolAllocatorNode *previous{ _Root };
 		PoolAllocatorNode *current{ _Root };
@@ -105,6 +99,17 @@ public:
 		}
 	}
 
+	/*
+	*	Resets this pool allocator.
+	*/
+	FORCE_INLINE void Reset() NOEXCEPT
+	{
+		if (_Root)
+		{
+			FreeNode(_Root);
+		}
+	}
+
 private:
 
 	/*
@@ -127,6 +132,32 @@ private:
 	};
 
 	//The root node.
-	PoolAllocatorNode *RESTRICT _Root;
+	PoolAllocatorNode *RESTRICT _Root{ nullptr };
+
+	/*
+	*	Initializes the root.
+	*/
+	FORCE_INLINE void InitializeRoot() NOEXCEPT
+	{
+		//Allocate a new node that will be the root node.
+		_Root = static_cast<PoolAllocatorNode *const RESTRICT>(Memory::Allocate(sizeof(PoolAllocatorNode)));
+
+		//Reset the new node.
+		_Root->_Active = static_cast<uint64>(0);
+		_Root->_Next = nullptr;
+	}
+
+	/*
+	*	Frees the given node.
+	*/
+	FORCE_INLINE void FreeNode(PoolAllocatorNode *const RESTRICT node) NOEXCEPT
+	{
+		if (node->_Next)
+		{
+			FreeNode(node->_Next);
+		}
+
+		Memory::Free(node);
+	}
 
 };

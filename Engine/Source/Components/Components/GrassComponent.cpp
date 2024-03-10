@@ -130,7 +130,7 @@ void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 	instance_data._NumberOfInstances = static_cast<uint32>(packed_instances.Size());
 
 	//Copy other properties.
-	instance_data._MaterialResource = _initialization_data->_MaterialResource;
+	instance_data._Material = _initialization_data->_Material;
 	instance_data._Thickness = _initialization_data->_Thickness;
 	instance_data._Height = _initialization_data->_Height;
 	instance_data._Tilt = _initialization_data->_Tilt;

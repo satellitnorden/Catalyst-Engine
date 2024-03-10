@@ -110,7 +110,7 @@ void InstancedStaticModelComponent::CreateInstance(Entity *const RESTRICT entity
 
 	instance_data._WorldSpaceAxisAlignedBoundingBox = _initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
 	instance_data._Model = _initialization_data->_Model;
-	instance_data._MaterialResources = _initialization_data->_MaterialResources;
+	instance_data._Materials = _initialization_data->_Materials;
 	instance_data._Cell = _initialization_data->_PreprocessedData._Cell;
 	instance_data._TransformationsBuffer = _initialization_data->_PreprocessedData._TransformationsBuffer;
 	instance_data._NumberOfTransformations = _initialization_data->_PreprocessedData._NumberOfTransformations;

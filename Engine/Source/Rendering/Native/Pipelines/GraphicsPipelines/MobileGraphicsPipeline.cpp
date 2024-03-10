@@ -238,7 +238,7 @@ void MobileGraphicsPipeline::Execute() NOEXCEPT
 				ASSERT(false, "This code is not ready. :x");
 				//data._ModelMatrix = instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 				data._SkyLightLuminance = sky_light_luminance;
-				data._MaterialIndex = instance_data._MaterialResources[mesh_index]->_Index;
+				data._MaterialIndex = instance_data._Materials[mesh_index]->_Index;
 				data._MobilePass = UNDERLYING(MobilePass::MODEL);
 
 				command_buffer->PushConstants(this, ShaderStage::VERTEX | ShaderStage::FRAGMENT, 0, sizeof(MobilePushConstantData), &data);

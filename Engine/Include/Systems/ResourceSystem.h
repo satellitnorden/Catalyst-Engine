@@ -10,7 +10,6 @@
 #include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/FontResource.h>
 #include <Resources/Core/LevelResource.h>
-#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ResourcePointer.h>
@@ -160,24 +159,6 @@ public:
 	}
 
 	/*
-	*	Returns the material resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<MaterialResource> GetMaterialResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the material resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<MaterialResource> FindOrCreateMaterialResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all material resources.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, MaterialResource *RESTRICT> &GetAllMaterialResources() const NOEXCEPT
-	{
-		return _MaterialResources;
-	}
-
-	/*
 	*	Returns the raw data resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<RawDataResource> GetRawDataResource(const HashString identifier) NOEXCEPT;
@@ -319,9 +300,6 @@ private:
 
 	//Container for all level resources.
 	HashTable<HashString, LevelResource *RESTRICT> _LevelResources;
-
-	//Container for all material resources.
-	HashTable<HashString, MaterialResource *RESTRICT> _MaterialResources;
 
 	//Container for all raw data resources.
 	HashTable<HashString, RawDataResource *RESTRICT> _RawDataResources;

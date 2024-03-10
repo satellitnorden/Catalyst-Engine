@@ -7,12 +7,12 @@
 //Components.
 #include <Components/Core/Component.h>
 
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/MaterialAsset.h>
+
 //Rendering.
 #include <Rendering/Native/GrassCore.h>
-
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/MaterialResource.h>
 
 //World.
 #include <World/Core/WorldPosition.h>
@@ -29,8 +29,8 @@ public:
 	//The grass instances.
 	DynamicArray<GrassInstance> _GrassInstances;
 
-	//The material resource.
-	ResourcePointer<MaterialResource> _MaterialResource;
+	//The material.
+	AssetPointer<MaterialAsset> _Material;
 
 	//The thickness.
 	float32 _Thickness;
@@ -66,8 +66,8 @@ public:
 	//The number of instances.
 	uint32 _NumberOfInstances;
 
-	//The material resource.
-	ResourcePointer<MaterialResource> _MaterialResource;
+	//The material.
+	AssetPointer<MaterialAsset> _Material;
 
 	//The thickness.
 	float32 _Thickness;

@@ -5,6 +5,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
 
+//Content.
+#include <Content/Assets/MaterialAsset.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/ShaderMaterial.h>
@@ -32,7 +35,7 @@ public:
 	/*
 	*	Registers a material.
 	*/
-	NO_DISCARD uint32 RegisterMaterial(const MaterialResource *const RESTRICT resource) NOEXCEPT;
+	NO_DISCARD uint32 RegisterMaterial(const MaterialAsset *const RESTRICT material) NOEXCEPT;
 
 	/*
 	*	Returns the current material uniform buffer.
@@ -45,7 +48,7 @@ private:
 	StaticArray<bool, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _MaterialSlots;
 
 	//Container for all material resources
-	StaticArray<const MaterialResource *RESTRICT, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _MaterialResources;
+	StaticArray<const MaterialAsset *RESTRICT, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _Materials;
 
 	//Container for all shader materials.
 	StaticArray<ShaderMaterial, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _ShaderMaterials;

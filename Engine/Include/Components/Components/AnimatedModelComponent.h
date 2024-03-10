@@ -9,7 +9,6 @@
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
-#include <Resources/Core/MaterialResource.h>
 #include <Resources/Core/ResourcePointer.h>
 
 //World.
@@ -24,7 +23,7 @@ public:
 	ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
 
 	//The material resource.
-	ResourcePointer<MaterialResource> _MaterialResource;
+	//ResourcePointer<MaterialResource> _MaterialResource;
 
 	//The initial animation resource.
 	ResourcePointer<AnimationResource> _InitialAnimationResource;
@@ -40,7 +39,7 @@ public:
 	ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
 
 	//The material resource.
-	ResourcePointer<MaterialResource> _MaterialResource;
+	//ResourcePointer<MaterialResource> _MaterialResource;
 
 	//The world space axis aligned bounding box.
 	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;

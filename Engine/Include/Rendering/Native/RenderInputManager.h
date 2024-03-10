@@ -3,11 +3,11 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Content.
+#include <Content/Assets/MaterialAsset.h>
+
 //Rendering.
 #include <Rendering/Native/RenderInputStream.h>
-
-//Resources.
-#include <Resources/Core/MaterialResource.h>
 
 class RenderInputManager final
 {
@@ -53,7 +53,7 @@ private:
 	*/
 	void GatherDepthModelInputStream
 	(
-		const MaterialResource::Type material_type,
+		const MaterialAsset::Type material_type,
 		const bool double_sided,
 		RenderInputStream *const RESTRICT input_stream
 	) NOEXCEPT;
@@ -63,7 +63,7 @@ private:
 	*/
 	void GatherFullModelInputStream
 	(
-		const MaterialResource::Type material_type,
+		const MaterialAsset::Type material_type,
 		const bool double_sided,
 		RenderInputStream *const RESTRICT input_stream
 	) NOEXCEPT;

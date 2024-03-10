@@ -9,16 +9,13 @@
 
 //Content.
 #include <Content/Core/AssetPointer.h>
+#include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
 
 //Physics.
 #include <Physics/Native/PhysicsCore.h>
 #include <Physics/Native/ModelCollisionConfiguration.h>
 #include <Physics/Native/ModelSimulationConfiguration.h>
-
-//Resources.
-#include <Resources/Core/MaterialResource.h>
-#include <Resources/Core/ResourcePointer.h>
 
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
@@ -31,8 +28,8 @@ public:
 	//The model.
 	AssetPointer<ModelAsset> _Model;
 
-	//The material resources.
-	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
+	//The materials.
+	StaticArray<AssetPointer<MaterialAsset>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _Materials;
 
 	//The model collision configuration.
 	ModelCollisionConfiguration _ModelCollisionConfiguration;
@@ -53,8 +50,8 @@ public:
 	//The world space axis aligned bounding box.
 	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
 
-	//The material resources.
-	StaticArray<ResourcePointer<MaterialResource>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _MaterialResources;
+	//The materials.
+	StaticArray<AssetPointer<MaterialAsset>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _Materials;
 
 	//The physics actor handle.
 	ActorHandle _PhysicsActorHandle;

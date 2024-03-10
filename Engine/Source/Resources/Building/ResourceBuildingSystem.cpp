@@ -445,29 +445,6 @@ void ResourceBuildingSystem::BuildLevel(const LevelBuildParameters &parameters) 
 }
 
 /*
-*	Builds a material.
-*/
-void ResourceBuildingSystem::BuildMaterial(const MaterialBuildParameters &parameters) NOEXCEPT
-{
-	//What should the material be called?
-	DynamicString fileName{ parameters._Output };
-	fileName += ".cr";
-
-	//Open the file to be written to.
-	BinaryFile<BinaryFileMode::OUT> file{ fileName.Data() };
-
-	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::MATERIAL_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
-	file.Write(&header, sizeof(ResourceHeader));
-
-	//Write the rest of the material to the file.
-	file.Write(&parameters._Type, sizeof(MaterialBuildParameters) - sizeof(const char *const RESTRICT) - sizeof(const char *const RESTRICT));
-
-	//Close the file.
-	file.Close();
-}
-
-/*
 *	Builds a raw data.
 */
 void ResourceBuildingSystem::BuildRawData(const RawDataBuildParameters &parameters) NOEXCEPT

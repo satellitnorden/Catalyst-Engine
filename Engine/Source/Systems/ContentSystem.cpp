@@ -9,6 +9,7 @@
 
 //Content.
 #include <Content/Core/ContentCache.h>
+#include <Content/AssetCompilers/MaterialAssetCompiler.h>
 #include <Content/AssetCompilers/ModelAssetCompiler.h>
 #include <Content/AssetCompilers/ScriptAssetCompiler.h>
 #include <Content/AssetCompilers/Texture2DAssetCompiler.h>
@@ -57,6 +58,7 @@ DEFINE_SINGLETON(ContentSystem);
 void ContentSystem::Initialize() NOEXCEPT
 {
 	//Register the native asset compilers
+	RegisterAssetCompiler(MaterialAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(ModelAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(ScriptAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(Texture2DAssetCompiler::Instance.Get());
@@ -251,6 +253,12 @@ void ContentSystem::LoadAssets(const char *const RESTRICT directory_path) NOEXCE
 		{
 			LoadAssetCollection(file_path.c_str());
 		}
+	}
+
+	//Call PostLoad() on all asset compilers.
+	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
+	{
+		asset_compiler->PostLoad();
 	}
 }
 
@@ -749,11 +757,6 @@ NO_DISCARD bool ContentSystem::ParseContentDefinitionsInDirectory(const Compilat
 				ParseFont(compilation_domain, content_cache, name, package, file);
 			}
 
-			else if (current_line == "MATERIAL")
-			{
-				ParseMaterial(compilation_domain, content_cache, name, package, file);
-			}
-
 			else if (current_line == "TEXTURE_CUBE")
 			{
 				ParseTextureCube(compilation_domain, content_cache, name, package, file);
@@ -896,168 +899,6 @@ void ContentSystem::ParseFont(const CompilationDomain compilation_domain, Conten
 
 	//Build!
 	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildFont(parameters);
-}
-
-/*
-*	Parses a Material from the given file.
-*/
-void ContentSystem::ParseMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT
-{
-	//Calculate the intermediate directory.
-	char intermediate_directory[MAXIMUM_FILE_PATH_LENGTH];
-
-	switch (compilation_domain)
-	{
-		case CompilationDomain::ENGINE:
-		{
-			sprintf_s(intermediate_directory, ENGINE_INTERMEDIATE "\\%s\\Materials", package.Length() > 0 ? package.Data() : "");
-
-			break;
-		}
-
-		case CompilationDomain::GAME:
-		{
-			sprintf_s(intermediate_directory, GAME_INTERMEDIATE "\\%s\\Materials", package.Length() > 0 ? package.Data() : "");
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
-
-	//Create the directory, if it doesn't exist.
-	File::CreateDirectory(intermediate_directory);
-
-	//Set up the build parameters.
-	MaterialBuildParameters parameters;
-
-	//Set the output.
-	char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(output_buffer, "%s\\%s", intermediate_directory, name.data());
-	parameters._Output = output_buffer;
-
-	//Set the id.
-	parameters._ID = name.data();
-
-	//Set some default parameters.
-	parameters._Type = MaterialResource::Type::OPAQUE;
-	parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-	parameters._AlbedoThicknessComponent._Color = Color(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
-	parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-	parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f));
-	parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-	parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f));
-	parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-	parameters._OpacityComponent._Color = Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	parameters._EmissiveMultiplier = 0.0f;
-	parameters._DoubleSided = false;
-
-	//Read all of the lines.
-	std::string line;
-	StaticArray<DynamicString, 5> arguments;
-
-	while (std::getline(file, line))
-	{
-		//Skip lines with only whitespace.
-		if (TextParsingUtilities::OnlyWhitespace(line.data(), line.length()))
-		{
-			continue;
-		}
-
-		//Parse the arguments.
-		TextParsingUtilities::ParseSpaceSeparatedArguments
-		(
-			line.data(),
-			line.length(),
-			arguments.Data()
-		);
-
-		if (arguments[0] == "MASKED")
-		{
-			parameters._Type = MaterialResource::Type::MASKED;
-		}
-
-		else if (arguments[0] == "OPAQUE")
-		{
-			parameters._Type = MaterialResource::Type::OPAQUE;
-		}
-
-		else if (arguments[0] == "TRANSLUCENT")
-		{
-			parameters._Type = MaterialResource::Type::TRANSLUCENT;
-		}
-
-		else if (arguments[0] == "ALBEDO_THICKNESS_COLOR")
-		{
-			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._AlbedoThicknessComponent._Color = Color(Vector4<float32>(std::stof(arguments[1].Data()), std::stof(arguments[2].Data()), std::stof(arguments[3].Data()), std::stof(arguments[4].Data())));
-		}
-
-		else if (arguments[0] == "ALBEDO_THICKNESS_TEXTURE")
-		{
-			parameters._AlbedoThicknessComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			parameters._AlbedoThicknessComponent._TextureResourceIdentifier = HashString(arguments[1].Data());
-		}
-
-		else if (arguments[0] == "NORMAL_MAP_DISPLACEMENT_COLOR")
-		{
-			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._NormalMapDisplacementComponent._Color = Color(Vector4<float32>(std::stof(arguments[1].Data()), std::stof(arguments[2].Data()), std::stof(arguments[3].Data()), std::stof(arguments[4].Data())));
-		}
-
-		else if (arguments[0] == "NORMAL_MAP_DISPLACEMENT_TEXTURE")
-		{
-			parameters._NormalMapDisplacementComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			parameters._NormalMapDisplacementComponent._TextureResourceIdentifier = HashString(arguments[1].Data());
-		}
-
-		else if (arguments[0] == "MATERIAL_PROPERTIES_COLOR")
-		{
-			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._MaterialPropertiesComponent._Color = Color(Vector4<float32>(std::stof(arguments[1].Data()), std::stof(arguments[2].Data()), std::stof(arguments[3].Data()), std::stof(arguments[4].Data())));
-		}
-
-		else if (arguments[0] == "MATERIAL_PROPERTIES_TEXTURE")
-		{
-			parameters._MaterialPropertiesComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			parameters._MaterialPropertiesComponent._TextureResourceIdentifier = HashString(arguments[1].Data());
-		}
-
-		else if (arguments[0] == "OPACITY_COLOR")
-		{
-			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::COLOR;
-			parameters._OpacityComponent._Color = Color(Vector4<float32>(std::stof(arguments[1].Data()), std::stof(arguments[2].Data()), std::stof(arguments[3].Data()), std::stof(arguments[4].Data())));
-		}
-
-		else if (arguments[0] == "OPACITY_TEXTURE")
-		{
-			parameters._OpacityComponent._Type = MaterialResource::MaterialResourceComponent::Type::TEXTURE;
-			parameters._OpacityComponent._TextureResourceIdentifier = HashString(arguments[1].Data());
-		}
-
-		else if (arguments[0] == "EMISSIVE_MULTIPLIER")
-		{
-			parameters._EmissiveMultiplier = std::stof(arguments[1].Data());
-		}
-
-		else if (arguments[0] == "DOUBLE_SIDED")
-		{
-			parameters._DoubleSided = true;
-		}
-
-		else
-		{
-			ASSERT(false, "Couldn't parse argument " << arguments[0]);
-		}
-	}
-
-	//Build!
-	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildMaterial(parameters);
 }
 
 /*
