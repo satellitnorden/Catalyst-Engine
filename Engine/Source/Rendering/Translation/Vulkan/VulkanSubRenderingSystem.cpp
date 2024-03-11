@@ -39,9 +39,6 @@
 #include <Rendering/Translation/Vulkan/VulkanRayTracingPipelineData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
-//Resources.
-#include <Resources/Loading/TextureCubeData.h>
-
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/MemorySystem.h>
@@ -1910,10 +1907,10 @@ void VulkanSubRenderingSystem::CreateTexture3D(const TextureData &data, Texture3
 /*
 *	Creates a texture cube.
 */
-void VulkanSubRenderingSystem::CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanSubRenderingSystem::CreateTextureCube(const uint32 resolution, const DynamicArray<DynamicArray<float32>> &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the texture cube.
-	*handle = static_cast<TextureCubeHandle>(VulkanInterface::Instance->CreateCubeMapTexture(data._Data, data._Resolution, data._Resolution));
+	*handle = static_cast<TextureCubeHandle>(VulkanInterface::Instance->CreateCubeMapTexture(data, resolution, resolution));
 }
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)

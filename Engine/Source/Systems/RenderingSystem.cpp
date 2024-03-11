@@ -1196,9 +1196,9 @@ void RenderingSystem::CreateTexture3D(const TextureData &data, Texture3DHandle *
 /*
 *	Creates a texture cube.
 */
-void RenderingSystem::CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT
+void RenderingSystem::CreateTextureCube(const uint32 resolution, const DynamicArray<DynamicArray<float32>> &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT
 {
-	_SubRenderingSystem->CreateTextureCube(data, handle);
+	_SubRenderingSystem->CreateTextureCube(resolution, data, handle);
 }
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -1703,7 +1703,7 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 #if defined(CATALYST_INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION)
 	BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], ResourceSystem::Instance->GetTextureCubeResource(HashString("Catalyst_Engine_Star_TextureCube"))->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 #else
-	BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], ResourceSystem::Instance->GetTextureCubeResource(HashString("Catalyst_Engine_Default_TextureCube"))->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+	//BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], ResourceSystem::Instance->GetTextureCubeResource(HashString("Catalyst_Engine_Default_TextureCube"))->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 #endif
 }
 
@@ -1781,7 +1781,7 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._CurrentBlueNoiseTextureOffsetX = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._CurrentBlueNoiseTextureOffsetY = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
 	_DynamicUniformData._ViewDistance = _Configuration._ViewDistance;
-	_DynamicUniformData._MaximumSkyTextureMipmapLevel = WorldSystem::Instance->GetSkySystem()->GetSkyTexture() ? static_cast<float32>(WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_MipmapLevels) : 1.0f;
+	_DynamicUniformData._MaximumSkyTextureMipmapLevel = WorldSystem::Instance->GetSkySystem()->GetSkyTexture() ? static_cast<float32>(WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_MipLevels) : 1.0f;
 	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
 	_DynamicUniformData._NearPlane = _CameraSystem.GetCurrentCamera()->GetNearPlane();
 	_DynamicUniformData._FarPlane = _CameraSystem.GetCurrentCamera()->GetFarPlane();

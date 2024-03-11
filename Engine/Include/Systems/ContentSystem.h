@@ -143,11 +143,6 @@ private:
 	void ParseFont(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
 
 	/*
-	*	Parses a TextureCube from the given file.
-	*/
-	void ParseTextureCube(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
-
-	/*
 	*	Parses a procedural tree model from the given file.
 	*/
 	void ParseProceduralTreeModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;

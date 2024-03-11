@@ -48,10 +48,10 @@ void SkyRenderPass::Initialize() NOEXCEPT
 
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(&_SkyGraphicsPipeline);
+	AddPipeline(&_SkyPipeline);
 
 	//Initialize all pipelines.
-	_SkyGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	_SkyPipeline.Initialize();
 }
 
 /*
@@ -60,7 +60,7 @@ void SkyRenderPass::Initialize() NOEXCEPT
 void SkyRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	_SkyGraphicsPipeline.Execute();
+	_SkyPipeline.Execute();
 }
 
 /*
@@ -69,5 +69,5 @@ void SkyRenderPass::Execute() NOEXCEPT
 void SkyRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	_SkyGraphicsPipeline.Terminate();
+	_SkyPipeline.Terminate();
 }

@@ -11,9 +11,6 @@
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
-//Resources.
-#include <Resources/Loading/TextureCubeData.h>
-
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
@@ -300,7 +297,7 @@ public:
 	/*
 	*	Creates a texture cube.
 	*/
-	virtual void CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT = 0;
+	virtual void CreateTextureCube(const uint32 resolution, const DynamicArray<DynamicArray<float32>> &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT = 0;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*

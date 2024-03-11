@@ -16,7 +16,6 @@
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture3DResource.h>
-#include <Resources/Core/TextureCubeResource.h>
 #include <Resources/Core/VideoResource.h>
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	#include <Resources/Building/ResourceBuildingSystem.h>
@@ -215,24 +214,6 @@ public:
 	}
 
 	/*
-	*	Returns the texture cube resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<TextureCubeResource> GetTextureCubeResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the texture cube resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<TextureCubeResource> FindOrCreateTextureCubeResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all texture cube resources.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, TextureCubeResource *RESTRICT> &GetAllTextureCubeResources() const NOEXCEPT
-	{
-		return _TextureCubeResources;
-	}
-
-	/*
 	*	Returns the video resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<VideoResource> GetVideoResource(const HashString identifier) NOEXCEPT;
@@ -312,9 +293,6 @@ private:
 
 	//Container for all sound resources.
 	HashTable<HashString, SoundResource *RESTRICT> _SoundResources;
-
-	//Container for all texture cube resources.
-	HashTable<HashString, TextureCubeResource *RESTRICT> _TextureCubeResources;
 
 	//Container for all video resources.
 	HashTable<HashString, VideoResource *RESTRICT> _VideoResources;

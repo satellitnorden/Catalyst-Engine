@@ -5,12 +5,12 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/SkyGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) SkyRenderPass final : public RenderPass
 {
-	
+
 public:
 
 	//Singleton declaration.
@@ -23,8 +23,8 @@ public:
 
 private:
 
-	//The sky graphics pipeline.
-	SkyGraphicsPipeline _SkyGraphicsPipeline;
+	//The sky pipeline.
+	GraphicsRenderPipeline _SkyPipeline{ HashString("Sky_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

@@ -43,7 +43,15 @@ public:
 	}
 
 	/*
-	*	Returns the face with the given index.
+	*	Returns the face with the given index, const.
+	*/
+	FORCE_INLINE NO_DISCARD const Texture2D<Vector4<float32>> &Face(const uint8 face_index) const NOEXCEPT
+	{
+		return _Faces[face_index];
+	}
+
+	/*
+	*	Returns the face with the given index, mutable.
 	*/
 	FORCE_INLINE NO_DISCARD Texture2D<Vector4<float32>> &Face(const uint8 face_index) NOEXCEPT
 	{
@@ -119,32 +127,32 @@ public:
 		{
 			case 0:
 			{
-				return Vector3<float32>::Normalize(Vector3<float32>(1.0f, -converted_coordinate._Y, -converted_coordinate._X));
+				return Vector3<float32>::Normalize(Vector3<float32>(-1.0f, -converted_coordinate._Y, -converted_coordinate._X));
 			}
 
 			case 1:
 			{
-				return Vector3<float32>::Normalize(Vector3<float32>(-1.0f, -converted_coordinate._Y, converted_coordinate._X));
+				return Vector3<float32>::Normalize(Vector3<float32>(1.0f, -converted_coordinate._Y, converted_coordinate._X));
 			}
 
 			case 2:
 			{
-				return Vector3<float32>::Normalize(Vector3<float32>(converted_coordinate._X, 1.0f, converted_coordinate._Y));
+				return Vector3<float32>::Normalize(Vector3<float32>(converted_coordinate._X, -1.0f, converted_coordinate._Y));
 			}
 
 			case 3:
 			{
-				return Vector3<float32>::Normalize(Vector3<float32>(converted_coordinate._X, -1.0f, -converted_coordinate._Y));
+				return Vector3<float32>::Normalize(Vector3<float32>(converted_coordinate._X, 1.0f, -converted_coordinate._Y));
 			}
 
 			case 4:
 			{
-				return Vector3<float32>::Normalize(Vector3<float32>(converted_coordinate._X, -converted_coordinate._Y, 1.0f));
+				return Vector3<float32>::Normalize(Vector3<float32>(converted_coordinate._X, -converted_coordinate._Y, -1.0f));
 			}
 
 			case 5:
 			{
-				return Vector3<float32>::Normalize(Vector3<float32>(-converted_coordinate._X, -converted_coordinate._Y, -1.0f));
+				return Vector3<float32>::Normalize(Vector3<float32>(-converted_coordinate._X, -converted_coordinate._Y, 1.0f));
 			}
 
 			default:

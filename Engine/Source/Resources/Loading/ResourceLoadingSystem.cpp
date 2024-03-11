@@ -498,28 +498,6 @@ void ResourceLoadingSystem::LoadTexture3D(BinaryFile<BinaryFileMode::IN> *const 
 }
 
 /*
-*	Given a file, load texture cube data.
-*/
-void ResourceLoadingSystem::LoadTextureCube(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, TextureCubeData *const RESTRICT data) NOEXCEPT
-{
-	//Read the resolution.
-	file->Read(&data->_Resolution, sizeof(uint32));
-
-	//Read the number of mipmap levels.
-	file->Read(&data->_MipmapLevels, sizeof(uint8));
-
-	//Upsize the data accordingly.
-	data->_Data.Upsize<true>(data->_MipmapLevels);
-
-	for (uint8 i{ 0 }; i < data->_MipmapLevels; ++i)
-	{	
-		//Read the data.
-		data->_Data[i].Upsize<false>((data->_Resolution >> i) * (data->_Resolution >> i) * 4 * 6);
-		file->Read(data->_Data[i].Data(), (data->_Resolution >> i) * (data->_Resolution >> i) * 4 * 6 * sizeof(float32));
-	}
-}
-
-/*
 *	Given a file, load video data.
 */
 void ResourceLoadingSystem::LoadVideo(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, VideoData *const RESTRICT data) NOEXCEPT

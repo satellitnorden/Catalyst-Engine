@@ -1,0 +1,71 @@
+//Declare uniform buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+IncludeUniformBuffer(World);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(World);
+
+//Declare input render targets.
+InputRenderTarget(SceneFeatures2 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(Scene);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+
+//Set depth/stencil properties.
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(KEEP);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(NOT_EQUAL);
+StencilCompareMask(1);
+StencilWriteMask(0);
+StencilReferenceMask(1);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample the scene features.
+    vec4 scene_features_2 = texture(SceneFeatures2, InScreenCoordinate);
+
+    float depth = scene_features_2.w;
+
+    //Calculate the world position.
+    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
+
+    //Calculate the view direction.
+    vec3 view_direction = normalize(world_position - CAMERA_WORLD_POSITION);
+
+    //Sample the sky.
+    //float lod_level = float(FRAME % 1200) / 1200.0f * MAXIMUM_SKY_TEXTURE_MIP_LEVEL;
+    float lod_level = 0.0f;
+    vec3 sky = SampleSky(view_direction, lod_level);
+
+    //Output the fragment.
+    OutputFragment(Scene, vec4(sky, 1.0f));
+}

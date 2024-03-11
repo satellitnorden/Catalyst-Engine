@@ -263,7 +263,7 @@ public:
 	/*
 	*	Creates a texture cube.
 	*/
-	void CreateTextureCube(const TextureCubeData &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT override;
+	void CreateTextureCube(const uint32 resolution, const DynamicArray<DynamicArray<float32>> &data, TextureCubeHandle *const RESTRICT handle) const NOEXCEPT override;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*

@@ -5,12 +5,12 @@
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/Optional.h>
 
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/TextureCubeAsset.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
-
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/TextureCubeResource.h>
 
 //World.
 #include <World/Sky/AtmosphericScatteringProperties.h>
@@ -95,7 +95,7 @@ public:
 	/*
 	*	Returns the sky texture.
 	*/
-	FORCE_INLINE NO_DISCARD const ResourcePointer<TextureCubeResource> GetSkyTexture() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const AssetPointer<TextureCubeAsset> GetSkyTexture() const NOEXCEPT
 	{
 		return _SkyTexture;
 	}
@@ -103,7 +103,7 @@ public:
 	/*
 	*	Sets the sky texture.
 	*/
-	FORCE_INLINE void SetSkyTexture(const ResourcePointer<TextureCubeResource> value) NOEXCEPT
+	FORCE_INLINE void SetSkyTexture(const AssetPointer<TextureCubeAsset> value) NOEXCEPT
 	{
 		_SkyMode = SkyMode::TEXTURE;
 		_SkyTexture = value;
@@ -172,7 +172,7 @@ private:
 	SkyGradient _SkyGradient;
 
 	//The sky texture.
-	ResourcePointer<TextureCubeResource> _SkyTexture;
+	AssetPointer<TextureCubeAsset> _SkyTexture;
 
 	//The sky intensity.
 	float32 _SkyIntensity{ 1.0f };

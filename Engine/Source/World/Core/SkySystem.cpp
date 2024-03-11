@@ -1,9 +1,6 @@
 //Header file.
 #include <World/Core/SkySystem.h>
 
-//Resources.
-#include <Resources/Loading/TextureCubeData.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
@@ -14,9 +11,5 @@
 */
 void SkySystem::PostInitialize() NOEXCEPT
 {
-	//Retrieve the default sky texture.
-	if (!_SkyTexture)
-	{
-		_SkyTexture = ResourceSystem::Instance->GetTextureCubeResource(HashString("Catalyst_Engine_Default_TextureCube"));
-	}
+	
 }

@@ -26,19 +26,9 @@ namespace CatalystEngineResourceBuilding
 	void BuildCloudTexture() NOEXCEPT;
 
 	/*
-	*	Builds the default sky texture.
-	*/
-	void BuildDefaultSkyTexture() NOEXCEPT;
-
-	/*
 	*	Builds the default texture 3D.
 	*/
 	void BuildDefaultTexture3D() NOEXCEPT;
-
-	/*
-	*	Builds the star texture.
-	*/
-	void BuildStarTexture() NOEXCEPT;
 #endif
 
 }

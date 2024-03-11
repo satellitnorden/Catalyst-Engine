@@ -42,10 +42,8 @@
 #define BUILD_ENGINE_CLOUD_TEXTURE (0)
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES (0)
 #define BUILD_ENGINE_SHADERS (0)
-#define BUILD_ENGINE_DEFAULT_SKY_TEXTURE (0)
 #define BUILD_ENGINE_DEFAULT_TEXTURE_3D (0)
 #define BUILD_ENGINE_MATERIALS (0)
-#define BUILD_ENGINE_STAR_TEXTURE (0)
 #define BUILD_ENGINE_MISCELLANEOUS (0)
 
 #define BUILD_ENGINE_RESOURCE_COLLECTIONS (0)
@@ -114,10 +112,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE
 	BuildCloudTexture();
-#endif
-
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_DEFAULT_SKY_TEXTURE
-	BuildDefaultSkyTexture();
 #endif
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_DEFAULT_TEXTURE_3D
@@ -1274,17 +1268,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\SkyFragmentShader";
-		parameters._ID = "SkyFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SkyFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\SphereVertexShader";
 		parameters._ID = "SphereVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SphereVertexShader.vert";
@@ -1489,10 +1472,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	}
 #endif
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_STAR_TEXTURE
-	BuildStarTexture();
-#endif
-
 	//Wait for all tasks to finish.
 	TaskSystem::Instance->WaitForAllTasksToFinish();
 
@@ -1506,7 +1485,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		|| BUILD_ENGINE_BASE
 		|| BUILD_ENGINE_BLUE_NOISE_TEXTURES
 		|| BUILD_ENGINE_SHADERS
-		|| BUILD_ENGINE_DEFAULT_SKY_TEXTURE
 		|| BUILD_ENGINE_DEFAULT_TEXTURE_3D
 		|| BUILD_ENGINE_MATERIALS 
 		|| BUILD_ENGINE_RESOURCE_COLLECTIONS
@@ -1522,7 +1500,7 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(parameters);
 	}
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_OCEAN_TEXTURE || BUILD_ENGINE_STAR_TEXTURE || BUILD_ENGINE_RESOURCE_COLLECTIONS
+#if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE || BUILD_ENGINE_RESOURCE_COLLECTIONS
 	{
 		ResourceCollectionBuildParameters parameters;
 
@@ -1691,40 +1669,6 @@ void CatalystEngineResourceBuilding::BuildCloudTexture() NOEXCEPT
 }
 
 /*
-*	Builds the default sky texture.
-*/
-void CatalystEngineResourceBuilding::BuildDefaultSkyTexture() NOEXCEPT
-{
-	//What should the resource be called?
-	DynamicString file_name{ "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Catalyst_Engine_Default_TextureCube.cr" };
-
-	//Open the file to be written to.
-	BinaryFile<BinaryFileMode::OUT> file{ file_name.Data() };
-
-	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER, HashString("Catalyst_Engine_Default_TextureCube"), "Catalyst_Engine_Default_TextureCube" };
-	file.Write(&header, sizeof(ResourceHeader));
-
-	//Write the resolution to the file.
-	const uint32 resolution{ 1 };
-	file.Write(&resolution, sizeof(uint32));
-
-	//Write the number of mipmap levels to the file.
-	const uint8 mipmap_levels{ 1 };
-	file.Write(&mipmap_levels, sizeof(uint8));
-
-	//Write the data to the file.
-	for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
-	{
-		Vector4<float32> color{ 0.1f, 0.1f, 0.1f, 1.0f };
-		file.Write(&color, sizeof(Vector4<float32>));
-	}
-
-	//Close the file.
-	file.Close();
-}
-
-/*
 *	Builds the default texture 3D.
 */
 void CatalystEngineResourceBuilding::BuildDefaultTexture3D() NOEXCEPT
@@ -1751,297 +1695,5 @@ void CatalystEngineResourceBuilding::BuildDefaultTexture3D() NOEXCEPT
 	parameters._Texture = &texture;
 
 	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTexture3D(parameters);
-}
-
-/*
-*	Builds the star texture.
-*/
-void CatalystEngineResourceBuilding::BuildStarTexture() NOEXCEPT
-{
-	//Define constants.
-	constexpr uint64 NUMBER_OF_STARS{ 1'024 * 256 };
-	constexpr float32 MINIMUM_DISTANCE_FROM_CENTER{ 2'048.0f };
-	constexpr float32 MINIMUM_DISTANCE_FROM_CENTER_SQUARED{ MINIMUM_DISTANCE_FROM_CENTER * MINIMUM_DISTANCE_FROM_CENTER };
-	constexpr float32 MAXIMUM_DISTANCE_FROM_CENTER{ 8'192.0f };
-	constexpr float32 MAXIMUM_DISTANCE_FROM_CENTER_SQUARED{ MAXIMUM_DISTANCE_FROM_CENTER * MAXIMUM_DISTANCE_FROM_CENTER };
-	constexpr float32 MINIMUM_RADIUS{ 1.0f };
-	constexpr float32 MAXIMUM_RADIUS{ 2.0f };
-	constexpr float32 MINIMUM_INTENSITY{ 2.0f };
-	constexpr float32 MAXIMUM_INTENSITY{ 4.0f };
-
-	/*
-	*	Star class definition.
-	*/
-	class Star final
-	{
-
-	public:
-
-		//The sphere.
-		Sphere _Sphere;
-
-		//The intensity.
-		float32 _Intensity;
-
-	};
-
-	//Scatter some stars. (:
-	DynamicArray<Star> stars;
-
-	for (uint64 i{ 0 }; i < NUMBER_OF_STARS; ++i)
-	{
-		//Generate a random position.
-		const Vector3<float32> position{ CatalystRandomMath::RandomPointInSphere(MAXIMUM_DISTANCE_FROM_CENTER) };
-
-		//Calculate the squared distance from the center.
-		const float32 distance_from_center{ Vector3<float32>::Length(position) };
-
-		//Discard if too close.
-		if (distance_from_center < MINIMUM_DISTANCE_FROM_CENTER)
-		{
-			continue;
-		}
-
-		//Construct the star!
-		stars.Emplace();
-		Star &new_star{ stars.Back() };
-
-		new_star._Sphere._Position = position;
-		new_star._Sphere._Radius = CatalystRandomMath::RandomFloatInRange(MINIMUM_RADIUS, MAXIMUM_RADIUS);
-		new_star._Intensity = CatalystRandomMath::RandomFloatInRange(MINIMUM_INTENSITY, MAXIMUM_INTENSITY);
-	}
-
-#if 0 //Debug the stars.
-	{
-		//Define constants.
-		constexpr uint32 TEXTURE_RESOLUTION{ 1'024 };
-
-		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
-		{
-			Vector3<float32> ray_direction;
-			Vector3<float32> ray_opposite_direction;
-
-			switch (face_index)
-			{
-				//Left.
-				case 0:
-				{
-					ray_direction = Vector3<float32>(1.0f, 0.0f, 0.0f);
-					ray_opposite_direction = -ray_direction;
-
-					break;
-				}
-
-				//Right.
-				case 1:
-				{
-					ray_direction = Vector3<float32>(-1.0f, 0.0f, 0.0f);
-					ray_opposite_direction = -ray_direction;
-
-					break;
-				}
-
-				//Down.
-				case 2:
-				{
-					ray_direction = Vector3<float32>(0.0f, 1.0f, 0.0f);
-					ray_opposite_direction = -ray_direction;
-
-					break;
-				}
-
-				//Up.
-				case 3:
-				{
-					ray_direction = Vector3<float32>(0.0f, -1.0f, 0.0f);
-					ray_opposite_direction = -ray_direction;
-
-					break;
-				}
-
-				//Backward.
-				case 4:
-				{
-					ray_direction = Vector3<float32>(0.0f, 0.0f, 1.0f);
-					ray_opposite_direction = -ray_direction;
-
-					break;
-				}
-
-				//Forward.
-				case 5:
-				{
-					ray_direction = Vector3<float32>(0.0f, 0.0f, -1.0f);
-					ray_opposite_direction = -ray_direction;
-
-					break;
-				}
-
-				default:
-				{
-					ASSERT(false, "Invalid case!");
-
-					break;
-				}
-			}
-
-			//Set up the ray.
-			Ray ray;
-
-			ray.SetDirection(ray_direction);
-
-			//Set up the texture.
-			Texture2D<Vector4<float32>> texture;
-			texture.Initialize(TEXTURE_RESOLUTION);
-
-			for (uint32 Y{ 0 }; Y < TEXTURE_RESOLUTION; ++Y)
-			{
-				for (uint32 X{ 0 }; X < TEXTURE_RESOLUTION; ++X)
-				{
-					//Calculate the normalized coordinate.
-					const Vector2<float32> normalized_coordinate{	(static_cast<float32>(X) + 0.5f) / static_cast<float32>(TEXTURE_RESOLUTION),
-																	(static_cast<float32>(Y) + 0.5f) / static_cast<float32>(TEXTURE_RESOLUTION) };
-
-					//Calculate the ray offset.
-					Vector3<float32> ray_offset;
-
-					if (ray_direction._X != 0.0f)
-					{
-						ray_offset._X = 0.0f;
-						ray_offset._Y = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._X);
-						ray_offset._Z = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._Y);
-					}
-
-					else if (ray_direction._Y != 0.0f)
-					{
-						ray_offset._X = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._X);
-						ray_offset._Y = 0.0f;
-						ray_offset._Z = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._Y);
-					}
-
-					else
-					{
-						ray_offset._X = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._X);
-						ray_offset._Y = CatalystBaseMath::LinearlyInterpolate(-MAXIMUM_DISTANCE_FROM_CENTER, MAXIMUM_DISTANCE_FROM_CENTER, normalized_coordinate._Y);
-						ray_offset._Z = 0.0f;
-					}
-
-					//Set the ray origin.
-					ray.SetOrigin(ray_opposite_direction * MAXIMUM_DISTANCE_FROM_CENTER + ray_offset);
-
-					//Raycast the stars. (:
-					bool hit{ false };
-
-					for (const Star &star : stars)
-					{
-						if (CatalystGeometryMath::RaySphereIntersection(ray, star._Sphere, nullptr))
-						{
-							hit = true;
-
-							break;
-						}
-					}
-
-					if (hit)
-					{
-						texture.At(X, Y) = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
-					}
-
-					else
-					{
-						texture.At(X, Y) = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
-					}
-				}
-			}
-
-			//Write the texture.
-			char buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(buffer, "Star_Texture_Debug_%u.png", static_cast<uint32>(face_index + 1));
-
-			PNGWriter::Write(texture, buffer);
-
-			PRINT_TO_OUTPUT("Wrote " << buffer);
-		}
-
-		BREAKPOINT();
-	}
-#endif
-
-	//Build the texture cube.
-	TextureCubeBuildParameters parameters;
-
-	parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Environment\\Catalyst_Engine_Star_TextureCube";
-	parameters._ID = "Catalyst_Engine_Star_TextureCube";
-	parameters._File = nullptr;
-	parameters._DefaultResolution = 1'024 / 4;
-	parameters._ProceduralFunction = [](const Vector3<float32> &direction, void *const RESTRICT user_data)
-	{
-		/*
-		const float32 left_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(-1.0f, 0.0f, 0.0f), direction), 0.0f) };
-		const float32 right_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(1.0f, 0.0f, 0.0f), direction), 0.0f) };
-		const float32 down_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(0.0f, -1.0f, 0.0f), direction), 0.0f) };
-		const float32 up_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(0.0f, 1.0f, 0.0f), direction), 0.0f) };
-		const float32 backward_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(0.0f, 0.0f, -1.0f), direction), 0.0f) };
-		const float32 forward_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(Vector3<float32>(0.0f, 0.0f, -1.0f), direction), 0.0f) };
-
-		Vector3<float32> final_color
-		{
-			Vector3<float32>(1.0f, 0.0f, 0.0f) * left_weight
-			+ Vector3<float32>(0.0f, 1.0f, 1.0f) * right_weight
-			+ Vector3<float32>(0.0f, 1.0f, 0.0f) * down_weight
-			+ Vector3<float32>(1.0f, 0.0f, 1.0f) * up_weight
-			+ Vector3<float32>(0.0f, 0.0f, 1.0f) * backward_weight
-			+ Vector3<float32>(1.0f, 1.0f, 0.0f) * forward_weight
-		};
-
-		final_color.Normalize();
-
-		return Vector4<float32>(final_color, 1.0f);
-		*/
-
-		//return Vector4<float32>(direction._X * 0.5f + 0.5f, direction._Y * 0.5f + 0.5f, direction._Z * 0.5f + 0.5f, 1.0f);
-
-		//Cache the stars.
-		const DynamicArray<Star> &stars{ *static_cast<const DynamicArray<Star> *const RESTRICT>(user_data) };
-
-		//Construct the ray.
-		Ray ray;
-
-		ray.SetOrigin(Vector3<float32>(0.0f, 0.0f, 0.0f));
-		ray.SetDirection(direction);
-
-		//Iterate over all the stars and see if any hit.
-		float32 closest_intersection_distance{ FLOAT32_MAXIMUM };
-		float32 closest_intensity;
-
-		for (const Star &star : stars)
-		{
-			float32 intersection_distance{ FLOAT32_MAXIMUM };
-			const bool hit{ CatalystGeometryMath::RaySphereIntersection(ray, star._Sphere, &intersection_distance) };
-
-			if (hit
-				&& closest_intersection_distance > intersection_distance)
-			{
-				closest_intersection_distance = intersection_distance;
-				closest_intensity = star._Intensity;
-			}
-		}
-
-		if (closest_intersection_distance != FLOAT32_MAXIMUM)
-		{
-			return Vector4<float32>(closest_intensity, closest_intensity, closest_intensity, 1.0f);
-		}
-		
-		else
-		{
-			return Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
-		}
-	};
-	parameters._ProceduralFunctionUserData = &stars;
-	parameters._ProceduralFunctionSuperSample = true;
-
-	ResourceSystem::Instance->GetResourceBuildingSystem()->BuildTextureCube(parameters);
-
-	BREAKPOINT();
 }
 #endif

@@ -18,7 +18,6 @@
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture3DData.h>
-#include <Resources/Loading/TextureCubeData.h>
 #include <Resources/Loading/VideoData.h>
 
 //Sound.
@@ -73,11 +72,6 @@ public:
 	*	Given a file, load texture 3D data.
 	*/
 	void LoadTexture3D(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, Texture3DData *const RESTRICT data) NOEXCEPT;
-
-	/*
-	*	Given a file, load texture cube data.
-	*/
-	void LoadTextureCube(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, TextureCubeData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load video data.

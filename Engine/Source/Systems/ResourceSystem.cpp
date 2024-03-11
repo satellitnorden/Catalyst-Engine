@@ -401,44 +401,6 @@ NO_DISCARD ResourcePointer<SoundResource> ResourceSystem::FindOrCreateSoundResou
 }
 
 /*
-*	Returns the texture cube resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<TextureCubeResource> ResourceSystem::GetTextureCubeResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	TextureCubeResource *const RESTRICT *const RESTRICT resource{ _TextureCubeResources.Find(identifier) };
-
-	ASSERT(resource, "Couldn't find resource!");
-
-	return resource ? ResourcePointer<TextureCubeResource>(*resource) : ResourcePointer<TextureCubeResource>();
-}
-
-/*
-*	Returns or creates the texture cube resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<TextureCubeResource> ResourceSystem::FindOrCreateTextureCubeResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	TextureCubeResource *const RESTRICT *const RESTRICT resource{ _TextureCubeResources.Find(identifier) };
-
-	if (!resource)
-	{
-		//If the resource couldn't be found, create it.
-		TextureCubeResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<TextureCubeResource>()) TextureCubeResource() };
-		new_resource->_Header._ResourceIdentifier = identifier;
-		_TextureCubeResources.Add(identifier, new_resource);
-		_AllResources.Emplace(new_resource);
-
-		return ResourcePointer<TextureCubeResource>(new_resource);
-	}
-
-	else
-	{
-		return ResourcePointer<TextureCubeResource>(*resource);
-	}
-}
-
-/*
 *	Returns the video resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<VideoResource> ResourceSystem::GetVideoResource(const HashString identifier) NOEXCEPT
@@ -834,44 +796,6 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 		//Create the resource.
 		_ResourceCreationSystem.CreateSound(&data, new_resource);
-
-		//Register that the resource is now loaded.
-		new_resource->_LoadState = ResourceLoadState::LOADED;
-	}
-
-	else if (header._TypeIdentifier == ResourceConstants::TEXTURE_CUBE_TYPE_IDENTIFIER)
-	{
-		/*
-		*	Find or allocate the new resource.
-		*	The resource might have been created already by other dependant resources, but not loaded yet.
-		*/
-		TextureCubeResource* RESTRICT new_resource;
-
-		if (TextureCubeResource* const RESTRICT* const RESTRICT found_resource{ _TextureCubeResources.Find(header._ResourceIdentifier) })
-		{
-			new_resource = *found_resource;
-		}
-
-		else
-		{
-			new_resource = new (MemorySystem::Instance->TypeAllocate<TextureCubeResource>()) TextureCubeResource();
-			_TextureCubeResources.Add(header._ResourceIdentifier, new_resource);
-			_AllResources.Emplace(new_resource);
-		}
-
-		//Set the resource header.
-		new_resource->_Header = header;
-
-		//Set the file path and file offset.
-		new_resource->_FilePath = file->GetFilePath();
-		new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
-
-		//Load the resource.
-		TextureCubeData data;
-		_ResourceLoadingSystem.LoadTextureCube(file, &data);
-
-		//Create the resource.
-		_ResourceCreationSystem.CreateTextureCube(&data, new_resource);
 
 		//Register that the resource is now loaded.
 		new_resource->_LoadState = ResourceLoadState::LOADED;

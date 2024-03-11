@@ -15,7 +15,6 @@
 #include <Resources/Building/ShaderBuildParameters.h>
 #include <Resources/Building/SoundBuildParameters.h>
 #include <Resources/Building/Texture3DBuildParameters.h>
-#include <Resources/Building/TextureCubeBuildParameters.h>
 #include <Resources/Building/VideoBuildParameters.h>
 
 class ResourceBuildingSystem final
@@ -67,11 +66,6 @@ public:
 	*	Builds a sound.
 	*/
 	void BuildSound(const SoundBuildParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Builds a texture cube
-	*/
-	void BuildTextureCube(const TextureCubeBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a texture 3D.
