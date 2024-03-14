@@ -19,7 +19,6 @@ namespace EntitySerialization
 	void SerializeToJSON
 	(
 		nlohmann::json &JSON,
-		const char *const RESTRICT name,
 		Entity *const RESTRICT entity
 	) NOEXCEPT;
 

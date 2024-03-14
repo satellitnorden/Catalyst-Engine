@@ -12,6 +12,9 @@
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
 
+//Entities.
+#include <Entities/Core/EntitySerialization.h>
+
 //File.
 #include <File/Core/FileCore.h>
 
@@ -725,31 +728,17 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 
 	GenerateEntityName(new_level_entry._Name.Data(), new_level_entry._Name.Size());
 
-	//Duplicate component configurations.
-	DynamicArray<ComponentInitializationData *RESTRICT> component_configurations;
+	/*
+	*	Maybe a bit overkill to do this whole round trip, but it keeps me from having to write more code here.
+	*	Shouldn't be too bad. (:
+	*/
+	nlohmann::json JSON;
+	StreamArchive stream_archive;
+	uint64 stream_archive_position{ new_level_entry._Name.Size() };
 
-	for (Component *const RESTRICT component : AllComponents())
-	{
-		if (component->Has(entity))
-		{
-			ComponentInitializationData *RESTRICT component_configuration{ component->AllocateInitializationData() };
-
-			for (const ComponentEditableField &editable_field : component->EditableFields())
-			{
-				ApplyEditableFieldToInitializationData
-				(
-					editable_field,
-					component->EditableFieldData<void>(entity, editable_field),
-					component_configuration
-				);
-			}
-
-			component_configurations.Emplace(component_configuration);
-		}
-	}
-
-	//Create the entity!
-	new_level_entry._Entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT>(component_configurations));
+	EntitySerialization::SerializeToJSON(JSON, entity);
+	EntitySerialization::SerializeToStreamArchive(JSON, new_level_entry._Name.Data(), &stream_archive);
+	new_level_entry._Entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position);
 
 	//Set the new selected level entry index.
 	_SelectedLevelEntryIndex = _Level._LevelEntries.LastIndex();

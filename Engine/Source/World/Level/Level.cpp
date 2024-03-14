@@ -31,7 +31,7 @@ void Level::Serialize(const char *const RESTRICT file_path) NOEXCEPT
 
 	for (const LevelEntry &level_entry : _LevelEntries)
 	{
-		EntitySerialization::SerializeToJSON(entities, level_entry._Name.Data(), level_entry._Entity);
+		EntitySerialization::SerializeToJSON(entities[level_entry._Name.Data()], level_entry._Entity);
 	}
 
 	//Writ the JSON to the file.

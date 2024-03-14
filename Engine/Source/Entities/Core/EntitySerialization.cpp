@@ -25,13 +25,10 @@ namespace EntitySerialization
 	void SerializeToJSON
 	(
 		nlohmann::json &JSON,
-		const char *const RESTRICT name,
 		Entity *const RESTRICT entity
 	) NOEXCEPT
 	{
-		nlohmann::json &entity_entry{ JSON[name] };
-
-		nlohmann::json &components{ entity_entry["Components"] };
+		nlohmann::json &components{ JSON["Components"] };
 
 		for (Component *const RESTRICT component : AllComponents())
 		{
