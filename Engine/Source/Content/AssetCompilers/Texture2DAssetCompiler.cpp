@@ -9,6 +9,7 @@
 
 //File.
 #include <File/Core/FileCore.h>
+#include <File/Core/BinaryFile.h>
 #include <File/Readers/JPGReader.h>
 #include <File/Readers/PNGReader.h>
 #include <File/Utilities/TextParsingUtilities.h>

@@ -2,20 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Algorithms/HashAlgorithms.h>
-#include <Core/Containers/StreamArchive.h>
 #include <Core/General/HashString.h>
-#include <Core/Utilities/StringUtilities.h>
-
-//Entities.
-#include <Entities/Core/Entity.h>
-
-//File.
-#include <File/Core/BinaryFile.h>
-
-//Forward declarations.
-class Component;
-class ComponentInitializationData;
 
 /*
 *	Component editable field class definition.
@@ -58,13 +45,3 @@ public:
 	}
 
 };
-
-/*
-*	Applies an editable field to initialization data.
-*/
-void ApplyEditableFieldToInitializationData
-(
-	const ComponentEditableField &editable_field,
-	const void *const RESTRICT data,
-	ComponentInitializationData *const RESTRICT initialization_data
-) NOEXCEPT;
