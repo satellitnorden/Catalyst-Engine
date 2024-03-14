@@ -211,44 +211,6 @@ NO_DISCARD ResourcePointer<FontResource> ResourceSystem::FindOrCreateFontResourc
 }
 
 /*
-*	Returns the level resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<LevelResource> ResourceSystem::GetLevelResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	LevelResource *const RESTRICT *const RESTRICT resource{ _LevelResources.Find(identifier) };
-
-	ASSERT(resource, "Couldn't find resource!");
-
-	return resource ? ResourcePointer<LevelResource>(*resource) : ResourcePointer<LevelResource>();
-}
-
-/*
-*	Returns or creates the level resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<LevelResource> ResourceSystem::FindOrCreateLevelResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	LevelResource *const RESTRICT *const RESTRICT resource{ _LevelResources.Find(identifier) };
-
-	if (!resource)
-	{
-		//If the resource couldn't be found, create it.
-		LevelResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<LevelResource>()) LevelResource() };
-		new_resource->_Header._ResourceIdentifier = identifier;
-		_LevelResources.Add(identifier, new_resource);
-		_AllResources.Emplace(new_resource);
-
-		return ResourcePointer<LevelResource>(new_resource);
-	}
-
-	else
-	{
-		return ResourcePointer<LevelResource>(*resource);
-	}
-}
-
-/*
 *	Returns the raw data resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<RawDataResource> ResourceSystem::GetRawDataResource(const HashString identifier) NOEXCEPT
@@ -606,44 +568,6 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 		//Create the resource.
 		_ResourceCreationSystem.CreateFont(&data, new_resource);
-
-		//Register that the resource is now loaded.
-		new_resource->_LoadState = ResourceLoadState::LOADED;
-	}
-
-	else if (header._TypeIdentifier == ResourceConstants::LEVEL_TYPE_IDENTIFIER)
-	{
-		/*
-		*	Find or allocate the new resource.
-		*	The resource might have been created already by other dependant resources, but not loaded yet.
-		*/
-		LevelResource* RESTRICT new_resource;
-
-		if (LevelResource* const RESTRICT* const RESTRICT found_resource{ _LevelResources.Find(header._ResourceIdentifier) })
-		{
-			new_resource = *found_resource;
-		}
-
-		else
-		{
-			new_resource = new (MemorySystem::Instance->TypeAllocate<LevelResource>()) LevelResource();
-			_LevelResources.Add(header._ResourceIdentifier, new_resource);
-			_AllResources.Emplace(new_resource);
-		}
-
-		//Set the resource header.
-		new_resource->_Header = header;
-
-		//Set the file path and file offset.
-		new_resource->_FilePath = file->GetFilePath();
-		new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
-
-		//Load the resource.
-		LevelData data;
-		_ResourceLoadingSystem.LoadLevel(file, &data);
-
-		//Create the resource.
-		_ResourceCreationSystem.CreateLevel(&data, new_resource);
 
 		//Register that the resource is now loaded.
 		new_resource->_LoadState = ResourceLoadState::LOADED;

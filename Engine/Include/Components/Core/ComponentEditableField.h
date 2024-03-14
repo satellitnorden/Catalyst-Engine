@@ -4,10 +4,11 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Algorithms/HashAlgorithms.h>
 #include <Core/Containers/StreamArchive.h>
+#include <Core/General/HashString.h>
 #include <Core/Utilities/StringUtilities.h>
 
 //Entities.
-#include <Entities/Types/Entity.h>
+#include <Entities/Core/Entity.h>
 
 //File.
 #include <File/Core/BinaryFile.h>
@@ -27,6 +28,7 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
+		EULER_ANGLES,
 		MATERIAL_ASSET,
 		MODEL_ASSET,
 		WORLD_TRANSFORM
@@ -36,7 +38,7 @@ public:
 	const char *RESTRICT _Name;
 
 	//The identifier.
-	uint64 _Identifier;
+	HashString _Identifier;
 
 	//The type.
 	Type _Type;
@@ -61,27 +63,6 @@ public:
 *	Applies an editable field to initialization data.
 */
 void ApplyEditableFieldToInitializationData
-(
-	const ComponentEditableField &editable_field,
-	const void *const RESTRICT data,
-	ComponentInitializationData *const RESTRICT initialization_data
-) NOEXCEPT;
-
-/*
-*	Serializes a component editable field to the given stream archive.
-*/
-void SerializeEditableField
-(
-	const ComponentEditableField &editable_field,
-	Component *const RESTRICT component,
-	Entity *const RESTRICT entity,
-	StreamArchive *const RESTRICT stream_archive
-) NOEXCEPT;
-
-/*
-*	Deserializes a component editable field to the given initialization data.
-*/
-NO_DISCARD uint64 DeserializeEditableField
 (
 	const ComponentEditableField &editable_field,
 	const void *const RESTRICT data,

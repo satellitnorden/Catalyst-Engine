@@ -7,20 +7,20 @@
 
 //Content.
 #include <Content/Core/AssetCompiler.h>
-#include <Content/Assets/Texture2DAsset.h>
+#include <Content/Assets/LevelAsset.h>
 
-class ALIGN(8) Texture2DAssetCompiler final : public AssetCompiler
+class ALIGN(8) LevelAssetCompiler final : public AssetCompiler
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(Texture2DAssetCompiler);
+	DECLARE_SINGLETON(LevelAssetCompiler);
 
 	/*
 	*	Default constructor.
 	*/
-	Texture2DAssetCompiler() NOEXCEPT;
+	LevelAssetCompiler() NOEXCEPT;
 
 	/*
 	*	Returns the asset type identifier.
@@ -81,7 +81,7 @@ private:
 		StreamArchive *RESTRICT _StreamArchive;
 
 		//The asset.
-		Texture2DAsset *RESTRICT _Asset;
+		LevelAsset *RESTRICT _Asset;
 
 	};
 
@@ -92,7 +92,7 @@ private:
 	PoolAllocator<sizeof(LoadData)> _LoadDataAllocator;
 
 	//The asset allocator.
-	PoolAllocator<sizeof(Texture2DAsset)> _AssetAllocator;
+	PoolAllocator<sizeof(LevelAsset)> _AssetAllocator;
 
 	/*
 	*	Compiles internally.

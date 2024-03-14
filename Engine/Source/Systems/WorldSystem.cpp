@@ -7,9 +7,6 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
-//Resources.
-#include <Resources/Core/LevelResource.h>
-
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/EntitySystem.h>

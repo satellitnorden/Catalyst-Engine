@@ -9,6 +9,7 @@
 
 //Content.
 #include <Content/Core/ContentCache.h>
+#include <Content/AssetCompilers/LevelAssetCompiler.h>
 #include <Content/AssetCompilers/MaterialAssetCompiler.h>
 #include <Content/AssetCompilers/ModelAssetCompiler.h>
 #include <Content/AssetCompilers/ScriptAssetCompiler.h>
@@ -59,6 +60,7 @@ DEFINE_SINGLETON(ContentSystem);
 void ContentSystem::Initialize() NOEXCEPT
 {
 	//Register the native asset compilers
+	RegisterAssetCompiler(LevelAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(MaterialAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(ModelAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(ScriptAssetCompiler::Instance.Get());
@@ -513,6 +515,7 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 	load_context._StreamArchivePosition = stream_archive_position;
 	load_context._TaskAllocator = &_TaskAllocator;
 	load_context._Tasks = &_Tasks;
+	load_context._Asset = nullptr;
 
 	//Load!
 	Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };
@@ -611,6 +614,7 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 		load_context._StreamArchivePosition = stream_archive_position;
 		load_context._TaskAllocator = &_TaskAllocator;
 		load_context._Tasks = &_Tasks;
+		load_context._Asset = nullptr;
 
 		//Load!
 		Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };

@@ -12,7 +12,6 @@
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/FontData.h>
-#include <Resources/Loading/LevelData.h>
 #include <Resources/Loading/RawDataData.h>
 #include <Resources/Loading/RenderPipelineData.h>
 #include <Resources/Loading/ShaderData.h>
@@ -42,11 +41,6 @@ public:
 	*	Given a file, load font data.
 	*/
 	void LoadFont(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, FontData *const RESTRICT data) NOEXCEPT;
-
-	/*
-	*	Given a file, load level data.
-	*/
-	void LoadLevel(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, LevelData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load raw data data.

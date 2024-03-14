@@ -2,10 +2,11 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
-//Resources.
-#include <Resources/Core/LevelResource.h>
-#include <Resources/Core/ResourcePointer.h>
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/LevelAsset.h>
 
 //World.
 #include <World/Core/WorldTransform.h>
@@ -33,7 +34,7 @@ public:
 	void SpawnLevel
 	(
 		const WorldTransform &world_transform,
-		const ResourcePointer<LevelResource> level_resource,
+		const AssetPointer<LevelAsset> level_asset,
 		DynamicArray<LevelEntry> *const RESTRICT level_entries
 	) NOEXCEPT;
 

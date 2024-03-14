@@ -118,61 +118,6 @@ void ResourceLoadingSystem::LoadFont(BinaryFile<BinaryFileMode::IN> *const RESTR
 }
 
 /*
-*	Given a file, load level data.
-*/
-void ResourceLoadingSystem::LoadLevel(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, LevelData *const RESTRICT data) NOEXCEPT
-{
-	//Read the number of level entries.
-	uint64 number_of_level_entries;
-	file->Read(&number_of_level_entries, sizeof(uint64));
-
-	//Reserve the appropriate amount of memory.
-	data->_LevelEntries.Reserve(number_of_level_entries);
-
-	//Read the level entries.
-	for (uint64 level_entry_index{ 0 }; level_entry_index < number_of_level_entries; ++level_entry_index)
-	{
-		//Add the new level entry.
-		data->_LevelEntries.Emplace();
-		LevelData::LevelEntry &new_level_entry{ data->_LevelEntries.Back() };
-
-		//Read the name.
-		file->Read(new_level_entry._Name.Data(), new_level_entry._Name.Size());
-
-		//Read the number of component entries.
-		uint64 number_of_component_entries;
-		file->Read(&number_of_component_entries, sizeof(uint64));
-
-		//Reserve the appropriate amount of memory.
-		new_level_entry._ComponentEntries.Reserve(number_of_component_entries);
-
-		for (uint64 component_entry_index{ 0 }; component_entry_index < number_of_component_entries; ++component_entry_index)
-		{
-			//Add the new component entry.
-			new_level_entry._ComponentEntries.Emplace();
-			LevelData::LevelEntry::ComponentEntry &new_component_entry{ new_level_entry._ComponentEntries.Back() };
-
-			//Read the component identifier.
-			file->Read(&new_component_entry._ComponentIdentifier, sizeof(HashString));
-
-			//Read the number of editable fields.
-			file->Read(&new_component_entry._NumberOfEditableFields, sizeof(uint64));
-
-			//Read the field data position.
-			file->Read(&new_component_entry._FieldDataPosition, sizeof(uint64));
-		}
-	}
-
-	//Read the stream archive size.
-	uint64 stream_archive_size;
-	file->Read(&stream_archive_size, sizeof(uint64));
-
-	//Read into the stream archive.
-	data->_StreamArchive.Resize(stream_archive_size);
-	file->Read(data->_StreamArchive.Data(), stream_archive_size);
-}
-
-/*
 *	Given a file, load raw data data.
 */
 void ResourceLoadingSystem::LoadRawData(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RawDataData* const RESTRICT data) NOEXCEPT

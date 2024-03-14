@@ -45,9 +45,9 @@ public:
 private:
 
 	/*
-	*	Model compile data class definition.
+	*	Compile data class definition.
 	*/
-	class ModelCompileData final
+	class CompileData final
 	{
 
 	public:
@@ -67,9 +67,9 @@ private:
 	};
 
 	/*
-	*	Model load data class definition.
+	*	Load data class definition.
 	*/
-	class ModelLoadData final
+	class LoadData final
 	{
 
 	public:
@@ -86,10 +86,10 @@ private:
 	};
 
 	//The compile data allocator.
-	PoolAllocator<sizeof(ModelCompileData)> _CompileDataAllocator;
+	PoolAllocator<sizeof(CompileData)> _CompileDataAllocator;
 
 	//The load data allocator.
-	PoolAllocator<sizeof(ModelLoadData)> _LoadDataAllocator;
+	PoolAllocator<sizeof(LoadData)> _LoadDataAllocator;
 
 	//The asset allocator.
 	PoolAllocator<sizeof(ModelAsset)> _AssetAllocator;
@@ -97,11 +97,11 @@ private:
 	/*
 	*	Compiles internally.
 	*/
-	void CompileInternal(ModelCompileData *const RESTRICT compile_data) NOEXCEPT;
+	void CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT;
 
 	/*
 	*	Loads internally.
 	*/
-	void LoadInternal(ModelLoadData *const RESTRICT load_data) NOEXCEPT;
+	void LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT;
 
 };

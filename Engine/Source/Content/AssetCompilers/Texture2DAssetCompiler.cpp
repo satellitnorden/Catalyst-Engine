@@ -134,7 +134,7 @@ Texture2DAssetCompiler::Texture2DAssetCompiler() NOEXCEPT
 */
 NO_DISCARD HashString Texture2DAssetCompiler::AssetTypeIdentifier() const NOEXCEPT
 {
-	return HashString("Texture2D");
+	return Texture2DAsset::TYPE_IDENTIFIER;
 }
 
 /*
@@ -151,8 +151,7 @@ NO_DISCARD uint64 Texture2DAssetCompiler::CurrentVersion() const NOEXCEPT
 void Texture2DAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 {
 	//Set up the compile data.
-	Texture2DCompileData *const RESTRICT compile_data{ static_cast<Texture2DCompileData *const RESTRICT>(_CompileDataAllocator.Allocate()) };
-	Memory::Set(compile_data, 0, sizeof(Texture2DCompileData));
+	CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
 
 	//Set the collection.
 	compile_data->_Collection = compile_context._Collection;
@@ -171,7 +170,7 @@ void Texture2DAssetCompiler::Compile(const CompileContext &compile_context) NOEX
 
 	task->_Function = [](void *const RESTRICT arguments)
 	{
-		Texture2DAssetCompiler::Instance->CompileInternal(static_cast<Texture2DCompileData *const RESTRICT>(arguments));
+		Texture2DAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = compile_data;
 	task->_ExecutableOnSameThread = true;
@@ -195,7 +194,7 @@ NO_DISCARD Asset *const RESTRICT Texture2DAssetCompiler::Load(const LoadContext 
 
 #if ASYNC_LOAD
 	//Set up the load data.
-	Texture2DLoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) Texture2DLoadData() };
+	LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
 
 	load_data->_StreamArchivePosition = load_context._StreamArchivePosition;
 	load_data->_StreamArchive = load_context._StreamArchive;
@@ -206,7 +205,7 @@ NO_DISCARD Asset *const RESTRICT Texture2DAssetCompiler::Load(const LoadContext 
 
 	task->_Function = [](void *const RESTRICT arguments)
 	{
-		Texture2DAssetCompiler::Instance->LoadInternal(static_cast<Texture2DLoadData*const RESTRICT>(arguments));
+		Texture2DAssetCompiler::Instance->LoadInternal(static_cast<LoadData*const RESTRICT>(arguments));
 	};
 	task->_Arguments = load_data;
 	task->_ExecutableOnSameThread = true;
@@ -235,7 +234,7 @@ NO_DISCARD Asset *const RESTRICT Texture2DAssetCompiler::Load(const LoadContext 
 /*
 *	Compiles internally.
 */
-void Texture2DAssetCompiler::CompileInternal(Texture2DCompileData *const RESTRICT compile_data) NOEXCEPT
+void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
 {
 	PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal");
 
@@ -854,7 +853,7 @@ void Texture2DAssetCompiler::CompileInternal(Texture2DCompileData *const RESTRIC
 /*
 *	Loads internally.
 */
-void Texture2DAssetCompiler::LoadInternal(Texture2DLoadData *const RESTRICT load_data) NOEXCEPT
+void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT
 {
 	PROFILING_SCOPE("Texture2DAssetCompiler::LoadInternal");
 

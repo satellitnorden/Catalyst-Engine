@@ -14,7 +14,7 @@ void WorldTransformComponent::Initialize() NOEXCEPT
 	//Add the editable fields.
 	AddEditableWorldTransformField
 	(
-		"WorldTransform",
+		"World Transform",
 		offsetof(WorldTransformInitializationData, _WorldTransform),
 		offsetof(WorldTransformInstanceData, _CurrentWorldTransform)
 	);

@@ -8,6 +8,7 @@
 
 //Content.
 #include <Content/Core/AssetPointer.h>
+#include <Content/Assets/LevelAsset.h>
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
 
@@ -263,8 +264,8 @@ void EditorLevelSystem::PostInitialize() NOEXCEPT
 void EditorLevelSystem::CreateEntity() NOEXCEPT
 {
 	//Add a new level entry.
-	_LevelEntries.Emplace();
-	LevelEntry& new_level_entry{ _LevelEntries.Back() };
+	_Level._LevelEntries.Emplace();
+	LevelEntry &new_level_entry{ _Level._LevelEntries.Back() };
 
 	//Generate a name.
 	GenerateEntityName(new_level_entry._Name.Data(), new_level_entry._Name.Size());
@@ -299,6 +300,9 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 
 	if (File::BrowseForFile(true, &chosen_file))
 	{
+		_Level.Serialize(chosen_file.Data());
+
+		/*
 		//Figre out the name.
 		std::string name;
 
@@ -313,9 +317,10 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 
 		parameters._OutputFilePath = chosen_file.Data();
 		parameters._Identifier = name.c_str();
-		parameters._LevelEntries = _LevelEntries;
+		parameters._LevelEntries = _Level._LevelEntries;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildLevel(parameters);
+		*/
 	}
 }
 
@@ -324,38 +329,36 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 */
 void EditorLevelSystem::LoadLevel() NOEXCEPT
 {
-	/*
 	//Request browsing for the level.
 	CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
 	(
 		"Select Level",
-		ResourceConstants::LEVEL_TYPE_IDENTIFIER,
-		[](Resource *const RESTRICT resource, void *const RESTRICT arguments)
+		LevelAsset::TYPE_IDENTIFIER,
+		[](Asset *const RESTRICT asset, void *const RESTRICT arguments)
 		{
-			CatalystEditorSystem::Instance->GetEditorLevelSystem()->LoadLevelInternal(resource);
+			CatalystEditorSystem::Instance->GetEditorLevelSystem()->LoadLevelInternal(asset);
 		},
 		nullptr
 	);
-	*/
 }
 
 /*
 *	Loads a level internally.
 */
-void EditorLevelSystem::LoadLevelInternal(Resource *const RESTRICT level_resource) NOEXCEPT
+void EditorLevelSystem::LoadLevelInternal(Asset *const RESTRICT level_asset) NOEXCEPT
 {
 	//Destroy all entities.
 	EntitySystem::Instance->DestroyAllEntities();
 
 	//Clear the level entries.
-	_LevelEntries.Clear();
+	_Level._LevelEntries.Clear();
 
 	//Spawn the level.
 	LevelSystem::Instance->SpawnLevel
 	(
 		WorldTransform(),
-		ResourcePointer<LevelResource>(static_cast<LevelResource *const RESTRICT>(level_resource)),
-		&_LevelEntries
+		AssetPointer<LevelAsset>(static_cast<LevelAsset *const RESTRICT>(level_asset)),
+		&_Level._LevelEntries
 	);
 }
 
@@ -376,9 +379,9 @@ NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> m
 	ImGuiSystem::Instance->BeginWindow("Editor Level Top Right", minimum, maximum, false, false, false, false);
 
 	//List all level entries.
-	for (uint64 i{ 0 }; i < _LevelEntries.Size(); ++i)
+	for (uint64 i{ 0 }; i < _Level._LevelEntries.Size(); ++i)
 	{
-		const LevelEntry &level_entry{ _LevelEntries[i] };
+		const LevelEntry &level_entry{ _Level._LevelEntries[i] };
 
 		const uint64 name_length{ StringUtilities::StringLength(level_entry._Name.Data()) };
 
@@ -423,7 +426,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 	if (_SelectedLevelEntryIndex != UINT64_MAXIMUM)
 	{
 		//Cache the selected level entry.
-		LevelEntry &selected_level_entry{ _LevelEntries[_SelectedLevelEntryIndex] };
+		LevelEntry &selected_level_entry{ _Level._LevelEntries[_SelectedLevelEntryIndex] };
 
 		//Retrieve the editor data.
 		EditorDataInstanceData &editor_data{ EditorDataComponent::Instance->InstanceData(selected_level_entry._Entity) };
@@ -717,8 +720,8 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Add a new level entry.
-	_LevelEntries.Emplace();
-	LevelEntry &new_level_entry{ _LevelEntries.Back() };
+	_Level._LevelEntries.Emplace();
+	LevelEntry &new_level_entry{ _Level._LevelEntries.Back() };
 
 	GenerateEntityName(new_level_entry._Name.Data(), new_level_entry._Name.Size());
 
@@ -749,6 +752,6 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 	new_level_entry._Entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT>(component_configurations));
 
 	//Set the new selected level entry index.
-	_SelectedLevelEntryIndex = _LevelEntries.LastIndex();
+	_SelectedLevelEntryIndex = _Level._LevelEntries.LastIndex();
 }
 #endif

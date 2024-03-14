@@ -3,8 +3,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Entities.
-#include <Entities/Core/EntityCore.h>
+//Type aliases.
+using EntityIdentifier = uint64;
 
 class Entity
 {

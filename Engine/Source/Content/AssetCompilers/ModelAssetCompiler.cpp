@@ -48,7 +48,7 @@ ModelAssetCompiler::ModelAssetCompiler() NOEXCEPT
 */
 NO_DISCARD HashString ModelAssetCompiler::AssetTypeIdentifier() const NOEXCEPT
 {
-	return HashString("Model");
+	return ModelAsset::TYPE_IDENTIFIER;
 }
 
 /*
@@ -65,7 +65,7 @@ NO_DISCARD uint64 ModelAssetCompiler::CurrentVersion() const NOEXCEPT
 void ModelAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 {
 	//Set up the compile data.
-	ModelCompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) ModelCompileData() };
+	CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
 
 	//Set the collection.
 	compile_data->_Collection = compile_context._Collection;
@@ -84,7 +84,7 @@ void ModelAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 
 	task->_Function = [](void *const RESTRICT arguments)
 	{
-		ModelAssetCompiler::Instance->CompileInternal(static_cast<ModelCompileData *const RESTRICT>(arguments));
+		ModelAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = compile_data;
 	task->_ExecutableOnSameThread = true;
@@ -105,7 +105,7 @@ NO_DISCARD Asset *const RESTRICT ModelAssetCompiler::Load(const LoadContext &loa
 	ModelAsset *const RESTRICT new_asset{ new (_AssetAllocator.Allocate()) ModelAsset() };
 
 	//Set up the load data.
-	ModelLoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) ModelLoadData() };
+	LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
 
 	load_data->_StreamArchivePosition = load_context._StreamArchivePosition;
 	load_data->_StreamArchive = load_context._StreamArchive;
@@ -116,7 +116,7 @@ NO_DISCARD Asset *const RESTRICT ModelAssetCompiler::Load(const LoadContext &loa
 
 	task->_Function = [](void *const RESTRICT arguments)
 	{
-		ModelAssetCompiler::Instance->LoadInternal(static_cast<ModelLoadData *const RESTRICT>(arguments));
+		ModelAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = load_data;
 	task->_ExecutableOnSameThread = true;
@@ -134,7 +134,7 @@ NO_DISCARD Asset *const RESTRICT ModelAssetCompiler::Load(const LoadContext &loa
 /*
 *	Compiles internally.
 */
-void ModelAssetCompiler::CompileInternal(ModelCompileData *const RESTRICT compile_data) NOEXCEPT
+void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
 {
 	PROFILING_SCOPE("ModelAssetCompiler::CompileInternal");
 
@@ -342,7 +342,7 @@ void ModelAssetCompiler::CompileInternal(ModelCompileData *const RESTRICT compil
 /*
 *	Loads internally.
 */
-void ModelAssetCompiler::LoadInternal(ModelLoadData *const RESTRICT load_data) NOEXCEPT
+void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT
 {
 	PROFILING_SCOPE("ModelAssetCompiler::LoadInternal");
 

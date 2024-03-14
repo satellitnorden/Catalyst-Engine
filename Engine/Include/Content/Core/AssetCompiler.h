@@ -100,6 +100,9 @@ public:
 		//The tasks.
 		DynamicArray<Task *RESTRICT> *RESTRICT _Tasks;
 
+		//The asset. Only set if the asset is being reloaded.
+		Asset *RESTRICT _Asset;
+
 		
 	};
 

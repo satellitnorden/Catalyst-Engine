@@ -8,7 +8,6 @@ namespace ResourceConstants
 	const HashString ANIMATED_MODEL_TYPE_IDENTIFIER{ "AnimatedModel" };
 	const HashString ANIMATION_TYPE_IDENTIFIER{ "Animation" };
 	const HashString FONT_TYPE_IDENTIFIER{ "Font" };
-	const HashString LEVEL_TYPE_IDENTIFIER{ "Level" };
 	const HashString RAW_DATA_TYPE_IDENTIFIER{ "RawData" };
 	const HashString RENDER_PIPELINE_TYPE_IDENTIFIER{ "RenderPipeline" };
 	const HashString SHADER_TYPE_IDENTIFIER{ "Shader" };

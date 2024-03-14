@@ -7,7 +7,7 @@
 #include <Core/General/HashString.h>
 
 //Entities.
-#include <Entities/Types/Entity.h>
+#include <Entities/Core/Entity.h>
 
 //Rendering.
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>

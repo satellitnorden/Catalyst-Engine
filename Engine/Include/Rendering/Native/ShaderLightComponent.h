@@ -5,7 +5,7 @@
 #include <Core/General/Padding.h>
 
 //Entities.
-#include <Entities/Types/Entity.h>
+#include <Entities/Core/Entity.h>
 
 //Lighting.
 #include <Lighting/LightingCore.h>

@@ -9,7 +9,13 @@ DEFINE_COMPONENT(EditorDataComponent, EditorDataInitializationData, EditorDataIn
 */
 void EditorDataComponent::Initialize() NOEXCEPT
 {
-
+	//Add the editable fields.
+	AddEditableEulerAnglesField
+	(
+		"Rotation",
+		offsetof(EditorDataInitializationData, _Rotation),
+		offsetof(EditorDataInstanceData, _Rotation)
+	);
 }
 
 /*

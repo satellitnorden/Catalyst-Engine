@@ -14,7 +14,7 @@
 #include <Concurrency/Spinlock.h>
 
 //Entities.
-#include <Entities/Types/Entity.h>
+#include <Entities/Core/Entity.h>
 
 //Memory.
 #include <Memory/PoolAllocator.h>

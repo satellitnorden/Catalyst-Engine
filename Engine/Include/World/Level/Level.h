@@ -7,18 +7,20 @@
 //World.
 #include <World/Level/LevelEntry.h>
 
-class LevelBuildParameters final
+class Level final
 {
 
 public:
 
-	//The output file path.
-	const char *RESTRICT _OutputFilePath;
-
-	//The identifier.
-	const char *RESTRICT _Identifier;
+	//The name.
+	StaticString<64> _Name;
 
 	//The level entries.
 	DynamicArray<LevelEntry> _LevelEntries;
+
+	/*
+	*	Serializes this level to the given file path.
+	*/
+	void Serialize(const char *const RESTRICT file_path) NOEXCEPT;
 
 };

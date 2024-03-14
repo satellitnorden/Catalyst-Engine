@@ -13,7 +13,7 @@
 #include <Concurrency/ScopedLock.h>
 
 //Entities.
-#include <Entities/Types/Entity.h>
+#include <Entities/Core/Entity.h>
 
 //Memory.
 #include <Memory/PoolAllocator.h>
@@ -245,6 +245,16 @@ protected:
 	*	Sub-editable field data function.
 	*/
 	virtual NO_DISCARD void *const RESTRICT SubEditableFieldData(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT = 0;
+
+	/*
+	*	Adds an editable euler angles field.
+	*/
+	void AddEditableEulerAnglesField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
 
 	/*
 	*	Adds an editable asset resource field.

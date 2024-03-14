@@ -9,10 +9,10 @@
 #include <Math/General/Vector.h>
 
 //World.
-#include <World/Level/LevelEntry.h>
+#include <World/Level/Level.h>
 
 //Forward declarations.
-class Resource;
+class Asset;
 
 class EditorLevelSystem final
 {
@@ -52,8 +52,8 @@ private:
 	//The name counter.
 	uint32 _NameCounter{ 0 };
 
-	//The level entries.
-	DynamicArray<LevelEntry> _LevelEntries;
+	//The level.
+	Level _Level;
 
 	//The selected level entry index.
 	uint64 _SelectedLevelEntryIndex{ UINT64_MAXIMUM };
@@ -64,7 +64,7 @@ private:
 	/*
 	*	Loads a level internally.
 	*/
-	void LoadLevelInternal(Resource *const RESTRICT level_resource) NOEXCEPT;
+	void LoadLevelInternal(Asset *const RESTRICT level_asset) NOEXCEPT;
 
 	/*
 	*	Generates an entity name.

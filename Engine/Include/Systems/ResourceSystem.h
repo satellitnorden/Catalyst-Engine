@@ -9,7 +9,6 @@
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/FontResource.h>
-#include <Resources/Core/LevelResource.h>
 #include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ResourcePointer.h>
@@ -140,24 +139,6 @@ public:
 	}
 
 	/*
-	*	Returns the level resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<LevelResource> GetLevelResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the level resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<LevelResource> FindOrCreateLevelResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all level resources.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, LevelResource *RESTRICT> &GetAllLevelResources() const NOEXCEPT
-	{
-		return _LevelResources;
-	}
-
-	/*
 	*	Returns the raw data resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<RawDataResource> GetRawDataResource(const HashString identifier) NOEXCEPT;
@@ -278,9 +259,6 @@ private:
 
 	//Container for all font resources.
 	HashTable<HashString, FontResource *RESTRICT> _FontResources;
-
-	//Container for all level resources.
-	HashTable<HashString, LevelResource *RESTRICT> _LevelResources;
 
 	//Container for all raw data resources.
 	HashTable<HashString, RawDataResource *RESTRICT> _RawDataResources;

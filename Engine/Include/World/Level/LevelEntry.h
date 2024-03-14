@@ -11,7 +11,7 @@
 #include <Core/General/StaticString.h>
 
 //Entities.
-#include <Entities/Types/Entity.h>
+#include <Entities/Core/Entity.h>
 
 class LevelEntry final
 {
@@ -19,7 +19,7 @@ class LevelEntry final
 public:
 
 	//The name.
-	StaticString<128> _Name;
+	StaticString<64> _Name;
 
 	//The entity.
 	Entity *RESTRICT _Entity;

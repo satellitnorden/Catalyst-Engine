@@ -2,6 +2,28 @@
 #include <Components/Core/Component.h>
 
 /*
+*	Adds an editable euler angles field.
+*/
+void Component::AddEditableEulerAnglesField
+(
+	const char *const RESTRICT name,
+	const uint64 initialization_data_offset,
+	const uint64 instance_data_offset
+) NOEXCEPT
+{
+	ComponentEditableField editable_field;
+
+	editable_field._Name = name;
+	editable_field._Identifier = HashString(name);
+	editable_field._Type = ComponentEditableField::Type::EULER_ANGLES;
+	editable_field._InitializationDataOffset = initialization_data_offset;
+	editable_field._InstanceDataOffset = instance_data_offset;
+
+	_EditableFields.Emplace(editable_field);
+
+}
+
+/*
 *	Adds an editable material asset field.
 */
 void Component::AddEditableMaterialAssetField
@@ -14,7 +36,7 @@ void Component::AddEditableMaterialAssetField
 	ComponentEditableField editable_field;
 
 	editable_field._Name = name;
-	editable_field._Identifier = HashAlgorithms::MurmurHash64(name, StringUtilities::StringLength(name));
+	editable_field._Identifier = HashString(name);
 	editable_field._Type = ComponentEditableField::Type::MATERIAL_ASSET;
 	editable_field._InitializationDataOffset = initialization_data_offset;
 	editable_field._InstanceDataOffset = instance_data_offset;
@@ -35,7 +57,7 @@ void Component::AddEditableModelAssetField
 	ComponentEditableField editable_field;
 
 	editable_field._Name = name;
-	editable_field._Identifier = HashAlgorithms::MurmurHash64(name, StringUtilities::StringLength(name));
+	editable_field._Identifier = HashString(name);
 	editable_field._Type = ComponentEditableField::Type::MODEL_ASSET;
 	editable_field._InitializationDataOffset = initialization_data_offset;
 	editable_field._InstanceDataOffset = instance_data_offset;
@@ -56,7 +78,7 @@ void Component::AddEditableWorldTransformField
 	ComponentEditableField editable_field;
 
 	editable_field._Name = name;
-	editable_field._Identifier = HashAlgorithms::MurmurHash64(name, StringUtilities::StringLength(name));
+	editable_field._Identifier = HashString(name);
 	editable_field._Type = ComponentEditableField::Type::WORLD_TRANSFORM;
 	editable_field._InitializationDataOffset = initialization_data_offset;
 	editable_field._InstanceDataOffset = instance_data_offset;

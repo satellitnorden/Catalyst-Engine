@@ -114,46 +114,6 @@ void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, FontResou
 }
 
 /*
-*	Creates a level.
-*/
-void ResourceCreationSystem::CreateLevel(LevelData *const RESTRICT data, LevelResource *const RESTRICT resource) NOEXCEPT
-{
-	//Copy over all level entries.
-	resource->_LevelEntries.Reserve(data->_LevelEntries.Size());
-
-	for (const LevelData::LevelEntry &level_entry : data->_LevelEntries)
-	{
-		resource->_LevelEntries.Emplace();
-		LevelResource::LevelEntry &new_level_entry{ resource->_LevelEntries.Back() };
-
-		new_level_entry._Name = level_entry._Name;
-		new_level_entry._ComponentEntries.Reserve(level_entry._ComponentEntries.Size());
-
-		for (const LevelData::LevelEntry::ComponentEntry &component_entry : level_entry._ComponentEntries)
-		{
-			new_level_entry._ComponentEntries.Emplace();
-			LevelResource::LevelEntry::ComponentEntry &new_component_entry{ new_level_entry._ComponentEntries.Back() };
-
-			for (Component *const RESTRICT component : AllComponents())
-			{
-				if (component->_Identifier == component_entry._ComponentIdentifier)
-				{
-					new_component_entry._Component = component;
-
-					break;
-				}
-			}
-
-			new_component_entry._NumberOfEditableFields = component_entry._NumberOfEditableFields;
-			new_component_entry._FieldDataPosition = component_entry._FieldDataPosition;
-		}
-	}
-
-	//Copy the stream archive.
-	resource->_StreamArchive = data->_StreamArchive;
-}
-
-/*
 *	Creates a raw data.
 */
 void ResourceCreationSystem::CreateRawData(RawDataData *const RESTRICT data, RawDataResource *const RESTRICT resource) NOEXCEPT
