@@ -344,8 +344,7 @@ public:																																			\
 	FORCE_INLINE INITIALIZATION_DATA_CLASS *const RESTRICT AllocateDerivedInitializationData() NOEXCEPT											\
 	{																																			\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																										\
-		INITIALIZATION_DATA_CLASS *const RESTRICT data{ static_cast<INITIALIZATION_DATA_CLASS *const RESTRICT>(POOL_ALLOCATOR.Allocate()) };	\
-		Memory::Set(data, 0, sizeof(INITIALIZATION_DATA_CLASS));																				\
+		INITIALIZATION_DATA_CLASS *const RESTRICT data{ new (POOL_ALLOCATOR.Allocate()) INITIALIZATION_DATA_CLASS() };							\
 		DefaultInitializationData(data);																										\
 		data->_Component = COMPONENT_CLASS::Instance.Get();																						\
 		return data;																															\

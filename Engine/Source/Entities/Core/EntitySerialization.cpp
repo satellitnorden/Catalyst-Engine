@@ -6,6 +6,9 @@
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
 
+//Generated.
+#include <Generated/Enumeration.Generated.h>
+
 //Math.
 #include <Math/General/EulerAngles.h>
 
@@ -43,6 +46,15 @@ namespace EntitySerialization
 			{
 				switch (editable_field._Type)
 				{
+					case ComponentEditableField::Type::ENUMERATION:
+					{
+						const Enumeration *const RESTRICT data{ component->EditableFieldData<Enumeration>(entity, editable_field) };
+
+						component_entry[editable_field._Name] = data->ToString();
+
+						break;
+					}
+
 					case ComponentEditableField::Type::EULER_ANGLES:
 					{
 						const EulerAngles *const RESTRICT data{ component->EditableFieldData<EulerAngles>(entity, editable_field) };
@@ -200,6 +212,17 @@ namespace EntitySerialization
 					{
 						switch (editable_field._Type)
 						{
+							case ComponentEditableField::Type::ENUMERATION:
+							{
+								const std::string enumeration_value{ editable_field_entry.get<std::string>() };
+
+								const uint64 hash{ HashAlgorithms::MurmurHash64(enumeration_value.data(), enumeration_value.length()) };
+
+								stream_archive->Write(&hash, sizeof(hash));
+
+								break;
+							}
+
 							case ComponentEditableField::Type::EULER_ANGLES:
 							{
 								EulerAngles euler_angles;
@@ -371,6 +394,18 @@ namespace EntitySerialization
 
 				switch (editable_field->_Type)
 				{
+					case ComponentEditableField::Type::ENUMERATION:
+					{
+						uint64 data;
+						stream_archive.Read(&data, sizeof(uint64), stream_archive_position);
+
+						Enumeration *const RESTRICT enumeration{ static_cast<Enumeration *const RESTRICT>(static_cast<void *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset))) };
+
+						enumeration->SetFromHash(data);
+
+						break;
+					}
+
 					case ComponentEditableField::Type::EULER_ANGLES:
 					{
 						EulerAngles data;

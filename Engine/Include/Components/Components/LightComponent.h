@@ -48,6 +48,14 @@ public:
 	//The intensity.
 	float32 _Intensity;
 
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE LightInitializationData() NOEXCEPT
+	{
+		Memory::Set(this, 0, sizeof(LightInitializationData));
+	}
+
 };
 
 class LightInstanceData final
