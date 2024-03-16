@@ -231,7 +231,7 @@ void ContentSystem::LoadAssets(const char *const RESTRICT directory_path) NOEXCE
 	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
 		//Cache the file path.
-		const std::string file_path{ entry.path().u8string() };
+		const std::string file_path{ entry.path().string() };
 
 		//Scan recursively if this is a directory.
 		if (entry.is_directory())
@@ -286,7 +286,7 @@ NO_DISCARD bool ContentSystem::ScanAssetsInDirectory
 		if (entry.is_directory())
 		{
 			//Cache the directory path.
-			const std::string _directory_path{ entry.path().u8string() };
+			const std::string _directory_path{ entry.path().string() };
 
 			//Check if this should be a collection.
 			const char *RESTRICT _collection{ collection };
@@ -302,7 +302,7 @@ NO_DISCARD bool ContentSystem::ScanAssetsInDirectory
 				}
 			}
 
-			new_content_compiled |= ScanAssetsInDirectory(compilation_domain, content_cache, entry.path().u8string().data(), _collection);
+			new_content_compiled |= ScanAssetsInDirectory(compilation_domain, content_cache, entry.path().string().data(), _collection);
 
 			continue;
 		}
@@ -391,7 +391,7 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 		if (entry.is_directory())
 		{
 			//Cache the directory path.
-			const std::string _directory_path{ entry.path().u8string() };
+			const std::string _directory_path{ entry.path().string() };
 
 			//Determine the sub-directory path.
 			std::string sub_directory_path{ _directory_path };
@@ -437,7 +437,7 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 		}
 
 		//Cache the file path.
-		const std::string file_path{ entry.path().u8string() };
+		const std::string file_path{ entry.path().string() };
 
 		//Open the input file.
 		BinaryFile<BinaryFileMode::IN> input_file{ file_path.c_str() };
@@ -687,7 +687,7 @@ NO_DISCARD bool ContentSystem::ParseContentDefinitionsInDirectory(const Compilat
 		//Parse recursively if this is a directory.
 		if (entry.is_directory())
 		{
-			new_content_compiled |= ParseContentDefinitionsInDirectory(compilation_domain, content_cache, entry.path().u8string().data());
+			new_content_compiled |= ParseContentDefinitionsInDirectory(compilation_domain, content_cache, entry.path().string().data());
 
 			continue;
 		}

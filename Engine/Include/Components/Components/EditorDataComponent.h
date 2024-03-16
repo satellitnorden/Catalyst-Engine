@@ -1,4 +1,3 @@
-#if defined(CATALYST_EDITOR)
 #pragma once
 
 //Core.
@@ -39,4 +38,3 @@ public:
 };
 
 DECLARE_COMPONENT(EditorDataComponent, EditorDataInitializationData, EditorDataInstanceData);
-#endif

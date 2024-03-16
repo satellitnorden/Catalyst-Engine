@@ -66,7 +66,7 @@ void BuildResourceCollectionsRecursive(	const ResourceCollectionBuildParameters 
 		//If this is a directory, call this function again recursively.
 		if (entry.is_directory())
 		{
-			BuildResourceCollectionsRecursive(parameters, entry.path().generic_u8string().c_str(), current_file, file_counter, current_file_size);
+			BuildResourceCollectionsRecursive(parameters, entry.path().string().c_str(), current_file, file_counter, current_file_size);
 		}
 
 		else

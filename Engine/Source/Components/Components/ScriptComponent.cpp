@@ -4,6 +4,9 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
+//Generated
+#include <Generated/Script.Generated.h>
+
 DEFINE_COMPONENT(ScriptComponent, ScriptInitializationData, ScriptInstanceData);
 
 /*

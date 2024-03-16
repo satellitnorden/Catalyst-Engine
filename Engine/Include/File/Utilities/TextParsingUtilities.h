@@ -165,7 +165,7 @@ namespace TextParsingUtilities
 	*	For example, if the string is "ARGUMENT_1 ARGUMENT_2",
 	*	the given output array would be filled with the strings "ARGUMENT_1" and "ARGUMENT_2".
 	*/
-	FORCE_INLINE void ParseSpaceSeparatedArguments
+	FORCE_INLINE NO_DISCARD uint64 ParseSpaceSeparatedArguments
 	(
 		const char *const RESTRICT string,
 		const uint64 string_length,
@@ -208,6 +208,8 @@ namespace TextParsingUtilities
 		//Write the last argument.
 		buffer[current_buffer_index] = '\0';
 		output_arguments[current_argument_index] = buffer;
+
+		return current_argument_index + 1;
 	}
 
 }

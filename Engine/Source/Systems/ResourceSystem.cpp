@@ -30,7 +30,7 @@ void ResourceSystem::LoadResources(const char *const RESTRICT directory_path) NO
 		//If this entry is itself a directory, recursively process it.
 		if (entry.is_directory())
 		{
-			LoadResources(entry.path().generic_u8string().c_str());
+			LoadResources(entry.path().string().c_str());
 		}
 
 		else

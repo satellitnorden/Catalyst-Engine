@@ -75,7 +75,7 @@ public:
 	/*
 	*	Equality operator overload.
 	*/
-	FORCE_INLINE bool operator==(const Vertex &other) NOEXCEPT
+	FORCE_INLINE bool operator==(const Vertex &other) const NOEXCEPT
 	{
 		return Memory::Compare(this, &other, sizeof(Vertex));
 	}

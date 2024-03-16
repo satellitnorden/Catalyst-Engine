@@ -604,7 +604,7 @@ public:
 		//Default destruct the old objects.
 		for (uint64 i{ new_size }; i < _Size; ++i)
 		{
-			delete (&_Array[i]) TYPE();
+			_Array[i].~TYPE();
 		}
 
 		//Default construct the new objects.

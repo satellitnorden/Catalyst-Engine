@@ -1,4 +1,3 @@
-#if defined(CATALYST_EDITOR)
 //Header file.
 #include <Components/Components/EditorDataComponent.h>
 
@@ -123,4 +122,3 @@ void EditorDataComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
 {
 
 }
-#endif

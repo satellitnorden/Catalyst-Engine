@@ -6,7 +6,7 @@
 //Components.
 #include <Components/Core/Component.h>
 
-//Generated.
+//Generated
 #include <Generated/Script.Generated.h>
 
 class ScriptInitializationData final : public ComponentInitializationData
