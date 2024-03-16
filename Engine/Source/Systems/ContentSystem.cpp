@@ -12,7 +12,6 @@
 #include <Content/AssetCompilers/LevelAssetCompiler.h>
 #include <Content/AssetCompilers/MaterialAssetCompiler.h>
 #include <Content/AssetCompilers/ModelAssetCompiler.h>
-#include <Content/AssetCompilers/ScriptAssetCompiler.h>
 #include <Content/AssetCompilers/Texture2DAssetCompiler.h>
 #include <Content/AssetCompilers/TextureCubeAssetCompiler.h>
 
@@ -63,7 +62,6 @@ void ContentSystem::Initialize() NOEXCEPT
 	RegisterAssetCompiler(LevelAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(MaterialAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(ModelAssetCompiler::Instance.Get());
-	RegisterAssetCompiler(ScriptAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(Texture2DAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(TextureCubeAssetCompiler::Instance.Get());
 }

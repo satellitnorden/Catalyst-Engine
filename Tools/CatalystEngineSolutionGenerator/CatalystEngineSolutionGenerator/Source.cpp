@@ -66,6 +66,12 @@ public:
 	//Denotes whether or not to include extra resource collection.
 	bool _IncludeExtraResourceCollection{ false };
 
+	//Denotes whether or not to enable code generation.
+	bool _EnableCodeGeneration{ false };
+
+	//The script generator game include.
+	std::string _ScriptGeneratorGameInclude;
+
 };
 
 /*
@@ -144,44 +150,10 @@ void PrintOptions()
 }
 
 /*
-*	Generates common.
-*/
-void GenerateCommon(const GeneralParameters &general_parameters)
-{
-	//Define constants.
-	constexpr const char *const DIRECTORY_PATH{ "..\\Code\\Include\\Generated" };
-
-	//If the generated script file doesn't exist, add it.
-	char buffer[256];
-	sprintf_s(buffer, "%s\\Script.Generated.h", DIRECTORY_PATH);
-
-	if (!std::filesystem::exists(buffer))
-	{
-		std::filesystem::create_directory(DIRECTORY_PATH);
-
-		std::ofstream file{ buffer };
-
-		file << "#pragma once" << std::endl;
-		file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
-		file << "#include <Scripting/ScriptContext.h>" << std::endl;
-		file << "enum class ScriptIdentifier : uint8 { NONE };" << std::endl;
-		file << "FORCE_INLINE uint64 GetRequiredDataSize(const ScriptIdentifier script_identifier) { return 0; }" << std::endl;
-		file << "FORCE_INLINE void InitializeScript(const ScriptIdentifier script_identifier, ScriptContext &script_context) { }" << std::endl;
-		file << "FORCE_INLINE void UpdateScript(const ScriptIdentifier script_identifier, ScriptContext &script_context) { }" << std::endl;
-		file << "FORCE_INLINE void TerminateScript(const ScriptIdentifier script_identifier, ScriptContext &script_context) { }" << std::endl;
-
-		file.close();
-	}
-}
-
-/*
 *	Generates Android.
 */
 void GenerateAndroid(const GeneralParameters& general_parameters, const AndroidParameters& platform_parameters)
 {
-	//Generate common.
-	GenerateCommon(general_parameters);
-
 	//Cache the lower case versions of developer_name and project_name.
 	std::string lower_developer_name{ general_parameters._DeveloperNameNoSpaces };
 	std::transform(lower_developer_name.begin(), lower_developer_name.end(), lower_developer_name.begin(), [](unsigned char character) { return std::tolower(character); });
@@ -628,9 +600,6 @@ void GenerateAndroid(const GeneralParameters& general_parameters, const AndroidP
 */
 void GenerateOculusQuest(const GeneralParameters& general_parameters, const OculusQuestParameters& platform_parameters)
 {
-	//Generate common.
-	GenerateCommon(general_parameters);
-
 	//Cache the lower case versions of developer_name and project_name.
 	std::string lower_developer_name{ general_parameters._DeveloperNameNoSpaces };
 	std::transform(lower_developer_name.begin(), lower_developer_name.end(), lower_developer_name.begin(), [](unsigned char character) { return std::tolower(character); });
@@ -901,9 +870,6 @@ void GenerateOculusQuest(const GeneralParameters& general_parameters, const Ocul
 */
 void GenerateWin64(const GeneralParameters& general_parameters, const Win64Parameters& platform_parameters)
 {
-	//Generate common.
-	GenerateCommon(general_parameters);
-
 	//Remember the error code for filesystem functions.
 	std::error_code error_code;
 
@@ -1098,12 +1064,50 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 		cmake_lists_output_file << "add_compile_definitions(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)" << std::endl;
 	}
 
+	//Add the code generation pre-build step, if requested.
+	if (general_parameters._EnableCodeGeneration)
+	{
+		cmake_lists_output_file << std::endl;
+		cmake_lists_output_file << "#Add the code generation pre-build step." << std::endl;
+		cmake_lists_output_file << "add_custom_command(" << std::endl;
+		cmake_lists_output_file << "TARGET ${PROJECT_NAME}" << std::endl;
+		cmake_lists_output_file << "PRE_BUILD" << std::endl;
+		cmake_lists_output_file << "COMMAND" << std::endl;
+		cmake_lists_output_file << "call \"RunCodeGeneration.bat\"";
+		cmake_lists_output_file << ")" << std::endl;
+	}
+
 	//Close the files.
 	cmake_lists_input_file.close();
 	cmake_lists_output_file.close();
 
 	//Remove all the contents of the Win64 folder.
 	std::filesystem::remove_all("Win64", error_code); CHECK_ERROR_CODE();
+
+	/*
+	*	If code generation is enabled, generate the .bat file, run it, and delete it.
+	*	Important that we do this before generating the solution, so the generated files gets included.
+	*/
+	if (general_parameters._EnableCodeGeneration)
+	{
+		std::filesystem::create_directories("Win64\\Win64", error_code); CHECK_ERROR_CODE();
+
+		std::ofstream run_code_generation_file{ "Win64\\Win64\\RunCodeGeneration.bat" };
+
+		run_code_generation_file << "cd Win64\\Win64\\" << std::endl;
+		run_code_generation_file << "\"../../../../Catalyst-Engine/Tools/Binaries/CatalystCodeGeneration_Win64.exe\"";
+
+		if (!general_parameters._ScriptGeneratorGameInclude.empty())
+		{
+			run_code_generation_file << " -script_generator_game_include " << general_parameters._ScriptGeneratorGameInclude.c_str();
+		}
+
+		run_code_generation_file.close();
+
+		system("Win64\\Win64\\RunCodeGeneration.bat");
+
+		std::filesystem::remove("Win64\\Win64\\RunCodeGeneration.bat");
+	}
 
 	//Win64 stuff.
 	{
@@ -1179,6 +1183,22 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 	//Copy the CMakeLists.txt file to CMakeLists_Windows, and remove CMakeLists.txt. Nice to save the CMakeLists.txt file, to look at it later. (:
 	std::filesystem::copy("CMakeLists.txt", "CMakeLists_Windows.txt", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	std::filesystem::remove("CMakeLists.txt", error_code); CHECK_ERROR_CODE();
+
+	//A bit ugly, but I guess the "RunCodeGeneration.bat" file gets removed in a previous step, so uh, just re-add it!.
+	if (general_parameters._EnableCodeGeneration)
+	{
+		//Add the "RunCodeGeneration.bat" file.
+		std::ofstream run_code_generation_file{ "Win64\\Win64\\RunCodeGeneration.bat" };
+
+		run_code_generation_file << "\"../../../../Catalyst-Engine/Tools/Binaries/CatalystCodeGeneration_Win64.exe\"";
+
+		if (!general_parameters._ScriptGeneratorGameInclude.empty())
+		{
+			run_code_generation_file << " -script_generator_game_include " << general_parameters._ScriptGeneratorGameInclude.c_str();
+		}
+
+		run_code_generation_file.close();
+	}
 }
 
 int main(int argument_count, char* arguments[])
@@ -1286,6 +1306,18 @@ int main(int argument_count, char* arguments[])
 			else if (identifier == "INCLUDE_EXTRA_RESOURCE_COLLECTION")
 			{
 				general_parameters._IncludeExtraResourceCollection = true;
+			}
+
+			//Should code generation be enabled?
+			else if (identifier == "ENABLE_CODE_GENERATION")
+			{
+				general_parameters._EnableCodeGeneration = true;
+			}
+
+			//is this the script generator game include
+			else if (identifier == "SCRIPT_GENERATOR_GAME_INCLUDE")
+			{
+				general_parameters._ScriptGeneratorGameInclude = argument;
 			}
 
 			//Should android force landscape mode?
