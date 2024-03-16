@@ -18,6 +18,9 @@
 //File.
 #include <File/Core/FileCore.h>
 
+//Generated.
+#include <Generated/Enumeration.Generated.h>
+
 //Systems.
 #include <Systems/CatalystEditorSystem.h>
 #include <Systems/ContentSystem.h>
@@ -68,6 +71,48 @@ FORCE_INLINE NO_DISCARD bool TextInputWidget(const char *const RESTRICT label, c
 
 	//Return if there was a change!
 	return changed;
+}
+
+/*
+*	Creates a custom enumeration widget. Returns if there was a change.
+*/
+FORCE_INLINE NO_DISCARD bool EnumerationWidget(const char *const RESTRICT label, Enumeration *const RESTRICT enumeration) NOEXCEPT
+{
+	ImGui::Columns(2);
+
+	ImGui::SetColumnWidth(0, 64.0f);
+	ImGui::Text(label);
+	ImGui::NextColumn();
+
+	ImGui::PushMultiItemsWidths(1, ImGui::CalcItemWidth());
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+	const float32 line_height{ GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f };
+	const ImVec2 button_size{ line_height + 3.0f, line_height };
+
+	ImGui::SameLine();
+
+	if (ImGui::BeginCombo("##ENUMERATION_VALUE", enumeration->ToString()))
+	{
+		for (uint64 i{ 0 }; i < enumeration->Size(); ++i)
+		{
+			if (ImGui::Selectable(enumeration->IndexToString(i)))
+			{
+				enumeration->SetFromIndex(i);
+			}
+		}
+
+		ImGui::EndCombo();
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+
+	ImGui::PopStyleVar();
+	ImGui::Columns(1);
+
+	//Eh.
+	return false;
 }
 
 /*
@@ -673,6 +718,15 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					{
 						switch (editable_field._Type)
 						{
+							case ComponentEditableField::Type::ENUMERATION:
+							{
+								Enumeration *const RESTRICT enumeration{ component->EditableFieldData<Enumeration>(selected_level_entry._Entity, editable_field) };
+
+								EnumerationWidget(editable_field._Name, enumeration);
+
+								break;
+							}
+
 							case ComponentEditableField::Type::MATERIAL_ASSET:
 							{
 								AssetPointer<MaterialAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<MaterialAsset>>(selected_level_entry._Entity, editable_field) };

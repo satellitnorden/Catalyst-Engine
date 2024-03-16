@@ -25,8 +25,12 @@ class ScriptInstanceData final
 public:
 
 
-	//The script identifier.
-	ScriptIdentifier _ScriptIdentifier;
+	//The previous script identifier.
+	ScriptIdentifier _PreviousScriptIdentifier;
+
+
+	//The current script identifier.
+	ScriptIdentifier _CurrentScriptIdentifier;
 
 	//The data.
 	void *RESTRICT _Data;

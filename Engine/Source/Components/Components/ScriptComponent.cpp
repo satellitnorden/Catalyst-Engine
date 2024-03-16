@@ -14,7 +14,13 @@ DEFINE_COMPONENT(ScriptComponent, ScriptInitializationData, ScriptInstanceData);
 */
 void ScriptComponent::Initialize() NOEXCEPT
 {
-
+	//Add the editable fields.
+	AddEditableEnumerationField
+	(
+		"Script",
+		offsetof(ScriptInitializationData, _ScriptIdentifier),
+		offsetof(ScriptInstanceData, _CurrentScriptIdentifier)
+	);
 }
 
 /*
@@ -57,10 +63,21 @@ void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ComponentIni
 	ScriptInstanceData &instance_data{ _InstanceData.Back() };
 
 	//Copy data.
-	instance_data._ScriptIdentifier = _initialization_data->_ScriptIdentifier;
+	instance_data._PreviousScriptIdentifier = _initialization_data->_ScriptIdentifier;
+	instance_data._CurrentScriptIdentifier = _initialization_data->_ScriptIdentifier;
 
 	//Allocate the required data.
-	instance_data._Data = Memory::Allocate(GetRequiredDataSize(instance_data._ScriptIdentifier));
+	const uint64 required_data_size{ GetRequiredDataSize(instance_data._CurrentScriptIdentifier) };
+
+	if (required_data_size > 0)
+	{
+		instance_data._Data = Memory::Allocate(required_data_size);
+	}
+	
+	else
+	{
+		instance_data._Data = nullptr;
+	}
 
 	//Set up the script context.
 	ScriptContext script_context;
@@ -69,7 +86,7 @@ void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ComponentIni
 	script_context._Data = instance_data._Data;
 
 	//Initialize the script.
-	InitializeScript(instance_data._ScriptIdentifier, script_context);
+	InitializeScript(instance_data._CurrentScriptIdentifier, script_context);
 }
 
 /*
@@ -99,7 +116,7 @@ void ScriptComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 	script_context._Data = instance_data._Data;
 
 	//Terminate the script.
-	TerminateScript(instance_data._ScriptIdentifier, script_context);
+	TerminateScript(instance_data._CurrentScriptIdentifier, script_context);
 
 	//Free the data.
 	Memory::Free(instance_data._Data);
@@ -154,6 +171,58 @@ void ScriptComponent::Update
 				//Cache the instance data.
 				ScriptInstanceData &instance_data{ _InstanceData[instance_index] };
 
+				
+
+				//Check if script has changed.
+				if (instance_data._PreviousScriptIdentifier != instance_data._CurrentScriptIdentifier)
+				{
+					//Terminate the previous script.
+					{
+						//Set up the script context.
+						ScriptContext script_context;
+
+						script_context._Entity = InstanceToEntity(instance_index);
+						script_context._Data = instance_data._Data;
+
+						//Terminate the script.
+						TerminateScript(instance_data._PreviousScriptIdentifier, script_context);
+
+						//Free the data, if needed.
+						if (instance_data._Data)
+						{
+							Memory::Free(instance_data._Data);
+						}
+					}
+
+					//Set up the new script.
+					{
+						//Allocate the required data.
+						const uint64 required_data_size{ GetRequiredDataSize(instance_data._CurrentScriptIdentifier) };
+
+						if (required_data_size > 0)
+						{
+							instance_data._Data = Memory::Allocate(required_data_size);
+						}
+
+						else
+						{
+							instance_data._Data = nullptr;
+						}
+
+						//Set up the script context.
+						ScriptContext script_context;
+
+						script_context._Entity = InstanceToEntity(instance_index);
+						script_context._Data = instance_data._Data;
+
+						//Initialize the script!
+						InitializeScript(instance_data._CurrentScriptIdentifier, script_context);
+					}
+
+					//Update the previous script identifier.
+					instance_data._PreviousScriptIdentifier = instance_data._CurrentScriptIdentifier;
+				}
+
 				//Set up the script context.
 				ScriptContext script_context;
 
@@ -161,7 +230,7 @@ void ScriptComponent::Update
 				script_context._Data = instance_data._Data;
 
 				//Update!
-				UpdateScript(instance_data._ScriptIdentifier, script_context);
+				UpdateScript(instance_data._CurrentScriptIdentifier, script_context);
 			}
 
 			break;
