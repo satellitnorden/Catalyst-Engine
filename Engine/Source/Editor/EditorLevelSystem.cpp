@@ -3,7 +3,6 @@
 #include <Editor/EditorLevelSystem.h>
 
 //Components.
-#include <Components/Components/EditorDataComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
 //Content.
@@ -316,23 +315,17 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 	LevelEntry &new_level_entry{ _Level._LevelEntries.Back() };
 
 	//Generate a name.
-	GenerateEntityName(new_level_entry._Name.Data(), new_level_entry._Name.Size());
+	GenerateEntityName(new_level_entry._EditorData._Name.Data(), new_level_entry._EditorData._Name.Size());
 
-	//Add components (entities created in the editor always have editor data and world transform components).
-	StaticArray<ComponentInitializationData* RESTRICT, 2> component_configurations;
-
-	{
-		EditorDataInitializationData* const RESTRICT data{ EditorDataComponent::Instance->AllocateDerivedInitializationData() };
-
-		component_configurations[0] = data;
-	}
+	//Add components (entities created in the editor always have a world transform component).
+	StaticArray<ComponentInitializationData *RESTRICT, 1> component_configurations;
 
 	{
 		WorldTransformInitializationData* const RESTRICT data{ WorldTransformComponent::Instance->AllocateDerivedInitializationData() };
 
 		data->_WorldTransform = WorldTransform();
 
-		component_configurations[1] = data;
+		component_configurations[0] = data;
 	}
 
 	//Create the entity!
@@ -398,7 +391,23 @@ void EditorLevelSystem::SaveLevelInternal(const DynamicString &file_path) NOEXCE
 
 	for (const LevelEntry &level_entry : _Level._LevelEntries)
 	{
-		EntitySerialization::SerializeToJSON(entities[level_entry._Name.Data()], level_entry._Entity);
+		//Cache the entity entry.
+		nlohmann::json &entity_entry{ entities[level_entry._EditorData._Name.Data()] };
+
+		//Serialize the entity.
+		EntitySerialization::SerializeToJSON(entity_entry, level_entry._Entity);
+
+		//Serialize the editor data.
+		nlohmann::json &editor_data_entry{ entity_entry["EditorData"] };
+
+		//Serialize the rotation.
+		{
+			nlohmann::json &rotation_entry{ editor_data_entry["Rotation"] };
+
+			rotation_entry["Roll"] = CatalystBaseMath::RadiansToDegrees(level_entry._EditorData._Rotation._Roll);
+			rotation_entry["Yaw"] = CatalystBaseMath::RadiansToDegrees(level_entry._EditorData._Rotation._Yaw);
+			rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(level_entry._EditorData._Rotation._Pitch);
+		}
 	}
 
 	//Writ the JSON to the file.
@@ -456,7 +465,7 @@ void EditorLevelSystem::LoadLevelInternal(const DynamicString &file_path) NOEXCE
 		LevelEntry &new_level_entry{ _Level._LevelEntries.Back() };
 
 		//Set the name.
-		new_level_entry._Name = entity_iterator.key().c_str();
+		new_level_entry._EditorData._Name = entity_iterator.key().c_str();
 
 		//Cache the entity entry.
 		const nlohmann::json &entity_entry{ *entity_iterator };
@@ -465,10 +474,22 @@ void EditorLevelSystem::LoadLevelInternal(const DynamicString &file_path) NOEXCE
 		uint64 stream_archive_position{ stream_archive.Size() };
 
 		//Serialize to the stream archive.
-		EntitySerialization::SerializeToStreamArchive(entity_entry, entity_iterator.key().c_str(), &stream_archive);
+		EntitySerialization::SerializeToStreamArchive(entity_entry, &stream_archive);
 
 		//Now deserialize!
 		new_level_entry._Entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
+
+		//Deserialize the editor data.
+		const nlohmann::json &editor_data_entry{ entity_entry["EditorData"] };
+
+		//Deserialize the rotation.
+		{
+			const nlohmann::json &rotation_entry{ editor_data_entry["Rotation"] };
+
+			new_level_entry._EditorData._Rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation_entry["Roll"]);
+			new_level_entry._EditorData._Rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation_entry["Yaw"]);
+			new_level_entry._EditorData._Rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation_entry["Pitch"]);
+		}
 	}
 }
 
@@ -493,9 +514,9 @@ NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> m
 	{
 		const LevelEntry &level_entry{ _Level._LevelEntries[i] };
 
-		const uint64 name_length{ StringUtilities::StringLength(level_entry._Name.Data()) };
+		const uint64 name_length{ StringUtilities::StringLength(level_entry._EditorData._Name.Data()) };
 
-		if (ImGui::Selectable(name_length == 0 ? "EMPTY" : level_entry._Name.Data(), _SelectedLevelEntryIndex == i))
+		if (ImGui::Selectable(name_length == 0 ? "EMPTY" : level_entry._EditorData._Name.Data(), _SelectedLevelEntryIndex == i))
 		{
 			_SelectedLevelEntryIndex = i;
 		}
@@ -538,9 +559,6 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		//Cache the selected level entry.
 		LevelEntry &selected_level_entry{ _Level._LevelEntries[_SelectedLevelEntryIndex] };
 
-		//Retrieve the editor data.
-		EditorDataInstanceData &editor_data{ EditorDataComponent::Instance->InstanceData(selected_level_entry._Entity) };
-
 		//Add the menu bar.
 		{
 			ImGui::BeginMenuBar();
@@ -569,7 +587,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		}
 
 		//Add a text input for the name.
-		TextInputWidget("Name", selected_level_entry._Name.Data(), selected_level_entry._Name.Size());
+		TextInputWidget("Name", selected_level_entry._EditorData._Name.Data(), selected_level_entry._EditorData._Name.Size());
 
 		//Add a duplicate button.
 		bool should_duplicate{ false };
@@ -611,7 +629,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 			//Add rotation widget.
 			{
 				//Retrieve the rotation.
-				EulerAngles rotation{ editor_data._Rotation };
+				EulerAngles rotation{ selected_level_entry._EditorData._Rotation };
 
 				//Convert to degrees.
 				for (uint8 i{ 0 }; i < 3; ++i)
@@ -631,7 +649,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 						rotation[i] = CatalystBaseMath::DegreesToRadians(rotation[i]);
 					}
 
-					editor_data._Rotation = rotation;
+					selected_level_entry._EditorData._Rotation = rotation;
 					world_transform->SetRotation(rotation);
 				}
 			}
@@ -660,7 +678,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 			{
 				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
-				EulerAngles rotation{ editor_data._Rotation };
+				EulerAngles rotation{ selected_level_entry._EditorData._Rotation };
 				Vector3<float32> scale{ world_transform->GetScale() };
 
 				//Rotation reported in degrees, so convert.
@@ -747,7 +765,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				}
 
 				world_transform->SetAbsolutePosition(position);
-				editor_data._Rotation = rotation;
+				selected_level_entry._EditorData._Rotation = rotation;
 				world_transform->SetRotation(rotation);
 
 				if (_CurrentGizmoMode == GizmoMode::SCALE)
@@ -765,8 +783,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		for (Component *const RESTRICT component : AllComponents())
 		{
 			//Ignore editor data and world transform components, as they are always implicitly added.
-			if (component == WorldTransformComponent::Instance.Get()
-				|| component == EditorDataComponent::Instance.Get())
+			if (component == WorldTransformComponent::Instance.Get())
 			{
 				continue;
 			}
@@ -851,7 +868,7 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 	_Level._LevelEntries.Emplace();
 	LevelEntry &new_level_entry{ _Level._LevelEntries.Back() };
 
-	GenerateEntityName(new_level_entry._Name.Data(), new_level_entry._Name.Size());
+	GenerateEntityName(new_level_entry._EditorData._Name.Data(), new_level_entry._EditorData._Name.Size());
 
 	/*
 	*	Maybe a bit overkill to do this whole round trip, but it keeps me from having to write more code here.
@@ -862,7 +879,7 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 	uint64 stream_archive_position{ 0 };
 
 	EntitySerialization::SerializeToJSON(JSON, entity);
-	EntitySerialization::SerializeToStreamArchive(JSON, new_level_entry._Name.Data(), &stream_archive);
+	EntitySerialization::SerializeToStreamArchive(JSON, &stream_archive);
 	new_level_entry._Entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
 
 	//Set the new selected level entry index.

@@ -19,8 +19,25 @@ class LevelEntry final
 public:
 
 #if defined(CATALYST_EDITOR)
-	//The name.
-	StaticString<64> _Name;
+	/*
+	*	Editor data class definition.
+	*/
+	class EditorData final
+	{
+
+	public:
+
+		//The name.
+		StaticString<64> _Name;
+
+		//The rotation. Used in place of the quaternion rotation in WorldTransformComponent.
+		EulerAngles _Rotation{ 0.0f, 0.0f, 0.0f };
+
+	};
+
+	//The editor data.
+	EditorData _EditorData;
+	
 #endif
 
 	//The entity.

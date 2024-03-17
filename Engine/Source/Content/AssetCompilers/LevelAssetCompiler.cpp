@@ -156,7 +156,7 @@ void LevelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 		const nlohmann::json &entity_entry{ *entity_iterator };
 
 		//Serialize to the stream archive.
-		EntitySerialization::SerializeToStreamArchive(entity_entry, entity_iterator.key().c_str(), &stream_archive);
+		EntitySerialization::SerializeToStreamArchive(entity_entry, &stream_archive);
 	}
 
 	//Determine the collection directory.

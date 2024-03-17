@@ -158,7 +158,6 @@ namespace EntitySerialization
 	void SerializeToStreamArchive
 	(
 		const nlohmann::json &JSON,
-		const char *const RESTRICT name,
 		StreamArchive *const RESTRICT stream_archive
 	) NOEXCEPT
 	{
