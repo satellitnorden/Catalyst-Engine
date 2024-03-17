@@ -745,6 +745,15 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 								break;
 							}
 
+							case ComponentEditableField::Type::POSITION:
+							{
+								Vector3<float32> *const RESTRICT editable_field_data{ component->EditableFieldData<Vector3<float32>>(selected_level_entry._Entity, editable_field) };
+
+								TransformWidget(editable_field._Name, &editable_field_data->_X, 3, 0.0f, 0.01f);
+
+								break;
+							}
+
 							default:
 							{
 								ASSERT(false, "Invalid case!");

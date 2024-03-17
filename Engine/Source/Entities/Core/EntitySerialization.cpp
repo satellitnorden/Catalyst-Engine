@@ -90,6 +90,19 @@ namespace EntitySerialization
 						break;
 					}
 
+					case ComponentEditableField::Type::POSITION:
+					{
+						const Vector3<float32> *const RESTRICT data{ component->EditableFieldData<Vector3<float32>>(entity, editable_field) };
+
+						nlohmann::json &position_entry{ component_entry[editable_field._Name] };
+
+						position_entry["X"] = data->_X;
+						position_entry["Y"] = data->_Y;
+						position_entry["Z"] = data->_Z;
+
+						break;
+					}
+
 					case ComponentEditableField::Type::WORLD_TRANSFORM:
 					{
 						const WorldTransform *const RESTRICT data{ component->EditableFieldData<WorldTransform>(entity, editable_field) };
@@ -253,6 +266,19 @@ namespace EntitySerialization
 								const HashString asset_identifier{ editable_field_entry.get<std::string>().c_str() };
 
 								stream_archive->Write(&asset_identifier, sizeof(HashString));
+
+								break;
+							}
+
+							case ComponentEditableField::Type::POSITION:
+							{
+								Vector3<float32> position;
+
+								position._X = editable_field_entry["X"];
+								position._Y = editable_field_entry["Y"];
+								position._Z = editable_field_entry["Z"];
+
+								stream_archive->Write(&position, sizeof(Vector3<float32>));
 
 								break;
 							}
@@ -437,6 +463,16 @@ namespace EntitySerialization
 						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
 
 						*reinterpret_cast<AssetPointer<ModelAsset> *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset)) = ContentSystem::Instance->GetAsset<ModelAsset>(data);
+
+						break;
+					}
+
+					case ComponentEditableField::Type::POSITION:
+					{
+						Vector3<float32> data;
+						stream_archive.Read(&data, sizeof(Vector3<float32>), stream_archive_position);
+
+						Memory::Copy(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset), &data, sizeof(Vector3<float32>));
 
 						break;
 					}

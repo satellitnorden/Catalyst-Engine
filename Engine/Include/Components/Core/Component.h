@@ -287,6 +287,16 @@ protected:
 	) NOEXCEPT;
 
 	/*
+	*	Adds an editable position field.
+	*/
+	void AddEditablePositionField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
 	*	Adds an editable world transform field.
 	*/
 	void AddEditableWorldTransformField
