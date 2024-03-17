@@ -7,6 +7,9 @@
 //Entities.
 #include <Entities/Core/Entity.h>
 
+//World.
+#include <World/Core/WorldTransform.h>
+
 //Third party.
 #include <ThirdParty/json/json.hpp>
 
@@ -34,11 +37,13 @@ namespace EntitySerialization
 
 	/*
 	*	Deserializes an entity from the given stream archive.
+	*	Takes an optional world transform to apply to spawned entities.
 	*/
 	NO_DISCARD Entity *const RESTRICT DeserializeFromStreamArchive
 	(
 		const StreamArchive &stream_archive,
-		uint64 *const RESTRICT stream_archive_position
+		uint64 *const RESTRICT stream_archive_position,
+		const WorldTransform *const RESTRICT world_transform
 	) NOEXCEPT;
 
 }

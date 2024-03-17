@@ -10,7 +10,7 @@
 
 //World.
 #include <World/Core/WorldTransform.h>
-#include <World/Level/LevelEntry.h>
+#include <World/Level/Level.h>
 
 class ALIGN(8) LevelSystem final
 {
@@ -35,7 +35,12 @@ public:
 	(
 		const WorldTransform &world_transform,
 		const AssetPointer<LevelAsset> level_asset,
-		DynamicArray<LevelEntry> *const RESTRICT level_entries
+		Level *const RESTRICT level
 	) NOEXCEPT;
+
+	/*
+	*	Despawns the given level.
+	*/
+	void DespawnLevel(Level *const RESTRICT level) NOEXCEPT;
 
 };

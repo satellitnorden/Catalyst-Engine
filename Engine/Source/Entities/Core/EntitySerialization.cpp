@@ -1,6 +1,9 @@
 //Header file.
 #include <Entities/Core/EntitySerialization.h>
 
+//Components.
+#include <Components/Components/WorldTransformComponent.h>
+
 //Content.
 #include <Content/Core/AssetPointer.h>
 #include <Content/Assets/MaterialAsset.h>
@@ -311,11 +314,13 @@ namespace EntitySerialization
 
 	/*
 	*	Deserializes an entity from the given stream archive.
+	*	Takes an optional world transform to apply to spawned entities.
 	*/
 	NO_DISCARD Entity *const RESTRICT DeserializeFromStreamArchive
 	(
 		const StreamArchive &stream_archive,
-		uint64 *const RESTRICT stream_archive_position
+		uint64 *const RESTRICT stream_archive_position,
+		const WorldTransform *const RESTRICT world_transform
 	) NOEXCEPT
 	{
 		//Define constants.
@@ -452,6 +457,24 @@ namespace EntitySerialization
 
 						break;
 					}
+				}
+			}
+
+			//Apply the supplied world transform.
+			if (world_transform)
+			{
+				if (component_identifier == WorldTransformComponent::Instance->_Identifier)
+				{
+					WorldTransformInitializationData *const RESTRICT world_transform_component_configuration{ static_cast<WorldTransformInitializationData *const RESTRICT>(component_configuration) };
+
+					//Apply position.
+					world_transform_component_configuration->_WorldTransform.SetCell(world_transform_component_configuration->_WorldTransform.GetCell() + world_transform->GetCell());
+					world_transform_component_configuration->_WorldTransform.SetLocalPosition(world_transform_component_configuration->_WorldTransform.GetLocalPosition() + world_transform->GetLocalPosition());
+				
+					//TODO: Apply rotation, somehow. :x
+
+					//Apply scale.
+					world_transform_component_configuration->_WorldTransform.SetScale(world_transform_component_configuration->_WorldTransform.GetScale() * world_transform->GetScale());
 				}
 			}
 		}

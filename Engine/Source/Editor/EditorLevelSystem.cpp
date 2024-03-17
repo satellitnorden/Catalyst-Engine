@@ -406,7 +406,7 @@ void EditorLevelSystem::LoadLevelInternal(Asset *const RESTRICT level_asset) NOE
 	(
 		WorldTransform(),
 		AssetPointer<LevelAsset>(static_cast<LevelAsset *const RESTRICT>(level_asset)),
-		&_Level._LevelEntries
+		&_Level
 	);
 }
 
@@ -792,7 +792,7 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 
 	EntitySerialization::SerializeToJSON(JSON, entity);
 	EntitySerialization::SerializeToStreamArchive(JSON, new_level_entry._Name.Data(), &stream_archive);
-	new_level_entry._Entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position);
+	new_level_entry._Entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
 
 	//Set the new selected level entry index.
 	_SelectedLevelEntryIndex = _Level._LevelEntries.LastIndex();
