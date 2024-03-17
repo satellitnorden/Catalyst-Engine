@@ -37,9 +37,6 @@ void LevelSystem::SpawnLevel
 		level->_LevelEntries.Emplace();
 		LevelEntry &new_level_entry{ level->_LevelEntries.Back() };
 
-		//Read the name.
-		level_asset->_StreamArchive.Read(new_level_entry._Name.Data(), new_level_entry._Name.Size(), &stream_archive_position);
-
 		//Deserialize the entitiy.
 		new_level_entry._Entity = EntitySerialization::DeserializeFromStreamArchive(level_asset->_StreamArchive, &stream_archive_position, &world_transform);
 	}

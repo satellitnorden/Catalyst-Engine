@@ -346,7 +346,7 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 {
 	if (_LevelFilePath)
 	{
-		_Level.Serialize(_LevelFilePath.Data());
+		SaveLevelInternal(_LevelFilePath);
 	}
 
 	else
@@ -365,7 +365,8 @@ void EditorLevelSystem::SaveLevelAs() NOEXCEPT
 	if (File::BrowseForFile(true, &chosen_file, "*.Level"))
 	{
 		_LevelFilePath = chosen_file;
-		_Level.Serialize(chosen_file.Data());
+		
+		SaveLevelInternal(_LevelFilePath);
 	}
 }
 
@@ -382,6 +383,28 @@ void EditorLevelSystem::LoadLevel() NOEXCEPT
 		//Load the level.
 		LoadLevelInternal(chosen_file);
 	}
+}
+
+/*
+*	Saves a level internally.
+*/
+void EditorLevelSystem::SaveLevelInternal(const DynamicString &file_path) NOEXCEPT
+{
+	//Set up the JSON object.
+	nlohmann::json JSON;
+
+	//Write all entities.
+	nlohmann::json &entities{ JSON["Entities"] };
+
+	for (const LevelEntry &level_entry : _Level._LevelEntries)
+	{
+		EntitySerialization::SerializeToJSON(entities[level_entry._Name.Data()], level_entry._Entity);
+	}
+
+	//Writ the JSON to the file.
+	std::ofstream file{ file_path.Data() };
+	file << std::setw(4) << JSON;
+	file.close();
 }
 
 /*
@@ -439,7 +462,7 @@ void EditorLevelSystem::LoadLevelInternal(const DynamicString &file_path) NOEXCE
 		const nlohmann::json &entity_entry{ *entity_iterator };
 
 		//Remember the stream archive position.
-		uint64 stream_archive_position{ stream_archive.Size() + new_level_entry._Name.Size() };
+		uint64 stream_archive_position{ stream_archive.Size() };
 
 		//Serialize to the stream archive.
 		EntitySerialization::SerializeToStreamArchive(entity_entry, entity_iterator.key().c_str(), &stream_archive);
@@ -836,7 +859,7 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 	*/
 	nlohmann::json JSON;
 	StreamArchive stream_archive;
-	uint64 stream_archive_position{ new_level_entry._Name.Size() };
+	uint64 stream_archive_position{ 0 };
 
 	EntitySerialization::SerializeToJSON(JSON, entity);
 	EntitySerialization::SerializeToStreamArchive(JSON, new_level_entry._Name.Data(), &stream_archive);

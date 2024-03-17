@@ -18,8 +18,10 @@ class LevelEntry final
 
 public:
 
+#if defined(CATALYST_EDITOR)
 	//The name.
 	StaticString<64> _Name;
+#endif
 
 	//The entity.
 	Entity *RESTRICT _Entity;

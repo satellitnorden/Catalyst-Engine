@@ -71,6 +71,11 @@ private:
 	GizmoMode _CurrentGizmoMode{ GizmoMode::TRANSLATE };
 
 	/*
+	*	Saves a level internally.
+	*/
+	void SaveLevelInternal(const DynamicString &file_path) NOEXCEPT;
+
+	/*
 	*	Loads a level internally.
 	*/
 	void LoadLevelInternal(const DynamicString &file_path) NOEXCEPT;

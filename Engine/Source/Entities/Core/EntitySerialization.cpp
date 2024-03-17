@@ -162,10 +162,6 @@ namespace EntitySerialization
 		StreamArchive *const RESTRICT stream_archive
 	) NOEXCEPT
 	{
-		//Write the name.
-		const StaticString<64> _name{ name };
-		stream_archive->Write(_name.Data(), _name.Size());
-
 		//Cache the components object.
 		const nlohmann::json &components{ JSON["Components"] };
 
