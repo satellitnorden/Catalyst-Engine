@@ -7,7 +7,7 @@
 #include <Concurrency/Atomic.h>
 #include <Concurrency/ConcurrencyCore.h>
 
-#if defined(CATALYST_CXX20) //C++20 implementation of a spinlock.
+#if defined(CATALYST_CXX20) && 0 //C++20 implementation of a spinlock. NOTE - Doesn't work I guess for C++20. Just go with old version. :x
 class Spinlock final
 {
 
