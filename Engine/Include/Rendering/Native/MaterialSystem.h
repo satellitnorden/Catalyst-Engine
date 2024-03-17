@@ -5,6 +5,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
 
+//Concurrency.
+#include <Concurrency/Spinlock.h>
+
 //Content.
 #include <Content/Assets/MaterialAsset.h>
 
@@ -43,6 +46,9 @@ public:
 	BufferHandle GetCurrentMaterialUnifomBuffer() NOEXCEPT;
 
 private:
+
+	//The materials lock.
+	Spinlock _MaterialsLock;
 
 	//Container for all material slots.
 	StaticArray<bool, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _MaterialSlots;

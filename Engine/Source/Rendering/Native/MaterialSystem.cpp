@@ -9,6 +9,8 @@
 */
 MaterialSystem::MaterialSystem() NOEXCEPT
 {
+	SCOPED_LOCK(_MaterialsLock);
+
 	//Mark all material slots as free.
 	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)
 	{
@@ -46,6 +48,8 @@ void MaterialSystem::PostInitialize() NOEXCEPT
 */
 void MaterialSystem::RenderUpdate() NOEXCEPT
 {
+	SCOPED_LOCK(_MaterialsLock);
+
 	//Update all shader materials.
 	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)
 	{
@@ -73,6 +77,8 @@ void MaterialSystem::RenderUpdate() NOEXCEPT
 */
 NO_DISCARD uint32 MaterialSystem::RegisterMaterial(const MaterialAsset *const RESTRICT material) NOEXCEPT
 {
+	SCOPED_LOCK(_MaterialsLock);
+
 	//Find the first free index.
 	uint32 index{ UINT32_MAXIMUM };
 
