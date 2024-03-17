@@ -28,6 +28,12 @@ ImGuiRenderPass::ImGuiRenderPass() NOEXCEPT
 		ImGuiRenderPass::Instance->Initialize();
 	});
 
+	//Set the pre-record function.
+	SetPreRecordFunction([](CommandBuffer *const RESTRICT frame_command_buffer)
+	{
+		ImGuiRenderPass::Instance->PreRecord(frame_command_buffer);
+	});
+
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
@@ -55,6 +61,21 @@ void ImGuiRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_ImGuiGraphicsPipeline.Initialize();
+}
+
+/*
+*	Pre-records this render pass.
+*/
+void ImGuiRenderPass::PreRecord(CommandBuffer *const RESTRICT frame_command_buffer) NOEXCEPT
+{
+#if defined(CATALYST_EDITOR)
+	frame_command_buffer->BlitImage
+	(
+		&_ImGuiGraphicsPipeline,
+		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1),
+		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::EDITOR_VIEWPORT)
+	);
+#endif
 }
 
 /*

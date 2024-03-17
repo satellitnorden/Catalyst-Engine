@@ -196,6 +196,17 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_DEPTH_BUFFER)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_DEPTH_BUFFER)]._IsDepthBuffer = true;
 
+#if defined(CATALYST_EDITOR)
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._Identifier = HashString("EditorViewport");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._Resolution = RenderingSystem::Instance->GetScaledResolution(0);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._TextureFormat = TextureFormat::RGBA_UINT8;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._IsDepthBuffer = false;
+#endif
 
 	//Create the required shared render targets.
 	for (uint8 i{ 0 }; i < UNDERLYING(SharedRenderTarget::NUMBER_OF_SHARED_RENDER_TARGETS); ++i)

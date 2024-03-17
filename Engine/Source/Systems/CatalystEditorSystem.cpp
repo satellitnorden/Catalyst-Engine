@@ -56,6 +56,21 @@ void CatalystEditorSystem::PostInitialize() NOEXCEPT
 	_EditorIcons[UNDERLYING(EditorIcon::CREATE)] = RenderingSystem::Instance->CreateImGuiTexture(ContentSystem::Instance->GetAsset<Texture2DAsset>(HashString("Editor_Create_Icon"))->_Texture2DHandle);
 	_EditorIcons[UNDERLYING(EditorIcon::TRANSLATE)] = RenderingSystem::Instance->CreateImGuiTexture(ContentSystem::Instance->GetAsset<Texture2DAsset>(HashString("Editor_Translate_Icon"))->_Texture2DHandle);
 
+	//Create the viewport texture ID.
+	_ViewportTextureID = RenderingSystem::Instance->CreateImGuiTexture(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::EDITOR_VIEWPORT));
+
+	/*
+	//Register for the viewport editor window.
+	ImGuiSystem::Instance->RegisterEditorWindow
+	(
+		ImGuiSystem::EditorWindow::VIEWPORT,
+		[](const Vector2<float32> minimum, const Vector2<float32> maximum)
+		{
+			return CatalystEditorSystem::Instance->ViewportUpdate(minimum, maximum);
+		}
+	);
+	*/
+
 	//Register for the top bar editor window.
 	ImGuiSystem::Instance->RegisterEditorWindow
 	(
@@ -184,10 +199,37 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 }
 
 /*
+*	The viewport update.
+*/
+NO_DISCARD bool CatalystEditorSystem::ViewportUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
+{
+	//Begin the window.
+	ImGuiSystem::Instance->BeginWindow("Editor Viewport", minimum, maximum, false, false, false, false);
+
+	//Retrieve the window resolution.
+	const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
+
+	//Calculate the window size.
+	const Vector2<float32> window_size{ window_resolution._X * (maximum._X - minimum._X), window_resolution._Y * (maximum._Y - minimum._Y) };
+
+	//Add the image.
+	ImGui::Image(_ViewportTextureID, ImVec2(window_size._X, window_size._Y));
+
+	//End the window.
+	ImGui::End();
+
+	//This window should always be shown.
+	return true;
+}
+
+/*
 *	The top bar update.
 */
 NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
+	//Define constants.
+	constexpr float32 IMAGE_SIZE{ 48.0f };
+
 	//Begin the window.
 	ImGuiSystem::Instance->BeginWindow("Editor Top Bar", minimum, maximum, false, false, false, true);
 
@@ -216,12 +258,33 @@ NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimu
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Rendering"))
+		{
+			if (RenderingSystem::Instance->GetRenderingReferenceSystem()->IsRenderingReferenceInProgress())
+			{
+				if (ImGui::MenuItem("Stop Rendering Reference"))
+				{
+					//TODO!
+				}
+			}
+
+			else
+			{
+				if (ImGui::MenuItem("Start Rendering Reference"))
+				{
+					RenderingSystem::Instance->GetRenderingReferenceSystem()->StartRenderingReference();
+				}
+			}
+
+			ImGui::EndMenu();
+		}
+
 		//End the menu.
 		ImGui::EndMenuBar();
 	}
 
 	//Add the "Play" button.
-	if (ImGui::ImageButton(_EditorIcons[UNDERLYING(EditorIcon::PLAY)], ImVec2(62.0f, 62.0f)))
+	if (ImGui::ImageButton(_EditorIcons[UNDERLYING(EditorIcon::PLAY)], ImVec2(IMAGE_SIZE, IMAGE_SIZE)))
 	{
 		SetIsInGame(true);
 	}
@@ -230,7 +293,7 @@ NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimu
 	ImGui::SameLine();
 
 	//Add the "Create" button.
-	if (ImGui::ImageButton(_EditorIcons[UNDERLYING(EditorIcon::CREATE)], ImVec2(62.0f, 62.0f)))
+	if (ImGui::ImageButton(_EditorIcons[UNDERLYING(EditorIcon::CREATE)], ImVec2(IMAGE_SIZE, IMAGE_SIZE)))
 	{
 		_EditorLevelSystem.CreateEntity();
 	}

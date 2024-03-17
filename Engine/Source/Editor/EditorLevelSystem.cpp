@@ -92,7 +92,7 @@ FORCE_INLINE NO_DISCARD bool EnumerationWidget(const char *const RESTRICT label,
 
 	ImGui::SameLine();
 
-	if (ImGui::BeginCombo("##ENUMERATION_VALUE", enumeration->ToString()))
+	if (ImGui::BeginCombo("##ENUMERATION_VALUE", enumeration->ToString(), ImGuiComboFlags_PopupAlignLeft))
 	{
 		for (uint64 i{ 0 }; i < enumeration->Size(); ++i)
 		{

@@ -69,12 +69,16 @@ void ImGuiSystem::Initialize() NOEXCEPT
 	}
 
 	//Set up the editor window data.
-	_EditorWindowData[UNDERLYING(EditorWindow::TOP_BAR)]._Minimum = Vector2<float32>(0.0f, 0.9f);
-	_EditorWindowData[UNDERLYING(EditorWindow::TOP_BAR)]._Maximum = Vector2<float32>(1.0f, 1.0f);
+	_EditorWindowData[UNDERLYING(EditorWindow::VIEWPORT)]._Minimum = Vector2<float32>(0.0f, 0.0f);
+	_EditorWindowData[UNDERLYING(EditorWindow::VIEWPORT)]._Maximum = Vector2<float32>(0.8f, 0.9f);
+	_EditorWindowData[UNDERLYING(EditorWindow::VIEWPORT)]._WindowCallback = nullptr;
+
+	_EditorWindowData[UNDERLYING(EditorWindow::TOP_BAR)]._Minimum = Vector2<float32>(0.0f, 0.9'125f);
+	_EditorWindowData[UNDERLYING(EditorWindow::TOP_BAR)]._Maximum = Vector2<float32>(0.8f, 1.0f);
 	_EditorWindowData[UNDERLYING(EditorWindow::TOP_BAR)]._WindowCallback = nullptr;
 
 	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._Minimum = Vector2<float32>(0.8f, 0.5f);
-	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._Maximum = Vector2<float32>(1.0f, 0.9f);
+	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._Maximum = Vector2<float32>(1.0f, 1.0f);
 	_EditorWindowData[UNDERLYING(EditorWindow::TOP_RIGHT)]._WindowCallback = nullptr;
 
 	_EditorWindowData[UNDERLYING(EditorWindow::BOTTOM_RIGHT)]._Minimum = Vector2<float32>(0.8f, 0.0f);

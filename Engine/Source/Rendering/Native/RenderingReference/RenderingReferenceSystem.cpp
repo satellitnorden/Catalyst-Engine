@@ -202,7 +202,7 @@ public:
 
 		//Initialize the tasks.
 		{
-			const uint32 number_of_task_executors{ TaskSystem::Instance->GetNumberOfTaskExecutors() };
+			const uint32 number_of_task_executors{ TaskSystem::Instance->GetNumberOfTaskExecutors() - 4 };
 
 			RenderingReferenceSystemData::_Tasks.Upsize<false>(number_of_task_executors);
 

@@ -491,6 +491,13 @@ enum class SharedRenderTarget : uint8
 	*/
 	SCENE_DEPTH_BUFFER,
 
+#if defined(CATALYST_EDITOR)
+	/*
+	*	The editor viewport.	
+	*/
+	EDITOR_VIEWPORT,
+#endif
+
 	NUMBER_OF_SHARED_RENDER_TARGETS
 };
 

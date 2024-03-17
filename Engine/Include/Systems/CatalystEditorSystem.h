@@ -116,6 +116,9 @@ private:
 	//The editor icons.
 	StaticArray<ImTextureID, UNDERLYING(EditorIcon::NUMBER_OF_EDITOR_ICONS)> _EditorIcons;
 
+	//The viewport texture ID.
+	ImTextureID _ViewportTextureID;
+
 	/*
 	*	Updates the Catalyst editor system during the GAMEPLAY update phase.
 	*/
@@ -145,6 +148,11 @@ private:
 	*	Updates when the Catalyst editor is not in a game.
 	*/
 	void UpdateNotInGame() NOEXCEPT;
+
+	/*
+	*	The viewport update.
+	*/
+	NO_DISCARD bool ViewportUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
 
 	/*
 	*	The top bar update.

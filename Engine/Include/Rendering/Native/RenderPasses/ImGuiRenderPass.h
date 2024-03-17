@@ -40,6 +40,11 @@ private:
 	void Initialize() NOEXCEPT;
 
 	/*
+	*	Pre-records this render pass.
+	*/
+	void PreRecord(CommandBuffer *const RESTRICT frame_command_buffer) NOEXCEPT;
+
+	/*
 	*	Executes this render pass.
 	*/
 	void Execute() NOEXCEPT;

@@ -1,6 +1,10 @@
 //Header file.
 #include <Systems/WorldTracingSystem.h>
 
+//Components.
+#include <Components/Components/StaticModelComponent.h>
+#include <Components/Components/WorldTransformComponent.h>
+
 //Math.
 #include <Math/Core/CatalystCoordinateSpaces.h>
 #include <Math/Core/CatalystGeometryMath.h>
@@ -91,73 +95,27 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 	//Rememder the index offset.
 	uint32 index_offset{ 0 };
 
-	/*
-	//Add dynamic model triangle and vertex data.
-	{
-		const uint64 number_of_components{ ComponentManager::GetNumberOfDynamicModelComponents() };
-		DynamicModelComponent *RESTRICT component{ ComponentManager::GetDynamicModelDynamicModelComponents() };
-
-		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
-		{
-			//Cache all triangles.
-			const Matrix4x4 model_transform{ component->_CurrentWorldTransform.ToAbsoluteMatrix4x4() };
-
-			for (uint64 mesh_index{ 0 }; mesh_index < component->_ModelResource->_Meshes.Size(); ++mesh_index)
-			{
-				const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Vertices };
-				const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Indices };
-
-				//Add the triangle data.
-				for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
-				{
-					_AccelerationStructure.AddTriangleData(AccelerationStructure<VertexData>::TriangleData(index_offset + indices[triangle_index + 0], index_offset + indices[triangle_index + 1], index_offset + indices[triangle_index + 2], component->_MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED ? DiscardFunctions::MaskedDiscardFunction : nullptr));
-				}
-
-				//Add the vertex data.
-				for (Vertex vertex : vertices)
-				{
-					//Transform the vertex.
-					vertex.Transform(model_transform, 0.0f);
-
-					//Construct the vertex data.
-					VertexData vertex_data;
-
-					vertex_data._MaterialResource = component->_MaterialResources[mesh_index];
-					vertex_data._Normal = vertex._Normal;
-					vertex_data._Tangent = vertex._Tangent;
-					vertex_data._TextureCoordinate = vertex._TextureCoordinate;
-
-					//Add the vertex data!
-					_AccelerationStructure.AddVertexData(AccelerationStructure<VertexData>::VertexData(vertex._Position, vertex_data));
-				}
-
-				//Update the index offset.
-				index_offset += static_cast<uint32>(vertices.Size());
-			}
-		}
-	}
-	*/
-
-	/*
 	//Add static model triangle and vertex data.
 	{
-		const uint64 number_of_components{ ComponentManager::GetNumberOfStaticModelComponents() };
-		StaticModelComponent *RESTRICT component{ ComponentManager::GetStaticModelStaticModelComponents() };
-
-		for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+		for (uint64 i{ 0 }; i < StaticModelComponent::Instance->NumberOfInstances(); ++i)
 		{
-			//Cache all triangles.
-			const Matrix4x4 model_transform{ component->_WorldTransform.ToAbsoluteMatrix4x4() };
+			//Cache the data.
+			Entity *const RESTRICT entity{ StaticModelComponent::Instance->InstanceToEntity(i) };
+			const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity) };
+			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
 
-			for (uint64 mesh_index{ 0 }; mesh_index < component->_ModelResource->_Meshes.Size(); ++mesh_index)
+			//Cache all triangles.
+			const Matrix4x4 model_transform{ world_transform_instance_data._CurrentWorldTransform.ToAbsoluteMatrix4x4() };
+
+			for (uint64 mesh_index{ 0 }; mesh_index < static_model_instance_data._Model->_Meshes.Size(); ++mesh_index)
 			{
-				const DynamicArray<Vertex> &vertices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Vertices };
-				const DynamicArray<uint32> &indices{ component->_ModelResource->_Meshes[mesh_index]._MeshLevelOfDetails[component->_LevelOfDetailIndices[mesh_index]]._Indices };
+				const DynamicArray<Vertex> &vertices{ static_model_instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[mesh_index]]._Vertices };
+				const DynamicArray<uint32> &indices{ static_model_instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[mesh_index]]._Indices };
 
 				//Add the triangle data.
 				for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
 				{
-					_AccelerationStructure.AddTriangleData(AccelerationStructure<VertexData>::TriangleData(index_offset + indices[triangle_index + 0], index_offset + indices[triangle_index + 1], index_offset + indices[triangle_index + 2], component->_MaterialResources[mesh_index]->_Type == MaterialResource::Type::MASKED ? DiscardFunctions::MaskedDiscardFunction : nullptr));
+					_AccelerationStructure.AddTriangleData(AccelerationStructure<VertexData>::TriangleData(index_offset + indices[triangle_index + 0], index_offset + indices[triangle_index + 1], index_offset + indices[triangle_index + 2], static_model_instance_data._Materials[mesh_index]->_Type == MaterialAsset::Type::MASKED ? DiscardFunctions::MaskedDiscardFunction : nullptr));
 				}
 
 				//Add the vertex data.
@@ -169,7 +127,7 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 					//Construct the vertex data.
 					VertexData vertex_data;
 
-					vertex_data._MaterialResource = component->_MaterialResources[mesh_index];
+					vertex_data._Material = static_model_instance_data._Materials[mesh_index];
 					vertex_data._Normal = vertex._Normal;
 					vertex_data._Tangent = vertex._Tangent;
 					vertex_data._TextureCoordinate = vertex._TextureCoordinate;
@@ -183,7 +141,6 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 			}
 		}
 	}
-	*/
 
 	//Build the acceleration structure.
 	_AccelerationStructure.Build(8);
@@ -436,7 +393,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray& ray) NOEXCEPT
 
 		case SkySystem::SkyMode::GRADIENT:
 		{
-			const SkyGradient& sky_gradient{ WorldSystem::Instance->GetSkySystem()->GetSkyGradient() };
+			const SkyGradient &sky_gradient{ WorldSystem::Instance->GetSkySystem()->GetSkyGradient() };
 			const float32 up_factor{ Vector3<float32>::DotProduct(ray._Direction, Vector3<float32>(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f };
 
 			return CatalystBaseMath::LinearlyInterpolate(sky_gradient._LowerSkyColor, sky_gradient._UpperSkyColor, up_factor) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();

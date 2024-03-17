@@ -19,6 +19,7 @@ public:
 	//Enumeration covering all editor windows.
 	enum class EditorWindow : uint8
 	{
+		VIEWPORT,
 		TOP_BAR,
 		TOP_RIGHT,
 		BOTTOM_RIGHT,
