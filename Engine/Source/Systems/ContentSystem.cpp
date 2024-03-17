@@ -358,7 +358,6 @@ NO_DISCARD bool ContentSystem::ScanAssetsInDirectory
 		AssetCompiler::CompileContext compile_context;
 
 		compile_context._CompilationDomain = compilation_domain;
-		compile_context._Identifier = identifier;
 		compile_context._LastWriteTime = last_write_time;
 		compile_context._Collection = collection;
 		compile_context._FilePath = file_path.c_str();

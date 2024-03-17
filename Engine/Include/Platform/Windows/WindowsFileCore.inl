@@ -30,7 +30,7 @@ namespace File
 	*	Browses for a file.
 	*	Returns if the action was successful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool BrowseForFile(const bool save, DynamicString* const RESTRICT chosen_file) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool BrowseForFile(const bool save, DynamicString* const RESTRICT chosen_file, const char *const RESTRICT filter) NOEXCEPT
 	{
 		bool success{ false };
 
@@ -47,6 +47,31 @@ namespace File
 				DWORD current_options{ 0 };
 				file_dialog->GetOptions(&current_options);
 				file_dialog->SetOptions(current_options | FOS_FILEMUSTEXIST);
+			}
+
+			//Set the filer.
+			if (filter)
+			{
+
+				WCHAR windows_filter[MAX_PATH];
+
+				{
+					const uint64 string_length{ strlen(filter) };
+
+					for (uint64 i{ 0 }; i < string_length; ++i)
+					{
+						windows_filter[i] = filter[i];
+					}
+
+					windows_filter[string_length] = '\0';
+				}
+
+				COMDLG_FILTERSPEC filter_specification;
+
+				filter_specification.pszName = L"Filter";
+				filter_specification.pszSpec = windows_filter;
+
+				file_dialog->SetFileTypes(1, &filter_specification);
 			}
 
 			//Show the file dialog.

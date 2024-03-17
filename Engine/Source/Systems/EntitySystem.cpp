@@ -17,8 +17,16 @@
 //Entity system constants.
 namespace EntitySystemConstants
 {
+	/*
+	*	In the editor, just spawn everything as possible.
+	*/
+#if defined(CATALYST_EDITOR)
+	constexpr float32 MAXIMUM_CREATION_TIME{ FLOAT32_MAXIMUM };
+	constexpr float32 MAXIMUM_DESTRUCTION_TIME{ FLOAT32_MAXIMUM };
+#else
 	constexpr float32 MAXIMUM_CREATION_TIME{ 0.25f / 1000.0f };
 	constexpr float32 MAXIMUM_DESTRUCTION_TIME{ 0.5f / 1000.0f };
+#endif
 }
 
 //Singleton definition.

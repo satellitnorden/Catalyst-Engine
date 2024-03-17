@@ -4,6 +4,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/General/DynamicString.h>
 
 //Math.
 #include <Math/General/Vector.h>
@@ -35,6 +36,11 @@ public:
 	void SaveLevel() NOEXCEPT;
 
 	/*
+	*	Saves the current level as...
+	*/
+	void SaveLevelAs() NOEXCEPT;
+
+	/*
 	*	Loads a level
 	*/
 	void LoadLevel() NOEXCEPT;
@@ -49,11 +55,14 @@ private:
 		SCALE
 	};
 
-	//The name counter.
-	uint32 _NameCounter{ 0 };
+	//The level file path.
+	DynamicString _LevelFilePath;
 
 	//The level.
 	Level _Level;
+
+	//The name counter.
+	uint32 _NameCounter{ 0 };
 
 	//The selected level entry index.
 	uint64 _SelectedLevelEntryIndex{ UINT64_MAXIMUM };
@@ -64,7 +73,7 @@ private:
 	/*
 	*	Loads a level internally.
 	*/
-	void LoadLevelInternal(Asset *const RESTRICT level_asset) NOEXCEPT;
+	void LoadLevelInternal(const DynamicString &file_path) NOEXCEPT;
 
 	/*
 	*	Generates an entity name.

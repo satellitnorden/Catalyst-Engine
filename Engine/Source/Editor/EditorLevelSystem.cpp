@@ -344,31 +344,28 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 */
 void EditorLevelSystem::SaveLevel() NOEXCEPT
 {
+	if (_LevelFilePath)
+	{
+		_Level.Serialize(_LevelFilePath.Data());
+	}
+
+	else
+	{
+		SaveLevelAs();
+	}
+}
+
+/*
+*	Saves the current level as...
+*/
+void EditorLevelSystem::SaveLevelAs() NOEXCEPT
+{
 	DynamicString chosen_file;
 
-	if (File::BrowseForFile(true, &chosen_file))
+	if (File::BrowseForFile(true, &chosen_file, "*.Level"))
 	{
+		_LevelFilePath = chosen_file;
 		_Level.Serialize(chosen_file.Data());
-
-		/*
-		//Figre out the name.
-		std::string name;
-
-		{
-			const std::string file_path{ chosen_file.Data() };
-			const size_t last_slash_position{ file_path.find_last_of("\\") };
-			name = file_path.substr(last_slash_position + 1, file_path.length() - last_slash_position - 1);
-		}
-
-		//Build the level!
-		LevelBuildParameters parameters;
-
-		parameters._OutputFilePath = chosen_file.Data();
-		parameters._Identifier = name.c_str();
-		parameters._LevelEntries = _Level._LevelEntries;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildLevel(parameters);
-		*/
 	}
 }
 
@@ -377,23 +374,20 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 */
 void EditorLevelSystem::LoadLevel() NOEXCEPT
 {
-	//Request browsing for the level.
-	CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
-	(
-		"Select Level",
-		LevelAsset::TYPE_IDENTIFIER,
-		[](Asset *const RESTRICT asset, void *const RESTRICT arguments)
-		{
-			CatalystEditorSystem::Instance->GetEditorLevelSystem()->LoadLevelInternal(asset);
-		},
-		nullptr
-	);
+	//Browse for a level.
+	DynamicString chosen_file;
+
+	if (File::BrowseForFile(false, &chosen_file, "*.Level"))
+	{
+		//Load the level.
+		LoadLevelInternal(chosen_file);
+	}
 }
 
 /*
 *	Loads a level internally.
 */
-void EditorLevelSystem::LoadLevelInternal(Asset *const RESTRICT level_asset) NOEXCEPT
+void EditorLevelSystem::LoadLevelInternal(const DynamicString &file_path) NOEXCEPT
 {
 	//Destroy all entities.
 	EntitySystem::Instance->DestroyAllEntities();
@@ -401,13 +395,58 @@ void EditorLevelSystem::LoadLevelInternal(Asset *const RESTRICT level_asset) NOE
 	//Clear the level entries.
 	_Level._LevelEntries.Clear();
 
-	//Spawn the level.
-	LevelSystem::Instance->SpawnLevel
-	(
-		WorldTransform(),
-		AssetPointer<LevelAsset>(static_cast<LevelAsset *const RESTRICT>(level_asset)),
-		&_Level
-	);
+	//Set the level file path.
+	_LevelFilePath = file_path;
+
+	//Figure out the name.
+	{
+		const std::string _file_path{ file_path.Data()};
+		const size_t position{ _file_path.find_last_of('\\') };
+		const std::string name{ _file_path.substr(position + 1, _file_path.length() - position - strlen(".Level") - 1) };
+
+		_Level._Name = name.c_str();
+	}
+
+	//Set up the stream archive.
+	StreamArchive stream_archive;
+
+	//Parse the JSON object.
+	nlohmann::json JSON;
+
+	{
+		std::ifstream input_file{ file_path.Data() };
+		input_file >> JSON;
+		input_file.close();
+	}
+
+	//Cache the entities JSON object.
+	const nlohmann::json &entities{ JSON["Entities"] };
+
+	//Allocate the necessary amount of memory.
+	_Level._LevelEntries.Reserve(entities.size());
+
+	//Iterate through all entities.
+	for (auto entity_iterator{ entities.begin() }; entity_iterator != entities.end(); ++entity_iterator)
+	{
+		//Add the new level entry.
+		_Level._LevelEntries.Emplace();
+		LevelEntry &new_level_entry{ _Level._LevelEntries.Back() };
+
+		//Set the name.
+		new_level_entry._Name = entity_iterator.key().c_str();
+
+		//Cache the entity entry.
+		const nlohmann::json &entity_entry{ *entity_iterator };
+
+		//Remember the stream archive position.
+		uint64 stream_archive_position{ stream_archive.Size() + new_level_entry._Name.Size() };
+
+		//Serialize to the stream archive.
+		EntitySerialization::SerializeToStreamArchive(entity_entry, entity_iterator.key().c_str(), &stream_archive);
+
+		//Now deserialize!
+		new_level_entry._Entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
+	}
 }
 
 /*

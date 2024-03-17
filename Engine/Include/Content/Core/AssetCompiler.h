@@ -54,9 +54,6 @@ public:
 		//The compilation domain.
 		CompilationDomain _CompilationDomain;
 
-		//The identifier.
-		uint64 _Identifier;
-
 		//The last write time.
 		std::filesystem::file_time_type _LastWriteTime;
 

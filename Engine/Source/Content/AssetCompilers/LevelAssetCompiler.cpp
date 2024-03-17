@@ -108,7 +108,7 @@ NO_DISCARD Asset *const RESTRICT LevelAssetCompiler::Load(const LoadContext &loa
 
 	task->_Function = [](void *const RESTRICT arguments)
 	{
-			LevelAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
+		LevelAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = load_data;
 	task->_ExecutableOnSameThread = true;

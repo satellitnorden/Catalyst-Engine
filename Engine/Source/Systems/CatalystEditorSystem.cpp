@@ -245,6 +245,11 @@ NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimu
 				_EditorLevelSystem.SaveLevel();
 			}
 
+			if (ImGui::MenuItem("Save Level As..."))
+			{
+				_EditorLevelSystem.SaveLevelAs();
+			}
+
 			if (ImGui::MenuItem("Load Level"))
 			{
 				_EditorLevelSystem.LoadLevel();
