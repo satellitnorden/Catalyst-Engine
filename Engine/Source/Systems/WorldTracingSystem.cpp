@@ -5,6 +5,9 @@
 #include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
+//Lighting.
+#include <Lighting/PhysicallyBasedLighting.h>
+
 //Math.
 #include <Math/Core/CatalystCoordinateSpaces.h>
 #include <Math/Core/CatalystGeometryMath.h>
@@ -12,7 +15,6 @@
 
 //Rendering.
 #include <Rendering/Native/Shader/CatalystAtmosphericScattering.h>
-#include <Rendering/Native/Shader/CatalystLighting.h>
 
 //Systems.
 #include <Systems/WorldSystem.h>
@@ -418,7 +420,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray& ray) NOEXCEPT
 /*
 *	Casts a ray into the world and returns the radiance internally.
 */
-NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& ray, const uint8 depth) NOEXCEPT
+NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &ray, const uint8 depth) NOEXCEPT
 {
 	//Don't go over the maximum depth.
 	if (depth > WorldTracingSystemConstants::MAXIMUM_RADIANCE_DEPTH)
@@ -591,8 +593,17 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 			//Otherwise, shoot a specular ray.
 			else
 			{
-				indirect_lighting_direction = Vector3<float32>::Reflect(ray._Direction, surface_description._GeometryNormal) + (CatalystRandomMath::RandomPointInSphere() * CatalystBaseMath::PowerOf(surface_description._Roughness, 2));
-				indirect_lighting_direction.Normalize();
+				Vector3<float32> diffuse_direction = CatalystRandomMath::RandomPointInSphere();
+				diffuse_direction.Normalize();
+
+				if (Vector3<float32>::DotProduct(diffuse_direction, surface_description._GeometryNormal) < 0.0f)
+				{
+					diffuse_direction *= -1.0f;
+				}
+
+				Vector3<float32> specular_direction = Vector3<float32>::Reflect(ray._Direction, surface_description._GeometryNormal);
+
+				indirect_lighting_direction = Vector3<float32>::Normalize(CatalystBaseMath::LinearlyInterpolate(specular_direction, diffuse_direction, surface_description._Roughness));
 			}
 
 			//Construct the indirect ray.
@@ -605,15 +616,18 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray& r
 			const Vector3<float32> indirect_radiance{ RadianceRayInternal(indirect_ray, depth + 1) };
 
 			//Add the indirect lighting.
-			final_radiance += CatalystLighting::CalculateLighting(	-ray._Direction,
-																	surface_description._Albedo,
-																	surface_description._ShadingNormal,
-																	surface_description._Roughness,
-																	surface_description._Metallic,
-																	surface_description._AmbientOcclusion,
-																	1.0f,
-																	-indirect_lighting_direction,
-																	indirect_radiance);
+			final_radiance += PhysicallyBasedLighting::CalculateLighting
+			(
+				-ray._Direction,
+				surface_description._Albedo,
+				surface_description._ShadingNormal,
+				surface_description._Roughness,
+				surface_description._Metallic,
+				surface_description._AmbientOcclusion,
+				1.0f,
+				-indirect_lighting_direction,
+				indirect_radiance
+			);
 		}
 
 		//Return the final radiance.

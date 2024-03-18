@@ -288,6 +288,11 @@ public:
 			//Fire the tasks again!
 			FireTasks();
 		}
+
+		else
+		{
+			Concurrency::CurrentThread::Yield();
+		}
 	}
 
 	/*
@@ -295,6 +300,8 @@ public:
 	*/
 	FORCE_INLINE static void FireTasks() NOEXCEPT
 	{
+		LOG_INFORMATION("Performing iteration %llu", RenderingReferenceSystemData::_CurrentNumberOfSamples);
+
 		//Reset the current number of pixels.
 		RenderingReferenceSystemData::_CurrentNumberOfPixels = 0;
 
