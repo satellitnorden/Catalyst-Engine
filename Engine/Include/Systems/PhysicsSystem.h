@@ -16,7 +16,6 @@
 #include <Physics/Native/CharacterController.h>
 #include <Physics/Native/CharacterControllerConfiguration.h>
 #include <Physics/Native/CollisionModelData.h>
-#include <Physics/Native/ModelCollisionConfiguration.h>
 #include <Physics/Native/ModelSimulationConfiguration.h>
 #include <Physics/Native/PhysicsCore.h>
 #include <Physics/Native/RaycastConfiguration.h>
@@ -76,7 +75,7 @@ public:
 	void CreateModelActor
 	(
 		const WorldTransform &world_transform,
-		const ModelCollisionConfiguration &collision_configuration,
+		const ModelCollisionType collision_type,
 		const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
 		const CollisionModelHandle collision_model,
 		const ModelSimulationConfiguration &simulation_configuration,
@@ -162,7 +161,7 @@ private:
 	void SubCreateModelActor
 	(
 		const WorldTransform &world_transform,
-		const ModelCollisionConfiguration &collision_configuration,
+		const ModelCollisionType collision_type,
 		const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
 		const CollisionModelHandle collision_model,
 		const ModelSimulationConfiguration &simulation_configuration,

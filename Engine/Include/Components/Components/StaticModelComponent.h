@@ -14,7 +14,6 @@
 
 //Physics.
 #include <Physics/Native/PhysicsCore.h>
-#include <Physics/Native/ModelCollisionConfiguration.h>
 #include <Physics/Native/ModelSimulationConfiguration.h>
 
 //World.
@@ -31,8 +30,8 @@ public:
 	//The materials.
 	StaticArray<AssetPointer<MaterialAsset>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _Materials;
 
-	//The model collision configuration.
-	ModelCollisionConfiguration _ModelCollisionConfiguration;
+	//The collision type.
+	ModelCollisionType _CollisionType;
 
 	//The model simulation configuration.
 	ModelSimulationConfiguration _ModelSimulationConfiguration;
@@ -56,8 +55,8 @@ public:
 	//The physics actor handle.
 	ActorHandle _PhysicsActorHandle;
 
-	//The model collision configuration.
-	ModelCollisionConfiguration _ModelCollisionConfiguration;
+	//The collision type.
+	ModelCollisionType _CollisionType;
 
 	//The model simulation configuration.
 	ModelSimulationConfiguration _ModelSimulationConfiguration;

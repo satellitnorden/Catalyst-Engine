@@ -424,19 +424,19 @@ void PhysicsSystem::SubCreateHeightFieldActor
 void PhysicsSystem::SubCreateModelActor
 (
 	const WorldTransform &world_transform,
-	const ModelCollisionConfiguration &collision_configuration,
+	const ModelCollisionType collision_type,
 	const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
 	const CollisionModelHandle collision_model,
 	const ModelSimulationConfiguration &simulation_configuration,
 	ActorHandle *const RESTRICT actor_handle
 ) NOEXCEPT
 {
-	ASSERT(collision_configuration._Type != ModelCollisionType::NONE, "Trying to create an actor with no collision!");
+	ASSERT(collision_type != ModelCollisionType::NONE, "Trying to create an actor with no collision!");
 
 	//Create the shape.
 	physx::PxShape *RESTRICT shape{ nullptr };
 
-	switch (collision_configuration._Type)
+	switch (collision_type)
 	{
 		case ModelCollisionType::BOX:
 		{

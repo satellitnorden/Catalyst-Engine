@@ -73,7 +73,7 @@ void StaticModelComponent::DefaultInitializationData(ComponentInitializationData
 		_initialization_data->_Materials[i] = ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"));
 	}
 	
-	_initialization_data->_ModelCollisionConfiguration._Type = ModelCollisionType::NONE;
+	_initialization_data->_CollisionType = ModelCollisionType::NONE;
 	_initialization_data->_ModelSimulationConfiguration._SimulatePhysics = false;
 }
 
@@ -102,7 +102,7 @@ void StaticModelComponent::CreateInstance(Entity *const RESTRICT entity, Compone
 
 	instance_data._Model = _initialization_data->_Model;
 	instance_data._Materials = _initialization_data->_Materials;
-	instance_data._ModelCollisionConfiguration = _initialization_data->_ModelCollisionConfiguration;
+	instance_data._CollisionType = _initialization_data->_CollisionType;
 	instance_data._ModelSimulationConfiguration = _initialization_data->_ModelSimulationConfiguration;
 	instance_data._MeshesVisibleMask = UINT8_MAXIMUM;
 }
@@ -129,14 +129,14 @@ void StaticModelComponent::PostCreateInstance(Entity *const RESTRICT entity) NOE
 	RenderingSystem::Instance->GetRayTracingSystem()->OnStaticModelInstanceCreated(entity, _InstanceData.Back());
 
 	//Create the physics actor.
-	if (static_model_instance_data._ModelCollisionConfiguration._Type != ModelCollisionType::NONE)
+	if (static_model_instance_data._CollisionType != ModelCollisionType::NONE)
 	{
 		static_model_instance_data._PhysicsActorHandle = nullptr;
 
 		PhysicsSystem::Instance->CreateModelActor
 		(
 			world_transform_instance_data._CurrentWorldTransform,
-			static_model_instance_data._ModelCollisionConfiguration,
+			static_model_instance_data._CollisionType,
 			static_model_instance_data._WorldSpaceAxisAlignedBoundingBox,
 			static_model_instance_data._Model->_CollisionModel,
 			static_model_instance_data._ModelSimulationConfiguration,
