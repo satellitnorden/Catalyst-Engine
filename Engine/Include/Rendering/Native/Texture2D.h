@@ -333,11 +333,33 @@ FORCE_INLINE NO_DISCARD Vector4<float32> Sample(const Texture2D<Vector4<byte>> &
 	const uint32 width{ texture.GetWidth() };
 	const uint32 height{ texture.GetHeight() };
 
+	//Assume REPEAT address mode.
+	Vector2<float32> actual_coordinate;
+
+	actual_coordinate._X = CatalystBaseMath::Fractional(coordinate._X);
+	actual_coordinate._Y = CatalystBaseMath::Fractional(coordinate._Y);
+
 	//Calculate the coordinates.
-	Vector2<uint32> lower_left_coordinate{ static_cast<uint32>(coordinate._X * static_cast<float32>(width)) , static_cast<uint32>(coordinate._Y * static_cast<float32>(height)) };
-	Vector2<uint32> upper_left_coordinate{ lower_left_coordinate._X, CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1) };
-	Vector2<uint32> lower_right_coordinate{ CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1), lower_left_coordinate._Y };
-	Vector2<uint32> upper_right_coordinate{ CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1), CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1) };
+	Vector2<uint32> lower_left_coordinate
+	{
+		CatalystBaseMath::Minimum<uint32>(static_cast<uint32>(actual_coordinate._X * static_cast<float32>(width)), width - 1),
+		CatalystBaseMath::Minimum<uint32>(static_cast<uint32>(actual_coordinate._Y * static_cast<float32>(height)), height - 1)
+	};
+	Vector2<uint32> upper_left_coordinate
+	{
+		lower_left_coordinate._X,
+		CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1)
+	};
+	Vector2<uint32> lower_right_coordinate
+	{
+		CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1),
+		lower_left_coordinate._Y
+	};
+	Vector2<uint32> upper_right_coordinate
+	{
+		CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1),
+		CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1)
+	};
 
 	//Sample the values.
 	Vector4<float32> lower_left_value;
