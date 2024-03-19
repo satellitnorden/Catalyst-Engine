@@ -164,9 +164,9 @@ FORCE_INLINE NO_DISCARD bool ModelAssetWidget(const char *const RESTRICT label, 
 			ModelAsset::TYPE_IDENTIFIER,
 			[](Asset *const RESTRICT asset, void *const RESTRICT arguments)
 			{
-				AssetPointer<ModelAsset> *const RESTRICT model_resource{ static_cast<AssetPointer<ModelAsset> *const RESTRICT>(arguments) };
+				AssetPointer<ModelAsset> *const RESTRICT model_asset{ static_cast<AssetPointer<ModelAsset> *const RESTRICT>(arguments) };
 			
-				(*model_resource) = AssetPointer<ModelAsset>((ModelAsset *const RESTRICT)asset);
+				(*model_asset) = AssetPointer<ModelAsset>((ModelAsset *const RESTRICT)asset);
 			},
 			model_asset
 		);
@@ -345,7 +345,14 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 {
 	if (_LevelFilePath)
 	{
-		SaveLevelInternal(_LevelFilePath);
+		nlohmann::json JSON;
+
+		SaveLevelInternal(JSON);
+
+		//Writ the JSON to the file.
+		std::ofstream file{ _LevelFilePath.Data() };
+		file << std::setw(4) << JSON;
+		file.close();
 	}
 
 	else
@@ -365,7 +372,14 @@ void EditorLevelSystem::SaveLevelAs() NOEXCEPT
 	{
 		_LevelFilePath = chosen_file;
 		
-		SaveLevelInternal(_LevelFilePath);
+		nlohmann::json JSON;
+
+		SaveLevelInternal(JSON);
+
+		//Writ the JSON to the file.
+		std::ofstream file{ _LevelFilePath.Data() };
+		file << std::setw(4) << JSON;
+		file.close();
 	}
 }
 
@@ -379,19 +393,58 @@ void EditorLevelSystem::LoadLevel() NOEXCEPT
 
 	if (File::BrowseForFile(false, &chosen_file, "*.Level"))
 	{
+		//Set the level file path.
+		_LevelFilePath = chosen_file;
+
+		//Figure out the level name.
+		{
+			const std::string _file_path{ _LevelFilePath.Data() };
+			const size_t position{ _file_path.find_last_of('\\') };
+			const std::string name{ _file_path.substr(position + 1, _file_path.length() - position - strlen(".Level") - 1) };
+
+			_Level._Name = name.c_str();
+		}
+
+		//Load the JSON object.
+		nlohmann::json JSON;
+
+		{
+			std::ifstream input_file{ _LevelFilePath.Data() };
+			input_file >> JSON;
+			input_file.close();
+		}
+
 		//Load the level.
-		LoadLevelInternal(chosen_file);
+		LoadLevelInternal(JSON);
 	}
+}
+
+/*
+*	Starts the game.
+*/
+void EditorLevelSystem::StartGame() NOEXCEPT
+{
+	//Save down the level, so we can restore if once the game is ended.
+	SaveLevelInternal(_CurrentlyPlayedLevel);
+}
+
+/*
+*	Ends the game.
+*/
+void EditorLevelSystem::EndGame() NOEXCEPT
+{
+	//Restore the level.
+	LoadLevelInternal(_CurrentlyPlayedLevel);
+
+	//Clear the JSON object so we don't keep around old data.
+	_CurrentlyPlayedLevel.clear();
 }
 
 /*
 *	Saves a level internally.
 */
-void EditorLevelSystem::SaveLevelInternal(const DynamicString &file_path) NOEXCEPT
+void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 {
-	//Set up the JSON object.
-	nlohmann::json JSON;
-
 	//Write all entities.
 	nlohmann::json &entities{ JSON["Entities"] };
 
@@ -415,17 +468,12 @@ void EditorLevelSystem::SaveLevelInternal(const DynamicString &file_path) NOEXCE
 			rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(level_entry._EditorData._Rotation._Pitch);
 		}
 	}
-
-	//Writ the JSON to the file.
-	std::ofstream file{ file_path.Data() };
-	file << std::setw(4) << JSON;
-	file.close();
 }
 
 /*
 *	Loads a level internally.
 */
-void EditorLevelSystem::LoadLevelInternal(const DynamicString &file_path) NOEXCEPT
+void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 {
 	//Destroy all entities.
 	EntitySystem::Instance->DestroyAllEntities();
@@ -433,29 +481,11 @@ void EditorLevelSystem::LoadLevelInternal(const DynamicString &file_path) NOEXCE
 	//Clear the level entries.
 	_Level._LevelEntries.Clear();
 
-	//Set the level file path.
-	_LevelFilePath = file_path;
-
-	//Figure out the name.
-	{
-		const std::string _file_path{ file_path.Data()};
-		const size_t position{ _file_path.find_last_of('\\') };
-		const std::string name{ _file_path.substr(position + 1, _file_path.length() - position - strlen(".Level") - 1) };
-
-		_Level._Name = name.c_str();
-	}
+	//Reset the selected level entry.
+	_SelectedLevelEntryIndex = UINT64_MAXIMUM;
 
 	//Set up the stream archive.
 	StreamArchive stream_archive;
-
-	//Parse the JSON object.
-	nlohmann::json JSON;
-
-	{
-		std::ifstream input_file{ file_path.Data() };
-		input_file >> JSON;
-		input_file.close();
-	}
 
 	//Cache the entities JSON object.
 	const nlohmann::json &entities{ JSON["Entities"] };

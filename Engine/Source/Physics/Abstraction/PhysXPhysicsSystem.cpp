@@ -435,6 +435,7 @@ void PhysicsSystem::SubCreateModelActor
 
 	//Create the shape.
 	physx::PxShape *RESTRICT shape{ nullptr };
+	Vector3<float32> position_offset{ 0.0f };
 
 	switch (collision_type)
 	{
@@ -448,6 +449,8 @@ void PhysicsSystem::SubCreateModelActor
 				SCOPED_LOCK(PhysXPhysicsSystemData::_PhysicsLock);
 				shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
 			}
+
+			position_offset = -AxisAlignedBoundingBox3D::CalculateCenter(local_axis_aligned_bounding_box);
 
 			break;
 		}
@@ -499,7 +502,7 @@ void PhysicsSystem::SubCreateModelActor
 	shape->setFlags(physx::PxShapeFlag::eSIMULATION_SHAPE | physx::PxShapeFlag::eSCENE_QUERY_SHAPE | physx::PxShapeFlag::eVISUALIZATION);
 
 	//Set up the transform.
-	const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
+	const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() + position_offset };
 	const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
 	const Quaternion rotation{ world_transform.GetRotation() };
 	physx::PxQuat physx_rotation;

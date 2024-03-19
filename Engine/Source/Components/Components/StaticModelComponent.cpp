@@ -361,3 +361,51 @@ void StaticModelComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
 {
 
 }
+
+void StaticModelComponent::PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
+{	
+	//Cache the instance data.
+	StaticModelInstanceData &instance_data{ InstanceData(entity) };
+
+	if (editable_field._Identifier == HashString("Collision Type"))
+	{
+		//Destroy the physics actor.
+		if (instance_data._PhysicsActorHandle)
+		{
+			PhysicsSystem::Instance->DestroyActor(&instance_data._PhysicsActorHandle);
+		}
+	}
+}
+
+void StaticModelComponent::PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
+{
+	//Cache the instance data.
+	StaticModelInstanceData &instance_data{ InstanceData(entity) };
+
+	if (editable_field._Identifier == HashString("Collision Type"))
+	{
+		//Create the physics actor.
+		if (instance_data._CollisionType != ModelCollisionType::NONE)
+		{
+			//Cache the world transform instance data.
+			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
+
+			instance_data._PhysicsActorHandle = nullptr;
+
+			PhysicsSystem::Instance->CreateModelActor
+			(
+				world_transform_instance_data._CurrentWorldTransform,
+				instance_data._CollisionType,
+				instance_data._WorldSpaceAxisAlignedBoundingBox,
+				instance_data._Model->_CollisionModel,
+				instance_data._ModelSimulationConfiguration,
+				&instance_data._PhysicsActorHandle
+			);
+		}
+
+		else
+		{
+			instance_data._PhysicsActorHandle = nullptr;
+		}
+	}
+}

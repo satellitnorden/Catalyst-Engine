@@ -12,6 +12,9 @@
 //World.
 #include <World/Level/Level.h>
 
+//Third party.
+#include <ThirdParty/json/json.hpp>
+
 //Forward declarations.
 class Asset;
 
@@ -45,6 +48,16 @@ public:
 	*/
 	void LoadLevel() NOEXCEPT;
 
+	/*
+	*	Starts the game.
+	*/
+	void StartGame() NOEXCEPT;
+
+	/*
+	*	Ends the game.
+	*/
+	void EndGame() NOEXCEPT;
+
 private:
 
 	//Enumeration covering all gizmo modes.
@@ -70,15 +83,18 @@ private:
 	//The current Gizmo mode.
 	GizmoMode _CurrentGizmoMode{ GizmoMode::TRANSLATE };
 
+	//The currently played level.
+	nlohmann::json _CurrentlyPlayedLevel;
+
 	/*
 	*	Saves a level internally.
 	*/
-	void SaveLevelInternal(const DynamicString &file_path) NOEXCEPT;
+	void SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT;
 
 	/*
 	*	Loads a level internally.
 	*/
-	void LoadLevelInternal(const DynamicString &file_path) NOEXCEPT;
+	void LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT;
 
 	/*
 	*	Generates an entity name.
