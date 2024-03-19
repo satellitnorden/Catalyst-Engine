@@ -165,6 +165,8 @@ void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 */
 void EntitySystem::DestroyAllEntities() NOEXCEPT
 {
+	SCOPED_LOCK(_EntityAllocatorLock);
+
 	//Add them all to the queue.
 	for (Entity *const RESTRICT entity : _Entities)
 	{
@@ -447,7 +449,7 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 				SCOPED_LOCK(_EntityAllocatorLock);
 
 				_EntityAllocator.Free(queue_item->_Entity);
-				_Entities.Emplace(queue_item->_Entity);
+				_Entities.Erase<false>(queue_item->_Entity);
 			}
 		}
 

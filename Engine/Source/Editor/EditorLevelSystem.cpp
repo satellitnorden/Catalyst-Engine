@@ -349,7 +349,7 @@ void EditorLevelSystem::SaveLevel() NOEXCEPT
 
 		SaveLevelInternal(JSON);
 
-		//Writ the JSON to the file.
+		//Write the JSON to the file.
 		std::ofstream file{ _LevelFilePath.Data() };
 		file << std::setw(4) << JSON;
 		file.close();
@@ -426,6 +426,11 @@ void EditorLevelSystem::StartGame() NOEXCEPT
 {
 	//Save down the level, so we can restore if once the game is ended.
 	SaveLevelInternal(_CurrentlyPlayedLevel);
+
+	//Write the JSON to a file for debug purpises..
+	std::ofstream file{ "CurrentlyPlayedLevel.Level" };
+	file << std::setw(4) << _CurrentlyPlayedLevel;
+	file.close();
 }
 
 /*

@@ -145,7 +145,7 @@ private:
 	DynamicArray<EntityPreProcessingQueueItem *RESTRICT> _PreProcessingQueue;
 
 	//Container for all entities.
-	DynamicArray<Entity *const RESTRICT> _Entities;
+	DynamicArray<Entity *RESTRICT> _Entities;
 
 	/*
 	*	Generates a new entity identifier.
