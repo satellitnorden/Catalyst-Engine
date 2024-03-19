@@ -75,7 +75,14 @@ FORCE_INLINE NO_DISCARD bool TextInputWidget(const char *const RESTRICT label, c
 /*
 *	Creates a custom enumeration widget. Returns if there was a change.
 */
-FORCE_INLINE NO_DISCARD bool EnumerationWidget(const char *const RESTRICT label, Enumeration *const RESTRICT enumeration) NOEXCEPT
+FORCE_INLINE void EnumerationWidget
+(
+	const char *const RESTRICT label,
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField &editable_field,
+	Enumeration *const RESTRICT enumeration
+) NOEXCEPT
 {
 	ImGui::Columns(2);
 
@@ -97,7 +104,9 @@ FORCE_INLINE NO_DISCARD bool EnumerationWidget(const char *const RESTRICT label,
 		{
 			if (ImGui::Selectable(enumeration->IndexToString(i)))
 			{
+				component->PreEditableFieldChange(entity, editable_field);
 				enumeration->SetFromIndex(i);
+				component->PostEditableFieldChange(entity, editable_field);
 			}
 		}
 
@@ -109,9 +118,6 @@ FORCE_INLINE NO_DISCARD bool EnumerationWidget(const char *const RESTRICT label,
 
 	ImGui::PopStyleVar();
 	ImGui::Columns(1);
-
-	//Eh.
-	return false;
 }
 
 /*
@@ -801,7 +807,14 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 							{
 								Enumeration *const RESTRICT enumeration{ component->EditableFieldData<Enumeration>(selected_level_entry._Entity, editable_field) };
 
-								EnumerationWidget(editable_field._Name, enumeration);
+								EnumerationWidget
+								(
+									editable_field._Name,
+									component,
+									selected_level_entry._Entity,
+									editable_field,
+									enumeration
+								);
 
 								break;
 							}

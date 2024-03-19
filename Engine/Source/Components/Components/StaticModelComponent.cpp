@@ -44,6 +44,13 @@ void StaticModelComponent::Initialize() NOEXCEPT
 		offsetof(StaticModelInitializationData, _Materials) + sizeof(AssetPointer<MaterialAsset>) * 1,
 		offsetof(StaticModelInstanceData, _Materials) + sizeof(AssetPointer<MaterialAsset>) * 1
 	);
+
+	AddEditableEnumerationField
+	(
+		"Collision Type",
+		offsetof(StaticModelInitializationData, _CollisionType),
+		offsetof(StaticModelInstanceData, _CollisionType)
+	);
 }
 
 /*

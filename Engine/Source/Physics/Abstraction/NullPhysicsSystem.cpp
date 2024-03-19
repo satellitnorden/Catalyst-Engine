@@ -53,7 +53,7 @@ void PhysicsSystem::SubCreateHeightFieldActor
 void PhysicsSystem::SubCreateModelActor
 (
 	const WorldTransform &world_transform,
-	const ModelCollisionConfiguration &collision_configuration,
+	const ModelCollisionType collision_type,
 	const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
 	const CollisionModelHandle collision_model,
 	const ModelSimulationConfiguration &simulation_configuration,

@@ -24,17 +24,26 @@ class ScriptInstanceData final
 
 public:
 
-
-	//The previous script identifier.
-	ScriptIdentifier _PreviousScriptIdentifier;
-
-
-	//The current script identifier.
-	ScriptIdentifier _CurrentScriptIdentifier;
+	//The script identifier.
+	ScriptIdentifier _ScriptIdentifier;
 
 	//The data.
 	void *RESTRICT _Data;
 
 };
 
-DECLARE_COMPONENT(ScriptComponent, ScriptInitializationData, ScriptInstanceData);
+DECLARE_COMPONENT
+(
+	ScriptComponent,
+	ScriptInitializationData,
+	ScriptInstanceData,
+	/*
+	*	Callback for before an editable field change happens.
+	*/
+	FORCE_INLINE void PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
+
+	/*
+	*	Callback for after an editable field change happens.
+	*/
+	FORCE_INLINE void PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
+);

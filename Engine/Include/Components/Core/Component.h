@@ -239,6 +239,22 @@ public:
 		return _EditableFields;
 	}
 
+	/*
+	*	Callback for before an editable field change happens.	
+	*/
+	FORCE_INLINE virtual void PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Callback for after an editable field change happens.
+	*/
+	FORCE_INLINE virtual void PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
+	{
+
+	}
+
 protected:
 
 	/*
