@@ -450,7 +450,7 @@ void PhysicsSystem::SubCreateModelActor
 				shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
 			}
 
-			position_offset = -AxisAlignedBoundingBox3D::CalculateCenter(local_axis_aligned_bounding_box);
+			position_offset = AxisAlignedBoundingBox3D::CalculateCenter(local_axis_aligned_bounding_box) - world_transform.GetAbsolutePosition();
 
 			break;
 		}

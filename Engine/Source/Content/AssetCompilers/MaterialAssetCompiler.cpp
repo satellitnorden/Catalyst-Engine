@@ -284,6 +284,40 @@ void MaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_
 				}
 			}
 
+			//Is this an albedo/thickness color declaration?
+			{
+				const size_t position{ current_line.find("AlbedoThicknessColor(") };
+
+				if (position != std::string::npos)
+				{
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							current_line.c_str(),
+							current_line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 4, "AlbedoThicknessColor() needs one argument!");
+
+					parameters._AlbedoThicknessComponent._Type = MaterialParameters::Component::Type::COLOR;
+					parameters._AlbedoThicknessComponent._Color = Color
+					(
+						Vector4<float32>
+						(
+							std::stof(arguments[0].Data()),
+							std::stof(arguments[1].Data()),
+							std::stof(arguments[2].Data()),
+							std::stof(arguments[3].Data())
+						)
+					);
+
+					continue;
+				}
+			}
+
 			//Is this an albedo/thickness texture declaration?
 			{
 				const size_t position{ current_line.find("AlbedoThicknessTexture(") };

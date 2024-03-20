@@ -675,6 +675,11 @@ NO_DISCARD bool ContentSystem::ParseContentDefinitionsInDirectory(const Compilat
 		std::string _FilePath;
 	};
 
+	if (!File::Exists(directory_path))
+	{
+		return false;
+	}
+
 	//Keep track of delayed compiles.
 	DynamicArray<DelayedCompile> delayed_compiles;
 
