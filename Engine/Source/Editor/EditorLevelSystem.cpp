@@ -30,6 +30,9 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 
+//World.
+#include <World/Level/LevelStatistics.h>
+
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
 #include <ThirdParty/ImGui/imgui_internal.h>
@@ -450,6 +453,12 @@ void EditorLevelSystem::EndGame() NOEXCEPT
 */
 void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 {
+	//Calculate the level statistics.
+	LevelStatistics level_statistics;
+
+	//Set some defaults.
+	level_statistics._Radius = 0.0f;
+
 	//Write all entities.
 	nlohmann::json &entities{ JSON["Entities"] };
 
@@ -472,7 +481,24 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 			rotation_entry["Yaw"] = CatalystBaseMath::RadiansToDegrees(level_entry._EditorData._Rotation._Yaw);
 			rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(level_entry._EditorData._Rotation._Pitch);
 		}
+
+		//Update the level statistics.
+		{
+			//Cache the world transform instance data.
+			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(level_entry._Entity) };
+
+			//Calculate the distance from the center.
+			const float32 distance_from_center{ Vector3<float32>::LengthXZ(world_transform_instance_data._CurrentWorldTransform.GetAbsolutePosition()) };
+
+			//Update the radius.
+			level_statistics._Radius = CatalystBaseMath::Maximum<float32>(level_statistics._Radius, distance_from_center);
+		}
 	}
+
+	//Write the level statistics.
+	nlohmann::json &level_statistics_entry{ JSON["LevelStatistics"] };
+
+	level_statistics_entry["Radius"] = level_statistics._Radius;
 }
 
 /*

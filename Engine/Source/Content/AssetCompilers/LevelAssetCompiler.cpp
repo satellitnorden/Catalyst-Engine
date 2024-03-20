@@ -142,6 +142,16 @@ void LevelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 		input_file.close();
 	}
 
+	//Read the level statistics.
+	LevelStatistics level_statistics;
+
+	if (JSON.contains("LevelStatistics"))
+	{
+		const nlohmann::json &level_statistics_entry{ JSON["LevelStatistics"] };
+
+		level_statistics._Radius = level_statistics_entry["Radius"];
+	}
+
 	//Cache the entities JSON object.
 	const nlohmann::json &entities{ JSON["Entities"] };
 
@@ -193,6 +203,9 @@ void LevelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
+	//Write the level statistics.
+	output_file.Write(&level_statistics, sizeof(LevelStatistics));
+
 	//Write the stream archive size.
 	const uint64 stream_archive_size{ stream_archive.Size() };
 	output_file.Write(&stream_archive_size, sizeof(uint64));
@@ -213,6 +226,9 @@ void LevelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 
 	//Read the data.
 	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
+
+	//Read the level statistics.
+	load_data->_StreamArchive->Read(&load_data->_Asset->_LevelStatistics, sizeof(LevelStatistics), &stream_archive_position);
 
 	//Read the stream archive size.
 	uint64 stream_archive_size;
