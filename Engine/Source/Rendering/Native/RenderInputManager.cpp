@@ -1402,7 +1402,7 @@ void RenderInputManager::GatherUserInterfaceTextInputStream
 		(
 			type_primitive->_Minimum,
 			type_primitive->_Maximum,
-			type_primitive->_FontResource,
+			type_primitive->_Font,
 			type_primitive->_Text,
 			type_primitive->_Scale,
 			type_primitive->_HorizontalAlignment,
@@ -1444,18 +1444,18 @@ void RenderInputManager::GatherUserInterfaceTextInputStream
 			push_constant_data._ColorOpacity = Vector4<float32>(1.0f, 1.0f, 1.0f, type_primitive->_Opacity);
 			push_constant_data._BoundsMinimum._X = aligned_minimum._X + current_offset;
 			push_constant_data._BoundsMinimum._Y = aligned_minimum._Y;
-			push_constant_data._BoundsMaximum._X = aligned_minimum._X + current_offset + type_primitive->_FontResource->_CharacterDescriptions[character]._Size._X * type_primitive->_Scale * aspect_ratio_reciprocal;
-			push_constant_data._BoundsMaximum._Y = aligned_minimum._Y + type_primitive->_FontResource->_CharacterDescriptions[character]._Size._Y * type_primitive->_Scale;
+			push_constant_data._BoundsMaximum._X = aligned_minimum._X + current_offset + type_primitive->_Font->_CharacterDescriptions[character]._Size._X * type_primitive->_Scale * aspect_ratio_reciprocal;
+			push_constant_data._BoundsMaximum._Y = aligned_minimum._Y + type_primitive->_Font->_CharacterDescriptions[character]._Size._Y * type_primitive->_Scale;
 
-			push_constant_data._BoundsMinimum._X += type_primitive->_FontResource->_CharacterDescriptions[character]._Offset._X * type_primitive->_Scale * aspect_ratio_reciprocal;
-			push_constant_data._BoundsMaximum._X += type_primitive->_FontResource->_CharacterDescriptions[character]._Offset._X * type_primitive->_Scale * aspect_ratio_reciprocal;
+			push_constant_data._BoundsMinimum._X += type_primitive->_Font->_CharacterDescriptions[character]._Offset._X * type_primitive->_Scale * aspect_ratio_reciprocal;
+			push_constant_data._BoundsMaximum._X += type_primitive->_Font->_CharacterDescriptions[character]._Offset._X * type_primitive->_Scale * aspect_ratio_reciprocal;
 
-			push_constant_data._BoundsMinimum._Y += type_primitive->_FontResource->_CharacterDescriptions[character]._Offset._Y * type_primitive->_Scale;
-			push_constant_data._BoundsMaximum._Y += type_primitive->_FontResource->_CharacterDescriptions[character]._Offset._Y * type_primitive->_Scale;
+			push_constant_data._BoundsMinimum._Y += type_primitive->_Font->_CharacterDescriptions[character]._Offset._Y * type_primitive->_Scale;
+			push_constant_data._BoundsMaximum._Y += type_primitive->_Font->_CharacterDescriptions[character]._Offset._Y * type_primitive->_Scale;
 			
-			push_constant_data._TextureMinimum = type_primitive->_FontResource->_CharacterDescriptions[character]._TextureBounds._Minimum;
-			push_constant_data._TextureMaximum = type_primitive->_FontResource->_CharacterDescriptions[character]._TextureBounds._Maximum;
-			push_constant_data._TextureIndex = type_primitive->_FontResource->_MasterTextureIndex;
+			push_constant_data._TextureMinimum = type_primitive->_Font->_CharacterDescriptions[character]._TextureBounds._Minimum;
+			push_constant_data._TextureMaximum = type_primitive->_Font->_CharacterDescriptions[character]._TextureBounds._Maximum;
+			push_constant_data._TextureIndex = type_primitive->_Font->_MasterTextureIndex;
 			push_constant_data._SmoothingFactor = 0.25f;
 
 			for (uint64 i{ 0 }; i < sizeof(UserInterfaceTextPushConstantData); ++i)
@@ -1464,7 +1464,7 @@ void RenderInputManager::GatherUserInterfaceTextInputStream
 			}
 
 			//Update the current offset.
-			current_offset += type_primitive->_FontResource->_CharacterDescriptions[character]._Advance * type_primitive->_Scale * aspect_ratio_reciprocal;
+			current_offset += type_primitive->_Font->_CharacterDescriptions[character]._Advance * type_primitive->_Scale * aspect_ratio_reciprocal;
 		}
 	}
 }

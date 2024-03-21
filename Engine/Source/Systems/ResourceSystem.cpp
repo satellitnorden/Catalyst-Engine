@@ -173,44 +173,6 @@ NO_DISCARD ResourcePointer<AnimationResource> ResourceSystem::FindOrCreateAnimat
 }
 
 /*
-*	Returns the font resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<FontResource> ResourceSystem::GetFontResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	FontResource *const RESTRICT *const RESTRICT resource{ _FontResources.Find(identifier) };
-
-	ASSERT(resource, "Couldn't find resource!");
-
-	return resource ? ResourcePointer<FontResource>(*resource) : ResourcePointer<FontResource>();
-}
-
-/*
-*	Returns or creates the font resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<FontResource> ResourceSystem::FindOrCreateFontResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	FontResource *const RESTRICT *const RESTRICT resource{ _FontResources.Find(identifier) };
-
-	if (!resource)
-	{
-		//If the resource couldn't be found, create it.
-		FontResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<FontResource>()) FontResource() };
-		new_resource->_Header._ResourceIdentifier = identifier;
-		_FontResources.Add(identifier, new_resource);
-		_AllResources.Emplace(new_resource);
-
-		return ResourcePointer<FontResource>(new_resource);
-	}
-
-	else
-	{
-		return ResourcePointer<FontResource>(*resource);
-	}
-}
-
-/*
 *	Returns the raw data resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<RawDataResource> ResourceSystem::GetRawDataResource(const HashString identifier) NOEXCEPT
@@ -530,44 +492,6 @@ void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT
 
 		//Create the resource.
 		_ResourceCreationSystem.CreateAnimation(&data, new_resource);
-
-		//Register that the resource is now loaded.
-		new_resource->_LoadState = ResourceLoadState::LOADED;
-	}
-
-	else if (header._TypeIdentifier == ResourceConstants::FONT_TYPE_IDENTIFIER)
-	{
-		/*
-		*	Find or allocate the new resource.
-		*	The resource might have been created already by other dependant resources, but not loaded yet.
-		*/
-		FontResource* RESTRICT new_resource;
-
-		if (FontResource* const RESTRICT* const RESTRICT found_resource{ _FontResources.Find(header._ResourceIdentifier) })
-		{
-			new_resource = *found_resource;
-		}
-
-		else
-		{
-			new_resource = new (MemorySystem::Instance->TypeAllocate<FontResource>()) FontResource();
-			_FontResources.Add(header._ResourceIdentifier, new_resource);
-			_AllResources.Emplace(new_resource);
-		}
-
-		//Set the resource header.
-		new_resource->_Header = header;
-
-		//Set the file path and file offset.
-		new_resource->_FilePath = file->GetFilePath();
-		new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
-
-		//Load the resource.
-		FontData data;
-		_ResourceLoadingSystem.LoadFont(file, &data);
-
-		//Create the resource.
-		_ResourceCreationSystem.CreateFont(&data, new_resource);
 
 		//Register that the resource is now loaded.
 		new_resource->_LoadState = ResourceLoadState::LOADED;

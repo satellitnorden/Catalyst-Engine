@@ -7,7 +7,6 @@
 //Resources.
 #include <Resources/Building/AnimatedModelBuildParameters.h>
 #include <Resources/Building/AnimationBuildParameters.h>
-#include <Resources/Building/FontBuildParameters.h>
 #include <Resources/Building/RawDataBuildParameters.h>
 #include <Resources/Building/RenderPipelineBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
@@ -35,11 +34,6 @@ public:
 	*	Builds an animation.
 	*/
 	void BuildAnimation(const AnimationBuildParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Builds a font.
-	*/
-	void BuildFont(const FontBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a raw data.

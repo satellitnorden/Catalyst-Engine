@@ -23,7 +23,7 @@ public:
 	UserInterfaceTextInput(	const Vector2<float32> initial_minimum,
 							const Vector2<float32> initial_maximum,
 							const UserInterfaceMaterial &initial_idle_material,
-							const ResourcePointer<FontResource> font_resource,
+							const AssetPointer<FontAsset> font,
 							const float32 text_scale,
 							const char *const RESTRICT prompt_text,
 							const char *const RESTRICT text) NOEXCEPT;
@@ -101,8 +101,8 @@ private:
 	//The idle material.
 	UserInterfaceMaterial _IdleMaterial;
 
-	//The font resource.
-	ResourcePointer<FontResource> _FontResource;
+	//The font.
+	AssetPointer<FontAsset> _Font;
 
 	//The text scale.
 	float32 _TextScale;

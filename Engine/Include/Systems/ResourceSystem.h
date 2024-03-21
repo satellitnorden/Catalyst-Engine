@@ -8,7 +8,6 @@
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
-#include <Resources/Core/FontResource.h>
 #include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ResourcePointer.h>
@@ -118,24 +117,6 @@ public:
 	FORCE_INLINE NO_DISCARD const HashTable<HashString, AnimationResource *RESTRICT> &GetAllAnimationResources() const NOEXCEPT
 	{
 		return _AnimationResources;
-	}
-
-	/*
-	*	Returns the font resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<FontResource> GetFontResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the font resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<FontResource> FindOrCreateFontResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all font resources.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, FontResource *RESTRICT> &GetAllFontResources() const NOEXCEPT
-	{
-		return _FontResources;
 	}
 
 	/*
@@ -256,9 +237,6 @@ private:
 
 	//Container for all animation resources.
 	HashTable<HashString, AnimationResource *RESTRICT> _AnimationResources;
-
-	//Container for all font resources.
-	HashTable<HashString, FontResource *RESTRICT> _FontResources;
 
 	//Container for all raw data resources.
 	HashTable<HashString, RawDataResource *RESTRICT> _RawDataResources;

@@ -10,10 +10,6 @@
 //Rendering.
 #include <Rendering/Native/Resolution.h>
 
-//Resources.
-#include <Resources/Core/FontResource.h>
-#include <Resources/Core/ResourcePointer.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -25,7 +21,7 @@ namespace UserInterfaceUtilities
 	*/
 	FORCE_INLINE static void CalculateAlignedBoundingBox(	const Vector2<float32> &original_minimum,
 															const Vector2<float32> &original_maximum,
-															ResourcePointer<FontResource> font_resource,
+															AssetPointer<FontAsset> font,
 															const DynamicString &text,
 															const float32 scale,
 															const TextHorizontalAlignment horizontal_alignment,
@@ -40,7 +36,7 @@ namespace UserInterfaceUtilities
 		const float32 aspect_ratio_reciprocal{ 1.0f / RenderingSystem::Instance->GetFullAspectRatio() };
 
 		//Use the character 'A' as a baseline height.
-		const float32 baseline_height{ font_resource->_CharacterDescriptions['A']._Size._Y * scale };
+		const float32 baseline_height{ font->_CharacterDescriptions['A']._Size._Y * scale };
 
 		//Calculate the original center.
 		const Vector2<float32> original_center{ CatalystBaseMath::LinearlyInterpolate(original_minimum, original_maximum, 0.5f) };
@@ -59,7 +55,7 @@ namespace UserInterfaceUtilities
 			const char character{ text[i] };
 
 			//Advance the maximum on the X axis..
-			text_maximum._X += font_resource->_CharacterDescriptions[character]._Advance * scale * aspect_ratio_reciprocal;
+			text_maximum._X += font->_CharacterDescriptions[character]._Advance * scale * aspect_ratio_reciprocal;
 		}
 
 		//Calculate the text horizontal/vertical extent.
@@ -235,7 +231,7 @@ namespace UserInterfaceUtilities
 	/*
 	*	Calculates the optimal text smoothing factor based on the text scale.
 	*/
-	FORCE_INLINE static NO_DISCARD float32 CalculateOptimalTextSmoothingFactor(ResourcePointer<FontResource> font_resource, const float32 scale) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD float32 CalculateOptimalTextSmoothingFactor(AssetPointer<FontAsset> font, const float32 scale) NOEXCEPT
 	{
 		return 1.0f / 8.0f;
 	}

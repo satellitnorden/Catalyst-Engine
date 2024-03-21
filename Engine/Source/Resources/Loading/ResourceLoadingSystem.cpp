@@ -83,41 +83,6 @@ void ResourceLoadingSystem::LoadAnimation(BinaryFile<BinaryFileMode::IN> *const 
 }
 
 /*
-*	Given a file, load font data.
-*/
-void ResourceLoadingSystem::LoadFont(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, FontData *const RESTRICT data) NOEXCEPT
-{
-	//Read all characters.
-	for (int8 i{ 0 }; i < FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
-	{
-		//Read the character description.
-		file->Read(&data->_CharacterDescriptions[i], sizeof(FontResource::CharacterDescription));
-	}
-
-	//Read the master texture width.
-	file->Read(&data->_MasterTextureWidth, sizeof(uint32));
-
-	//Read the master texture height.
-	file->Read(&data->_MasterTextureHeight, sizeof(uint32));
-
-	//Read the number of mipmap levels.
-	file->Read(&data->_NumberOfMipmapLevels, sizeof(uint8));
-
-	//Read the master texture data.
-	data->_MasterTextureData.Upsize<true>(data->_NumberOfMipmapLevels);
-
-	for (uint8 i{ 0 }; i < data->_NumberOfMipmapLevels; ++i)
-	{
-		const uint32 mip_width{ data->_MasterTextureWidth >> i };
-		const uint32 mip_height{ data->_MasterTextureHeight >> i };
-
-		data->_MasterTextureData[i].Upsize<false>(mip_width * mip_height);
-
-		file->Read(data->_MasterTextureData[i].Data(), mip_width * mip_height);
-	}
-}
-
-/*
 *	Given a file, load raw data data.
 */
 void ResourceLoadingSystem::LoadRawData(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RawDataData* const RESTRICT data) NOEXCEPT

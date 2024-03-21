@@ -136,12 +136,6 @@ private:
 	*	Returns if new content was compiled.
 	*/
 	NO_DISCARD bool ParseContentDefinitionsInDirectory(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const char *const RESTRICT directory_path) NOEXCEPT;
-
-	/*
-	*	Parses a Font from the given file.
-	*/
-	void ParseFont(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
-
 	/*
 	*	Parses a procedural tree model from the given file.
 	*/

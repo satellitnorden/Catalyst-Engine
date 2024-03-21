@@ -14,7 +14,7 @@
 UserInterfaceText::UserInterfaceText(	const Vector2<float32> initial_minimum,
 										const Vector2<float32> initial_maximum,
 										const char *const RESTRICT text,
-										const ResourcePointer<FontResource> font_resource,
+										const AssetPointer<FontAsset> font,
 										const float32 scale,
 										const TextHorizontalAlignment horizontal_alignment,
 										const TextVerticalAlignment vertical_alignment,
@@ -27,8 +27,8 @@ UserInterfaceText::UserInterfaceText(	const Vector2<float32> initial_minimum,
 	_Minimum = initial_minimum;
 	_Maximum = initial_maximum;
 
-	//Set the font resource.
-	_FontResource = font_resource;
+	//Set the font.
+	_Font = font;
 
 	//Set the scale.
 	_Scale = scale;
@@ -90,7 +90,7 @@ void UserInterfaceText::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Minimum = _Minimum;
 			description._Maximum = _Maximum;
 			description._Opacity = 1.0f;
-			description._FontResource = _FontResource;
+			description._Font = _Font;
 			description._Scale = _Scale;
 			description._HorizontalAlignment = _HorizontalAlignment;
 			description._VerticalAlignment = _VerticalAlignment;

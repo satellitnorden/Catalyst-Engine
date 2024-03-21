@@ -55,65 +55,6 @@ void ResourceCreationSystem::CreateAnimation(AnimationData *const RESTRICT data,
 }
 
 /*
-*	Creates a font.
-*/
-void ResourceCreationSystem::CreateFont(FontData *const RESTRICT data, FontResource *const RESTRICT resource) NOEXCEPT
-{
-	//Just copy the character descriptions.
-	resource->_CharacterDescriptions = data->_CharacterDescriptions;
-
-	//Create the master texture.
-	Texture2DHandle master_texture;
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(data->_MasterTextureData, data->_MasterTextureWidth, data->_MasterTextureHeight, 1), TextureFormat::R_UINT8, TextureUsage::NONE, false), &master_texture);
-
-	resource->_MasterTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(master_texture);
-
-	//Calculate the default height.
-	resource->_DefaultHeight = FLOAT32_MAXIMUM;
-
-	for (uint8 i{ 0 }; i < FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
-	{
-		if (resource->_CharacterDescriptions[i]._Size._Y != 0.0f
-			&& ((i >= 'A' && i <= 'Z')
-			|| (i >= 'a' && i <= 'z')))
-		{
-			resource->_DefaultHeight = CatalystBaseMath::Minimum<float32>(resource->_DefaultHeight, resource->_CharacterDescriptions[i]._Size._Y);
-		}
-	}
-
-	if (resource->_DefaultHeight == FLOAT32_MAXIMUM)
-	{
-		ASSERT(false, "This shouldn't happen...");
-
-		resource->_DefaultHeight = 0.0f;
-
-		float32 number_of_valid_characters{ 0.0f };
-
-		for (uint8 i{ 0 }; i < FontResource::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
-		{
-			if (resource->_CharacterDescriptions[i]._Size._Y != 0.0f)
-			{
-				resource->_DefaultHeight += resource->_CharacterDescriptions[i]._Size._Y;
-			
-				++number_of_valid_characters;
-			}
-		}
-
-		if (number_of_valid_characters > 0.0f)
-		{
-			resource->_DefaultHeight /= number_of_valid_characters;
-		}
-
-		else
-		{
-			ASSERT(false, "This shouldn't happen...");
-
-			resource->_DefaultHeight = 0.1f;
-		}
-	}
-}
-
-/*
 *	Creates a raw data.
 */
 void ResourceCreationSystem::CreateRawData(RawDataData *const RESTRICT data, RawDataResource *const RESTRICT resource) NOEXCEPT

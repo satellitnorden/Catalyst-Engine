@@ -30,7 +30,7 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 												const float32 text_scale,
 												const TextHorizontalAlignment horizontal_alignment,
 												const TextVerticalAlignment vertical_alignment,
-												const ResourcePointer<FontResource> font_resource,
+												const AssetPointer<FontAsset> font,
 												const bool is_three_dimensional) NOEXCEPT
 {
 	//Set the type.
@@ -83,8 +83,8 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 	_HorizontalAlignment = horizontal_alignment;
 	_VerticalAlignment = vertical_alignment;
 
-	//Set the font resource.
-	_FontResource = font_resource;
+	//Set the font.
+	_Font = font;
 
 	//Remember whether or not this checkbox is three dimensional.
 	_IsThreeDimensional = is_three_dimensional;
@@ -158,7 +158,7 @@ void UserInterfaceCheckbox::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Minimum = _TextMinimum;
 			description._Maximum = _TextMaximum;
 			description._Opacity = 1.0f;
-			description._FontResource = _FontResource;
+			description._Font = _Font;
 			description._Scale = _TextScale;
 			description._HorizontalAlignment = _HorizontalAlignment;
 			description._VerticalAlignment = _VerticalAlignment;

@@ -4,9 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/DynamicString.h>
 
-//Resources.
-#include <Resources/Core/FontResource.h>
-#include <Resources/Core/ResourcePointer.h>
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/FontAsset.h>
 
 //User interface.
 #include <UserInterface/UserInterfacePrimitive.h>
@@ -16,8 +16,8 @@ class TextUserInterfacePrimitive final : public UserInterfacePrimitive
 
 public:
 
-	//The font resource.
-	ResourcePointer<FontResource> _FontResource;
+	//The font.
+	AssetPointer<FontAsset> _Font;
 
 	//The scale.
 	float32 _Scale;

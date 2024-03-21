@@ -9,7 +9,6 @@
 //Resources.
 #include <Resources/Core/AnimatedModelResource.h>
 #include <Resources/Core/AnimationResource.h>
-#include <Resources/Core/FontResource.h>
 #include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ShaderResource.h>
@@ -18,7 +17,6 @@
 #include <Resources/Core/VideoResource.h>
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
-#include <Resources/Loading/FontData.h>
 #include <Resources/Loading/RawDataData.h>
 #include <Resources/Loading/RenderPipelineData.h>
 #include <Resources/Loading/ShaderData.h>
@@ -40,11 +38,6 @@ public:
 	*	Creates an animation.
 	*/
 	void CreateAnimation(AnimationData *const RESTRICT data, AnimationResource *const RESTRICT resource) NOEXCEPT;
-
-	/*
-	*	Creates a font.
-	*/
-	void CreateFont(FontData *const RESTRICT data, FontResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a raw data.

@@ -79,7 +79,7 @@ RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem
 			primitive->_Minimum = type_description->_Minimum;
 			primitive->_Maximum = type_description->_Maximum;
 			primitive->_Opacity = type_description->_Opacity;
-			primitive->_FontResource = type_description->_FontResource;
+			primitive->_Font = type_description->_Font;
 			primitive->_Scale = type_description->_Scale;
 			primitive->_HorizontalAlignment = type_description->_HorizontalAlignment;
 			primitive->_VerticalAlignment = type_description->_VerticalAlignment;

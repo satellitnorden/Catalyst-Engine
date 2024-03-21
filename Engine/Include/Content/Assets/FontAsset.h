@@ -2,19 +2,21 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/StaticArray.h>
+
+//Content.
+#include <Content/Core/Asset.h>
 
 //Math.
 #include <Math/General/Vector.h>
 #include <Math/Geometry/AxisAlignedBoundingBox2D.h>
 
-//Resources.
-#include <Resources/Core/Resource.h>
-
-class FontResource final : public Resource
+class FontAsset final : public Asset
 {
 
 public:
+
+	//The type identifier.
+	static HashString TYPE_IDENTIFIER;
 
 	//Constants.
 	constexpr static uint8 NUMBER_OF_CHARACTER_DESCRIPTIONS{ 127 };

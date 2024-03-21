@@ -16,7 +16,7 @@
 UserInterfaceTextInput::UserInterfaceTextInput(	const Vector2<float32> initial_minimum,
 												const Vector2<float32> initial_maximum,
 												const UserInterfaceMaterial& initial_idle_material,
-												const ResourcePointer<FontResource> font_resource,
+												const AssetPointer<FontAsset> font,
 												const float32 text_scale,
 												const char* const RESTRICT prompt_text,
 												const char* const RESTRICT text) NOEXCEPT
@@ -31,8 +31,8 @@ UserInterfaceTextInput::UserInterfaceTextInput(	const Vector2<float32> initial_m
 	//Set the materials.
 	_IdleMaterial = initial_idle_material;
 
-	//Set the font resource.
-	_FontResource = font_resource;
+	//Set the font.
+	_Font = font;
 
 	//Set the text scale.
 	_TextScale = text_scale;
@@ -168,7 +168,7 @@ void UserInterfaceTextInput::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Minimum = _Minimum;
 			description._Maximum = _Maximum;
 			description._Opacity = 1.0f;
-			description._FontResource = _FontResource;
+			description._Font = _Font;
 			description._Scale = _TextScale;
 			description._HorizontalAlignment = TextHorizontalAlignment::CENTER;
 			description._VerticalAlignment = TextVerticalAlignment::CENTER;

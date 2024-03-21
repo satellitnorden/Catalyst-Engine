@@ -40,7 +40,7 @@ public:
 							const float32 text_scale,
 							const TextHorizontalAlignment horizontal_alignment,
 							const TextVerticalAlignment vertical_alignment,
-							const ResourcePointer<FontResource> font_resource,
+							const AssetPointer<FontAsset> font,
 							const bool is_three_dimensional) NOEXCEPT;
 
 	/*
@@ -228,8 +228,8 @@ private:
 	//The checked pressed material.
 	UserInterfaceMaterial _CheckedPressedMaterial;
 
-	//The font resource.
-	ResourcePointer<FontResource> _FontResource;
+	//The font.
+	AssetPointer<FontAsset> _Font;
 
 	//The text scale.
 	float32 _TextScale;

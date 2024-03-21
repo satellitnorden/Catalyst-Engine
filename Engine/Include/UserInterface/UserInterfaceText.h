@@ -22,7 +22,7 @@ public:
 	UserInterfaceText(	const Vector2<float32> initial_minimum,
 						const Vector2<float32> initial_maximum,
 						const char *const RESTRICT text,
-						const ResourcePointer<FontResource> font_resource,
+						const AssetPointer<FontAsset> font,
 						const float32 scale,
 						const TextHorizontalAlignment horizontal_alignment,
 						const TextVerticalAlignment vertical_alignment,
@@ -61,8 +61,8 @@ private:
 	//The maximum.
 	Vector2<float32> _Maximum;
 
-	//The font resource.
-	ResourcePointer<FontResource> _FontResource;
+	//The font.
+	AssetPointer<FontAsset> _Font;
 
 	//The scale.
 	float32 _Scale;

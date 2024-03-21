@@ -141,11 +141,11 @@ protected:
 	}
 
 	/*
-	*	Sets the font resource.
+	*	Sets the font.
 	*/
-	FORCE_INLINE void SetFontResource(const ResourcePointer<FontResource> value) NOEXCEPT
+	FORCE_INLINE void SetFont(const AssetPointer<FontAsset> value) NOEXCEPT
 	{
-		_FontResource = value;
+		_Font = value;
 	}
 
 	/*
@@ -845,8 +845,8 @@ private:
 	//The vertical subdivision reciprocal.
 	float32 _VerticalSubdivisionReciprocal;
 
-	//The font resource.
-	ResourcePointer<FontResource> _FontResource;
+	//The font.
+	AssetPointer<FontAsset> _Font;
 
 	//The button idle material.
 	UserInterfaceMaterial _ButtonIdleMaterial;

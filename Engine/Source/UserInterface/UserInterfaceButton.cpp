@@ -22,7 +22,7 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 											const UserInterfaceMaterial &initial_hovered_material,
 											const UserInterfaceMaterial &initial_pressed_material,
 											const char *const RESTRICT text,
-											const ResourcePointer<FontResource> font_resource,
+											const AssetPointer<FontAsset> font,
 											const float32 text_scale,
 											const bool is_three_dimensional) NOEXCEPT
 {
@@ -47,8 +47,8 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 	_HoveredMaterial = initial_hovered_material;
 	_PressedMaterial = initial_pressed_material;
 
-	//Set the font resource.
-	_FontResource = font_resource;
+	//Set the font.
+	_Font = font;
 
 	//Set the text scale.
 	_TextScale = text_scale;
@@ -180,7 +180,7 @@ void UserInterfaceButton::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Minimum = _Minimum;
 			description._Maximum = _Maximum;
 			description._Opacity = 1.0f;
-			description._FontResource = _FontResource;
+			description._Font = _Font;
 			description._Scale = _TextScale;
 			description._HorizontalAlignment = TextHorizontalAlignment::CENTER;
 			description._VerticalAlignment = TextVerticalAlignment::CENTER;

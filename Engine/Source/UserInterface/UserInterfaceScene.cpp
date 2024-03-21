@@ -9,7 +9,7 @@
 	#include <Systems/CatalystEditorSystem.h>
 #endif
 #include <Systems/CatalystEngineSystem.h>
-#include <Systems/ResourceSystem.h>
+#include <Systems/ContentSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/MemorySystem.h>
 #include <Systems/RenderingSystem.h>
@@ -44,7 +44,7 @@ void UserInterfaceScene::OnActivated() NOEXCEPT
 	SetHorizontalSubdivision(33);
 	SetVerticalSubdivision(33);
 
-	_FontResource = ResourceSystem::Instance->GetFontResource(HashString("Default"));
+	_Font = ContentSystem::Instance->GetAsset<FontAsset>(HashString("Default"));
 
 	_ButtonIdleMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f));
 	_ButtonIdleMaterial.SetBorderOffset(0.0f);
@@ -231,7 +231,7 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButtonByNo
 																			hovered_material_override ? *hovered_material_override : _ButtonHoveredMaterial,
 																			pressed_material_override ? *pressed_material_override : _ButtonPressedMaterial,
 																			text,
-																			_FontResource,
+																			_Font,
 																			text_scale_override ? *text_scale_override : _TextScale,
 																			_Entity != nullptr) };
 
@@ -346,7 +346,7 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 			scale_override ? *scale_override : _TextScale,
 			horizontal_alignment,
 			vertical_alignment,
-			_FontResource,
+			_Font,
 			_Entity != nullptr
 		) 
 	};
@@ -477,7 +477,7 @@ RESTRICTED UserInterfaceProgressBar* const RESTRICT UserInterfaceScene::AddProgr
 																							bottom_material_override ? *bottom_material_override : _ProgressBarBottomMaterial,
 																							top_material_override ? *top_material_override : _ProgressBarTopMaterial,
 																							text,
-																							_FontResource,
+																							_Font,
 																							_Entity != nullptr) };
 
 	//Add the progress bar to the container.
@@ -532,7 +532,7 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddTextByNormal
 	UserInterfaceText* const RESTRICT new_text{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceText>()) UserInterfaceText(	minimum,
 																		maximum,
 																		text,
-																		_FontResource,
+																		_Font,
 																		scale_override ? *scale_override : _TextScale,
 																		horizontal_alignment,
 																		vertical_alignment,
@@ -600,7 +600,7 @@ RESTRICTED UserInterfaceTextInput *const RESTRICT UserInterfaceScene::AddTextInp
 			minimum,
 			maximum,
 			_ButtonIdleMaterial,
-			_FontResource,
+			_Font,
 			_TextScale,
 			prompt_text,
 			text

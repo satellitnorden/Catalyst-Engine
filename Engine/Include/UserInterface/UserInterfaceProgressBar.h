@@ -25,7 +25,7 @@ public:
 								const UserInterfaceMaterial &initial_bottom_material,
 								const UserInterfaceMaterial &initial_top_material,
 								const char *const RESTRICT text,
-								const ResourcePointer<FontResource> font_resource,
+								const AssetPointer<FontAsset> font,
 								const bool is_three_dimensional) NOEXCEPT;
 
 	/*
@@ -58,8 +58,8 @@ public:
 
 private:
 
-	//The font resource.
-	ResourcePointer<FontResource> _FontResource;
+	//The font.
+	AssetPointer<FontAsset> _Font;
 
 	//The bottom primitive.
 	ImageUserInterfacePrimitive *RESTRICT _BottomPrimitive;
