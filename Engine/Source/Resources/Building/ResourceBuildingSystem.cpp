@@ -19,7 +19,6 @@
 #include <File/Core/BinaryFile.h>
 #include <File/Readers/FBXReader.h>
 #include <File/Readers/JPGReader.h>
-#include <File/Readers/MP4Reader.h>
 #include <File/Readers/PNGReader.h>
 #include <File/Readers/WAVReader.h>
 #include <File/Writers/PNGWriter.h>
@@ -1194,53 +1193,5 @@ void ResourceBuildingSystem::BuildTexture3D(const Texture3DBuildParameters& para
 
 	//Close the output file.
 	file.Close();
-}
-
-/*
-*	Builds a video.
-*/
-void ResourceBuildingSystem::BuildVideo(const VideoBuildParameters &parameters) NOEXCEPT
-{
-	//Read the video resource.
-	VideoResource video_resource;
-	MP4Reader::Read(parameters._FilePath, &video_resource);
-
-	//What should the output file path be?
-	DynamicString output_file_path{ parameters._Output };
-	output_file_path += ".cr";
-
-	//Open the output file to be written to.
-	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path.Data() };
-
-	//Write the resource header to the file.
-	const ResourceHeader header{ ResourceConstants::VIDEO_TYPE_IDENTIFIER, HashString(parameters._ResourceIdentifier), parameters._ResourceIdentifier };
-	output_file.Write(&header, sizeof(ResourceHeader));
-
-	//Write the width.
-	output_file.Write(&video_resource._Width, sizeof(uint32));
-
-	//Write the height.
-	output_file.Write(&video_resource._Height, sizeof(uint32));
-
-	//Write the frames per second.
-	output_file.Write(&video_resource._FramesPerSecond, sizeof(float32));
-
-	//Write the frames per second reciprocal.
-	output_file.Write(&video_resource._FramesPerSecondReciprocal, sizeof(float32));
-
-	//Write the number of frames.
-	const uint64 number_of_frames{ video_resource._Frames.Size() };
-	output_file.Write(&number_of_frames, sizeof(uint64));
-
-	//Write the frames.
-	for (const VideoResource::Frame &frame : video_resource._Frames)
-	{
-		output_file.Write(frame._DataX.Data(), sizeof(uint8) * video_resource._Width * video_resource._Height);
-		output_file.Write(frame._DataY.Data(), sizeof(uint8) * video_resource._Width * video_resource._Height);
-		output_file.Write(frame._DataZ.Data(), sizeof(uint8) * video_resource._Width * video_resource._Height);
-	}
-
-	//Close the output file.
-	output_file.Close();
 }
 #endif

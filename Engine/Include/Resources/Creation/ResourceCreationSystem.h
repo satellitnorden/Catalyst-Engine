@@ -14,7 +14,6 @@
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture3DResource.h>
-#include <Resources/Core/VideoResource.h>
 #include <Resources/Loading/AnimatedModelData.h>
 #include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/RawDataData.h>
@@ -22,7 +21,6 @@
 #include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture3DData.h>
-#include <Resources/Loading/VideoData.h>
 
 class ResourceCreationSystem final
 {
@@ -63,10 +61,5 @@ public:
 	*	Creates a texture 3D.
 	*/
 	void CreateTexture3D(Texture3DData *const RESTRICT data, Texture3DResource *const RESTRICT resource) NOEXCEPT;
-
-	/*
-	*	Creates a video.
-	*/
-	void CreateVideo(VideoData *const RESTRICT data, VideoResource *const RESTRICT resource) NOEXCEPT;
 
 };

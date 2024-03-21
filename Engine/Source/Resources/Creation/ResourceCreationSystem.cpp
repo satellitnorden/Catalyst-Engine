@@ -201,18 +201,3 @@ void ResourceCreationSystem::CreateTexture3D(Texture3DData *const RESTRICT data,
 	//Create the texture!
 	RenderingSystem::Instance->CreateTexture3D(TextureData(TextureDataContainer(temporary_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &resource->_Texture3DHandle);
 }
-
-/*
-*	Creates a video.
-*/
-void ResourceCreationSystem::CreateVideo(VideoData *const RESTRICT data, VideoResource *const RESTRICT resource) NOEXCEPT
-{
-	//Copy the width/height/frames per second/frames per second reciprocal.
-	resource->_Width = data->_Width;
-	resource->_Height = data->_Height;
-	resource->_FramesPerSecond = data->_FramesPerSecond;
-	resource->_FramesPerSecondReciprocal = data->_FramesPerSecondReciprocal;
-
-	//Move the frames.
-	resource->_Frames = std::move(data->_Frames);
-}

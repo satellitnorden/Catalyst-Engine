@@ -13,7 +13,6 @@
 #include <Resources/Building/ShaderBuildParameters.h>
 #include <Resources/Building/SoundBuildParameters.h>
 #include <Resources/Building/Texture3DBuildParameters.h>
-#include <Resources/Building/VideoBuildParameters.h>
 
 class ResourceBuildingSystem final
 {
@@ -59,11 +58,6 @@ public:
 	*	Builds a texture 3D.
 	*/
 	void BuildTexture3D(const Texture3DBuildParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Builds a video.
-	*/
-	void BuildVideo(const VideoBuildParameters &parameters) NOEXCEPT;
 
 };
 #endif

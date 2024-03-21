@@ -14,7 +14,6 @@
 #include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture3DResource.h>
-#include <Resources/Core/VideoResource.h>
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	#include <Resources/Building/ResourceBuildingSystem.h>
 #endif
@@ -176,24 +175,6 @@ public:
 	}
 
 	/*
-	*	Returns the video resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<VideoResource> GetVideoResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the video resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<VideoResource> FindOrCreateVideoResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all video resources.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, VideoResource *RESTRICT> &GetAllVideoResources() const NOEXCEPT
-	{
-		return _VideoResources;
-	}
-
-	/*
 	*	Returns the texture 3D resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT;
@@ -249,9 +230,6 @@ private:
 
 	//Container for all sound resources.
 	HashTable<HashString, SoundResource *RESTRICT> _SoundResources;
-
-	//Container for all video resources.
-	HashTable<HashString, VideoResource *RESTRICT> _VideoResources;
 
 	//Container for all texture 3D resources.
 	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;
