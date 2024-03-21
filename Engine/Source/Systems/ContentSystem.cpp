@@ -100,7 +100,7 @@ NO_DISCARD bool ContentSystem::CompileEngine() NOEXCEPT
 	{
 		//Set up the content cache.
 		char content_cache_file_path[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(content_cache_file_path, "%s\\ContentCache.content_cache", ENGINE_CONTENT_DEFINITIONS);
+		sprintf_s(content_cache_file_path, "%s\\ContentCache", ENGINE_COMPILED);
 		ContentCache content_cache{ content_cache_file_path };
 
 		//Scan assets.
@@ -172,7 +172,7 @@ NO_DISCARD bool ContentSystem::CompileGame() NOEXCEPT
 	{
 		//Set up the content cache.
 		char content_cache_file_path[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(content_cache_file_path, "%s\\ContentCache.content_cache", GAME_CONTENT_DEFINITIONS);
+		sprintf_s(content_cache_file_path, "%s\\ContentCache", GAME_COMPILED);
 		ContentCache content_cache{ content_cache_file_path };
 
 		//Scan assets.
@@ -437,6 +437,12 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 
 		//Cache the file path.
 		const std::string file_path{ entry.path().string() };
+
+		//Ignore the content cache.
+		if (file_path.find("ContentCache") != std::string::npos)
+		{
+			continue;
+		}
 
 		//Open the input file.
 		BinaryFile<BinaryFileMode::IN> input_file{ file_path.c_str() };
