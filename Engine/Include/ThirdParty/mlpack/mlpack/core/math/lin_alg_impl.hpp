@@ -15,6 +15,8 @@
 
 #include "lin_alg.hpp"
 
+#include <corecrt_math_defines.h>
+
 namespace mlpack {
 
 inline size_t SvecIndex(size_t i, size_t j, size_t n)
