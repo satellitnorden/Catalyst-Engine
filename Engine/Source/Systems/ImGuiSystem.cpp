@@ -40,7 +40,7 @@ void ImGuiSystem::Initialize() NOEXCEPT
 
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
-	io.FontDefault = io.Fonts->AddFontFromFileTTF("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Raw\\Fonts\\OpenSans-Regular.ttf", 18.0f);
+	io.FontDefault = io.Fonts->AddFontFromFileTTF("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Fonts\\OpenSans-Regular.ttf", 18.0f);
 
 	//Set up the style.
 	ImGuiStyle *style = &ImGui::GetStyle();

@@ -1,2 +1,2 @@
-LevelOfDetail(..\..\..\..\Catalyst-Engine\Engine\Content\Raw\Models\Plane.fbx);
-Collision(..\..\..\..\Catalyst-Engine\Engine\Content\Raw\Models\Plane.fbx);
+LevelOfDetail(..\..\..\..\Catalyst-Engine\Engine\Content\Source\Base\Models\Plane.fbx);
+Collision(..\..\..\..\Catalyst-Engine\Engine\Content\Source\Base\Models\Plane.fbx);
