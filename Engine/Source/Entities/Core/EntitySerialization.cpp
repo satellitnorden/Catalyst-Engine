@@ -38,7 +38,7 @@ namespace EntitySerialization
 
 		for (Component *const RESTRICT component : AllComponents())
 		{
-			if (!component->Has(entity) || component->EditableFields().Empty())
+			if (!component->Has(entity))
 			{
 				continue;
 			}

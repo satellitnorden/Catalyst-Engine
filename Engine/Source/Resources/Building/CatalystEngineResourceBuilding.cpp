@@ -60,9 +60,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 
 	TaskSystem::Instance->Initialize(concurrency_configuration);
 
-	//Compile for engine.
-	const bool new_content_was_compiled{ ContentSystem::Instance->CompileEngine() };
-
 	//Run the rendering compiler.
 	const bool new_rendering_data_was_compiled{ RenderingCompiler::Instance->Run() };
 
@@ -1477,7 +1474,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		|| BUILD_ENGINE_DEFAULT_TEXTURE_3D
 		|| BUILD_ENGINE_MATERIALS 
 		|| BUILD_ENGINE_RESOURCE_COLLECTIONS
-		|| new_content_was_compiled
 		|| new_rendering_data_was_compiled)
 	{
 		ResourceCollectionBuildParameters parameters;
@@ -1512,17 +1508,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(parameters);
 	}
 #endif
-
-	if (new_content_was_compiled)
-	{
-		ResourceCollectionBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEditorResourceCollection";
-		parameters._Folder = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Editor";
-		parameters._MaximumFileSize = 1'000'000'000;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildResourceCollections(parameters);
-	}
 
 	//Terminate the task system so that it can be re-initialized with the proper arguments.
 	TaskSystem::Instance->Terminate();

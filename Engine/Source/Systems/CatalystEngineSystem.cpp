@@ -76,9 +76,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Set whether or not to run the engine single-threaded.
 	_SingleThreaded = _ProjectConfiguration._ConcurrencyConfiguration._NumberOfTaskExecutors.Valid() && _ProjectConfiguration._ConcurrencyConfiguration._NumberOfTaskExecutors.Get() == 0;
 
-	//Initialize the content system here already, since we might be compiling assets first up.
-	ContentSystem::Instance->Initialize();
-
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Build the Catalyst Engine resources.
 	CatalystEngineResourceBuilding::BuildResources(_ProjectConfiguration);
@@ -132,48 +129,25 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 	}
 	
-	//Register the Catalyst Engine resource collection. 
-#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
-	ResourceSystem::Instance->LoadResourceCollection("CatalystEngineBaseResourceCollection_0.crc");
+	//Initialize and run compilation the content system.
+	ContentSystem::Instance->Initialize();
+	ContentSystem::Instance->CompileEngine();
+	ContentSystem::Instance->CompileGame();
 
-	#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
-		ResourceSystem::Instance->LoadResourceCollection("CatalystEngineEnvironmentResourceCollection_0.crc");
-	#endif
+	//Load assets.
+	ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Base");
+	ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Base");
 
-	#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
-		ResourceSystem::Instance->LoadResourceCollection("CatalystEngineExtraResourceCollection_0.crc");
-	#endif
-
+#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
+	ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEnvironmentResourceCollection_0.crc");
 #endif
 
-#if defined(CATALYST_PLATFORM_WINDOWS)
-	#if defined(CATALYST_CONFIGURATION_FINAL)
-		ResourceSystem::Instance->LoadResourceCollection("EngineContent\\CatalystEngineBaseResourceCollection_0.crc");
+#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
+	ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineExtraResourceCollection_0.crc");
+#endif
 
-		#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
-			ResourceSystem::Instance->LoadResourceCollection("EngineContent\\CatalystEngineEnvironmentResourceCollection_0.crc");
-		#endif
-
-		#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
-			ResourceSystem::Instance->LoadResourceCollection("EngineContent\\CatalystEngineExtraResourceCollection_0.crc");
-		#endif
-	#else
-		ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Base");
-		ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Base");
-
-		#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
-			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEnvironmentResourceCollection_0.crc");
-		#endif
-
-		#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
-			ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineExtraResourceCollection_0.crc");
-		#endif
-
-		#if defined(CATALYST_EDITOR)
-			ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Editor");
-		#endif
-	#endif
-		
+#if defined(CATALYST_EDITOR)
+	ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Editor");
 #endif
 
 	//Post-initialize all systems.
