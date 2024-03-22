@@ -516,8 +516,7 @@ vec3 CalculateDirectLighting
 	float weakening_factor = dot(normal, -radiance_direction);
 	weakening_factor = mix(weakening_factor * 0.5f + 0.5f, max(weakening_factor, 0.0f), thickness);
 
-	//return (diffuse_component + specular_component) * radiance * weakening_factor;
-	return diffuse_component * radiance * weakening_factor;
+	return (diffuse_component + specular_component) * radiance * weakening_factor;
 }
 
 ///////////////////////

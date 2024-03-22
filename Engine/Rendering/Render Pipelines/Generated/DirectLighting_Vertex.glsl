@@ -211,6 +211,8 @@ layout (std140, set = 1, binding = 1) uniform Wind
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
+	layout (offset = 32) uint SKY_MODE;
+	layout (offset = 36) float MAXIMUM_SKY_TEXTURE_MIP_LEVEL;
 };
 
 //Lighting header struct definition.
@@ -584,8 +586,7 @@ vec3 CalculateDirectLighting
 	float weakening_factor = dot(normal, -radiance_direction);
 	weakening_factor = mix(weakening_factor * 0.5f + 0.5f, max(weakening_factor, 0.0f), thickness);
 
-	//return (diffuse_component + specular_component) * radiance * weakening_factor;
-	return diffuse_component * radiance * weakening_factor;
+	return (diffuse_component + specular_component) * radiance * weakening_factor;
 }
 
 ///////////////////////
