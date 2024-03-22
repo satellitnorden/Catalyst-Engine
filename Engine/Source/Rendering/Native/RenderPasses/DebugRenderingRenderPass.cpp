@@ -51,12 +51,20 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 	ResetRenderPass();
 
 	//Add the pipelines.
-	SetNumberOfPipelines(_GraphicsRenderPipelines.Size() + _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines
+	(
+#if defined(CATALYST_EDITOR)
+		_EditorGraphicsRenderPipelines.Size() +
+#endif
+		_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines.Size() + 1
+	);
 
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
+#if defined(CATALYST_EDITOR)
+	for (GraphicsRenderPipeline &pipeline : _EditorGraphicsRenderPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
+#endif
 
 	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
 	{
@@ -66,10 +74,12 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_DebugRenderSphereGraphicsPipeline);
 
 	//Initialize all pipelines.
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
+#if defined(CATALYST_EDITOR)
+	for (GraphicsRenderPipeline &pipeline : _EditorGraphicsRenderPipelines)
 	{
 		pipeline.Initialize();
 	}
+#endif
 
 	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[0].Initialize(EMPTY_HANDLE, false, false);
 	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[1].Initialize(EMPTY_HANDLE, false, true);
@@ -84,10 +94,12 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 void DebugRenderingRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
+#if defined(CATALYST_EDITOR)
+	for (GraphicsRenderPipeline &pipeline : _EditorGraphicsRenderPipelines)
 	{
 		pipeline.Execute();
 	}
+#endif
 
 	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
 	{
@@ -102,10 +114,12 @@ void DebugRenderingRenderPass::Execute() NOEXCEPT
 */
 void DebugRenderingRenderPass::Terminate() NOEXCEPT
 {
-	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
+#if defined(CATALYST_EDITOR)
+	for (GraphicsRenderPipeline &pipeline : _EditorGraphicsRenderPipelines)
 	{
 		pipeline.Terminate();
 	}
+#endif
 
 	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
 	{

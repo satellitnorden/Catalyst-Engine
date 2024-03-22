@@ -90,20 +90,6 @@ NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<Componen
 		}
 	}
 
-	//If the creation queue is full, process items if we're on the main thread, otherwise hold off a bit.
-	while (_NumberOfItemsInCreationQueue >= CREATION_QUEUE_THRESHOLD)
-	{
-		if (Concurrency::CurrentThread::IsMainThread())
-		{
-			//ASSERT(false, "Implement this!");
-		}
-
-		else
-		{
-			Concurrency::CurrentThread::SleepFor(1'000'000);
-		}
-	}
-
 	_CreationQueue.Push(queue_item);
 
 	//Increment the number of items in the creation queue.
@@ -126,20 +112,6 @@ void EntitySystem::AddComponentToEntity(Entity *const RESTRICT entity, Component
 	//Create a form of linked list for the component configurations.
 	queue_item._ComponentConfigurations = component_configuration;
 	queue_item._ComponentConfigurations->_NextComponentInitializationData = nullptr;
-
-	//If the creation queue is full, process items if we're on the main thread, otherwise hold off a bit.
-	while (_NumberOfItemsInCreationQueue >= CREATION_QUEUE_THRESHOLD)
-	{
-		if (Concurrency::CurrentThread::IsMainThread())
-		{
-			//ASSERT(false, "Implement this!");
-		}
-
-		else
-		{
-			Concurrency::CurrentThread::SleepFor(1'000'000);
-		}
-	}
 
 	_CreationQueue.Push(queue_item);
 

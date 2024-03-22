@@ -26,11 +26,13 @@ public:
 
 private:
 
-	//The graphics render pipelines.
-	StaticArray<GraphicsRenderPipeline, 1> _GraphicsRenderPipelines
+#if defined(CATALYST_EDITOR)
+	//The editor graphics render pipelines.
+	StaticArray<GraphicsRenderPipeline, 1> _EditorGraphicsRenderPipelines
 	{
 		GraphicsRenderPipeline(HashString("CircleMarker_RenderPipeline"))
 	};
+#endif
 
 	//The debug render axis aligned bounding box 3D graphics pipelines.
 	StaticArray<DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline, 4> _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines;

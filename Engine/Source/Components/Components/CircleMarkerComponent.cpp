@@ -62,7 +62,7 @@ void GatherCircleMarkerRenderInputStream(RenderInputStream *const RESTRICT input
 			new_entry._IndexBuffer = EMPTY_HANDLE;
 			new_entry._IndexBufferOffset = 0;
 			new_entry._InstanceBuffer = EMPTY_HANDLE;
-			new_entry._VertexCount = 34;
+			new_entry._VertexCount = 66;
 			new_entry._IndexCount = 0;
 			new_entry._InstanceCount = 0;
 

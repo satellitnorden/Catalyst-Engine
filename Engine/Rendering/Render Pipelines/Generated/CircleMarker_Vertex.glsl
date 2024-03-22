@@ -325,6 +325,6 @@ layout (location = 0) out vec3 OutWorldPosition;
 void main()
 {
     vec3 offset = 
-    OutWorldPosition = POSITION_RADIUS.xyz + (RotateYaw(vec3(1.0f, 0.0f, 0.0f), float(gl_VertexIndex - 1) / 32.0f * PI * 2.0f) * POSITION_RADIUS.w * float(gl_VertexIndex > 0));
+    OutWorldPosition = POSITION_RADIUS.xyz + (RotateYaw(vec3(1.0f, 0.0f, 0.0f), float(gl_VertexIndex - 1) / 64.0f * PI * 2.0f) * POSITION_RADIUS.w * float(gl_VertexIndex > 0));
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

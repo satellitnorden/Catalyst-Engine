@@ -55,7 +55,7 @@ Vertex
     vec3 offset = 
 
     //Calculate the world position.
-    OutWorldPosition = POSITION_RADIUS.xyz + (RotateYaw(vec3(1.0f, 0.0f, 0.0f), float(VERTEX_INDEX - 1) / 32.0f * PI * 2.0f) * POSITION_RADIUS.w * float(VERTEX_INDEX > 0));
+    OutWorldPosition = POSITION_RADIUS.xyz + (RotateYaw(vec3(1.0f, 0.0f, 0.0f), float(VERTEX_INDEX - 1) / 64.0f * PI * 2.0f) * POSITION_RADIUS.w * float(VERTEX_INDEX > 0));
 
     //Output the position.
     OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));

@@ -67,7 +67,7 @@ private:
 
 	//Constants.
 	constexpr static uint64 CREATION_QUEUE_SIZE{ 4'096 };
-	constexpr static uint64 CREATION_QUEUE_THRESHOLD{ 3'072 }; //3/4 of the size.
+	constexpr static uint64 DESTRUCTION_QUEUE_SIZE{ 4'096 * 2 };
 
 	/*
 	*	Entity creation queue item class definition.
@@ -139,7 +139,7 @@ private:
 	AtomicQueue<EntityCreationQueueItem, CREATION_QUEUE_SIZE, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _CreationQueue;
 
 	//The destruction queue.
-	AtomicQueue<EntityDestructionQueueItem, 4'096, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DestructionQueue;
+	AtomicQueue<EntityDestructionQueueItem, DESTRUCTION_QUEUE_SIZE, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _DestructionQueue;
 
 	//The pre-processing queue.
 	DynamicArray<EntityPreProcessingQueueItem *RESTRICT> _PreProcessingQueue;
