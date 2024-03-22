@@ -2971,6 +2971,11 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 						render_pipeline_information._DepthCompareOperator = CompareOperator::Greater;
 					}
 
+					else if (string == "GREATER_OR_EQUAL")
+					{
+						render_pipeline_information._DepthCompareOperator = CompareOperator::GreaterOrEqual;
+					}
+
 					else if (string == "LESS")
 					{
 						render_pipeline_information._DepthCompareOperator = CompareOperator::Less;

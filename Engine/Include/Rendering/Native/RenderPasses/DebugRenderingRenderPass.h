@@ -6,6 +6,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DebugRenderSphereGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
@@ -24,6 +25,12 @@ public:
 	DebugRenderingRenderPass() NOEXCEPT;
 
 private:
+
+	//The graphics render pipelines.
+	StaticArray<GraphicsRenderPipeline, 1> _GraphicsRenderPipelines
+	{
+		GraphicsRenderPipeline(HashString("CircleMarker_RenderPipeline"))
+	};
 
 	//The debug render axis aligned bounding box 3D graphics pipelines.
 	StaticArray<DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline, 4> _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines;

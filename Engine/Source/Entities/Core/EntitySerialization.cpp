@@ -49,6 +49,15 @@ namespace EntitySerialization
 			{
 				switch (editable_field._Type)
 				{
+					case ComponentEditableField::Type::FLOAT:
+					{
+						const float32 *const RESTRICT data{ component->EditableFieldData<float32>(entity, editable_field) };
+
+						component_entry[editable_field._Name] = *data;
+
+						break;
+					}
+
 					case ComponentEditableField::Type::ENUMERATION:
 					{
 						const Enumeration *const RESTRICT data{ component->EditableFieldData<Enumeration>(entity, editable_field) };
@@ -223,6 +232,15 @@ namespace EntitySerialization
 					{
 						switch (editable_field._Type)
 						{
+							case ComponentEditableField::Type::FLOAT:
+							{
+								const float32 value{ editable_field_entry.get<float32>() };
+								
+								stream_archive->Write(&value, sizeof(float32));
+
+								break;
+							}
+
 							case ComponentEditableField::Type::ENUMERATION:
 							{
 								const std::string enumeration_value{ editable_field_entry.get<std::string>() };
@@ -420,6 +438,18 @@ namespace EntitySerialization
 
 				switch (editable_field->_Type)
 				{
+					case ComponentEditableField::Type::FLOAT:
+					{
+						float32 data;
+						stream_archive.Read(&data, sizeof(float32), stream_archive_position);
+
+						float32 *const RESTRICT value{ static_cast<float32 *const RESTRICT>(static_cast<void *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset))) };
+
+						*value = data;
+
+						break;
+					}
+
 					case ComponentEditableField::Type::ENUMERATION:
 					{
 						uint64 data;

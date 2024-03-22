@@ -76,6 +76,48 @@ FORCE_INLINE NO_DISCARD bool TextInputWidget(const char *const RESTRICT label, c
 }
 
 /*
+*	Creates a custom float widget.
+*/
+FORCE_INLINE void FloatWidget
+(
+	const char *const RESTRICT label,
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField &editable_field,
+	float32 *const RESTRICT value
+) NOEXCEPT
+{
+	ImGui::Columns(2);
+
+	ImGui::SetColumnWidth(0, 64.0f);
+	ImGui::Text(label);
+	ImGui::NextColumn();
+
+	ImGui::PushMultiItemsWidths(1, ImGui::CalcItemWidth());
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+	const float32 line_height{ GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f };
+	const ImVec2 button_size{ line_height + 3.0f, line_height };
+
+	ImGui::SameLine();
+
+	float32 _value{ *value };
+
+	if (ImGui::DragFloat("##FLOAT_VALUE", &_value, 0.1f))
+	{
+		component->PreEditableFieldChange(entity, editable_field);
+		*value = _value;
+		component->PostEditableFieldChange(entity, editable_field);
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+
+	ImGui::PopStyleVar();
+	ImGui::Columns(1);
+}
+
+/*
 *	Creates a custom enumeration widget. Returns if there was a change.
 */
 FORCE_INLINE void EnumerationWidget
@@ -482,7 +524,7 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 			rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(level_entry._EditorData._Rotation._Pitch);
 		}
 
-		//Update the level statistics.
+		//Update the level statistics from the world transform component.
 		{
 			//Cache the world transform instance data.
 			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(level_entry._Entity) };
@@ -864,6 +906,22 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					{
 						switch (editable_field._Type)
 						{
+							case ComponentEditableField::Type::FLOAT:
+							{
+								float32 *const RESTRICT value{ component->EditableFieldData<float32>(selected_level_entry._Entity, editable_field) };
+
+								FloatWidget
+								(
+									editable_field._Name,
+									component,
+									selected_level_entry._Entity,
+									editable_field,
+									value
+								);
+
+								break;
+							}
+
 							case ComponentEditableField::Type::ENUMERATION:
 							{
 								Enumeration *const RESTRICT enumeration{ component->EditableFieldData<Enumeration>(selected_level_entry._Entity, editable_field) };

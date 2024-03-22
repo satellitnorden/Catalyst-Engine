@@ -15,6 +15,7 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
+		FLOAT,
 		ENUMERATION,
 		EULER_ANGLES,
 		MATERIAL_ASSET,

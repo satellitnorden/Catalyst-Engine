@@ -51,7 +51,12 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 	ResetRenderPass();
 
 	//Add the pipelines.
-	SetNumberOfPipelines(_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(_GraphicsRenderPipelines.Size() + _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines.Size() + 1);
+
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
 
 	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
 	{
@@ -61,6 +66,11 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_DebugRenderSphereGraphicsPipeline);
 
 	//Initialize all pipelines.
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
+	{
+		pipeline.Initialize();
+	}
+
 	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[0].Initialize(EMPTY_HANDLE, false, false);
 	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[1].Initialize(EMPTY_HANDLE, false, true);
 	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[2].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true, false);
@@ -74,6 +84,11 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 void DebugRenderingRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
+	{
+		pipeline.Execute();
+	}
+
 	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
 	{
 		pipeline.Execute();
@@ -87,6 +102,11 @@ void DebugRenderingRenderPass::Execute() NOEXCEPT
 */
 void DebugRenderingRenderPass::Terminate() NOEXCEPT
 {
+	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
+	{
+		pipeline.Terminate();
+	}
+
 	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
 	{
 		pipeline.Terminate();
