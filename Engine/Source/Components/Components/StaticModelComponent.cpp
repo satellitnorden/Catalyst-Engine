@@ -240,10 +240,29 @@ void StaticModelComponent::Update
 					PhysicsSystem::Instance->GetActorWorldTransform(instance_data._PhysicsActorHandle, &world_transform_instance_data._CurrentWorldTransform);
 				}
 
-				//Do culling.
-				bool visible{ false };
+				//Update the world space axis aligned bounding box.
+				AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
+				RenderingUtilities::TransformAxisAlignedBoundingBox(instance_data._Model->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+				instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
+				instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
 
+				//Retrieve the relative axis aligned bounding box.
+				const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_world_transform.GetCell()) };
+
+				//Calculate the screen coverage.
+				const float32 screen_coverage{ Culling::CalculateScreenCoverage(relative_axis_aligned_bounding_box, *camera_world_to_clip_matrix) };
+
+				//If the screen coverage is really low, just cull it outright.
+				if (screen_coverage <= 0.0001f)
 				{
+					instance_data._VisibilityFlags = static_cast<VisibilityFlags>(0);
+				}
+
+				else
+				{
+					//Do culling.
+					bool visible{ false };
+
 					//Reset the visibility flags.
 					instance_data._VisibilityFlags = static_cast<VisibilityFlags>(UINT8_MAXIMUM);
 
@@ -277,68 +296,24 @@ void StaticModelComponent::Update
 							visible = true;
 						}
 					}
-				}
 
-				//Do level of detail.
-				if (visible)
-				{
-					for (uint64 mesh_index{ 0 }, size{ instance_data._Model->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+					//Do level of detail.
+					if (visible)
 					{
-						//If the mesh used only has one level of detail, skip it.
-						if (instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() == 1)
+						for (uint64 mesh_index{ 0 }, size{ instance_data._Model->_Meshes.Size() }; mesh_index < size; ++mesh_index)
 						{
-							instance_data._LevelOfDetailIndices[mesh_index] = 0;
+							//If the mesh used only has one level of detail, skip it.
+							if (instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() == 1)
+							{
+								instance_data._LevelOfDetailIndices[mesh_index] = 0;
 
-							continue;
+								continue;
+							}
+
+							//Calculate the level of detail index.
+							instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - screen_coverage) * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
 						}
-
-						//Retrieve the relative axis aligned bounding box.
-						const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_world_transform.GetCell()) };
-
-						//Calculate the minimum/maximum screen coordinates from the corners of the relative axis aligned bounding box.
-						Vector2<float32> minimum_screen_coordinate{ FLOAT32_MAXIMUM, FLOAT32_MAXIMUM };
-						Vector2<float32> maximum_screen_coordinate{ -FLOAT32_MAXIMUM, -FLOAT32_MAXIMUM };
-
-						const StaticArray<Vector3<float32>, 8> corners
-						{
-							Vector3<float32>(relative_axis_aligned_bounding_box._Minimum._X, relative_axis_aligned_bounding_box._Minimum._Y, relative_axis_aligned_bounding_box._Minimum._Z),
-							Vector3<float32>(relative_axis_aligned_bounding_box._Minimum._X, relative_axis_aligned_bounding_box._Minimum._Y, relative_axis_aligned_bounding_box._Maximum._Z),
-							Vector3<float32>(relative_axis_aligned_bounding_box._Minimum._X, relative_axis_aligned_bounding_box._Maximum._Y, relative_axis_aligned_bounding_box._Minimum._Z),
-							Vector3<float32>(relative_axis_aligned_bounding_box._Minimum._X, relative_axis_aligned_bounding_box._Maximum._Y, relative_axis_aligned_bounding_box._Maximum._Z),
-
-							Vector3<float32>(relative_axis_aligned_bounding_box._Maximum._X, relative_axis_aligned_bounding_box._Minimum._Y, relative_axis_aligned_bounding_box._Minimum._Z),
-							Vector3<float32>(relative_axis_aligned_bounding_box._Maximum._X, relative_axis_aligned_bounding_box._Minimum._Y, relative_axis_aligned_bounding_box._Maximum._Z),
-							Vector3<float32>(relative_axis_aligned_bounding_box._Maximum._X, relative_axis_aligned_bounding_box._Maximum._Y, relative_axis_aligned_bounding_box._Minimum._Z),
-							Vector3<float32>(relative_axis_aligned_bounding_box._Maximum._X, relative_axis_aligned_bounding_box._Maximum._Y, relative_axis_aligned_bounding_box._Maximum._Z)
-						};
-
-						for (uint8 corner_index{ 0 }; corner_index < 8; ++corner_index)
-						{
-							Vector4<float32> screen_space_position{ *camera_world_to_clip_matrix * Vector4<float32>(corners[corner_index], 1.0f) };
-							const float32 screen_space_position_reciprocal{ 1.0f / screen_space_position._W };
-
-							Vector2<float32> screen_coordinate{ screen_space_position._X * screen_space_position_reciprocal, screen_space_position._Y * screen_space_position_reciprocal };
-
-							screen_coordinate._X = screen_coordinate._X * 0.5f + 0.5f;
-							screen_coordinate._Y = screen_coordinate._Y * 0.5f + 0.5f;
-
-							minimum_screen_coordinate = Vector2<float32>::Minimum(minimum_screen_coordinate, screen_coordinate);
-							maximum_screen_coordinate = Vector2<float32>::Maximum(maximum_screen_coordinate, screen_coordinate);
-						}
-
-						//Calculate the screen coverage.
-						const float32 screen_coverage{ CatalystBaseMath::Minimum<float32>((maximum_screen_coordinate._X - minimum_screen_coordinate._X) * (maximum_screen_coordinate._Y - minimum_screen_coordinate._Y), 1.0f) };
-
-						//Calculate the level of detail index.
-						instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - screen_coverage) * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
 					}
-
-					//Update the world space axis aligned bounding box.
-					AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
-					RenderingUtilities::TransformAxisAlignedBoundingBox(instance_data._Model->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
-					instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
-					instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
-
 				}
 			}
 

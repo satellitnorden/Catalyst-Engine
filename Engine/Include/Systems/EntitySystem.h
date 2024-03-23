@@ -67,7 +67,7 @@ private:
 
 	//Constants.
 	constexpr static uint64 CREATION_QUEUE_SIZE{ 4'096 };
-	constexpr static uint64 DESTRUCTION_QUEUE_SIZE{ 4'096 * 2 };
+	constexpr static uint64 DESTRUCTION_QUEUE_SIZE{ 4'096 * 4 };
 
 	/*
 	*	Entity creation queue item class definition.

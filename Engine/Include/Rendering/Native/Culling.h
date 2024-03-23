@@ -13,6 +13,46 @@ namespace Culling
 {
 
 	/*
+	*	Calculates the screen coverage of the given axis aligned bounding box.
+	*/
+	FORCE_INLINE NO_DISCARD float32 CalculateScreenCoverage(const AxisAlignedBoundingBox3D &box, const Matrix4x4 &clip_matrix) NOEXCEPT
+	{
+		//Calculate the minimum/maximum screen coordinates from the corners of the relative axis aligned bounding box.
+		Vector2<float32> minimum_screen_coordinate{ FLOAT32_MAXIMUM, FLOAT32_MAXIMUM };
+		Vector2<float32> maximum_screen_coordinate{ -FLOAT32_MAXIMUM, -FLOAT32_MAXIMUM };
+
+		const StaticArray<Vector3<float32>, 8> corners
+		{
+			Vector3<float32>(box._Minimum._X, box._Minimum._Y, box._Minimum._Z),
+			Vector3<float32>(box._Minimum._X, box._Minimum._Y, box._Maximum._Z),
+			Vector3<float32>(box._Minimum._X, box._Maximum._Y, box._Minimum._Z),
+			Vector3<float32>(box._Minimum._X, box._Maximum._Y, box._Maximum._Z),
+
+			Vector3<float32>(box._Maximum._X, box._Minimum._Y, box._Minimum._Z),
+			Vector3<float32>(box._Maximum._X, box._Minimum._Y, box._Maximum._Z),
+			Vector3<float32>(box._Maximum._X, box._Maximum._Y, box._Minimum._Z),
+			Vector3<float32>(box._Maximum._X, box._Maximum._Y, box._Maximum._Z)
+		};
+
+		for (uint8 corner_index{ 0 }; corner_index < 8; ++corner_index)
+		{
+			Vector4<float32> screen_space_position{ clip_matrix * Vector4<float32>(corners[corner_index], 1.0f) };
+			const float32 screen_space_position_reciprocal{ 1.0f / screen_space_position._W };
+
+			Vector2<float32> screen_coordinate{ screen_space_position._X * screen_space_position_reciprocal, screen_space_position._Y * screen_space_position_reciprocal };
+
+			screen_coordinate._X = screen_coordinate._X * 0.5f + 0.5f;
+			screen_coordinate._Y = screen_coordinate._Y * 0.5f + 0.5f;
+
+			minimum_screen_coordinate = Vector2<float32>::Minimum(minimum_screen_coordinate, screen_coordinate);
+			maximum_screen_coordinate = Vector2<float32>::Maximum(maximum_screen_coordinate, screen_coordinate);
+		}
+
+		//Calculate the screen coverage.
+		return CatalystBaseMath::Minimum<float32>((maximum_screen_coordinate._X - minimum_screen_coordinate._X) * (maximum_screen_coordinate._Y - minimum_screen_coordinate._Y), 1.0f);
+	}
+
+	/*
 	*	Returns if the given box is within the given frustum.
 	*/
 	FORCE_INLINE NO_DISCARD bool IsWithinFrustum(const AxisAlignedBoundingBox3D &box, const Frustum &frustum) NOEXCEPT

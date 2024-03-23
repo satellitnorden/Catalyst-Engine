@@ -25,7 +25,7 @@ namespace EntitySystemConstants
 	constexpr float32 MAXIMUM_DESTRUCTION_TIME{ FLOAT32_MAXIMUM };
 #else
 	constexpr float32 MAXIMUM_CREATION_TIME{ 0.25f / 1000.0f };
-	constexpr float32 MAXIMUM_DESTRUCTION_TIME{ 0.5f / 1000.0f };
+	constexpr float32 MAXIMUM_DESTRUCTION_TIME{ 1.0f / 1000.0f };
 #endif
 }
 
