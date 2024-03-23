@@ -37,6 +37,21 @@ DECLARE_COMPONENT
 	ScriptComponent,
 	ScriptInitializationData,
 	ScriptInstanceData,
+public:
+	
+	/*
+	*	Callback for before an editable field change happens.
+	*/
 	void PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
+	
+	/*
+	*	Callback for after an editable field change happens.
+	*/
 	void PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
+
+	/*
+	*	Sends the given event to the given script.
+	*/
+	void Event(Entity *const RESTRICT entity, const HashString event) NOEXCEPT;
+
 );

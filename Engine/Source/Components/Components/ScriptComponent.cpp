@@ -66,7 +66,7 @@ void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ComponentIni
 	instance_data._ScriptIdentifier = _initialization_data->_ScriptIdentifier;
 
 	//Allocate the required data.
-	const uint64 required_data_size{ GetRequiredDataSize(instance_data._ScriptIdentifier) };
+	const uint64 required_data_size{ Script::RequiredDataSize(instance_data._ScriptIdentifier) };
 
 	if (required_data_size > 0)
 	{
@@ -85,7 +85,7 @@ void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ComponentIni
 	script_context._Data = instance_data._Data;
 
 	//Initialize the script.
-	InitializeScript(instance_data._ScriptIdentifier, script_context);
+	Script::Initialize(instance_data._ScriptIdentifier, script_context);
 }
 
 /*
@@ -115,7 +115,7 @@ void ScriptComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 	script_context._Data = instance_data._Data;
 
 	//Terminate the script.
-	TerminateScript(instance_data._ScriptIdentifier, script_context);
+	Script::Terminate(instance_data._ScriptIdentifier, script_context);
 
 	//Free the data.
 	Memory::Free(instance_data._Data);
@@ -177,7 +177,7 @@ void ScriptComponent::Update
 				script_context._Data = instance_data._Data;
 
 				//Update!
-				UpdateScript(instance_data._ScriptIdentifier, script_context);
+				Script::Update(instance_data._ScriptIdentifier, script_context);
 			}
 
 			break;
@@ -217,7 +217,7 @@ FORCE_INLINE void ScriptComponent::PreEditableFieldChange(Entity *const RESTRICT
 		script_context._Data = instance_data._Data;
 
 		//Terminate the current script.
-		TerminateScript(instance_data._ScriptIdentifier, script_context);
+		Script::Terminate(instance_data._ScriptIdentifier, script_context);
 
 		//Free the data.
 		Memory::Free(instance_data._Data);
@@ -235,7 +235,7 @@ FORCE_INLINE void ScriptComponent::PostEditableFieldChange(Entity *const RESTRIC
 	if (editable_field._Identifier == HashString("Script"))
 	{
 		//Allocate the required data.
-		const uint64 required_data_size{ GetRequiredDataSize(instance_data._ScriptIdentifier) };
+		const uint64 required_data_size{ Script::RequiredDataSize(instance_data._ScriptIdentifier) };
 
 		if (required_data_size > 0)
 		{
@@ -254,6 +254,24 @@ FORCE_INLINE void ScriptComponent::PostEditableFieldChange(Entity *const RESTRIC
 		script_context._Data = instance_data._Data;
 
 		//Initialize the script.
-		InitializeScript(instance_data._ScriptIdentifier, script_context);
+		Script::Initialize(instance_data._ScriptIdentifier, script_context);
 	}
+}
+
+/*
+*	Sends the given event to the given script.
+*/
+void ScriptComponent::Event(Entity *const RESTRICT entity, const HashString event) NOEXCEPT
+{	
+	//Cache the instance data.
+	ScriptInstanceData &instance_data{ InstanceData(entity) };
+
+	//Set up the script context.
+	ScriptContext script_context;
+
+	script_context._Entity = entity;
+	script_context._Data = instance_data._Data;
+
+	//Send the event!
+	Script::Event(instance_data._ScriptIdentifier, event, script_context);
 }
