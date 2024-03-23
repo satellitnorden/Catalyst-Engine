@@ -267,6 +267,207 @@ void ContentSystem::LoadAssets(const char *const RESTRICT directory_path) NOEXCE
 }
 
 /*
+*	Load a single asset from the given file path.
+*/
+void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
+{
+	//Load the file into a stream archive.
+	StreamArchive stream_archive;
+
+	{
+		PROFILING_SCOPE("ContentSystem::LoadAsset::CreateStreamArchive");
+
+		BinaryFile<BinaryFileMode::IN> file{ file_path };
+
+		{
+			PROFILING_SCOPE("ContentSystem::LoadAsset::AllocateStreamArchive");
+			stream_archive.Resize(file.Size());
+		}
+
+		{
+			PROFILING_SCOPE("ContentSystem::LoadAsset::ReadStreamArchive");
+			file.Read(stream_archive.Data(), file.Size());
+		}
+
+		file.Close();
+	}
+
+	//Set up the stream archive position.
+	uint64 stream_archive_position{ 0 };
+
+	//Read the asset header.
+	AssetHeader asset_header;
+	stream_archive.Read(&asset_header, sizeof(AssetHeader), &stream_archive_position);
+
+	//Find the asset compiler for this asset type.
+	AssetCompiler *RESTRICT asset_compiler;
+
+	{
+		AssetCompiler *const RESTRICT *const RESTRICT _asset_compiler{ _AssetCompilers.Find(asset_header._AssetTypeIdentifier) };
+		asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
+	}
+
+	//Couldn't find an asset compiler, ignore!
+	if (!asset_compiler)
+	{
+		ASSERT(false, "Couldn't find asset compiler!");
+
+		return;
+	}
+
+	//Set up the load context.
+	AssetCompiler::LoadContext load_context;
+
+	load_context._StreamArchive = &stream_archive;
+	load_context._StreamArchivePosition = stream_archive_position;
+	load_context._TaskAllocator = &_TaskAllocator;
+	load_context._Tasks = &_Tasks;
+	load_context._Asset = nullptr;
+
+	//Load!
+	Asset* const RESTRICT new_asset{ asset_compiler->Load(load_context) };
+
+	//Copy the asset header.
+	Memory::Copy(&new_asset->_Header, &asset_header, sizeof(AssetHeader));
+
+	//Add it to the list of assets.
+	HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_compiler->AssetTypeIdentifier()) };
+
+	assets->Add(asset_header._AssetIdentifier, new_asset);
+
+	//Wait for all tasks to finish.
+	bool all_tasks_finished{ _Tasks.Empty() };
+
+	while (!all_tasks_finished)
+	{
+		TaskSystem::Instance->DoWork(Task::Priority::LOW);
+
+		all_tasks_finished = true;
+
+		for (const Task *const RESTRICT task : _Tasks)
+		{
+			all_tasks_finished &= task->IsExecuted();
+		}
+	}
+
+	//Clear the tasks.
+	_Tasks.Clear();
+}
+
+/*
+*	Load a single asset collection from the given file path.
+*/
+void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT
+{
+	//Load the file into a stream archive.
+	StreamArchive stream_archive;
+
+	{
+		PROFILING_SCOPE("ContentSystem::LoadAssetCollection::CreateStreamArchive");
+
+		BinaryFile<BinaryFileMode::IN> file{ file_path };
+
+		{
+			PROFILING_SCOPE("ContentSystem::LoadAssetCollection::AllocateStreamArchive");
+			stream_archive.Resize(file.Size());
+		}
+
+		{
+			PROFILING_SCOPE("ContentSystem::LoadAssetCollection::ReadStreamArchive");
+			file.Read(stream_archive.Data(), file.Size());
+		}
+
+		file.Close();
+	}
+
+	//Read the whole file.
+	uint64 stream_archive_position{ 0 };
+
+	while (stream_archive_position < stream_archive.Size())
+	{
+		//Remember the original stream archive position.
+		const uint64 original_stream_archive_position{ stream_archive_position };
+
+		//Read the file size.
+		uint64 file_size{ 0 };
+		stream_archive.Read(&file_size, sizeof(uint64), &stream_archive_position);
+
+		//Read the asset header.
+		AssetHeader asset_header;
+		stream_archive.Read(&asset_header, sizeof(AssetHeader), &stream_archive_position);
+
+		//Find the asset compiler for this asset type.
+		AssetCompiler *RESTRICT asset_compiler;
+
+		{
+			AssetCompiler *const RESTRICT *const RESTRICT _asset_compiler{ _AssetCompilers.Find(asset_header._AssetTypeIdentifier) };
+			asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
+		}
+
+		//Couldn't find an asset compiler, ignore!
+		if (!asset_compiler)
+		{
+			ASSERT(false, "Couldn't find asset compiler!");
+
+			stream_archive_position = original_stream_archive_position + file_size + sizeof(uint64);
+
+			continue;
+		}
+
+		//Set up the load context.
+		AssetCompiler::LoadContext load_context;
+
+		load_context._StreamArchive = &stream_archive;
+		load_context._StreamArchivePosition = stream_archive_position;
+		load_context._TaskAllocator = &_TaskAllocator;
+		load_context._Tasks = &_Tasks;
+		load_context._Asset = nullptr;
+
+		//Load!
+		Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };
+
+		//Copy the asset header.
+		Memory::Copy(&new_asset->_Header, &asset_header, sizeof(AssetHeader));
+
+		//Add it to the list of assets.
+		HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_compiler->AssetTypeIdentifier()) };
+
+		assets->Add(asset_header._AssetIdentifier, new_asset);
+
+		//Advance the stream archive position.
+		stream_archive_position = original_stream_archive_position + file_size + sizeof(uint64);
+	}
+
+	//Wait for all tasks to finish.
+	uint64 number_of_tasks_left{ _Tasks.Size() };
+
+	while (number_of_tasks_left > 0)
+	{
+		uint64 _number_of_tasks_left{ 0 };
+
+		TaskSystem::Instance->DoWork(Task::Priority::LOW);
+
+		for (const Task *const RESTRICT task : _Tasks)
+		{
+			if (!task->IsExecuted())
+			{
+				++_number_of_tasks_left;
+			}
+		}
+
+		if (number_of_tasks_left != _number_of_tasks_left)
+		{
+			number_of_tasks_left = _number_of_tasks_left;
+
+			LOG_INFORMATION("Number of ascynhronous compile tasks left: %llu", number_of_tasks_left);
+		}
+	}
+
+	//Clear the tasks.
+	_Tasks.Clear();
+}
+
+/*
 *	Scans assets in the given directory.
 *	Returns if new content was compiled.
 */
@@ -462,207 +663,6 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 		//Close the input file.
 		input_file.Close();
 	}
-}
-
-/*
-*	Load a single asset from the given file path.
-*/
-void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
-{
-	//Load the file into a stream archive.
-	StreamArchive stream_archive;
-
-	{
-		PROFILING_SCOPE("ContentSystem::LoadAsset::CreateStreamArchive");
-
-		BinaryFile<BinaryFileMode::IN> file{ file_path };
-
-		{
-			PROFILING_SCOPE("ContentSystem::LoadAsset::AllocateStreamArchive");
-			stream_archive.Resize(file.Size());
-		}
-		
-		{
-			PROFILING_SCOPE("ContentSystem::LoadAsset::ReadStreamArchive");
-			file.Read(stream_archive.Data(), file.Size());
-		}
-
-		file.Close();
-	}
-
-	//Set up the stream archive position.
-	uint64 stream_archive_position{ 0 };
-
-	//Read the asset header.
-	AssetHeader asset_header;
-	stream_archive.Read(&asset_header, sizeof(AssetHeader), &stream_archive_position);
-
-	//Find the asset compiler for this asset type.
-	AssetCompiler *RESTRICT asset_compiler;
-
-	{
-		AssetCompiler *const RESTRICT *const RESTRICT _asset_compiler{ _AssetCompilers.Find(asset_header._AssetTypeIdentifier) };
-		asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
-	}
-
-	//Couldn't find an asset compiler, ignore!
-	if (!asset_compiler)
-	{
-		ASSERT(false, "Couldn't find asset compiler!");
-
-		return;
-	}
-
-	//Set up the load context.
-	AssetCompiler::LoadContext load_context;
-
-	load_context._StreamArchive = &stream_archive;
-	load_context._StreamArchivePosition = stream_archive_position;
-	load_context._TaskAllocator = &_TaskAllocator;
-	load_context._Tasks = &_Tasks;
-	load_context._Asset = nullptr;
-
-	//Load!
-	Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };
-
-	//Copy the asset header.
-	Memory::Copy(&new_asset->_Header, &asset_header, sizeof(AssetHeader));
-
-	//Add it to the list of assets.
-	HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_compiler->AssetTypeIdentifier()) };
-
-	assets->Add(asset_header._AssetIdentifier, new_asset);
-
-	//Wait for all tasks to finish.
-	bool all_tasks_finished{ _Tasks.Empty() };
-
-	while (!all_tasks_finished)
-	{
-		TaskSystem::Instance->DoWork(Task::Priority::LOW);
-
-		all_tasks_finished = true;
-
-		for (const Task *const RESTRICT task : _Tasks)
-		{
-			all_tasks_finished &= task->IsExecuted();
-		}
-	}
-
-	//Clear the tasks.
-	_Tasks.Clear();
-}
-
-/*
-*	Load a single asset collection from the given file path.
-*/
-void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT
-{
-	//Load the file into a stream archive.
-	StreamArchive stream_archive;
-
-	{
-		PROFILING_SCOPE("ContentSystem::LoadAssetCollection::CreateStreamArchive");
-
-		BinaryFile<BinaryFileMode::IN> file{ file_path };
-
-		{
-			PROFILING_SCOPE("ContentSystem::LoadAssetCollection::AllocateStreamArchive");
-			stream_archive.Resize(file.Size());
-		}
-
-		{
-			PROFILING_SCOPE("ContentSystem::LoadAssetCollection::ReadStreamArchive");
-			file.Read(stream_archive.Data(), file.Size());
-		}
-
-		file.Close();
-	}
-
-	//Read the whole file.
-	uint64 stream_archive_position{ 0 };
-
-	while (stream_archive_position < stream_archive.Size())
-	{
-		//Remember the original stream archive position.
-		const uint64 original_stream_archive_position{ stream_archive_position };
-
-		//Read the file size.
-		uint64 file_size{ 0 };
-		stream_archive.Read(&file_size, sizeof(uint64), &stream_archive_position);
-
-		//Read the asset header.
-		AssetHeader asset_header;
-		stream_archive.Read(&asset_header, sizeof(AssetHeader), &stream_archive_position);
-
-		//Find the asset compiler for this asset type.
-		AssetCompiler *RESTRICT asset_compiler;
-
-		{
-			AssetCompiler *const RESTRICT *const RESTRICT _asset_compiler{ _AssetCompilers.Find(asset_header._AssetTypeIdentifier) };
-			asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
-		}
-
-		//Couldn't find an asset compiler, ignore!
-		if (!asset_compiler)
-		{
-			ASSERT(false, "Couldn't find asset compiler!");
-
-			stream_archive_position = original_stream_archive_position + file_size + sizeof(uint64);
-
-			continue;
-		}
-
-		//Set up the load context.
-		AssetCompiler::LoadContext load_context;
-
-		load_context._StreamArchive = &stream_archive;
-		load_context._StreamArchivePosition = stream_archive_position;
-		load_context._TaskAllocator = &_TaskAllocator;
-		load_context._Tasks = &_Tasks;
-		load_context._Asset = nullptr;
-
-		//Load!
-		Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };
-
-		//Copy the asset header.
-		Memory::Copy(&new_asset->_Header, &asset_header, sizeof(AssetHeader));
-
-		//Add it to the list of assets.
-		HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_compiler->AssetTypeIdentifier()) };
-
-		assets->Add(asset_header._AssetIdentifier, new_asset);
-
-		//Advance the stream archive position.
-		stream_archive_position = original_stream_archive_position + file_size + sizeof(uint64);
-	}
-
-	//Wait for all tasks to finish.
-	uint64 number_of_tasks_left{ _Tasks.Size() };
-
-	while (number_of_tasks_left > 0)
-	{
-		uint64 _number_of_tasks_left{ 0 };
-
-		TaskSystem::Instance->DoWork(Task::Priority::LOW);
-
-		for (const Task *const RESTRICT task : _Tasks)
-		{
-			if (!task->IsExecuted())
-			{
-				++_number_of_tasks_left;
-			}
-		}
-
-		if (number_of_tasks_left != _number_of_tasks_left)
-		{
-			number_of_tasks_left = _number_of_tasks_left;
-
-			LOG_INFORMATION("Number of ascynhronous compile tasks left: %llu", number_of_tasks_left);
-		}
-	}
-
-	//Clear the tasks.
-	_Tasks.Clear();
 }
 
 /*

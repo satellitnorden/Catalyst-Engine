@@ -139,19 +139,11 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 
 	//Load assets.
-	ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Base");
+	ContentSystem::Instance->LoadAssetCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Base.cac");
 	ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Base");
 
-#if defined(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)
-	ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineEnvironmentResourceCollection_0.crc");
-#endif
-
-#if defined(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)
-	ResourceSystem::Instance->LoadResourceCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Final\\CatalystEngineExtraResourceCollection_0.crc");
-#endif
-
 #if defined(CATALYST_EDITOR)
-	ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Editor");
+	ContentSystem::Instance->LoadAssetCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Editor.cac");
 #endif
 
 	//Post-initialize all systems.

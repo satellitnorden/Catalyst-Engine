@@ -160,7 +160,7 @@ NO_DISCARD Asset *const RESTRICT TextureCubeAssetCompiler::Load(const LoadContex
 void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint8 MIP_LEVELS{ 8 };
+	constexpr uint8 MIP_LEVELS{ 9 };
 	constexpr uint32 NUMBER_OF_SAMPLES{ 1024 };
 
 	PROFILING_SCOPE("TextureCubeAssetCompiler::CompileInternal");

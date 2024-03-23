@@ -62,6 +62,16 @@ public:
 	void LoadAssets(const char *const RESTRICT directory_path) NOEXCEPT;
 
 	/*
+	*	Load a single asset from the given file path.
+	*/
+	void LoadAsset(const char *const RESTRICT file_path) NOEXCEPT;
+
+	/*
+	*	Load a single asset collection from the given file path.
+	*/
+	void LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT;
+
+	/*
 	*	Returns the asset with the given asset identifier.
 	*/
 	template <typename TYPE>
@@ -120,16 +130,6 @@ private:
 	*	Creates asset collections from the given directory path.
 	*/
 	void CreateAssetCollections(const char *const RESTRICT directory_path, BinaryFile<BinaryFileMode::OUT> *const RESTRICT file) NOEXCEPT;
-
-	/*
-	*	Load a single asset from the given file path.
-	*/
-	void LoadAsset(const char *const RESTRICT file_path) NOEXCEPT;
-
-	/*
-	*	Load a single asset collection from the given file path.
-	*/
-	void LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT;
 
 	/*
 	*	Parses content definitions in the given directory.
