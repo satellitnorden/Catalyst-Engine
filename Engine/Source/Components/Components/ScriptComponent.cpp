@@ -136,7 +136,7 @@ void ScriptComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const
 {
 	update_configuration->_UpdatePhaseMask = UpdatePhase::GAMEPLAY;
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = 4;
+	update_configuration->_BatchSize = UINT64_MAXIMUM;
 }
 
 /*

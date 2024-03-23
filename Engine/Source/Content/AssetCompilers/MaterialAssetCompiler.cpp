@@ -313,6 +313,7 @@ void MaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_
 							std::stof(arguments[3].Data())
 						)
 					);
+					parameters._AlbedoThicknessComponent._Color.ApplyGammaCorrection();
 
 					continue;
 				}
@@ -444,6 +445,40 @@ void MaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_
 				}
 			}
 
+			//Is this a material properties color declaration?
+			{
+				const size_t position{ current_line.find("MaterialPropertiesColor(") };
+
+				if (position != std::string::npos)
+				{
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							current_line.c_str(),
+							current_line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 4, "AlbedoThicknessColor() needs one argument!");
+
+					parameters._MaterialPropertiesComponent._Type = MaterialParameters::Component::Type::COLOR;
+					parameters._MaterialPropertiesComponent._Color = Color
+					(
+						Vector4<float32>
+						(
+							std::stof(arguments[0].Data()),
+							std::stof(arguments[1].Data()),
+							std::stof(arguments[2].Data()),
+							std::stof(arguments[3].Data())
+						)
+					);
+
+					continue;
+				}
+			}
+
 			//Is this a material properties texture declaration?
 			{
 				const size_t position{ current_line.find("MaterialPropertiesTexture(") };
@@ -489,6 +524,30 @@ void MaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_
 
 					parameters._OpacityComponent._Type = MaterialParameters::Component::Type::TEXTURE;
 					parameters._OpacityComponent._Texture = HashString(arguments[0].Data());
+
+					continue;
+				}
+			}
+
+			//Is this an emissive multiplier declaration?
+			{
+				const size_t position{ current_line.find("EmissiveMultiplier(") };
+
+				if (position != std::string::npos)
+				{
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							current_line.c_str(),
+							current_line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 1, "EmissiveMultiplier() needs one argument!");
+
+					parameters._EmissiveMultiplier = std::stof(arguments[0].Data());
 
 					continue;
 				}

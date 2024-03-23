@@ -2,10 +2,14 @@
 #include <Scripting/ScriptNodes.h>
 
 //Components.
+#include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
+
+//Systems.
+#include <Systems/ContentSystem.h>
 
 namespace Script
 {
@@ -24,6 +28,18 @@ namespace Script
 		NO_DISCARD float32 Sine(ScriptContext &script_context, const float32 phase) NOEXCEPT
 		{
 			return CatalystBaseMath::Sine(phase);
+		}
+	}
+
+	namespace StaticModel
+	{
+		void SetMaterial(ScriptContext &script_context, const uint8 mesh_index, const HashString material) NOEXCEPT
+		{
+			ASSERT(StaticModelComponent::Instance->Has(script_context._Entity), "Can't call StaticModel::SetMaterial on an entity without a static model component!");
+		
+			StaticModelInstanceData& instance_data{ StaticModelComponent::Instance->InstanceData(script_context._Entity) };
+
+			instance_data._Materials[mesh_index] = ContentSystem::Instance->GetAsset<MaterialAsset>(material);
 		}
 	}
 
