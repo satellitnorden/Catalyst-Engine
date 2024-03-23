@@ -129,10 +129,14 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 	}
 	
-	//Initialize and run compilation the content system.
+	//Initialize the content system.
 	ContentSystem::Instance->Initialize();
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Compile both for engine and game.
 	ContentSystem::Instance->CompileEngine();
 	ContentSystem::Instance->CompileGame();
+#endif
 
 	//Load assets.
 	ContentSystem::Instance->LoadAssets("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled\\COLLECTION Base");
