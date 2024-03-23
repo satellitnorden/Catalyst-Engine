@@ -2,9 +2,8 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StreamArchive.h>
-
-//Core.
 #include <Core/General/HashString.h>
 
 //Concurrency.
