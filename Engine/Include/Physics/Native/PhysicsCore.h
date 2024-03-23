@@ -2,9 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-
-//Generated.
-#include <Generated/Enumeration.Generated.h>
+#include <Core/General/Enumeration.h>
 
 //Physics constants.
 namespace PhysicsConstants
@@ -19,14 +17,14 @@ using ActorHandle = void *RESTRICT;
 using CollisionModelHandle = void *RESTRICT;
 
 //Enumeration covering all model collision types.
-/*!CATALYST_ENUMERATION
-enum class ModelCollisionType : uint8
-{
+CATALYST_ENUMERATION
+(
+	ModelCollisionType,
+	uint8,
 	NONE,
 	BOX,
 	COLLISION_MODEL
-};
-*/
+);
 
 //Enumeration covering all physics channels.
 enum class PhysicsChannel : uint8

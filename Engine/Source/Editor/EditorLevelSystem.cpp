@@ -2,6 +2,9 @@
 //Header file.
 #include <Editor/EditorLevelSystem.h>
 
+//Core.
+#include <Core/General/Enumeration.h>
+
 //Components.
 #include <Components/Components/WorldTransformComponent.h>
 
@@ -16,9 +19,6 @@
 
 //File.
 #include <File/Core/FileCore.h>
-
-//Generated.
-#include <Generated/Enumeration.Generated.h>
 
 //Systems.
 #include <Systems/CatalystEditorSystem.h>

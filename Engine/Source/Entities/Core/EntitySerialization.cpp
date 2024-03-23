@@ -1,6 +1,9 @@
 //Header file.
 #include <Entities/Core/EntitySerialization.h>
 
+//Core.
+#include <Core/General/Enumeration.h>
+
 //Components.
 #include <Components/Components/WorldTransformComponent.h>
 
@@ -8,9 +11,6 @@
 #include <Content/Core/AssetPointer.h>
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
-
-//Generated.
-#include <Generated/Enumeration.Generated.h>
 
 //Math.
 #include <Math/General/EulerAngles.h>

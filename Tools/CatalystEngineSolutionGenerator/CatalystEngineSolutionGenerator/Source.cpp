@@ -1085,10 +1085,9 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 	std::filesystem::remove_all("Win64", error_code); CHECK_ERROR_CODE();
 
 	/*
-	*	If code generation is enabled, generate the .bat file, run it, and delete it.
+	*	Generate the code generation .bat file, run it, and delete it.
 	*	Important that we do this before generating the solution, so the generated files gets included.
 	*/
-	if (general_parameters._EnableCodeGeneration)
 	{
 		std::filesystem::create_directories("Win64\\Win64", error_code); CHECK_ERROR_CODE();
 
