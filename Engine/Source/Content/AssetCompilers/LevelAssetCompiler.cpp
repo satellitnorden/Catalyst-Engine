@@ -149,6 +149,26 @@ void LevelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 	{
 		const nlohmann::json &level_statistics_entry{ JSON["LevelStatistics"] };
 
+		{
+			const nlohmann::json &axis_aligned_bounding_box_entry{ level_statistics_entry["AxisAlignedBoundingBox"] };
+
+			{
+				const nlohmann::json &minimum_entry{ axis_aligned_bounding_box_entry["Minimum"] };
+
+				level_statistics._AxisAlignedBoundingBox._Minimum._X = minimum_entry["X"];
+				level_statistics._AxisAlignedBoundingBox._Minimum._Y = minimum_entry["Y"];
+				level_statistics._AxisAlignedBoundingBox._Minimum._Z = minimum_entry["Z"];
+			}
+
+			{
+				const nlohmann::json &maximum_entry{ axis_aligned_bounding_box_entry["Maximum"] };
+
+				level_statistics._AxisAlignedBoundingBox._Maximum._X = maximum_entry["X"];
+				level_statistics._AxisAlignedBoundingBox._Maximum._Y = maximum_entry["Y"];
+				level_statistics._AxisAlignedBoundingBox._Maximum._Z = maximum_entry["Z"];
+			}
+		}
+
 		level_statistics._Radius = level_statistics_entry["Radius"];
 	}
 

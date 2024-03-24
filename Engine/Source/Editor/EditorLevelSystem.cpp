@@ -539,10 +539,52 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 			//Update the radius.
 			level_statistics._Radius = CatalystBaseMath::Maximum<float32>(level_statistics._Radius, distance_from_center);
 		}
+
+		//Update level statistics from the static model component.
+		if (StaticModelComponent::Instance->Has(entity))
+		{
+			//Cache the static model instance data.
+			const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity) };
+
+			//Cache the absolute axis aligned bounding box.
+			const AxisAlignedBoundingBox3D absolute_axis_aligned_bounding_box{ static_model_instance_data._WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox() };
+
+			//Expand the axis aligned bounding box.
+			level_statistics._AxisAlignedBoundingBox.Expand(absolute_axis_aligned_bounding_box);
+		
+			//Calculate the distance from the center.
+			float32 distance_from_center{ Vector3<float32>::LengthXZ(AxisAlignedBoundingBox3D::CalculateCenter(absolute_axis_aligned_bounding_box)) };
+
+			//Cache the half extents.
+			const Vector3<float32> half_extents{ absolute_axis_aligned_bounding_box.Dimensions() * 0.5f };
+
+			//Update the radius.
+			level_statistics._Radius = CatalystBaseMath::Maximum<float32>(level_statistics._Radius, distance_from_center + CatalystBaseMath::Maximum<float32>(half_extents._X, half_extents._Z));
+		}
 	}
 
 	//Write the level statistics.
 	nlohmann::json &level_statistics_entry{ JSON["LevelStatistics"] };
+
+	{
+		nlohmann::json &axis_aligned_bounding_box_entry{ level_statistics_entry["AxisAlignedBoundingBox"] };
+
+		{
+			nlohmann::json &minimum_entry{ axis_aligned_bounding_box_entry["Minimum"] };
+
+			minimum_entry["X"] = level_statistics._AxisAlignedBoundingBox._Minimum._X;
+			minimum_entry["Y"] = level_statistics._AxisAlignedBoundingBox._Minimum._Y;
+			minimum_entry["Z"] = level_statistics._AxisAlignedBoundingBox._Minimum._Z;
+		}
+
+		{
+			nlohmann::json &maximum_entry{ axis_aligned_bounding_box_entry["Maximum"] };
+
+			maximum_entry["X"] = level_statistics._AxisAlignedBoundingBox._Maximum._X;
+			maximum_entry["Y"] = level_statistics._AxisAlignedBoundingBox._Maximum._Y;
+			maximum_entry["Z"] = level_statistics._AxisAlignedBoundingBox._Maximum._Z;
+		}
+	}
 
 	level_statistics_entry["Radius"] = level_statistics._Radius;
 
