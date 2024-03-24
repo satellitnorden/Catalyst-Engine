@@ -27,18 +27,18 @@ void LevelSystem::SpawnLevel
 	uint64 number_of_entities;
 	level_asset->_StreamArchive.Read(&number_of_entities, sizeof(uint64), &stream_archive_position);
 
-	//Add all level entries.
-	level->_LevelEntries.Reserve(number_of_entities);
+	//Add all entities.
+	level->_Entities.Reserve(number_of_entities);
 
 	//Add all the entities.
 	for (uint64 entity_index{ 0 }; entity_index < number_of_entities; ++entity_index)
 	{
 		//Add a new level entry.
-		level->_LevelEntries.Emplace();
-		LevelEntry &new_level_entry{ level->_LevelEntries.Back() };
+		level->_Entities.Emplace();
+		Entity *RESTRICT &new_entity{ level->_Entities.Back() };
 
 		//Deserialize the entitiy.
-		new_level_entry._Entity = EntitySerialization::DeserializeFromStreamArchive(level_asset->_StreamArchive, &stream_archive_position, &world_transform);
+		new_entity = EntitySerialization::DeserializeFromStreamArchive(level_asset->_StreamArchive, &stream_archive_position, &world_transform);
 	}
 }
 
@@ -47,10 +47,10 @@ void LevelSystem::SpawnLevel
 */
 void LevelSystem::DespawnLevel(Level *const RESTRICT level) NOEXCEPT
 {
-	for (LevelEntry &level_entry : level->_LevelEntries)
+	for (Entity *const RESTRICT entity : level->_Entities)
 	{
-		EntitySystem::Instance->DestroyEntity(level_entry._Entity);
+		EntitySystem::Instance->DestroyEntity(entity);
 	}
 
-	level->_LevelEntries.Clear();
+	level->_Entities.Clear();
 }

@@ -361,12 +361,15 @@ void EditorLevelSystem::PostInitialize() NOEXCEPT
 */
 void EditorLevelSystem::CreateEntity() NOEXCEPT
 {
-	//Add a new level entry.
-	_Level._LevelEntries.Emplace();
-	LevelEntry &new_level_entry{ _Level._LevelEntries.Back() };
+	//Add a new entity.
+	_Entities.Emplace();
+	Entity *RESTRICT &new_entity{ _Entities.Back() };
+
+	_EntityEditorData.Emplace();
+	EntityEditorData &new_entity_editor_data{ _EntityEditorData.Back() };
 
 	//Generate a name.
-	GenerateEntityName(new_level_entry._EditorData._Name.Data(), new_level_entry._EditorData._Name.Size());
+	GenerateEntityName(new_entity_editor_data._Name.Data(), new_entity_editor_data._Name.Size());
 
 	//Add components (entities created in the editor always have a world transform component).
 	StaticArray<ComponentInitializationData *RESTRICT, 1> component_configurations;
@@ -380,7 +383,7 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 	}
 
 	//Create the entity!
-	new_level_entry._Entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData * RESTRICT>(component_configurations));
+	new_entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData * RESTRICT>(component_configurations));
 }
 
 /*
@@ -495,13 +498,17 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 	//Write all entities.
 	nlohmann::json &entities{ JSON["Entities"] };
 
-	for (const LevelEntry &level_entry : _Level._LevelEntries)
+	for (uint64 entity_index{ 0 }; entity_index < _Entities.Size(); ++entity_index)
 	{
+		//Cache the entity and entity editor data.
+		Entity *const RESTRICT entity{ _Entities[entity_index] };
+		EntityEditorData &entity_editor_data{ _EntityEditorData[entity_index] };
+
 		//Cache the entity entry.
-		nlohmann::json &entity_entry{ entities[level_entry._EditorData._Name.Data()] };
+		nlohmann::json &entity_entry{ entities[entity_editor_data._Name.Data()] };
 
 		//Serialize the entity.
-		EntitySerialization::SerializeToJSON(entity_entry, level_entry._Entity);
+		EntitySerialization::SerializeToJSON(entity_entry, entity);
 
 		//Serialize the editor data.
 		nlohmann::json &editor_data_entry{ entity_entry["EditorData"] };
@@ -510,15 +517,15 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 		{
 			nlohmann::json &rotation_entry{ editor_data_entry["Rotation"] };
 
-			rotation_entry["Roll"] = CatalystBaseMath::RadiansToDegrees(level_entry._EditorData._Rotation._Roll);
-			rotation_entry["Yaw"] = CatalystBaseMath::RadiansToDegrees(level_entry._EditorData._Rotation._Yaw);
-			rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(level_entry._EditorData._Rotation._Pitch);
+			rotation_entry["Roll"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Roll);
+			rotation_entry["Yaw"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Yaw);
+			rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Pitch);
 		}
 
 		//Update the level statistics from the world transform component.
 		{
 			//Cache the world transform instance data.
-			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(level_entry._Entity) };
+			const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
 
 			//Calculate the distance from the center.
 			const float32 distance_from_center{ Vector3<float32>::LengthXZ(world_transform_instance_data._CurrentWorldTransform.GetAbsolutePosition()) };
@@ -542,11 +549,14 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 	//Destroy all entities.
 	EntitySystem::Instance->DestroyAllEntities();
 
-	//Clear the level entries.
-	_Level._LevelEntries.Clear();
+	//Clear the entities.
+	_Entities.Clear();
 
-	//Reset the selected level entry.
-	_SelectedLevelEntryIndex = UINT64_MAXIMUM;
+	//Clear the entity editor data.
+	_EntityEditorData.Clear();
+
+	//Reset the selected entity.
+	_SelectedEntityIndex = UINT64_MAXIMUM;
 
 	//Set up the stream archive.
 	StreamArchive stream_archive;
@@ -555,17 +565,22 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 	const nlohmann::json &entities{ JSON["Entities"] };
 
 	//Allocate the necessary amount of memory.
-	_Level._LevelEntries.Reserve(entities.size());
+	_Entities.Reserve(entities.size());
+	_EntityEditorData.Reserve(entities.size());
 
 	//Iterate through all entities.
 	for (auto entity_iterator{ entities.begin() }; entity_iterator != entities.end(); ++entity_iterator)
 	{
-		//Add the new level entry.
-		_Level._LevelEntries.Emplace();
-		LevelEntry &new_level_entry{ _Level._LevelEntries.Back() };
+		//Add the new entity.
+		_Entities.Emplace();
+		Entity *RESTRICT &new_entity{ _Entities.Back() };
+
+		//Add a new entity editor data.
+		_EntityEditorData.Emplace();
+		EntityEditorData &entity_editor_data{ _EntityEditorData.Back() };
 
 		//Set the name.
-		new_level_entry._EditorData._Name = entity_iterator.key().c_str();
+		entity_editor_data._Name = entity_iterator.key().c_str();
 
 		//Cache the entity entry.
 		const nlohmann::json &entity_entry{ *entity_iterator };
@@ -577,7 +592,7 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 		EntitySerialization::SerializeToStreamArchive(entity_entry, &stream_archive);
 
 		//Now deserialize!
-		new_level_entry._Entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
+		new_entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
 
 		//Deserialize the editor data.
 		const nlohmann::json &editor_data_entry{ entity_entry["EditorData"] };
@@ -586,9 +601,9 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 		{
 			const nlohmann::json &rotation_entry{ editor_data_entry["Rotation"] };
 
-			new_level_entry._EditorData._Rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation_entry["Roll"]);
-			new_level_entry._EditorData._Rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation_entry["Yaw"]);
-			new_level_entry._EditorData._Rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation_entry["Pitch"]);
+			entity_editor_data._Rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation_entry["Roll"]);
+			entity_editor_data._Rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation_entry["Yaw"]);
+			entity_editor_data._Rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation_entry["Pitch"]);
 		}
 	}
 }
@@ -609,16 +624,19 @@ NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> m
 	//Begin the window.
 	ImGuiSystem::Instance->BeginWindow("Editor Level Top Right", minimum, maximum, false, false, false, false);
 
-	//List all level entries.
-	for (uint64 i{ 0 }; i < _Level._LevelEntries.Size(); ++i)
+	//List all entities.
+	for (uint64 entity_index{ 0 }; entity_index < _Entities.Size(); ++entity_index)
 	{
-		const LevelEntry &level_entry{ _Level._LevelEntries[i] };
+		//Cache the entity and entity editor data.
+		Entity *const RESTRICT entity{ _Entities[entity_index] };
+		EntityEditorData &entity_editor_data{ _EntityEditorData[entity_index] };
 
-		const uint64 name_length{ StringUtilities::StringLength(level_entry._EditorData._Name.Data()) };
+		//Calculate the name length.
+		const uint64 name_length{ StringUtilities::StringLength(entity_editor_data._Name.Data()) };
 
-		if (ImGui::Selectable(name_length == 0 ? "EMPTY" : level_entry._EditorData._Name.Data(), _SelectedLevelEntryIndex == i))
+		if (ImGui::Selectable(name_length == 0 ? "EMPTY" : entity_editor_data._Name.Data(), _SelectedEntityIndex == entity_index))
 		{
-			_SelectedLevelEntryIndex = i;
+			_SelectedEntityIndex = entity_index;
 		}
 	}
 
@@ -653,11 +671,12 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 	//Begin the window.
 	ImGuiSystem::Instance->BeginWindow("Editor Level Bottom Right", minimum, maximum, false, false, false, true);
 
-	//Set up stuff for the selected level entry.
-	if (_SelectedLevelEntryIndex != UINT64_MAXIMUM)
+	//Set up stuff for the selected entity.
+	if (_SelectedEntityIndex != UINT64_MAXIMUM)
 	{
-		//Cache the selected level entry.
-		LevelEntry &selected_level_entry{ _Level._LevelEntries[_SelectedLevelEntryIndex] };
+		//Cache the selected entity and entity editor data.
+		Entity *const RESTRICT selected_entity{ _Entities[_SelectedEntityIndex] };
+		EntityEditorData &selected_entity_editor_data{ _EntityEditorData[_SelectedEntityIndex] };
 
 		//Add the menu bar.
 		{
@@ -667,7 +686,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 			{
 				for (Component *const RESTRICT component : AllComponents())
 				{
-					if (component->Has(selected_level_entry._Entity))
+					if (component->Has(selected_entity))
 					{
 						continue;
 					}
@@ -675,7 +694,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					if (ImGui::MenuItem(component->Name()))
 					{
 						ComponentInitializationData *const RESTRICT initialization_data{ component->AllocateInitializationData() };
-						EntitySystem::Instance->AddComponentToEntity(selected_level_entry._Entity, initialization_data);
+						EntitySystem::Instance->AddComponentToEntity(selected_entity, initialization_data);
 					}
 				}
 				
@@ -687,7 +706,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		}
 
 		//Add a text input for the name.
-		TextInputWidget("Name", selected_level_entry._EditorData._Name.Data(), selected_level_entry._EditorData._Name.Size());
+		TextInputWidget("Name", selected_entity_editor_data._Name.Data(), selected_entity_editor_data._Name.Size());
 
 		//Add a duplicate button.
 		bool should_duplicate{ false };
@@ -706,7 +725,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 			ASSERT(editable_field._Type == ComponentEditableField::Type::WORLD_TRANSFORM, "What happened here?");
 
 			//Retrieve the world transform.
-			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_level_entry._Entity, editable_field) };
+			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_entity, editable_field) };
 
 			//Add a header.
 			ImGui::Text("World Transform");
@@ -729,7 +748,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 			//Add rotation widget.
 			{
 				//Retrieve the rotation.
-				EulerAngles rotation{ selected_level_entry._EditorData._Rotation };
+				EulerAngles rotation{ selected_entity_editor_data._Rotation };
 
 				//Convert to degrees.
 				for (uint8 i{ 0 }; i < 3; ++i)
@@ -749,7 +768,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 						rotation[i] = CatalystBaseMath::DegreesToRadians(rotation[i]);
 					}
 
-					selected_level_entry._EditorData._Rotation = rotation;
+					selected_entity_editor_data._Rotation = rotation;
 					world_transform->SetRotation(rotation);
 				}
 			}
@@ -772,13 +791,13 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 		//Add a Gizmo for the world transform!
 		{
-			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_level_entry._Entity, WorldTransformComponent::Instance->EditableFields()[0]) };
+			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_entity, WorldTransformComponent::Instance->EditableFields()[0]) };
 
 			Matrix4x4 transformation_matrix;
 
 			{
 				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
-				EulerAngles rotation{ selected_level_entry._EditorData._Rotation };
+				EulerAngles rotation{ selected_entity_editor_data._Rotation };
 				Vector3<float32> scale{ world_transform->GetScale() };
 
 				//Rotation reported in degrees, so convert.
@@ -865,7 +884,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				}
 
 				world_transform->SetAbsolutePosition(position);
-				selected_level_entry._EditorData._Rotation = rotation;
+				selected_entity_editor_data._Rotation = rotation;
 				world_transform->SetRotation(rotation);
 
 				if (_CurrentGizmoMode == GizmoMode::SCALE)
@@ -888,7 +907,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				continue;
 			}
 
-			if (component->Has(selected_level_entry._Entity))
+			if (component->Has(selected_entity))
 			{
 				if (ImGui::CollapsingHeader(component->Name()))
 				{
@@ -899,13 +918,13 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 						{
 							case ComponentEditableField::Type::FLOAT:
 							{
-								float32 *const RESTRICT value{ component->EditableFieldData<float32>(selected_level_entry._Entity, editable_field) };
+								float32 *const RESTRICT value{ component->EditableFieldData<float32>(selected_entity, editable_field) };
 
 								FloatWidget
 								(
 									editable_field._Name,
 									component,
-									selected_level_entry._Entity,
+									selected_entity,
 									editable_field,
 									value
 								);
@@ -915,13 +934,13 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 							case ComponentEditableField::Type::ENUMERATION:
 							{
-								Enumeration *const RESTRICT enumeration{ component->EditableFieldData<Enumeration>(selected_level_entry._Entity, editable_field) };
+								Enumeration *const RESTRICT enumeration{ component->EditableFieldData<Enumeration>(selected_entity, editable_field) };
 
 								EnumerationWidget
 								(
 									editable_field._Name,
 									component,
-									selected_level_entry._Entity,
+									selected_entity,
 									editable_field,
 									enumeration
 								);
@@ -931,7 +950,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 							case ComponentEditableField::Type::MATERIAL_ASSET:
 							{
-								AssetPointer<MaterialAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<MaterialAsset>>(selected_level_entry._Entity, editable_field) };
+								AssetPointer<MaterialAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<MaterialAsset>>(selected_entity, editable_field) };
 
 								MaterialAssetWidget(editable_field._Name, asset);
 
@@ -940,7 +959,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 							case ComponentEditableField::Type::MODEL_ASSET:
 							{
-								AssetPointer<ModelAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<ModelAsset>>(selected_level_entry._Entity, editable_field) };
+								AssetPointer<ModelAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<ModelAsset>>(selected_entity, editable_field) };
 
 								ModelAssetWidget(editable_field._Name, asset);
 
@@ -949,7 +968,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 							case ComponentEditableField::Type::POSITION:
 							{
-								Vector3<float32> *const RESTRICT editable_field_data{ component->EditableFieldData<Vector3<float32>>(selected_level_entry._Entity, editable_field) };
+								Vector3<float32> *const RESTRICT editable_field_data{ component->EditableFieldData<Vector3<float32>>(selected_entity, editable_field) };
 
 								TransformWidget(editable_field._Name, &editable_field_data->_X, 3, 0.0f, 0.01f);
 
@@ -971,7 +990,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		//Duplicate the entity, if requested.
 		if (should_duplicate)
 		{
-			DuplicateEntity(selected_level_entry._Entity);
+			DuplicateEntity(selected_entity);
 		}
 	}
 
@@ -987,11 +1006,14 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 */
 void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
-	//Add a new level entry.
-	_Level._LevelEntries.Emplace();
-	LevelEntry &new_level_entry{ _Level._LevelEntries.Back() };
+	//Add a new entity.
+	_Entities.Emplace();
+	Entity *RESTRICT& new_entity{ _Entities.Back() };
 
-	GenerateEntityName(new_level_entry._EditorData._Name.Data(), new_level_entry._EditorData._Name.Size());
+	_EntityEditorData.Emplace();
+	EntityEditorData &new_entity_editor_data{ _EntityEditorData.Back() };
+
+	GenerateEntityName(new_entity_editor_data._Name.Data(), new_entity_editor_data._Name.Size());
 
 	/*
 	*	Maybe a bit overkill to do this whole round trip, but it keeps me from having to write more code here.
@@ -1003,9 +1025,9 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 
 	EntitySerialization::SerializeToJSON(JSON, entity);
 	EntitySerialization::SerializeToStreamArchive(JSON, &stream_archive);
-	new_level_entry._Entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
+	new_entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
 
-	//Set the new selected level entry index.
-	_SelectedLevelEntryIndex = _Level._LevelEntries.LastIndex();
+	//Set the new selected entity index.
+	_SelectedEntityIndex = _Entities.LastIndex();
 }
 #endif

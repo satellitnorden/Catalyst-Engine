@@ -4,20 +4,15 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-//World.
-#include <World/Level/LevelEntry.h>
+//Entities.
+#include <Entities/Core/Entity.h>
 
 class Level final
 {
 
 public:
 
-	//The level entries.
-	DynamicArray<LevelEntry> _LevelEntries;
-
-	/*
-	*	Serializes this level to the given file path.
-	*/
-	void Serialize(const char *const RESTRICT file_path) NOEXCEPT;
+	//The entities.
+	DynamicArray<Entity *RESTRICT> _Entities;
 
 };

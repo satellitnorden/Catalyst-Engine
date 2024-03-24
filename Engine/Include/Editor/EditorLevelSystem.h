@@ -5,12 +5,13 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
+#include <Core/General/StaticString.h>
+
+//Entities.
+#include <Entities/Core/Entity.h>
 
 //Math.
 #include <Math/General/Vector.h>
-
-//World.
-#include <World/Level/Level.h>
 
 //Third party.
 #include <ThirdParty/json/json.hpp>
@@ -68,17 +69,36 @@ private:
 		SCALE
 	};
 
+	/*
+	*	Entity editor data class definition.
+	*/
+	class EntityEditorData final
+	{
+
+	public:
+
+		//The name.
+		StaticString<64> _Name;
+
+		//The rotation. Used in place of the quaternion rotation in WorldTransformComponent.
+		EulerAngles _Rotation{ 0.0f, 0.0f, 0.0f };
+
+	};
+
 	//The level file path.
 	DynamicString _LevelFilePath;
 
-	//The level.
-	Level _Level;
+	//The entities.
+	DynamicArray<Entity *RESTRICT> _Entities;
+
+	//The entity editor data.
+	DynamicArray<EntityEditorData> _EntityEditorData;
 
 	//The name counter.
 	uint32 _NameCounter{ 0 };
 
-	//The selected level entry index.
-	uint64 _SelectedLevelEntryIndex{ UINT64_MAXIMUM };
+	//The selected entity index.
+	uint64 _SelectedEntityIndex{ UINT64_MAXIMUM };
 
 	//The current Gizmo mode.
 	GizmoMode _CurrentGizmoMode{ GizmoMode::TRANSLATE };
