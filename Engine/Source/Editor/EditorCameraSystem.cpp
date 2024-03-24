@@ -28,50 +28,14 @@ void EditorCameraSystem::Initialize() NOEXCEPT
 */
 void EditorCameraSystem::Update() NOEXCEPT
 {
-	/*
-	//Is the current contextual window CAMERA?
-	if (CatalystEditorSystem::Instance->GetCurrentContextualWindow() == CatalystEditorSystem::ContextualWindow::CAMERA)
+	//Detect if any text input is active - If so, do nothing.
+	if (ImGui::GetIO().WantTextInput)
 	{
-		//Add the entities window.
-		ImGui::Begin("Camera", nullptr, EditorConstants::WINDOW_FLAGS);
-		EditorUtilities::SetWindowPositionAndSize(WindowAnchor::BOTTOM_LEFT, Vector2<float32>(0.0f, 0.0f), Vector2<float32>(EditorConstants::GENERAL_WINDOW_WIDTH, 0.5f));
-
-		//Add a slider for the aperture.
-		{
-			float32 aperture{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetAperture() };
-
-			if (ImGui::DragFloat("Aperture", &aperture, 0.01f, 0.0f, 1.0f))
-			{
-				RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->SetAperture(aperture);
-			}
-		}
-
-		//Add a checkbox for automatic focal distance.
-		{
-			bool automatic_focal_distance{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetAutomaticFocalDistance() };
-
-			if (ImGui::Checkbox("Automatic Focal Distance", &automatic_focal_distance))
-			{
-				RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->SetAutomaticFocalDistance(automatic_focal_distance);
-			}
-		}
-
-		//Add a slider for the focal distance.
-		{
-			float32 focal_distance{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFocalDistance() };
-
-			if (ImGui::DragFloat("Focal Distance", &focal_distance, 0.01f))
-			{
-				RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->SetFocalDistance(focal_distance);
-			}
-		}
-
-		ImGui::End();
+		return;
 	}
-	*/
 
 	//Cache the input state.
-	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::DEBUG) };
+	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::GAME) };
 
 	//Cache if keyboard/mouse rotation should be updated.
 	const bool update_keyboard_mouse_rotation{ mouse_state->_Right == ButtonState::PRESSED || mouse_state->_Right == ButtonState::PRESSED_HELD };

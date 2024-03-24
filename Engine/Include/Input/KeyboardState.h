@@ -175,6 +175,9 @@ public:
 		}
 
 		//Set the upper/lower case characters.
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::Spacebar)] = ' ';
+		_LowerCaseCharacters[UNDERLYING(KeyboardButton::Spacebar)] = ' ';
+
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::ZERO)] = '0';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::ZERO)] = '0';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadZero)] = '0';
@@ -331,7 +334,7 @@ public:
 	/*
 	*	Returns the keyboard button state for the given keyboard button, non-const.
 	*/
-	ButtonState& GetButtonState(const KeyboardButton button) NOEXCEPT
+	ButtonState &GetButtonState(const KeyboardButton button) NOEXCEPT
 	{
 		return _ButtonStates[UNDERLYING(button)];
 	}

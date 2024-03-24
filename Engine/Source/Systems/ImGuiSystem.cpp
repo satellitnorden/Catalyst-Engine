@@ -144,116 +144,26 @@ void ImGuiSystem::PostTerminate() NOEXCEPT
 */
 void ImGuiSystem::OnInputAvailable() NOEXCEPT
 {
-	/*
-	*	Keyboard button input character mapping class definition.
-	*/
-	class KeyboardButtonInputCharacterMapping final
-	{
-
-	public:
-
-		//The keyboard button.
-		KeyboardButton _KeyboardButton;
-
-		//The upper case input character.
-		char _UpperCaseInputCharacter;
-
-		//The lower case input character.
-		char _LowerCaseInputCharacter;
-
-		/*
-		*	Constructor taking all values as arguments.
-		*/
-		FORCE_INLINE constexpr KeyboardButtonInputCharacterMapping
-		(
-			const KeyboardButton initial_keyboard_button,
-			const char initial_upper_case_input_character,
-			const char initial_lower_case_input_character
-		) NOEXCEPT
-			:
-		_KeyboardButton(initial_keyboard_button),
-			_UpperCaseInputCharacter(initial_upper_case_input_character),
-			_LowerCaseInputCharacter(initial_lower_case_input_character)
-		{
-
-		}
-	};
-
-	//Define constants.
-	constexpr StaticArray<KeyboardButtonInputCharacterMapping, 54> KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS
-	{
-		KeyboardButtonInputCharacterMapping(KeyboardButton::A, 'A', 'a'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::B, 'B', 'b'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::C, 'C', 'c'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::D, 'D', 'd'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::E, 'E', 'e'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::F, 'F', 'f'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::G, 'G', 'g'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::H, 'H', 'h'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::I, 'I', 'i'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::J, 'J', 'J'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::K, 'K', 'k'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::L, 'L', 'l'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::M, 'M', 'm'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::N, 'N', 'n'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::O, 'O', 'o'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::P, 'P', 'p'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::Q, 'Q', 'q'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::R, 'R', 'r'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::S, 'S', 's'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::T, 'T', 't'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::U, 'U', 'u'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::V, 'V', 'v'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::W, 'W', 'w'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::X, 'X', 'x'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::Y, 'Y', 'y'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::Z, 'Z', 'z'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadZero, '0', '0'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadOne, '1', '1'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadTwo, '2', '2'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadThree, '3', '3'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadFour, '4', '4'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadFive, '5', '5'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadSix, '6', '6'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadSeven, '7', '7'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadEight, '8', '8'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NumpadNine, '9', '9'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::MULTIPLY, '*', '*'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::ADD, '+', '+'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::SEPARATOR, '.', '.'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::SUBTRACT, '-', '-'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::DECIMAL, ',', ','),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::DIVIDE, '/', '/'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::ZERO, '0', '0'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::ONE, '1', '1'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::TWO, '2', '2'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::THREE, '3', '3'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::FOUR, '4', '4'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::FIVE, '5', '5'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::SIX, '6', '6'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::SEVEN, '7', '7'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::EIGHT, '8', '8'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::NINE, '9', '9'),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::COMMA, ',', ','),
-		KeyboardButtonInputCharacterMapping(KeyboardButton::PERIOD, '.', '.')
-	};
+	//Cache the input state.
+	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::USER_INTERFACE) };
+	const KeyboardState *const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE) };
 
 	//Fill in ImGui's IO struct.
-	ImGuiIO& io{ ImGui::GetIO() };
+	ImGuiIO &io{ ImGui::GetIO() };
 
 	io.DisplaySize.x = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width);
 	io.DisplaySize.y = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
 	io.DeltaTime = CatalystBaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetDeltaTime(), FLOAT32_EPSILON);
 	io.IniFilename = nullptr;
-	io.MousePos = ImVec2(InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_CurrentX * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), (1.0f - InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_CurrentY) * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
-	io.MouseDown[0] = InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_Left == ButtonState::PRESSED || InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_Left == ButtonState::PRESSED_HELD;
-	io.MouseDown[1] = InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_Right == ButtonState::PRESSED || InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_Right == ButtonState::PRESSED_HELD;
-	io.MouseDown[2] = InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_ScrollWheel == ButtonState::PRESSED || InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_ScrollWheel == ButtonState::PRESSED_HELD;
-	io.MouseWheel = static_cast<float32>(InputSystem::Instance->GetMouseState(InputLayer::DEBUG)->_ScrollWheelStep);
-	io.KeyCtrl = InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightControl) == ButtonState::PRESSED;
-	io.KeyShift = InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED;
-	io.KeyAlt = InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftAlt) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightAlt) == ButtonState::PRESSED;
-	io.KeySuper = InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftWindows) == ButtonState::PRESSED || InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightWindows) == ButtonState::PRESSED;
+	io.MousePos = ImVec2(mouse_state->_CurrentX * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), (1.0f - mouse_state->_CurrentY) * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
+	io.MouseDown[0] = mouse_state->_Left == ButtonState::PRESSED || mouse_state->_Left == ButtonState::PRESSED_HELD;
+	io.MouseDown[1] = mouse_state->_Right == ButtonState::PRESSED || mouse_state->_Right == ButtonState::PRESSED_HELD;
+	io.MouseDown[2] = mouse_state->_ScrollWheel == ButtonState::PRESSED || mouse_state->_ScrollWheel == ButtonState::PRESSED_HELD;
+	io.MouseWheel = static_cast<float32>(mouse_state->_ScrollWheelStep);
+	io.KeyCtrl = keyboard_state->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::RightControl) == ButtonState::PRESSED;
+	io.KeyShift = keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED;
+	io.KeyAlt = keyboard_state->GetButtonState(KeyboardButton::LeftAlt) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::RightAlt) == ButtonState::PRESSED;
+	io.KeySuper = keyboard_state->GetButtonState(KeyboardButton::LeftWindows) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::RightWindows) == ButtonState::PRESSED;
 
 	//Update the KeyMap.
 	io.KeyMap[ImGuiKey_Tab] = UNDERLYING(KeyboardButton::Tab);
@@ -282,32 +192,28 @@ void ImGuiSystem::OnInputAvailable() NOEXCEPT
 	//Update the KeyDown array.
 	for (uint8 i{ 0 }; i < UNDERLYING(KeyboardButton::NumberOfKeyboardButtons); ++i)
 	{
-		io.KeysDown[i] = InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(static_cast<KeyboardButton>(i)) == ButtonState::PRESSED;
+		io.KeysDown[i] = keyboard_state->GetButtonState(static_cast<KeyboardButton>(i)) == ButtonState::PRESSED;
 	}
 
-	//Add the input characters.
-	if (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED
-		|| InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED_HELD
-		|| InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED
-		|| InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED_HELD)
+	//Check if shift is held down.
+	const bool shift_held
 	{
-		for (const KeyboardButtonInputCharacterMapping& mapping : KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS)
-		{
-			if (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(mapping._KeyboardButton) == ButtonState::PRESSED)
-			{
-				io.AddInputCharacter(mapping._UpperCaseInputCharacter);
-			}
-		}
-	}
+		keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED
+		|| keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED_HELD
+		|| keyboard_state->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED
+		|| keyboard_state->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED_HELD
+	};
 
-	else
+	//Add input characters.
+	for (uint32 i{ 0 }; i < UNDERLYING(KeyboardButton::NumberOfKeyboardButtons); ++i)
 	{
-		for (const KeyboardButtonInputCharacterMapping& mapping : KEYBOARD_BUTTON_INPUT_CHARACTER_MAPPINGS)
+		const ButtonState button_state{ keyboard_state->GetButtonState(static_cast<KeyboardButton>(i)) };
+		const char upper_case_character{ keyboard_state->GetUpperCaseCharacter(static_cast<KeyboardButton>(i)) };
+		const char lower_case_character{ keyboard_state->GetLowerCaseCharacter(static_cast<KeyboardButton>(i)) };
+
+		if (button_state == ButtonState::PRESSED && upper_case_character != CHAR_MAX && lower_case_character != CHAR_MAX)
 		{
-			if (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(mapping._KeyboardButton) == ButtonState::PRESSED)
-			{
-				io.AddInputCharacter(mapping._LowerCaseInputCharacter);
-			}
+			io.AddInputCharacter(shift_held ? upper_case_character : lower_case_character);
 		}
 	}
 
