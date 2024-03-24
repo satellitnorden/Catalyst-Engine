@@ -64,6 +64,16 @@ void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ComponentIni
 
 	//Copy data.
 	instance_data._ScriptIdentifier = _initialization_data->_ScriptIdentifier;
+}
+
+/*
+*	Runs after all components have created their instance for the given entity.
+*	Useful if there is some setup needed involving multiple components.
+*/
+void ScriptComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Cache the instance data.
+	ScriptInstanceData &instance_data{ InstanceData(entity) };
 
 	//Allocate the required data.
 	const uint64 required_data_size{ Script::RequiredDataSize(instance_data._ScriptIdentifier) };
@@ -71,8 +81,9 @@ void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ComponentIni
 	if (required_data_size > 0)
 	{
 		instance_data._Data = Memory::Allocate(required_data_size);
+		Memory::Set(instance_data._Data, 0, required_data_size);
 	}
-	
+
 	else
 	{
 		instance_data._Data = nullptr;
@@ -86,15 +97,6 @@ void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ComponentIni
 
 	//Initialize the script.
 	Script::Initialize(instance_data._ScriptIdentifier, script_context);
-}
-
-/*
-*	Runs after all components have created their instance for the given entity.
-*	Useful if there is some setup needed involving multiple components.
-*/
-void ScriptComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
-{
-
 }
 
 /*
@@ -240,6 +242,7 @@ FORCE_INLINE void ScriptComponent::PostEditableFieldChange(Entity *const RESTRIC
 		if (required_data_size > 0)
 		{
 			instance_data._Data = Memory::Allocate(required_data_size);
+			Memory::Set(instance_data._Data, 0, required_data_size);
 		}
 
 		else

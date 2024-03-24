@@ -127,6 +127,15 @@ void PhysicsSystem::GetActorWorldTransform(const ActorHandle actor_handle, World
 }
 
 /*
+*	Updates the world transform of the given actor.
+*/
+void PhysicsSystem::UpdateWorldTransform(const WorldTransform &world_transform, ActorHandle *const RESTRICT actor_handle) NOEXCEPT
+{
+	//Update the world transform on the sub-system.
+	SubUpdateWorldTransform(world_transform, actor_handle);
+}
+
+/*
 *	Creates a character controller.
 */
 RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::CreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT

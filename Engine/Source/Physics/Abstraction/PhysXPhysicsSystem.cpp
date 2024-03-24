@@ -435,7 +435,6 @@ void PhysicsSystem::SubCreateModelActor
 
 	//Create the shape.
 	physx::PxShape *RESTRICT shape{ nullptr };
-	Vector3<float32> position_offset{ 0.0f };
 
 	switch (collision_type)
 	{
@@ -450,7 +449,22 @@ void PhysicsSystem::SubCreateModelActor
 				shape = PhysXPhysicsSystemData::_Physics->createShape(geometry, *PhysXPhysicsSystemData::_DefaultMaterial);
 			}
 
-			position_offset = AxisAlignedBoundingBox3D::CalculateCenter(local_axis_aligned_bounding_box) - world_transform.GetAbsolutePosition();
+			/*
+			*	Set the local pose of the box shape here.
+			*	Currently it doesn't seem to work to just set rotation in the actor,
+			*	so set that here as well, don't know why I have to though... :x
+			*/
+			const Vector3<float32> position_offset{ AxisAlignedBoundingBox3D::CalculateCenter(local_axis_aligned_bounding_box) - world_transform.GetAbsolutePosition() };
+			const physx::PxVec3 position{ position_offset._X, position_offset._Y, position_offset._Z };
+			const Quaternion rotation{ world_transform.GetRotation() };
+			physx::PxQuat physx_rotation;
+			physx_rotation.x = rotation._X;
+			physx_rotation.y = rotation._Y;
+			physx_rotation.z = rotation._Z;
+			physx_rotation.w = rotation._W;
+			const physx::PxTransform transform{ position, physx_rotation };
+
+			shape->setLocalPose(transform);
 
 			break;
 		}
@@ -502,7 +516,7 @@ void PhysicsSystem::SubCreateModelActor
 	shape->setFlags(physx::PxShapeFlag::eSIMULATION_SHAPE | physx::PxShapeFlag::eSCENE_QUERY_SHAPE | physx::PxShapeFlag::eVISUALIZATION);
 
 	//Set up the transform.
-	const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() + position_offset };
+	const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
 	const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
 	const Quaternion rotation{ world_transform.GetRotation() };
 	physx::PxQuat physx_rotation;
@@ -595,6 +609,32 @@ void PhysicsSystem::SubGetActorWorldTransform(const ActorHandle actor_handle, Wo
 	world_transform->SetAbsolutePosition(*static_cast<const Vector3<float32> *const RESTRICT>(static_cast<const void *const RESTRICT>(&transform.p)));
 	world_transform->SetRotation(*static_cast<const Quaternion* const RESTRICT>(static_cast<const void* const RESTRICT>(&transform.q)));
 	world_transform->SetScale(1.0f);
+}
+
+/*
+*	Updates the world transform of the given actor on the sub-system.
+*/
+void PhysicsSystem::SubUpdateWorldTransform(const WorldTransform &world_transform, ActorHandle *const RESTRICT actor_handle) NOEXCEPT
+{
+	//Cache the actor.
+	physx::PxRigidActor *const RESTRICT actor{ static_cast<physx::PxRigidActor *const RESTRICT>(*actor_handle) };
+
+	//Set up the transform.
+	const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition()/* + position_offset*/};
+	const physx::PxVec3 position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
+	const Quaternion rotation{ world_transform.GetRotation() };
+	physx::PxQuat physx_rotation;
+	physx_rotation.x = rotation._X;
+	physx_rotation.y = rotation._Y;
+	physx_rotation.z = rotation._Z;
+	physx_rotation.w = rotation._W;
+	const physx::PxTransform transform{ position, physx_rotation };
+
+	//Update the transform!
+	{
+		SCOPED_LOCK(PhysXPhysicsSystemData::_SceneLock);
+		actor->setGlobalPose(transform);
+	}
 }
 
 /*

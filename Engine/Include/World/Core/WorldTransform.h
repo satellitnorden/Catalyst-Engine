@@ -124,6 +124,22 @@ public:
 	{
 
 	}
+		
+	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD bool operator==(const WorldTransform &other) const NOEXCEPT
+	{
+		return Memory::Compare(this, &other, sizeof(WorldTransform));
+	}
+
+	/*
+	*	Inequality operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD bool operator!=(const WorldTransform &other) const NOEXCEPT
+	{
+		return !operator==(other);
+	}
 
 	/*
 	*	Returns the world position.

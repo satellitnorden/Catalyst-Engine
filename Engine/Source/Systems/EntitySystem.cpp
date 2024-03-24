@@ -54,6 +54,11 @@ void EntitySystem::Initialize() NOEXCEPT
 */
 NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT> component_configurations) NOEXCEPT
 {
+	while (_NumberOfItemsInCreationQueue.load() > 1024)
+	{
+		Concurrency::CurrentThread::Yield();
+	}
+
 	//Allocate the entity.
 	Entity *RESTRICT entity;
 	
@@ -384,23 +389,38 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 */
 void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 {
+	//Remember the "looparound" entity.
+	EntityIdentifier looparound_entity{ UINT64_MAXIMUM };
+
 	TimePoint start_time{ GetCurrentTimePoint() };
 
 	while (start_time.GetSecondsSince() < EntitySystemConstants::MAXIMUM_DESTRUCTION_TIME)
 	{
 		if (EntityDestructionQueueItem *const RESTRICT queue_item{ _DestructionQueue.Pop() })
 		{
-			/*
-			*	If the entity isn't initialized yet, we have to assume it's somewhere in the creation queue.
-			*	Best we can do right now is just put it back into the queue at the end, and destroy it once initialized.
-			*	Return here to avoid being stuck in a loop the rest of the time-slice,
-			*	if the entity in question takes a long time to be created.
-			*/
-			if (!queue_item->_Entity->_Initialized)
+			//Check if we have looped around.
+			if (looparound_entity != UINT64_MAXIMUM && queue_item->_Entity->_EntityIdentifier == looparound_entity)
 			{
 				_DestructionQueue.Push(*queue_item);
 
 				return;
+			}
+
+			/*
+			*	If the entity isn't initialized yet, we have to assume it's somewhere in the creation queue.
+			*	Best we can do right now is just put it back into the queue at the end, and destroy it once initialized.
+			*	Set the "looparound" entity here, if it's not set, or check if we have reached the "looparound" entity here (and if so, return).
+			*/
+			if (!queue_item->_Entity->_Initialized)
+			{
+				if (looparound_entity == UINT64_MAXIMUM)
+				{
+					looparound_entity = queue_item->_Entity->_EntityIdentifier;
+				}
+
+				_DestructionQueue.Push(*queue_item);
+
+				continue;
 			}
 
 			//Notify all components that this entity was destroyed.

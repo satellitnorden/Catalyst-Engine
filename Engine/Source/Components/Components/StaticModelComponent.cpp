@@ -240,6 +240,12 @@ void StaticModelComponent::Update
 					PhysicsSystem::Instance->GetActorWorldTransform(instance_data._PhysicsActorHandle, &world_transform_instance_data._CurrentWorldTransform);
 				}
 
+				//Otherwise, check if the world transform has updated, and if so, update the physics actor.
+				else if (instance_data._PhysicsActorHandle && world_transform_instance_data._PreviousWorldTransform != world_transform_instance_data._CurrentWorldTransform)
+				{
+					PhysicsSystem::Instance->UpdateWorldTransform(world_transform_instance_data._CurrentWorldTransform, &instance_data._PhysicsActorHandle);
+				}
+
 				//Update the world space axis aligned bounding box.
 				AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
 				RenderingUtilities::TransformAxisAlignedBoundingBox(instance_data._Model->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);

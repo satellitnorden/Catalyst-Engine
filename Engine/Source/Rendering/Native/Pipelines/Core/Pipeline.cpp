@@ -103,7 +103,7 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 
 		case RenderInputStream::Mode::DRAW_INDEXED:
 		{
-			for (const RenderInputStreamEntry& entry : input_stream._Entries)
+			for (const RenderInputStreamEntry &entry : input_stream._Entries)
 			{
 				command_buffer->PushConstants
 				(

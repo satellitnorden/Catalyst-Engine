@@ -93,6 +93,11 @@ public:
 	void GetActorWorldTransform(const ActorHandle actor_handle, WorldTransform *const RESTRICT world_transform) NOEXCEPT;
 
 	/*
+	*	Updates the world transform of the given actor.
+	*/
+	void UpdateWorldTransform(const WorldTransform &world_transform, ActorHandle *const RESTRICT actor_handle) NOEXCEPT;
+
+	/*
 	*	Creates a character controller.
 	*/
 	RESTRICTED NO_DISCARD CharacterController *const RESTRICT CreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT;
@@ -176,7 +181,12 @@ private:
 	/*
 	*	Returns the world transform for the given actor on the sub-system.
 	*/
-	void SubGetActorWorldTransform(const ActorHandle actor_handle, WorldTransform* const RESTRICT world_transform) NOEXCEPT;
+	void SubGetActorWorldTransform(const ActorHandle actor_handle, WorldTransform *const RESTRICT world_transform) NOEXCEPT;
+
+	/*
+	*	Updates the world transform of the given actor on the sub-system.
+	*/
+	void SubUpdateWorldTransform(const WorldTransform &world_transform, ActorHandle *const RESTRICT actor_handle) NOEXCEPT;
 
 	/*
 	*	Casts a sub-system ray.
