@@ -542,6 +542,26 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 	nlohmann::json &level_statistics_entry{ JSON["LevelStatistics"] };
 
 	level_statistics_entry["Radius"] = level_statistics._Radius;
+
+	//Write the entity links.
+	nlohmann::json &entity_links_entry{ JSON["EntityLinks"] };
+
+	for (uint64 entity_index{ 0 }; entity_index < _Entities.Size(); ++entity_index)
+	{
+		//Cache the entity identifier.
+		const uint64 entity_identifier{ _EntityEditorData[entity_index]._Identifier };
+
+		//Go through the links.
+		for (const uint64 link : _EntityEditorData[entity_index]._Links)
+		{
+			//Add the new entry.
+			nlohmann::json &link_entry{ entity_links_entry.emplace_back() };
+
+			//Set the from/to links.
+			link_entry["From"] = entity_identifier;
+			link_entry["To"] = link;
+		}
+	}
 }
 
 /*
@@ -614,6 +634,19 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 
 		//Update the current entity identifier, since it's supposed to be a long chain of identifiers.
 		_CurrentEntityIdentifier = new_entity_editor_data._Identifier;
+	}
+
+	//Read the entity links.
+	const nlohmann::json &entity_links_entry{ JSON["EntityLinks"] };
+
+	for (const nlohmann::json &entity_link : entity_links_entry)
+	{
+		const uint64 from{ entity_link["From"] };
+		const uint64 to{ entity_link["To"] };
+
+		const uint64 from_index{ EntityIdentifierToIndex(from) };
+
+		_EntityEditorData[from_index]._Links.Emplace(to);
 	}
 }
 
@@ -732,6 +765,86 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		if (ImGui::Button("Duplicate"))
 		{
 			should_duplicate = true;
+		}
+
+		//Add widgets for entity links.
+		if (ImGui::CollapsingHeader("Entity Links"))
+		{
+			//Add the "Add" button.
+			if (ImGui::Button("Add"))
+			{
+				selected_entity_editor_data._Links.Emplace(0);
+			}
+
+			//List all the current links.
+			for (uint64 link_index{ 0 }; link_index < selected_entity_editor_data._Links.Size();)
+			{
+				//Cache the link.
+				uint64 &link{ selected_entity_editor_data._Links[link_index] };
+
+				//Retrieve the linked entity index.
+				const uint64 linked_entity_index{ EntityIdentifierToIndex(link) };
+
+				//Figure out the preview value.
+				const char *RESTRICT preview_value{ nullptr };
+
+				if (linked_entity_index != UINT64_MAXIMUM)
+				{
+					preview_value = _EntityEditorData[linked_entity_index]._Name.Data();
+				}
+
+				else
+				{
+					preview_value = "NONE";
+				}
+
+				//Figure out the label.
+				char label_buffer[64];
+				sprintf_s(label_buffer, "##%llu", link);
+
+				if (ImGui::BeginCombo(label_buffer, preview_value))
+				{
+					//Cache if an entry is selected.
+					bool selected{ false };
+
+					//Add the remove selected.
+					if (ImGui::Selectable("REMOVE", &selected))
+					{
+						selected_entity_editor_data._Links.EraseAt<true>(link_index);
+
+						ImGui::EndCombo();
+
+						continue;
+					}
+
+					//List all the entities.
+					for (uint64 entity_index{ 0 }; entity_index < _Entities.Size(); ++entity_index)
+					{
+						//Disregard the current entity.
+						if (entity_index == _SelectedEntityIndex)
+						{
+							continue;
+						}
+
+						//Disregard entities that are already linked.
+						if (AreEntitiesLinked(_SelectedEntityIndex, entity_index))
+						{
+							continue;
+						}
+
+						//Link the entities if requested.
+						if (ImGui::Selectable(_EntityEditorData[entity_index]._Name.Data(), &selected))
+						{
+							link = _EntityEditorData[entity_index]._Identifier;
+						}
+					}
+
+					ImGui::EndCombo();
+				}
+
+				//Update the link index.
+				++link_index;
+			}
 		}
 
 		//Add widgets for the world transform component.
@@ -1047,5 +1160,37 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 
 	//Set the new selected entity index.
 	_SelectedEntityIndex = _Entities.LastIndex();
+}
+
+/*
+*	Returns the index for the given entity identifier.
+*/
+NO_DISCARD uint64 EditorLevelSystem::EntityIdentifierToIndex(const uint64 identifier) NOEXCEPT
+{
+	for (uint64 entity_index{ 0 }; entity_index < _Entities.Size(); ++entity_index)
+	{
+		if (_EntityEditorData[entity_index]._Identifier == identifier)
+		{
+			return entity_index;
+		}
+	}
+
+	return UINT64_MAXIMUM;
+}
+
+/*
+*	Returns if the first entity is linked to the second entity.
+*/
+NO_DISCARD bool EditorLevelSystem::AreEntitiesLinked(const uint64 entity_index_1, const uint64 entity_index_2) NOEXCEPT
+{
+	for (const uint64 link : _EntityEditorData[entity_index_1]._Links)
+	{
+		if (EntityIdentifierToIndex(link) == entity_index_2)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 #endif

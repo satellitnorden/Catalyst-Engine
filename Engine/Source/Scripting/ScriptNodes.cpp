@@ -2,6 +2,7 @@
 #include <Scripting/ScriptNodes.h>
 
 //Components.
+#include <Components/Components/ScriptComponent.h>
 #include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
@@ -10,6 +11,7 @@
 
 //Systems.
 #include <Systems/ContentSystem.h>
+#include <Systems/EntitySystem.h>
 
 namespace Script
 {
@@ -29,6 +31,25 @@ namespace Script
 		{
 			return CatalystBaseMath::Sine(phase);
 		}
+	}
+
+	namespace Script
+	{
+
+		/*
+		*	Sends an event to linked entities.
+		*/
+		void Event(ScriptContext &script_context, const HashString event) NOEXCEPT
+		{
+			for (Entity *const RESTRICT linked_entity : EntitySystem::Instance->GetEntityLinks()->GetLinks(script_context._Entity))
+			{
+				if (ScriptComponent::Instance->Has(linked_entity))
+				{
+					ScriptComponent::Instance->Event(linked_entity, event);
+				}
+			}
+		}
+
 	}
 
 	namespace StaticModel

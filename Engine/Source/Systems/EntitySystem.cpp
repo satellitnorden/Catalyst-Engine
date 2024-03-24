@@ -176,6 +176,9 @@ void EntitySystem::EntityUpdate() NOEXCEPT
 
 	//Process the destruction queue.
 	ProcessDestructionQueue();
+
+	//Update the entity links.
+	_EntityLinks.Update();
 }
 
 /*
@@ -422,6 +425,12 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 
 				_EntityAllocator.Free(queue_item->_Entity);
 				_Entities.Erase<false>(queue_item->_Entity);
+			}
+
+			//Remove the links for this entity as well.
+			if (_EntityLinks.HasLinks(queue_item->_Entity))
+			{
+				_EntityLinks.RemoveLinks(queue_item->_Entity);
 			}
 		}
 

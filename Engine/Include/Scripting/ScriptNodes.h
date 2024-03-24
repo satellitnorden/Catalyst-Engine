@@ -20,6 +20,16 @@ namespace Script
 		NO_DISCARD float32 Sine(ScriptContext &script_context, const float32 phase) NOEXCEPT;
 	}
 
+	namespace Script
+	{
+
+		/*
+		*	Sends an event to linked entities.
+		*/
+		void Event(ScriptContext &script_context, const HashString event) NOEXCEPT;
+	
+	}
+
 	namespace StaticModel
 	{
 		void SetMaterial(ScriptContext &script_context, const uint8 mesh_index, const HashString material) NOEXCEPT;

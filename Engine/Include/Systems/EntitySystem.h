@@ -15,6 +15,7 @@
 
 //Entities.
 #include <Entities/Core/Entity.h>
+#include <Entities/Core/EntityLinks.h>
 
 //Memory.
 #include <Memory/PoolAllocator.h>
@@ -62,6 +63,14 @@ public:
 	*	Destroys all entities.
 	*/
 	void DestroyAllEntities() NOEXCEPT;
+
+	/*
+	*	Returns the entity links.
+	*/
+	FORCE_INLINE NO_DISCARD EntityLinks *const RESTRICT GetEntityLinks() NOEXCEPT
+	{
+		return &_EntityLinks;
+	}
 
 private:
 
@@ -146,6 +155,9 @@ private:
 
 	//Container for all entities.
 	DynamicArray<Entity *RESTRICT> _Entities;
+
+	//The entity links.
+	EntityLinks _EntityLinks;
 
 	/*
 	*	Generates a new entity identifier.

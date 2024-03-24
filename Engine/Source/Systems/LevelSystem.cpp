@@ -48,6 +48,39 @@ void LevelSystem::SpawnLevel
 		//Deserialize the entitiy.
 		new_entity = EntitySerialization::DeserializeFromStreamArchive(level_asset->_StreamArchive, &stream_archive_position, &world_transform);
 	}
+
+	//Read the number of entity linkts.
+	uint64 number_of_entity_links;
+	level_asset->_StreamArchive.Read(&number_of_entity_links, sizeof(uint64), &stream_archive_position);
+
+	for (uint64 i{ 0 }; i < number_of_entity_links; ++i)
+	{
+		uint64 from_identifier;
+		level_asset->_StreamArchive.Read(&from_identifier, sizeof(uint64), &stream_archive_position);
+
+		uint64 to_identifier;
+		level_asset->_StreamArchive.Read(&to_identifier, sizeof(uint64), &stream_archive_position);
+
+		Entity *RESTRICT from_entity{ nullptr };
+		Entity *RESTRICT to_entity{ nullptr };
+
+		for (uint64 entity_index{ 0 }; entity_index < entity_identifiers.Size(); ++entity_index)
+		{
+			if (entity_identifiers[entity_index] == from_identifier)
+			{
+				from_entity = level->_Entities[entity_index];
+			}
+
+			if (entity_identifiers[entity_index] == to_identifier)
+			{
+				to_entity = level->_Entities[entity_index];
+			}
+		}
+
+		ASSERT(from_entity && to_entity, "Broken links!");
+
+		EntitySystem::Instance->GetEntityLinks()->AddLink(from_entity, to_entity);
+	}
 }
 
 /*

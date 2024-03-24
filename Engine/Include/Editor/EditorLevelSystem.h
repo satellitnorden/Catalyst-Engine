@@ -86,6 +86,9 @@ private:
 		//The rotation. Used in place of the quaternion rotation in WorldTransformComponent.
 		EulerAngles _Rotation{ 0.0f, 0.0f, 0.0f };
 
+		//The links.
+		DynamicArray<uint64> _Links;
+
 	};
 
 	//The level file path.
@@ -146,6 +149,16 @@ private:
 	*	Duplicates an entry.
 	*/
 	void DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT;
+
+	/*
+	*	Returns the index for the given entity identifier.
+	*/
+	NO_DISCARD uint64 EntityIdentifierToIndex(const uint64 identifier) NOEXCEPT;
+
+	/*
+	*	Returns if the first entity is linked to the second entity.
+	*/
+	NO_DISCARD bool AreEntitiesLinked(const uint64 entity_index_1, const uint64 entity_index_2) NOEXCEPT;
 
 };
 

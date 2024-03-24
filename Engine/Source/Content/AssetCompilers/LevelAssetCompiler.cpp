@@ -173,6 +173,27 @@ void LevelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 		EntitySerialization::SerializeToStreamArchive(entity_entry, &stream_archive);
 	}
 
+	//Serialize entity links.
+	{
+		//Cache the entity links entry.
+		const nlohmann::json &entity_links_entry{ JSON["EntityLinks"] };
+
+		//Write the number of entity links.
+		const uint64 number_of_entity_links{ entity_links_entry.size() };
+
+		stream_archive.Write(&number_of_entity_links, sizeof(uint64));
+
+		//Serialize the entity links.
+		for (const nlohmann::json &entity_link : entity_links_entry)
+		{
+			const uint64 from{ entity_link["From"] };
+			const uint64 to{ entity_link["To"] };
+
+			stream_archive.Write(&from, sizeof(uint64));
+			stream_archive.Write(&to, sizeof(uint64));
+		}
+	}
+
 	//Determine the collection directory.
 	char collection_directory_path[MAXIMUM_FILE_PATH_LENGTH];
 
