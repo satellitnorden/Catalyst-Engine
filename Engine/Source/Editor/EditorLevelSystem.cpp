@@ -522,6 +522,9 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 			rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Pitch);
 		}
 
+		//Serialize the identifier.
+		entity_entry["Identifier"] = entity_editor_data._Identifier;
+
 		//Update the level statistics from the world transform component.
 		{
 			//Cache the world transform instance data.
@@ -577,10 +580,10 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 
 		//Add a new entity editor data.
 		_EntityEditorData.Emplace();
-		EntityEditorData &entity_editor_data{ _EntityEditorData.Back() };
+		EntityEditorData &new_entity_editor_data{ _EntityEditorData.Back() };
 
 		//Set the name.
-		entity_editor_data._Name = entity_iterator.key().c_str();
+		new_entity_editor_data._Name = entity_iterator.key().c_str();
 
 		//Cache the entity entry.
 		const nlohmann::json &entity_entry{ *entity_iterator };
@@ -601,10 +604,16 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 		{
 			const nlohmann::json &rotation_entry{ editor_data_entry["Rotation"] };
 
-			entity_editor_data._Rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation_entry["Roll"]);
-			entity_editor_data._Rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation_entry["Yaw"]);
-			entity_editor_data._Rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation_entry["Pitch"]);
+			new_entity_editor_data._Rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation_entry["Roll"]);
+			new_entity_editor_data._Rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation_entry["Yaw"]);
+			new_entity_editor_data._Rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation_entry["Pitch"]);
 		}
+
+		//Deserialize the identifier.
+		new_entity_editor_data._Identifier = entity_entry["Identifier"];
+
+		//Update the current entity identifier, since it's supposed to be a long chain of identifiers.
+		_CurrentEntityIdentifier = new_entity_editor_data._Identifier;
 	}
 }
 
@@ -614,6 +623,15 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 void EditorLevelSystem::GenerateEntityName(char* const RESTRICT buffer, const uint64 buffer_size) NOEXCEPT
 {
 	sprintf_s(buffer, buffer_size, "Entity_%u", _NameCounter++);
+}
+
+/*
+*	Generates an entity identifier.
+*/
+void EditorLevelSystem::GenerateEntityIdentifier(uint64 *const RESTRICT identifier) NOEXCEPT
+{
+	_CurrentEntityIdentifier = HashAlgorithms::MurmurHash64(&_CurrentEntityIdentifier, sizeof(uint64));
+	*identifier = _CurrentEntityIdentifier;
 }
 
 /*

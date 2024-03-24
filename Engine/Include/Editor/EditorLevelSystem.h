@@ -80,6 +80,9 @@ private:
 		//The name.
 		StaticString<64> _Name;
 
+		//The identifier.
+		uint64 _Identifier;
+
 		//The rotation. Used in place of the quaternion rotation in WorldTransformComponent.
 		EulerAngles _Rotation{ 0.0f, 0.0f, 0.0f };
 
@@ -96,6 +99,9 @@ private:
 
 	//The name counter.
 	uint32 _NameCounter{ 0 };
+
+	//The current entity identifier.
+	uint64 _CurrentEntityIdentifier{ 0 };
 
 	//The selected entity index.
 	uint64 _SelectedEntityIndex{ UINT64_MAXIMUM };
@@ -120,6 +126,11 @@ private:
 	*	Generates an entity name.
 	*/
 	void GenerateEntityName(char *const RESTRICT buffer, const uint64 buffer_size) NOEXCEPT;
+
+	/*
+	*	Generates an entity identifier.
+	*/
+	void GenerateEntityIdentifier(uint64 *const RESTRICT identifier) NOEXCEPT;
 
 	/*
 	*	The top right window update.

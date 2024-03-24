@@ -32,7 +32,7 @@ DEFINE_SINGLETON(LevelAssetCompiler);
 LevelAssetCompiler::LevelAssetCompiler() NOEXCEPT
 {
 	//Set the flags.
-	_Flags = Flags::NONE;
+	_Flags = Flags::ALWAYS_COMPILE;
 }
 
 /*
@@ -164,6 +164,10 @@ void LevelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 	{
 		//Cache the entity entry.
 		const nlohmann::json &entity_entry{ *entity_iterator };
+
+		//Write the identifier.
+		const uint64 identifier{ entity_entry["Identifier"] };
+		stream_archive.Write(&identifier, sizeof(uint64));
 
 		//Serialize to the stream archive.
 		EntitySerialization::SerializeToStreamArchive(entity_entry, &stream_archive);

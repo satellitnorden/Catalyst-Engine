@@ -30,12 +30,20 @@ void LevelSystem::SpawnLevel
 	//Add all entities.
 	level->_Entities.Reserve(number_of_entities);
 
+	//Keep track of the entity identifiers, so we can set up entity links.
+	DynamicArray<uint64> entity_identifiers;
+	entity_identifiers.Reserve(number_of_entities);
+
 	//Add all the entities.
 	for (uint64 entity_index{ 0 }; entity_index < number_of_entities; ++entity_index)
 	{
-		//Add a new level entry.
+		//Add a new entity.
 		level->_Entities.Emplace();
 		Entity *RESTRICT &new_entity{ level->_Entities.Back() };
+
+		//Read the entity identifier.
+		entity_identifiers.Emplace();
+		level_asset->_StreamArchive.Read(&entity_identifiers.Back(), sizeof(uint64), &stream_archive_position);
 
 		//Deserialize the entitiy.
 		new_entity = EntitySerialization::DeserializeFromStreamArchive(level_asset->_StreamArchive, &stream_archive_position, &world_transform);
