@@ -37,7 +37,6 @@ public:
 
 	//The editor data.
 	EditorData _EditorData;
-	
 #endif
 
 	//The entity.

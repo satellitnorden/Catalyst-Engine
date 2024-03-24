@@ -12,9 +12,6 @@ class Level final
 
 public:
 
-	//The name.
-	StaticString<64> _Name;
-
 	//The level entries.
 	DynamicArray<LevelEntry> _LevelEntries;
 

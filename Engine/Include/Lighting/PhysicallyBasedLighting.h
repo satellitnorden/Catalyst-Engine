@@ -9,16 +9,17 @@
 
 namespace PhysicallyBasedLighting
 {
-	////////////
-// COMMON //
-////////////
 
-/*
-*	The distribution function.
-*	This approximates the amount the surface's microfacets are aligned to the halfway vector,
-*	influenced by the roughness of the surface; this is the primary function approximating the microfacets.
-*	Trowbridge-Reitz GGX.
-*/
+	////////////
+	// COMMON //
+	////////////
+
+	/*
+	*	The distribution function.
+	*	This approximates the amount the surface's microfacets are aligned to the halfway vector,
+	*	influenced by the roughness of the surface; this is the primary function approximating the microfacets.
+	*	Trowbridge-Reitz GGX.
+	*/
 	float Distribution(float roughness, float microsurface_angle)
 	{
 		float roughness_squared = pow(roughness, 4.0f);
@@ -189,7 +190,7 @@ namespace PhysicallyBasedLighting
 		float weakening_factor = Vector3<float32>::DotProduct(normal, -radiance_direction);
 		weakening_factor = CatalystBaseMath::LinearlyInterpolate(weakening_factor * 0.5f + 0.5f, CatalystBaseMath::Maximum<float32>(weakening_factor, 0.0f), thickness);
 
-		//return (diffuse_component + specular_component) * radiance * weakening_factor;
-		return diffuse_component * radiance * weakening_factor;
+		return (diffuse_component + specular_component) * radiance * weakening_factor;
 	}
+
 }

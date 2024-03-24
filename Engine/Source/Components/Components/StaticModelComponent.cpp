@@ -253,7 +253,7 @@ void StaticModelComponent::Update
 				const float32 screen_coverage{ Culling::CalculateScreenCoverage(relative_axis_aligned_bounding_box, *camera_world_to_clip_matrix) };
 
 				//If the screen coverage is really low, just cull it outright.
-				if (screen_coverage <= 0.0001f)
+				if (screen_coverage <= 0.0000125f)
 				{
 					instance_data._VisibilityFlags = static_cast<VisibilityFlags>(0);
 				}

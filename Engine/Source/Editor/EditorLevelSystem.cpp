@@ -441,15 +441,6 @@ void EditorLevelSystem::LoadLevel() NOEXCEPT
 		//Set the level file path.
 		_LevelFilePath = chosen_file;
 
-		//Figure out the level name.
-		{
-			const std::string _file_path{ _LevelFilePath.Data() };
-			const size_t position{ _file_path.find_last_of('\\') };
-			const std::string name{ _file_path.substr(position + 1, _file_path.length() - position - strlen(".Level") - 1) };
-
-			_Level._Name = name.c_str();
-		}
-
 		//Load the JSON object.
 		nlohmann::json JSON;
 
