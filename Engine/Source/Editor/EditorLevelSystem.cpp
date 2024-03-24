@@ -371,6 +371,9 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 	//Generate a name.
 	GenerateEntityName(new_entity_editor_data._Name.Data(), new_entity_editor_data._Name.Size());
 
+	//Generate the entity identifier.
+	GenerateEntityIdentifier(&new_entity_editor_data._Identifier);
+
 	//Add components (entities created in the editor always have a world transform component).
 	StaticArray<ComponentInitializationData *RESTRICT, 1> component_configurations;
 
@@ -1144,7 +1147,11 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT
 	_EntityEditorData.Emplace();
 	EntityEditorData &new_entity_editor_data{ _EntityEditorData.Back() };
 
+	//Generate the entity name.
 	GenerateEntityName(new_entity_editor_data._Name.Data(), new_entity_editor_data._Name.Size());
+
+	//Generate the entity identifier.
+	GenerateEntityIdentifier(&new_entity_editor_data._Identifier);
 
 	/*
 	*	Maybe a bit overkill to do this whole round trip, but it keeps me from having to write more code here.
