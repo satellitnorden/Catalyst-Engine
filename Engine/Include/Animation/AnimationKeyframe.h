@@ -21,7 +21,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr AnimationKeyframe(const float initial_timestamp, const BoneTransform &initial_bone_transform) NOEXCEPT
+	FORCE_INLINE AnimationKeyframe(const float initial_timestamp, const BoneTransform &initial_bone_transform) NOEXCEPT
 		:
 		_Timestamp(initial_timestamp),
 		_BoneTransform(initial_bone_transform)

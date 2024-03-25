@@ -526,13 +526,29 @@ namespace EntitySerialization
 			{
 				if (component_identifier == WorldTransformComponent::Instance->_Identifier)
 				{
+					//Cache the world transform component configuration.
 					WorldTransformInitializationData *const RESTRICT world_transform_component_configuration{ static_cast<WorldTransformInitializationData *const RESTRICT>(component_configuration) };
 
-					//Apply position.
+					//Create a transformation matrix.
+					const Matrix4x4 transformation_matrix{ world_transform->ToLocalMatrix4x4() };
+
+					//Apply the cell.
 					world_transform_component_configuration->_WorldTransform.SetCell(world_transform_component_configuration->_WorldTransform.GetCell() + world_transform->GetCell());
-					world_transform_component_configuration->_WorldTransform.SetLocalPosition(world_transform_component_configuration->_WorldTransform.GetLocalPosition() + world_transform->GetLocalPosition());
-				
-					//TODO: Apply rotation, somehow. :x
+					
+					//Apply the position.
+					{
+						Vector3<float32> local_position{ world_transform_component_configuration->_WorldTransform.GetLocalPosition() };
+						local_position.Rotate(world_transform->GetRotation().ToEulerAngles());
+						local_position += world_transform->GetLocalPosition();
+						world_transform_component_configuration->_WorldTransform.SetLocalPosition(local_position);
+					}
+
+					//Apply rotation.
+					{
+						Quaternion local_rotation{ world_transform_component_configuration->_WorldTransform.GetRotation() };
+						local_rotation = local_rotation * world_transform->GetRotation();
+						world_transform_component_configuration->_WorldTransform.SetRotation(local_rotation);
+					}
 
 					//Apply scale.
 					world_transform_component_configuration->_WorldTransform.SetScale(world_transform_component_configuration->_WorldTransform.GetScale() * world_transform->GetScale());

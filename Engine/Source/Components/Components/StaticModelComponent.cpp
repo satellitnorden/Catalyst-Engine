@@ -215,6 +215,9 @@ void StaticModelComponent::Update
 	const uint64 sub_instance_index
 ) NOEXCEPT
 {
+	//Define constants.
+	constexpr float32 BASE_CULLING_DIMENSION_MULTIPLIER{ 64.0f };
+
 	PROFILING_SCOPE("StaticModelComponent::Update");
 
 	switch (update_phase)
@@ -255,23 +258,34 @@ void StaticModelComponent::Update
 				//Retrieve the relative axis aligned bounding box.
 				const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_world_transform.GetCell()) };
 
-				//Calculate the screen coverage.
-				const float32 screen_coverage{ Culling::CalculateScreenCoverage(relative_axis_aligned_bounding_box, *camera_world_to_clip_matrix) };
+				//Do culling.
+				bool visible{ false };
 
-				//If the screen coverage is really low, just cull it outright.
-				if (screen_coverage <= 0.0000125f)
+				//Reset the visibility flags.
+				instance_data._VisibilityFlags = static_cast<VisibilityFlags>(UINT8_MAXIMUM);
+
+				/*
+				*	Calculate the distance based culling score.
+				*	Bias the height dimension a bit more, makes tall model popping is more noticable.
+				*/
+				const float32 culling_score
+				{
+					Culling::CalculateDistanceBasedCullingScore
+					(
+						relative_axis_aligned_bounding_box,
+						camera_world_transform.GetLocalPosition(),
+						Vector3<float32>(BASE_CULLING_DIMENSION_MULTIPLIER, BASE_CULLING_DIMENSION_MULTIPLIER * 2.0f, BASE_CULLING_DIMENSION_MULTIPLIER)
+					)
+				};
+
+				//If the culling score is negative, just cull it outright.
+				if (culling_score < 0.0f)
 				{
 					instance_data._VisibilityFlags = static_cast<VisibilityFlags>(0);
 				}
 
 				else
 				{
-					//Do culling.
-					bool visible{ false };
-
-					//Reset the visibility flags.
-					instance_data._VisibilityFlags = static_cast<VisibilityFlags>(UINT8_MAXIMUM);
-
 					//Do camera culling.
 					{
 						//Do frustum culling.
@@ -289,7 +303,7 @@ void StaticModelComponent::Update
 					//Do shadow map culling.
 					for (uint32 shadow_map_data_index{ 0 }; shadow_map_data_index < RenderingSystem::Instance->GetShadowsSystem()->GetNumberOfShadowMapData(); ++shadow_map_data_index)
 					{
-						const ShadowsSystem::ShadowMapData &shadow_map_data{ RenderingSystem::Instance->GetShadowsSystem()->GetShadowMapData(shadow_map_data_index) };
+						const ShadowsSystem::ShadowMapData& shadow_map_data{ RenderingSystem::Instance->GetShadowsSystem()->GetShadowMapData(shadow_map_data_index) };
 
 						//Do frustum culling.
 						if (!Culling::IsWithinFrustum(instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell), shadow_map_data._Frustum))
@@ -317,7 +331,7 @@ void StaticModelComponent::Update
 							}
 
 							//Calculate the level of detail index.
-							instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - screen_coverage) * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
+							instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - culling_score) * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
 						}
 					}
 				}

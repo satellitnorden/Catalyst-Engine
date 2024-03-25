@@ -35,12 +35,21 @@ public:
 
 		//The data.
 		float32 _Data[4];
+
+		struct
+		{
+			//The vector.
+			Vector3<float32> _Vector;
+
+			//The scalar.
+			float32 _Scalar;
+		};
 	};
 
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE constexpr Quaternion() NOEXCEPT
+	FORCE_INLINE Quaternion() NOEXCEPT
 		:
 		_X(0.0f),
 		_Y(0.0f),
@@ -51,9 +60,17 @@ public:
 	}
 
 	/*
+	*	Copy constructor.
+	*/
+	FORCE_INLINE Quaternion(const Quaternion &other) NOEXCEPT
+	{
+		Memory::Copy(this, &other, sizeof(Quaternion));
+	}
+
+	/*
 	*	Constructor taking all the values as arguments.
 	*/
-	FORCE_INLINE constexpr Quaternion(const float32 initial_x, const float32 initial_y, const float32 initial_z, const float32 initial_w) NOEXCEPT
+	FORCE_INLINE Quaternion(const float32 initial_x, const float32 initial_y, const float32 initial_z, const float32 initial_w) NOEXCEPT
 		:
 		_X(initial_x),
 		_Y(initial_y),
@@ -74,7 +91,7 @@ public:
 	/*
 	*	Constructor taking an axis and an angle.
 	*/
-	FORCE_INLINE constexpr Quaternion(const Vector3<float32> &axis, const float32 angle) NOEXCEPT
+	FORCE_INLINE Quaternion(const Vector3<float32> &axis, const float32 angle) NOEXCEPT
 		:
 		_X(axis._X * CatalystBaseMath::Sine(angle * 0.5f)),
 		_Y(axis._Y * CatalystBaseMath::Sine(angle * 0.5f)),
@@ -85,20 +102,30 @@ public:
 	}
 
 	/*
+	*	Assignment operator overload. constructor.
+	*/
+	FORCE_INLINE void operator=(const Quaternion &other) NOEXCEPT
+	{
+		Memory::Copy(this, &other, sizeof(Quaternion));
+	}
+
+	/*
 	*	Quaternion by quaternion multiplication operator overload.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD Quaternion operator*(const Quaternion &other) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD Quaternion operator*(const Quaternion &other) const NOEXCEPT
 	{
-		return Quaternion(	(_W * other._X) + (_X * other._W) + (_Y * other._Z) - (_Z * other._Y),
-							(_W * other._Y) - (_X * other._Z) + (_Y * other._W) + (_Z * other._X),
-							(_W * other._Z) + (_X * other._Y) - (_Y * other._X) + (_Z * other._W),
-							(_W * other._W) - (_X * other._X) -( _Y * other._Y) - (_Z * other._Z));
+		Quaternion result;
+
+		result._Vector = other._Vector * _Scalar + _Vector * other._Scalar + Vector3<float32>::CrossProduct(_Vector, other._Vector);
+		result._Scalar = _Scalar * other._Scalar - Vector3<float32>::DotProduct(_Vector, other._Vector);
+
+		return result;
 	}
 
 	/*
 	*	Returns if this quaternion is normalized or not (is a unit quaternion).
 	*/
-	FORCE_INLINE constexpr NO_DISCARD bool IsNormalized() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool IsNormalized() const NOEXCEPT
 	{
 		return MagnitudeSquared() == 1.0f;
 	}
@@ -106,7 +133,7 @@ public:
 	/*
 	*	Returns the magnitude of this quaternion.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD float32 Magnitude() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD float32 Magnitude() const NOEXCEPT
 	{
 		return CatalystBaseMath::SquareRoot(MagnitudeSquared());
 	}
@@ -114,7 +141,7 @@ public:
 	/*
 	*	Returns the squared magnitude of this quaternion.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD float32 MagnitudeSquared() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD float32 MagnitudeSquared() const NOEXCEPT
 	{
 		return (_X * _X) + (_Y * _Y) + (_Z * _Z) + (_W * _W);
 	}
@@ -186,25 +213,29 @@ public:
 	*/
 	FORCE_INLINE void FromEulerAngles(const EulerAngles &angles) NOEXCEPT
 	{
+		const EulerAngles half_angles
+		{
+			angles._Roll * 0.5f,
+			angles._Yaw * 0.5f,
+			angles._Pitch * 0.5f
+		};
 		const Vector3<float32> cosine
 		{
-			CatalystBaseMath::Cosine(angles._Roll * 0.5f),
-			CatalystBaseMath::Cosine(angles._Yaw * 0.5f),
-			CatalystBaseMath::Cosine(angles._Pitch * 0.5f),
+			CatalystBaseMath::Cosine(half_angles._Roll),
+			CatalystBaseMath::Cosine(half_angles._Yaw),
+			CatalystBaseMath::Cosine(half_angles._Pitch),
 		};
 		const Vector3<float32> sine
 		{
-			CatalystBaseMath::Sine(angles._Roll * 0.5f),
-			CatalystBaseMath::Sine(angles._Yaw * 0.5f),
-			CatalystBaseMath::Sine(angles._Pitch * 0.5f),
+			CatalystBaseMath::Sine(half_angles._Roll),
+			CatalystBaseMath::Sine(half_angles._Yaw),
+			CatalystBaseMath::Sine(half_angles._Pitch),
 		};
 
-		_X = sine._X * cosine._Y * cosine._Z - cosine._X * sine._Y * sine._Z;
-		_Y = cosine._X * sine._Y * cosine._Z + sine._X * cosine._Y * sine._Z;
-		_Z = cosine._X * cosine._Y * sine._Z - sine._X * sine._Y * cosine._Z;
-		_W = cosine._X * cosine._Y * cosine._Z + sine._X * sine._Y * sine._Z;
-
-		*this = Quaternion(Vector3<float32>(1.0f, 0.0f, 0.0f), angles._Roll) * Quaternion(Vector3<float32>(0.0f, 1.0f, 0.0f), angles._Yaw) * Quaternion(Vector3<float32>(0.0f, 0.0f, 1.0f), angles._Pitch);
+		_X = sine._X	* cosine._Y * cosine._Z - cosine._X * sine._Y	* sine._Z;
+		_Y = cosine._X	* sine._Y	* cosine._Z + sine._X	* cosine._Y * sine._Z;
+		_Z = cosine._X	* cosine._Y * sine._Z	- sine._X	* sine._Y	* cosine._Z;
+		_W = cosine._X	* cosine._Y * cosine._Z + sine._X	* sine._Y	* sine._Z;
 	}
 
 };

@@ -458,10 +458,17 @@ void PhysicsSystem::SubCreateModelActor
 			const physx::PxVec3 position{ position_offset._X, position_offset._Y, position_offset._Z };
 			const Quaternion rotation{ world_transform.GetRotation() };
 			physx::PxQuat physx_rotation;
+#if 1
 			physx_rotation.x = rotation._X;
 			physx_rotation.y = rotation._Y;
 			physx_rotation.z = rotation._Z;
 			physx_rotation.w = rotation._W;
+#else
+			physx_rotation.x = 0.0f;
+			physx_rotation.y = 0.0f;
+			physx_rotation.z = 0.0f;
+			physx_rotation.w = 1.0f;
+#endif
 			const physx::PxTransform transform{ position, physx_rotation };
 
 			shape->setLocalPose(transform);

@@ -21,7 +21,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE constexpr BoneTransform(const Quaternion &initial_rotation, const Vector3<float> &initial_position) NOEXCEPT
+	FORCE_INLINE BoneTransform(const Quaternion &initial_rotation, const Vector3<float> &initial_position) NOEXCEPT
 		:
 		_Rotation(initial_rotation),
 		_Position(initial_position)
