@@ -874,13 +874,33 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 
 	//Read the data.
 	DynamicArray<DynamicArray<byte>> data;
-	data.Upsize<true>(number_of_mip_levels);
+	data.Reserve(number_of_mip_levels);
+	uint32 final_width{ width };
+	uint32 final_height{ height };
 
 	for (uint8 mip_index{ 0 }; mip_index < number_of_mip_levels; ++mip_index)
 	{
+		const uint32 mip_width{ width >> mip_index };
+		const uint32 mip_height{ height >> mip_index };
 		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) };
-		data[mip_index].Upsize<false>(mip_size);
-		load_data->_StreamArchive->Read(data[mip_index].Data(), mip_size, &stream_archive_position);
+
+#if 0 //Low-resolution textures. (:
+		if (mip_index < number_of_mip_levels - 1)
+		{
+			if (mip_width > 64 || mip_height > 64)
+			{
+				final_width >>= 1;
+				final_height >>= 1;
+				stream_archive_position += mip_size;
+
+				continue;
+			}
+		}
+#endif
+
+		data.Emplace();
+		data.Back().Upsize<false>(mip_size);
+		load_data->_StreamArchive->Read(data.Back().Data(), mip_size, &stream_archive_position);
 	}
 
 	//Create the texture.
@@ -894,8 +914,8 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 				TextureDataContainer
 				(
 					data,
-					width,
-					height,
+					final_width,
+					final_height,
 					4
 				),
 				TextureFormat::RGBA_UINT8,
@@ -910,6 +930,6 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	load_data->_Asset->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(load_data->_Asset->_Texture2DHandle);
 
 	//Create the texture 2D.
-	load_data->_Asset->_Texture2D.Initialize(width, height);
-	Memory::Copy(load_data->_Asset->_Texture2D.Data(), data[0].Data(), width * height * sizeof(Vector4<byte>));
+	load_data->_Asset->_Texture2D.Initialize(final_width, final_height);
+	Memory::Copy(load_data->_Asset->_Texture2D.Data(), data[0].Data(), final_width * final_height * sizeof(Vector4<byte>));
 }

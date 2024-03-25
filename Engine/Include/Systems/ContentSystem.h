@@ -102,6 +102,22 @@ public:
 
 private:
 
+	/*
+	*	Compile result class definition.
+	*/
+	class CompileResult final
+	{
+
+	public:
+
+		//Denotes if new assets were compiled.
+		bool _NewAssetsCompiled{ false };
+
+		//Denotes if a recompile should be triggered.
+		bool _TriggerRecompile{ false };
+
+	};
+
 	//The asset compilers.
 	HashTable<HashString, AssetCompiler *const RESTRICT> _AssetCompilers;
 
@@ -115,36 +131,21 @@ private:
 	HashTable<HashString, HashTable<HashString, Asset *RESTRICT>> _Assets;
 
 	/*
-	*	Scans assets in the given directory.
-	*	Returns if new content was compiled.
+	*	Compiles assets in the given directory.
 	*/
-	NO_DISCARD bool ScanAssetsInDirectory
+	void CompileAssetsInDirectory
 	(
 		const CompilationDomain compilation_domain,
 		ContentCache *const RESTRICT content_cache,
 		const char *const RESTRICT directory_path,
-		const char *const RESTRICT collection
+		const char *const RESTRICT collection,
+		CompileResult *const RESTRICT compile_result
 	) NOEXCEPT;
 
 	/*
 	*	Creates asset collections from the given directory path.
 	*/
 	void CreateAssetCollections(const char *const RESTRICT directory_path, BinaryFile<BinaryFileMode::OUT> *const RESTRICT file) NOEXCEPT;
-
-	/*
-	*	Parses content definitions in the given directory.
-	*	Returns if new content was compiled.
-	*/
-	NO_DISCARD bool ParseContentDefinitionsInDirectory(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const char *const RESTRICT directory_path) NOEXCEPT;
-	/*
-	*	Parses a procedural tree model from the given file.
-	*/
-	void ParseProceduralTreeModel(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
-
-	/*
-	*	Parses an Impostor Material from the given file.
-	*/
-	void ParseImpostorMaterial(const CompilationDomain compilation_domain, ContentCache *const RESTRICT content_cache, const std::string &name, const DynamicString &package, std::ifstream &file) NOEXCEPT;
 
 };
 #endif

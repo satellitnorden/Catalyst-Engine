@@ -106,6 +106,12 @@ public:
 	Flags _Flags{ Flags::NONE };
 
 	/*
+	*	Denotes if this asset compiler triggers a recompile when it's run.
+	*	This can be set if an asset compiler produces files that should be consumed by other asset compilers.
+	*/
+	bool _TriggerRecompile{ false };
+
+	/*
 	*	Returns the asset type identifier.
 	*/
 	virtual NO_DISCARD HashString AssetTypeIdentifier() const NOEXCEPT = 0;
@@ -150,6 +156,58 @@ public:
 	}
 
 protected:
+
+	/*
+	*	Returns the source directory for the given compilation domain.
+	*/
+	FORCE_INLINE NO_DISCARD const char *const RESTRICT GetSourceDirectoryPath(const CompilationDomain compilation_domain) NOEXCEPT
+	{
+		switch (compilation_domain)
+		{
+			case CompilationDomain::ENGINE:
+			{
+				return "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source";
+			}
+
+			case CompilationDomain::GAME:
+			{
+				return "..\\..\\..\\Content\\Source";
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return "";
+			}
+		}
+	}
+
+	/*
+	*	Returns the assets directory for the given compilation domain.
+	*/
+	FORCE_INLINE NO_DISCARD const char *const RESTRICT GetAssetsDirectoryPath(const CompilationDomain compilation_domain) NOEXCEPT
+	{
+		switch (compilation_domain)
+		{
+			case CompilationDomain::ENGINE:
+			{
+				return "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets";
+			}
+
+			case CompilationDomain::GAME:
+			{
+				return "..\\..\\..\\Content\\Assets";
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return "";
+			}
+		}
+	}
 
 	/*
 	*	Returns the compiled directory for the given compilation domain.
