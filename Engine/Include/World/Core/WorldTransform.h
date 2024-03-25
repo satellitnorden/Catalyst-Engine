@@ -22,7 +22,7 @@ public:
 		:
 		_WorldPosition(),
 		_Rotation(0.0f, 0.0f, 0.0f, 1.0f),
-		_Scale(1.0f)
+		_Scale(1.0f, 1.0f, 1.0f)
 	{
 
 	}
@@ -32,7 +32,7 @@ public:
 	*/
 	FORCE_INLINE explicit WorldTransform(	const WorldPosition &initial_world_position,
 											const Quaternion &initial_rotation,
-											const float32 initial_scale) NOEXCEPT
+											const Vector3<float32> &initial_scale) NOEXCEPT
 		:
 		_WorldPosition(initial_world_position),
 		_Rotation(initial_rotation),
@@ -46,7 +46,7 @@ public:
 	*/
 	FORCE_INLINE explicit WorldTransform(	const WorldPosition &initial_world_position,
 											const EulerAngles &initial_rotation,
-											const float32 initial_scale) NOEXCEPT
+											const Vector3<float32> &initial_scale) NOEXCEPT
 		:
 		_WorldPosition(initial_world_position),
 		_Rotation(initial_rotation),
@@ -58,10 +58,10 @@ public:
 	/*
 	*	Constructor taking cell, local position, euler angles and scale.
 	*/
-	FORCE_INLINE explicit WorldTransform(	const Vector3<int32>& initial_cell,
-											const Vector3<float32>& initial_local_position,
-											const Quaternion& initial_rotation,
-											const float32 initial_scale) NOEXCEPT
+	FORCE_INLINE explicit WorldTransform(	const Vector3<int32> &initial_cell,
+											const Vector3<float32> &initial_local_position,
+											const Quaternion &initial_rotation,
+											const Vector3<float32> &initial_scale) NOEXCEPT
 		:
 		_WorldPosition(initial_cell, initial_local_position),
 		_Rotation(initial_rotation),
@@ -76,7 +76,7 @@ public:
 	FORCE_INLINE explicit WorldTransform(	const Vector3<int32> &initial_cell,
 											const Vector3<float32> &initial_local_position,
 											const EulerAngles &initial_rotation,
-											const float32 initial_scale) NOEXCEPT
+											const Vector3<float32> &initial_scale) NOEXCEPT
 		:
 		_WorldPosition(initial_cell, initial_local_position),
 		_Rotation(initial_rotation),
@@ -90,7 +90,7 @@ public:
 	*/
 	FORCE_INLINE explicit WorldTransform(	const Vector3<float32> &initial_local_position,
 											const Quaternion &initial_rotation,
-											const float32 initial_scale) NOEXCEPT
+											const Vector3<float32> &initial_scale) NOEXCEPT
 		:
 		_WorldPosition(initial_local_position),
 		_Rotation(initial_rotation),
@@ -104,7 +104,7 @@ public:
 	*/
 	FORCE_INLINE explicit WorldTransform(	const Vector3<float32> &initial_local_position,
 											const EulerAngles &initial_rotation,
-											const float32 initial_scale) NOEXCEPT
+											const Vector3<float32> &initial_scale) NOEXCEPT
 		:
 		_WorldPosition(initial_local_position),
 		_Rotation(initial_rotation),
@@ -120,7 +120,7 @@ public:
 		:
 		_WorldPosition(transformation.GetTranslation()),
 		_Rotation(transformation.GetRotation()),
-		_Scale((transformation.GetScale()._X + transformation.GetScale()._Y + transformation.GetScale()._Z) / 3.0f) //Only supports uniform scale, so average the scales.
+		_Scale(transformation.GetScale())
 	{
 
 	}
@@ -178,7 +178,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD const Vector3<float32> &GetLocalPosition() const NOEXCEPT
 	{
-		return _WorldPosition.GetLocalPosition();;
+		return _WorldPosition.GetLocalPosition();
 	}
 
 	/*
@@ -248,7 +248,7 @@ public:
 	/*
 	*	Returns the scale.
 	*/
-	FORCE_INLINE NO_DISCARD float32 GetScale() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const Vector3<float32> &GetScale() const NOEXCEPT
 	{
 		return _Scale;
 	}
@@ -256,7 +256,7 @@ public:
 	/*
 	*	Sets the scale.
 	*/
-	FORCE_INLINE void SetScale(const float32 value) NOEXCEPT
+	FORCE_INLINE void SetScale(const Vector3<float32> &value) NOEXCEPT
 	{
 		_Scale = value;
 	}
@@ -266,7 +266,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD Matrix4x4 ToLocalMatrix4x4() const NOEXCEPT
 	{
-		return Matrix4x4(_WorldPosition.GetLocalPosition(), _Rotation, Vector3<float32>(_Scale));
+		return Matrix4x4(_WorldPosition.GetLocalPosition(), _Rotation, _Scale);
 	}
 
 	/*
@@ -277,7 +277,7 @@ public:
 	/*
 	*	Converts this world transform into a relative Matrix4x4 as seen from the given cell.
 	*/
-	NO_DISCARD Matrix4x4 ToRelativeMatrix4x4(const Vector3<int32>& cell) const NOEXCEPT;
+	NO_DISCARD Matrix4x4 ToRelativeMatrix4x4(const Vector3<int32> &cell) const NOEXCEPT;
 
 	/*
 	*	Returns the forward vector.
@@ -293,6 +293,6 @@ private:
 	Quaternion _Rotation;
 
 	//The scale.
-	float32 _Scale;
+	Vector3<float32> _Scale;
 
 };

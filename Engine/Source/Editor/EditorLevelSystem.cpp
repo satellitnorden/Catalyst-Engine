@@ -804,6 +804,14 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		//Add a text input for the name.
 		TextInputWidget("Name", selected_entity_editor_data._Name.Data(), selected_entity_editor_data._Name.Size());
 
+		//Add a delete button.
+		bool should_delete{ false };
+
+		if (ImGui::Button("Delete"))
+		{
+			should_delete = true;
+		}
+
 		//Add a duplicate button.
 		bool should_duplicate{ false };
 
@@ -952,10 +960,10 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 			//Add scale widget.
 			{
 				//Retrieve the scale.
-				float32 scale{ world_transform->GetScale() };
+				Vector3<float32> scale{ world_transform->GetScale() };
 
 				//Add the transform widget.
-				const bool changed{ TransformWidget("Scale", &scale, 1, 1.0f, 0.01f) };
+				const bool changed{ TransformWidget("Scale", &scale._X, 3, 1.0f, 0.01f) };
 
 				//Update the scale if anything changed.
 				if (changed)
@@ -1020,7 +1028,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 				case GizmoMode::SCALE:
 				{
-					operation = ImGuizmo::OPERATION::SCALE_Y;
+					operation = ImGuizmo::OPERATION::SCALE;
 
 					break;
 				}
@@ -1062,12 +1070,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				world_transform->SetAbsolutePosition(position);
 				selected_entity_editor_data._Rotation = rotation;
 				world_transform->SetRotation(rotation);
-
-				if (_CurrentGizmoMode == GizmoMode::SCALE)
-				{	
-					//As the scale is uniform, just use the X axis for now.
-					world_transform->SetScale(scale._Y);
-				}
+				world_transform->SetScale(scale);
 			}
 		}
 
@@ -1161,6 +1164,15 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					}
 				}
 			}
+		}
+
+		//Delete the entity, if requested.
+		if (should_delete)
+		{
+			EntitySystem::Instance->DestroyEntity(selected_entity);
+			_Entities.EraseAt<true>(_SelectedEntityIndex);
+			_EntityEditorData.EraseAt<true>(_SelectedEntityIndex);
+			_SelectedEntityIndex = UINT64_MAXIMUM;
 		}
 
 		//Duplicate the entity, if requested.

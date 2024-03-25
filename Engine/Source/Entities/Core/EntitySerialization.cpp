@@ -140,11 +140,13 @@ namespace EntitySerialization
 						}
 
 						{
-							const float32 scale{ data->GetScale() };
+							const Vector3<float32> scale{ data->GetScale() };
 
 							nlohmann::json &scale_entry{ world_transform_entry["Scale"] };
 
-							scale_entry = scale;
+							scale_entry["X"] = scale._X;
+							scale_entry["Y"] = scale._Y;
+							scale_entry["Z"] = scale._Z;
 						}
 
 						break;
@@ -319,10 +321,14 @@ namespace EntitySerialization
 									rotation._W = rotation_entry["W"];
 								}
 
-								float32 scale;
+								Vector3<float32> scale;
 
 								{
-									scale = editable_field_entry["Scale"];
+									const nlohmann::json &scale_entry{ editable_field_entry["Scale"] };
+
+									scale._X = scale_entry["X"];
+									scale._Y = scale_entry["Y"];
+									scale._Z = scale_entry["Z"];
 								}
 
 								WorldTransform world_transform;
