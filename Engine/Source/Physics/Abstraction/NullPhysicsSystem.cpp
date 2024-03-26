@@ -54,7 +54,7 @@ void PhysicsSystem::SubCreateModelActor
 (
 	const WorldTransform &world_transform,
 	const ModelCollisionType collision_type,
-	const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
+	const AxisAlignedBoundingBox3D &axis_aligned_bounding_box,
 	const CollisionModelHandle collision_model,
 	const ModelSimulationConfiguration &simulation_configuration,
 	ActorHandle *const RESTRICT actor_handle
@@ -75,6 +75,14 @@ void PhysicsSystem::SubDestroyActor(ActorHandle *const RESTRICT actor_handle) NO
 *	Returns the world transform for the given actor on the sub-system.
 */
 void PhysicsSystem::SubGetActorWorldTransform(const ActorHandle actor_handle, WorldTransform *const RESTRICT world_transform) NOEXCEPT
+{
+
+}
+
+/*
+*	Updates the world transform of the given actor on the sub-system.
+*/
+void PhysicsSystem::SubUpdateWorldTransform(const WorldTransform &world_transform, ActorHandle *const RESTRICT actor_handle) NOEXCEPT
 {
 
 }

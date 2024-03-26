@@ -37,7 +37,7 @@ int main(int argument_count, char *arguments[])
 
 	{
 		//Open the config file.
-		std::ifstream config_file{ "Project_Generation.ini" };
+		std::ifstream config_file{ "Project.ini" };
 
 		//Cache some commonly used variables.
 		std::string current_line;
@@ -100,22 +100,6 @@ int main(int argument_count, char *arguments[])
 
 	ASSERT_RETURN(!parameters._DeveloperName.empty(), "Needs to set deveoloper name!");
 	ASSERT_RETURN(!parameters._ProjectName.empty(), "Needs to set project name!");
-	
-	//Create the ".gitignore" file.
-	{
-		std::ofstream file{ ".gitignore" };
-
-		file << "*.crc" << std::endl;
-		file << "*.exe" << std::endl;
-		file << "*.ilk" << std::endl;
-		file << "*.iobj" << std::endl;
-		file << "*.iobj" << std::endl;
-		file << "*.pdb" << std::endl;
-		file << "*.pch" << std::endl;
-		file << "*.iobj";
-
-		file.close();
-	}
 
 	//Create the "Code" directory.
 	{
@@ -129,28 +113,6 @@ int main(int argument_count, char *arguments[])
 			{
 				std::filesystem::create_directory("Code\\Include\\Main");
 
-				//Create the essential header file.
-				{
-					char game_system_header_file_buffer[260];
-					sprintf_s(game_system_header_file_buffer, "Code\\Include\\Main\\%sEssential.h", parameters._ProjectNameNoSpaces.c_str());
-
-					std::ofstream file{ game_system_header_file_buffer };
-
-					file << "#pragma once" << std::endl;
-
-					file << std::endl;
-
-					file << "//Core." << std::endl;
-					file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
-
-					file << std::endl;
-
-					file << "//Main." << std::endl;
-					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "FilePaths.h>";
-
-					file.close();
-				}
-
 				//Create the game system header file.
 				{
 					char game_system_header_file_buffer[260];
@@ -162,8 +124,8 @@ int main(int argument_count, char *arguments[])
 
 					file << std::endl;
 
-					file << "//Main." << std::endl;
-					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "Essential.h>" << std::endl;
+					file << "//Core." << std::endl;
+					file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
 
 					file << std::endl;
 
@@ -189,16 +151,44 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "\t/*" << std::endl;
-					file << "\t*\tInitializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
+					file << "\t*\tInitializes the " << parameters._ProjectName.c_str() << " game system commonly." << std::endl;
 					file << "\t*/" << std::endl;
-					file << "\tvoid Initialize() NOEXCEPT;" << std::endl;
+					file << "\tvoid CommonInitialize() NOEXCEPT;" << std::endl;
 
 					file << std::endl;
 
 					file << "\t/*" << std::endl;
-					file << "\t*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
+					file << "\t*\tInitializes the " << parameters._ProjectName.c_str() << " game system for the editor." << std::endl;
 					file << "\t*/" << std::endl;
-					file << "\tvoid PostInitialize() NOEXCEPT;" << std::endl;
+					file << "\tvoid EditorInitialize() NOEXCEPT;" << std::endl;
+
+					file << std::endl;
+
+					file << "\t/*" << std::endl;
+					file << "\t*\tInitializes the " << parameters._ProjectName.c_str() << " game system for the game." << std::endl;
+					file << "\t*/" << std::endl;
+					file << "\tvoid GameInitialize() NOEXCEPT;" << std::endl;
+
+					file << std::endl;
+
+					file << "\t/*" << std::endl;
+					file << "\t*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system commonly." << std::endl;
+					file << "\t*/" << std::endl;
+					file << "\tvoid CommonPostInitialize() NOEXCEPT;" << std::endl;
+
+					file << std::endl;
+
+					file << "\t/*" << std::endl;
+					file << "\t*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system for the editor." << std::endl;
+					file << "\t*/" << std::endl;
+					file << "\tvoid EditorPostInitialize() NOEXCEPT;" << std::endl;
+
+					file << std::endl;
+
+					file << "\t/*" << std::endl;
+					file << "\t*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system for the game." << std::endl;
+					file << "\t*/" << std::endl;
+					file << "\tvoid GamePostInitialize() NOEXCEPT;" << std::endl;
 
 					file << std::endl;
 
@@ -223,76 +213,6 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "};";
-
-					file.close();
-				}
-
-				//Create the resource building header file.
-				{
-					char resource_building_header_file_buffer[260];
-					sprintf_s(resource_building_header_file_buffer, "Code\\Include\\Main\\%sResourceBuilding.h", parameters._ProjectNameNoSpaces.c_str());
-
-					std::ofstream file{ resource_building_header_file_buffer };
-
-					file << "#pragma once" << std::endl;
-
-					file << std::endl;
-
-					file << "//Main." << std::endl;
-					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "Essential.h>" << std::endl;
-
-					file << std::endl;
-
-					file << "class " << parameters._ProjectNameNoSpaces.c_str() << "ResourceBuilding final" << std::endl;
-					file << "{" << std::endl;
-
-					file << std::endl;
-
-					file << "public:" << std::endl;
-
-					file << std::endl;
-
-					file << "\t/*" << std::endl;
-					file << "\t*\tBuilds resources for the " << parameters._ProjectName.c_str() << " game." << std::endl;
-					file << "\t*/" << std::endl;
-					file << "\tstatic void BuildResources() NOEXCEPT" << std::endl;
-					file << "#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)" << std::endl;
-					file << "\t\t;" << std::endl;
-					file << "#else" << std::endl;
-					file << "\t{" << std::endl;
-					file << std::endl;
-					file << "\t}" << std::endl;
-					file << "#endif" << std::endl;
-
-					file << std::endl;
-
-					file << "};";
-
-					file.close();
-				}
-
-				//Create the file paths header file.
-				{
-					char game_system_header_file_buffer[260];
-					sprintf_s(game_system_header_file_buffer, "Code\\Include\\Main\\%sFilePaths.h", parameters._ProjectNameNoSpaces.c_str());
-
-					std::ofstream file{ game_system_header_file_buffer };
-
-					file << "#pragma once" << std::endl;
-
-					file << std::endl;
-
-					file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
-
-					file << "\t#define GAME_CONTENT_FINAL \"..\\\\..\\\\..\\\\Content\\\\Final\\\\\"" << std::endl;
-					file << "\t#define GAME_CONTENT_INTERMEDIATE \"..\\\\..\\\\..\\\\Content\\\\Intermediate\\\\\"" << std::endl;
-					file << "\t#define GAME_CONTENT_RAW \"..\\\\..\\\\..\\\\Content\\\\Raw\\\\\"" << std::endl;
-
-					file << "#else" << std::endl;
-
-					file << "\t#define GAME_CONTENT_FINAL \"GameContent\\\\\"" << std::endl;
-
-					file << "#endif";
 
 					file.close();
 				}
@@ -335,9 +255,9 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "/*" << std::endl;
-					file << "*\tInitializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
+					file << "*\tInitializes the " << parameters._ProjectName.c_str() << " game system commonly." << std::endl;
 					file << "*/" << std::endl;
-					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Initialize() NOEXCEPT" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::CommonInitialize() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -345,9 +265,49 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "/*" << std::endl;
-					file << "*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
+					file << "*\tInitializes the " << parameters._ProjectName.c_str() << " game system for the editor." << std::endl;
 					file << "*/" << std::endl;
-					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::PostInitialize() NOEXCEPT" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::EditorInitialize() NOEXCEPT" << std::endl;
+					file << "{" << std::endl;
+					file << std::endl;
+					file << "}" << std::endl;
+
+					file << std::endl;
+
+					file << "/*" << std::endl;
+					file << "*\tInitializes the " << parameters._ProjectName.c_str() << " game system for the game." << std::endl;
+					file << "*/" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::GameInitialize() NOEXCEPT" << std::endl;
+					file << "{" << std::endl;
+					file << std::endl;
+					file << "}" << std::endl;
+
+					file << std::endl;
+
+					file << "/*" << std::endl;
+					file << "*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system commonly." << std::endl;
+					file << "*/" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::CommonPostInitialize() NOEXCEPT" << std::endl;
+					file << "{" << std::endl;
+					file << std::endl;
+					file << "}" << std::endl;
+
+					file << std::endl;
+
+					file << "/*" << std::endl;
+					file << "*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system for the editor." << std::endl;
+					file << "*/" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::EditorPostInitialize() NOEXCEPT" << std::endl;
+					file << "{" << std::endl;
+					file << std::endl;
+					file << "}" << std::endl;
+
+					file << std::endl;
+
+					file << "/*" << std::endl;
+					file << "*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system for the game." << std::endl;
+					file << "*/" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::GamePostInitialize() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -385,32 +345,6 @@ int main(int argument_count, char *arguments[])
 					file.close();
 				}
 
-				//Create the resource building source file.
-				{
-					char resource_building_source_file_buffer[260];
-					sprintf_s(resource_building_source_file_buffer, "Code\\Source\\Main\\%sResourceBuilding.cpp", parameters._ProjectNameNoSpaces.c_str());
-
-					std::ofstream file{ resource_building_source_file_buffer };
-
-					file << "#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)" << std::endl;
-
-					file << "//Header file." << std::endl;
-					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "ResourceBuilding.h>" << std::endl;
-
-					file << std::endl;
-
-					file << "/*" << std::endl;
-					file << "*\tBuilds resources for the " << parameters._ProjectName.c_str() << " game." << std::endl;
-					file << "*/" << std::endl;
-					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "ResourceBuilding::BuildResources() NOEXCEPT" << std::endl;
-					file << "{" << std::endl;
-					file << std::endl;
-					file << "}" << std::endl;
-					file << "#endif";
-
-					file.close();
-				}
-
 				//Create the main source file.
 				{
 					std::ofstream file{ "Code\\Source\\Main\\Main.cpp" };
@@ -437,14 +371,34 @@ int main(int argument_count, char *arguments[])
 					file << "{" << std::endl;
 					file << "\tconfiguration->_GeneralConfiguration._ProjectName = \"" << parameters._ProjectName.c_str() << "\";" << std::endl;
 
-					file << "\tconfiguration->_GeneralConfiguration._InitializationFunction = []()" << std::endl;
+					file << "\tconfiguration->_GeneralConfiguration._CommonInitializeFunction = []()" << std::endl;
 					file << "\t{" << std::endl;
-					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->Initialize();" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->CommonInitialize();" << std::endl;
 					file << "\t};" << std::endl;
 
-					file << "\tconfiguration->_GeneralConfiguration._PostInitializationFunction = []()" << std::endl;
+					file << "\tconfiguration->_GeneralConfiguration._EditorInitializeFunction = []()" << std::endl;
 					file << "\t{" << std::endl;
-					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->PostInitialize();" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->EditorInitialize();" << std::endl;
+					file << "\t};" << std::endl;
+
+					file << "\tconfiguration->_GeneralConfiguration._GameInitializeFunction = []()" << std::endl;
+					file << "\t{" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->GameInitialize();" << std::endl;
+					file << "\t};" << std::endl;
+
+					file << "\tconfiguration->_GeneralConfiguration._CommonPostInitializeFunction = []()" << std::endl;
+					file << "\t{" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->CommonPostInitialize();" << std::endl;
+					file << "\t};" << std::endl;
+
+					file << "\tconfiguration->_GeneralConfiguration._EditorPostInitializeFunction = []()" << std::endl;
+					file << "\t{" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->EditorPostInitialize();" << std::endl;
+					file << "\t};" << std::endl;
+
+					file << "\tconfiguration->_GeneralConfiguration._GamePostInitializeFunction = []()" << std::endl;
+					file << "\t{" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->GamePostInitialize();" << std::endl;
 					file << "\t};" << std::endl;
 
 					file << "\tconfiguration->_GeneralConfiguration._StartGameFunction = []()" << std::endl;
@@ -457,7 +411,7 @@ int main(int argument_count, char *arguments[])
 					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->EndGame();" << std::endl;
 					file << "\t};" << std::endl;
 
-					file << "\tconfiguration->_GeneralConfiguration._TerminationFunction = []()" << std::endl;
+					file << "\tconfiguration->_GeneralConfiguration._TerminateFunction = []()" << std::endl;
 					file << "\t{" << std::endl;
 					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->Terminate();" << std::endl;
 					file << "\t};" << std::endl;
@@ -492,29 +446,54 @@ int main(int argument_count, char *arguments[])
 	{
 		std::filesystem::create_directory("Content");
 
-		//Create the "Content/Final" directory.
+		//Create the "Content/Source" directory.
 		{
-			std::filesystem::create_directory("Content\\Final");
+			std::filesystem::create_directory("Content\\Source");
+		}
 
-			//Create the "Conntent/Final/.gitignore" file.
+		//Create the "Content/Assets" directory.
+		{
+			std::filesystem::create_directory("Content\\Assets");
+		}
+
+		//Create the "Content/Compiled" directory.
+		{
+			std::filesystem::create_directory("Content\\Compiled");
+
+			//Create the ".gitignore" file.
 			{
-				std::ofstream file{ "Content\\Final\\.gitignore" };
+				std::ofstream file{ "Content\\Compiled\\.gitignore" };
 
-				file << "#Ignore the final resource collection(s)" << std::endl;
-				file << "*.crc";
+				file << "#Ignore everything in this directory." << std::endl;
+				file << "*" << std::endl;
+
+				file << std::endl;
+
+				file << "#Except this file!" << std::endl;
+				file << "!.gitignore";
 
 				file.close();
 			}
 		}
 
-		//Create the "Content/Intermediate" directory.
+		//Create the "Content/Collections" directory.
 		{
-			std::filesystem::create_directory("Content\\Intermediate");
-		}
+			std::filesystem::create_directory("Content\\Collections");
 
-		//Create the "Content/Raw" directory.
-		{
-			std::filesystem::create_directory("Content\\Raw");
+			//Create the ".gitignore" file.
+			{
+				std::ofstream file{ "Content\\Collections\\.gitignore" };
+
+				file << "#Ignore everything in this directory." << std::endl;
+				file << "*" << std::endl;
+
+				file << std::endl;
+
+				file << "#Except this file!" << std::endl;
+				file << "!.gitignore";
+
+				file.close();
+			}
 		}
 	}
 
@@ -536,12 +515,11 @@ int main(int argument_count, char *arguments[])
 
 			file << std::endl;
 
-			file << "#And the project generation files!" << std::endl;
-			file << "!Generate_All_Projects.bat" << std::endl;
-			file << "!Generate_Android_Project.bat" << std::endl;
-			file << "!Generate_Oculus_Quest_Project.bat" << std::endl;
-			file << "!Generate_Win64_Project.bat" << std::endl;
-			file << "!Project_Generation.ini";
+			file << "#And the solution generation files!" << std::endl;
+			file << "!Generate_All_Solution.bat" << std::endl;
+			file << "!Generate_Android_Solution.bat" << std::endl;
+			file << "!Generate_Oculus_Quest_Solution.bat" << std::endl;
+			file << "!Generate_Win64_Solution.bat" << std::endl;
 
 			file.close();
 		}
@@ -590,21 +568,6 @@ int main(int argument_count, char *arguments[])
 			file << std::endl;
 
 			file << "pause" << std::endl;
-
-			file.close();
-		}
-
-		//Create the "Solution_Generation.ini" file.
-		{
-			std::ofstream file{ "Solutions\\Solution_Generation.ini" };
-
-			file << "#The developer namee." << std::endl;
-			file << "DEVELOPER_NAME " << parameters._DeveloperName << std::endl;
-
-			file << std::endl;
-
-			file << "#The project namee." << std::endl;
-			file << "PROJECT_NAME " << parameters._ProjectName << std::endl;
 
 			file.close();
 		}

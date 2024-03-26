@@ -1241,7 +1241,7 @@ int main(int argument_count, char* arguments[])
 	//Read the parameters.
 	{
 		//Open the config file.
-		std::ifstream config_file{ "Solution_Generation.ini" };
+		std::ifstream config_file{ "..\\Project.ini" };
 
 		//Cache some commonly used variables.
 		std::string current_line;
