@@ -20,14 +20,6 @@
 DEFINE_COMPONENT(AnimatedModelComponent, AnimatedModelInitializationData, AnimatedModelInstanceData);
 
 /*
-*	Initializes this component.
-*/
-void AnimatedModelComponent::Initialize() NOEXCEPT
-{
-
-}
-
-/*
 *	Post-initializes this component.
 */
 void AnimatedModelComponent::PostInitialize() NOEXCEPT

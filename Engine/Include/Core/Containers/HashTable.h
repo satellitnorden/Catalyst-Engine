@@ -239,6 +239,16 @@ public:
 		return _Keys.Size();
 	}
 
+	/*
+	*	Upsizes this hash table.
+	*/
+	template <bool CONSTRUCT>
+	FORCE_INLINE void Upsize(const uint64 new_capacity) NOEXCEPT
+	{
+		_Keys.Upsize<CONSTRUCT>(new_capacity);
+		_Values.Upsize<CONSTRUCT>(new_capacity);
+	}
+
 private:
 
 	//The underlying keys.
