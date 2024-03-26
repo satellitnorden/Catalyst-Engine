@@ -516,10 +516,10 @@ int main(int argument_count, char *arguments[])
 			file << std::endl;
 
 			file << "#And the solution generation files!" << std::endl;
-			file << "!Generate_All_Solution.bat" << std::endl;
+			file << "!Generate_All_Solutions.bat" << std::endl;
 			file << "!Generate_Android_Solution.bat" << std::endl;
 			file << "!Generate_Oculus_Quest_Solution.bat" << std::endl;
-			file << "!Generate_Win64_Solution.bat" << std::endl;
+			file << "!Generate_Win64_Solution.bat";
 
 			file.close();
 		}
