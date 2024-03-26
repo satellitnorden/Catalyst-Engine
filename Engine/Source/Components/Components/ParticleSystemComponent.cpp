@@ -18,14 +18,6 @@
 DEFINE_COMPONENT(ParticleSystemComponent, ParticleSystemInitializationData, ParticleSystemInstanceData);
 
 /*
-*	Initializes this component.
-*/
-void ParticleSystemComponent::Initialize() NOEXCEPT
-{
-	
-}
-
-/*
 *	Post-initializes this component.
 */
 void ParticleSystemComponent::PostInitialize() NOEXCEPT

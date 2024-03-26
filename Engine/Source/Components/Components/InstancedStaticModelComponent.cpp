@@ -11,14 +11,6 @@
 DEFINE_COMPONENT(InstancedStaticModelComponent, InstancedStaticModelInitializationData, InstancedStaticModelInstanceData);
 
 /*
-*	Initializes this component.
-*/
-void InstancedStaticModelComponent::Initialize() NOEXCEPT
-{
-
-}
-
-/*
 *	Post-initializes this component.
 */
 void InstancedStaticModelComponent::PostInitialize() NOEXCEPT

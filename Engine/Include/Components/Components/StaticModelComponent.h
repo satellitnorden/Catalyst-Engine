@@ -77,8 +77,27 @@ DECLARE_COMPONENT
 	StaticModelComponent,
 	StaticModelInitializationData,
 	StaticModelInstanceData,
+
 public:
+
+	/*
+	*	Initializes this component.
+	*/
+	void Initialize() NOEXCEPT override;
+
+	/*
+	*	Sets default values for initialization data.
+	*/
 	void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
+
+	/*
+	*	Callback for before an editable field change happens.
+	*/
 	void PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
+
+	/*
+	*	Callback for after an editable field change happens.
+	*/
 	void PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
+
 );

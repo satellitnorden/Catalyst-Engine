@@ -87,7 +87,10 @@ public:
 	/*
 	*	Initializes this component.
 	*/
-	virtual void Initialize() NOEXCEPT = 0;
+	FORCE_INLINE virtual void Initialize() NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Post-Initializes this component.
@@ -368,13 +371,12 @@ void AddComponentToAllComponents(Component *const RESTRICT component) NOEXCEPT;
 /*
 *	Declares a component.
 */
-#define DECLARE_COMPONENT(COMPONENT_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_DATA_CLASS, ...)									\
+#define DECLARE_COMPONENT(COMPONENT_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_DATA_CLASS, ...)													\
 static_assert(std::is_convertible<INITIALIZATION_DATA_CLASS*, ComponentInitializationData*>::value, "Incorrect inheritance");					\
 class ALIGN(8) COMPONENT_CLASS final : public Component																							\
 {																																				\
 public:																																			\
 	DECLARE_SINGLETON(COMPONENT_CLASS);																											\
-	void Initialize() NOEXCEPT override;																										\
 	void PostInitialize() NOEXCEPT override;																									\
 	void Terminate() NOEXCEPT override;																											\
 	FORCE_INLINE INITIALIZATION_DATA_CLASS *const RESTRICT AllocateDerivedInitializationData() NOEXCEPT											\

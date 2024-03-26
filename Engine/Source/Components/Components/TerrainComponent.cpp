@@ -20,14 +20,6 @@
 DEFINE_COMPONENT(TerrainComponent, TerrainInitializationData, TerrainInstanceData);
 
 /*
-*	Initializes this component.
-*/
-void TerrainComponent::Initialize() NOEXCEPT
-{
-
-}
-
-/*
 *	Post-initializes this component.
 */
 void TerrainComponent::PostInitialize() NOEXCEPT

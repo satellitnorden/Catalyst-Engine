@@ -31,5 +31,12 @@ DECLARE_COMPONENT
 	CircleMarkerComponent,
 	CircleMarkerInitializationData,
 	CircleMarkerInstanceData,
+
 public:
+
+	/*
+	*	Initializes this component.
+	*/
+	void Initialize() NOEXCEPT override;
+
 );

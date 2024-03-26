@@ -19,14 +19,6 @@
 DEFINE_COMPONENT(WaterComponent, WaterInitializationData, WaterInstanceData);
 
 /*
-*	Initializes this component.
-*/
-void WaterComponent::Initialize() NOEXCEPT
-{
-
-}
-
-/*
 *	Post-initializes this component.
 */
 void WaterComponent::PostInitialize() NOEXCEPT

@@ -40,6 +40,11 @@ DECLARE_COMPONENT
 public:
 	
 	/*
+	*	Initializes this component.
+	*/
+	void Initialize() NOEXCEPT override;
+
+	/*
 	*	Callback for before an editable field change happens.
 	*/
 	void PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;

@@ -7,14 +7,6 @@
 DEFINE_COMPONENT(LightComponent, LightInitializationData, LightInstanceData);
 
 /*
-*	Initializes this component.
-*/
-void LightComponent::Initialize() NOEXCEPT
-{
-
-}
-
-/*
 *	Post-initializes this component.
 */
 void LightComponent::PostInitialize() NOEXCEPT

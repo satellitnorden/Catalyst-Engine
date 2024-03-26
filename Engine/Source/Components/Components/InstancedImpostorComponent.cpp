@@ -13,14 +13,6 @@
 DEFINE_COMPONENT(InstancedImpostorComponent, InstancedImpostorInitializationData, InstancedImpostorInstanceData);
 
 /*
-*	Initializes this component.
-*/
-void InstancedImpostorComponent::Initialize() NOEXCEPT
-{
-
-}
-
-/*
 *	Post-initializes this component.
 */
 void InstancedImpostorComponent::PostInitialize() NOEXCEPT

@@ -32,4 +32,17 @@ public:
 
 };
 
-DECLARE_COMPONENT(WorldTransformComponent, WorldTransformInitializationData, WorldTransformInstanceData);
+DECLARE_COMPONENT
+(
+	WorldTransformComponent,
+	WorldTransformInitializationData,
+	WorldTransformInstanceData,
+	
+public:
+
+	/*
+	*	Initializes this component.
+	*/
+	void Initialize() NOEXCEPT override;
+	
+);

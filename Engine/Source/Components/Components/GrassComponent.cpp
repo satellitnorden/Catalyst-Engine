@@ -17,14 +17,6 @@
 DEFINE_COMPONENT(GrassComponent, GrassInitializationData, GrassInstanceData);
 
 /*
-*	Initializes this component.
-*/
-void GrassComponent::Initialize() NOEXCEPT
-{
-
-}
-
-/*
 *	Post-initializes this component.
 */
 void GrassComponent::PostInitialize() NOEXCEPT
