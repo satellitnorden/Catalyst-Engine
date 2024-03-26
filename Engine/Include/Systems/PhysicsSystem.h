@@ -10,6 +10,7 @@
 #include <File/Types/ModelFile.h>
 
 //Math.
+#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 #include <Math/Geometry/Ray.h>
 
 //Physics.
@@ -25,7 +26,6 @@
 #include <Rendering/Native/Texture2D.h>
 
 //World.
-#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
 #include <World/Core/WorldTransform.h>
 
 class ALIGN(8) PhysicsSystem final
@@ -76,7 +76,7 @@ public:
 	(
 		const WorldTransform &world_transform,
 		const ModelCollisionType collision_type,
-		const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
+		const AxisAlignedBoundingBox3D &axis_aligned_bounding_box,
 		const CollisionModelHandle collision_model,
 		const ModelSimulationConfiguration &simulation_configuration,
 		ActorHandle *const RESTRICT actor_handle
@@ -167,7 +167,7 @@ private:
 	(
 		const WorldTransform &world_transform,
 		const ModelCollisionType collision_type,
-		const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
+		const AxisAlignedBoundingBox3D &axis_aligned_bounding_box,
 		const CollisionModelHandle collision_model,
 		const ModelSimulationConfiguration &simulation_configuration,
 		ActorHandle *const RESTRICT actor_handle

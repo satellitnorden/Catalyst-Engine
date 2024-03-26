@@ -6,7 +6,9 @@
 //Math.
 #include <Math/General/EulerAngles.h>
 #include <Math/General/Vector.h>
-#include <Math/General/Quaternion.h>
+
+//Forward declarations.
+class Quaternion;
 
 class Matrix2x2 final
 {
@@ -386,22 +388,7 @@ public:
 	/*
 	*	Constructor taking position and a rotation quaternion as arguments.
 	*/
-	FORCE_INLINE constexpr Matrix4x4(const Vector3<float32> &translation, const Quaternion &rotation, const Vector3<float32> scale = VectorConstants::ONE) NOEXCEPT
-		:
-		_Matrix{ { 1.0f, 0.0f, 0.0f, 0.0f },
-				 { 0.0f, 1.0f, 0.0f, 0.0f },
-				 { 0.0f, 0.0f, 1.0f, 0.0f },
-				 { 0.0f, 0.0f, 0.0f, 1.0f } }
-	{
-		//Translate this matrix.
-		Translate(translation);
-
-		//Scale this matrix.
-		Scale(scale);
-
-		//Rotate the matrix.
-		Rotate(rotation);
-	}
+	Matrix4x4(const Vector3<float32> &translation, const Quaternion &rotation, const Vector3<float32> &scale = VectorConstants::ONE) NOEXCEPT;
 
 	/*
 	*	Equality operator overload.
@@ -755,36 +742,7 @@ public:
 	/*
 	*	Rotates this matrix.
 	*/
-	FORCE_INLINE constexpr void Rotate(const Quaternion &rotation) NOEXCEPT
-	{
-		Matrix4x4 rotation_matrix;
-
-		const float32 qxx{ rotation._X * rotation._X };
-		const float32 qyy{ rotation._Y * rotation._Y };
-		const float32 qzz{ rotation._Z * rotation._Z };
-		const float32 qxz{ rotation._X * rotation._Z };
-		const float32 qxy{ rotation._X * rotation._Y };
-		const float32 qyz{ rotation._Y * rotation._Z };
-		const float32 qwx{ rotation._W * rotation._X };
-		const float32 qwy{ rotation._W * rotation._Y };
-		const float32 qwz{ rotation._W * rotation._Z };
-
-		rotation_matrix._Matrix[0][0] = 1.0f - 2.0f * (qyy + qzz);
-		rotation_matrix._Matrix[0][1] = 2.0f * (qxy + qwz);
-		rotation_matrix._Matrix[0][2] = 2.0f * (qxz - qwy);
-
-		rotation_matrix._Matrix[1][0] = 2.0f * (qxy - qwz);
-		rotation_matrix._Matrix[1][1] = 1.0f - 2.0f * (qxx + qzz);
-		rotation_matrix._Matrix[1][2] = 2.0f * (qyz + qwx);
-
-		rotation_matrix._Matrix[2][0] = 2.0f * (qxz + qwy);
-		rotation_matrix._Matrix[2][1] = 2.0f * (qyz - qwx);
-		rotation_matrix._Matrix[2][2] = 1.0f - 2.0f * (qxx + qyy);
-
-		*this = *this * rotation_matrix;
-
-		Verify();
-	}
+	void Rotate(const Quaternion &rotation) NOEXCEPT;
 
 	/*
 	*	Scales this matrix.

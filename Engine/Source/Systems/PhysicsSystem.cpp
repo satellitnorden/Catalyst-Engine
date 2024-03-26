@@ -90,7 +90,7 @@ void PhysicsSystem::CreateModelActor
 (
 	const WorldTransform &world_transform,
 	const ModelCollisionType collision_type,
-	const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
+	const AxisAlignedBoundingBox3D &axis_aligned_bounding_box,
 	const CollisionModelHandle collision_model,
 	const ModelSimulationConfiguration &simulation_configuration,
 	ActorHandle *const RESTRICT actor_handle
@@ -101,7 +101,7 @@ void PhysicsSystem::CreateModelActor
 	(
 		world_transform,
 		collision_type,
-		world_space_axis_aligned_bounding_box,
+		axis_aligned_bounding_box,
 		collision_model,
 		simulation_configuration,
 		actor_handle

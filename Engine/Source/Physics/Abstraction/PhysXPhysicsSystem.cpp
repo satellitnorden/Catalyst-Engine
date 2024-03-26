@@ -425,7 +425,7 @@ void PhysicsSystem::SubCreateModelActor
 (
 	const WorldTransform &world_transform,
 	const ModelCollisionType collision_type,
-	const WorldSpaceAxisAlignedBoundingBox3D &world_space_axis_aligned_bounding_box,
+	const AxisAlignedBoundingBox3D &axis_aligned_bounding_box,
 	const CollisionModelHandle collision_model,
 	const ModelSimulationConfiguration &simulation_configuration,
 	ActorHandle *const RESTRICT actor_handle
@@ -440,8 +440,17 @@ void PhysicsSystem::SubCreateModelActor
 	{
 		case ModelCollisionType::BOX:
 		{
-			const AxisAlignedBoundingBox3D local_axis_aligned_bounding_box{ world_space_axis_aligned_bounding_box.GetAbsoluteAxisAlignedBoundingBox() };
-			const Vector3<float32> dimensions{ local_axis_aligned_bounding_box.Dimensions() };
+			//Cache a local copy of the axis aligned bounding box.
+			AxisAlignedBoundingBox3D _axis_aligned_bounding_box{ axis_aligned_bounding_box };
+
+			//Apply the scale.
+			_axis_aligned_bounding_box._Minimum *= world_transform.GetScale();
+			_axis_aligned_bounding_box._Maximum *= world_transform.GetScale();
+
+			//Retrieve the dimensions.
+			const Vector3<float32> dimensions{ _axis_aligned_bounding_box.Dimensions() };
+
+			//Set up the geometry.
 			const physx::PxBoxGeometry geometry{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
 
 			{
@@ -451,24 +460,13 @@ void PhysicsSystem::SubCreateModelActor
 
 			/*
 			*	Set the local pose of the box shape here.
-			*	Currently it doesn't seem to work to just set rotation in the actor,
-			*	so set that here as well, don't know why I have to though... :x
+			*	Since the position is expected to be at the center of the box,
+			*	we need to offset it for it to work correctly.
 			*/
-			const Vector3<float32> position_offset{ AxisAlignedBoundingBox3D::CalculateCenter(local_axis_aligned_bounding_box) - world_transform.GetAbsolutePosition() };
+			const Vector3<float32> position_offset{ AxisAlignedBoundingBox3D::CalculateCenter(_axis_aligned_bounding_box) };
 			const physx::PxVec3 position{ position_offset._X, position_offset._Y, position_offset._Z };
-			const Quaternion rotation{ world_transform.GetRotation() };
-			physx::PxQuat physx_rotation;
-#if 1
-			physx_rotation.x = rotation._X;
-			physx_rotation.y = rotation._Y;
-			physx_rotation.z = rotation._Z;
-			physx_rotation.w = rotation._W;
-#else
-			physx_rotation.x = 0.0f;
-			physx_rotation.y = 0.0f;
-			physx_rotation.z = 0.0f;
-			physx_rotation.w = 1.0f;
-#endif
+			const physx::PxQuat physx_rotation{ physx::PxIDENTITY::PxIdentity };
+
 			const physx::PxTransform transform{ position, physx_rotation };
 
 			shape->setLocalPose(transform);

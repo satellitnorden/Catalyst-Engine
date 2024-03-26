@@ -5,7 +5,10 @@
 
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
-#include <Math/General/EulerAngles.h>
+#include <Math/General/Vector.h>
+
+//Forward declarations.
+class EulerAngles;
 
 /*
 *	Quaternion definition.
@@ -162,80 +165,11 @@ public:
 	/*
 	*	Converts this quaternion to euler angles.
 	*/
-	FORCE_INLINE NO_DISCARD EulerAngles ToEulerAngles() const NOEXCEPT
-	{
-		EulerAngles angles;
-
-		//Roll.
-		{
-			const float32 y{ 2.0f * (_Y * _Z + _W * _X) };
-			const float32 x{ _W * _W - _X * _X - _Y * _Y + _Z * _Z };
-
-			if (CatalystBaseMath::Absolute(x) <= FLOAT32_EPSILON
-				&& CatalystBaseMath::Absolute(y) <= FLOAT32_EPSILON)
-			{
-				angles._Roll = 2.0f * CatalystBaseMath::ArcTangent(_X, _W);
-			}
-
-			else
-			{
-				angles._Roll = CatalystBaseMath::ArcTangent(y, x);
-			}
-		}
-
-		//Yaw.
-		{
-			angles._Yaw = CatalystBaseMath::ArcSine(CatalystBaseMath::Clamp(-2.0f * (_X * _Z - _W * _Y), -1.0f, 1.0f));
-		}
-
-		//Pitch.
-		{
-			const float32 y{ 2.0f * (_X * _Y + _W * _Z) };
-			const float32 x{ _W * _W + _X * _X - _Y * _Y - _Z * _Z };
-
-			if (CatalystBaseMath::Absolute(x) <= FLOAT32_EPSILON
-				&& CatalystBaseMath::Absolute(y) <= FLOAT32_EPSILON)
-			{
-				angles._Pitch = 0.0f;
-			}
-
-			else
-			{
-				angles._Pitch = CatalystBaseMath::ArcTangent(y, x);
-			}
-		}
-
-		return angles;
-	}
+	NO_DISCARD EulerAngles ToEulerAngles() const NOEXCEPT;
 
 	/*
 	*	Converts euler angles to this quaternion.
 	*/
-	FORCE_INLINE void FromEulerAngles(const EulerAngles &angles) NOEXCEPT
-	{
-		const EulerAngles half_angles
-		{
-			angles._Roll * 0.5f,
-			angles._Yaw * 0.5f,
-			angles._Pitch * 0.5f
-		};
-		const Vector3<float32> cosine
-		{
-			CatalystBaseMath::Cosine(half_angles._Roll),
-			CatalystBaseMath::Cosine(half_angles._Yaw),
-			CatalystBaseMath::Cosine(half_angles._Pitch),
-		};
-		const Vector3<float32> sine
-		{
-			CatalystBaseMath::Sine(half_angles._Roll),
-			CatalystBaseMath::Sine(half_angles._Yaw),
-			CatalystBaseMath::Sine(half_angles._Pitch),
-		};
-
-		_X = sine._X	* cosine._Y * cosine._Z - cosine._X * sine._Y	* sine._Z;
-		_Y = cosine._X	* sine._Y	* cosine._Z + sine._X	* cosine._Y * sine._Z;
-		_Z = cosine._X	* cosine._Y * sine._Z	- sine._X	* sine._Y	* cosine._Z;
-		_W = cosine._X	* cosine._Y * cosine._Z + sine._X	* sine._Y	* sine._Z;
-	}
+	void FromEulerAngles(const EulerAngles &angles) NOEXCEPT;
 
 };

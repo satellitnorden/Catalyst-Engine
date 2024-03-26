@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Forward declarations.
+class Quaternion;
+
 /*
 *	Class representing Euler angles, with roll, yaw and pitch, all denoted in radians.
 */
@@ -51,9 +54,21 @@ public:
 	}
 
 	/*
+	*	Constructor taking all the values as arguments.
+	*/
+	FORCE_INLINE constexpr EulerAngles(const float32 roll, const float32 yaw, const float32 pitch) NOEXCEPT
+		:
+		_Roll(roll),
+		_Yaw(yaw),
+		_Pitch(pitch)
+	{
+	
+	}
+
+	/*
 	*	Subscript operator overload, const.
 	*/
-	FORCE_INLINE const float32 operator[](const uint64 index) const NOEXCEPT
+	FORCE_INLINE float32 operator[](const uint64 index) const NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -64,18 +79,6 @@ public:
 	FORCE_INLINE float32 &operator[](const uint64 index) NOEXCEPT
 	{
 		return _Data[index];
-	}
-
-	/*
-	*	Constructor taking all the values as arguments.
-	*/
-	FORCE_INLINE constexpr EulerAngles(const float32 initial_roll, const float32 initial_yaw, const float32 initial_pitch) NOEXCEPT
-		:
-		_Roll(initial_roll),
-		_Yaw(initial_yaw),
-		_Pitch(initial_pitch)
-	{
-
 	}
 
 	/*
@@ -101,5 +104,10 @@ public:
 	{
 		return &_Roll;
 	}
+
+	/*
+	*	Converts a quaternion to these euler angles.
+	*/
+	void FromQuaternion(const Quaternion &quaternion) NOEXCEPT;
 
 };

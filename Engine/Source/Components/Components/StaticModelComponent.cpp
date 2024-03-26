@@ -144,7 +144,7 @@ void StaticModelComponent::PostCreateInstance(Entity *const RESTRICT entity) NOE
 		(
 			world_transform_instance_data._CurrentWorldTransform,
 			static_model_instance_data._CollisionType,
-			static_model_instance_data._WorldSpaceAxisAlignedBoundingBox,
+			static_model_instance_data._Model->_ModelSpaceAxisAlignedBoundingBox,
 			static_model_instance_data._Model->_CollisionModel,
 			static_model_instance_data._ModelSimulationConfiguration,
 			&static_model_instance_data._PhysicsActorHandle
@@ -391,7 +391,7 @@ void StaticModelComponent::PostEditableFieldChange(Entity *const RESTRICT entity
 			(
 				world_transform_instance_data._CurrentWorldTransform,
 				instance_data._CollisionType,
-				instance_data._WorldSpaceAxisAlignedBoundingBox,
+				instance_data._Model->_ModelSpaceAxisAlignedBoundingBox,
 				instance_data._Model->_CollisionModel,
 				instance_data._ModelSimulationConfiguration,
 				&instance_data._PhysicsActorHandle

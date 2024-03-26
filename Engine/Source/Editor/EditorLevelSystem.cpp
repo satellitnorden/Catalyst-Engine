@@ -306,7 +306,7 @@ FORCE_INLINE NO_DISCARD bool TransformWidget
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.25f, 0.8f, 1.0f));
 		if (ImGui::Button("Z", button_size))
 		{
-			data[2] = 0.0f;
+			data[2] = reset_value;
 
 			changed = true;
 		}

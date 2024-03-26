@@ -6,6 +6,7 @@
 //Math.
 #include <Math/General/Matrix.h>
 #include <Math/General/Vector.h>
+#include <Math/General/Quaternion.h>
 
 //World.
 #include <World/Core/WorldPosition.h>
