@@ -136,3 +136,6 @@ set(CMAKE_CXX_FLAGS_FINAL "/O2 /Oi /MT /sdl- /GL [MLPACK_CXX_FLAGS]")
 
 #Remove the ZERO_CHECK project.
 set(CMAKE_SUPPRESS_REGENERATION true)
+
+#Add build generation for the Final config.
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND if $(Configuration) == Final call "RunBuildGeneration.bat")

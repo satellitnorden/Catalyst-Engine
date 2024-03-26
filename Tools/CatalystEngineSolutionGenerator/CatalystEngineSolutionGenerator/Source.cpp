@@ -1198,6 +1198,15 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 
 		run_code_generation_file.close();
 	}
+
+	//Add the "RunBuildGeneration.bat" file.
+	{
+		std::ofstream run_code_generation_file{ "Win64\\Win64\\RunBuildGeneration.bat" };
+
+		run_code_generation_file << "\"../../../../Catalyst-Engine/Tools/Binaries/CatalystEngineBuildGenerator.exe\"";
+
+		run_code_generation_file.close();
+	}
 }
 
 int main(int argument_count, char* arguments[])

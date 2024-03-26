@@ -139,8 +139,13 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 
 	//Load assets.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	ContentSystem::Instance->LoadAssetCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Base.cac");
 	ResourceSystem::Instance->LoadResources("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Base");
+#else
+	ContentSystem::Instance->LoadAssetCollection("EngineContent\\Base.cac");
+	ResourceSystem::Instance->LoadResources("EngineContent\\Old");
+#endif
 
 #if defined(CATALYST_EDITOR)
 	ContentSystem::Instance->LoadAssetCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Editor.cac");

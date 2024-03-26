@@ -749,19 +749,22 @@ NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> m
 NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
 	//Update the Gizmo mode.
-	if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::ONE) == ButtonState::PRESSED)
+	if (!ImGui::GetIO().WantTextInput)
 	{
-		_CurrentGizmoMode = GizmoMode::TRANSLATE;
-	}
+		if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::ONE) == ButtonState::PRESSED)
+		{
+			_CurrentGizmoMode = GizmoMode::TRANSLATE;
+		}
 
-	else if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::TWO) == ButtonState::PRESSED)
-	{
-		_CurrentGizmoMode = GizmoMode::ROTATE;
-	}
+		else if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::TWO) == ButtonState::PRESSED)
+		{
+			_CurrentGizmoMode = GizmoMode::ROTATE;
+		}
 
-	else if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::THREE) == ButtonState::PRESSED)
-	{
-		_CurrentGizmoMode = GizmoMode::SCALE;
+		else if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::THREE) == ButtonState::PRESSED)
+		{
+			_CurrentGizmoMode = GizmoMode::SCALE;
+		}
 	}
 
 	//Begin the window.

@@ -1,4 +1,3 @@
-#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 //Header file.
 #include <Systems/ContentSystem.h>
 
@@ -63,6 +62,7 @@ void ContentSystem::RegisterAssetCompiler(AssetCompiler *const RESTRICT asset_co
 	_Assets.Add(asset_compiler->AssetTypeIdentifier(), HashTable<HashString, Asset *RESTRICT>());
 }
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 /*
 *	Compiles the content for engine.
 *	Returns if new content was compiled.
@@ -220,6 +220,7 @@ RECOMPILE:
 
 	return compile_result._NewAssetsCompiled;
 }
+#endif
 
 /*
 *	Loads assets from the given directory path.
@@ -462,6 +463,12 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 
 	//Clear the tasks.
 	_Tasks.Clear();
+
+	//Call PostLoad() on all asset compilers.
+	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
+	{
+		asset_compiler->PostLoad();
+	}
 }
 
 /*
@@ -662,4 +669,3 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 		input_file.Close();
 	}
 }
-#endif

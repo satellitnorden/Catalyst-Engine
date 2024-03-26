@@ -305,6 +305,27 @@ public:
 
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::Z)] = 'Z';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::Z)] = 'z';
+
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::MULTIPLY)] = '*';
+		_LowerCaseCharacters[UNDERLYING(KeyboardButton::MULTIPLY)] = '*';
+
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::ADD)] = '+';
+		_LowerCaseCharacters[UNDERLYING(KeyboardButton::ADD)] = '+';
+
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::SEPARATOR)] = '-';
+		_LowerCaseCharacters[UNDERLYING(KeyboardButton::SEPARATOR)] = '-';
+
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::DECIMAL)] = ',';
+		_LowerCaseCharacters[UNDERLYING(KeyboardButton::DECIMAL)] = ',';
+
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::DIVIDE)] = '/';
+		_LowerCaseCharacters[UNDERLYING(KeyboardButton::DIVIDE)] = '/';
+
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::COMMA)] = ',';
+		_LowerCaseCharacters[UNDERLYING(KeyboardButton::COMMA)] = ',';
+
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::PERIOD)] = '.';
+		_LowerCaseCharacters[UNDERLYING(KeyboardButton::PERIOD)] = '.';
 	}
 
 	/*

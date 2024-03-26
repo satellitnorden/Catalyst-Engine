@@ -1,4 +1,3 @@
-#if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 #pragma once
 
 //Core.
@@ -44,6 +43,7 @@ public:
 	*/
 	void RegisterAssetCompiler(AssetCompiler *const RESTRICT asset_compiler) NOEXCEPT;
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
 	*	Compiles the content for engine.
 	*	Returns if new content was compiled.
@@ -55,6 +55,7 @@ public:
 	*	Returns if new content was compiled.
 	*/
 	NO_DISCARD bool CompileGame() NOEXCEPT;
+#endif
 
 	/*
 	*	Loads assets from the given directory path.
@@ -148,4 +149,3 @@ private:
 	void CreateAssetCollections(const char *const RESTRICT directory_path, BinaryFile<BinaryFileMode::OUT> *const RESTRICT file) NOEXCEPT;
 
 };
-#endif
