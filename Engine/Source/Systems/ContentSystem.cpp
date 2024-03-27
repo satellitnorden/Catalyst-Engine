@@ -51,6 +51,15 @@ void ContentSystem::Initialize() NOEXCEPT
 }
 
 /*
+*	Terminates the content system.
+*/
+void ContentSystem::Terminate() NOEXCEPT
+{
+	//Tell asset pointers to stop reference counting.
+	AssetPointerData::_DoReferenceCounting = false;
+}
+
+/*
 *	Registers an asset compiler.
 */
 void ContentSystem::RegisterAssetCompiler(AssetCompiler *const RESTRICT asset_compiler) NOEXCEPT

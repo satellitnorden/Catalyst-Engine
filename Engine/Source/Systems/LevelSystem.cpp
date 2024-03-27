@@ -17,7 +17,9 @@ void LevelSystem::SpawnLevel
 (
 	const WorldTransform &world_transform,
 	const AssetPointer<LevelAsset> level_asset,
-	Level *const RESTRICT level
+	Level *const RESTRICT level,
+	SpawnFunction spawn_function,
+	void *const RESTRICT spawn_function_user_data
 ) NOEXCEPT
 {
 	//Set up the stream archive position.
@@ -46,7 +48,38 @@ void LevelSystem::SpawnLevel
 		level_asset->_StreamArchive.Read(&entity_identifiers.Back(), sizeof(uint64), &stream_archive_position);
 
 		//Deserialize the entitiy.
-		new_entity = EntitySerialization::DeserializeFromStreamArchive(level_asset->_StreamArchive, &stream_archive_position, &world_transform);
+		struct DeserializeFunctionUserData
+		{
+			SpawnFunction _SpawnFunction;
+			uint64 _EntityIdentifier;
+			void *const RESTRICT _UserData;
+		} deserialize_function_user_data
+		{
+			spawn_function,
+			entity_identifiers.Back(),
+			spawn_function_user_data
+		};
+
+		new_entity = EntitySerialization::DeserializeFromStreamArchive
+		(
+			level_asset->_StreamArchive,
+			&stream_archive_position,
+			&world_transform,
+			[]
+			(
+				ComponentInitializationData *const RESTRICT initialization_data,
+				void *const RESTRICT user_data
+			)
+			{
+				DeserializeFunctionUserData *const RESTRICT _user_data{ static_cast<DeserializeFunctionUserData *const RESTRICT>(user_data) };
+
+				if (_user_data->_SpawnFunction)
+				{
+					_user_data->_SpawnFunction(initialization_data, _user_data->_EntityIdentifier, _user_data->_UserData);
+				}
+			},
+			&deserialize_function_user_data
+		);
 	}
 
 	//Read the number of entity linkts.

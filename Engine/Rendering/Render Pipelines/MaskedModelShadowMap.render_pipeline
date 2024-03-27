@@ -17,7 +17,7 @@ DepthStencilLoadOperator(LOAD);
 DepthStencilStoreOperator(STORE);
 
 //Set the cull mode.
-CullMode(BACK);
+CullMode(NONE);
 
 //Set depth/stencil properties.
 DepthCompareOperator(LESS);

@@ -32,7 +32,7 @@ DEFINE_SINGLETON(LevelAssetCompiler);
 LevelAssetCompiler::LevelAssetCompiler() NOEXCEPT
 {
 	//Set the flags.
-	_Flags = Flags::ALWAYS_COMPILE;
+	_Flags = Flags::NONE;
 }
 
 /*

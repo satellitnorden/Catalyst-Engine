@@ -355,6 +355,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 
 	//Terminate all systems.
 	ComponentSystem::Instance->Terminate();
+	ContentSystem::Instance->Terminate();
 	DistributionSystem::Instance->Terminate();
 	PhysicsSystem::Instance->Terminate();
 	RenderingSystem::Instance->Terminate();
@@ -372,6 +373,9 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	ImGuiSystem::Instance->PostTerminate();
 #endif
+
+	//Flush the logs after termination.
+	LogSystem::Instance->Flush();
 }
 
 /*

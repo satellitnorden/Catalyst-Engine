@@ -99,11 +99,32 @@ namespace EntitySerialization
 						break;
 					}
 
-					case ComponentEditableField::Type::POSITION:
+					case ComponentEditableField::Type::UINT32:
+					{
+						const uint32 *const RESTRICT data{ component->EditableFieldData<uint32>(entity, editable_field) };
+
+						component_entry[editable_field._Name] = *data;
+
+						break;
+					}
+
+					case ComponentEditableField::Type::VECTOR2:
+					{
+						const Vector2<float32> *const RESTRICT data{ component->EditableFieldData<Vector2<float32>>(entity, editable_field) };
+
+						nlohmann::json &vector_2_entry{ component_entry[editable_field._Name] };
+
+						vector_2_entry["X"] = data->_X;
+						vector_2_entry["Y"] = data->_Y;
+
+						break;
+					}
+
+					case ComponentEditableField::Type::VECTOR3:
 					{
 						const Vector3<float32> *const RESTRICT data{ component->EditableFieldData<Vector3<float32>>(entity, editable_field) };
 
-						nlohmann::json &position_entry{ component_entry[editable_field._Name] };
+						nlohmann::json& position_entry{ component_entry[editable_field._Name] };
 
 						position_entry["X"] = data->_X;
 						position_entry["Y"] = data->_Y;
@@ -285,7 +306,28 @@ namespace EntitySerialization
 								break;
 							}
 
-							case ComponentEditableField::Type::POSITION:
+							case ComponentEditableField::Type::UINT32:
+							{
+								const uint32 value{ editable_field_entry.get<uint32>() };
+
+								stream_archive->Write(&value, sizeof(uint32));
+
+								break;
+							}
+
+							case ComponentEditableField::Type::VECTOR2:
+							{
+								Vector2<float32> value;
+
+								value._X = editable_field_entry["X"];
+								value._Y = editable_field_entry["Y"];
+
+								stream_archive->Write(&value, sizeof(Vector2<float32>));
+
+								break;
+							}
+
+							case ComponentEditableField::Type::VECTOR3:
 							{
 								Vector3<float32> position;
 
@@ -365,7 +407,9 @@ namespace EntitySerialization
 	(
 		const StreamArchive &stream_archive,
 		uint64 *const RESTRICT stream_archive_position,
-		const WorldTransform *const RESTRICT world_transform
+		const WorldTransform *const RESTRICT world_transform,
+		const DeserializeFunction deserialize_function,
+		void *const RESTRICT deserialize_user_data
 	) NOEXCEPT
 	{
 		//Define constants.
@@ -498,7 +542,29 @@ namespace EntitySerialization
 						break;
 					}
 
-					case ComponentEditableField::Type::POSITION:
+					case ComponentEditableField::Type::UINT32:
+					{
+						uint32 data;
+						stream_archive.Read(&data, sizeof(uint32), stream_archive_position);
+
+						uint32 *const RESTRICT value{ static_cast<uint32 *const RESTRICT>(static_cast<void* const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset))) };
+
+						*value = data;
+
+						break;
+					}
+
+					case ComponentEditableField::Type::VECTOR2:
+					{
+						Vector2<float32> data;
+						stream_archive.Read(&data, sizeof(Vector2<float32>), stream_archive_position);
+
+						Memory::Copy(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset), &data, sizeof(Vector2<float32>));
+
+						break;
+					}
+
+					case ComponentEditableField::Type::VECTOR3:
 					{
 						Vector3<float32> data;
 						stream_archive.Read(&data, sizeof(Vector3<float32>), stream_archive_position);
@@ -559,6 +625,12 @@ namespace EntitySerialization
 					//Apply scale.
 					world_transform_component_configuration->_WorldTransform.SetScale(world_transform_component_configuration->_WorldTransform.GetScale() * world_transform->GetScale());
 				}
+			}
+
+			//Call the deserialize function, if one is applied.
+			if (deserialize_function)
+			{
+				deserialize_function(component_configuration, deserialize_user_data);
 			}
 		}
 

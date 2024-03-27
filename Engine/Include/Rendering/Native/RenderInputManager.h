@@ -110,14 +110,6 @@ private:
 	) NOEXCEPT;
 
 	/*
-	*	Gathers a particles input stream.
-	*/
-	void GatherParticlesInputStream
-	(
-		RenderInputStream *const RESTRICT input_stream
-	) NOEXCEPT;
-
-	/*
 	*	Gathers a user interface text input stream.
 	*/
 	void GatherUserInterfaceTextInputStream

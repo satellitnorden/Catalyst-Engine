@@ -39,6 +39,11 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
+	*	Terminates the content system.
+	*/
+	void Terminate() NOEXCEPT;
+
+	/*
 	*	Registers an asset compiler.
 	*/
 	void RegisterAssetCompiler(AssetCompiler *const RESTRICT asset_compiler) NOEXCEPT;

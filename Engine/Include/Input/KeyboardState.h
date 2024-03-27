@@ -312,8 +312,8 @@ public:
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::ADD)] = '+';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::ADD)] = '+';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::SEPARATOR)] = '-';
-		_LowerCaseCharacters[UNDERLYING(KeyboardButton::SEPARATOR)] = '-';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::SUBTRACT)] = '-';
+		_LowerCaseCharacters[UNDERLYING(KeyboardButton::SUBTRACT)] = '-';
 
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::DECIMAL)] = ',';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::DECIMAL)] = ',';

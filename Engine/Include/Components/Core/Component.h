@@ -316,9 +316,29 @@ protected:
 	) NOEXCEPT;
 
 	/*
-	*	Adds an editable position field.
+	*	Adds an editable uint32 field.
 	*/
-	void AddEditablePositionField
+	void AddEditableUint32Field
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
+	*	Adds an editable vector 2 field.
+	*/
+	void AddEditableVector2Field
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
+	*	Adds an editable vector 3 field.
+	*/
+	void AddEditableVector3Field
 	(
 		const char *const RESTRICT name,
 		const uint64 initialization_data_offset,

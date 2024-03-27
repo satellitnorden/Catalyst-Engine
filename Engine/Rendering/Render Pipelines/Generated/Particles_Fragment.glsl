@@ -212,6 +212,8 @@ layout (std430, set = 1, binding = 1) buffer Particles
 	layout (offset = 0) vec4[] PARTICLES;
 };
 
+layout (set = 1, binding = 2) uniform sampler SAMPLER;
+
 /*
 *   Linearizes a depth value.
 */
@@ -322,7 +324,8 @@ float SmoothStep(float number)
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) uint START_INDEX;
+	layout (offset = 0) uint MATERIAL_INDEX;
+	layout (offset = 4) uint START_INDEX;
 };
 
 layout (location = 0) in vec3 InWorldPosition;
@@ -337,7 +340,14 @@ layout (location = 3) out vec4 SceneFeatures4;
 
 void main()
 {
-    float opacity = 1.0f - (length(InTextureCoordinate - vec2(0.5)) * 2.0f);
+    vec4 albedo_thickness;
+    EVALUATE_ALBEDO_THICKNESS(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, albedo_thickness);
+    vec4 normal_map_displacement;
+    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, normal_map_displacement);
+    vec4 material_properties;
+    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, material_properties);
+    float opacity;
+    EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
     opacity *= smoothstep(0.0f, 0.1f, InNormalizedAge);
     opacity *= 1.0f - smoothstep(0.9f, 1.0f, InNormalizedAge);
     if (opacity < 0.5f)
@@ -345,8 +355,8 @@ void main()
         discard;
     }
     vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
-	SceneFeatures1 = vec4(0.5f,0.5f,0.5f,opacity);
+	SceneFeatures1 = vec4(albedo_thickness.rgb,albedo_thickness.a*opacity);
 	SceneFeatures2 = vec4(InNormal,gl_FragCoord.z);
-	SceneFeatures3 = vec4(1.0f,0.0f,1.0f,0.0f);
+	SceneFeatures3 = material_properties;
 	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
 }

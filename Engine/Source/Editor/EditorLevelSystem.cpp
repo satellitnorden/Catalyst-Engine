@@ -129,19 +129,9 @@ FORCE_INLINE void EnumerationWidget
 	Enumeration *const RESTRICT enumeration
 ) NOEXCEPT
 {
-	ImGui::Columns(2);
-
-	ImGui::SetColumnWidth(0, 64.0f);
 	ImGui::Text(label);
-	ImGui::NextColumn();
 
 	ImGui::PushMultiItemsWidths(1, ImGui::CalcItemWidth());
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
-
-	const float32 line_height{ GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f };
-	const ImVec2 button_size{ line_height + 3.0f, line_height };
-
-	ImGui::SameLine();
 
 	if (ImGui::BeginCombo("##ENUMERATION_VALUE", enumeration->ToString(), ImGuiComboFlags_PopupAlignLeft))
 	{
@@ -159,10 +149,6 @@ FORCE_INLINE void EnumerationWidget
 	}
 
 	ImGui::PopItemWidth();
-	ImGui::SameLine();
-
-	ImGui::PopStyleVar();
-	ImGui::Columns(1);
 }
 
 /*
@@ -222,29 +208,31 @@ FORCE_INLINE NO_DISCARD bool ModelAssetWidget(const char *const RESTRICT label, 
 }
 
 /*
-*	Creates a custom widget for stuff like position/rotation/scale. Returns if there was a change.
+*	Creates a custom widget for stuff like position/rotation/scale.
+*	Returns if there was a change.
 */
-FORCE_INLINE NO_DISCARD bool TransformWidget
+FORCE_INLINE bool TransformWidgetFloat
 (
 	const char *const RESTRICT label,
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField &editable_field,
 	float32 *const RESTRICT data,
 	const uint64 data_size,
 	const float32 reset_value,
 	const float32 drag_speed
 ) NOEXCEPT
 {
+	//Remember if there was a change.
+	bool changed{ false };
+
 	//Push the ID.
 	ImGui::PushID(label);
 
-	//Set up the widget. Keep track of if anything changed.
-	bool changed{ false };
-
-	ImGui::Columns(2);
-
-	ImGui::SetColumnWidth(0, 64.0f);
+	//Set the text on it's own line.
 	ImGui::Text(label);
-	ImGui::NextColumn();
 
+	//Set up the widget.
 	ImGui::PushMultiItemsWidths(static_cast<uint32>(data_size), ImGui::CalcItemWidth());
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
 
@@ -258,7 +246,9 @@ FORCE_INLINE NO_DISCARD bool TransformWidget
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8f, 0.1f, 0.15f, 1.0f));
 		if (ImGui::Button("X", button_size))
 		{
+			component->PreEditableFieldChange(entity, editable_field);
 			data[0] = reset_value;
+			component->PostEditableFieldChange(entity, editable_field);
 
 			changed = true;
 		}
@@ -266,13 +256,23 @@ FORCE_INLINE NO_DISCARD bool TransformWidget
 
 		ImGui::SameLine();
 
-		if (ImGui::DragFloat("##X", &data[0], drag_speed))
+		float32 value{ data[0] };
+
+		if (ImGui::DragFloat("##X", &value, drag_speed))
 		{
+			component->PreEditableFieldChange(entity, editable_field);
+			data[0] = value;
+			component->PostEditableFieldChange(entity, editable_field);
+
 			changed = true;
 		}
 
 		ImGui::PopItemWidth();
-		ImGui::SameLine();
+
+		if (data_size >= 2)
+		{
+			ImGui::SameLine();
+		}
 	}
 	
 	if (data_size >= 2)
@@ -282,21 +282,34 @@ FORCE_INLINE NO_DISCARD bool TransformWidget
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
 		if (ImGui::Button("Y", button_size))
 		{
+			component->PreEditableFieldChange(entity, editable_field);
 			data[1] = reset_value;
+			component->PostEditableFieldChange(entity, editable_field);
 
 			changed = true;
 		}
+
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
 
-		if (ImGui::DragFloat("##Y", &data[1], drag_speed))
+		float32 value{ data[1] };
+
+		if (ImGui::DragFloat("##Y", &value, drag_speed))
 		{
+			component->PreEditableFieldChange(entity, editable_field);
+			data[1] = value;
+			component->PostEditableFieldChange(entity, editable_field);
+
 			changed = true;
 		}
 
 		ImGui::PopItemWidth();
-		ImGui::SameLine();
+
+		if (data_size >= 3)
+		{
+			ImGui::SameLine();
+		}
 	}
 
 	if (data_size >= 3)
@@ -306,16 +319,25 @@ FORCE_INLINE NO_DISCARD bool TransformWidget
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.25f, 0.8f, 1.0f));
 		if (ImGui::Button("Z", button_size))
 		{
+			component->PreEditableFieldChange(entity, editable_field);
 			data[2] = reset_value;
+			component->PostEditableFieldChange(entity, editable_field);
 
 			changed = true;
 		}
+
 		ImGui::PopStyleColor(3);
 
 		ImGui::SameLine();
 
-		if (ImGui::DragFloat("##Z", &data[2], drag_speed))
+		float32 value{ data[2] };
+
+		if (ImGui::DragFloat("##Z", &value, drag_speed))
 		{
+			component->PreEditableFieldChange(entity, editable_field);
+			data[2] = value;
+			component->PostEditableFieldChange(entity, editable_field);
+
 			changed = true;
 		}
 
@@ -323,7 +345,149 @@ FORCE_INLINE NO_DISCARD bool TransformWidget
 	}
 
 	ImGui::PopStyleVar();
-	ImGui::Columns(1);
+
+	ImGui::PopID();
+
+	return changed;
+}
+
+/*
+*	Creates a custom widget for stuff like position/rotation/scale.
+*	Returns if there was a change.
+*/
+FORCE_INLINE bool TransformWidgetUint32
+(
+	const char *const RESTRICT label,
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField &editable_field,
+	uint32 *const RESTRICT data,
+	const uint64 data_size,
+	const uint32 reset_value
+) NOEXCEPT
+{
+	//Remember if there was a change.
+	bool changed{ false };
+
+	//Push the ID.
+	ImGui::PushID(label);
+
+	//Set the text on it's own line.
+	ImGui::Text(label);
+
+	//Set up the widget.
+	ImGui::PushMultiItemsWidths(static_cast<uint32>(data_size), ImGui::CalcItemWidth());
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+	const float32 line_height{ GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f };
+	const ImVec2 button_size{ line_height + 3.0f, line_height };
+
+	if (data_size >= 1)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.15f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.2f, 0.2f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8f, 0.1f, 0.15f, 1.0f));
+		if (ImGui::Button("X", button_size))
+		{
+			component->PreEditableFieldChange(entity, editable_field);
+			data[0] = reset_value;
+			component->PostEditableFieldChange(entity, editable_field);
+
+			changed = true;
+		}
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();
+
+		int32 value{ static_cast<int32>(data[0]) };
+
+		if (ImGui::DragInt("##X", &value))
+		{
+			component->PreEditableFieldChange(entity, editable_field);
+			data[0] = value;
+			component->PostEditableFieldChange(entity, editable_field);
+
+			changed = true;
+		}
+
+		ImGui::PopItemWidth();
+
+		if (data_size >= 2)
+		{
+			ImGui::SameLine();
+		}
+	}
+
+	if (data_size >= 2)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.3f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.8f, 0.3f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
+		if (ImGui::Button("Y", button_size))
+		{
+			component->PreEditableFieldChange(entity, editable_field);
+			data[1] = reset_value;
+			component->PostEditableFieldChange(entity, editable_field);
+
+			changed = true;
+		}
+
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();
+
+		int32 value{ static_cast<int32>(data[1]) };
+
+		if (ImGui::DragInt("##Y", &value))
+		{
+			component->PreEditableFieldChange(entity, editable_field);
+			data[1] = value;
+			component->PostEditableFieldChange(entity, editable_field);
+
+			changed = true;
+		}
+
+		ImGui::PopItemWidth();
+
+		if (data_size >= 3)
+		{
+			ImGui::SameLine();
+		}
+	}
+
+	if (data_size >= 3)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.25f, 0.8f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.1f, 0.35f, 0.9f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.25f, 0.8f, 1.0f));
+		if (ImGui::Button("Z", button_size))
+		{
+			component->PreEditableFieldChange(entity, editable_field);
+			data[2] = reset_value;
+			component->PostEditableFieldChange(entity, editable_field);
+
+			changed = true;
+		}
+
+		ImGui::PopStyleColor(3);
+
+		ImGui::SameLine();
+
+		int32 value{ static_cast<int32>(data[2]) };
+
+		if (ImGui::DragInt("##Z", &value))
+		{
+			component->PreEditableFieldChange(entity, editable_field);
+			data[2] = value;
+			component->PostEditableFieldChange(entity, editable_field);
+
+			changed = true;
+		}
+
+		ImGui::PopItemWidth();
+	}
+
+	ImGui::PopStyleVar();
 
 	ImGui::PopID();
 
@@ -923,7 +1087,20 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				Vector3<float32> position{ world_transform->GetAbsolutePosition() };
 
 				//Add the transform widget.
-				const bool changed{ TransformWidget("Position", &position._X, 3, 0.0f, 0.01f) };
+				const bool changed
+				{
+					TransformWidgetFloat
+					(
+						"Position",
+						WorldTransformComponent::Instance.Get(),
+						selected_entity,
+						editable_field,
+						&position._X,
+						3,
+						0.0f,
+						0.01f
+					)
+				};
 
 				//Update the position if anything changed.
 				if (changed)
@@ -944,7 +1121,20 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				}
 
 				//Add the transform widget.
-				const bool changed{ TransformWidget("Rotation", &rotation._Roll, 3, 0.0f, 0.1f) };
+				const bool changed
+				{
+					TransformWidgetFloat
+					(
+						"Rotation",
+						WorldTransformComponent::Instance.Get(),
+						selected_entity,
+						editable_field,
+						&rotation._Roll,
+						3,
+						0.0f,
+						0.1f
+					)
+				};
 
 				//Update the rotation if anything changed.
 				if (changed)
@@ -966,7 +1156,20 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				Vector3<float32> scale{ world_transform->GetScale() };
 
 				//Add the transform widget.
-				const bool changed{ TransformWidget("Scale", &scale._X, 3, 1.0f, 0.01f) };
+				const bool changed
+				{
+					TransformWidgetFloat
+					(
+						"Scale",
+						WorldTransformComponent::Instance.Get(),
+						selected_entity,
+						editable_field,
+						&scale._X,
+						3,
+						1.0f,
+						0.01f
+					)
+				};
 
 				//Update the scale if anything changed.
 				if (changed)
@@ -1102,13 +1305,16 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 							{
 								float32 *const RESTRICT value{ component->EditableFieldData<float32>(selected_entity, editable_field) };
 
-								FloatWidget
+								TransformWidgetFloat
 								(
 									editable_field._Name,
 									component,
 									selected_entity,
 									editable_field,
-									value
+									value,
+									1,
+									0.0f,
+									0.01f
 								);
 
 								break;
@@ -1148,11 +1354,58 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 								break;
 							}
 
-							case ComponentEditableField::Type::POSITION:
+							case ComponentEditableField::Type::UINT32:
+							{
+								uint32 *const RESTRICT value{ component->EditableFieldData<uint32>(selected_entity, editable_field) };
+
+								TransformWidgetUint32
+								(
+									editable_field._Name,
+									component,
+									selected_entity,
+									editable_field,
+									value,
+									1,
+									0
+								);
+
+								break;
+							}
+
+							case ComponentEditableField::Type::VECTOR2:
+							{
+								Vector2<float32> *const RESTRICT editable_field_data{ component->EditableFieldData<Vector2<float32>>(selected_entity, editable_field) };
+
+								TransformWidgetFloat
+								(
+									editable_field._Name,
+									component,
+									selected_entity,
+									editable_field,
+									&editable_field_data->_X,
+									2,
+									0.0f,
+									0.01f
+								);
+
+								break;
+							}
+
+							case ComponentEditableField::Type::VECTOR3:
 							{
 								Vector3<float32> *const RESTRICT editable_field_data{ component->EditableFieldData<Vector3<float32>>(selected_entity, editable_field) };
 
-								TransformWidget(editable_field._Name, &editable_field_data->_X, 3, 0.0f, 0.01f);
+								TransformWidgetFloat
+								(
+									editable_field._Name,
+									component,
+									selected_entity,
+									editable_field,
+									&editable_field_data->_X,
+									3,
+									0.0f,
+									0.01f
+								);
 
 								break;
 							}

@@ -212,6 +212,8 @@ layout (std430, set = 1, binding = 1) buffer Particles
 	layout (offset = 0) vec4[] PARTICLES;
 };
 
+layout (set = 1, binding = 2) uniform sampler SAMPLER;
+
 /*
 *   Linearizes a depth value.
 */
@@ -322,7 +324,8 @@ float SmoothStep(float number)
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) uint START_INDEX;
+	layout (offset = 0) uint MATERIAL_INDEX;
+	layout (offset = 4) uint START_INDEX;
 };
 
 layout (location = 0) out vec3 OutWorldPosition;
@@ -346,8 +349,8 @@ void main()
     OutWorldPosition += right_vector * mix(-half_particle_size.x, half_particle_size.x, float(gl_VertexIndex & 1));
     OutWorldPosition += up_vector * mix(-half_particle_size.y, half_particle_size.y, float(gl_VertexIndex > 1));
     OutNormal = forward_vector;
-    OutTextureCoordinate.x = float(gl_VertexIndex & 1);
-    OutTextureCoordinate.y = float(gl_VertexIndex > 1);
+    OutTextureCoordinate.x = float(gl_VertexIndex > 1);
+    OutTextureCoordinate.y = 1.0f - float(gl_VertexIndex & 1);
     OutNormalizedAge = particle_normalized_age;
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

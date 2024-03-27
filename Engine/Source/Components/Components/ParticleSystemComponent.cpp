@@ -12,10 +12,197 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/ContentSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
 DEFINE_COMPONENT(ParticleSystemComponent, ParticleSystemInitializationData, ParticleSystemInstanceData);
+
+/*
+*	Particles push constant data.
+*/
+class ParticlesPushConstantData final
+{
+
+public:
+
+	//The material index.
+	uint32 _MaterialIndex;
+
+	//The start index.
+	uint32 _StartIndex;
+
+};
+
+/*
+*	Gathers a particles input stream.
+*/
+void GatherParticlesInputStream(RenderInputStream *const RESTRICT input_stream) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Gather particles.
+	{
+		for (ParticleSystemInstanceData &instance_data : ParticleSystemComponent::Instance->InstanceData())
+		{
+			if (instance_data._NumberOfInstances == 0)
+			{
+				continue;
+			}
+
+			//Add a new entry.
+			input_stream->_Entries.Emplace();
+			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+			new_entry._VertexBuffer = EMPTY_HANDLE;
+			new_entry._IndexBuffer = EMPTY_HANDLE;
+			new_entry._IndexBufferOffset = 0;
+			new_entry._InstanceBuffer = EMPTY_HANDLE;
+			new_entry._VertexCount = 4;
+			new_entry._IndexCount = 0;
+			new_entry._InstanceCount = instance_data._NumberOfInstances;
+
+			//Set up the push constant data.
+			ParticlesPushConstantData push_constant_data;
+
+			push_constant_data._MaterialIndex = instance_data._Material->_Index;
+			push_constant_data._StartIndex = instance_data._StartInstanceIndex;
+
+			for (uint64 i{ 0 }; i < sizeof(ParticlesPushConstantData); ++i)
+			{
+				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+			}
+		}
+	}
+}
+
+/*
+*	Splits one emitter into X sub emitters.
+*/
+FORCE_INLINE void SplitIntoSubEmitters(const ParticleEmitter &master_emitter, DynamicArray<ParticleSubEmitter> *const RESTRICT sub_emitters) NOEXCEPT
+{
+	//Define constants.
+	constexpr uint32 MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER{ 256 };
+
+	//Clear the sub emitters.
+	sub_emitters->Clear();
+
+	//Add the sub emitters.
+	const uint32 number_of_sub_emitters{ CatalystBaseMath::Maximum<uint32>(master_emitter._SpawnRate / MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER, 1) };
+
+	for (uint32 sub_emitter_index{ 0 }; sub_emitter_index < number_of_sub_emitters; ++sub_emitter_index)
+	{
+		//Add the new sub emitter.
+		sub_emitters->Emplace();
+		ParticleSubEmitter &new_sub_emitter{ sub_emitters->Back() };
+
+		//Copy data.
+		Memory::Copy(&new_sub_emitter._Emitter, &master_emitter, sizeof(ParticleEmitter));
+
+		//Modify the spawn rate.
+		new_sub_emitter._Emitter._SpawnRate = CatalystBaseMath::Maximum<uint32>(master_emitter._SpawnRate / number_of_sub_emitters, 1);
+
+		//Reset the time since the last particle spawn.
+		new_sub_emitter._TimeSinceLastParticleSpawn = 0.0f;
+	}
+}
+
+/*
+*	Initializes this component.
+*/
+void ParticleSystemComponent::Initialize() NOEXCEPT
+{
+	//Register the "Particles" input stream.
+	RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+	(
+		HashString("Particles"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		sizeof(ParticlesPushConstantData),
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			GatherParticlesInputStream(input_stream);
+		},
+		RenderInputStream::Mode::DRAW_INSTANCED,
+		nullptr
+	);
+
+	//Add the editable fields.
+	AddEditableMaterialAssetField
+	(
+		"Material",
+		offsetof(ParticleSystemInitializationData, _Material),
+		offsetof(ParticleSystemInstanceData, _Material)
+	);
+
+	AddEditableEnumerationField
+	(
+		"Emitter Mode",
+		offsetof(ParticleSystemInitializationData, _Emitter._ParticleEmitterMode),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._ParticleEmitterMode)
+	);
+
+	AddEditableFloatField
+	(
+		"Sphere Radius",
+		offsetof(ParticleSystemInitializationData, _Emitter._SphereMode._Radius),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._SphereMode._Radius)
+	);
+
+	AddEditableVector3Field
+	(
+		"Minimum Velocity",
+		offsetof(ParticleSystemInitializationData, _Emitter._MinimumVelocity),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._MinimumVelocity)
+	);
+
+	AddEditableVector3Field
+	(
+		"Maximum Velocity",
+		offsetof(ParticleSystemInitializationData, _Emitter._MaximumVelocity),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._MaximumVelocity)
+	);
+
+	AddEditableVector2Field
+	(
+		"Minimum Size",
+		offsetof(ParticleSystemInitializationData, _Emitter._MinimumSize),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._MinimumSize)
+	);
+
+	AddEditableVector2Field
+	(
+		"Maximum Size",
+		offsetof(ParticleSystemInitializationData, _Emitter._MaximumSize),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._MaximumSize)
+	);
+
+	AddEditableFloatField
+	(
+		"Minimum Lifetime",
+		offsetof(ParticleSystemInitializationData, _Emitter._MinimumLifetime),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._MinimumLifetime)
+	);
+
+	AddEditableFloatField
+	(
+		"Maximum Lifetime",
+		offsetof(ParticleSystemInitializationData, _Emitter._MaximumLifetime),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._MaximumLifetime)
+	);
+
+	AddEditableUint32Field
+	(
+		"Spawn Rate",
+		offsetof(ParticleSystemInitializationData, _Emitter._SpawnRate),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._SpawnRate)
+	);
+}
 
 /*
 *	Post-initializes this component.
@@ -51,6 +238,16 @@ void ParticleSystemComponent::Terminate() NOEXCEPT
 
 }
 
+/*
+*	Sets default values for initialization data.
+*/
+void ParticleSystemComponent::DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+{
+	ParticleSystemInitializationData *const RESTRICT _initialization_data{ static_cast<ParticleSystemInitializationData *const RESTRICT>(initialization_data) };
+
+	_initialization_data->_Material = ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"));
+}
+
 NO_DISCARD bool ParticleSystemComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return false;
@@ -69,32 +266,17 @@ void ParticleSystemComponent::PreProcess(ComponentInitializationData *const REST
 */
 void ParticleSystemComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
-	//Define constants.
-	constexpr uint32 MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER{ 512 };
-
 	//Set up the instance data.
 	ParticleSystemInitializationData *const RESTRICT _initialization_data{ static_cast<ParticleSystemInitializationData *const RESTRICT>(initialization_data) };
 	_InstanceData.Emplace();
 	ParticleSystemInstanceData &instance_data{ _InstanceData.Back() };
 
-	//Add the sub emitters.
-	const uint32 number_of_sub_emitters{ CatalystBaseMath::Maximum<uint32>(_initialization_data->_Emitter._SpawnRate / MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER, 1) };
-	
-	for (uint32 sub_emitter_index{ 0 }; sub_emitter_index < number_of_sub_emitters; ++sub_emitter_index)
-	{
-		//Add the new sub emitter.
-		instance_data._SubEmitters.Emplace();
-		ParticleSubEmitter &new_sub_emitter{ instance_data._SubEmitters.Back() };
+	//Copy data.
+	instance_data._Material = _initialization_data->_Material;
+	instance_data._MasterEmitter = _initialization_data->_Emitter;
 
-		//Copy data.
-		Memory::Copy(&new_sub_emitter._Emitter, &_initialization_data->_Emitter, sizeof(ParticleEmitter));
-
-		//Modify the spawn rate.
-		new_sub_emitter._Emitter._SpawnRate = CatalystBaseMath::Maximum<uint32>(_initialization_data->_Emitter._SpawnRate / number_of_sub_emitters, 1);
-
-		//Reset the time since the last particle spawn.
-		new_sub_emitter._TimeSinceLastParticleSpawn = 0.0f;
-	}
+	//Split into sub emitters.
+	SplitIntoSubEmitters(instance_data._MasterEmitter, &instance_data._SubEmitters);
 }
 
 /*
@@ -189,9 +371,9 @@ void ParticleSystemComponent::Update
 						ParticleInstance &new_particle_instance{ sub_emitter._Instances.Back() };
 
 						//Randomize the world position.
-						switch (sub_emitter._Emitter._EmitMode)
+						switch (sub_emitter._Emitter._ParticleEmitterMode)
 						{
-							case ParticleEmitter::EmitMode::SPHERE:
+							case ParticleEmitterMode::SPHERE:
 							{
 								new_particle_instance._WorldPosition = WorldPosition
 								(
@@ -363,4 +545,16 @@ void ParticleSystemComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEP
 
 		instance_data._NumberOfInstances = instance_counter - instance_data._StartInstanceIndex;
 	}
+}
+
+/*
+*	Callback for after an editable field change happens.
+*/
+void ParticleSystemComponent::PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
+{
+	//Cache the instance data.
+	ParticleSystemInstanceData &instance_data{ InstanceData(entity) };
+
+	//Set up the sub emitters again.
+	SplitIntoSubEmitters(instance_data._MasterEmitter, &instance_data._SubEmitters);
 }

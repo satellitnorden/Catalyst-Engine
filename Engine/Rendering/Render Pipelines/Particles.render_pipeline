@@ -46,7 +46,11 @@ StencilReferenceMask(1);
 Topology(TRIANGLE_STRIP);
 
 //Declare push constant data.
+PushConstantData(uint, MATERIAL_INDEX);
 PushConstantData(uint, START_INDEX);
+
+//Declare samplers.
+Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
 
 //Subscribe to input streams.
 SubscribeToInputStream(Particles);
@@ -89,8 +93,8 @@ Vertex
     OutNormal = forward_vector;
 
     //Calculate the texture coordinate.
-    OutTextureCoordinate.x = float(VERTEX_INDEX & 1);
-    OutTextureCoordinate.y = float(VERTEX_INDEX > 1);
+    OutTextureCoordinate.x = float(VERTEX_INDEX > 1);
+    OutTextureCoordinate.y = 1.0f - float(VERTEX_INDEX & 1);
 
     //Set the normalized age.
     OutNormalizedAge = particle_normalized_age;
@@ -108,8 +112,15 @@ Fragment
     InputParameter(vec2, InTextureCoordinate);
     InputParameter(float, InNormalizedAge);
 
-    //Calculate the opacity.
-    float opacity = 1.0f - (length(InTextureCoordinate - vec2(0.5)) * 2.0f);
+    //Evaluate the material.
+    vec4 albedo_thickness;
+    EVALUATE_ALBEDO_THICKNESS(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, albedo_thickness);
+    vec4 normal_map_displacement;
+    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, normal_map_displacement);
+    vec4 material_properties;
+    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, material_properties);
+    float opacity;
+    EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
 
     //Apply the normalized age.
     opacity *= smoothstep(0.0f, 0.1f, InNormalizedAge);
@@ -125,8 +136,8 @@ Fragment
     vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
 
     //Output the fragments.
-    OutputFragment(SceneFeatures1, vec4(0.5f, 0.5f, 0.5f, opacity));
+    OutputFragment(SceneFeatures1, vec4(albedo_thickness.rgb, albedo_thickness.a * opacity));
     OutputFragment(SceneFeatures2, vec4(InNormal, gl_FragCoord.z));
-    OutputFragment(SceneFeatures3, vec4(1.0f, 0.0f, 1.0f, 0.0f));
+    OutputFragment(SceneFeatures3, material_properties);
     OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
 }

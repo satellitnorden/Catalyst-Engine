@@ -8,7 +8,6 @@
 #include <Components/Components/GrassComponent.h>
 #include <Components/Components/InstancedImpostorComponent.h>
 #include <Components/Components/InstancedStaticModelComponent.h>
-#include <Components/Components/ParticleSystemComponent.h>
 #include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/TerrainComponent.h>
 #include <Components/Components/WaterComponent.h>
@@ -110,11 +109,6 @@ struct GrassPushConstantData
 	float32 _Tilt;
 	float32 _Bend;
 	float32 _FadeOutDistance;
-};
-
-struct ParticlesPushConstantData
-{
-	uint32 _StartIndex;
 };
 
 struct UserInterfaceTextPushConstantData
@@ -615,21 +609,6 @@ void RenderInputManager::Initialize() NOEXCEPT
 			this
 		);
 	}
-
-	//Register the particles input stream.
-	RegisterInputStream
-	(
-		HashString("Particles"),
-		DynamicArray<VertexInputAttributeDescription>(),
-		DynamicArray<VertexInputBindingDescription>(),
-		sizeof(ParticlesPushConstantData),
-		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-		{
-			static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherParticlesInputStream(input_stream);
-		},
-		RenderInputStream::Mode::DRAW_INSTANCED,
-		this
-	);
 
 	//Register the user interface text input stream.
 	RegisterInputStream
@@ -1307,55 +1286,6 @@ void RenderInputManager::GatherGrassInputStream
 				return first->_SortValue < second->_SortValue;
 			}
 		);
-	}
-}
-
-/*
-*	Gathers a particles input stream.
-*/
-void RenderInputManager::GatherParticlesInputStream
-(
-	RenderInputStream *const RESTRICT input_stream
-) NOEXCEPT
-{
-	//Clear the entries.
-	input_stream->_Entries.Clear();
-
-	//Clear the push constant data memory.
-	input_stream->_PushConstantDataMemory.Clear();
-
-	//Gather particles.
-	{
-		for (ParticleSystemInstanceData &instance_data : ParticleSystemComponent::Instance->InstanceData())
-		{
-			if (instance_data._StartInstanceIndex && instance_data._NumberOfInstances)
-			{
-				continue;
-			}
-
-			//Add a new entry.
-			input_stream->_Entries.Emplace();
-			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
-
-			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-			new_entry._VertexBuffer = EMPTY_HANDLE;
-			new_entry._IndexBuffer = EMPTY_HANDLE;
-			new_entry._IndexBufferOffset = 0;
-			new_entry._InstanceBuffer = EMPTY_HANDLE;
-			new_entry._VertexCount = 4;
-			new_entry._IndexCount = 0;
-			new_entry._InstanceCount = instance_data._NumberOfInstances;
-
-			//Set up the push constant data.
-			ParticlesPushConstantData push_constant_data;
-
-			push_constant_data._StartIndex = instance_data._StartInstanceIndex;
-
-			for (uint64 i{ 0 }; i < sizeof(ParticlesPushConstantData); ++i)
-			{
-				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
-			}
-		}
 	}
 }
 

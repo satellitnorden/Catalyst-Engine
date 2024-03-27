@@ -108,9 +108,9 @@ void Component::AddEditableModelAssetField
 }
 
 /*
-*	Adds an editable position field.
+*	Adds an editable uint32 field.
 */
-void Component::AddEditablePositionField
+void Component::AddEditableUint32Field
 (
 	const char *const RESTRICT name,
 	const uint64 initialization_data_offset,
@@ -121,7 +121,49 @@ void Component::AddEditablePositionField
 
 	editable_field._Name = name;
 	editable_field._Identifier = HashString(name);
-	editable_field._Type = ComponentEditableField::Type::POSITION;
+	editable_field._Type = ComponentEditableField::Type::UINT32;
+	editable_field._InitializationDataOffset = initialization_data_offset;
+	editable_field._InstanceDataOffset = instance_data_offset;
+
+	_EditableFields.Emplace(editable_field);
+}
+
+/*
+*	Adds an editable world vector 2 field.
+*/
+void Component::AddEditableVector2Field
+(
+	const char *const RESTRICT name,
+	const uint64 initialization_data_offset,
+	const uint64 instance_data_offset
+) NOEXCEPT
+{
+	ComponentEditableField editable_field;
+
+	editable_field._Name = name;
+	editable_field._Identifier = HashString(name);
+	editable_field._Type = ComponentEditableField::Type::VECTOR2;
+	editable_field._InitializationDataOffset = initialization_data_offset;
+	editable_field._InstanceDataOffset = instance_data_offset;
+
+	_EditableFields.Emplace(editable_field);
+}
+
+/*
+*	Adds an editable vector 3 field.
+*/
+void Component::AddEditableVector3Field
+(
+	const char *const RESTRICT name,
+	const uint64 initialization_data_offset,
+	const uint64 instance_data_offset
+) NOEXCEPT
+{
+	ComponentEditableField editable_field;
+
+	editable_field._Name = name;
+	editable_field._Identifier = HashString(name);
+	editable_field._Type = ComponentEditableField::Type::VECTOR3;
 	editable_field._InitializationDataOffset = initialization_data_offset;
 	editable_field._InstanceDataOffset = instance_data_offset;
 

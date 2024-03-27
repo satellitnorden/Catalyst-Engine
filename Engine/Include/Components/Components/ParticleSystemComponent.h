@@ -2,13 +2,24 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Enumeration.h>
 #include <Core/General/Padding.h>
 
 //Components.
 #include <Components/Core/Component.h>
 
+//Content.
+#include <Content/Assets/MaterialAsset.h>
+
 //World.
 #include <World/Core/WorldPosition.h>
+
+CATALYST_ENUMERATION
+(
+	ParticleEmitterMode,
+	uint8,
+	SPHERE
+);
 
 /*
 *	Particle instance class definition.
@@ -65,17 +76,8 @@ class ParticleEmitter final
 
 public:
 
-	//Enumeration covering all emit modes.
-	enum class EmitMode : uint8
-	{
-		/*
-		*	Picks random positions in a sphere of '_SphereMode._Radius' radius.
-		*/
-		SPHERE
-	};
-
-	//The emit mode.
-	EmitMode _EmitMode;
+	//The particle emitter mode.
+	ParticleEmitterMode _ParticleEmitterMode;
 
 	union
 	{
@@ -152,6 +154,9 @@ class ParticleSystemInitializationData final : public ComponentInitializationDat
 
 public:
 
+	//The material.
+	AssetPointer<MaterialAsset> _Material;
+
 	//The emitter.
 	ParticleEmitter _Emitter;
 
@@ -164,6 +169,12 @@ class ParticleSystemInstanceData final
 {
 
 public:
+
+	//The material.
+	AssetPointer<MaterialAsset> _Material;
+
+	//The master emitter.
+	ParticleEmitter _MasterEmitter;
 
 	//The sub emitters.
 	DynamicArray<ParticleSubEmitter> _SubEmitters;
@@ -181,11 +192,30 @@ DECLARE_COMPONENT
 	ParticleSystemComponent,
 	ParticleSystemInitializationData,
 	ParticleSystemInstanceData,
+
 public:
+
+	/*
+	*	Initializes this component.
+	*/
+	void Initialize() NOEXCEPT override;
+
+	/*
+	*	Sets default values for initialization data.
+	*/
+	void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
+
+	/*
+	*	Callback for after an editable field change happens.
+	*/
+	void PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
+
 	FORCE_INLINE NO_DISCARD ParticleSystemSharedData &SharedData() NOEXCEPT
 	{
 		return _SharedData;
 	}
+
 private:
+
 	ParticleSystemSharedData _SharedData;
 );

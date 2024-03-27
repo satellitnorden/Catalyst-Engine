@@ -23,7 +23,8 @@
 //Shadows systems constants.
 namespace ShadowsSystemConstants
 {
-	constexpr float32 DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 4.00f };
+	constexpr float32 MAXIMUM_VIEW_DISTANCE{ 1'024.0f };
+	constexpr float32 DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTOR{ 1.0f / 5.00f };
 	constexpr StaticArray<float32, 4> DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTORS
 	{
 		1.0f * DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTOR * DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTOR * DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTOR,
@@ -180,7 +181,7 @@ void ShadowsSystem::PostInitialize() NOEXCEPT
 					*	This would work great if all the geometry was perfectly planar, but alas, it is not.
 					*	So increase it by some magic amount that seems to work fine. (:
 					*/
-					const float32 maximum_depth_bias{ shadow_map_data._DepthRange / static_cast<float32>(UINT16_MAXIMUM) * 8.0f };
+					const float32 maximum_depth_bias{ shadow_map_data._DepthRange / static_cast<float32>(UINT16_MAXIMUM) * 4.0f };
 
 					for (uint64 i{ 0 }; i < sizeof(float32); ++i)
 					{
@@ -315,11 +316,12 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 	{
 		if (instance_data._LightType == LightType::DIRECTIONAL)
 		{
+			const float32 view_distance{ CatalystBaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance, ShadowsSystemConstants::MAXIMUM_VIEW_DISTANCE) };
 			Vector4<float32> cascade_distances;
 
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				cascade_distances[i] = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance * ShadowsSystemConstants::DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTORS[i];
+				cascade_distances[i] = view_distance * ShadowsSystemConstants::DIRECTIONAL_LIGHT_SHADOW_MAP_CASCADE_DISTANCE_FACTORS[i];
 			}
 
 			for (uint8 i{ 0 }; i < 4; ++i)

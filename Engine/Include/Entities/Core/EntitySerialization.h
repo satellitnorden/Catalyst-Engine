@@ -13,8 +13,17 @@
 //Third party.
 #include <ThirdParty/json/json.hpp>
 
+//Forward declarations.
+class ComponentInitializationData;
+
 namespace EntitySerialization
 {
+	//Type aliases.
+	using DeserializeFunction = void(*)
+	(
+		ComponentInitializationData *const RESTRICT initialization_data,
+		void *const RESTRICT user_data
+	);
 
 	/*
 	*	Serializes the given entity to the given JSON object with the given name.
@@ -42,7 +51,9 @@ namespace EntitySerialization
 	(
 		const StreamArchive &stream_archive,
 		uint64 *const RESTRICT stream_archive_position,
-		const WorldTransform *const RESTRICT world_transform
+		const WorldTransform *const RESTRICT world_transform,
+		const DeserializeFunction deserialize_function = nullptr,
+		void *const RESTRICT deserialize_user_data = nullptr
 	) NOEXCEPT;
 
 }

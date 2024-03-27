@@ -12,6 +12,9 @@
 #include <World/Core/WorldTransform.h>
 #include <World/Level/Level.h>
 
+//Forward declarations.
+class ComponentInitializationData;
+
 class ALIGN(8) LevelSystem final
 {
 
@@ -19,6 +22,14 @@ public:
 
 	//Singleton declaration.
 	DECLARE_SINGLETON(LevelSystem);
+
+	//Type aliases.
+	using SpawnFunction = void(*)
+	(
+		ComponentInitializationData *const RESTRICT initialization_data,
+		const uint64 entity_identifier,
+		void *const RESTRICT user_data
+	);
 
 	/*
 	*	Default constructor.
@@ -35,7 +46,9 @@ public:
 	(
 		const WorldTransform &world_transform,
 		const AssetPointer<LevelAsset> level_asset,
-		Level *const RESTRICT level
+		Level *const RESTRICT level,
+		SpawnFunction spawn_function = nullptr,
+		void *const RESTRICT spawn_function_user_data = nullptr
 	) NOEXCEPT;
 
 	/*
