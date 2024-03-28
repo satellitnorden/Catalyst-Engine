@@ -103,4 +103,17 @@ public:
 
 };
 
-DECLARE_COMPONENT(WaterComponent, WaterInitializationData, WaterInstanceData);
+DECLARE_COMPONENT
+(
+	WaterComponent,
+	WaterInitializationData,
+	WaterInstanceData,
+	
+public:
+
+	/*
+	*	Returns if this component needs pre-processing.
+	*/
+	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;
+
+);

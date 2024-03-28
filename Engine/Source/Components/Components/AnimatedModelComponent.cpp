@@ -20,27 +20,6 @@
 DEFINE_COMPONENT(AnimatedModelComponent, AnimatedModelInitializationData, AnimatedModelInstanceData);
 
 /*
-*	Post-initializes this component.
-*/
-void AnimatedModelComponent::PostInitialize() NOEXCEPT
-{
-
-}
-
-/*
-*	Terminates this component.
-*/
-void AnimatedModelComponent::Terminate() NOEXCEPT
-{
-
-}
-
-NO_DISCARD bool AnimatedModelComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return false;
-}
-
-/*
 *	Preprocessed initialization data an instance.
 */
 void AnimatedModelComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

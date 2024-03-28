@@ -95,17 +95,18 @@ public:
 	/*
 	*	Post-Initializes this component.
 	*/
-	virtual void PostInitialize() NOEXCEPT = 0;
+	FORCE_INLINE virtual void PostInitialize() NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Terminates this component.
 	*/
-	virtual void Terminate() NOEXCEPT = 0;
+	FORCE_INLINE virtual void Terminate() NOEXCEPT
+	{
 
-	/*
-	*	Allocations initialization data.
-	*/
-	virtual NO_DISCARD ComponentInitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT = 0;
+	}
 
 	/*
 	*	Sets default values for initialization data.
@@ -116,14 +117,12 @@ public:
 	}
 
 	/*
-	*	Frees initialization data.
-	*/
-	virtual void FreeInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
-
-	/*
 	*	Returns if this component needs pre-processing.
 	*/
-	virtual NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT = 0;
+	FORCE_INLINE virtual NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT
+	{
+		return false;
+	}
 
 	/*
 	*	Preprocessed initialization data an instance.
@@ -360,6 +359,22 @@ private:
 	//The editable fields.
 	DynamicArray<ComponentEditableField> _EditableFields;
 
+	//////////////////////////////////////////////////////////////////////////////////////////
+	// The below functions are automatically added to a component with DECLARE_COMPONENT()! //
+	//////////////////////////////////////////////////////////////////////////////////////////
+
+public:
+
+	/*
+	*	Allocations initialization data.
+	*/
+	virtual NO_DISCARD ComponentInitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT = 0;
+
+	/*
+	*	Frees initialization data.
+	*/
+	virtual void FreeInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
+
 };
 
 /*
@@ -397,8 +412,6 @@ class ALIGN(8) COMPONENT_CLASS final : public Component																							\
 {																																				\
 public:																																			\
 	DECLARE_SINGLETON(COMPONENT_CLASS);																											\
-	void PostInitialize() NOEXCEPT override;																									\
-	void Terminate() NOEXCEPT override;																											\
 	FORCE_INLINE INITIALIZATION_DATA_CLASS *const RESTRICT AllocateDerivedInitializationData() NOEXCEPT											\
 	{																																			\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																										\
@@ -422,7 +435,6 @@ public:																																			\
 	{																																			\
 		AddComponentToAllComponents(this);																										\
 	}																																			\
-	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;																				\
 	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;											\
 	void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;		\
 	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;																	\

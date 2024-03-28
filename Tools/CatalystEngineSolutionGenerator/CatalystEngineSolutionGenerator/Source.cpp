@@ -1094,7 +1094,7 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 		std::ofstream run_code_generation_file{ "Win64\\Win64\\RunCodeGeneration.bat" };
 
 		run_code_generation_file << "cd Win64\\Win64\\" << std::endl;
-		run_code_generation_file << "\"../../../../Catalyst-Engine/Tools/Binaries/CatalystCodeGeneration_Win64.exe\"";
+		run_code_generation_file << "\"../../../../Catalyst-Engine/Tools/Binaries/CatalystEngineCodeGenerator.exe\"";
 
 		if (!general_parameters._ScriptGeneratorGameInclude.empty())
 		{
@@ -1123,11 +1123,11 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 		std::filesystem::create_directory("Win64\\Win64\\ProfileEditor", error_code); CHECK_ERROR_CODE();
 		std::filesystem::create_directory("Win64\\Win64\\Final", error_code); CHECK_ERROR_CODE();
 
-		//Copy assimp.dll.
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\assimp.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\assimp.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\assimp.dll", "Win64\\Win64\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\assimp.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		//Copy assimp-vc143-mt.dll.
+		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", "Win64\\Win64\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 		//Copy steam_api64.dll.
 		if (platform_parameters._Distribution == Win64Distribution::STEAM)
@@ -1189,7 +1189,7 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 		//Add the "RunCodeGeneration.bat" file.
 		std::ofstream run_code_generation_file{ "Win64\\Win64\\RunCodeGeneration.bat" };
 
-		run_code_generation_file << "\"../../../../Catalyst-Engine/Tools/Binaries/CatalystCodeGeneration_Win64.exe\"";
+		run_code_generation_file << "\"../../../../Catalyst-Engine/Tools/Binaries/CatalystEngineCodeGenerator.exe\"";
 
 		if (!general_parameters._ScriptGeneratorGameInclude.empty())
 		{

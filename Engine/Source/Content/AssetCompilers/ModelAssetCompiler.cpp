@@ -3,6 +3,7 @@
 
 //File.
 #include <File/Core/FileCore.h>
+#include <File/Core/BinaryFile.h>
 #include <File/Readers/FBXReader.h>
 #include <File/Utilities/TextParsingUtilities.h>
 

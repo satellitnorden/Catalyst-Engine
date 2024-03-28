@@ -1,6 +1,9 @@
 //Header file.
 #include <File/Types/ModelFile.h>
 
+//Core.
+#include <Core/Algorithms/SortingAlgorithms.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 
@@ -35,6 +38,21 @@ NO_DISCARD bool ModelFile::IsValid() const NOEXCEPT
 */
 void ModelFile::PostProcess() NOEXCEPT
 {
+	//Sort the meshes based on their name.
+	if (_Meshes.Size() > 1)
+	{
+		SortingAlgorithms::StandardSort<ModelFile::Mesh>
+		(
+			_Meshes.Begin(),
+			_Meshes.End(),
+			nullptr,
+			[](const void *const RESTRICT user_data, const ModelFile::Mesh *const RESTRICT A, const ModelFile::Mesh *const RESTRICT B)
+			{
+				return strcmp(A->_Name.Data(), B->_Name.Data()) < 0;
+			}
+		);
+	}
+
 	//Check for NaN's/invalid values.
 	for (ModelFile::Mesh &mesh : _Meshes)
 	{

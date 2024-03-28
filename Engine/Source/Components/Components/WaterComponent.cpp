@@ -19,21 +19,8 @@
 DEFINE_COMPONENT(WaterComponent, WaterInitializationData, WaterInstanceData);
 
 /*
-*	Post-initializes this component.
+*	Returns if this component needs pre-processing.
 */
-void WaterComponent::PostInitialize() NOEXCEPT
-{
-
-}
-
-/*
-*	Terminates this component.
-*/
-void WaterComponent::Terminate() NOEXCEPT
-{
-
-}
-
 NO_DISCARD bool WaterComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return true;

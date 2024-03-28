@@ -17,27 +17,6 @@
 DEFINE_COMPONENT(GrassComponent, GrassInitializationData, GrassInstanceData);
 
 /*
-*	Post-initializes this component.
-*/
-void GrassComponent::PostInitialize() NOEXCEPT
-{
-
-}
-
-/*
-*	Terminates this component.
-*/
-void GrassComponent::Terminate() NOEXCEPT
-{
-
-}
-
-NO_DISCARD bool GrassComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return false;
-}
-
-/*
 *	Preprocessed initialization data an instance.
 */
 void GrassComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

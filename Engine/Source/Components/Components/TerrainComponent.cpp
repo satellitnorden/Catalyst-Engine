@@ -20,21 +20,8 @@
 DEFINE_COMPONENT(TerrainComponent, TerrainInitializationData, TerrainInstanceData);
 
 /*
-*	Post-initializes this component.
+*	Returns if this component needs pre-processing.
 */
-void TerrainComponent::PostInitialize() NOEXCEPT
-{
-
-}
-
-/*
-*	Terminates this component.
-*/
-void TerrainComponent::Terminate() NOEXCEPT
-{
-
-}
-
 NO_DISCARD bool TerrainComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return true;

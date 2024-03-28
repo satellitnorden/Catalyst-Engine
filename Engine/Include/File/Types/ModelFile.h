@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/General/DynamicString.h>
 
 //Rendering.
 #include <Rendering/Native/Vertex.h>
@@ -30,6 +31,9 @@ public:
 	{
 
 	public:
+
+		//The name.
+		DynamicString _Name;
 
 		//The vertices.
 		DynamicArray<Vertex> _Vertices;

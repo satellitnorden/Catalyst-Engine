@@ -11,21 +11,8 @@
 DEFINE_COMPONENT(InstancedStaticModelComponent, InstancedStaticModelInitializationData, InstancedStaticModelInstanceData);
 
 /*
-*	Post-initializes this component.
+*	Returns if this component needs pre-processing.
 */
-void InstancedStaticModelComponent::PostInitialize() NOEXCEPT
-{
-
-}
-
-/*
-*	Terminates this component.
-*/
-void InstancedStaticModelComponent::Terminate() NOEXCEPT
-{
-
-}
-
 NO_DISCARD bool InstancedStaticModelComponent::NeedsPreProcessing() const NOEXCEPT
 {
 	return true;

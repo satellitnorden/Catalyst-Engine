@@ -231,14 +231,6 @@ void ParticleSystemComponent::PostInitialize() NOEXCEPT
 }
 
 /*
-*	Terminates this component.
-*/
-void ParticleSystemComponent::Terminate() NOEXCEPT
-{
-
-}
-
-/*
 *	Sets default values for initialization data.
 */
 void ParticleSystemComponent::DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
@@ -246,11 +238,6 @@ void ParticleSystemComponent::DefaultInitializationData(ComponentInitializationD
 	ParticleSystemInitializationData *const RESTRICT _initialization_data{ static_cast<ParticleSystemInitializationData *const RESTRICT>(initialization_data) };
 
 	_initialization_data->_Material = ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"));
-}
-
-NO_DISCARD bool ParticleSystemComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return false;
 }
 
 /*

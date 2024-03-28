@@ -13,27 +13,6 @@
 DEFINE_COMPONENT(InstancedImpostorComponent, InstancedImpostorInitializationData, InstancedImpostorInstanceData);
 
 /*
-*	Post-initializes this component.
-*/
-void InstancedImpostorComponent::PostInitialize() NOEXCEPT
-{
-
-}
-
-/*
-*	Terminates this component.
-*/
-void InstancedImpostorComponent::Terminate() NOEXCEPT
-{
-
-}
-
-NO_DISCARD bool InstancedImpostorComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return false;
-}
-
-/*
 *	Preprocessed initialization data an instance.
 */
 void InstancedImpostorComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

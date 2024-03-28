@@ -21,27 +21,6 @@ void WorldTransformComponent::Initialize() NOEXCEPT
 }
 
 /*
-*	Post-initializes this component.
-*/
-void WorldTransformComponent::PostInitialize() NOEXCEPT
-{
-
-}
-
-/*
-*	Terminates this component.
-*/
-void WorldTransformComponent::Terminate() NOEXCEPT
-{
-
-}
-
-NO_DISCARD bool WorldTransformComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return false;
-}
-
-/*
 *	Preprocessed initialization data an instance.
 */
 void WorldTransformComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

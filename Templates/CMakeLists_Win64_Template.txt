@@ -70,12 +70,18 @@ file(GLOB_RECURSE GAME_RENDERING_FILES ../Rendering/*.common_shader ../Rendering
 file(GLOB_RECURSE GAME_SCRIPT_FILES ../Content/Assets/*.Script)
 file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.c ../Code/Source/*.cpp  ../Code/Source/*.asm)
 
+#Add the third party include files.
+file(GLOB_RECURSE ASSIMP_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/ThirdParty/assimp/*.h ../../Catalyst-Engine/Engine/Include/ThirdParty/assimp/*.hpp)
+
 #Add the executable.
-add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES}  ${ENGINE_RENDERING_FILES} ${GAME_INCLUDE_FILES} ${GAME_RENDERING_FILES} ${GAME_SCRIPT_FILES} ${GAME_SOURCE_FILES})
+add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES}  ${ENGINE_RENDERING_FILES} ${GAME_INCLUDE_FILES} ${GAME_RENDERING_FILES} ${GAME_SCRIPT_FILES} ${GAME_SOURCE_FILES} ${ASSIMP_INCLUDE_FILES})
 
 #Set the core include paths.
 target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include)
 target_include_directories(${PROJECT_NAME} PUBLIC ../Code/Include)
+
+#Set the third party include paths.
+target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/assimp)
 
 #Set the third party include paths.
 [SET_MLPACK_INCLUDE_DIRECTORIES]
@@ -99,6 +105,11 @@ target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/libsoundwave>
 										$<$<CONFIG:Profile>:Profile/libsoundwave>
 										$<$<CONFIG:ProfileEditor>:Profile/libsoundwave>
 										$<$<CONFIG:Final>:final/libsoundwave>
+										)
+target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/assimp-vc143-mtd>
+										$<$<CONFIG:DebugEditor>:Debug/assimp-vc143-mtd>
+										$<$<CONFIG:Profile>:Profile/assimp-vc143-mt>
+										$<$<CONFIG:ProfileEditor>:Profile/assimp-vc143-mt>
 										)
 [LINK_MLPACK_LIBRARIES]
 

@@ -116,27 +116,6 @@ void CircleMarkerComponent::Initialize() NOEXCEPT
 }
 
 /*
-*	Post-initializes this component.
-*/
-void CircleMarkerComponent::PostInitialize() NOEXCEPT
-{
-
-}
-
-/*
-*	Terminates this component.
-*/
-void CircleMarkerComponent::Terminate() NOEXCEPT
-{
-
-}
-
-NO_DISCARD bool CircleMarkerComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return false;
-}
-
-/*
 *	Preprocessed initialization data an instance.
 */
 void CircleMarkerComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

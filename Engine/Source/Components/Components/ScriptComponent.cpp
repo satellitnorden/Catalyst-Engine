@@ -24,27 +24,6 @@ void ScriptComponent::Initialize() NOEXCEPT
 }
 
 /*
-*	Post-initializes this component.
-*/
-void ScriptComponent::PostInitialize() NOEXCEPT
-{
-
-}
-
-/*
-*	Terminates this component.
-*/
-void ScriptComponent::Terminate() NOEXCEPT
-{
-
-}
-
-NO_DISCARD bool ScriptComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return false;
-}
-
-/*
 *	Preprocessed initialization data an instance.
 */
 void ScriptComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

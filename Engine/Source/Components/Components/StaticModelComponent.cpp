@@ -53,22 +53,6 @@ void StaticModelComponent::Initialize() NOEXCEPT
 	);
 }
 
-/*
-*	Post-initializes this component.
-*/
-void StaticModelComponent::PostInitialize() NOEXCEPT
-{
-
-}
-
-/*
-*	Terminates this component.
-*/
-void StaticModelComponent::Terminate() NOEXCEPT
-{
-
-}
-
 void StaticModelComponent::DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	StaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<StaticModelInitializationData* const RESTRICT>(initialization_data) };
@@ -82,11 +66,6 @@ void StaticModelComponent::DefaultInitializationData(ComponentInitializationData
 	
 	_initialization_data->_CollisionType = ModelCollisionType::NONE;
 	_initialization_data->_ModelSimulationConfiguration._SimulatePhysics = false;
-}
-
-NO_DISCARD bool StaticModelComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return false;
 }
 
 /*

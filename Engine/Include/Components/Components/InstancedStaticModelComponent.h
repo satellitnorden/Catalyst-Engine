@@ -101,4 +101,17 @@ public:
 
 };
 
-DECLARE_COMPONENT(InstancedStaticModelComponent, InstancedStaticModelInitializationData, InstancedStaticModelInstanceData);
+DECLARE_COMPONENT
+(
+	InstancedStaticModelComponent,
+	InstancedStaticModelInitializationData,
+	InstancedStaticModelInstanceData,
+
+public:
+
+	/*
+	*	Returns if this component needs pre-processing.
+	*/
+	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;
+	
+);

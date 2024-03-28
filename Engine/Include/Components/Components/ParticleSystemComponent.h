@@ -201,6 +201,11 @@ public:
 	void Initialize() NOEXCEPT override;
 
 	/*
+	*	Post-initializes this component.
+	*/
+	void PostInitialize() NOEXCEPT override;
+
+	/*
 	*	Sets default values for initialization data.
 	*/
 	void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;

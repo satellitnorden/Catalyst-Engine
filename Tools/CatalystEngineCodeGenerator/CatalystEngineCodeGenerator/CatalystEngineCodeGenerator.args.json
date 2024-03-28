@@ -1,0 +1,10 @@
+{
+  "FileVersion": 2,
+  "Id": "46758416-704c-43e8-bbb4-6d14cb4e61cb",
+  "Items": [
+    {
+      "Id": "6a10665e-6c6e-4712-ad1b-98e219887e50",
+      "Command": "-script_generator_game_include ClairvoyantScripting/ClairvoyantScriptNodes.h"
+    }
+  ]
+}

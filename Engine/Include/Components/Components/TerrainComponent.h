@@ -175,4 +175,17 @@ public:
 
 };
 
-DECLARE_COMPONENT(TerrainComponent, TerrainInitializationData, TerrainInstanceData);
+DECLARE_COMPONENT
+(
+	TerrainComponent,
+	TerrainInitializationData,
+	TerrainInstanceData,
+
+public:
+
+	/*
+	*	Returns if this component needs pre-processing.
+	*/
+	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;
+
+);
