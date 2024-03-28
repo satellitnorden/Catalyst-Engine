@@ -208,3 +208,37 @@ inline uint64 ParseSpaceSeparatedArguments
 
 	return current_argument_index + 1;
 }
+
+/*
+*	A set of utilities for text parsing.
+*/
+namespace TextParsing
+{
+
+	/*
+	*	Returns the next non-whitespace character from the given start position in the given string.
+	*/
+	inline void GetNextNonWhitespaceCharacter(const char *const string, const uint64 start_position, char *const character, uint64 *const position)
+	{
+		uint64 current_position{ start_position + 1 };
+
+		while (string[current_position])
+		{
+			if (IsWhitespace(string[current_position]))
+			{
+				++current_position;
+
+				continue;
+			}
+
+			else
+			{
+				*character = string[current_position];
+				*position = current_position;
+
+				return;
+			}
+		}
+	}
+
+}

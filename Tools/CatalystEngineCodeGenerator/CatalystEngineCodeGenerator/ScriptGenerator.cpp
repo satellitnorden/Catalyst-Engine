@@ -203,6 +203,18 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 		//The variables.
 		std::vector<std::string> _Variables;
 
+		//The function names.
+		std::vector<std::string> _FunctionNames;
+
+		/*
+		*	Clears the intermediate data.
+		*/
+		inline void Clear()
+		{
+			_Variables.clear();
+			_FunctionNames.clear();
+		}
+
 	};
 
 	//Set up the intermediate data.
@@ -263,7 +275,7 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 	for (ScriptData &script_data : _ScriptData)
 	{
 		//Clear the intermediate data.
-		intermediate_data._Variables.clear();
+		intermediate_data.Clear();
 
 		//Add the namespace into the source file.
 		file << "namespace " << script_data._Name.c_str() << std::endl;
@@ -475,6 +487,9 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 						script_data._Flags |= SCRIPT_DATA_FLAG_HAS_TERMINATE;
 					}
 
+					//Add the function name.
+					intermediate_data._FunctionNames.emplace_back(arguments[1].c_str());
+
 					continue;
 				}
 			}
@@ -561,6 +576,78 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 
 					//Replace the call in the current line.
 					current_line.replace(start_position, end_position - start_position + 1, modified_call);
+				}
+			}
+
+			//Recursively modify function calls to insert the script context at the start.
+			{
+				bool modified_function_call{ true };
+
+				while (modified_function_call)
+				{
+					//Reset whether or not we modified a function call here, otherwise we'll loop indefinitely.
+					modified_function_call = false;
+
+					//Search for one of the function names.
+					for (const std::string &function_name : intermediate_data._FunctionNames)
+					{
+						const size_t position{ current_line.find(function_name) };
+
+						if (position != std::string::npos)
+						{
+							//Search forward in the string.
+							uint64 current_position{ position + function_name.length() - 1 };
+
+							//Check if the next character is the start parantheses.
+							char next_character;
+							uint64 next_character_position;
+
+							TextParsing::GetNextNonWhitespaceCharacter(current_line.c_str(), current_position, &next_character, &next_character_position);
+
+							//If the next non-whitespace character is not the start parantheses, then... It must not be an actual function call. :x
+							if (next_character != '(')
+							{
+								continue;
+							}
+
+							//Update the current position.
+							current_position = next_character_position;
+
+							//Now check if the next character is the end parantheses.
+							TextParsing::GetNextNonWhitespaceCharacter(current_line.c_str(), current_position, &next_character, &next_character_position);
+
+							if (next_character == ')')
+							{
+								//Insert the script context now!
+								current_line.insert(next_character_position, "script_context");
+
+								//We did modify the function call!
+								modified_function_call = true;
+							}
+
+							else
+							{
+								//Check if we have already added the script context.
+								const std::string compare_string{ "script_context" };
+
+								bool already_added_script_context{ true };
+
+								for (uint64 i{ 0 }; i < std::min(current_line.length() - next_character_position, compare_string.length()) && already_added_script_context; ++i)
+								{
+									already_added_script_context = current_line[next_character_position + i] == compare_string[i];
+								}
+
+								if (!already_added_script_context)
+								{
+									//Insert the script context now!
+									current_line.insert(next_character_position, "script_context");
+
+									//We did modify the function call!
+									modified_function_call = true;
+								}
+							}
+						}
+					}
 				}
 			}
 
