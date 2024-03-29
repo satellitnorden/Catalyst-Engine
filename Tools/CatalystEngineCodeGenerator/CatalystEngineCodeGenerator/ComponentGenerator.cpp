@@ -11,6 +11,28 @@
 #define GAME_CODE_SOURCE_DIRECTORY "..\\..\\..\\Code\\Source"
 
 /*
+*	Component serial update class definition.
+*/
+class ComponentSerialUpdate final
+{
+
+public:
+
+	//The component name.
+	std::string _ComponentName;
+
+	//The befores.
+	std::vector<std::string> _Befores;
+
+	//The afters.
+	std::vector<std::string> _Afters;
+
+	//The sort value.
+	uint32 _SortValue{ UINT_MAX / 2 };
+
+};
+
+/*
 *	Component data class definition.
 */
 class ComponentData final
@@ -264,6 +286,84 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 			}
 		}
 
+		//Check if this component wants a serial update.
+		{
+			const size_t position{ current_line.find("COMPONENT_SERIAL_UPDATE(") };
+
+			if (position != std::string::npos)
+			{
+				//Parse the function arguments.
+				std::array<std::string, 8> arguments;
+
+				const uint64 number_of_arguments
+				{
+					TextParsing::ParseFunctionArguments
+					(
+						current_line.c_str(),
+						current_line.length(),
+						arguments.data()
+					)
+				};
+
+				nlohmann::json &serial_updates_entry{ component_entry["SerialUpdates"] };
+				nlohmann::json &serial_update_entry{ serial_updates_entry[arguments[0].c_str()] };
+
+				//Check if there's any befores/afters.
+				for (uint64 argument_index{ 1 }; argument_index < number_of_arguments; ++argument_index)
+				{
+					{
+						const size_t position{ arguments[argument_index].find("Before(") };
+
+						if (position != std::string::npos)
+						{
+							std::array<std::string, 1> sub_arguments;
+
+							const uint64 number_of_sub_arguments
+							{
+								TextParsing::ParseFunctionArguments
+								(
+									arguments[argument_index].c_str(),
+									arguments[argument_index].length(),
+									sub_arguments.data()
+								)
+							};
+
+							nlohmann::json &befores_entry{ serial_update_entry["Befores"] };
+							nlohmann::json &before_entry{ befores_entry[sub_arguments[0].c_str()] };
+
+							continue;
+						}
+					}
+
+					{
+						const size_t position{ arguments[argument_index].find("After(") };
+
+						if (position != std::string::npos)
+						{
+							std::array<std::string, 1> sub_arguments;
+
+							const uint64 number_of_sub_arguments
+							{
+								TextParsing::ParseFunctionArguments
+								(
+									arguments[argument_index].c_str(),
+									arguments[argument_index].length(),
+									sub_arguments.data()
+								)
+							};
+
+							nlohmann::json &afters_entry{ serial_update_entry["Afters"] };
+							nlohmann::json &after_entry{ afters_entry[sub_arguments[0].c_str()] };
+
+							continue;
+						}
+					}
+				}
+
+				continue;
+			}
+		}
+
 		//Check if this component wants an "Terminate()" call.
 		{
 			const size_t position{ current_line.find("COMPONENT_TERMINATE(") };
@@ -304,6 +404,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	//Add all component data.
 	std::vector<ComponentData> component_data;
+	std::map<std::string, std::vector<ComponentSerialUpdate>> serial_updates;
 
 	for (auto file_iterator{ JSON.begin() }; file_iterator != JSON.end(); ++file_iterator)
 	{
@@ -343,10 +444,96 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this component wants a "Terminate()" call.
 				new_component_data._Terminate = component_entry["Terminate"];
+
+				//Check if this component wants any serial updates.
+				if (component_entry.contains("SerialUpdates"))
+				{
+					const nlohmann::json &serial_updates_entry{ component_entry["SerialUpdates"] };
+
+					for (auto serial_update_iterator{ serial_updates_entry.begin() }; serial_update_iterator != serial_updates_entry.end(); ++serial_update_iterator)
+					{
+						const nlohmann::json &serial_update_entry{ *serial_update_iterator };
+
+						ComponentSerialUpdate &new_serial_update{ serial_updates[serial_update_iterator.key()].emplace_back() };
+
+						new_serial_update._ComponentName = new_component_data._Name;
+
+						if (serial_update_entry.contains("Befores"))
+						{
+							const nlohmann::json &befores_entry{ serial_update_entry["Befores"] };
+
+							for (auto before_iterator{ befores_entry.begin() }; before_iterator != befores_entry.end(); ++before_iterator)
+							{
+								new_serial_update._Befores.emplace_back(before_iterator.key());
+							}
+						}
+
+						if (serial_update_entry.contains("Afters"))
+						{
+							const nlohmann::json &afters_entry{ serial_update_entry["Afters"] };
+
+							for (auto after_iterator{ afters_entry.begin() }; after_iterator != afters_entry.end(); ++after_iterator)
+							{
+								new_serial_update._Afters.emplace_back(after_iterator.key());
+							}
+						}
+					}
+				}
 			}
 		}
 
 		file << std::endl;
+	}
+
+	//Try to satisfy befores/afters for all updates.
+	for (std::pair<const std::string, std::vector<ComponentSerialUpdate>> &serial_update : serial_updates)
+	{
+		for (ComponentSerialUpdate &update : serial_update.second)
+		{
+			//Try to satisfy any befores.
+			for (const std::string &before : update._Befores)
+			{
+				for (ComponentSerialUpdate &sub_update : serial_update.second)
+				{
+					if (before == sub_update._ComponentName)
+					{
+						if (update._SortValue >= sub_update._SortValue)
+						{
+							update._SortValue = sub_update._SortValue - 1;
+						}
+
+						break;
+					}
+				}
+			}
+
+			//Try to satisfy any afters.
+			for (const std::string &after : update._Afters)
+			{
+				for (ComponentSerialUpdate &sub_update : serial_update.second)
+				{
+					if (after == sub_update._ComponentName)
+					{
+						if (update._SortValue <= sub_update._SortValue)
+						{
+							update._SortValue = sub_update._SortValue + 1;
+						}
+
+						break;
+					}
+				}
+			}
+		}
+
+		//Sort the list now based on the sort value.
+		std::sort
+		(
+			serial_update.second.begin(),
+			serial_update.second.end(),[](const ComponentSerialUpdate &A, const ComponentSerialUpdate &B)
+			{
+				return A._SortValue < B._SortValue;
+			}
+		);
 	}
 
 	//Set up the "Components::Size" function.
@@ -408,6 +595,32 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		}
 	}
 
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::Update()" function.
+	file << "void Components::Update(const UpdatePhase update_phase) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	file << "\t//Do serial updates." << std::endl;
+	file << "\tswitch (update_phase)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (const std::pair<std::string, std::vector<ComponentSerialUpdate>> &serial_update : serial_updates)
+	{
+		file << "\t\tcase " << serial_update.first.c_str() << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+
+		for (const ComponentSerialUpdate &_serial_update : serial_update.second)
+		{
+			file << "\t\t\t" << _serial_update._ComponentName.c_str() << "::Instance->SerialUpdate(update_phase);" << std::endl;
+		}
+
+		file << "\t\t\tbreak;" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
+	file << "\t}" << std::endl;
 	file << "}" << std::endl;
 	file << std::endl;
 

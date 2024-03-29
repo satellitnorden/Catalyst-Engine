@@ -111,14 +111,6 @@ void ScriptComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const
 }
 
 /*
-*	Runs before the given update phase.
-*/
-void ScriptComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
-}
-
-/*
 *	Updates this component.
 */
 void ScriptComponent::Update
@@ -161,14 +153,6 @@ void ScriptComponent::Update
 			break;
 		}
 	}
-}
-
-/*
-*	Runs after the given update phase.
-*/
-void ScriptComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
 }
 
 /*

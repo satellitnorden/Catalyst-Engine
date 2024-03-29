@@ -289,14 +289,6 @@ void ParticleSystemComponent::GetUpdateConfiguration(ComponentUpdateConfiguratio
 }
 
 /*
-*	Runs before the given update phase.
-*/
-void ParticleSystemComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
-}
-
-/*
 *	Updates this component.
 */
 void ParticleSystemComponent::Update

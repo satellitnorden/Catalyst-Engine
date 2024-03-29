@@ -160,14 +160,6 @@ void CircleMarkerComponent::GetUpdateConfiguration(ComponentUpdateConfiguration 
 }
 
 /*
-*	Runs before the given update phase.
-*/
-void CircleMarkerComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
-}
-
-/*
 *	Updates this component.
 */
 void CircleMarkerComponent::Update
@@ -181,12 +173,4 @@ void CircleMarkerComponent::Update
 	PROFILING_SCOPE("CircleMarkerComponent::Update");
 
 	ASSERT(false, "This does not need to be updated. (:");
-}
-
-/*
-*	Runs after the given update phase.
-*/
-void CircleMarkerComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
 }

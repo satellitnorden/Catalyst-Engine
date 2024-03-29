@@ -141,14 +141,6 @@ void WaterComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const 
 }
 
 /*
-*	Runs before the given update phase.
-*/
-void WaterComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
-}
-
-/*
 *	Checks combination of a node.
 */
 void CheckCombination(WaterInstanceData &instance_data, const Vector3<float32> &camera_position, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
@@ -478,12 +470,4 @@ void WaterComponent::Update
 			break;
 		}
 	}
-}
-
-/*
-*	Runs after the given update phase.
-*/
-void WaterComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
 }

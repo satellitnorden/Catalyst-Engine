@@ -57,14 +57,6 @@ void WorldTransformComponent::GetUpdateConfiguration(ComponentUpdateConfiguratio
 }
 
 /*
-*	Runs before the given update phase.
-*/
-void WorldTransformComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
-}
-
-/*
 *	Updates this component.
 */
 void WorldTransformComponent::Update
@@ -101,12 +93,4 @@ void WorldTransformComponent::Update
 			break;
 		}
 	}
-}
-
-/*
-*	Runs after the given update phase.
-*/
-void WorldTransformComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
 }

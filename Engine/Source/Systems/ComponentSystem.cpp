@@ -130,7 +130,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 */
 void ComponentSystem::PostInitialize() NOEXCEPT
 {
-	//Post-initialize all components.
+	//Post-initialize components.
 	Components::PostInitialize();
 }
 
@@ -139,7 +139,7 @@ void ComponentSystem::PostInitialize() NOEXCEPT
 */
 void ComponentSystem::Terminate() NOEXCEPT
 {
-	//Terminate all components.
+	//Terminate components.
 	Components::Terminate();
 }
 
@@ -150,22 +150,6 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 {
 	//Gather the update data.
 	_UpdateData.Clear();
-
-	//Run the pre update.
-	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
-	{
-		//Cache the component.
-		Component *const RESTRICT component{ Components::At(component_index) };
-
-		ComponentUpdateConfiguration update_configuration;
-
-		component->GetUpdateConfiguration(&update_configuration);
-
-		if (TEST_BIT(update_configuration._UpdatePhaseMask, update_phase))
-		{
-			component->PreUpdate(update_phase);
-		}
-	}
 
 	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 	{
@@ -253,6 +237,9 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 		
 		TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &update_data._Task);
 	}
+
+	//Update components.
+	Components::Update(update_phase);
 
 	//Do work until all tasks are finished.
 	bool all_done{ _UpdateData.Empty() };

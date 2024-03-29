@@ -209,6 +209,11 @@ public:
 	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;
 
 	/*
+	*	Runs after the given update phase.
+	*/
+	void PostUpdate(const UpdatePhase update_phase) NOEXCEPT override;
+
+	/*
 	*	Callback for after an editable field change happens.
 	*/
 	void PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;

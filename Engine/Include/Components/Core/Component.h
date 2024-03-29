@@ -162,11 +162,6 @@ public:
 	virtual void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT = 0;
 
 	/*
-	*	Runs before the given update phase.
-	*/
-	virtual void PreUpdate(const UpdatePhase update_phase) NOEXCEPT = 0;
-
-	/*
 	*	Updates this component.
 	*/
 	virtual void Update
@@ -180,7 +175,10 @@ public:
 	/*
 	*	Runs after the given update phase.
 	*/
-	virtual void PostUpdate(const UpdatePhase update_phase) NOEXCEPT = 0;
+	FORCE_INLINE virtual void PostUpdate(const UpdatePhase update_phase) NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Returns the editable field data.
@@ -410,6 +408,11 @@ public:
 	static void PostInitialize() NOEXCEPT;
 
 	/*
+	*	Updates components during the specific update phase.
+	*/
+	static void Update(const UpdatePhase update_phase) NOEXCEPT;
+
+	/*
 	*	Terminates components.
 	*/
 	static void Terminate() NOEXCEPT;
@@ -429,6 +432,14 @@ public:								\
 #define COMPONENT_POST_INITIALIZE()	\
 public:								\
 	void PostInitialize() NOEXCEPT;
+
+/*
+*	Put this in your component declaration and implement it to receive a "SerialUpdate()" call during the specified update phase.
+*	Can optionally add "Before(X)" or "After(X)" to control ordering of updates.
+*/
+#define COMPONENT_SERIAL_UPDATE(UPDATE_PHASE, ...)				\
+public:															\
+	void SerialUpdate(const UpdatePhase update_phase) NOEXCEPT;
 
 /*
 *	Put this in your component declaration and implement it to receive a "Terminate()" call.
@@ -484,7 +495,6 @@ public:																																			\
 		return _InstanceData[EntityToInstance(entity)];																							\
 	}																																			\
 	void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT override;							\
-	void PreUpdate(const UpdatePhase update_phase) NOEXCEPT override;																			\
 	void Update																																	\
 	(																																			\
 		const UpdatePhase update_phase,																											\
@@ -492,7 +502,6 @@ public:																																			\
 		const uint64 end_instance_index,																										\
 		const uint64 sub_instance_index																											\
 	) NOEXCEPT override;																														\
-	void PostUpdate(const UpdatePhase update_phase) NOEXCEPT override;																			\
 	FORCE_INLINE void RemoveInstance(Entity *const RESTRICT entity) NOEXCEPT																	\
 	{																																			\
 		const uint64 instance_index{ _EntityToInstanceMappings[entity->_EntityIdentifier] };													\

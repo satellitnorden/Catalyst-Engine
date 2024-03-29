@@ -72,14 +72,6 @@ void LightComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const 
 }
 
 /*
-*	Runs before the given update phase.
-*/
-void LightComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
-}
-
-/*
 *	Updates this component.
 */
 void LightComponent::Update
@@ -103,12 +95,4 @@ void LightComponent::Update
 		}
 	}
 	*/
-}
-
-/*
-*	Runs after the given update phase.
-*/
-void LightComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
 }

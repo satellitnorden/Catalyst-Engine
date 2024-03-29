@@ -166,14 +166,6 @@ void StaticModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *
 }
 
 /*
-*	Runs before the given update phase.
-*/
-void StaticModelComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
-}
-
-/*
 *	Updates this component.
 */
 void StaticModelComponent::Update
@@ -316,14 +308,6 @@ void StaticModelComponent::Update
 			break;
 		}
 	}
-}
-
-/*
-*	Runs after the given update phase.
-*/
-void StaticModelComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
 }
 
 void StaticModelComponent::PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
