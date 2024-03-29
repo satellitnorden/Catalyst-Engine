@@ -114,4 +114,9 @@ public:
 	*/
 	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;
 	
+	/*
+	*	Preprocessed initialization data an instance.
+	*/
+	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
+
 );

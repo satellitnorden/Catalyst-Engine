@@ -24,14 +24,6 @@ void ScriptComponent::Initialize() NOEXCEPT
 }
 
 /*
-*	Preprocessed initialization data an instance.
-*/
-void ScriptComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-{
-
-}
-
-/*
 *	Creates an instance.
 */
 void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

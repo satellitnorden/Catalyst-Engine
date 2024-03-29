@@ -241,14 +241,6 @@ void ParticleSystemComponent::DefaultInitializationData(ComponentInitializationD
 }
 
 /*
-*	Preprocessed initialization data an instance.
-*/
-void ParticleSystemComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-{
-
-}
-
-/*
 *	Creates an instance.
 */
 void ParticleSystemComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

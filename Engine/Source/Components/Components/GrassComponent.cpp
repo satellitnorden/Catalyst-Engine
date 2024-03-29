@@ -17,14 +17,6 @@
 DEFINE_COMPONENT(GrassComponent, GrassInitializationData, GrassInstanceData);
 
 /*
-*	Preprocessed initialization data an instance.
-*/
-void GrassComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-{
-
-}
-
-/*
 *	Creates an instance.
 */
 void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

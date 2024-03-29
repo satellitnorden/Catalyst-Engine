@@ -116,14 +116,6 @@ void CircleMarkerComponent::Initialize() NOEXCEPT
 }
 
 /*
-*	Preprocessed initialization data an instance.
-*/
-void CircleMarkerComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-{
-
-}
-
-/*
 *	Creates an instance.
 */
 void CircleMarkerComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

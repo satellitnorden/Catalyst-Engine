@@ -13,14 +13,6 @@
 DEFINE_COMPONENT(InstancedImpostorComponent, InstancedImpostorInitializationData, InstancedImpostorInstanceData);
 
 /*
-*	Preprocessed initialization data an instance.
-*/
-void InstancedImpostorComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-{
-
-}
-
-/*
 *	Creates an instance.
 */
 void InstancedImpostorComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

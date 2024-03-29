@@ -21,14 +21,6 @@ void WorldTransformComponent::Initialize() NOEXCEPT
 }
 
 /*
-*	Preprocessed initialization data an instance.
-*/
-void WorldTransformComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-{
-
-}
-
-/*
 *	Creates an instance.
 */
 void WorldTransformComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

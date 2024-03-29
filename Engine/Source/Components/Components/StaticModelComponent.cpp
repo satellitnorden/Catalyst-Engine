@@ -69,14 +69,6 @@ void StaticModelComponent::DefaultInitializationData(ComponentInitializationData
 }
 
 /*
-*	Preprocessed initialization data an instance.
-*/
-void StaticModelComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-{
-
-}
-
-/*
 *	Creates an instance.
 */
 void StaticModelComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT

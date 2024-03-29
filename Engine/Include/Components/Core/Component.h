@@ -127,7 +127,10 @@ public:
 	/*
 	*	Preprocessed initialization data an instance.
 	*/
-	virtual void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
+	FORCE_INLINE virtual void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Runs before an instance is created.
@@ -435,7 +438,6 @@ public:																																			\
 	{																																			\
 		AddComponentToAllComponents(this);																										\
 	}																																			\
-	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;											\
 	void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;		\
 	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;																	\
 	void DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT override;																		\

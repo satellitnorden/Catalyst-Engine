@@ -16,14 +16,6 @@ void LightComponent::DefaultInitializationData(ComponentInitializationData *cons
 }
 
 /*
-*	Preprocessed initialization data an instance.
-*/
-void LightComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-{
-
-}
-
-/*
 *	Creates an instance.
 */
 void LightComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
