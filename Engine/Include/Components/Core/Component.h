@@ -442,6 +442,15 @@ public:															\
 	void SerialUpdate(const UpdatePhase update_phase) NOEXCEPT;
 
 /*
+*	Put this in your component declaration and implement it to receive a "ParallelBatchUpdate()" call during the specified update phase.
+*	Needs to specify the batch size.
+*	Can optionally add "Before(X)" or "After(X)" to control ordering of updates.
+*/
+#define COMPONENT_PARALLEL_BATCH_UPDATE(UPDATE_PHASE, BATCH_SIZE, ...)																		\
+public:																																		\
+	void ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT;
+
+/*
 *	Put this in your component declaration and implement it to receive a "Terminate()" call.
 */
 #define COMPONENT_TERMINATE()	\

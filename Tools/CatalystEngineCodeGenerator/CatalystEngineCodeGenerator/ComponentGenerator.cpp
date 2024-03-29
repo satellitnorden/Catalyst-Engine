@@ -11,9 +11,9 @@
 #define GAME_CODE_SOURCE_DIRECTORY "..\\..\\..\\Code\\Source"
 
 /*
-*	Component serial update class definition.
+*	Component update class definition.
 */
-class ComponentSerialUpdate final
+class ComponentUpdate final
 {
 
 public:
@@ -29,6 +29,9 @@ public:
 
 	//The sort value.
 	uint32 _SortValue{ UINT_MAX / 2 };
+
+	//The batch size. Only relevant for parallel batch updates.
+	uint64 _BatchSize;
 
 };
 
@@ -90,11 +93,9 @@ void ComponentGenerator::Run()
 	}
 
 	//Write the JSON to file.
-#if defined(NDEBUG)
 	std::ofstream file{ "..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json" };
 	file << std::setw(4) << JSON;
 	file.close();
-#endif
 }
 
 /*
@@ -364,6 +365,88 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 			}
 		}
 
+		//Check if this component wants a parallel batch update.
+		{
+			const size_t position{ current_line.find("COMPONENT_PARALLEL_BATCH_UPDATE(") };
+
+			if (position != std::string::npos)
+			{
+				//Parse the function arguments.
+				std::array<std::string, 8> arguments;
+
+				const uint64 number_of_arguments
+				{
+					TextParsing::ParseFunctionArguments
+					(
+						current_line.c_str(),
+						current_line.length(),
+						arguments.data()
+					)
+				};
+
+				nlohmann::json &parallel_batch_updates_entry{ component_entry["ParallelBatchUpdates"] };
+				nlohmann::json &parallel_batch_update_entry{ parallel_batch_updates_entry[arguments[0].c_str()] };
+
+				//Write the batch size.
+				const uint64 batch_size{ std::stoull(arguments[1].c_str()) };
+				parallel_batch_update_entry["BatchSize"] = batch_size;
+
+				//Check if there's any befores/afters.
+				for (uint64 argument_index{ 1 }; argument_index < number_of_arguments; ++argument_index)
+				{
+					{
+						const size_t position{ arguments[argument_index].find("Before(") };
+
+						if (position != std::string::npos)
+						{
+							std::array<std::string, 1> sub_arguments;
+
+							const uint64 number_of_sub_arguments
+							{
+								TextParsing::ParseFunctionArguments
+								(
+									arguments[argument_index].c_str(),
+									arguments[argument_index].length(),
+									sub_arguments.data()
+								)
+							};
+
+							nlohmann::json &befores_entry{ parallel_batch_update_entry["Befores"] };
+							nlohmann::json &before_entry{ befores_entry[sub_arguments[0].c_str()] };
+
+							continue;
+						}
+					}
+
+					{
+						const size_t position{ arguments[argument_index].find("After(") };
+
+						if (position != std::string::npos)
+						{
+							std::array<std::string, 1> sub_arguments;
+
+							const uint64 number_of_sub_arguments
+							{
+								TextParsing::ParseFunctionArguments
+								(
+									arguments[argument_index].c_str(),
+									arguments[argument_index].length(),
+									sub_arguments.data()
+								)
+							};
+
+							nlohmann::json &afters_entry{ parallel_batch_update_entry["Afters"] };
+							nlohmann::json &after_entry{ afters_entry[sub_arguments[0].c_str()] };
+
+							continue;
+						}
+					}
+				}
+
+				continue;
+			}
+		}
+
 		//Check if this component wants an "Terminate()" call.
 		{
 			const size_t position{ current_line.find("COMPONENT_TERMINATE(") };
@@ -402,9 +485,45 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "#include <Components/Core/Component.h>" << std::endl;
 	file << std::endl;
 
+	file << "//Systems." << std::endl;
+	file << "#include <Systems/TaskSystem.h>" << std::endl;
+	file << std::endl;
+
+	//Add the "BatchUpdate" class definition.
+	file << "/*" << std::endl;
+	file << "*\tParallel batch update class definition." << std::endl;
+	file << "*/" << std::endl;
+
+	file << "class ParallelBatchUpdate final" << std::endl;
+	file << "{" << std::endl;
+	file << std::endl;
+	file << "public:" << std::endl;
+	file << std::endl;
+
+	file << "\t//The task." << std::endl;
+	file << "\tTask _Task;" << std::endl;
+	file << std::endl;
+
+	file << "\t//The start instance index." << std::endl;
+	file << "\tuint64 _StartInstanceIndex;" << std::endl;
+	file << std::endl;
+
+	file << "\t//The end instance index." << std::endl;
+	file << "\tuint64 _EndInstanceIndex;" << std::endl;
+	file << std::endl;
+
+	file << "};" << std::endl;
+	file << std::endl;
+
+	//Add the parallel batch updates container.
+	file << "//Container for all parallel batch updates." << std::endl;
+	file << "DynamicArray<ParallelBatchUpdate> PARALLEL_BATCH_UPDATES;" << std::endl;
+	file << std::endl;
+
 	//Add all component data.
 	std::vector<ComponentData> component_data;
-	std::map<std::string, std::vector<ComponentSerialUpdate>> serial_updates;
+	std::map<std::string, std::vector<ComponentUpdate>> serial_updates;
+	std::map<std::string, std::vector<ComponentUpdate>> parallel_batch_updates;
 
 	for (auto file_iterator{ JSON.begin() }; file_iterator != JSON.end(); ++file_iterator)
 	{
@@ -454,9 +573,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 					{
 						const nlohmann::json &serial_update_entry{ *serial_update_iterator };
 
-						ComponentSerialUpdate &new_serial_update{ serial_updates[serial_update_iterator.key()].emplace_back() };
+						ComponentUpdate &new_update{ serial_updates[serial_update_iterator.key()].emplace_back() };
 
-						new_serial_update._ComponentName = new_component_data._Name;
+						new_update._ComponentName = new_component_data._Name;
 
 						if (serial_update_entry.contains("Befores"))
 						{
@@ -464,7 +583,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 							for (auto before_iterator{ befores_entry.begin() }; before_iterator != befores_entry.end(); ++before_iterator)
 							{
-								new_serial_update._Befores.emplace_back(before_iterator.key());
+								new_update._Befores.emplace_back(before_iterator.key());
 							}
 						}
 
@@ -474,9 +593,46 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 							for (auto after_iterator{ afters_entry.begin() }; after_iterator != afters_entry.end(); ++after_iterator)
 							{
-								new_serial_update._Afters.emplace_back(after_iterator.key());
+								new_update._Afters.emplace_back(after_iterator.key());
 							}
 						}
+					}
+				}
+
+				//Check if this component wants any parallel batch updates.
+				if (component_entry.contains("ParallelBatchUpdates"))
+				{
+					const nlohmann::json &parallel_batch_updates_entry{ component_entry["ParallelBatchUpdates"] };
+
+					for (auto parallel_batch_update_iterator{ parallel_batch_updates_entry.begin() }; parallel_batch_update_iterator != parallel_batch_updates_entry.end(); ++parallel_batch_update_iterator)
+					{
+						const nlohmann::json &parallel_batch_update_entry{ *parallel_batch_update_iterator };
+
+						ComponentUpdate &new_update{ parallel_batch_updates[parallel_batch_update_iterator.key()].emplace_back() };
+
+						new_update._ComponentName = new_component_data._Name;
+
+						if (parallel_batch_update_entry.contains("Befores"))
+						{
+							const nlohmann::json &befores_entry{ parallel_batch_update_entry["Befores"] };
+
+							for (auto before_iterator{ befores_entry.begin() }; before_iterator != befores_entry.end(); ++before_iterator)
+							{
+								new_update._Befores.emplace_back(before_iterator.key());
+							}
+						}
+
+						if (parallel_batch_update_entry.contains("Afters"))
+						{
+							const nlohmann::json &afters_entry{ parallel_batch_update_entry["Afters"] };
+
+							for (auto after_iterator{ afters_entry.begin() }; after_iterator != afters_entry.end(); ++after_iterator)
+							{
+								new_update._Afters.emplace_back(after_iterator.key());
+							}
+						}
+
+						new_update._BatchSize = parallel_batch_update_entry["BatchSize"];
 					}
 				}
 			}
@@ -486,56 +642,65 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	}
 
 	//Try to satisfy befores/afters for all updates.
-	for (std::pair<const std::string, std::vector<ComponentSerialUpdate>> &serial_update : serial_updates)
+	const auto BEFORE_AFTER_SORT
 	{
-		for (ComponentSerialUpdate &update : serial_update.second)
+		[](std::map<std::string, std::vector<ComponentUpdate>> &updates)
 		{
-			//Try to satisfy any befores.
-			for (const std::string &before : update._Befores)
+			for (std::pair<const std::string, std::vector<ComponentUpdate>> &update : updates)
 			{
-				for (ComponentSerialUpdate &sub_update : serial_update.second)
+				for (ComponentUpdate &_update : update.second)
 				{
-					if (before == sub_update._ComponentName)
+					//Try to satisfy any befores.
+					for (const std::string &before : _update._Befores)
 					{
-						if (update._SortValue >= sub_update._SortValue)
+						for (ComponentUpdate &sub_update : update.second)
 						{
-							update._SortValue = sub_update._SortValue - 1;
-						}
+							if (before == sub_update._ComponentName)
+							{
+								if (_update._SortValue >= sub_update._SortValue)
+								{
+									_update._SortValue = sub_update._SortValue - 1;
+								}
 
-						break;
+								break;
+							}
+						}
+					}
+
+					//Try to satisfy any afters.
+					for (const std::string &after : _update._Afters)
+					{
+						for (ComponentUpdate &sub_update : update.second)
+						{
+							if (after == sub_update._ComponentName)
+							{
+								if (_update._SortValue <= sub_update._SortValue)
+								{
+									_update._SortValue = sub_update._SortValue + 1;
+								}
+
+								break;
+							}
+						}
 					}
 				}
-			}
 
-			//Try to satisfy any afters.
-			for (const std::string &after : update._Afters)
-			{
-				for (ComponentSerialUpdate &sub_update : serial_update.second)
-				{
-					if (after == sub_update._ComponentName)
+				//Sort the list now based on the sort value.
+				std::sort
+				(
+					update.second.begin(),
+					update.second.end(),
+					[](const ComponentUpdate &A, const ComponentUpdate &B)
 					{
-						if (update._SortValue <= sub_update._SortValue)
-						{
-							update._SortValue = sub_update._SortValue + 1;
-						}
-
-						break;
+						return A._SortValue < B._SortValue;
 					}
-				}
+				);
 			}
 		}
+	};
 
-		//Sort the list now based on the sort value.
-		std::sort
-		(
-			serial_update.second.begin(),
-			serial_update.second.end(),
-			[](const ComponentSerialUpdate &A, const ComponentSerialUpdate &B)
-			{
-				return A._SortValue < B._SortValue;
-			}
-		);
-	}
+	BEFORE_AFTER_SORT(serial_updates);
+	BEFORE_AFTER_SORT(parallel_batch_updates);
 
 	//Set up the "Components::Size" function.
 	file << "NO_DISCARD uint64 Components::Size() NOEXCEPT" << std::endl;
@@ -603,18 +768,67 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "void Components::Update(const UpdatePhase update_phase) NOEXCEPT" << std::endl;
 	file << "{" << std::endl;
 
+	//Execute parallel batch updates.
+	file << "\t//Execute parallel batch updates." << std::endl;
+	file << "\t{" << std::endl;
+	file << "\t\tPARALLEL_BATCH_UPDATES.Clear();" << std::endl;
+	file << "\t\tswitch (update_phase)" << std::endl;
+	file << "\t\t{" << std::endl;
+
+	for (const std::pair<std::string, std::vector<ComponentUpdate>> &parallel_batch_update : parallel_batch_updates)
+	{
+		file << "\t\t\tcase " << parallel_batch_update.first.c_str() << ":" << std::endl;
+		file << "\t\t\t{" << std::endl;
+
+		for (const ComponentUpdate &update : parallel_batch_update.second)
+		{
+			file << "\t\t\t\t{" << std::endl;
+			file << "\t\t\t\t\tconst uint64 number_of_instances{ " << update._ComponentName.c_str() << "::Instance->NumberOfInstances() };" << std::endl;
+			file << "\t\t\t\t\tfor (uint64 batch_start_index{ 0 }; batch_start_index < number_of_instances; batch_start_index += " << update._BatchSize << ")" << std::endl;
+			file << "\t\t\t\t\t{" << std::endl;
+			file << "\t\t\t\t\t\tPARALLEL_BATCH_UPDATES.Emplace();" << std::endl;
+			file << "\t\t\t\t\t\tParallelBatchUpdate &parallel_batch_update{ PARALLEL_BATCH_UPDATES.Back() };" << std::endl;
+			file << "\t\t\t\t\t\tparallel_batch_update._Task._Function = [](void *const RESTRICT arguments)" << std::endl;
+			file << "\t\t\t\t\t\t{" << std::endl;
+			file << "\t\t\t\t\t\t\tParallelBatchUpdate *const RESTRICT parallel_batch_update{ static_cast<ParallelBatchUpdate *const RESTRICT>(arguments) };" << std::endl;
+			file << "\t\t\t\t\t\t\t" << update._ComponentName.c_str() << "::Instance->ParallelBatchUpdate(" << parallel_batch_update.first.c_str() << ", parallel_batch_update->_StartInstanceIndex, parallel_batch_update->_EndInstanceIndex);" << std::endl;
+			file << "\t\t\t\t\t\t};" << std::endl;
+			file << "\t\t\t\t\t\tparallel_batch_update._Task._Arguments = nullptr;" << std::endl;
+			file << "\t\t\t\t\t\tparallel_batch_update._Task._ExecutableOnSameThread = false;" << std::endl;
+			file << "\t\t\t\t\t\tparallel_batch_update._StartInstanceIndex = batch_start_index;" << std::endl;
+			file << "\t\t\t\t\t\tparallel_batch_update._EndInstanceIndex = batch_start_index + CatalystBaseMath::Minimum<uint64>(" << update._BatchSize << ", number_of_instances - batch_start_index);" << std::endl;
+			file << "\t\t\t\t\t}" << std::endl;
+			file << "\t\t\t\t}" << std::endl;
+		}
+
+		file << "\t\t\t\tbreak;" << std::endl;
+		file << "\t\t\t}" << std::endl;
+	}
+
+	file << "\t\t}" << std::endl;
+
+	file << "\t\tfor (ParallelBatchUpdate &parallel_batch_update : PARALLEL_BATCH_UPDATES)" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tparallel_batch_update._Task._Arguments = &parallel_batch_update;" << std::endl;
+	file << "\t\t\tTaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &parallel_batch_update._Task);" << std::endl;
+	file << "\t\t}" << std::endl;
+
+	file << "\t}" << std::endl;
+	file << std::endl;
+
+	//Do serial updates.
 	file << "\t//Do serial updates." << std::endl;
 	file << "\tswitch (update_phase)" << std::endl;
 	file << "\t{" << std::endl;
 
-	for (const std::pair<std::string, std::vector<ComponentSerialUpdate>> &serial_update : serial_updates)
+	for (const std::pair<std::string, std::vector<ComponentUpdate>> &serial_update : serial_updates)
 	{
 		file << "\t\tcase " << serial_update.first.c_str() << ":" << std::endl;
 		file << "\t\t{" << std::endl;
 
-		for (const ComponentSerialUpdate &_serial_update : serial_update.second)
+		for (const ComponentUpdate &update : serial_update.second)
 		{
-			file << "\t\t\t" << _serial_update._ComponentName.c_str() << "::Instance->SerialUpdate(update_phase);" << std::endl;
+			file << "\t\t\t" << update._ComponentName.c_str() << "::Instance->SerialUpdate(update_phase);" << std::endl;
 		}
 
 		file << "\t\t\tbreak;" << std::endl;
@@ -622,6 +836,21 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	}
 
 	file << "\t}" << std::endl;
+	file << std::endl;
+
+	//Wait for parallel batch updates to finish.
+	file << "\t//Wait for parallel batch update to finish." << std::endl;
+	file << "\tbool all_done{ PARALLEL_BATCH_UPDATES.Empty() };" << std::endl;
+	file << "\twhile (!all_done)" << std::endl;
+	file << "\t{" << std::endl;
+	file << "\t\tTaskSystem::Instance->DoWork(Task::Priority::HIGH);" << std::endl;
+	file << "\t\tall_done = true;" << std::endl;
+	file << "\t\tfor (ParallelBatchUpdate &parallel_batch_update : PARALLEL_BATCH_UPDATES)" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tall_done &= parallel_batch_update._Task.IsExecuted();" << std::endl;
+	file << "\t\t}" << std::endl;
+	file << "\t}" << std::endl;
+
 	file << "}" << std::endl;
 	file << std::endl;
 

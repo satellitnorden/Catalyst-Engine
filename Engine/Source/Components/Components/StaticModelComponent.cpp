@@ -51,6 +51,142 @@ void StaticModelComponent::Initialize() NOEXCEPT
 	);
 }
 
+void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT
+{
+	//Define constants.
+	constexpr float32 BASE_CULLING_DIMENSION_MULTIPLIER{ 64.0f };
+
+	PROFILING_SCOPE("StaticModelComponent::ParallelBatchUpdate");
+
+	switch (update_phase)
+	{
+		case UpdatePhase::PRE_RENDER:
+		{
+			//Cache data that will be used.
+			const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform() };
+			const Vector3<int32> camera_cell{ camera_world_transform.GetCell() };
+			const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetViewMatrix() };
+			const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
+
+			//Iterate over the instances.
+			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
+			{
+				//Cache the instance data.
+				StaticModelInstanceData &instance_data{ _InstanceData[instance_index] };
+				WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(InstanceToEntity(instance_index)) };
+
+				//Update the world transform is this static model instance is physics-simulated.
+				if (instance_data._PhysicsActorHandle && instance_data._ModelSimulationConfiguration._SimulatePhysics)
+				{
+					PhysicsSystem::Instance->GetActorWorldTransform(instance_data._PhysicsActorHandle, &world_transform_instance_data._CurrentWorldTransform);
+				}
+
+				//Otherwise, check if the world transform has updated, and if so, update the physics actor.
+				else if (instance_data._PhysicsActorHandle && world_transform_instance_data._PreviousWorldTransform != world_transform_instance_data._CurrentWorldTransform)
+				{
+					PhysicsSystem::Instance->UpdateWorldTransform(world_transform_instance_data._CurrentWorldTransform, &instance_data._PhysicsActorHandle);
+				}
+
+				//Update the world space axis aligned bounding box.
+				AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
+				RenderingUtilities::TransformAxisAlignedBoundingBox(instance_data._Model->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+				instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
+				instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
+
+				//Retrieve the relative axis aligned bounding box.
+				const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_world_transform.GetCell()) };
+
+				//Do culling.
+				bool visible{ false };
+
+				//Reset the visibility flags.
+				instance_data._VisibilityFlags = static_cast<VisibilityFlags>(UINT8_MAXIMUM);
+
+				/*
+				*	Calculate the distance based culling score.
+				*	Bias the height dimension a bit more, makes tall model popping is more noticable.
+				*/
+				const float32 culling_score
+				{
+					Culling::CalculateDistanceBasedCullingScore
+					(
+						relative_axis_aligned_bounding_box,
+						camera_world_transform.GetLocalPosition(),
+						Vector3<float32>(BASE_CULLING_DIMENSION_MULTIPLIER, BASE_CULLING_DIMENSION_MULTIPLIER * 2.0f, BASE_CULLING_DIMENSION_MULTIPLIER)
+					)
+				};
+
+				//If the culling score is negative, just cull it outright.
+				if (culling_score < 0.0f)
+				{
+					instance_data._VisibilityFlags = static_cast<VisibilityFlags>(0);
+				}
+
+				else
+				{
+					//Do camera culling.
+					{
+						//Do frustum culling.
+						if (!Culling::IsWithinFrustum(instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell), *frustum))
+						{
+							CLEAR_BIT(instance_data._VisibilityFlags, VisibilityFlags::CAMERA);
+						}
+
+						else
+						{
+							visible = true;
+						}
+					}
+
+					//Do shadow map culling.
+					for (uint32 shadow_map_data_index{ 0 }; shadow_map_data_index < RenderingSystem::Instance->GetShadowsSystem()->GetNumberOfShadowMapData(); ++shadow_map_data_index)
+					{
+						const ShadowsSystem::ShadowMapData &shadow_map_data{ RenderingSystem::Instance->GetShadowsSystem()->GetShadowMapData(shadow_map_data_index) };
+
+						//Do frustum culling.
+						if (!Culling::IsWithinFrustum(instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell), shadow_map_data._Frustum))
+						{
+							CLEAR_BIT(instance_data._VisibilityFlags, VisibilityFlags::SHADOW_MAP_START << shadow_map_data_index);
+						}
+
+						else
+						{
+							visible = true;
+						}
+					}
+
+					//Do level of detail.
+					if (visible)
+					{
+						for (uint64 mesh_index{ 0 }, size{ instance_data._Model->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+						{
+							//If the mesh used only has one level of detail, skip it.
+							if (instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() == 1)
+							{
+								instance_data._LevelOfDetailIndices[mesh_index] = 0;
+
+								continue;
+							}
+
+							//Calculate the level of detail index.
+							instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - culling_score) * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
+						}
+					}
+				}
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+}
+
 void StaticModelComponent::DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	StaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<StaticModelInitializationData* const RESTRICT>(initialization_data) };
@@ -160,9 +296,9 @@ NO_DISCARD uint64 StaticModelComponent::NumberOfSubInstances(const uint64 instan
 
 void StaticModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
-	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
+	update_configuration->_UpdatePhaseMask = static_cast<UpdatePhase>(0);
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = 128;
+	update_configuration->_BatchSize = UINT64_MAXIMUM;
 }
 
 /*
@@ -176,138 +312,7 @@ void StaticModelComponent::Update
 	const uint64 sub_instance_index
 ) NOEXCEPT
 {
-	//Define constants.
-	constexpr float32 BASE_CULLING_DIMENSION_MULTIPLIER{ 64.0f };
-
-	PROFILING_SCOPE("StaticModelComponent::Update");
-
-	switch (update_phase)
-	{
-		case UpdatePhase::PRE_RENDER:
-		{
-			//Cache data that will be used.
-			const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform() };
-			const Vector3<int32> camera_cell{ camera_world_transform.GetCell() };
-			const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetViewMatrix() };
-			const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
-
-			//Iterate over the instances.
-			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
-			{
-				//Cache the instance data.
-				StaticModelInstanceData &instance_data{ _InstanceData[instance_index] };
-				WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(InstanceToEntity(instance_index)) };
-
-				//Update the world transform is this static model instance is physics-simulated.
-				if (instance_data._PhysicsActorHandle && instance_data._ModelSimulationConfiguration._SimulatePhysics)
-				{
-					PhysicsSystem::Instance->GetActorWorldTransform(instance_data._PhysicsActorHandle, &world_transform_instance_data._CurrentWorldTransform);
-				}
-
-				//Otherwise, check if the world transform has updated, and if so, update the physics actor.
-				else if (instance_data._PhysicsActorHandle && world_transform_instance_data._PreviousWorldTransform != world_transform_instance_data._CurrentWorldTransform)
-				{
-					PhysicsSystem::Instance->UpdateWorldTransform(world_transform_instance_data._CurrentWorldTransform, &instance_data._PhysicsActorHandle);
-				}
-
-				//Update the world space axis aligned bounding box.
-				AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
-				RenderingUtilities::TransformAxisAlignedBoundingBox(instance_data._Model->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
-				instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
-				instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
-
-				//Retrieve the relative axis aligned bounding box.
-				const AxisAlignedBoundingBox3D relative_axis_aligned_bounding_box{ instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_world_transform.GetCell()) };
-
-				//Do culling.
-				bool visible{ false };
-
-				//Reset the visibility flags.
-				instance_data._VisibilityFlags = static_cast<VisibilityFlags>(UINT8_MAXIMUM);
-
-				/*
-				*	Calculate the distance based culling score.
-				*	Bias the height dimension a bit more, makes tall model popping is more noticable.
-				*/
-				const float32 culling_score
-				{
-					Culling::CalculateDistanceBasedCullingScore
-					(
-						relative_axis_aligned_bounding_box,
-						camera_world_transform.GetLocalPosition(),
-						Vector3<float32>(BASE_CULLING_DIMENSION_MULTIPLIER, BASE_CULLING_DIMENSION_MULTIPLIER * 2.0f, BASE_CULLING_DIMENSION_MULTIPLIER)
-					)
-				};
-
-				//If the culling score is negative, just cull it outright.
-				if (culling_score < 0.0f)
-				{
-					instance_data._VisibilityFlags = static_cast<VisibilityFlags>(0);
-				}
-
-				else
-				{
-					//Do camera culling.
-					{
-						//Do frustum culling.
-						if (!Culling::IsWithinFrustum(instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell), *frustum))
-						{
-							CLEAR_BIT(instance_data._VisibilityFlags, VisibilityFlags::CAMERA);
-						}
-
-						else
-						{
-							visible = true;
-						}
-					}
-
-					//Do shadow map culling.
-					for (uint32 shadow_map_data_index{ 0 }; shadow_map_data_index < RenderingSystem::Instance->GetShadowsSystem()->GetNumberOfShadowMapData(); ++shadow_map_data_index)
-					{
-						const ShadowsSystem::ShadowMapData& shadow_map_data{ RenderingSystem::Instance->GetShadowsSystem()->GetShadowMapData(shadow_map_data_index) };
-
-						//Do frustum culling.
-						if (!Culling::IsWithinFrustum(instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell), shadow_map_data._Frustum))
-						{
-							CLEAR_BIT(instance_data._VisibilityFlags, VisibilityFlags::SHADOW_MAP_START << shadow_map_data_index);
-						}
-
-						else
-						{
-							visible = true;
-						}
-					}
-
-					//Do level of detail.
-					if (visible)
-					{
-						for (uint64 mesh_index{ 0 }, size{ instance_data._Model->_Meshes.Size() }; mesh_index < size; ++mesh_index)
-						{
-							//If the mesh used only has one level of detail, skip it.
-							if (instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() == 1)
-							{
-								instance_data._LevelOfDetailIndices[mesh_index] = 0;
-
-								continue;
-							}
-
-							//Calculate the level of detail index.
-							instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - culling_score) * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
-						}
-					}
-				}
-			}
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
+	
 }
 
 void StaticModelComponent::PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT

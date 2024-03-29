@@ -78,6 +78,7 @@ DECLARE_COMPONENT
 	StaticModelInitializationData,
 	StaticModelInstanceData,
 	COMPONENT_INITIALIZE()
+	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
 
 public:
 
