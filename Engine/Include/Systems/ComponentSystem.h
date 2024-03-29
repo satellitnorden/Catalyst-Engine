@@ -2,12 +2,13 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-
-//Components.
-#include <Components/Core/Component.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Concurrency.
 #include <Concurrency/Task.h>
+
+//Forward declarations.
+class Component;
 
 class ALIGN(8) ComponentSystem final
 {

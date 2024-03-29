@@ -36,8 +36,11 @@ namespace EntitySerialization
 	{
 		nlohmann::json &components{ JSON["Components"] };
 
-		for (Component *const RESTRICT component : AllComponents())
+		for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 		{
+			//Cache the component.
+			Component *const RESTRICT component{ Components::At(component_index) };
+
 			if (!component->Has(entity))
 			{
 				continue;
@@ -214,8 +217,11 @@ namespace EntitySerialization
 			//Retrieve the component.
 			const Component *RESTRICT component{ nullptr };
 
-			for (const Component *const RESTRICT _component : AllComponents())
+			for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 			{
+				//Cache the component.
+				Component *const RESTRICT _component{ Components::At(component_index) };
+
 				if (_component->_Identifier == component_identifier)
 				{
 					component = _component;
@@ -435,8 +441,11 @@ namespace EntitySerialization
 			//Find the component.
 			Component *RESTRICT component{ nullptr };
 
-			for (Component *const RESTRICT _component : AllComponents())
+			for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 			{
+				//Cache the component.
+				Component *const RESTRICT _component{ Components::At(component_index) };
+
 				if (_component->_Identifier == component_identifier)
 				{
 					component = _component;

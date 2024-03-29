@@ -424,8 +424,11 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 			}
 
 			//Notify all components that this entity was destroyed.
-			for (Component *const RESTRICT component : AllComponents())
+			for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 			{
+				//Cache the component.
+				Component *const RESTRICT component{ Components::At(component_index) };
+
 				if (component->Has(queue_item->_Entity))
 				{
 					component->DestroyInstance(queue_item->_Entity);

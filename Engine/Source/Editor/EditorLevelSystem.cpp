@@ -947,8 +947,11 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 			if (ImGui::BeginMenu("Add Component"))
 			{
-				for (Component *const RESTRICT component : AllComponents())
+				for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 				{
+					//Cache the component.
+					Component *const RESTRICT component{ Components::At(component_index) };
+
 					if (component->Has(selected_entity))
 					{
 						continue;
@@ -1284,8 +1287,11 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		*	Alright, this is crude, but right now, just iterate over all components,
 		*	check if this entity has that, and expose the editable fields.
 		*/
-		for (Component *const RESTRICT component : AllComponents())
+		for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 		{
+			//Cache the component.
+			Component *const RESTRICT component{ Components::At(component_index) };
+
 			//Ignore editor data and world transform components, as they are always implicitly added.
 			if (component == WorldTransformComponent::Instance.Get())
 			{

@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/ComponentSystem.h>
 
+//Components.
+#include <Components/Core/Component.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
@@ -14,8 +17,11 @@ DEFINE_SINGLETON(ComponentSystem);
 void ComponentSystem::Initialize() NOEXCEPT
 {
 	//Initialize all components.
-	for (Component *const RESTRICT component : AllComponents())
+	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 	{
+		//Cache the component.
+		Component *const RESTRICT component{ Components::At(component_index) };
+
 		component->Initialize();
 	}
 
@@ -131,8 +137,11 @@ void ComponentSystem::Initialize() NOEXCEPT
 void ComponentSystem::PostInitialize() NOEXCEPT
 {
 	//Post-initialize all components.
-	for (Component *const RESTRICT component : AllComponents())
+	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 	{
+		//Cache the component.
+		Component *const RESTRICT component{ Components::At(component_index) };
+
 		component->PostInitialize();
 	}
 }
@@ -143,8 +152,10 @@ void ComponentSystem::PostInitialize() NOEXCEPT
 void ComponentSystem::Terminate() NOEXCEPT
 {
 	//Terminate all components.
-	for (Component *const RESTRICT component : AllComponents())
+	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 	{
+		//Cache the component.
+		Component *const RESTRICT component{ Components::At(component_index) };
 		component->Terminate();
 	}
 }
@@ -158,8 +169,11 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 	_UpdateData.Clear();
 
 	//Run the pre update.
-	for (Component *const RESTRICT component : AllComponents())
+	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 	{
+		//Cache the component.
+		Component *const RESTRICT component{ Components::At(component_index) };
+
 		ComponentUpdateConfiguration update_configuration;
 
 		component->GetUpdateConfiguration(&update_configuration);
@@ -170,8 +184,11 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 		}
 	}
 
-	for (Component *const RESTRICT component : AllComponents())
+	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 	{
+		//Cache the component.
+		Component *const RESTRICT component{ Components::At(component_index) };
+
 		ComponentUpdateConfiguration update_configuration;
 
 		component->GetUpdateConfiguration(&update_configuration);
@@ -270,8 +287,11 @@ void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
 	}
 
 	//Run the post update.
-	for (Component *const RESTRICT component : AllComponents())
+	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
 	{
+		//Cache the component.
+		Component *const RESTRICT component{ Components::At(component_index) };
+
 		ComponentUpdateConfiguration update_configuration;
 
 		component->GetUpdateConfiguration(&update_configuration);

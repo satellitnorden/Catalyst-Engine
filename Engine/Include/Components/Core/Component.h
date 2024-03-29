@@ -406,16 +406,6 @@ public:
 };
 
 /*
-*	Returns all components.
-*/
-NO_DISCARD const DynamicArray<Component *RESTRICT> &AllComponents() NOEXCEPT;
-
-/*
-*	Adds a component to all component.
-*/
-void AddComponentToAllComponents(Component *const RESTRICT component) NOEXCEPT;
-
-/*
 *	Declares a component.
 */
 #define DECLARE_COMPONENT(COMPONENT_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_DATA_CLASS, ...)													\
@@ -445,7 +435,6 @@ public:																																			\
 		:																																		\
 		Component(HashString(#COMPONENT_CLASS))																									\
 	{																																			\
-		AddComponentToAllComponents(this);																										\
 	}																																			\
 	void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;		\
 	void DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT override;																		\
@@ -510,3 +499,23 @@ private:																																		\
 																																				\
 __VA_ARGS__																																		\
 };																																				\
+
+/*
+*	"Manager" class for all components.
+*/
+class Components final
+{
+
+public:
+
+	/*
+	*	Returns the number of components.
+	*/
+	static NO_DISCARD uint64 Size() NOEXCEPT;
+
+	/*
+	*	Returns the component at the given index.
+	*/
+	static NO_DISCARD Component *const RESTRICT At(const uint64 index) NOEXCEPT;
+
+};

@@ -18,9 +18,6 @@ class ComponentData final
 
 public:
 
-	//The file path.
-	std::string _FilePath;
-
 	//The name.
 	std::string _Name;
 
@@ -237,6 +234,8 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << std::endl;
 
 	//Add all component data.
+	std::vector<ComponentData> component_data;
+
 	for (auto file_iterator{ JSON.begin() }; file_iterator != JSON.end(); ++file_iterator)
 	{
 		const nlohmann::json &file_entry{ *file_iterator };
@@ -259,8 +258,47 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 			//Add the singleton definition.
 			file << "DEFINE_SINGLETON(" << component_iterator.key().c_str() << ");" << std::endl;
+
+			//Add the component data.
+			{
+				ComponentData &new_component_data{ component_data.emplace_back() };
+
+				//Set the name.
+				new_component_data._Name = component_iterator.key().c_str();
+			}
 		}
 
 		file << std::endl;
 	}
+
+	//Set up the "Components::Size" function.
+	file << "NO_DISCARD uint64 Components::Size() NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+	file << "\treturn " << component_data.size() << ";" << std::endl;
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::At()" function.
+	file << "NO_DISCARD Component *const RESTRICT Components::At(const uint64 index) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+	file << "\tswitch (index)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (uint64 i{ 0 }; i < component_data.size(); ++i)
+	{
+		file << "\t\tcase " << i << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\treturn " << component_data[i]._Name.c_str() << "::Instance.Get();" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
+	file << "\t\tdefault:" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tASSERT(false, \"Invalid case!\");" << std::endl;
+	file << "\t\t\treturn nullptr;" << std::endl;
+	file << "\t\t}" << std::endl;
+
+	file << "\t}" << std::endl;
+
+	file << "}";
 }

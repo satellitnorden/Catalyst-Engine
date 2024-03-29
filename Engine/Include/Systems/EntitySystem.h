@@ -5,9 +5,6 @@
 #include <Core/Containers/ArrayProxy.h>
 #include <Core/Containers/DynamicArray.h>
 
-//Components.
-#include <Components/Core/Component.h>
-
 //Concurrency.
 #include <Concurrency/AtomicQueue.h>
 #include <Concurrency/Task.h>
@@ -22,6 +19,9 @@
 
 //Systems.
 #include <Systems/MemorySystem.h>
+
+//Forward declarations.
+class ComponentInitializationData;
 
 class ALIGN(8) EntitySystem final
 {
