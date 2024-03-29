@@ -510,10 +510,3 @@ private:																																		\
 																																				\
 __VA_ARGS__																																		\
 };																																				\
-
-/*
-*	Defines a component.
-*	This needs to be in ONE, and only ONE .cpp file.
-*/
-#define DEFINE_COMPONENT(COMPONENT_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_CLASS)	\
-DEFINE_SINGLETON(COMPONENT_CLASS);														\

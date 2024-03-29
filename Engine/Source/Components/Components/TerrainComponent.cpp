@@ -17,8 +17,6 @@
 #include <Terrain/TerrainVertex.h>
 #include <Terrain/TerrainQuadTreeUtilities.h>
 
-DEFINE_COMPONENT(TerrainComponent, TerrainInitializationData, TerrainInstanceData);
-
 /*
 *	Returns if this component needs pre-processing.
 */

@@ -4,8 +4,6 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
-DEFINE_COMPONENT(LightComponent, LightInitializationData, LightInstanceData);
-
 void LightComponent::DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
 	LightInitializationData *const RESTRICT _initialization_data{ static_cast<LightInitializationData* const RESTRICT>(initialization_data) };

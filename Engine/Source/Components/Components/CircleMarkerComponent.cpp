@@ -16,8 +16,6 @@
 #include <Systems/WorldSystem.h>
 #endif
 
-DEFINE_COMPONENT(CircleMarkerComponent, CircleMarkerInitializationData, CircleMarkerInstanceData);
-
 #if defined(CATALYST_EDITOR)
 /*
 *	Circle marker push constant data.

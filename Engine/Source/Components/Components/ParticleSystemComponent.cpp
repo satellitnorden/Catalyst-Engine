@@ -16,8 +16,6 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
-DEFINE_COMPONENT(ParticleSystemComponent, ParticleSystemInitializationData, ParticleSystemInstanceData);
-
 /*
 *	Particles push constant data.
 */

@@ -16,8 +16,6 @@
 #include <Systems/PhysicsSystem.h>
 #include <Systems/ResourceSystem.h>
 
-DEFINE_COMPONENT(StaticModelComponent, StaticModelInitializationData, StaticModelInstanceData);
-
 /*
 *	Initializes this component.
 */

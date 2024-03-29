@@ -4,8 +4,6 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
-DEFINE_COMPONENT(WorldTransformComponent, WorldTransformInitializationData, WorldTransformInstanceData);
-
 /*
 *	Initializes this component.
 */

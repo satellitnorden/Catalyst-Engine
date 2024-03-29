@@ -16,8 +16,6 @@
 #include <Terrain/TerrainVertex.h>
 #include <Terrain/TerrainQuadTreeUtilities.h>
 
-DEFINE_COMPONENT(WaterComponent, WaterInitializationData, WaterInstanceData);
-
 /*
 *	Returns if this component needs pre-processing.
 */

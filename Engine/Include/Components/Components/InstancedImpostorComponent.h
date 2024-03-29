@@ -83,4 +83,9 @@ public:
 
 };
 
-DECLARE_COMPONENT(InstancedImpostorComponent, InstancedImpostorInitializationData, InstancedImpostorInstanceData);
+DECLARE_COMPONENT
+(
+	InstancedImpostorComponent,
+	InstancedImpostorInitializationData,
+	InstancedImpostorInstanceData
+);

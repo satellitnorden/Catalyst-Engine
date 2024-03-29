@@ -19,6 +19,9 @@
     <ClCompile Include="CatalystCodeGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ComponentGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EnumerationGenerator.h">
@@ -37,6 +40,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="TextParsing.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentGenerator.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

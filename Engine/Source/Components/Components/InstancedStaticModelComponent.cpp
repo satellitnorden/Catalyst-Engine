@@ -8,8 +8,6 @@
 #include <Rendering/Native/Culling.h>
 #include <Rendering/Native/RenderingUtilities.h>
 
-DEFINE_COMPONENT(InstancedStaticModelComponent, InstancedStaticModelInitializationData, InstancedStaticModelInstanceData);
-
 /*
 *	Returns if this component needs pre-processing.
 */

@@ -7,8 +7,6 @@
 //Generated
 #include <Generated/Script.Generated.h>
 
-DEFINE_COMPONENT(ScriptComponent, ScriptInitializationData, ScriptInstanceData);
-
 /*
 *	Initializes this component.
 */
@@ -176,7 +174,7 @@ void ScriptComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
 /*
 *	Callback for before an editable field change happens.
 */
-FORCE_INLINE void ScriptComponent::PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
+void ScriptComponent::PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
 {
 	//Cache the instance data.
 	ScriptInstanceData &instance_data{ InstanceData(entity) };
@@ -200,7 +198,7 @@ FORCE_INLINE void ScriptComponent::PreEditableFieldChange(Entity *const RESTRICT
 /*
 *	Callback for after an editable field change happens.
 */
-FORCE_INLINE void ScriptComponent::PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
+void ScriptComponent::PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
 {
 	//Cache the instance data.
 	ScriptInstanceData &instance_data{ InstanceData(entity) };

@@ -14,8 +14,6 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-DEFINE_COMPONENT(GrassComponent, GrassInitializationData, GrassInstanceData);
-
 /*
 *	Creates an instance.
 */

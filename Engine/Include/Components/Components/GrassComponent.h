@@ -92,4 +92,9 @@ public:
 
 };
 
-DECLARE_COMPONENT(GrassComponent, GrassInitializationData, GrassInstanceData);
+DECLARE_COMPONENT
+(
+	GrassComponent,
+	GrassInitializationData,
+	GrassInstanceData
+);

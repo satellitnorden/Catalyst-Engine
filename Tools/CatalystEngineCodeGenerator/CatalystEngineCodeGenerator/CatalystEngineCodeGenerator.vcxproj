@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CatalystCodeGenerator.cpp" />
+    <ClCompile Include="ComponentGenerator.cpp" />
     <ClCompile Include="EnumerationGenerator.cpp" />
     <ClCompile Include="ScriptGenerator.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -140,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="CatalystCodeGenerator.h" />
     <ClInclude Include="CatalystCodeGeneratorCore.h" />
+    <ClInclude Include="ComponentGenerator.h" />
     <ClInclude Include="EnumerationGenerator.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="ScriptGenerator.h" />
