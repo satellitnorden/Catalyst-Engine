@@ -38,7 +38,7 @@ DECLARE_COMPONENT
 	ScriptInitializationData,
 	ScriptInstanceData,
 	COMPONENT_INITIALIZE()
-
+	COMPONENT_SERIAL_UPDATE(UpdatePhase::GAMEPLAY)
 public:
 
 	/*

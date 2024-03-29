@@ -529,7 +529,8 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		std::sort
 		(
 			serial_update.second.begin(),
-			serial_update.second.end(),[](const ComponentSerialUpdate &A, const ComponentSerialUpdate &B)
+			serial_update.second.end(),
+			[](const ComponentSerialUpdate &A, const ComponentSerialUpdate &B)
 			{
 				return A._SortValue < B._SortValue;
 			}

@@ -22,6 +22,45 @@ void ScriptComponent::Initialize() NOEXCEPT
 }
 
 /*
+*	Updates this component.
+*/
+void ScriptComponent::SerialUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+	PROFILING_SCOPE("ScriptComponent::Update");
+
+	switch (update_phase)
+	{
+		case UpdatePhase::GAMEPLAY:
+		{
+			//Iterate over the instances.
+			for (uint64 instance_index{ 0 }; instance_index < NumberOfInstances(); ++instance_index)
+			{
+				//Cache the instance data.
+				ScriptInstanceData &instance_data{ _InstanceData[instance_index] };
+
+				//Set up the script context.
+				ScriptContext script_context;
+
+				script_context._Entity = InstanceToEntity(instance_index);
+				script_context._Data = instance_data._Data;
+
+				//Update!
+				Script::Update(instance_data._ScriptIdentifier, script_context);
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+}
+
+/*
 *	Creates an instance.
 */
 void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
@@ -105,7 +144,7 @@ NO_DISCARD uint64 ScriptComponent::NumberOfSubInstances(const uint64 instance_in
 
 void ScriptComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
-	update_configuration->_UpdatePhaseMask = UpdatePhase::GAMEPLAY;
+	update_configuration->_UpdatePhaseMask = static_cast<UpdatePhase>(0);
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
 	update_configuration->_BatchSize = UINT64_MAXIMUM;
 }
@@ -121,38 +160,7 @@ void ScriptComponent::Update
 	const uint64 sub_instance_index
 ) NOEXCEPT
 {
-	PROFILING_SCOPE("ScriptComponent::Update");
-
-	switch (update_phase)
-	{
-		case UpdatePhase::GAMEPLAY:
-		{
-			//Iterate over the instances.
-			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
-			{
-				//Cache the instance data.
-				ScriptInstanceData &instance_data{ _InstanceData[instance_index] };
-
-				//Set up the script context.
-				ScriptContext script_context;
-
-				script_context._Entity = InstanceToEntity(instance_index);
-				script_context._Data = instance_data._Data;
-
-				//Update!
-				Script::Update(instance_data._ScriptIdentifier, script_context);
-			}
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
+	
 }
 
 /*
