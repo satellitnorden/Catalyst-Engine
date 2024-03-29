@@ -13,40 +13,40 @@ class AnimatedVertex final
 public:
 
 	//The position of this vertex.
-	Vector3<float> _Position;
+	Vector3<float32> _Position;
 
 	//The normal of this vertex.
-	Vector3<float> _Normal;
+	Vector3<float32> _Normal;
 
 	//The tangent of this vertex.
-	Vector3<float> _Tangent;
+	Vector3<float32> _Tangent;
 
 	//The bone indices of this vertex.
-	Vector3<uint32> _BoneIndices;
+	Vector4<uint32> _BoneIndices;
 
 	//The bone weights of this vertex.
-	Vector3<float> _BoneWeights;
+	Vector4<float32> _BoneWeights;
 
 	//The texture coordinate of this vertex.
-	Vector2<float> _TextureCoordinate;
-
-	//Some padding. (:
-	Padding<4> _Padding;
+	Vector2<float32> _TextureCoordinate;
 
 	/*
-	*	Default constructor - prohibited, must be constructed with the proper arguments.
+	*	Default constructor.
 	*/
-	AnimatedVertex() NOEXCEPT = delete;
+	FORCE_INLINE AnimatedVertex() NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Constructor taking the position, normal and the color of this vertex.
 	*/
-	AnimatedVertex(	const Vector3<float> &initial_position,
-					const Vector3<float> &initial_normal,
-					const Vector3<float> &initial_tangent,
-					const Vector3<uint32> &initial_bone_indices,
-					const Vector3<float> &initial_bone_weights,
-					const Vector2<float> &initial_texture_coordinate) NOEXCEPT
+	FORCE_INLINE AnimatedVertex(const Vector3<float32> &initial_position,
+								const Vector3<float32> &initial_normal,
+								const Vector3<float32> &initial_tangent,
+								const Vector3<uint32> &initial_bone_indices,
+								const Vector3<float32> &initial_bone_weights,
+								const Vector2<float32> &initial_texture_coordinate) NOEXCEPT
 		:
 		_Position(initial_position),
 		_Normal(initial_normal),

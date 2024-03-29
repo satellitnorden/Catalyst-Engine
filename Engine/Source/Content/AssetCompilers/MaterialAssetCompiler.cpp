@@ -3,7 +3,6 @@
 
 //File.
 #include <File/Core/FileCore.h>
-#include <File/Readers/FBXReader.h>
 #include <File/Readers/JPGReader.h>
 #include <File/Readers/PNGReader.h>
 #include <File/Utilities/TextParsingUtilities.h>

@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/DynamicArray.h>
 #include <Core/General/HashString.h>
 
 //Math.
@@ -24,8 +23,5 @@ public:
 
 	//The inverse bind transform.
 	Matrix4x4 _InverseBindTransform;
-
-	//The children.
-	DynamicArray<Bone> _Children;
 
 };

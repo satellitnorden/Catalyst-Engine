@@ -12,6 +12,7 @@
 */
 FORCE_INLINE void ReadBoneFromFile(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, Bone *const RESTRICT bone) NOEXCEPT
 {
+	/*
 	file->Read(bone, sizeof(Bone) - sizeof(DynamicArray<Bone>));
 
 	uint64 number_of_child_bones;
@@ -23,6 +24,7 @@ FORCE_INLINE void ReadBoneFromFile(BinaryFile<BinaryFileMode::IN> *const RESTRIC
 	{
 		ReadBoneFromFile(file, &child_bone);
 	}
+	*/
 }
 
 /*
@@ -30,6 +32,7 @@ FORCE_INLINE void ReadBoneFromFile(BinaryFile<BinaryFileMode::IN> *const RESTRIC
 */
 void ResourceLoadingSystem::LoadAnimatedModel(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, AnimatedModelData *const RESTRICT data) NOEXCEPT
 {
+	/*
 	//Read the axis-aligned bounding box
 	file->Read(&data->_AxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3D));
 
@@ -51,6 +54,7 @@ void ResourceLoadingSystem::LoadAnimatedModel(BinaryFile<BinaryFileMode::IN> *co
 
 	//Read the skeleton.
 	ReadBoneFromFile(file, &data->_Skeleton._RootBone);
+	*/
 }
 
 /*

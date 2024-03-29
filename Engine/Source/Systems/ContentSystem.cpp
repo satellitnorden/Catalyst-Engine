@@ -8,6 +8,7 @@
 
 //Content.
 #include <Content/Core/ContentCache.h>
+#include <Content/AssetCompilers/AnimatedModelAssetCompiler.h>
 #include <Content/AssetCompilers/FontAssetCompiler.h>
 #include <Content/AssetCompilers/ImpostorMaterialAssetCompiler.h>
 #include <Content/AssetCompilers/LevelAssetCompiler.h>
@@ -41,6 +42,7 @@ DEFINE_SINGLETON(ContentSystem);
 void ContentSystem::Initialize() NOEXCEPT
 {
 	//Register the native asset compilers
+	RegisterAssetCompiler(AnimatedModelAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(FontAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(ImpostorMaterialAssetCompiler::Instance.Get());
 	RegisterAssetCompiler(LevelAssetCompiler::Instance.Get());

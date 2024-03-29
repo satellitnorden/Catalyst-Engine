@@ -13,8 +13,7 @@
 #define SCRIPT_DATA_FLAG_NONE (0)
 #define SCRIPT_DATA_FLAG_HAS_INITIALIZE (BIT(0))
 #define SCRIPT_DATA_FLAG_HAS_UPDATE (BIT(1))
-#define SCRIPT_DATA_FLAG_UPDATE_WANTS_DELTA_TIME (BIT(2))
-#define SCRIPT_DATA_FLAG_HAS_TERMINATE (BIT(3))
+#define SCRIPT_DATA_FLAG_HAS_TERMINATE (BIT(2))
 
 //Macros.
 #define CHECK_ERROR_CODE() if (error_code) { std::cout << "Error at " << __LINE__ << ": " << error_code.message() << std::endl; }
@@ -32,6 +31,11 @@ uint64 SizeOfType(const char *const type)
 	if (strcmp(type, "float32") == 0)
 	{
 		return sizeof(float32);
+	}
+
+	if (strcmp(type, "uint8") == 0)
+	{
+		return sizeof(uint8);
 	}
 
 	if (strcmp(type, "uint32") == 0)
@@ -66,12 +70,14 @@ void ScriptGenerator::Run(int32 command_line_argument_count, char *command_line_
 	//Set up the script cache.
 	nlohmann::json script_cache;
 
+#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\ScriptCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\ScriptCache.json" };
 		input_file >> script_cache;
 		input_file.close();
 	}
+#endif
 
 	//Gather scripts!
 	GatherScripts(ASSETS_DIRECTORY, script_cache);
@@ -84,11 +90,13 @@ void ScriptGenerator::Run(int32 command_line_argument_count, char *command_line_
 	}
 
 	//Write the content cache.
+#if defined(NDEBUG)
 	{
 		std::ofstream file{ "..\\..\\..\\Code\\CodeGeneration\\ScriptCache.json" };
 		file << std::setw(4) << script_cache;
 		file.close();
 	}
+#endif
 }
 
 /*
@@ -333,7 +341,7 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 				{
 					const uint64 number_of_arguments
 					{
-						ParseFunctionArguments
+						TextParsing::ParseFunctionArguments
 						(
 							current_line.c_str(),
 							current_line.length(),
@@ -356,51 +364,61 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 				}
 			}
 
-			//Is this an function declaration?
+			//Is this an Initialize function declaration?
 			{
-				const size_t position{ current_line.find("Event(") };
+				const size_t position{ current_line.find("Initialize()") };
 
-				/*
-				*	Since some script nodes might end in this token,
-				*	check if there's anything before the position that signals that this is not the correct token.
-				*/
-				bool is_correct_token{ false };
-
-				if (position != std::string::npos)
+				//It is only valid for these functions to be at the first indentation.
+				if (position == 0 && position != std::string::npos)
 				{
-					is_correct_token = true;
-
-					for (int64 i{ static_cast<int64>(position) - 1 }; i >= 0; --i)
-					{
-						//Only accept spaces and tabs before the position.
-						if (current_line[i] != '\t' && current_line[i] != ' ')
-						{
-							is_correct_token = false;
-
-							break;
-						}
-					}
-				}
-
-				if (is_correct_token)
-				{
-					const uint64 number_of_arguments
-					{
-						ParseFunctionArguments
-						(
-							current_line.c_str(),
-							current_line.length(),
-							arguments.data()
-						)
-					};
-
-					ASSERT(number_of_arguments == 1, "A function declaration needs one argument!");
-
 					//Add function signature.
-					file << "\tvoid " << arguments[0].data() << "(ScriptContext &script_context) NOEXCEPT" << std::endl;
+					file << "\tvoid Initialize(ScriptContext &script_context)" << std::endl;
 
-					//Add the event.
-					script_data._Events.emplace_back(arguments[0]);
+					//Update the script flags.
+					script_data._Flags |= SCRIPT_DATA_FLAG_HAS_INITIALIZE;
+
+					//Add the function name, in case this is called by the script itself.
+					intermediate_data._FunctionNames.emplace_back(arguments[1].c_str());
+
+					continue;
+				}
+			}
+
+			//Is this an Update function declaration?
+			{
+				const size_t position{ current_line.find("Update()") };
+
+				//It is only valid for these functions to be at the first indentation.
+				if (position == 0 && position != std::string::npos)
+				{
+					//Add function signature.
+					file << "\tvoid Update(ScriptContext &script_context, const float32 delta_time)" << std::endl;
+
+					//Update the script flags.
+					script_data._Flags |= SCRIPT_DATA_FLAG_HAS_UPDATE;
+
+					//Add the function name, in case this is called by the script itself.
+					intermediate_data._FunctionNames.emplace_back(arguments[1].c_str());
+
+					continue;
+				}
+			}
+
+			//Is this a Terminate function declaration?
+			{
+				const size_t position{ current_line.find("Terminate()") };
+
+				//It is only valid for these functions to be at the first indentation.
+				if (position == 0 && position != std::string::npos)
+				{
+					//Add function signature.
+					file << "\tvoid Terminate(ScriptContext &script_context)" << std::endl;
+
+					//Update the script flags.
+					script_data._Flags |= SCRIPT_DATA_FLAG_HAS_TERMINATE;
+
+					//Add the function name, in case this is called by the script itself.
+					intermediate_data._FunctionNames.emplace_back(arguments[1].c_str());
 
 					continue;
 				}
@@ -436,7 +454,7 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 				{
 					const uint64 number_of_arguments
 					{
-						ParseFunctionArguments
+						TextParsing::ParseFunctionArguments
 						(
 							current_line.c_str(),
 							current_line.length(),
@@ -454,11 +472,11 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 						file << ", ";
 					}
 
-					for (uint64 i{ 2 }; i < number_of_arguments; i += 2)
+					for (uint64 i{ 2 }; i < number_of_arguments; ++i)
 					{
-						file << arguments[i].c_str() << " " << arguments[i + 1].c_str();
+						file << arguments[i].c_str();
 
-						if (i < (number_of_arguments - 2))
+						if (i < (number_of_arguments - 1))
 						{
 							file << ", ";
 						}
@@ -466,29 +484,58 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 
 					file << ")" << std::endl;
 
-					//Update the script flags.
-					if (arguments[1] == "Initialize")
-					{
-						script_data._Flags |= SCRIPT_DATA_FLAG_HAS_INITIALIZE;
-					}
-
-					else if (arguments[1] == "Update")
-					{
-						script_data._Flags |= SCRIPT_DATA_FLAG_HAS_UPDATE;
-
-						if (number_of_arguments >= 4 && arguments[3] == "delta_time")
-						{
-							script_data._Flags |= SCRIPT_DATA_FLAG_UPDATE_WANTS_DELTA_TIME;
-						}
-					}
-
-					else if (arguments[1] == "Terminate")
-					{
-						script_data._Flags |= SCRIPT_DATA_FLAG_HAS_TERMINATE;
-					}
-
 					//Add the function name.
 					intermediate_data._FunctionNames.emplace_back(arguments[1].c_str());
+
+					continue;
+				}
+			}
+
+			//Is this an function declaration?
+			{
+				const size_t position{ current_line.find("Event(") };
+
+				/*
+				*	Since some script nodes might end in this token,
+				*	check if there's anything before the position that signals that this is not the correct token.
+				*/
+				bool is_correct_token{ false };
+
+				if (position != std::string::npos)
+				{
+					is_correct_token = true;
+
+					for (int64 i{ static_cast<int64>(position) - 1 }; i >= 0; --i)
+					{
+						//Only accept spaces and tabs before the position.
+						if (current_line[i] != '\t' && current_line[i] != ' ')
+						{
+							is_correct_token = false;
+
+							break;
+						}
+					}
+				}
+
+				if (is_correct_token)
+				{
+					const uint64 number_of_arguments
+					{
+						TextParsing::ParseFunctionArguments
+						(
+							current_line.c_str(),
+							current_line.length(),
+							arguments.data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 1, "A function declaration needs one argument!");
+
+					//Add function signature.
+					file << "\tvoid " << arguments[0].data() << "(ScriptContext &script_context) NOEXCEPT" << std::endl;
+
+					//Add the event.
+					script_data._Events.emplace_back(arguments[0]);
 
 					continue;
 				}
@@ -541,7 +588,7 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 
 					const uint64 number_of_arguments
 					{
-						ParseFunctionArguments
+						TextParsing::ParseFunctionArguments
 						(
 							current_line.c_str(),
 							current_line.length(),
@@ -732,23 +779,13 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 	file << "\t\tswitch (script_identifier)" << std::endl;
 	file << "\t\t{" << std::endl;
 
-	for (const ScriptData& script_data : _ScriptData)
+	for (const ScriptData &script_data : _ScriptData)
 	{
 		if (TEST_BIT(script_data._Flags, SCRIPT_DATA_FLAG_HAS_UPDATE))
 		{
 			file << "\t\t\tcase ScriptIdentifier::" << script_data._Name.c_str() << ":" << std::endl;
 			file << "\t\t\t{" << std::endl;
-
-			if (TEST_BIT(script_data._Flags, SCRIPT_DATA_FLAG_UPDATE_WANTS_DELTA_TIME))
-			{
-				file << "\t\t\t\t" << script_data._Name.c_str() << "::Update(script_context, CatalystEngineSystem::Instance->GetDeltaTime());" << std::endl;
-			}
-
-			else
-			{
-				file << "\t\t\t\t" << script_data._Name.c_str() << "::Update(script_context);" << std::endl;
-			}
-
+			file << "\t\t\t\t" << script_data._Name.c_str() << "::Update(script_context, CatalystEngineSystem::Instance->GetDeltaTime());" << std::endl;
 			file << "\t\t\t\t" << "break;" << std::endl;
 			file << "\t\t\t}" << std::endl;
 		}

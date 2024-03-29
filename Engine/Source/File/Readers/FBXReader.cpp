@@ -20,6 +20,140 @@
 /*
 *	Processes a single mesh.
 */
+FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode *const RESTRICT node, const aiMesh *const RESTRICT mesh, AnimatedModelFile *const RESTRICT animated_model_file) NOEXCEPT
+{
+	//Add a new mesh.
+	animated_model_file->_Meshes.Emplace();
+	AnimatedModelFile::Mesh &new_mesh{ animated_model_file->_Meshes.Back() };
+
+	//Set the name.
+	new_mesh._Name = node->mName.C_Str();
+
+	//Process the vertices.
+	{
+		new_mesh._Vertices.Reserve(mesh->mNumVertices);
+
+		for (uint32 i{ 0 }; i < mesh->mNumVertices; ++i)
+		{
+			//Add the new vertex.
+			new_mesh._Vertices.Emplace();
+			AnimatedVertex &new_vertex{ new_mesh._Vertices.Back() };
+
+			//Set the position.
+			new_vertex._Position._X = mesh->mVertices[i].x;
+			new_vertex._Position._Y = mesh->mVertices[i].y;
+			new_vertex._Position._Z = mesh->mVertices[i].z;
+
+			//Set the normal.
+			new_vertex._Normal._X = mesh->mNormals[i].x;
+			new_vertex._Normal._Y = mesh->mNormals[i].y;
+			new_vertex._Normal._Z = mesh->mNormals[i].z;
+
+			//Set the tangent.
+			new_vertex._Tangent._X = mesh->mTangents[i].x;
+			new_vertex._Tangent._Y = mesh->mTangents[i].y;
+			new_vertex._Tangent._Z = mesh->mTangents[i].z;
+
+			//Set the texture coordinate.
+			if (mesh->mTextureCoords[0])
+			{
+				new_vertex._TextureCoordinate._X = mesh->mTextureCoords[0][i].x;
+				new_vertex._TextureCoordinate._Y = mesh->mTextureCoords[0][i].y;
+			}
+
+			else
+			{
+				new_vertex._TextureCoordinate = Vector2<float32>(0.0f, 0.0f);
+			}
+
+			//Set the bone indices and bone weights to their default state.
+			new_vertex._BoneIndices = Vector4<uint32>(UINT32_MAXIMUM, UINT32_MAXIMUM, UINT32_MAXIMUM, UINT32_MAXIMUM);
+			new_vertex._BoneWeights = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+		}
+	}
+
+	//Process the indices.
+	for (uint32 face_index{ 0 }; face_index < mesh->mNumFaces; ++face_index)
+	{
+		const aiFace &face{ mesh->mFaces[face_index] };
+
+		for (uint32 index_index{ 0 }; index_index < face.mNumIndices; ++index_index)
+		{
+			new_mesh._Indices.Emplace(face.mIndices[index_index]);
+		}
+	}
+
+	//Set up the skeleton.
+	animated_model_file->_Skeleton._Bones.Reserve(mesh->mNumBones);
+
+	for (uint32 bone_index{ 0 }; bone_index < mesh->mNumBones; ++bone_index)
+	{
+		//Cache the bone.
+		const aiBone* const RESTRICT bone{ mesh->mBones[bone_index] };
+
+		//Add the new bone.
+		animated_model_file->_Skeleton._Bones.Emplace();
+		Bone& new_bone{ animated_model_file->_Skeleton._Bones.Back() };
+
+		//Set the name.
+		new_bone._Name = HashString(bone->mName.C_Str());
+
+		//Set the index.
+		new_bone._Index = bone_index;
+
+		//Set the bind transform.
+#if 1
+		{
+			new_bone._BindTransform._Matrix[0][0] = bone->mOffsetMatrix.a1; new_bone._BindTransform._Matrix[1][0] = bone->mOffsetMatrix.a2; new_bone._BindTransform._Matrix[2][0] = bone->mOffsetMatrix.a3; new_bone._BindTransform._Matrix[3][0] = bone->mOffsetMatrix.a4;
+			new_bone._BindTransform._Matrix[0][1] = bone->mOffsetMatrix.b1; new_bone._BindTransform._Matrix[1][1] = bone->mOffsetMatrix.b2; new_bone._BindTransform._Matrix[2][1] = bone->mOffsetMatrix.b3; new_bone._BindTransform._Matrix[3][1] = bone->mOffsetMatrix.b4;
+			new_bone._BindTransform._Matrix[0][2] = bone->mOffsetMatrix.c1; new_bone._BindTransform._Matrix[1][2] = bone->mOffsetMatrix.c2; new_bone._BindTransform._Matrix[2][2] = bone->mOffsetMatrix.c3; new_bone._BindTransform._Matrix[3][2] = bone->mOffsetMatrix.c4;
+			new_bone._BindTransform._Matrix[0][3] = bone->mOffsetMatrix.d1; new_bone._BindTransform._Matrix[1][3] = bone->mOffsetMatrix.d2; new_bone._BindTransform._Matrix[2][3] = bone->mOffsetMatrix.d3; new_bone._BindTransform._Matrix[3][3] = bone->mOffsetMatrix.d4;
+	}
+#else
+		Memory::Copy(&new_bone._BindTransform, &bone->mOffsetMatrix, sizeof(Matrix4x4));
+		new_bone._BindTransform.Transpose(); //Don't know if this is needed. :x
+#endif
+
+		//Set the inverse bind transform.
+		new_bone._InverseBindTransform = new_bone._BindTransform;
+		new_bone._InverseBindTransform.Inverse();
+
+		//Add the vertex weights.
+		for (uint32 vertex_weight_index{ 0 }; vertex_weight_index < bone->mNumWeights; ++vertex_weight_index)
+		{
+			//Cache the vertex weight.
+			const aiVertexWeight &vertex_weight{ bone->mWeights[vertex_weight_index] };
+
+			//Cache the affected vertex.
+			AnimatedVertex &affected_vertex{ animated_model_file->_Meshes.Back()._Vertices[vertex_weight.mVertexId] };
+
+			//Find the first free bone index.
+			bool found_free_bone{ false };
+
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				if (affected_vertex._BoneIndices[i] == UINT32_MAXIMUM)
+				{
+					affected_vertex._BoneIndices[i] = bone_index;
+					affected_vertex._BoneWeights[i] = vertex_weight.mWeight;
+
+					found_free_bone = true;
+
+					break;
+				}
+			}
+
+			if (!found_free_bone)
+			{
+				ASSERT(false, "Handle this!");
+			}
+		}
+	}
+}
+
+/*
+*	Processes a single mesh.
+*/
 FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode *const RESTRICT node, const aiMesh *const RESTRICT mesh, ModelFile *const RESTRICT model_file) NOEXCEPT
 {
 	//Add a new mesh.
@@ -71,12 +205,34 @@ FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode 
 	//Process the indices.
 	for (uint32 face_index{ 0 }; face_index < mesh->mNumFaces; ++face_index)
 	{
-		const aiFace& face{ mesh->mFaces[face_index] };
+		const aiFace &face{ mesh->mFaces[face_index] };
 
 		for (uint32 index_index{ 0 }; index_index < face.mNumIndices; ++index_index)
 		{
 			new_mesh._Indices.Emplace(face.mIndices[index_index]);
 		}
+	}
+}
+
+/*
+*	Processes a single node.
+*/
+FORCE_INLINE void ProcessNode(const aiScene *const RESTRICT scene, const aiNode *const RESTRICT node, AnimatedModelFile *const RESTRICT animated_model_file) NOEXCEPT
+{
+	//Process all meshes.
+	for (uint32 i{ 0 }; i < node->mNumMeshes; ++i)
+	{
+		//Cache the mesh.
+		const aiMesh *const RESTRICT mesh{ scene->mMeshes[node->mMeshes[i]] };
+
+		//Process the mesh.
+		ProcessMesh(scene, node, mesh, animated_model_file);
+	}
+
+	//Process all child nodes.
+	for (uint32 i{ 0 }; i < node->mNumChildren; ++i)
+	{
+		ProcessNode(scene, node->mChildren[i], animated_model_file);
 	}
 }
 
@@ -100,6 +256,42 @@ FORCE_INLINE void ProcessNode(const aiScene *const RESTRICT scene, const aiNode 
 	{
 		ProcessNode(scene, node->mChildren[i], model_file);
 	}
+}
+
+/*
+*	Reads the animated model file at the given file path. Returns if the read was succesful.
+*/
+NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimatedModelFile *const RESTRICT animated_model_file) NOEXCEPT
+{
+	//Define constants.
+	constexpr uint32 POST_PROCESS_FLAGS
+	{
+		aiProcess_CalcTangentSpace
+		| aiProcess_Triangulate
+		| aiProcess_LimitBoneWeights
+	};
+
+	ASSERT(File::Exists(file_path), "File path: " << file_path << " doesn't exist!");
+
+	//Set up the importer.
+	Assimp::Importer importer;
+
+	//Load the scene.
+	const aiScene *const RESTRICT scene{ importer.ReadFile(file_path, POST_PROCESS_FLAGS) };
+
+	//Check if the import succeeded.
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		ASSERT(false, "Import failed: " << importer.GetErrorString());
+
+		return false;
+	}
+
+	//Process the root node.
+	ProcessNode(scene, scene->mRootNode, animated_model_file);
+
+	//Return that the read succeeded!
+	return true;
 }
 
 /*

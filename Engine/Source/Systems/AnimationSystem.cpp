@@ -51,6 +51,7 @@ void AnimationSystem::RenderUpdate() NOEXCEPT
 */
 void AnimationSystem::UpdateAnimatedModel(const float32 delta_time, AnimatedModelInstanceData &instance_data) NOEXCEPT
 {
+	/*
 	StaticArray<Matrix4x4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> bone_transforms;
 
 	if (instance_data._CurrentAnimationResource)
@@ -92,6 +93,7 @@ void AnimationSystem::UpdateAnimatedModel(const float32 delta_time, AnimatedMode
 	const uint64 dataSizes[]{ sizeof(Matrix4x4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS };
 
 	RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &instance_data._AnimationDataBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]);
+	*/
 }
 
 /*
@@ -99,6 +101,7 @@ void AnimationSystem::UpdateAnimatedModel(const float32 delta_time, AnimatedMode
 */
 bool AnimationSystem::FindBoneIndex(const Bone* const RESTRICT bone, const HashString name, uint32* const RESTRICT bone_index) NOEXCEPT
 {
+	/*
 	if (bone->_Name == name)
 	{
 		*bone_index = bone->_Index;
@@ -114,5 +117,7 @@ bool AnimationSystem::FindBoneIndex(const Bone* const RESTRICT bone, const HashS
 		}
 	}
 
+	return false;
+	*/
 	return false;
 }
