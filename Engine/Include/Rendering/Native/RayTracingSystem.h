@@ -4,13 +4,13 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-//Components.
-#include <Components/Components/StaticModelComponent.h>
-
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>
 #include <Rendering/Native/RayTracing/RayTracingHitGroup.h>
+
+//Forward declarations.
+class StaticModelInstanceData;
 
 class RayTracingSystem final
 {

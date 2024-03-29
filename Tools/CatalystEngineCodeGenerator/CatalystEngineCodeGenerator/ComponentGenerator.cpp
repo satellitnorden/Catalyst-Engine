@@ -24,6 +24,9 @@ public:
 	//Denotes whether or not this component wants an "Initialize()" call.
 	bool _Initialize;
 
+	//Denotes whether or not this component wants a "PostInitialize()" call.
+	bool _PostInitialize;
+
 };
 
 /*
@@ -216,6 +219,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 
 	//Also set up some defaults.
 	component_entry["Initialize"] = false;
+	component_entry["PostInitialize"] = false;
 
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
@@ -226,6 +230,12 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 
 	while (std::getline(file, current_line))
 	{
+		//Stop if we've reached the end.
+		if (current_line == ");")
+		{
+			break;
+		}
+
 		//Check if this component wants an "Initialize()" call.
 		{
 			const size_t position{ current_line.find("COMPONENT_INITIALIZE(") };
@@ -233,6 +243,18 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 			if (position != std::string::npos)
 			{
 				component_entry["Initialize"] = true;
+
+				continue;
+			}
+		}
+
+		//Check if this component wants an "PostInitialize()" call.
+		{
+			const size_t position{ current_line.find("COMPONENT_POST_INITIALIZE(") };
+
+			if (position != std::string::npos)
+			{
+				component_entry["PostInitialize"] = true;
 
 				continue;
 			}
@@ -299,6 +321,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this component wants an "Initialize()" call.
 				new_component_data._Initialize = component_entry["Initialize"];
+
+				//Set whether or not this component wants a "PostInitialize()" call.
+				new_component_data._PostInitialize = component_entry["PostInitialize"];
 			}
 		}
 
@@ -346,6 +371,21 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		if (component_data[i]._Initialize)
 		{
 			file << "\t" << component_data[i]._Name.c_str() << "::Instance->Initialize();" << std::endl;
+		}
+	}
+
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::PostInitialize()" function.
+	file << "void Components::PostInitialize() NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	for (uint64 i{ 0 }; i < component_data.size(); ++i)
+	{
+		if (component_data[i]._PostInitialize)
+		{
+			file << "\t" << component_data[i]._Name.c_str() << "::Instance->PostInitialize();" << std::endl;
 		}
 	}
 

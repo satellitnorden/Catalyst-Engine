@@ -85,14 +85,6 @@ public:
 	}
 
 	/*
-	*	Post-Initializes this component.
-	*/
-	FORCE_INLINE virtual void PostInitialize() NOEXCEPT
-	{
-
-	}
-
-	/*
 	*	Terminates this component.
 	*/
 	FORCE_INLINE virtual void Terminate() NOEXCEPT
@@ -420,6 +412,11 @@ public:
 	*/
 	static void Initialize() NOEXCEPT;
 
+	/*
+	*	Post-Initializes components.
+	*/
+	static void PostInitialize() NOEXCEPT;
+
 };
 
 /*
@@ -428,6 +425,13 @@ public:
 #define COMPONENT_INITIALIZE()		\
 public:								\
 	void Initialize() NOEXCEPT;
+
+/*
+*	Put this in your component declaration and implement it to receive a "PostInitialize"() call.
+*/
+#define COMPONENT_POST_INITIALIZE()	\
+public:								\
+	void PostInitialize() NOEXCEPT;
 
 /*
 *	Declares a component.

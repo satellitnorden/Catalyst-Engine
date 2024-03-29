@@ -2,6 +2,7 @@
 #include <Rendering/Native/RayTracingSystem.h>
 
 //Components.
+#include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
 //Profiling.

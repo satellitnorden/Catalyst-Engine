@@ -5,6 +5,7 @@
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanCommandBufferAbstraction.h>
 #include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/Vertex.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
