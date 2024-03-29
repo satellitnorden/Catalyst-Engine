@@ -16,14 +16,8 @@ DEFINE_SINGLETON(ComponentSystem);
 */
 void ComponentSystem::Initialize() NOEXCEPT
 {
-	//Initialize all components.
-	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
-	{
-		//Cache the component.
-		Component *const RESTRICT component{ Components::At(component_index) };
-
-		component->Initialize();
-	}
+	//Initialize components.
+	Components::Initialize();
 
 	//Register all updates.
 	CatalystEngineSystem::Instance->RegisterUpdate

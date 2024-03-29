@@ -192,13 +192,9 @@ DECLARE_COMPONENT
 	ParticleSystemComponent,
 	ParticleSystemInitializationData,
 	ParticleSystemInstanceData,
+	COMPONENT_INITIALIZE()
 
 public:
-
-	/*
-	*	Initializes this component.
-	*/
-	void Initialize() NOEXCEPT override;
 
 	/*
 	*	Post-initializes this component.

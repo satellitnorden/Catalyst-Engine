@@ -77,13 +77,9 @@ DECLARE_COMPONENT
 	StaticModelComponent,
 	StaticModelInitializationData,
 	StaticModelInstanceData,
+	COMPONENT_INITIALIZE()
 
 public:
-
-	/*
-	*	Initializes this component.
-	*/
-	void Initialize() NOEXCEPT override;
 
 	/*
 	*	Runs after all components have created their instance for the given entity.

@@ -21,6 +21,9 @@ public:
 	//The name.
 	std::string _Name;
 
+	//Denotes whether or not this component wants an "Initialize()" call.
+	bool _Initialize;
+
 };
 
 /*
@@ -207,6 +210,34 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 
 	//Add the entry for this component.
 	nlohmann::json &component_entry{ (*JSON)[name.c_str()] };
+
+	//Set the name.
+	component_entry["Name"] = name.c_str();
+
+	//Also set up some defaults.
+	component_entry["Initialize"] = false;
+
+	//Set up the arguments.
+	std::array<std::string, 8> arguments;
+
+	//Walk through the rest of the lines.
+	std::string previous_value;
+	uint64 value_index{ 0 };
+
+	while (std::getline(file, current_line))
+	{
+		//Check if this component wants an "Initialize()" call.
+		{
+			const size_t position{ current_line.find("COMPONENT_INITIALIZE(") };
+
+			if (position != std::string::npos)
+			{
+				component_entry["Initialize"] = true;
+
+				continue;
+			}
+		}
+	}
 }
 
 /*
@@ -265,6 +296,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set the name.
 				new_component_data._Name = component_iterator.key().c_str();
+
+				//Set whether or not this component wants an "Initialize()" call.
+				new_component_data._Initialize = component_entry["Initialize"];
 			}
 		}
 
@@ -299,6 +333,21 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "\t\t}" << std::endl;
 
 	file << "\t}" << std::endl;
+
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::Initialize()" function.
+	file << "void Components::Initialize() NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	for (uint64 i{ 0 }; i < component_data.size(); ++i)
+	{
+		if (component_data[i]._Initialize)
+		{
+			file << "\t" << component_data[i]._Name.c_str() << "::Instance->Initialize();" << std::endl;
+		}
+	}
 
 	file << "}";
 }

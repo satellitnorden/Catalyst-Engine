@@ -31,13 +31,9 @@ DECLARE_COMPONENT
 	CircleMarkerComponent,
 	CircleMarkerInitializationData,
 	CircleMarkerInstanceData,
+	COMPONENT_INITIALIZE()
 
 public:
-
-	/*
-	*	Initializes this component.
-	*/
-	void Initialize() NOEXCEPT override;
 
 	/*
 	*	Runs after all components have created their instance for the given entity.

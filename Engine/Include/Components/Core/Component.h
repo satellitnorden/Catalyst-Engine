@@ -85,14 +85,6 @@ public:
 	}
 
 	/*
-	*	Initializes this component.
-	*/
-	FORCE_INLINE virtual void Initialize() NOEXCEPT
-	{
-
-	}
-
-	/*
 	*	Post-Initializes this component.
 	*/
 	FORCE_INLINE virtual void PostInitialize() NOEXCEPT
@@ -406,6 +398,38 @@ public:
 };
 
 /*
+*	"Manager" class for all components.
+*/
+class Components final
+{
+
+public:
+
+	/*
+	*	Returns the number of components.
+	*/
+	static NO_DISCARD uint64 Size() NOEXCEPT;
+
+	/*
+	*	Returns the component at the given index.
+	*/
+	static NO_DISCARD Component* const RESTRICT At(const uint64 index) NOEXCEPT;
+
+	/*
+	*	Initializes components.
+	*/
+	static void Initialize() NOEXCEPT;
+
+};
+
+/*
+*	Put this in your component declaration and implement it to receive an "Initialize"() call.
+*/
+#define COMPONENT_INITIALIZE()		\
+public:								\
+	void Initialize() NOEXCEPT;
+
+/*
 *	Declares a component.
 */
 #define DECLARE_COMPONENT(COMPONENT_CLASS, INITIALIZATION_DATA_CLASS, INSTANCE_DATA_CLASS, ...)													\
@@ -499,23 +523,3 @@ private:																																		\
 																																				\
 __VA_ARGS__																																		\
 };																																				\
-
-/*
-*	"Manager" class for all components.
-*/
-class Components final
-{
-
-public:
-
-	/*
-	*	Returns the number of components.
-	*/
-	static NO_DISCARD uint64 Size() NOEXCEPT;
-
-	/*
-	*	Returns the component at the given index.
-	*/
-	static NO_DISCARD Component *const RESTRICT At(const uint64 index) NOEXCEPT;
-
-};
