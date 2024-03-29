@@ -50,15 +50,6 @@ void LightComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 }
 
 /*
-*	Runs after all components have created their instance for the given entity.
-*	Useful if there is some setup needed involving multiple components.
-*/
-void LightComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
-{
-
-}
-
-/*
 *	Destroys an instance.
 */
 void LightComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT

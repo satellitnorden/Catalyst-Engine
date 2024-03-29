@@ -133,20 +133,6 @@ public:
 	}
 
 	/*
-	*	Runs before an instance is created.
-	*/
-	FORCE_INLINE void PreCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
-	{
-		for (uint64 i{ _EntityToInstanceMappings.Size() }; i <= entity->_EntityIdentifier; ++i)
-		{
-			_EntityToInstanceMappings.Emplace(UINT64_MAXIMUM);
-		}
-
-		_EntityToInstanceMappings[entity->_EntityIdentifier] = _InstanceToEntityMappings.Size();
-		_InstanceToEntityMappings.Emplace(entity);
-	}
-
-	/*
 	*	Creates an instance.
 	*/
 	virtual void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
@@ -155,7 +141,10 @@ public:
 	*	Runs after all components have created their instance for the given entity.
 	*	Useful if there is some setup needed involving multiple components.
 	*/
-	virtual void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT = 0;
+	FORCE_INLINE virtual void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Destroys an instance.
@@ -185,11 +174,6 @@ public:
 	{
 		return _InstanceToEntityMappings[instance_index];
 	}
-
-	/*
-	*	Returns the number of instances.
-	*/
-	virtual NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT = 0;
 
 	/*
 	*	Returns the number of sub-instances for the given instance.
@@ -362,6 +346,26 @@ private:
 	//The editable fields.
 	DynamicArray<ComponentEditableField> _EditableFields;
 
+	////////////////////////////////////////////////////////
+	// The below functions are common for all components! //
+	////////////////////////////////////////////////////////
+
+public:
+
+	/*
+	*	Runs before an instance is created.
+	*/
+	FORCE_INLINE void PreCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
+	{
+		for (uint64 i{ _EntityToInstanceMappings.Size() }; i <= entity->_EntityIdentifier; ++i)
+		{
+			_EntityToInstanceMappings.Emplace(UINT64_MAXIMUM);
+		}
+
+		_EntityToInstanceMappings[entity->_EntityIdentifier] = _InstanceToEntityMappings.Size();
+		_InstanceToEntityMappings.Emplace(entity);
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////
 	// The below functions are automatically added to a component with DECLARE_COMPONENT()! //
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -377,6 +381,11 @@ public:
 	*	Frees initialization data.
 	*/
 	virtual void FreeInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
+
+	/*
+	*	Returns the number of instances.
+	*/
+	virtual NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT = 0;
 
 };
 
@@ -439,7 +448,6 @@ public:																																			\
 		AddComponentToAllComponents(this);																										\
 	}																																			\
 	void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;		\
-	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;																	\
 	void DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT override;																		\
 	FORCE_INLINE NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT override																	\
 	{																																			\

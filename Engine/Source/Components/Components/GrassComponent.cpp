@@ -102,15 +102,6 @@ void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 }
 
 /*
-*	Runs after all components have created their instance for the given entity.
-*	Useful if there is some setup needed involving multiple components.
-*/
-void GrassComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
-{
-
-}
-
-/*
 *	Destroys an instance.
 */
 void GrassComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT

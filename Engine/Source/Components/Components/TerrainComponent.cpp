@@ -191,15 +191,6 @@ void TerrainComponent::CreateInstance(Entity *const RESTRICT entity, ComponentIn
 }
 
 /*
-*	Runs after all components have created their instance for the given entity.
-*	Useful if there is some setup needed involving multiple components.
-*/
-void TerrainComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
-{
-
-}
-
-/*
 *	Destroys an instance.
 */
 void TerrainComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT

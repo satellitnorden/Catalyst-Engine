@@ -84,15 +84,6 @@ void InstancedImpostorComponent::CreateInstance(Entity *const RESTRICT entity, C
 }
 
 /*
-*	Runs after all components have created their instance for the given entity.
-*	Useful if there is some setup needed involving multiple components.
-*/
-void InstancedImpostorComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
-{
-
-}
-
-/*
 *	Destroys an instance.
 */
 void InstancedImpostorComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT

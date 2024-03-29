@@ -58,4 +58,18 @@ public:
 
 };
 
-DECLARE_COMPONENT(AnimatedModelComponent, AnimatedModelInitializationData, AnimatedModelInstanceData);
+DECLARE_COMPONENT
+(
+	AnimatedModelComponent,
+	AnimatedModelInitializationData,
+	AnimatedModelInstanceData,
+
+public:
+
+	/*
+	*	Runs after all components have created their instance for the given entity.
+	*	Useful if there is some setup needed involving multiple components.
+	*/
+	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;
+	
+);
