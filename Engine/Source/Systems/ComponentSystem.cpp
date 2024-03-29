@@ -140,12 +140,7 @@ void ComponentSystem::PostInitialize() NOEXCEPT
 void ComponentSystem::Terminate() NOEXCEPT
 {
 	//Terminate all components.
-	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
-	{
-		//Cache the component.
-		Component *const RESTRICT component{ Components::At(component_index) };
-		component->Terminate();
-	}
+	Components::Terminate();
 }
 
 /*

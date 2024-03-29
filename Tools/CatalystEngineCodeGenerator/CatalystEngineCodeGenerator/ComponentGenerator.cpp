@@ -27,6 +27,9 @@ public:
 	//Denotes whether or not this component wants a "PostInitialize()" call.
 	bool _PostInitialize;
 
+	//Denotes whether or not this component wants a "Terminate()" call.
+	bool _Terminate;
+
 };
 
 /*
@@ -220,6 +223,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 	//Also set up some defaults.
 	component_entry["Initialize"] = false;
 	component_entry["PostInitialize"] = false;
+	component_entry["Terminate"] = false;
 
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
@@ -255,6 +259,18 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 			if (position != std::string::npos)
 			{
 				component_entry["PostInitialize"] = true;
+
+				continue;
+			}
+		}
+
+		//Check if this component wants an "Terminate()" call.
+		{
+			const size_t position{ current_line.find("COMPONENT_TERMINATE(") };
+
+			if (position != std::string::npos)
+			{
+				component_entry["Terminate"] = true;
 
 				continue;
 			}
@@ -324,6 +340,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this component wants a "PostInitialize()" call.
 				new_component_data._PostInitialize = component_entry["PostInitialize"];
+
+				//Set whether or not this component wants a "Terminate()" call.
+				new_component_data._Terminate = component_entry["Terminate"];
 			}
 		}
 
@@ -386,6 +405,21 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		if (component_data[i]._PostInitialize)
 		{
 			file << "\t" << component_data[i]._Name.c_str() << "::Instance->PostInitialize();" << std::endl;
+		}
+	}
+
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::Terminate()" function.
+	file << "void Components::Terminate() NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	for (uint64 i{ 0 }; i < component_data.size(); ++i)
+	{
+		if (component_data[i]._Terminate)
+		{
+			file << "\t" << component_data[i]._Name.c_str() << "::Instance->Terminate();" << std::endl;
 		}
 	}
 

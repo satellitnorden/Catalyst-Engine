@@ -85,14 +85,6 @@ public:
 	}
 
 	/*
-	*	Terminates this component.
-	*/
-	FORCE_INLINE virtual void Terminate() NOEXCEPT
-	{
-
-	}
-
-	/*
 	*	Sets default values for initialization data.
 	*/
 	FORCE_INLINE virtual void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
@@ -413,25 +405,37 @@ public:
 	static void Initialize() NOEXCEPT;
 
 	/*
-	*	Post-Initializes components.
+	*	Post-initializes components.
 	*/
 	static void PostInitialize() NOEXCEPT;
+
+	/*
+	*	Terminates components.
+	*/
+	static void Terminate() NOEXCEPT;
 
 };
 
 /*
-*	Put this in your component declaration and implement it to receive an "Initialize"() call.
+*	Put this in your component declaration and implement it to receive an "Initialize()" call.
 */
 #define COMPONENT_INITIALIZE()		\
 public:								\
 	void Initialize() NOEXCEPT;
 
 /*
-*	Put this in your component declaration and implement it to receive a "PostInitialize"() call.
+*	Put this in your component declaration and implement it to receive a "PostInitialize()" call.
 */
 #define COMPONENT_POST_INITIALIZE()	\
 public:								\
 	void PostInitialize() NOEXCEPT;
+
+/*
+*	Put this in your component declaration and implement it to receive a "Terminate()" call.
+*/
+#define COMPONENT_TERMINATE()	\
+public:							\
+	void Terminate() NOEXCEPT;
 
 /*
 *	Declares a component.
