@@ -87,5 +87,6 @@ DECLARE_COMPONENT
 (
 	InstancedImpostorComponent,
 	InstancedImpostorInitializationData,
-	InstancedImpostorInstanceData
+	InstancedImpostorInstanceData,
+	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
 );

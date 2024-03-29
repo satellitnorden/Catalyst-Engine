@@ -180,6 +180,7 @@ DECLARE_COMPONENT
 	TerrainComponent,
 	TerrainInitializationData,
 	TerrainInstanceData,
+	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 1)
 
 public:
 

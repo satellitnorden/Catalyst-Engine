@@ -17,130 +17,6 @@
 #include <Terrain/TerrainQuadTreeUtilities.h>
 
 /*
-*	Returns if this component needs pre-processing.
-*/
-NO_DISCARD bool WaterComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return true;
-}
-
-/*
-*	Preprocessed initialization data an instance.
-*/
-void WaterComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-{
-	//Cache the initialization data.
-	WaterInitializationData *const RESTRICT _initialization_data{ static_cast<WaterInitializationData *const RESTRICT>(initialization_data) };
-
-	//Calculate the world space axis aligned bounding box.
-	AxisAlignedBoundingBox3D axis_aligned_bounding_box;
-
-	axis_aligned_bounding_box._Minimum._X = -(static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
-	axis_aligned_bounding_box._Minimum._Y = _initialization_data->_WorldPosition.GetLocalPosition()._Y;
-	axis_aligned_bounding_box._Minimum._Z = -(static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
-
-	axis_aligned_bounding_box._Maximum._X = (static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
-	axis_aligned_bounding_box._Maximum._Y = _initialization_data->_WorldPosition.GetLocalPosition()._Y;
-	axis_aligned_bounding_box._Maximum._Z = (static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
-
-	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Minimum);
-	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Maximum);
-
-	//Construct the plane.
-	DynamicArray<TerrainVertex> vertices;
-	DynamicArray<uint32> indices;
-
-	TerrainGeneralUtilities::GenerateTerrainPlane
-	(
-		_initialization_data->_BaseResolution,
-		&vertices,
-		&indices
-	);
-
-	StaticArray<void* RESTRICT, 2> buffer_data;
-
-	buffer_data[0] = vertices.Data();
-	buffer_data[1] = indices.Data();
-
-	StaticArray<uint64, 2> buffer_data_sizes;
-
-	buffer_data_sizes[0] = sizeof(TerrainVertex) * vertices.Size();
-	buffer_data_sizes[1] = sizeof(uint32) * indices.Size();
-
-	RenderingSystem::Instance->CreateBuffer(buffer_data_sizes[0] + buffer_data_sizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &_initialization_data->_PreprocessedData._Buffer);
-	RenderingSystem::Instance->UploadDataToBuffer(buffer_data.Data(), buffer_data_sizes.Data(), 2, &_initialization_data->_PreprocessedData._Buffer);
-
-	_initialization_data->_PreprocessedData._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
-	_initialization_data->_PreprocessedData._IndexCount = static_cast<uint32>(indices.Size());
-}
-
-/*
-*	Creates an instance.
-*/
-void WaterComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-{
-	//Set up the instance data.
-	WaterInitializationData *const RESTRICT _initialization_data{ static_cast<WaterInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	WaterInstanceData &instance_data{ _InstanceData.Back() };
-
-	instance_data._WorldPosition = _initialization_data->_WorldPosition;
-	instance_data._WorldSpaceAxisAlignedBoundingBox = _initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
-	instance_data._PatchSize = _initialization_data->_PatchSize;
-	instance_data._BaseResolution = _initialization_data->_BaseResolution;
-	instance_data._MaximumSubdivisionSteps = _initialization_data->_MaximumSubdivisionSteps;
-
-	instance_data._Buffer = _initialization_data->_PreprocessedData._Buffer;
-	instance_data._IndexOffset = _initialization_data->_PreprocessedData._IndexOffset;
-	instance_data._IndexCount = _initialization_data->_PreprocessedData._IndexCount;
-	instance_data._Texture = _initialization_data->_Texture;
-
-	instance_data._QuadTree._RootNode._Depth = 0;
-	instance_data._QuadTree._RootNode._Borders = 0;
-	instance_data._QuadTree._RootNode._Minimum = instance_data._QuadTree._RootNode._Maximum = Vector2<float32>(instance_data._WorldPosition.GetLocalPosition()._X, instance_data._WorldPosition.GetLocalPosition()._Z);
-	instance_data._QuadTree._RootNode._Minimum -= Vector2<float32>(static_cast<float32>(instance_data._PatchSize) * 0.5f);
-	instance_data._QuadTree._RootNode._Maximum = Vector2<float32>(static_cast<float32>(instance_data._PatchSize) * 0.5f);
-	instance_data._QuadTree._RootNode._AxisAlignedBoundingBox = instance_data._WorldSpaceAxisAlignedBoundingBox.GetLocalAxisAlignedBoundingBox();
-	instance_data._QuadTree._RootNode._Position = Vector2<float32>(instance_data._WorldPosition.GetLocalPosition()._X, instance_data._WorldPosition.GetLocalPosition()._Z);
-	instance_data._QuadTree._RootNode._MinimumHeightMapCoordinate = Vector2<float32>(0.0f);
-	instance_data._QuadTree._RootNode._MaximumHeightMapCoordinate = Vector2<float32>(1.0f);
-	instance_data._QuadTree._RootNode._PatchSize = static_cast<float32>(instance_data._PatchSize);
-}
-
-/*
-*	Destroys an instance.
-*/
-void WaterComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
-{
-	//Cache the instance index.
-	const uint64 instance_index{ EntityToInstance(entity) };
-
-	//Cache the instance data.
-	WaterInstanceData &instance_data{ _InstanceData[instance_index] };
-
-	//Destroy stuff.
-	RenderingSystem::Instance->DestroyBuffer(&instance_data._Buffer);
-
-	//Remove the instance.
-	RemoveInstance(entity);
-}
-
-/*
-*	Returns the number of sub-instances for the given instance.
-*/
-NO_DISCARD uint64 WaterComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
-{
-	return 1;
-}
-
-void WaterComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
-{
-	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
-	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = 1;
-}
-
-/*
 *	Checks combination of a node.
 */
 void CheckCombination(WaterInstanceData &instance_data, const Vector3<float32> &camera_position, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
@@ -190,7 +66,7 @@ void CheckSubdivision(WaterInstanceData &instance_data, const Vector3<float32> &
 
 			for (uint64 current_node_index{ 0 }; current_node_index < 4; ++current_node_index)
 			{
-				TerrainQuadTreeNode &child_node{ node->_ChildNodes[current_node_index] };
+				TerrainQuadTreeNode& child_node{ node->_ChildNodes[current_node_index] };
 
 				child_node._Depth = node->_Depth + 1;
 				child_node._Borders = 0;
@@ -276,7 +152,7 @@ void CheckSubdivision(WaterInstanceData &instance_data, const Vector3<float32> &
 /*
 *	Calculates borders for the given node.
 */
-void CalculateBorders(WaterInstanceData &instance_data, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+void CalculateBorders(WaterInstanceData& instance_data, TerrainQuadTreeNode* const RESTRICT node) NOEXCEPT
 {
 	//If this node is subdivided, calculate new borders for it's child nodes.
 	if (node->IsSubdivided())
@@ -397,15 +273,9 @@ void CullWaterQuadTreeNode
 /*
 *	Updates this component.
 */
-void WaterComponent::Update
-(
-	const UpdatePhase update_phase,
-	const uint64 start_instance_index,
-	const uint64 end_instance_index,
-	const uint64 sub_instance_index
-) NOEXCEPT
+void WaterComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT
 {
-	PROFILING_SCOPE("WaterComponent::Update");
+	PROFILING_SCOPE("WaterComponent::ParallelBatchUpdate");
 
 	switch (update_phase)
 	{
@@ -426,7 +296,7 @@ void WaterComponent::Update
 				{
 					//Calculate the camera relative position.
 					const Vector3<float32> camera_relative_position{ camera_world_position.GetRelativePosition(instance_data._WorldPosition.GetCell()) };
-				
+
 					//Check combination.
 					CheckCombination(instance_data, camera_relative_position, &instance_data._QuadTree._RootNode);
 
@@ -441,7 +311,7 @@ void WaterComponent::Update
 				{
 					//Cull the instance.
 					instance_data._Visibility = Culling::IsWithinFrustum(instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell), *frustum);
-				
+
 					//If this instance is visible, walk through the quad tree and determine the visibility of each node.
 					if (instance_data._Visibility)
 					{
@@ -470,4 +340,142 @@ void WaterComponent::Update
 			break;
 		}
 	}
+}
+
+/*
+*	Returns if this component needs pre-processing.
+*/
+NO_DISCARD bool WaterComponent::NeedsPreProcessing() const NOEXCEPT
+{
+	return true;
+}
+
+/*
+*	Preprocessed initialization data an instance.
+*/
+void WaterComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+{
+	//Cache the initialization data.
+	WaterInitializationData *const RESTRICT _initialization_data{ static_cast<WaterInitializationData *const RESTRICT>(initialization_data) };
+
+	//Calculate the world space axis aligned bounding box.
+	AxisAlignedBoundingBox3D axis_aligned_bounding_box;
+
+	axis_aligned_bounding_box._Minimum._X = -(static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Minimum._Y = _initialization_data->_WorldPosition.GetLocalPosition()._Y;
+	axis_aligned_bounding_box._Minimum._Z = -(static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
+
+	axis_aligned_bounding_box._Maximum._X = (static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Maximum._Y = _initialization_data->_WorldPosition.GetLocalPosition()._Y;
+	axis_aligned_bounding_box._Maximum._Z = (static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
+
+	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Minimum);
+	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Maximum);
+
+	//Construct the plane.
+	DynamicArray<TerrainVertex> vertices;
+	DynamicArray<uint32> indices;
+
+	TerrainGeneralUtilities::GenerateTerrainPlane
+	(
+		_initialization_data->_BaseResolution,
+		&vertices,
+		&indices
+	);
+
+	StaticArray<void* RESTRICT, 2> buffer_data;
+
+	buffer_data[0] = vertices.Data();
+	buffer_data[1] = indices.Data();
+
+	StaticArray<uint64, 2> buffer_data_sizes;
+
+	buffer_data_sizes[0] = sizeof(TerrainVertex) * vertices.Size();
+	buffer_data_sizes[1] = sizeof(uint32) * indices.Size();
+
+	RenderingSystem::Instance->CreateBuffer(buffer_data_sizes[0] + buffer_data_sizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &_initialization_data->_PreprocessedData._Buffer);
+	RenderingSystem::Instance->UploadDataToBuffer(buffer_data.Data(), buffer_data_sizes.Data(), 2, &_initialization_data->_PreprocessedData._Buffer);
+
+	_initialization_data->_PreprocessedData._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
+	_initialization_data->_PreprocessedData._IndexCount = static_cast<uint32>(indices.Size());
+}
+
+/*
+*	Creates an instance.
+*/
+void WaterComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+{
+	//Set up the instance data.
+	WaterInitializationData *const RESTRICT _initialization_data{ static_cast<WaterInitializationData *const RESTRICT>(initialization_data) };
+	_InstanceData.Emplace();
+	WaterInstanceData &instance_data{ _InstanceData.Back() };
+
+	instance_data._WorldPosition = _initialization_data->_WorldPosition;
+	instance_data._WorldSpaceAxisAlignedBoundingBox = _initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
+	instance_data._PatchSize = _initialization_data->_PatchSize;
+	instance_data._BaseResolution = _initialization_data->_BaseResolution;
+	instance_data._MaximumSubdivisionSteps = _initialization_data->_MaximumSubdivisionSteps;
+
+	instance_data._Buffer = _initialization_data->_PreprocessedData._Buffer;
+	instance_data._IndexOffset = _initialization_data->_PreprocessedData._IndexOffset;
+	instance_data._IndexCount = _initialization_data->_PreprocessedData._IndexCount;
+	instance_data._Texture = _initialization_data->_Texture;
+
+	instance_data._QuadTree._RootNode._Depth = 0;
+	instance_data._QuadTree._RootNode._Borders = 0;
+	instance_data._QuadTree._RootNode._Minimum = instance_data._QuadTree._RootNode._Maximum = Vector2<float32>(instance_data._WorldPosition.GetLocalPosition()._X, instance_data._WorldPosition.GetLocalPosition()._Z);
+	instance_data._QuadTree._RootNode._Minimum -= Vector2<float32>(static_cast<float32>(instance_data._PatchSize) * 0.5f);
+	instance_data._QuadTree._RootNode._Maximum = Vector2<float32>(static_cast<float32>(instance_data._PatchSize) * 0.5f);
+	instance_data._QuadTree._RootNode._AxisAlignedBoundingBox = instance_data._WorldSpaceAxisAlignedBoundingBox.GetLocalAxisAlignedBoundingBox();
+	instance_data._QuadTree._RootNode._Position = Vector2<float32>(instance_data._WorldPosition.GetLocalPosition()._X, instance_data._WorldPosition.GetLocalPosition()._Z);
+	instance_data._QuadTree._RootNode._MinimumHeightMapCoordinate = Vector2<float32>(0.0f);
+	instance_data._QuadTree._RootNode._MaximumHeightMapCoordinate = Vector2<float32>(1.0f);
+	instance_data._QuadTree._RootNode._PatchSize = static_cast<float32>(instance_data._PatchSize);
+}
+
+/*
+*	Destroys an instance.
+*/
+void WaterComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Cache the instance index.
+	const uint64 instance_index{ EntityToInstance(entity) };
+
+	//Cache the instance data.
+	WaterInstanceData &instance_data{ _InstanceData[instance_index] };
+
+	//Destroy stuff.
+	RenderingSystem::Instance->DestroyBuffer(&instance_data._Buffer);
+
+	//Remove the instance.
+	RemoveInstance(entity);
+}
+
+/*
+*	Returns the number of sub-instances for the given instance.
+*/
+NO_DISCARD uint64 WaterComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
+{
+	return 1;
+}
+
+void WaterComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
+{
+	update_configuration->_UpdatePhaseMask = static_cast<UpdatePhase>(0);
+	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
+	update_configuration->_BatchSize = 0;
+}
+
+/*
+*	Updates this component.
+*/
+void WaterComponent::Update
+(
+	const UpdatePhase update_phase,
+	const uint64 start_instance_index,
+	const uint64 end_instance_index,
+	const uint64 sub_instance_index
+) NOEXCEPT
+{
+	
 }

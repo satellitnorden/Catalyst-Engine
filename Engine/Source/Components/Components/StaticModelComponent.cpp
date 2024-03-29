@@ -51,6 +51,9 @@ void StaticModelComponent::Initialize() NOEXCEPT
 	);
 }
 
+/*
+*	Updates this component.
+*/
 void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT
 {
 	//Define constants.

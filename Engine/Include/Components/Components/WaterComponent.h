@@ -108,6 +108,7 @@ DECLARE_COMPONENT
 	WaterComponent,
 	WaterInitializationData,
 	WaterInstanceData,
+	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 1)
 	
 public:
 

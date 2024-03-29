@@ -82,17 +82,5 @@ void LightComponent::Update
 	const uint64 sub_instance_index
 ) NOEXCEPT
 {
-	PROFILING_SCOPE("LightComponent::Update");
-
-	/*
-	switch (update_phase)
-	{
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
-	*/
+	
 }

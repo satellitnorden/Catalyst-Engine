@@ -9,6 +9,65 @@
 #include <Rendering/Native/RenderingUtilities.h>
 
 /*
+*	Updates this component.
+*/
+void InstancedStaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT
+{
+	PROFILING_SCOPE("InstancedStaticModelComponent::ParallelBatchUpdate");
+
+	switch (update_phase)
+	{
+		case UpdatePhase::PRE_RENDER:
+		{
+			//Cache data that will be used.
+			const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
+			const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
+			const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
+
+			//Iterate over the instances.
+			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
+			{
+				//Cache the instance data.
+				InstancedStaticModelInstanceData &instance_data{ _InstanceData[instance_index] };
+
+				//Do culling.
+				{
+					//Set visibility to true.
+					instance_data._Visibility = true;
+
+					//Cache the camera relative axis aligned bounding box.
+					const AxisAlignedBoundingBox3D camera_relative_axis_aligned_bounding_box{ instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell) };
+
+					//Do distance culling.
+					if (instance_data._ModelFadeData.Valid())
+					{
+						const Vector3<float32> closest_position{ AxisAlignedBoundingBox3D::GetClosestPointInside(camera_relative_axis_aligned_bounding_box, camera_local_position) };
+						const float32 distance_squared{ Vector3<float32>::LengthSquared(camera_local_position - closest_position) };
+
+						instance_data._Visibility = distance_squared < (instance_data._ModelFadeData.Get()._EndFadeOutDistance * instance_data._ModelFadeData.Get()._EndFadeOutDistance);
+					}
+
+					//Do frustum culling.
+					if (instance_data._Visibility)
+					{
+						instance_data._Visibility = Culling::IsWithinFrustum(camera_relative_axis_aligned_bounding_box, *frustum);
+					}
+				}
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+}
+
+/*
 *	Returns if this component needs pre-processing.
 */
 NO_DISCARD bool InstancedStaticModelComponent::NeedsPreProcessing() const NOEXCEPT
@@ -123,17 +182,9 @@ NO_DISCARD uint64 InstancedStaticModelComponent::NumberOfSubInstances(const uint
 
 void InstancedStaticModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
 {
-	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
+	update_configuration->_UpdatePhaseMask = static_cast<UpdatePhase>(0);
 	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = 128;
-}
-
-/*
-*	Runs before the given update phase.
-*/
-void InstancedStaticModelComponent::PreUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
+	update_configuration->_BatchSize = 0;
 }
 
 /*
@@ -147,64 +198,5 @@ void InstancedStaticModelComponent::Update
 	const uint64 sub_instance_index
 ) NOEXCEPT
 {
-	PROFILING_SCOPE("InstancedStaticModelComponent::Update");
-
-	switch (update_phase)
-	{
-		case UpdatePhase::PRE_RENDER:
-		{
-			//Cache data that will be used.
-			const Vector3<int32> camera_cell{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell() };
-			const Vector3<float32> camera_local_position{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition() };
-			const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
-
-			//Iterate over the instances.
-			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
-			{
-				//Cache the instance data.
-				InstancedStaticModelInstanceData &instance_data{ _InstanceData[instance_index] };
-
-				//Do culling.
-				{
-					//Set visibility to true.
-					instance_data._Visibility = true;
-
-					//Cache the camera relative axis aligned bounding box.
-					const AxisAlignedBoundingBox3D camera_relative_axis_aligned_bounding_box{ instance_data._WorldSpaceAxisAlignedBoundingBox.GetRelativeAxisAlignedBoundingBox(camera_cell) };
-
-					//Do distance culling.
-					if (instance_data._ModelFadeData.Valid())
-					{
-						const Vector3<float32> closest_position{ AxisAlignedBoundingBox3D::GetClosestPointInside(camera_relative_axis_aligned_bounding_box, camera_local_position) };
-						const float32 distance_squared{ Vector3<float32>::LengthSquared(camera_local_position - closest_position) };
-
-						instance_data._Visibility = distance_squared < (instance_data._ModelFadeData.Get()._EndFadeOutDistance * instance_data._ModelFadeData.Get()._EndFadeOutDistance);
-					}
-
-					//Do frustum culling.
-					if (instance_data._Visibility)
-					{
-						instance_data._Visibility = Culling::IsWithinFrustum(camera_relative_axis_aligned_bounding_box, *frustum);
-					}
-				}
-			}
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
-}
-
-/*
-*	Runs after the given update phase.
-*/
-void InstancedStaticModelComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-
+	
 }

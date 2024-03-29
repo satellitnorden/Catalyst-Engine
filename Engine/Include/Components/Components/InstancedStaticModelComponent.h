@@ -106,6 +106,7 @@ DECLARE_COMPONENT
 	InstancedStaticModelComponent,
 	InstancedStaticModelInitializationData,
 	InstancedStaticModelInstanceData,
+	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
 
 public:
 

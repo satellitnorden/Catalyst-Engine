@@ -38,4 +38,5 @@ DECLARE_COMPONENT
 	WorldTransformInitializationData,
 	WorldTransformInstanceData,
 	COMPONENT_INITIALIZE()
+	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE, 512)
 );

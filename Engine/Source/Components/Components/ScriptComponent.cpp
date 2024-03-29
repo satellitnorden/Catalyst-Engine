@@ -26,7 +26,7 @@ void ScriptComponent::Initialize() NOEXCEPT
 */
 void ScriptComponent::SerialUpdate(const UpdatePhase update_phase) NOEXCEPT
 {
-	PROFILING_SCOPE("ScriptComponent::Update");
+	PROFILING_SCOPE("ScriptComponent::SerialUpdate");
 
 	switch (update_phase)
 	{
