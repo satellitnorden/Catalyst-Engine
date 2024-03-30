@@ -10,6 +10,9 @@
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
 
+//Entities.
+#include <Entities/Core/EntitySerialization.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
@@ -47,6 +50,17 @@ void EntitySystem::Initialize() NOEXCEPT
 	UpdatePhase::INPUT,
 	false,
 	false);
+}
+
+/*
+*	Creates an entity.
+*/
+NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(const WorldTransform &world_transform, AssetPointer<EntityAsset> entity) NOEXCEPT
+{
+	//Just let entity serialization take care of this.
+	uint64 stream_archive_position{ 0 };
+
+	return EntitySerialization::DeserializeFromStreamArchive(entity->_StreamArchive, &stream_archive_position, &world_transform);
 }
 
 /*

@@ -146,6 +146,11 @@ private:
 	NO_DISCARD bool BottomRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
 
 	/*
+	*	Saves an entity.
+	*/
+	void SaveEntity(const char *const RESTRICT file_path, Entity *const RESTRICT entity) NOEXCEPT;
+
+	/*
 	*	Duplicates an entry.
 	*/
 	void DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT;

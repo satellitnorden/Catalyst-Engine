@@ -109,6 +109,15 @@ public:
 	//The spawn rate, expressed in instances per second.
 	uint32 _SpawnRate;
 
+	//The position offset.
+	Vector3<float32> _PositionOffset;
+
+	//Denotes how much gravity affects these particles.
+	float32 _GravityAffection;
+
+	//Denotes how much wind affects these particles.
+	float32 _WindAffection;
+
 };
 
 /*

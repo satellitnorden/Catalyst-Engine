@@ -6,6 +6,7 @@
 #include <Core/General/Enumeration.h>
 
 //Components.
+#include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
 //Content.
@@ -16,6 +17,7 @@
 
 //Entities.
 #include <Entities/Core/EntitySerialization.h>
+#include <Entities/Core/EntityStatistics.h>
 
 //File.
 #include <File/Core/FileCore.h>
@@ -974,8 +976,21 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		//Add a text input for the name.
 		TextInputWidget("Name", selected_entity_editor_data._Name.Data(), selected_entity_editor_data._Name.Size());
 
+		//Add a save button.
+		if (ImGui::Button("Save"))
+		{
+			DynamicString chosen_file;
+
+			if (File::BrowseForFile(true, &chosen_file, "*.Entity"))
+			{
+				SaveEntity(chosen_file.Data(), selected_entity);
+			}
+		}
+
 		//Add a delete button.
 		bool should_delete{ false };
+
+		ImGui::SameLine();
 
 		if (ImGui::Button("Delete"))
 		{
@@ -984,6 +999,8 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 		//Add a duplicate button.
 		bool should_duplicate{ false };
+
+		ImGui::SameLine();
 
 		if (ImGui::Button("Duplicate"))
 		{
@@ -1449,6 +1466,62 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 	//This window should always be shown.
 	return true;
+}
+
+/*
+*	Saves an entity.
+*/
+void EditorLevelSystem::SaveEntity(const char *const RESTRICT file_path, Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Set up the JSON.
+	nlohmann::json JSON;
+
+	//Calculate the entity statistics.
+	EntityStatistics entity_statistics;
+
+	//Update entity statistics from the static model component.
+	if (StaticModelComponent::Instance->Has(entity))
+	{
+		//Cache the static model instance data.
+		const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity) };
+
+		//Cache the absolute axis aligned bounding box.
+		const AxisAlignedBoundingBox3D absolute_axis_aligned_bounding_box{ static_model_instance_data._WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox() };
+
+		//Expand the axis aligned bounding box.
+		entity_statistics._AxisAlignedBoundingBox.Expand(absolute_axis_aligned_bounding_box);
+	}
+
+	//Write the entity statistics.
+	nlohmann::json &entity_statistics_entry{ JSON["EntityStatistics"] };
+
+	{
+		nlohmann::json &axis_aligned_bounding_box_entry{ entity_statistics_entry["AxisAlignedBoundingBox"] };
+
+		{
+			nlohmann::json &minimum_entry{ axis_aligned_bounding_box_entry["Minimum"] };
+
+			minimum_entry["X"] = entity_statistics._AxisAlignedBoundingBox._Minimum._X;
+			minimum_entry["Y"] = entity_statistics._AxisAlignedBoundingBox._Minimum._Y;
+			minimum_entry["Z"] = entity_statistics._AxisAlignedBoundingBox._Minimum._Z;
+		}
+
+		{
+			nlohmann::json &maximum_entry{ axis_aligned_bounding_box_entry["Maximum"] };
+
+			maximum_entry["X"] = entity_statistics._AxisAlignedBoundingBox._Maximum._X;
+			maximum_entry["Y"] = entity_statistics._AxisAlignedBoundingBox._Maximum._Y;
+			maximum_entry["Z"] = entity_statistics._AxisAlignedBoundingBox._Maximum._Z;
+		}
+	}
+
+	//Serialize the entity.
+	EntitySerialization::SerializeToJSON(JSON, entity);
+
+	//Write the JSON to the file.
+	std::ofstream file{ file_path };
+	file << std::setw(4) << JSON;
+	file.close();
 }
 
 /*

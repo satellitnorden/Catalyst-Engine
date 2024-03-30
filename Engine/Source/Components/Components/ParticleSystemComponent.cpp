@@ -7,6 +7,9 @@
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
+//Physics.
+#include <Physics/Native/PhysicsCore.h>
+
 //Profiling.
 #include <Profiling/Profiling.h>
 
@@ -200,6 +203,27 @@ void ParticleSystemComponent::Initialize() NOEXCEPT
 		offsetof(ParticleSystemInitializationData, _Emitter._SpawnRate),
 		offsetof(ParticleSystemInstanceData, _MasterEmitter._SpawnRate)
 	);
+
+	AddEditableVector3Field
+	(
+		"Position Offset",
+		offsetof(ParticleSystemInitializationData, _Emitter._PositionOffset),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._PositionOffset)
+	);
+
+	AddEditableFloatField
+	(
+		"Gravity Affection",
+		offsetof(ParticleSystemInitializationData, _Emitter._GravityAffection),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._GravityAffection)
+	);
+
+	AddEditableFloatField
+	(
+		"Wind Affection",
+		offsetof(ParticleSystemInitializationData, _Emitter._WindAffection),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._WindAffection)
+	);
 }
 
 /*
@@ -263,6 +287,16 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 			//Cache the sub emitter.
 			ParticleSubEmitter &sub_emitter{ particle_system_instance_data._SubEmitters[sub_instance_index] };
 
+			//Cache the current world position.
+			WorldPosition current_world_position{ world_transform_instance_data._CurrentWorldTransform.GetWorldPosition() };
+
+			//Rotate the offset.
+			Vector3<float32> rotated_position_offset{ sub_emitter._Emitter._PositionOffset };
+			rotated_position_offset.Rotate(world_transform_instance_data._CurrentWorldTransform.GetRotation().ToEulerAngles());
+
+			//Apply the position offset.
+			current_world_position.SetLocalPosition(current_world_position.GetLocalPosition() + rotated_position_offset);
+
 			//Check spawning of new particles.
 			{
 				PROFILING_SCOPE("Spawn New Particles");
@@ -286,8 +320,8 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 						{
 							new_particle_instance._WorldPosition = WorldPosition
 							(
-								world_transform_instance_data._CurrentWorldTransform.GetCell(),
-								world_transform_instance_data._CurrentWorldTransform.GetLocalPosition() + CatalystRandomMath::RandomPointInSphere(sub_emitter._Emitter._SphereMode._Radius)
+								current_world_position.GetCell(),
+								current_world_position.GetLocalPosition() + CatalystRandomMath::RandomPointInSphere(sub_emitter._Emitter._SphereMode._Radius)
 							);
 
 							break;
@@ -338,6 +372,12 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 
 					if (instance._Age < instance._Lifetime)
 					{
+						//Apply gravity
+						if (sub_emitter._Emitter._GravityAffection > 0.0f)
+						{
+							instance._Velocity._Y -= PhysicsConstants::GRAVITY * delta_time * sub_emitter._Emitter._GravityAffection;
+						}
+
 						//Update the position based on the velocity.
 						{
 							Vector3<float32> local_position{ instance._WorldPosition.GetLocalPosition() };
@@ -353,16 +393,15 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 						//Calculate modifiers.
 						float32 size_modifier{ 1.0f };
 
-#if 1
 						//Apply wind.
+						if (sub_emitter._Emitter._WindAffection > 0.0f)
 						{
 							Vector3<float32> local_position{ instance._WorldPosition.GetLocalPosition() };
 
-							local_position += WorldSystem::Instance->GetWindSystem()->GetWindDirection() * WorldSystem::Instance->GetWindSystem()->GetWindSpeed() * 0.5f * delta_time;
+							local_position += WorldSystem::Instance->GetWindSystem()->GetWindDirection() * WorldSystem::Instance->GetWindSystem()->GetWindSpeed() * delta_time * sub_emitter._Emitter._WindAffection;
 
 							instance._WorldPosition.SetLocalPosition(local_position);
 						}
-#endif
 
 						//Modify the size based on the distance to the camera.
 						{
@@ -463,6 +502,11 @@ void ParticleSystemComponent::DefaultInitializationData(ComponentInitializationD
 	ParticleSystemInitializationData *const RESTRICT _initialization_data{ static_cast<ParticleSystemInitializationData *const RESTRICT>(initialization_data) };
 
 	_initialization_data->_Material = ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"));
+	_initialization_data->_Emitter._MinimumSize = Vector2<float32>(1.0f);
+	_initialization_data->_Emitter._MaximumSize = Vector2<float32>(1.0f);
+	_initialization_data->_Emitter._MinimumLifetime = 1.0f;
+	_initialization_data->_Emitter._MaximumLifetime = 1.0f;
+	_initialization_data->_Emitter._SpawnRate = 1;
 }
 
 /*

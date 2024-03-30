@@ -10,6 +10,10 @@
 #include <Concurrency/Task.h>
 #include <Concurrency/Spinlock.h>
 
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/EntityAsset.h>
+
 //Entities.
 #include <Entities/Core/Entity.h>
 #include <Entities/Core/EntityLinks.h>
@@ -19,6 +23,9 @@
 
 //Systems.
 #include <Systems/MemorySystem.h>
+
+//World.
+#include <World/Core/WorldTransform.h>
 
 //Forward declarations.
 class ComponentInitializationData;
@@ -43,6 +50,11 @@ public:
 	*	Initializes the entity system.
 	*/
 	void Initialize() NOEXCEPT;
+
+	/*
+	*	Creates an entity.
+	*/
+	NO_DISCARD Entity *const RESTRICT CreateEntity(const WorldTransform &world_transform, AssetPointer<EntityAsset> entity) NOEXCEPT;
 
 	/*
 	*	Creates an entity.
