@@ -195,6 +195,7 @@ DECLARE_COMPONENT
 	COMPONENT_INITIALIZE()
 	COMPONENT_POST_INITIALIZE()
 	COMPONENT_PARALLEL_SUB_INSTANCE_UPDATE(UpdatePhase::PRE_RENDER)
+	COMPONENT_POST_UPDATE(UpdatePhase::PRE_RENDER)
 
 public:
 
@@ -208,11 +209,6 @@ public:
 	*	Useful if there is some setup needed involving multiple components.
 	*/
 	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;
-
-	/*
-	*	Runs after the given update phase.
-	*/
-	void PostUpdate(const UpdatePhase update_phase) NOEXCEPT override;
 
 	/*
 	*	Callback for after an editable field change happens.

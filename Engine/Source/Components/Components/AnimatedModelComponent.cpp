@@ -104,24 +104,3 @@ NO_DISCARD uint64 AnimatedModelComponent::NumberOfSubInstances(const uint64 inst
 {
 	return 1;
 }
-
-void AnimatedModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
-{
-	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
-	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = 64;
-}
-
-/*
-*	Updates this component.
-*/
-void AnimatedModelComponent::Update
-(
-	const UpdatePhase update_phase,
-	const uint64 start_instance_index,
-	const uint64 end_instance_index,
-	const uint64 sub_instance_index
-) NOEXCEPT
-{
-	
-}

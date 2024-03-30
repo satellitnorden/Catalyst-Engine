@@ -24,7 +24,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 	(
 		[](void *const RESTRICT arguments)
 		{
-			static_cast<ComponentSystem *const RESTRICT>(arguments)->UpdateComponents(UpdatePhase::PRE);
+			Components::Update(UpdatePhase::PRE);
 		},
 		this,
 		UpdatePhase::PRE,
@@ -37,7 +37,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 	(
 		[](void *const RESTRICT arguments)
 		{
-			static_cast<ComponentSystem *const RESTRICT>(arguments)->UpdateComponents(UpdatePhase::INPUT);
+			Components::Update(UpdatePhase::INPUT);
 		},
 		this,
 		UpdatePhase::INPUT,
@@ -50,7 +50,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 	(
 		[](void *const RESTRICT arguments)
 		{
-			static_cast<ComponentSystem *const RESTRICT>(arguments)->UpdateComponents(UpdatePhase::GAMEPLAY);
+			Components::Update(UpdatePhase::GAMEPLAY);
 		},
 		this,
 		UpdatePhase::GAMEPLAY,
@@ -63,7 +63,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 	(
 		[](void *const RESTRICT arguments)
 		{
-			static_cast<ComponentSystem *const RESTRICT>(arguments)->UpdateComponents(UpdatePhase::USER_INTERFACE);
+			Components::Update(UpdatePhase::USER_INTERFACE);
 		},
 		this,
 		UpdatePhase::USER_INTERFACE,
@@ -76,7 +76,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 	(
 		[](void *const RESTRICT arguments)
 		{
-			static_cast<ComponentSystem *const RESTRICT>(arguments)->UpdateComponents(UpdatePhase::PHYSICS);
+			Components::Update(UpdatePhase::PHYSICS);
 		},
 		this,
 		UpdatePhase::PHYSICS,
@@ -89,7 +89,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 	(
 		[](void *const RESTRICT arguments)
 		{
-			static_cast<ComponentSystem *const RESTRICT>(arguments)->UpdateComponents(UpdatePhase::PRE_RENDER);
+			Components::Update(UpdatePhase::PRE_RENDER);
 		},
 		this,
 		UpdatePhase::PRE_RENDER,
@@ -102,7 +102,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 	(
 		[](void *const RESTRICT arguments)
 		{
-			static_cast<ComponentSystem *const RESTRICT>(arguments)->UpdateComponents(UpdatePhase::RENDER);
+			Components::Update(UpdatePhase::RENDER);
 		},
 		this,
 		UpdatePhase::RENDER,
@@ -115,7 +115,7 @@ void ComponentSystem::Initialize() NOEXCEPT
 	(
 		[](void *const RESTRICT arguments)
 		{
-			static_cast<ComponentSystem *const RESTRICT>(arguments)->UpdateComponents(UpdatePhase::POST);
+			Components::Update(UpdatePhase::POST);
 		},
 		this,
 		UpdatePhase::POST,
@@ -141,29 +141,4 @@ void ComponentSystem::Terminate() NOEXCEPT
 {
 	//Terminate components.
 	Components::Terminate();
-}
-
-/*
-*	Updates components for the given update phase.
-*/
-void ComponentSystem::UpdateComponents(const UpdatePhase update_phase) NOEXCEPT
-{
-	//Update components.
-	Components::Update(update_phase);
-
-	//Run the post update.
-	for (uint64 component_index{ 0 }; component_index < Components::Size(); ++component_index)
-	{
-		//Cache the component.
-		Component *const RESTRICT component{ Components::At(component_index) };
-
-		ComponentUpdateConfiguration update_configuration;
-
-		component->GetUpdateConfiguration(&update_configuration);
-
-		if (TEST_BIT(update_configuration._UpdatePhaseMask, update_phase))
-		{
-			component->PostUpdate(update_phase);
-		}
-	}
 }

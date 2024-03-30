@@ -81,24 +81,3 @@ NO_DISCARD uint64 WorldTransformComponent::NumberOfSubInstances(const uint64 ins
 {
 	return 1;
 }
-
-void WorldTransformComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
-{
-	update_configuration->_UpdatePhaseMask = static_cast<UpdatePhase>(0);
-	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = 0;
-}
-
-/*
-*	Updates this component.
-*/
-void WorldTransformComponent::Update
-(
-	const UpdatePhase update_phase,
-	const uint64 start_instance_index,
-	const uint64 end_instance_index,
-	const uint64 sub_instance_index
-) NOEXCEPT
-{
-	
-}

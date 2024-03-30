@@ -41,11 +41,4 @@ public:
 	*/
 	void Terminate() NOEXCEPT;
 
-private:
-
-	/*
-	*	Updates components for the given update phase.
-	*/
-	void UpdateComponents(const UpdatePhase update_phase) NOEXCEPT;
-
 };

@@ -525,6 +525,84 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 			}
 		}
 
+		//Check if this component wants a post update.
+		{
+			const size_t position{ current_line.find("COMPONENT_POST_UPDATE(") };
+
+			if (position != std::string::npos)
+			{
+				//Parse the function arguments.
+				std::array<std::string, 8> arguments;
+
+				const uint64 number_of_arguments
+				{
+					TextParsing::ParseFunctionArguments
+					(
+						current_line.c_str(),
+						current_line.length(),
+						arguments.data()
+					)
+				};
+
+				nlohmann::json &post_updates_entry{ component_entry["PostUpdates"] };
+				nlohmann::json &post_update_entry{ post_updates_entry[arguments[0].c_str()] };
+
+				//Check if there's any befores/afters.
+				for (uint64 argument_index{ 1 }; argument_index < number_of_arguments; ++argument_index)
+				{
+					{
+						const size_t position{ arguments[argument_index].find("Before(") };
+
+						if (position != std::string::npos)
+						{
+							std::array<std::string, 1> sub_arguments;
+
+							const uint64 number_of_sub_arguments
+							{
+								TextParsing::ParseFunctionArguments
+								(
+									arguments[argument_index].c_str(),
+									arguments[argument_index].length(),
+									sub_arguments.data()
+								)
+							};
+
+							nlohmann::json &befores_entry{ post_update_entry["Befores"] };
+							nlohmann::json &before_entry{ befores_entry[sub_arguments[0].c_str()] };
+
+							continue;
+						}
+					}
+
+					{
+						const size_t position{ arguments[argument_index].find("After(") };
+
+						if (position != std::string::npos)
+						{
+							std::array<std::string, 1> sub_arguments;
+
+							const uint64 number_of_sub_arguments
+							{
+								TextParsing::ParseFunctionArguments
+								(
+									arguments[argument_index].c_str(),
+									arguments[argument_index].length(),
+									sub_arguments.data()
+								)
+							};
+
+							nlohmann::json &afters_entry{ post_update_entry["Afters"] };
+							nlohmann::json &after_entry{ afters_entry[sub_arguments[0].c_str()] };
+
+							continue;
+						}
+					}
+				}
+
+				continue;
+			}
+		}
+
 		//Check if this component wants an "Terminate()" call.
 		{
 			const size_t position{ current_line.find("COMPONENT_TERMINATE(") };
@@ -624,6 +702,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	std::map<std::string, std::vector<ComponentUpdate>> serial_updates;
 	std::map<std::string, std::vector<ComponentUpdate>> parallel_batch_updates;
 	std::map<std::string, std::vector<ComponentUpdate>> parallel_sub_instance_updates;
+	std::map<std::string, std::vector<ComponentUpdate>> post_updates;
 
 	for (auto file_iterator{ JSON.begin() }; file_iterator != JSON.end(); ++file_iterator)
 	{
@@ -770,6 +849,41 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 						}
 					}
 				}
+
+				//Check if this component wants any post updates.
+				if (component_entry.contains("PostUpdates"))
+				{
+					const nlohmann::json &post_updates_entry{ component_entry["PostUpdates"] };
+
+					for (auto post_update_iterator{ post_updates_entry.begin() }; post_update_iterator != post_updates_entry.end(); ++post_update_iterator)
+					{
+						const nlohmann::json &post_update_entry{ *post_update_iterator };
+
+						ComponentUpdate &new_update{ post_updates[post_update_iterator.key()].emplace_back() };
+
+						new_update._ComponentName = new_component_data._Name;
+
+						if (post_update_entry.contains("Befores"))
+						{
+							const nlohmann::json &befores_entry{ post_update_entry["Befores"] };
+
+							for (auto before_iterator{ befores_entry.begin() }; before_iterator != befores_entry.end(); ++before_iterator)
+							{
+								new_update._Befores.emplace_back(before_iterator.key());
+							}
+						}
+
+						if (post_update_entry.contains("Afters"))
+						{
+							const nlohmann::json &afters_entry{ post_update_entry["Afters"] };
+
+							for (auto after_iterator{ afters_entry.begin() }; after_iterator != afters_entry.end(); ++after_iterator)
+							{
+								new_update._Afters.emplace_back(after_iterator.key());
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -837,6 +951,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	BEFORE_AFTER_SORT(serial_updates);
 	BEFORE_AFTER_SORT(parallel_batch_updates);
 	BEFORE_AFTER_SORT(parallel_sub_instance_updates);
+	BEFORE_AFTER_SORT(post_updates);
 
 	//Set up the "Components::Size" function.
 	file << "NO_DISCARD uint64 Components::Size() NOEXCEPT" << std::endl;
@@ -948,7 +1063,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << std::endl;
 
 	//Fill up parallel sub instance updates.
-	file << "\t//Fill up parallel sub_instance updates." << std::endl;
+	file << "\t//Fill up parallel sub instance updates." << std::endl;
 	file << "\tswitch (update_phase)" << std::endl;
 	file << "\t{" << std::endl;
 
@@ -1031,6 +1146,29 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "\t\t{" << std::endl;
 	file << "\t\t\tall_done &= parallel_update._Task.IsExecuted();" << std::endl;
 	file << "\t\t}" << std::endl;
+	file << "\t}" << std::endl;
+	file << std::endl;
+
+	//Post-update components.
+	file << "\t//Post-update components." << std::endl;
+
+	file << "\tswitch (update_phase)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (const std::pair<std::string, std::vector<ComponentUpdate>> &post_update : post_updates)
+	{
+		file << "\t\tcase " << post_update.first.c_str() << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+
+		for (const ComponentUpdate &update : post_update.second)
+		{
+			file << "\t\t\t" << update._ComponentName.c_str() << "::Instance->PostUpdate(update_phase);" << std::endl;
+		}
+
+		file << "\t\t\tbreak;" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
 	file << "\t}" << std::endl;
 
 	file << "}" << std::endl;

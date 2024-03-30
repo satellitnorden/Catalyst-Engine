@@ -297,27 +297,6 @@ NO_DISCARD uint64 StaticModelComponent::NumberOfSubInstances(const uint64 instan
 	return 1;
 }
 
-void StaticModelComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
-{
-	update_configuration->_UpdatePhaseMask = static_cast<UpdatePhase>(0);
-	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = UINT64_MAXIMUM;
-}
-
-/*
-*	Updates this component.
-*/
-void StaticModelComponent::Update
-(
-	const UpdatePhase update_phase,
-	const uint64 start_instance_index,
-	const uint64 end_instance_index,
-	const uint64 sub_instance_index
-) NOEXCEPT
-{
-	
-}
-
 void StaticModelComponent::PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
 {	
 	//Cache the instance data.

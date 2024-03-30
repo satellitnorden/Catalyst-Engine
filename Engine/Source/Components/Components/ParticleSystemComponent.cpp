@@ -203,6 +203,32 @@ void ParticleSystemComponent::Initialize() NOEXCEPT
 }
 
 /*
+*	Post-initializes this component.
+*/
+void ParticleSystemComponent::PostInitialize() NOEXCEPT
+{
+	//Register the storage buffer.
+	RenderingSystem::Instance->GetBufferManager()->RegisterStorageBuffer
+	(
+		HashString("Particles"),
+		sizeof(ParticlePackedInstance) * 4'096,
+		[](DynamicArray<byte> *const RESTRICT data, void *const RESTRICT arguments)
+		{
+			ParticleSystemComponent* const RESTRICT particle_system_component{ static_cast<ParticleSystemComponent* const RESTRICT>(arguments) };
+
+			if (particle_system_component->_SharedData._PackedInstances.Empty())
+			{
+				return;
+			}
+
+			data->Resize<false>(sizeof(ParticlePackedInstance) * particle_system_component->_SharedData._PackedInstances.Size());
+			Memory::Copy(data->Data(), particle_system_component->_SharedData._PackedInstances.Data(), sizeof(ParticlePackedInstance) * particle_system_component->_SharedData._PackedInstances.Size());
+		},
+		this
+	);
+}
+
+/*
 *	Updates this component.
 */
 void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update_phase, const uint64 instance_index, const uint64 sub_instance_index) NOEXCEPT
@@ -372,29 +398,52 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 }
 
 /*
-*	Post-initializes this component.
+*	Runs after the given update phase.
 */
-void ParticleSystemComponent::PostInitialize() NOEXCEPT
+void ParticleSystemComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
 {
-	//Register the storage buffer.
-	RenderingSystem::Instance->GetBufferManager()->RegisterStorageBuffer
-	(
-		HashString("Particles"),
-		sizeof(ParticlePackedInstance) * 4'096,
-		[](DynamicArray<byte> *const RESTRICT data, void *const RESTRICT arguments)
+	//Gather all packed instances.
+	_SharedData._PackedInstances.Clear();
+
+	//Calculate the number of shared instances.
+	uint64 number_of_packed_instances{ 0 };
+
+	for (const ParticleSystemInstanceData &instance_data : InstanceData())
+	{
+		for (const ParticleSubEmitter &sub_emitter : instance_data._SubEmitters)
 		{
-			ParticleSystemComponent *const RESTRICT particle_system_component{ static_cast<ParticleSystemComponent *const RESTRICT>(arguments) };
+			number_of_packed_instances += sub_emitter._PackedInstances.Size();
+		}
+	}
 
-			if (particle_system_component->_SharedData._PackedInstances.Empty())
+	//Don't do anything if there's nothing to do. (:
+	if (number_of_packed_instances == 0)
+	{
+		return;
+	}
+
+	//Resize to fit the number of packed instances.
+	_SharedData._PackedInstances.Resize<false>(number_of_packed_instances);
+
+	//Copy over the packed instances.
+	uint32 instance_counter{ 0 };
+
+	for (ParticleSystemInstanceData &instance_data : InstanceData())
+	{
+		instance_data._StartInstanceIndex = static_cast<uint32>(instance_counter);
+
+		for (const ParticleSubEmitter &sub_emitter : instance_data._SubEmitters)
+		{
+			if (!sub_emitter._PackedInstances.Empty())
 			{
-				return;
-			}
+				Memory::Copy(&_SharedData._PackedInstances[instance_counter], sub_emitter._PackedInstances.Data(), sizeof(ParticlePackedInstance) * sub_emitter._PackedInstances.Size());
 
-			data->Resize<false>(sizeof(ParticlePackedInstance) * particle_system_component->_SharedData._PackedInstances.Size());
-			Memory::Copy(data->Data(), particle_system_component->_SharedData._PackedInstances.Data(), sizeof(ParticlePackedInstance) * particle_system_component->_SharedData._PackedInstances.Size());
-		},
-		this
-	);
+				instance_counter += static_cast<uint32>(sub_emitter._PackedInstances.Size());
+			}
+		}
+
+		instance_data._NumberOfInstances = instance_counter - instance_data._StartInstanceIndex;
+	}
 }
 
 /*
@@ -449,75 +498,6 @@ void ParticleSystemComponent::DestroyInstance(Entity *const RESTRICT entity) NOE
 NO_DISCARD uint64 ParticleSystemComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
 {
 	return _InstanceData[instance_index]._SubEmitters.Size();
-}
-
-void ParticleSystemComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
-{
-	update_configuration->_UpdatePhaseMask = UpdatePhase::PRE_RENDER;
-	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::SUB_INSTANCE;
-}
-
-/*
-*	Updates this component.
-*/
-void ParticleSystemComponent::Update
-(
-	const UpdatePhase update_phase,
-	const uint64 start_instance_index,
-	const uint64 end_instance_index,
-	const uint64 sub_instance_index
-) NOEXCEPT
-{
-	
-}
-
-/*
-*	Runs after the given update phase.
-*/
-void ParticleSystemComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
-{
-	//Gather all packed instances.
-	_SharedData._PackedInstances.Clear();
-
-	//Calculate the number of shared instances.
-	uint64 number_of_packed_instances{ 0 };
-
-	for (const ParticleSystemInstanceData &instance_data : InstanceData())
-	{
-		for (const ParticleSubEmitter &sub_emitter : instance_data._SubEmitters)
-		{
-			number_of_packed_instances += sub_emitter._PackedInstances.Size();
-		}
-	}
-
-	//Don't do anything if there's nothing to do. (:
-	if (number_of_packed_instances == 0)
-	{
-		return;
-	}
-
-	//Resize to fit the number of packed instances.
-	_SharedData._PackedInstances.Resize<false>(number_of_packed_instances);
-
-	//Copy over the packed instances.
-	uint32 instance_counter{ 0 };
-
-	for (ParticleSystemInstanceData &instance_data : InstanceData())
-	{
-		instance_data._StartInstanceIndex = static_cast<uint32>(instance_counter);
-
-		for (const ParticleSubEmitter &sub_emitter : instance_data._SubEmitters)
-		{
-			if (!sub_emitter._PackedInstances.Empty())
-			{
-				Memory::Copy(&_SharedData._PackedInstances[instance_counter], sub_emitter._PackedInstances.Data(), sizeof(ParticlePackedInstance) * sub_emitter._PackedInstances.Size());
-			
-				instance_counter += static_cast<uint32>(sub_emitter._PackedInstances.Size());
-			}
-		}
-
-		instance_data._NumberOfInstances = instance_counter - instance_data._StartInstanceIndex;
-	}
 }
 
 /*

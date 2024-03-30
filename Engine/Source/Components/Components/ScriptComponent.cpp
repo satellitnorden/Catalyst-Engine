@@ -142,27 +142,6 @@ NO_DISCARD uint64 ScriptComponent::NumberOfSubInstances(const uint64 instance_in
 	return 1;
 }
 
-void ScriptComponent::GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT
-{
-	update_configuration->_UpdatePhaseMask = static_cast<UpdatePhase>(0);
-	update_configuration->_Mode = ComponentUpdateConfiguration::Mode::BATCH;
-	update_configuration->_BatchSize = UINT64_MAXIMUM;
-}
-
-/*
-*	Updates this component.
-*/
-void ScriptComponent::Update
-(
-	const UpdatePhase update_phase,
-	const uint64 start_instance_index,
-	const uint64 end_instance_index,
-	const uint64 sub_instance_index
-) NOEXCEPT
-{
-	
-}
-
 /*
 *	Callback for before an editable field change happens.
 */

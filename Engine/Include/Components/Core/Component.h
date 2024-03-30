@@ -22,42 +22,6 @@
 class ComponentInitializationData;
 
 /*
-*	Component update configuration class definition.
-*/
-class ComponentUpdateConfiguration final
-{
-
-public:
-
-	//Enumeration covering all modes.
-	enum class Mode : uint8
-	{
-		/*
-		*	Will update instances in batches of '_BatchSize'.
-		*/
-		BATCH,
-
-		/*
-		*	Will update each instance in parallel, based on how many sub instances each instance has.
-		*/
-		SUB_INSTANCE
-	};
-
-	//The update phase mask.
-	UpdatePhase _UpdatePhaseMask{ static_cast<UpdatePhase>(0) };
-
-	//The mode.
-	Mode _Mode;
-
-	/*
-	*	The batch size.
-	*	Only used then '_Mode' is set to Mode::BATCH.
-	*/
-	uint64 _BatchSize;
-
-};
-
-/*
 *	Component class definition.
 */
 class Component
@@ -155,30 +119,6 @@ public:
 	*	Returns the number of sub-instances for the given instance.
 	*/
 	virtual NO_DISCARD uint64 NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT = 0;
-
-	/*
-	*	Returns the update configuration.
-	*/
-	virtual void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT = 0;
-
-	/*
-	*	Updates this component.
-	*/
-	virtual void Update
-	(
-		const UpdatePhase update_phase,
-		const uint64 start_instance_index,
-		const uint64 end_instance_index,
-		const uint64 sub_instance_index
-	) NOEXCEPT = 0;
-
-	/*
-	*	Runs after the given update phase.
-	*/
-	FORCE_INLINE virtual void PostUpdate(const UpdatePhase update_phase) NOEXCEPT
-	{
-
-	}
 
 	/*
 	*	Returns the editable field data.
@@ -459,6 +399,13 @@ public:																																		\
 	void ParallelSubInstanceUpdate(const UpdatePhase update_phase, const uint64 instance_index, const uint64 sub_instance_index) NOEXCEPT;
 
 /*
+*	Put this in your component declaration and implement it to receive an "PostUpdate()" call.
+*/
+#define COMPONENT_POST_UPDATE(UPDATE_PHASE)						\
+public:															\
+	void PostUpdate(const UpdatePhase update_phase) NOEXCEPT;
+
+/*
 *	Put this in your component declaration and implement it to receive a "Terminate()" call.
 */
 #define COMPONENT_TERMINATE()	\
@@ -511,14 +458,6 @@ public:																																			\
 	{																																			\
 		return _InstanceData[EntityToInstance(entity)];																							\
 	}																																			\
-	void GetUpdateConfiguration(ComponentUpdateConfiguration *const RESTRICT update_configuration) NOEXCEPT override;							\
-	void Update																																	\
-	(																																			\
-		const UpdatePhase update_phase,																											\
-		const uint64 start_instance_index,																										\
-		const uint64 end_instance_index,																										\
-		const uint64 sub_instance_index																											\
-	) NOEXCEPT override;																														\
 	FORCE_INLINE void RemoveInstance(Entity *const RESTRICT entity) NOEXCEPT																	\
 	{																																			\
 		const uint64 instance_index{ _EntityToInstanceMappings[entity->_EntityIdentifier] };													\
