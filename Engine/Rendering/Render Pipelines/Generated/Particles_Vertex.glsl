@@ -341,6 +341,8 @@ void main()
     vec2 particle_size = vec2(particle_data_1.w, particle_data_2.x);
     vec2 half_particle_size = particle_size * 0.5f;
     float particle_normalized_age = particle_data_2.y;
+    half_particle_size *= smoothstep(0.0f, 0.1f, particle_normalized_age);
+    half_particle_size *= 1.0f - smoothstep(0.9f, 1.0f, particle_normalized_age);
     vec3 forward_vector = normalize(CAMERA_WORLD_POSITION - particle_position);
     mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(forward_vector, vec3(0.0f, 1.0f, 0.0f));
     vec3 right_vector = tangent_space_matrix[0];

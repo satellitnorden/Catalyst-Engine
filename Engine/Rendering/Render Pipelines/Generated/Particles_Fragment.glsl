@@ -348,8 +348,6 @@ void main()
     EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, material_properties);
     float opacity;
     EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
-    opacity *= smoothstep(0.0f, 0.1f, InNormalizedAge);
-    opacity *= 1.0f - smoothstep(0.9f, 1.0f, InNormalizedAge);
     if (opacity < 0.5f)
     {
         discard;

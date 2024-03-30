@@ -976,14 +976,28 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		//Add a text input for the name.
 		TextInputWidget("Name", selected_entity_editor_data._Name.Data(), selected_entity_editor_data._Name.Size());
 
+		//Add a load button.
+		bool wants_to_load{ false };
+		DynamicString load_file_path;
+
+		if (ImGui::Button("Load"))
+		{
+			if (File::BrowseForFile(false, &load_file_path, "*.Entity"))
+			{
+				wants_to_load = true;
+			}
+		}
+
 		//Add a save button.
+		ImGui::SameLine();
+
 		if (ImGui::Button("Save"))
 		{
 			DynamicString chosen_file;
 
 			if (File::BrowseForFile(true, &chosen_file, "*.Entity"))
 			{
-				SaveEntity(chosen_file.Data(), selected_entity);
+				SaveEntity(chosen_file.Data(), selected_entity, selected_entity_editor_data);
 			}
 		}
 
@@ -1445,6 +1459,13 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 			}
 		}
 
+		//Load an entity, if requrested.
+		if (wants_to_load)
+		{
+			//Load the entity!
+			LoadEntity(load_file_path.Data(), &_Entities[_SelectedEntityIndex], &_EntityEditorData[_SelectedEntityIndex]);
+		}
+
 		//Delete the entity, if requested.
 		if (should_delete)
 		{
@@ -1469,9 +1490,61 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 }
 
 /*
+*	Loads an entity.
+*/
+void EditorLevelSystem::LoadEntity(const char *const RESTRICT file_path, Entity *RESTRICT *const RESTRICT entity, EntityEditorData *const RESTRICT editor_data) NOEXCEPT
+{
+	//Destroy the entity.
+	EntitySystem::Instance->DestroyEntity(*entity);
+
+	//Clear the editor data.
+	editor_data->_Links.Clear();
+
+	//Load the JSON object.
+	nlohmann::json JSON;
+
+	{
+		std::ifstream input_file{ file_path };
+		input_file >> JSON;
+		input_file.close();
+	}
+
+	//Serialize the entity to the stream archive.
+	StreamArchive stream_archive;
+	EntitySerialization::SerializeToStreamArchive(JSON, &stream_archive);
+
+	//Now deserialize!
+	uint64 stream_archive_position{ 0 };
+	*entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
+
+	//Figure out the name.
+	{
+		const std::string _file_path{ file_path };
+		const size_t last_slash_position{ _file_path.find_last_of("\\") };
+
+		editor_data->_Name = _file_path.substr(last_slash_position + 1, _file_path.length() - last_slash_position - strlen(".Entity") - 1).c_str();
+	}
+
+	//Generate the entity identifier.
+	GenerateEntityIdentifier(&editor_data->_Identifier);
+
+	//Deserialize the editor data.
+	const nlohmann::json &editor_data_entry{ JSON["EditorData"] };
+
+	//Deserialize the rotation.
+	{
+		const nlohmann::json& rotation_entry{ editor_data_entry["Rotation"] };
+
+		editor_data->_Rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation_entry["Roll"]);
+		editor_data->_Rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation_entry["Yaw"]);
+		editor_data->_Rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation_entry["Pitch"]);
+	}
+}
+
+/*
 *	Saves an entity.
 */
-void EditorLevelSystem::SaveEntity(const char *const RESTRICT file_path, Entity *const RESTRICT entity) NOEXCEPT
+void EditorLevelSystem::SaveEntity(const char *const RESTRICT file_path, Entity *const RESTRICT entity, const EntityEditorData &entity_editor_data) NOEXCEPT
 {
 	//Set up the JSON.
 	nlohmann::json JSON;
@@ -1517,6 +1590,18 @@ void EditorLevelSystem::SaveEntity(const char *const RESTRICT file_path, Entity 
 
 	//Serialize the entity.
 	EntitySerialization::SerializeToJSON(JSON, entity);
+
+	//Serialize the editor data.
+	nlohmann::json &editor_data_entry{ JSON["EditorData"] };
+
+	//Serialize the rotation.
+	{
+		nlohmann::json &rotation_entry{ editor_data_entry["Rotation"] };
+
+		rotation_entry["Roll"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Roll);
+		rotation_entry["Yaw"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Yaw);
+		rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Pitch);
+	}
 
 	//Write the JSON to the file.
 	std::ofstream file{ file_path };
