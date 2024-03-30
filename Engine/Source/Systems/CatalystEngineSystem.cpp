@@ -38,7 +38,6 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/SaveSystem.h>
-#include <Systems/ScriptSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/UserInterfaceSystem.h>
@@ -112,7 +111,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 		RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
 	}
 	
-	ScriptSystem::Instance->Initialize();
 	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
 	TaskSystem::Instance->Initialize(_ProjectConfiguration._ConcurrencyConfiguration);
 	UserInterfaceSystem::Instance->Initialize();
