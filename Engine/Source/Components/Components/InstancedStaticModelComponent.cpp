@@ -171,11 +171,3 @@ void InstancedStaticModelComponent::DestroyInstance(Entity *const RESTRICT entit
 	//Remove the instance.
 	RemoveInstance(entity);
 }
-
-/*
-*	Returns the number of sub-instances for the given instance.
-*/
-NO_DISCARD uint64 InstancedStaticModelComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
-{
-	return 1;
-}

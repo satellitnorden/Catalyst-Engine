@@ -55,11 +55,3 @@ void LightComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 	//Remove the instance.
 	RemoveInstance(entity);
 }
-
-/*
-*	Returns the number of sub-instances for the given instance.
-*/
-NO_DISCARD uint64 LightComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
-{
-	return 1;
-}

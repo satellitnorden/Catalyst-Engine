@@ -289,14 +289,6 @@ void StaticModelComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCE
 	RemoveInstance(entity);
 }
 
-/*
-*	Returns the number of sub-instances for the given instance.
-*/
-NO_DISCARD uint64 StaticModelComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
-{
-	return 1;
-}
-
 void StaticModelComponent::PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT
 {	
 	//Cache the instance data.

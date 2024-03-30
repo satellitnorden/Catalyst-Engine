@@ -229,6 +229,15 @@ void ParticleSystemComponent::PostInitialize() NOEXCEPT
 }
 
 /*
+*	Returns the number of sub-instances for the given instance.
+*/
+NO_DISCARD uint64 ParticleSystemComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
+{
+	return _InstanceData[instance_index]._SubEmitters.Size();
+}
+
+
+/*
 *	Updates this component.
 */
 void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update_phase, const uint64 instance_index, const uint64 sub_instance_index) NOEXCEPT
@@ -491,15 +500,6 @@ void ParticleSystemComponent::DestroyInstance(Entity *const RESTRICT entity) NOE
 	//Remove the instance.
 	RemoveInstance(entity);
 }
-
-/*
-*	Returns the number of sub-instances for the given instance.
-*/
-NO_DISCARD uint64 ParticleSystemComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
-{
-	return _InstanceData[instance_index]._SubEmitters.Size();
-}
-
 /*
 *	Callback for after an editable field change happens.
 */

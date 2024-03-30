@@ -96,11 +96,3 @@ void AnimatedModelComponent::DestroyInstance(Entity *const RESTRICT entity) NOEX
 	//Remove the instance.
 	RemoveInstance(entity);
 }
-
-/*
-*	Returns the number of sub-instances for the given instance.
-*/
-NO_DISCARD uint64 AnimatedModelComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
-{
-	return 1;
-}

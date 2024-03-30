@@ -135,14 +135,6 @@ void ScriptComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 }
 
 /*
-*	Returns the number of sub-instances for the given instance.
-*/
-NO_DISCARD uint64 ScriptComponent::NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT
-{
-	return 1;
-}
-
-/*
 *	Callback for before an editable field change happens.
 */
 void ScriptComponent::PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT

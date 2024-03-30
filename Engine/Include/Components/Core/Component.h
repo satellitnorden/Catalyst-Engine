@@ -116,11 +116,6 @@ public:
 	}
 
 	/*
-	*	Returns the number of sub-instances for the given instance.
-	*/
-	virtual NO_DISCARD uint64 NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT = 0;
-
-	/*
 	*	Returns the editable field data.
 	*/
 	template <typename TYPE>
@@ -396,6 +391,7 @@ public:																																		\
 */
 #define COMPONENT_PARALLEL_SUB_INSTANCE_UPDATE(UPDATE_PHASE, ...)																			\
 public:																																		\
+	NO_DISCARD uint64 NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT;														\
 	void ParallelSubInstanceUpdate(const UpdatePhase update_phase, const uint64 instance_index, const uint64 sub_instance_index) NOEXCEPT;
 
 /*
@@ -449,7 +445,6 @@ public:																																			\
 	{																																			\
 		return _InstanceData.Size();																											\
 	}																																			\
-	NO_DISCARD uint64 NumberOfSubInstances(const uint64 instance_index) const NOEXCEPT override;												\
 	FORCE_INLINE NO_DISCARD DynamicArray<INSTANCE_DATA_CLASS> &InstanceData() NOEXCEPT															\
 	{																																			\
 		return _InstanceData;																													\
