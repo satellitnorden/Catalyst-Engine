@@ -451,6 +451,14 @@ public:																																		\
 	void ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT;
 
 /*
+*	Put this in your component declaration and implement it to receive a "ParallelSubInstanceUpdate()" call during the specified update phase.
+*	Can optionally add "Before(X)" or "After(X)" to control ordering of updates.
+*/
+#define COMPONENT_PARALLEL_SUB_INSTANCE_UPDATE(UPDATE_PHASE, ...)																			\
+public:																																		\
+	void ParallelSubInstanceUpdate(const UpdatePhase update_phase, const uint64 instance_index, const uint64 sub_instance_index) NOEXCEPT;
+
+/*
 *	Put this in your component declaration and implement it to receive a "Terminate()" call.
 */
 #define COMPONENT_TERMINATE()	\

@@ -447,6 +447,84 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 			}
 		}
 
+		//Check if this component wants a parallel sub instance update.
+		{
+			const size_t position{ current_line.find("COMPONENT_PARALLEL_SUB_INSTANCE_UPDATE(") };
+
+			if (position != std::string::npos)
+			{
+				//Parse the function arguments.
+				std::array<std::string, 8> arguments;
+
+				const uint64 number_of_arguments
+				{
+					TextParsing::ParseFunctionArguments
+					(
+						current_line.c_str(),
+						current_line.length(),
+						arguments.data()
+					)
+				};
+
+				nlohmann::json &parallel_sub_instance_updates_entry{ component_entry["ParallelSubInstanceUpdates"] };
+				nlohmann::json &parallel_sub_instance_update_entry{ parallel_sub_instance_updates_entry[arguments[0].c_str()] };
+
+				//Check if there's any befores/afters.
+				for (uint64 argument_index{ 1 }; argument_index < number_of_arguments; ++argument_index)
+				{
+					{
+						const size_t position{ arguments[argument_index].find("Before(") };
+
+						if (position != std::string::npos)
+						{
+							std::array<std::string, 1> sub_arguments;
+
+							const uint64 number_of_sub_arguments
+							{
+								TextParsing::ParseFunctionArguments
+								(
+									arguments[argument_index].c_str(),
+									arguments[argument_index].length(),
+									sub_arguments.data()
+								)
+							};
+
+							nlohmann::json &befores_entry{ parallel_sub_instance_update_entry["Befores"] };
+							nlohmann::json &before_entry{ befores_entry[sub_arguments[0].c_str()] };
+
+							continue;
+						}
+					}
+
+					{
+						const size_t position{ arguments[argument_index].find("After(") };
+
+						if (position != std::string::npos)
+						{
+							std::array<std::string, 1> sub_arguments;
+
+							const uint64 number_of_sub_arguments
+							{
+								TextParsing::ParseFunctionArguments
+								(
+									arguments[argument_index].c_str(),
+									arguments[argument_index].length(),
+									sub_arguments.data()
+								)
+							};
+
+							nlohmann::json &afters_entry{ parallel_sub_instance_update_entry["Afters"] };
+							nlohmann::json &after_entry{ afters_entry[sub_arguments[0].c_str()] };
+
+							continue;
+						}
+					}
+				}
+
+				continue;
+			}
+		}
+
 		//Check if this component wants an "Terminate()" call.
 		{
 			const size_t position{ current_line.find("COMPONENT_TERMINATE(") };
@@ -489,12 +567,12 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "#include <Systems/TaskSystem.h>" << std::endl;
 	file << std::endl;
 
-	//Add the "BatchUpdate" class definition.
+	//Add the "ParallelUpdate" class definition.
 	file << "/*" << std::endl;
-	file << "*\tParallel batch update class definition." << std::endl;
+	file << "*\tParallel update class definition." << std::endl;
 	file << "*/" << std::endl;
 
-	file << "class ParallelBatchUpdate final" << std::endl;
+	file << "class ParallelUpdate final" << std::endl;
 	file << "{" << std::endl;
 	file << std::endl;
 	file << "public:" << std::endl;
@@ -504,26 +582,48 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "\tTask _Task;" << std::endl;
 	file << std::endl;
 
-	file << "\t//The start instance index." << std::endl;
-	file << "\tuint64 _StartInstanceIndex;" << std::endl;
+	file << "\tunion" << std::endl;
+	file << "\t{" << std::endl;
+
+	file << "\t\tstruct" << std::endl;
+	file << "\t\t{" << std::endl;
+
+	file << "\t\t\t//The start instance index." << std::endl;
+	file << "\t\t\tuint64 _StartInstanceIndex;" << std::endl;
 	file << std::endl;
 
-	file << "\t//The end instance index." << std::endl;
-	file << "\tuint64 _EndInstanceIndex;" << std::endl;
+	file << "\t\t\t//The end instance index." << std::endl;
+	file << "\t\t\tuint64 _EndInstanceIndex;" << std::endl;
+
+	file << "\t\t};" << std::endl;
+
+	file << "\t\tstruct" << std::endl;
+	file << "\t\t{" << std::endl;
+
+	file << "\t\t\t//The instance index." << std::endl;
+	file << "\t\t\tuint64 _InstanceIndex;" << std::endl;
 	file << std::endl;
+
+	file << "\t\t\t//The sub instance index." << std::endl;
+	file << "\t\t\tuint64 _SubInstanceIndex;" << std::endl;
+
+	file << "\t\t};" << std::endl;
+
+	file << "\t};" << std::endl;
 
 	file << "};" << std::endl;
 	file << std::endl;
 
-	//Add the parallel batch updates container.
-	file << "//Container for all parallel batch updates." << std::endl;
-	file << "DynamicArray<ParallelBatchUpdate> PARALLEL_BATCH_UPDATES;" << std::endl;
+	//Add the parallel updates container.
+	file << "//Container for all parallel updates." << std::endl;
+	file << "DynamicArray<ParallelUpdate> PARALLEL_UPDATES;" << std::endl;
 	file << std::endl;
 
 	//Add all component data.
 	std::vector<ComponentData> component_data;
 	std::map<std::string, std::vector<ComponentUpdate>> serial_updates;
 	std::map<std::string, std::vector<ComponentUpdate>> parallel_batch_updates;
+	std::map<std::string, std::vector<ComponentUpdate>> parallel_sub_instance_updates;
 
 	for (auto file_iterator{ JSON.begin() }; file_iterator != JSON.end(); ++file_iterator)
 	{
@@ -635,6 +735,41 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 						new_update._BatchSize = parallel_batch_update_entry["BatchSize"];
 					}
 				}
+
+				//Check if this component wants any parallel sub instance updates.
+				if (component_entry.contains("ParallelSubInstanceUpdates"))
+				{
+					const nlohmann::json &parallel_sub_instance_updates_entry{ component_entry["ParallelSubInstanceUpdates"] };
+
+					for (auto parallel_sub_instance_update_iterator{ parallel_sub_instance_updates_entry.begin() }; parallel_sub_instance_update_iterator != parallel_sub_instance_updates_entry.end(); ++parallel_sub_instance_update_iterator)
+					{
+						const nlohmann::json &parallel_sub_instance_update_entry{ *parallel_sub_instance_update_iterator };
+
+						ComponentUpdate &new_update{ parallel_sub_instance_updates[parallel_sub_instance_update_iterator.key()].emplace_back() };
+
+						new_update._ComponentName = new_component_data._Name;
+
+						if (parallel_sub_instance_update_entry.contains("Befores"))
+						{
+							const nlohmann::json &befores_entry{ parallel_sub_instance_update_entry["Befores"] };
+
+							for (auto before_iterator{ befores_entry.begin() }; before_iterator != befores_entry.end(); ++before_iterator)
+							{
+								new_update._Befores.emplace_back(before_iterator.key());
+							}
+						}
+
+						if (parallel_sub_instance_update_entry.contains("Afters"))
+						{
+							const nlohmann::json &afters_entry{ parallel_sub_instance_update_entry["Afters"] };
+
+							for (auto after_iterator{ afters_entry.begin() }; after_iterator != afters_entry.end(); ++after_iterator)
+							{
+								new_update._Afters.emplace_back(after_iterator.key());
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -701,6 +836,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	BEFORE_AFTER_SORT(serial_updates);
 	BEFORE_AFTER_SORT(parallel_batch_updates);
+	BEFORE_AFTER_SORT(parallel_sub_instance_updates);
 
 	//Set up the "Components::Size" function.
 	file << "NO_DISCARD uint64 Components::Size() NOEXCEPT" << std::endl;
@@ -768,51 +904,97 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "void Components::Update(const UpdatePhase update_phase) NOEXCEPT" << std::endl;
 	file << "{" << std::endl;
 
-	//Execute parallel batch updates.
-	file << "\t//Execute parallel batch updates." << std::endl;
+	//Clear the parallel updates.
+	file << "\t//Clear the parallel updates." << std::endl;
+	file << "\tPARALLEL_UPDATES.Clear();" << std::endl;
+	file << std::endl;
+
+	//Fill up parallel batch updates.
+	file << "\t//Fill up parallel batch updates." << std::endl;
+	file << "\tswitch (update_phase)" << std::endl;
 	file << "\t{" << std::endl;
-	file << "\t\tPARALLEL_BATCH_UPDATES.Clear();" << std::endl;
-	file << "\t\tswitch (update_phase)" << std::endl;
-	file << "\t\t{" << std::endl;
 
 	for (const std::pair<std::string, std::vector<ComponentUpdate>> &parallel_batch_update : parallel_batch_updates)
 	{
-		file << "\t\t\tcase " << parallel_batch_update.first.c_str() << ":" << std::endl;
-		file << "\t\t\t{" << std::endl;
+		file << "\t\tcase " << parallel_batch_update.first.c_str() << ":" << std::endl;
+		file << "\t\t{" << std::endl;
 
 		for (const ComponentUpdate &update : parallel_batch_update.second)
 		{
+			file << "\t\t\t{" << std::endl;
+			file << "\t\t\t\tconst uint64 number_of_instances{ " << update._ComponentName.c_str() << "::Instance->NumberOfInstances() };" << std::endl;
+			file << "\t\t\t\tfor (uint64 batch_start_index{ 0 }; batch_start_index < number_of_instances; batch_start_index += " << update._BatchSize << ")" << std::endl;
 			file << "\t\t\t\t{" << std::endl;
-			file << "\t\t\t\t\tconst uint64 number_of_instances{ " << update._ComponentName.c_str() << "::Instance->NumberOfInstances() };" << std::endl;
-			file << "\t\t\t\t\tfor (uint64 batch_start_index{ 0 }; batch_start_index < number_of_instances; batch_start_index += " << update._BatchSize << ")" << std::endl;
+			file << "\t\t\t\t\tPARALLEL_UPDATES.Emplace();" << std::endl;
+			file << "\t\t\t\t\tParallelUpdate &parallel_batch_update{ PARALLEL_UPDATES.Back() };" << std::endl;
+			file << "\t\t\t\t\tparallel_batch_update._Task._Function = [](void *const RESTRICT arguments)" << std::endl;
 			file << "\t\t\t\t\t{" << std::endl;
-			file << "\t\t\t\t\t\tPARALLEL_BATCH_UPDATES.Emplace();" << std::endl;
-			file << "\t\t\t\t\t\tParallelBatchUpdate &parallel_batch_update{ PARALLEL_BATCH_UPDATES.Back() };" << std::endl;
-			file << "\t\t\t\t\t\tparallel_batch_update._Task._Function = [](void *const RESTRICT arguments)" << std::endl;
-			file << "\t\t\t\t\t\t{" << std::endl;
-			file << "\t\t\t\t\t\t\tParallelBatchUpdate *const RESTRICT parallel_batch_update{ static_cast<ParallelBatchUpdate *const RESTRICT>(arguments) };" << std::endl;
-			file << "\t\t\t\t\t\t\t" << update._ComponentName.c_str() << "::Instance->ParallelBatchUpdate(" << parallel_batch_update.first.c_str() << ", parallel_batch_update->_StartInstanceIndex, parallel_batch_update->_EndInstanceIndex);" << std::endl;
-			file << "\t\t\t\t\t\t};" << std::endl;
-			file << "\t\t\t\t\t\tparallel_batch_update._Task._Arguments = nullptr;" << std::endl;
-			file << "\t\t\t\t\t\tparallel_batch_update._Task._ExecutableOnSameThread = false;" << std::endl;
-			file << "\t\t\t\t\t\tparallel_batch_update._StartInstanceIndex = batch_start_index;" << std::endl;
-			file << "\t\t\t\t\t\tparallel_batch_update._EndInstanceIndex = batch_start_index + CatalystBaseMath::Minimum<uint64>(" << update._BatchSize << ", number_of_instances - batch_start_index);" << std::endl;
-			file << "\t\t\t\t\t}" << std::endl;
+			file << "\t\t\t\t\t\tParallelUpdate *const RESTRICT parallel_batch_update{ static_cast<ParallelUpdate *const RESTRICT>(arguments) };" << std::endl;
+			file << "\t\t\t\t\t\t" << update._ComponentName.c_str() << "::Instance->ParallelBatchUpdate(" << parallel_batch_update.first.c_str() << ", parallel_batch_update->_StartInstanceIndex, parallel_batch_update->_EndInstanceIndex);" << std::endl;
+			file << "\t\t\t\t\t};" << std::endl;
+			file << "\t\t\t\t\tparallel_batch_update._Task._Arguments = nullptr;" << std::endl;
+			file << "\t\t\t\t\tparallel_batch_update._Task._ExecutableOnSameThread = false;" << std::endl;
+			file << "\t\t\t\t\tparallel_batch_update._StartInstanceIndex = batch_start_index;" << std::endl;
+			file << "\t\t\t\t\tparallel_batch_update._EndInstanceIndex = batch_start_index + CatalystBaseMath::Minimum<uint64>(" << update._BatchSize << ", number_of_instances - batch_start_index);" << std::endl;
 			file << "\t\t\t\t}" << std::endl;
+			file << "\t\t\t}" << std::endl;
 		}
 
-		file << "\t\t\t\tbreak;" << std::endl;
-		file << "\t\t\t}" << std::endl;
+		file << "\t\t\tbreak;" << std::endl;
+		file << "\t\t}" << std::endl;
 	}
 
-	file << "\t\t}" << std::endl;
+	file << "\t}" << std::endl;
+	file << std::endl;
 
-	file << "\t\tfor (ParallelBatchUpdate &parallel_batch_update : PARALLEL_BATCH_UPDATES)" << std::endl;
-	file << "\t\t{" << std::endl;
-	file << "\t\t\tparallel_batch_update._Task._Arguments = &parallel_batch_update;" << std::endl;
-	file << "\t\t\tTaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &parallel_batch_update._Task);" << std::endl;
-	file << "\t\t}" << std::endl;
+	//Fill up parallel sub instance updates.
+	file << "\t//Fill up parallel sub_instance updates." << std::endl;
+	file << "\tswitch (update_phase)" << std::endl;
+	file << "\t{" << std::endl;
 
+	for (const std::pair<std::string, std::vector<ComponentUpdate>> &parallel_sub_instance_update : parallel_sub_instance_updates)
+	{
+		file << "\t\tcase " << parallel_sub_instance_update.first.c_str() << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+
+		for (const ComponentUpdate &update : parallel_sub_instance_update.second)
+		{
+			file << "\t\t\t{" << std::endl;
+			file << "\t\t\t\tconst uint64 number_of_instances{ " << update._ComponentName.c_str() << "::Instance->NumberOfInstances() };" << std::endl;
+			file << "\t\t\t\tfor (uint64 instance_index{ 0 }; instance_index < number_of_instances; ++instance_index)" << std::endl;
+			file << "\t\t\t\t{" << std::endl;
+			file << "\t\t\t\t\tconst uint64 number_of_sub_instances{ " << update._ComponentName.c_str() << "::Instance->NumberOfSubInstances(instance_index) };" << std::endl;
+			file << "\t\t\t\t\tfor (uint64 sub_instance_index{ 0 }; sub_instance_index < number_of_sub_instances; ++sub_instance_index)" << std::endl;
+			file << "\t\t\t\t\t{" << std::endl;
+			file << "\t\t\t\t\t\tPARALLEL_UPDATES.Emplace();" << std::endl;
+			file << "\t\t\t\t\t\tParallelUpdate &parallel_sub_instance_update{ PARALLEL_UPDATES.Back() };" << std::endl;
+			file << "\t\t\t\t\t\tparallel_sub_instance_update._Task._Function = [](void *const RESTRICT arguments)" << std::endl;
+			file << "\t\t\t\t\t\t{" << std::endl;
+			file << "\t\t\t\t\t\t\tParallelUpdate *const RESTRICT parallel_sub_instance_update{ static_cast<ParallelUpdate *const RESTRICT>(arguments) };" << std::endl;
+			file << "\t\t\t\t\t\t\t" << update._ComponentName.c_str() << "::Instance->ParallelSubInstanceUpdate(" << parallel_sub_instance_update.first.c_str() << ", parallel_sub_instance_update->_InstanceIndex, parallel_sub_instance_update->_SubInstanceIndex);" << std::endl;
+			file << "\t\t\t\t\t\t};" << std::endl;
+			file << "\t\t\t\t\t\tparallel_sub_instance_update._Task._Arguments = nullptr;" << std::endl;
+			file << "\t\t\t\t\t\tparallel_sub_instance_update._Task._ExecutableOnSameThread = false;" << std::endl;
+			file << "\t\t\t\t\t\tparallel_sub_instance_update._InstanceIndex = instance_index;" << std::endl;
+			file << "\t\t\t\t\t\tparallel_sub_instance_update._SubInstanceIndex = sub_instance_index;" << std::endl;
+			file << "\t\t\t\t\t}" << std::endl;
+			file << "\t\t\t\t}" << std::endl;
+			file << "\t\t\t}" << std::endl;
+		}
+
+		file << "\t\t\tbreak;" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
+	file << "\t}" << std::endl;
+	file << std::endl;
+
+	//Execute all parallel updates.
+	file << "\t//Execute all parallel updates." << std::endl;
+	file << "\tfor (ParallelUpdate &parallel_update : PARALLEL_UPDATES)" << std::endl;
+	file << "\t{" << std::endl;
+	file << "\t\tparallel_update._Task._Arguments = &parallel_update;" << std::endl;
+	file << "\t\tTaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &parallel_update._Task);" << std::endl;
 	file << "\t}" << std::endl;
 	file << std::endl;
 
@@ -839,15 +1021,15 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << std::endl;
 
 	//Wait for parallel batch updates to finish.
-	file << "\t//Wait for parallel batch update to finish." << std::endl;
-	file << "\tbool all_done{ PARALLEL_BATCH_UPDATES.Empty() };" << std::endl;
+	file << "\t//Wait for parallel updates to finish." << std::endl;
+	file << "\tbool all_done{ PARALLEL_UPDATES.Empty() };" << std::endl;
 	file << "\twhile (!all_done)" << std::endl;
 	file << "\t{" << std::endl;
 	file << "\t\tTaskSystem::Instance->DoWork(Task::Priority::HIGH);" << std::endl;
 	file << "\t\tall_done = true;" << std::endl;
-	file << "\t\tfor (ParallelBatchUpdate &parallel_batch_update : PARALLEL_BATCH_UPDATES)" << std::endl;
+	file << "\t\tfor (ParallelUpdate &parallel_update : PARALLEL_UPDATES)" << std::endl;
 	file << "\t\t{" << std::endl;
-	file << "\t\t\tall_done &= parallel_batch_update._Task.IsExecuted();" << std::endl;
+	file << "\t\t\tall_done &= parallel_update._Task.IsExecuted();" << std::endl;
 	file << "\t\t}" << std::endl;
 	file << "\t}" << std::endl;
 

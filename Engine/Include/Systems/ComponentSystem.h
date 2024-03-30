@@ -44,44 +44,8 @@ public:
 private:
 
 	/*
-	*	Update data class definition.
-	*/
-	class UpdateData final
-	{
-
-	public:
-
-		//The task.
-		Task _Task;
-
-		//The component.
-		Component *RESTRICT _Component;
-
-		//The update phase.
-		UpdatePhase _UpdatePhase;
-
-		//The start index.
-		uint64 _StartIndex;
-
-		//The end index.
-		uint64 _EndIndex;
-
-		//The sub instance index.
-		uint64 _SubInstanceIndex;
-
-	};
-
-	//The update data.
-	DynamicArray<UpdateData> _UpdateData;
-
-	/*
 	*	Updates components for the given update phase.
 	*/
 	void UpdateComponents(const UpdatePhase update_phase) NOEXCEPT;
-
-	/*
-	*	Updates a component with the given update data.
-	*/
-	void UpdateComponent(const UpdateData &update_data) NOEXCEPT;
 
 };
