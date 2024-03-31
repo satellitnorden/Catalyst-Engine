@@ -96,7 +96,7 @@ Fragment
         metallic,
         ambient_occlusion,
         thickness,
-        incoming_diffuse_irradiance,
+        incoming_diffuse_irradiance * (1.0f + roughness),
         incoming_specular_irradiance
     );
 

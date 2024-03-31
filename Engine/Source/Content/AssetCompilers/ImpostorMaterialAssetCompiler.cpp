@@ -42,6 +42,9 @@ public:
 	//The resolution.
 	Resolution _Resolution;
 
+	//The super sample.
+	uint32 _SuperSample;
+
 	//The model.
 	StaticString<MAXIMUM_FILE_PATH_LENGTH> _Model;
 
@@ -198,6 +201,30 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 
 					parameters._Resolution._Width = std::stoul(arguments[0].Data());
 					parameters._Resolution._Height = std::stoul(arguments[1].Data());
+
+					continue;
+				}
+			}
+
+			//Is this a super sample declaration?
+			{
+				const size_t position{ current_line.find("SuperSample(") };
+
+				if (position != std::string::npos)
+				{
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							current_line.c_str(),
+							current_line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 1, "SuperSample() needs one argument!");
+
+					parameters._SuperSample = std::stoul(arguments[0].Data());
 
 					continue;
 				}
@@ -434,6 +461,10 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 
 	//Close the input file.
 	input_file.close();
+
+	//Apply the super sample.
+	parameters._Resolution._Width <<= parameters._SuperSample;
+	parameters._Resolution._Height <<= parameters._SuperSample;
 
 	//Load the model.
 	ModelFile model;
@@ -720,7 +751,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			asset_file << "ChannelMapping(BLUE, FILE_1, BLUE);" << std::endl;
 			asset_file << "ChannelMapping(ALPHA, FILE_1, ALPHA);" << std::endl;
 			asset_file << "ApplyGammaCorrection();" << std::endl;
-			asset_file << "BaseMipLevel(0);" << std::endl;
+			asset_file << "BaseMipLevel(" << parameters._SuperSample << ");" << std::endl;
 
 			asset_file.close();
 		}
@@ -742,7 +773,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			asset_file << "ChannelMapping(GREEN, FILE_1, GREEN);" << std::endl;
 			asset_file << "ChannelMapping(BLUE, FILE_1, BLUE);" << std::endl;
 			asset_file << "ChannelMapping(ALPHA, FILE_1, ALPHA);" << std::endl;
-			asset_file << "BaseMipLevel(0);" << std::endl;
+			asset_file << "BaseMipLevel(" << parameters._SuperSample << ");" << std::endl;
 
 			asset_file.close();
 		}
@@ -764,7 +795,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			asset_file << "ChannelMapping(GREEN, FILE_1, GREEN);" << std::endl;
 			asset_file << "ChannelMapping(BLUE, FILE_1, BLUE);" << std::endl;
 			asset_file << "ChannelMapping(ALPHA, FILE_1, ALPHA);" << std::endl;
-			asset_file << "BaseMipLevel(0);" << std::endl;
+			asset_file << "BaseMipLevel(" << parameters._SuperSample << ");" << std::endl;
 
 			asset_file.close();
 		}
@@ -786,7 +817,8 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			asset_file << "ChannelMapping(GREEN, FILE_1, GREEN);" << std::endl;
 			asset_file << "ChannelMapping(BLUE, FILE_1, BLUE);" << std::endl;
 			asset_file << "ChannelMapping(ALPHA, FILE_1, ALPHA);" << std::endl;
-			asset_file << "BaseMipLevel(0);" << std::endl;
+			asset_file << "BaseMipLevel(" << parameters._SuperSample << ");" << std::endl;
+			asset_file << "MipmapGenerationMode(MAXIMUM);";
 
 			asset_file.close();
 		}

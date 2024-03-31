@@ -561,8 +561,12 @@ vec3 CalculateIndirectLighting
 	//Calculate the geometry.
 	float geometry = GeometryIndirect(roughness, outgoing_angle);
 
-	//Calculate the fresnel.
-	vec3 fresnel = FresnelIndirect(surface_color, outgoing_angle);
+	/*
+	*	Calculate the fresnel.
+	*	Multiplying by ((1.0f - roughness) * 0.5f + 0.5f) is technically incorrect here,
+	*	but it looks better, so let's do that. (:
+	*/
+	vec3 fresnel = FresnelIndirect(surface_color, outgoing_angle) * ((1.0f - roughness) * 0.5f + 0.5f);
 
 	//Calculate the diffuse component.
 	vec3 diffuse_component;
