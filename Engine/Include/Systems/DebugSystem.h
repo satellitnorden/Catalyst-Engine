@@ -45,6 +45,9 @@ public:
 		CHECKBOX
 	};
 
+	//The full name.
+	DynamicString _FullName;
+
 	//The name.
 	DynamicString _Name;
 
@@ -82,16 +85,6 @@ public:
 	*	Initializes the debug system.
 	*/
 	void Initialize() NOEXCEPT;
-
-	/*
-	*	Registers a debug window.
-	*/
-	void RegisterDebugWindow
-	(
-		const char *const RESTRICT name,
-		DebugCommandFunction function,
-		void* const RESTRICT user_data
-	) NOEXCEPT;
 
 	/*
 	*	Registers a button debug command.

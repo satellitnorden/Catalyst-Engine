@@ -88,6 +88,7 @@ void DebugSystem::RegisterButtonDebugCommand
 			parent_category->_DebugCommands.Emplace();
 			DebugCommand &new_debug_command{ parent_category->_DebugCommands.Back() };
 
+			new_debug_command._FullName = name;
 			new_debug_command._Name = current_name.data();
 			new_debug_command._Type = DebugCommand::Type::BUTTON;
 			new_debug_command._Function = function;
@@ -123,7 +124,7 @@ void DebugSystem::RegisterCheckboxDebugCommand
 
 			bool category_exists{ false };
 
-			for (DebugCategory& sub_category : parent_category->_SubCategories)
+			for (DebugCategory &sub_category : parent_category->_SubCategories)
 			{
 				if (StringUtilities::IsEqual(sub_category._Name.Data(), category_name.data()))
 				{
@@ -139,7 +140,7 @@ void DebugSystem::RegisterCheckboxDebugCommand
 			if (!category_exists)
 			{
 				parent_category->_SubCategories.Emplace();
-				DebugCategory& new_sub_category{ parent_category->_SubCategories.Back() };
+				DebugCategory &new_sub_category{ parent_category->_SubCategories.Back() };
 
 				new_sub_category._Name = category_name.data();
 
@@ -151,8 +152,9 @@ void DebugSystem::RegisterCheckboxDebugCommand
 		else
 		{
 			parent_category->_DebugCommands.Emplace();
-			DebugCommand& new_debug_command{ parent_category->_DebugCommands.Back() };
+			DebugCommand &new_debug_command{ parent_category->_DebugCommands.Back() };
 
+			new_debug_command._FullName = name;
 			new_debug_command._Name = current_name.data();
 			new_debug_command._Type = DebugCommand::Type::CHECKBOX;
 			new_debug_command._Function = function;
@@ -233,6 +235,9 @@ void DebugSystem::DrawDebugCategory(DebugCategory &debug_category, const bool is
 
 		for (DebugCommand &debug_command : debug_category._DebugCommands)
 		{
+			//Push the ID.
+			ImGui::PushID(debug_command._FullName.Data());
+
 			switch (debug_command._Type)
 			{
 				case DebugCommand::Type::BUTTON:
@@ -263,6 +268,8 @@ void DebugSystem::DrawDebugCategory(DebugCategory &debug_category, const bool is
 				}
 			}
 			
+			//Pop the ID.
+			ImGui::PopID();
 		}
 	}
 }
