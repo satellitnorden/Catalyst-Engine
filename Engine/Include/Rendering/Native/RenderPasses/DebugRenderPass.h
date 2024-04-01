@@ -56,8 +56,9 @@ private:
 	DebugGraphicsPipeline _DebugGraphicsPipeline;
 
 	//The render pipelines.
-	StaticArray<GraphicsRenderPipeline, 1> _RenderPipelines
+	StaticArray<GraphicsRenderPipeline, 2> _RenderPipelines
 	{
+		GraphicsRenderPipeline(HashString("TerrainWireframe_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("StaticModelWireframe_RenderPipeline"))
 	};
 

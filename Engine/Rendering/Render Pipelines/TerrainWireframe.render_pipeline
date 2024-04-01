@@ -1,0 +1,230 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Terrain);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(SceneLowDynamicRange1);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the cull mode.
+CullMode(NONE);
+
+//Set the load/store operators.
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER_OR_EQUAL);
+DepthTestEnable();
+
+//Set the topology.
+Topology(LINE_STRIP);
+
+//Set blend properties.
+BlendEnable();
+BlendColorSourceFactor(SOURCE_ALPHA);
+BlendColorDestinationFactor(ONE_MINUS_SOURCE_ALPHA);
+BlendColorOperator(ADD);
+BlendAlphaSourceFactor(ONE);
+BlendAlphaDestinationFactor(ZERO);
+BlendAlphaOperator(ADD);
+
+//Declare push constant data.
+PushConstantData(vec3, COLOR);
+PushConstantData(vec2, WORLD_POSITION);
+PushConstantData(vec2, MINIMUM_HEIGHT_MAP_COORDINATE);
+PushConstantData(vec2, MAXIMUM_HEIGHT_MAP_COORDINATE);
+PushConstantData(uint, BORDERS);
+PushConstantData(float, PATCH_RESOLUTION_RECIPROCAL);
+PushConstantData(float, PATCH_SIZE);
+PushConstantData(uint, HEIGHT_MAP_TEXTURE_INDEX);
+PushConstantData(uint, NORMAL_MAP_TEXTURE_INDEX);
+PushConstantData(uint, INDEX_MAP_TEXTURE_INDEX);
+PushConstantData(uint, BLEND_MAP_TEXTURE_INDEX);
+PushConstantData(float, MAP_RESOLUTION);
+PushConstantData(float, MAP_RESOLUTION_RECIPROCAL);
+
+//Subscribe to input streams.
+SubscribeToInputStream(TerrainWireframe);
+
+//Declare samplers.
+Sampler(HEIGHT_MAP_SAMPLER /* Name */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
+Sampler(NORMAL_MAP_SAMPLER /* Name */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
+Sampler(INDEX_BLEND_MAP_SAMPLER /* Name */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
+Sampler(MATERIAL_SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec2, InPosition);
+    InputParameter(uint, InBorders);
+
+    //Calculate the stitched position.
+    vec2 stitched_position = InPosition;
+
+    //Apply the first layer of stiching.
+    {
+	    float is_left_multiplier = float((InBorders & BIT(0)) & (BORDERS & BIT(0)));
+    	float is_right_multiplier = float((InBorders & BIT(2)) & (BORDERS & BIT(2)));
+	    float vertical_offset = min(is_left_multiplier + is_right_multiplier, 1.0f);
+
+        float is_down_multiplier = float((InBorders & BIT(4)) & (BORDERS & BIT(4)));
+    	float is_up_multiplier = float((InBorders & BIT(6)) & (BORDERS & BIT(6)));
+	    float horizontal_offset = min(is_down_multiplier + is_up_multiplier, 1.0f);
+
+	    stitched_position.y -= PATCH_RESOLUTION_RECIPROCAL * vertical_offset;
+	    stitched_position.x -= PATCH_RESOLUTION_RECIPROCAL * horizontal_offset;
+    }
+
+    //Apply the second layer of stiching.
+    {
+	    float is_left_multiplier = float((InBorders & BIT(1)) & (BORDERS & BIT(1)));
+    	float is_right_multiplier = float((InBorders & BIT(3)) & (BORDERS & BIT(3)));
+	    float vertical_offset = min(is_left_multiplier + is_right_multiplier, 1.0f);
+
+        float is_down_multiplier = float((InBorders & BIT(5)) & (BORDERS & BIT(5)));
+    	float is_up_multiplier = float((InBorders & BIT(7)) & (BORDERS & BIT(7)));
+	    float horizontal_offset = min(is_down_multiplier + is_up_multiplier, 1.0f);
+
+	    stitched_position.y -= (PATCH_RESOLUTION_RECIPROCAL * 2.0f) * vertical_offset;
+	    stitched_position.x -= (PATCH_RESOLUTION_RECIPROCAL * 2.0f) * horizontal_offset;
+    }
+
+    //Calculate the height map coordinate.
+    vec2 height_map_coordinate = vec2(mix(MINIMUM_HEIGHT_MAP_COORDINATE.x, MAXIMUM_HEIGHT_MAP_COORDINATE.x, stitched_position.x), mix(MINIMUM_HEIGHT_MAP_COORDINATE.y, MAXIMUM_HEIGHT_MAP_COORDINATE.y, stitched_position.y));
+
+    //Calculate the world position.
+    vec3 world_position;
+
+    world_position.x = WORLD_POSITION.x + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.x);
+    world_position.y = 0.0f;
+    world_position.z = WORLD_POSITION.y + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
+
+    //Sample the heightmap.
+    {
+        float height_1 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).x;
+        float height_2 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).x;
+        float height_3 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).x;
+        float height_4 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).x;
+    
+        float blend_1 = mix(height_1, height_2, fract(height_map_coordinate.y * MAP_RESOLUTION));
+	    float blend_2 = mix(height_3, height_4, fract(height_map_coordinate.y * MAP_RESOLUTION));
+
+	    float final_height = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
+
+        world_position.y = final_height;
+    }
+    
+    //Sample the normal map.
+    vec3 normal;
+
+    {
+        vec3 normal_1 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_2 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_3 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 normal_4 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+    
+        vec3 blend_1 = mix(normal_1, normal_2, fract(height_map_coordinate.y * MAP_RESOLUTION));
+	    vec3 blend_2 = mix(normal_3, normal_4, fract(height_map_coordinate.y * MAP_RESOLUTION));
+
+	    normal = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
+        normal = normal * 2.0f - 1.0f;
+        normal = normalize(normal);
+    }
+
+    //Calculate the material texture coordinate.
+    vec2 material_texture_coordinate = world_position.xz * 0.5f;
+
+    //Apply displacement.
+    {
+        //Sample the displacements.
+        float displacements[4];
+        vec2 sample_offsets[4];
+    
+        sample_offsets[0] = vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_offsets[1] = vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_offsets[2] = vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_offsets[3] = vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+
+        for (uint i = 0; i < 4; ++i)
+        {
+            //Cache the height map texture coordinate.
+            vec2 height_map_texture_coordinate = height_map_coordinate + sample_offsets[i];
+
+            //Sample the index map.
+            vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
+    
+            //Retrieve the materials.
+            Material material_1 = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
+            Material material_2 = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
+            Material material_3 = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
+            Material material_4 = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
+
+            //Evaluate the normal map/displacement of the materials.
+            vec4 normal_map_displacement_1;
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_1);
+            vec4 normal_map_displacement_2;
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_2);
+            vec4 normal_map_displacement_3;
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_3);
+            vec4 normal_map_displacement_4;
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_4);
+
+            normal_map_displacement_1.w = max(normal_map_displacement_1.w, TERRAIN_MINIMUM_DISPLACEMENT);
+            normal_map_displacement_2.w = max(normal_map_displacement_2.w, TERRAIN_MINIMUM_DISPLACEMENT);
+            normal_map_displacement_3.w = max(normal_map_displacement_3.w, TERRAIN_MINIMUM_DISPLACEMENT);
+            normal_map_displacement_4.w = max(normal_map_displacement_4.w, TERRAIN_MINIMUM_DISPLACEMENT);
+
+            //Sample the blend map.
+            vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
+
+            //Alter the blend values based on the displacement.
+            blend_map[0] *= BIAS_DISPLACEMENT(normal_map_displacement_1.w);
+            blend_map[1] *= BIAS_DISPLACEMENT(normal_map_displacement_2.w);
+            blend_map[2] *= BIAS_DISPLACEMENT(normal_map_displacement_3.w);
+            blend_map[3] *= BIAS_DISPLACEMENT(normal_map_displacement_4.w);
+
+            //Renormalize the blend map.
+            float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
+
+            blend_map[0] *= inverse_sum;
+            blend_map[1] *= inverse_sum;
+            blend_map[2] *= inverse_sum;
+            blend_map[3] *= inverse_sum;
+
+            //Blend the material.
+            displacements[i] =  normal_map_displacement_1.w * blend_map[0]
+                                + normal_map_displacement_2.w * blend_map[1]
+                                + normal_map_displacement_3.w * blend_map[2]
+                                + normal_map_displacement_4.w * blend_map[3];
+        }
+
+        float blend_1 = mix(displacements[0], displacements[1], fract(height_map_coordinate.y * MAP_RESOLUTION));
+	    float blend_2 = mix(displacements[2], displacements[3], fract(height_map_coordinate.y * MAP_RESOLUTION));
+
+	    float final_displacement = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
+
+        //Apply the displacement!
+        world_position += normal * mix(-0.125f, 0.25f, final_displacement); //Slight bias for upward displacement.
+    }
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Output the fragment.
+    OutputFragment(SceneLowDynamicRange1, vec4(COLOR, 0.5f));
+}

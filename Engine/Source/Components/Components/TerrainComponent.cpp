@@ -8,6 +8,9 @@
 #include <Rendering/Native/Culling.h>
 
 //Systems.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <Systems/DebugSystem.h>
+#endif
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
@@ -16,6 +19,128 @@
 #include <Terrain/TerrainGeneralUtilities.h>
 #include <Terrain/TerrainVertex.h>
 #include <Terrain/TerrainQuadTreeUtilities.h>
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+//Denotes whether or not terrain wireframe is enabled.
+bool TERRAIN_WIREFRAME_ENABLED{ false };
+
+/*
+*	Terrain wireframe push constant data.
+*/
+class TerrainWireframePushConstantData final
+{
+
+public:
+
+	Vector3<float32> _Color;
+	Padding<4> _Padding;
+	Vector2<float32> _WorldPosition;
+	Vector2<float32> _MinimumHeightMapCoordinate;
+	Vector2<float32> _MaximumHeightMapCoordinate;
+	uint32 _Borders;
+	float32 _PatchResolutionReciprocal;
+	float32 _PatchSize;
+	uint32 _HeightMapTextureIndex;
+	uint32 _NormalMapTextureIndex;
+	uint32 _IndexMapTextureIndex;
+	uint32 _BlendMapTextureIndex;
+	float32 _MapResolution;
+	float32 _MapResolutionReciprocal;
+
+};
+
+/*
+*	Gathers a terrain wireframe quad tree node.
+*/
+FORCE_INLINE void GatherTerrainWireframeQuadTreeNode
+(
+	const TerrainInstanceData &instance_data,
+	const TerrainQuadTreeNode &node,
+	RenderInputStream *const RESTRICT input_stream
+) NOEXCEPT
+{
+	if (node.IsSubdivided())
+	{
+		for (const TerrainQuadTreeNode &child_node : node._ChildNodes)
+		{
+			GatherTerrainWireframeQuadTreeNode(instance_data, child_node, input_stream);
+		}
+	}
+
+	else
+	{
+		//Ignore this node if it not visible.
+		if (!node._Visible)
+		{
+			return;
+		}
+
+		//Add a new entry.
+		input_stream->_Entries.Emplace();
+		RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+		new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+		new_entry._VertexBuffer = instance_data._Buffer;
+		new_entry._IndexBuffer = instance_data._Buffer;
+		new_entry._IndexBufferOffset = instance_data._IndexOffset;
+		new_entry._InstanceBuffer = EMPTY_HANDLE;
+		new_entry._VertexCount = 0;
+		new_entry._IndexCount = instance_data._IndexCount;
+		new_entry._InstanceCount = 0;
+
+		//Set up the push constant data.
+		TerrainWireframePushConstantData push_constant_data;
+
+		push_constant_data._Color = Vector3<float32>(1.0f, 1.0f, 1.0f);
+		const Vector3<float32> component_world_position{ instance_data._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
+		push_constant_data._WorldPosition = Vector2<float32>(component_world_position._X, component_world_position._Z) + node._Position;
+		push_constant_data._MinimumHeightMapCoordinate = node._MinimumHeightMapCoordinate;
+		push_constant_data._MaximumHeightMapCoordinate = node._MaximumHeightMapCoordinate;
+		push_constant_data._Borders = node._Borders;
+		push_constant_data._PatchResolutionReciprocal = 1.0f / static_cast<float32>(instance_data._BaseResolution);
+		push_constant_data._PatchSize = node._PatchSize;
+		push_constant_data._HeightMapTextureIndex = instance_data._HeightMapTextureIndex;
+		push_constant_data._NormalMapTextureIndex = instance_data._NormalMapTextureIndex;
+		push_constant_data._IndexMapTextureIndex = instance_data._IndexMapTextureIndex;
+		push_constant_data._BlendMapTextureIndex = instance_data._BlendMapTextureIndex;
+		push_constant_data._MapResolution = static_cast<float32>(instance_data._HeightMap.GetResolution());
+		push_constant_data._MapResolutionReciprocal = 1.0f / push_constant_data._MapResolution;
+
+		for (uint64 i{ 0 }; i < sizeof(TerrainWireframePushConstantData); ++i)
+		{
+			input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+		}
+	}
+}
+
+/*
+*	Gathers a terrain wireframe render input stream.
+*/
+void GatherTerrainWireframeRenderInputStream(RenderInputStream *const RESTRICT input_stream) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Gather terrains.
+	if (TERRAIN_WIREFRAME_ENABLED)
+	{
+		for (const TerrainInstanceData &instance_data : TerrainComponent::Instance->InstanceData())
+		{
+			//Is this terrain visible?
+			if (!instance_data._Visibility)
+			{
+				continue;
+			}
+
+			//Walk the quad tree.
+			GatherTerrainWireframeQuadTreeNode(instance_data, instance_data._QuadTree._RootNode, input_stream);
+		}
+	}
+}
+#endif
 
 /*
 *	Checks combination of a node.
@@ -277,6 +402,51 @@ void CullTerrainQuadTreeNode
 		//Cull!
 		node->_Visible = Culling::IsWithinFrustum(transformed_axis_aligned_bounding_box, *frustum);
 	}
+}
+
+/*
+*	Initializes this component.
+*/
+void TerrainComponent::Initialize() NOEXCEPT
+{
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Register the debug command.
+	DebugSystem::Instance->RegisterCheckboxDebugCommand
+	(
+		"Rendering\\Terrain\\Wireframe",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			TERRAIN_WIREFRAME_ENABLED = !TERRAIN_WIREFRAME_ENABLED;
+		},
+		nullptr
+	);
+
+	//Register the input stream.
+	{
+		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
+
+		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(TerrainVertex, _Position)));
+		required_vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32UnsignedInt, static_cast<uint32>(offsetof(TerrainVertex, _Borders)));
+
+		DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
+
+		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(TerrainVertex)), VertexInputBindingDescription::InputRate::Vertex);
+
+		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+		(
+			HashString("TerrainWireframe"),
+			required_vertex_input_attribute_descriptions,
+			required_vertex_input_binding_descriptions,
+			sizeof(TerrainWireframePushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				GatherTerrainWireframeRenderInputStream(input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED,
+			nullptr
+		);
+	}
+#endif
 }
 
 /*
