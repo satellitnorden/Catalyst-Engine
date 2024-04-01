@@ -34,9 +34,9 @@ void DebugSystem::Initialize() NOEXCEPT
 }
 
 /*
-*	Registers a debug command.
+*	Registers a button debug command.
 */
-void DebugSystem::RegisterDebugCommand
+void DebugSystem::RegisterButtonDebugCommand
 (
 	const char *const RESTRICT name,
 	DebugCommandFunction function,
@@ -89,6 +89,72 @@ void DebugSystem::RegisterDebugCommand
 			DebugCommand &new_debug_command{ parent_category->_DebugCommands.Back() };
 
 			new_debug_command._Name = current_name.data();
+			new_debug_command._Type = DebugCommand::Type::BUTTON;
+			new_debug_command._Function = function;
+			new_debug_command._UserData = user_data;
+
+			break;
+		}
+	}
+}
+
+/*
+*	Registers a checkbox debug command.
+*/
+void DebugSystem::RegisterCheckboxDebugCommand
+(
+	const char *const RESTRICT name,
+	DebugCommandFunction function,
+	void *const RESTRICT user_data
+) NOEXCEPT
+{
+	//Remember some stuff.
+	DebugCategory* RESTRICT parent_category{ &_RootDebugCategory };
+	std::string current_name{ name };
+
+	for (;;)
+	{
+		//Figure out the category.
+		const size_t first_slash_position{ current_name.find_first_of("\\") };
+
+		if (first_slash_position != std::string::npos)
+		{
+			const std::string category_name{ current_name.substr(0, first_slash_position) };
+
+			bool category_exists{ false };
+
+			for (DebugCategory& sub_category : parent_category->_SubCategories)
+			{
+				if (StringUtilities::IsEqual(sub_category._Name.Data(), category_name.data()))
+				{
+					parent_category = &sub_category;
+					current_name = current_name.substr(first_slash_position + 1);
+
+					category_exists = true;
+
+					break;
+				}
+			}
+
+			if (!category_exists)
+			{
+				parent_category->_SubCategories.Emplace();
+				DebugCategory& new_sub_category{ parent_category->_SubCategories.Back() };
+
+				new_sub_category._Name = category_name.data();
+
+				parent_category = &new_sub_category;
+				current_name = current_name.substr(first_slash_position + 1);
+			}
+		}
+
+		else
+		{
+			parent_category->_DebugCommands.Emplace();
+			DebugCommand& new_debug_command{ parent_category->_DebugCommands.Back() };
+
+			new_debug_command._Name = current_name.data();
+			new_debug_command._Type = DebugCommand::Type::CHECKBOX;
 			new_debug_command._Function = function;
 			new_debug_command._UserData = user_data;
 
@@ -167,10 +233,36 @@ void DebugSystem::DrawDebugCategory(DebugCategory &debug_category, const bool is
 
 		for (DebugCommand &debug_command : debug_category._DebugCommands)
 		{
-			if (ImGui::Button(debug_command._Name.Data()))
+			switch (debug_command._Type)
 			{
-				debug_command._Function(&debug_command, debug_command._UserData);
+				case DebugCommand::Type::BUTTON:
+				{
+					if (ImGui::Button(debug_command._Name.Data()))
+					{
+						debug_command._Function(&debug_command, debug_command._UserData);
+					}
+
+					break;
+				}
+
+				case DebugCommand::Type::CHECKBOX:
+				{
+					if (ImGui::Checkbox(debug_command._Name.Data(), &debug_command._State._CheckboxState._IsChecked))
+					{
+						debug_command._Function(&debug_command, debug_command._UserData);
+					}
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
 			}
+			
 		}
 	}
 }

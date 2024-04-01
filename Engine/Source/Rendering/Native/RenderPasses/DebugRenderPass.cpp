@@ -50,8 +50,18 @@ void DebugRenderPass::Initialize() NOEXCEPT
 	SetNumberOfPipelines(1);
 	AddPipeline(&_DebugGraphicsPipeline);
 
+	for (GraphicsRenderPipeline &pipeline : _RenderPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
 	//Initialize all pipelines.
 	_DebugGraphicsPipeline.Initialize(static_cast<uint32>(Mode::NONE), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
+
+	for (GraphicsRenderPipeline &pipeline : _RenderPipelines)
+	{
+		pipeline.Initialize();
+	}
 }
 
 /*
@@ -181,13 +191,19 @@ void DebugRenderPass::Execute() NOEXCEPT
 	//Set execution depending on the current mode.
 	if (_CurrentMode != Mode::NONE)
 	{
+		_DebugGraphicsPipeline.SetIncludeInRender(true);
 		_DebugGraphicsPipeline.Execute();
-		SetEnabled(true);
 	}
 
 	else
 	{
-		SetEnabled(false);
+		_DebugGraphicsPipeline.SetIncludeInRender(false);
+	}
+
+	//Execute all pipelines.
+	for (GraphicsRenderPipeline &pipeline : _RenderPipelines)
+	{
+		pipeline.Execute();
 	}
 }
 
@@ -200,6 +216,11 @@ void DebugRenderPass::Terminate() NOEXCEPT
 	if (_CurrentMode != Mode::NONE)
 	{
 		_DebugGraphicsPipeline.Terminate();
+	}
+
+	for (GraphicsRenderPipeline &pipeline : _RenderPipelines)
+	{
+		pipeline.Terminate();
 	}
 }
 #endif

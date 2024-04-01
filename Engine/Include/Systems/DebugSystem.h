@@ -7,15 +7,52 @@
 #include <Core/General/DynamicString.h>
 
 //Type aliases.
-using DebugCommandFunction = void(*)(class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data);
+using DebugCommandFunction = void(*)(class DebugCommand *const RESTRICT command, void *const RESTRICT user_data);
+
+class DebugCommandState final
+{
+
+public:
+
+	union
+	{
+		struct
+		{
+			//Denotes whether or not this checkbox is checked.
+			bool _IsChecked;
+		} _CheckboxState;
+	};
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE DebugCommandState() NOEXCEPT
+	{
+		Memory::Set(this, 0, sizeof(DebugCommandState));
+	}
+
+};
 
 class DebugCommand final
 {
 
 public:
 
+	//Enumeration covering all types.
+	enum class Type : uint8
+	{
+		BUTTON,
+		CHECKBOX
+	};
+
 	//The name.
 	DynamicString _Name;
+
+	//The type.
+	Type _Type;
+
+	//The state.
+	DebugCommandState _State;
 
 	//The function.
 	DebugCommandFunction _Function;
@@ -57,9 +94,19 @@ public:
 	) NOEXCEPT;
 
 	/*
-	*	Registers a debug command.
+	*	Registers a button debug command.
 	*/
-	void RegisterDebugCommand
+	void RegisterButtonDebugCommand
+	(
+		const char *const RESTRICT name,
+		DebugCommandFunction function,
+		void *const RESTRICT user_data
+	) NOEXCEPT;
+
+	/*
+	*	Registers a checkbox debug command.
+	*/
+	void RegisterCheckboxDebugCommand
 	(
 		const char *const RESTRICT name,
 		DebugCommandFunction function,

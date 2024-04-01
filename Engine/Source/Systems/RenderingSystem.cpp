@@ -175,7 +175,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Register debug commands.
-	DebugSystem::Instance->RegisterDebugCommand
+	DebugSystem::Instance->RegisterCheckboxDebugCommand
 	(
 		"Performance\\Rendering",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
@@ -184,7 +184,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
-	DebugSystem::Instance->RegisterDebugCommand
+	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
 		"Rendering\\Visualization Modes\\None",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
@@ -193,7 +193,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
-	DebugSystem::Instance->RegisterDebugCommand
+	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
 		"Rendering\\Visualization Modes\\Albedo",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
@@ -202,7 +202,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
-	DebugSystem::Instance->RegisterDebugCommand
+	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
 		"Rendering\\Visualization Modes\\Thickness",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
@@ -211,7 +211,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
-	DebugSystem::Instance->RegisterDebugCommand
+	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
 		"Rendering\\Visualization Modes\\Normal",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
@@ -220,7 +220,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
-	DebugSystem::Instance->RegisterDebugCommand
+	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
 		"Rendering\\Visualization Modes\\Depth",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
@@ -229,7 +229,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
-	DebugSystem::Instance->RegisterDebugCommand
+	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
 		"Rendering\\Visualization Modes\\Roughness",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
@@ -238,7 +238,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
-	DebugSystem::Instance->RegisterDebugCommand
+	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
 		"Rendering\\Visualization Modes\\Metallic",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
@@ -247,7 +247,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
-	DebugSystem::Instance->RegisterDebugCommand
+	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
 		"Rendering\\Visualization Modes\\Ambient Occlusion",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
@@ -256,7 +256,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
-	DebugSystem::Instance->RegisterDebugCommand
+	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
 		"Rendering\\Visualization Modes\\Emissive",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)

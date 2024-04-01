@@ -5,6 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DebugGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -53,6 +54,12 @@ private:
 
 	//The debug graphics pipeline.
 	DebugGraphicsPipeline _DebugGraphicsPipeline;
+
+	//The render pipelines.
+	StaticArray<GraphicsRenderPipeline, 1> _RenderPipelines
+	{
+		GraphicsRenderPipeline(HashString("StaticModelWireframe_RenderPipeline"))
+	};
 
 	/*
 	*	Initializes this render pass.
