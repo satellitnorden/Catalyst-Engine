@@ -6,6 +6,7 @@
 //Math.
 #include <Math/Core/CatalystBaseMath.h>
 #include <Math/General/Matrix.h>
+#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>

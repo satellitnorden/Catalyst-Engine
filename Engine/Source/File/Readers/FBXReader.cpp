@@ -6,17 +6,13 @@
 
 //File.
 #include <File/Core/FileCore.h>
-#include <File/Core/BinaryFile.h>
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 //Third party.
 #include <ThirdParty/assimp/assimp/Importer.hpp>
 #include <ThirdParty/assimp/assimp/postprocess.h>
 #include <ThirdParty/assimp/assimp/scene.h>
-#include <ThirdParty/zlib/zlib.h>
 
-#define USE_ASSIMP (1)
-
-#if USE_ASSIMP
 /*
 *	Processes a single mesh.
 */
@@ -370,6 +366,35 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 	return true;
 }
 #else
+/*
+*	Reads the animated model file at the given file path. Returns if the read was succesful.
+*/
+NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimatedModelFile *const RESTRICT animated_model_file) NOEXCEPT
+{
+	ASSERT(false, "This should not be called in final builds!");
+
+	return false;
+}
+
+/*
+*	Reads the model file at the given file path. Returns if the read was succesful.
+*/
+NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile *const RESTRICT model_file) NOEXCEPT
+{
+	ASSERT(false, "This should not be called in final builds!");
+
+	return false;
+}
+#endif
+
+#if 0 //Old implementation here, for reference.
+
+//File.
+#include <File/Core/BinaryFile.h>
+
+//Third party.
+#include <ThirdParty/zlib/zlib.h>
+
 //Macros.
 #define FBX_READER_PRINT_TO_OUTPUT(MESSAGE) /*PRINT_TO_OUTPUT(MESSAGE)*/
 
