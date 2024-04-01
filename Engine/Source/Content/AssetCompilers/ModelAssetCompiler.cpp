@@ -33,6 +33,9 @@ public:
 	//The collision.
 	StaticString<MAXIMUM_FILE_PATH_LENGTH> _Collision;
 
+	//The level of detail multiplier.
+	float32 _LevelOfDetailMultiplier;
+
 };
 
 /*
@@ -142,6 +145,9 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 	//Set up the parameters.
 	ModelParameters parameters;
 
+	//Set defaults.
+	parameters._LevelOfDetailMultiplier = 32.0f;
+
 	//Open the input file.
 	std::ifstream input_file{ compile_data->_FilePath.Data() };
 
@@ -195,6 +201,30 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 					ASSERT(number_of_arguments == 1, "Collision() needs one argument!");
 
 					parameters._Collision = arguments[0].Data();
+
+					continue;
+				}
+			}
+
+			//Is this a level of detail multiplier declaration?
+			{
+				const size_t position{ current_line.find("LevelOfDetailMultiplier(") };
+
+				if (position != std::string::npos)
+				{
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							current_line.c_str(),
+							current_line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 1, "LevelOfDetailMultiplier() needs one argument!");
+
+					parameters._LevelOfDetailMultiplier = std::stof(arguments[0].Data());
 
 					continue;
 				}
@@ -336,6 +366,9 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 		output_file.Write(&collision_model_exists, sizeof(bool));
 	}
 
+	//Write the level of detail multiplier.
+	output_file.Write(&parameters._LevelOfDetailMultiplier, sizeof(float32));
+
 	//Close the output file.
 	output_file.Close();
 }
@@ -461,4 +494,7 @@ void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 	{
 		load_data->_Asset->_CollisionModel = nullptr;
 	}
+
+	//Read the level of detail multiplier.
+	load_data->_StreamArchive->Read(&load_data->_Asset->_LevelOfDetailMultiplier, sizeof(float32), &stream_archive_position);
 }

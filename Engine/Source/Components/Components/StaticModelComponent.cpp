@@ -67,6 +67,7 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 		{
 			//Cache data that will be used.
 			const WorldTransform &camera_world_transform{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform() };
+			const Vector3<float32> camera_local_position{ camera_world_transform.GetLocalPosition() };
 			const Vector3<int32> camera_cell{ camera_world_transform.GetCell() };
 			const Matrix4x4 *const RESTRICT camera_world_to_clip_matrix{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetViewMatrix() };
 			const Frustum *const RESTRICT frustum{ RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetFrustum() };
@@ -105,6 +106,9 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 				//Reset the visibility flags.
 				instance_data._VisibilityFlags = static_cast<VisibilityFlags>(UINT8_MAXIMUM);
 
+				//Calculate the distance.
+				const float32 distance{ Vector3<float32>::Length(AxisAlignedBoundingBox3D::GetClosestPointInside(relative_axis_aligned_bounding_box, camera_local_position) - camera_local_position) };
+
 				/*
 				*	Calculate the distance based culling score.
 				*	Bias the height dimension a bit more, makes tall model popping is more noticable.
@@ -114,8 +118,8 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 					Culling::CalculateDistanceBasedCullingScore
 					(
 						relative_axis_aligned_bounding_box,
-						camera_world_transform.GetLocalPosition(),
-						Vector3<float32>(BASE_CULLING_DIMENSION_MULTIPLIER, BASE_CULLING_DIMENSION_MULTIPLIER * 2.0f, BASE_CULLING_DIMENSION_MULTIPLIER)
+						Vector3<float32>(BASE_CULLING_DIMENSION_MULTIPLIER, BASE_CULLING_DIMENSION_MULTIPLIER * 2.0f, BASE_CULLING_DIMENSION_MULTIPLIER),
+						distance
 					)
 				};
 
@@ -171,8 +175,19 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 								continue;
 							}
 
+							//Calculate the level of detail score.
+							const float32 level_of_detail_score
+							{
+								1.0f - CatalystBaseMath::Maximum<float32>(Culling::CalculateDistanceBasedCullingScore
+								(
+									relative_axis_aligned_bounding_box,
+									Vector3<float32>(instance_data._Model->_LevelOfDetailMultiplier, instance_data._Model->_LevelOfDetailMultiplier, instance_data._Model->_LevelOfDetailMultiplier),
+									distance
+								), 0.0f)
+							};
+
 							//Calculate the level of detail index.
-							instance_data._LevelOfDetailIndices[mesh_index] = static_cast<uint32>((1.0f - culling_score) * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size() - 1));
+							instance_data._LevelOfDetailIndices[mesh_index] = CatalystBaseMath::Minimum<uint8>(static_cast<uint8>(level_of_detail_score * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size())), static_cast<uint8>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.LastIndex()));
 						}
 					}
 				}

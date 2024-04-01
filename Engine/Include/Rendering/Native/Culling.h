@@ -21,8 +21,8 @@ namespace Culling
 	FORCE_INLINE NO_DISCARD float32 CalculateDistanceBasedCullingScore
 	(
 		const AxisAlignedBoundingBox3D &box,
-		const Vector3<float32> &position,
-		const Vector3<float32> &dimension_multipliers
+		const Vector3<float32> &dimension_multipliers,
+		const float32 distance
 	) NOEXCEPT
 	{
 		//Cache the dimensions.
@@ -35,9 +35,6 @@ namespace Culling
 			+ dimensions._Y * dimension_multipliers._Y
 			+ dimensions._Z * dimension_multipliers._Z
 		};
-
-		//Calculate the distance.
-		const float32 distance{ Vector3<float32>::Length(AxisAlignedBoundingBox3D::GetClosestPointInside(box, position) - position) };
 
 		//Calculate the score. Normalize it so that it falls in the [-INFINITY, 1.0f] range.
 		const float32 score{ (dimensions_score - distance) / dimensions_score };

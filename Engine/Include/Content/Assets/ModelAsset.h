@@ -33,4 +33,7 @@ public:
 	//The collision model.
 	CollisionModelHandle _CollisionModel;
 
+	//The level of detail multiplier.
+	float32 _LevelOfDetailMultiplier;
+
 };
