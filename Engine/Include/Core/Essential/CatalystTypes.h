@@ -35,9 +35,3 @@ static_assert(sizeof(byte) == 1, "Size of byte is not 1 bytes, how could this be
 
 static_assert(sizeof(float32) == 4, "Size of float32 is not 4 bytes, how could this be?");
 static_assert(sizeof(float64) == 8, "Size of float64 is not 8 bytes, how could this be?");
-
-/*
-*	Special types.
-*/
-#include <Core/General/Float16.h>
-#include <Core/General/NormalizedFloat.h>

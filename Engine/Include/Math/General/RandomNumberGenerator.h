@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/ArrayProxy.h>
 
+//STL.
+#include <random>
+
 class RandomNumberGenerator final
 {
 

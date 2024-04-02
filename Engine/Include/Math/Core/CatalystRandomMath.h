@@ -7,6 +7,9 @@
 //Math.
 #include <Math/General/Vector.h>
 
+//STL.
+#include <random>
+
 class CatalystRandomMath final
 {
 
