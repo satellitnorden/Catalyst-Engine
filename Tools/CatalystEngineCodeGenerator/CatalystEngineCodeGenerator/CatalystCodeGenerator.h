@@ -3,6 +3,7 @@
 #include "ComponentGenerator.h"
 #include "EnumerationGenerator.h"
 #include "ScriptGenerator.h"
+#include "SettingsGenerator.h"
 
 class CatalystCodeGenerator final
 {
@@ -24,5 +25,8 @@ private:
 
 	//The script generator.
 	ScriptGenerator _ScriptGenerator;
+
+	//The settings generator.
+	SettingsGenerator _SettingsGenerator;
 
 };

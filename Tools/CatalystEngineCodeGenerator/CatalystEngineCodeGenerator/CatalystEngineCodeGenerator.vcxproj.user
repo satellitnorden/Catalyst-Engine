@@ -3,8 +3,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerWorkingDirectory>C:\GitHub\Clairvoyant\Solutions\Win64\Win64</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-script_generator_game_include ClairvoyantScripting/ClairvoyantScriptNodes.h</LocalDebuggerCommandArguments>
-    <RemoteDebuggerCommandArguments>-script_generator_game_include ClairvoyantScripting/ClairvoyantScriptNodes.h</RemoteDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
+    <RemoteDebuggerCommandArguments>
+    </RemoteDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerCommandArguments>-script_generator_game_include ClairvoyantScripting/ClairvoyantScriptNodes.h</LocalDebuggerCommandArguments>

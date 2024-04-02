@@ -3,8 +3,32 @@
   "Id": "46758416-704c-43e8-bbb4-6d14cb4e61cb",
   "Items": [
     {
-      "Id": "6a10665e-6c6e-4712-ad1b-98e219887e50",
-      "Command": "-script_generator_game_include ClairvoyantScripting/ClairvoyantScriptNodes.h"
+      "Id": "54db32a0-515e-43e0-ab54-ec08246786c3",
+      "Command": "Release|x64",
+      "ProjectConfig": "Release",
+      "ProjectPlatform": "x64",
+      "Items": [
+        {
+          "Id": "8be92989-0e68-491f-bb03-cff6555bfb33",
+          "Command": "WindowsLocalDebugger",
+          "Items": [
+            {
+              "Id": "235a5ea8-163b-4cb8-9c7d-340d2bd0ffbf",
+              "Command": "-script_generator_game_include ClairvoyantScripting/ClairvoyantScriptNodes.h"
+            }
+          ]
+        },
+        {
+          "Id": "b856f5e1-3785-4b57-81e4-8d519c04002a",
+          "Command": "WindowsRemoteDebugger",
+          "Items": [
+            {
+              "Id": "952348b9-7e77-465d-8166-bc045d2bf3a4",
+              "Command": "-script_generator_game_include ClairvoyantScripting/ClairvoyantScriptNodes.h"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

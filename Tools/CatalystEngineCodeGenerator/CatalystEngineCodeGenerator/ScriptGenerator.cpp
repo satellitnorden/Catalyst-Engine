@@ -70,14 +70,14 @@ void ScriptGenerator::Run(int32 command_line_argument_count, char *command_line_
 	//Set up the script cache.
 	nlohmann::json script_cache;
 
-#if defined(NDEBUG)
+//#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\ScriptCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\ScriptCache.json" };
 		input_file >> script_cache;
 		input_file.close();
 	}
-#endif
+//#endif
 
 	//Gather scripts!
 	GatherScripts(ASSETS_DIRECTORY, script_cache);
@@ -90,13 +90,11 @@ void ScriptGenerator::Run(int32 command_line_argument_count, char *command_line_
 	}
 
 	//Write the content cache.
-#if defined(NDEBUG)
 	{
 		std::ofstream file{ "..\\..\\..\\Code\\CodeGeneration\\ScriptCache.json" };
 		file << std::setw(4) << script_cache;
 		file.close();
 	}
-#endif
 }
 
 /*

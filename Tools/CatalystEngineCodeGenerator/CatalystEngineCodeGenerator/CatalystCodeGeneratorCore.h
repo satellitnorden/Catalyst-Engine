@@ -109,9 +109,9 @@ static_assert(sizeof(float64) == 8, "Size of float64 is not 8 bytes, how could t
 */
 #define PRINT_TO_OUTPUT(MESSAGE) { std::ostringstream output; output << MESSAGE << std::endl; OutputDebugStringA(output.str().c_str()); }
 #define BREAKPOINT() { __nop(); __debugbreak(); }
-#define ASSERT(CONDITION, MESSAGE) if (!(CONDITION)) { PRINT_TO_OUTPUT(MESSAGE); BREAKPOINT(); }
 #define BIT(INDEX) (static_cast<uint64>(1) << static_cast<uint64>(INDEX))
 #define TEST_BIT(BIT_FIELD, BIT) ((BIT_FIELD & BIT) == BIT)
+#define ASSERT(CONDITION, MESSAGE) { if (!(CONDITION)) { PRINT_TO_OUTPUT(MESSAGE); std::cout << MESSAGE << std::endl; std::exit(1); } }
 
 /*
 *	Returns the modulo of two integers.
