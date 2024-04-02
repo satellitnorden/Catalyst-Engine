@@ -35,10 +35,8 @@
 #include <cmath>
 #include <ctime>
 #include <cstdio>
-#include <filesystem>
 #include <fstream>
 #include <sstream>
-#include <thread>
 #include <type_traits>
 
 //Catalyst Engine information.

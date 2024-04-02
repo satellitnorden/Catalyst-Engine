@@ -7,6 +7,9 @@
 //Systems.
 #include <Systems/MemorySystem.h>
 
+//STL.
+#include <filesystem>
+
 //Singleton definition.
 DEFINE_SINGLETON(ResourceSystem);
 

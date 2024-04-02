@@ -28,6 +28,9 @@
 //Third party.
 #include <ThirdParty/vulkan/shaderc/shaderc.h>
 
+//STL.
+#include <filesystem>
+
 //Constants.
 #define ENGINE_RENDERING_DIRECTORY_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering"
 #define GLOBAL_RENDER_DATA_FILE_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data"

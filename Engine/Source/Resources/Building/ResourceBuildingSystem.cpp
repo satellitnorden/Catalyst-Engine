@@ -49,6 +49,9 @@
 #include <ThirdParty/stb_truetype/stb_truetype.h>
 #include <ThirdParty/vulkan/shaderc/shaderc.h>
 
+//STL.
+#include <filesystem>
+
 /*
 *	Builds the resource collection recursively.
 */

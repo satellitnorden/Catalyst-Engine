@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/DynamicString.h>
 
+//STL.
+#include <iomanip>
+
 DISABLE_WARNING(4996) //Disable warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
 
 namespace TimeUtilities

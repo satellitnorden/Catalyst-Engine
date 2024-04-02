@@ -53,9 +53,6 @@ public:
 		//The compilation domain.
 		CompilationDomain _CompilationDomain;
 
-		//The last write time.
-		std::filesystem::file_time_type _LastWriteTime;
-
 		//The collection.
 		const char *RESTRICT _Collection;
 

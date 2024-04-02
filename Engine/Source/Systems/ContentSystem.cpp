@@ -19,15 +19,15 @@
 #include <Content/AssetCompilers/Texture2DAssetCompiler.h>
 #include <Content/AssetCompilers/TextureCubeAssetCompiler.h>
 
-//File.
-//#include <File/Core/FileCore.h>
-
 //Profiling.
 #include <Profiling/Profiling.h>
 
 //Systems.
 #include <Systems/LogSystem.h>
 #include <Systems/TaskSystem.h>
+
+//STL.
+#include <filesystem>
 
 //Constants.
 #define ENGINE_ASSETS "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets"
@@ -577,7 +577,6 @@ void ContentSystem::CompileAssetsInDirectory
 		AssetCompiler::CompileContext compile_context;
 
 		compile_context._CompilationDomain = compilation_domain;
-		compile_context._LastWriteTime = last_write_time;
 		compile_context._Collection = collection;
 		compile_context._FilePath = file_path.c_str();
 		compile_context._Name = name.c_str();

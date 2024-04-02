@@ -8,6 +8,9 @@
 #include <File/Core/FileCore.h>
 #include <File/Core/BinaryFile.h>
 
+//STL.
+#include <filesystem>
+
 class ContentCache final
 {
 

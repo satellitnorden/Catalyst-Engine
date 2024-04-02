@@ -2,6 +2,9 @@
 //Header file.
 #include <Concurrency/Thread.h>
 
+//STL.
+#include <thread>
+
 /*
 *	Default constructor.
 */

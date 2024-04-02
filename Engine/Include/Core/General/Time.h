@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//STL.
+#include <chrono>
+
 /*
 *	Time point class definition.
 */
