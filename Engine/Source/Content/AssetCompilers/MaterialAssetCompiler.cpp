@@ -2,7 +2,7 @@
 #include <Content/AssetCompilers/MaterialAssetCompiler.h>
 
 //File.
-#include <File/Core/FileCore.h>
+#include <File/Core/File.h>
 #include <File/Core/BinaryOutputFile.h>
 #include <File/Readers/JPGReader.h>
 #include <File/Readers/PNGReader.h>

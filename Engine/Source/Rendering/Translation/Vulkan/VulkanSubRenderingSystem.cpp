@@ -7,7 +7,7 @@
 #include <Concurrency/ScopedLock.h>
 
 //File.
-#include <File/Core/FileCore.h>
+#include <File/Core/File.h>
 #include <File/Writers/PNGWriter.h>
 #include <File/Writers/TGAWriter.h>
 

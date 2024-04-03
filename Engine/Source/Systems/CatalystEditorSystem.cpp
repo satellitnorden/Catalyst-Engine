@@ -5,9 +5,6 @@
 //Editor.
 #include <Editor/EditorCore.h>
 
-//File.
-#include <File/Core/FileCore.h>
-
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/ContentSystem.h>

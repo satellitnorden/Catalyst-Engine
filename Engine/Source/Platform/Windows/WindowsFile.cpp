@@ -1,24 +1,6 @@
 #if defined(CATALYST_PLATFORM_WINDOWS)
-/*
-*	Windows file namespace, for Windows specific functionality.
-*/
-namespace WindowsFile
-{
-
-	/*
-	*	The browse for folder callback.
-	*/
-	static int32 CALLBACK BrowseForFolderCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
-	{
-		if (uMsg == BFFM_INITIALIZED)
-		{
-			SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
-		}
-
-		return 0;
-	}
-
-}
+//Header file.
+#include <File/Core/File.h>
 
 /*
 *	File namespace, containing common code relating to files.
@@ -30,12 +12,12 @@ namespace File
 	*	Browses for a file.
 	*	Returns if the action was successful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool BrowseForFile(const bool save, DynamicString* const RESTRICT chosen_file, const char *const RESTRICT filter) NOEXCEPT
+	NO_DISCARD bool BrowseForFile(const bool save, DynamicString *const RESTRICT chosen_file, const char *const RESTRICT filter) NOEXCEPT
 	{
 		bool success{ false };
 
 		IFileDialog *RESTRICT file_dialog;
-		
+
 		if (SUCCEEDED(::CoCreateInstance(save ? CLSID_FileSaveDialog : CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, save ? IID_IFileSaveDialog : IID_IFileOpenDialog, IID_PPV_ARGS_Helper(&file_dialog))))
 		{
 			//Set the title.
@@ -112,7 +94,7 @@ namespace File
 	/*
 	*	Browses for a folder.
 	*/
-	FORCE_INLINE static NO_DISCARD bool BrowseForFolder(DynamicString *const RESTRICT chosen_folder) NOEXCEPT
+	NO_DISCARD bool BrowseForFolder(DynamicString *const RESTRICT chosen_folder) NOEXCEPT
 	{
 		bool success{ false };
 
@@ -167,7 +149,7 @@ namespace File
 	/*
 	*	Creates a directory.
 	*/
-	FORCE_INLINE static void CreateDirectory(const char* const RESTRICT path) NOEXCEPT
+	void CreateDirectory(const char* const RESTRICT path) NOEXCEPT
 	{
 		CreateDirectoryA(path, nullptr);
 	}
@@ -175,15 +157,21 @@ namespace File
 	/*
 	*	Creates a file.
 	*/
-	FORCE_INLINE static void CreateFile(const char *const RESTRICT path) NOEXCEPT
+	void CreateFile(const char *const RESTRICT path) NOEXCEPT
 	{
-		const HANDLE file_handle{	CreateFileA(path,
-												0,
-												0,
-												nullptr,
-												CREATE_ALWAYS,
-												FILE_ATTRIBUTE_NORMAL,
-												nullptr) };
+		const HANDLE file_handle
+		{
+			CreateFileA
+			(
+				path,
+				0,
+				0,
+				nullptr,
+				CREATE_ALWAYS,
+				FILE_ATTRIBUTE_NORMAL,
+				nullptr
+			)
+		};
 
 		CloseHandle(file_handle);
 	}
@@ -191,7 +179,7 @@ namespace File
 	/*
 	*	Returns if a file exists or not.
 	*/
-	FORCE_INLINE static NO_DISCARD bool Exists(const char *const RESTRICT file) NOEXCEPT
+	NO_DISCARD bool Exists(const char *const RESTRICT file) NOEXCEPT
 	{
 		TCHAR windows_path[MAX_PATH];
 
@@ -206,11 +194,11 @@ namespace File
 
 		return GetFileAttributes(windows_path) != INVALID_FILE_SIZE;
 	}
-	
+
 	/*
 	*	Deletes a file.
 	*/
-	FORCE_INLINE static void Delete(const char *const RESTRICT file) NOEXCEPT
+	void Delete(const char *const RESTRICT file) NOEXCEPT
 	{
 		DeleteFileA(file);
 	}
@@ -218,15 +206,22 @@ namespace File
 	/*
 	*	Returns the size of the file with the given file path.
 	*/
-	FORCE_INLINE static NO_DISCARD uint64 GetSize(const char* const RESTRICT file_path) NOEXCEPT
+	NO_DISCARD uint64 GetSize(const char *const RESTRICT file_path) NOEXCEPT
 	{
-		HANDLE file_handle{ CreateFileA(file_path,
-										GENERIC_READ,
-										FILE_SHARE_READ | FILE_SHARE_WRITE,
-										nullptr,
-										OPEN_EXISTING,
-										FILE_ATTRIBUTE_NORMAL,
-										nullptr) };
+		HANDLE file_handle
+		{
+			CreateFileA
+			(
+				file_path,
+				GENERIC_READ,
+				FILE_SHARE_READ | FILE_SHARE_WRITE,
+				nullptr,
+				OPEN_EXISTING,
+				FILE_ATTRIBUTE_NORMAL,
+				nullptr
+			)
+		};
+
 		if (file_handle == INVALID_HANDLE_VALUE)
 		{
 			ASSERT(false, "File::GetSize() failed!");

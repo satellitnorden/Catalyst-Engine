@@ -2,7 +2,7 @@
 #include <Systems/SaveSystem.h>
 
 //File.
-#include <File/Core/FileCore.h>
+#include <File/Core/File.h>
 #include <File/Core/BinaryInputFile.h>
 #include <File/Core/BinaryOutputFile.h>
 
@@ -22,7 +22,7 @@ DEFINE_SINGLETON(SaveSystem);
 void SaveSystem::Initialize() NOEXCEPT
 {
 	//Initialize the process saves task.
-	_ProcessSavesTask._Function = [](void* const RESTRICT)
+	_ProcessSavesTask._Function = [](void *const RESTRICT)
 	{
 		SaveSystem::Instance->ProcessSaves();
 	};

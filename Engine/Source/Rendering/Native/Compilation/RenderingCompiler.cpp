@@ -10,7 +10,7 @@
 #include <Core/General/Time.h>
 
 //File.
-#include <File/Core/FileCore.h>
+#include <File/Core/File.h>
 #include <File/Core/BinaryInputFile.h>
 #include <File/Core/BinaryOutputFile.h>
 #include <File/Utilities/TextParsingUtilities.h>

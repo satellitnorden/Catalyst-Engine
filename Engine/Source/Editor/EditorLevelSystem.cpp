@@ -20,7 +20,7 @@
 #include <Entities/Core/EntityStatistics.h>
 
 //File.
-#include <File/Core/FileCore.h>
+#include <File/Core/File.h>
 
 //Systems.
 #include <Systems/CatalystEditorSystem.h>

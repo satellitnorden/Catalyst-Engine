@@ -5,7 +5,7 @@
 #include <Core/General/DynamicString.h>
 
 //File.
-#include <File/Core/FileCore.h>
+#include <File/Core/File.h>
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Third party.

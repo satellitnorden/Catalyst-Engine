@@ -5,7 +5,7 @@
 #include <Core/General/StaticString.h>
 
 //File.
-#include <File/Core/FileCore.h>
+#include <File/Core/File.h>
 #include <File/Readers/FBXReader.h>
 #include <File/Readers/JPGReader.h>
 #include <File/Readers/PNGReader.h>

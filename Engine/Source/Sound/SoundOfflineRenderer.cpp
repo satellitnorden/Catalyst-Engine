@@ -2,7 +2,7 @@
 #include <Sound/SoundOfflineRenderer.h>
 
 //File.
-#include <File/Core/FileCore.h>
+#include <File/Core/File.h>
 #include <File/Writers/OGGWriter.h>
 #include <File/Writers/WAVWriter.h>
 

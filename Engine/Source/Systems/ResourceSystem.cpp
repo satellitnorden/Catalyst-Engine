@@ -2,7 +2,7 @@
 #include <Systems/ResourceSystem.h>
 
 //File.
-#include <File/Core/FileCore.h>
+#include <File/Core/File.h>
 #include <File/Core/BinaryInputFile.h>
 
 //Systems.
