@@ -17,6 +17,7 @@
 
 //STL.
 #include <fstream>
+#include <stdarg.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(LogSystem);

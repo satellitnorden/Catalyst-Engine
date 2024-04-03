@@ -22,9 +22,9 @@
 #include <Xinput.h>
 
 //Static variable definitions.
-HINSTANCE CatalystPlatform::_Instance;
-int32 CatalystPlatform::_ShowCommand;
-HWND CatalystPlatform::_Window;
+HINSTANCE CatalystPlatformWindows::_Instance;
+int32 CatalystPlatformWindows::_ShowCommand;
+HWND CatalystPlatformWindows::_Window;
 
 //Catalyst Windows data.
 namespace CatalystWindowsData
@@ -55,12 +55,12 @@ namespace CatalystWindowsLogic
 	void PostUpdate() NOEXCEPT
 	{
 		//Determine if the window is in focus.
-		CatalystWindowsData::_IsWindowInFocus = GetFocus() == CatalystPlatform::_Window;
+		CatalystWindowsData::_IsWindowInFocus = GetFocus() == CatalystPlatformWindows::_Window;
 
 		//Process messages.
 		MSG message;
 
-		while (PeekMessage(&message, CatalystPlatform::_Window, 0, 0, PM_REMOVE) > 0)
+		while (PeekMessage(&message, CatalystPlatformWindows::_Window, 0, 0, PM_REMOVE) > 0)
 		{
 			TranslateMessage(&message);
 			DispatchMessage(&message);
@@ -80,12 +80,12 @@ namespace CatalystWindowsLogic
 
 					RECT rectangle;
 
-					if (GetClientRect(CatalystPlatform::_Window, &rectangle))
+					if (GetClientRect(CatalystPlatformWindows::_Window, &rectangle))
 					{
 						POINT minimum{ rectangle.left, rectangle.bottom };
 						POINT maximum{ rectangle.right, rectangle.top };
 
-						if (ClientToScreen(CatalystPlatform::_Window, &minimum) && ClientToScreen(CatalystPlatform::_Window, &maximum))
+						if (ClientToScreen(CatalystPlatformWindows::_Window, &minimum) && ClientToScreen(CatalystPlatformWindows::_Window, &maximum))
 						{
 							SetCursorPos(minimum.x + ((maximum.x - minimum.x) / 2), minimum.y + ((maximum.y - minimum.y) / 2));
 						}
@@ -167,8 +167,8 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	windowInfo.lpfnWndProc = WindowProcedure;
 	windowInfo.cbClsExtra = 0;
 	windowInfo.cbWndExtra = 0;
-	windowInfo.hInstance = CatalystPlatform::_Instance;
-	windowInfo.hIcon = LoadIcon(CatalystPlatform::_Instance, IDI_APPLICATION);
+	windowInfo.hInstance = CatalystPlatformWindows::_Instance;
+	windowInfo.hIcon = LoadIcon(CatalystPlatformWindows::_Instance, IDI_APPLICATION);
 	windowInfo.hCursor = LoadCursor(NULL, IDC_ARROW);
 	windowInfo.hbrBackground = 0;
 	windowInfo.lpszMenuName = NULL;
@@ -198,17 +198,20 @@ void CatalystPlatform::Initialize() NOEXCEPT
 			resolution = CatalystPlatform::GetDefaultResolution();
 		}
 
-		_Window = CreateWindow(	windowInfo.lpszClassName,
-								_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
-								WS_POPUP | WS_VISIBLE,
-								CW_USEDEFAULT,
-								CW_USEDEFAULT,
-								resolution._Width,
-								resolution._Height,
-								nullptr,
-								nullptr,
-								_Instance,
-								nullptr);
+		CatalystPlatformWindows::_Window = CreateWindow
+		(
+			windowInfo.lpszClassName,
+			_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
+			WS_POPUP | WS_VISIBLE,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			resolution._Width,
+			resolution._Height,
+			nullptr,
+			nullptr,
+			CatalystPlatformWindows::_Instance,
+			nullptr
+		);
 	}
 
 	else
@@ -233,21 +236,24 @@ void CatalystPlatform::Initialize() NOEXCEPT
 			resolution = CatalystPlatform::GetDefaultResolution();
 		}
 
-		_Window = CreateWindow(	windowInfo.lpszClassName,
-								_T(window_name_buffer),
-								WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
-								CW_USEDEFAULT,
-								CW_USEDEFAULT,
-								resolution._Width,
-								resolution._Height,
-								nullptr,
-								nullptr,
-								_Instance,
-								nullptr);
+		CatalystPlatformWindows::_Window = CreateWindow
+		(
+			windowInfo.lpszClassName,
+			_T(window_name_buffer),
+			WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			resolution._Width,
+			resolution._Height,
+			nullptr,
+			nullptr,
+			CatalystPlatformWindows::_Instance,
+			nullptr
+		);
 	}
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	if (!_Window)
+	if (!CatalystPlatformWindows::_Window)
 	{
 		const DWORD result{ GetLastError() };
 
@@ -256,10 +262,10 @@ void CatalystPlatform::Initialize() NOEXCEPT
 #endif
 
 	//Show the window.
-	ShowWindow(_Window, _ShowCommand);
+	ShowWindow(CatalystPlatformWindows::_Window, CatalystPlatformWindows::_ShowCommand);
 
 	//Update the window.
-	UpdateWindow(_Window);
+	UpdateWindow(CatalystPlatformWindows::_Window);
 
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT)

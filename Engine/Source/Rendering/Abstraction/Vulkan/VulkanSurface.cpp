@@ -2,6 +2,11 @@
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanSurface.h>
 
+#if defined(CATALYST_PLATFORM_WINDOWS)
+//Platform.
+#include <Platform/Windows/CatalystPlatformWindows.h>
+#endif
+
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 
@@ -32,8 +37,8 @@ void VulkanSurface::Initialize() NOEXCEPT
 	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 	surfaceCreateInfo.pNext = nullptr;
 	surfaceCreateInfo.flags = 0;
-	surfaceCreateInfo.hinstance = CatalystPlatform::_Instance;
-	surfaceCreateInfo.hwnd = CatalystPlatform::_Window;
+	surfaceCreateInfo.hinstance = CatalystPlatformWindows::_Instance;
+	surfaceCreateInfo.hwnd = CatalystPlatformWindows::_Window;
 
 	VULKAN_ERROR_CHECK(vkCreateWin32SurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
 #endif

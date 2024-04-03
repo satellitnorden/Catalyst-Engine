@@ -10,6 +10,7 @@
 
 //Third party.
 #include <ThirdParty/RtAudio/RtAudio.h>
+#include <Platform/Windows/WindowsUndefines.h>
 
 /*
 *	Opened input stream class definition.

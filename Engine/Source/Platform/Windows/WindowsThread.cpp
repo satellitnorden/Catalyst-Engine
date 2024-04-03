@@ -2,6 +2,9 @@
 //Header file.
 #include <Concurrency/Thread.h>
 
+//Platform.
+#include <Platform/Windows/CatalystPlatformWindows.h>
+
 //STL.
 #include <thread>
 

@@ -1,6 +1,11 @@
 //Header file.
 #include <Core/General/CommandLine.h>
 
+#if defined(CATALYST_PLATFORM_WINDOWS)
+//Platform.
+#include <Platform/Windows/CatalystPlatformWindows.h>
+#endif
+
 //Singleton definition.
 DEFINE_SINGLETON(CommandLine);
 

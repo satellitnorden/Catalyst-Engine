@@ -2,6 +2,9 @@
 //Header file.
 #include <File/Core/File.h>
 
+//Platform.
+#include <Platform/Windows/CatalystPlatformWindows.h>
+
 /*
 *	File namespace, containing common code relating to files.
 */

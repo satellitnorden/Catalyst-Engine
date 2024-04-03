@@ -11,6 +11,7 @@
 
 //Third party.
 #include <ThirdParty/RtAudio/RtAudio.h>
+#include <Platform/Windows/WindowsUndefines.h>
 
 //Sound sub system WASAPI constants.
 namespace SoundSubSystemWASAPIConstants

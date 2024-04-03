@@ -2,6 +2,9 @@
 //Header file.
 #include <Systems/InputSystem.h>
 
+//Platform.
+#include <Platform/Windows/CatalystPlatformWindows.h>
+
 //Windows.
 #include <Xinput.h>
 
@@ -369,11 +372,11 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 
 	if (GetCursorPos(&point))
 	{
-		if (ScreenToClient(CatalystPlatform::_Window, &point))
+		if (ScreenToClient(CatalystPlatformWindows::_Window, &point))
 		{
 			RECT rectangle;
 
-			if (GetClientRect(CatalystPlatform::_Window, &rectangle))
+			if (GetClientRect(CatalystPlatformWindows::_Window, &rectangle))
 			{
 				state->_CurrentX = CatalystBaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f);
 				state->_CurrentY = CatalystBaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f);
@@ -449,11 +452,11 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 
 		if (GetCursorPos(&point))
 		{
-			if (ScreenToClient(CatalystPlatform::_Window, &point))
+			if (ScreenToClient(CatalystPlatformWindows::_Window, &point))
 			{
 				RECT rectangle;
 
-				if (GetClientRect(CatalystPlatform::_Window, &rectangle))
+				if (GetClientRect(CatalystPlatformWindows::_Window, &rectangle))
 				{
 					//Calculate the center and always place the cursor at the center of the screen.
 					POINT center;
@@ -462,7 +465,7 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 					center.x = adjusted_center.x = rectangle.left + ((rectangle.right - rectangle.left) / 2);
 					center.y = adjusted_center.y = rectangle.top + ((rectangle.bottom - rectangle.top) / 2);
 
-					if (ClientToScreen(CatalystPlatform::_Window, &adjusted_center))
+					if (ClientToScreen(CatalystPlatformWindows::_Window, &adjusted_center))
 					{
 						SetCursorPos(adjusted_center.x, adjusted_center.y);
 
