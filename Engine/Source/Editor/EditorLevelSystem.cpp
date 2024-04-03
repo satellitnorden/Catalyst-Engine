@@ -40,6 +40,9 @@
 #include <ThirdParty/ImGui/imgui_internal.h>
 #include <ThirdParty/ImGuizmo/ImGuizmo.h>
 
+//STL.
+#include <fstream>
+
 /*
 *	Creates a custom text input widget. Returns if there was a change.
 */

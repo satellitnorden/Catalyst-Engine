@@ -3,7 +3,8 @@
 
 //File.
 #include <File/Core/FileCore.h>
-#include <File/Core/BinaryFile.h>
+#include <File/Core/BinaryOutputFile.h>
+#include <File/Core/BinaryInputFile.h>
 #include <File/Utilities/TextParsingUtilities.h>
 
 //Profiling.
@@ -18,6 +19,9 @@
 
 //Third party.
 #include <ThirdParty/stb_truetype/stb_truetype.h>
+
+//STL.
+#include <fstream>
 
 //Singleton definition.
 DEFINE_SINGLETON(FontAssetCompiler);
@@ -181,7 +185,7 @@ void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data
 			}
 
 			//Couldn't figure out what this line is?
-			ASSERT(false, "Unknown line " << current_line.c_str());
+			ASSERT(false, "Unknown line %s", current_line.c_str());
 		}
 	}
 
@@ -216,14 +220,14 @@ void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data
 	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
 
 	//Open the output file.
-	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path };
+	BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
 	//Open the font file.
-	BinaryFile<BinaryFileMode::IN> font_file{ parameters._File.Data()};
+	BinaryInputFile font_file{ parameters._File.Data()};
 
 	//Create the buffer.
 	byte *const RESTRICT buffer{ static_cast<byte *const RESTRICT>(Memory::Allocate(font_file.Size())) };

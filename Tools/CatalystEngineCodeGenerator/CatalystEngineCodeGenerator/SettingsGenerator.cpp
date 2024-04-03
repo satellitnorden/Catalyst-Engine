@@ -56,6 +56,9 @@ public:
 	//The type.
 	std::string _Type;
 
+	//The default.
+	std::string _Default;
+
 	//Denotes whether or not this variable is an array.
 	bool _IsArray;
 
@@ -136,6 +139,64 @@ inline void GenerateSerializeToStreamArchiveForType
 	//Otherwise it's a "builtin type".
 	file << indent << "const " << type << " _value{ " << JSON << ".get<" << type << ">() };" << std::endl;
 	file << indent << "stream_archive->Write(&_value, sizeof(" << type << "));" << std::endl;
+}
+
+/*
+*	Generates a serialization of a default value.
+*/
+inline void GenerateSerializeDefaultValue(const std::string &indent, const Variable &variable, std::ofstream &file)
+{
+	//Arrays can't really have default values - They are just empty.
+	if (variable._IsArray)
+	{
+		file << indent << "constexpr uint64 DEFAULT{ 0 };" << std::endl;
+		file << indent << "stream_archive->Write(&DEFAULT, sizeof(uint64));" << std::endl;
+	}
+
+	else
+	{
+		//If this variable has a default value, try to use that.
+		if (!variable._Default.empty())
+		{
+			//Special cases.
+			if (variable._Type == "HashString")
+			{
+				file << indent << "const HashString DEFAULT{ \"" << variable._Default.c_str() << "\" }; " << std::endl;
+				file << indent << "stream_archive->Write(&DEFAULT, sizeof(HashString));" << std::endl;
+			}
+
+			else if (variable._Type == "String")
+			{
+				file << indent << "constexpr const char *const RESTRICT DEFAULT{ \"" << variable._Default.c_str() << "\" }; " << std::endl;
+				file << indent << "constexpr uint64 DEFAULT_LENGTH{ StringUtilities::StringLength(DEFAULT) + 1 }; " << std::endl;
+				file << indent << "stream_archive->Write(&DEFAULT_LENGTH, sizeof(uint64));" << std::endl;
+				file << indent << "stream_archive->Write(RESTRICT, DEFAULT_LENGTH);" << std::endl;
+			}
+
+			else
+			{
+				file << indent << "const " << variable._Type.c_str() << " DEFAULT{ " << variable._Default.c_str() << " }; " << std::endl;
+				file << indent << "stream_archive->Write(&DEFAULT, sizeof(" << variable._Type.c_str() << "));" << std::endl;
+			}
+		}
+
+		else
+		{
+			//Special cases.
+			if (variable._Type == "String")
+			{
+				file << indent << "constexpr uint64 DEFAULT{ 0 };" << std::endl;
+				file << indent << "stream_archive->Write(&DEFAULT, sizeof(uint64));" << std::endl;
+			}
+
+			else
+			{
+				file << indent << "const " << variable._Type.c_str() << " DEFAULT{ }; " << std::endl;
+				file << indent << "stream_archive->Write(&DEFAULT, sizeof(" << variable._Type.c_str() << "));" << std::endl;
+			}
+		}
+		
+	}
 }
 
 /*
@@ -408,6 +469,35 @@ void SettingsGenerator::GenerateCode()
 
 						//Parse the type.
 						new_variable._Type = variable_entry["Type"].get<std::string>();
+
+						//Parse the default.
+						if (variable_entry.contains("Default"))
+						{
+							const nlohmann::json &default_entry{ variable_entry["Default"] };
+
+							if (new_variable._Type == "float32")
+							{
+								char buffer[16];
+								sprintf_s(buffer, "%f", variable_entry["Default"].get<float32>());
+
+								new_variable._Default = buffer;
+
+								if (new_variable._Default[new_variable._Default.length() - 1] != 'f')
+								{
+									new_variable._Default += "f";
+								}
+							}
+
+							else if (new_variable._Type == "String")
+							{
+								new_variable._Default = variable_entry["Default"].get<std::string>();
+							}
+							
+							else
+							{
+								ASSERT(false, "Unknown default type!");
+							}
+						}
 
 						//Parse whether or not this variable is an array.
 						if (variable_entry.contains("Array") && variable_entry["Array"].get<bool>())
@@ -862,27 +952,7 @@ void SettingsGenerator::GenerateCode()
 			file << "\telse" << std::endl;
 			file << "\t{" << std::endl;
 
-			if (variable._IsArray)
-			{
-				file << "\t\tconstexpr uint64 EMPTY_SIZE{ 0 };" << std::endl;
-				file << "\t\tstream_archive->Write(&EMPTY_SIZE, sizeof(uint64));" << std::endl;
-			}
-
-			else
-			{
-				//Special cases.
-				if (variable._Type == "String")
-				{
-					file << "\t\tconstexpr uint64 EMPTY_STRING_SIZE{ 0 };" << std::endl;
-					file << "\t\tstream_archive->Write(&EMPTY_STRING_SIZE, sizeof(uint64));" << std::endl;
-				}
-
-				else
-				{
-					file << "\t\tconst " << variable._Type.c_str() << " DEFAULT_VALUE{ };" << std::endl;
-					file << "\t\tstream_archive->Write(&DEFAULT_VALUE, sizeof(" << variable._Type.c_str() << "));" << std::endl;
-				}
-			}
+			GenerateSerializeDefaultValue("\t\t", variable, file);
 
 			file << "\t}" << std::endl;
 		}

@@ -598,7 +598,7 @@ private:
 			{
 				const TriangleData& triangle_data{ node._TriangleDataMemory[i] };
 
-				float intersection_distance_temporary{ FLOAT_MAXIMUM };
+				float intersection_distance_temporary{ FLOAT32_MAXIMUM };
 
 				//Cache the triangle.
 				Triangle triangle;
@@ -644,7 +644,7 @@ private:
 					continue;
 				}
 
-				float intersection_distance_temporary{ FLOAT_MAXIMUM };
+				float intersection_distance_temporary{ FLOAT32_MAXIMUM };
 
 				if (node._AxisAlignedBoundingBoxes[i].IsValid()
 					&& CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary)
@@ -677,7 +677,7 @@ private:
 			{
 				const TriangleData& triangle_data{ node._TriangleDataMemory[i] };
 
-				float intersection_distance_temporary{ FLOAT_MAXIMUM };
+				float intersection_distance_temporary{ FLOAT32_MAXIMUM };
 
 				//Cache the triangle.
 				Triangle triangle;
@@ -726,7 +726,7 @@ private:
 					continue;
 				}
 
-				float intersection_distance_temporary{ FLOAT_MAXIMUM };
+				float intersection_distance_temporary{ FLOAT32_MAXIMUM };
 
 				if ( CatalystGeometryMath::RayBoxIntersection(ray, node._AxisAlignedBoundingBoxes[i], &intersection_distance_temporary)
 					&& intersection_distance_temporary < maximum_distance)

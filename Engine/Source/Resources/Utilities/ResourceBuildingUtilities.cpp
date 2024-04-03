@@ -31,7 +31,7 @@ NO_DISCARD Vector4<float32> ResourceBuildingUtilities::CalculateAverageColor(con
 		{
 			if (!JPGReader::Read(texture_file_path, &texture))
 			{
-				ASSERT(false, "Couldn't read " << texture_file_path);
+				ASSERT(false, "Couldn't read %s", texture_file_path);
 			}
 
 			break;
@@ -41,7 +41,7 @@ NO_DISCARD Vector4<float32> ResourceBuildingUtilities::CalculateAverageColor(con
 		{
 			if (!PNGReader::Read(texture_file_path, &texture))
 			{
-				ASSERT(false, "Couldn't read " << texture_file_path);
+				ASSERT(false, "Couldn't read %s", texture_file_path);
 			}
 
 			break;

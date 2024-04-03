@@ -58,7 +58,7 @@ void VulkanSampler::CreateSamplerCreateInfo(VkSamplerCreateInfo &sampler_create_
 	sampler_create_info.compareEnable = VK_FALSE;
 	sampler_create_info.compareOp = VK_COMPARE_OP_ALWAYS;
 	sampler_create_info.minLod = 0.0f;
-	sampler_create_info.maxLod = FLOAT_MAXIMUM;
+	sampler_create_info.maxLod = FLOAT32_MAXIMUM;
 	sampler_create_info.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 	sampler_create_info.unnormalizedCoordinates = VK_FALSE;
 }

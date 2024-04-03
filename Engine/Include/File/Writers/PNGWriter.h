@@ -3,9 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//File.
-#include <File/Core/BinaryFile.h>
-
 //Rendering.
 #include <Rendering/Native/Texture2D.h>
 

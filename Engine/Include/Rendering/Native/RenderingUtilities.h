@@ -34,15 +34,15 @@ public:
 
 		extent *= 2.0f;
 
-		box->_Minimum._X = FLOAT_MAXIMUM;
-		box->_Minimum._Y = FLOAT_MAXIMUM;
-		box->_Minimum._Z = FLOAT_MAXIMUM;
+		box->_Minimum._X = FLOAT32_MAXIMUM;
+		box->_Minimum._Y = FLOAT32_MAXIMUM;
+		box->_Minimum._Z = FLOAT32_MAXIMUM;
 
-		box->_Maximum._X = -FLOAT_MAXIMUM;
-		box->_Maximum._Y = -FLOAT_MAXIMUM;
-		box->_Maximum._Z = -FLOAT_MAXIMUM;
+		box->_Maximum._X = -FLOAT32_MAXIMUM;
+		box->_Maximum._Y = -FLOAT32_MAXIMUM;
+		box->_Maximum._Z = -FLOAT32_MAXIMUM;
 
-		float largest_scale{ -FLOAT_MAXIMUM };
+		float largest_scale{ -FLOAT32_MAXIMUM };
 
 		for (const Matrix4x4 &transformation : transformations)
 		{

@@ -17,9 +17,9 @@
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	#define ASSERT(CONDITION, MESSAGE) if (!(UNLIKELY(CONDITION))) { PRINT_TO_OUTPUT(MESSAGE); BREAKPOINT(); }
+	#define ASSERT(CONDITION, FORMAT, ...) if (!(UNLIKELY(CONDITION))) { PRINT_TO_OUTPUT(FORMAT, __VA_ARGS__); BREAKPOINT(); }
 #else
-	#define ASSERT(CONDITION, MESSAGE) 
+	#define ASSERT(CONDITION, FORMAT, ...) 
 #endif
 
 /*
@@ -117,9 +117,9 @@ FORCE_INLINE constexpr static void operator&=(ENUMERATION &first, const ENUMERAT
 *	Prints a message to the output in non-final builds.
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	#define PRINT_TO_OUTPUT(MESSAGE) { std::ostringstream output; output << MESSAGE << std::endl; CatalystPlatform::PrintToOutput(output.str().c_str()); }
+	#define PRINT_TO_OUTPUT(FORMAT, ...) { CatalystPlatform::PrintToOutput(FORMAT, __VA_ARGS__); }
 #else
-	#define PRINT_TO_OUTPUT(MESSAGE)
+	#define PRINT_TO_OUTPUT(FORMAT)
 #endif
 
 /*

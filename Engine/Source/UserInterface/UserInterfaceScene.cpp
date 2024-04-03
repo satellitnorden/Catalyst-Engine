@@ -827,7 +827,7 @@ void UserInterfaceScene::UpdateButtons() NOEXCEPT
 
 					//Find another button that is close and in the general direction.
 					ButtonInterface new_gamepad_selected_button;
-					float32 shortest_distance{ FLOAT_MAXIMUM };
+					float32 shortest_distance{ FLOAT32_MAXIMUM };
 
 					for (ButtonInterface &button : _ButtonInterfaces)
 					{

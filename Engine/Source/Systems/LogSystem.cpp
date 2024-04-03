@@ -18,6 +18,9 @@
 //Systems.
 #include <Systems/TaskSystem.h>
 
+//STL.
+#include <fstream>
+
 //Singleton definition.
 DEFINE_SINGLETON(LogSystem);
 

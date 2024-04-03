@@ -73,12 +73,6 @@ public:
 	}
 
 	/*
-	*	Prefetches the memory pointed to by the given pointer.
-	*/
-	template <typename TYPE>
-	FORCE_INLINE static void Prefetch(const TYPE* const RESTRICT pointer) NOEXCEPT;
-
-	/*
 	*	Returns the global linear allocator.
 	*/
 	FORCE_INLINE RESTRICTED static NO_DISCARD LinearAllocator<MemoryConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> *const RESTRICT GlobalLinearAllocator() NOEXCEPT
@@ -89,8 +83,3 @@ public:
 	}
 
 };
-
-//Implementation.
-#if defined(CATALYST_PLATFORM_WINDOWS)
-	#include <Platform/Windows/WindowsMemory.inl>
-#endif

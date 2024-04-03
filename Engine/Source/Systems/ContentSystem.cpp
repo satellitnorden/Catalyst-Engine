@@ -19,6 +19,9 @@
 #include <Content/AssetCompilers/Texture2DAssetCompiler.h>
 #include <Content/AssetCompilers/TextureCubeAssetCompiler.h>
 
+//File.
+#include <File/Core/BinaryInputFile.h>
+
 //Profiling.
 #include <Profiling/Profiling.h>
 
@@ -290,7 +293,7 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		PROFILING_SCOPE("ContentSystem::LoadAsset::CreateStreamArchive");
 
-		BinaryFile<BinaryFileMode::IN> file{ file_path };
+		BinaryInputFile file{ file_path };
 
 		{
 			PROFILING_SCOPE("ContentSystem::LoadAsset::AllocateStreamArchive");
@@ -378,7 +381,7 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 	{
 		PROFILING_SCOPE("ContentSystem::LoadAssetCollection::CreateStreamArchive");
 
-		BinaryFile<BinaryFileMode::IN> file{ file_path };
+		BinaryInputFile file{ file_path };
 
 		{
 			PROFILING_SCOPE("ContentSystem::LoadAssetCollection::AllocateStreamArchive");
@@ -604,7 +607,7 @@ void ContentSystem::CompileAssetsInDirectory
 /*
 *	Creates asset collections from the given directory path.
 */
-void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_path, BinaryFile<BinaryFileMode::OUT> *const RESTRICT file) NOEXCEPT
+void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_path, BinaryOutputFile *const RESTRICT file) NOEXCEPT
 {
 	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
@@ -639,7 +642,7 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 				sprintf_s(collection_path, "%s\\..\\Collections\\%s.cac", directory_path, collection_name.c_str());
 
 				//Set up the file.
-				BinaryFile<BinaryFileMode::OUT> _file{ collection_path };
+				BinaryOutputFile _file{ collection_path };
 				
 				//Call recursively!
 				CreateAssetCollections(_directory_path.c_str(), &_file);
@@ -667,7 +670,7 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 		}
 
 		//Open the input file.
-		BinaryFile<BinaryFileMode::IN> input_file{ file_path.c_str() };
+		BinaryInputFile input_file{ file_path.c_str() };
 
 		//Write the file size.
 		const uint64 file_size{ input_file.Size() };

@@ -66,7 +66,7 @@ public:
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
 		++_NumberOfQueuedItems;
 
-		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: " << _NumberOfQueuedItems << ", SIZE: " << SIZE << ".");
+		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.load(), SIZE);
 #endif
 	}
 
@@ -145,7 +145,7 @@ public:
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
 		++_NumberOfQueuedItems;
 
-		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: " << _NumberOfQueuedItems << ", SIZE: " << SIZE << ".");
+		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.load(), SIZE);
 #endif
 	}
 
@@ -232,7 +232,7 @@ public:
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
 		++_NumberOfQueuedItems;
 
-		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: " << _NumberOfQueuedItems << ", SIZE: " << SIZE << ".");
+		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.load(), SIZE);
 #endif
 	}
 
@@ -322,7 +322,7 @@ public:
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
 		++_NumberOfQueuedItems;
 
-		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: " << _NumberOfQueuedItems << ", SIZE: " << SIZE << ".");
+		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.load(), SIZE);
 #endif
 	}
 

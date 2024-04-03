@@ -3,6 +3,7 @@
 
 //File.
 #include <File/Core/FileCore.h>
+#include <File/Core/BinaryInputFile.h>
 
 //Systems.
 #include <Systems/MemorySystem.h>
@@ -45,7 +46,7 @@ void ResourceSystem::LoadResources(const char *const RESTRICT directory_path) NO
 			if (file_extension == File::Extension::CR)
 			{
 				//Open the file.
-				BinaryFile<BinaryFileMode::IN> file{ entry.path().string().c_str() };
+				BinaryInputFile file{ entry.path().string().c_str() };
 
 				//Load the resource.
 				LoadResource(&file);
@@ -57,7 +58,7 @@ void ResourceSystem::LoadResources(const char *const RESTRICT directory_path) NO
 			if (file_extension == File::Extension::CRC)
 			{
 				//Open the file.
-				BinaryFile<BinaryFileMode::IN> file{ entry.path().string().c_str() };
+				BinaryInputFile file{ entry.path().string().c_str() };
 
 				//Load the resource collection.
 				LoadResourceCollection(&file);
@@ -75,7 +76,7 @@ void ResourceSystem::LoadResources(const char *const RESTRICT directory_path) NO
 void ResourceSystem::LoadResourceCollection(const char *const RESTRICT file_path) NOEXCEPT
 {
 	//Open the file.
-	BinaryFile<BinaryFileMode::IN> file{ file_path };
+	BinaryInputFile file{ file_path };
 
 	//Load the resource collection.
 	LoadResourceCollection(&file);
@@ -90,7 +91,7 @@ void ResourceSystem::LoadResourceCollection(const char *const RESTRICT file_path
 void ResourceSystem::LoadResource(const char *const RESTRICT file_path) NOEXCEPT
 {
 	//Open the file.
-	BinaryFile<BinaryFileMode::IN> file{ file_path };
+	BinaryInputFile file{ file_path };
 
 	//Load the resource.
 	LoadResource(&file);
@@ -368,7 +369,7 @@ NO_DISCARD ResourcePointer<Texture3DResource> ResourceSystem::FindOrCreateTextur
 /*
 *	Loads a resource collection from the given binary file.
 */
-void ResourceSystem::LoadResourceCollection(BinaryFile<BinaryFileMode::IN> *const RESTRICT file) NOEXCEPT
+void ResourceSystem::LoadResourceCollection(BinaryInputFile *const RESTRICT file) NOEXCEPT
 {
 	//While the file hasn't reached the end, load the resources in the resource collection.
 	while (!file->HasReachedEndOfFile())
@@ -380,7 +381,7 @@ void ResourceSystem::LoadResourceCollection(BinaryFile<BinaryFileMode::IN> *cons
 /*
 *	Loads a resource from the given binary file.
 */
-void ResourceSystem::LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT file) NOEXCEPT
+void ResourceSystem::LoadResource(BinaryInputFile *const RESTRICT file) NOEXCEPT
 {
 	//Read the resource header.
 	ResourceHeader header;

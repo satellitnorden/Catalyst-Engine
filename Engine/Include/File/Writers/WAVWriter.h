@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //File.
-#include <File/Core/BinaryFile.h>
+#include <File/Core/BinaryOutputFile.h>
 
 //Resources.
 #include <Resources/Core/SoundResource.h>
@@ -27,7 +27,7 @@ public:
 		constexpr uint8 BIT_DEPTH{ 16 };
 
 		//Open the output file.
-		BinaryFile<BinaryFileMode::OUT> output_file{ file_path };
+		BinaryOutputFile output_file{ file_path };
 
 		//Add the header chunk.
 		{

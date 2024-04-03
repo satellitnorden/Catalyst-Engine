@@ -7,6 +7,9 @@
 //File.
 #include <File/Utilities/TextParsingUtilities.h>
 
+//STL.
+#include <fstream>
+
 namespace GLSLCompilation
 {
 

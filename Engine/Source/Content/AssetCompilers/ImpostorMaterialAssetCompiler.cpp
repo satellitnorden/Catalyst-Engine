@@ -25,6 +25,9 @@
 //Systems.
 #include <Systems/TaskSystem.h>
 
+//STL.
+#include <fstream>
+
 //Singleton definition.
 DEFINE_SINGLETON(ImpostorMaterialAssetCompiler);
 
@@ -455,7 +458,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			}
 
 			//Couldn't figure out what this line is?
-			ASSERT(false, "Unknown line " << current_line.c_str());
+			ASSERT(false, "Unknown line %s", current_line.c_str());
 		}
 	}
 
@@ -471,7 +474,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 	
 	if (!FBXReader::Read(parameters._Model.Data(), &model))
 	{
-		ASSERT(false, "Couldn't read " << parameters._Model.Data() << "!");
+		ASSERT(false, "Couldn't read %s!", parameters._Model.Data());
 	}
 
 	//Set up the axis aligned bounding box.

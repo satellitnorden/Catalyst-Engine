@@ -6,13 +6,8 @@
 	#define _WIN32_WINNT 0x0A00
 #endif
 
-//Core.
-#include <Core/Essential/CatalystEssential.h>
-
-//Rendering.
-#include <Rendering/Native/Resolution.h>
-
 //Windows.
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #if !defined(INITGUID)
 #define INITGUID
@@ -46,6 +41,9 @@
 #undef IN
 #undef OUT
 #undef ERROR
+
+//Rendering.
+#include <Rendering/Native/Resolution.h>
 
 /*
 *	Main function.
@@ -150,7 +148,7 @@ public:
 	/*
 	*	Prints a string to output.
 	*/
-	static void PrintToOutput(const char *const RESTRICT message) NOEXCEPT;
+	static void PrintToOutput(const char *const RESTRICT format, ...) NOEXCEPT;
 #endif
 
 };

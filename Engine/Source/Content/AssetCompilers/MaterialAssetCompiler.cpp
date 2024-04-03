@@ -3,6 +3,7 @@
 
 //File.
 #include <File/Core/FileCore.h>
+#include <File/Core/BinaryOutputFile.h>
 #include <File/Readers/JPGReader.h>
 #include <File/Readers/PNGReader.h>
 #include <File/Utilities/TextParsingUtilities.h>
@@ -16,6 +17,9 @@
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
+
+//STL.
+#include <fstream>
 
 //Singleton definition.
 DEFINE_SINGLETON(MaterialAssetCompiler);
@@ -276,7 +280,7 @@ void MaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_
 
 					else
 					{
-						ASSERT(false, "Unknown argument " << arguments[0].Data());
+						ASSERT(false, "Unknown argument %s", arguments[0].Data());
 					}
 
 					continue;
@@ -565,7 +569,7 @@ void MaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_
 			}
 
 			//Couldn't figure out what this line is?
-			ASSERT(false, "Unknown line " << current_line.c_str());
+			ASSERT(false, "Unknown line %s", current_line.c_str());
 		}
 	}
 
@@ -600,7 +604,7 @@ void MaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_
 	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
 
 	//Open the output file.
-	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path };
+	BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };

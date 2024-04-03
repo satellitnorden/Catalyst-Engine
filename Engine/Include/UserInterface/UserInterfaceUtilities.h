@@ -130,8 +130,8 @@ namespace UserInterfaceUtilities
 		const float32 vertical_extent{ original_maximum._Y - original_minimum._Y };
 
 		//Calculate the bounding box for the text.
-		Vector2<float32> text_minimum{ FLOAT_MAXIMUM, FLOAT_MAXIMUM };
-		Vector2<float32> text_maximum{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
+		Vector2<float32> text_minimum{ FLOAT32_MAXIMUM, FLOAT32_MAXIMUM };
+		Vector2<float32> text_maximum{ -FLOAT32_MAXIMUM, -FLOAT32_MAXIMUM };
 
 		float32 current_offset_X{ 0.0f };
 

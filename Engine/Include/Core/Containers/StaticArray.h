@@ -45,7 +45,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD TYPE& operator[](const uint64 index) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD TYPE &operator[](const uint64 index) NOEXCEPT
 	{
 #if defined(CATALYST_PLATFORM_WINDOWS)
 		ASSERT(index < SIZE, "Index is out of bounds!");

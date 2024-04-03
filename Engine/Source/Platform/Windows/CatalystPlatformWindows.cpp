@@ -411,9 +411,21 @@ void CatalystPlatform::ShowInterstitialAd() NOEXCEPT
 /*
 *	Prints a string to output.
 */
-void CatalystPlatform::PrintToOutput(const char *const RESTRICT message) NOEXCEPT
+void CatalystPlatform::PrintToOutput(const char *const RESTRICT format, ...) NOEXCEPT
 {
-	OutputDebugString(message);
+	char buffer[256];
+
+	va_list variadic_arguments;
+	va_start(variadic_arguments, format);
+
+	vsprintf_s(buffer, format, variadic_arguments);
+
+	const uint64 length{ strlen(buffer) };
+
+	buffer[length] = '\n';
+	buffer[length + 1] = '\0';
+
+	OutputDebugString(buffer);
 }
 #endif
 #endif

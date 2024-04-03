@@ -20,6 +20,9 @@
 #include <Resources/Creation/ResourceCreationSystem.h>
 #include <Resources/Loading/ResourceLoadingSystem.h>
 
+//Forward declarations.
+class BinaryInputFile;
+
 class ALIGN(8) ResourceSystem final
 {
 
@@ -240,11 +243,11 @@ private:
 	/*
 	*	Loads a resource collection from the given binary file.
 	*/
-	void LoadResourceCollection(BinaryFile<BinaryFileMode::IN> *const RESTRICT file) NOEXCEPT;
+	void LoadResourceCollection(BinaryInputFile *const RESTRICT file) NOEXCEPT;
 
 	/*
 	*	Loads a resource from the given binary file.
 	*/
-	void LoadResource(BinaryFile<BinaryFileMode::IN> *const RESTRICT file) NOEXCEPT;
+	void LoadResource(BinaryInputFile *const RESTRICT file) NOEXCEPT;
 
 };

@@ -11,7 +11,6 @@
 #include <Concurrency/Task.h>
 
 //File.
-#include <File/Core/BinaryFile.h>
 #include <File/Writers/PNGWriter.h>
 
 //Math.
@@ -1569,7 +1568,7 @@ void CatalystEngineResourceBuilding::BuildCloudTexture() NOEXCEPT
 	Texture3D<Vector4<float>> temporary_texture{ CLOUD_TEXTURE_RESOLUTION };
 
 	//Keep track of the longest distances.
-	StaticArray<float, 4> longest_distances{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
+	StaticArray<float, 4> longest_distances{ -FLOAT32_MAXIMUM, -FLOAT32_MAXIMUM, -FLOAT32_MAXIMUM, -FLOAT32_MAXIMUM };
 
 	for (uint32 X{ 0 }; X < CLOUD_TEXTURE_RESOLUTION; ++X)
 	{
@@ -1585,7 +1584,7 @@ void CatalystEngineResourceBuilding::BuildCloudTexture() NOEXCEPT
 				for (uint8 i{ 0 }; i < 4; ++i)
 				{
 					//Find the closest distance.
-					float closest_distance{ FLOAT_MAXIMUM };
+					float closest_distance{ FLOAT32_MAXIMUM };
 
 					for (const Vector3<float>& point : points[i])
 					{

@@ -11,10 +11,9 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Core/AssetPointer.h>
 
-//File.
-#include <File/Core/BinaryFile.h>
-
 //Forward declarations.
+class BinaryInputFile;
+class BinaryOutputFile;
 class ContentCache;
 
 class ALIGN(8) ContentSystem final
@@ -151,6 +150,6 @@ private:
 	/*
 	*	Creates asset collections from the given directory path.
 	*/
-	void CreateAssetCollections(const char *const RESTRICT directory_path, BinaryFile<BinaryFileMode::OUT> *const RESTRICT file) NOEXCEPT;
+	void CreateAssetCollections(const char *const RESTRICT directory_path, BinaryOutputFile *const RESTRICT file) NOEXCEPT;
 
 };

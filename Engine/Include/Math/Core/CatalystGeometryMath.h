@@ -121,8 +121,8 @@ public:
 																		float *const RESTRICT intersection_distance) NOEXCEPT
 	{
 		//Find the minimum/maximum.
-		float32 minimum{ -FLOAT_MAXIMUM };
-		float32 maximum{ FLOAT_MAXIMUM };
+		float32 minimum{ -FLOAT32_MAXIMUM };
+		float32 maximum{ FLOAT32_MAXIMUM };
 
 		//Test the X-axis slab.
 		minimum = CatalystBaseMath::Maximum<float32>(minimum, (box[1 - ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);

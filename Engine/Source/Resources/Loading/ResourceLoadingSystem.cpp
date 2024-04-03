@@ -4,13 +4,16 @@
 //Animation.
 #include <Animation/AnimatedVertex.h>
 
+//File.
+#include <File/Core/BinaryInputFile.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
 /*
 *	Reads a bone from file.
 */
-FORCE_INLINE void ReadBoneFromFile(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, Bone *const RESTRICT bone) NOEXCEPT
+FORCE_INLINE void ReadBoneFromFile(BinaryInputFile *const RESTRICT file, Bone *const RESTRICT bone) NOEXCEPT
 {
 	/*
 	file->Read(bone, sizeof(Bone) - sizeof(DynamicArray<Bone>));
@@ -30,7 +33,7 @@ FORCE_INLINE void ReadBoneFromFile(BinaryFile<BinaryFileMode::IN> *const RESTRIC
 /*
 *	Given a file, load an animated model.
 */
-void ResourceLoadingSystem::LoadAnimatedModel(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, AnimatedModelData *const RESTRICT data) NOEXCEPT
+void ResourceLoadingSystem::LoadAnimatedModel(BinaryInputFile *const RESTRICT file, AnimatedModelData *const RESTRICT data) NOEXCEPT
 {
 	/*
 	//Read the axis-aligned bounding box
@@ -60,7 +63,7 @@ void ResourceLoadingSystem::LoadAnimatedModel(BinaryFile<BinaryFileMode::IN> *co
 /*
 *	Given a file, load animation data.
 */
-void ResourceLoadingSystem::LoadAnimation(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, AnimationData *const RESTRICT data) NOEXCEPT
+void ResourceLoadingSystem::LoadAnimation(BinaryInputFile *const RESTRICT file, AnimationData *const RESTRICT data) NOEXCEPT
 {
 	//Read the duration.
 	file->Read(&data->_Animation._Duration, sizeof(float32));
@@ -89,7 +92,7 @@ void ResourceLoadingSystem::LoadAnimation(BinaryFile<BinaryFileMode::IN> *const 
 /*
 *	Given a file, load raw data data.
 */
-void ResourceLoadingSystem::LoadRawData(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RawDataData* const RESTRICT data) NOEXCEPT
+void ResourceLoadingSystem::LoadRawData(BinaryInputFile *const RESTRICT file, RawDataData* const RESTRICT data) NOEXCEPT
 {
 	//Read the data size.
 	uint64 data_size;
@@ -105,7 +108,7 @@ void ResourceLoadingSystem::LoadRawData(BinaryFile<BinaryFileMode::IN> *const RE
 /*
 *	Given a file, load render pipeline data.
 */
-void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, RenderPipelineData *const RESTRICT data) NOEXCEPT
+void ResourceLoadingSystem::LoadRenderPipeline(BinaryInputFile *const RESTRICT file, RenderPipelineData *const RESTRICT data) NOEXCEPT
 {
 	//Read the compute shader data.
 	{
@@ -338,7 +341,7 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryFile<BinaryFileMode::IN> *c
 /*
 *	Given a file, load shader data.
 */
-void ResourceLoadingSystem::LoadShader(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, ShaderData *const RESTRICT data) NOEXCEPT
+void ResourceLoadingSystem::LoadShader(BinaryInputFile *const RESTRICT file, ShaderData *const RESTRICT data) NOEXCEPT
 {
 	//Read the stage.
 	file->Read(&data->_Stage, sizeof(ShaderStage));
@@ -357,7 +360,7 @@ void ResourceLoadingSystem::LoadShader(BinaryFile<BinaryFileMode::IN> *const RES
 /*
 *	Given a file, load sound data.
 */
-void ResourceLoadingSystem::LoadSound(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, SoundData *const RESTRICT data) NOEXCEPT
+void ResourceLoadingSystem::LoadSound(BinaryInputFile *const RESTRICT file, SoundData *const RESTRICT data) NOEXCEPT
 {
 	//Read the sample rate.
 	file->Read(&data->_SampleRate, sizeof(float32));
@@ -384,7 +387,7 @@ void ResourceLoadingSystem::LoadSound(BinaryFile<BinaryFileMode::IN> *const REST
 /*
 *	Given a file, load texture 3D data.
 */
-void ResourceLoadingSystem::LoadTexture3D(BinaryFile<BinaryFileMode::IN> *const RESTRICT file, Texture3DData *const RESTRICT data) NOEXCEPT
+void ResourceLoadingSystem::LoadTexture3D(BinaryInputFile *const RESTRICT file, Texture3DData *const RESTRICT data) NOEXCEPT
 {
 	//Read the number of mipmap levels.
 	file->Read(&data->_MipmapLevels, sizeof(uint8));

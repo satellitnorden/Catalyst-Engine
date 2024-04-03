@@ -6,7 +6,8 @@
 
 //File.
 #include <File/Core/FileCore.h>
-#include <File/Core/BinaryFile.h>
+#include <File/Core/BinaryInputFile.h>
+#include <File/Core/BinaryOutputFile.h>
 
 //STL.
 #include <filesystem>
@@ -52,7 +53,7 @@ public:
 		}
 
 		//Read the file.
-		BinaryFile<BinaryFileMode::IN> file{ file_path };
+		BinaryInputFile file{ file_path };
 
 		//Read the version.
 		uint64 version;
@@ -138,7 +139,7 @@ public:
 	FORCE_INLINE void Write(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Open the file.
-		BinaryFile<BinaryFileMode::OUT> file{ file_path };
+		BinaryOutputFile file{ file_path };
 
 		//Write the version.
 		const uint64 version{ CURRENT_VERSION };

@@ -75,7 +75,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 	if (result != AAUDIO_OK)
 	{
-        PRINT_TO_OUTPUT("Couldn't initialize AAudio because:" << AAudio_convertResultToText(result));
+        PRINT_TO_OUTPUT("Couldn't initialize AAudio because: %s", AAudio_convertResultToText(result));
 
 		return;
 	}
@@ -126,7 +126,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 	if (result != AAUDIO_OK)
 	{
-        PRINT_TO_OUTPUT("Couldn't initialize AAudio because:" << AAudio_convertResultToText(result));
+        PRINT_TO_OUTPUT("Couldn't initialize AAudio because: %s", AAudio_convertResultToText(result));
 
 		return;
 	}
@@ -178,7 +178,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 	if (result != AAUDIO_OK)
 	{
-        PRINT_TO_OUTPUT("Couldn't initialize AAudio because:" << AAudio_convertResultToText(result));
+        PRINT_TO_OUTPUT("Couldn't initialize AAudio because: %s", AAudio_convertResultToText(result));
 
 		return;
 	}
@@ -190,7 +190,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 
 	if (result != AAUDIO_OK)
 	{
-        PRINT_TO_OUTPUT("Couldn't initialize AAudio because:" << AAudio_convertResultToText(result));
+        PRINT_TO_OUTPUT("Couldn't initialize AAudio because: %s", AAudio_convertResultToText(result));
 
 		return;
 	}

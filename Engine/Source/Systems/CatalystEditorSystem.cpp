@@ -4,7 +4,6 @@
 
 //Editor.
 #include <Editor/EditorCore.h>
-#include <Editor/EditorUtilities.h>
 
 //File.
 #include <File/Core/FileCore.h>

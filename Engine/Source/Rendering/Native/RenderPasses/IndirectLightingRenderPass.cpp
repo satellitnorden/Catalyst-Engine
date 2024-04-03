@@ -22,7 +22,7 @@ void UpdateIndirectLightingOptions()
 	{
 		USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING = !USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING;
 
-		PRINT_TO_OUTPUT("Indirect lighting temporal denoising is now " << (USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING ? "on." : "off"));
+		PRINT_TO_OUTPUT("Indirect lighting temporal denoising is now %s", (USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING ? "on." : "off"));
 	}
 }
 //TEMP

@@ -30,13 +30,10 @@
 *	STL includes. Included here so that it is more easily trackable.
 *	The goal is to decrease the number of STL dependencies in the future.
 */
-#include <atomic>
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <ctime>
 #include <cstdio>
-#include <fstream>
-#include <sstream>
 #include <type_traits>
 
 //Catalyst Engine information.

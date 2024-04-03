@@ -6,7 +6,8 @@
 
 //File.
 #include <File/Core/FileCore.h>
-#include <File/Core/BinaryFile.h>
+#include <File/Core/BinaryInputFile.h>
+#include <File/Core/BinaryOutputFile.h>
 
 //Math.
 #include <Math/Core/CatalystCoordinateSpaces.h>
@@ -33,7 +34,7 @@ void TimeOfDaySystem::Terminate() NOEXCEPT
 		DynamicString time_of_day_save_data_file_path{ _TimeOfDayParameters._SaveFolder };
 		time_of_day_save_data_file_path += "\\TimeOfDaySaveData.save";
 
-		BinaryFile<BinaryFileMode::OUT> time_of_day_save_data_file{ time_of_day_save_data_file_path.Data() };
+		BinaryOutputFile time_of_day_save_data_file{ time_of_day_save_data_file_path.Data() };
 
 		time_of_day_save_data_file.Write(&_CurrentTimeOfDay, sizeof(float32));
 
@@ -58,7 +59,7 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 
 		if (File::Exists(time_of_day_save_data_file_path.Data()))
 		{
-			BinaryFile<BinaryFileMode::IN> time_of_day_save_data_file{ time_of_day_save_data_file_path.Data() };
+			BinaryInputFile time_of_day_save_data_file{ time_of_day_save_data_file_path.Data() };
 
 			time_of_day_save_data_file.Read(&_CurrentTimeOfDay, sizeof(float32));
 

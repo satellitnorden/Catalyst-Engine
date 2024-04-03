@@ -11,7 +11,8 @@
 
 //File.
 #include <File/Core/FileCore.h>
-#include <File/Core/BinaryFile.h>
+#include <File/Core/BinaryInputFile.h>
+#include <File/Core/BinaryOutputFile.h>
 #include <File/Utilities/TextParsingUtilities.h>
 
 //Rendering.
@@ -30,6 +31,7 @@
 
 //STL.
 #include <filesystem>
+#include <fstream>
 
 //Constants.
 #define ENGINE_RENDERING_DIRECTORY_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering"
@@ -81,7 +83,7 @@ public:
 		}
 
 		//Read the file.
-		BinaryFile<BinaryFileMode::IN> file{ file_path };
+		BinaryInputFile file{ file_path };
 
 		//Read the version.
 		uint64 version;
@@ -153,7 +155,7 @@ public:
 	FORCE_INLINE void Write(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Open the file.
-		BinaryFile<BinaryFileMode::OUT> file{ file_path };
+		BinaryOutputFile file{ file_path };
 
 		//Write the version.
 		const uint64 version{ CURRENT_VERSION };
@@ -2173,7 +2175,7 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 					else
 					{
-						ASSERT(false, "Unknown argument " << arguments[1].Data());
+						ASSERT(false, "Unknown argument %s", arguments[1].Data());
 					}
 
 					continue;
@@ -3493,7 +3495,7 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 			else
 			{
-				ASSERT(false, "Unknown line " << current_line.data());
+				ASSERT(false, "Unknown line %s", current_line.data());
 			}
 		}
 

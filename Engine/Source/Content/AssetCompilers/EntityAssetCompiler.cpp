@@ -3,7 +3,7 @@
 
 //File.
 #include <File/Core/FileCore.h>
-#include <File/Core/BinaryFile.h>
+#include <File/Core/BinaryOutputFile.h>
 
 //Entities.
 #include <Entities/Core/EntitySerialization.h>
@@ -16,6 +16,9 @@
 
 //Third party.
 #include <ThirdParty/json/json.hpp>
+
+//STL.
+#include <fstream>
 
 //Singleton definition.
 DEFINE_SINGLETON(EntityAssetCompiler);
@@ -195,7 +198,7 @@ void EntityAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_da
 	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
 
 	//Open the output file.
-	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path };
+	BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };

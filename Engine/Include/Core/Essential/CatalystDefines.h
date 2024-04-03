@@ -102,43 +102,37 @@
 /*
 *	Type maximums/minimums.
 */
-#define FLOAT_MAXIMUM (std::numeric_limits<float>::max())
-#define FLOAT_MINIMUM (std::numeric_limits<float>::min())
+#define FLOAT32_MAXIMUM (3.40282347e+38f)
+#define FLOAT32_MINIMUM (1.17549435e-38f)
 
-#define DOUBLE_MAXIMUM (std::numeric_limits<double>::max())
-#define DOUBLE_MINIMUM (std::numeric_limits<double>::min())
+#define FLOAT64_MAXIMUM (1.7976931348623157e+308)
+#define FLOAT64_MINIMUM (2.2250738585072014e-308)
 
-#define FLOAT32_MAXIMUM (FLOAT_MAXIMUM)
-#define FLOAT32_MINIMUM (FLOAT_MINIMUM)
+#define INT8_MAXIMUM (127)
+#define INT16_MAXIMUM (32767)
+#define INT24_MAXIMUM (8388607)
+#define INT32_MAXIMUM (2147483647)
+#define INT64_MAXIMUM (9223372036854775807)
 
-#define FLOAT64_MAXIMUM (DOUBLE_MAXIMUM)
-#define FLOAT64_MINIMUM (DOUBLE_MINIMUM)
+#define INT8_MINIMUM (-128)
+#define INT16_MINIMUM (-32768)
+#define INT24_MINIMUM (-8388608)
+#define INT32_MINIMUM (-2147483648)
+#define INT64_MINIMUM (-9223372036854775808)
 
-#define INT8_MAXIMUM (std::numeric_limits<int8>::max())
-#define INT16_MAXIMUM (std::numeric_limits<int16>::max())
-#define INT24_MAXIMUM (8'388'607)
-#define INT32_MAXIMUM (std::numeric_limits<int32>::max())
-#define INT64_MAXIMUM (std::numeric_limits<int64>::max())
+#define UINT8_MAXIMUM (255)
+#define UINT16_MAXIMUM (65535)
+#define UINT24_MAXIMUM (16777215)
+#define UINT32_MAXIMUM (4294967295)
+#define UINT64_MAXIMUM (18446744073709551615)
 
-#define INT8_MINIMUM (std::numeric_limits<int8>::min())
-#define INT16_MINIMUM (std::numeric_limits<int16>::min())
-#define INT24_MINIMUM (-8'388'608)
-#define INT32_MINIMUM (std::numeric_limits<int32>::min())
-#define INT64_MINIMUM (std::numeric_limits<int64>::min())
-
-#define UINT8_MAXIMUM (std::numeric_limits<uint8>::max())
-#define UINT16_MAXIMUM (std::numeric_limits<uint16>::max())
-#define UINT24_MAXIMUM (16'777'215)
-#define UINT32_MAXIMUM (std::numeric_limits<uint32>::max())
-#define UINT64_MAXIMUM (std::numeric_limits<uint64>::max())
-
-#define UINT8_MINIMUM (std::numeric_limits<uint8>::min())
-#define UINT16_MINIMUM (std::numeric_limits<uint16>::min())
+#define UINT8_MINIMUM (0)
+#define UINT16_MINIMUM (0)
 #define UINT24_MINIMUM (0)
-#define UINT32_MINIMUM (std::numeric_limits<uint32>::min())
-#define UINT64_MINIMUM (std::numeric_limits<uint64>::min())
+#define UINT32_MINIMUM (0)
+#define UINT64_MINIMUM (0)
 
 #define BYTE_MAXIMUM (UINT8_MAXIMUM)
 
-#define FLOAT32_EPSILON (std::numeric_limits<float32>::epsilon())
-#define FLOAT64_EPSILON (std::numeric_limits<float64>::epsilon())
+#define FLOAT32_EPSILON (1.19209290e-07f)
+#define FLOAT64_EPSILON (2.2204460492503131e-16)

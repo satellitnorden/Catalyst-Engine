@@ -58,7 +58,7 @@
 */
 static void PrintResultAndBreak(const char *const RESTRICT function, const VkResult result) NOEXCEPT
 {
-	PRINT_TO_OUTPUT(function << " failed.");
+	PRINT_TO_OUTPUT("%s failed", function);
 
 	switch (result)
 	{

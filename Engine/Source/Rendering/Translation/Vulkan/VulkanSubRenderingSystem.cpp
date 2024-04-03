@@ -8,7 +8,6 @@
 
 //File.
 #include <File/Core/FileCore.h>
-#include <File/Core/BinaryFile.h>
 #include <File/Writers/PNGWriter.h>
 #include <File/Writers/TGAWriter.h>
 
@@ -906,7 +905,7 @@ void VulkanSubRenderingSystem::PostInitialize() NOEXCEPT
 			imgui_init_info.Allocator = nullptr;
 			imgui_init_info.CheckVkResultFn = [](VkResult result)
 			{
-				ASSERT(result == VkResult::VK_SUCCESS, "Ih no!");
+				ASSERT(result == VkResult::VK_SUCCESS, "Oh no!");
 			};
 			imgui_init_info.MinAllocationSize = 1024 * 1024;
 

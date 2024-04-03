@@ -194,7 +194,7 @@ private:
 #include <Core/Essential/CatalystEssential.h>
 
 //File.
-#include <File/Core/BinaryFile.h>
+#include <File/Core/BinaryInputFile.h>
 
 //Resources.
 #include <Resources/Core/SoundResource.h>
@@ -293,11 +293,11 @@ public:
 		};
 
 		//Open the file.
-		BinaryFile<BinaryFileMode::IN> file{ file_path };
+		BinaryInputFile file{ file_path };
 
 		if (!file)
 		{
-			ASSERT(false, "Couldn't read file" << file_path << "!");
+			ASSERT(false, "Couldn't read file %s!", file_path);
 
 			return false;
 		}

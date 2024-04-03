@@ -3,7 +3,8 @@
 
 //File.
 #include <File/Core/FileCore.h>
-#include <File/Core/BinaryFile.h>
+#include <File/Core/BinaryInputFile.h>
+#include <File/Core/BinaryOutputFile.h>
 
 //Save.
 #include <Save/SaveHeader.h>
@@ -155,7 +156,7 @@ void SaveSystem::LoadSingleEntry(const SaveEntry &entry) NOEXCEPT
 		File::CreateFile(entry._FilePath.Data());
 
 		//Write it to file.
-		BinaryFile<BinaryFileMode::OUT> file{ entry._FilePath.Data() };
+		BinaryOutputFile file{ entry._FilePath.Data() };
 		file.Write(&save_header, sizeof(SaveHeader));
 		file.Write(save_data, size);
 		file.Close();
@@ -170,7 +171,7 @@ void SaveSystem::LoadSingleEntry(const SaveEntry &entry) NOEXCEPT
 	else
 	{
 		//Open the file.
-		BinaryFile<BinaryFileMode::IN> file{ entry._FilePath.Data() };
+		BinaryInputFile file{ entry._FilePath.Data() };
 
 		//Remember the save size.
 		const uint64 save_size{ file.Size() };
@@ -210,7 +211,7 @@ void SaveSystem::SaveSingleEntry(const SaveEntry &entry) NOEXCEPT
 	entry._SaveCallback(save_data);
 
 	//Write it to file.
-	BinaryFile<BinaryFileMode::OUT> file{ entry._FilePath.Data() };
+	BinaryOutputFile file{ entry._FilePath.Data() };
 	file.Write(&save_header, sizeof(SaveHeader));
 	file.Write(save_data, size);
 	file.Close();

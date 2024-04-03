@@ -267,7 +267,7 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimatedMo
 		| aiProcess_LimitBoneWeights
 	};
 
-	ASSERT(File::Exists(file_path), "File path: " << file_path << " doesn't exist!");
+	ASSERT(File::Exists(file_path), "File path: %s does not exist!", file_path);
 
 	//Set up the importer.
 	Assimp::Importer importer;
@@ -278,7 +278,7 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimatedMo
 	//Check if the import succeeded.
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		ASSERT(false, "Import failed: " << importer.GetErrorString());
+		ASSERT(false, "Import failed: %s", importer.GetErrorString());
 
 		return false;
 	}
@@ -305,7 +305,7 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 		| aiProcess_ImproveCacheLocality
 	};
 
-	ASSERT(File::Exists(file_path), "File path: " << file_path << " doesn't exist!");
+	ASSERT(File::Exists(file_path), "File path: %s doesn't exist!", file_path);
 
 	//Set up the importer.
 	Assimp::Importer importer;
@@ -316,7 +316,7 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 	//Check if the import succeeded.
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		ASSERT(false, "Import failed: " << importer.GetErrorString());
+		ASSERT(false, "Import failed: %s", importer.GetErrorString());
 
 		return false;
 	}

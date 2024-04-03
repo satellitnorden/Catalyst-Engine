@@ -168,8 +168,8 @@ public:
 	*/
 	FORCE_INLINE constexpr void Invalidate() NOEXCEPT
 	{
-		_Minimum = Vector2<float32>(FLOAT_MAXIMUM, FLOAT_MAXIMUM);
-		_Maximum = Vector2<float32>(-FLOAT_MAXIMUM, -FLOAT_MAXIMUM);
+		_Minimum = Vector2<float32>(FLOAT32_MAXIMUM, FLOAT32_MAXIMUM);
+		_Maximum = Vector2<float32>(-FLOAT32_MAXIMUM, -FLOAT32_MAXIMUM);
 	}
 
 	/*

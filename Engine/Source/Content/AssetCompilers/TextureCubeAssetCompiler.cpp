@@ -3,6 +3,7 @@
 
 //File.
 #include <File/Core/FileCore.h>
+#include <File/Core/BinaryOutputFile.h>
 #include <File/Utilities/TextParsingUtilities.h>
 
 //Math.
@@ -19,6 +20,9 @@
 
 //Third party.
 #include <ThirdParty/stb_image.h>
+
+//STL.
+#include <fstream>
 
 //Singleton definition.
 DEFINE_SINGLETON(TextureCubeAssetCompiler);
@@ -230,7 +234,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 			}
 
 			//Couldn't figure out what this line is?
-			ASSERT(false, "Unknown line " << current_line.c_str());
+			ASSERT(false, "Unknown line %s", current_line.c_str());
 		}
 	}
 
@@ -524,7 +528,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
 
 	//Open the output file.
-	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path };
+	BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
