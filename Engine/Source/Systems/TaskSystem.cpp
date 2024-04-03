@@ -2,7 +2,7 @@
 #include <Systems/TaskSystem.h>
 
 //Concurrency.
-#include <Concurrency/ConcurrencyCore.h>
+#include <Concurrency/Concurrency.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>

@@ -56,7 +56,7 @@ namespace Concurrency
 		/*
 		*	Pauses the current thread.
 		*/
-		FORCE_INLINE static void Pause() NOEXCEPT;
+		void Pause() NOEXCEPT;
 
 		/*
 		*	Yields the current thread.
@@ -106,16 +106,3 @@ namespace Concurrency
 	}
 
 }
-
-//Implementation.
-#if defined(CATALYST_PLATFORM_ANDROID)
-	#include <Platform/Android/AndroidConcurrencyCore.inl>
-#endif
-
-#if defined(CATALYST_PLATFORM_OCULUS_QUEST)
-	#include <Platform/OculusQuest/OculusQuestConcurrencyCore.inl>
-#endif
-
-#if defined(CATALYST_PLATFORM_WINDOWS)
-	#include <Platform/Windows/WindowsConcurrencyCore.inl>
-#endif

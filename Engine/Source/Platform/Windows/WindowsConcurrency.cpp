@@ -1,4 +1,6 @@
 #if defined(CATALYST_PLATFORM_WINDOWS)
+//Header file.
+#include <Concurrency/Concurrency.h>
 
 //Intrinsics.
 #include <immintrin.h>
@@ -18,7 +20,7 @@ namespace Concurrency
 		/*
 		*	Pauses the current thread.
 		*/
-		FORCE_INLINE static void Pause() NOEXCEPT
+		void Pause() NOEXCEPT
 		{
 			_mm_pause();
 		}

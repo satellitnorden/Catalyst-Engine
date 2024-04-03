@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Concurrency.
-#include <Concurrency/ConcurrencyCore.h>
+#include <Concurrency/Concurrency.h>
 
 class AtomicFlag final
 {
