@@ -21,9 +21,6 @@
 	#pragma inline_depth(255)
 	#pragma inline_recursion(on)
 	#pragma auto_inline(on)
-
-	//Include the intrinsics header.
-	#include <intrin.h>
 #endif
 
 /*
@@ -33,7 +30,6 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <ctime>
-#include <cstdio>
 #include <type_traits>
 
 //Catalyst Engine information.
@@ -43,6 +39,9 @@
 #include <Core/Essential/CatalystDefines.h>
 #include <Core/Essential/CatalystMacros.h>
 #include <Core/Essential/CatalystTypes.h>
+
+//Compiler.
+#include <Core/Compiler/Compiler.h>
 
 //Platform.
 #include <Platform/General/CatalystPlatform.h>

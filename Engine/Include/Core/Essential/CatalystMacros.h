@@ -31,11 +31,7 @@
 *	Sets a breakpoint in the code in non-final builds.
 */
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	#if defined(CATALYST_MSVC)
-		#define BREAKPOINT() { __nop(); __debugbreak(); }
-	#elif defined(CATALYST_CLANG)
-		#define BREAKPOINT() { __builtin_debugtrap(); }
-	#endif
+	#define BREAKPOINT() Compiler::Breakpoint();
 #else
 	#define BREAKPOINT()
 #endif
@@ -44,16 +40,6 @@
 *	Clears the bit at the specified index.
 */
 #define CLEAR_BIT(BIT_FIELD, BIT) (BIT_FIELD = BIT_FIELD & ~(BIT))
-
-/*
-*	Concatenates the arguments together.
-*/
-#define CONCATENATE(FIRST, SECOND) FIRST##SECOND
-
-/*
-*	Intentionally crashes the game.
-*/
-#define CRASH() { int32 *const RESTRICT x{ nullptr }; *x = 42; }
 
 /*
 *	Declares a singleton class. Must be done inside the class in the header file.
@@ -95,11 +81,6 @@ FORCE_INLINE constexpr static void operator&=(ENUMERATION &first, const ENUMERAT
 }																															\
 
 /*
-*	Given a condition and a message, if the condition is false, the message will be printed and the game will immediately crash.
-*/
-#define FATAL_ASSERT(condition, message) if (!(UNLIKELY(condition))) { PRINT_TO_OUTPUT(message); CRASH(); }
-
-/*
 *	Indicates to the branch predictor that an expression is expected to most times be true.
 */
 #if defined(CATALYST_MSVC)
@@ -107,11 +88,6 @@ FORCE_INLINE constexpr static void operator&=(ENUMERATION &first, const ENUMERAT
 #elif defined(CATALYST_CLANG)
 	#define LIKELY(expression) __builtin_expect(expression, 1)
 #endif
-
-/*
-*	Does a section of code exactly once.
-*/
-#define ONCE(code) { static bool once{ false }; if (!once) { code; once = true; } }
 
 /*
 *	Prints a message to the output in non-final builds.

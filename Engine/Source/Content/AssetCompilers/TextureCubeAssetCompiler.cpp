@@ -427,7 +427,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 							case 3: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y)); break; //Down.
 							case 4: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), -1.0f); break; //Right.
 							case 5: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), 1.0f); break; //Left.
-							default: CRASH(); break;
+							default: ASSERT(false, "Invalid case!"); break;
 						}
 
 						base_direction.Normalize();
@@ -484,7 +484,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 						case 3: direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
 						case 4: direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
 						case 5: direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
-						default: CRASH(); break;
+						default: ASSERT(false, "Invalid case!"); break;
 					}
 
 					direction.Normalize();

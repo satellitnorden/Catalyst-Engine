@@ -777,10 +777,7 @@ public:
 	*/
 	FORCE_INLINE constexpr void Verify() const NOEXCEPT
 	{
-		if (!IsValid())
-		{
-			CRASH();
-		}
+		ASSERT(IsValid(), "Matrix is not valid!");
 	}
 
 };

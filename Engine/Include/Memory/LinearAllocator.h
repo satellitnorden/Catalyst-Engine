@@ -38,7 +38,7 @@ public:
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 		if (_Index.load() + size > SIZE)
 		{
-			CRASH();
+			ASSERT(false, "Increase size!");
 		}
 #endif
 
