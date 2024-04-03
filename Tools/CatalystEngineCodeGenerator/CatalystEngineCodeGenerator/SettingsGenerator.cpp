@@ -136,6 +136,16 @@ inline void GenerateSerializeToStreamArchiveForType
 		return;
 	}
 
+	if (type == "Vector2")
+	{
+		file << indent << "Vector2<float32> _value;" << std::endl;
+		file << indent << "_value._X = " << JSON << ".contains(\"X\") ? " << JSON << "[\"X\"].get<float32>() : 0.0f;" << std::endl;
+		file << indent << "_value._Y = " << JSON << ".contains(\"Y\") ? " << JSON << "[\"Y\"].get<float32>() : 0.0f;" << std::endl;
+		file << indent << "stream_archive->Write(&_value, sizeof(Vector2<float32>));" << std::endl;
+
+		return;
+	}
+
 	//Otherwise it's a "builtin type".
 	file << indent << "const " << type << " _value{ " << JSON << ".get<" << type << ">() };" << std::endl;
 	file << indent << "stream_archive->Write(&_value, sizeof(" << type << "));" << std::endl;
@@ -144,7 +154,13 @@ inline void GenerateSerializeToStreamArchiveForType
 /*
 *	Generates a serialization of a default value.
 */
-inline void GenerateSerializeDefaultValue(const std::string &indent, const Variable &variable, std::ofstream &file)
+inline void GenerateSerializeDefaultValue
+(
+	const std::string &indent,
+	const Variable &variable,
+	const std::vector<Class> &classes,
+	std::ofstream &file
+)
 {
 	//Arrays can't really have default values - They are just empty.
 	if (variable._IsArray)
@@ -155,6 +171,22 @@ inline void GenerateSerializeDefaultValue(const std::string &indent, const Varia
 
 	else
 	{
+		//If this is a class, we can't really just serialize it straight straight up, instead call this function recursively to generate default values for all of it's values.
+		for (const Class &_class : classes)
+		{
+			if (variable._Type == _class._Name)
+			{
+				for (const Variable &_variable : _class._Variables)
+				{
+					file << indent << "{" << std::endl;
+					GenerateSerializeDefaultValue(indent + "\t", _variable, classes, file);
+					file << indent << "}" << std::endl;
+				}
+
+				return;
+			}
+		}
+
 		//If this variable has a default value, try to use that.
 		if (!variable._Default.empty())
 		{
@@ -231,6 +263,13 @@ inline void GenerateDeserializeFromStreamArchiveForType
 		file << indent << "\t" << name << " = reinterpret_cast<const char *RESTRICT>(&stream_archive.Data()[*stream_archive_position]);" << std::endl;
 		file << indent << "\t*stream_archive_position += _string_length;" << std::endl;
 		file << indent << "}" << std::endl;
+
+		return;
+	}
+
+	if (type == "Vector2")
+	{
+		file << indent << "stream_archive.Read(&" << name << ", sizeof(Vector2<float32>), stream_archive_position);" << std::endl;
 
 		return;
 	}
@@ -593,7 +632,7 @@ void SettingsGenerator::GenerateCode()
 				{
 					bool any_variable_is_array{ false };
 
-					for (const Variable& variable : _class._Variables)
+					for (const Variable &variable : _class._Variables)
 					{
 						if (variable._IsArray)
 						{
@@ -646,6 +685,33 @@ void SettingsGenerator::GenerateCode()
 				if (has_added_any_core_include)
 				{
 					file << std::endl;
+				}
+
+				//Check if any variable in this class is a math type - If so, include it.
+				{
+					bool any_variable_is_math_type{ false };
+
+					for (const Variable& variable : _class._Variables)
+					{
+						if (variable._Type == "Vector2"
+							|| variable._Type == "Vector3"
+							|| variable._Type == "Vector4")
+						{
+							if (!any_variable_is_math_type)
+							{
+								file << "//Math." << std::endl;
+
+								any_variable_is_math_type = true;
+							}
+
+							file << "#include <Math/General/Vector.h>" << std::endl;
+						}
+					}
+
+					if (any_variable_is_math_type)
+					{
+						file << std::endl;
+					}
 				}
 			}
 
@@ -727,10 +793,15 @@ void SettingsGenerator::GenerateCode()
 				//Figure out the type.
 				std::string type{ variable._Type };
 
-				//Special case for "String".
+				//Special cases.
 				if (type == "String")
 				{
 					type = "const char *RESTRICT";
+				}
+
+				else if (type == "Vector2")
+				{
+					type = "Vector2<float32>";
 				}
 
 				if (variable._IsArray)
@@ -952,7 +1023,7 @@ void SettingsGenerator::GenerateCode()
 			file << "\telse" << std::endl;
 			file << "\t{" << std::endl;
 
-			GenerateSerializeDefaultValue("\t\t", variable, file);
+			GenerateSerializeDefaultValue("\t\t", variable, classes, file);
 
 			file << "\t}" << std::endl;
 		}
