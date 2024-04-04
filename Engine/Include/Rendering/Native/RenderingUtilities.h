@@ -256,11 +256,6 @@ public:
 							break;
 						}
 					}
-					//Retrieve the value at this texel.
-					output_textures->Back().At(X, Y) = output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 0, Y * 2 + 0) * 0.25f;
-					output_textures->Back().At(X, Y) += output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 0, Y * 2 + 1) * 0.25f;
-					output_textures->Back().At(X, Y) += output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 1, Y * 2 + 0) * 0.25f;
-					output_textures->Back().At(X, Y) += output_textures->At(output_textures->LastIndex() - 1).At(X * 2 + 1, Y * 2 + 1) * 0.25f;
 				}
 			}
 
