@@ -716,62 +716,48 @@ void SettingsGenerator::GenerateCode()
 			}
 
 			//Check if this class references any enumerations that should be included.
-			bool has_referenced_any_enumerations{ false };
+			bool has_referenced_any_settings{ false };
 
+			for (const Variable &variable : _class._Variables)
 			{
-				for (const Variable &variable : _class._Variables)
+				for (const Enumeration &enumeration : enumerations)
 				{
-					for (const Enumeration &enumeration : enumerations)
+					if (variable._Type == enumeration._Name)
 					{
-						if (variable._Type == enumeration._Name)
+						if (!has_referenced_any_settings)
 						{
-							if (!has_referenced_any_enumerations)
-							{
-								file << "//Settings." << std::endl;
+							file << "//Settings." << std::endl;
 
-								has_referenced_any_enumerations = true;
-							}
-
-							file << "#include <Generated/Settings/" << enumeration._Name.c_str() << ".Generated.h>" << std::endl;
+							has_referenced_any_settings = true;
 						}
-					}
-				}
 
-				if (has_referenced_any_enumerations)
-				{
-					file << std::endl;
+						file << "#include <Generated/Settings/" << enumeration._Name.c_str() << ".Generated.h>" << std::endl;
+					}
 				}
 			}
 
 			//Check if this class references any other classes that should be included.
+			for (const Variable &variable : _class._Variables)
 			{
-				bool has_referenced_any_classes{ false };
-
-				for (const Variable &variable : _class._Variables)
+				for (const Class &other_class : classes)
 				{
-					for (const Class &other_class : classes)
+					if (variable._Type == other_class._Name)
 					{
-						if (variable._Type == other_class._Name)
+						if (!has_referenced_any_settings)
 						{
-							if (!has_referenced_any_classes)
-							{
-								if (!has_referenced_any_enumerations)
-								{
-									file << "//Settings." << std::endl;
-								}
+							file << "//Settings." << std::endl;
 
-								has_referenced_any_classes = true;
-							}
-
-							file << "#include <Generated/Settings/" << other_class._Name.c_str() << ".Generated.h>" << std::endl;
+							has_referenced_any_settings = true;
 						}
+
+						file << "#include <Generated/Settings/" << other_class._Name.c_str() << ".Generated.h>" << std::endl;
 					}
 				}
+			}
 
-				if (has_referenced_any_classes)
-				{
-					file << std::endl;
-				}
+			if (has_referenced_any_settings)
+			{
+				file << std::endl;
 			}
 
 			//Write the class!
