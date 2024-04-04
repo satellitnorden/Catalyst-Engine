@@ -195,7 +195,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 
 		else
 		{
-			resolution = CatalystPlatform::GetDefaultResolution();
+			CatalystPlatform::GetDefaultResolution(&resolution._Width, &resolution._Height);
 		}
 
 		CatalystPlatformWindows::_Window = CreateWindow
@@ -233,7 +233,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 
 		else
 		{
-			resolution = CatalystPlatform::GetDefaultResolution();
+			CatalystPlatform::GetDefaultResolution(&resolution._Width, &resolution._Height);
 		}
 
 		CatalystPlatformWindows::_Window = CreateWindow
@@ -306,7 +306,7 @@ bool CatalystPlatform::IsWindowInFocus() NOEXCEPT
 /*
 *	Returns the default resolution.
 */
-Resolution CatalystPlatform::GetDefaultResolution() NOEXCEPT
+void CatalystPlatform::GetDefaultResolution(uint32 *const RESTRICT width, uint32 *const RESTRICT height) NOEXCEPT
 {
 	//Retrieve the desktop window.
 	const HWND desktop_window{ GetDesktopWindow() };
@@ -315,15 +315,19 @@ Resolution CatalystPlatform::GetDefaultResolution() NOEXCEPT
 	{
 		ASSERT(false, "Panik!");
 
-		return Resolution(1'920, 1'080);
+		*width = 1'920;
+		*height = 1'080;
+
+		return;
 	}
 
 	//Get the window rectangle.
 	RECT window_rectangle;
 	GetWindowRect(desktop_window, &window_rectangle);
 
-	//Return the resolution.
-	return Resolution(window_rectangle.right, window_rectangle.bottom);
+	//Set the width/height.
+	*width = window_rectangle.right;
+	*height = window_rectangle.bottom;
 }
 
 /*

@@ -181,7 +181,8 @@ public:
 		if (RenderingReferenceSystemData::_IntermediateTexture.GetWidth() == 0
 			|| RenderingReferenceSystemData::_IntermediateTexture.GetHeight() == 0)
 		{
-			const Resolution default_resolution{ CatalystPlatform::GetDefaultResolution() };
+			Resolution default_resolution;
+			CatalystPlatform::GetDefaultResolution(&default_resolution._Width, &default_resolution._Height);
 
 			RenderingReferenceSystemData::_IntermediateTexture.Initialize(default_resolution._Width, default_resolution._Height);
 		}
@@ -195,7 +196,8 @@ public:
 		if (RenderingReferenceSystemData::_FinalTexture.GetWidth() == 0
 			|| RenderingReferenceSystemData::_FinalTexture.GetHeight() == 0)
 		{
-			const Resolution default_resolution{ CatalystPlatform::GetDefaultResolution() };
+			Resolution default_resolution;
+			CatalystPlatform::GetDefaultResolution(&default_resolution._Width, &default_resolution._Height);
 
 			RenderingReferenceSystemData::_FinalTexture.Initialize(default_resolution._Width, default_resolution._Height);
 		}

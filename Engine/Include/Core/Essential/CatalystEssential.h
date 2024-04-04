@@ -29,8 +29,6 @@
 */
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include <ctime>
-#include <type_traits>
 
 //Catalyst Engine information.
 #include <Core/Essential/CatalystEngineInformation.h>

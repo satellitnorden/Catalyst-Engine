@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/SamplerProperties.h>
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/TopLevelAccelerationStructureInstanceData.h>

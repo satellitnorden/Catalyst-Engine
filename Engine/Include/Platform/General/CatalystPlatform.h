@@ -3,9 +3,6 @@
 //Core
 #include <Core/Essential/CatalystEssential.h>
 
-//Rendering.
-#include <Rendering/Native/Resolution.h>
-
 //Forward declarations.
 class DynamicString;
 
@@ -37,7 +34,7 @@ public:
 	/*
 	*	Returns the default resolution.
 	*/
-	static Resolution GetDefaultResolution() NOEXCEPT;
+	static void GetDefaultResolution(uint32 *const RESTRICT width, uint32 *const RESTRICT height) NOEXCEPT;
 
 	/*
 	*	Returns the default refresh rate.

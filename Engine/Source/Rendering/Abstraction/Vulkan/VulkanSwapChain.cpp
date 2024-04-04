@@ -125,7 +125,7 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 
 	else
 	{
-		resolution = CatalystPlatform::GetDefaultResolution();
+		CatalystPlatform::GetDefaultResolution(&resolution._Width, &resolution._Height);
 	}
 
 	_SwapExtent.width = CatalystBaseMath::Clamp<uint32>(resolution._Width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);

@@ -7,6 +7,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/Resolution.h>
 
 class SharedRenderTargetManager final
 {
