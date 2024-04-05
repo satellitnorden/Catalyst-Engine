@@ -1,12 +1,8 @@
 #pragma once
 
-//Concurrency.
-#include <Concurrency/ScopedLock.h>
-
 //Memory.
 #include <Memory/DestructorPointer.h>
 #include <Memory/LinearAllocator.h>
-#include <Memory/UniquePointer.h>
 
 //Memory constants.
 namespace MemoryConstants

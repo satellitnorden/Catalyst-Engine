@@ -119,10 +119,7 @@ FORCE_INLINE static NO_DISCARD uint8 NumberOfBitsSet(const TYPE value) NOEXCEPT
 
 	for (uint64 i{ 0 }; i < NUMBER_OF_BITS; ++i)
 	{
-		if (TEST_BIT(value, static_cast<TYPE>(BIT(i))))
-		{
-			++number_of_bits_set;
-		}
+		number_of_bits_set += static_cast<TYPE>(TEST_BIT(value, static_cast<TYPE>(BIT(i))));
 	}
 
 	//Return the number of bits set.

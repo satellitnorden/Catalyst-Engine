@@ -8,6 +8,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Concurrency.
+#include <Concurrency/Atomic.h>
 #include <Concurrency/Thread.h>
 
 //Sound.

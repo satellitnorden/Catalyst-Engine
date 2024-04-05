@@ -3,9 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Concurrency.
-#include <Concurrency/Atomic.h>
-
 template <uint64 SIZE>
 class LinearAllocator final
 {
@@ -36,14 +33,17 @@ public:
 	FORCE_INLINE RESTRICTED NO_DISCARD void *const RESTRICT Allocate(const uint64 size) NOEXCEPT
 	{
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-		if (_Index.load() + size > SIZE)
+		if ((_Index + size) > SIZE)
 		{
 			ASSERT(false, "Increase size!");
 		}
 #endif
 
 		//Just return the memory at the current index and increase the index.
-		return static_cast<void *const RESTRICT>(static_cast<byte *const RESTRICT>(_Memory) + _Index.fetch_add(size));
+		void *const RESTRICT memory{ static_cast<void *const RESTRICT>(static_cast<byte *const RESTRICT>(_Memory) + _Index) };
+		_Index += size;
+
+		return memory;
 	}
 
 	/*
@@ -57,7 +57,7 @@ public:
 private:
 
 	//The current index.
-	Atomic<uint64> _Index{ 0 };
+	uint64 _Index{ 0 };
 
 	//The memory.
 	void *RESTRICT _Memory{ nullptr };

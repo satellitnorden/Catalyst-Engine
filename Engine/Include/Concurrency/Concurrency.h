@@ -3,9 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//STL.
-#include <thread>
-
 //Concurrency constants.
 namespace ConcurrencyConstants
 {
@@ -28,30 +25,33 @@ namespace Concurrency
 	/*
 	*	Returns the main thread's index.
 	*/
-	FORCE_INLINE static uint64 &MainThreadIndex() NOEXCEPT
-	{
-		static uint64 INDEX{ 0 };
-
-		return INDEX;
-	}
+	NO_DISCARD uint64 &MainThreadIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of hardware threads.
 	*/
-	FORCE_INLINE static NO_DISCARD uint32 NumberOfHardwareThreads() NOEXCEPT
-	{
-		//Ask the standard library. (:
-		const uint32 number_of_hardware_threads{ std::thread::hardware_concurrency() };
-
-		//In the rare case that the standard library reports zero, use the minimum number of hardware threads for the Windows platform.
-		return number_of_hardware_threads != 0 ? number_of_hardware_threads : ConcurrencyConstants::MINIMUM_NUMBER_OF_HARDWARE_THREADS;
-	}
+	NO_DISCARD uint32 NumberOfHardwareThreads() NOEXCEPT;
 
 	/*
 	*	CurrentThread namespace, containing common functions relating to the current thread.
 	*/
 	namespace CurrentThread
 	{
+
+		/*
+		*	Initializes the current thread's index.
+		*/
+		void InitializeIndex() NOEXCEPT;
+
+		/*
+		*	Returns the current thread's index.
+		*/
+		NO_DISCARD uint64 &Index() NOEXCEPT;
+
+		/*
+		*	Returns if the current thread is the main thread.
+		*/
+		NO_DISCARD bool IsMainThread() NOEXCEPT;
 
 		/*
 		*	Pauses the current thread.
@@ -61,47 +61,12 @@ namespace Concurrency
 		/*
 		*	Yields the current thread.
 		*/
-		FORCE_INLINE static void Yield() NOEXCEPT
-		{
-			//Just use the standard library.
-			std::this_thread::yield();
-		}
+		void Yield() NOEXCEPT;
 
 		/*
 		*	Puts the current thread to sleep for N amount of nanoseconds.
 		*/
-		FORCE_INLINE static void SleepFor(const uint64 number_of_nanoseconds) NOEXCEPT
-		{
-			std::this_thread::sleep_for(std::chrono::nanoseconds(number_of_nanoseconds));
-		}
-
-		/*
-		*	Returns the current thread's index.
-		*/
-		FORCE_INLINE static uint64 &Index() NOEXCEPT
-		{
-			static thread_local uint64 INDEX{ 0 };
-
-			return INDEX;
-		}
-
-		/*
-		*	Initializes the current thread's index.
-		*/
-		FORCE_INLINE static void InitializeIndex() NOEXCEPT
-		{
-			static std::atomic<uint64> INDEX_COUNTER{ 0 };
-
-			Index() = INDEX_COUNTER.fetch_add(1);
-		}
-
-		/*
-		*	Returns if the current thread is the main thread.
-		*/
-		FORCE_INLINE static NO_DISCARD bool IsMainThread() NOEXCEPT
-		{
-			return Index() == Concurrency::MainThreadIndex();
-		}
+		void SleepFor(const uint64 number_of_nanoseconds) NOEXCEPT;
 
 	}
 

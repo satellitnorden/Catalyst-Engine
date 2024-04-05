@@ -97,7 +97,7 @@ public:
 	*/
 	FORCE_INLINE static Vector3<float> CalculateRayDirectionFromScreenCoordinate(const Vector2<float>& screen_coordinate) NOEXCEPT
 	{
-		const Vector3<float> world_position{ CalculateWorldPositionFromScreenCoordinate(screen_coordinate, 1.0f - std::numeric_limits<float>::epsilon()) };
+		const Vector3<float> world_position{ CalculateWorldPositionFromScreenCoordinate(screen_coordinate, 1.0f - FLOAT32_EPSILON) };
 
 		return Vector3<float>::Normalize(world_position - RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition());
 	}
@@ -105,7 +105,7 @@ public:
 	/*
 	*	Calculates the screen coordinate of a position.
 	*/
-	FORCE_INLINE static Vector2<float32> CalculateScreenCoordinate(const Matrix4x4 &view_matrix, const Vector3<float32>& position) NOEXCEPT
+	FORCE_INLINE static Vector2<float32> CalculateScreenCoordinate(const Matrix4x4 &view_matrix, const Vector3<float32> &position) NOEXCEPT
 	{
 		Vector4<float32> view_space_coordinate{ view_matrix * Vector4<float32>(position, 1.0f) };
 

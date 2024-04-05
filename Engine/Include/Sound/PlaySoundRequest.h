@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Concurrency.
+#include <Concurrency/Atomic.h>
+
 //Resources.
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/SoundResource.h>

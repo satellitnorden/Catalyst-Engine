@@ -3,7 +3,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Concurrency.
+//Concurrency
+#include <Concurrency/Atomic.h>
 #include <Concurrency/Concurrency.h>
 
 class AtomicFlag final
