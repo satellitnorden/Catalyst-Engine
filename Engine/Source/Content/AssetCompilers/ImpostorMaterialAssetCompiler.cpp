@@ -150,6 +150,9 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 	//Set up the parameters.
 	ImpostorMaterialParameters parameters;
 
+	//Set some reasonable defaults.
+	parameters._SuperSample = 0;
+
 	//Open the input file.
 	std::ifstream input_file{ compile_data->_FilePath.Data() };
 
@@ -821,7 +824,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			asset_file << "ChannelMapping(BLUE, FILE_1, BLUE);" << std::endl;
 			asset_file << "ChannelMapping(ALPHA, FILE_1, ALPHA);" << std::endl;
 			asset_file << "BaseMipLevel(" << parameters._SuperSample << ");" << std::endl;
-			asset_file << "MipmapGenerationMode(MAXIMUM);";
+			asset_file << "MipmapGenerationMode(OPACITY);";
 
 			asset_file.close();
 		}

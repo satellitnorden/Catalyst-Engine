@@ -249,6 +249,29 @@ public:
 							break;
 						}
 
+						case MipmapGenerationMode::OPACITY:
+						{
+							const TYPE average
+							{
+								source_texels[0] * 0.25f
+								+ source_texels[1] * 0.25f
+								+ source_texels[2] * 0.25f
+								+ source_texels[3] * 0.25f
+							};
+							const TYPE maximum
+							{
+								CatalystBaseMath::Maximum<TYPE>
+								(
+									CatalystBaseMath::Maximum<TYPE>(source_texels[0], source_texels[1]),
+									CatalystBaseMath::Maximum<TYPE>(source_texels[2], source_texels[3])
+								)
+							};
+
+							output_textures->Back().At(X, Y) = CatalystBaseMath::LinearlyInterpolate(average, maximum, 0.5f);
+
+							break;
+						}
+
 						default:
 						{
 							ASSERT(false, "Invalid case!");

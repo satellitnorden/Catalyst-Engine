@@ -631,7 +631,12 @@ enum class MipmapGenerationMode : uint8
 	/*
 	*	Will do a blend of all 4 source texels, but normalize them afterwards.
 	*/
-	NORMAL_MAP
+	NORMAL_MAP,
+
+	/*
+	*	Will perform a special algorithm tailored for opacity textures.
+	*/
+	OPACITY
 };
 
 //Enumeration covering all texture filters.

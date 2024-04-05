@@ -556,6 +556,11 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 						parameters._MipmapGenerationMode = MipmapGenerationMode::NORMAL_MAP;
 					}
 
+					else if (arguments[0] == "OPACITY")
+					{
+						parameters._MipmapGenerationMode = MipmapGenerationMode::OPACITY;
+					}
+
 					else
 					{
 						ASSERT(false, "Unknown argument %s", arguments[0].Data());
