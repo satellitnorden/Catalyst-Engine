@@ -29,7 +29,7 @@ DEFINE_SINGLETON(SettingsAssetCompiler);
 SettingsAssetCompiler::SettingsAssetCompiler() NOEXCEPT
 {
 	//Set the flags.
-	_Flags = Flags::ALWAYS_COMPILE;
+	_Flags = Flags::NONE;
 }
 
 /*
