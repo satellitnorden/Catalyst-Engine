@@ -191,6 +191,16 @@ protected:
 	) NOEXCEPT;
 
 	/*
+	*	Adds an editable hash string field.
+	*/
+	void AddEditableHashStringField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
 	*	Adds an editable asset resource field.
 	*/
 	void AddEditableMaterialAssetField

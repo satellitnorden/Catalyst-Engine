@@ -4,6 +4,11 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StreamArchive.h>
 
+#if defined(CATALYST_EDITOR)
+//Editor.
+#include <Editor/EditorEntityData.h>
+#endif
+
 //Entities.
 #include <Entities/Core/Entity.h>
 
@@ -25,14 +30,17 @@ namespace EntitySerialization
 		void *const RESTRICT user_data
 	);
 
+#if defined(CATALYST_EDITOR)
 	/*
 	*	Serializes the given entity to the given JSON object with the given name.
 	*/
 	void SerializeToJSON
 	(
+		const EditorEntityData &editor_entity_data,
 		nlohmann::json &JSON,
 		Entity *const RESTRICT entity
 	) NOEXCEPT;
+#endif
 
 	/*
 	*	Serializes an entity from the given JSON object to the give stream archive.

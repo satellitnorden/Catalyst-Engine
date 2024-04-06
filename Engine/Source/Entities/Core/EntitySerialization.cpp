@@ -25,11 +25,13 @@
 namespace EntitySerialization
 {
 
+#if defined(CATALYST_EDITOR)
 	/*
 	*	Serializes the given entity to the given JSON object with the given name.
 	*/
 	void SerializeToJSON
 	(
+		const EditorEntityData &editor_entity_data,
 		nlohmann::json &JSON,
 		Entity *const RESTRICT entity
 	) NOEXCEPT
@@ -80,6 +82,29 @@ namespace EntitySerialization
 						rotation_entry["Roll"] = BaseMath::RadiansToDegrees(data->_Roll);
 						rotation_entry["Yaw"] = BaseMath::RadiansToDegrees(data->_Yaw);
 						rotation_entry["Pitch"] = BaseMath::RadiansToDegrees(data->_Pitch);
+
+						break;
+					}
+
+					case ComponentEditableField::Type::HASH_STRING:
+					{
+						//Find the hash string data.
+						const EditorEntityData::HashStringData *RESTRICT hash_string_data{ nullptr };
+
+						for (const EditorEntityData::HashStringData &_hash_string_data : editor_entity_data._HashStringData)
+						{
+							if (_hash_string_data._ComponentIdentifier == component->_Identifier
+								&& _hash_string_data._EditableFieldIdentifier == editable_field._Identifier)
+							{
+								hash_string_data = &_hash_string_data;
+
+								break;
+							}
+						}
+
+						ASSERT(hash_string_data, "Couldn't find hash string data!");
+
+						component_entry[editable_field._Name] = hash_string_data->_String.Data();
 
 						break;
 					}
@@ -186,6 +211,7 @@ namespace EntitySerialization
 			}
 		}
 	}
+#endif
 
 	/*
 	*	Serializes an entity from the given JSON object to the give stream archive.
@@ -290,6 +316,15 @@ namespace EntitySerialization
 								euler_angles._Pitch = BaseMath::DegreesToRadians(editable_field_entry["Pitch"]);
 
 								stream_archive->Write(&euler_angles, sizeof(EulerAngles));
+
+								break;
+							}
+
+							case ComponentEditableField::Type::HASH_STRING:
+							{
+								const HashString value{ editable_field_entry.get<std::string>().c_str()};
+
+								stream_archive->Write(&value, sizeof(HashString));
 
 								break;
 							}
@@ -527,6 +562,16 @@ namespace EntitySerialization
 						stream_archive.Read(&data, sizeof(EulerAngles), stream_archive_position);
 
 						Memory::Copy(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset), &data, sizeof(EulerAngles));
+
+						break;
+					}
+
+					case ComponentEditableField::Type::HASH_STRING:
+					{
+						HashString data;
+						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
+
+						Memory::Copy(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset), &data, sizeof(HashString));
 
 						break;
 					}

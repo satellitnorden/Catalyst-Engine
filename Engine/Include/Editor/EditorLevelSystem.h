@@ -7,6 +7,9 @@
 #include <Core/General/DynamicString.h>
 #include <Core/General/StaticString.h>
 
+//Editor.
+#include <Editor/EditorEntityData.h>
+
 //Entities.
 #include <Entities/Core/Entity.h>
 
@@ -69,36 +72,14 @@ private:
 		SCALE
 	};
 
-	/*
-	*	Entity editor data class definition.
-	*/
-	class EntityEditorData final
-	{
-
-	public:
-
-		//The name.
-		StaticString<64> _Name;
-
-		//The identifier.
-		uint64 _Identifier;
-
-		//The rotation. Used in place of the quaternion rotation in WorldTransformComponent.
-		EulerAngles _Rotation{ 0.0f, 0.0f, 0.0f };
-
-		//The links.
-		DynamicArray<uint64> _Links;
-
-	};
-
 	//The level file path.
 	DynamicString _LevelFilePath;
 
 	//The entities.
 	DynamicArray<Entity *RESTRICT> _Entities;
 
-	//The entity editor data.
-	DynamicArray<EntityEditorData> _EntityEditorData;
+	//The editor entity data.
+	DynamicArray<EditorEntityData> _EditorEntityData;
 
 	//The name counter.
 	uint32 _NameCounter{ 0 };
@@ -148,17 +129,17 @@ private:
 	/*
 	*	Loads an entity.
 	*/
-	void LoadEntity(const char *const RESTRICT file_path, Entity *RESTRICT *const RESTRICT entity, EntityEditorData *const RESTRICT editor_data) NOEXCEPT;
+	void LoadEntity(const char *const RESTRICT file_path, Entity *RESTRICT *const RESTRICT entity, EditorEntityData *const RESTRICT editor_data) NOEXCEPT;
 
 	/*
 	*	Saves an entity.
 	*/
-	void SaveEntity(const char *const RESTRICT file_path, Entity *const RESTRICT entity, const EntityEditorData &entity_editor_data) NOEXCEPT;
+	void SaveEntity(const char *const RESTRICT file_path, Entity *const RESTRICT entity, const EditorEntityData &entity_editor_data) NOEXCEPT;
 
 	/*
 	*	Duplicates an entry.
 	*/
-	void DuplicateEntity(Entity *const RESTRICT entity) NOEXCEPT;
+	void DuplicateEntity(Entity *const RESTRICT entity, const EditorEntityData &entity_editor_data) NOEXCEPT;
 
 	/*
 	*	Returns the index for the given entity identifier.
