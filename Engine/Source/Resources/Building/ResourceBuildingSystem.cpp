@@ -137,22 +137,6 @@ void ResourceBuildingSystem::BuildResourceCollections(const ResourceCollectionBu
 }
 
 /*
-*	Builds an animated model.
-*/
-void ResourceBuildingSystem::BuildAnimatedModel(const AnimatedModelBuildParameters &parameters) NOEXCEPT
-{
-	ASSERT(false, "Not implemented!");
-}
-
-/*
-*	Builds an animation.
-*/
-void ResourceBuildingSystem::BuildAnimation(const AnimationBuildParameters &parameters) NOEXCEPT
-{
-	ASSERT(false, "Not implemented!");
-}
-
-/*
 *	Builds a raw data.
 */
 void ResourceBuildingSystem::BuildRawData(const RawDataBuildParameters &parameters) NOEXCEPT

@@ -6,10 +6,8 @@
 //Components.
 #include <Components/Core/Component.h>
 
-//Resources.
-#include <Resources/Core/AnimatedModelResource.h>
-#include <Resources/Core/AnimationResource.h>
-#include <Resources/Core/ResourcePointer.h>
+//Rendering.
+#include <Rendering/Native/RenderingCore.h>
 
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
@@ -20,13 +18,13 @@ class AnimatedModelInitializationData final : public ComponentInitializationData
 public:
 
 	//The animated model resource.
-	ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
+	//ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
 
 	//The material resource.
 	//ResourcePointer<MaterialResource> _MaterialResource;
 
 	//The initial animation resource.
-	ResourcePointer<AnimationResource> _InitialAnimationResource;
+	//ResourcePointer<AnimationResource> _InitialAnimationResource;
 
 };
 
@@ -36,7 +34,7 @@ class AnimatedModelInstanceData final
 public:
 
 	//The animated model resource.
-	ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
+	//ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
 
 	//The material resource.
 	//ResourcePointer<MaterialResource> _MaterialResource;
@@ -45,7 +43,7 @@ public:
 	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
 
 	//The current animated model resource.
-	ResourcePointer<AnimationResource> _CurrentAnimationResource;
+	//ResourcePointer<AnimationResource> _CurrentAnimationResource;
 
 	//The current animation time.
 	float32 _CurrentAnimationTime{ 0.0f };

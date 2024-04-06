@@ -6,8 +6,6 @@
 
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
-#include <Resources/Loading/AnimatedModelData.h>
-#include <Resources/Loading/AnimationData.h>
 #include <Resources/Loading/RawDataData.h>
 #include <Resources/Loading/RenderPipelineData.h>
 #include <Resources/Loading/ShaderData.h>
@@ -24,16 +22,6 @@ class ResourceLoadingSystem final
 {
 
 public:
-
-	/*
-	*	Given a file, load animated model data.
-	*/
-	void LoadAnimatedModel(BinaryInputFile *const RESTRICT file, AnimatedModelData *const RESTRICT data) NOEXCEPT;
-
-	/*
-	*	Given a file, load animation data.
-	*/
-	void LoadAnimation(BinaryInputFile *const RESTRICT file, AnimationData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load raw data data.

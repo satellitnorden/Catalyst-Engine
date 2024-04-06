@@ -5,8 +5,6 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Resources.
-#include <Resources/Building/AnimatedModelBuildParameters.h>
-#include <Resources/Building/AnimationBuildParameters.h>
 #include <Resources/Building/RawDataBuildParameters.h>
 #include <Resources/Building/RenderPipelineBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
@@ -23,16 +21,6 @@ public:
 	*	Builds resource collections.
 	*/
 	void BuildResourceCollections(const ResourceCollectionBuildParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Builds an animated model.
-	*/
-	void BuildAnimatedModel(const AnimatedModelBuildParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Builds an animation.
-	*/
-	void BuildAnimation(const AnimationBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a raw data.

@@ -157,7 +157,7 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 	const uint64 number_of_instances{ AnimatedModelComponent::Instance->NumberOfInstances() };
 
 	//If there's none to render - render none.
-	if (number_of_instances == 0)
+	if (number_of_instances == 0 || true)
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -165,6 +165,7 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 		return;
 	}
 
+	/*
 	//Retrieve and set the command buffer.
 	CommandBuffer *const RESTRICT command_buffer{ RenderingSystem::Instance->GetGlobalCommandBuffer(CommandBufferLevel::SECONDARY) };
 	SetCommandBuffer(command_buffer);
@@ -219,6 +220,7 @@ void AnimatedModelSceneFeaturesGraphicsPipeline::Execute() NOEXCEPT
 
 	//Include this render pass in the final render.
 	SetIncludeInRender(true);
+	*/
 }
 
 /*

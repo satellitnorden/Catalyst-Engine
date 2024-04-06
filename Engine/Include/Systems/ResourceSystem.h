@@ -6,8 +6,6 @@
 #include <Core/General/HashString.h>
 
 //Resources.
-#include <Resources/Core/AnimatedModelResource.h>
-#include <Resources/Core/AnimationResource.h>
 #include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ResourcePointer.h>
@@ -84,42 +82,6 @@ public:
 	*	Loads a single resource contained in the given file path.
 	*/
 	void LoadResource(const char *const RESTRICT file_path) NOEXCEPT;
-
-	/*
-	*	Returns the animated model resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<AnimatedModelResource> GetAnimatedModelResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the animated model resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<AnimatedModelResource> FindOrCreateAnimatedModelResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all animated model resources.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, AnimatedModelResource *RESTRICT> &GetAllAnimatedModelResources() const NOEXCEPT
-	{
-		return _AnimatedModelResources;
-	}
-
-	/*
-	*	Returns the animation resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<AnimationResource> GetAnimationResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the animation resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<AnimationResource> FindOrCreateAnimationResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all animation resources.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, AnimationResource *RESTRICT> &GetAllAnimationResources() const NOEXCEPT
-	{
-		return _AnimationResources;
-	}
 
 	/*
 	*	Returns the raw data resource with the given identifier.
@@ -215,12 +177,6 @@ private:
 
 	//The resource creation system.
 	ResourceCreationSystem _ResourceCreationSystem;
-
-	//Container for all animated model resources.
-	HashTable<HashString, AnimatedModelResource *RESTRICT> _AnimatedModelResources;
-
-	//Container for all animation resources.
-	HashTable<HashString, AnimationResource *RESTRICT> _AnimationResources;
 
 	//Container for all raw data resources.
 	HashTable<HashString, RawDataResource *RESTRICT> _RawDataResources;

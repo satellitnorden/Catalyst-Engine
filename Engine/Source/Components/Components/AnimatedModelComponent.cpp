@@ -28,9 +28,9 @@ void AnimatedModelComponent::CreateInstance(Entity *const RESTRICT entity, Compo
 	AnimatedModelInstanceData &instance_data{ _InstanceData.Back() };
 
 	//Copy data.
-	instance_data._AnimatedModelResource = _initialization_data->_AnimatedModelResource;
+	//instance_data._AnimatedModelResource = _initialization_data->_AnimatedModelResource;
 	//instance_data._MaterialResource = _initialization_data->_MaterialResource;
-	instance_data._CurrentAnimationResource = _initialization_data->_InitialAnimationResource;
+	//instance_data._CurrentAnimationResource = _initialization_data->_InitialAnimationResource;
 
 	//Create the animation data buffers and render data tables.
 	const uint8 number_of_framebuffers{ RenderingSystem::Instance->GetNumberOfFramebuffers() };
@@ -68,7 +68,7 @@ void AnimatedModelComponent::PostCreateInstance(Entity *const RESTRICT entity) N
 
 	//Calculate the world space axis aligned bounding box.
 	AxisAlignedBoundingBox3D local_axis_aligned_bounding_box;
-	RenderingUtilities::TransformAxisAlignedBoundingBox(animated_model_instance_data._AnimatedModelResource->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
+	//RenderingUtilities::TransformAxisAlignedBoundingBox(animated_model_instance_data._AnimatedModelResource->_ModelSpaceAxisAlignedBoundingBox, world_transform_instance_data._CurrentWorldTransform.ToLocalMatrix4x4(), &local_axis_aligned_bounding_box);
 	animated_model_instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Minimum);
 	animated_model_instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(world_transform_instance_data._CurrentWorldTransform.GetCell(), local_axis_aligned_bounding_box._Maximum);
 }

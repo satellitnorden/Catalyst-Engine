@@ -8,53 +8,6 @@
 #include <Systems/ResourceSystem.h>
 
 /*
-*	Creates an animated model.
-*/
-void ResourceCreationSystem::CreateAnimatedModel(AnimatedModelData *const RESTRICT data, AnimatedModelResource *const RESTRICT resource) NOEXCEPT
-{
-	//Copy the model space axis aligned bounding box.
-	resource->_ModelSpaceAxisAlignedBoundingBox = std::move(data->_AxisAlignedBoundingBox);
-
-	//Create the buffers.
-	{
-		const void *const RESTRICT dataChunks[]{ data->_Vertices.Data() };
-		const uint64 dataSizes[]{ sizeof(AnimatedVertex) * data->_Vertices.Size() };
-		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &resource->_VertexBuffer);
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &resource->_VertexBuffer);
-	}
-
-	{
-		const void *const RESTRICT dataChunks[]{ data->_Indices.Data() };
-		const uint64 dataSizes[]{ sizeof(uint32) * data->_Indices.Size() };
-		RenderingSystem::Instance->CreateBuffer(dataSizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &resource->_IndexBuffer);
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &resource->_IndexBuffer);
-	}
-
-	//Write the index count.
-	resource->_IndexCount = static_cast<uint32>(data->_Indices.Size());
-
-	//Create the bottom level acceleration structure.
-	RenderingSystem::Instance->CreateBottomLevelAccelerationStructure(	resource->_VertexBuffer,
-																		static_cast<uint32>(data->_Vertices.Size()),
-																		resource->_IndexBuffer,
-																		static_cast<uint32>(data->_Indices.Size()),
-																		BottomLevelAccelerationStructureFlag::NONE,
-																		&resource->_BottomLevelAccelerationStructure);
-
-	//Copy the skeleton.
-	resource->_Skeleton = data->_Skeleton;
-}
-
-/*
-*	Creates an animation
-*/
-void ResourceCreationSystem::CreateAnimation(AnimationData *const RESTRICT data, AnimationResource *const RESTRICT resource) NOEXCEPT
-{
-	//Just... Copy.
-	*resource = data->_Animation;
-}
-
-/*
 *	Creates a raw data.
 */
 void ResourceCreationSystem::CreateRawData(RawDataData *const RESTRICT data, RawDataResource *const RESTRICT resource) NOEXCEPT

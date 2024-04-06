@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/HashString.h>
+#include <Core/General/Pair.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>

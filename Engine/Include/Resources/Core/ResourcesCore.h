@@ -25,8 +25,6 @@ enum class ResourceLoadState : uint8
 namespace ResourceConstants
 {
 	//The type identifiers.
-	const extern HashString ANIMATED_MODEL_TYPE_IDENTIFIER;
-	const extern HashString ANIMATION_TYPE_IDENTIFIER;
 	const extern HashString RAW_DATA_TYPE_IDENTIFIER;
 	const extern HashString RENDER_PIPELINE_TYPE_IDENTIFIER;
 	const extern HashString SHADER_TYPE_IDENTIFIER;
