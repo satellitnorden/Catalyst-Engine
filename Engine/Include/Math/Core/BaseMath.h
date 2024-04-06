@@ -3,10 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//STL.
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 //Base math constants.
 namespace BaseMathConstants
 {
@@ -36,38 +32,6 @@ public:
 	FORCE_INLINE constexpr static NO_DISCARD TYPE Absolute(const TYPE value) NOEXCEPT
 	{
 		return value >= static_cast<TYPE>(0) ? value : value * static_cast<TYPE>(-1);
-	}
-
-	/*
-	*	Given a number, returns the arcsine of the number.
-	*/
-	FORCE_INLINE static NO_DISCARD float32 ArcCosine(const float32 number) NOEXCEPT
-	{
-		return acosf(number);
-	}
-
-	/*
-	*	Given a number, returns the arcsine of the number.
-	*/
-	FORCE_INLINE static NO_DISCARD float32 ArcSine(const float32 number) NOEXCEPT
-	{
-		return asinf(number);
-	}
-
-	/*
-	*	Given a number, returns the arctangent of the number.
-	*/
-	FORCE_INLINE static NO_DISCARD float32 ArcTangent(const float32 number) NOEXCEPT
-	{
-		return atanf(number);
-	}
-
-	/*
-	*	Given two numbers, returns the arctangent of the number.
-	*/
-	FORCE_INLINE static NO_DISCARD float32 ArcTangent(const float32 Y, const float32 X) NOEXCEPT
-	{
-		return atan2f(Y, X);
 	}
 
 	/*
@@ -145,35 +109,11 @@ public:
 	}
 
 	/*
-	*	Returns the cube root of the given number.
-	*/
-	FORCE_INLINE static NO_DISCARD float32 CubeRoot(const float32 number) NOEXCEPT
-	{
-		return std::cbrtf(number);
-	}
-
-	/*
 	*	Given a number in degrees, return it in radians.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float32 DegreesToRadians(const float32 number) NOEXCEPT
 	{
 		return number * BaseMathConstants::DEGREES_TO_RADIANS;
-	}
-
-	/*
-	*	Generates the exponential of a number.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD float32 Exponential(const float32 number) NOEXCEPT
-	{
-		return	1.0f
-				+ number
-				+ PowerOf(number, 2) * InverseFactorial(2)
-				+ PowerOf(number, 3) * InverseFactorial(3)
-				+ PowerOf(number, 4) * InverseFactorial(4)
-				+ PowerOf(number, 5) * InverseFactorial(5)
-				+ PowerOf(number, 6) * InverseFactorial(6)
-				+ PowerOf(number, 7) * InverseFactorial(7)
-				+ PowerOf(number, 3) * InverseFactorial(3);
 	}
 
 	/*
@@ -480,38 +420,6 @@ public:
 	}
 
 	/*
-	*	Given a number, returns the square root.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD float32 SquareRoot(float32 number) NOEXCEPT
-	{
-		if (number == 0.0f)
-		{
-			return 0.0f;
-		}
-
-		int32 exponent{ 0 };
-
-		number = frexp(number, &exponent);
-
-		if (exponent & 1)
-		{ 
-			--exponent;
-			number *= 2.0f;
-		}
-
-		float32 approximation{ (1.0f + number) * 0.5f };
-		float32 target{ 0.0f };
-
-		while (approximation != target)
-		{
-			target = approximation;
-			approximation = (approximation + number / approximation) * 0.5f;
-		}
-
-		return ldexp(approximation, exponent / 2);
-	}
-
-	/*
 	*	Given an angle, return the tangent of the angle.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float32 Tangent(const float32 angle) NOEXCEPT
@@ -539,5 +447,55 @@ public:
 
 		return temporary;
 	}
+
+	/*
+	*	Given a number, returns the arcsine of the number.
+	*/
+	static NO_DISCARD float32 ArcCosine(const float32 number) NOEXCEPT;
+
+	/*
+	*	Given a number, returns the arcsine of the number.
+	*/
+	static NO_DISCARD float32 ArcSine(const float32 number) NOEXCEPT;
+
+	/*
+	*	Given a number, returns the arctangent of the number.
+	*/
+	static NO_DISCARD float32 ArcTangent(const float32 number) NOEXCEPT;
+
+	/*
+	*	Given two numbers, returns the arctangent of the number.
+	*/
+	static NO_DISCARD float32 ArcTangent(const float32 Y, const float32 X) NOEXCEPT;
+
+	/*
+	*	Returns the cube root of the given number.
+	*/
+	static NO_DISCARD float32 CubeRoot(const float32 number) NOEXCEPT;
+
+	/*
+	*	Returns the error function of the given number.
+	*/
+	static NO_DISCARD float32 ErrorFunction(const float32 number) NOEXCEPT;
+
+	/*
+	*	Returns e (Euler's number) raised to the given power.
+	*/
+	static NO_DISCARD float32 Exponential(const float32 power) NOEXCEPT;
+
+	/*
+	*	Returns the natural (base e) logarithm of the given number.
+	*/
+	static NO_DISCARD float32 Logarithm(const float32 number) NOEXCEPT;
+
+	/*
+	*	Given a number, returns the hyperbolic tangent of the number.
+	*/
+	static NO_DISCARD float32 HyperbolicTangent(const float32 number) NOEXCEPT;
+
+	/*
+	*	Given a number, returns the square root.
+	*/
+	static NO_DISCARD float32 SquareRoot(float32 number) NOEXCEPT;
 
 };

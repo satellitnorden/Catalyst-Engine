@@ -380,14 +380,14 @@ public:
 
 			case Variation::VARIATION_2:
 			{
-				*sample = tanh(*sample);
+				*sample = BaseMath::HyperbolicTangent(*sample);
 
 				break;
 			}
 
 			case Variation::VARIATION_3:
 			{
-				*sample = erf(SQUARE_ROOT_OF_PI_DIVIDED_BY_TWO * *sample);
+				*sample = BaseMath::ErrorFunction(SQUARE_ROOT_OF_PI_DIVIDED_BY_TWO * *sample);
 
 				break;
 			}

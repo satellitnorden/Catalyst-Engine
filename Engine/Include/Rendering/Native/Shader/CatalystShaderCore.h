@@ -90,10 +90,22 @@
 	constexpr TYPE NAME{ VALUE };
 
 	/*
+	*	Calls the absolute function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_ABSOLUTE(ARGUMENT) \
+	BaseMath::Absolute(ARGUMENT)
+
+	/*
 	*	Calls the clamp function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_CLAMP(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3) \
 	BaseMath::Clamp(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3)
+
+	/*
+	*	Calls the cosine function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_COSINE(ARGUMENT) \
+	BaseMath::Cosine(ARGUMENT)
 
 	/*
 	*	Calls the cross product function.
@@ -279,10 +291,22 @@
 	const TYPE NAME = VALUE;
 
 	/*
+	*	Calls the absolute function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_ABSOLUTE(ARGUMENT) \
+	abs(ARGUMENT)
+
+	/*
 	*	Calls the clamp function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_CLAMP(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3) \
 	clamp(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3)
+
+	/*
+	*	Calls the cosine function.
+	*/
+	#define CATALYST_SHADER_FUNCTION_COSINE(ARGUMENT) \
+	cos(ARGUMENT)
 
 	/*
 	*	Calls the cross product function.
@@ -489,17 +513,17 @@ CATALYST_SHADER_FUNCTION_PREFIX vec3 CatalystShaderGenerateSpecularLobeDirection
 	float a = roughness*roughness;
 
 	float phi = 2.0f * PI_VALUE * hammersley_sequence_sample.x;
-	float cosTheta = sqrt((1.0f - hammersley_sequence_sample.y) / (1.0f + (a*a - 1.0f) * hammersley_sequence_sample.y));
-	float sinTheta = sqrt(1.0f - cosTheta*cosTheta);
+	float cosTheta = CATALYST_SHADER_FUNCTION_SQUAREROOT((1.0f - hammersley_sequence_sample.y) / (1.0f + (a*a - 1.0f) * hammersley_sequence_sample.y));
+	float sinTheta = CATALYST_SHADER_FUNCTION_SQUAREROOT(1.0f - cosTheta*cosTheta);
 
 	// from spherical coordinates to cartesian coordinates
 	vec3 H;
-	H.x = cos(phi) * sinTheta;
-	H.y = sin(phi) * sinTheta;
+	H.x = CATALYST_SHADER_FUNCTION_COSINE(phi) * sinTheta;
+	H.y = CATALYST_SHADER_FUNCTION_SINE(phi) * sinTheta;
 	H.z = cosTheta;
 
 	// from tangent-space vector to world-space sample vector
-	vec3 up        = abs(orientation_vector.z) < 0.999f ? vec3(0.0f, 0.0f, 1.0f) : vec3(1.0f, 0.0f, 0.0f);
+	vec3 up        = CATALYST_SHADER_FUNCTION_ABSOLUTE(orientation_vector.z) < 0.999f ? vec3(0.0f, 0.0f, 1.0f) : vec3(1.0f, 0.0f, 0.0f);
 	vec3 tangent   = CATALYST_SHADER_FUNCTION_NORMALIZE(CATALYST_SHADER_FUNCTION_CROSS_PRODUCT(up, orientation_vector));
 	vec3 bitangent = CATALYST_SHADER_FUNCTION_CROSS_PRODUCT(orientation_vector, tangent);
 

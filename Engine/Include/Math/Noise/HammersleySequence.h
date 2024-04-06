@@ -23,7 +23,7 @@ public:
 	/*
 	*	Calculates the cosinus hemisphere coordinate given the parameters.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateCoordinateHemisphereCosinus(const uint32 index, const uint32 maximum) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Vector3<float32> CalculateCoordinateHemisphereCosinus(const uint32 index, const uint32 maximum) NOEXCEPT
 	{
 		//Calculate the 2D coordinate.
 		const Vector2<float32> coordinate{ CalculateCoordinate2D(index, maximum) };
@@ -40,7 +40,7 @@ public:
 	/*
 	*	Calculates the uniform hemisphere coordinate given the parameters.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateCoordinateHemisphereUniform(const uint32 index, const uint32 maximum) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Vector3<float32> CalculateCoordinateHemisphereUniform(const uint32 index, const uint32 maximum) NOEXCEPT
 	{
 		//Calculate the 2D coordinate.
 		const Vector2<float32> coordinate{ CalculateCoordinate2D(index, maximum) };

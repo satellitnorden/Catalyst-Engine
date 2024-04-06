@@ -61,7 +61,7 @@ public:
 	/*
 	*	Calculates the cosinus hemisphere vector given a coordinate.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateHemisphereCosinus(const Vector2<float32> &coordinate) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Vector3<float32> CalculateHemisphereCosinus(const Vector2<float32> &coordinate) NOEXCEPT
 	{
 		//Map the 2D coordinate onto the hemisphere.
 		const float32 phi{ coordinate._Y * 2.0f * BaseMathConstants::PI };
@@ -75,7 +75,7 @@ public:
 	/*
 	*	Calculates the uniform hemisphere vector given a coordinate.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateHemisphereUniform(const Vector2<float32> &coordinate) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Vector3<float32> CalculateHemisphereUniform(const Vector2<float32> &coordinate) NOEXCEPT
 	{
 		//Map the 2D coordinate onto the hemisphere.
 		const float32 phi{ coordinate._Y * 2.0f * BaseMathConstants::PI };
