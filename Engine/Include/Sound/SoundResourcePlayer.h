@@ -63,9 +63,9 @@ public:
     FORCE_INLINE void SetPan(const float32 new_pan) NOEXCEPT
     {
         //Define constants.
-        const float32 angle{ CatalystBaseMath::DegreesToRadians(45.0f) * new_pan };
-        const float32 angle_sine{ CatalystBaseMath::Sine(angle) };
-        const float32 angle_cosine{ CatalystBaseMath::Cosine(angle) };
+        const float32 angle{ BaseMath::DegreesToRadians(45.0f) * new_pan };
+        const float32 angle_sine{ BaseMath::Sine(angle) };
+        const float32 angle_cosine{ BaseMath::Cosine(angle) };
 
         _LeftPanCoefficient = angle_cosine - angle_sine;
         _RightPanCoefficient = angle_cosine + angle_sine;
@@ -150,7 +150,7 @@ public:
             const int16 first_sample{ _SoundResource->_Samples[actual_channel_index][_CurrentSamples[channel_index]] };
             const int16 second_sample{ _SoundResource->_Samples[actual_channel_index][_CurrentSamples[channel_index] < static_cast<int64>(_SoundResource->_Samples[actual_channel_index].Size() - 1) ? _CurrentSamples[channel_index] + 1 : _CurrentSamples[channel_index]] };
 
-            float32 interpolated_sample{ CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), _CurrentSampleFractions[channel_index]) / static_cast<float32>(INT16_MAXIMUM) };
+            float32 interpolated_sample{ BaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), _CurrentSampleFractions[channel_index]) / static_cast<float32>(INT16_MAXIMUM) };
 
             //Apply the pan.
             interpolated_sample *= channel_index == 0 ? _LeftPanCoefficient : _RightPanCoefficient;

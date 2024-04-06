@@ -5,7 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 #include <Math/General/Vector.h>
 
 //Rendering.
@@ -235,14 +235,14 @@ public:
 		const TYPE &upper_right_value{ _Data[(upper_right_integer_coordinate._Y * _Width) + upper_right_integer_coordinate._X] };
 
 		//Calculate the blend values.
-		const float32 horizontal_blend{ CatalystBaseMath::Fractional(lower_left_coordinate._X * static_cast<float32>(_Width)) };
-		const float32 vertical_blend{ CatalystBaseMath::Fractional(lower_left_coordinate._Y * static_cast<float32>(_Height)) };
+		const float32 horizontal_blend{ BaseMath::Fractional(lower_left_coordinate._X * static_cast<float32>(_Width)) };
+		const float32 vertical_blend{ BaseMath::Fractional(lower_left_coordinate._Y * static_cast<float32>(_Height)) };
 
 		//Perform the blends.
-		const TYPE blend_1{ CatalystBaseMath::LinearlyInterpolate<TYPE>(lower_left_value, lower_right_value, horizontal_blend) };
-		const TYPE blend_2{ CatalystBaseMath::LinearlyInterpolate<TYPE>(upper_left_value, upper_right_value, horizontal_blend) };
+		const TYPE blend_1{ BaseMath::LinearlyInterpolate<TYPE>(lower_left_value, lower_right_value, horizontal_blend) };
+		const TYPE blend_2{ BaseMath::LinearlyInterpolate<TYPE>(upper_left_value, upper_right_value, horizontal_blend) };
 
-		return static_cast<TYPE>(CatalystBaseMath::LinearlyInterpolate<TYPE>(blend_1, blend_2, vertical_blend));
+		return static_cast<TYPE>(BaseMath::LinearlyInterpolate<TYPE>(blend_1, blend_2, vertical_blend));
 	}
 
 	/*
@@ -299,16 +299,16 @@ private:
 		{
 			case AddressMode::CLAMP_TO_EDGE:
 			{
-				coordinate->_X = CatalystBaseMath::Clamp<float32>(coordinate->_X, 0.0f, 1.0f - 1.0f / static_cast<float32>(_Width));
-				coordinate->_Y = CatalystBaseMath::Clamp<float32>(coordinate->_Y, 0.0f, 1.0f - 1.0f / static_cast<float32>(_Height));
+				coordinate->_X = BaseMath::Clamp<float32>(coordinate->_X, 0.0f, 1.0f - 1.0f / static_cast<float32>(_Width));
+				coordinate->_Y = BaseMath::Clamp<float32>(coordinate->_Y, 0.0f, 1.0f - 1.0f / static_cast<float32>(_Height));
 
 				break;
 			}
 
 			case AddressMode::REPEAT:
 			{
-				coordinate->_X = CatalystBaseMath::Clamp<float32>(CatalystBaseMath::Fractional(coordinate->_X), 0.0f, 1.0f - 1.0f / static_cast<float32>(_Width));
-				coordinate->_Y = CatalystBaseMath::Clamp<float32>(CatalystBaseMath::Fractional(coordinate->_Y), 0.0f, 1.0f - 1.0f / static_cast<float32>(_Height));
+				coordinate->_X = BaseMath::Clamp<float32>(BaseMath::Fractional(coordinate->_X), 0.0f, 1.0f - 1.0f / static_cast<float32>(_Width));
+				coordinate->_Y = BaseMath::Clamp<float32>(BaseMath::Fractional(coordinate->_Y), 0.0f, 1.0f - 1.0f / static_cast<float32>(_Height));
 
 				break;
 			}
@@ -336,29 +336,29 @@ FORCE_INLINE NO_DISCARD Vector4<float32> Sample(const Texture2D<Vector4<byte>> &
 	//Assume REPEAT address mode.
 	Vector2<float32> actual_coordinate;
 
-	actual_coordinate._X = CatalystBaseMath::Fractional(coordinate._X);
-	actual_coordinate._Y = CatalystBaseMath::Fractional(coordinate._Y);
+	actual_coordinate._X = BaseMath::Fractional(coordinate._X);
+	actual_coordinate._Y = BaseMath::Fractional(coordinate._Y);
 
 	//Calculate the coordinates.
 	Vector2<uint32> lower_left_coordinate
 	{
-		CatalystBaseMath::Minimum<uint32>(static_cast<uint32>(actual_coordinate._X * static_cast<float32>(width)), width - 1),
-		CatalystBaseMath::Minimum<uint32>(static_cast<uint32>(actual_coordinate._Y * static_cast<float32>(height)), height - 1)
+		BaseMath::Minimum<uint32>(static_cast<uint32>(actual_coordinate._X * static_cast<float32>(width)), width - 1),
+		BaseMath::Minimum<uint32>(static_cast<uint32>(actual_coordinate._Y * static_cast<float32>(height)), height - 1)
 	};
 	Vector2<uint32> upper_left_coordinate
 	{
 		lower_left_coordinate._X,
-		CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1)
+		BaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1)
 	};
 	Vector2<uint32> lower_right_coordinate
 	{
-		CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1),
+		BaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1),
 		lower_left_coordinate._Y
 	};
 	Vector2<uint32> upper_right_coordinate
 	{
-		CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1),
-		CatalystBaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1)
+		BaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1),
+		BaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1)
 	};
 
 	//Sample the values.
@@ -407,12 +407,12 @@ FORCE_INLINE NO_DISCARD Vector4<float32> Sample(const Texture2D<Vector4<byte>> &
 	}
 
 	//Calculate the blend values.
-	const float32 horizontal_blend{ CatalystBaseMath::Fractional(coordinate._X * static_cast<float32>(width)) };
-	const float32 vertical_blend{ CatalystBaseMath::Fractional(coordinate._Y * static_cast<float32>(height)) };
+	const float32 horizontal_blend{ BaseMath::Fractional(coordinate._X * static_cast<float32>(width)) };
+	const float32 vertical_blend{ BaseMath::Fractional(coordinate._Y * static_cast<float32>(height)) };
 
 	//Perform the blends.
-	const Vector4<float32> blend_1{ CatalystBaseMath::LinearlyInterpolate<Vector4<float32>>(lower_left_value, lower_right_value, horizontal_blend) };
-	const Vector4<float32> blend_2{ CatalystBaseMath::LinearlyInterpolate<Vector4<float32>>(upper_left_value, upper_right_value, horizontal_blend) };
+	const Vector4<float32> blend_1{ BaseMath::LinearlyInterpolate<Vector4<float32>>(lower_left_value, lower_right_value, horizontal_blend) };
+	const Vector4<float32> blend_2{ BaseMath::LinearlyInterpolate<Vector4<float32>>(upper_left_value, upper_right_value, horizontal_blend) };
 
-	return static_cast<Vector4<float32>>(CatalystBaseMath::LinearlyInterpolate<Vector4<float32>>(blend_1, blend_2, vertical_blend));
+	return static_cast<Vector4<float32>>(BaseMath::LinearlyInterpolate<Vector4<float32>>(blend_1, blend_2, vertical_blend));
 }

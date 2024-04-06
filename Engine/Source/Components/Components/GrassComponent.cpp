@@ -73,7 +73,7 @@ void GrassComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const u
 					const float32 distance{ Vector3<float32>::Length(camera_local_position - closest_position) };
 
 					//Calculate the level of detail.
-					instance_data._LevelOfDetail = CatalystBaseMath::Minimum<uint8>(static_cast<uint8>(distance / GrassConstants::LEVEL_OF_DETAIL_DISTANCE_FACTOR), GrassConstants::HIGHEST_LEVEL_OF_DETAIL);
+					instance_data._LevelOfDetail = BaseMath::Minimum<uint8>(static_cast<uint8>(distance / GrassConstants::LEVEL_OF_DETAIL_DISTANCE_FACTOR), GrassConstants::HIGHEST_LEVEL_OF_DETAIL);
 				}
 			}
 
@@ -114,8 +114,8 @@ void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 
 	for (const GrassInstance &grass_instance : _initialization_data->_GrassInstances)
 	{
-		minimum = Vector3<float32>::Minimum(minimum, grass_instance._Position);
-		maximum = Vector3<float32>::Maximum(maximum, grass_instance._Position);
+		minimum = BaseMath::Minimum(minimum, grass_instance._Position);
+		maximum = BaseMath::Maximum(maximum, grass_instance._Position);
 	}
 
 	instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum.SetLocalPosition(minimum);
@@ -138,9 +138,9 @@ void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 
 		const Vector3<float32> normalized_position
 		{
-			CatalystBaseMath::Scale(grass_instance._Position._X, minimum._X, maximum._X, 0.0f, 1.0f),
-			CatalystBaseMath::Scale(grass_instance._Position._Y, minimum._Y, maximum._Y, 0.0f, 1.0f),
-			CatalystBaseMath::Scale(grass_instance._Position._Z, minimum._Z, maximum._Z, 0.0f, 1.0f)
+			BaseMath::Scale(grass_instance._Position._X, minimum._X, maximum._X, 0.0f, 1.0f),
+			BaseMath::Scale(grass_instance._Position._Y, minimum._Y, maximum._Y, 0.0f, 1.0f),
+			BaseMath::Scale(grass_instance._Position._Z, minimum._Z, maximum._Z, 0.0f, 1.0f)
 		};
 
 		const Vector3<uint16> quantized_position
@@ -150,7 +150,7 @@ void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 			static_cast<uint16>(normalized_position._Z * static_cast<float32>(UINT16_MAXIMUM))
 		};
 
-		const float32 normalized_rotation{ CatalystBaseMath::Scale(grass_instance._Rotation, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI, 0.0f, 1.0f) };
+		const float32 normalized_rotation{ BaseMath::Scale(grass_instance._Rotation, -BaseMathConstants::PI, BaseMathConstants::PI, 0.0f, 1.0f) };
 
 		const uint16 quantized_rotation{ static_cast<uint16>(normalized_rotation * static_cast<float32>(UINT16_MAXIMUM)) };
 

@@ -77,9 +77,9 @@ namespace EntitySerialization
 						nlohmann::json &rotation_entry{ component_entry[editable_field._Name] };
 
 						//Always store in degrees as this might be manually manipulated via text.
-						rotation_entry["Roll"] = CatalystBaseMath::RadiansToDegrees(data->_Roll);
-						rotation_entry["Yaw"] = CatalystBaseMath::RadiansToDegrees(data->_Yaw);
-						rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(data->_Pitch);
+						rotation_entry["Roll"] = BaseMath::RadiansToDegrees(data->_Roll);
+						rotation_entry["Yaw"] = BaseMath::RadiansToDegrees(data->_Yaw);
+						rotation_entry["Pitch"] = BaseMath::RadiansToDegrees(data->_Pitch);
 
 						break;
 					}
@@ -285,9 +285,9 @@ namespace EntitySerialization
 							{
 								EulerAngles euler_angles;
 
-								euler_angles._Roll = CatalystBaseMath::DegreesToRadians(editable_field_entry["Roll"]);
-								euler_angles._Yaw = CatalystBaseMath::DegreesToRadians(editable_field_entry["Yaw"]);
-								euler_angles._Pitch = CatalystBaseMath::DegreesToRadians(editable_field_entry["Pitch"]);
+								euler_angles._Roll = BaseMath::DegreesToRadians(editable_field_entry["Roll"]);
+								euler_angles._Yaw = BaseMath::DegreesToRadians(editable_field_entry["Yaw"]);
+								euler_angles._Pitch = BaseMath::DegreesToRadians(editable_field_entry["Pitch"]);
 
 								stream_archive->Write(&euler_angles, sizeof(EulerAngles));
 

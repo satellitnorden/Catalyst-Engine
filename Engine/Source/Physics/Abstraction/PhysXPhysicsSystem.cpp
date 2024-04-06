@@ -332,7 +332,7 @@ void PhysicsSystem::SubCreateHeightFieldActor
 		{
 			for (uint32 X{ 0 }; X < height_field.GetResolution(); ++X)
 			{
-				maximum_height = CatalystBaseMath::Maximum<float32>(maximum_height, height_field.At(X, Y));
+				maximum_height = BaseMath::Maximum<float32>(maximum_height, height_field.At(X, Y));
 			}
 		}
 

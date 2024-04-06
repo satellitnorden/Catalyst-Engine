@@ -34,7 +34,7 @@ public:
 	*/
 	FORCE_INLINE void CorrectForAspectRatio() NOEXCEPT
 	{
-		const Vector2<float32> center{ CatalystBaseMath::LinearlyInterpolate(_Minimum, _Maximum, 0.5f) };
+		const Vector2<float32> center{ BaseMath::LinearlyInterpolate(_Minimum, _Maximum, 0.5f) };
 		Vector2<float32> half_extents{ (_Maximum - _Minimum) * 0.5f };
 
 		half_extents._X /= RenderingSystem::Instance->GetScaledAspectRatio();

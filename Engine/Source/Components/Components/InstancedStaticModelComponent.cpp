@@ -100,7 +100,7 @@ void InstancedStaticModelComponent::PreProcess(ComponentInitializationData *cons
 
 	for (uint8 i{ 0 }; i < 3; ++i)
 	{
-		_initialization_data->_PreprocessedData._Cell[i] = CatalystBaseMath::Round<int32>(average_cell[i]);
+		_initialization_data->_PreprocessedData._Cell[i] = BaseMath::Round<int32>(average_cell[i]);
 	}
 
 	//Create the transoformations buffer. Calculate the world space axis aligned bounding box in the process.

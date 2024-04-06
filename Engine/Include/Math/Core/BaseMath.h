@@ -7,8 +7,8 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-//Catalyst base math constants.
-namespace CatalystBaseMathConstants
+//Base math constants.
+namespace BaseMathConstants
 {
 	constexpr float32 DEGREES_TO_RADIANS{ 0.017'453f };
 	constexpr float32 PI{ 3.141'592f };
@@ -24,7 +24,7 @@ namespace CatalystBaseMathConstants
 	constexpr float32 RADIANS_TO_DEGREES{ 57.295'779f };
 }
 
-class CatalystBaseMath final
+class BaseMath final
 {
 
 public:
@@ -123,7 +123,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float32 Cosine(const float32 angle) NOEXCEPT
 	{
-		const float32 temporary{ WrapAround(angle, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
+		const float32 temporary{ WrapAround(angle, -BaseMathConstants::PI, BaseMathConstants::PI) };
 
 		return	1.0f
 				- PowerOf(temporary, 2) * InverseFactorial(2)
@@ -157,7 +157,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float32 DegreesToRadians(const float32 number) NOEXCEPT
 	{
-		return number * CatalystBaseMathConstants::DEGREES_TO_RADIANS;
+		return number * BaseMathConstants::DEGREES_TO_RADIANS;
 	}
 
 	/*
@@ -353,7 +353,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float32 RadiansToDegrees(const float32 number) NOEXCEPT
 	{
-		return number * CatalystBaseMathConstants::RADIANS_TO_DEGREES;
+		return number * BaseMathConstants::RADIANS_TO_DEGREES;
 	}
 
 	/*
@@ -441,7 +441,7 @@ public:
 		*	Due to the implementation of Sine/Cosine (using Taylor Series), it's slightly cheaper
 		*	to redirect Sine to Cosine since it uses slighlty lower exponents for PowerOf().
 		*/
-		return Cosine(angle - CatalystBaseMathConstants::HALF_PI);
+		return Cosine(angle - BaseMathConstants::HALF_PI);
 	}
 
 	/*

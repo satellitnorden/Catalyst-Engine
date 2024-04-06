@@ -381,9 +381,9 @@ public:
 				//Write to the final texture.
 				Vector4<float32>& final_sample{ RenderingReferenceSystemData::_FinalTexture.At(X, *Y) };
 
-				final_sample._R = CatalystBaseMath::Clamp<float32>(final_radiance._R, 0.0f, 1.0f);
-				final_sample._G = CatalystBaseMath::Clamp<float32>(final_radiance._G, 0.0f, 1.0f);
-				final_sample._B = CatalystBaseMath::Clamp<float32>(final_radiance._B, 0.0f, 1.0f);
+				final_sample._R = BaseMath::Clamp<float32>(final_radiance._R, 0.0f, 1.0f);
+				final_sample._G = BaseMath::Clamp<float32>(final_radiance._G, 0.0f, 1.0f);
+				final_sample._B = BaseMath::Clamp<float32>(final_radiance._B, 0.0f, 1.0f);
 				final_sample._A = 1.0f;
 
 				//Update the current number of pixels.

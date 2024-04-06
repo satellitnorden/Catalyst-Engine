@@ -708,7 +708,7 @@ NO_DISCARD Vector2<float32> UserInterfaceScene::GetNormalizedCoordinateCenterOfC
 	const Vector2<float32> maximum{ static_cast<float32>(cell._X + 1) * _HorizontalSubdivisionReciprocal,
 									static_cast<float32>(cell._Y + 1) * _VerticalSubdivisionReciprocal };
 
-	return CatalystBaseMath::LinearlyInterpolate(minimum, maximum, 0.5f);
+	return BaseMath::LinearlyInterpolate(minimum, maximum, 0.5f);
 }
 
 /*

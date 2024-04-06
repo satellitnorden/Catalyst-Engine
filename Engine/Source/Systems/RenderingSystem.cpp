@@ -11,7 +11,6 @@
 #include <Entities/Core/Entity.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
 #include <Math/Core/CatalystRandomMath.h>
 #include <Math/Noise/HammersleySequence.h>
 

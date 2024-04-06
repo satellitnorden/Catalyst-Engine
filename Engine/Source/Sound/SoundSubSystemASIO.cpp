@@ -437,8 +437,8 @@ void SoundSubSystemASIO::StartStream() NOEXCEPT
 
 		for (const OpenedInputStream *const RESTRICT opened_input_stream : _OpenedInputStreams)
 		{
-			first_input_channel = CatalystBaseMath::Minimum<uint32>(first_input_channel, opened_input_stream->_StartChannelIndex);
-			last_input_channel = CatalystBaseMath::Maximum<uint32>(last_input_channel, opened_input_stream->_StartChannelIndex + opened_input_stream->_NumberOfChannels);
+			first_input_channel = BaseMath::Minimum<uint32>(first_input_channel, opened_input_stream->_StartChannelIndex);
+			last_input_channel = BaseMath::Maximum<uint32>(last_input_channel, opened_input_stream->_StartChannelIndex + opened_input_stream->_NumberOfChannels);
 		}
 
 		if (first_input_channel != UINT32_MAXIMUM)

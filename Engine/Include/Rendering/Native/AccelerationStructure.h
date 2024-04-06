@@ -634,9 +634,9 @@ private:
 				//Check first if this box is close enough.
 				const Vector3<float32> closest_point
 				{
-					CatalystBaseMath::Clamp(ray._Origin._X, node._AxisAlignedBoundingBoxes[i]._Minimum._X, node._AxisAlignedBoundingBoxes[i]._Maximum._X),
-					CatalystBaseMath::Clamp(ray._Origin._Y, node._AxisAlignedBoundingBoxes[i]._Minimum._Y, node._AxisAlignedBoundingBoxes[i]._Maximum._Y),
-					CatalystBaseMath::Clamp(ray._Origin._Z, node._AxisAlignedBoundingBoxes[i]._Minimum._Z, node._AxisAlignedBoundingBoxes[i]._Maximum._Z)
+					BaseMath::Clamp(ray._Origin._X, node._AxisAlignedBoundingBoxes[i]._Minimum._X, node._AxisAlignedBoundingBoxes[i]._Maximum._X),
+					BaseMath::Clamp(ray._Origin._Y, node._AxisAlignedBoundingBoxes[i]._Minimum._Y, node._AxisAlignedBoundingBoxes[i]._Maximum._Y),
+					BaseMath::Clamp(ray._Origin._Z, node._AxisAlignedBoundingBoxes[i]._Minimum._Z, node._AxisAlignedBoundingBoxes[i]._Maximum._Z)
 				};
 
 				if (Vector3<float32>::LengthSquared(ray._Origin - closest_point) >= maximum_distance_squared)
@@ -716,9 +716,9 @@ private:
 				//Check first if this box is close enough.
 				const Vector3<float32> closest_point
 				{
-					CatalystBaseMath::Clamp(ray._Origin._X, node._AxisAlignedBoundingBoxes[i]._Minimum._X, node._AxisAlignedBoundingBoxes[i]._Maximum._X),
-					CatalystBaseMath::Clamp(ray._Origin._Y, node._AxisAlignedBoundingBoxes[i]._Minimum._Y, node._AxisAlignedBoundingBoxes[i]._Maximum._Y),
-					CatalystBaseMath::Clamp(ray._Origin._Z, node._AxisAlignedBoundingBoxes[i]._Minimum._Z, node._AxisAlignedBoundingBoxes[i]._Maximum._Z)
+					BaseMath::Clamp(ray._Origin._X, node._AxisAlignedBoundingBoxes[i]._Minimum._X, node._AxisAlignedBoundingBoxes[i]._Maximum._X),
+					BaseMath::Clamp(ray._Origin._Y, node._AxisAlignedBoundingBoxes[i]._Minimum._Y, node._AxisAlignedBoundingBoxes[i]._Maximum._Y),
+					BaseMath::Clamp(ray._Origin._Z, node._AxisAlignedBoundingBoxes[i]._Minimum._Z, node._AxisAlignedBoundingBoxes[i]._Maximum._Z)
 				};
 
 				if (Vector3<float32>::LengthSquared(ray._Origin - closest_point) >= maximum_distance_squared)

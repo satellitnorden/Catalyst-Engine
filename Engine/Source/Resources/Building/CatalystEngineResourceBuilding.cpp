@@ -1589,14 +1589,14 @@ void CatalystEngineResourceBuilding::BuildCloudTexture() NOEXCEPT
 					for (const Vector3<float>& point : points[i])
 					{
 						const float distance{ Vector3<float>::Length(position - point) };
-						closest_distance = CatalystBaseMath::Minimum<float>(closest_distance, distance);
+						closest_distance = BaseMath::Minimum<float>(closest_distance, distance);
 					}
 
 					//Write to the texture.
 					temporary_texture.At(X, Y, Z)[i] = closest_distance;
 
 					//Update the longest distance.
-					longest_distances[i] = CatalystBaseMath::Maximum<float>(longest_distances[i], closest_distance);
+					longest_distances[i] = BaseMath::Maximum<float>(longest_distances[i], closest_distance);
 				}
 			}
 		}

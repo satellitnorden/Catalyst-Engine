@@ -3,7 +3,7 @@
 #include <Rendering/Abstraction/Vulkan/VulkanSwapChain.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
@@ -128,8 +128,8 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 		CatalystPlatform::GetDefaultResolution(&resolution._Width, &resolution._Height);
 	}
 
-	_SwapExtent.width = CatalystBaseMath::Clamp<uint32>(resolution._Width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
-	_SwapExtent.height = CatalystBaseMath::Clamp<uint32>(resolution._Height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
+	_SwapExtent.width = BaseMath::Clamp<uint32>(resolution._Width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
+	_SwapExtent.height = BaseMath::Clamp<uint32>(resolution._Height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
 }
 
 /*
@@ -146,7 +146,7 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapCh
 	const VkSurfaceFormatKHR &surface_format{ VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat() };
 	const VkPresentModeKHR &present_mode{ VulkanInterface::Instance->GetPhysicalDevice().GetPresentMode() };
 
-	uint32 minimumImageCount = CatalystBaseMath::Maximum<uint32>(3, surface_capabilities.minImageCount);
+	uint32 minimumImageCount = BaseMath::Maximum<uint32>(3, surface_capabilities.minImageCount);
 
 	if (surface_capabilities.maxImageCount > 0 && minimumImageCount > surface_capabilities.maxImageCount)
 		minimumImageCount = surface_capabilities.maxImageCount;

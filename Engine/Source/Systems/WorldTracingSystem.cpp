@@ -398,7 +398,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray& ray) NOEXCEPT
 			const SkyGradient &sky_gradient{ WorldSystem::Instance->GetSkySystem()->GetSkyGradient() };
 			const float32 up_factor{ Vector3<float32>::DotProduct(ray._Direction, Vector3<float32>(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f };
 
-			return CatalystBaseMath::LinearlyInterpolate(sky_gradient._LowerSkyColor, sky_gradient._UpperSkyColor, up_factor) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
+			return BaseMath::LinearlyInterpolate(sky_gradient._LowerSkyColor, sky_gradient._UpperSkyColor, up_factor) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
 		}
 
 		case SkySystem::SkyMode::TEXTURE:
@@ -603,7 +603,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 
 				Vector3<float32> specular_direction = Vector3<float32>::Reflect(ray._Direction, surface_description._GeometryNormal);
 
-				indirect_lighting_direction = Vector3<float32>::Normalize(CatalystBaseMath::LinearlyInterpolate(specular_direction, diffuse_direction, surface_description._Roughness));
+				indirect_lighting_direction = Vector3<float32>::Normalize(BaseMath::LinearlyInterpolate(specular_direction, diffuse_direction, surface_description._Roughness));
 			}
 
 			//Construct the indirect ray.

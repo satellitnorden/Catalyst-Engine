@@ -1094,7 +1094,7 @@ void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) 
 					const int16 first_sample{ channel[current_sample] };
 					const int16 second_sample{ channel[current_sample < channel.Size() - 1 ? current_sample + 1 : current_sample] };
 
-					const int16 interpolated_sample{ CatalystBaseMath::Round<int16>(CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), current_sample_fraction)) };
+					const int16 interpolated_sample{ BaseMath::Round<int16>(BaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), current_sample_fraction)) };
 				
 					resource._Samples[i].Emplace(interpolated_sample);
 

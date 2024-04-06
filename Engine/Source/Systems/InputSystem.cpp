@@ -79,7 +79,7 @@ void InputSystem::InputUpdate() NOEXCEPT
 	{
 		PROFILING_SCOPE("InputSystem_InputUpdate_UpdateGamepadStates");
 
-		for (uint8 i{ 0 }; i < CatalystBaseMath::Minimum<uint8>(_NumberOfSupportedGamepads, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS); ++i)
+		for (uint8 i{ 0 }; i < BaseMath::Minimum<uint8>(_NumberOfSupportedGamepads, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS); ++i)
 		{
 			UpdateGamepadState(i);
 		}

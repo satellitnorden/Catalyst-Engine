@@ -153,7 +153,7 @@ void ImGuiSystem::OnInputAvailable() NOEXCEPT
 
 	io.DisplaySize.x = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width);
 	io.DisplaySize.y = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
-	io.DeltaTime = CatalystBaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetDeltaTime(), FLOAT32_EPSILON);
+	io.DeltaTime = BaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetDeltaTime(), FLOAT32_EPSILON);
 	io.IniFilename = nullptr;
 	io.MousePos = ImVec2(mouse_state->_CurrentX * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), (1.0f - mouse_state->_CurrentY) * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
 	io.MouseDown[0] = mouse_state->_Left == ButtonState::PRESSED || mouse_state->_Left == ButtonState::PRESSED_HELD;

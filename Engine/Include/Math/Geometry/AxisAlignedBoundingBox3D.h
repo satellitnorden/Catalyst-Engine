@@ -40,9 +40,9 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> GetClosestPointInside(const AxisAlignedBoundingBox3D &box, const Vector3<float32> &position) NOEXCEPT
 	{
-		return Vector3<float32>(CatalystBaseMath::Clamp<float32>(position._X, box._Minimum._X, box._Maximum._X),
-								CatalystBaseMath::Clamp<float32>(position._Y, box._Minimum._Y, box._Maximum._Y),
-								CatalystBaseMath::Clamp<float32>(position._Z, box._Minimum._Z, box._Maximum._Z));
+		return Vector3<float32>(BaseMath::Clamp<float32>(position._X, box._Minimum._X, box._Maximum._X),
+								BaseMath::Clamp<float32>(position._Y, box._Minimum._Y, box._Maximum._Y),
+								BaseMath::Clamp<float32>(position._Z, box._Minimum._Z, box._Maximum._Z));
 	}
 
 	/*
@@ -50,8 +50,8 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD AxisAlignedBoundingBox3D Union(const AxisAlignedBoundingBox3D &first, const AxisAlignedBoundingBox3D &second) NOEXCEPT
 	{
-		return AxisAlignedBoundingBox3D(Vector3<float32>::Minimum(first._Minimum, second._Minimum),
-										Vector3<float32>::Maximum(first._Maximum, second._Maximum));
+		return AxisAlignedBoundingBox3D(BaseMath::Minimum(first._Minimum, second._Minimum),
+										BaseMath::Maximum(first._Maximum, second._Maximum));
 	}
 
 	/*
@@ -142,8 +142,8 @@ public:
 	*/
 	FORCE_INLINE constexpr void Expand(const Vector3<float32> &position) NOEXCEPT
 	{
-		_Minimum = Vector3<float32>::Minimum(_Minimum, position);
-		_Maximum = Vector3<float32>::Maximum(_Maximum, position);
+		_Minimum = BaseMath::Minimum(_Minimum, position);
+		_Maximum = BaseMath::Maximum(_Maximum, position);
 	}
 
 	/*

@@ -69,14 +69,14 @@ void ComponentGenerator::Run()
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
-//#if defined(NDEBUG)
+#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
-//#endif
+#endif
 
 	//Gather components!
 	bool new_files_parsed{ false };
@@ -1050,7 +1050,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "\t\t\t\t\tparallel_batch_update._Task._Arguments = nullptr;" << std::endl;
 			file << "\t\t\t\t\tparallel_batch_update._Task._ExecutableOnSameThread = false;" << std::endl;
 			file << "\t\t\t\t\tparallel_batch_update._StartInstanceIndex = batch_start_index;" << std::endl;
-			file << "\t\t\t\t\tparallel_batch_update._EndInstanceIndex = batch_start_index + CatalystBaseMath::Minimum<uint64>(" << update._BatchSize << ", number_of_instances - batch_start_index);" << std::endl;
+			file << "\t\t\t\t\tparallel_batch_update._EndInstanceIndex = batch_start_index + BaseMath::Minimum<uint64>(" << update._BatchSize << ", number_of_instances - batch_start_index);" << std::endl;
 			file << "\t\t\t\t}" << std::endl;
 			file << "\t\t\t}" << std::endl;
 		}

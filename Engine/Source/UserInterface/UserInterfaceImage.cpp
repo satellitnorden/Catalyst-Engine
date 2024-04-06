@@ -62,7 +62,7 @@ void UserInterfaceImage::SetPosition(const Vector2<float32>& position) NOEXCEPT
 */
 void UserInterfaceImage::SetHalfExtents(const Vector2<float32> &half_extents) NOEXCEPT
 {
-	const Vector2<float32> center{ CatalystBaseMath::LinearlyInterpolate(_Primitive->_Minimum, _Primitive->_Maximum, 0.5f) };
+	const Vector2<float32> center{ BaseMath::LinearlyInterpolate(_Primitive->_Minimum, _Primitive->_Maximum, 0.5f) };
 
 	_Primitive->_Minimum = center - half_extents;
 	_Primitive->_Maximum = center + half_extents;

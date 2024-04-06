@@ -11,7 +11,6 @@
 #include <Input/MouseState.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
 #include <Math/General/Vector.h>
 
 //Systems.

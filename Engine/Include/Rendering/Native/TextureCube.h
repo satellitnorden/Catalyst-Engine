@@ -5,7 +5,6 @@
 #include <Core/Containers/StaticArray.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
 #include <Math/General/Vector.h>
 
 //Rendering.

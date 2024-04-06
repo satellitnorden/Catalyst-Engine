@@ -15,6 +15,6 @@ void RenderingUtilities::TransformAxisAlignedBoundingBox(const AxisAlignedBoundi
 	const Vector3<float> zMinimum{ transformation.GetForward() * original_box._Minimum._Z };
 	const Vector3<float> zMaximum{ transformation.GetForward() * original_box._Maximum._Z };
 
-	new_box->_Minimum = transformation.GetTranslation() + Vector3<float>::Minimum(xMinimum, xMaximum) + Vector3<float>::Minimum(yMinimum, yMaximum) + Vector3<float>::Minimum(zMinimum, zMaximum);
-	new_box->_Maximum = transformation.GetTranslation() + Vector3<float>::Maximum(xMinimum, xMaximum) + Vector3<float>::Maximum(yMinimum, yMaximum) + Vector3<float>::Maximum(zMinimum, zMaximum);
+	new_box->_Minimum = transformation.GetTranslation() + BaseMath::Minimum(xMinimum, xMaximum) + BaseMath::Minimum(yMinimum, yMaximum) + BaseMath::Minimum(zMinimum, zMaximum);
+	new_box->_Maximum = transformation.GetTranslation() + BaseMath::Maximum(xMinimum, xMaximum) + BaseMath::Maximum(yMinimum, yMaximum) + BaseMath::Maximum(zMinimum, zMaximum);
 }

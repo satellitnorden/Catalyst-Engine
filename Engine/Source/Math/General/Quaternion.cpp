@@ -26,15 +26,15 @@ void Quaternion::FromEulerAngles(const EulerAngles &angles) NOEXCEPT
 	};
 	const Vector3<float32> cosine
 	{
-		CatalystBaseMath::Cosine(half_angles._Roll),
-		CatalystBaseMath::Cosine(half_angles._Yaw),
-		CatalystBaseMath::Cosine(half_angles._Pitch),
+		BaseMath::Cosine(half_angles._Roll),
+		BaseMath::Cosine(half_angles._Yaw),
+		BaseMath::Cosine(half_angles._Pitch),
 	};
 	const Vector3<float32> sine
 	{
-		CatalystBaseMath::Sine(half_angles._Roll),
-		CatalystBaseMath::Sine(half_angles._Yaw),
-		CatalystBaseMath::Sine(half_angles._Pitch),
+		BaseMath::Sine(half_angles._Roll),
+		BaseMath::Sine(half_angles._Yaw),
+		BaseMath::Sine(half_angles._Pitch),
 	};
 
 #if 1

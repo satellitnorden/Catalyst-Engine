@@ -8,7 +8,7 @@
 #include <Concurrency/Atomic.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 //Constants.
 #if defined(CATALYST_CONFIGURATION_FINAL)
@@ -45,7 +45,7 @@ template<typename TYPE, uint64 SIZE>
 class AtomicQueue<TYPE, SIZE, AtomicQueueMode::SINGLE, AtomicQueueMode::SINGLE> final
 {
 
-	static_assert(CatalystBaseMath::IsPowerOfTwo(SIZE), "SIZE is not a power of two!");
+	static_assert(BaseMath::IsPowerOfTwo(SIZE), "SIZE is not a power of two!");
 
 public:
 
@@ -124,7 +124,7 @@ template<typename TYPE, uint64 SIZE>
 class AtomicQueue<TYPE, SIZE, AtomicQueueMode::SINGLE, AtomicQueueMode::MULTIPLE> final
 {
 
-	static_assert(CatalystBaseMath::IsPowerOfTwo(SIZE), "SIZE is not a power of two!");
+	static_assert(BaseMath::IsPowerOfTwo(SIZE), "SIZE is not a power of two!");
 
 public:
 
@@ -203,7 +203,7 @@ template<typename TYPE, uint64 SIZE>
 class AtomicQueue<TYPE, SIZE, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> final
 {
 
-	static_assert(CatalystBaseMath::IsPowerOfTwo(SIZE), "SIZE is not a power of two!");
+	static_assert(BaseMath::IsPowerOfTwo(SIZE), "SIZE is not a power of two!");
 
 public:
 
@@ -293,7 +293,7 @@ template<typename TYPE, uint64 SIZE>
 class AtomicQueue<TYPE, SIZE, AtomicQueueMode::MULTIPLE, AtomicQueueMode::MULTIPLE> final
 {
 
-	static_assert(CatalystBaseMath::IsPowerOfTwo(SIZE), "SIZE is not a power of two!");
+	static_assert(BaseMath::IsPowerOfTwo(SIZE), "SIZE is not a power of two!");
 
 public:
 

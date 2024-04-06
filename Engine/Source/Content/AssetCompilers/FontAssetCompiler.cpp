@@ -472,7 +472,7 @@ void FontAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEP
 			&& ((i >= 'A' && i <= 'Z')
 				|| (i >= 'a' && i <= 'z')))
 		{
-			load_data->_Asset->_DefaultHeight = CatalystBaseMath::Minimum<float32>(load_data->_Asset->_DefaultHeight, load_data->_Asset->_CharacterDescriptions[i]._Size._Y);
+			load_data->_Asset->_DefaultHeight = BaseMath::Minimum<float32>(load_data->_Asset->_DefaultHeight, load_data->_Asset->_CharacterDescriptions[i]._Size._Y);
 		}
 	}
 

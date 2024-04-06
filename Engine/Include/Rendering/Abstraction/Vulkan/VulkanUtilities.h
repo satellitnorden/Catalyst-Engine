@@ -144,11 +144,11 @@ public:
 			bufferImageCopy.imageSubresource.baseArrayLayer = 0;
 			bufferImageCopy.imageSubresource.layerCount = layerCount;
 			bufferImageCopy.imageOffset = { 0, 0, 0 };
-			bufferImageCopy.imageExtent = { width >> i, height >> i, CatalystBaseMath::Maximum<uint32>(depth >> i, 1) };
+			bufferImageCopy.imageExtent = { width >> i, height >> i, BaseMath::Maximum<uint32>(depth >> i, 1) };
 
 			bufferImageCopies.Emplace(bufferImageCopy);
 
-			currentOffset += (width >> i) * (height >> i) * CatalystBaseMath::Maximum<uint32>(depth >> i, 1) * texture_channels * texel_size * layerCount;
+			currentOffset += (width >> i) * (height >> i) * BaseMath::Maximum<uint32>(depth >> i, 1) * texture_channels * texel_size * layerCount;
 		}
 
 		//Begin the transfer ommand buffer.
@@ -198,11 +198,11 @@ public:
 			bufferImageCopy.imageSubresource.baseArrayLayer = 0;
 			bufferImageCopy.imageSubresource.layerCount = layerCount;
 			bufferImageCopy.imageOffset = { 0, 0, 0 };
-			bufferImageCopy.imageExtent = { width >> i, height >> i, CatalystBaseMath::Maximum<uint32>(depth >> i, 1) };
+			bufferImageCopy.imageExtent = { width >> i, height >> i, BaseMath::Maximum<uint32>(depth >> i, 1) };
 
 			bufferImageCopies.Emplace(bufferImageCopy);
 
-			currentOffset += (width >> i) * (height >> i) * CatalystBaseMath::Maximum<uint32>(depth >> i, 1) * texture_channels * texel_size * layerCount;
+			currentOffset += (width >> i) * (height >> i) * BaseMath::Maximum<uint32>(depth >> i, 1) * texture_channels * texel_size * layerCount;
 		}
 
 		//Record the copy command to the transfer command buffer.

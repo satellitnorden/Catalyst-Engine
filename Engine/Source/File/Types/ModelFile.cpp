@@ -75,35 +75,35 @@ void ModelFile::PostProcess() NOEXCEPT
 				continue;
 			}
 
-			if (CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[0])
-				|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[1])
-				|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[2]))
+			if (BaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[0])
+				|| BaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[1])
+				|| BaseMath::IsNaN(mesh._Vertices[vertex_index]._Position[2]))
 			{
 				invalid_indices.Emplace(vertex_index);
 
 				continue;
 			}
 
-			if (CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Normal[0])
-				|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Normal[1])
-				|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Normal[2]))
+			if (BaseMath::IsNaN(mesh._Vertices[vertex_index]._Normal[0])
+				|| BaseMath::IsNaN(mesh._Vertices[vertex_index]._Normal[1])
+				|| BaseMath::IsNaN(mesh._Vertices[vertex_index]._Normal[2]))
 			{
 				invalid_indices.Emplace(vertex_index);
 
 				continue;
 			}
 
-			if (CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Tangent[0])
-				|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Tangent[1])
-				|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._Tangent[2]))
+			if (BaseMath::IsNaN(mesh._Vertices[vertex_index]._Tangent[0])
+				|| BaseMath::IsNaN(mesh._Vertices[vertex_index]._Tangent[1])
+				|| BaseMath::IsNaN(mesh._Vertices[vertex_index]._Tangent[2]))
 			{
 				invalid_indices.Emplace(vertex_index);
 
 				continue;
 			}
 
-			if (CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._TextureCoordinate[0])
-				|| CatalystBaseMath::IsNaN(mesh._Vertices[vertex_index]._TextureCoordinate[1]))
+			if (BaseMath::IsNaN(mesh._Vertices[vertex_index]._TextureCoordinate[0])
+				|| BaseMath::IsNaN(mesh._Vertices[vertex_index]._TextureCoordinate[1]))
 			{
 				invalid_indices.Emplace(vertex_index);
 

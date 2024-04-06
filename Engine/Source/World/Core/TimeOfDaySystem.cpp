@@ -248,16 +248,16 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 
 	if (_CurrentTimeOfDay >= 18.0f || _CurrentTimeOfDay < 6.0f)
 	{
-		rotation._Roll = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
+		rotation._Roll = BaseMath::LinearlyInterpolate(BaseMath::DegreesToRadians(-100.0f), BaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
 		rotation._Yaw = 0.0f;
-		rotation._Pitch = CatalystBaseMath::DegreesToRadians(22.5f);
+		rotation._Pitch = BaseMath::DegreesToRadians(22.5f);
 	}
 	
 	else
 	{
-		rotation._Roll = CatalystBaseMath::DegreesToRadians(22.5f);
+		rotation._Roll = BaseMath::DegreesToRadians(22.5f);
 		rotation._Yaw = 0.0f;
-		rotation._Pitch = CatalystBaseMath::LinearlyInterpolate(CatalystBaseMath::DegreesToRadians(-100.0f), CatalystBaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
+		rotation._Pitch = BaseMath::LinearlyInterpolate(BaseMath::DegreesToRadians(-100.0f), BaseMath::DegreesToRadians(100.0f), time_of_day_alpha);
 	}
 
 	//Cache the instance data.

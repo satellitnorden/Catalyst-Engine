@@ -689,9 +689,9 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 		{
 			nlohmann::json &rotation_entry{ editor_data_entry["Rotation"] };
 
-			rotation_entry["Roll"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Roll);
-			rotation_entry["Yaw"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Yaw);
-			rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Pitch);
+			rotation_entry["Roll"] = BaseMath::RadiansToDegrees(entity_editor_data._Rotation._Roll);
+			rotation_entry["Yaw"] = BaseMath::RadiansToDegrees(entity_editor_data._Rotation._Yaw);
+			rotation_entry["Pitch"] = BaseMath::RadiansToDegrees(entity_editor_data._Rotation._Pitch);
 		}
 
 		//Serialize the identifier.
@@ -706,7 +706,7 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 			const float32 distance_from_center{ Vector3<float32>::LengthXZ(world_transform_instance_data._CurrentWorldTransform.GetAbsolutePosition()) };
 
 			//Update the radius.
-			level_statistics._Radius = CatalystBaseMath::Maximum<float32>(level_statistics._Radius, distance_from_center);
+			level_statistics._Radius = BaseMath::Maximum<float32>(level_statistics._Radius, distance_from_center);
 		}
 
 		//Update level statistics from the static model component.
@@ -728,7 +728,7 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 			const Vector3<float32> half_extents{ absolute_axis_aligned_bounding_box.Dimensions() * 0.5f };
 
 			//Update the radius.
-			level_statistics._Radius = CatalystBaseMath::Maximum<float32>(level_statistics._Radius, distance_from_center + CatalystBaseMath::Maximum<float32>(half_extents._X, half_extents._Z));
+			level_statistics._Radius = BaseMath::Maximum<float32>(level_statistics._Radius, distance_from_center + BaseMath::Maximum<float32>(half_extents._X, half_extents._Z));
 		}
 	}
 
@@ -838,9 +838,9 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 		{
 			const nlohmann::json &rotation_entry{ editor_data_entry["Rotation"] };
 
-			new_entity_editor_data._Rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation_entry["Roll"]);
-			new_entity_editor_data._Rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation_entry["Yaw"]);
-			new_entity_editor_data._Rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation_entry["Pitch"]);
+			new_entity_editor_data._Rotation._Roll = BaseMath::DegreesToRadians(rotation_entry["Roll"]);
+			new_entity_editor_data._Rotation._Yaw = BaseMath::DegreesToRadians(rotation_entry["Yaw"]);
+			new_entity_editor_data._Rotation._Pitch = BaseMath::DegreesToRadians(rotation_entry["Pitch"]);
 		}
 
 		//Deserialize the identifier.
@@ -1154,7 +1154,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				//Convert to degrees.
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
-					rotation[i] = CatalystBaseMath::RadiansToDegrees(rotation[i]);
+					rotation[i] = BaseMath::RadiansToDegrees(rotation[i]);
 				}
 
 				//Add the transform widget.
@@ -1179,7 +1179,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					//Convert to radians.
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
-						rotation[i] = CatalystBaseMath::DegreesToRadians(rotation[i]);
+						rotation[i] = BaseMath::DegreesToRadians(rotation[i]);
 					}
 
 					selected_entity_editor_data._Rotation = rotation;
@@ -1230,7 +1230,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				//Rotation reported in degrees, so convert.
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
-					rotation[i] = CatalystBaseMath::RadiansToDegrees(rotation[i]);
+					rotation[i] = BaseMath::RadiansToDegrees(rotation[i]);
 				}
 
 				ImGuizmo::RecomposeMatrixFromComponents(&position._X, &rotation._Roll, &scale._X, &transformation_matrix._11);
@@ -1307,7 +1307,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				//Rotation is reported in degrees, so convert to radians.
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
-					rotation[i] = CatalystBaseMath::DegreesToRadians(rotation[i]);
+					rotation[i] = BaseMath::DegreesToRadians(rotation[i]);
 				}
 
 				world_transform->SetAbsolutePosition(position);
@@ -1538,9 +1538,9 @@ void EditorLevelSystem::LoadEntity(const char *const RESTRICT file_path, Entity 
 	{
 		const nlohmann::json& rotation_entry{ editor_data_entry["Rotation"] };
 
-		editor_data->_Rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation_entry["Roll"]);
-		editor_data->_Rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation_entry["Yaw"]);
-		editor_data->_Rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation_entry["Pitch"]);
+		editor_data->_Rotation._Roll = BaseMath::DegreesToRadians(rotation_entry["Roll"]);
+		editor_data->_Rotation._Yaw = BaseMath::DegreesToRadians(rotation_entry["Yaw"]);
+		editor_data->_Rotation._Pitch = BaseMath::DegreesToRadians(rotation_entry["Pitch"]);
 	}
 }
 
@@ -1601,9 +1601,9 @@ void EditorLevelSystem::SaveEntity(const char *const RESTRICT file_path, Entity 
 	{
 		nlohmann::json &rotation_entry{ editor_data_entry["Rotation"] };
 
-		rotation_entry["Roll"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Roll);
-		rotation_entry["Yaw"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Yaw);
-		rotation_entry["Pitch"] = CatalystBaseMath::RadiansToDegrees(entity_editor_data._Rotation._Pitch);
+		rotation_entry["Roll"] = BaseMath::RadiansToDegrees(entity_editor_data._Rotation._Roll);
+		rotation_entry["Yaw"] = BaseMath::RadiansToDegrees(entity_editor_data._Rotation._Yaw);
+		rotation_entry["Pitch"] = BaseMath::RadiansToDegrees(entity_editor_data._Rotation._Pitch);
 	}
 
 	//Write the JSON to the file.

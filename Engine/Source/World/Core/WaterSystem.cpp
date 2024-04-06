@@ -36,11 +36,11 @@ void WaterSystem::RenderUpdate() NOEXCEPT
 
 	//Cache the wind direction.
 	Vector2<float32> wind_direction{ WorldSystem::Instance->GetWindSystem()->GetWindDirection()._X , WorldSystem::Instance->GetWindSystem()->GetWindDirection()._Z };
-	wind_direction.Rotate(CatalystBaseMathConstants::PI);
+	wind_direction.Rotate(BaseMathConstants::PI);
 
 	//Update the water uniform data.
-	_WaterUniformData._Offsets[0] += wind_direction * delta_time * CatalystBaseMathConstants::QUARTER_PI * SCALE;
-	_WaterUniformData._Offsets[1] += wind_direction * delta_time * CatalystBaseMathConstants::PHI * SCALE;
-	_WaterUniformData._Offsets[2] += wind_direction * delta_time * CatalystBaseMathConstants::EULERS_NUMBER * SCALE;
-	_WaterUniformData._Offsets[3] += wind_direction * delta_time * (CatalystBaseMathConstants::PI + CatalystBaseMathConstants::HALF_PI) * SCALE;
+	_WaterUniformData._Offsets[0] += wind_direction * delta_time * BaseMathConstants::QUARTER_PI * SCALE;
+	_WaterUniformData._Offsets[1] += wind_direction * delta_time * BaseMathConstants::PHI * SCALE;
+	_WaterUniformData._Offsets[2] += wind_direction * delta_time * BaseMathConstants::EULERS_NUMBER * SCALE;
+	_WaterUniformData._Offsets[3] += wind_direction * delta_time * (BaseMathConstants::PI + BaseMathConstants::HALF_PI) * SCALE;
 }

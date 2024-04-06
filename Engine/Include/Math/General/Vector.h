@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 #include <Math/General/EulerAngles.h>
 
 /*
@@ -55,7 +55,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float Clamp(const Vector2& vector, const float minimum, const float maximum) NOEXCEPT
 	{
-		return Vector2(CatalystBaseMath::Clamp<TYPE>(vector._X, minimum, maximum), CatalystBaseMath::Clamp<TYPE>(vector._Y, minimum, maximum));
+		return Vector2(BaseMath::Clamp<TYPE>(vector._X, minimum, maximum), BaseMath::Clamp<TYPE>(vector._Y, minimum, maximum));
 	}
 
 	/*
@@ -71,7 +71,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector2 Floor(const Vector2 &value) NOEXCEPT
 	{
-		return Vector2(CatalystBaseMath::Floor<TYPE>(value._X), CatalystBaseMath::Floor<TYPE>(value._Y));
+		return Vector2(BaseMath::Floor<TYPE>(value._X), BaseMath::Floor<TYPE>(value._Y));
 	}
 
 	/*
@@ -79,7 +79,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float Length(const Vector2 &vector) NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot(LengthSquared(vector));
+		return BaseMath::SquareRoot(LengthSquared(vector));
 	}
 
 	/*
@@ -95,8 +95,8 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector2 Minimum(const Vector2 &first, const Vector2 &second) NOEXCEPT
 	{
-		return Vector2(	CatalystBaseMath::Minimum<TYPE>(first._X, second._X),
-						CatalystBaseMath::Minimum<TYPE>(first._Y, second._Y));
+		return Vector2(	BaseMath::Minimum<TYPE>(first._X, second._X),
+						BaseMath::Minimum<TYPE>(first._Y, second._Y));
 	}
 
 	/*
@@ -104,8 +104,8 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector2 Maximum(const Vector2 &first, const Vector2 &second) NOEXCEPT
 	{
-		return Vector2(	CatalystBaseMath::Maximum<TYPE>(first._X, second._X),
-						CatalystBaseMath::Maximum<TYPE>(first._Y, second._Y));
+		return Vector2(	BaseMath::Maximum<TYPE>(first._X, second._X),
+						BaseMath::Maximum<TYPE>(first._Y, second._Y));
 	}
 
 	/*
@@ -359,7 +359,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD float Length() const NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot(LengthSquared());
+		return BaseMath::SquareRoot(LengthSquared());
 	}
 
 	/*
@@ -375,7 +375,7 @@ public:
 	*/
 	FORCE_INLINE constexpr void Normalize() NOEXCEPT
 	{
-		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
+		const float32 inverse_length{ BaseMath::InverseSquareRoot(LengthSquared()) };
 
 		_X *= inverse_length;
 		_Y *= inverse_length;
@@ -386,7 +386,7 @@ public:
 	*/
 	FORCE_INLINE constexpr void NormalizeSafe() NOEXCEPT
 	{
-		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(CatalystBaseMath::Maximum<float>(LengthSquared(), FLOAT32_EPSILON)) };
+		const float32 inverse_length{ BaseMath::InverseSquareRoot(BaseMath::Maximum<float32>(LengthSquared(), FLOAT32_EPSILON)) };
 
 		_X *= inverse_length;
 		_Y *= inverse_length;
@@ -408,8 +408,8 @@ public:
 	*/
 	FORCE_INLINE constexpr void Rotate(const float amount) NOEXCEPT
 	{
-		const float cosine{ CatalystBaseMath::Cosine(amount) };
-		const float sine{ CatalystBaseMath::Sine(amount) };
+		const float cosine{ BaseMath::Cosine(amount) };
+		const float sine{ BaseMath::Sine(amount) };
 
 		const float newX{ _X * cosine - _Y * sine };
 		const float newY{ _X * sine + _Y * cosine };
@@ -489,7 +489,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3 Absolute(const Vector3 &vector) NOEXCEPT
 	{
-		return Vector3(CatalystBaseMath::Absolute(vector._X), CatalystBaseMath::Absolute(vector._Y), CatalystBaseMath::Absolute(vector._Z));
+		return Vector3(BaseMath::Absolute(vector._X), BaseMath::Absolute(vector._Y), BaseMath::Absolute(vector._Z));
 	}
 
 	/*
@@ -513,7 +513,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector3 Floor(const Vector3 &value) NOEXCEPT
 	{
-		return Vector3(CatalystBaseMath::Floor<TYPE>(value._X), CatalystBaseMath::Floor<TYPE>(value._Y), CatalystBaseMath::Floor<TYPE>(value._Z));
+		return Vector3(BaseMath::Floor<TYPE>(value._X), BaseMath::Floor<TYPE>(value._Y), BaseMath::Floor<TYPE>(value._Z));
 	}
 
 	/*
@@ -537,7 +537,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float Length(const Vector3 &vector) NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot(LengthSquared(vector));
+		return BaseMath::SquareRoot(LengthSquared(vector));
 	}
 
 	/*
@@ -545,7 +545,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float LengthXY(const Vector3 &vector) NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot(LengthSquaredXY(vector));
+		return BaseMath::SquareRoot(LengthSquaredXY(vector));
 	}
 
 	/*
@@ -553,7 +553,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float LengthXZ(const Vector3 &vector) NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot(LengthSquaredXZ(vector));
+		return BaseMath::SquareRoot(LengthSquaredXZ(vector));
 	}
 
 	/*
@@ -561,7 +561,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float LengthYZ(const Vector3 &vector) NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot(LengthSquaredYZ(vector));
+		return BaseMath::SquareRoot(LengthSquaredYZ(vector));
 	}
 
 	/*
@@ -594,34 +594,6 @@ public:
 	FORCE_INLINE constexpr static NO_DISCARD float LengthSquaredYZ(const Vector3 &vector) NOEXCEPT
 	{
 		return vector._Y * vector._Y + vector._Z * vector._Z;
-	}
-
-	/*
-	*	Linearly interpolate between two float vectors.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3 LinearlyInterpolate(const Vector3 &first, const Vector3 &second, const float alpha) NOEXCEPT
-	{
-		return Vector3(CatalystBaseMath::LinearlyInterpolate(first._X, second._X, alpha), CatalystBaseMath::LinearlyInterpolate(first._Y, second._Y, alpha), CatalystBaseMath::LinearlyInterpolate(first._Z, second._Z, alpha));
-	}
-
-	/*
-	*	Returns the minimum of two vectors.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3 Minimum(const Vector3 &first, const Vector3 &second) NOEXCEPT
-	{
-		return Vector3(	CatalystBaseMath::Minimum<TYPE>(first._X, second._X),
-						CatalystBaseMath::Minimum<TYPE>(first._Y, second._Y),
-						CatalystBaseMath::Minimum<TYPE>(first._Z, second._Z));
-	}
-
-	/*
-	*	Returns the maximum of two vectors.
-	*/
-	FORCE_INLINE constexpr static NO_DISCARD Vector3 Maximum(const Vector3 &first, const Vector3 &second) NOEXCEPT
-	{
-		return Vector3(	CatalystBaseMath::Maximum<TYPE>(first._X, second._X),
-						CatalystBaseMath::Maximum<TYPE>(first._Y, second._Y),
-						CatalystBaseMath::Maximum<TYPE>(first._Z, second._Z));
 	}
 
 	/*
@@ -961,7 +933,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD float Length() const NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot(LengthSquared());
+		return BaseMath::SquareRoot(LengthSquared());
 	}
 
 	/*
@@ -977,7 +949,7 @@ public:
 	*/
 	FORCE_INLINE constexpr void Normalize() NOEXCEPT
 	{
-		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
+		const float32 inverse_length{ BaseMath::InverseSquareRoot(LengthSquared()) };
 
 		_X *= inverse_length;
 		_Y *= inverse_length;
@@ -989,7 +961,7 @@ public:
 	*/
 	FORCE_INLINE constexpr void NormalizeSafe() NOEXCEPT
 	{
-		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(CatalystBaseMath::Maximum<float>(LengthSquared(), FLOAT32_EPSILON)) };
+		const float32 inverse_length{ BaseMath::InverseSquareRoot(BaseMath::Maximum<float32>(LengthSquared(), FLOAT32_EPSILON)) };
 
 		_X *= inverse_length;
 		_Y *= inverse_length;
@@ -1003,7 +975,7 @@ public:
 	{
 		_Z = 0.0f;
 
-		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
+		const float32 inverse_length{ BaseMath::InverseSquareRoot(LengthSquared()) };
 
 		_X *= inverse_length;
 		_Y *= inverse_length;
@@ -1016,7 +988,7 @@ public:
 	{
 		_Y = 0.0f;
 
-		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
+		const float32 inverse_length{ BaseMath::InverseSquareRoot(LengthSquared()) };
 
 		_X *= inverse_length;
 		_Z *= inverse_length;
@@ -1029,7 +1001,7 @@ public:
 	{
 		_X = 0.0f;
 
-		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
+		const float32 inverse_length{ BaseMath::InverseSquareRoot(LengthSquared()) };
 
 		_Y *= inverse_length;
 		_Z *= inverse_length;
@@ -1092,14 +1064,14 @@ public:
 	*/
 	FORCE_INLINE constexpr void Rotate(const EulerAngles &rotation) NOEXCEPT
 	{
-		const float xCosine{ CatalystBaseMath::Cosine(rotation._Roll) };
-		const float xSine{ CatalystBaseMath::Sine(rotation._Roll) };
+		const float32 xCosine{ BaseMath::Cosine(rotation._Roll) };
+		const float32 xSine{ BaseMath::Sine(rotation._Roll) };
 
-		const float yCosine{ CatalystBaseMath::Cosine(rotation._Yaw) };
-		const float ySine{ CatalystBaseMath::Sine(rotation._Yaw) };
+		const float32 yCosine{ BaseMath::Cosine(rotation._Yaw) };
+		const float32 ySine{ BaseMath::Sine(rotation._Yaw) };
 
-		const float zCosine{ CatalystBaseMath::Cosine(rotation._Pitch) };
-		const float zSine{ CatalystBaseMath::Sine(rotation._Pitch) };
+		const float32 zCosine{ BaseMath::Cosine(rotation._Pitch) };
+		const float32 zSine{ BaseMath::Sine(rotation._Pitch) };
 
 		//Rotate the roll.
 		if (rotation._Roll != 0.0f)
@@ -1133,8 +1105,8 @@ public:
 	{
 		const float dot{ DotProduct(*this, axis) };
 
-		const Vector3 X{ CatalystBaseMath::Cosine(angle) * (*this - dot * axis) };
-		const Vector3 Y{ CatalystBaseMath::Sine(angle) * CrossProduct(axis, *this) };
+		const Vector3 X{ BaseMath::Cosine(angle) * (*this - dot * axis) };
+		const Vector3 Y{ BaseMath::Sine(angle) * CrossProduct(axis, *this) };
 		const Vector3 Z{ dot * axis };
 
 		*this *= X + Y + Z;
@@ -1235,7 +1207,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector4 Floor(const Vector4 &value) NOEXCEPT
 	{
-		return Vector4(CatalystBaseMath::Floor<TYPE>(value._X), CatalystBaseMath::Floor<TYPE>(value._Y), CatalystBaseMath::Floor<TYPE>(value._Z), CatalystBaseMath::Floor<TYPE>(value._W));
+		return Vector4(BaseMath::Floor<TYPE>(value._X), BaseMath::Floor<TYPE>(value._Y), BaseMath::Floor<TYPE>(value._Z), BaseMath::Floor<TYPE>(value._W));
 	}
 
 	/*
@@ -1518,7 +1490,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD float Length() const NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot(LengthSquared());
+		return BaseMath::SquareRoot(LengthSquared());
 	}
 
 	/*
@@ -1534,7 +1506,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD float LengthXYZ() const NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot((_X * _X) + (_Y * _Y) + (_Z * _Z));
+		return BaseMath::SquareRoot((_X * _X) + (_Y * _Y) + (_Z * _Z));
 	}
 
 	/*
@@ -1542,7 +1514,7 @@ public:
 	*/
 	FORCE_INLINE constexpr void Normalize() NOEXCEPT
 	{
-		const float32 inverse_length{ CatalystBaseMath::InverseSquareRoot(LengthSquared()) };
+		const float32 inverse_length{ BaseMath::InverseSquareRoot(LengthSquared()) };
 
 		_X *= inverse_length;
 		_Y *= inverse_length;
@@ -1554,26 +1526,48 @@ public:
 
 //Template specializations.
 template<>
-FORCE_INLINE constexpr static NO_DISCARD Vector4<float32> CatalystBaseMath::Minimum<Vector4<float32>>(const Vector4<float32> first, const Vector4<float32> second) NOEXCEPT
+FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> BaseMath::Minimum<Vector3<float32>>(const Vector3<float32> first, const Vector3<float32> second) NOEXCEPT
+{
+	return Vector3<float32>
+		(
+			BaseMath::Minimum<float32>(first._X, second._X),
+			BaseMath::Minimum<float32>(first._Y, second._Y),
+			BaseMath::Minimum<float32>(first._Z, second._Z)
+		);
+}
+
+template<>
+FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> BaseMath::Maximum<Vector3<float32>>(const Vector3<float32> first, const Vector3<float32> second) NOEXCEPT
+{
+	return Vector3<float32>
+		(
+			BaseMath::Maximum<float32>(first._X, second._X),
+			BaseMath::Maximum<float32>(first._Y, second._Y),
+			BaseMath::Maximum<float32>(first._Z, second._Z)
+		);
+}
+
+template<>
+FORCE_INLINE constexpr static NO_DISCARD Vector4<float32> BaseMath::Minimum<Vector4<float32>>(const Vector4<float32> first, const Vector4<float32> second) NOEXCEPT
 {
 	return Vector4<float32>
 	(
-		CatalystBaseMath::Minimum<float32>(first._X, second._X),
-		CatalystBaseMath::Minimum<float32>(first._Y, second._Y),
-		CatalystBaseMath::Minimum<float32>(first._Z, second._Z),
-		CatalystBaseMath::Minimum<float32>(first._W, second._W)
+		BaseMath::Minimum<float32>(first._X, second._X),
+		BaseMath::Minimum<float32>(first._Y, second._Y),
+		BaseMath::Minimum<float32>(first._Z, second._Z),
+		BaseMath::Minimum<float32>(first._W, second._W)
 	);
 }
 
 template<>
-FORCE_INLINE constexpr static NO_DISCARD Vector4<float32> CatalystBaseMath::Maximum<Vector4<float32>>(const Vector4<float32> first, const Vector4<float32> second) NOEXCEPT
+FORCE_INLINE constexpr static NO_DISCARD Vector4<float32> BaseMath::Maximum<Vector4<float32>>(const Vector4<float32> first, const Vector4<float32> second) NOEXCEPT
 {
 	return Vector4<float32>
 	(
-		CatalystBaseMath::Maximum<float32>(first._X, second._X),
-		CatalystBaseMath::Maximum<float32>(first._Y, second._Y),
-		CatalystBaseMath::Maximum<float32>(first._Z, second._Z),
-		CatalystBaseMath::Maximum<float32>(first._W, second._W)
+		BaseMath::Maximum<float32>(first._X, second._X),
+		BaseMath::Maximum<float32>(first._Y, second._Y),
+		BaseMath::Maximum<float32>(first._Z, second._Z),
+		BaseMath::Maximum<float32>(first._W, second._W)
 	);
 }
 

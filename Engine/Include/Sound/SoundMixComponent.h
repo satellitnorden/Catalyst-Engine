@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 /*
 *	Process for adding a new sound mix component:
@@ -102,7 +102,7 @@ public:
 	FORCE_INLINE static void Process(State *const RESTRICT state, float32 *const RESTRICT sample) NOEXCEPT
 	{
 		//Update the gain.
-		state->_Gain -= CatalystBaseMath::Maximum(CatalystBaseMath::Absolute(*sample * state->_Gain) - 1.0f, 0.0f);
+		state->_Gain -= BaseMath::Maximum(BaseMath::Absolute(*sample * state->_Gain) - 1.0f, 0.0f);
 
 		//Process the sample.
 		*sample *= state->_Gain;
@@ -156,7 +156,7 @@ public:
 	FORCE_INLINE static void Process(State *const RESTRICT state, float32 *const RESTRICT sample) NOEXCEPT
 	{
 		//Update the current value.
-		state->_CurrentValue = CatalystBaseMath::LinearlyInterpolate(*sample, state->_CurrentValue, state->_Mix);
+		state->_CurrentValue = BaseMath::LinearlyInterpolate(*sample, state->_CurrentValue, state->_Mix);
 
 		//Process the sample.
 		*sample = state->_CurrentValue;
@@ -258,7 +258,7 @@ public:
 	FORCE_INLINE static void Process(State *const RESTRICT state, float32 *const RESTRICT sample) NOEXCEPT
 	{
 		//Apply the clamp.
-		*sample = CatalystBaseMath::Clamp(*sample * state->_Boost, -state->_Ceiling, state->_Ceiling);
+		*sample = BaseMath::Clamp(*sample * state->_Boost, -state->_Ceiling, state->_Ceiling);
 	}
 
 	/*
@@ -363,7 +363,7 @@ public:
 	FORCE_INLINE static void Process(State *const RESTRICT state, float32 *const RESTRICT sample) NOEXCEPT
 	{
 		//Define constants.
-		const static float32 SQUARE_ROOT_OF_PI_DIVIDED_BY_TWO{ CatalystBaseMath::SquareRoot(CatalystBaseMathConstants::PI) / 2.0f };
+		const static float32 SQUARE_ROOT_OF_PI_DIVIDED_BY_TWO{ BaseMath::SquareRoot(BaseMathConstants::PI) / 2.0f };
 
 		//Apply the boost.
 		*sample *= state->_Boost;
@@ -373,7 +373,7 @@ public:
 		{
 			case Variation::VARIATION_1:
 			{
-				*sample = *sample / (1.0f + CatalystBaseMath::Absolute(*sample));
+				*sample = *sample / (1.0f + BaseMath::Absolute(*sample));
 				
 				break;
 			}

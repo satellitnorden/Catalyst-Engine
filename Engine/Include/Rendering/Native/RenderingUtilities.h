@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 #include <Math/General/Matrix.h>
 #include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 
@@ -25,12 +25,12 @@ public:
 	*/
 	FORCE_INLINE static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4x4> &transformations, const AxisAlignedBoundingBox3D &model_space_bounding_box, AxisAlignedBoundingBox3D *const RESTRICT box) NOEXCEPT
 	{
-		float extent{ CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._X) };
-		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._Y));
-		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Minimum._Z));
-		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Maximum._X));
-		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Maximum._Y));
-		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(model_space_bounding_box._Maximum._Z));
+		float extent{ BaseMath::Absolute(model_space_bounding_box._Minimum._X) };
+		extent = BaseMath::Maximum<float>(extent, BaseMath::Absolute(model_space_bounding_box._Minimum._Y));
+		extent = BaseMath::Maximum<float>(extent, BaseMath::Absolute(model_space_bounding_box._Minimum._Z));
+		extent = BaseMath::Maximum<float>(extent, BaseMath::Absolute(model_space_bounding_box._Maximum._X));
+		extent = BaseMath::Maximum<float>(extent, BaseMath::Absolute(model_space_bounding_box._Maximum._Y));
+		extent = BaseMath::Maximum<float>(extent, BaseMath::Absolute(model_space_bounding_box._Maximum._Z));
 
 		extent *= 2.0f;
 
@@ -49,17 +49,17 @@ public:
 			const Vector3<float> position{ transformation.GetTranslation() };
 			const Vector3<float> scale{ transformation.GetScale() };
 
-			box->_Minimum._X = CatalystBaseMath::Minimum<float>(box->_Minimum._X, position._X);
-			box->_Minimum._Y = CatalystBaseMath::Minimum<float>(box->_Minimum._Y, position._Y);
-			box->_Minimum._Z = CatalystBaseMath::Minimum<float>(box->_Minimum._Z, position._Z);
+			box->_Minimum._X = BaseMath::Minimum<float>(box->_Minimum._X, position._X);
+			box->_Minimum._Y = BaseMath::Minimum<float>(box->_Minimum._Y, position._Y);
+			box->_Minimum._Z = BaseMath::Minimum<float>(box->_Minimum._Z, position._Z);
 
-			box->_Maximum._X = CatalystBaseMath::Maximum<float>(box->_Maximum._X, position._X);
-			box->_Maximum._Y = CatalystBaseMath::Maximum<float>(box->_Maximum._Y, position._Y);
-			box->_Maximum._Z = CatalystBaseMath::Maximum<float>(box->_Maximum._Z, position._Z);
+			box->_Maximum._X = BaseMath::Maximum<float>(box->_Maximum._X, position._X);
+			box->_Maximum._Y = BaseMath::Maximum<float>(box->_Maximum._Y, position._Y);
+			box->_Maximum._Z = BaseMath::Maximum<float>(box->_Maximum._Z, position._Z);
 
-			largest_scale = CatalystBaseMath::Maximum<float>(largest_scale, scale._X);
-			largest_scale = CatalystBaseMath::Maximum<float>(largest_scale, scale._Y);
-			largest_scale = CatalystBaseMath::Maximum<float>(largest_scale, scale._Z);
+			largest_scale = BaseMath::Maximum<float>(largest_scale, scale._X);
+			largest_scale = BaseMath::Maximum<float>(largest_scale, scale._Y);
+			largest_scale = BaseMath::Maximum<float>(largest_scale, scale._Z);
 		}
 
 		box->_Minimum._X -= extent * largest_scale;
@@ -76,7 +76,7 @@ public:
 	*/
 	FORCE_INLINE static NO_DISCARD float32 CalculateDepthOfFieldSize(const float32 aperture) NOEXCEPT
 	{
-		return CatalystBaseMath::LinearlyInterpolate(0.01f, 0.0f, aperture);
+		return BaseMath::LinearlyInterpolate(0.01f, 0.0f, aperture);
 	}
 
 	/*
@@ -232,7 +232,7 @@ public:
 
 						case MipmapGenerationMode::MAXIMUM:
 						{
-							output_textures->Back().At(X, Y) = CatalystBaseMath::Maximum<TYPE>(CatalystBaseMath::Maximum<TYPE>(source_texels[0], source_texels[1]), CatalystBaseMath::Maximum<TYPE>(source_texels[2], source_texels[3]));
+							output_textures->Back().At(X, Y) = BaseMath::Maximum<TYPE>(BaseMath::Maximum<TYPE>(source_texels[0], source_texels[1]), BaseMath::Maximum<TYPE>(source_texels[2], source_texels[3]));
 
 							break;
 						}
@@ -260,14 +260,14 @@ public:
 							};
 							const TYPE maximum
 							{
-								CatalystBaseMath::Maximum<TYPE>
+								BaseMath::Maximum<TYPE>
 								(
-									CatalystBaseMath::Maximum<TYPE>(source_texels[0], source_texels[1]),
-									CatalystBaseMath::Maximum<TYPE>(source_texels[2], source_texels[3])
+									BaseMath::Maximum<TYPE>(source_texels[0], source_texels[1]),
+									BaseMath::Maximum<TYPE>(source_texels[2], source_texels[3])
 								)
 							};
 
-							output_textures->Back().At(X, Y) = CatalystBaseMath::LinearlyInterpolate(average, maximum, 0.5f);
+							output_textures->Back().At(X, Y) = BaseMath::LinearlyInterpolate(average, maximum, 0.5f);
 
 							break;
 						}

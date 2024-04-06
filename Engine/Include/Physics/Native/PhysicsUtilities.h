@@ -32,7 +32,7 @@ namespace PhysicsUtilities
             {
                 const float32 distance{ Vector3<float32>::DotProduct(Vector3<float32>(points[j]._X - A._X, points[j]._Y - A._Y, points[j]._Z - A._Z), BC_normalized) };
 
-                if((CatalystBaseMath::Absolute(check_point) > 0.001f) && (CatalystBaseMath::Absolute(distance) > 0.001f) && (check_point * distance < 0.0f))
+                if((BaseMath::Absolute(check_point) > 0.001f) && (BaseMath::Absolute(distance) > 0.001f) && (check_point * distance < 0.0f))
                 {
                     return false;
                 }

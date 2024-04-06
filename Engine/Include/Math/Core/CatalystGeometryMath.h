@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 #include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 #include <Math/Geometry/Capsule.h>
 #include <Math/Geometry/Circle.h>
@@ -64,12 +64,12 @@ public:
 	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateHemisphereCosinus(const Vector2<float32> &coordinate) NOEXCEPT
 	{
 		//Map the 2D coordinate onto the hemisphere.
-		const float32 phi{ coordinate._Y * 2.0f * CatalystBaseMathConstants::PI };
-		const float32 cos_theta{ CatalystBaseMath::SquareRoot(1.0f - coordinate._X) };
-		const float32 sin_theta{ CatalystBaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
+		const float32 phi{ coordinate._Y * 2.0f * BaseMathConstants::PI };
+		const float32 cos_theta{ BaseMath::SquareRoot(1.0f - coordinate._X) };
+		const float32 sin_theta{ BaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
 
 		//Return the cosinus hemisphere coordinate.
-		return Vector3<float32>(CatalystBaseMath::Cosine(phi) * sin_theta, CatalystBaseMath::Sine(phi) * sin_theta, cos_theta);
+		return Vector3<float32>(BaseMath::Cosine(phi) * sin_theta, BaseMath::Sine(phi) * sin_theta, cos_theta);
 	}
 
 	/*
@@ -78,12 +78,12 @@ public:
 	FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> CalculateHemisphereUniform(const Vector2<float32> &coordinate) NOEXCEPT
 	{
 		//Map the 2D coordinate onto the hemisphere.
-		const float32 phi{ coordinate._Y * 2.0f * CatalystBaseMathConstants::PI };
+		const float32 phi{ coordinate._Y * 2.0f * BaseMathConstants::PI };
 		const float32 cos_theta{ 1.0f - coordinate._X };
-		const float32 sin_theta{ CatalystBaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
+		const float32 sin_theta{ BaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
 
 		//Return the cosinus hemisphere coordinate.
-		return Vector3<float32>(CatalystBaseMath::Cosine(phi) * sin_theta, CatalystBaseMath::Sine(phi) * sin_theta, cos_theta);
+		return Vector3<float32>(BaseMath::Cosine(phi) * sin_theta, BaseMath::Sine(phi) * sin_theta, cos_theta);
 	}
 
 	/*
@@ -110,7 +110,7 @@ public:
 
 		const float32 projection{ Vector2<float32>::DotProduct(point_to_start, end_to_start) * end_to_start_length_reciprocal };
 
-		return CatalystBaseMath::LinearlyInterpolate(line_segment._Start, line_segment._End, CatalystBaseMath::Clamp<float32>(projection, 0.0f, 1.0f));
+		return BaseMath::LinearlyInterpolate(line_segment._Start, line_segment._End, BaseMath::Clamp<float32>(projection, 0.0f, 1.0f));
 	}
 
 	/*
@@ -125,8 +125,8 @@ public:
 		float32 maximum{ FLOAT32_MAXIMUM };
 
 		//Test the X-axis slab.
-		minimum = CatalystBaseMath::Maximum<float32>(minimum, (box[1 - ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);
-		maximum = CatalystBaseMath::Minimum<float32>(maximum, (box[ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);
+		minimum = BaseMath::Maximum<float32>(minimum, (box[1 - ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);
+		maximum = BaseMath::Minimum<float32>(maximum, (box[ray._Signs[0]]._X - ray._Origin._X) * ray._Reciprocals._X);
 
 		if (minimum > maximum)
 		{
@@ -134,8 +134,8 @@ public:
 		}
 
 		//Test the Y-axis slab.
-		minimum = CatalystBaseMath::Maximum<float32>(minimum, (box[1 - ray._Signs[1]]._Y - ray._Origin._Y) * ray._Reciprocals._Y);
-		maximum = CatalystBaseMath::Minimum<float32>(maximum, (box[ray._Signs[1]]._Y - ray._Origin._Y) * ray._Reciprocals._Y);
+		minimum = BaseMath::Maximum<float32>(minimum, (box[1 - ray._Signs[1]]._Y - ray._Origin._Y) * ray._Reciprocals._Y);
+		maximum = BaseMath::Minimum<float32>(maximum, (box[ray._Signs[1]]._Y - ray._Origin._Y) * ray._Reciprocals._Y);
 
 		if (minimum > maximum)
 		{
@@ -143,8 +143,8 @@ public:
 		}
 
 		//Test the Z-axis slab.
-		minimum = CatalystBaseMath::Maximum<float32>(minimum, (box[1 - ray._Signs[2]]._Z - ray._Origin._Z) * ray._Reciprocals._Z);
-		maximum = CatalystBaseMath::Minimum<float32>(maximum, (box[ray._Signs[2]]._Z - ray._Origin._Z) * ray._Reciprocals._Z);
+		minimum = BaseMath::Maximum<float32>(minimum, (box[1 - ray._Signs[2]]._Z - ray._Origin._Z) * ray._Reciprocals._Z);
+		maximum = BaseMath::Minimum<float32>(maximum, (box[ray._Signs[2]]._Z - ray._Origin._Z) * ray._Reciprocals._Z);
 
 		if (minimum > maximum)
 		{
@@ -211,7 +211,7 @@ public:
 
 		else
 		{
-			discriminant = CatalystBaseMath::SquareRoot(discriminant);
+			discriminant = BaseMath::SquareRoot(discriminant);
 		}
 
 		float T0 = -B + discriminant;

@@ -35,7 +35,7 @@ void Camera::CheckUpdates() NOEXCEPT
 void Camera::UpdateProjectionMatrix() NOEXCEPT
 {
 	//Update the projection matrix.
-	_ProjectionMatrix = Matrix4x4::ReversePerspective(CatalystBaseMath::DegreesToRadians(_FieldOfView), RenderingSystem::Instance->GetFullAspectRatio(), _NearPlane, _FarPlane);
+	_ProjectionMatrix = Matrix4x4::ReversePerspective(BaseMath::DegreesToRadians(_FieldOfView), RenderingSystem::Instance->GetFullAspectRatio(), _NearPlane, _FarPlane);
 
 	//Apply the jitter.
 	_ProjectionMatrix._Matrix[2]._X -= _ProjectionMatrixJitter._X;
@@ -87,7 +87,7 @@ void Camera::UpdateFrustum() NOEXCEPT
 	//Normalize the frustum planes.
 	for (uint8 i{ 0 }; i < 6; ++i)
 	{
-		const float32 length_reciprocal{ CatalystBaseMath::InverseSquareRoot(_Frustum._Planes[i]._X * _Frustum._Planes[i]._X + _Frustum._Planes[i]._Y * _Frustum._Planes[i]._Y + _Frustum._Planes[i]._Z * _Frustum._Planes[i]._Z) };
+		const float32 length_reciprocal{ BaseMath::InverseSquareRoot(_Frustum._Planes[i]._X * _Frustum._Planes[i]._X + _Frustum._Planes[i]._Y * _Frustum._Planes[i]._Y + _Frustum._Planes[i]._Z * _Frustum._Planes[i]._Z) };
 
 		_Frustum._Planes[i]._X *= length_reciprocal;
 		_Frustum._Planes[i]._Y *= length_reciprocal;

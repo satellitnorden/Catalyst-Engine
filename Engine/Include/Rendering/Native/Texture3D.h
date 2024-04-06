@@ -5,7 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 #include <Math/General/Vector.h>
 
 //Rendering.
@@ -219,8 +219,8 @@ public:
 		const TYPE& lowerRightValue{ _Data[(lowerRightIntegerCoordinate._Y * _Width) + lowerRightIntegerCoordinate._X] };
 
 		//Calculate the blend values.
-		const float horizontalBlend{ CatalystBaseMath::Fractional(lowerLeftCoordinate._X * static_cast<float>(_Width)) };
-		const float verticalBlend{ CatalystBaseMath::Fractional(lowerLeftCoordinate._Y * static_cast<float>(_Height)) };
+		const float horizontalBlend{ BaseMath::Fractional(lowerLeftCoordinate._X * static_cast<float>(_Width)) };
+		const float verticalBlend{ BaseMath::Fractional(lowerLeftCoordinate._Y * static_cast<float>(_Height)) };
 
 		//Perform the blends.
 		const TYPE blend1{ TYPE::LinearlyInterpolate(lowerLeftValue, lowerRightValue, horizontalBlend) };
@@ -270,18 +270,18 @@ private:
 		{
 			case AddressMode::CLAMP_TO_EDGE:
 			{
-				coordinate->_X = CatalystBaseMath::Clamp<float>(coordinate->_X, 0.0f, 1.0f - 1.0f / static_cast<float>(_Width));
-				coordinate->_Y = CatalystBaseMath::Clamp<float>(coordinate->_Y, 0.0f, 1.0f - 1.0f / static_cast<float>(_Height));
-				coordinate->_Z = CatalystBaseMath::Clamp<float>(coordinate->_Z, 0.0f, 1.0f - 1.0f / static_cast<float>(_Depth));
+				coordinate->_X = BaseMath::Clamp<float>(coordinate->_X, 0.0f, 1.0f - 1.0f / static_cast<float>(_Width));
+				coordinate->_Y = BaseMath::Clamp<float>(coordinate->_Y, 0.0f, 1.0f - 1.0f / static_cast<float>(_Height));
+				coordinate->_Z = BaseMath::Clamp<float>(coordinate->_Z, 0.0f, 1.0f - 1.0f / static_cast<float>(_Depth));
 
 				break;
 			}
 
 			case AddressMode::REPEAT:
 			{
-				coordinate->_X = coordinate->_X >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_X) : CatalystBaseMath::Fractional(1.0f + CatalystBaseMath::Fractional(coordinate->_X));
-				coordinate->_Y = coordinate->_Y >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_Y) : CatalystBaseMath::Fractional(1.0f + CatalystBaseMath::Fractional(coordinate->_Y));
-				coordinate->_Z = coordinate->_Z >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_Z) : CatalystBaseMath::Fractional(1.0f + CatalystBaseMath::Fractional(coordinate->_Z));
+				coordinate->_X = coordinate->_X >= 0.0f ? BaseMath::Fractional(coordinate->_X) : BaseMath::Fractional(1.0f + BaseMath::Fractional(coordinate->_X));
+				coordinate->_Y = coordinate->_Y >= 0.0f ? BaseMath::Fractional(coordinate->_Y) : BaseMath::Fractional(1.0f + BaseMath::Fractional(coordinate->_Y));
+				coordinate->_Z = coordinate->_Z >= 0.0f ? BaseMath::Fractional(coordinate->_Z) : BaseMath::Fractional(1.0f + BaseMath::Fractional(coordinate->_Z));
 
 				break;
 			}

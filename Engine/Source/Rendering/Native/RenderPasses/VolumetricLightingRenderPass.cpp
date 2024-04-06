@@ -99,9 +99,9 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 
 		parameters._InputRenderTargets.Emplace(HashString("VolumetricLightingNearest"), _VolumetricLightingRenderTarget);
 		parameters._InputRenderTargets.Emplace(HashString("VolumetricLightingLinear"), _VolumetricLightingRenderTarget);
-		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), CatalystBaseMath::IsEven(i) ? _VolumetricLightingTemporalBufferRenderTargets[0] : _VolumetricLightingTemporalBufferRenderTargets[1]);
+		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), BaseMath::IsEven(i) ? _VolumetricLightingTemporalBufferRenderTargets[0] : _VolumetricLightingTemporalBufferRenderTargets[1]);
 
-		parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), CatalystBaseMath::IsEven(i) ? _VolumetricLightingTemporalBufferRenderTargets[1] : _VolumetricLightingTemporalBufferRenderTargets[0]);
+		parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), BaseMath::IsEven(i) ? _VolumetricLightingTemporalBufferRenderTargets[1] : _VolumetricLightingTemporalBufferRenderTargets[0]);
 		parameters._OutputRenderTargets.Emplace(HashString("CurrentVolumetricLighting"), _IntermediateVolumetricLightingRenderTarget);
 
 		_VolumetricLightingTemporalDenoisingPipelines[i].Initialize(parameters);
@@ -111,8 +111,8 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	{
 		GraphicsRenderPipelineParameters parameters;
 
-		parameters._InputRenderTargets.Emplace(HashString("InputVolumetricLighting"), CatalystBaseMath::IsEven(i) ? _IntermediateVolumetricLightingRenderTarget : _VolumetricLightingRenderTarget);
-		parameters._OutputRenderTargets.Emplace(HashString("OutputVolumetricLighting"), CatalystBaseMath::IsEven(i) ? _VolumetricLightingRenderTarget : _IntermediateVolumetricLightingRenderTarget);
+		parameters._InputRenderTargets.Emplace(HashString("InputVolumetricLighting"), BaseMath::IsEven(i) ? _IntermediateVolumetricLightingRenderTarget : _VolumetricLightingRenderTarget);
+		parameters._OutputRenderTargets.Emplace(HashString("OutputVolumetricLighting"), BaseMath::IsEven(i) ? _VolumetricLightingRenderTarget : _IntermediateVolumetricLightingRenderTarget);
 
 		_VolumetricLightingSpatialDenoisingPipelines[i].Initialize(parameters);
 	}

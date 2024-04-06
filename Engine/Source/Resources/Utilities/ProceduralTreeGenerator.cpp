@@ -49,10 +49,10 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 	};
 
 	//Define some constants.
-	constexpr float32 RANDOM_BASE_TRUNK_ROTATION_RANGE{ CatalystBaseMathConstants::PI * 0.125f * 0.125f };
-	constexpr float32 RANDOM_CONTINUOUS_RANGE{ CatalystBaseMathConstants::PI * 0.125f * 0.25f };
-	constexpr float32 RANDOM_BRANCHING_RANGE{ CatalystBaseMathConstants::PI * 0.125f };
-	constexpr float32 MINIMUM_BRANCHING_DIVERGENCE{ CatalystBaseMathConstants::PI * 0.125f * 0.125f };
+	constexpr float32 RANDOM_BASE_TRUNK_ROTATION_RANGE{ BaseMathConstants::PI * 0.125f * 0.125f };
+	constexpr float32 RANDOM_CONTINUOUS_RANGE{ BaseMathConstants::PI * 0.125f * 0.25f };
+	constexpr float32 RANDOM_BRANCHING_RANGE{ BaseMathConstants::PI * 0.125f };
+	constexpr float32 MINIMUM_BRANCHING_DIVERGENCE{ BaseMathConstants::PI * 0.125f * 0.125f };
 	constexpr float32 BASE_RADIUS{ 0.5f };
 	constexpr float32 RADIUS_DECAY_MULTIPLIER{ 0.9f };
 	constexpr float32 HEIGHT{ 24.0f };
@@ -117,7 +117,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 			LineSegment &line_segment{ line_segments[line_segment_index] };
 
 			//Randomize at which height to branch this off.
-			const float32 branch_height{ CatalystBaseMath::LinearlyInterpolate(MINIMUM_BRANCHING_HEIGHT, 1.0f, CatalystRandomMath::RandomFloat()) };
+			const float32 branch_height{ BaseMath::LinearlyInterpolate(MINIMUM_BRANCHING_HEIGHT, 1.0f, CatalystRandomMath::RandomFloat()) };
 
 			if (branch_height < line_segment._Points[0]._NormalizedHeight)
 			{
@@ -147,12 +147,12 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 					new_line_segment_point._Rotation = EulerAngles(CatalystRandomMath::RandomFloatInRange(-RANDOM_BRANCHING_RANGE, RANDOM_BRANCHING_RANGE), 0.0f, CatalystRandomMath::RandomFloatInRange(-RANDOM_BRANCHING_RANGE, RANDOM_BRANCHING_RANGE) * 2.0f);
 
 					//Enforce a minimum rotation divergence.
-					const float32 roll_difference{ CatalystBaseMath::Absolute(new_line_segment_point._Rotation._Roll - line_segment_point._Rotation._Roll) };
-					const float32 roll_divergence_fixer{ CatalystBaseMath::Maximum(MINIMUM_BRANCHING_DIVERGENCE - roll_difference, 0.0f) };
+					const float32 roll_difference{ BaseMath::Absolute(new_line_segment_point._Rotation._Roll - line_segment_point._Rotation._Roll) };
+					const float32 roll_divergence_fixer{ BaseMath::Maximum(MINIMUM_BRANCHING_DIVERGENCE - roll_difference, 0.0f) };
 					new_line_segment_point._Rotation._Roll += roll_divergence_fixer * (new_line_segment_point._Rotation._Roll >= line_segment_point._Rotation._Roll ? -1.0f : 1.0f);
 
-					const float32 pitch_difference{ CatalystBaseMath::Absolute(new_line_segment_point._Rotation._Pitch - line_segment_point._Rotation._Pitch) };
-					const float32 pitch_divergence_fixer{ CatalystBaseMath::Maximum(MINIMUM_BRANCHING_DIVERGENCE - pitch_difference, 0.0f) };
+					const float32 pitch_difference{ BaseMath::Absolute(new_line_segment_point._Rotation._Pitch - line_segment_point._Rotation._Pitch) };
+					const float32 pitch_divergence_fixer{ BaseMath::Maximum(MINIMUM_BRANCHING_DIVERGENCE - pitch_difference, 0.0f) };
 					new_line_segment_point._Rotation._Pitch += pitch_divergence_fixer * (new_line_segment_point._Rotation._Pitch >= line_segment_point._Rotation._Pitch ? -1.0f : 1.0f);
 
 					//Calculate the start index.
@@ -243,8 +243,8 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 						continue;
 					}
 
-					const float32 line_segment_point_radius{ line_segment._Radius * (1.0f - CatalystBaseMath::Square(line_segment_point._NormalizedHeight)) };
-					const float32 other_line_segment_point_radius{ other_line_segment._Radius * (1.0f - CatalystBaseMath::Square(other_line_segment_point._NormalizedHeight)) };
+					const float32 line_segment_point_radius{ line_segment._Radius * (1.0f - BaseMath::Square(line_segment_point._NormalizedHeight)) };
+					const float32 other_line_segment_point_radius{ other_line_segment._Radius * (1.0f - BaseMath::Square(other_line_segment_point._NormalizedHeight)) };
 					
 					if (Vector3<float32>::Length(line_segment_point._Position - other_line_segment_point._Position) < (line_segment_point_radius + other_line_segment_point_radius))
 					{
@@ -315,15 +315,15 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 	for (const LineSegment &line_segment : line_segments)
 	{
 		//Calculate the number of circle segments for this line segment.
-		const uint32 number_of_circle_segments{ static_cast<uint32>(CatalystBaseMath::LinearlyInterpolate(static_cast<float32>(NUMBER_OF_CIRCLE_SEGMENTS), 4.0f, line_segment._Points[0]._NormalizedHeight)) };
+		const uint32 number_of_circle_segments{ static_cast<uint32>(BaseMath::LinearlyInterpolate(static_cast<float32>(NUMBER_OF_CIRCLE_SEGMENTS), 4.0f, line_segment._Points[0]._NormalizedHeight)) };
 
 		for (uint64 line_segment_index{ 0 }; line_segment_index < line_segment._Points.Size(); ++line_segment_index)
 		{
 			//Calculate the radius at this point.
-			const float32 radius_at_point{ line_segment._Radius * (1.0f - CatalystBaseMath::Square(line_segment._Points[line_segment_index]._NormalizedHeight)) };
+			const float32 radius_at_point{ line_segment._Radius * (1.0f - BaseMath::Square(line_segment._Points[line_segment_index]._NormalizedHeight)) };
 
 			//Calculate the circumference at this point.
-			const float32 circumference_at_point{ 2.0f * CatalystBaseMathConstants::PI * line_segment._Radius };
+			const float32 circumference_at_point{ 2.0f * BaseMathConstants::PI * line_segment._Radius };
 
 			for (uint32 circle_segment_index{ 0 }; circle_segment_index < number_of_circle_segments; ++circle_segment_index)
 			{
@@ -331,7 +331,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 				const float32 circle_percent{ static_cast<float32>(circle_segment_index) / static_cast<float32>(number_of_circle_segments - 1) };
 
 				//Calculate the rotation.
-				const float32 rotation{ CatalystBaseMathConstants::DOUBLE_PI * circle_percent };
+				const float32 rotation{ BaseMathConstants::DOUBLE_PI * circle_percent };
 
 				//Cache the vertex index.
 				const uint32 vertex_index{ static_cast<uint32>(output->_Vertices.Back().Size()) };
@@ -386,7 +386,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 				}
 
 				//Calculate the crown branch weight.
-				const float32 crown_branch_weight{ CatalystBaseMath::Square(CatalystBaseMath::Maximum(line_segment._Points[line_segment_index]._NormalizedHeight - MINIMUM_CROWN_HEIGHT, 0.0f) * (1.0f / (1.0f - MINIMUM_CROWN_HEIGHT))) };
+				const float32 crown_branch_weight{ BaseMath::Square(BaseMath::Maximum(line_segment._Points[line_segment_index]._NormalizedHeight - MINIMUM_CROWN_HEIGHT, 0.0f) * (1.0f / (1.0f - MINIMUM_CROWN_HEIGHT))) };
 
 				if (CatalystRandomMath::RandomChance(crown_branch_weight))
 				{
@@ -402,7 +402,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 		for (uint64 line_segment_index{ 0 }; line_segment_index < line_segment._Points.Size(); ++line_segment_index)
 		{
 			//Calculate the radius at this point.
-			const float32 radius_at_point{ line_segment._Radius * (1.0f - CatalystBaseMath::Square(line_segment._Points[line_segment_index]._NormalizedHeight)) };
+			const float32 radius_at_point{ line_segment._Radius * (1.0f - BaseMath::Square(line_segment._Points[line_segment_index]._NormalizedHeight)) };
 
 			//Don't care about really thin branches after a certain point.
 			if (radius_at_point < (line_segment._Radius * 0.5f))
@@ -411,7 +411,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 			}
 
 			//Calculate the circumference at this point.
-			const float32 circumference_at_point{ 2.0f * CatalystBaseMathConstants::PI * line_segment._Radius };
+			const float32 circumference_at_point{ 2.0f * BaseMathConstants::PI * line_segment._Radius };
 
 			for (uint32 circle_segment_index{ 0 }; circle_segment_index < NUMBER_OF_COLLISION_CIRCLE_SEGMENTS; ++circle_segment_index)
 			{
@@ -419,7 +419,7 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 				const float32 circle_percent{ static_cast<float32>(circle_segment_index) / static_cast<float32>(NUMBER_OF_COLLISION_CIRCLE_SEGMENTS - 1) };
 
 				//Calculate the rotation.
-				const float32 rotation{ CatalystBaseMathConstants::DOUBLE_PI * circle_percent };
+				const float32 rotation{ BaseMathConstants::DOUBLE_PI * circle_percent };
 
 				//Cache the vertex index.
 				const uint32 vertex_index{ static_cast<uint32>(output->_CollisionVertices.Size()) };
@@ -480,9 +480,9 @@ void ProceduralTreeGenerator::GenerateTree(const Parameters &parameters, Output 
 		//Calculate the random rotation.
 		const EulerAngles random_rotation
 		{
-			CatalystRandomMath::RandomFloatInRange(-CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) * 0.25f,
-			CatalystRandomMath::RandomFloatInRange(-CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI),
-			CatalystRandomMath::RandomFloatInRange(-CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) * 0.25f
+			CatalystRandomMath::RandomFloatInRange(-BaseMathConstants::PI, BaseMathConstants::PI) * 0.25f,
+			CatalystRandomMath::RandomFloatInRange(-BaseMathConstants::PI, BaseMathConstants::PI),
+			CatalystRandomMath::RandomFloatInRange(-BaseMathConstants::PI, BaseMathConstants::PI) * 0.25f
 		};
 
 		//Add the vertices.

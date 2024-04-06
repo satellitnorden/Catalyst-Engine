@@ -92,7 +92,7 @@ void LightingSystem::RenderUpdate() NOEXCEPT
 		uint64 &current_light_data_buffer_size{ _LightDataBufferSizes[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
 		//Does the light data buffer need to be recreated?
-		if (current_light_data_buffer_size != CatalystBaseMath::Maximum<uint32>(number_of_lights, 1))
+		if (current_light_data_buffer_size != BaseMath::Maximum<uint32>(number_of_lights, 1))
 		{
 			if (current_light_data_buffer)
 			{

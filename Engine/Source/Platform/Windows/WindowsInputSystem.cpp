@@ -155,44 +155,44 @@ void InputSystem::UpdateGamepadState(const uint8 index) NOEXCEPT
 	state->_RightThumbstickY = static_cast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
 
 	//Calculate if the thumbstick values are in the deadzone.If so, reset them.
-	if (CatalystBaseMath::Absolute(state->_LeftThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
+	if (BaseMath::Absolute(state->_LeftThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
 	{
 		state->_LeftThumbstickX = 0.0f;
 	}
 
 	else
 	{
-		state->_LeftThumbstickX = CatalystBaseMath::Scale(state->_LeftThumbstickX, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
+		state->_LeftThumbstickX = BaseMath::Scale(state->_LeftThumbstickX, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
 	}
 
-	if (CatalystBaseMath::Absolute(state->_LeftThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
+	if (BaseMath::Absolute(state->_LeftThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
 	{
 		state->_LeftThumbstickY = 0.0f;
 	}
 
 	else
 	{
-		state->_LeftThumbstickY = CatalystBaseMath::Scale(state->_LeftThumbstickY, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
+		state->_LeftThumbstickY = BaseMath::Scale(state->_LeftThumbstickY, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
 	}
 
-	if (CatalystBaseMath::Absolute(state->_RightThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
+	if (BaseMath::Absolute(state->_RightThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
 	{
 		state->_RightThumbstickX = 0.0f;
 	}
 
 	else
 	{
-		state->_RightThumbstickX = CatalystBaseMath::Scale(state->_RightThumbstickX, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
+		state->_RightThumbstickX = BaseMath::Scale(state->_RightThumbstickX, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
 	}
 
-	if (CatalystBaseMath::Absolute(state->_RightThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
+	if (BaseMath::Absolute(state->_RightThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
 	{
 		state->_RightThumbstickY = 0.0f;
 	}
 
 	else
 	{
-		state->_RightThumbstickY = CatalystBaseMath::Scale(state->_RightThumbstickY, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
+		state->_RightThumbstickY = BaseMath::Scale(state->_RightThumbstickY, InputConstants::GAMEPAD_DEADZONE, 1.0f, 0.0f, 1.0f);
 	}
 }
 
@@ -378,8 +378,8 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 
 			if (GetClientRect(CatalystPlatformWindows::_Window, &rectangle))
 			{
-				state->_CurrentX = CatalystBaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f);
-				state->_CurrentY = CatalystBaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f);
+				state->_CurrentX = BaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f);
+				state->_CurrentY = BaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f);
 
 				state->_DeltaX = state->_CurrentX - state->_PreviousX;
 				state->_DeltaY = state->_CurrentY - state->_PreviousY;
@@ -469,12 +469,12 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 					{
 						SetCursorPos(adjusted_center.x, adjusted_center.y);
 
-						const float current_x{ CatalystBaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f) };
-						const float current_y{ CatalystBaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f) };
+						const float current_x{ BaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f) };
+						const float current_y{ BaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f) };
 
 						//Don't bother moving the cursor if it hasn't moved N pixels to account for integer rounding errors.
-						state->_DeltaX = (current_x - 0.5f) * static_cast<float>(CatalystBaseMath::Absolute<int32>(point.x - center.x) > 0);
-						state->_DeltaY = (current_y - 0.5f) * static_cast<float>(CatalystBaseMath::Absolute<int32>(point.y - center.y) > 0);
+						state->_DeltaX = (current_x - 0.5f) * static_cast<float>(BaseMath::Absolute<int32>(point.x - center.x) > 0);
+						state->_DeltaY = (current_y - 0.5f) * static_cast<float>(BaseMath::Absolute<int32>(point.y - center.y) > 0);
 					}
 
 					else

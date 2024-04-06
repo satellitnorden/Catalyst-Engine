@@ -7,7 +7,7 @@
 #include <Components/Components/WorldTransformComponent.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 //Systems.
 #include <Systems/ContentSystem.h>
@@ -25,7 +25,7 @@ namespace Script
 
 		NO_DISCARD float32 Lerp(ScriptContext &script_context, const float32 A, const float32 B, const float32 alpha) NOEXCEPT
 		{
-			return CatalystBaseMath::LinearlyInterpolate(A, B, alpha);
+			return BaseMath::LinearlyInterpolate(A, B, alpha);
 		}
 
 		/*
@@ -38,7 +38,7 @@ namespace Script
 
 			for (uint8 i{ 0 }; i < 3; ++i)
 			{
-				_rotation[i] = CatalystBaseMath::DegreesToRadians(rotation[i]);
+				_rotation[i] = BaseMath::DegreesToRadians(rotation[i]);
 			}
 
 			//Do the rotation!
@@ -47,7 +47,7 @@ namespace Script
 
 		NO_DISCARD float32 Sine(ScriptContext &script_context, const float32 phase) NOEXCEPT
 		{
-			return CatalystBaseMath::Sine(phase);
+			return BaseMath::Sine(phase);
 		}
 
 	}
@@ -120,7 +120,7 @@ namespace Script
 
 			for (uint8 i{ 0 }; i < 3; ++i)
 			{
-				rotation[i] = CatalystBaseMath::RadiansToDegrees(rotation[i]);
+				rotation[i] = BaseMath::RadiansToDegrees(rotation[i]);
 			}
 
 			return rotation;

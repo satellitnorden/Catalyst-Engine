@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 #include <Math/General/Vector.h>
 
 //Forward declarations.
@@ -96,10 +96,10 @@ public:
 	*/
 	FORCE_INLINE Quaternion(const Vector3<float32> &axis, const float32 angle) NOEXCEPT
 		:
-		_X(axis._X * CatalystBaseMath::Sine(angle * 0.5f)),
-		_Y(axis._Y * CatalystBaseMath::Sine(angle * 0.5f)),
-		_Z(axis._Z * CatalystBaseMath::Sine(angle * 0.5f)),
-		_W(CatalystBaseMath::Cosine(angle * 0.5f))
+		_X(axis._X * BaseMath::Sine(angle * 0.5f)),
+		_Y(axis._Y * BaseMath::Sine(angle * 0.5f)),
+		_Z(axis._Z * BaseMath::Sine(angle * 0.5f)),
+		_W(BaseMath::Cosine(angle * 0.5f))
 	{
 
 	}
@@ -138,7 +138,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD float32 Magnitude() const NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot(MagnitudeSquared());
+		return BaseMath::SquareRoot(MagnitudeSquared());
 	}
 
 	/*
@@ -154,7 +154,7 @@ public:
 	*/
 	FORCE_INLINE void Normalize() NOEXCEPT
 	{
-		const float32 inverse_magnitude{ CatalystBaseMath::InverseSquareRoot(MagnitudeSquared()) };
+		const float32 inverse_magnitude{ BaseMath::InverseSquareRoot(MagnitudeSquared()) };
 
 		_X *= inverse_magnitude;
 		_Y *= inverse_magnitude;

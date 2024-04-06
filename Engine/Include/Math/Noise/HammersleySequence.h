@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 #include <Math/General/Vector.h>
 
 class HammersleySequence final
@@ -29,12 +29,12 @@ public:
 		const Vector2<float32> coordinate{ CalculateCoordinate2D(index, maximum) };
 
 		//Map the 2D coordinate onto the hemisphere.
-		const float32 phi{ coordinate._Y * 2.0f * CatalystBaseMathConstants::PI };
-		const float32 cos_theta{ CatalystBaseMath::SquareRoot(1.0f - coordinate._X) };
-		const float32 sin_theta{ CatalystBaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
+		const float32 phi{ coordinate._Y * 2.0f * BaseMathConstants::PI };
+		const float32 cos_theta{ BaseMath::SquareRoot(1.0f - coordinate._X) };
+		const float32 sin_theta{ BaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
 
 		//Return the cosinus hemisphere coordinate.
-		return Vector3<float32>(CatalystBaseMath::Cosine(phi) * sin_theta, CatalystBaseMath::Sine(phi) * sin_theta, cos_theta);
+		return Vector3<float32>(BaseMath::Cosine(phi) * sin_theta, BaseMath::Sine(phi) * sin_theta, cos_theta);
 	}
 
 	/*
@@ -46,12 +46,12 @@ public:
 		const Vector2<float32> coordinate{ CalculateCoordinate2D(index, maximum) };
 
 		//Map the 2D coordinate onto the hemisphere.
-		const float32 phi{ coordinate._Y * 2.0f * CatalystBaseMathConstants::PI };
+		const float32 phi{ coordinate._Y * 2.0f * BaseMathConstants::PI };
 		const float32 cos_theta{ 1.0f - coordinate._X };
-		const float32 sin_theta{ CatalystBaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
+		const float32 sin_theta{ BaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
 
 		//Return the cosinus hemisphere coordinate.
-		return Vector3<float32>(CatalystBaseMath::Cosine(phi) * sin_theta, CatalystBaseMath::Sine(phi) * sin_theta, cos_theta);
+		return Vector3<float32>(BaseMath::Cosine(phi) * sin_theta, BaseMath::Sine(phi) * sin_theta, cos_theta);
 	}
 
 	/*

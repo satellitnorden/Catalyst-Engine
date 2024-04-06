@@ -15,7 +15,7 @@
 #include <Lighting/LightingCore.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -424,12 +424,12 @@ namespace VulkanSubRenderingSystemLogic
 
 				if (pipeline->GetDepthBuffer())
 				{
-					parameters._SampleCount = CatalystBaseMath::Maximum(parameters._SampleCount, static_cast<VulkanDepthBuffer* const RESTRICT>(pipeline->GetDepthBuffer())->GetSampleCount());
+					parameters._SampleCount = BaseMath::Maximum(parameters._SampleCount, static_cast<VulkanDepthBuffer* const RESTRICT>(pipeline->GetDepthBuffer())->GetSampleCount());
 				}
 
 				for (const RenderTargetHandle output_render_target : pipeline->GetOutputRenderTargets())
 				{
-					parameters._SampleCount = CatalystBaseMath::Maximum(parameters._SampleCount, static_cast<VulkanRenderTarget *const RESTRICT>(output_render_target)->GetSampleCount());
+					parameters._SampleCount = BaseMath::Maximum(parameters._SampleCount, static_cast<VulkanRenderTarget *const RESTRICT>(output_render_target)->GetSampleCount());
 				}
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -603,7 +603,7 @@ namespace VulkanSubRenderingSystemLogic
 		//Create the shader binding table buffer.
 		const uint32 shader_group_handle_size{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupHandleSize };
 		const uint32 shader_group_base_alignment{ VulkanInterface::Instance->GetPhysicalDevice().GetRayTracingProperties().shaderGroupBaseAlignment };
-		const uint32 shader_group_handle_size_aligned{ CatalystBaseMath::RoundToNearestMultipleOf(shader_group_handle_size, shader_group_base_alignment) };
+		const uint32 shader_group_handle_size_aligned{ BaseMath::RoundToNearestMultipleOf(shader_group_handle_size, shader_group_base_alignment) };
 
 		//Calculate the shader binding table size.
 		uint32 number_of_handles{ 0 };
@@ -613,11 +613,11 @@ namespace VulkanSubRenderingSystemLogic
 		++number_of_handles;
 
 		//Calculate the hit shader groups.
-		const uint32 hit_shader_groups_size{ CatalystBaseMath::RoundToNearestMultipleOf(static_cast<uint32>(shader_group_handle_size * pipeline->GetHitGroups().Size()), shader_group_base_alignment) };
+		const uint32 hit_shader_groups_size{ BaseMath::RoundToNearestMultipleOf(static_cast<uint32>(shader_group_handle_size * pipeline->GetHitGroups().Size()), shader_group_base_alignment) };
 		number_of_handles += static_cast<uint32>(pipeline->GetHitGroups().Size());
 
 		//Calculate the miss shadergroups.
-		const uint32 miss_shader_groups_size{ CatalystBaseMath::RoundToNearestMultipleOf(static_cast<uint32>(shader_group_handle_size * pipeline->GetMissShaders().Size()), shader_group_base_alignment) };
+		const uint32 miss_shader_groups_size{ BaseMath::RoundToNearestMultipleOf(static_cast<uint32>(shader_group_handle_size * pipeline->GetMissShaders().Size()), shader_group_base_alignment) };
 		number_of_handles += static_cast<uint32>(pipeline->GetMissShaders().Size());
 
 		//Calculate the handles data size.
@@ -651,7 +651,7 @@ namespace VulkanSubRenderingSystemLogic
 
 		Memory::Copy(&shader_binding_table_handles_storage[current_offset], &handles_storage[shader_group_handle_size * handle_index++], shader_group_handle_size);
 
-		current_offset = CatalystBaseMath::RoundToNearestMultipleOf(static_cast<uint32>(current_offset + shader_group_handle_size), shader_group_base_alignment);
+		current_offset = BaseMath::RoundToNearestMultipleOf(static_cast<uint32>(current_offset + shader_group_handle_size), shader_group_base_alignment);
 
 		for (uint64 i{ 0 }; i < pipeline->GetHitGroups().Size(); ++i)
 		{
@@ -659,7 +659,7 @@ namespace VulkanSubRenderingSystemLogic
 			current_offset += shader_group_handle_size;
 		}
 
-		current_offset = CatalystBaseMath::RoundToNearestMultipleOf(static_cast<uint32>(current_offset), shader_group_base_alignment);
+		current_offset = BaseMath::RoundToNearestMultipleOf(static_cast<uint32>(current_offset), shader_group_base_alignment);
 
 		for (uint64 i{ 0 }; i < pipeline->GetMissShaders().Size(); ++i)
 		{
@@ -667,7 +667,7 @@ namespace VulkanSubRenderingSystemLogic
 			current_offset += shader_group_handle_size;
 		}
 
-		current_offset = CatalystBaseMath::RoundToNearestMultipleOf(static_cast<uint32>(current_offset), shader_group_base_alignment);
+		current_offset = BaseMath::RoundToNearestMultipleOf(static_cast<uint32>(current_offset), shader_group_base_alignment);
 
 		//Create the shader binding table buffer.
 		data->_ShaderBindingTableBuffer = VulkanInterface::Instance->CreateBuffer(shader_binding_table_size, VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
@@ -1380,7 +1380,7 @@ NO_DISCARD uint64 VulkanSubRenderingSystem::GetExecutionTime(const QueryPoolHand
 	const uint64 timestamp_valid_bits{ static_cast<uint64>(VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyProperties(VulkanLogicalDevice::QueueType::MAIN).timestampValidBits) };
 	const float64 timestamp_period{ static_cast<float64>(VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceProperties().limits.timestampPeriod) };
 
-	return CatalystBaseMath::Round<uint64>(static_cast<float32>(static_cast<float64>(query_pool_results[1] - query_pool_results[0]) * timestamp_period));
+	return BaseMath::Round<uint64>(static_cast<float32>(static_cast<float64>(query_pool_results[1] - query_pool_results[0]) * timestamp_period));
 }
 
 /*

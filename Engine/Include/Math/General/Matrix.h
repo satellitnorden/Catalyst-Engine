@@ -183,11 +183,11 @@ public:
 		}
 
 		const Vector3<float32> rotationAxis{ Vector3<float32>::CrossProduct(up, normal) };
-		const float32 rotationAngle{ CatalystBaseMath::ArcCosine(Vector3<float>::DotProduct(normal, up)) };
+		const float32 rotationAngle{ BaseMath::ArcCosine(Vector3<float>::DotProduct(normal, up)) };
 
 		const float32 a = rotationAngle;
-		const float32 c = CatalystBaseMath::Cosine(a);
-		const float32 s = CatalystBaseMath::Sine(a);
+		const float32 c = BaseMath::Cosine(a);
+		const float32 s = BaseMath::Sine(a);
 
 		Vector3<float32> axis{ Vector3<float32>::Normalize(rotationAxis) };
 		Vector3<float32> temp{ (1.0f - c) * axis };
@@ -249,7 +249,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 Perspective(const float32 field_of_view, const float32 aspect_ratio, const float32 near_plane, const float32 far_plane) NOEXCEPT
 	{
-		const float32 f{ 1.0f / CatalystBaseMath::Tangent(field_of_view * 0.5f) };
+		const float32 f{ 1.0f / BaseMath::Tangent(field_of_view * 0.5f) };
 
 		return Matrix4x4(	-(f / aspect_ratio),
 							0.0f,
@@ -277,7 +277,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Matrix4x4 ReversePerspective(const float32 field_of_view, const float32 aspect_ratio, const float32 near_plane, const float32 far_plane) NOEXCEPT
 	{
-		const float32 f{ 1.0f / CatalystBaseMath::Tangent(field_of_view * 0.5f) };
+		const float32 f{ 1.0f / BaseMath::Tangent(field_of_view * 0.5f) };
 
 		return Matrix4x4(	-(f / aspect_ratio),
 							0.0f,
@@ -504,7 +504,7 @@ public:
 		{
 			for (uint8 j{ 0 }; j < 4; ++j)
 			{
-				if (CatalystBaseMath::IsNaN(_Matrix[i][j]))
+				if (BaseMath::IsNaN(_Matrix[i][j]))
 				{
 					return false;
 				}
@@ -559,21 +559,21 @@ public:
 	{
 		EulerAngles out_rotation;
 
-		out_rotation._Yaw = CatalystBaseMath::ArcSine(CatalystBaseMath::Clamp(-AtColumnRow(0, 2), 0.0f, 1.0f));
+		out_rotation._Yaw = BaseMath::ArcSine(BaseMath::Clamp(-AtColumnRow(0, 2), 0.0f, 1.0f));
 
-		const float32 C{ CatalystBaseMath::Cosine(out_rotation._Yaw) };
+		const float32 C{ BaseMath::Cosine(out_rotation._Yaw) };
 
-		if(CatalystBaseMath::Absolute(C) > FLOAT32_EPSILON)
+		if(BaseMath::Absolute(C) > FLOAT32_EPSILON)
 		{
 			float32 tan_x{ AtColumnRow(2, 2) / C };
 			float32 tan_y{ AtColumnRow(1, 2) / C };
 
-			out_rotation._Roll = CatalystBaseMath::ArcTangent(tan_y, tan_x);
+			out_rotation._Roll = BaseMath::ArcTangent(tan_y, tan_x);
 
 			tan_x = AtColumnRow(0, 0) / C;
 			tan_y = AtColumnRow(0, 1) / C;
 
-			out_rotation._Pitch = -CatalystBaseMath::ArcTangent(tan_y, tan_x);
+			out_rotation._Pitch = -BaseMath::ArcTangent(tan_y, tan_x);
 		}
 
 		else
@@ -583,7 +583,7 @@ public:
 			const float32 tan_x{ AtColumnRow(1, 1) };
 			const float32 tan_y{ -AtColumnRow(1, 0) };
 
-			out_rotation._Pitch = -CatalystBaseMath::ArcTangent(tan_y, tan_x);
+			out_rotation._Pitch = -BaseMath::ArcTangent(tan_y, tan_x);
 		}
 
 		return out_rotation;
@@ -712,8 +712,8 @@ public:
 			}
 
 			const float32 angle{ rotation[i] };
-			const float32 c{ CatalystBaseMath::Cosine(angle) };
-			const float32 s{ CatalystBaseMath::Sine(angle) };
+			const float32 c{ BaseMath::Cosine(angle) };
+			const float32 s{ BaseMath::Sine(angle) };
 			
 			const Vector3<float32> axis{ static_cast<float32>(i == 0), static_cast<float32>(i == 1), static_cast<float32>(i == 2) };
 

@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 #include <Math/General/Vector.h>
 
 namespace PhysicallyBasedLighting
@@ -27,7 +27,7 @@ namespace PhysicallyBasedLighting
 
 		float nominator = roughness_squared;
 		float denominator = microsurface_angle_squared * (roughness_squared - 1.0f) + 1.0f;
-		denominator = CatalystBaseMathConstants::PI * denominator * denominator;
+		denominator = BaseMathConstants::PI * denominator * denominator;
 
 		return nominator / denominator;
 	}
@@ -41,10 +41,10 @@ namespace PhysicallyBasedLighting
 	float Geometry(Vector3<float32> normal, Vector3<float32> outgoing_direction, Vector3<float32> radiance_direction, float roughness)
 	{
 		//Calculate the outgoing direction coefficient.
-		float outgoing_direction_coefficient = CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, outgoing_direction), 0.0f);
+		float outgoing_direction_coefficient = BaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, outgoing_direction), 0.0f);
 
 		//Calculate the irradiance direction coefficient.
-		float irradiance_direction_coefficient = CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, -radiance_direction), 0.0f);
+		float irradiance_direction_coefficient = BaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, -radiance_direction), 0.0f);
 
 		//Calculate the roughness coefficient.
 		float roughness_coefficient = roughness + 1.0f;
@@ -95,7 +95,7 @@ namespace PhysicallyBasedLighting
 	*/
 	Vector3<float32> LambertDiffuse(Vector3<float32> albedo)
 	{
-		return albedo / CatalystBaseMathConstants::PI;
+		return albedo / BaseMathConstants::PI;
 	}
 
 	/*
@@ -108,7 +108,7 @@ namespace PhysicallyBasedLighting
 		float FD90 = 0.5f + 2.0f * roughness * pow(cos(difference_angle), 2.0f);
 
 		//Set up terms.
-		Vector3<float32> term_1 = albedo / CatalystBaseMathConstants::PI;
+		Vector3<float32> term_1 = albedo / BaseMathConstants::PI;
 		float term_2 = 1.0f + (FD90 - 1.0f) * pow(1.0f - cos(radiance_angle), 5.0f);
 		float term_3 = 1.0f + (FD90 - 1.0f) * pow(1.0f - cos(outgoing_angle), 5.0f);
 
@@ -150,13 +150,13 @@ namespace PhysicallyBasedLighting
 		Vector3<float32> microsurface_normal = Vector3<float32>::Normalize(outgoing_direction + -radiance_direction);
 
 		//Calculate the surface color.
-		Vector3<float32> surface_color = CatalystBaseMath::LinearlyInterpolate(Vector3<float32>(0.04f), albedo, metallic);
+		Vector3<float32> surface_color = BaseMath::LinearlyInterpolate(Vector3<float32>(0.04f), albedo, metallic);
 
 		//Calculate the angle values.
-		float outgoing_angle = CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, outgoing_direction), 0.0f);
-		float radiance_angle = CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, -radiance_direction), 0.0f);
-		float microsurface_angle = CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, microsurface_normal), 0.0f);
-		float difference_angle = CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(-radiance_direction, microsurface_normal), 0.0f);
+		float outgoing_angle = BaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, outgoing_direction), 0.0f);
+		float radiance_angle = BaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, -radiance_direction), 0.0f);
+		float microsurface_angle = BaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, microsurface_normal), 0.0f);
+		float difference_angle = BaseMath::Maximum<float32>(Vector3<float32>::DotProduct(-radiance_direction, microsurface_normal), 0.0f);
 
 		//Calculate the normal distribution.
 		float distribution = Distribution(roughness, microsurface_angle);
@@ -181,14 +181,14 @@ namespace PhysicallyBasedLighting
 
 		{
 			Vector3<float32> nominator = Vector3<float32>(distribution) * Vector3<float32>(geometry) * fresnel;
-			float denominator = CatalystBaseMath::Maximum<float32>(4.0f * outgoing_angle * radiance_angle, 0.00001f);
+			float denominator = BaseMath::Maximum<float32>(4.0f * outgoing_angle * radiance_angle, 0.00001f);
 
 			specular_component = nominator / denominator;
 		}
 
 		//Calculate the weakening factor.
 		float weakening_factor = Vector3<float32>::DotProduct(normal, -radiance_direction);
-		weakening_factor = CatalystBaseMath::LinearlyInterpolate(weakening_factor * 0.5f + 0.5f, CatalystBaseMath::Maximum<float32>(weakening_factor, 0.0f), thickness);
+		weakening_factor = BaseMath::LinearlyInterpolate(weakening_factor * 0.5f + 0.5f, BaseMath::Maximum<float32>(weakening_factor, 0.0f), thickness);
 
 		return (diffuse_component + specular_component) * radiance * weakening_factor;
 	}

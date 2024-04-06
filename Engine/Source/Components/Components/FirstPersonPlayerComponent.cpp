@@ -172,7 +172,7 @@ void FirstPersonPlayerComponent::SerialUpdate(const UpdatePhase update_phase) NO
 				//Apply rotation.
 				instance_data._Rotation._Roll += instance_data._InputState._Rotation._X * delta_time;
 				instance_data._Rotation._Yaw += instance_data._InputState._Rotation._Y * delta_time;
-				instance_data._Rotation._Roll = CatalystBaseMath::Clamp<float32>(instance_data._Rotation._Roll, CatalystBaseMath::DegreesToRadians(-89.0f), CatalystBaseMath::DegreesToRadians(89.0f));
+				instance_data._Rotation._Roll = BaseMath::Clamp<float32>(instance_data._Rotation._Roll, BaseMath::DegreesToRadians(-89.0f), BaseMath::DegreesToRadians(89.0f));
 
 				//Calculate the forward and right vector.
 				Vector3<float32> forward{ CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(instance_data._Rotation) };

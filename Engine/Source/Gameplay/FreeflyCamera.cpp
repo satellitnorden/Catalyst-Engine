@@ -41,7 +41,7 @@ void FreeflyCamera::Update(const float32 delta_time) NOEXCEPT
 	//Apply rotation.
 	_Rotation._Roll += _CurrentInputState._Rotation._X * delta_time * _RotationFactor;
 	_Rotation._Yaw += _CurrentInputState._Rotation._Y * delta_time * _RotationFactor;
-	_Rotation._Roll = CatalystBaseMath::Clamp<float32>(_Rotation._Roll, CatalystBaseMath::DegreesToRadians(-89.0f), CatalystBaseMath::DegreesToRadians(89.0f));
+	_Rotation._Roll = BaseMath::Clamp<float32>(_Rotation._Roll, BaseMath::DegreesToRadians(-89.0f), BaseMath::DegreesToRadians(89.0f));
 
 	//Calculate the forward and right vector.
 	Vector3<float32> forward{ CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_Rotation) };

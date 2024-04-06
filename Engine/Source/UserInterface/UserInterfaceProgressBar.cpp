@@ -82,7 +82,7 @@ void UserInterfaceProgressBar::SetCurrentProgress(const float32 value) NOEXCEPT
 	_CurrentProgress = value;
 
 	//Update the bounding box for the top primitive.
-	_TopPrimitive->_Maximum._X = CatalystBaseMath::LinearlyInterpolate(_BottomPrimitive->_Minimum._X, _BottomPrimitive->_Maximum._X, _CurrentProgress);
+	_TopPrimitive->_Maximum._X = BaseMath::LinearlyInterpolate(_BottomPrimitive->_Minimum._X, _BottomPrimitive->_Maximum._X, _CurrentProgress);
 }
 
 /*

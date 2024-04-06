@@ -557,8 +557,8 @@ void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT in
 		{
 			const float32 height{ _initialization_data->_HeightMap.At(X, Y) };
 
-			axis_aligned_bounding_box._Minimum._Y = CatalystBaseMath::Minimum<float32>(axis_aligned_bounding_box._Minimum._Y, height);
-			axis_aligned_bounding_box._Maximum._Y = CatalystBaseMath::Maximum<float32>(axis_aligned_bounding_box._Maximum._Y, height);
+			axis_aligned_bounding_box._Minimum._Y = BaseMath::Minimum<float32>(axis_aligned_bounding_box._Minimum._Y, height);
+			axis_aligned_bounding_box._Maximum._Y = BaseMath::Maximum<float32>(axis_aligned_bounding_box._Maximum._Y, height);
 		}
 	}
 

@@ -79,5 +79,5 @@ void WindSystem::RenderUpdate() NOEXCEPT
 	_WindUniformData._PreviousWindDirectionSpeed = _WindUniformData._CurrentWindDirectionSpeed;
 	_WindUniformData._PreviousWindTime = _WindUniformData._CurrentWindTime;
 	_WindUniformData._CurrentWindDirectionSpeed = Vector4<float32>(_WindDirection, _WindSpeed);
-	_WindUniformData._CurrentWindTime = fmodf(_WindUniformData._CurrentWindTime + CatalystEngineSystem::Instance->GetDeltaTime(), CatalystBaseMathConstants::DOUBLE_PI);
+	_WindUniformData._CurrentWindTime = fmodf(_WindUniformData._CurrentWindTime + CatalystEngineSystem::Instance->GetDeltaTime(), BaseMathConstants::DOUBLE_PI);
 }

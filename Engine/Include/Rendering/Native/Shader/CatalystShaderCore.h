@@ -53,7 +53,7 @@
 	template <>
 	FORCE_INLINE static NO_DISCARD float32 FloorHelper<float32>(const float32 value) NOEXCEPT
 	{
-		return CatalystBaseMath::Floor<float32>(value);
+		return BaseMath::Floor<float32>(value);
 	}
 
 	/*
@@ -63,24 +63,6 @@
 	FORCE_INLINE static NO_DISCARD float32 LengthHelper(const TYPE &value) NOEXCEPT
 	{
 		return TYPE::Length(value);
-	}
-
-	/*
-	*	Maximum helper function.
-	*/
-	template <typename TYPE>
-	FORCE_INLINE static NO_DISCARD TYPE MaximumHelper(const TYPE value_1, const TYPE value_2) NOEXCEPT
-	{
-		return CatalystBaseMath::Maximum(value_1, value_2);
-	}
-
-	/*
-	*	Maximum helper function specialization for Vector3<float32>.
-	*/
-	template <>
-	FORCE_INLINE static NO_DISCARD Vector3<float32> MaximumHelper<Vector3<float32>>(const Vector3<float32> value_1, const Vector3<float32> value_2) NOEXCEPT
-	{
-		return Vector3<float32>::Maximum(value_1, value_2);
 	}
 
 	/*
@@ -111,7 +93,7 @@
 	*	Calls the clamp function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_CLAMP(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3) \
-	CatalystBaseMath::Clamp(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3)
+	BaseMath::Clamp(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3)
 
 	/*
 	*	Calls the cross product function.
@@ -135,7 +117,7 @@
 	*	Calls the fractional function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_FRACTIONAL(ARGUMENT) \
-	CatalystBaseMath::Fractional(ARGUMENT)
+	BaseMath::Fractional(ARGUMENT)
 
 	/*
 	*	Calls the length function.
@@ -147,19 +129,19 @@
 	*	Calls the linear interpolation function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_LINEAR_INTERPOLATION(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3) \
-	CatalystBaseMath::LinearlyInterpolate(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3)
+	BaseMath::LinearlyInterpolate(ARGUMENT_1, ARGUMENT_2, ARGUMENT_3)
 
 	/*
 	*	Calls the minimum function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_MINIMUM(ARGUMENT_1, ARGUMENT_2) \
-	CatalystBaseMath::Minimum(ARGUMENT_1, ARGUMENT_2)
+	BaseMath::Minimum(ARGUMENT_1, ARGUMENT_2)
 
 	/*
 	*	Calls the maximum function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_MAXIMUM(ARGUMENT_1, ARGUMENT_2) \
-	MaximumHelper(ARGUMENT_1, ARGUMENT_2)
+	BaseMath::Maximum(ARGUMENT_1, ARGUMENT_2)
 
 	/*
 	*	Calls the normalize function.
@@ -183,25 +165,25 @@
 	*	Calls the sine function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_SINE(ARGUMENT) \
-	CatalystBaseMath::Sine(ARGUMENT)
+	BaseMath::Sine(ARGUMENT)
 
 	/*
 	*	Calls the smoothstep function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_SMOOTHSTEP(ARGUMENT) \
-	CatalystBaseMath::SmoothStep<1>(ARGUMENT)
+	BaseMath::SmoothStep<1>(ARGUMENT)
 
 	/*
 	*	Calls the square function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_SQUARE(ARGUMENT) \
-	CatalystBaseMath::Square(ARGUMENT)
+	BaseMath::Square(ARGUMENT)
 
 	/*
 	*	Calls the squareroot function.
 	*/
 	#define CATALYST_SHADER_FUNCTION_SQUAREROOT(ARGUMENT) \
-	CatalystBaseMath::SquareRoot(ARGUMENT)
+	BaseMath::SquareRoot(ARGUMENT)
 
 	/*
 	*	Defines a function with a return value and one argument.

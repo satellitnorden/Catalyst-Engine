@@ -5,7 +5,7 @@
 #include <Core/Containers/ArrayProxy.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 #include <Math/General/Vector.h>
 
 //Simplex noise constants.
@@ -64,8 +64,8 @@ public:
 		float32 s = (offset_coordinate._X + offset_coordinate._Y) * SimplexNoiseConstants::F2;
 		float32 xs = offset_coordinate._X + s;
 		float32 ys = offset_coordinate._Y + s;
-		int32 i = CatalystBaseMath::Floor<int32>(xs);
-		int32 j = CatalystBaseMath::Floor<int32>(ys);
+		int32 i = BaseMath::Floor<int32>(xs);
+		int32 j = BaseMath::Floor<int32>(ys);
 
 		float32 t = static_cast<float>(i + j) * SimplexNoiseConstants::G2;
 		float32 X0 = i - t;
@@ -146,9 +146,9 @@ public:
 		float32 n0, n1, n2, n3;
 
 		float32 s = (offset_coordinate._X + offset_coordinate._Y + offset_coordinate._Z) * SimplexNoiseConstants::F3;
-		int32 i = CatalystBaseMath::Floor<int32>(offset_coordinate._X + s);
-		int32 j = CatalystBaseMath::Floor<int32>(offset_coordinate._Y + s);
-		int32 k = CatalystBaseMath::Floor<int32>(offset_coordinate._Z + s);
+		int32 i = BaseMath::Floor<int32>(offset_coordinate._X + s);
+		int32 j = BaseMath::Floor<int32>(offset_coordinate._Y + s);
+		int32 k = BaseMath::Floor<int32>(offset_coordinate._Z + s);
 		float32 t = (i + j + k) * SimplexNoiseConstants::G3;
 		float32 X0 = i - t;
 		float32 Y0 = j - t;
@@ -294,8 +294,8 @@ public:
 		float32 s = (offset_coordinate._X + offset_coordinate._Y) * SimplexNoiseConstants::F2;
 		float32 xs = offset_coordinate._X + s;
 		float32 ys = offset_coordinate._Y + s;
-		int32 i = CatalystBaseMath::Floor<int32>(xs);
-		int32 j = CatalystBaseMath::Floor<int32>(ys);
+		int32 i = BaseMath::Floor<int32>(xs);
+		int32 j = BaseMath::Floor<int32>(ys);
 
 		float32 t = static_cast<float32>(i + j) * SimplexNoiseConstants::G2;
 		float32 X0 = i - t;
@@ -390,7 +390,7 @@ public:
 			derivative_x += noise._Y;
 			derivative_y += noise._Z;
 
-			total += noise._X / CatalystBaseMath::LinearlyInterpolate(1.0f, 1.0f + derivative_x * derivative_x + derivative_y * derivative_y, derivative_weight) * amplitude;
+			total += noise._X / BaseMath::LinearlyInterpolate(1.0f, 1.0f + derivative_x * derivative_x + derivative_y * derivative_y, derivative_weight) * amplitude;
 
 			maximum += amplitude;
 
@@ -469,7 +469,7 @@ public:
 
 		for (uint8 i{ 0 }; i < octaves; ++i)
 		{
-			float octave{ 1.0f - CatalystBaseMath::Absolute<float32>(Generate2D(coordinate * frequency, offsets.Size() > i ? offsets[i] : Vector2<float32>(0.0f, 0.0f))) };
+			float octave{ 1.0f - BaseMath::Absolute<float32>(Generate2D(coordinate * frequency, offsets.Size() > i ? offsets[i] : Vector2<float32>(0.0f, 0.0f))) };
 
 			noise += octave * amplitude;
 			total += amplitude;

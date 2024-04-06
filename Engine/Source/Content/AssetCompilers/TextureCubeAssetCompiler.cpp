@@ -36,7 +36,7 @@ FORCE_INLINE NO_DISCARD Vector4<float32> SampleHDRTexture(const Texture2D<Vector
 	constexpr Vector2<float32> INVERSE_ATAN{ 0.1591f, 0.3183f };
 
 	//Calculate the texture coordinate.
-	Vector2<float32> texture_coordinate{ CatalystBaseMath::ArcTangent(direction._Z, direction._X), CatalystBaseMath::ArcSine(direction._Y) };
+	Vector2<float32> texture_coordinate{ BaseMath::ArcTangent(direction._Z, direction._X), BaseMath::ArcSine(direction._Y) };
 	texture_coordinate *= INVERSE_ATAN;
 	texture_coordinate += 0.5f;
 
@@ -421,12 +421,12 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 
 						switch (face_index)
 						{
-							case 0: base_direction = Vector3<float32>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X)); break; //Front.
-							case 1: base_direction = Vector3<float32>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X)); break; //Back.
-							case 2: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._Y)); break; //Up.
-							case 3: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y)); break; //Down.
-							case 4: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), -1.0f); break; //Right.
-							case 5: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), 1.0f); break; //Left.
+							case 0: base_direction = Vector3<float32>(-1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X)); break; //Front.
+							case 1: base_direction = Vector3<float32>(1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X)); break; //Back.
+							case 2: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), -1.0f, BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._Y)); break; //Up.
+							case 3: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), 1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y)); break; //Down.
+							case 4: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), -1.0f); break; //Right.
+							case 5: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), 1.0f); break; //Left.
 							default: ASSERT(false, "Invalid case!"); break;
 						}
 
@@ -478,19 +478,19 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 
 					switch (face_index)
 					{
-						case 0: direction = Vector3<float32>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
-						case 1: direction = Vector3<float32>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
-						case 2: direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
-						case 3: direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
-						case 4: direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
-						case 5: direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
+						case 0: direction = Vector3<float32>(-1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight)); break; //Front.
+						case 1: direction = Vector3<float32>(1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), BaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight)); break; //Back.
+						case 2: direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), -1.0f, BaseMath::LinearlyInterpolate(1.0f, -1.0f, y_weight)); break; //Up.
+						case 3: direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), 1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight)); break; //Down.
+						case 4: direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, x_weight), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), -1.0f); break; //Right.
+						case 5: direction = Vector3<float32>(BaseMath::LinearlyInterpolate(-1.0f, 1.0f, x_weight), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, y_weight), 1.0f); break; //Left.
 						default: ASSERT(false, "Invalid case!"); break;
 					}
 
 					direction.Normalize();
 
 					//Sample the HDR texture.
-					Vector2<float32> texture_coordinate{ CatalystBaseMath::ArcTangent(direction._Z, direction._X), CatalystBaseMath::ArcSine(direction._Y) };
+					Vector2<float32> texture_coordinate{ BaseMath::ArcTangent(direction._Z, direction._X), BaseMath::ArcSine(direction._Y) };
 					texture_coordinate *= INVERSE_ATAN;
 					texture_coordinate += 0.5f;
 

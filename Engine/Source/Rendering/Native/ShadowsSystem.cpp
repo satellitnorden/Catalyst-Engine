@@ -94,7 +94,7 @@ FORCE_INLINE NO_DISCARD CascadeInformation CalculateCascadeInformation(const Vec
 	frustum_corners[6] = Vector4<float32>(camera_local_position + lower_right_direction * cascade_end, 1.0f);
 	frustum_corners[7] = Vector4<float32>(camera_local_position + upper_right_direction * cascade_end, 1.0f);
 
-	const Vector3<float32> center_position{ camera_local_position + straight_direction * CatalystBaseMath::LinearlyInterpolate(cascade_start, cascade_end, 0.5f) };
+	const Vector3<float32> center_position{ camera_local_position + straight_direction * BaseMath::LinearlyInterpolate(cascade_start, cascade_end, 0.5f) };
 
 	//Construct the light matrix.
 	const Matrix4x4 light_matrix{ Matrix4x4::LookAt(center_position, center_position + light_direction, CatalystWorldCoordinateSpace::UP) };
@@ -111,12 +111,12 @@ FORCE_INLINE NO_DISCARD CascadeInformation CalculateCascadeInformation(const Vec
 	{
 		const Vector4<float32> light_space_corner{ light_matrix * frustum_corners[i] };
 
-		minX = CatalystBaseMath::Minimum<float32>(minX, light_space_corner._X);
-		maxX = CatalystBaseMath::Maximum<float32>(maxX, light_space_corner._X);
-		minY = CatalystBaseMath::Minimum<float32>(minY, light_space_corner._Y);
-		maxY = CatalystBaseMath::Maximum<float32>(maxY, light_space_corner._Y);
-		minZ = CatalystBaseMath::Minimum<float32>(minZ, light_space_corner._Z);
-		maxZ = CatalystBaseMath::Maximum<float32>(maxZ, light_space_corner._Z);
+		minX = BaseMath::Minimum<float32>(minX, light_space_corner._X);
+		maxX = BaseMath::Maximum<float32>(maxX, light_space_corner._X);
+		minY = BaseMath::Minimum<float32>(minY, light_space_corner._Y);
+		maxY = BaseMath::Maximum<float32>(maxY, light_space_corner._Y);
+		minZ = BaseMath::Minimum<float32>(minZ, light_space_corner._Z);
+		maxZ = BaseMath::Maximum<float32>(maxZ, light_space_corner._Z);
 	}
 
 	//Cache the view distance.
@@ -316,7 +316,7 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 	{
 		if (instance_data._LightType == LightType::DIRECTIONAL)
 		{
-			const float32 view_distance{ CatalystBaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance, ShadowsSystemConstants::MAXIMUM_VIEW_DISTANCE) };
+			const float32 view_distance{ BaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance, ShadowsSystemConstants::MAXIMUM_VIEW_DISTANCE) };
 			Vector4<float32> cascade_distances;
 
 			for (uint8 i{ 0 }; i < 4; ++i)
@@ -360,7 +360,7 @@ void ShadowsSystem::PreRenderUpdate() NOEXCEPT
 					//Normalize the frustum planes.
 					for (uint8 j{ 0 }; j < 6; ++j)
 					{
-						const float32 length_reciprocal{ CatalystBaseMath::InverseSquareRoot(shadow_map_data->_Frustum._Planes[j]._X * shadow_map_data->_Frustum._Planes[j]._X + shadow_map_data->_Frustum._Planes[j]._Y * shadow_map_data->_Frustum._Planes[j]._Y + shadow_map_data->_Frustum._Planes[j]._Z * shadow_map_data->_Frustum._Planes[j]._Z) };
+						const float32 length_reciprocal{ BaseMath::InverseSquareRoot(shadow_map_data->_Frustum._Planes[j]._X * shadow_map_data->_Frustum._Planes[j]._X + shadow_map_data->_Frustum._Planes[j]._Y * shadow_map_data->_Frustum._Planes[j]._Y + shadow_map_data->_Frustum._Planes[j]._Z * shadow_map_data->_Frustum._Planes[j]._Z) };
 
 						shadow_map_data->_Frustum._Planes[j]._X *= length_reciprocal;
 						shadow_map_data->_Frustum._Planes[j]._Y *= length_reciprocal;

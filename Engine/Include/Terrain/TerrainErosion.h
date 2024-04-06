@@ -211,9 +211,9 @@ private:
 		float u = position._X - x_i;
 		float v = position._Y - y_i;
 		ul = CalculateGradient(parameters, resolution, height_map, x_i, y_i);
-		ur = CalculateGradient(parameters, resolution, height_map, CatalystBaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X), y_i);
-		ll = CalculateGradient(parameters, resolution, height_map, x_i, CatalystBaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y));
-		lr = CalculateGradient(parameters, resolution, height_map, CatalystBaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X), CatalystBaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y));
+		ur = CalculateGradient(parameters, resolution, height_map, BaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X), y_i);
+		ll = CalculateGradient(parameters, resolution, height_map, x_i, BaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y));
+		lr = CalculateGradient(parameters, resolution, height_map, BaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X), BaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y));
 		ipl_l = (ul * (1.0f - v)) + (ll * v);
 		ipl_r = (ur * (1.0f - v)) + (lr * v);
 		output._Gradient = (ipl_l * (1.0f - u)) + (ipl_r * u);
@@ -249,9 +249,9 @@ private:
 		u = position._X - x_i;
 		v = position._Y - y_i;
 		ul = height_map[y_i * resolution + x_i];
-		ur = height_map[y_i * resolution + CatalystBaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X)];
-		ll = height_map[CatalystBaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y) * resolution + x_i];
-		lr = height_map[CatalystBaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y) * resolution + CatalystBaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X)];
+		ur = height_map[y_i * resolution + BaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X)];
+		ll = height_map[BaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y) * resolution + x_i];
+		lr = height_map[BaseMath::Minimum<uint32>(y_i + 1, parameters._MaximumBounds._Y) * resolution + BaseMath::Minimum<uint32>(x_i + 1, parameters._MaximumBounds._X)];
 		ipl_l = (1.0f - v) * ul + v * ll;
 		ipl_r = (1.0f - v) * ur + v * lr;
 
@@ -283,10 +283,10 @@ private:
 	{
 		int32 x0 = (int32)position._X - 2;
 		int32 y0 = (int32)position._Y - 2;
-		int32 x_start = CatalystBaseMath::Maximum<int32>(parameters._MinimumBounds._X, x0);
-		int32 y_start = CatalystBaseMath::Maximum<int32>(parameters._MinimumBounds._Y, y0);
-		int32 x_end = CatalystBaseMath::Minimum<int32>(parameters._MaximumBounds._X, x0 + 2 * 3 + 1);
-		int32 y_end = CatalystBaseMath::Minimum<int32>(parameters._MaximumBounds._Y, y0 + 2 * 3 + 1);
+		int32 x_start = BaseMath::Maximum<int32>(parameters._MinimumBounds._X, x0);
+		int32 y_start = BaseMath::Maximum<int32>(parameters._MinimumBounds._Y, y0);
+		int32 x_end = BaseMath::Minimum<int32>(parameters._MaximumBounds._X, x0 + 2 * 3 + 1);
+		int32 y_end = BaseMath::Minimum<int32>(parameters._MaximumBounds._Y, y0 + 2 * 3 + 1);
 
 		// construct erosion/deposition kernel.
 		float kernel[2 * 3 + 1][2 * 3 + 1];
@@ -298,7 +298,7 @@ private:
 				float d_x = x - position._X;
 				float d_y = y - position._Y;
 				float distance = sqrt(d_x * d_x + d_y * d_y);
-				float w = CatalystBaseMath::Maximum<float>(0, 2 - distance);
+				float w = BaseMath::Maximum<float32>(0, 2 - distance);
 				kernel_sum += w;
 				kernel[y - y0][x - x0] = w;
 			}

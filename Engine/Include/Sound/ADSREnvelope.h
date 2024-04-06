@@ -5,7 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 class ADSREnvelope
 {
@@ -87,7 +87,7 @@ public:
 
           case Stage::STAGE_DECAY:
           {
-              return CatalystBaseMath::LinearlyInterpolate(1.0f, _StageValues[2], static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage));
+              return BaseMath::LinearlyInterpolate(1.0f, _StageValues[2], static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage));
           }
 
           case Stage::STAGE_SUSTAIN:
@@ -97,7 +97,7 @@ public:
 
           case Stage::STAGE_RELEASE:
           {
-              return CatalystBaseMath::LinearlyInterpolate(_StageValues[2], 0.0f, static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage));
+              return BaseMath::LinearlyInterpolate(_StageValues[2], 0.0f, static_cast<float>(_CurrentSample) / static_cast<float>(_SamplesUntilNextStage));
           }
 
           default:
@@ -148,7 +148,7 @@ public:
               }
 
               //For the decay stage, blend in the sustain value.
-              return CatalystBaseMath::LinearlyInterpolate(1.0f, _StageValues[2], multiplier);
+              return BaseMath::LinearlyInterpolate(1.0f, _StageValues[2], multiplier);
           }
 
           case Stage::STAGE_SUSTAIN:
@@ -169,7 +169,7 @@ public:
               }
 
               //For the decay stage, blend in the sustain value.
-              return CatalystBaseMath::LinearlyInterpolate(_StageValues[2], 0.0f, multiplier);
+              return BaseMath::LinearlyInterpolate(_StageValues[2], 0.0f, multiplier);
           }
 
           default:

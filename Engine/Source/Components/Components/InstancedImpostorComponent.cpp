@@ -105,7 +105,7 @@ void InstancedImpostorComponent::CreateInstance(Entity *const RESTRICT entity, C
 
 	for (uint8 i{ 0 }; i < 3; ++i)
 	{
-		instance_data._Cell[i] = CatalystBaseMath::Round<int32>(average_cell[i]);
+		instance_data._Cell[i] = BaseMath::Round<int32>(average_cell[i]);
 	}
 
 	//Calculate the axis aligned bounding box.
@@ -119,8 +119,8 @@ void InstancedImpostorComponent::CreateInstance(Entity *const RESTRICT entity, C
 	{
 		const Vector3<float32> relative_position{ world_position.GetRelativePosition(instance_data._Cell) };
 
-		minimum = Vector3<float32>::Minimum(minimum, relative_position);
-		maximum = Vector3<float32>::Maximum(maximum, relative_position);
+		minimum = BaseMath::Minimum(minimum, relative_position);
+		maximum = BaseMath::Maximum(maximum, relative_position);
 	}
 
 	minimum -= Vector3<float32>(instance_data._Dimensions._X * 0.5f, 0.0f, instance_data._Dimensions._X * 0.5f);

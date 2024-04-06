@@ -40,8 +40,8 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD Vector2<float32> GetClosestPointInside(const AxisAlignedBoundingBox2D &box, const Vector2<float32> &position) NOEXCEPT
 	{
-		return Vector2<float32>(CatalystBaseMath::Clamp<float32>(position._X, box._Minimum._X, box._Maximum._X),
-								CatalystBaseMath::Clamp<float32>(position._Y, box._Minimum._Y, box._Maximum._Y));
+		return Vector2<float32>(BaseMath::Clamp<float32>(position._X, box._Minimum._X, box._Maximum._X),
+								BaseMath::Clamp<float32>(position._Y, box._Minimum._Y, box._Maximum._Y));
 	}
 
 	/*

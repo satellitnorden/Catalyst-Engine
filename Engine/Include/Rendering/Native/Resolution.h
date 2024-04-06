@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 class Resolution final
 {
@@ -52,7 +52,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Resolution operator*(const float32 scalar) NOEXCEPT
 	{
-		return Resolution(CatalystBaseMath::Round<uint32>(static_cast<float32>(_Width) * scalar), CatalystBaseMath::Round<uint32>(static_cast<float32>(_Height) * scalar));
+		return Resolution(BaseMath::Round<uint32>(static_cast<float32>(_Width) * scalar), BaseMath::Round<uint32>(static_cast<float32>(_Height) * scalar));
 	}
 
 	/*

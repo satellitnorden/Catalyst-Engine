@@ -225,12 +225,12 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	//Set the delta time.
 	if (preferred_refresh_rate > 0.0f)
 	{
-		_DeltaTime = CatalystBaseMath::Minimum(1.0f / preferred_refresh_rate, MAXIMUM_DELTA_TIME) * _UpdateSpeed;
+		_DeltaTime = BaseMath::Minimum(1.0f / preferred_refresh_rate, MAXIMUM_DELTA_TIME) * _UpdateSpeed;
 	}
 
 	else
 	{
-		_DeltaTime = CatalystBaseMath::Minimum(CatalystEngineSystemData::_DeltaTimer.Update(), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
+		_DeltaTime = BaseMath::Minimum(CatalystEngineSystemData::_DeltaTimer.Update(), MAXIMUM_DELTA_TIME) * _UpdateSpeed;
 	}
 
 	/*

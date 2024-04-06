@@ -177,7 +177,7 @@ void VulkanAccelerationStructure::Initialize
 		}
 
 		//Calculate the new instance capacity.
-		const uint64 new_instance_capacity{ CatalystBaseMath::RoundToNearestMultipleOf(instances.Size(), static_cast<uint64>(1024)) };
+		const uint64 new_instance_capacity{ BaseMath::RoundToNearestMultipleOf(instances.Size(), static_cast<uint64>(1024)) };
 
 		//Create the instance data buffers.
 		_InstanceDataHostBuffer.Initialize(sizeof(VulkanGeometryInstance) * new_instance_capacity, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -213,7 +213,7 @@ void VulkanAccelerationStructure::Initialize
 		}
 
 		//Calculate the new scratch capacity.
-		const uint64 new_scratch_capacity{ CatalystBaseMath::RoundToNearestMultipleOf(scratch_memory_requirements.size, static_cast<uint64>(1024)) };
+		const uint64 new_scratch_capacity{ BaseMath::RoundToNearestMultipleOf(scratch_memory_requirements.size, static_cast<uint64>(1024)) };
 
 		_ScratchBuffer.Initialize(new_scratch_capacity, VkBufferUsageFlagBits::VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 

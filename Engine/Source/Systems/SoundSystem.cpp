@@ -458,7 +458,7 @@ uint32 SoundSystem::GetAudioLatency() const NOEXCEPT
 	final_latency += (static_cast<float32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER) * static_cast<float32>(DEFAULT_NUMBER_OF_MIXING_BUFFERS)) / GetSampleRate() * 1'000.0f;
 
 	//Return the final latency.
-	return CatalystBaseMath::Round<uint32>(final_latency);
+	return BaseMath::Round<uint32>(final_latency);
 }
 
 /*
@@ -616,8 +616,8 @@ void SoundSystem::StartRecording(SoundResource *const RESTRICT recording_sound_r
 	//Allocate the required amount of data, if the expected length is reported.
 	if (expected_length > 0.0f)
 	{
-		_RecordingSoundResource->_Samples[0].Reserve(CatalystBaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
-		_RecordingSoundResource->_Samples[1].Reserve(CatalystBaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
+		_RecordingSoundResource->_Samples[0].Reserve(BaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
+		_RecordingSoundResource->_Samples[1].Reserve(BaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
 	}
 
 	//Set the flag.
@@ -1063,7 +1063,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 			while (samples_left_to_read > 0)
 			{
 				//Calculate the number of samples to read.
-				const uint32 number_of_samples_to_read{ CatalystBaseMath::Minimum<uint32>(_NumberOfSamplesPerMixingBuffer - local_sample_read_index, samples_left_to_read) };
+				const uint32 number_of_samples_to_read{ BaseMath::Minimum<uint32>(_NumberOfSamplesPerMixingBuffer - local_sample_read_index, samples_left_to_read) };
 
                 if (local_mixing_buffers_ready > 0)
 				{

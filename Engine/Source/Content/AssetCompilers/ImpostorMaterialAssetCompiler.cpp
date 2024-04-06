@@ -520,8 +520,8 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 				maximum._Y = axis_aligned_bounding_box._Maximum._Y;
 
 				//Center if around the origin on the X axis.
-				const float32 min_distance_from_center{ CatalystBaseMath::Absolute(minimum._X) };
-				const float32 max_distance_from_center{ CatalystBaseMath::Absolute(maximum._X) };
+				const float32 min_distance_from_center{ BaseMath::Absolute(minimum._X) };
+				const float32 max_distance_from_center{ BaseMath::Absolute(maximum._X) };
 
 				if (min_distance_from_center > max_distance_from_center)
 				{
@@ -537,8 +537,8 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			//Calculate the camera position.
 			Vector3<float32> camera_position;
 
-			camera_position._X = CatalystBaseMath::LinearlyInterpolate(minimum._X, maximum._X, normalized_coordinate._X);
-			camera_position._Y = CatalystBaseMath::LinearlyInterpolate(minimum._Y, maximum._Y, normalized_coordinate._Y);
+			camera_position._X = BaseMath::LinearlyInterpolate(minimum._X, maximum._X, normalized_coordinate._X);
+			camera_position._Y = BaseMath::LinearlyInterpolate(minimum._Y, maximum._Y, normalized_coordinate._Y);
 			camera_position._Z = axis_aligned_bounding_box._Minimum._Z - 1.0f;
 
 			//Construct the ray.

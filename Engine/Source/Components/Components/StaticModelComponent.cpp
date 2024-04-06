@@ -319,7 +319,7 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 							//Calculate the level of detail score.
 							const float32 level_of_detail_score
 							{
-								1.0f - CatalystBaseMath::Maximum<float32>(Culling::CalculateDistanceBasedCullingScore
+								1.0f - BaseMath::Maximum<float32>(Culling::CalculateDistanceBasedCullingScore
 								(
 									relative_axis_aligned_bounding_box,
 									Vector3<float32>(instance_data._Model->_LevelOfDetailMultiplier, instance_data._Model->_LevelOfDetailMultiplier, instance_data._Model->_LevelOfDetailMultiplier),
@@ -328,7 +328,7 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 							};
 
 							//Calculate the level of detail index.
-							instance_data._LevelOfDetailIndices[mesh_index] = CatalystBaseMath::Minimum<uint8>(static_cast<uint8>(level_of_detail_score * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size())), static_cast<uint8>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.LastIndex()));
+							instance_data._LevelOfDetailIndices[mesh_index] = BaseMath::Minimum<uint8>(static_cast<uint8>(level_of_detail_score * static_cast<float32>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.Size())), static_cast<uint8>(instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails.LastIndex()));
 						}
 					}
 				}

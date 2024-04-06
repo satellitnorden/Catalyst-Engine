@@ -94,7 +94,7 @@ FORCE_INLINE void SplitIntoSubEmitters(const ParticleEmitter &master_emitter, Dy
 	sub_emitters->Clear();
 
 	//Add the sub emitters.
-	const uint32 number_of_sub_emitters{ CatalystBaseMath::Maximum<uint32>(master_emitter._SpawnRate / MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER, 1) };
+	const uint32 number_of_sub_emitters{ BaseMath::Maximum<uint32>(master_emitter._SpawnRate / MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER, 1) };
 
 	for (uint32 sub_emitter_index{ 0 }; sub_emitter_index < number_of_sub_emitters; ++sub_emitter_index)
 	{
@@ -106,7 +106,7 @@ FORCE_INLINE void SplitIntoSubEmitters(const ParticleEmitter &master_emitter, Dy
 		Memory::Copy(&new_sub_emitter._Emitter, &master_emitter, sizeof(ParticleEmitter));
 
 		//Modify the spawn rate.
-		new_sub_emitter._Emitter._SpawnRate = CatalystBaseMath::Maximum<uint32>(master_emitter._SpawnRate / number_of_sub_emitters, 1);
+		new_sub_emitter._Emitter._SpawnRate = BaseMath::Maximum<uint32>(master_emitter._SpawnRate / number_of_sub_emitters, 1);
 
 		//Reset the time since the last particle spawn.
 		new_sub_emitter._TimeSinceLastParticleSpawn = 0.0f;
@@ -344,7 +344,7 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 					);
 
 					//Randomize the size.
-					new_particle_instance._Size = CatalystBaseMath::LinearlyInterpolate(sub_emitter._Emitter._MinimumSize, sub_emitter._Emitter._MaximumSize, CatalystRandomMath::RandomFloat());
+					new_particle_instance._Size = BaseMath::LinearlyInterpolate(sub_emitter._Emitter._MinimumSize, sub_emitter._Emitter._MaximumSize, CatalystRandomMath::RandomFloat());
 
 					//Set the age.
 					new_particle_instance._Age = 0.0f;
@@ -407,7 +407,7 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 						{
 							const float32 distance_to_camera{ Vector3<float32>::Length(camera_relative_position - camera_local_position) };
 
-							size_modifier = CatalystBaseMath::Minimum<float32>(distance_to_camera / 16.0f, 1.0f);
+							size_modifier = BaseMath::Minimum<float32>(distance_to_camera / 16.0f, 1.0f);
 						}
 
 						//Do _very_ simple culling.

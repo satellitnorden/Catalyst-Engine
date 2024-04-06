@@ -47,7 +47,7 @@ public:
 		else
 		{
 			const Vector2<float32> middle_point{ MiddlePoint(node) };
-			const float32 length{ CatalystBaseMath::Maximum<float32>(CatalystBaseMath::Absolute(middle_point._X - position._X), CatalystBaseMath::Absolute(middle_point._Y - position._Z)) };
+			const float32 length{ BaseMath::Maximum<float32>(BaseMath::Absolute(middle_point._X - position._X), BaseMath::Absolute(middle_point._Y - position._Z)) };
 
 			return	node._Depth > maximum_subdivision_steps
 					|| length > static_cast<float32>(patch_size) * PatchSizeMultiplier(node);
@@ -60,7 +60,7 @@ public:
 	FORCE_INLINE static NO_DISCARD bool ShouldBeSubdivided(const uint32 patch_size, const uint8 maximum_subdivision_steps, const TerrainQuadTreeNode &node, const Vector3<float32> &position) NOEXCEPT
 	{
 		const Vector2<float32> middle_point{ MiddlePoint(node) };
-		const float32 length{ CatalystBaseMath::Maximum<float32>(CatalystBaseMath::Absolute(middle_point._X - position._X), CatalystBaseMath::Absolute(middle_point._Y - position._Z)) };
+		const float32 length{ BaseMath::Maximum<float32>(BaseMath::Absolute(middle_point._X - position._X), BaseMath::Absolute(middle_point._Y - position._Z)) };
 
 		return	node._Depth < maximum_subdivision_steps
 				&& length <= static_cast<float32>(patch_size) * PatchSizeMultiplier(node);

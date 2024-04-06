@@ -39,7 +39,7 @@ namespace UserInterfaceUtilities
 		const float32 baseline_height{ font->_CharacterDescriptions['A']._Size._Y * scale };
 
 		//Calculate the original center.
-		const Vector2<float32> original_center{ CatalystBaseMath::LinearlyInterpolate(original_minimum, original_maximum, 0.5f) };
+		const Vector2<float32> original_center{ BaseMath::LinearlyInterpolate(original_minimum, original_maximum, 0.5f) };
 
 		//Calculate the horizontal/vertical extent.
 		const float32 horizontal_extent{ original_maximum._X - original_minimum._X };
