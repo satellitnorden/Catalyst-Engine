@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Time.h>
 
 template <typename TYPE>
 class DeltaTimer final
@@ -14,7 +15,7 @@ public:
 	*/
 	FORCE_INLINE void Reset() NOEXCEPT
 	{
-		_CurrentTime = std::chrono::high_resolution_clock::now();
+		_CurrentTimePoint.Reset();
 	}
 
 	/*
@@ -22,16 +23,15 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD TYPE Update() NOEXCEPT
 	{
-		const std::chrono::time_point<std::chrono::steady_clock> new_time{ std::chrono::high_resolution_clock::now() };
-		const TYPE delta_time{ std::chrono::duration<TYPE>(new_time - _CurrentTime).count() };
-		_CurrentTime = new_time;
+		const TYPE delta_time{ static_cast<TYPE>(_CurrentTimePoint.GetSecondsSince()) };
+		_CurrentTimePoint.Reset();
 
 		return delta_time;
 	}
 
 private:
 
-	//The underlying current time.
-	std::chrono::time_point<std::chrono::steady_clock> _CurrentTime{ std::chrono::high_resolution_clock::now() };
+	//The current time point.
+	TimePoint _CurrentTimePoint;
 
 };

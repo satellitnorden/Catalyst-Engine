@@ -9,6 +9,9 @@
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
+//STL.
+#include <stdio.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(ShadowsRenderPass);
 

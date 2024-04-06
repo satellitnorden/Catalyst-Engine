@@ -3,6 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//STL.
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 //Catalyst base math constants.
 namespace CatalystBaseMathConstants
 {

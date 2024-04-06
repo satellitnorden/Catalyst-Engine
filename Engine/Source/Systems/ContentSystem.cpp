@@ -88,7 +88,7 @@ void ContentSystem::RegisterAssetCompiler(AssetCompiler *const RESTRICT asset_co
 NO_DISCARD bool ContentSystem::CompileEngine() NOEXCEPT
 {
 	//Cache the start time.
-	const TimePoint start_time{ GetCurrentTimePoint() };
+	const TimePoint start_time;
 
 	//Call PreCompile() on all asset compilers.
 	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
@@ -167,7 +167,7 @@ RECOMPILE:
 NO_DISCARD bool ContentSystem::CompileGame() NOEXCEPT
 {
 	//Cache the start time.
-	const TimePoint start_time{ GetCurrentTimePoint() };
+	const TimePoint start_time;
 
 	//Call PreCompile() on all asset compilers.
 	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())

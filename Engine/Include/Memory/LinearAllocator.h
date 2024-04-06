@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//STL.
+#include <stdlib.h>
+
 template <uint64 SIZE>
 class LinearAllocator final
 {

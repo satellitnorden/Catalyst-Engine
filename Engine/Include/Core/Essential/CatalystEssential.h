@@ -23,13 +23,6 @@
 	#pragma auto_inline(on)
 #endif
 
-/*
-*	STL includes. Included here so that it is more easily trackable.
-*	The goal is to decrease the number of STL dependencies in the future.
-*/
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 //Catalyst Engine information.
 #include <Core/Essential/CatalystEngineInformation.h>
 

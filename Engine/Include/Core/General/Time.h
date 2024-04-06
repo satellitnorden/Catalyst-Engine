@@ -2,9 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-
-//STL.
-#include <chrono>
+#include <Core/General/Any.h>
 
 /*
 *	Time point class definition.
@@ -15,39 +13,28 @@ class TimePoint final
 public:
 
 	/*
+	*	Default constructor.
+	*/
+	TimePoint() NOEXCEPT;
+
+	/*
+	*	Resets this time point.
+	*/
+	void Reset() NOEXCEPT;
+
+	/*
 	*	Returns the amount of seconds since this time point.
 	*/
-	FORCE_INLINE NO_DISCARD float64 GetSecondsSince() const NOEXCEPT
-	{
-		return static_cast<float64>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - _TimePoint).count()) / 1'000'000'000.0;
-	}
+	NO_DISCARD float64 GetSecondsSince() const NOEXCEPT;
 
 	/*
 	*	Adds seconds.
 	*/
-	FORCE_INLINE void AddSeconds(const float64 value) NOEXCEPT
-	{
-		_TimePoint += std::chrono::nanoseconds(static_cast<uint64>(value * 1'000'000'000));
-	}
+	void AddSeconds(const float64 value) NOEXCEPT;
 
 private:
 
-	//The underlying timepoint.
-	std::chrono::time_point<std::chrono::steady_clock> _TimePoint;
+	//The implementation.
+	Any<8> _Implementation;
 
 };
-
-/*
-*	Returns the current timepoint.
-*/
-FORCE_INLINE NO_DISCARD TimePoint GetCurrentTimePoint() NOEXCEPT
-{
-	TimePoint time_point;
-
-	//The time point class is just a thin wrapper around the std::chrono object, so we can cast it directly. (:
-	std::chrono::time_point<std::chrono::steady_clock>* const RESTRICT chrono_time_point{ (std::chrono::time_point<std::chrono::steady_clock> *const RESTRICT)(&time_point) };
-
-	*chrono_time_point = std::chrono::steady_clock::now();
-
-	return time_point;
-}

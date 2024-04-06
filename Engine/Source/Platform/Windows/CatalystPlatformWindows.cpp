@@ -21,6 +21,9 @@
 #include <Lmcons.h>
 #include <Xinput.h>
 
+//STl.
+#include <stdio.h>
+
 //Static variable definitions.
 HINSTANCE CatalystPlatformWindows::_Instance;
 int32 CatalystPlatformWindows::_ShowCommand;

@@ -10,6 +10,9 @@
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
 
+//STL.
+#include <string>
+
 //Singleton definition.
 DEFINE_SINGLETON(DebugSystem);
 

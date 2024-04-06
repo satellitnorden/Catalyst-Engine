@@ -4,6 +4,9 @@
 #include <Memory/DestructorPointer.h>
 #include <Memory/LinearAllocator.h>
 
+//STL.
+#include <cstring>
+
 //Memory constants.
 namespace MemoryConstants
 {

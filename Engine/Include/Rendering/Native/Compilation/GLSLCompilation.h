@@ -9,6 +9,7 @@
 
 //STL.
 #include <fstream>
+#include <string>
 
 namespace GLSLCompilation
 {

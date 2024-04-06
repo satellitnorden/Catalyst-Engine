@@ -1,5 +1,8 @@
 #pragma once
 
+//STL.
+#include <utility>
+
 /*
 *	Clang doesn't have sprintf_s, but instead snprintf, so swap those. Should be fine. (:
 */

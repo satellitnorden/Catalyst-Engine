@@ -206,7 +206,7 @@ void EntitySystem::EntityUpdate() NOEXCEPT
 void EntitySystem::ProcessCreationQueue() NOEXCEPT
 {
 	//Cache the start time.
-	TimePoint start_time{ GetCurrentTimePoint() };
+	const TimePoint start_time;
 	
 	//Check the pre-processing queue.
 	for (uint64 i{ 0 }; i < _PreProcessingQueue.Size();)
@@ -406,7 +406,7 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 	//Remember the "looparound" entity.
 	EntityIdentifier looparound_entity{ UINT64_MAXIMUM };
 
-	TimePoint start_time{ GetCurrentTimePoint() };
+	const TimePoint start_time;
 
 	while (start_time.GetSecondsSince() < EntitySystemConstants::MAXIMUM_DESTRUCTION_TIME)
 	{

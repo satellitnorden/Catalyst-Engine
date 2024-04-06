@@ -1959,7 +1959,7 @@ void GenerateRayAnyHitShader
 NO_DISCARD bool RenderingCompiler::Run() NOEXCEPT
 {
 	//Cache the start time.
-	const TimePoint start_time{ GetCurrentTimePoint() };
+	const TimePoint start_time;
 
 	//Remember if new rendering data was compiled.
 	bool new_rendering_data_compiled{ false };

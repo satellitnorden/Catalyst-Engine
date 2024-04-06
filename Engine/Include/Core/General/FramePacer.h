@@ -17,8 +17,8 @@ public:
 	*/
 	FORCE_INLINE void Initialize() NOEXCEPT
 	{
-		//Retrieve the current time point.
-		_CurrentTimePoint = GetCurrentTimePoint();
+		//Reset the current time point.
+		_CurrentTimePoint.Reset();
 	}
 
 	/*
