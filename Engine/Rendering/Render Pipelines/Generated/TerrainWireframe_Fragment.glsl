@@ -214,9 +214,123 @@ layout (set = 1, binding = 2) uniform sampler NORMAL_MAP_SAMPLER;
 layout (set = 1, binding = 3) uniform sampler INDEX_BLEND_MAP_SAMPLER;
 layout (set = 1, binding = 4) uniform sampler MATERIAL_SAMPLER;
 
+/*
+*	Rotates the given vector around the yaw.
+*/
+vec3 RotateYaw(vec3 X, float angle)
+{
+	float sine = sin(angle);
+    float cosine = cos(angle);
+
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
+
+    return X;
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}
+
+/*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
+*   Combines two hashes.
+*/
+uint CombineHash(uint hash_1, uint hash_2)
+{
+    return 3141592653 * hash_1 + hash_2;
+}
+
+/*
+*   Hash function taking a uint.
+*/
+uint Hash(uint seed)
+{
+    seed ^= seed >> 17;
+    seed *= 0xed5ad4bbU;
+    seed ^= seed >> 11;
+    seed *= 0xac4c1b51U;
+    seed ^= seed >> 15;
+    seed *= 0x31848babU;
+    seed ^= seed >> 14;
+    return seed;
+}
+
+/*
+*   Hash function taking a uvec2.
+*/
+uint Hash2(uvec2 seed)
+{
+    return Hash(seed.x) ^ Hash(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
+    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
+    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
+}
+
+/*
+*   Given a seed, returns a random number.
+*/
+float RandomFloat(inout uint seed)
+{
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate and a seed, returns a random number.
+*/
+float RandomFloat(uvec2 coordinate, uint seed)
+{
+    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate, returns a random number.
+*/
+float RandomFloat(vec2 coordinate)
+{
+    return fract(sin(dot(coordinate, vec2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
+/*
+*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*/
+float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+{
+	frame = frame % 64;
+
+	float x = float(coordinate.x) + 5.588238f * float(frame);
+	float y = float(coordinate.y) + 5.588238f * float(frame);
+
+	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+}
+
 //Constants.
-#define TERRAIN_MINIMUM_DISPLACEMENT (0.001f)
-#define BIAS_DISPLACEMENT(X) (X * X * X * X)
+#define TERRAIN_SAMPLED_MATERIALS (4) //For performance. (:
+#define TERRAIN_MINIMUM_DISPLACEMENT (0.0001f)
+#define BIAS_DISPLACEMENT(X) (X * X * X * X * X * X * X * X * X * X * X * X * X * X * X * X)
+#define TERRAIN_MATERIAL_SCALE (0.5f)
 
 /*
 *   Terrain material struct definition.
@@ -224,22 +338,41 @@ layout (set = 1, binding = 4) uniform sampler MATERIAL_SAMPLER;
 struct TerrainMaterial
 {
     vec3 albedo;
-    vec3 normal_map;
+    vec4 normal_map_displacement;
     vec4 material_properties;
 };
 
 /*
-*   Blend two terrain materials.
+*   Calculates the material coordinate for the given world position.
 */
-TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial second, float alpha)
+vec2 CalculateTerrainMaterialCoordinate(vec3 world_position, vec2 tile_index, vec3 normal)
 {
-    TerrainMaterial output_material;
+#if 1
+    //Take the absolute of the normal.
+    vec3 absolute_normal = abs(normal);
 
-    output_material.albedo = mix(first.albedo, second.albedo, alpha);
-    output_material.normal_map = mix(first.normal_map, second.normal_map, alpha);
-    output_material.material_properties = mix(first.material_properties, second.material_properties, alpha);
+    //Calculate the tile.
+    bool x_dominant = absolute_normal.x > absolute_normal.y && absolute_normal.x > absolute_normal.z;
+    bool z_dominant = absolute_normal.z > absolute_normal.x && absolute_normal.z > absolute_normal.y;
+    vec2 tile = world_position.yz * float(x_dominant) + world_position.xy * float(z_dominant) + world_position.xz * float(!x_dominant && !z_dominant);
 
-    return output_material;
+    tile *= TERRAIN_MATERIAL_SCALE;
+
+    //Calculate the random rotation.
+    float random_rotation = mix(-PI, PI, RandomFloat(tile_index));
+
+    //Randomly rotate the tile.
+    tile -= tile_index;
+    tile -= 0.5f;
+    tile = RotateYaw(vec3(tile.x, 0.0f, tile.y), random_rotation).xz;
+    tile += 0.5f;
+    tile += tile_index;
+
+    //Return the tile!
+    return tile;
+#else
+    return vec2(world_position.x, world_position.z) * 0.5f;
+#endif
 }
 
 layout (push_constant) uniform PushConstantData

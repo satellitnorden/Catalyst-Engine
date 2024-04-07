@@ -167,7 +167,7 @@ Vertex
         for (uint i = 0; i < 4; ++i)
         {
             //Calculate the material texture coordinate.
-            vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(OutWorldPosition + vec3(sample_offsets[i].x, 0.0f, sample_offsets[i].y) * PATCH_SIZE, normals[i]);
+            vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(OutWorldPosition, (floor(OutHeightMapTextureCoordinate * MAP_RESOLUTION) + sample_offsets[i] * MAP_RESOLUTION) * TERRAIN_MATERIAL_SCALE, normals[i]);
 
             //Cache the height map texture coordinate.
             vec2 height_map_texture_coordinate = OutHeightMapTextureCoordinate + sample_offsets[i];
@@ -178,23 +178,35 @@ Vertex
             //Retrieve the materials.
             Material material_1 = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
             Material material_2 = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
+#if TERRAIN_SAMPLED_MATERIALS >= 3
             Material material_3 = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
             Material material_4 = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
+#endif
 
             //Evaluate the normal map/displacement of the materials.
             vec4 normal_map_displacement_1;
             EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_1);
             vec4 normal_map_displacement_2;
             EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_2);
+#if TERRAIN_SAMPLED_MATERIALS >= 3
             vec4 normal_map_displacement_3;
             EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_3);
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
             vec4 normal_map_displacement_4;
             EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_4);
+#endif
 
             normal_map_displacement_1.w = max(normal_map_displacement_1.w, TERRAIN_MINIMUM_DISPLACEMENT);
             normal_map_displacement_2.w = max(normal_map_displacement_2.w, TERRAIN_MINIMUM_DISPLACEMENT);
+#if TERRAIN_SAMPLED_MATERIALS >= 3
             normal_map_displacement_3.w = max(normal_map_displacement_3.w, TERRAIN_MINIMUM_DISPLACEMENT);
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
             normal_map_displacement_4.w = max(normal_map_displacement_4.w, TERRAIN_MINIMUM_DISPLACEMENT);
+#endif
 
             //Sample the blend map.
             vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
@@ -202,31 +214,77 @@ Vertex
             //Alter the blend values based on the displacement.
             blend_map[0] *= BIAS_DISPLACEMENT(normal_map_displacement_1.w);
             blend_map[1] *= BIAS_DISPLACEMENT(normal_map_displacement_2.w);
+#if TERRAIN_SAMPLED_MATERIALS >= 3
             blend_map[2] *= BIAS_DISPLACEMENT(normal_map_displacement_3.w);
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
             blend_map[3] *= BIAS_DISPLACEMENT(normal_map_displacement_4.w);
+#endif
 
             //Renormalize the blend map.
-            float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
+            float inverse_sum = 1.0f / 
+            (
+                blend_map[0]
+                + blend_map[1]
+#if TERRAIN_SAMPLED_MATERIALS >= 3
+                + blend_map[2]
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
+                + blend_map[3]
+#endif
+            );
 
             blend_map[0] *= inverse_sum;
             blend_map[1] *= inverse_sum;
+#if TERRAIN_SAMPLED_MATERIALS >= 3
             blend_map[2] *= inverse_sum;
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
             blend_map[3] *= inverse_sum;
+#endif
 
             //Blend the material.
             displacements[i] =  normal_map_displacement_1.w * blend_map[0]
                                 + normal_map_displacement_2.w * blend_map[1]
+#if TERRAIN_SAMPLED_MATERIALS >= 3
                                 + normal_map_displacement_3.w * blend_map[2]
-                                + normal_map_displacement_4.w * blend_map[3];
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
+                                + normal_map_displacement_4.w * blend_map[3]
+#endif
+                                ;
         }
 
-        float blend_1 = mix(displacements[0], displacements[1], fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
-	    float blend_2 = mix(displacements[2], displacements[3], fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+        //Calculate the blends.
+        vec4 blends;
+        
+        blends[0] = (1.0f - fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (1.0f - fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+        blends[1] = (1.0f - fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+        blends[2] = (fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (1.0f - fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+        blends[3] = (fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
 
-	    float final_displacement = mix(blend_1, blend_2, fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION));
+        //Alter the blend values based on the displacement.
+        blends[0] *= BIAS_DISPLACEMENT(max(displacements[0], TERRAIN_MINIMUM_DISPLACEMENT));
+        blends[1] *= BIAS_DISPLACEMENT(max(displacements[1], TERRAIN_MINIMUM_DISPLACEMENT));
+        blends[2] *= BIAS_DISPLACEMENT(max(displacements[2], TERRAIN_MINIMUM_DISPLACEMENT));
+        blends[3] *= BIAS_DISPLACEMENT(max(displacements[3], TERRAIN_MINIMUM_DISPLACEMENT));
+
+        //Renormalize the blend map.
+        float inverse_sum = 1.0f / (blends[0] + blends[1] + blends[2] + blends[3]);
+
+        blends[0] *= inverse_sum;
+        blends[1] *= inverse_sum;
+        blends[2] *= inverse_sum;
+        blends[3] *= inverse_sum;
+
+        //Calculate the final displacement!
+	    float final_displacement =  displacements[0] * blends[0]
+                                    + displacements[1] * blends[1]
+                                    + displacements[2] * blends[2]
+                                    + displacements[3] * blends[3];
 
         //Apply the displacement!
-        OutWorldPosition += normal * mix(-0.125f, 0.25f, final_displacement); //Slight bias for upward displacement.
+        OutWorldPosition += normal * mix(-0.1875f, 0.25f, final_displacement); //Slight bias for upward displacement.
     }
 
     //Output the position.
@@ -272,7 +330,7 @@ Fragment
     for (uint i = 0; i < 4; ++i)
     {
         //Calculate the material texture coordinate.
-        vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(InWorldPosition + vec3(sample_offsets[i].x, 0.0f, sample_offsets[i].y) * PATCH_SIZE, normals[i]);
+        vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(InWorldPosition, (floor(InHeightMapTextureCoordinate * MAP_RESOLUTION) + sample_offsets[i] * MAP_RESOLUTION) * TERRAIN_MATERIAL_SCALE, normals[i]);
 
         //Cache the height map texture coordinate.
         vec2 height_map_texture_coordinate = InHeightMapTextureCoordinate + sample_offsets[i];
@@ -283,43 +341,63 @@ Fragment
         //Retrieve the materials.
         Material material_1 = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
         Material material_2 = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
+#if TERRAIN_SAMPLED_MATERIALS >= 3
         Material material_3 = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
         Material material_4 = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
+#endif
 
         //Evaluate the albedo/thickness of the materials.
         vec4 albedo_thickness_1;
         EVALUATE_ALBEDO_THICKNESS(material_1, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_1);
         vec4 albedo_thickness_2;
         EVALUATE_ALBEDO_THICKNESS(material_2, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_2);
+#if TERRAIN_SAMPLED_MATERIALS >= 3
         vec4 albedo_thickness_3;
         EVALUATE_ALBEDO_THICKNESS(material_3, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_3);
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
         vec4 albedo_thickness_4;
         EVALUATE_ALBEDO_THICKNESS(material_4, material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness_4);
+#endif
 
         //Evaluate the normal map/displacement of the materials.
         vec4 normal_map_displacement_1;
         EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_1);
         vec4 normal_map_displacement_2;
         EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_2);
+#if TERRAIN_SAMPLED_MATERIALS >= 3
         vec4 normal_map_displacement_3;
         EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_3);
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
         vec4 normal_map_displacement_4;
         EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_4);
+#endif
 
         //Evaluate the material properties of the materials.
         vec4 material_properties_1;
         EVALUATE_MATERIAL_PROPERTIES(material_1, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_1);
         vec4 material_properties_2;
         EVALUATE_MATERIAL_PROPERTIES(material_2, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_2);
+#if TERRAIN_SAMPLED_MATERIALS >= 3
         vec4 material_properties_3;
         EVALUATE_MATERIAL_PROPERTIES(material_3, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_3);
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
         vec4 material_properties_4;
         EVALUATE_MATERIAL_PROPERTIES(material_4, material_texture_coordinate, MATERIAL_SAMPLER, material_properties_4);
+#endif
 
         normal_map_displacement_1.w = max(normal_map_displacement_1.w, TERRAIN_MINIMUM_DISPLACEMENT);
         normal_map_displacement_2.w = max(normal_map_displacement_2.w, TERRAIN_MINIMUM_DISPLACEMENT);
+#if TERRAIN_SAMPLED_MATERIALS >= 3
         normal_map_displacement_3.w = max(normal_map_displacement_3.w, TERRAIN_MINIMUM_DISPLACEMENT);
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
         normal_map_displacement_4.w = max(normal_map_displacement_4.w, TERRAIN_MINIMUM_DISPLACEMENT);
+#endif
 
         //Sample the blend map.
         vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
@@ -327,50 +405,118 @@ Fragment
         //Alter the blend values based on the displacement.
         blend_map[0] *= BIAS_DISPLACEMENT(normal_map_displacement_1.w);
         blend_map[1] *= BIAS_DISPLACEMENT(normal_map_displacement_2.w);
+#if TERRAIN_SAMPLED_MATERIALS >= 3
         blend_map[2] *= BIAS_DISPLACEMENT(normal_map_displacement_3.w);
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
         blend_map[3] *= BIAS_DISPLACEMENT(normal_map_displacement_4.w);
+#endif
 
         //Renormalize the blend map.
-        float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
+        float inverse_sum = 1.0f / 
+        (
+        blend_map[0]
+        + blend_map[1]
+#if TERRAIN_SAMPLED_MATERIALS >= 3
+        + blend_map[2]
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
+        + blend_map[3]
+#endif
+        );
 
         blend_map[0] *= inverse_sum;
         blend_map[1] *= inverse_sum;
+#if TERRAIN_SAMPLED_MATERIALS >= 3
         blend_map[2] *= inverse_sum;
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
         blend_map[3] *= inverse_sum;
+#endif
 
         //Blend the material.
         terrain_materials[i].albedo =   albedo_thickness_1.rgb * blend_map[0]
                                         + albedo_thickness_2.rgb * blend_map[1]
+#if TERRAIN_SAMPLED_MATERIALS >= 3
                                         + albedo_thickness_3.rgb * blend_map[2]
-                                        + albedo_thickness_4.rgb * blend_map[3];
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
+                                        + albedo_thickness_4.rgb * blend_map[3]
+#endif
+                                        ;
 
-        terrain_materials[i].normal_map =   normal_map_displacement_1.rgb * blend_map[0]
-                                            + normal_map_displacement_2.rgb * blend_map[1]
-                                            + normal_map_displacement_3.rgb * blend_map[2]
-                                            + normal_map_displacement_4.rgb * blend_map[3];
+        terrain_materials[i].normal_map_displacement =  normal_map_displacement_1 * blend_map[0]
+                                                        + normal_map_displacement_2 * blend_map[1]
+#if TERRAIN_SAMPLED_MATERIALS >= 3
+                                                        + normal_map_displacement_3 * blend_map[2]
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
+                                                        + normal_map_displacement_4 * blend_map[3]
+#endif
+                                                        ;
 
         terrain_materials[i].material_properties =  material_properties_1 * blend_map[0]
                                                     + material_properties_2 * blend_map[1]
+#if TERRAIN_SAMPLED_MATERIALS >= 3
                                                     + material_properties_3 * blend_map[2]
-                                                    + material_properties_4 * blend_map[3];
+#endif
+#if TERRAIN_SAMPLED_MATERIALS >= 4
+                                                    + material_properties_4 * blend_map[3]
+#endif
+                                                    ;
     }
 
-    TerrainMaterial blend_1 = BlendTerrainMaterial(terrain_materials[0], terrain_materials[1], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
-	TerrainMaterial blend_2 = BlendTerrainMaterial(terrain_materials[2], terrain_materials[3], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+    //Calculate the blends.
+    vec4 blends;
+        
+    blends[0] = (1.0f - fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (1.0f - fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+    blends[1] = (1.0f - fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+    blends[2] = (fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (1.0f - fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+    blends[3] = (fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
 
-	TerrainMaterial final_material = BlendTerrainMaterial(blend_1, blend_2, fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION));
+    //Alter the blend values based on the displacement.
+    blends[0] *= BIAS_DISPLACEMENT(max(terrain_materials[0].normal_map_displacement.w, TERRAIN_MINIMUM_DISPLACEMENT));
+    blends[1] *= BIAS_DISPLACEMENT(max(terrain_materials[1].normal_map_displacement.w, TERRAIN_MINIMUM_DISPLACEMENT));
+    blends[2] *= BIAS_DISPLACEMENT(max(terrain_materials[2].normal_map_displacement.w, TERRAIN_MINIMUM_DISPLACEMENT));
+    blends[3] *= BIAS_DISPLACEMENT(max(terrain_materials[3].normal_map_displacement.w, TERRAIN_MINIMUM_DISPLACEMENT));
 
-    final_material.normal_map = final_material.normal_map * 2.0f - 1.0f;
-	final_material.normal_map = normalize(final_material.normal_map);
+    //Renormalize the blend map.
+    float inverse_sum = 1.0f / (blends[0] + blends[1] + blends[2] + blends[3]);
+
+    blends[0] *= inverse_sum;
+    blends[1] *= inverse_sum;
+    blends[2] *= inverse_sum;
+    blends[3] *= inverse_sum;
+
+    //Calculate the final material!
+    TerrainMaterial final_material;
+
+    final_material.albedo = terrain_materials[0].albedo * blends[0]
+                            + terrain_materials[1].albedo * blends[1]
+                            + terrain_materials[2].albedo * blends[2]
+                            + terrain_materials[3].albedo * blends[3];
+    final_material.normal_map_displacement =    terrain_materials[0].normal_map_displacement * blends[0]
+                                                + terrain_materials[1].normal_map_displacement * blends[1]
+                                                + terrain_materials[2].normal_map_displacement * blends[2]
+                                                + terrain_materials[3].normal_map_displacement * blends[3];
+    final_material.material_properties =    terrain_materials[0].material_properties * blends[0]
+                                            + terrain_materials[1].material_properties * blends[1]
+                                            + terrain_materials[2].material_properties * blends[2]
+                                            + terrain_materials[3].material_properties * blends[3];
+
+    final_material.normal_map_displacement.xyz = final_material.normal_map_displacement.xyz * 2.0f - 1.0f;
+	final_material.normal_map_displacement.xyz = normalize(final_material.normal_map_displacement.xyz);
 
     //Calculate the shading normal.
-	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map);
+	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map_displacement.xyz);
 
     //Calculate the velocity.
     vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
 
+    vec3 debug_albedo = vec3(fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION));
+
     //Output the fragments.
-    OutputFragment(SceneFeatures1, vec4(final_material.albedo, 1.0f));
+    OutputFragment(SceneFeatures1, vec4(mix(debug_albedo, final_material.albedo, 1.0f), 1.0f));
     OutputFragment(SceneFeatures2, vec4(shading_normal, gl_FragCoord.z));
     OutputFragment(SceneFeatures3, final_material.material_properties);
     OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));

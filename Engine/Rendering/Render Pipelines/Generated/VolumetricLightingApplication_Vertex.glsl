@@ -348,6 +348,14 @@ float RandomFloat(uvec2 coordinate, uint seed)
 }
 
 /*
+*   Given a coordinate, returns a random number.
+*/
+float RandomFloat(vec2 coordinate)
+{
+    return fract(sin(dot(coordinate, vec2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
+/*
 *	Returns the interleaved gradient noise for the given coordinate at the given frame.
 */
 float InterleavedGradientNoise(uvec2 coordinate, uint frame)

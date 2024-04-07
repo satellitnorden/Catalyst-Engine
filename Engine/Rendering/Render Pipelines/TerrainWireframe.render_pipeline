@@ -2,6 +2,8 @@
 IncludeUniformBuffer(Camera);
 
 //Declare shader function library includes.
+IncludeShaderFunctionLibrary(Math);
+IncludeShaderFunctionLibrary(Noise);
 IncludeShaderFunctionLibrary(Terrain);
 
 //Declare output depth buffer.

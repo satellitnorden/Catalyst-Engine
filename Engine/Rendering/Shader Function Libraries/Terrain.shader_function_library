@@ -1,6 +1,8 @@
 //Constants.
-#define TERRAIN_MINIMUM_DISPLACEMENT (0.001f)
-#define BIAS_DISPLACEMENT(X) (X * X * X * X)
+#define TERRAIN_SAMPLED_MATERIALS (4) //For performance. (:
+#define TERRAIN_MINIMUM_DISPLACEMENT (0.0001f)
+#define BIAS_DISPLACEMENT(X) (X * X * X * X * X * X * X * X * X * X * X * X * X * X * X * X)
+#define TERRAIN_MATERIAL_SCALE (0.5f)
 
 /*
 *   Terrain material struct definition.
@@ -8,64 +10,34 @@
 struct TerrainMaterial
 {
     vec3 albedo;
-    vec3 normal_map;
+    vec4 normal_map_displacement;
     vec4 material_properties;
 };
 
 /*
-*   Blend two terrain materials.
-*/
-TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial second, float alpha)
-{
-    TerrainMaterial output_material;
-
-    output_material.albedo = mix(first.albedo, second.albedo, alpha);
-    output_material.normal_map = mix(first.normal_map, second.normal_map, alpha);
-    output_material.material_properties = mix(first.material_properties, second.material_properties, alpha);
-
-    return output_material;
-}
-
-/*
 *   Calculates the material coordinate for the given world position.
 */
-vec2 CalculateTerrainMaterialCoordinate(vec3 world_position, vec3 normal)
+vec2 CalculateTerrainMaterialCoordinate(vec3 world_position, vec2 tile_index, vec3 normal)
 {
-#if 0
+#if 1
     //Take the absolute of the normal.
     vec3 absolute_normal = abs(normal);
 
     //Calculate the tile.
-    vec2 tile;
+    bool x_dominant = absolute_normal.x > absolute_normal.y && absolute_normal.x > absolute_normal.z;
+    bool z_dominant = absolute_normal.z > absolute_normal.x && absolute_normal.z > absolute_normal.y;
+    vec2 tile = world_position.yz * float(x_dominant) + world_position.xy * float(z_dominant) + world_position.xz * float(!x_dominant && !z_dominant);
 
-    if (absolute_normal.x > absolute_normal.y
-        && absolute_normal.x > absolute_normal.z)
-    {
-        tile = world_position.yz;
-    }
-
-    else if (   absolute_normal.z > absolute_normal.x
-                && absolute_normal.z > absolute_normal.y)
-    {
-        tile = world_position.xy;
-    }
-
-    else
-    {
-        tile = world_position.xz;
-    }
-
-    tile *= 0.5f;
-
-    //Calculate the tile index.
-    vec2 tile_index = floor(tile);
+    tile *= TERRAIN_MATERIAL_SCALE;
 
     //Calculate the random rotation.
-    float random_rotation = RandomFloat(tile_index) * PI * 2.0f;
+    float random_rotation = mix(-PI, PI, RandomFloat(tile_index));
 
     //Randomly rotate the tile.
     tile -= tile_index;
+    tile -= 0.5f;
     tile = RotateYaw(vec3(tile.x, 0.0f, tile.y), random_rotation).xz;
+    tile += 0.5f;
     tile += tile_index;
 
     //Return the tile!
