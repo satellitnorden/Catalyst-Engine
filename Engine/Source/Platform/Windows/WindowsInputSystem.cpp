@@ -424,8 +424,8 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 		//Calculate the last known cursor point.
 		POINT last_known_cursor_point;
 
-		last_known_cursor_point.x = static_cast<LONG>(CatalystBaseMath::LinearlyInterpolate(static_cast<float>(rectangle.left), static_cast<float>(rectangle.right), CatalystWindowsData::_LastKnownCursorPosition._X));
-		last_known_cursor_point.y = static_cast<LONG>(CatalystBaseMath::LinearlyInterpolate(static_cast<float>(rectangle.bottom), static_cast<float>(rectangle.top), CatalystWindowsData::_LastKnownCursorPosition._Y));
+		last_known_cursor_point.x = static_cast<LONG>(BaseMath::LinearlyInterpolate(static_cast<float>(rectangle.left), static_cast<float>(rectangle.right), CatalystWindowsData::_LastKnownCursorPosition._X));
+		last_known_cursor_point.y = static_cast<LONG>(BaseMath::LinearlyInterpolate(static_cast<float>(rectangle.bottom), static_cast<float>(rectangle.top), CatalystWindowsData::_LastKnownCursorPosition._Y));
 
 		if (ClientToScreen(_Window, &last_known_cursor_point))
 		{

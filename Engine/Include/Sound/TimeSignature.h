@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 class TimeSignature final
 {
@@ -46,7 +46,7 @@ public:
 	{
 		ASSERT(_Numerator != 0, "Numerator must not be zero!");
 		ASSERT(_Denominator != 0, "Denominator must not be zero!");
-		ASSERT(CatalystBaseMath::IsPowerOfTwo(_Denominator), "Denominator must be power of two!");
+		ASSERT(BaseMath::IsPowerOfTwo(_Denominator), "Denominator must be power of two!");
 	}
 
 	/*
@@ -55,13 +55,13 @@ public:
 	FORCE_INLINE void ConformNumerator(const uint32 denominator) NOEXCEPT
 	{
 		ASSERT(denominator != 0, "Denominator must not be zero!");
-		ASSERT(CatalystBaseMath::IsPowerOfTwo(denominator), "Denominator must be power of two!");
+		ASSERT(BaseMath::IsPowerOfTwo(denominator), "Denominator must be power of two!");
 
 		if (_Denominator > denominator)
 		{
 			while (_Denominator > denominator)
 			{
-				_Denominator = CatalystBaseMath::RoundDownToNearestPowerOfTwo(_Denominator - 1);
+				_Denominator = BaseMath::RoundDownToNearestPowerOfTwo(_Denominator - 1);
 				_Numerator *= 2;
 			}
 		}
@@ -70,7 +70,7 @@ public:
 		{
 			while (_Denominator < denominator)
 			{
-				_Denominator = CatalystBaseMath::RoundUpToNearestPowerOfTwo(_Denominator + 1);
+				_Denominator = BaseMath::RoundUpToNearestPowerOfTwo(_Denominator + 1);
 				_Numerator /= 2;
 			}
 		}

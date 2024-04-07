@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 class ValueNoise final
 {
@@ -16,13 +16,13 @@ public:
 	*/
 	static float Generate(const float X, const float Y, const float seed = 0.0f) NOEXCEPT
 	{
-		const float xSeeded{ CatalystBaseMath::Absolute(X + seed) };
-		const float ySeeded{ CatalystBaseMath::Absolute(Y + seed) };
+		const float xSeeded{ BaseMath::Absolute(X + seed) };
+		const float ySeeded{ BaseMath::Absolute(Y + seed) };
 
-		const float XI{ CatalystBaseMath::Floor<float>(xSeeded) };
-		const float YI{ CatalystBaseMath::Floor<float>(ySeeded) };
-		const float XF{ CatalystBaseMath::Fractional(xSeeded) };
-		const float YF{ CatalystBaseMath::Fractional(ySeeded) };
+		const float XI{ BaseMath::Floor<float>(xSeeded) };
+		const float YI{ BaseMath::Floor<float>(ySeeded) };
+		const float XF{ BaseMath::Fractional(xSeeded) };
+		const float YF{ BaseMath::Fractional(ySeeded) };
 
 		const float A{ Random(XI, YI) };
 		const float B{ Random(XI + 1.0f, YI) };
@@ -32,7 +32,7 @@ public:
 		const float xAlpha{ XF * XF * (3.0f - 2.0f * XF) };
 		const float yAlpha{ YF * YF * (3.0f - 2.0f * YF) };
 
-		return CatalystBaseMath::LinearlyInterpolate(A, B, xAlpha) + (C - A) * yAlpha * (1.0f - xAlpha) + (D - B) * xAlpha * yAlpha;
+		return BaseMath::LinearlyInterpolate(A, B, xAlpha) + (C - A) * yAlpha * (1.0f - xAlpha) + (D - B) * xAlpha * yAlpha;
 	}
 
 	/*
@@ -50,6 +50,6 @@ private:
 	*/
 	static float Random(const float X, const float Y) NOEXCEPT
 	{
-		return CatalystBaseMath::Fractional(CatalystBaseMath::Sine(X * 12.9898f + Y * 78.233f) * 43'758.545312f);
+		return BaseMath::Fractional(BaseMath::Sine(X * 12.9898f + Y * 78.233f) * 43'758.545312f);
 	}
 };

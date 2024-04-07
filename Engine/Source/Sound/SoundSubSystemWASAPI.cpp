@@ -819,7 +819,7 @@ void SoundSubSystemWASAPI::Update() NOEXCEPT
 	//Initialize the audio client.
 	HANDLE_ERROR(_AudioClient->Initialize(	AUDCLNT_SHAREMODE::AUDCLNT_SHAREMODE_SHARED,
 											0,
-											CatalystBaseMath::Maximum<REFERENCE_TIME>(minimum_device_period, optimal_device_period),
+											BaseMath::Maximum<REFERENCE_TIME>(minimum_device_period, optimal_device_period),
 											0,
 											chosen_mix_format,
 											nullptr));

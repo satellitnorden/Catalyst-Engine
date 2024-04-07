@@ -47,8 +47,8 @@ public:
 		float32 s = (offset_coordinate._X + offset_coordinate._Y) * F2;
 		float32 xs = offset_coordinate._X + s;
 		float32 ys = offset_coordinate._Y + s;
-		int32 i = CatalystBaseMath::Floor<int32>(xs);
-		int32 j = CatalystBaseMath::Floor<int32>(ys);
+		int32 i = BaseMath::Floor<int32>(xs);
+		int32 j = BaseMath::Floor<int32>(ys);
 
 		float32 t = static_cast<float>(i + j) * G2;
 		float32 X0 = i - t;
@@ -171,8 +171,8 @@ public:
 		float32 s = (offset_coordinate._X + offset_coordinate._Y) * F2;
 		float32 xs = offset_coordinate._X + s;
 		float32 ys = offset_coordinate._Y + s;
-		int32 i = CatalystBaseMath::Floor<int32>(xs);
-		int32 j = CatalystBaseMath::Floor<int32>(ys);
+		int32 i = BaseMath::Floor<int32>(xs);
+		int32 j = BaseMath::Floor<int32>(ys);
 
 		float32 t = static_cast<float32>(i + j) * G2;
 		float32 X0 = i - t;
@@ -267,7 +267,7 @@ public:
 			derivative_x += noise._Y;
 			derivative_y += noise._Z;
 
-			total += noise._X / CatalystBaseMath::LinearlyInterpolate(1.0f, 1.0f + derivative_x * derivative_x + derivative_y * derivative_y, derivative_weight) * amplitude;
+			total += noise._X / BaseMath::LinearlyInterpolate(1.0f, 1.0f + derivative_x * derivative_x + derivative_y * derivative_y, derivative_weight) * amplitude;
 
 			maximum += amplitude;
 

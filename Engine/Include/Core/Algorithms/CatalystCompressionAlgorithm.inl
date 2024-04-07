@@ -1,7 +1,7 @@
 #pragma once
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 namespace CompressionAlgorithms
 {

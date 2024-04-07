@@ -216,7 +216,7 @@ void SoundSystem::PlatformInitialize(const CatalystProjectSoundConfiguration &co
 			const uint32 number_of_samples_required_for_bursts{ (frames_per_burst * 2) / DEFAULT_NUMBER_OF_MIXING_BUFFERS };
 
             //Set the number of samples per buffer.
-			number_of_samples_per_buffer = CatalystBaseMath::Maximum<uint32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER, number_of_samples_required_for_bursts);
+			number_of_samples_per_buffer = BaseMath::Maximum<uint32>(DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER, number_of_samples_required_for_bursts);
 		}
 
         //Initialize the mixing buffers.

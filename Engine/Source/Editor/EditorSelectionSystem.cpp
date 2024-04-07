@@ -348,15 +348,15 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				//Add the rotation editor.
 				EulerAngles rotation{ world_transform.GetRotation().ToEulerAngles() };
 
-				rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
-				rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
-				rotation._Pitch = CatalystBaseMath::RadiansToDegrees(rotation._Pitch);
+				rotation._Roll = BaseMath::RadiansToDegrees(rotation._Roll);
+				rotation._Yaw = BaseMath::RadiansToDegrees(rotation._Yaw);
+				rotation._Pitch = BaseMath::RadiansToDegrees(rotation._Pitch);
 
 				if (ImGui::DragFloat3("Rotation", rotation.Data(), 0.1f))
 				{
-					rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation._Roll);
-					rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation._Yaw);
-					rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation._Pitch);
+					rotation._Roll = BaseMath::DegreesToRadians(rotation._Roll);
+					rotation._Yaw = BaseMath::DegreesToRadians(rotation._Yaw);
+					rotation._Pitch = BaseMath::DegreesToRadians(rotation._Pitch);
 
 					world_transform.SetRotation(rotation);
 				}
@@ -513,15 +513,15 @@ void EditorSelectionSystem::Update() NOEXCEPT
 						{
 							EulerAngles rotation{ light_entity->GetRotation() };
 
-							rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
-							rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
-							rotation._Pitch = CatalystBaseMath::RadiansToDegrees(rotation._Pitch);
+							rotation._Roll = BaseMath::RadiansToDegrees(rotation._Roll);
+							rotation._Yaw = BaseMath::RadiansToDegrees(rotation._Yaw);
+							rotation._Pitch = BaseMath::RadiansToDegrees(rotation._Pitch);
 
 							if (ImGui::DragFloat3("Rotation", rotation.Data(), 0.1f))
 							{
-								rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation._Roll);
-								rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation._Yaw);
-								rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation._Pitch);
+								rotation._Roll = BaseMath::DegreesToRadians(rotation._Roll);
+								rotation._Yaw = BaseMath::DegreesToRadians(rotation._Yaw);
+								rotation._Pitch = BaseMath::DegreesToRadians(rotation._Pitch);
 
 								light_entity->SetRotation(rotation);
 							}
@@ -796,15 +796,15 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				//Add the rotation editor.
 				EulerAngles rotation{ world_transform.GetRotation().ToEulerAngles() };
 
-				rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
-				rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
-				rotation._Pitch = CatalystBaseMath::RadiansToDegrees(rotation._Pitch);
+				rotation._Roll = BaseMath::RadiansToDegrees(rotation._Roll);
+				rotation._Yaw = BaseMath::RadiansToDegrees(rotation._Yaw);
+				rotation._Pitch = BaseMath::RadiansToDegrees(rotation._Pitch);
 
 				if (ImGui::DragFloat3("Rotation", rotation.Data(), 0.1f))
 				{
-					rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation._Roll);
-					rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation._Yaw);
-					rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation._Pitch);
+					rotation._Roll = BaseMath::DegreesToRadians(rotation._Roll);
+					rotation._Yaw = BaseMath::DegreesToRadians(rotation._Yaw);
+					rotation._Pitch = BaseMath::DegreesToRadians(rotation._Pitch);
 
 					world_transform.SetRotation(rotation);
 				}
@@ -885,15 +885,15 @@ void EditorSelectionSystem::Update() NOEXCEPT
 				{
 					EulerAngles rotation{ user_interface_entity->GetRotation() };
 
-					rotation._Roll = CatalystBaseMath::RadiansToDegrees(rotation._Roll);
-					rotation._Yaw = CatalystBaseMath::RadiansToDegrees(rotation._Yaw);
-					rotation._Pitch = CatalystBaseMath::RadiansToDegrees(rotation._Pitch);
+					rotation._Roll = BaseMath::RadiansToDegrees(rotation._Roll);
+					rotation._Yaw = BaseMath::RadiansToDegrees(rotation._Yaw);
+					rotation._Pitch = BaseMath::RadiansToDegrees(rotation._Pitch);
 
 					if (ImGui::DragFloat3("Rotation", rotation.Data(), 0.1f))
 					{
-						rotation._Roll = CatalystBaseMath::DegreesToRadians(rotation._Roll);
-						rotation._Yaw = CatalystBaseMath::DegreesToRadians(rotation._Yaw);
-						rotation._Pitch = CatalystBaseMath::DegreesToRadians(rotation._Pitch);
+						rotation._Roll = BaseMath::DegreesToRadians(rotation._Roll);
+						rotation._Yaw = BaseMath::DegreesToRadians(rotation._Yaw);
+						rotation._Pitch = BaseMath::DegreesToRadians(rotation._Pitch);
 
 						user_interface_entity->SetRotation(rotation);
 					}

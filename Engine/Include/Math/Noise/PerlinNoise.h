@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/CatalystBaseMath.h>
+#include <Math/BaseMath.h>
 
 namespace PerlinNoiseConstants
 {
@@ -50,13 +50,13 @@ public:
 	*/
 	static constexpr float Generate(float X, float Y, float Z) NOEXCEPT
 	{
-		int32 xInt = static_cast<int32>(CatalystBaseMath::Floor<float>(X)) & 255;
-		int32 yInt = static_cast<int32>(CatalystBaseMath::Floor<float>(Y)) & 255;
-		int32 zInt = static_cast<int32>(CatalystBaseMath::Floor<float>(Z)) & 255;
+		int32 xInt = static_cast<int32>(BaseMath::Floor<float>(X)) & 255;
+		int32 yInt = static_cast<int32>(BaseMath::Floor<float>(Y)) & 255;
+		int32 zInt = static_cast<int32>(BaseMath::Floor<float>(Z)) & 255;
 
-		float xFloat = X - CatalystBaseMath::Floor<float>(X);
-		float yFloat = Y - CatalystBaseMath::Floor<float>(Y);
-		float zFloat = Z - CatalystBaseMath::Floor<float>(Z);
+		float xFloat = X - BaseMath::Floor<float>(X);
+		float yFloat = Y - BaseMath::Floor<float>(Y);
+		float zFloat = Z - BaseMath::Floor<float>(Z);
 
 		float u = Fade(xFloat);
 		float v = Fade(yFloat);
@@ -71,19 +71,19 @@ public:
 		int32 bab = PerlinNoiseConstants::PERMUTATIONS[PerlinNoiseConstants::PERMUTATIONS[PerlinNoiseConstants::PERMUTATIONS[Increment(xInt)] + yInt] + Increment(zInt)];
 		int32 bbb = PerlinNoiseConstants::PERMUTATIONS[PerlinNoiseConstants::PERMUTATIONS[PerlinNoiseConstants::PERMUTATIONS[Increment(xInt)] + Increment(yInt)] + Increment(zInt)];
 
-		float x1 = CatalystBaseMath::LinearlyInterpolate(Gradient(aaa, xFloat, yFloat, zFloat), Gradient(baa, xFloat - 1.0f, yFloat, zFloat), u);
+		float x1 = BaseMath::LinearlyInterpolate(Gradient(aaa, xFloat, yFloat, zFloat), Gradient(baa, xFloat - 1.0f, yFloat, zFloat), u);
 
-		float x2 = CatalystBaseMath::LinearlyInterpolate(Gradient(aba, xFloat, yFloat - 1.0f, zFloat), Gradient(bba, xFloat - 1.0f, yFloat - 1.0f, zFloat), u);
+		float x2 = BaseMath::LinearlyInterpolate(Gradient(aba, xFloat, yFloat - 1.0f, zFloat), Gradient(bba, xFloat - 1.0f, yFloat - 1.0f, zFloat), u);
 
-		float y1 = CatalystBaseMath::LinearlyInterpolate(x1, x2, v);
+		float y1 = BaseMath::LinearlyInterpolate(x1, x2, v);
 
-		x1 = CatalystBaseMath::LinearlyInterpolate(Gradient(aab, xFloat, yFloat, zFloat - 1.0f), Gradient(bab, xFloat - 1.0f, yFloat, zFloat - 1.0f), u);
+		x1 = BaseMath::LinearlyInterpolate(Gradient(aab, xFloat, yFloat, zFloat - 1.0f), Gradient(bab, xFloat - 1.0f, yFloat, zFloat - 1.0f), u);
 
-		x2 = CatalystBaseMath::LinearlyInterpolate(Gradient(abb, xFloat, yFloat - 1.0f, zFloat - 1.0f), Gradient(bbb, xFloat - 1.0f, yFloat - 1.0f, zFloat - 1.0f), u);
+		x2 = BaseMath::LinearlyInterpolate(Gradient(abb, xFloat, yFloat - 1.0f, zFloat - 1.0f), Gradient(bbb, xFloat - 1.0f, yFloat - 1.0f, zFloat - 1.0f), u);
 
-		float y2 = CatalystBaseMath::LinearlyInterpolate(x1, x2, v);
+		float y2 = BaseMath::LinearlyInterpolate(x1, x2, v);
 
-		return CatalystBaseMath::LinearlyInterpolate(y1, y2, w);
+		return BaseMath::LinearlyInterpolate(y1, y2, w);
 	}
 
 	/*
@@ -91,7 +91,7 @@ public:
 	*/
 	static constexpr float GenerateBillowed(float X, float Y, float Z) NOEXCEPT
 	{
-		return CatalystBaseMath::Absolute(Generate(X, Y, Z));
+		return BaseMath::Absolute(Generate(X, Y, Z));
 	}
 
 	/*

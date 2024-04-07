@@ -23,6 +23,7 @@
 
 //STL.
 #include <fstream>
+#include <string>
 
 //Singleton definition.
 DEFINE_SINGLETON(TextureCubeAssetCompiler);
@@ -275,7 +276,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 		const float32 diffuse_weight{ static_cast<float32>(mip_level) / static_cast<float32>(MIP_LEVELS - 1) };
 
 		//Calculate the number of samples.
-		const uint32 number_of_samples{ CatalystBaseMath::Maximum<uint32>(static_cast<uint32>(static_cast<float32>(NUMBER_OF_SAMPLES) * diffuse_weight), 1) };
+		const uint32 number_of_samples{ BaseMath::Maximum<uint32>(static_cast<uint32>(static_cast<float32>(NUMBER_OF_SAMPLES) * diffuse_weight), 1) };
 
 		for (uint8 face_index{ 0 }; face_index < 6; ++face_index)
 		{
@@ -295,12 +296,12 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 
 					switch (face_index)
 					{
-						case 0: base_direction = Vector3<float32>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X)); break; //Front.
-						case 1: base_direction = Vector3<float32>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X)); break; //Back.
-						case 2: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._Y)); break; //Up.
-						case 3: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y)); break; //Down.
-						case 4: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), -1.0f); break; //Right.
-						case 5: base_direction = Vector3<float32>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), 1.0f); break; //Left.
+						case 0: base_direction = Vector3<float32>(-1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X)); break; //Front.
+						case 1: base_direction = Vector3<float32>(1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X)); break; //Back.
+						case 2: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), -1.0f, BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._Y)); break; //Up.
+						case 3: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), 1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y)); break; //Down.
+						case 4: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), -1.0f); break; //Right.
+						case 5: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), 1.0f); break; //Left.
 						default: CRASH(); break;
 					}
 
@@ -318,11 +319,11 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 						{
 							const Vector2<float32> coordinate{ CatalystRandomMath::RandomFloat() , CatalystRandomMath::RandomFloat() };
 
-							const float32 phi{ coordinate._Y * 2.0f * CatalystBaseMathConstants::PI };
+							const float32 phi{ coordinate._Y * 2.0f * BaseMathConstants::PI };
 							const float32 cos_theta{ 1.0f - coordinate._X };
-							const float32 sin_theta{ CatalystBaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
+							const float32 sin_theta{ BaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
 
-							sample_direction =  Vector3<float32>(CatalystBaseMath::Cosine(phi) * sin_theta, CatalystBaseMath::Sine(phi) * sin_theta, cos_theta);
+							sample_direction =  Vector3<float32>(BaseMath::Cosine(phi) * sin_theta, BaseMath::Sine(phi) * sin_theta, cos_theta);
 						}
 
 						//Flip the sample direction, if necessary.
@@ -332,10 +333,10 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 						}
 
 						//Modify the sample direction based on how diffuse it is.
-						sample_direction = Vector3<float32>::Normalize(CatalystBaseMath::LinearlyInterpolate(base_direction, sample_direction, diffuse_weight));
+						sample_direction = Vector3<float32>::Normalize(BaseMath::LinearlyInterpolate(base_direction, sample_direction, diffuse_weight));
 					
 						//Calculate the sample weight.
-						const float32 sample_weight{ CatalystBaseMath::Maximum<float32>(Vector3<float32>::DotProduct(base_direction, sample_direction), 0.0f) };
+						const float32 sample_weight{ BaseMath::Maximum<float32>(Vector3<float32>::DotProduct(base_direction, sample_direction), 0.0f) };
 
 						//Sample.
 						Vector4<float32> sample;

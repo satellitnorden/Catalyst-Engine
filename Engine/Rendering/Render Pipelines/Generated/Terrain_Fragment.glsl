@@ -403,7 +403,7 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 //Constants.
 #define TERRAIN_SAMPLED_MATERIALS (4) //For performance. (:
 #define TERRAIN_MINIMUM_DISPLACEMENT (0.0001f)
-#define BIAS_DISPLACEMENT(X) (X * X * X * X * X * X * X * X * X * X * X * X * X * X * X * X)
+#define BIAS_DISPLACEMENT(X) (pow(X, 12.0f))
 #define TERRAIN_MATERIAL_SCALE (0.5f)
 
 /*
@@ -463,6 +463,7 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 48) uint BLEND_MAP_TEXTURE_INDEX;
 	layout (offset = 52) float MAP_RESOLUTION;
 	layout (offset = 56) float MAP_RESOLUTION_RECIPROCAL;
+	layout (offset = 60) float ROTATION_AMOUNT;
 };
 
 layout (location = 0) in vec3 InWorldPosition;

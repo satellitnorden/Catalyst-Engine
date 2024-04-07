@@ -6,7 +6,8 @@
 #include <Core/Containers/DynamicArray.h>
 
 //File.
-#include <File/Core/BinaryFile.h>
+#include <File/Core/BinaryInputFile.h>
+#include <File/Core/BinaryOutputFile.h>
 
 //Math.
 #include <Math/MachineLearning/ActivationFunctions.h>
@@ -382,7 +383,7 @@ public:
 	FORCE_INLINE void ExportTrainingData(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Open the output file.
-		BinaryFile<BinaryFileMode::OUT> output_file{ file_path };
+		BinaryOutputFile output_file{ file_path };
 
 		//Write all weights for all neurons.
 		for (const Neuron &neuron : _InputLayer._Neurons)
@@ -422,7 +423,7 @@ public:
 	FORCE_INLINE void ImportTrainingData(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Open the input file.
-		BinaryFile<BinaryFileMode::IN> input_file{ file_path };
+		BinaryInputFile input_file{ file_path };
 
 		//Write all weights for all neurons.
 		for (Neuron &neuron : _InputLayer._Neurons)

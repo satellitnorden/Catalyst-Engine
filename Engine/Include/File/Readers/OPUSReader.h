@@ -41,7 +41,7 @@ public:
 		//Add the samples.
 		for (uint64 i{ 0 }; i < audio_data.samples.size(); ++i)
 		{
-			resource->_Samples[i % resource->_NumberOfChannels].Emplace(static_cast<int16>(CatalystBaseMath::Clamp(audio_data.samples[i], -1.0f, 1.0f) * static_cast<float32>(INT16_MAXIMUM)));
+			resource->_Samples[i % resource->_NumberOfChannels].Emplace(static_cast<int16>(BaseMath::Clamp(audio_data.samples[i], -1.0f, 1.0f) * static_cast<float32>(INT16_MAXIMUM)));
 		}
 
 		//Return that the read was successful.

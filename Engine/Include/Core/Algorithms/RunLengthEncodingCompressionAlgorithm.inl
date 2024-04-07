@@ -1,7 +1,7 @@
 #pragma once
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 namespace CompressionAlgorithms
 {
@@ -40,7 +40,7 @@ namespace CompressionAlgorithms
 			for (uint64 i{ 1 }; i < input_size; ++i)
 			{
 				//Has the run ended?
-				if (CatalystBaseMath::Absolute<int32>(static_cast<int32>(run_value) - static_cast<int32>(input_data[i])) > 0 || run_counter == UINT8_MAX)
+				if (BaseMath::Absolute<int32>(static_cast<int32>(run_value) - static_cast<int32>(input_data[i])) > 0 || run_counter == UINT8_MAX)
 				{
 					//Write how long the previous run lasted.
 					intermediate_data[(*compressed_size)++] = run_counter;

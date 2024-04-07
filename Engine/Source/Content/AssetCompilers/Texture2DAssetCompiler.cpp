@@ -28,6 +28,7 @@
 
 //STL.
 #include <fstream>
+#include <string>
 
 //Singleton definition.
 DEFINE_SINGLETON(Texture2DAssetCompiler);

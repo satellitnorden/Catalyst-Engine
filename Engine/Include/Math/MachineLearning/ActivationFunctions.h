@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 namespace ActivationFunctions
 {
@@ -60,7 +60,7 @@ namespace ActivationFunctions
 	*/
 	FORCE_INLINE NO_DISCARD float32 ReLU(const float32 X) NOEXCEPT
 	{
-		return CatalystBaseMath::Maximum<float32>(0.0f, X);
+		return BaseMath::Maximum<float32>(0.0f, X);
 	}
 
 }

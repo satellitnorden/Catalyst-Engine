@@ -728,9 +728,6 @@ void SoundSystem::Mix() NOEXCEPT
 	{
 		PROFILING_SCOPE("SoundSystem_Mix");
 
-		//Remember the start of the update.
-		const std::chrono::steady_clock::time_point start_of_update{ std::chrono::steady_clock::now() };
-
 		//Need the platform to have been initialized before the mixing buffers has been initialized. And no mixing is done when paused.
 		if (!_ShouldMix.IsSet() || !_SubSystem->IsInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused() || (_ContinueWhileEnginePaused ? false : CatalystEngineSystem::Instance->IsEnginePaused()))
 		{

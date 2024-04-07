@@ -39,7 +39,7 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 			{
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
-					_TintColor[i] = CatalystBaseMath::Maximum<float32>(_TintColor[i], 0.0f);
+					_TintColor[i] = BaseMath::Maximum<float32>(_TintColor[i], 0.0f);
 				}
 			}
 		}
@@ -48,7 +48,7 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 		{
 			if (ImGui::DragFloat("Tint Intensity", &_TintIntensity, 0.01f))
 			{
-				_TintIntensity = CatalystBaseMath::Maximum<float32>(_TintIntensity, 0.0f);
+				_TintIntensity = BaseMath::Maximum<float32>(_TintIntensity, 0.0f);
 			}
 		}
 
@@ -56,7 +56,7 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 		{
 			if (ImGui::DragFloat("Brightness", &_Brightness, 0.01f))
 			{
-				_Brightness = CatalystBaseMath::Maximum<float32>(_Brightness, 0.0f);
+				_Brightness = BaseMath::Maximum<float32>(_Brightness, 0.0f);
 			}
 		}
 
@@ -64,7 +64,7 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 		{
 			if (ImGui::DragFloat("Contrast", &_Contrast, 0.01f))
 			{
-				_Contrast = CatalystBaseMath::Maximum<float32>(_Contrast, 0.0f);
+				_Contrast = BaseMath::Maximum<float32>(_Contrast, 0.0f);
 			}
 		}
 
@@ -72,7 +72,7 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 		{
 			if (ImGui::DragFloat("Chromatic Aberration Intensity", &_ChromaticAberrationIntensity, 0.001f))
 			{
-				_ChromaticAberrationIntensity = CatalystBaseMath::Maximum<float32>(_ChromaticAberrationIntensity, 0.0f);
+				_ChromaticAberrationIntensity = BaseMath::Maximum<float32>(_ChromaticAberrationIntensity, 0.0f);
 			}
 		}
 
@@ -80,7 +80,7 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 		{
 			if (ImGui::DragFloat("Exposure", &_Exposure, 0.01f))
 			{
-				_Exposure = CatalystBaseMath::Maximum<float32>(_Exposure, 0.0f);
+				_Exposure = BaseMath::Maximum<float32>(_Exposure, 0.0f);
 			}
 		}
 
@@ -88,7 +88,7 @@ void EditorPostProcessingSystem::Update() NOEXCEPT
 		{
 			if (ImGui::DragFloat("Saturation", &_Saturation, 0.01f))
 			{
-				_Saturation = CatalystBaseMath::Maximum<float32>(_Saturation, 0.0f);
+				_Saturation = BaseMath::Maximum<float32>(_Saturation, 0.0f);
 			}
 		}
 

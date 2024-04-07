@@ -12,6 +12,9 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
+//STL.
+#include <stdio.h>
+
 /*
 *	Post-initializes the ray tracing system.
 */

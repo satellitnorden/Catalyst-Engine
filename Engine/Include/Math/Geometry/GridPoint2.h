@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 #include <Math/General/Vector.h>
 
 class GridPoint2 final
@@ -88,8 +88,8 @@ public:
 	*/
 	constexpr static NO_DISCARD GridPoint2 WorldPositionToGridPoint(const Vector3<float> &worldPosition, const float gridSize) NOEXCEPT
 	{
-		return GridPoint2(	CatalystBaseMath::Round<int32>(worldPosition._X / gridSize),
-							CatalystBaseMath::Round<int32>(worldPosition._Z / gridSize));
+		return GridPoint2(	BaseMath::Round<int32>(worldPosition._X / gridSize),
+							BaseMath::Round<int32>(worldPosition._Z / gridSize));
 	}
 
 };

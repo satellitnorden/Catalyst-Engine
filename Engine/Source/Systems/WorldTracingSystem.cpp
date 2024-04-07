@@ -512,9 +512,9 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 
 							light_position = Vector3<float32>
 							(
-								CatalystBaseMath::Clamp<float32>(offset_hit_position._X, minimum._X, maximum._X),
-								CatalystBaseMath::Clamp<float32>(offset_hit_position._Y, minimum._Y, maximum._Y),
-								CatalystBaseMath::Clamp<float32>(offset_hit_position._Z, minimum._Z, maximum._Z)
+								BaseMath::Clamp<float32>(offset_hit_position._X, minimum._X, maximum._X),
+								BaseMath::Clamp<float32>(offset_hit_position._Y, minimum._Y, maximum._Y),
+								BaseMath::Clamp<float32>(offset_hit_position._Z, minimum._Z, maximum._Z)
 							);
 
 							light_position += CatalystRandomMath::RandomPointInSphere(component->_Size);

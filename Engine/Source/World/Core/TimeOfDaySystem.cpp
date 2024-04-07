@@ -287,5 +287,5 @@ void TimeOfDaySystem::UpdateSky() NOEXCEPT
 	WorldSystem::Instance->GetSkySystem()->SetSkyIntensity(1.0f);
 
 	WorldSystem::Instance->GetSkySystem()->SetSkyGradient(_SkyGradientCurve.Sample(_CurrentTimeOfDay / 24.0f));
-	//WorldSystem::Instance->GetSkySystem()->SetStarIntensity(CatalystBaseMath::LinearlyInterpolate(TimeOfDaySystemConstants::STAR_INTENSITY_LOOKUP[first_index], TimeOfDaySystemConstants::STAR_INTENSITY_LOOKUP[second_index], alpha));
+	//WorldSystem::Instance->GetSkySystem()->SetStarIntensity(BaseMath::LinearlyInterpolate(TimeOfDaySystemConstants::STAR_INTENSITY_LOOKUP[first_index], TimeOfDaySystemConstants::STAR_INTENSITY_LOOKUP[second_index], alpha));
 } 

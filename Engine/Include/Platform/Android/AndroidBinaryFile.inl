@@ -49,7 +49,7 @@ public:
 
 				while (bytes_left_to_read > 0)
 				{
-                    uint64 bytes_to_read{ CatalystBaseMath::Minimum<uint64>(CHUNK_SIZE, bytes_left_to_read) };
+                    uint64 bytes_to_read{ BaseMath::Minimum<uint64>(CHUNK_SIZE, bytes_left_to_read) };
 
 					AAsset_read(asset, static_cast<void *const RESTRICT>(static_cast<byte *const RESTRICT>(_Buffer) + bytes_read), bytes_to_read);
 

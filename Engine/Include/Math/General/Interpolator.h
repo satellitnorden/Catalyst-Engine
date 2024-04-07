@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
-#include <Math/Core/CatalystBaseMath.h>
+#include <Math/Core/BaseMath.h>
 
 /*
 *	Interpolator class definition.
@@ -30,9 +30,9 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD float32 Update(const float32 delta_time) NOEXCEPT
 	{
-		_CurrentTime = CatalystBaseMath::Minimum<float32>(_CurrentTime + delta_time, _MaximumTime);
+		_CurrentTime = BaseMath::Minimum<float32>(_CurrentTime + delta_time, _MaximumTime);
 
-		return CatalystBaseMath::SmoothStep<1>(CatalystBaseMath::LinearlyInterpolate(_Current, _Target, _CurrentTime / _MaximumTime));
+		return BaseMath::SmoothStep<1>(BaseMath::LinearlyInterpolate(_Current, _Target, _CurrentTime / _MaximumTime));
 	}
 
 	/*

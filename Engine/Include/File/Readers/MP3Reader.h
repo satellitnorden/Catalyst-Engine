@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //File.
-#include <File/Core/BinaryFile.h>
+#include <File/Core/BinaryInputFile.h>
 
 //Resources.
 #include <Resources/Core/SoundResource.h>
@@ -23,7 +23,7 @@ public:
 	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, SoundResource *const RESTRICT resource) NOEXCEPT
 	{
 		//Read the file.
-		BinaryFile<BinaryFileMode::IN> file{ file_path };
+		BinaryInputFile file{ file_path };
 
 		//Read the raw data.
 		byte *const RESTRICT raw_data{ static_cast<byte *const RESTRICT>(Memory::Allocate(file.Size())) };
@@ -63,7 +63,7 @@ public:
 						{
 							for (OpenMP3::UInt sample_index{ 0 }; sample_index < processed_samples; ++sample_index)
 							{
-								resource->_Samples[channel_index].Emplace(static_cast<int16>(CatalystBaseMath::Clamp(output[channel_index][sample_index], -1.0f, 1.0f) * static_cast<float32>(INT16_MAXIMUM)));
+								resource->_Samples[channel_index].Emplace(static_cast<int16>(BaseMath::Clamp(output[channel_index][sample_index], -1.0f, 1.0f) * static_cast<float32>(INT16_MAXIMUM)));
 							}
 						}
 					}
