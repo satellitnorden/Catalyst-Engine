@@ -25,3 +25,52 @@ TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial seco
 
     return output_material;
 }
+
+/*
+*   Calculates the material coordinate for the given world position.
+*/
+vec2 CalculateTerrainMaterialCoordinate(vec3 world_position, vec3 normal)
+{
+#if 0
+    //Take the absolute of the normal.
+    vec3 absolute_normal = abs(normal);
+
+    //Calculate the tile.
+    vec2 tile;
+
+    if (absolute_normal.x > absolute_normal.y
+        && absolute_normal.x > absolute_normal.z)
+    {
+        tile = world_position.yz;
+    }
+
+    else if (   absolute_normal.z > absolute_normal.x
+                && absolute_normal.z > absolute_normal.y)
+    {
+        tile = world_position.xy;
+    }
+
+    else
+    {
+        tile = world_position.xz;
+    }
+
+    tile *= 0.5f;
+
+    //Calculate the tile index.
+    vec2 tile_index = floor(tile);
+
+    //Calculate the random rotation.
+    float random_rotation = RandomFloat(tile_index) * PI * 2.0f;
+
+    //Randomly rotate the tile.
+    tile -= tile_index;
+    tile = RotateYaw(vec3(tile.x, 0.0f, tile.y), random_rotation).xz;
+    tile += tile_index;
+
+    //Return the tile!
+    return tile;
+#else
+    return vec2(world_position.x, world_position.z) * 0.5f;
+#endif
+}

@@ -4,6 +4,7 @@ IncludeUniformBuffer(Camera);
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
 IncludeShaderFunctionLibrary(Math);
+IncludeShaderFunctionLibrary(Noise);
 IncludeShaderFunctionLibrary(Terrain);
 
 //Declare output depth buffer.
@@ -132,16 +133,17 @@ Vertex
     }
     
     //Sample the normal map.
+    vec3 normals[4];
     vec3 normal;
 
     {
-        vec3 normal_1 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_2 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_3 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_4 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[0] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[1] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[2] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[3] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
     
-        vec3 blend_1 = mix(normal_1, normal_2, fract(height_map_coordinate.y * MAP_RESOLUTION));
-	    vec3 blend_2 = mix(normal_3, normal_4, fract(height_map_coordinate.y * MAP_RESOLUTION));
+        vec3 blend_1 = mix(normals[0], normals[1], fract(height_map_coordinate.y * MAP_RESOLUTION));
+	    vec3 blend_2 = mix(normals[2], normals[3], fract(height_map_coordinate.y * MAP_RESOLUTION));
 
 	    normal = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
         normal = normal * 2.0f - 1.0f;
@@ -150,9 +152,6 @@ Vertex
 
     //Calculate the heightmap texture coordinate.
     OutHeightMapTextureCoordinate = height_map_coordinate;
-
-    //Calculate the material texture coordinate.
-    vec2 material_texture_coordinate = OutWorldPosition.xz * 0.5f;
 
     //Apply displacement.
     {
@@ -167,6 +166,9 @@ Vertex
 
         for (uint i = 0; i < 4; ++i)
         {
+            //Calculate the material texture coordinate.
+            vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(OutWorldPosition + vec3(sample_offsets[i].x, 0.0f, sample_offsets[i].y) * PATCH_SIZE, normals[i]);
+
             //Cache the height map texture coordinate.
             vec2 height_map_texture_coordinate = OutHeightMapTextureCoordinate + sample_offsets[i];
 
@@ -239,16 +241,17 @@ Fragment
     InputParameter(vec2, InHeightMapTextureCoordinate);
     
     //Sample the normal map.
+    vec3 normals[4];
     vec3 normal;
 
     {
-        vec3 normal_1 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_2 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_3 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_4 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[0] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[1] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[2] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[3] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
     
-        vec3 blend_1 = mix(normal_1, normal_2, fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
-	    vec3 blend_2 = mix(normal_3, normal_4, fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+        vec3 blend_1 = mix(normals[0], normals[1], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+	    vec3 blend_2 = mix(normals[2], normals[3], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
 
 	    normal = mix(blend_1, blend_2, fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION));
         normal = normal * 2.0f - 1.0f;
@@ -256,9 +259,6 @@ Fragment
     }
 
     mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(normal, vec3(0.0f, 0.0f, 1.0f));
-
-    //Calculate the material texture coordinate.
-    vec2 material_texture_coordinate = InWorldPosition.xz * 0.5f;
 
     //Sample the terrain materials
     TerrainMaterial terrain_materials[4];
@@ -271,6 +271,9 @@ Fragment
 
     for (uint i = 0; i < 4; ++i)
     {
+        //Calculate the material texture coordinate.
+        vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(InWorldPosition + vec3(sample_offsets[i].x, 0.0f, sample_offsets[i].y) * PATCH_SIZE, normals[i]);
+
         //Cache the height map texture coordinate.
         vec2 height_map_texture_coordinate = InHeightMapTextureCoordinate + sample_offsets[i];
 

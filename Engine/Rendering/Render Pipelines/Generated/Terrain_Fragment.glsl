@@ -322,6 +322,84 @@ float SmoothStep(float number)
     return number * number * (3.0f - 2.0f * number);
 }
 
+/*
+*   Combines two hashes.
+*/
+uint CombineHash(uint hash_1, uint hash_2)
+{
+    return 3141592653 * hash_1 + hash_2;
+}
+
+/*
+*   Hash function taking a uint.
+*/
+uint Hash(uint seed)
+{
+    seed ^= seed >> 17;
+    seed *= 0xed5ad4bbU;
+    seed ^= seed >> 11;
+    seed *= 0xac4c1b51U;
+    seed ^= seed >> 15;
+    seed *= 0x31848babU;
+    seed ^= seed >> 14;
+    return seed;
+}
+
+/*
+*   Hash function taking a uvec2.
+*/
+uint Hash2(uvec2 seed)
+{
+    return Hash(seed.x) ^ Hash(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
+    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
+    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
+}
+
+/*
+*   Given a seed, returns a random number.
+*/
+float RandomFloat(inout uint seed)
+{
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate and a seed, returns a random number.
+*/
+float RandomFloat(uvec2 coordinate, uint seed)
+{
+    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate, returns a random number.
+*/
+float RandomFloat(vec2 coordinate)
+{
+    return fract(sin(dot(coordinate, vec2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
+/*
+*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*/
+float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+{
+	frame = frame % 64;
+
+	float x = float(coordinate.x) + 5.588238f * float(frame);
+	float y = float(coordinate.y) + 5.588238f * float(frame);
+
+	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+}
+
 //Constants.
 #define TERRAIN_MINIMUM_DISPLACEMENT (0.001f)
 #define BIAS_DISPLACEMENT(X) (X * X * X * X)
@@ -350,6 +428,55 @@ TerrainMaterial BlendTerrainMaterial(TerrainMaterial first, TerrainMaterial seco
     return output_material;
 }
 
+/*
+*   Calculates the material coordinate for the given world position.
+*/
+vec2 CalculateTerrainMaterialCoordinate(vec3 world_position, vec3 normal)
+{
+#if 0
+    //Take the absolute of the normal.
+    vec3 absolute_normal = abs(normal);
+
+    //Calculate the tile.
+    vec2 tile;
+
+    if (absolute_normal.x > absolute_normal.y
+        && absolute_normal.x > absolute_normal.z)
+    {
+        tile = world_position.yz;
+    }
+
+    else if (   absolute_normal.z > absolute_normal.x
+                && absolute_normal.z > absolute_normal.y)
+    {
+        tile = world_position.xy;
+    }
+
+    else
+    {
+        tile = world_position.xz;
+    }
+
+    tile *= 0.5f;
+
+    //Calculate the tile index.
+    vec2 tile_index = floor(tile);
+
+    //Calculate the random rotation.
+    float random_rotation = RandomFloat(tile_index) * PI * 2.0f;
+
+    //Randomly rotate the tile.
+    tile -= tile_index;
+    tile = RotateYaw(vec3(tile.x, 0.0f, tile.y), random_rotation).xz;
+    tile += tile_index;
+
+    //Return the tile!
+    return tile;
+#else
+    return vec2(world_position.x, world_position.z) * 0.5f;
+#endif
+}
+
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 WORLD_POSITION;
@@ -376,20 +503,20 @@ layout (location = 3) out vec4 SceneFeatures4;
 
 void main()
 {
+    vec3 normals[4];
     vec3 normal;
     {
-        vec3 normal_1 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_2 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_3 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_4 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 blend_1 = mix(normal_1, normal_2, fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
-	    vec3 blend_2 = mix(normal_3, normal_4, fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+        normals[0] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[1] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[2] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[3] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 blend_1 = mix(normals[0], normals[1], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+	    vec3 blend_2 = mix(normals[2], normals[3], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
 	    normal = mix(blend_1, blend_2, fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION));
         normal = normal * 2.0f - 1.0f;
         normal = normalize(normal);
     }
     mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(normal, vec3(0.0f, 0.0f, 1.0f));
-    vec2 material_texture_coordinate = InWorldPosition.xz * 0.5f;
     TerrainMaterial terrain_materials[4];
     vec2 sample_offsets[4];
     sample_offsets[0] = vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
@@ -398,6 +525,7 @@ void main()
     sample_offsets[3] = vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
     for (uint i = 0; i < 4; ++i)
     {
+        vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(InWorldPosition + vec3(sample_offsets[i].x, 0.0f, sample_offsets[i].y) * PATCH_SIZE, normals[i]);
         vec2 height_map_texture_coordinate = InHeightMapTextureCoordinate + sample_offsets[i];
         vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
         Material material_1 = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];

@@ -425,7 +425,7 @@ void CatalystPlatform::ShowInterstitialAd() NOEXCEPT
 */
 void CatalystPlatform::PrintToOutput(const char *const RESTRICT format, ...) NOEXCEPT
 {
-	char buffer[256];
+	char buffer[512];
 
 	va_list variadic_arguments;
 	va_start(variadic_arguments, format);
