@@ -1386,7 +1386,7 @@ void RenderInputManager::GatherUserInterfaceTextInputStream
 			push_constant_data._TextureMinimum = type_primitive->_Font->_CharacterDescriptions[character]._TextureBounds._Minimum;
 			push_constant_data._TextureMaximum = type_primitive->_Font->_CharacterDescriptions[character]._TextureBounds._Maximum;
 			push_constant_data._TextureIndex = type_primitive->_Font->_MasterTextureIndex;
-			push_constant_data._SmoothingFactor = 0.25f;
+			push_constant_data._SmoothingFactor = 0.3'25f;
 
 			for (uint64 i{ 0 }; i < sizeof(UserInterfaceTextPushConstantData); ++i)
 			{

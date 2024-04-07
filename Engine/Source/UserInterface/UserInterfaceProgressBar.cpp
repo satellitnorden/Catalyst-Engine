@@ -101,7 +101,7 @@ void UserInterfaceProgressBar::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Maximum = _BottomPrimitive->_Maximum;
 			description._Opacity = 1.0f;
 			description._Font = _Font;
-			description._Scale = 0.015f;
+			description._Scale = 0.02'50f;
 			description._HorizontalAlignment = TextHorizontalAlignment::CENTER;
 			description._VerticalAlignment = TextVerticalAlignment::CENTER;
 			description._Text = text;
