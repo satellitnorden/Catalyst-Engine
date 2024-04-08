@@ -158,6 +158,7 @@ inline void GenerateSerializeDefaultValue
 (
 	const std::string &indent,
 	const Variable &variable,
+	const std::vector<Enumeration> &enumerations,
 	const std::vector<Class> &classes,
 	std::ofstream &file
 )
@@ -179,7 +180,7 @@ inline void GenerateSerializeDefaultValue
 				for (const Variable &_variable : _class._Variables)
 				{
 					file << indent << "{" << std::endl;
-					GenerateSerializeDefaultValue(indent + "\t", _variable, classes, file);
+					GenerateSerializeDefaultValue(indent + "\t", _variable, enumerations, classes, file);
 					file << indent << "}" << std::endl;
 				}
 
@@ -190,11 +191,15 @@ inline void GenerateSerializeDefaultValue
 		//If this variable has a default value, try to use that.
 		if (!variable._Default.empty())
 		{
+			bool found_type{ false };
+
 			//Special cases.
 			if (variable._Type == "HashString")
 			{
 				file << indent << "const HashString DEFAULT{ \"" << variable._Default.c_str() << "\" }; " << std::endl;
 				file << indent << "stream_archive->Write(&DEFAULT, sizeof(HashString));" << std::endl;
+
+				found_type = true;
 			}
 
 			else if (variable._Type == "String")
@@ -203,9 +208,27 @@ inline void GenerateSerializeDefaultValue
 				file << indent << "constexpr uint64 DEFAULT_LENGTH{ StringUtilities::StringLength(DEFAULT) + 1 }; " << std::endl;
 				file << indent << "stream_archive->Write(&DEFAULT_LENGTH, sizeof(uint64));" << std::endl;
 				file << indent << "stream_archive->Write(RESTRICT, DEFAULT_LENGTH);" << std::endl;
+
+				found_type = true;
 			}
 
 			else
+			{
+				for (const Enumeration &enumeration : enumerations)
+				{
+					if (variable._Type == enumeration._Name)
+					{
+						file << indent << "const " << variable._Type.c_str() << " DEFAULT{ " << enumeration._Name.c_str() << "::" << variable._Default.c_str() << " }; " << std::endl;
+						file << indent << "stream_archive->Write(&DEFAULT, sizeof(" << variable._Type.c_str() << "));" << std::endl;
+
+						found_type = true;
+
+						break;
+					}
+				}
+			}
+
+			if (!found_type)
 			{
 				file << indent << "const " << variable._Type.c_str() << " DEFAULT{ " << variable._Default.c_str() << " }; " << std::endl;
 				file << indent << "stream_archive->Write(&DEFAULT, sizeof(" << variable._Type.c_str() << "));" << std::endl;
@@ -512,7 +535,7 @@ void SettingsGenerator::GenerateCode()
 						//Parse the default.
 						if (variable_entry.contains("Default"))
 						{
-							const nlohmann::json &default_entry{ variable_entry["Default"] };
+							bool found_type{ false };
 
 							if (new_variable._Type == "float32")
 							{
@@ -525,17 +548,33 @@ void SettingsGenerator::GenerateCode()
 								{
 									new_variable._Default += "f";
 								}
+
+								found_type = true;
 							}
 
 							else if (new_variable._Type == "String")
 							{
 								new_variable._Default = variable_entry["Default"].get<std::string>();
+
+								found_type = true;
 							}
-							
+
 							else
 							{
-								ASSERT(false, "Unknown default type!");
+								for (const Enumeration &enumeration : enumerations)
+								{
+									if (new_variable._Type == enumeration._Name)
+									{
+										new_variable._Default = variable_entry["Default"].get<std::string>();
+
+										found_type = true;
+
+										break;
+									}
+								}
 							}
+							
+							ASSERT(found_type, "Unknown default type!");
 						}
 
 						//Parse whether or not this variable is an array.
@@ -1009,7 +1048,7 @@ void SettingsGenerator::GenerateCode()
 			file << "\telse" << std::endl;
 			file << "\t{" << std::endl;
 
-			GenerateSerializeDefaultValue("\t\t", variable, classes, file);
+			GenerateSerializeDefaultValue("\t\t", variable, enumerations, classes, file);
 
 			file << "\t}" << std::endl;
 		}
