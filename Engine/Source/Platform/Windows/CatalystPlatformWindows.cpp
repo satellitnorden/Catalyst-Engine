@@ -425,12 +425,37 @@ void CatalystPlatform::ShowInterstitialAd() NOEXCEPT
 */
 void CatalystPlatform::PrintToOutput(const char *const RESTRICT format, ...) NOEXCEPT
 {
+	/*
+	*	To guard against invalid format specifiers, we put the message in a staging buffer first and filter it.
+	*/
+	char format_buffer[1024];
+
+	{
+		const uint64 format_length{ strlen(format) };
+
+		for (uint64 i{ 0 }; i < format_length; ++i)
+		{
+			//Guard against '%_'.
+			if (format[i] == '%' && (i + 1) < format_length && format[i + 1] == '_')
+			{
+				format_buffer[i] = '_';
+			}
+
+			else
+			{
+				format_buffer[i] = format[i];
+			}
+		}
+
+		format_buffer[format_length] = '\0';
+	}
+
 	char buffer[1024];
 
-	va_list variadic_arguments;
-	va_start(variadic_arguments, format);
+	va_list variadic_arguments{ nullptr };
+	va_start(variadic_arguments, format_buffer);
 
-	vsprintf_s(buffer, format, variadic_arguments);
+	vsprintf_s(buffer, format_buffer, variadic_arguments);
 
 	const uint64 length{ strlen(buffer) };
 

@@ -331,7 +331,6 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec3 InWorldPosition;
 layout (location = 1) in vec3 InNormal;
 layout (location = 2) in vec2 InTextureCoordinate;
-layout (location = 3) in float InNormalizedAge;
 
 layout (location = 0) out vec4 SceneFeatures1;
 layout (location = 1) out vec4 SceneFeatures2;

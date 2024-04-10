@@ -331,7 +331,6 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) out vec3 OutWorldPosition;
 layout (location = 1) out vec3 OutNormal;
 layout (location = 2) out vec2 OutTextureCoordinate;
-layout (location = 3) out float OutNormalizedAge;
 
 void main()
 {
@@ -353,6 +352,5 @@ void main()
     OutNormal = forward_vector;
     OutTextureCoordinate.x = float(gl_VertexIndex > 1);
     OutTextureCoordinate.y = 1.0f - float(gl_VertexIndex & 1);
-    OutNormalizedAge = particle_normalized_age;
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

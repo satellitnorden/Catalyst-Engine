@@ -283,16 +283,45 @@ namespace GLSLCompilation
 
 					output_file << "\tlayout (offset = " << current_offset << ") " << type_string.data() << " " << name_string.data() << std::endl;
 
-					//Update the current offset.
-					if (buffer_type == BufferType::STORAGE)
+					//Figure out if this is an array.
+					uint64 array_count{ 0 };
+
 					{
-						//Offsets are always 16 for storage buffers.
-						current_offset += 16;
+						const size_t array_start_position{ current_line.find("[") };
+
+						if (array_start_position != std::string::npos)
+						{
+							const size_t array_end_position{ current_line.find("]") };
+
+							const size_t array_position_length{ array_end_position - array_start_position };
+
+							if (array_position_length > 1)
+							{
+								const std::string array_count_string{ current_line.substr(array_start_position + 1, array_position_length - 1) };
+
+								array_count = std::stoull(array_count_string.c_str());
+							}
+						}
+					}
+
+					//Update the current offset. Assume 16 bytes for each array element if this is an array.
+					if (array_count > 0)
+					{
+						current_offset += 16 * array_count;
 					}
 
 					else
 					{
-						current_offset += GetByteOffsetForType(type_string.data());
+						if (buffer_type == BufferType::STORAGE)
+						{
+							//Offsets are always 16 for storage buffers.
+							current_offset += 16;
+						}
+
+						else
+						{
+							current_offset += GetByteOffsetForType(type_string.data());
+						}
 					}
 				}
 			}

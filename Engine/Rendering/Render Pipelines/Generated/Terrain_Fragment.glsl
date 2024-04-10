@@ -463,7 +463,6 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 48) uint BLEND_MAP_TEXTURE_INDEX;
 	layout (offset = 52) float MAP_RESOLUTION;
 	layout (offset = 56) float MAP_RESOLUTION_RECIPROCAL;
-	layout (offset = 60) float ROTATION_AMOUNT;
 };
 
 layout (location = 0) in vec3 InWorldPosition;

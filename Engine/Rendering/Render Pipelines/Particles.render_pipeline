@@ -62,7 +62,6 @@ Vertex
     OutputParameter(vec3, OutWorldPosition);
     OutputParameter(vec3, OutNormal);
     OutputParameter(vec2, OutTextureCoordinate);
-    OutputParameter(float, OutNormalizedAge);
 
     //Unpack the particle data.
     vec4 particle_data_1 = PARTICLES[(START_INDEX + INSTANCE_INDEX) * 2 + 0];
@@ -100,9 +99,6 @@ Vertex
     OutTextureCoordinate.x = float(VERTEX_INDEX > 1);
     OutTextureCoordinate.y = 1.0f - float(VERTEX_INDEX & 1);
 
-    //Set the normalized age.
-    OutNormalizedAge = particle_normalized_age;
-
     //Output the position.
     OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
 }
@@ -114,7 +110,6 @@ Fragment
     InputParameter(vec3, InWorldPosition);
     InputParameter(vec3, InNormal);
     InputParameter(vec2, InTextureCoordinate);
-    InputParameter(float, InNormalizedAge);
 
     //Evaluate the material.
     vec4 albedo_thickness;

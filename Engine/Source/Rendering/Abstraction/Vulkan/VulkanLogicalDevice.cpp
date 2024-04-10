@@ -229,7 +229,7 @@ void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreat
 	extension.descriptorBindingStorageTexelBufferUpdateAfterBind = VK_FALSE;
 	extension.descriptorBindingPartiallyBound = VK_FALSE;
 	extension.descriptorBindingVariableDescriptorCount = VK_FALSE;
-	extension.runtimeDescriptorArray = VK_FALSE;
+	extension.runtimeDescriptorArray = VK_TRUE;
 
 	//Define the required extensions.
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

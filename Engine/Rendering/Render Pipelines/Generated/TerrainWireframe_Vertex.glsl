@@ -327,7 +327,7 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 //Constants.
 #define TERRAIN_SAMPLED_MATERIALS (4) //For performance. (:
 #define TERRAIN_MINIMUM_DISPLACEMENT (0.0001f)
-#define BIAS_DISPLACEMENT(X) (X * X * X * X * X * X * X * X * X * X * X * X * X * X * X * X)
+#define BIAS_DISPLACEMENT(X) (pow(X, 12.0f))
 #define TERRAIN_MATERIAL_SCALE (0.5f)
 
 /*
