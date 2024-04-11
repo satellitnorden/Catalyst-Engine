@@ -771,6 +771,33 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 			}
 		}
 	}
+
+	//Calculate the average value.
+	Vector4<float32> average_value;
+
+	{
+		//Calculate the average value with higher precision.
+		Vector4<float64> _average_value{ 0.0, 0.0, 0.0, 0.0 };
+
+		for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
+		{
+			for (uint32 X{ 0 }; X < composite_texture.GetWidth(); ++X)
+			{
+				const Vector4<float32> &texel{ composite_texture.At(X, Y) };
+
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					_average_value[i] += static_cast<float64>(texel[i]);
+				}
+			}
+		}
+
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			_average_value[i] /= static_cast<float64>(composite_texture.GetWidth() * composite_texture.GetHeight());
+			average_value[i] = static_cast<float32>(_average_value[i]);
+		}
+	}
 	
 	//Generate the mip chain.
 	DynamicArray<Texture2D<Vector4<float32>>> mip_chain;
@@ -840,6 +867,9 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data()};
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
+	//Write the average value.
+	output_file.Write(&average_value, sizeof(Vector4<float32>));
+
 	//Write the number of mipmap levels to the file.
 	const uint8 mipmap_levels{ static_cast<uint8>(output_textures.Size() - parameters._BaseMipLevel) };
 	output_file.Write(&mipmap_levels, sizeof(uint8));
@@ -869,6 +899,9 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 
 	//Read the data.
 	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
+
+	//Read the average value.
+	load_data->_StreamArchive->Read(&load_data->_Asset->_AverageValue, sizeof(Vector4<float32>), &stream_archive_position);
 
 	//Read the number of mip levels.
 	uint8 number_of_mip_levels;

@@ -103,6 +103,7 @@ public:
 		{
 			case MaterialAsset::Component::Type::COLOR:
 			{
+				CLEAR_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE);
 				_AlbedoThickness = *material->_AlbedoThicknessComponent._Color.Data();
 
 				break;
@@ -110,8 +111,17 @@ public:
 
 			case MaterialAsset::Component::Type::TEXTURE:
 			{
-				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE);
-				_AlbedoThickness = material->_AlbedoThicknessComponent._Texture->_Index;
+				if (true) //Placeholder for if texture is loaded.
+				{
+					SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE);
+					_AlbedoThickness = material->_AlbedoThicknessComponent._Texture->_Index;
+				}
+				
+				else
+				{
+					CLEAR_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE);
+					_AlbedoThickness = *Color(material->_AlbedoThicknessComponent._Texture->_AverageValue).Data();
+				}
 
 				break;
 			}
@@ -129,6 +139,7 @@ public:
 		{
 			case MaterialAsset::Component::Type::COLOR:
 			{
+				CLEAR_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE);
 				_NormalMapDisplacement = *material->_NormalMapDisplacementComponent._Color.Data();
 
 				break;
@@ -136,8 +147,17 @@ public:
 
 			case MaterialAsset::Component::Type::TEXTURE:
 			{
-				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE);
-				_NormalMapDisplacement = material->_NormalMapDisplacementComponent._Texture->_Index;
+				if (true) //Placeholder for if texture is loaded.
+				{
+					SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE);
+					_NormalMapDisplacement = material->_NormalMapDisplacementComponent._Texture->_Index;
+				}
+
+				else
+				{
+					CLEAR_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE);
+					_NormalMapDisplacement = *Color(material->_NormalMapDisplacementComponent._Texture->_AverageValue).Data();
+				}
 
 				break;
 			}
@@ -155,6 +175,7 @@ public:
 		{
 			case MaterialAsset::Component::Type::COLOR:
 			{
+				CLEAR_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE);
 				_MaterialProperties = *material->_MaterialPropertiesComponent._Color.Data();
 
 				break;
@@ -162,8 +183,17 @@ public:
 
 			case MaterialAsset::Component::Type::TEXTURE:
 			{
-				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE);
-				_MaterialProperties = material->_MaterialPropertiesComponent._Texture->_Index;
+				if (true) //Placeholder for if texture is loaded.
+				{
+					SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE);
+					_MaterialProperties = material->_MaterialPropertiesComponent._Texture->_Index;
+				}
+
+				else
+				{
+					CLEAR_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE);
+					_MaterialProperties = *Color(material->_MaterialPropertiesComponent._Texture->_AverageValue).Data();
+				}
 
 				break;
 			}
@@ -181,6 +211,7 @@ public:
 		{
 			case MaterialAsset::Component::Type::COLOR:
 			{
+				CLEAR_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_OPACITY_TEXTURE);
 				_Opacity = *material->_OpacityComponent._Color.Data();
 
 				break;
@@ -188,8 +219,17 @@ public:
 
 			case MaterialAsset::Component::Type::TEXTURE:
 			{
-				SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_OPACITY_TEXTURE);
-				_Opacity = material->_OpacityComponent._Texture->_Index;
+				if (true) //Placeholder for if texture is loaded.
+				{
+					SET_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_OPACITY_TEXTURE);
+					_Opacity = material->_OpacityComponent._Texture->_Index;
+				}
+
+				else
+				{
+					CLEAR_BIT(_Properties, CatalystShaderConstants::MATERIAL_PROPERTY_OPACITY_TEXTURE);
+					_Opacity = *Color(material->_OpacityComponent._Texture->_AverageValue).Data();
+				}
 
 				break;
 			}

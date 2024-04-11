@@ -19,6 +19,9 @@ void Vulkan3DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 	//Set the image layout.
 	_VulkanImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
+	//Set the extent.
+	_Extent = VkExtent3D(textureWidth, textureHeight, textureDepth);
+
 	//Calculate the image size.
 	VkDeviceSize imageSize{ 0 };
 

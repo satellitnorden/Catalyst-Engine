@@ -10,9 +10,6 @@
 */
 void VulkanRenderTarget::Initialize(const VkExtent2D extent, const VkFormat format, const VkSampleCountFlagBits sample_count) NOEXCEPT
 {
-	//Set the extent
-	_Extent = extent;
-
 	//Set the sample count.
 	_SampleCount = sample_count;
 
@@ -21,6 +18,9 @@ void VulkanRenderTarget::Initialize(const VkExtent2D extent, const VkFormat form
 
 	//Set the image layout.
 	_VulkanImageLayout = VK_IMAGE_LAYOUT_GENERAL;
+
+	//Set the extent.
+	_Extent = VkExtent3D(extent.width, extent.height, 1);
 
 	//Create the Vulkan image.
 	VkImageCreateInfo image_info = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };

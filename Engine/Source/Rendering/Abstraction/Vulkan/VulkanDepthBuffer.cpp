@@ -20,6 +20,9 @@ void VulkanDepthBuffer::Initialize(const VkExtent2D extent, const VkFormat forma
 	//Set the image layout.
 	_VulkanImageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
+	//Set the extent.
+	_Extent = VkExtent3D(extent.width, extent.height, 1);
+
 	//Set the sample count.
 	_SampleCount = sample_count;
 

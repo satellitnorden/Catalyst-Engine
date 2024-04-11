@@ -19,6 +19,9 @@ void VulkanCubeMapTexture::Initialize(const DynamicArray<DynamicArray<float32>> 
 	//Set the image layout.
 	_VulkanImageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
+	//Set the extent.
+	_Extent = VkExtent3D(width, height, 1);
+
 	//Calculate the image size.
 	VkDeviceSize image_size{ 0 };
 

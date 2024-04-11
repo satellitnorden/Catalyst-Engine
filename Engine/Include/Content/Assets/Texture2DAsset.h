@@ -18,6 +18,9 @@ public:
 	//The type identifier.
 	static HashString TYPE_IDENTIFIER;
 
+	//The average value.
+	Vector4<float32> _AverageValue;
+
 	//The texture 2D handle.
 	Texture2DHandle _Texture2DHandle{ EMPTY_HANDLE };
 

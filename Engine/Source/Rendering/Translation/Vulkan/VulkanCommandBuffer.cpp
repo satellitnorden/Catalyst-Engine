@@ -149,7 +149,11 @@ void CommandBuffer::BlitImage(const Pipeline *const RESTRICT pipeline, const Opa
 	VulkanImage *const RESTRICT source_image{ static_cast<VulkanImage* const RESTRICT>(source) };
 	VulkanImage *const RESTRICT target_image{ static_cast<VulkanImage* const RESTRICT>(target) };
 
-	static_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData)->CommandBlitImage(source_image->GetImage(), target_image->GetImage());
+	ASSERT(source_image->GetExtent().width == target_image->GetExtent().width, "Mismatching width!");
+	ASSERT(source_image->GetExtent().height == target_image->GetExtent().height, "Mismatching height!");
+	ASSERT(source_image->GetExtent().depth == target_image->GetExtent().depth, "Mismatching depth!");
+
+	static_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData)->CommandBlitImage(source_image->GetImage(), target_image->GetImage(), VkExtent2D(source_image->GetExtent().width, source_image->GetExtent().height));
 }
 
 /*

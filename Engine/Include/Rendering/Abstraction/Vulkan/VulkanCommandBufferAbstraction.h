@@ -71,7 +71,7 @@ public:
 	/*
 	*	Records a blit image command.
 	*/
-	void CommandBlitImage(VkImage source, VkImage destination) NOEXCEPT;
+	void CommandBlitImage(VkImage source, VkImage destination, const VkExtent2D exten) NOEXCEPT;
 
 	/*
 	*	Records a build acceleration structure command.

@@ -35,11 +35,6 @@ public:
 	void Release() NOEXCEPT;
 
 	/*
-	*	Returns the extent of the render target.
-	*/
-	FORCE_INLINE NO_DISCARD VkExtent2D GetExtent() const NOEXCEPT { return _Extent; }
-
-	/*
 	*	Returns the sample count of the render target.
 	*/
 	FORCE_INLINE NO_DISCARD VkSampleCountFlagBits GetSampleCount() const NOEXCEPT { return _SampleCount; }
@@ -55,9 +50,6 @@ public:
 	const VkImageView GetResolveImageView() const NOEXCEPT { return _VulkanResolveImageView; }
 
 private:
-
-	//The extent of the image.
-	VkExtent2D _Extent;
 
 	//The sample count.
 	VkSampleCountFlagBits _SampleCount;

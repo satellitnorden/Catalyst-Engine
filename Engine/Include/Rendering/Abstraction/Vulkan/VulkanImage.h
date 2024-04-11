@@ -51,6 +51,14 @@ public:
 	*/
 	const VkImageLayout GetImageLayout() const NOEXCEPT { return _VulkanImageLayout; }
 
+	/*
+	*	Returns the extent.
+	*/
+	const VkExtent3D GetExtent() const NOEXCEPT
+	{
+		return _Extent;
+	}
+
 protected:
 
 	//The type.
@@ -73,6 +81,9 @@ protected:
 
 	//The underlying Vulkan image layout.
 	VkImageLayout _VulkanImageLayout;
+
+	//The extent.
+	VkExtent3D _Extent;
 
 };
 #endif

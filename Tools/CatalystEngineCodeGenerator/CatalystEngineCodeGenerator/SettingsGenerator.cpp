@@ -664,9 +664,11 @@ void SettingsGenerator::GenerateCode()
 			file << std::endl;
 
 			//Add core includes.
-			{
-				bool has_added_any_core_include{ false };
+			file << "//Core." << std::endl;
+			file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
 
+			//Add core includes.
+			{
 				//Check if any variable in this class is an array - If so, include <DynamicArray.h>.
 				{
 					bool any_variable_is_array{ false };
@@ -683,13 +685,6 @@ void SettingsGenerator::GenerateCode()
 
 					if (any_variable_is_array)
 					{
-						if (!has_added_any_core_include)
-						{
-							file << "//Core." << std::endl;
-
-							has_added_any_core_include = true;
-						}
-
 						file << "#include <Core/Containers/DynamicArray.h>" << std::endl;
 					}
 				}
@@ -710,21 +705,12 @@ void SettingsGenerator::GenerateCode()
 
 					if (any_variable_is_hashstring)
 					{
-						if (!has_added_any_core_include)
-						{
-							file << "//Core." << std::endl;
-
-							has_added_any_core_include = true;
-						}
 
 						file << "#include <Core/General/HashString.h>" << std::endl;
 					}
 				}
 
-				if (has_added_any_core_include)
-				{
-					file << std::endl;
-				}
+				file << std::endl;
 
 				//Check if any variable in this class is a math type - If so, include it.
 				{
@@ -869,6 +855,9 @@ void SettingsGenerator::GenerateCode()
 
 	file << "//Core." << std::endl;
 	file << "#include <Core/Algorithms/HashAlgorithms.h>" << std::endl;
+	file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+	file << "\t#include <Core/General/Time.h>" << std::endl;
+	file << "#endif" << std::endl;
 	file << std::endl;
 
 	file << "//Settings." << std::endl;
@@ -878,6 +867,12 @@ void SettingsGenerator::GenerateCode()
 		file << "#include <Generated/Settings/" << _class._Name.c_str() << ".Generated.h>" << std::endl;
 	}
 
+	file << std::endl;
+
+	file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+	file << "//Systems." << std::endl;
+	file << "#include <Systems/LogSystem.h>" << std::endl;
+	file << "#endif" << std::endl;
 	file << std::endl;
 
 	//Add forward declarations for all class specific functions.
@@ -917,7 +912,13 @@ void SettingsGenerator::GenerateCode()
 	{
 		file << "\t\t\tcase " << _class._Name.c_str() << "::CLASS_IDENTIFIER:" << std::endl;
 		file << "\t\t\t{" << std::endl;
+		file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+		file << "\t\t\t\tTimePoint time_point;" << std::endl;
+		file << "#endif" << std::endl;
 		file << "\t\t\t\tSerialize" << _class._Name.c_str() << "ToStreamArchive(*entry_iterator, stream_archive);" << std::endl;
+		file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+		file << "\t\t\t\tLOG_INFORMATION(\"Serialize" << _class._Name.c_str() << "ToStreamArchive took %f seconds\", time_point.GetSecondsSince());" << std::endl;
+		file << "#endif" << std::endl;
 		file << "\t\t\t\tbreak;" << std::endl;
 		file << "\t\t\t}" << std::endl;
 	}
@@ -946,7 +947,13 @@ void SettingsGenerator::GenerateCode()
 	{
 		file << "\t\tcase " << _class._Name.c_str() << "::CLASS_IDENTIFIER:" << std::endl;
 		file << "\t\t{" << std::endl;
+		file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+		file << "\t\t\tTimePoint time_point;" << std::endl;
+		file << "#endif" << std::endl;
 		file << "\t\t\tDeserialize" << _class._Name.c_str() << "FromStreamArchive(stream_archive, static_cast<" << _class._Name.c_str() << " *const RESTRICT>(object), &stream_archive_position);" << std::endl;
+		file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+		file << "\t\t\tLOG_INFORMATION(\"Deserialize" << _class._Name.c_str() << "FromStreamArchive took %f seconds\", time_point.GetSecondsSince());" << std::endl;
+		file << "#endif" << std::endl;
 		file << "\t\t\tbreak;" << std::endl;
 		file << "\t\t}" << std::endl;
 	}
