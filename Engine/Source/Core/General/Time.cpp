@@ -4,7 +4,7 @@
 //STL.
 #include <chrono>
 
-#define IMPLEMENTATION() (*_Implementation.Get< std::chrono::time_point<std::chrono::steady_clock>>())
+#define IMPLEMENTATION() (*_Implementation.Get<std::chrono::time_point<std::chrono::steady_clock>>())
 
 /*
 *	Default constructor.

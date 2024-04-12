@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/DynamicString.h>
 
 namespace TextParsingUtilities
 {

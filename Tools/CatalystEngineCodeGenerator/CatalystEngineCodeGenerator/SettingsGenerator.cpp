@@ -138,10 +138,19 @@ inline void GenerateSerializeToStreamArchiveForType
 
 	if (type == "Vector2")
 	{
-		file << indent << "Vector2<float32> _value;" << std::endl;
+		file << indent << "Vector2 _value;" << std::endl;
 		file << indent << "_value._X = " << JSON << ".contains(\"X\") ? " << JSON << "[\"X\"].get<float32>() : 0.0f;" << std::endl;
 		file << indent << "_value._Y = " << JSON << ".contains(\"Y\") ? " << JSON << "[\"Y\"].get<float32>() : 0.0f;" << std::endl;
-		file << indent << "stream_archive->Write(&_value, sizeof(Vector2<float32>));" << std::endl;
+		file << indent << "stream_archive->Write(&_value, sizeof(Vector2));" << std::endl;
+
+		return;
+	}
+
+	if (type == "WorldTransform")
+	{
+		file << indent << "//TODO: Support world transforms properly." << std::endl;
+		file << indent << "const WorldTransform DEFAULT{ };" << std::endl;
+		file << indent << "stream_archive->Write(&DEFAULT, sizeof(WorldTransform));" << std::endl;
 
 		return;
 	}
@@ -151,6 +160,48 @@ inline void GenerateSerializeToStreamArchiveForType
 	file << indent << "stream_archive->Write(&_value, sizeof(" << type << "));" << std::endl;
 }
 
+/*
+*	Generates serialize to stream archive for the given type.
+*/
+inline void GenerateSerializeToStreamArchiveForType
+(
+	const std::string &indent,
+	const std::string &object,
+	const std::string &type,
+	const std::vector<Class> &classes,
+	std::ofstream &file
+)
+{
+	for (const Class &_class : classes)
+	{
+		if (_class._Name == type)
+		{
+			file << indent << "Serialize" << _class._Name.c_str() << "ToStreamArchive(" << object << ", stream_archive);" << std::endl;
+
+			return;
+		}
+	}
+
+	if (type == "String")
+	{
+		const std::string _object{ object.substr(1) };
+
+		file << indent << "{" << std::endl;
+		file << indent << "\tconst uint64 string_length{ StringUtilities::StringLength(" << _object << ") + 1 };" << std::endl;
+		file << indent << "\tstream_archive->Write(&string_length, sizeof(uint64));" << std::endl;
+		file << indent << "\tif (string_length > 0)" << std::endl;
+		file << indent << "\t{" << std::endl;
+		file << indent << "\t\tstream_archive->Write(" << _object << ", string_length);" << std::endl;
+		file << indent << "\t\tconstexpr char NUL_TERMINATOR{ '\\0' };" << std::endl;
+		file << indent << "\t\tstream_archive->Write(&NUL_TERMINATOR, sizeof(char));" << std::endl;
+		file << indent << "\t}" << std::endl;
+		file << indent << "}" << std::endl;
+
+		return;
+	}
+
+	file << indent << "stream_archive->Write(" << object << ", sizeof(" << type.c_str() << "));" << std::endl;
+}
 /*
 *	Generates a serialization of a default value.
 */
@@ -290,15 +341,43 @@ inline void GenerateDeserializeFromStreamArchiveForType
 		return;
 	}
 
-	if (type == "Vector2")
+	//Otherwise it's a "builtin type".
+	file << indent << "stream_archive.Read(&" << name << ", sizeof(" << type << "), stream_archive_position);" << std::endl;
+}
+
+/*
+*	Generates size for the given type.
+*/
+inline void GenerateSizeForType
+(
+	const std::string &indent,
+	const Variable &variable,
+	const std::string &object,
+	const std::vector<Class> &classes,
+	std::ofstream &file
+)
+{
+	//Check if the type is an object.
+	for (const Class &_class : classes)
 	{
-		file << indent << "stream_archive.Read(&" << name << ", sizeof(Vector2<float32>), stream_archive_position);" << std::endl;
+		if (variable._Type == _class._Name)
+		{
+			file << indent << "size += " << _class._Name.c_str() << "Size(" << object << ");" << std::endl;
+
+			return;
+		}
+	}
+
+	//Check for special cases.
+	if (variable._Type == "String")
+	{
+		file << indent << "size += sizeof(uint64);" << std::endl;
 
 		return;
 	}
 
 	//Otherwise it's a "builtin type".
-	file << indent << "stream_archive.Read(&" << name << ", sizeof(" << type << "), stream_archive_position);" << std::endl;
+	file << indent << "size += sizeof(" << variable._Type << ");" << std::endl;
 }
 
 /*
@@ -740,6 +819,22 @@ void SettingsGenerator::GenerateCode()
 				}
 			}
 
+			//Add world includes.
+			{
+				//Check if any variable in this class is a world transform - If so, include <WorldTransform.h>.
+				for (const Variable &variable : _class._Variables)
+				{
+					if (variable._Type == "WorldTransform")
+					{
+						file << "//World." << std::endl;
+						file << "#include <World/Core/WorldTransform.h>" << std::endl;
+						file << std::endl;
+
+						break;
+					}
+				}
+			}
+
 			//Check if this class references any enumerations that should be included.
 			bool has_referenced_any_settings{ false };
 
@@ -875,6 +970,10 @@ void SettingsGenerator::GenerateCode()
 	file << "#endif" << std::endl;
 	file << std::endl;
 
+	//Add some constants.
+	file << "#define Vector2 Vector2<float32>" << std::endl;
+	file << std::endl;
+
 	//Add forward declarations for all class specific functions.
 	file << "//Forward declarations." << std::endl;
 
@@ -891,7 +990,21 @@ void SettingsGenerator::GenerateCode()
 
 	for (const Class &_class : classes)
 	{
+		file << "FORCE_INLINE void Serialize" << _class._Name.c_str() << "ToStreamArchive(const " << _class._Name.c_str() << "*const RESTRICT object, StreamArchive *const RESTRICT stream_archive) NOEXCEPT;" << std::endl;
+	}
+
+	file << std::endl;
+
+	for (const Class &_class : classes)
+	{
 		file << "FORCE_INLINE void Deserialize" << _class._Name.c_str() << "FromStreamArchive(const StreamArchive &stream_archive, " << _class._Name.c_str() << " *const RESTRICT object, uint64 *const RESTRICT stream_archive_position) NOEXCEPT;" << std::endl;
+	}
+
+	file << std::endl;
+
+	for (const Class &_class : classes)
+	{
+		file << "FORCE_INLINE NO_DISCARD uint64 " << _class._Name.c_str() << "Size(const " << _class._Name.c_str() << " *const RESTRICT object) NOEXCEPT;" << std::endl;
 	}
 
 	file << std::endl;
@@ -933,6 +1046,33 @@ void SettingsGenerator::GenerateCode()
 	file << "}" << std::endl;
 	file << std::endl;
 
+	//Add the "SerializeToStreamArchiveInternal" function.
+	file << "/*" << std::endl;
+	file << "*\tSerializes settings from an object into a stream archive." << std::endl;
+	file << "*/" << std::endl;
+	file << "void Settings::SerializeToStreamArchiveInternal(const uint64 class_identifier, const void *const RESTRICT object, StreamArchive *const RESTRICT stream_archive) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+	file << "\tswitch (class_identifier)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (const Class &_class : classes)
+	{
+		file << "\t\tcase " << _class._Name.c_str() << "::CLASS_IDENTIFIER:" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\tSerialize" << _class._Name.c_str() << "ToStreamArchive(static_cast<const " << _class._Name.c_str() << " *const RESTRICT>(object), stream_archive);" << std::endl;
+		file << "\t\t\tbreak;" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
+	file << "\t\tdefault:" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tASSERT(false, \"Invalid case!\");" << std::endl;
+	file << "\t\t\tbreak;" << std::endl;
+	file << "\t\t}" << std::endl;
+	file << "\t}" << std::endl;
+	file << "}" << std::endl;
+	file << std::endl;
+
 	//Add the "DeserializeFromStreamArchiveInternal" function.
 	file << "/*" << std::endl;
 	file << "*\tDeserializes a settings object from the given stream archive internally." << std::endl;
@@ -962,6 +1102,32 @@ void SettingsGenerator::GenerateCode()
 	file << "\t\t{" << std::endl;
 	file << "\t\t\tASSERT(false, \"Invalid case!\");" << std::endl;
 	file << "\t\t\tbreak;" << std::endl;
+	file << "\t\t}" << std::endl;
+	file << "\t}" << std::endl;
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Add the "SizeInternal" function.
+	file << "/*" << std::endl;
+	file << "*\tCalculates the size, in bytes, of the given object internally." << std::endl;
+	file << "*/" << std::endl;
+	file << "NO_DISCARD uint64 Settings::SizeInternal(const uint64 class_identifier, const void *const RESTRICT object) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+	file << "\tswitch (class_identifier)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (const Class& _class : classes)
+	{
+		file << "\t\tcase " << _class._Name.c_str() << "::CLASS_IDENTIFIER:" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\treturn " << _class._Name.c_str() << "Size(static_cast<const " << _class._Name.c_str() << " *const RESTRICT>(object));" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
+	file << "\t\tdefault:" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tASSERT(false, \"Invalid case!\");" << std::endl;
+	file << "\t\t\treturn 0;" << std::endl;
 	file << "\t\t}" << std::endl;
 	file << "\t}" << std::endl;
 	file << "}" << std::endl;
@@ -1064,6 +1230,53 @@ void SettingsGenerator::GenerateCode()
 		file << std::endl;
 	}
 
+	//Add "SerializeToStreamArchive" functions for all classes.
+	for (const Class& _class : classes)
+	{
+		file << "FORCE_INLINE void Serialize" << _class._Name.c_str() << "ToStreamArchive(const " << _class._Name.c_str() << " *const RESTRICT object, StreamArchive *const RESTRICT stream_archive) NOEXCEPT" << std::endl;
+		file << "{" << std::endl;
+
+		//Serialize all variables.
+		for (const Variable &variable : _class._Variables)
+		{
+			if (variable._IsArray)
+			{
+				file << "\t{" << std::endl;
+				file << "\t\tconst uint64 size{ object->_" << variable._Name.c_str() << ".Size() };" << std::endl;
+				file << "\t\tstream_archive->Write(&size, sizeof(uint64));" << std::endl;
+				file << "\t\tfor (const " << variable._Type.c_str() << " &element : object->_" << variable._Name.c_str() << ")" << std::endl;
+				file << "\t\t{" << std::endl;
+
+				GenerateSerializeToStreamArchiveForType
+				(
+					"\t\t\t",
+					"&element",
+					variable._Type,
+					classes,
+					file
+				);
+
+				file << "\t\t}" << std::endl;
+				file << "\t}" << std::endl;
+			}
+
+			else
+			{
+				GenerateSerializeToStreamArchiveForType
+				(
+					"\t",
+					std::string("&object->_") + variable._Name,
+					variable._Type,
+					classes,
+					file
+				);
+			}
+		}
+
+		file << "}" << std::endl;
+		file << std::endl;
+	}
+
 	//Add "DeserializeFromStreamArchive" functions for all classes.
 	for (const Class &_class : classes)
 	{
@@ -1114,6 +1327,53 @@ void SettingsGenerator::GenerateCode()
 
 			file << "\t}" << std::endl;
 		}
+
+		file << "}" << std::endl;
+		file << std::endl;
+	}
+
+	//Add "Size" functions for all classes.
+	for (const Class  _class : classes)
+	{
+		file << "FORCE_INLINE NO_DISCARD uint64 " << _class._Name.c_str() << "Size(const " << _class._Name.c_str() << " *const RESTRICT object) NOEXCEPT" << std::endl;
+		file << "{" << std::endl;
+
+		file << "\tuint64 size{ 0 };" << std::endl;
+
+		for (const Variable &variable : _class._Variables)
+		{
+			if (variable._IsArray)
+			{
+				file << "\tsize += sizeof(uint64);" << std::endl;
+				file << "\tfor (const " << variable._Type.c_str() << " &element : object->_" << variable._Name.c_str() << ")" << std::endl;
+				file << "\t{" << std::endl;
+
+				GenerateSizeForType
+				(
+					"\t\t",
+					variable,
+					std::string("&element"),
+					classes,
+					file
+				);
+
+				file << "\t}" << std::endl;
+			}
+
+			else
+			{
+				GenerateSizeForType
+				(
+					"\t",
+					variable,
+					std::string("&object->_") + variable._Name.c_str(),
+					classes,
+					file
+				);
+			}
+		}
+
+		file << "\treturn size;" << std::endl;
 
 		file << "}" << std::endl;
 		file << std::endl;

@@ -32,7 +32,7 @@ void SaveSystem::Initialize() NOEXCEPT
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterSequentialUpdate
 	(
-		[](void* const RESTRICT arguments)
+		[](void *const RESTRICT arguments)
 		{
 			static_cast<SaveSystem *const RESTRICT>(arguments)->SequentialUpdate();
 		},
