@@ -145,6 +145,22 @@ NO_DISCARD Asset *const RESTRICT ImpostorMaterialAssetCompiler::Load(const LoadC
 */
 void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
 {
+	class SignedDistanceFieldData final
+	{
+
+	public:
+
+		//The closest texel coordinate.
+		Vector2<uint32> _ClosestTexelCoordinate;
+
+		//The closest texel distance.
+		float32 _ClosestTexelDistance;
+
+		//Denotes whether or not this texel is outside.
+		bool _Outside;
+
+	};
+
 	PROFILING_SCOPE("ImpostorMaterialAssetCompiler::CompileInternal");
 
 	//Set up the parameters.
@@ -725,6 +741,55 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 				impostor_normal_map_texture.At(X, Y) = Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f);
 				impostor_material_properties_texture.At(X, Y) = Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f);
 				impostor_opacity_texture.At(X, Y) = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
+			}
+		}
+	}
+
+	//For each texel that is outside the opacity mask, calculate the closest pixel to it to "stretch out" the textures.
+	for (uint32 Y{ 0 }; Y < impostor_opacity_texture.GetHeight(); ++Y)
+	{
+		for (uint32 X{ 0 }; X < impostor_opacity_texture.GetWidth(); ++X)
+		{
+			if (impostor_opacity_texture.At(X, Y)._X < 0.5f)
+			{
+				Vector2<uint32> closest_texel_coordinate{ UINT32_MAXIMUM, UINT32_MAXIMUM };
+				float32 closest_texel_distance{ FLOAT32_MAXIMUM };
+
+				const Vector2<float32> normalized_coordinate
+				{
+					(static_cast<float32>(X) + 0.5f) / static_cast<float32>(impostor_opacity_texture.GetWidth()),
+					(static_cast<float32>(Y) + 0.5f) / static_cast<float32>(impostor_opacity_texture.GetHeight())
+				};
+
+				for (uint32 _Y{ 0 }; _Y < impostor_opacity_texture.GetHeight(); ++_Y)
+				{
+					for (uint32 _X{ 0 }; _X < impostor_opacity_texture.GetWidth(); ++_X)
+					{
+						if (impostor_opacity_texture.At(_X, _Y)._X >= 0.5f)
+						{
+							const Vector2<float32> _normalized_coordinate
+							{
+								(static_cast<float32>(_X) + 0.5f) / static_cast<float32>(impostor_opacity_texture.GetWidth()),
+								(static_cast<float32>(_Y) + 0.5f) / static_cast<float32>(impostor_opacity_texture.GetHeight())
+							};
+
+							const float32 distance{ Vector2<float32>::LengthSquared(normalized_coordinate - _normalized_coordinate) };
+
+							if (closest_texel_distance > distance)
+							{
+								closest_texel_coordinate = Vector2<uint32>(_X, _Y);
+								closest_texel_distance = distance;
+							}
+						}
+					}
+				}
+
+				if (closest_texel_coordinate != Vector2<uint32>(UINT32_MAXIMUM, UINT32_MAXIMUM))
+				{
+					impostor_albedo_texture.At(X, Y) = impostor_albedo_texture.At(closest_texel_coordinate._X, closest_texel_coordinate._Y);
+					impostor_normal_map_texture.At(X, Y) = impostor_normal_map_texture.At(closest_texel_coordinate._X, closest_texel_coordinate._Y);
+					impostor_material_properties_texture.At(X, Y) = impostor_material_properties_texture.At(closest_texel_coordinate._X, closest_texel_coordinate._Y);
+				}
 			}
 		}
 	}
