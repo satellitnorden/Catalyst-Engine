@@ -163,7 +163,7 @@ private:
 	bool _SkyEnabled{ true };
 
 	//The sky mode.
-	SkyMode _SkyMode{ SkyMode::TEXTURE };
+	SkyMode _SkyMode{ SkyMode::GRADIENT };
 
 	//The atmospheric scattering properties.
 	AtmosphericScatteringProperties _AtmosphericScatteringProperties;
