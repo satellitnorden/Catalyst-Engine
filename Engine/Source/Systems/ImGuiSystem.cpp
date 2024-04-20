@@ -297,8 +297,8 @@ void ImGuiSystem::BeginWindow
 	Vector2<float32> window_size{ window_resolution._X * (maximum._X - minimum._X), window_resolution._Y * (maximum._Y - minimum._Y) };
 
 	//Set the window position and size.
-	ImGui::SetWindowPos(ImVec2(window_position._X, window_position._Y));
-	ImGui::SetWindowSize(ImVec2(window_size._X, window_size._Y));
+	ImGui::SetWindowPos(ImVec2(window_position._X, window_position._Y), ImGuiCond_Once);
+	ImGui::SetWindowSize(ImVec2(window_size._X, window_size._Y), ImGuiCond_Once);
 	//ImGui::SetWindowPos(ImVec2(64, 128));
 	//ImGui::SetWindowSize(ImVec2(1920, 64));
 }
