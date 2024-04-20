@@ -16,6 +16,9 @@
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
 
+//Type aliases.
+using TopBarMenuCallback = void(*)();
+
 class ALIGN(8) CatalystEditorSystem final
 {
 
@@ -90,6 +93,14 @@ public:
 		return &_EditorSelectionSystem;
 	}
 
+	/*
+	*	Registers a top bar menu callback.
+	*/
+	FORCE_INLINE void RegisterTopBarMenuCallback(const TopBarMenuCallback callback) NOEXCEPT
+	{
+		_TopBarMenuCallbacks.Emplace(callback);
+	}
+
 private:
 
 	//Denotes if the editor is in a game.
@@ -118,6 +129,9 @@ private:
 
 	//The viewport texture ID.
 	ImTextureID _ViewportTextureID;
+
+	//The top bar menu callbacks.
+	DynamicArray<TopBarMenuCallback> _TopBarMenuCallbacks;
 
 	/*
 	*	Updates the Catalyst editor system during the GAMEPLAY update phase.

@@ -894,14 +894,14 @@ void VulkanSubRenderingSystem::PostInitialize() NOEXCEPT
 			imgui_init_info.Device = VulkanInterface::Instance->GetLogicalDevice().Get();
 			imgui_init_info.QueueFamily = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::MAIN);
 			imgui_init_info.Queue = VulkanInterface::Instance->GetMainQueue()->Get();
-			imgui_init_info.PipelineCache = VK_NULL_HANDLE;
 			imgui_init_info.DescriptorPool = VulkanInterface::Instance->GetDescriptorPool().Get();
-			imgui_init_info.Subpass = 0;
+			imgui_init_info.RenderPass = static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(ImGuiRenderPass::Instance->GetImGuiGraphicsPipeline()->GetData())->_RenderPass->Get();
 			imgui_init_info.MinImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages();
 			imgui_init_info.ImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages();
 			imgui_init_info.MSAASamples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+
 			imgui_init_info.UseDynamicRendering = false;
-			imgui_init_info.ColorAttachmentFormat = VkFormat::VK_FORMAT_UNDEFINED;
+
 			imgui_init_info.Allocator = nullptr;
 			imgui_init_info.CheckVkResultFn = [](VkResult result)
 			{
@@ -909,7 +909,7 @@ void VulkanSubRenderingSystem::PostInitialize() NOEXCEPT
 			};
 			imgui_init_info.MinAllocationSize = 1024 * 1024;
 
-			ImGui_ImplVulkan_Init(&imgui_init_info, static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(ImGuiRenderPass::Instance->GetImGuiGraphicsPipeline()->GetData())->_RenderPass->Get());
+			ImGui_ImplVulkan_Init(&imgui_init_info);
 		}
 
 		//Create the fonts texture.

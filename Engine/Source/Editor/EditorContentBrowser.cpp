@@ -52,16 +52,15 @@ void EditorContentBrowser::Request
 NO_DISCARD bool EditorContentBrowser::UpdateFloatingWindow(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
 	//Begin the window.
-	ImGuiSystem::Instance->BeginWindow
-	(
-		_Prompt,
-		minimum,
-		maximum,
-		true,
-		true,
-		true,
-		false
-	);
+	ImGuiSystem::BeginWindowParameters begin_window_parameters;
+
+	begin_window_parameters._Name = _Prompt;
+	begin_window_parameters._Minimum = minimum;
+	begin_window_parameters._Maximum = maximum;
+	begin_window_parameters._EnableResize = true;
+	begin_window_parameters._EnableMove = true;
+
+	ImGuiSystem::Instance->BeginWindow(begin_window_parameters);
 
 	//Add buttons for all filtered assets.
 	for (Asset *const RESTRICT asset : _FilteredAssets)

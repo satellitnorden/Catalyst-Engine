@@ -72,9 +72,11 @@ file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.c ../Code/Source/*.cpp  ../
 
 #Add the third party include files.
 file(GLOB_RECURSE ASSIMP_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/ThirdParty/assimp/*.h ../../Catalyst-Engine/Engine/Include/ThirdParty/assimp/*.hpp)
+file(GLOB_RECURSE IMGUI_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/ThirdParty/ImGui/*.h)
+file(GLOB_RECURSE IMGUINODEEDITOR_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/ThirdParty/imguinodeeditor/*.h ../../Catalyst-Engine/Engine/Include/ThirdParty/imguinodeeditor/*.inl)
 
 #Add the executable.
-add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES}  ${ENGINE_RENDERING_FILES} ${GAME_INCLUDE_FILES} ${GAME_RENDERING_FILES} ${GAME_SCRIPT_FILES} ${GAME_SOURCE_FILES} ${ASSIMP_INCLUDE_FILES})
+add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES}  ${ENGINE_RENDERING_FILES} ${GAME_INCLUDE_FILES} ${GAME_RENDERING_FILES} ${GAME_SCRIPT_FILES} ${GAME_SOURCE_FILES} ${ASSIMP_INCLUDE_FILES} ${IMGUI_INCLUDE_FILES} ${IMGUINODEEDITOR_INCLUDE_FILES})
 
 #Set the core include paths.
 target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include)
@@ -82,6 +84,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC ../Code/Include)
 
 #Set the third party include paths.
 target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/assimp)
+target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/ImGui)
+target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/imguinodeeditor)
 
 #Set the third party include paths.
 [SET_MLPACK_INCLUDE_DIRECTORIES]

@@ -200,7 +200,14 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 NO_DISCARD bool CatalystEditorSystem::ViewportUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
 	//Begin the window.
-	ImGuiSystem::Instance->BeginWindow("Editor Viewport", minimum, maximum, false, false, false, false);
+	ImGuiSystem::BeginWindowParameters begin_window_parameters;
+
+	begin_window_parameters._Name = "Editor Viewport";
+	begin_window_parameters._Minimum = minimum;
+	begin_window_parameters._Maximum = maximum;
+	begin_window_parameters._ShowTitleBar = false;
+
+	ImGuiSystem::Instance->BeginWindow(begin_window_parameters);
 
 	//Retrieve the window resolution.
 	const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
@@ -227,7 +234,15 @@ NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimu
 	constexpr float32 IMAGE_SIZE{ 48.0f };
 
 	//Begin the window.
-	ImGuiSystem::Instance->BeginWindow("Editor Top Bar", minimum, maximum, false, false, false, true);
+	ImGuiSystem::BeginWindowParameters begin_window_parameters;
+
+	begin_window_parameters._Name = "Editor Top Bar";
+	begin_window_parameters._Minimum = minimum;
+	begin_window_parameters._Maximum = maximum;
+	begin_window_parameters._ShowTitleBar = false;
+	begin_window_parameters._EnableMenuBar = true;
+
+	ImGuiSystem::Instance->BeginWindow(begin_window_parameters);
 
 	//Main menu.
 	{
@@ -278,6 +293,12 @@ NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimu
 			}
 
 			ImGui::EndMenu();
+		}
+
+		//Call the top bar callbacks.
+		for (const TopBarMenuCallback callback : _TopBarMenuCallbacks)
+		{
+			callback();
 		}
 
 		//End the menu.

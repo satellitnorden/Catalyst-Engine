@@ -36,6 +36,40 @@ public:
 		NUMBER_OF_GAME_WINDOWS
 	};
 
+	/*
+	*	Begin window parameters class definition.
+	*/
+	class BeginWindowParameters final
+	{
+
+	public:
+
+		//The name.
+		const char *RESTRICT _Name{ "[WINDOW_NAME]" };
+
+		//The minimum.
+		Vector2<float32> _Minimum{ 0.0f, 0.0f };
+
+		//The maximum.
+		Vector2<float32> _Maximum{ 1.0f, 1.0f };
+
+		//Denotes whether or not to show title bar.
+		bool _ShowTitleBar{ true };
+
+		//Denotes whether or not to enable resize.
+		bool _EnableResize{ false };
+
+		//Denotes whether or not to enable move.
+		bool _EnableMove{ false };
+
+		//Denotes whether or not to enable menu bar.
+		bool _EnableMenuBar{ false };
+
+		//Denotes whether or not this window is closable.
+		bool _Closable{ false };
+
+	};
+
 	//Singleton declaration.
 	DECLARE_SINGLETON(ImGuiSystem);
 
@@ -69,17 +103,9 @@ public:
 
 	/*
 	*	Utility function for beginning an ImGui window.
+	*	Returns if the window should remain opened.
 	*/
-	void BeginWindow
-	(
-		const char *const RESTRICT name,
-		const Vector2<float32> minimum,
-		const Vector2<float32> maximum,
-		const bool show_title_bar = true,
-		const bool enable_resize = false,
-		const bool enable_move = false,
-		const bool enable_menu_bar = false
-	) NOEXCEPT;
+	bool BeginWindow(const BeginWindowParameters &parameters) NOEXCEPT;
 
 private:
 	

@@ -947,7 +947,14 @@ void EditorLevelSystem::GenerateEntityIdentifier(uint64 *const RESTRICT identifi
 NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
 	//Begin the window.
-	ImGuiSystem::Instance->BeginWindow("Editor Level Top Right", minimum, maximum, false, false, false, false);
+	ImGuiSystem::BeginWindowParameters begin_window_parameters;
+
+	begin_window_parameters._Name = "Editor Level Top Right";
+	begin_window_parameters._Minimum = minimum;
+	begin_window_parameters._Maximum = maximum;
+	begin_window_parameters._ShowTitleBar = false;
+
+	ImGuiSystem::Instance->BeginWindow(begin_window_parameters);
 
 	//List all entities.
 	for (uint64 entity_index{ 0 }; entity_index < _Entities.Size(); ++entity_index)
@@ -997,7 +1004,15 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 	}
 
 	//Begin the window.
-	ImGuiSystem::Instance->BeginWindow("Editor Level Bottom Right", minimum, maximum, false, false, false, true);
+	ImGuiSystem::BeginWindowParameters begin_window_parameters;
+
+	begin_window_parameters._Name = "Editor Level Bottom Right";
+	begin_window_parameters._Minimum = minimum;
+	begin_window_parameters._Maximum = maximum;
+	begin_window_parameters._ShowTitleBar = false;
+	begin_window_parameters._EnableMenuBar = true;
+
+	ImGuiSystem::Instance->BeginWindow(begin_window_parameters);
 
 	//Set up stuff for the selected entity.
 	if (_SelectedEntityIndex != UINT64_MAXIMUM)

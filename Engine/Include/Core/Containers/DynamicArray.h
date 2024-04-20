@@ -150,7 +150,7 @@ public:
 	*/
 	FORCE_INLINE TYPE &operator[](const uint64 index) NOEXCEPT
 	{
-	ASSERT(index < _Size, "Index is out of bounds!");
+		ASSERT(index < _Size, "Index is out of bounds!");
 
 		return _Array[index];
 	}

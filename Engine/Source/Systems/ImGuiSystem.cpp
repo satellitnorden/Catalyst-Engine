@@ -238,34 +238,25 @@ void ImGuiSystem::RegisterEditorWindow(const EditorWindow window, const WindowCa
 /*
 *	Utility function for beginning an ImGui window.
 */
-void ImGuiSystem::BeginWindow
-(
-	const char *const RESTRICT name,
-	const Vector2<float32> minimum,
-	const Vector2<float32> maximum,
-	const bool show_title_bar,
-	const bool enable_resize,
-	const bool enable_move,
-	const bool enable_menu_bar
-) NOEXCEPT
+bool ImGuiSystem::BeginWindow(const BeginWindowParameters &parameters) NOEXCEPT
 {
 	//Calculate the window flags.
 	ImGuiWindowFlags window_flags = 0;
 
 	//Remove title bar if requested.
-	if (!show_title_bar)
+	if (!parameters._ShowTitleBar)
 	{
 		window_flags |= ImGuiWindowFlags_NoTitleBar;
 	}
 
 	//Always no resize.
-	if (!enable_resize)
+	if (!parameters._EnableResize)
 	{
 		window_flags |= ImGuiWindowFlags_NoResize;
 	}
 
 	//Always no move.
-	if (!enable_move)
+	if (!parameters._EnableMove)
 	{
 		window_flags |= ImGuiWindowFlags_NoMove;
 	}
@@ -274,16 +265,18 @@ void ImGuiSystem::BeginWindow
 	window_flags |= ImGuiWindowFlags_NoCollapse;
 
 	//Enable menu bar, if requested.
-	if (enable_menu_bar)
+	if (parameters._EnableMenuBar)
 	{
 		window_flags |= ImGuiWindowFlags_MenuBar;
 	}
 
 	//Begin the window!
+	bool should_be_open{ true };
+
 	ImGui::Begin
 	(
-		name ? name : "EMPTY",
-		nullptr,
+		parameters._Name,
+		parameters._Closable ? &should_be_open : nullptr,
 		window_flags
 	);
 
@@ -291,16 +284,26 @@ void ImGuiSystem::BeginWindow
 	const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
 
 	//Calculate the window position.
-	Vector2<float32> window_position{ window_resolution._X * minimum._X, window_resolution._Y * (1.0f - maximum._Y) };
+	Vector2<float32> window_position{ window_resolution._X * parameters._Minimum._X, window_resolution._Y * (1.0f - parameters._Maximum._Y) };
 
 	//Calculate the window size.
-	Vector2<float32> window_size{ window_resolution._X * (maximum._X - minimum._X), window_resolution._Y * (maximum._Y - minimum._Y) };
+	Vector2<float32> window_size{ window_resolution._X * (parameters._Maximum._X - parameters._Minimum._X), window_resolution._Y * (parameters._Maximum._Y - parameters._Minimum._Y) };
 
 	//Set the window position and size.
 	ImGui::SetWindowPos(ImVec2(window_position._X, window_position._Y), ImGuiCond_Once);
 	ImGui::SetWindowSize(ImVec2(window_size._X, window_size._Y), ImGuiCond_Once);
 	//ImGui::SetWindowPos(ImVec2(64, 128));
 	//ImGui::SetWindowSize(ImVec2(1920, 64));
+
+	if (parameters._Closable)
+	{
+		return should_be_open;
+	}
+
+	else
+	{
+		return true;
+	}
 }
 
 /*
