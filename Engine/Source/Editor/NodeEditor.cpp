@@ -130,30 +130,119 @@ void NodeEditor::Update() NOEXCEPT
 	//Add all nodes.
 	for (Node *const RESTRICT node : _Nodes)
 	{
+		//Begin the node.
 		ax::NodeEditor::BeginNode(node->_UniqueID);
 
+		//Draw then name.
 		ImGui::Text(node->_Name.Data());
+
+		//Draw input pins.
+		ax::NodeEditor::PushStyleVar(ax::NodeEditor::StyleVar_PivotAlignment, ImVec2(0.0f, 0.5f));
+		ax::NodeEditor::PushStyleVar(ax::NodeEditor::StyleVar_PivotSize, ImVec2(0.0f, 0.0f));
+
+		const ImVec2 input_cursor{ ImGui::GetCursorPos() };
+		float32 furthest_input{ 0.0f };
 
 		for (Pin *const RESTRICT pin : node->_InputPins)
 		{
 			ax::NodeEditor::BeginPin(pin->_UniqueID, ax::NodeEditor::PinKind::Input);
+			ImGui::Indent(16.0f);
 			ImGui::Text(pin->_Name.Data());
+			
+			const ImVec2 item_min{ ImGui::GetItemRectMin() };
+			const ImVec2 item_max{ ImGui::GetItemRectMax() };
+
+			const ImVec2 circle_center
+			{
+				item_min.x - (item_max.y - item_min.y) * 0.5f,
+				item_min.y + (item_max.y - item_min.y) * 0.5f
+			};
+
+			ImGui::GetWindowDrawList()->AddCircleFilled(circle_center, 4.0f, IM_COL32(255, 255, 255, 127), 0);
+			ImGui::GetWindowDrawList()->AddCircle(circle_center, 4.0f, IM_COL32(255, 255, 255, 255), 0, 2.0f);
+
+			ax::NodeEditor::PinRect(ImVec2(circle_center.x - 4.0f, item_min.y), ImVec2(item_max.x, item_max.y));
+
 			ax::NodeEditor::EndPin();
+
+			furthest_input = BaseMath::Maximum<float32>(furthest_input, item_max.x);
 		}
 
-		for (Pin *const RESTRICT pin : node->_OutputPins)
+		ax::NodeEditor::PopStyleVar(2);
+
+		//Draw output pins.
+		if (!node->_OutputPins.Empty())
 		{
-			ax::NodeEditor::BeginPin(pin->_UniqueID, ax::NodeEditor::PinKind::Output);
-			ImGui::Text(pin->_Name.Data());
-			ax::NodeEditor::EndPin();
+			//Set the cursor position.
+			ImGui::SetCursorPos(ImVec2(furthest_input > 0.0f ? furthest_input + 16.0f : ImGui::GetCursorPosX(), input_cursor.y));
+
+			//Push style vars.
+			ax::NodeEditor::PushStyleVar(ax::NodeEditor::StyleVar_PivotAlignment, ImVec2(1.0f, 0.5f));
+			ax::NodeEditor::PushStyleVar(ax::NodeEditor::StyleVar_PivotSize, ImVec2(0.0f, 0.0f));
+
+			for (Pin *const RESTRICT pin : node->_OutputPins)
+			{
+				ImGui::SetCursorPos(ImVec2(furthest_input > 0.0f ? furthest_input + 16.0f : ImGui::GetCursorPosX(), ImGui::GetCursorPosY()));
+
+				ax::NodeEditor::BeginPin(pin->_UniqueID, ax::NodeEditor::PinKind::Output);
+				ImGui::Text(pin->_Name.Data());
+
+				ImVec2 item_min{ ImGui::GetItemRectMin() };
+				ImVec2 item_max{ ImGui::GetItemRectMax() };
+
+				ImGui::SameLine();
+				ImGui::Text(" ");
+
+				const ImVec2 circle_center
+				{
+					item_max.x + 8.0f,
+					item_min.y + (item_max.y - item_min.y) * 0.5f + 1.0f
+				};
+
+				ImGui::GetWindowDrawList()->AddCircleFilled(circle_center, 4.0f, IM_COL32(255, 255, 255, 127), 0);
+				ImGui::GetWindowDrawList()->AddCircle(circle_center, 4.0f, IM_COL32(255, 255, 255, 255), 0, 2.0f);
+
+				ax::NodeEditor::PinRect(ImVec2(item_min.x, item_min.y), ImVec2(circle_center.x + 4.0f, item_max.y));
+
+				ax::NodeEditor::EndPin();
+			}
+
+			ax::NodeEditor::PopStyleVar(2);
 		}
 
 		//Update whether or not this node is seleceted.
 		node->_IsSelected = ax::NodeEditor::IsNodeSelected(node->_UniqueID);
 
+		//Update the node.
 		node->Update();
 
+		//End the node.
 		ax::NodeEditor::EndNode();
+
+		//Draw header.
+		{
+			ImDrawList *const RESTRICT draw_list{ ax::NodeEditor::GetNodeBackgroundDrawList(node->_UniqueID) };
+
+			const ImVec2 node_position{ ax::NodeEditor::GetNodePosition(node->_UniqueID) };
+			const ImVec2 node_size{ ax::NodeEditor::GetNodeSize(node->_UniqueID) };
+			const ImVec2 node_half_size{ node_size.x * 0.5f, node_size.y * 0.5f };
+
+			draw_list->AddRectFilled
+			(
+				ImVec2(node_position.x + 1.0f, node_position.y + 1.0f),
+				ImVec2(node_position.x + node_size.x - 1.0f, node_position.y + ImGui::GetStyle().ItemSpacing.y * 8.0f - 1.0f),
+				*node->_Color.Data(),
+				ax::NodeEditor::GetStyle().NodeRounding
+			);
+
+			draw_list->AddRectFilled
+			(
+				ImVec2(node_position.x + 1.0f, node_position.y + ImGui::GetStyle().ItemSpacing.y * 4.0f),
+				ImVec2(node_position.x + node_size.x - 1.0f, node_position.y + ImGui::GetStyle().ItemSpacing.y * 8.0f - 1.0f),
+				*node->_Color.Data(),
+				0.0f
+			);
+		}
 	}
 
 	//Create links.

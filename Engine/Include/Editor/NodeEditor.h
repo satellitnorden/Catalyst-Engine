@@ -11,6 +11,9 @@
 //Math.
 #include <Math/General/Vector.h>
 
+//Rendering.
+#include <Rendering/Native/Color.h>
+
 class NodeEditor final
 {
 
@@ -43,6 +46,9 @@ public:
 
 		//The name.
 		DynamicString _Name;
+
+		//The color.
+		Color _Color{ Vector4<float32>(0.5f, 0.125f, 0.0f, 1.0f) };
 
 		//The unique ID.
 		uint64 _UniqueID;
