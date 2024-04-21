@@ -178,52 +178,52 @@ public:
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::Spacebar)] = ' ';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::Spacebar)] = ' ';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::ZERO)] = '0';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::ZERO)] = '=';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::ZERO)] = '0';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadZero)] = '0';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NumpadZero)] = '0';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::ONE)] = '1';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::ONE)] = '!';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::ONE)] = '1';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadOne)] = '1';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NumpadOne)] = '1';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::TWO)] = '2';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::TWO)] = '\"';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::TWO)] = '2';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadTwo)] = '2';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NumpadTwo)] = '2';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::THREE)] = '3';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::THREE)] = '#';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::THREE)] = '3';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadThree)] = '3';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NumpadThree)] = '3';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::FOUR)] = '4';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::FOUR)] = '¤';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::FOUR)] = '4';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadFour)] = '4';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NumpadFour)] = '4';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::FIVE)] = '5';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::FIVE)] = '%';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::FIVE)] = '5';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadFive)] = '5';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NumpadFive)] = '5';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::SIX)] = '6';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::SIX)] = '&';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::SIX)] = '6';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadSix)] = '6';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NumpadSix)] = '6';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::SEVEN)] = '7';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::SEVEN)] = '/';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::SEVEN)] = '7';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadSeven)] = '7';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NumpadSeven)] = '7';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::EIGHT)] = '8';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::EIGHT)] = '(';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::EIGHT)] = '8';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadEight)] = '8';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NumpadEight)] = '8';
 
-		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NINE)] = '9';
+		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NINE)] = ')';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NINE)] = '9';
 		_UpperCaseCharacters[UNDERLYING(KeyboardButton::NumpadNine)] = '9';
 		_LowerCaseCharacters[UNDERLYING(KeyboardButton::NumpadNine)] = '9';

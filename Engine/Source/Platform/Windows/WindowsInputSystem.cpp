@@ -2,6 +2,9 @@
 //Header file.
 #include <Systems/InputSystem.h>
 
+//Core.
+#include <Core/General/Pair.h>
+
 //Platform.
 #include <Platform/Windows/CatalystPlatformWindows.h>
 
@@ -201,6 +204,148 @@ void InputSystem::UpdateGamepadState(const uint8 index) NOEXCEPT
 */
 void InputSystem::UpdateKeyboardState() NOEXCEPT
 {
+	//Define constants.
+	constexpr Pair<uint64, KeyboardButton> MAPPINGS[]
+	{
+		Pair<uint64, KeyboardButton>(VK_BACK, KeyboardButton::Backspace),
+		Pair<uint64, KeyboardButton>(VK_TAB, KeyboardButton::Tab),
+		Pair<uint64, KeyboardButton>(VK_CLEAR, KeyboardButton::Clear),
+		Pair<uint64, KeyboardButton>(VK_RETURN, KeyboardButton::Enter),
+		Pair<uint64, KeyboardButton>(VK_SHIFT, KeyboardButton::LeftShift),
+		Pair<uint64, KeyboardButton>(VK_SHIFT, KeyboardButton::RightShift),
+		Pair<uint64, KeyboardButton>(VK_PAUSE, KeyboardButton::Pause),
+		Pair<uint64, KeyboardButton>(VK_CAPITAL, KeyboardButton::CapsLock),
+		Pair<uint64, KeyboardButton>(VK_ESCAPE, KeyboardButton::Escape),
+		Pair<uint64, KeyboardButton>(VK_SPACE, KeyboardButton::Spacebar),
+		Pair<uint64, KeyboardButton>(VK_PRIOR, KeyboardButton::PageUp),
+		Pair<uint64, KeyboardButton>(VK_NEXT, KeyboardButton::PageDown),
+		Pair<uint64, KeyboardButton>(VK_HOME, KeyboardButton::Home),
+		Pair<uint64, KeyboardButton>(VK_LEFT, KeyboardButton::LeftArrow),
+		Pair<uint64, KeyboardButton>(VK_UP, KeyboardButton::UpArrow),
+		Pair<uint64, KeyboardButton>(VK_RIGHT, KeyboardButton::RightArrow),
+		Pair<uint64, KeyboardButton>(VK_DOWN, KeyboardButton::DownArrow),
+		Pair<uint64, KeyboardButton>(VK_SELECT, KeyboardButton::Select),
+		Pair<uint64, KeyboardButton>(VK_PRINT, KeyboardButton::Print),
+		Pair<uint64, KeyboardButton>(VK_EXECUTE, KeyboardButton::Execute),
+		Pair<uint64, KeyboardButton>(VK_SNAPSHOT, KeyboardButton::PrintScreen),
+		Pair<uint64, KeyboardButton>(VK_INSERT, KeyboardButton::Insert),
+		Pair<uint64, KeyboardButton>(VK_DELETE, KeyboardButton::Delete),
+		Pair<uint64, KeyboardButton>(VK_HELP, KeyboardButton::Help),
+
+		Pair<uint64, KeyboardButton>(0x30, KeyboardButton::ZERO),
+		Pair<uint64, KeyboardButton>(0x31, KeyboardButton::ONE),
+		Pair<uint64, KeyboardButton>(0x32, KeyboardButton::TWO),
+		Pair<uint64, KeyboardButton>(0x33, KeyboardButton::THREE),
+		Pair<uint64, KeyboardButton>(0x34, KeyboardButton::FOUR),
+		Pair<uint64, KeyboardButton>(0x35, KeyboardButton::FIVE),
+		Pair<uint64, KeyboardButton>(0x36, KeyboardButton::SIX),
+		Pair<uint64, KeyboardButton>(0x37, KeyboardButton::SEVEN),
+		Pair<uint64, KeyboardButton>(0x38, KeyboardButton::EIGHT),
+		Pair<uint64, KeyboardButton>(0x39, KeyboardButton::NINE),
+
+		Pair<uint64, KeyboardButton>(0x41, KeyboardButton::A),
+		Pair<uint64, KeyboardButton>(0x42, KeyboardButton::B),
+		Pair<uint64, KeyboardButton>(0x43, KeyboardButton::C),
+		Pair<uint64, KeyboardButton>(0x44, KeyboardButton::D),
+		Pair<uint64, KeyboardButton>(0x45, KeyboardButton::E),
+		Pair<uint64, KeyboardButton>(0x46, KeyboardButton::F),
+		Pair<uint64, KeyboardButton>(0x47, KeyboardButton::G),
+		Pair<uint64, KeyboardButton>(0x48, KeyboardButton::H),
+		Pair<uint64, KeyboardButton>(0x49, KeyboardButton::I),
+		Pair<uint64, KeyboardButton>(0x4A, KeyboardButton::J),
+		Pair<uint64, KeyboardButton>(0x4B, KeyboardButton::K),
+		Pair<uint64, KeyboardButton>(0x4C, KeyboardButton::L),
+		Pair<uint64, KeyboardButton>(0x4D, KeyboardButton::M),
+		Pair<uint64, KeyboardButton>(0x4E, KeyboardButton::N),
+		Pair<uint64, KeyboardButton>(0x4F, KeyboardButton::O),
+		Pair<uint64, KeyboardButton>(0x50, KeyboardButton::P),
+		Pair<uint64, KeyboardButton>(0x51, KeyboardButton::Q),
+		Pair<uint64, KeyboardButton>(0x52, KeyboardButton::R),
+		Pair<uint64, KeyboardButton>(0x53, KeyboardButton::S),
+		Pair<uint64, KeyboardButton>(0x54, KeyboardButton::T),
+		Pair<uint64, KeyboardButton>(0x55, KeyboardButton::U),
+		Pair<uint64, KeyboardButton>(0x56, KeyboardButton::V),
+		Pair<uint64, KeyboardButton>(0x57, KeyboardButton::W),
+		Pair<uint64, KeyboardButton>(0x58, KeyboardButton::X),
+		Pair<uint64, KeyboardButton>(0x59, KeyboardButton::Y),
+		Pair<uint64, KeyboardButton>(0x5A, KeyboardButton::Z),
+
+		Pair<uint64, KeyboardButton>(VK_LWIN, KeyboardButton::LeftWindows),
+		Pair<uint64, KeyboardButton>(VK_RWIN, KeyboardButton::RightWindows),
+		Pair<uint64, KeyboardButton>(VK_APPS, KeyboardButton::Applications),
+		Pair<uint64, KeyboardButton>(VK_SLEEP, KeyboardButton::Sleep),
+
+		Pair<uint64, KeyboardButton>(VK_NUMPAD0, KeyboardButton::NumpadZero),
+		Pair<uint64, KeyboardButton>(VK_NUMPAD1, KeyboardButton::NumpadOne),
+		Pair<uint64, KeyboardButton>(VK_NUMPAD2, KeyboardButton::NumpadTwo),
+		Pair<uint64, KeyboardButton>(VK_NUMPAD3, KeyboardButton::NumpadThree),
+		Pair<uint64, KeyboardButton>(VK_NUMPAD4, KeyboardButton::NumpadFour),
+		Pair<uint64, KeyboardButton>(VK_NUMPAD5, KeyboardButton::NumpadFive),
+		Pair<uint64, KeyboardButton>(VK_NUMPAD6, KeyboardButton::NumpadSix),
+		Pair<uint64, KeyboardButton>(VK_NUMPAD7, KeyboardButton::NumpadSeven),
+		Pair<uint64, KeyboardButton>(VK_NUMPAD8, KeyboardButton::NumpadEight),
+		Pair<uint64, KeyboardButton>(VK_NUMPAD9, KeyboardButton::NumpadNine),
+
+		Pair<uint64, KeyboardButton>(VK_MULTIPLY, KeyboardButton::MULTIPLY),
+		Pair<uint64, KeyboardButton>(VK_ADD, KeyboardButton::ADD),
+		Pair<uint64, KeyboardButton>(VK_SEPARATOR, KeyboardButton::SEPARATOR),
+		Pair<uint64, KeyboardButton>(VK_SUBTRACT, KeyboardButton::SUBTRACT),
+		Pair<uint64, KeyboardButton>(VK_DECIMAL, KeyboardButton::DECIMAL),
+		Pair<uint64, KeyboardButton>(VK_DIVIDE, KeyboardButton::DIVIDE),
+
+		Pair<uint64, KeyboardButton>(VK_F1, KeyboardButton::F1),
+		Pair<uint64, KeyboardButton>(VK_F2, KeyboardButton::F2),
+		Pair<uint64, KeyboardButton>(VK_F3, KeyboardButton::F3),
+		Pair<uint64, KeyboardButton>(VK_F4, KeyboardButton::F4),
+		Pair<uint64, KeyboardButton>(VK_F5, KeyboardButton::F5),
+		Pair<uint64, KeyboardButton>(VK_F6, KeyboardButton::F6),
+		Pair<uint64, KeyboardButton>(VK_F7, KeyboardButton::F7),
+		Pair<uint64, KeyboardButton>(VK_F8, KeyboardButton::F8),
+		Pair<uint64, KeyboardButton>(VK_F9, KeyboardButton::F9),
+		Pair<uint64, KeyboardButton>(VK_F10, KeyboardButton::F10),
+		Pair<uint64, KeyboardButton>(VK_F11, KeyboardButton::F11),
+		Pair<uint64, KeyboardButton>(VK_F12, KeyboardButton::F12),
+		Pair<uint64, KeyboardButton>(VK_F13, KeyboardButton::F13),
+		Pair<uint64, KeyboardButton>(VK_F14, KeyboardButton::F14),
+		Pair<uint64, KeyboardButton>(VK_F15, KeyboardButton::F15),
+		Pair<uint64, KeyboardButton>(VK_F16, KeyboardButton::F16),
+		Pair<uint64, KeyboardButton>(VK_F17, KeyboardButton::F17),
+		Pair<uint64, KeyboardButton>(VK_F18, KeyboardButton::F18),
+		Pair<uint64, KeyboardButton>(VK_F19, KeyboardButton::F19),
+		Pair<uint64, KeyboardButton>(VK_F20, KeyboardButton::F20),
+		Pair<uint64, KeyboardButton>(VK_F21, KeyboardButton::F21),
+		Pair<uint64, KeyboardButton>(VK_F22, KeyboardButton::F22),
+		Pair<uint64, KeyboardButton>(VK_F23, KeyboardButton::F23),
+		Pair<uint64, KeyboardButton>(VK_F24, KeyboardButton::F24),
+
+		Pair<uint64, KeyboardButton>(VK_NUMLOCK, KeyboardButton::NumLock),
+		Pair<uint64, KeyboardButton>(VK_SCROLL, KeyboardButton::ScrollLock),
+		Pair<uint64, KeyboardButton>(VK_LCONTROL, KeyboardButton::LeftControl),
+		Pair<uint64, KeyboardButton>(VK_RCONTROL, KeyboardButton::RightControl),
+		Pair<uint64, KeyboardButton>(VK_LMENU, KeyboardButton::LeftAlt),
+		Pair<uint64, KeyboardButton>(VK_RMENU, KeyboardButton::RightAlt),
+
+		Pair<uint64, KeyboardButton>(VK_BROWSER_BACK, KeyboardButton::BrowserBack),
+		Pair<uint64, KeyboardButton>(VK_BROWSER_FORWARD, KeyboardButton::BrowserForward),
+		Pair<uint64, KeyboardButton>(VK_BROWSER_REFRESH, KeyboardButton::BrowserRefresh),
+		Pair<uint64, KeyboardButton>(VK_BROWSER_STOP, KeyboardButton::BrowserStop),
+		Pair<uint64, KeyboardButton>(VK_BROWSER_SEARCH, KeyboardButton::BrowserSearch),	
+		Pair<uint64, KeyboardButton>(VK_BROWSER_FAVORITES, KeyboardButton::BrowserFavorites),
+		Pair<uint64, KeyboardButton>(VK_BROWSER_HOME, KeyboardButton::BrowserStartAndHome),
+
+		Pair<uint64, KeyboardButton>(VK_VOLUME_MUTE, KeyboardButton::VolumeMute),
+		Pair<uint64, KeyboardButton>(VK_VOLUME_DOWN, KeyboardButton::VolumeDown),
+		Pair<uint64, KeyboardButton>(VK_VOLUME_UP, KeyboardButton::VolumeUp),
+
+		Pair<uint64, KeyboardButton>(VK_MEDIA_NEXT_TRACK, KeyboardButton::NextTrack),
+		Pair<uint64, KeyboardButton>(VK_MEDIA_PREV_TRACK, KeyboardButton::PreviousTrack),
+		Pair<uint64, KeyboardButton>(VK_MEDIA_STOP, KeyboardButton::StopMedia),
+		Pair<uint64, KeyboardButton>(VK_MEDIA_PLAY_PAUSE, KeyboardButton::PlayPause),
+
+		Pair<uint64, KeyboardButton>(VK_OEM_COMMA, KeyboardButton::COMMA),
+		Pair<uint64, KeyboardButton>(VK_OEM_PERIOD, KeyboardButton::PERIOD)
+	};
+
 	//No need to update if the window isn't in focus.
 	if (!CatalystPlatform::IsWindowInFocus())
 	{
@@ -208,8 +353,58 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 	}
 
 	//Cache the state.
-	KeyboardState* const RESTRICT state{ &_InputState._KeyboardState };
+	KeyboardState *const RESTRICT state{ &_InputState._KeyboardState };
 
+	//Update all keyboard buttons.
+	for (uint64 i{ 0 }; i < UNDERLYING(KeyboardButton::NumberOfKeyboardButtons); ++i)
+	{
+		switch ((*state)[static_cast<KeyboardButton>(i)])
+		{
+			case ButtonState::PRESSED:
+			{
+				(*state)[static_cast<KeyboardButton>(i)] = ButtonState::PRESSED_HELD;
+
+				break;
+			}
+
+			case ButtonState::RELEASED:
+			{
+				(*state)[static_cast<KeyboardButton>(i)] = ButtonState::RELEASED_HELD;
+
+				break;
+			}
+		}
+	}
+
+	//Process key down events.
+	for (const uint64 key_down_event : CatalystPlatformWindows::_KeyDownEvents)
+	{
+		for (uint64 i{ 0 }; i < ARRAY_LENGTH(MAPPINGS); ++i)
+		{
+			if (key_down_event == MAPPINGS[i]._First)
+			{
+				(*state)[MAPPINGS[i]._Second] = ButtonState::PRESSED;
+
+				break;
+			}
+		}
+	}
+
+	//Process key up events.
+	for (const uint64 key_up_event : CatalystPlatformWindows::_KeyUpEvents)
+	{
+		for (uint64 i{ 0 }; i < ARRAY_LENGTH(MAPPINGS); ++i)
+		{
+			if (key_up_event == MAPPINGS[i]._First)
+			{
+				(*state)[MAPPINGS[i]._Second] = ButtonState::RELEASED;
+
+				break;
+			}
+		}
+	}
+
+	/*
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_BACK, &(*state)[KeyboardButton::Backspace]);
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_TAB, &(*state)[KeyboardButton::Tab]);
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_CLEAR, &(*state)[KeyboardButton::Clear]);
@@ -347,6 +542,7 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_OEM_COMMA, &(*state)[KeyboardButton::COMMA]);
 	WindowsInputSystemLogic::UpdateWindowsButton(VK_OEM_PERIOD, &(*state)[KeyboardButton::PERIOD]);
+	*/
 }
 
 /*

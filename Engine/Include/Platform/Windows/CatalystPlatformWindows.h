@@ -3,6 +3,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //ASIO library. Needs to be included before everything else. (:
 #if defined(_WIN32)
@@ -37,6 +38,12 @@ public:
 
 	//Handle to the window.
 	static HWND _Window;
+
+	//The key down events.
+	static DynamicArray<uint64> _KeyDownEvents;
+
+	//The key up events.
+	static DynamicArray<uint64> _KeyUpEvents;
 
 };
 

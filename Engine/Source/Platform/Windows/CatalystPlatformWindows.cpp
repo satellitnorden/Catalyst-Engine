@@ -27,6 +27,8 @@
 HINSTANCE CatalystPlatformWindows::_Instance;
 int32 CatalystPlatformWindows::_ShowCommand;
 HWND CatalystPlatformWindows::_Window;
+DynamicArray<uint64> CatalystPlatformWindows::_KeyDownEvents;
+DynamicArray<uint64> CatalystPlatformWindows::_KeyUpEvents;
 
 //Catalyst Windows data.
 namespace CatalystWindowsData
@@ -45,6 +47,7 @@ namespace CatalystWindowsData
 
 	//The scroll wheel step.
 	int8 _ScrollWheelStep{ 0 };
+
 }
 
 //Catalyst Windows logic.
@@ -58,6 +61,10 @@ namespace CatalystWindowsLogic
 	{
 		//Determine if the window is in focus.
 		CatalystWindowsData::_IsWindowInFocus = GetFocus() == CatalystPlatformWindows::_Window;
+
+		//Clear the key up/down events.
+		CatalystPlatformWindows::_KeyDownEvents.Clear();
+		CatalystPlatformWindows::_KeyUpEvents.Clear();
 
 		//Process messages.
 		MSG message;
@@ -138,6 +145,34 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 			CatalystWindowsData::_ScrollWheelStep = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
 
 			return 0;
+		}
+
+		case WM_KEYDOWN:
+		{
+			CatalystPlatformWindows::_KeyDownEvents.Emplace(wParam);
+
+			return 0;
+		}
+
+		case WM_SYSKEYDOWN:
+		{
+			CatalystPlatformWindows::_KeyDownEvents.Emplace(wParam);
+
+			return DefWindowProc(window, message, wParam, lParam);
+		}
+
+		case WM_KEYUP:
+		{
+			CatalystPlatformWindows::_KeyUpEvents.Emplace(wParam);
+
+			return 0;
+		}
+
+		case WM_SYSKEYUP:
+		{
+			CatalystPlatformWindows::_KeyUpEvents.Emplace(wParam);
+
+			return DefWindowProc(window, message, wParam, lParam);
 		}
 
 		default:
@@ -268,6 +303,10 @@ void CatalystPlatform::Initialize() NOEXCEPT
 
 	//Update the window.
 	UpdateWindow(CatalystPlatformWindows::_Window);
+
+	//Allocate an appropriate amount of memory for key events.
+	CatalystPlatformWindows::_KeyDownEvents.Reserve(32);
+	CatalystPlatformWindows::_KeyUpEvents.Reserve(32);
 
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT)

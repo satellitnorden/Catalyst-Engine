@@ -5,6 +5,7 @@
 
 //Forward declarations.
 class DynamicString;
+class KeyboardState;
 
 class CatalystPlatform final
 {

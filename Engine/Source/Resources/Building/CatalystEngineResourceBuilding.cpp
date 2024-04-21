@@ -1429,7 +1429,7 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		|| BUILD_ENGINE_DEFAULT_TEXTURE_3D
 		|| BUILD_ENGINE_MATERIALS 
 		|| BUILD_ENGINE_RESOURCE_COLLECTIONS
-		|| new_rendering_data_was_compiled || 1)
+		|| new_rendering_data_was_compiled)
 	{
 		ResourceCollectionBuildParameters parameters;
 
