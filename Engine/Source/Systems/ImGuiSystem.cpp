@@ -195,26 +195,10 @@ void ImGuiSystem::OnInputAvailable() NOEXCEPT
 		io.KeysDown[i] = keyboard_state->GetButtonState(static_cast<KeyboardButton>(i)) == ButtonState::PRESSED;
 	}
 
-	//Check if shift is held down.
-	const bool shift_held
-	{
-		keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED
-		|| keyboard_state->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PRESSED_HELD
-		|| keyboard_state->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED
-		|| keyboard_state->GetButtonState(KeyboardButton::RightShift) == ButtonState::PRESSED_HELD
-	};
-
 	//Add input characters.
-	for (uint32 i{ 0 }; i < UNDERLYING(KeyboardButton::NumberOfKeyboardButtons); ++i)
+	for (const char character : keyboard_state->_InputCharacters)
 	{
-		const ButtonState button_state{ keyboard_state->GetButtonState(static_cast<KeyboardButton>(i)) };
-		const char upper_case_character{ keyboard_state->GetUpperCaseCharacter(static_cast<KeyboardButton>(i)) };
-		const char lower_case_character{ keyboard_state->GetLowerCaseCharacter(static_cast<KeyboardButton>(i)) };
-
-		if (button_state == ButtonState::PRESSED && upper_case_character != CHAR_MAX && lower_case_character != CHAR_MAX)
-		{
-			io.AddInputCharacter(shift_held ? upper_case_character : lower_case_character);
-		}
+		io.AddInputCharacter(character);
 	}
 
 	//Begin the new ImGui frame.

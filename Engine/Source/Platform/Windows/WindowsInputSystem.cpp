@@ -21,6 +21,7 @@ namespace WindowsInputSystemData
 //Windows input system logic.
 namespace WindowsInputSystemLogic
 {
+
 	/*
 	*	Updates a single gamepad button.
 	*/
@@ -88,6 +89,7 @@ namespace WindowsInputSystemLogic
 			}
 		}
 	}
+
 }
 
 
@@ -404,145 +406,13 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 		}
 	}
 
-	/*
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_BACK, &(*state)[KeyboardButton::Backspace]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_TAB, &(*state)[KeyboardButton::Tab]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_CLEAR, &(*state)[KeyboardButton::Clear]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_RETURN, &(*state)[KeyboardButton::Enter]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_PAUSE, &(*state)[KeyboardButton::Pause]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_CAPITAL, &(*state)[KeyboardButton::CapsLock]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_ESCAPE, &(*state)[KeyboardButton::Escape]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_SPACE, &(*state)[KeyboardButton::Spacebar]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_PRIOR, &(*state)[KeyboardButton::PageUp]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NEXT, &(*state)[KeyboardButton::PageDown]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_HOME, &(*state)[KeyboardButton::Home]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_LEFT, &(*state)[KeyboardButton::LeftArrow]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_UP, &(*state)[KeyboardButton::UpArrow]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_RIGHT, &(*state)[KeyboardButton::RightArrow]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_DOWN, &(*state)[KeyboardButton::DownArrow]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_SELECT, &(*state)[KeyboardButton::Select]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_PRINT, &(*state)[KeyboardButton::Print]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_EXECUTE, &(*state)[KeyboardButton::Execute]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_SNAPSHOT, &(*state)[KeyboardButton::PrintScreen]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_INSERT, &(*state)[KeyboardButton::Insert]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_DELETE, &(*state)[KeyboardButton::Delete]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_HELP, &(*state)[KeyboardButton::Help]);
+	//Update the input characters.
+	state->_InputCharacters.Clear();
 
-	WindowsInputSystemLogic::UpdateWindowsButton(0x30, &(*state)[KeyboardButton::ZERO]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x31, &(*state)[KeyboardButton::ONE]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x32, &(*state)[KeyboardButton::TWO]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x33, &(*state)[KeyboardButton::THREE]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x34, &(*state)[KeyboardButton::FOUR]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x35, &(*state)[KeyboardButton::FIVE]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x36, &(*state)[KeyboardButton::SIX]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x37, &(*state)[KeyboardButton::SEVEN]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x38, &(*state)[KeyboardButton::EIGHT]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x39, &(*state)[KeyboardButton::NINE]);
-
-	WindowsInputSystemLogic::UpdateWindowsButton(0x41, &(*state)[KeyboardButton::A]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x42, &(*state)[KeyboardButton::B]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x43, &(*state)[KeyboardButton::C]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x44, &(*state)[KeyboardButton::D]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x45, &(*state)[KeyboardButton::E]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x46, &(*state)[KeyboardButton::F]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x47, &(*state)[KeyboardButton::G]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x48, &(*state)[KeyboardButton::H]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x49, &(*state)[KeyboardButton::I]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x4A, &(*state)[KeyboardButton::J]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x4B, &(*state)[KeyboardButton::K]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x4C, &(*state)[KeyboardButton::L]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x4D, &(*state)[KeyboardButton::M]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x4E, &(*state)[KeyboardButton::N]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x4F, &(*state)[KeyboardButton::O]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x50, &(*state)[KeyboardButton::P]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x51, &(*state)[KeyboardButton::Q]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x52, &(*state)[KeyboardButton::R]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x53, &(*state)[KeyboardButton::S]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x54, &(*state)[KeyboardButton::T]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x55, &(*state)[KeyboardButton::U]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x56, &(*state)[KeyboardButton::V]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x57, &(*state)[KeyboardButton::W]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x58, &(*state)[KeyboardButton::X]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x59, &(*state)[KeyboardButton::Y]);
-	WindowsInputSystemLogic::UpdateWindowsButton(0x5A, &(*state)[KeyboardButton::Z]);
-
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_LWIN, &(*state)[KeyboardButton::LeftWindows]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_RWIN, &(*state)[KeyboardButton::RightWindows]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_APPS, &(*state)[KeyboardButton::Applications]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_SLEEP, &(*state)[KeyboardButton::Sleep]);
-
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD0, &(*state)[KeyboardButton::NumpadZero]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD1, &(*state)[KeyboardButton::NumpadOne]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD2, &(*state)[KeyboardButton::NumpadTwo]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD3, &(*state)[KeyboardButton::NumpadThree]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD4, &(*state)[KeyboardButton::NumpadFour]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD5, &(*state)[KeyboardButton::NumpadFive]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD6, &(*state)[KeyboardButton::NumpadSix]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD7, &(*state)[KeyboardButton::NumpadSeven]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD8, &(*state)[KeyboardButton::NumpadEight]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMPAD9, &(*state)[KeyboardButton::NumpadNine]);
-
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_MULTIPLY, &(*state)[KeyboardButton::MULTIPLY]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_ADD, &(*state)[KeyboardButton::ADD]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_SEPARATOR, &(*state)[KeyboardButton::SEPARATOR]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_SUBTRACT, &(*state)[KeyboardButton::SUBTRACT]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_DECIMAL, &(*state)[KeyboardButton::DECIMAL]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_DIVIDE, &(*state)[KeyboardButton::DIVIDE]);
-
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F1, &(*state)[KeyboardButton::F1]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F2, &(*state)[KeyboardButton::F2]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F3, &(*state)[KeyboardButton::F3]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F4, &(*state)[KeyboardButton::F4]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F5, &(*state)[KeyboardButton::F5]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F6, &(*state)[KeyboardButton::F6]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F7, &(*state)[KeyboardButton::F7]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F8, &(*state)[KeyboardButton::F8]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F9, &(*state)[KeyboardButton::F9]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F10, &(*state)[KeyboardButton::F10]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F11, &(*state)[KeyboardButton::F11]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F12, &(*state)[KeyboardButton::F12]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F13, &(*state)[KeyboardButton::F13]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F14, &(*state)[KeyboardButton::F14]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F15, &(*state)[KeyboardButton::F15]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F16, &(*state)[KeyboardButton::F16]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F17, &(*state)[KeyboardButton::F17]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F18, &(*state)[KeyboardButton::F18]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F19, &(*state)[KeyboardButton::F19]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F20, &(*state)[KeyboardButton::F20]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F21, &(*state)[KeyboardButton::F21]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F22, &(*state)[KeyboardButton::F22]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F23, &(*state)[KeyboardButton::F23]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_F24, &(*state)[KeyboardButton::F24]);
-
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_NUMLOCK, &(*state)[KeyboardButton::NumLock]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_SCROLL, &(*state)[KeyboardButton::ScrollLock]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_LSHIFT, &(*state)[KeyboardButton::LeftShift]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_RSHIFT, &(*state)[KeyboardButton::RightShift]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_LCONTROL, &(*state)[KeyboardButton::LeftControl]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_RCONTROL, &(*state)[KeyboardButton::RightControl]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_LMENU, &(*state)[KeyboardButton::LeftAlt]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_RMENU, &(*state)[KeyboardButton::RightAlt]);
-
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_BROWSER_BACK, &(*state)[KeyboardButton::BrowserBack]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_BROWSER_FORWARD, &(*state)[KeyboardButton::BrowserForward]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_BROWSER_REFRESH, &(*state)[KeyboardButton::BrowserRefresh]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_BROWSER_STOP, &(*state)[KeyboardButton::BrowserStop]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_BROWSER_SEARCH, &(*state)[KeyboardButton::BrowserSearch]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_BROWSER_FAVORITES, &(*state)[KeyboardButton::BrowserFavorites]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_BROWSER_HOME, &(*state)[KeyboardButton::BrowserStartAndHome]);
-
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_VOLUME_MUTE, &(*state)[KeyboardButton::VolumeMute]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_VOLUME_DOWN, &(*state)[KeyboardButton::VolumeDown]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_VOLUME_UP, &(*state)[KeyboardButton::VolumeUp]);
-
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_MEDIA_NEXT_TRACK, &(*state)[KeyboardButton::NextTrack]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_MEDIA_PREV_TRACK, &(*state)[KeyboardButton::PreviousTrack]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_MEDIA_STOP, &(*state)[KeyboardButton::StopMedia]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_MEDIA_PLAY_PAUSE, &(*state)[KeyboardButton::PlayPause]);
-
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_OEM_COMMA, &(*state)[KeyboardButton::COMMA]);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_OEM_PERIOD, &(*state)[KeyboardButton::PERIOD]);
-	*/
+	for (const char character : CatalystPlatformWindows::_InputCharacters)
+	{
+		state->_InputCharacters.Emplace(character);
+	}
 }
 
 /*

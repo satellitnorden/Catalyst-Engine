@@ -45,6 +45,9 @@ public:
 	//The key up events.
 	static DynamicArray<uint64> _KeyUpEvents;
 
+	//The input characters.
+	static DynamicArray<char> _InputCharacters;
+
 };
 
 /*

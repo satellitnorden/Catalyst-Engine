@@ -29,6 +29,7 @@ int32 CatalystPlatformWindows::_ShowCommand;
 HWND CatalystPlatformWindows::_Window;
 DynamicArray<uint64> CatalystPlatformWindows::_KeyDownEvents;
 DynamicArray<uint64> CatalystPlatformWindows::_KeyUpEvents;
+DynamicArray<char> CatalystPlatformWindows::_InputCharacters;
 
 //Catalyst Windows data.
 namespace CatalystWindowsData
@@ -62,9 +63,10 @@ namespace CatalystWindowsLogic
 		//Determine if the window is in focus.
 		CatalystWindowsData::_IsWindowInFocus = GetFocus() == CatalystPlatformWindows::_Window;
 
-		//Clear the key up/down events.
+		//Clear the keyboard events.
 		CatalystPlatformWindows::_KeyDownEvents.Clear();
 		CatalystPlatformWindows::_KeyUpEvents.Clear();
+		CatalystPlatformWindows::_InputCharacters.Clear();
 
 		//Process messages.
 		MSG message;
@@ -173,6 +175,13 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 			CatalystPlatformWindows::_KeyUpEvents.Emplace(wParam);
 
 			return DefWindowProc(window, message, wParam, lParam);
+		}
+
+		case WM_CHAR:
+		{
+			CatalystPlatformWindows::_InputCharacters.Emplace((char)(wParam & 255));
+
+			return 0;
 		}
 
 		default:
@@ -304,9 +313,10 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	//Update the window.
 	UpdateWindow(CatalystPlatformWindows::_Window);
 
-	//Allocate an appropriate amount of memory for key events.
+	//Allocate an appropriate amount of memory for keyboard events.
 	CatalystPlatformWindows::_KeyDownEvents.Reserve(32);
 	CatalystPlatformWindows::_KeyUpEvents.Reserve(32);
+	CatalystPlatformWindows::_InputCharacters.Reserve(32);
 
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT)

@@ -108,17 +108,10 @@ void UserInterfaceTextInput::Update() NOEXCEPT
 	};
 
 	//Add characters.
-	for (uint32 i{ 0 }; i < UNDERLYING(KeyboardButton::NumberOfKeyboardButtons); ++i)
+	for (const char character : keyboard_state->_InputCharacters)
 	{
-		const ButtonState button_state{ keyboard_state->GetButtonState(static_cast<KeyboardButton>(i)) };
-		const char upper_case_character{ keyboard_state->GetUpperCaseCharacter(static_cast<KeyboardButton>(i)) };
-		const char lower_case_character{ keyboard_state->GetLowerCaseCharacter(static_cast<KeyboardButton>(i)) };
-
-		if (button_state == ButtonState::PRESSED && upper_case_character != CHAR_MAX && lower_case_character != CHAR_MAX)
-		{
-			_CurrentText += shift_held ? upper_case_character : lower_case_character;
-			text_was_updated = true;
-		}
+		_CurrentText += character;
+		text_was_updated = true;
 	}
 
 	//Check removal of characters.
