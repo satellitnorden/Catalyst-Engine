@@ -71,6 +71,11 @@ public:
 	void BlitImage(const Pipeline *const RESTRICT pipeline, const OpaqueHandle source, const OpaqueHandle target) NOEXCEPT;
 
 	/*
+	*	Clears a depth/stencil image.
+	*/
+	void ClearDepthStencilImage(const OpaqueHandle image) NOEXCEPT;
+
+	/*
 	*	Dispatches.
 	*/
 	void Dispatch(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT;

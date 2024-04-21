@@ -337,19 +337,17 @@ vec3 SampleSky(vec3 direction, float mip_level)
 	}
 }
 
-layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2;
-
 layout (location = 0) in vec2 InScreenCoordinate;
 
-layout (location = 0) out vec4 Scene;
+layout (location = 0) out vec4 SceneFeatures2;
+layout (location = 1) out vec4 Scene;
 
 void main()
 {
-    vec4 scene_features_2 = texture(SceneFeatures2, InScreenCoordinate);
-    float depth = scene_features_2.w;
-    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
+    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, 0.0f);
     vec3 view_direction = normalize(world_position - CAMERA_WORLD_POSITION);
     float lod_level = 0.0f;
     vec3 sky = SampleSky(view_direction, lod_level);
+	SceneFeatures2 = vec4(0.0f,1.0f,0.0f,0.0f);
 	Scene = vec4(sky,1.0f);
 }

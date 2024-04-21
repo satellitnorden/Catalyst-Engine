@@ -24,6 +24,15 @@ SceneFeaturesRenderPass::SceneFeaturesRenderPass() NOEXCEPT
 		SceneFeaturesRenderPass::Instance->Initialize();
 	});
 
+	//Set the pre record function.
+	SetPreRecordFunction
+	(
+		[](CommandBuffer *const RESTRICT command_buffer)
+		{
+			SceneFeaturesRenderPass::Instance->PreRecord(command_buffer);
+		}
+	);
+
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
@@ -74,6 +83,15 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	_EditorSelectedModelGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 #endif
 	_VelocityGraphicsPipeline.Initialize();
+}
+
+/*
+*	Pre records this render pass.
+*/
+void SceneFeaturesRenderPass::PreRecord(CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
+{
+	//Clear the depth buffer.
+	command_buffer->ClearDepthStencilImage(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 }
 
 /*

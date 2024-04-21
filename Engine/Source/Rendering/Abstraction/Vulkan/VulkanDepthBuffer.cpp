@@ -38,7 +38,7 @@ void VulkanDepthBuffer::Initialize(const VkExtent2D extent, const VkFormat forma
 	image_info.arrayLayers = 1;
 	image_info.samples = _SampleCount;
 	image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
-	image_info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	image_info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 
 	VmaAllocationCreateInfo allocation_info = { };
 

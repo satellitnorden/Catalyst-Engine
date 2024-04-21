@@ -7,13 +7,11 @@ IncludeUniformBuffer(World);
 IncludeShaderFunctionLibrary(Camera);
 IncludeShaderFunctionLibrary(World);
 
-//Declare input render targets.
-InputRenderTarget(SceneFeatures2 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
-
 //Declare output depth buffer.
 OutputDepthBuffer(SceneDepthBuffer);
 
 //Declare output render targets.
+OutputRenderTarget(SceneFeatures2);
 OutputRenderTarget(Scene);
 
 //Declare render resolution.
@@ -50,13 +48,8 @@ Fragment
     //Declare input parameters.
     InputParameter(vec2, InScreenCoordinate);
 
-    //Sample the scene features.
-    vec4 scene_features_2 = texture(SceneFeatures2, InScreenCoordinate);
-
-    float depth = scene_features_2.w;
-
     //Calculate the world position.
-    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
+    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, 0.0f);
 
     //Calculate the view direction.
     vec3 view_direction = normalize(world_position - CAMERA_WORLD_POSITION);
@@ -67,5 +60,6 @@ Fragment
     vec3 sky = SampleSky(view_direction, lod_level);
 
     //Output the fragment.
+    OutputFragment(SceneFeatures2, vec4(0.0f, 1.0f, 0.0f, 0.0f));
     OutputFragment(Scene, vec4(sky, 1.0f));
 }

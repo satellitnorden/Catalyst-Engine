@@ -28,9 +28,9 @@ public:
 private:
 
 	//The graphics render pipelines.
-	StaticArray<GraphicsRenderPipeline, 16> _GraphicsRenderPipelines
+	StaticArray<GraphicsRenderPipeline, 15> _GraphicsRenderPipelines
 	{
-		GraphicsRenderPipeline(HashString("Clear_RenderPipeline")),
+		//GraphicsRenderPipeline(HashString("Clear_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelDepthSingleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelDepthDoubleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("InstancedModelDepthSingleSided_RenderPipeline")),
@@ -63,6 +63,11 @@ private:
 	*	Initializes this render pass.
 	*/
 	void Initialize() NOEXCEPT;
+
+	/*
+	*	Pre records this render pass.
+	*/
+	void PreRecord(CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;
 
 	/*
 	*	Executes this render pass.

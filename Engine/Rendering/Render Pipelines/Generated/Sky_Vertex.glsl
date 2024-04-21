@@ -335,8 +335,6 @@ vec3 SampleSky(vec3 direction, float mip_level)
 	}
 }
 
-layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2;
-
 layout (location = 0) out vec2 OutScreenCoordinate;
 
 void main()
