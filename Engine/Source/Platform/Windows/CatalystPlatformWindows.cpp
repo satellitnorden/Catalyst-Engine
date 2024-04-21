@@ -139,56 +139,39 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 		{
 			CatalystEngineSystem::Instance->SetShouldTerminate();
 
-			return DefWindowProc(window, message, wParam, lParam);
+			break;
 		}
 
 		case WM_MOUSEWHEEL:
 		{
 			CatalystWindowsData::_ScrollWheelStep = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
 
-			return 0;
+			break;
 		}
 
 		case WM_KEYDOWN:
 		{
 			CatalystPlatformWindows::_KeyDownEvents.Emplace(wParam);
 
-			return 0;
-		}
-
-		case WM_SYSKEYDOWN:
-		{
-			CatalystPlatformWindows::_KeyDownEvents.Emplace(wParam);
-
-			return DefWindowProc(window, message, wParam, lParam);
+			break;
 		}
 
 		case WM_KEYUP:
 		{
 			CatalystPlatformWindows::_KeyUpEvents.Emplace(wParam);
 
-			return 0;
-		}
-
-		case WM_SYSKEYUP:
-		{
-			CatalystPlatformWindows::_KeyUpEvents.Emplace(wParam);
-
-			return DefWindowProc(window, message, wParam, lParam);
+			break;
 		}
 
 		case WM_CHAR:
 		{
 			CatalystPlatformWindows::_InputCharacters.Emplace((char)(wParam & 255));
 
-			return 0;
-		}
-
-		default:
-		{
-			return DefWindowProc(window, message, wParam, lParam);
+			break;
 		}
 	}
+
+	return DefWindowProc(window, message, wParam, lParam);
 }
 
 /*

@@ -15,7 +15,7 @@
 namespace WindowsInputSystemData
 {
 	//The last known cursor position.
-	Vector2<float> _LastKnownCursorPosition{ 0.5f, 0.5f };
+	Vector2<float32> _LastKnownCursorPosition{ 0.5f, 0.5f };
 }
 
 //Windows input system logic.
