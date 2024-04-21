@@ -7,9 +7,6 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AnimatedModelSceneFeaturesGraphicsPipeline.h>
-#if defined(CATALYST_EDITOR)
-#include <Rendering/Native/Pipelines/GraphicsPipelines/EditorSelectedModelGraphicsPipeline.h>
-#endif
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) SceneFeaturesRenderPass final : public RenderPass
@@ -50,11 +47,6 @@ private:
 
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;
-
-#if defined(CATALYST_EDITOR)
-	//The editor selected model graphics pipeline.
-	EditorSelectedModelGraphicsPipeline _EditorSelectedModelGraphicsPipeline;
-#endif
 
 	//The velocity graphics pipeline.
 	GraphicsRenderPipeline _VelocityGraphicsPipeline{ HashString("Velocity_RenderPipeline") };

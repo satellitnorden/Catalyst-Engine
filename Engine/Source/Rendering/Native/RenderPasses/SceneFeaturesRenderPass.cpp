@@ -67,9 +67,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	}
 
 	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
-#if defined(CATALYST_EDITOR)
-	AddPipeline(&_EditorSelectedModelGraphicsPipeline);
-#endif
 	AddPipeline(&_VelocityGraphicsPipeline);
 
 	//Initialize all pipelines.
@@ -79,9 +76,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	}
 
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
-#if defined(CATALYST_EDITOR)
-	_EditorSelectedModelGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
-#endif
 	_VelocityGraphicsPipeline.Initialize();
 }
 
@@ -106,9 +100,6 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 	}
 
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();
-#if defined(CATALYST_EDITOR)
-	_EditorSelectedModelGraphicsPipeline.Execute();
-#endif
 	_VelocityGraphicsPipeline.Execute();
 }
 
@@ -124,8 +115,5 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 	}
 
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Terminate();
-#if defined(CATALYST_EDITOR)
-	_EditorSelectedModelGraphicsPipeline.Terminate();
-#endif
 	_VelocityGraphicsPipeline.Terminate();
 }
