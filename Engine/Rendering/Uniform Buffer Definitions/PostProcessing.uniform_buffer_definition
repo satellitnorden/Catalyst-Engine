@@ -6,6 +6,7 @@ UniformBuffer(PostProcessing)
     float BRIGHTNESS;
     float CONTRAST;
     float CHROMATIC_ABERRATION_INTENSITY;
+    float EXPOSURE;
     float FILM_GRAIN_INTENSITY;
     float HORIZONTAL_BORDER;
     float MOTION_BLUR_INTENSITY;

@@ -1,31 +1,45 @@
-//Includes.
-#include "..\Include\Rendering\Native\Shader\CatalystToneMapping.h"
+/*
+*	Applis tone mapping.
+*/
+vec3 ApplyToneMapping(vec3 fragment)
+{
+	//Define constants.
+	#define GAMMA (1.0f / 2.2f)
+	#define A (2.51f)
+	#define B (0.03f)
+	#define C (2.43f)
+	#define D (0.59f)
+	#define E (0.14f)
 
+	//Apply color mapping.
+	fragment *= 0.6f;
+
+	//Calculate the tone mapped fragment.
+	vec3 tone_mapped = (fragment * (A * fragment + B)) / (fragment * (C * fragment + D) + E);
+
+	//Apply gamma correction.
+	tone_mapped[0] = pow(tone_mapped[0], GAMMA);
+	tone_mapped[1] = pow(tone_mapped[1], GAMMA);
+	tone_mapped[2] = pow(tone_mapped[2], GAMMA);
+
+	//Return the tone mapped fragment!
+	return tone_mapped;
+
+	//Undefine constants.
+	#undef GAMMA
+	#undef A
+	#undef B
+	#undef C
+	#undef D
+	#undef E
+}
+
+#if 0 //If color grading textures should be a thing again. (:
 //Constants.
 #define TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS (16.0f)
 #define TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE (TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS - 1.0f)
 #define TONE_MAPPING_COLOR_GRADING_WIDTH (256.0f)
 #define TONE_MAPPING_COLOR_GRADING_HEIGHT (16.0f)
-
-//Layout specification.
-layout (early_fragment_tests) in;
-
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-    layout (offset = 0) float EXPOSURE;
-    layout (offset = 4) uint COLOR_GRADING_TEXTURE_INDEX;
-};
-
-//In parameters.
-layout (location = 0) in vec2 fragment_texture_coordinate;
-
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D SCENE_TEXTURE;
-
-//Out parameters.
-layout (location = 0) out vec4 scene;
-layout (location = 1) out vec4 previous_scene;
 
 /*
 *   Applies color grading.
@@ -50,26 +64,4 @@ vec3 ApplyColorGrading(vec3 fragment)
     //The color graded value is a linearly interpolated value of the current and the next cells!
     return mix(current_color_graded_value, next_colorgraded_value, fract(cell));
 }
-
-void CatalystShaderMain()
-{
-    //Sample the scene texture.
-    vec4 scene_sample = texture(SCENE_TEXTURE, fragment_texture_coordinate);
-
-    //Apply tone mapping.
-    vec3 tonemapped_scene_sample = ApplyToneMapping(scene_sample.rgb * EXPOSURE);
-
-    //Apply color grading.
-    if (COLOR_GRADING_TEXTURE_INDEX < UINT32_MAXIMUM)
-    {
-        tonemapped_scene_sample = ApplyColorGrading(tonemapped_scene_sample);
-    }
-
-    //Calculate the luminance.
-    float luminance = sqrt(CalculateAverage(tonemapped_scene_sample));
-
-    //Write the fragment
-    if (isnan(tonemapped_scene_sample.r) || isnan(tonemapped_scene_sample.g) || isnan(tonemapped_scene_sample.b)) scene = vec4(vec3(1.0f, 0.0f, 0.0f), luminance);
-    else scene = vec4(tonemapped_scene_sample, luminance);
-    previous_scene = scene_sample;
-}
+#endif

@@ -208,15 +208,86 @@ layout (std140, set = 1, binding = 0) uniform PostProcessing
 	layout (offset = 52) float SATURATION;
 };
 
-layout (set = 1, binding = 1) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_1;
+/*
+*	Applis tone mapping.
+*/
+vec3 ApplyToneMapping(vec3 fragment)
+{
+	//Define constants.
+	#define GAMMA (1.0f / 2.2f)
+	#define A (2.51f)
+	#define B (0.03f)
+	#define C (2.43f)
+	#define D (0.59f)
+	#define E (0.14f)
 
-layout (location = 0) out vec2 OutScreenCoordinate;
+	//Apply color mapping.
+	fragment *= 0.6f;
+
+	//Calculate the tone mapped fragment.
+	vec3 tone_mapped = (fragment * (A * fragment + B)) / (fragment * (C * fragment + D) + E);
+
+	//Apply gamma correction.
+	tone_mapped[0] = pow(tone_mapped[0], GAMMA);
+	tone_mapped[1] = pow(tone_mapped[1], GAMMA);
+	tone_mapped[2] = pow(tone_mapped[2], GAMMA);
+
+	//Return the tone mapped fragment!
+	return tone_mapped;
+
+	//Undefine constants.
+	#undef GAMMA
+	#undef A
+	#undef B
+	#undef C
+	#undef D
+	#undef E
+}
+
+#if 0 //If color grading textures should be a thing again. (:
+//Constants.
+#define TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS (16.0f)
+#define TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE (TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS - 1.0f)
+#define TONE_MAPPING_COLOR_GRADING_WIDTH (256.0f)
+#define TONE_MAPPING_COLOR_GRADING_HEIGHT (16.0f)
+
+/*
+*   Applies color grading.
+*/
+vec3 ApplyColorGrading(vec3 fragment)
+{
+    //Calculate the cell that should be sampled based on the blue channel.
+    float cell = fragment.b * TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE;
+
+    //Calculate the current cell and the next cell.
+    float current_cell = floor(cell);
+    float next_cell = ceil(cell);
+
+    //Calculate the red and green offsets.
+    float red_offset = (0.5f / TONE_MAPPING_COLOR_GRADING_WIDTH) + fragment.r / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS * (TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS);
+    float green_offset = (0.5f / TONE_MAPPING_COLOR_GRADING_HEIGHT) + fragment.g * (TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS_MINUS_ONE / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS);
+
+    //Sample the current and next color graded values.
+    vec3 current_color_graded_value = texture(sampler2D(GLOBAL_TEXTURES[COLOR_GRADING_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), vec2(current_cell / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS + red_offset, green_offset)).rgb;
+    vec3 next_colorgraded_value = texture(sampler2D(GLOBAL_TEXTURES[COLOR_GRADING_TEXTURE_INDEX], GLOBAL_SAMPLERS[GLOBAL_SAMPLER_FILTER_LINEAR_MIPMAP_MODE_NEAREST_ADDRESS_MODE_CLAMP_TO_EDGE_INDEX]), vec2(next_cell / TONE_MAPPING_COLOR_GRADING_NUMBER_OF_CELLS + red_offset, green_offset)).rgb;
+
+    //The color graded value is a linearly interpolated value of the current and the next cells!
+    return mix(current_color_graded_value, next_colorgraded_value, fract(cell));
+}
+#endif
+
+layout (set = 1, binding = 1) uniform sampler2D Scene;
+
+layout (location = 0) in vec2 InScreenCoordinate;
+
+layout (location = 0) out vec4 SceneLowDynamicRange1;
+layout (location = 1) out vec4 PreviousScene;
 
 void main()
 {
-	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
-    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
-    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
-    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
-	gl_Position = vec4(x,y,0.0f,1.0f);
+    vec3 scene = texture(Scene, InScreenCoordinate).rgb;
+    vec3 tone_mapped_scene = ApplyToneMapping(scene);
+    float luminance = sqrt(Luminance(tone_mapped_scene));
+	SceneLowDynamicRange1 = vec4(tone_mapped_scene,luminance);
+	PreviousScene = vec4(scene,1.0f);
 }

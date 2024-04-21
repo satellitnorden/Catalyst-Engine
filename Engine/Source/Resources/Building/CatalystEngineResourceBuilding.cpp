@@ -1265,17 +1265,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ToneMappingFragmentShader";
-		parameters._ID = "ToneMappingFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ToneMappingFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\UserInterfaceFragmentShader";
 		parameters._ID = "UserInterfaceFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceFragmentShader.frag";
@@ -1451,7 +1440,7 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		|| BUILD_ENGINE_DEFAULT_TEXTURE_3D
 		|| BUILD_ENGINE_MATERIALS 
 		|| BUILD_ENGINE_RESOURCE_COLLECTIONS
-		|| new_rendering_data_was_compiled || 1)
+		|| new_rendering_data_was_compiled)
 	{
 		ResourceCollectionBuildParameters parameters;
 

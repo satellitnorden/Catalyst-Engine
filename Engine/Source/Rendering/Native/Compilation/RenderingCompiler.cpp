@@ -566,7 +566,7 @@ void CompileGLSLShader(const char *const RESTRICT file_path, const shaderc_shade
 	//Check for errors.
 	if (shaderc_result_get_num_errors(result) > 0)
 	{
-		ASSERT(false, "Compilation failed! Result: %s", shaderc_result_get_error_message(result));
+		ASSERT(false, shaderc_result_get_error_message(result));
 	}
 
 	//Retrieve the compiled file size.

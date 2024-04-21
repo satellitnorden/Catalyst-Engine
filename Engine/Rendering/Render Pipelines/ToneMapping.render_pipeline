@@ -1,0 +1,47 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(PostProcessing);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(ToneMapping);
+
+//Declare input render targets.
+InputRenderTarget(Scene /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(SceneLowDynamicRange1);
+OutputRenderTarget(PreviousScene);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample the scene.
+    vec3 scene = texture(Scene, InScreenCoordinate).rgb;
+
+    //Apply tone mapping.
+    vec3 tone_mapped_scene = ApplyToneMapping(scene);
+
+    //Calculate the luminance.
+    float luminance = sqrt(Luminance(tone_mapped_scene));
+
+    //Output the fragment.
+    OutputFragment(SceneLowDynamicRange1, vec4(tone_mapped_scene, luminance));
+    OutputFragment(PreviousScene, vec4(scene, 1.0f));
+}

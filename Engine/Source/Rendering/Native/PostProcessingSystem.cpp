@@ -30,6 +30,7 @@ void PostProcessingSystem::RenderUpdate() NOEXCEPT
 	_PostProcessingUniformData._Brightness = _Brightness;
 	_PostProcessingUniformData._Contrast = _Contrast;
 	_PostProcessingUniformData._ChromaticAberrationIntensity = _ChromaticAberrationIntensity;
+	_PostProcessingUniformData._Exposure = _Exposure;
 	_PostProcessingUniformData._FilmGrainIntensity = _FilmGrainIntensity;
 	_PostProcessingUniformData._HorizontalBorder = _HorizontalBorder;
 	_PostProcessingUniformData._MotionBlurIntensity = _MotionBlurIntensity;

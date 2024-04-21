@@ -224,10 +224,11 @@ layout (std140, set = 1, binding = 2) uniform PostProcessing
 	layout (offset = 24) float BRIGHTNESS;
 	layout (offset = 28) float CONTRAST;
 	layout (offset = 32) float CHROMATIC_ABERRATION_INTENSITY;
-	layout (offset = 36) float FILM_GRAIN_INTENSITY;
-	layout (offset = 40) float HORIZONTAL_BORDER;
-	layout (offset = 44) float MOTION_BLUR_INTENSITY;
-	layout (offset = 48) float SATURATION;
+	layout (offset = 36) float EXPOSURE;
+	layout (offset = 40) float FILM_GRAIN_INTENSITY;
+	layout (offset = 44) float HORIZONTAL_BORDER;
+	layout (offset = 48) float MOTION_BLUR_INTENSITY;
+	layout (offset = 52) float SATURATION;
 };
 
 /*

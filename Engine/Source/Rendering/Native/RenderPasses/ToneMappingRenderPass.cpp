@@ -48,10 +48,10 @@ void ToneMappingRenderPass::Initialize() NOEXCEPT
 
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(&_ToneMappingGraphicsPipeline);
+	AddPipeline(&_ToneMappingPipeline);
 
 	//Initialize all pipelines.
-	_ToneMappingGraphicsPipeline.Initialize();
+	_ToneMappingPipeline.Initialize();
 }
 
 /*
@@ -60,7 +60,7 @@ void ToneMappingRenderPass::Initialize() NOEXCEPT
 void ToneMappingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	_ToneMappingGraphicsPipeline.Execute();
+	_ToneMappingPipeline.Execute();
 }
 
 /*
@@ -69,5 +69,5 @@ void ToneMappingRenderPass::Execute() NOEXCEPT
 void ToneMappingRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	_ToneMappingGraphicsPipeline.Terminate();
+	_ToneMappingPipeline.Terminate();
 }

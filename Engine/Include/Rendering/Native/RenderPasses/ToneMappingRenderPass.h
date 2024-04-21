@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ToneMappingGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 class ALIGN(8) ToneMappingRenderPass final : public RenderPass
@@ -22,8 +22,8 @@ public:
 
 private:
 
-	//The tone mapping graphics pipeline.
-	ToneMappingGraphicsPipeline _ToneMappingGraphicsPipeline;
+	//The tone mapping pipeline.
+	GraphicsRenderPipeline _ToneMappingPipeline{ HashString("ToneMapping_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

@@ -275,6 +275,9 @@ private:
 		//The chromatic aberration intensity.
 		float32 _ChromaticAberrationIntensity;
 
+		//The exposure.
+		float32 _Exposure;
+
 		//The film grain intensity.
 		float32 _FilmGrainIntensity;
 
