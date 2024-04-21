@@ -196,7 +196,7 @@ void NodeEditor::Update() NOEXCEPT
 				const ImVec2 circle_center
 				{
 					item_max.x + 8.0f,
-					item_min.y + (item_max.y - item_min.y) * 0.5f + 1.0f
+					item_min.y + (item_max.y - item_min.y) * 0.5f
 				};
 
 				ImGui::GetWindowDrawList()->AddCircleFilled(circle_center, 4.0f, IM_COL32(255, 255, 255, 127), 0);
