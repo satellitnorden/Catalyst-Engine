@@ -188,6 +188,22 @@ public:
 	}
 
 	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD bool operator==(const KeyboardState &other) const NOEXCEPT
+	{
+		return Memory::Compare(&_ButtonStates, &other._ButtonStates, sizeof(StaticArray<ButtonState, UNDERLYING(KeyboardButton::NumberOfKeyboardButtons)>));
+	}
+
+	/*
+	*	Inequality operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD bool operator!=(const KeyboardState &other) const NOEXCEPT
+	{
+		return !operator==(other);
+	}
+
+	/*
 	*	Returns the keyboard button state for the given keyboard button, const.
 	*/
 	ButtonState GetButtonState(const KeyboardButton button) const NOEXCEPT
