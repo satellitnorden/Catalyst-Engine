@@ -922,6 +922,41 @@ void SettingsGenerator::GenerateCode()
 			}
 
 			file << std::endl;
+
+			//Add equality/inequality operator overloads.
+			file << "\tFORCE_INLINE NO_DISCARD bool operator==(const " << _class._Name.data() << " &other) const NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+
+			file << "\t\treturn ";
+
+			for (uint64 variable_index{ 0 }; variable_index < _class._Variables.size(); ++variable_index)
+			{
+				const Variable &variable{ _class._Variables[variable_index] };
+
+				file << "_" << variable._Name.c_str() << " == other._" << variable._Name.c_str();
+
+				if (variable_index < (_class._Variables.size() - 1))
+				{
+					file << " && ";
+				}
+
+				else
+				{
+					file << ";" << std::endl;
+				}
+			}
+
+			file << "\t}" << std::endl;
+
+			file << std::endl;
+
+			file << "\tFORCE_INLINE NO_DISCARD bool operator!=(const " << _class._Name.data() << " &other) const NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn !operator==(other);" << std::endl;
+			file << "\t}" << std::endl;
+
+			file << std::endl;
+
 			file << "};";
 
 			//Close the file.

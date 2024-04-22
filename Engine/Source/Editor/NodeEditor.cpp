@@ -2,6 +2,9 @@
 //Header file.
 #include <Editor/NodeEditor.h>
 
+//Systems.
+#include <Systems/InputSystem.h>
+
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
 #include <ThirdParty/imguinodeeditor/imgui_node_editor.h>
@@ -115,14 +118,64 @@ void NodeEditor::AddLink(Pin *const RESTRICT start_pin, Pin *const RESTRICT end_
 */
 void NodeEditor::Update() NOEXCEPT
 {
+	//Set the context.
+	ax::NodeEditor::SetCurrentEditor(IMPLEMENTATION()._Context);
+
+	//Check deletion of nodes/links.
+	if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::Delete) == ButtonState::PRESSED)
+	{
+		{
+			StaticArray<ax::NodeEditor::NodeId, 64> selected_nodes;
+
+			const int32 number_of_selected_nodes{ ax::NodeEditor::GetSelectedNodes(selected_nodes.Data(), 64) };
+
+			for (int32 selected_node_index{ 0 }; selected_node_index < number_of_selected_nodes; ++selected_node_index)
+			{
+				const uint64 selected_node_id{ selected_nodes[selected_node_index].Get() };
+
+				for (uint64 node_index{ 0 }; node_index < _Nodes.Size(); ++node_index)
+				{
+					if (_Nodes[node_index]->_UniqueID == selected_node_id)
+					{
+						ax::NodeEditor::DeleteNode(selected_node_id);
+					
+						_Nodes.EraseAt<false>(node_index);
+
+						break;
+					}
+				}
+			}
+		}
+
+		{
+			StaticArray<ax::NodeEditor::LinkId, 64> selected_links;
+
+			const int32 number_of_selected_links{ ax::NodeEditor::GetSelectedLinks(selected_links.Data(), 64) };
+
+			for (int32 selected_link_index{ 0 }; selected_link_index < number_of_selected_links; ++selected_link_index)
+			{
+				const uint64 selected_link_id{ selected_links[selected_link_index].Get() };
+
+				for (uint64 link_index{ 0 }; link_index < _Links.Size(); ++link_index)
+				{
+					if (_Links[link_index]._LinkID == selected_link_id)
+					{
+						ax::NodeEditor::DeleteLink(selected_link_id);
+
+						_Links.EraseAt<false>(link_index);
+
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	//Pre update all nodes.
 	for (Node *const RESTRICT node : _Nodes)
 	{
 		node->PreUpdate();
 	}
-
-	//Set the context.
-	ax::NodeEditor::SetCurrentEditor(IMPLEMENTATION()._Context);
 
 	//Begin the editor.
 	ax::NodeEditor::Begin(_Name.Data());
@@ -141,7 +194,7 @@ void NodeEditor::Update() NOEXCEPT
 		ax::NodeEditor::PushStyleVar(ax::NodeEditor::StyleVar_PivotSize, ImVec2(0.0f, 0.0f));
 
 		const ImVec2 input_cursor{ ImGui::GetCursorPos() };
-		float32 furthest_input{ 0.0f };
+		float32 furthest_input{ -FLOAT32_MAXIMUM };
 
 		for (Pin *const RESTRICT pin : node->_InputPins)
 		{
@@ -174,7 +227,7 @@ void NodeEditor::Update() NOEXCEPT
 		if (!node->_OutputPins.Empty())
 		{
 			//Set the cursor position.
-			ImGui::SetCursorPos(ImVec2(furthest_input > 0.0f ? furthest_input + 16.0f : ImGui::GetCursorPosX(), input_cursor.y));
+			ImGui::SetCursorPos(ImVec2(furthest_input > -FLOAT32_MAXIMUM ? furthest_input + 16.0f : ImGui::GetCursorPosX(), input_cursor.y));
 
 			//Push style vars.
 			ax::NodeEditor::PushStyleVar(ax::NodeEditor::StyleVar_PivotAlignment, ImVec2(1.0f, 0.5f));
@@ -182,7 +235,7 @@ void NodeEditor::Update() NOEXCEPT
 
 			for (Pin *const RESTRICT pin : node->_OutputPins)
 			{
-				ImGui::SetCursorPos(ImVec2(furthest_input > 0.0f ? furthest_input + 16.0f : ImGui::GetCursorPosX(), ImGui::GetCursorPosY()));
+				ImGui::SetCursorPos(ImVec2(furthest_input > -FLOAT32_MAXIMUM ? furthest_input + 16.0f : ImGui::GetCursorPosX(), ImGui::GetCursorPosY()));
 
 				ax::NodeEditor::BeginPin(pin->_UniqueID, ax::NodeEditor::PinKind::Output);
 				ImGui::Text(pin->_Name.Data());
