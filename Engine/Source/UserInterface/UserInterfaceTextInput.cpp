@@ -108,9 +108,9 @@ void UserInterfaceTextInput::Update() NOEXCEPT
 	};
 
 	//Add characters.
-	for (const char character : keyboard_state->_InputCharacters)
+	for (uint64 i{ 0 }; i < CatalystPlatform::NumberOfInputCharacters(); ++i)
 	{
-		_CurrentText += character;
+		_CurrentText += CatalystPlatform::InputCharacterAt(i);
 		text_was_updated = true;
 	}
 

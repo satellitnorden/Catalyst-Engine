@@ -43,6 +43,16 @@ public:
 	static float32 GetDefaultRefreshRate() NOEXCEPT;
 
 	/*
+	*	Returns the number of input characters for this frame.
+	*/
+	static NO_DISCARD uint64 NumberOfInputCharacters() NOEXCEPT;
+
+	/*
+	*	Returns the input character at the given index for this frame.
+	*/
+	static NO_DISCARD char InputCharacterAt(const uint64 index) NOEXCEPT;
+
+	/*
 	*	Hides the cursor.
 	*/
 	static void HideCursor() NOEXCEPT;

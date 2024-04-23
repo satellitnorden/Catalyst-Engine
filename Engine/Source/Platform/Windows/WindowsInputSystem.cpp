@@ -405,14 +405,6 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 			}
 		}
 	}
-
-	//Update the input characters.
-	state->_InputCharacters.Clear();
-
-	for (const char character : CatalystPlatformWindows::_InputCharacters)
-	{
-		state->_InputCharacters.Emplace(character);
-	}
 }
 
 /*

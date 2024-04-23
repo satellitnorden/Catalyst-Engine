@@ -54,6 +54,11 @@ namespace UserInterfaceUtilities
 			//Cache the chartacter.
 			const char character{ text[i] };
 
+			if (character < 0)
+			{
+				continue;
+			}
+
 			//Advance the maximum on the X axis..
 			text_maximum._X += font->_CharacterDescriptions[character]._Advance * scale * aspect_ratio_reciprocal;
 		}

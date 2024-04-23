@@ -117,7 +117,7 @@ void InputSystem::InputUpdate() NOEXCEPT
 		}
 
 		//Did the keybard state change?
-		else if (old_input_state._KeyboardState != _InputState._KeyboardState)
+		else if (!Memory::Compare(&old_input_state._KeyboardState, &_InputState._KeyboardState, sizeof(KeyboardState)))
 		{
 			_LastUpdatedInputDeviceType = InputDeviceType::KEYBOARD;
 		}

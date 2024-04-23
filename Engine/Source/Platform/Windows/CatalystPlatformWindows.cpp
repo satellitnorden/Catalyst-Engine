@@ -377,6 +377,22 @@ float32 CatalystPlatform::GetDefaultRefreshRate() NOEXCEPT
 }
 
 /*
+*	Returns the number of input characters for this frame.
+*/
+NO_DISCARD uint64 CatalystPlatform::NumberOfInputCharacters() NOEXCEPT
+{
+	return CatalystPlatformWindows::_InputCharacters.Size();
+}
+
+/*
+*	Returns the input character at the given index for this frame.
+*/
+NO_DISCARD char CatalystPlatform::InputCharacterAt(const uint64 index) NOEXCEPT
+{
+	return CatalystPlatformWindows::_InputCharacters[index];
+}
+
+/*
 *	Hides the cursor.
 */
 void CatalystPlatform::HideCursor() NOEXCEPT

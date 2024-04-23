@@ -196,9 +196,9 @@ void ImGuiSystem::OnInputAvailable() NOEXCEPT
 	}
 
 	//Add input characters.
-	for (const char character : keyboard_state->_InputCharacters)
+	for (uint64 i{ 0 }; i < CatalystPlatform::NumberOfInputCharacters(); ++i)
 	{
-		io.AddInputCharacter(character);
+		io.AddInputCharacter(CatalystPlatform::InputCharacterAt(i));
 	}
 
 	//Begin the new ImGui frame.

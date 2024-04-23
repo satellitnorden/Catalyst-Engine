@@ -156,9 +156,6 @@ class KeyboardState final
 
 public:
 
-	//The input characters.
-	DynamicArray<char> _InputCharacters;
-
 	/*
 	*	Default constructor.
 	*/
@@ -185,22 +182,6 @@ public:
 	ButtonState& operator[](const KeyboardButton button) NOEXCEPT
 	{
 		return _ButtonStates[UNDERLYING(button)];
-	}
-
-	/*
-	*	Equality operator overload.
-	*/
-	FORCE_INLINE NO_DISCARD bool operator==(const KeyboardState &other) const NOEXCEPT
-	{
-		return Memory::Compare(&_ButtonStates, &other._ButtonStates, sizeof(StaticArray<ButtonState, UNDERLYING(KeyboardButton::NumberOfKeyboardButtons)>));
-	}
-
-	/*
-	*	Inequality operator overload.
-	*/
-	FORCE_INLINE NO_DISCARD bool operator!=(const KeyboardState &other) const NOEXCEPT
-	{
-		return !operator==(other);
 	}
 
 	/*

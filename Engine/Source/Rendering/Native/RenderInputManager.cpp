@@ -1350,6 +1350,11 @@ void RenderInputManager::GatherUserInterfaceTextInputStream
 			const char character{ type_primitive->_Text[i] };
 
 			//Only draw if it's a valid character.
+			if (character < 0)
+			{
+				continue;
+			}
+
 			if (character == '\n')
 			{
 				continue;
