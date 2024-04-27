@@ -27,8 +27,24 @@ private:
 	//The intermediate diffuse irradiance render target.
 	RenderTargetHandle _IntermediateDiffuseIrradianceRenderTarget;
 
+	//The diffuse irradiance temporal buffers.
+	StaticArray<RenderTargetHandle, 2> _DiffuseIrradianceTemporalBuffers;
+
+	//The current temporal buffer index.
+	uint8 _CurrentTemporalBufferIndex{ 0 };
+
 	//The ray traced diffuse irradiance pipeline.
 	RayTracingRenderPipeline _RayTracedDiffuseIrradiancePipeline{ HashString("RayTracedDiffuseIrradiance_RenderPipeline") };
+
+	//The diffuse irradiance temporal denoising pipelines.
+	StaticArray<GraphicsRenderPipeline, 2> _DiffuseIrradianceTemporalDenoisingPipelines
+	{
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceTemporalDenoising_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceTemporalDenoising_RenderPipeline"))
+	};
+
+	//The passthrough pipeline.
+	GraphicsRenderPipeline _PassthroughPipeline{ HashString("PassthroughHalf_RenderPipeline") };
 
 	//The diffuse irradiance spatial denoising pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _DiffuseIrradianceSpatialDenoisingPipelines

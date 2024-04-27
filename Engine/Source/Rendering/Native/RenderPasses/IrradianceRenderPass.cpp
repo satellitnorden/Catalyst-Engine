@@ -8,6 +8,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Constants.
+#define TEMPORAL_DENOISING (1)
 #define SPATIAL_DENOISING (1)
 
 //Singleton definition.
@@ -141,14 +142,35 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 		&_IntermediateDiffuseIrradianceRenderTarget
 	);
 
+	//Create the diffuse irradiance temporal buffers.
+	for (RenderTargetHandle &temporal_buffer : _DiffuseIrradianceTemporalBuffers)
+	{
+		RenderingSystem::Instance->CreateRenderTarget
+		(
+			RenderingSystem::Instance->GetScaledResolution(1),
+			TextureFormat::RGBA_FLOAT32,
+			SampleCount::SAMPLE_COUNT_1,
+			&temporal_buffer
+		);
+	}
+
 	//Add the pipelines.
 	SetNumberOfPipelines
 	(
 		1
+		+ _DiffuseIrradianceTemporalDenoisingPipelines.Size()
+		+ 1
 		+ _DiffuseIrradianceSpatialDenoisingPipelines.Size()
 	);
 
 	AddPipeline(&_RayTracedDiffuseIrradiancePipeline);
+
+	for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceTemporalDenoisingPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
+
+	AddPipeline(&_PassthroughPipeline);
 
 	for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceSpatialDenoisingPipelines)
 	{
@@ -157,6 +179,37 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_RayTracedDiffuseIrradiancePipeline.Initialize();
+
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), _DiffuseIrradianceTemporalBuffers[0]);
+		parameters._InputRenderTargets.Emplace(HashString("InputDiffuseIrradiance"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(HashString("DiffuseIrradiance")));
+		parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), _DiffuseIrradianceTemporalBuffers[1]);
+		parameters._OutputRenderTargets.Emplace(HashString("OutputDiffuseIrradiance"), _IntermediateDiffuseIrradianceRenderTarget);
+
+		_DiffuseIrradianceTemporalDenoisingPipelines[0].Initialize(parameters);
+	}
+
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), _DiffuseIrradianceTemporalBuffers[1]);
+		parameters._InputRenderTargets.Emplace(HashString("InputDiffuseIrradiance"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(HashString("DiffuseIrradiance")));
+		parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), _DiffuseIrradianceTemporalBuffers[0]);
+		parameters._OutputRenderTargets.Emplace(HashString("OutputDiffuseIrradiance"), _IntermediateDiffuseIrradianceRenderTarget);
+
+		_DiffuseIrradianceTemporalDenoisingPipelines[1].Initialize(parameters);
+	}
+
+	{
+		GraphicsRenderPipelineParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), _IntermediateDiffuseIrradianceRenderTarget);
+		parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(HashString("DiffuseIrradiance")));
+
+		_PassthroughPipeline.Initialize(parameters);
+	}
 
 	for (uint64 i{ 0 }; i < _DiffuseIrradianceSpatialDenoisingPipelines.Size(); i += 2)
 	{
@@ -194,6 +247,13 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 		{
 			_RayTracedDiffuseIrradiancePipeline.SetIncludeInRender(false);
 
+			for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceTemporalDenoisingPipelines)
+			{
+				pipeline.SetIncludeInRender(false);
+			}
+
+			_PassthroughPipeline.SetIncludeInRender(false);
+
 			for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceSpatialDenoisingPipelines)
 			{
 				pipeline.SetIncludeInRender(false);
@@ -207,18 +267,53 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 			_RayTracedDiffuseIrradiancePipeline.SetIncludeInRender(true);
 			_RayTracedDiffuseIrradiancePipeline.Execute();
 
-#if SPATIAL_DENOISING
-			for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceSpatialDenoisingPipelines)
+			if (TEMPORAL_DENOISING && !RenderingSystem::Instance->IsTakingScreenshot())
 			{
-				pipeline.SetIncludeInRender(true);
-				pipeline.Execute();
+				for (uint64 i{ 0 }, size{ _DiffuseIrradianceTemporalDenoisingPipelines.Size() }; i < size; ++i)
+				{
+					if (i == _CurrentTemporalBufferIndex)
+					{
+						_DiffuseIrradianceTemporalDenoisingPipelines[i].Execute();
+					}
+
+					else
+					{
+						_DiffuseIrradianceTemporalDenoisingPipelines[i].SetIncludeInRender(false);
+					}
+				}
+
+				//Update the current buffer index.
+				_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _DiffuseIrradianceTemporalDenoisingPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
+
+				_PassthroughPipeline.Execute();
 			}
-#else
-			for (GraphicsRenderPipeline& pipeline : _DiffuseIrradianceSpatialDenoisingPipelines)
+
+			else
 			{
-				pipeline.SetIncludeInRender(false);
+				for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceTemporalDenoisingPipelines)
+				{
+					pipeline.SetIncludeInRender(false);
+				}
+
+				_PassthroughPipeline.SetIncludeInRender(false);
 			}
-#endif
+
+			if (SPATIAL_DENOISING && !RenderingSystem::Instance->IsTakingScreenshot())
+			{
+				for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceSpatialDenoisingPipelines)
+				{
+					pipeline.SetIncludeInRender(true);
+					pipeline.Execute();
+				}
+			}
+
+			else
+			{
+				for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceSpatialDenoisingPipelines)
+				{
+					pipeline.SetIncludeInRender(false);
+				}
+			}
 
 			break;
 		}
@@ -240,6 +335,13 @@ void IrradianceRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
 	_RayTracedDiffuseIrradiancePipeline.Terminate();
+
+	for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceTemporalDenoisingPipelines)
+	{
+		pipeline.Terminate();
+	}
+
+	_PassthroughPipeline.Terminate();
 
 	for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceSpatialDenoisingPipelines)
 	{

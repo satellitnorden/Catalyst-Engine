@@ -109,72 +109,7 @@ RayClosestHit
     //Add emissive lighting.
     RADIANCE += albedo_thickness.rgb * material_properties.w * MATERIALS[hit_material_index]._EmissiveMultiplier;
 
-    //Add direct lighting.
-    {
-        //Iterate over all lights.
-        for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
-        {
-            //Unpack the light.
-	        Light light = UnpackLight(i);
-
-            //Calculate the light radiance.
-            vec3 light_radiance = light._Color * light._Intensity;
-
-            switch (light._LightType)
-            {
-                case LIGHT_TYPE_DIRECTIONAL:
-                {
-                    //Accumulate light.
-                    RADIANCE += CalculateDirectLighting
-                    (
-                        -WORLD_RAY_DIRECTION,
-                        albedo_thickness.rgb,
-                        hit_vertex_information._Normal,
-                        material_properties.x,
-                        material_properties.y,
-                        material_properties.z,
-                        albedo_thickness.w,
-                        light._TransformData1,
-                        light_radiance,
-                        0
-                    );
-
-                    break;
-                }
-            }
-        }
-    }
-}
-
-//Declare a new hit group.
-HitGroup(MaskedModels);
-
-//The ray closest hit shader.
-RayClosestHit
-{
-    //Declare payloads.
-    Payload(vec3, RADIANCE);
-
-    //Retrieve the hit vertex information.
-    HitVertexInformation hit_vertex_information = GetHitVertexInformation();
-
-    //Retrieve the hit material index.
-    uint hit_material_index = GetHitMaterialIndex();
-
-    //Evaluate the material.
-    vec4 albedo_thickness;
-    EVALUATE_ALBEDO_THICKNESS(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, albedo_thickness);
-    vec4 normal_map_displacement;
-    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, normal_map_displacement);
-    vec4 material_properties;
-    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, material_properties);
-
-    //Calculate the radiance.
-    RADIANCE = vec3(0.0f, 0.0f, 0.0f);
-
-    //Add emissive lighting.
-    RADIANCE += albedo_thickness.rgb * material_properties.w * MATERIALS[hit_material_index]._EmissiveMultiplier;
-
+#if 0
     //Add direct lighting.
     {
         //Iterate over all lights.
@@ -210,6 +145,75 @@ RayClosestHit
             }
         }
     }
+#endif
+}
+
+//Declare a new hit group.
+HitGroup(MaskedModels);
+
+//The ray closest hit shader.
+RayClosestHit
+{
+    //Declare payloads.
+    Payload(vec3, RADIANCE);
+
+    //Retrieve the hit vertex information.
+    HitVertexInformation hit_vertex_information = GetHitVertexInformation();
+
+    //Retrieve the hit material index.
+    uint hit_material_index = GetHitMaterialIndex();
+
+    //Evaluate the material.
+    vec4 albedo_thickness;
+    EVALUATE_ALBEDO_THICKNESS(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, albedo_thickness);
+    vec4 normal_map_displacement;
+    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, normal_map_displacement);
+    vec4 material_properties;
+    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, material_properties);
+
+    //Calculate the radiance.
+    RADIANCE = vec3(0.0f, 0.0f, 0.0f);
+
+    //Add emissive lighting.
+    RADIANCE += albedo_thickness.rgb * material_properties.w * MATERIALS[hit_material_index]._EmissiveMultiplier;
+
+#if 0
+    //Add direct lighting.
+    {
+        //Iterate over all lights.
+        for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
+        {
+            //Unpack the light.
+	        Light light = UnpackLight(i);
+
+            //Calculate the light radiance.
+            vec3 light_radiance = light._Color * light._Intensity;
+
+            switch (light._LightType)
+            {
+                case LIGHT_TYPE_DIRECTIONAL:
+                {
+                    //Add direct light.
+                    RADIANCE += CalculateDirectLighting
+                    (
+                        -WORLD_RAY_DIRECTION,
+                        albedo_thickness.rgb,
+                        hit_vertex_information._Normal,
+                        material_properties.x,
+                        material_properties.y,
+                        material_properties.z,
+                        albedo_thickness.w,
+                        light._TransformData1,
+                        light_radiance,
+                        0
+                    );
+
+                    break;
+                }
+            }
+        }
+    }
+#endif
 }
 
 //The ray any hit shader.

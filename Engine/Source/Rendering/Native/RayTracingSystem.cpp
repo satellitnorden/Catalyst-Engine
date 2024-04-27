@@ -220,6 +220,40 @@ void RayTracingSystem::OnStaticModelInstanceCreated(Entity *const RESTRICT entit
 }
 
 /*
+*	Updates the world transform for the given static model instance.
+*/
+void RayTracingSystem::UpdateStaticModelInstanceWorldTransform(Entity* const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT
+{
+	//Iterate through the meshes.
+	for (uint64 mesh_index{ 0 }, size{ instance_data._Model->_Meshes.Size() }; mesh_index < size; ++mesh_index)
+	{
+		//Decide which hit group this mesh is in.
+		RayTracingHitGroup *RESTRICT hit_group;
+
+		if (instance_data._Materials[mesh_index]->_Type == MaterialAsset::Type::MASKED)
+		{
+			hit_group = GetHitGroup(HashString("MaskedModels"));
+		}
+
+		else
+		{
+			hit_group = GetHitGroup(HashString("OpaqueModels"));
+		}
+
+		//Remove the entries associated with this entity.
+		for (RayTracingHitGroup::Entry &entry : hit_group->_Entries)
+		{
+			if (entry._EntityIdentifier == entity->_EntityIdentifier)
+			{
+				entry._InstanceData._Transform = WorldTransformComponent::Instance->InstanceData(entity)._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+
+				break;
+			}
+		}
+	}
+}
+
+/*
 *	Callback for when a static model instance is destroyed.
 */
 void RayTracingSystem::OnStaticModelInstanceDestroyed(Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT

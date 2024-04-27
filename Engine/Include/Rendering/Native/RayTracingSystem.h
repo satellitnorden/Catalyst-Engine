@@ -54,6 +54,11 @@ public:
 	void OnStaticModelInstanceCreated(Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT;
 
 	/*
+	*	Updates the world transform for the given static model instance.
+	*/
+	void UpdateStaticModelInstanceWorldTransform(Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT;
+
+	/*
 	*	Callback for when a static model instance is destroyed.
 	*/
 	void OnStaticModelInstanceDestroyed(Entity *const RESTRICT entity, const StaticModelInstanceData &instance_data) NOEXCEPT;

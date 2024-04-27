@@ -217,6 +217,7 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 			for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
 			{
 				//Cache the instance data.
+				Entity *const RESTRICT entity{ InstanceToEntity(instance_index) };
 				StaticModelInstanceData &instance_data{ _InstanceData[instance_index] };
 				WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(InstanceToEntity(instance_index)) };
 
@@ -230,6 +231,12 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 				else if (instance_data._PhysicsActorHandle && world_transform_instance_data._PreviousWorldTransform != world_transform_instance_data._CurrentWorldTransform)
 				{
 					PhysicsSystem::Instance->UpdateWorldTransform(world_transform_instance_data._CurrentWorldTransform, &instance_data._PhysicsActorHandle);
+				}
+
+				//Let the ray tracing system know if the world transform needs to be updated.
+				if (world_transform_instance_data._PreviousWorldTransform != world_transform_instance_data._CurrentWorldTransform)
+				{
+					RenderingSystem::Instance->GetRayTracingSystem()->UpdateStaticModelInstanceWorldTransform(entity, instance_data);
 				}
 
 				//Update the world space axis aligned bounding box.

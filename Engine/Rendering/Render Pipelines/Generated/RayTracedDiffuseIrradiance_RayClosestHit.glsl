@@ -832,6 +832,7 @@ void main()
     EVALUATE_MATERIAL_PROPERTIES(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, material_properties);
     RADIANCE = vec3(0.0f, 0.0f, 0.0f);
     RADIANCE += albedo_thickness.rgb * material_properties.w * MATERIALS[hit_material_index]._EmissiveMultiplier;
+#if 0
     {
         for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
         {
@@ -859,4 +860,5 @@ void main()
             }
         }
     }
+#endif
 }
