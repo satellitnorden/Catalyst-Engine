@@ -7,6 +7,9 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
+//Constants.
+#define SPATIAL_DENOISING (1)
+
 //Singleton definition.
 DEFINE_SINGLETON(IrradianceRenderPass);
 
@@ -204,11 +207,18 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 			_RayTracedDiffuseIrradiancePipeline.SetIncludeInRender(true);
 			_RayTracedDiffuseIrradiancePipeline.Execute();
 
+#if SPATIAL_DENOISING
 			for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceSpatialDenoisingPipelines)
 			{
 				pipeline.SetIncludeInRender(true);
 				pipeline.Execute();
 			}
+#else
+			for (GraphicsRenderPipeline& pipeline : _DiffuseIrradianceSpatialDenoisingPipelines)
+			{
+				pipeline.SetIncludeInRender(false);
+			}
+#endif
 
 			break;
 		}

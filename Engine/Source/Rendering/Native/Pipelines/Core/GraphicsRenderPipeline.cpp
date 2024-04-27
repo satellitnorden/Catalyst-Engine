@@ -34,7 +34,7 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 	{
 		//Create the render data table layout.
 		{
-			constexpr uint64 MAX_BINDINGS{ 8 };
+			constexpr uint64 MAX_BINDINGS{ 16 };
 
 			StaticArray<RenderDataTableLayoutBinding, MAX_BINDINGS> bindings;
 			uint32 current_binding_index{ 0 };
