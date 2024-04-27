@@ -1511,7 +1511,7 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 		BindUniformBufferToRenderDataTable(0, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
 	
 #if RENDERING_PERFORMANCE_QUERY
-		CreateQueryPool(128, &_GlobalRenderData._PerformanceData[i]._QueryPool);
+		CreateQueryPool(256, &_GlobalRenderData._PerformanceData[i]._QueryPool);
 #endif
 	}
 

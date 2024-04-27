@@ -5,6 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Rendering.
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/Core/RayTracingRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
@@ -23,8 +24,18 @@ public:
 
 private:
 
+	//The intermediate diffuse irradiance render target.
+	RenderTargetHandle _IntermediateDiffuseIrradianceRenderTarget;
+
 	//The ray traced diffuse irradiance pipeline.
 	RayTracingRenderPipeline _RayTracedDiffuseIrradiancePipeline{ HashString("RayTracedDiffuseIrradiance_RenderPipeline") };
+
+	//The diffuse irradiance spatial denoising pipelines.
+	StaticArray<GraphicsRenderPipeline, 2> _DiffuseIrradianceSpatialDenoisingPipelines
+	{
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline"))
+	};
 
 	/*
 	*	Initializes this render pass.
