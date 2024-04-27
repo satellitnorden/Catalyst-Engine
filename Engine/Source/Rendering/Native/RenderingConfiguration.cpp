@@ -23,6 +23,7 @@ void RenderingConfiguration::Initialize() NOEXCEPT
 */
 void RenderingConfiguration::Update() NOEXCEPT
 {
-	//Update the rendering configuration uniform data.
+	//Update the rendering configuration uniform data
+	_RenderingConfigurationUniformData._DiffuseIrradianceMode = static_cast<uint32>(_DiffuseIrradianceMode);
 	_RenderingConfigurationUniformData._VolumetricShadowsMode = static_cast<uint32>(_VolumetricShadowsMode);
 }

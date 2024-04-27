@@ -476,7 +476,7 @@ void CatalystPlatform::PrintToOutput(const char *const RESTRICT format, ...) NOE
 	/*
 	*	To guard against invalid format specifiers, we put the message in a staging buffer first and filter it.
 	*/
-	char format_buffer[1024];
+	char format_buffer[4096];
 
 	{
 		const uint64 format_length{ strlen(format) };
@@ -498,7 +498,7 @@ void CatalystPlatform::PrintToOutput(const char *const RESTRICT format, ...) NOE
 		format_buffer[format_length] = '\0';
 	}
 
-	char buffer[1024];
+	char buffer[4096];
 
 	va_list variadic_arguments{ nullptr };
 	va_start(variadic_arguments, format_buffer);

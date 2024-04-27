@@ -217,7 +217,18 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 32) uint FRAME;
 };
 
-layout (std140, set = 1, binding = 2) uniform Wind
+layout (std140, set = 1, binding = 2) uniform HammersleyHemisphereSamples
+{
+	layout (offset = 0) vec4 HAMMERSLEY_COSINUS_SAMPLES[64];
+	layout (offset = 1024) vec4 HAMMERSLEY_UNIFORM_SAMPLES[64];
+};
+
+layout (std140, set = 1, binding = 3) uniform Irradiance
+{
+	layout (offset = 0) vec4 IRRADIANCE_HEMISPHERE_SAMPLES[64];
+};
+
+layout (std140, set = 1, binding = 4) uniform Wind
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
@@ -231,16 +242,16 @@ struct LightingHeader
 	uint _NumberOfLights;
 	uint _MaximumNumberOfShadowCastingLights;	
 };
-layout (std430, set = 1, binding = 3) buffer Lighting
+layout (std430, set = 1, binding = 5) buffer Lighting
 {
 	layout (offset = 0) LightingHeader LIGHTING_HEADER;
 	layout (offset = 16) vec4[] LIGHT_DATA;
 };
 
-layout (set = 1, binding = 4) uniform sampler SAMPLER;
+layout (set = 1, binding = 6) uniform sampler SAMPLER;
 
-layout (set = 1, binding = 5, rgba32f) uniform image2D SceneFeatures2Half; 
-layout (set = 1, binding = 6, rgba32f) uniform image2D VolumetricLighting; 
+layout (set = 1, binding = 7, rgba32f) uniform image2D SceneFeatures2Half; 
+layout (set = 1, binding = 8, rgba32f) uniform image2D DiffuseIrradiance; 
 
 /*
 *   Samples the current blue noise texture at the given coordinate and index.
@@ -390,141 +401,373 @@ Light UnpackLight(uint index)
 }
 
 /*
-*   Combines two hashes.
+*	Rotates the given vector around the yaw.
 */
-uint CombineHash(uint hash_1, uint hash_2)
+vec3 RotateYaw(vec3 X, float angle)
 {
-    return 3141592653 * hash_1 + hash_2;
+	float sine = sin(angle);
+    float cosine = cos(angle);
+
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
+
+    return X;
 }
 
 /*
-*   Hash function taking a uint.
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
 */
-uint Hash(uint seed)
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
 {
-    seed ^= seed >> 17;
-    seed *= 0xed5ad4bbU;
-    seed ^= seed >> 11;
-    seed *= 0xac4c1b51U;
-    seed ^= seed >> 15;
-    seed *= 0x31848babU;
-    seed ^= seed >> 14;
-    return seed;
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
 }
 
 /*
-*   Hash function taking a uvec2.
+*   Returns a smoothed number in the range 0.0f-1.0f.
 */
-uint Hash2(uvec2 seed)
+float SmoothStep(float number)
 {
-    return Hash(seed.x) ^ Hash(seed.y);
+    return number * number * (3.0f - 2.0f * number);
+}
+
+////////////
+// COMMON //
+////////////
+
+/*
+*	The distribution function for direct lighting.
+*	This approximates the amount the surface's microfacets are aligned to the halfway vector,
+*	influenced by the roughness of the surface; this is the primary function approximating the microfacets.
+*	Trowbridge-Reitz GGX.
+*/
+float DistributionDirect(float roughness, float microsurface_angle)
+{
+	float roughness_squared = pow(roughness, 4.0f);
+	float microsurface_angle_squared = microsurface_angle * microsurface_angle;
+
+	float nominator = roughness_squared;
+	float denominator = microsurface_angle_squared * (roughness_squared - 1.0f) + 1.0f;
+	denominator = PI * denominator * denominator;
+
+	return nominator / denominator;
 }
 
 /*
-*   Hash function taking a uvec3.
+*	The geometry function for direct lighting.
+*	This describes the self-shadowing property of the microfacets.
+*	When a surface is relatively rough, the surface's microfacets can overshadow other microfacets reducing the light the surface reflects.
+*	Schlick-GGX.
 */
-uint Hash3(uvec3 seed)
+float GeometryDirect(vec3 normal, vec3 outgoing_direction, vec3 radiance_direction, float roughness)
 {
-    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
-    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
-    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
+	//Calculate the outgoing direction coefficient.
+	float outgoing_direction_coefficient = max(dot(normal, outgoing_direction), 0.0f);
+
+	//Calculate the irradiance direction coefficient.
+	float irradiance_direction_coefficient = max(dot(normal, -radiance_direction), 0.0f);
+
+	//Calculate the roughness coefficient.
+	float roughness_coefficient = roughness + 1.0f;
+	roughness_coefficient = (roughness_coefficient * roughness_coefficient) / 8.0f;
+
+	//Calculate the first coefficient.
+	float first_coefficient;
+
+	{
+		//Calculate the nominator.
+		float nominator = outgoing_direction_coefficient;
+
+		//Calculate the denominator.
+		float denominator = outgoing_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient;
+
+		first_coefficient = nominator / denominator;
+	}
+
+	//Calculate the second coefficient.
+	float second_coefficient;
+
+	{
+		//Calculate the nominator.
+		float nominator = irradiance_direction_coefficient;
+
+		//Calculate the denominator.
+		float denominator = irradiance_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient;
+
+		second_coefficient = nominator / denominator;
+	}
+
+	//Calculate the geometry.
+	return first_coefficient * second_coefficient;
 }
 
 /*
-*   Given a seed, returns a random number.
+*	The geometry function for indirect lighting.
+*	This describes the self-shadowing property of the microfacets.
+*	When a surface is relatively rough, the surface's microfacets can overshadow other microfacets reducing the light the surface reflects.
+*	Schlick-GGX.
 */
-float RandomFloat(inout uint seed)
+float GeometryIndirect(float roughness, float outgoing_angle)
 {
-    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+	//Calculate the roughness coefficient.
+	float roughness_coefficient = (roughness * roughness) * 0.5f;
+
+	//Calculate the coefficient.
+	float coefficient;
+
+	{
+		//Calculate the nominator.
+		float nominator = outgoing_angle;
+
+		//Calculate the denominator.
+		float denominator = outgoing_angle * (1.0f - roughness_coefficient) + roughness_coefficient;
+
+		coefficient = nominator / denominator;
+	}
+
+	//Calculate the geometry.
+	return coefficient;
 }
 
 /*
-*   Given a coordinate and a seed, returns a random number.
+*	The fresnel function for direct lighting.
+*	The Fresnel equation describes the ratio of surface reflection at different surface angles.
 */
-float RandomFloat(uvec2 coordinate, uint seed)
+vec3 FresnelDirect(vec3 surface_color, float difference_angle)
 {
-    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
+	//Calculate the fresnel.
+	return surface_color + (vec3(1.0f) - surface_color) * pow(1.0f - difference_angle, 5.0f);
 }
 
 /*
-*   Given a coordinate, returns a random number.
+*	The fresnel function for indirect lighting.
+*	The Fresnel equation describes the ratio of surface reflection at different surface angles.
 */
-float RandomFloat(vec2 coordinate)
+vec3 FresnelIndirect(vec3 surface_color, float outgoing_angle)
 {
-    return fract(sin(dot(coordinate, vec2(12.9898f, 78.233f))) * 43758.5453f);
+	//Calculate the fresnel.
+	return surface_color + (vec3(1.0f) - surface_color) * pow(1.0f - outgoing_angle, 5.0f);
 }
 
 /*
-*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*	The lambert diffuse function.
 */
-float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+vec3 LambertDiffuse(vec3 albedo)
 {
-	frame = frame % 64;
+	return albedo / PI;
+}
 
-	float x = float(coordinate.x) + 5.588238f * float(frame);
-	float y = float(coordinate.y) + 5.588238f * float(frame);
+/*
+*	The disney diffuse function.
+*	Inspired by: https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf
+*/
+vec3 DisneyDiffuse(vec3 albedo, float roughness, float difference_angle, float radiance_angle, float outgoing_angle)
+{
+	//Calculate some stuff.
+	float FD90 = 0.5f + 2.0f * roughness * pow(cos(difference_angle), 2.0f);
 
-	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+	//Set up terms.
+	vec3 term_1 = albedo / PI;
+	float term_2 = 1.0f + (FD90 - 1.0f) * pow(1.0f - cos(radiance_angle), 5.0f);
+	float term_3 = 1.0f + (FD90 - 1.0f) * pow(1.0f - cos(outgoing_angle), 5.0f);
+
+	return term_1 * term_2 * term_3;
+}
+
+/////////////////////
+// DIRECT LIGHTING //
+/////////////////////
+
+float CrossScalar(vec3 A, vec3 B)
+{
+	vec3 _cross = cross(A, B);
+
+	return _cross.x + _cross.y + _cross.z;
+}
+
+/*
+*	Calculates direct lighting. Returns the radiance transmitted from the surface in the outgoing direction.
+*
+*	Arguments;
+*	
+*	- outgoing_direction: A direction vector from the point on the surface being shaded in the outgoing direction.
+*	- albedo: The albedo of the surface point being shaded.
+*	- normal: The normal of the surface point being shaded.
+*	- roughness: The roughness of the surface point being shaded.
+*	- metallic: The metallic of the surface point being shaded.
+*	- ambient_occlusion: The ambient occlusion of the surface point being shaded.
+*	- thickness: The thickness of the surface point being shaded.
+*	- radiance_direction: A direction vector going from the entity emitting irradiance toward the surface point being shaded.
+*	- radiance: The incoming irradiance towards the surface point being shaded.
+*/
+vec3 CalculateDirectLighting
+(
+	vec3 outgoing_direction,
+	vec3 albedo,
+	vec3 normal,
+	float roughness,
+	float metallic,
+	float ambient_occlusion,
+	float thickness,
+	vec3 radiance_direction,
+	vec3 radiance,
+	uint flags
+)
+{
+	//Calculate the microsurface normal.
+	vec3 microsurface_normal = normalize(outgoing_direction + -radiance_direction);
+
+	//Calculate the surface color.
+	vec3 surface_color = mix(vec3(0.04f), albedo, metallic);
+
+	//Calculate the angle values.
+	float outgoing_angle = max(dot(normal, outgoing_direction), 0.0f);
+	float radiance_angle = max(dot(normal, -radiance_direction), 0.0f);
+	float microsurface_angle = max(dot(normal, microsurface_normal), 0.0f);
+	float difference_angle = max(dot(-radiance_direction, microsurface_normal), 0.0f);
+
+	//Calculate the normal distribution.
+	float distribution = DistributionDirect(roughness, microsurface_angle);
+
+	//Calculate the geometry.
+	float geometry = GeometryDirect(normal, outgoing_direction, radiance_direction, roughness);
+
+	//Calculate the fresnel.
+	vec3 fresnel = FresnelDirect(surface_color, difference_angle);
+
+	//Calculate the diffuse component.
+	vec3 diffuse_component;
+
+	{
+		diffuse_component = DisneyDiffuse(albedo, roughness, difference_angle, radiance_angle, outgoing_angle);
+
+		diffuse_component *= (1.0f - fresnel) * (1.0f - metallic);
+	}
+
+	//Calculate the specular component.
+	vec3 specular_component;
+
+	{
+		vec3 nominator = vec3(distribution) * vec3(geometry) * fresnel;
+		float denominator = max(4.0f * outgoing_angle * radiance_angle, 0.00001f);
+
+		specular_component = nominator / denominator;
+	}
+
+	//Calculate the weakening factor.
+	float weakening_factor = dot(normal, -radiance_direction);
+	weakening_factor = mix(weakening_factor * 0.5f + 0.5f, max(weakening_factor, 0.0f), thickness);
+
+	return (diffuse_component + specular_component) * radiance * weakening_factor;
+}
+
+///////////////////////
+// INDIRECT LIGHTING //
+///////////////////////
+
+/*
+*	Calculates inddirect lighting. Returns the radiance transmitted from the surface in the outgoing direction.
+*
+*	Arguments;
+*	
+*	- outgoing_direction: A direction vector from the point on the surface being shaded in the outgoing direction.
+*	- albedo: The albedo of the surface point being shaded.
+*	- normal: The normal of the surface point being shaded.
+*	- roughness: The roughness of the surface point being shaded.
+*	- metallic: The metallic of the surface point being shaded.
+*	- ambient_occlusion: The ambient occlusion of the surface point being shaded.
+*	- thickness: The thickness of the surface point being shaded.
+*	- radiance: The incoming irradiance towards the surface point being shaded.
+*/
+vec3 CalculateIndirectLighting
+(
+	vec3 outgoing_direction,
+	vec3 albedo,
+	vec3 normal,
+	float roughness,
+	float metallic,
+	float ambient_occlusion,
+	float thickness,
+	vec3 diffuse_irradiance,
+	vec3 specular_irradiance
+)
+{
+	//Calculate the surface color.
+	vec3 surface_color = mix(vec3(0.04f), albedo, metallic);
+
+	//Calculate the angle values.
+	//float outgoing_angle = max(dot(normal, outgoing_direction), 0.0f);
+	float outgoing_angle = dot(normal, outgoing_direction);
+	outgoing_angle = mix(max(outgoing_angle, 0.0f), outgoing_angle * 0.5f + 0.5f, pow(0.5f, 20.0f)); //Add some "thinness" to the angle. (:
+
+	//Calculate the geometry.
+	float geometry = GeometryIndirect(roughness, outgoing_angle);
+
+	/*
+	*	Calculate the fresnel.
+	*	Multiplying by ((1.0f - roughness) * 0.5f + 0.5f) is technically incorrect here,
+	*	but it looks better, so let's do that. (:
+	*/
+	vec3 fresnel = FresnelIndirect(surface_color, outgoing_angle) * ((1.0f - roughness) * 0.5f + 0.5f);
+
+	//Calculate the diffuse component.
+	vec3 diffuse_component;
+
+	{
+		diffuse_component = (vec3(1.0f) - fresnel) * (1.0f - metallic) * albedo;
+	}
+
+	//Calculate the specular component.
+	vec3 specular_component;
+
+	{
+		vec3 nominator = vec3(geometry) * fresnel;
+		float denominator = max(4.0f * max(dot(normal, outgoing_direction), 0.0f), 0.00001f);
+
+		specular_component = nominator / denominator;
+	}
+
+	return (diffuse_component * diffuse_irradiance * ambient_occlusion) + (specular_component * specular_irradiance * mix(ambient_occlusion, 1.0f, 0.5f));
 }
 
 //Constants.
-#define DIFFUSE_IRRADIANCE_MODE_NONE (0)
-#define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
-
-#define VOLUMETRIC_SHADOWS_MODE_NONE (0)
-#define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
-#define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
+#define SKY_MODE_ATMOSPHERIC_SCATTERING (0)
+#define SKY_MODE_GRADIENT (1)
+#define SKY_MODE_TEXTURE (2)
 
 /*
-*	Returns the extinction at the given position.
+*	Samples the sky.
+*	Requires the "World" uniform buffer to be bound.
 */
-float GetExtinctionAtPosition(vec3 position)
+vec3 SampleSky(vec3 direction, float mip_level)
 {
-	#define BASE_EXTINCTION (0.00125f)
-
-	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.125f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
-
-	#undef BASE_EXTINCTION
-}
-
-/*
-*	Calculates the attenuation in the given direction.
-*/
-float CalculateAttenuationInDirection(vec3 position, vec3 direction, float distance)
-{
-	#define NUMBER_OF_SAMPLES (4)
-
-	float attenuation = 1.0f;
-	float step_size = distance / float(NUMBER_OF_SAMPLES);
-
-	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+	switch (SKY_MODE)
 	{
-		vec3 sample_position = position + direction * float(i) * step_size;
-		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * step_size);
-	}
+		case SKY_MODE_ATMOSPHERIC_SCATTERING:
+		{
+			//Oh no!
+			return vec3(0.0f);
+		}
 
-	return attenuation;
+		case SKY_MODE_GRADIENT:
+		{
+			return mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f);
+		}
+
+		case SKY_MODE_TEXTURE:
+		{
+			return textureLod(SKY_TEXTURE, direction, mip_level).rgb;
+		}
 	
-	#undef NUMBER_OF_SAMPLES
-}
-
-/*
-*	The Henyey-Greenstein phase function.
-*/
-float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
-{
-	float G = 0.5f;
-	float dot_product = dot(outgoing_direction, -incoming_direction);
-
-	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
-}
-
-/*
-*	Calculates the scattering with the given properties.
-*/
-vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
-{
-	return vec3(0.0f, 0.0f, 0.0f);
+		default:
+		{
+			//Oh no!
+			return vec3(0.0f);
+		}
+	}
 }
 
 layout (set = 2, binding = 0) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;
@@ -534,96 +777,34 @@ layout (set = 2, binding = 3) buffer OpaqueModels_MATERIAL_BUFFER { layout (offs
 layout (set = 2, binding = 4) buffer MaskedModels_VERTEX_DATA_BUFFER { vec4 MaskedModels_VERTEX_DATA[]; } MaskedModels_VERTEX_BUFFERS[];
 layout (set = 2, binding = 5) buffer MaskedModels_INDEX_DATA_BUFFER { uint MaskedModels_INDEX_DATA[]; } MaskedModels_INDEX_BUFFERS[];
 layout (set = 2, binding = 6) buffer MaskedModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] MaskedModels_MATERIAL_INDICES; };
-layout (location = 0) rayPayloadNV float VISIBILITY;
+layout (location = 0) rayPayloadNV vec3 RADIANCE;
 
 void main()
 {
-    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
-    #define NUMBER_OF_SAMPLES (4)
-    #define SAMPLE_RECIPROCAL (1.0f / NUMBER_OF_SAMPLES)
-    #define HALF_SAMPLE_RECIPROCAL (SAMPLE_RECIPROCAL / 2)
-    vec3 start_position = CAMERA_WORLD_POSITION;
     vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
     vec4 scene_features_2 = imageLoad(SceneFeatures2Half, ivec2(gl_LaunchIDNV.xy));
+    vec3 normal = scene_features_2.xyz;
     float depth = scene_features_2.w;
     vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
-    float hit_distance = length(world_position - start_position);
-	float hit_distance_reciprocal = 1.0f / hit_distance;
-	vec3 ray_direction = (world_position - start_position) * hit_distance_reciprocal;
-    float offsets[NUMBER_OF_SAMPLES];
-    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
-    {
-        offsets[i] = HALF_SAMPLE_RECIPROCAL + SAMPLE_RECIPROCAL * float(i);
-    }
-    for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
-    {
-        vec4 blue_noise_texture_sample = (SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i / 4) - 0.5f) * (SAMPLE_RECIPROCAL - FLOAT32_EPSILON);
-        offsets[i * 4 + 0] += blue_noise_texture_sample.x;
-        offsets[i * 4 + 1] += blue_noise_texture_sample.y;
-        offsets[i * 4 + 2] += blue_noise_texture_sample.z;
-        offsets[i * 4 + 3] += blue_noise_texture_sample.w;
-    }
-    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
-    {
-        offsets[i] *= offsets[i];
-    }
-	vec3 volumetric_lighting = vec3(0.0f);
-    float transmittance = 1.0f;
-    for (uint sample_index = 0; sample_index < NUMBER_OF_SAMPLES; ++sample_index)
-    {
-        float previous_offset = sample_index > 0 ? offsets[sample_index - 1] : 0.0f;
-        float current_offset = offsets[sample_index];
-        vec3 sample_position = mix(start_position, world_position, current_offset);
-        float sample_hit_distance = (hit_distance * current_offset) - (hit_distance * previous_offset);
-        float extinction = GetExtinctionAtPosition(sample_position);
-        float attenuation_factor = exp(-extinction * sample_hit_distance);
-        {
-            float ambient_attenuation = mix(CalculateAttenuationInDirection(sample_position, vec3(0.0f, 1.0f, 0.0f), FAR_PLANE), CalculateAttenuationInDirection(sample_position, vec3(0.0f, -1.0f, 0.0f), FAR_PLANE), 0.5f);
-            vec3 scattering = mix(UPPER_SKY_COLOR, LOWER_SKY_COLOR, 0.5f) * SCATTERING * (1.0f / (4.0f * 3.14f)) * ambient_attenuation;
-            vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
-            volumetric_lighting += transmittance * scattering_integral;
-        }
-        for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
-        {
-		    Light light = UnpackLight(i);
-            if (TEST_BIT(light._LightProperties, LIGHT_PROPERTY_VOLUMETRIC_BIT))
-            {
-                vec3 light_radiance = light._Color * light._Intensity;
-                switch (light._LightType)
-                {
-                    case LIGHT_TYPE_DIRECTIONAL:
-                    {
-                        float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, hit_distance);
-                        vec3 scattering = light_radiance * SCATTERING * HenyeyGreensteinPhaseFunction(ray_direction, light._TransformData1) * light_attenuation;
-                        {
-                            VISIBILITY = 0.0f;
-                            uint ray_tracing_flags =    gl_RayFlagsTerminateOnFirstHitNV
-                                                        | gl_RayFlagsSkipClosestHitShaderNV;
-                            vec3 direction = -light._TransformData1;
+	vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);
+    mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
+	uint random_hemisphere_sample_index = uint(noise_texture_sample.w * 64.0f) & 63;
+    vec3 random_hemisphere_direction = IRRADIANCE_HEMISPHERE_SAMPLES[random_hemisphere_sample_index].xyz;
+    vec3 random_direction = random_rotation * random_hemisphere_direction;
+    random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
 traceNV
 (
 	TOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/
-	ray_tracing_flags, /*rayFlags*/
+	0, /*rayFlags*/
 	0xff, /*cullMask*/
 	0, /*sbtRecordOffset*/
 	0, /*sbtRecordStride*/
 	0, /*missIndex*/
-	sample_position, /*origin*/
+	world_position, /*origin*/
 	FLOAT32_EPSILON * 8.0f, /*Tmin*/
-	direction, /*direction*/
+	random_direction, /*direction*/
 	FLOAT32_MAXIMUM, /*Tmax*/
 	0 /*payload*/
 );
-                        }
-                        scattering *= VISIBILITY;
-                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
-                        volumetric_lighting += transmittance * scattering_integral;
-                        break;
-                    }
-                }
-            }
-        }
-        transmittance *= attenuation_factor;
-    }
-    imageStore(VolumetricLighting, ivec2(gl_LaunchIDNV.xy), vec4(volumetric_lighting, 1.0f));
+    imageStore(DiffuseIrradiance, ivec2(gl_LaunchIDNV.xy), vec4(RADIANCE, 1.0f));
 }

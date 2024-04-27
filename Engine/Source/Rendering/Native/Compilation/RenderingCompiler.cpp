@@ -118,7 +118,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 0
+#if 1
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -1664,14 +1664,19 @@ void GenerateRayGenerationShader
 
 				if (position != std::string::npos)
 				{
-					StaticArray<DynamicString, 4> arguments;
+					StaticArray<DynamicString, 5> arguments;
 
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						line.data(),
-						line.length(),
-						arguments.Data()
-					);
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							line.data(),
+							line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 5, "TraceRay needs 5 arguments!");
 
 					line = "traceNV\n";
 					line += "(\n";
@@ -1680,11 +1685,11 @@ void GenerateRayGenerationShader
 					line += "\t0xff, /*cullMask*/\n";
 					line += "\t0, /*sbtRecordOffset*/\n";
 					line += "\t0, /*sbtRecordStride*/\n";
-					line += "\t0, /*missIndex*/\n";
-					line += std::string("\t") + std::string(arguments[1].Data()) + ", /*origin*/\n";
-					line += "\tFLOAT32_EPSILON * 2.0f, /*Tmin*/\n";
-					line += std::string("\t") + std::string(arguments[2].Data()) + ", /*direction*/\n";
-					line += std::string("\t") + std::string(arguments[3].Data()) + ", /*Tmax*/\n";
+					line += std::string("\t") + std::string(arguments[1].Data()) + ", /*missIndex*/\n";
+					line += std::string("\t") + std::string(arguments[2].Data()) + ", /*origin*/\n";
+					line += "\tFLOAT32_EPSILON * 8.0f, /*Tmin*/\n";
+					line += std::string("\t") + std::string(arguments[3].Data()) + ", /*direction*/\n";
+					line += std::string("\t") + std::string(arguments[4].Data()) + ", /*Tmax*/\n";
 					line += "\t0 /*payload*/\n";
 					line += ");";
 				}
@@ -1736,12 +1741,15 @@ void GenerateRayMissShader
 		{
 			StaticArray<DynamicString, 2> arguments;
 
-			TextParsingUtilities::ParseFunctionArguments
-			(
-				lines[i].data(),
-				lines[i].length(),
-				arguments.Data()
-			);
+			const uint64 number_of_arguments
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					lines[i].data(),
+					lines[i].length(),
+					arguments.Data()
+				)
+			};
 
 			payloads.Emplace();
 			payloads.Back()._Type = std::move(arguments[0]);
@@ -1809,6 +1817,17 @@ void GenerateRayMissShader
 			//Cache the line.
 			std::string &line{ glsl_lines[i] };
 
+			//Replace "WORLD_RAY_DIRECTION" with "gl_WorldRayDirectionNV".
+			{
+				size_t position{ line.find("WORLD_RAY_DIRECTION") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("WORLD_RAY_DIRECTION"), "gl_WorldRayDirectionNV");
+					position = line.find("WORLD_RAY_DIRECTION");
+				}
+			}
+
 			//Write the line.
 			glsl_file << line << std::endl;
 		}
@@ -1818,6 +1837,139 @@ void GenerateRayMissShader
 
 		//Compile the GLSL shader.
 		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_miss_shader, &parameters->_RayMissShaderData._GLSLData);
+	}
+}
+
+/*
+*	Generates a ray closest hit shader.
+*/
+void GenerateRayClosestHitShader
+(
+	std::ifstream &file,
+	const char *const RESTRICT generated_file_path,
+	const std::string &shader_name,
+	const RenderPipelineInformation &render_pipeline_information,
+	RenderPipelineBuildParameters *const RESTRICT parameters
+) NOEXCEPT
+{
+	//Struct definitions.
+	struct Payload final
+	{
+		DynamicString _Type;
+		DynamicString _Name;
+	};
+
+	//Gather all the lines in the vertex function.
+	DynamicArray<std::string> lines;
+	GatherShaderLines(file, lines);
+
+	//Gather the payloads.
+	DynamicArray<Payload> payloads;
+
+	for (uint64 i{ 0 }; i < lines.Size();)
+	{
+		const size_t position{ lines[i].find("Payload(") };
+
+		if (position != std::string::npos)
+		{
+			StaticArray<DynamicString, 2> arguments;
+
+			TextParsingUtilities::ParseFunctionArguments
+			(
+				lines[i].data(),
+				lines[i].length(),
+				arguments.Data()
+			);
+
+			payloads.Emplace();
+			payloads.Back()._Type = std::move(arguments[0]);
+			payloads.Back()._Name = std::move(arguments[1]);
+
+			lines.EraseAt<true>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
+
+	//Write the GLSL file.
+	{
+		//Make a copy of the lines.
+		DynamicArray<std::string> glsl_lines{ lines };
+
+		//Open the file.
+		char glsl_file_path[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(glsl_file_path, "%s\\%s_RayClosestHit.glsl", generated_file_path, shader_name.c_str());
+		std::ofstream glsl_file{ glsl_file_path };
+
+		//Write the version declaration.
+		glsl_file << "#version 460" << std::endl;
+
+		glsl_file << std::endl;
+
+		//Insert extensions.
+		GLSLCompilation::InsertExtensions(glsl_file);
+		GLSLCompilation::InsertRayTracingExtensions(glsl_file);
+
+		//Insert the global render data.
+		GLSLCompilation::InsertFromFile(glsl_file, GLOBAL_RENDER_DATA_FILE_PATH);
+
+		//Insert things from the render pipeline information.
+		InsertRenderPipelineInformationToGLSL(render_pipeline_information, glsl_file);
+
+		//Insert ray tracing data.
+		InsertRayTracingData(glsl_file);
+
+		//Insert the ray traing hit shader utility functions.
+		InsertRayTracingHitShaderUtilityFunctions(render_pipeline_information._HitGroupNames.Back(), glsl_file);
+
+		//Write the payloads.
+		if (!payloads.Empty())
+		{
+			//Remember the current location index.
+			uint32 location_index{ 0 };
+
+			for (const Payload &payload : payloads)
+			{
+				glsl_file << "layout (location = " << location_index << ") rayPayloadInNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
+
+				++location_index;
+			}
+
+			glsl_file << std::endl;
+		}
+
+		//Write the "void main()" line.
+		glsl_file << "void main()" << std::endl;
+
+		//Write the remaining lines.
+		for (uint64 i{ 0 }; i < glsl_lines.Size(); ++i)
+		{
+			//Cache the line.
+			std::string &line{ glsl_lines[i] };
+
+			//Replace "WORLD_RAY_DIRECTION" with "gl_WorldRayDirectionNV".
+			{
+				size_t position{ line.find("WORLD_RAY_DIRECTION") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("WORLD_RAY_DIRECTION"), "gl_WorldRayDirectionNV");
+					position = line.find("WORLD_RAY_DIRECTION");
+				}
+			}
+
+			//Write the line.
+			glsl_file << line << std::endl;
+		}
+
+		//Close the file.
+		glsl_file.close();
+
+		//Compile the GLSL shader.
+		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_closesthit_shader, &parameters->_RayHitGroupShaderData.Back()._RayClosestHitShaderData._GLSLData);
 	}
 }
 
@@ -1930,6 +2082,17 @@ void GenerateRayAnyHitShader
 		{
 			//Cache the line.
 			std::string &line{ glsl_lines[i] };
+
+			//Replace "WORLD_RAY_DIRECTION" with "gl_WorldRayDirectionNV".
+			{
+				size_t position{ line.find("WORLD_RAY_DIRECTION") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("WORLD_RAY_DIRECTION"), "gl_WorldRayDirectionNV");
+					position = line.find("WORLD_RAY_DIRECTION");
+				}
+			}
 
 			//Replace "IgnoreHit()" with "ignoreIntersectionNV()".
 			{
@@ -3487,6 +3650,12 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 			else if (current_line == "RayMiss")
 			{
 				GenerateRayMissShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
+			}
+
+			//Is this the beginning of a ray closest hit shader?
+			else if (current_line == "RayClosestHit")
+			{
+				GenerateRayClosestHitShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
 			}
 
 			//Is this the beginning of a ray any hit shader?

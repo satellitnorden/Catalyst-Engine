@@ -468,6 +468,9 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 }
 
 //Constants.
+#define DIFFUSE_IRRADIANCE_MODE_NONE (0)
+#define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
+
 #define VOLUMETRIC_SHADOWS_MODE_NONE (0)
 #define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
 #define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)

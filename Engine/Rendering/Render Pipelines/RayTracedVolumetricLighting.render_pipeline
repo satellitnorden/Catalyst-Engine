@@ -142,7 +142,7 @@ RayGeneration
                             vec3 direction = -light._TransformData1;
 
                             //Trace the ray!
-                            TraceRay(ray_tracing_flags, sample_position, direction, FLOAT32_MAXIMUM);
+                            TraceRay(ray_tracing_flags, 0, sample_position, direction, FLOAT32_MAXIMUM);
                         }
 
                         scattering *= VISIBILITY;

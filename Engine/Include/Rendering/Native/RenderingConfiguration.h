@@ -34,6 +34,13 @@ public:
 		FAST_APPROXIMATE_PLUS_TEMPORAL
 	};
 
+	//Enumeration covering all diffuse irradiance modes.
+	enum class DiffuseIrradianceMode : uint8
+	{
+		NONE,
+		RAY_TRACED
+	};
+
 	//Enumeration covering all indirect lighting modes.
 	enum class IndirectLightingMode : uint8
 	{
@@ -131,6 +138,22 @@ public:
 	}
 
 	/*
+	*	Returns the diffuse irradiance mode.
+	*/
+	FORCE_INLINE NO_DISCARD DiffuseIrradianceMode GetDiffuseIrradianceMode() const NOEXCEPT
+	{
+		return _DiffuseIrradianceMode;
+	}
+
+	/*
+	*	Sets the diffuse irradiance mode.
+	*/
+	FORCE_INLINE void SetDiffuseIrradianceMode(const DiffuseIrradianceMode value) NOEXCEPT
+	{
+		_DiffuseIrradianceMode = value;
+	}
+
+	/*
 	*	Returns the indirect lighting mode.
 	*/
 	FORCE_INLINE NO_DISCARD IndirectLightingMode GetIndirectLightingMode() const NOEXCEPT
@@ -204,6 +227,9 @@ private:
 
 	public:
 
+		//The diffuse irradiance mode.
+		uint32 _DiffuseIrradianceMode;
+
 		//The volumetric shadows mode.
 		uint32 _VolumetricShadowsMode;
 
@@ -217,6 +243,9 @@ private:
 
 	//The anti aliasing mode.
 	AntiAliasingMode _AntiAliasingMode{ AntiAliasingMode::TEMPORAL };
+
+	//The diffuse irradiance mode.
+	DiffuseIrradianceMode _DiffuseIrradianceMode{ DiffuseIrradianceMode::NONE };
 
 	//The indirect lighting mode.
 	IndirectLightingMode _IndirectLightingMode{ IndirectLightingMode::SCREEN_SPACE };

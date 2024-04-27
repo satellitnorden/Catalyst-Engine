@@ -274,27 +274,6 @@ NO_DISCARD bool CatalystEditorSystem::TopBarUpdate(const Vector2<float32> minimu
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Rendering"))
-		{
-			if (RenderingSystem::Instance->GetRenderingReferenceSystem()->IsRenderingReferenceInProgress())
-			{
-				if (ImGui::MenuItem("Stop Rendering Reference"))
-				{
-					//TODO!
-				}
-			}
-
-			else
-			{
-				if (ImGui::MenuItem("Start Rendering Reference"))
-				{
-					RenderingSystem::Instance->GetRenderingReferenceSystem()->StartRenderingReference();
-				}
-			}
-
-			ImGui::EndMenu();
-		}
-
 		//Call the top bar callbacks.
 		for (const TopBarMenuCallback callback : _TopBarMenuCallbacks)
 		{

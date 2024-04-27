@@ -28,6 +28,9 @@
 
 //Systems.
 #include <Systems/AnimationSystem.h>
+#if defined(CATALYST_EDITOR)
+#include <Systems/CatalystEditorSystem.h>
+#endif
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/ContentSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -180,6 +183,61 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		sizeof(HammersleyHemisphereSamplesUniformData)
 	);
 
+#if defined(CATALYST_EDITOR)
+	CatalystEditorSystem::Instance->RegisterTopBarMenuCallback
+	(
+		[]()
+		{
+			if (ImGui::BeginMenu("Rendering"))
+			{
+				if (RenderingSystem::Instance->IsTakingScreenshot())
+				{
+					if (ImGui::MenuItem("Stop Taking Screenshot"))
+					{
+						RenderingSystem::Instance->StopTakingScreenshot(nullptr);
+					}
+				}
+
+				else
+				{
+					if (ImGui::MenuItem("Start Taking Screenshot"))
+					{
+						RenderingSystem::Instance->StartTakingScreenshot();
+					}
+				}
+
+				if (RenderingSystem::Instance->GetRenderingReferenceSystem()->IsRenderingReferenceInProgress())
+				{
+					if (ImGui::MenuItem("Stop Rendering Reference"))
+					{
+						RenderingSystem::Instance->GetRenderingReferenceSystem()->StopRenderingReference();
+					}
+				}
+
+				else
+				{
+					if (ImGui::MenuItem("Start Rendering Reference"))
+					{
+						RenderingSystem::Instance->GetRenderingReferenceSystem()->StartRenderingReference();
+					}
+				}
+
+				if (ImGui::MenuItem("Visualization: None"))
+				{
+					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NONE);
+				}
+
+				else if (ImGui::MenuItem("Visualization: Diffuse Irradiance"))
+				{
+					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::DIFFUSE_IRRADIANCE);
+				}
+
+				ImGui::EndMenu();
+			}
+		}
+	);
+#endif
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Register debug commands.
 	DebugSystem::Instance->RegisterCheckboxDebugCommand
@@ -272,6 +330,15 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
+	DebugSystem::Instance->RegisterButtonDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Diffuse Irradiance",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::DIFFUSE_IRRADIANCE);
+		},
+		nullptr
+	);
 #endif
 }
 
@@ -288,6 +355,9 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 
 	//Initialize the camera system.
 	_CameraSystem.Initialize();
+
+	//Post initialize the irradiance system.
+	_IrradianceSystem.PostInitialize();
 
 	//Post-initialize the lighting system.
 	_LightingSystem.PostInitialize();
@@ -432,6 +502,13 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		PROFILING_SCOPE("RenderingSystem_UpdateGlobalRenderData");
 
 		UpdateGlobalRenderData();
+	}
+
+	//Update the irradiance system.
+	{
+		PROFILING_SCOPE("RenderingSystem_IrradianceSystem_RenderUpdate");
+
+		_IrradianceSystem.RenderUpdate();
 	}
 
 	//Update the lighting system.
@@ -681,6 +758,7 @@ NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
 	return	IsRayTracingSupported() &&
 			(GetCurrentRenderingPath() == RenderingPath::PATH_TRACING
 			|| _RenderingConfiguration.GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED
+			|| _RenderingConfiguration.GetDiffuseIrradianceMode() == RenderingConfiguration::DiffuseIrradianceMode::RAY_TRACED
 			|| _RenderingConfiguration.GetIndirectLightingMode() == RenderingConfiguration::IndirectLightingMode::RAY_TRACED
 			|| _RenderingConfiguration.GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RAY_TRACED
 			|| _RenderingConfiguration.GetVolumetricShadowsMode() == RenderingConfiguration::VolumetricShadowsMode::RAY_TRACED);

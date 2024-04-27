@@ -25,7 +25,8 @@ public:
 		ROUGHNESS,
 		METALLIC,
 		AMBIENT_OCCLUSION,
-		EMISSIVE
+		EMISSIVE,
+		DIFFUSE_IRRADIANCE
 	};
 
 	//Singleton declaration.

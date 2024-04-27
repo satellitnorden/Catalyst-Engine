@@ -2,8 +2,7 @@
 
 #extension GL_ARB_separate_shader_objects : require
 #extension GL_EXT_nonuniform_qualifier : require
-layout (early_fragment_tests) in;
-
+#extension GL_NV_ray_tracing : require
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -209,19 +208,65 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (std140, set = 1, binding = 1) uniform RenderingConfiguration
+layout (std140, set = 1, binding = 1) uniform General
 {
-	layout (offset = 0) uint DIFFUSE_IRRADIANCE_MODE;
-	layout (offset = 4) uint VOLUMETRIC_SHADOWS_MODE;
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
 };
 
-layout (std140, set = 1, binding = 2) uniform Wind
+layout (std140, set = 1, binding = 2) uniform HammersleyHemisphereSamples
+{
+	layout (offset = 0) vec4 HAMMERSLEY_COSINUS_SAMPLES[64];
+	layout (offset = 1024) vec4 HAMMERSLEY_UNIFORM_SAMPLES[64];
+};
+
+layout (std140, set = 1, binding = 3) uniform Irradiance
+{
+	layout (offset = 0) vec4 IRRADIANCE_HEMISPHERE_SAMPLES[64];
+};
+
+layout (std140, set = 1, binding = 4) uniform Wind
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
 	layout (offset = 32) uint SKY_MODE;
 	layout (offset = 36) float MAXIMUM_SKY_TEXTURE_MIP_LEVEL;
 };
+
+//Lighting header struct definition.
+struct LightingHeader
+{
+	uint _NumberOfLights;
+	uint _MaximumNumberOfShadowCastingLights;	
+};
+layout (std430, set = 1, binding = 5) buffer Lighting
+{
+	layout (offset = 0) LightingHeader LIGHTING_HEADER;
+	layout (offset = 16) vec4[] LIGHT_DATA;
+};
+
+layout (set = 1, binding = 6) uniform sampler SAMPLER;
+
+layout (set = 1, binding = 7, rgba32f) uniform image2D SceneFeatures2Half; 
+layout (set = 1, binding = 8, rgba32f) uniform image2D DiffuseIrradiance; 
+
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    uint offset_index = (FRAME + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1);
+
+    uvec2 offset_coordinate;
+
+    offset_coordinate.x = coordinate.x + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+    offset_coordinate.y = coordinate.y + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+
+    return texture(BLUE_NOISE_TEXTURES[offset_index], vec2(offset_coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
 
 /*
 *   Linearizes a depth value.
@@ -295,6 +340,98 @@ vec3 CalculateScreenPosition(vec3 world_position)
     view_space_position.z = LinearizeDepth(view_space_position.z);
     
     return view_space_position.xyz;
+}
+
+//Constants.
+#define LIGHT_TYPE_DIRECTIONAL (0)
+#define LIGHT_TYPE_POINT (1)
+#define LIGHT_TYPE_BOX (2)
+
+#define LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT (BIT(0))
+#define LIGHT_PROPERTY_VOLUMETRIC_BIT (BIT(1))
+#define LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT (BIT(2))
+
+/*
+*	Light struct definition.
+*/
+struct Light
+{
+	/*
+	*	First transform data.
+	*	Direction for directional lights, position for point lights, minimum world position for box lights.
+	*/
+	vec3 _TransformData1;
+
+	/*
+	*	Second transform data.
+	*	Maximum word position for box lights.
+	*/
+	vec3 _TransformData2;
+	vec3 _Color;
+	uint _LightType;
+	uint _LightProperties;
+	float _Intensity;
+	float _Radius;
+	float _Size;
+};
+
+/*
+*	Unpacks the light at the given index.
+*   Requies the Lighting storage buffer to be included.
+*/
+Light UnpackLight(uint index)
+{
+	Light light;
+
+  	vec4 light_data_1 = LIGHT_DATA[index * 4 + 0];
+  	vec4 light_data_2 = LIGHT_DATA[index * 4 + 1];
+  	vec4 light_data_3 = LIGHT_DATA[index * 4 + 2];
+  	vec4 light_data_4 = LIGHT_DATA[index * 4 + 3];
+
+  	light._TransformData1 = vec3(light_data_1.x, light_data_1.y, light_data_1.z);
+  	light._TransformData2 = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
+  	light._Color = vec3(light_data_2.z, light_data_2.w, light_data_3.x);
+  	light._LightType = floatBitsToUint(light_data_3.y);
+  	light._LightProperties = floatBitsToUint(light_data_3.z);
+  	light._Intensity = light_data_3.w;
+  	light._Radius = light_data_4.x;
+  	light._Size = light_data_4.y;
+
+	return light;
+}
+
+/*
+*	Rotates the given vector around the yaw.
+*/
+vec3 RotateYaw(vec3 X, float angle)
+{
+	float sine = sin(angle);
+    float cosine = cos(angle);
+
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
+
+    return X;
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}
+
+/*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
 }
 
 ////////////
@@ -597,14 +734,6 @@ vec3 CalculateIndirectLighting
 }
 
 //Constants.
-#define DIFFUSE_IRRADIANCE_MODE_NONE (0)
-#define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
-
-#define VOLUMETRIC_SHADOWS_MODE_NONE (0)
-#define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
-#define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
-
-//Constants.
 #define SKY_MODE_ATMOSPHERIC_SCATTERING (0)
 #define SKY_MODE_GRADIENT (1)
 #define SKY_MODE_TEXTURE (2)
@@ -641,56 +770,62 @@ vec3 SampleSky(vec3 direction, float mip_level)
 	}
 }
 
-layout (set = 1, binding = 3) uniform sampler2D SceneFeatures1;
-layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2;
-layout (set = 1, binding = 5) uniform sampler2D SceneFeatures3;
-layout (set = 1, binding = 6) uniform sampler2D DiffuseIrradiance;
+layout (set = 2, binding = 0) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;
+layout (set = 2, binding = 1) buffer OpaqueModels_VERTEX_DATA_BUFFER { vec4 OpaqueModels_VERTEX_DATA[]; } OpaqueModels_VERTEX_BUFFERS[];
+layout (set = 2, binding = 2) buffer OpaqueModels_INDEX_DATA_BUFFER { uint OpaqueModels_INDEX_DATA[]; } OpaqueModels_INDEX_BUFFERS[];
+layout (set = 2, binding = 3) buffer OpaqueModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] OpaqueModels_MATERIAL_INDICES; };
+layout (set = 2, binding = 4) buffer MaskedModels_VERTEX_DATA_BUFFER { vec4 MaskedModels_VERTEX_DATA[]; } MaskedModels_VERTEX_BUFFERS[];
+layout (set = 2, binding = 5) buffer MaskedModels_INDEX_DATA_BUFFER { uint MaskedModels_INDEX_DATA[]; } MaskedModels_INDEX_BUFFERS[];
+layout (set = 2, binding = 6) buffer MaskedModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] MaskedModels_MATERIAL_INDICES; };
+hitAttributeNV vec3 HIT_ATTRIBUTE;
 
-layout (location = 0) in vec2 InScreenCoordinate;
+struct HitVertexInformation
+{
+	vec3 _Position;
+	vec3 _Normal;
+	vec3 _Tangent;
+	vec2 _TextureCoordinate;
+};
 
-layout (location = 0) out vec4 Scene;
+HitVertexInformation GetHitVertexInformation()
+{
+	HitVertexInformation hit_vertex_information;
+	uint vertex_index_0 = MaskedModels_INDEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_INDEX_DATA[gl_PrimitiveID * 3 + 0];
+	vec4 vertex_data_0_0 = MaskedModels_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_VERTEX_DATA[3 * vertex_index_0 + 0];
+	vec4 vertex_data_0_1 = MaskedModels_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_VERTEX_DATA[3 * vertex_index_0 + 1];
+	vec4 vertex_data_0_2 = MaskedModels_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_VERTEX_DATA[3 * vertex_index_0 + 2];
+	uint vertex_index_1 = MaskedModels_INDEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_INDEX_DATA[gl_PrimitiveID * 3 + 1];
+	vec4 vertex_data_1_0 = MaskedModels_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_VERTEX_DATA[3 * vertex_index_1 + 0];
+	vec4 vertex_data_1_1 = MaskedModels_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_VERTEX_DATA[3 * vertex_index_1 + 1];
+	vec4 vertex_data_1_2 = MaskedModels_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_VERTEX_DATA[3 * vertex_index_1 + 2];
+	uint vertex_index_2 = MaskedModels_INDEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_INDEX_DATA[gl_PrimitiveID * 3 + 2];
+	vec4 vertex_data_2_0 = MaskedModels_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_VERTEX_DATA[3 * vertex_index_2 + 0];
+	vec4 vertex_data_2_1 = MaskedModels_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_VERTEX_DATA[3 * vertex_index_2 + 1];
+	vec4 vertex_data_2_2 = MaskedModels_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].MaskedModels_VERTEX_DATA[3 * vertex_index_2 + 2];
+	vec3 barycentric_coordinates = vec3(1.0f - HIT_ATTRIBUTE.x - HIT_ATTRIBUTE.y, HIT_ATTRIBUTE.x, HIT_ATTRIBUTE.y);
+	hit_vertex_information._Position = vec3(vertex_data_0_0.x, vertex_data_0_0.y, vertex_data_0_0.z) * barycentric_coordinates[0] + vec3(vertex_data_1_0.x, vertex_data_1_0.y, vertex_data_1_0.z) * barycentric_coordinates[1] + vec3(vertex_data_2_0.x, vertex_data_2_0.y, vertex_data_2_0.z) * barycentric_coordinates[2];
+	hit_vertex_information._Position = gl_ObjectToWorldNV * vec4(hit_vertex_information._Normal, 1.0f);
+	hit_vertex_information._Normal = vec3(vertex_data_0_0.w, vertex_data_0_1.x, vertex_data_0_1.y) * barycentric_coordinates[0] + vec3(vertex_data_1_0.w, vertex_data_1_1.x, vertex_data_1_1.y) * barycentric_coordinates[1] + vec3(vertex_data_2_0.w, vertex_data_2_1.x, vertex_data_2_1.y) * barycentric_coordinates[2];
+	hit_vertex_information._Normal = normalize(gl_ObjectToWorldNV * vec4(hit_vertex_information._Normal, 0.0f));
+	hit_vertex_information._Tangent = vec3(vertex_data_0_1.z, vertex_data_0_1.w, vertex_data_0_2.x) * barycentric_coordinates[0] + vec3(vertex_data_1_1.z, vertex_data_1_1.w, vertex_data_1_2.x) * barycentric_coordinates[1] + vec3(vertex_data_2_1.z, vertex_data_2_1.w, vertex_data_2_2.x) * barycentric_coordinates[2];
+	hit_vertex_information._Tangent = normalize(gl_ObjectToWorldNV * vec4(hit_vertex_information._Tangent, 0.0f));
+	hit_vertex_information._TextureCoordinate = vec2(vertex_data_0_2.y, vertex_data_0_2.z) * barycentric_coordinates[0] + vec2(vertex_data_1_2.y, vertex_data_1_2.z) * barycentric_coordinates[1] + vec2(vertex_data_2_2.y, vertex_data_2_2.z) * barycentric_coordinates[2];
+	return hit_vertex_information;
+}
+
+uint GetHitMaterialIndex()
+{
+	return MaskedModels_MATERIAL_INDICES[gl_InstanceCustomIndexNV / 4][gl_InstanceCustomIndexNV & 3];
+}
 
 void main()
 {
-    vec4 scene_features_1 = texture(SceneFeatures1, InScreenCoordinate);
-    vec4 scene_features_2 = texture(SceneFeatures2, InScreenCoordinate);
-    vec4 scene_features_3 = texture(SceneFeatures3, InScreenCoordinate);
-    vec3 albedo = scene_features_1.rgb;
-    float thickness = scene_features_1.w;
-    vec3 normal = scene_features_2.xyz;
-    float depth = scene_features_2.w;
-    float roughness = scene_features_3.x;
-    float metallic = scene_features_3.y;
-    float ambient_occlusion = scene_features_3.z;
-    float emissive = scene_features_3.w;
-    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
-    vec3 view_direction = normalize(CAMERA_WORLD_POSITION - world_position);
-    vec3 incoming_diffuse_irradiance = SampleSky(normal, MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
-    switch (DIFFUSE_IRRADIANCE_MODE)
+    HitVertexInformation hit_vertex_information = GetHitVertexInformation();
+    uint hit_material_index = GetHitMaterialIndex();
+    float opacity;
+    EVALUATE_OPACITY(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, opacity);
+    if (opacity < 0.5f)
     {
-        case DIFFUSE_IRRADIANCE_MODE_NONE:
-        {
-            incoming_diffuse_irradiance = SampleSky(normal, MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
-            break;
-        }
-        case DIFFUSE_IRRADIANCE_MODE_RAY_TRACED:
-        {
-            incoming_diffuse_irradiance = texture(DiffuseIrradiance, InScreenCoordinate).rgb;
-            break;
-        }
+        ignoreIntersectionNV();
     }
-    vec3 incoming_specular_irradiance = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
-    vec3 indirect_lighting = CalculateIndirectLighting
-    (
-        view_direction,
-        albedo,
-        normal,
-        roughness,
-        metallic,
-        ambient_occlusion,
-        thickness,
-        incoming_diffuse_irradiance * (1.0f + roughness),
-        incoming_specular_irradiance
-    );
-	Scene = vec4(indirect_lighting,1.0f);
 }

@@ -39,6 +39,9 @@ public:
 		//The identifier.
 		HashString _Identifier;
 
+		//The ray closest hit shader data.
+		ShaderData _RayClosestHitShaderData;
+
 		//The ray any hit shader data.
 		ShaderData _RayAnyHitShaderData;
 

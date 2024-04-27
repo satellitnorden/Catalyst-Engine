@@ -29,6 +29,9 @@ public:
 		//The identifier.
 		HashString _Identifier;
 
+		//The ray closest hit shader handle
+		ShaderHandle _RayClosestHitShaderHandle{ EMPTY_HANDLE };
+
 		//The ray any hit shader handle
 		ShaderHandle _RayAnyHitShaderHandle{ EMPTY_HANDLE };
 

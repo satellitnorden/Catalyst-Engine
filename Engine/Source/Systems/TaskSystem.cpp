@@ -40,6 +40,18 @@ void TaskSystem::Initialize(const CatalystProjectConcurrencyConfiguration &confi
 		{
 			--_NumberOfTaskExecutors;
 		}
+
+		//Leave one thread for the OS. (:
+		if (_NumberOfTaskExecutors > 1)
+		{
+			--_NumberOfTaskExecutors;
+		}
+
+		//Leave one thread for the OS. (:
+		if (_NumberOfTaskExecutors > 1)
+		{
+			--_NumberOfTaskExecutors;
+		}
 	}
 
 	if (number_of_task_executors > 0)

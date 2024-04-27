@@ -184,7 +184,7 @@ public:
 	/*
 	*	Returns the texture value at the specified indices, const.
 	*/
-	const TYPE& At(const uint32 X, const uint32 Y) const NOEXCEPT
+	const TYPE &At(const uint32 X, const uint32 Y) const NOEXCEPT
 	{
 		return _Data[X + (Y * _Width)];
 	}

@@ -207,7 +207,13 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (std140, set = 1, binding = 1) uniform Wind
+layout (std140, set = 1, binding = 1) uniform RenderingConfiguration
+{
+	layout (offset = 0) uint DIFFUSE_IRRADIANCE_MODE;
+	layout (offset = 4) uint VOLUMETRIC_SHADOWS_MODE;
+};
+
+layout (std140, set = 1, binding = 2) uniform Wind
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
@@ -589,6 +595,14 @@ vec3 CalculateIndirectLighting
 }
 
 //Constants.
+#define DIFFUSE_IRRADIANCE_MODE_NONE (0)
+#define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
+
+#define VOLUMETRIC_SHADOWS_MODE_NONE (0)
+#define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
+#define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
+
+//Constants.
 #define SKY_MODE_ATMOSPHERIC_SCATTERING (0)
 #define SKY_MODE_GRADIENT (1)
 #define SKY_MODE_TEXTURE (2)
@@ -625,9 +639,10 @@ vec3 SampleSky(vec3 direction, float mip_level)
 	}
 }
 
-layout (set = 1, binding = 2) uniform sampler2D SceneFeatures1;
-layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2;
-layout (set = 1, binding = 4) uniform sampler2D SceneFeatures3;
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures1;
+layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2;
+layout (set = 1, binding = 5) uniform sampler2D SceneFeatures3;
+layout (set = 1, binding = 6) uniform sampler2D DiffuseIrradiance;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 

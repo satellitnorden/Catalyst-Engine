@@ -60,6 +60,11 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 		{
 			resource->_RayHitGroupShaderData[ray_hit_group_index]._Identifier = data->_RayHitGroupShaderData[ray_hit_group_index]._Identifier;
 
+			if (!data->_RayHitGroupShaderData[ray_hit_group_index]._RayClosestHitShaderData._GLSLData.Empty())
+			{
+				RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_RayHitGroupShaderData[ray_hit_group_index]._RayClosestHitShaderData._GLSLData), ShaderStage::RAY_CLOSEST_HIT, &resource->_RayHitGroupShaderData[ray_hit_group_index]._RayClosestHitShaderHandle);
+			}
+
 			if (!data->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderData._GLSLData.Empty())
 			{
 				RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderData._GLSLData), ShaderStage::RAY_ANY_HIT, &resource->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderHandle);

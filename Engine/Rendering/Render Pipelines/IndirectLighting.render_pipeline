@@ -1,16 +1,19 @@
 //Declare uniform buffer includes.
 IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(RenderingConfiguration);
 IncludeUniformBuffer(World);
 
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
 IncludeShaderFunctionLibrary(PhysicallyBasedLighting);
+IncludeShaderFunctionLibrary(RenderingConfiguration);
 IncludeShaderFunctionLibrary(World);
 
 //Declare input render targets.
 InputRenderTarget(SceneFeatures1 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures2 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures3 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(DiffuseIrradiance /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output depth buffer.
 OutputDepthBuffer(SceneDepthBuffer);
@@ -84,6 +87,24 @@ Fragment
 
     //Calculate the incoming indirect light.
     vec3 incoming_diffuse_irradiance = SampleSky(normal, MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
+
+    switch (DIFFUSE_IRRADIANCE_MODE)
+    {
+        case DIFFUSE_IRRADIANCE_MODE_NONE:
+        {
+            incoming_diffuse_irradiance = SampleSky(normal, MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
+
+            break;
+        }
+
+        case DIFFUSE_IRRADIANCE_MODE_RAY_TRACED:
+        {
+            incoming_diffuse_irradiance = texture(DiffuseIrradiance, InScreenCoordinate).rgb;
+        
+            break;
+        }
+    }
+
     vec3 incoming_specular_irradiance = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
 
     //Calculate the indirect lighting.

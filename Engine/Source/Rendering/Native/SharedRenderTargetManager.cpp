@@ -96,6 +96,16 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_FEATURES_4_HALF)]._IsDepthBuffer = false;
 
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::DIFFUSE_IRRADIANCE)]._Identifier = HashString("DiffuseIrradiance");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::DIFFUSE_IRRADIANCE)]._Resolution = RenderingSystem::Instance->GetScaledResolution(1);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::DIFFUSE_IRRADIANCE)]._TextureFormat = TextureFormat::RGBA_FLOAT32;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::DIFFUSE_IRRADIANCE)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::DIFFUSE_IRRADIANCE)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::DIFFUSE_IRRADIANCE)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::DIFFUSE_IRRADIANCE)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::DIFFUSE_IRRADIANCE)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::DIFFUSE_IRRADIANCE)]._IsDepthBuffer = false;
+
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE)]._Identifier = HashString("Scene");
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE)]._Resolution = RenderingSystem::Instance->GetScaledResolution(0);
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE)]._TextureFormat = TextureFormat::RGBA_FLOAT32;

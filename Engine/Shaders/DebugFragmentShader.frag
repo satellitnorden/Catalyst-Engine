@@ -8,6 +8,7 @@
 #define MODE_METALLIC (6)
 #define MODE_AMBIENT_OCCLUSION (7)
 #define MODE_EMISSIVE (8)
+#define MODE_DIFFUSE_IRRADIANCE (9)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -90,6 +91,13 @@ void CatalystShaderMain()
 		case MODE_EMISSIVE:
 		{
 			fragment = vec4(vec3(texture(SOURCE_TEXTURE, fragment_texture_coordinate).a), 1.0f);
+
+			break;
+		}
+
+		case MODE_DIFFUSE_IRRADIANCE:
+		{
+			fragment = vec4(vec3(texture(SOURCE_TEXTURE, fragment_texture_coordinate).rgb), 1.0f);
 
 			break;
 		}

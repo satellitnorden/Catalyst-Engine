@@ -1,0 +1,4 @@
+UniformBuffer(Irradiance)
+{
+    vec4 IRRADIANCE_HEMISPHERE_SAMPLES[64];
+};

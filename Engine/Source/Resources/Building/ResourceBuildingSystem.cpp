@@ -326,6 +326,28 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 			//Write the identifier.
 			output_file.Write(&ray_hit_group_shader_data._Identifier, sizeof(HashString));
 
+			//Write the ray closest hit shader data, if it exists.
+			if (!ray_hit_group_shader_data._RayClosestHitShaderData._GLSLData.Empty())
+			{
+				//Write that it has GLSL shader data.
+				const bool has_data{ true };
+				output_file.Write(&has_data, sizeof(bool));
+
+				//Write the data size.
+				const uint64 data_size{ ray_hit_group_shader_data._RayClosestHitShaderData._GLSLData.Size() };
+				output_file.Write(&data_size, sizeof(uint64));
+
+				//Write the data.
+				output_file.Write(ray_hit_group_shader_data._RayClosestHitShaderData._GLSLData.Data(), ray_hit_group_shader_data._RayClosestHitShaderData._GLSLData.Size());
+			}
+
+			else
+			{
+				//Write that it doesn't GLSL shader data.
+				const bool has_data{ false };
+				output_file.Write(&has_data, sizeof(bool));
+			}
+
 			//Write the ray any hit shader data, if it exists.
 			if (!ray_hit_group_shader_data._RayAnyHitShaderData._GLSLData.Empty())
 			{

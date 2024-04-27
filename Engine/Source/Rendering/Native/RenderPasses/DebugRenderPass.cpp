@@ -177,6 +177,18 @@ void DebugRenderPass::Execute() NOEXCEPT
 				break;
 			}
 
+			case Mode::DIFFUSE_IRRADIANCE:
+			{
+				if (_CurrentMode != Mode::NONE)
+				{
+					_DebugGraphicsPipeline.Terminate();
+				}
+
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::DIFFUSE_IRRADIANCE));
+
+				break;
+			}
+
 			default:
 			{
 				ASSERT(false, "Invalid case!");

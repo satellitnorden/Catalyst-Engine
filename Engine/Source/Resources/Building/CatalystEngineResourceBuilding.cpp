@@ -922,7 +922,7 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DebugFragmentShader";
+		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Base\\DebugFragmentShader";
 		parameters._ID = "DebugFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DebugFragmentShader.frag";
 		parameters._Stage = ShaderStage::FRAGMENT;

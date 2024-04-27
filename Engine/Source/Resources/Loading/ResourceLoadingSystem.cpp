@@ -106,7 +106,7 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryInputFile *const RESTRICT f
 		}
 	}
 
-	//Read the ray hit group
+	//Read the ray hit group.
 	{
 		uint64 number_of_ray_hit_groups{ 0 };
 		file->Read(&number_of_ray_hit_groups, sizeof(uint64));
@@ -119,16 +119,32 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryInputFile *const RESTRICT f
 			{
 				file->Read(&data->_RayHitGroupShaderData[ray_hit_group_index]._Identifier, sizeof(HashString));
 
-				bool has_data{ false };
-				file->Read(&has_data, sizeof(bool));
-
-				if (has_data)
 				{
-					uint64 data_size{ 0 };
-					file->Read(&data_size, sizeof(uint64));
-					data->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderData._GLSLData.Upsize<false>(data_size);
+					bool has_data{ false };
+					file->Read(&has_data, sizeof(bool));
 
-					file->Read(data->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderData._GLSLData.Data(), data_size);
+					if (has_data)
+					{
+						uint64 data_size{ 0 };
+						file->Read(&data_size, sizeof(uint64));
+						data->_RayHitGroupShaderData[ray_hit_group_index]._RayClosestHitShaderData._GLSLData.Upsize<false>(data_size);
+
+						file->Read(data->_RayHitGroupShaderData[ray_hit_group_index]._RayClosestHitShaderData._GLSLData.Data(), data_size);
+					}
+				}
+
+				{
+					bool has_data{ false };
+					file->Read(&has_data, sizeof(bool));
+
+					if (has_data)
+					{
+						uint64 data_size{ 0 };
+						file->Read(&data_size, sizeof(uint64));
+						data->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderData._GLSLData.Upsize<false>(data_size);
+
+						file->Read(data->_RayHitGroupShaderData[ray_hit_group_index]._RayAnyHitShaderData._GLSLData.Data(), data_size);
+					}
 				}
 			}
 		}

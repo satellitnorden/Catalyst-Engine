@@ -19,6 +19,7 @@
 #endif
 #include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/GlobalRenderData.h>
+#include <Rendering/Native/IrradianceSystem.h>
 #include <Rendering/Native/LightingSystem.h>
 #include <Rendering/Native/MaterialSystem.h>
 #include <Rendering/Native/ModelSystem.h>
@@ -253,6 +254,14 @@ public:
 		return &_DebugRenderingSystem;
 	}
 #endif
+
+	/*
+	*	Returns the irradiance system.
+	*/
+	RESTRICTED NO_DISCARD IrradianceSystem *const RESTRICT GetIrradianceSystem() NOEXCEPT
+	{
+		return &_IrradianceSystem;
+	}
 
 	/*
 	*	Returns the lighting system.
@@ -744,6 +753,9 @@ private:
 	//The debug rendering system.
 	DebugRenderingSystem _DebugRenderingSystem;
 #endif
+
+	//The irradiance system.
+	IrradianceSystem _IrradianceSystem;
 
 	//The lighting system.
 	LightingSystem _LightingSystem;

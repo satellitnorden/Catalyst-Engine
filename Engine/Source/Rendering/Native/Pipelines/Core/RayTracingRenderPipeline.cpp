@@ -32,6 +32,7 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 		shader_stages |= ShaderStage::RAY_MISS;
 	}
 
+	shader_stages |= ShaderStage::RAY_CLOSEST_HIT;
 	shader_stages |= ShaderStage::RAY_ANY_HIT;
 
 	//Set if this render pipeline needs a render data table.
@@ -46,7 +47,7 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 	{
 		//Create the render data table layout.
 		{
-			constexpr uint64 MAX_BINDINGS{ 7 };
+			constexpr uint64 MAX_BINDINGS{ 16 };
 
 			StaticArray<RenderDataTableLayoutBinding, MAX_BINDINGS> bindings;
 			uint32 current_binding_index{ 0 };
@@ -249,16 +250,16 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 
 			AddHitGroup
 			(
-				EMPTY_HANDLE,
+				ray_hit_group_shader_data ? ray_hit_group_shader_data->_RayClosestHitShaderHandle : EMPTY_HANDLE,
 				ray_hit_group_shader_data ? ray_hit_group_shader_data->_RayAnyHitShaderHandle : EMPTY_HANDLE,
 				EMPTY_HANDLE
 			);
 		}
 
-		for (const RenderPipelineResource::RayHitGroupShaderData &ray_hit_group_shader_data : _RenderPipelineResource->_RayHitGroupShaderData)
-		{
-			AddHitGroup(EMPTY_HANDLE, ray_hit_group_shader_data._RayAnyHitShaderHandle, EMPTY_HANDLE);
-		}
+		//for (const RenderPipelineResource::RayHitGroupShaderData &ray_hit_group_shader_data : _RenderPipelineResource->_RayHitGroupShaderData)
+		//{
+		//	AddHitGroup(ray_hit_group_shader_data._RayClosestHitShaderHandle, ray_hit_group_shader_data._RayAnyHitShaderHandle, EMPTY_HANDLE);
+		//}
 	}
 
 	//Add the render data table layouts.

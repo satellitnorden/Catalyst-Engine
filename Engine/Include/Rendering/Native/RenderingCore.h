@@ -107,6 +107,7 @@ enum class DefaultNativeRenderPassStage : uint8
 	SCENE_FEATURES,
 	POST_SCENE_FEATURES,
 	SHADOWS,
+	IRRADIANCE,
 	AMBIENT_OCCLUSION,
 	DIRECT_LIGHTING,
 	INDIRECT_LIGHTING,
@@ -440,6 +441,11 @@ enum class SharedRenderTarget : uint8
 	*	Contains the velocity in the RG channels at half resolution.
 	*/
 	SCENE_FEATURES_4_HALF,
+
+	/*
+	*	Contains the diffuse irradiance.
+	*/
+	DIFFUSE_IRRADIANCE,
 
 	/*
 	*	Contains the final color for the scene, in high dynamic range.
