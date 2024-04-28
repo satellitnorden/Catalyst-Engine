@@ -155,7 +155,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 			AddPipeline(&_PassthroughPipeline);
 
 			{
-				GraphicsRenderPipelineParameters parameters;
+				GraphicsRenderPipelineInitializeParameters parameters;
 
 				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
 				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
@@ -164,7 +164,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 			}
 
 			{
-				GraphicsRenderPipelineParameters parameters;
+				GraphicsRenderPipelineInitializeParameters parameters;
 
 				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
 				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
@@ -195,7 +195,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 
 			for (uint64 i{ 0 }; i < _TemporalAntiAliasingPipelines.Size(); ++i)
 			{
-				GraphicsRenderPipelineParameters parameters;
+				GraphicsRenderPipelineInitializeParameters parameters;
 
 				parameters._InputRenderTargets.Emplace(HashString("SceneNearest"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
 				parameters._InputRenderTargets.Emplace(HashString("SceneLinear"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
@@ -208,7 +208,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 			}
 
 			{
-				GraphicsRenderPipelineParameters parameters;
+				GraphicsRenderPipelineInitializeParameters parameters;
 
 				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
 				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
@@ -242,7 +242,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 			AddPipeline(&_PassthroughPipeline);
 
 			{
-				GraphicsRenderPipelineParameters parameters;
+				GraphicsRenderPipelineInitializeParameters parameters;
 
 				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
 				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
@@ -252,7 +252,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 
 			for (uint64 i{ 0 }; i < _TemporalAntiAliasingPipelines.Size(); ++i)
 			{
-				GraphicsRenderPipelineParameters parameters;
+				GraphicsRenderPipelineInitializeParameters parameters;
 
 				parameters._InputRenderTargets.Emplace(HashString("SceneNearest"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
 				parameters._InputRenderTargets.Emplace(HashString("SceneLinear"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
@@ -265,7 +265,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 			}
 
 			{
-				GraphicsRenderPipelineParameters parameters;
+				GraphicsRenderPipelineInitializeParameters parameters;
 
 				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
 				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
@@ -275,7 +275,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 			}
 
 			{
-				GraphicsRenderPipelineParameters parameters;
+				GraphicsRenderPipelineInitializeParameters parameters;
 
 				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
 				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));

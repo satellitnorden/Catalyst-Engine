@@ -292,7 +292,8 @@ vec3 CalculateScreenPosition(vec3 world_position)
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) uint DIRECTION;
+	layout (offset = 0) int STRIDE;
+	layout (offset = 4) uint DIRECTION;
 };
 
 layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2Half;
@@ -309,7 +310,9 @@ void main()
 	float center_depth = LinearizeDepth(center_scene_features_2.w);
 	vec3 denoised_diffuse_irradiance = vec3(0.0f);
 	float weight_sum = 0.0f;
-	for (int sample_index = -4; sample_index <= 4; ++sample_index)
+	int start = -STRIDE * 4;
+	int end = STRIDE * 4;
+	for (int sample_index = start; sample_index <= end; sample_index += STRIDE)
 	{
 		vec2 sample_coordinate = InScreenCoordinate + vec2(float(sample_index) * float(DIRECTION == 0), float(sample_index) * float(DIRECTION == 1)) * INVERSE_HALF_MAIN_RESOLUTION;
 		vec3 sample_diffuse_irradiance = texture(InputDiffuseIrradiance, sample_coordinate).rgb;

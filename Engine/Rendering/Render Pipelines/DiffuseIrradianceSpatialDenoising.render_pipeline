@@ -21,7 +21,11 @@ ColorStoreOperator(STORE);
 //Set the topology.
 Topology(TRIANGLE_FAN);
 
+//Subscribe to input streams.
+SubscribeToInputStream(DiffuseIrradianceSpatialDenoising);
+
 //Declare push constant data.
+PushConstantData(int, STRIDE);
 PushConstantData(uint, DIRECTION);
 
 //The vertex shader.
@@ -43,7 +47,10 @@ Fragment
 	vec3 denoised_diffuse_irradiance = vec3(0.0f);
 	float weight_sum = 0.0f;
 
-	for (int sample_index = -4; sample_index <= 4; ++sample_index)
+	int start = -STRIDE * 4;
+	int end = STRIDE * 4;
+
+	for (int sample_index = start; sample_index <= end; sample_index += STRIDE)
 	{
 		//Calculate the sample coordinate.
 		vec2 sample_coordinate = InScreenCoordinate + vec2(float(sample_index) * float(DIRECTION == 0), float(sample_index) * float(DIRECTION == 1)) * INVERSE_HALF_MAIN_RESOLUTION;

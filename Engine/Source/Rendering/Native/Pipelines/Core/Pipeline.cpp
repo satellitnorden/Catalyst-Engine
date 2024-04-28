@@ -22,7 +22,7 @@ void Pipeline::ResetPipeline() NOEXCEPT
 /*
 *	Processes the given input stream.
 */
-void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
+void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, CommandBuffer *const RESTRICT command_buffer, const void *const RESTRICT push_constant_data) NOEXCEPT
 {
 	//Define constants.
 	constexpr uint64 OFFSET{ 0 };
@@ -42,7 +42,7 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 						ShaderStage::COMPUTE,
 						0,
 						static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
-						&input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
+						push_constant_data  ? push_constant_data : &input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
 					);
 				}
 
@@ -66,7 +66,7 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 						ShaderStage::VERTEX | ShaderStage::FRAGMENT,
 						0,
 						static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
-						&input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
+						push_constant_data ? push_constant_data : &input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
 					);
 				}
 
@@ -87,7 +87,7 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 					ShaderStage::VERTEX | ShaderStage::FRAGMENT,
 					0,
 					static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
-					&input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
+					push_constant_data ? push_constant_data : &input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
 				);
 
 				if (entry._InstanceBuffer != EMPTY_HANDLE)
@@ -111,7 +111,7 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 					ShaderStage::VERTEX | ShaderStage::FRAGMENT,
 					0,
 					static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
-					&input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
+					push_constant_data ? push_constant_data : &input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
 				);
 
 				command_buffer->BindVertexBuffer(this, 0, entry._VertexBuffer, &OFFSET);
@@ -133,7 +133,7 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 					ShaderStage::VERTEX | ShaderStage::FRAGMENT,
 					0,
 					static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
-					&input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
+					push_constant_data ? push_constant_data : &input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
 				);
 
 				command_buffer->BindVertexBuffer(this, 0, entry._VertexBuffer, &OFFSET);
@@ -159,7 +159,7 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 						ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS,
 						0,
 						static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
-						&input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
+						push_constant_data ? push_constant_data : &input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
 					);
 				}
 

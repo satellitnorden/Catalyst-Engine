@@ -61,7 +61,7 @@ void WaterRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("SceneInput"), _SceneRenderTarget);
 

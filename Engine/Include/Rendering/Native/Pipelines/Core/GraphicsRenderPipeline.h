@@ -11,7 +11,7 @@
 //Resources.
 #include <Resources/Core/RenderPipelineResource.h>
 
-class GraphicsRenderPipelineParameters final
+class GraphicsRenderPipelineInitializeParameters final
 {
 
 public:
@@ -27,6 +27,19 @@ public:
 
 	//The input stream subscriptions.
 	DynamicArray<HashString> _InputStreamSubscriptions;
+
+};
+
+class GraphicsRenderPipelineExecuteParameters final
+{
+
+public:
+
+	/*
+	*	The push constant data.
+	*	If set, will override all other push constant data.
+	*/
+	void *RESTRICT _PushConstantData{ nullptr };
 
 };
 
@@ -48,12 +61,12 @@ public:
 	/*
 	*	Initializes this graphics pipeline.
 	*/
-	void Initialize(const GraphicsRenderPipelineParameters &parameters = GraphicsRenderPipelineParameters()) NOEXCEPT;
+	void Initialize(const GraphicsRenderPipelineInitializeParameters &parameters = GraphicsRenderPipelineInitializeParameters()) NOEXCEPT;
 
 	/*
 	*	Executes this graphics pipeline.
 	*/
-	void Execute() NOEXCEPT;
+	void Execute(const GraphicsRenderPipelineExecuteParameters *const RESTRICT parameters = nullptr) NOEXCEPT;
 
 	/*
 	*	Terminates this graphics pipeline.

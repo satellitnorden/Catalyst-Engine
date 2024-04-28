@@ -292,7 +292,8 @@ vec3 CalculateScreenPosition(vec3 world_position)
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) uint DIRECTION;
+	layout (offset = 0) int STRIDE;
+	layout (offset = 4) uint DIRECTION;
 };
 
 layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2Half;

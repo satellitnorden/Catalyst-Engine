@@ -28,7 +28,7 @@ void IrradianceSystem::PostInitialize() NOEXCEPT
 void IrradianceSystem::RenderUpdate() NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 TOTAL_SAMPLES{ 4'096 * 32 };
+	constexpr uint32 TOTAL_SAMPLES{ 4'096 * 64 };
 	constexpr uint32 POSSIBLE_SAMPLES_PER_SLICE{ TOTAL_SAMPLES / 64 };
 
 	//Update the uniform data.

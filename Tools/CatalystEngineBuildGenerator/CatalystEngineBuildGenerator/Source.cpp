@@ -20,6 +20,9 @@ public:
 	//The project name.
 	std::string _ProjectName;
 
+	//The project name without spaces.
+	std::string _ProjectNameNoSpaces;
+
 	//The physics.
 	Physics _Physics{ Physics::NONE };
 
@@ -72,6 +75,22 @@ int main(int argument_count, char *arguments[])
 			if (identifier == "PROJECT_NAME")
 			{
 				parameters._ProjectName = argument;
+				parameters._ProjectNameNoSpaces = parameters._ProjectName;
+
+				for (;;)
+				{
+					const size_t position{ parameters._ProjectNameNoSpaces.find(" ") };
+
+					if (position != std::string::npos)
+					{
+						parameters._ProjectNameNoSpaces.replace(position, 1, "");
+					}
+
+					else
+					{
+						break;
+					}
+				}
 			}
 
 			//Is this the physics?
@@ -203,10 +222,10 @@ int main(int argument_count, char *arguments[])
 	//Copy over the .exe file.
 	{
 		char origin[256];
-		sprintf_s(origin, "Final\\%s_Win64.exe", parameters._ProjectName.c_str());
+		sprintf_s(origin, "Final\\%s_Win64.exe", parameters._ProjectNameNoSpaces.c_str());
 
 		char destination[256];
-		sprintf_s(destination, "%s\\%s.exe", build_directory, parameters._ProjectName.c_str());
+		sprintf_s(destination, "%s\\%s.exe", build_directory, parameters._ProjectNameNoSpaces.c_str());
 
 		std::filesystem::copy_file(origin, destination, error_code); CHECK_ERROR_CODE();
 	}

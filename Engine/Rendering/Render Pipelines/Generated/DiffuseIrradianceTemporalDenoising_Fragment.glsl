@@ -302,7 +302,7 @@ layout (location = 1) out vec4 OutputDiffuseIrradiance;
 
 void main()
 {
-    #define FEEDBACK_FACTOR (0.975f)
+    #define FEEDBACK_FACTOR (0.9f)
     vec3 current_diffuse_irradiance = texture(InputDiffuseIrradiance, InScreenCoordinate).rgb;
     float current_depth = LinearizeDepth(texture(SceneFeatures2Half, InScreenCoordinate).w);
     vec2 velocity = texture(SceneFeatures4Half, InScreenCoordinate).xy;

@@ -164,7 +164,7 @@ protected:
 	/*
 	*	Processes the given input stream.
 	*/
-	void ProcessInputStream(const RenderInputStream &input_stream, CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;
+	void ProcessInputStream(const RenderInputStream &input_stream, CommandBuffer *const RESTRICT command_buffer, const void *const RESTRICT push_constant_data = nullptr) NOEXCEPT;
 
 	/*
 	*	Finalizes this pipeline.

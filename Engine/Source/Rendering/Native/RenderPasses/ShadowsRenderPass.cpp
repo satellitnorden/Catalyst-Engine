@@ -137,7 +137,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 			if (!_ShadowMapPipelinesIsInitialized[i])
 			{
 				{
-					GraphicsRenderPipelineParameters parameters;
+					GraphicsRenderPipelineInitializeParameters parameters;
 
 					parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), shadow_map_data._DepthBuffer);
 					parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), shadow_map_data._RenderTarget);
@@ -146,7 +146,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 				}
 
 				{
-					GraphicsRenderPipelineParameters parameters;
+					GraphicsRenderPipelineInitializeParameters parameters;
 
 					parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), shadow_map_data._DepthBuffer);
 					parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), shadow_map_data._RenderTarget);
@@ -158,7 +158,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 				}
 
 				{
-					GraphicsRenderPipelineParameters parameters;
+					GraphicsRenderPipelineInitializeParameters parameters;
 
 					parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), shadow_map_data._DepthBuffer);
 					parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), shadow_map_data._RenderTarget);

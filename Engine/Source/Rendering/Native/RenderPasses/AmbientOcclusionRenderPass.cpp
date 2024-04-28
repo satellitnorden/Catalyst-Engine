@@ -244,7 +244,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._OutputRenderTargets.Emplace(HashString("AmbientOcclusion"), _AmbientOcclusionRenderTarget);
 
@@ -252,7 +252,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	}
 
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._OutputRenderTargets.Emplace(HashString("AmbientOcclusion"), _AmbientOcclusionRenderTarget);
 
@@ -262,7 +262,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	_AmbientOcclusionRayTracingPipeline.Initialize(_AmbientOcclusionRenderTarget);
 
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), _AmbientOcclusionTemporalBufferRenderTargets[0]);
 		parameters._InputRenderTargets.Emplace(HashString("InputAmbientOcclusion"), _AmbientOcclusionRenderTarget);
@@ -274,7 +274,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	}
 
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), _AmbientOcclusionTemporalBufferRenderTargets[1]);
 		parameters._InputRenderTargets.Emplace(HashString("InputAmbientOcclusion"), _AmbientOcclusionRenderTarget);
@@ -287,7 +287,7 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 
 	for (uint64 i{ 0 }; i < _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size(); ++i)
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("InputAmbientOcclusion"), i == 0 ? _IntermediateAmbientOcclusionRenderTarget : _AmbientOcclusionRenderTarget);
 		parameters._OutputRenderTargets.Emplace(HashString("OutputAmbientOcclusion"), i == 0 ? _AmbientOcclusionRenderTarget : _IntermediateAmbientOcclusionRenderTarget);

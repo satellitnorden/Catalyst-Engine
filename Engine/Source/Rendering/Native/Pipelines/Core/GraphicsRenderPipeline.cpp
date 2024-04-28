@@ -15,7 +15,7 @@
 /*
 *	Initializes this graphics pipeline.
 */
-void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &parameters) NOEXCEPT
+void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializeParameters &parameters) NOEXCEPT
 {
 	//Retrieve the render pipeline resource.
 	_RenderPipelineResource = ResourceSystem::Instance->GetRenderPipelineResource(_RenderPipelineIdentifier);
@@ -327,7 +327,7 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineParameters &
 /*
 *	Executes this graphics pipeline.
 */
-void GraphicsRenderPipeline::Execute() NOEXCEPT
+void GraphicsRenderPipeline::Execute(const GraphicsRenderPipelineExecuteParameters *const RESTRICT parameters) NOEXCEPT
 {
 	//Check if this graphics pipeline should be included in the render.
 	{
@@ -387,7 +387,7 @@ void GraphicsRenderPipeline::Execute() NOEXCEPT
 	{
 		const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(input_stream_subscription) };
 
-		ProcessInputStream(input_stream, command_buffer);
+		ProcessInputStream(input_stream, command_buffer, parameters ? parameters->_PushConstantData : nullptr);
 	}
 	
 	//End the command buffer.

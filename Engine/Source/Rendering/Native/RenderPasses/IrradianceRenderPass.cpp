@@ -22,6 +22,9 @@ class DiffuseIrradianceSpatialDenoisingPushConstantData final
 
 public:
 
+	//The stride.
+	int32 _Stride;
+
 	//The direction.
 	uint32 _Direction;
 
@@ -65,7 +68,7 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 	//Register the input streams.
 	RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
 	(
-		HashString("DiffuseIrradianceSpatialDenoisingHorizontal"),
+		HashString("DiffuseIrradianceSpatialDenoising"),
 		DynamicArray< VertexInputAttributeDescription>(),
 		DynamicArray<VertexInputBindingDescription>(),
 		sizeof(DiffuseIrradianceSpatialDenoisingPushConstantData),
@@ -84,49 +87,6 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 				new_entry._VertexCount = 3;
 				new_entry._IndexCount = 0;
 				new_entry._InstanceCount = 0;
-
-				DiffuseIrradianceSpatialDenoisingPushConstantData push_constant_data;
-
-				push_constant_data._Direction = 0;
-
-				input_stream->_PushConstantDataMemory.Upsize<false>(sizeof(DiffuseIrradianceSpatialDenoisingPushConstantData));
-
-				Memory::Copy(input_stream->_PushConstantDataMemory.Data(), &push_constant_data, sizeof(DiffuseIrradianceSpatialDenoisingPushConstantData));
-			}
-		},
-		RenderInputStream::Mode::DRAW,
-		nullptr
-	);
-
-	RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
-	(
-		HashString("DiffuseIrradianceSpatialDenoisingVertical"),
-		DynamicArray< VertexInputAttributeDescription>(),
-		DynamicArray<VertexInputBindingDescription>(),
-		sizeof(DiffuseIrradianceSpatialDenoisingPushConstantData),
-		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-		{
-			if (input_stream->_Entries.Empty())
-			{
-				input_stream->_Entries.Emplace();
-				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
-
-				new_entry._PushConstantDataOffset = 0;
-				new_entry._VertexBuffer = EMPTY_HANDLE;
-				new_entry._IndexBuffer = EMPTY_HANDLE;
-				new_entry._IndexBufferOffset = 0;
-				new_entry._InstanceBuffer = EMPTY_HANDLE;
-				new_entry._VertexCount = 3;
-				new_entry._IndexCount = 0;
-				new_entry._InstanceCount = 0;
-
-				DiffuseIrradianceSpatialDenoisingPushConstantData push_constant_data;
-
-				push_constant_data._Direction = 1;
-
-				input_stream->_PushConstantDataMemory.Upsize<false>(sizeof(DiffuseIrradianceSpatialDenoisingPushConstantData));
-
-				Memory::Copy(input_stream->_PushConstantDataMemory.Data(), &push_constant_data, sizeof(DiffuseIrradianceSpatialDenoisingPushConstantData));
 			}
 		},
 		RenderInputStream::Mode::DRAW,
@@ -181,7 +141,7 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 	_RayTracedDiffuseIrradiancePipeline.Initialize();
 
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), _DiffuseIrradianceTemporalBuffers[0]);
 		parameters._InputRenderTargets.Emplace(HashString("InputDiffuseIrradiance"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(HashString("DiffuseIrradiance")));
@@ -192,7 +152,7 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 	}
 
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), _DiffuseIrradianceTemporalBuffers[1]);
 		parameters._InputRenderTargets.Emplace(HashString("InputDiffuseIrradiance"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(HashString("DiffuseIrradiance")));
@@ -203,7 +163,7 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 	}
 
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), _IntermediateDiffuseIrradianceRenderTarget);
 		parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(HashString("DiffuseIrradiance")));
@@ -214,21 +174,19 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 	for (uint64 i{ 0 }; i < _DiffuseIrradianceSpatialDenoisingPipelines.Size(); i += 2)
 	{
 		{
-			GraphicsRenderPipelineParameters parameters;
+			GraphicsRenderPipelineInitializeParameters parameters;
 
 			parameters._InputRenderTargets.Emplace(HashString("InputDiffuseIrradiance"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(HashString("DiffuseIrradiance")));
 			parameters._OutputRenderTargets.Emplace(HashString("OutputDiffuseIrradiance"), _IntermediateDiffuseIrradianceRenderTarget);
-			parameters._InputStreamSubscriptions.Emplace(HashString("DiffuseIrradianceSpatialDenoisingHorizontal"));
 
 			_DiffuseIrradianceSpatialDenoisingPipelines[i].Initialize(parameters);
 		}
 
 		{
-			GraphicsRenderPipelineParameters parameters;
+			GraphicsRenderPipelineInitializeParameters parameters;
 			
 			parameters._InputRenderTargets.Emplace(HashString("InputDiffuseIrradiance"), _IntermediateDiffuseIrradianceRenderTarget);
 			parameters._OutputRenderTargets.Emplace(HashString("OutputDiffuseIrradiance"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(HashString("DiffuseIrradiance")));
-			parameters._InputStreamSubscriptions.Emplace(HashString("DiffuseIrradianceSpatialDenoisingVertical"));
 
 			_DiffuseIrradianceSpatialDenoisingPipelines[i + 1].Initialize(parameters);
 		}
@@ -300,10 +258,20 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 
 			if (SPATIAL_DENOISING && !RenderingSystem::Instance->IsTakingScreenshot())
 			{
-				for (GraphicsRenderPipeline &pipeline : _DiffuseIrradianceSpatialDenoisingPipelines)
+				for (uint64 i{ 0 }; i < _DiffuseIrradianceSpatialDenoisingPipelines.Size(); ++i)
 				{
-					pipeline.SetIncludeInRender(true);
-					pipeline.Execute();
+					_DiffuseIrradianceSpatialDenoisingPipelines[i].SetIncludeInRender(true);
+
+					DiffuseIrradianceSpatialDenoisingPushConstantData push_constant_data;
+
+					push_constant_data._Stride = 1 + (i / 2);
+					push_constant_data._Direction = BaseMath::IsEven(i) ? 0 : 1;
+
+					GraphicsRenderPipelineExecuteParameters parameters;
+
+					parameters._PushConstantData = &push_constant_data;
+
+					_DiffuseIrradianceSpatialDenoisingPipelines[i].Execute(&parameters);
 				}
 			}
 

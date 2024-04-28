@@ -53,7 +53,7 @@ void PostProcessingRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
 		parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
@@ -62,7 +62,7 @@ void PostProcessingRenderPass::Initialize() NOEXCEPT
 	}
 
 	{
-		GraphicsRenderPipelineParameters parameters;
+		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
 		parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));

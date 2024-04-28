@@ -54,6 +54,11 @@ namespace GLSLCompilation
 			return 4;
 		}
 
+		if (StringUtilities::IsEqual(type_string, "int"))
+		{
+			return 4;
+		}
+
 		if (StringUtilities::IsEqual(type_string, "uint"))
 		{
 			return 4;
