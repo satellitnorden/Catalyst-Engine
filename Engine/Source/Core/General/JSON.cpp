@@ -11,9 +11,28 @@
 #include <fstream>
 
 //Defines.
-#define IMPLEMENTATION() (_Implementation.Get<nlohmann::json>())
+#define IMPLEMENTATION (_Implementation.Get<Implementation>())
 
-static_assert(JSON::ANY_SIZE >= sizeof(nlohmann::json), "Insufficient size!");
+/*
+*	Implementation class definition.
+*/
+class Implementation final
+{
+
+public:
+
+	//The storage.
+	StaticArray<byte, sizeof(nlohmann::ordered_json)> _Storage;
+
+	//The JSON object.
+	nlohmann::ordered_json *RESTRICT _JSON;
+
+	//Denotes whether or not this object is a sub object.
+	bool _IsSubObject;
+
+};
+
+static_assert(JSON::ANY_SIZE >= sizeof(Implementation), "Insufficient size!");
 
 /*
 *	Default constructor.
@@ -21,22 +40,76 @@ static_assert(JSON::ANY_SIZE >= sizeof(nlohmann::json), "Insufficient size!");
 JSON::JSON() NOEXCEPT
 {
 	//Construct the implementation.
-	new (IMPLEMENTATION()) nlohmann::json();
+	IMPLEMENTATION->_JSON = new (IMPLEMENTATION->_Storage.Data()) nlohmann::ordered_json();
+	IMPLEMENTATION->_IsSubObject = false;
 }
 
 /*
-*	Constructor taking a file path.
+*	Default destructor.
 */
-JSON::JSON(const char *const RESTRICT file_path) NOEXCEPT
+JSON::~JSON() NOEXCEPT
 {
-	//Construct the implementation.
-	new (IMPLEMENTATION()) nlohmann::json();
+	if (!IMPLEMENTATION->_IsSubObject)
+	{
+		IMPLEMENTATION->_JSON->~basic_json();
+	}
+}
 
+/*
+*	Assignment operator taking a C string.
+*/
+void JSON::operator=(const char *const RESTRICT value) NOEXCEPT
+{
+	(*IMPLEMENTATION->_JSON) = value;
+}
+
+/*
+*	Assignment operator taking a bool.
+*/
+void JSON::operator=(const bool value) NOEXCEPT
+{
+	(*IMPLEMENTATION->_JSON) = value;
+}
+
+/*
+*	Assignment operator taking a float64.
+*/
+void JSON::operator=(const float64 value) NOEXCEPT
+{
+	(*IMPLEMENTATION->_JSON) = value;
+}
+
+/*
+*	Assignment operator taking a uint64.
+*/
+void JSON::operator=(const uint64 value) NOEXCEPT
+{
+	(*IMPLEMENTATION->_JSON) = value;
+}
+
+/*
+*	Subscript operator overload.
+*/
+JSON JSON::operator[](const char *const RESTRICT key) NOEXCEPT
+{
+	JSON sub_object;
+
+	sub_object._Implementation.Get<Implementation>()->_JSON = &(*IMPLEMENTATION->_JSON)[key];
+	sub_object._Implementation.Get<Implementation>()->_IsSubObject = true;
+
+	return sub_object;
+}
+
+/*
+*	Reads from the given file path.
+*/
+void JSON::Read(const char *const RESTRICT file_path) NOEXCEPT
+{
 	//Open the file.
 	std::ifstream file{ file_path };
 
 	/*
-	*	Gather the source, adding some custom filtering to remove comments. (:
+	*	Gather the source, adding some custom filtering. (:
 	*/
 	std::string source;
 
@@ -58,17 +131,33 @@ JSON::JSON(const char *const RESTRICT file_path) NOEXCEPT
 	file.close();
 
 	//Now parse into the JSON object.
-	*IMPLEMENTATION() = nlohmann::json::parse(source.c_str());
+	IMPLEMENTATION->_JSON->parse(source.c_str());
 }
 
 /*
-*	Subscript operator overload.
+*	Writes to the given file path.
 */
-JSON JSON::operator[](const char *const RESTRICT key) NOEXCEPT
+void JSON::Write(const char *const RESTRICT file_path) NOEXCEPT
+{
+	//OPen the file.
+	std::ofstream file{ file_path };
+
+	//Write the JSON to the file.
+	file << std::setw(4) << (*IMPLEMENTATION->_JSON);
+
+	//Close the file.
+	file.close();
+}
+
+/*
+*	Emplaces a new object under this JSON object.
+*/
+JSON JSON::Emplace() NOEXCEPT
 {
 	JSON sub_object;
 
-	*sub_object._Implementation.Get<nlohmann::json>() = (*IMPLEMENTATION())[key];
+	sub_object._Implementation.Get<Implementation>()->_JSON = &(*IMPLEMENTATION->_JSON).emplace_back();
+	sub_object._Implementation.Get<Implementation>()->_IsSubObject = true;
 
 	return sub_object;
 }
