@@ -29,6 +29,9 @@ SubscribeToInputStream(RayTracingViewportHalf);
 //The ray generation shader.
 RayGeneration
 {
+    //Constants.
+    #define NUMBER_OF_SAMPLES (2)
+
     //Declare payloads.
     Payload(vec3, RADIANCE);
 
@@ -45,29 +48,38 @@ RayGeneration
     //Calculate the world position.
     vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
 
-    //Sample the noise texture.
-	vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(RAY_TRACING_ID.xy), 0);
+    //Accumulate the radiance over a number of samples.
+    vec3 accumulated_radiance = vec3(0.0f);
 
-    //Initialize the random rotation.
-    mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    {
+        //Sample the noise texture.
+	    vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(RAY_TRACING_ID.xy), i);
 
-    //Calculate the random hemisphere sample index.
-	uint random_hemisphere_sample_index = uint(noise_texture_sample.w * 64.0f) & 63;
+        //Initialize the random rotation.
+        mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
 
-    //Retrieve the random hemisphere sample.
-    vec3 random_hemisphere_direction = IRRADIANCE_HEMISPHERE_SAMPLES[random_hemisphere_sample_index].xyz;
+        //Calculate the random hemisphere sample index.
+	    uint random_hemisphere_sample_index = uint(noise_texture_sample.w * 64.0f) & 63;
+
+        //Retrieve the random hemisphere sample.
+        vec3 random_hemisphere_direction = IRRADIANCE_HEMISPHERE_SAMPLES[random_hemisphere_sample_index].xyz;
     
-    //Rotate the random direction.
-    vec3 random_direction = random_rotation * random_hemisphere_direction;
+        //Rotate the random direction.
+        vec3 random_direction = random_rotation * random_hemisphere_direction;
 
-    //Flip the direction, if needed.
-    random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
+        //Flip the direction, if needed.
+        random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
 
-    //Trace the ray!
-    TraceRay(0, 0, world_position, random_direction, FLOAT32_MAXIMUM);
+        //Trace the ray!
+        TraceRay(0, 0, world_position, random_direction, FLOAT32_MAXIMUM);
+
+        //Accumulate radiance.
+        accumulated_radiance += RADIANCE;
+    }
 
     //Store the shadows.
-    ImageStore(DiffuseIrradiance, ivec2(RAY_TRACING_ID.xy), vec4(RADIANCE, 1.0f));
+    ImageStore(DiffuseIrradiance, ivec2(RAY_TRACING_ID.xy), vec4(accumulated_radiance / NUMBER_OF_SAMPLES, 1.0f));
 }
 
 //The ray miss shader.

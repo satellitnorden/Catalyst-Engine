@@ -309,7 +309,7 @@ void main()
 	float center_depth = LinearizeDepth(center_scene_features_2.w);
 	vec3 denoised_diffuse_irradiance = vec3(0.0f);
 	float weight_sum = 0.0f;
-	for (int sample_index = -2; sample_index <= 2; ++sample_index)
+	for (int sample_index = -4; sample_index <= 4; ++sample_index)
 	{
 		vec2 sample_coordinate = InScreenCoordinate + vec2(float(sample_index) * float(DIRECTION == 0), float(sample_index) * float(DIRECTION == 1)) * INVERSE_HALF_MAIN_RESOLUTION;
 		vec3 sample_diffuse_irradiance = texture(InputDiffuseIrradiance, sample_coordinate).rgb;

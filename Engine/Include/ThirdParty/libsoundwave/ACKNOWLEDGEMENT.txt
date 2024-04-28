@@ -1,4 +1,4 @@
-This version of the "libsoundwave" library was downloaded 2023-08-05 from https://github.com/warrengalyen/libsoundwave with the following license:
+This version of the "libsoundwave" library was downloaded 2024-04-28 from https://github.com/warrengalyen/libsoundwave with the following license:
 
 	Copyright (c) 2015, Warren Galyen All rights reserved.
 

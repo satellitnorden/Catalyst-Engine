@@ -47,8 +47,10 @@ private:
 	GraphicsRenderPipeline _PassthroughPipeline{ HashString("PassthroughHalf_RenderPipeline") };
 
 	//The diffuse irradiance spatial denoising pipelines.
-	StaticArray<GraphicsRenderPipeline, 2> _DiffuseIrradianceSpatialDenoisingPipelines
+	StaticArray<GraphicsRenderPipeline, 4> _DiffuseIrradianceSpatialDenoisingPipelines
 	{
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline"))
 	};

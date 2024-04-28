@@ -34,7 +34,6 @@ ColorLoadOperator(LOAD);
 ColorStoreOperator(STORE);
 
 //Set depth/stencil properties.
-
 StencilTestEnable();
 StencilFailOperator(KEEP);
 StencilPassOperator(KEEP);

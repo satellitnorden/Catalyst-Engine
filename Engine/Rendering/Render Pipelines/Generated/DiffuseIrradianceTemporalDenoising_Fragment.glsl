@@ -302,13 +302,13 @@ layout (location = 1) out vec4 OutputDiffuseIrradiance;
 
 void main()
 {
-    #define FEEDBACK_FACTOR (0.9f)
+    #define FEEDBACK_FACTOR (0.975f)
     vec3 current_diffuse_irradiance = texture(InputDiffuseIrradiance, InScreenCoordinate).rgb;
     float current_depth = LinearizeDepth(texture(SceneFeatures2Half, InScreenCoordinate).w);
     vec2 velocity = texture(SceneFeatures4Half, InScreenCoordinate).xy;
-    vec2 previous_screen_coordinate = InScreenCoordinate - velocity;
-    vec3 previous_diffuse_irradiance = texture(PreviousTemporalBuffer, previous_screen_coordinate).rgb;
-#if 0
+    vec2 previous_screen_coordinate = InScreenCoordinate - velocity - INVERSE_HALF_MAIN_RESOLUTION * 0.5f;
+    vec3 previous_diffuse_irradiance = vec3(0.0f);
+    float previous_sample_weight = 0.0f;
     {
         vec2 sample_coordinates[4];
         sample_coordinates[0] = previous_screen_coordinate;
@@ -322,14 +322,11 @@ void main()
         }
         vec2 fractions = fract(previous_screen_coordinate * HALF_MAIN_RESOLUTION);
         float weights[4];
-        weights[0] = (1.0f - fractions.x) * (1.0f - fractions.y);
-        weights[1] = fractions.x * (1.0f - fractions.y);
-        weights[2] = (1.0f - fractions.x) * fractions.y;
-        weights[3] = fractions.x * fractions.y;
         for (uint i = 0; i < 4; ++i)
         {
-            weights[i] *= exp(-abs(current_depth - previous_irradiance_samples[i].w));
+            weights[i] = exp(-abs(current_depth - previous_irradiance_samples[i].w));
         }
+        previous_sample_weight = max(max(weights[0], weights[1]), max(weights[2], weights[3]));
         float weight_sum = weights[0] + weights[1] + weights[2] + weights[3];
         float inverse_weight_sum = weight_sum > 0.0f ? 1.0f / weight_sum : 1.0f;
         for (uint i = 0; i < 4; ++i)
@@ -340,15 +337,12 @@ void main()
         {
             previous_diffuse_irradiance += previous_irradiance_samples[i].rgb * weights[i];
         }
-        highest_previous_weight = max(max(weights[0], weights[1]), max(weights[2], weights[3]));
     }
-#endif
     /*
 	*	Calculate the weight between the current frame and the history depending on certain criteria.
 	*
 	*	1. Is the previous screen coordinate outside the screen? If so, it's not valid.
 	*/
-	float previous_sample_weight = 1.0f;
 	previous_sample_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
     previous_sample_weight *= FEEDBACK_FACTOR;
     vec3 blended_diffuse_irradiance;
@@ -360,6 +354,6 @@ void main()
     {
         blended_diffuse_irradiance = current_diffuse_irradiance;
     }
-	CurrentTemporalBuffer = vec4(blended_diffuse_irradiance,1.0f);
+	CurrentTemporalBuffer = vec4(blended_diffuse_irradiance,current_depth);
 	OutputDiffuseIrradiance = vec4(blended_diffuse_irradiance,1.0f);
 }

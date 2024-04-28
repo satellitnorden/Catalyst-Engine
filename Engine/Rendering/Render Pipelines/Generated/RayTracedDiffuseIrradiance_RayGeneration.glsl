@@ -781,17 +781,21 @@ layout (location = 0) rayPayloadNV vec3 RADIANCE;
 
 void main()
 {
+    #define NUMBER_OF_SAMPLES (2)
     vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
     vec4 scene_features_2 = imageLoad(SceneFeatures2Half, ivec2(gl_LaunchIDNV.xy));
     vec3 normal = scene_features_2.xyz;
     float depth = scene_features_2.w;
     vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
-	vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), 0);
-    mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
-	uint random_hemisphere_sample_index = uint(noise_texture_sample.w * 64.0f) & 63;
-    vec3 random_hemisphere_direction = IRRADIANCE_HEMISPHERE_SAMPLES[random_hemisphere_sample_index].xyz;
-    vec3 random_direction = random_rotation * random_hemisphere_direction;
-    random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
+    vec3 accumulated_radiance = vec3(0.0f);
+    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    {
+	    vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i);
+        mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
+	    uint random_hemisphere_sample_index = uint(noise_texture_sample.w * 64.0f) & 63;
+        vec3 random_hemisphere_direction = IRRADIANCE_HEMISPHERE_SAMPLES[random_hemisphere_sample_index].xyz;
+        vec3 random_direction = random_rotation * random_hemisphere_direction;
+        random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
 traceNV
 (
 	TOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/
@@ -806,5 +810,7 @@ traceNV
 	FLOAT32_MAXIMUM, /*Tmax*/
 	0 /*payload*/
 );
-    imageStore(DiffuseIrradiance, ivec2(gl_LaunchIDNV.xy), vec4(RADIANCE, 1.0f));
+        accumulated_radiance += RADIANCE;
+    }
+    imageStore(DiffuseIrradiance, ivec2(gl_LaunchIDNV.xy), vec4(accumulated_radiance / NUMBER_OF_SAMPLES, 1.0f));
 }
