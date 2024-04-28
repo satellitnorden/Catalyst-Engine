@@ -52,13 +52,13 @@ public:
 	*	Compiles the content for engine.
 	*	Returns if new content was compiled.
 	*/
-	NO_DISCARD bool CompileEngine() NOEXCEPT;
+	bool CompileEngine() NOEXCEPT;
 
 	/*
 	*	Compiles the content for game.
 	*	Returns if new content was compiled.
 	*/
-	NO_DISCARD bool CompileGame() NOEXCEPT;
+	bool CompileGame() NOEXCEPT;
 #endif
 
 	/*

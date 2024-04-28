@@ -85,7 +85,7 @@ void ContentSystem::RegisterAssetCompiler(AssetCompiler *const RESTRICT asset_co
 *	Compiles the content for engine.
 *	Returns if new content was compiled.
 */
-NO_DISCARD bool ContentSystem::CompileEngine() NOEXCEPT
+bool ContentSystem::CompileEngine() NOEXCEPT
 {
 	//Cache the start time.
 	const TimePoint start_time;
@@ -164,7 +164,7 @@ RECOMPILE:
 *	Compiles the content for game.
 *	Returns if new content was compiled.
 */
-NO_DISCARD bool ContentSystem::CompileGame() NOEXCEPT
+bool ContentSystem::CompileGame() NOEXCEPT
 {
 	//Cache the start time.
 	const TimePoint start_time;
