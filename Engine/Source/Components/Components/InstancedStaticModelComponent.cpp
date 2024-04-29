@@ -68,27 +68,16 @@ void InstancedStaticModelComponent::ParallelBatchUpdate(const UpdatePhase update
 }
 
 /*
-*	Returns if this component needs pre-processing.
-*/
-NO_DISCARD bool InstancedStaticModelComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return true;
-}
-
-/*
 *	Preprocessed initialization data an instance.
 */
-void InstancedStaticModelComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void InstancedStaticModelComponent::PreProcess(InstancedStaticModelInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
-	//Cache the initialization data.
-	InstancedStaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<InstancedStaticModelInitializationData *const RESTRICT>(initialization_data) };
-
-	ASSERT(!_initialization_data->_WorldTransforms.Empty(), "Trying to add instanced static model entity without any transforms!");
+	ASSERT(!initialization_data->_WorldTransforms.Empty(), "Trying to add instanced static model entity without any transforms!");
 
 	//Calculate the average cell for all transforms.
 	Vector3<float32> average_cell{ 0.0f, 0.0f, 0.0f };
 
-	for (const WorldTransform &world_transform : _initialization_data->_WorldTransforms)
+	for (const WorldTransform &world_transform : initialization_data->_WorldTransforms)
 	{
 		for (uint8 i{ 0 }; i < 3; ++i)
 		{
@@ -96,42 +85,42 @@ void InstancedStaticModelComponent::PreProcess(ComponentInitializationData *cons
 		}
 	}
 
-	average_cell /= static_cast<float32>(_initialization_data->_WorldTransforms.Size());
+	average_cell /= static_cast<float32>(initialization_data->_WorldTransforms.Size());
 
 	for (uint8 i{ 0 }; i < 3; ++i)
 	{
-		_initialization_data->_PreprocessedData._Cell[i] = BaseMath::Round<int32>(average_cell[i]);
+		initialization_data->_PreprocessedData._Cell[i] = BaseMath::Round<int32>(average_cell[i]);
 	}
 
 	//Create the transoformations buffer. Calculate the world space axis aligned bounding box in the process.
 	DynamicArray<Matrix4x4> transformations;
-	transformations.Reserve(_initialization_data->_WorldTransforms.Size());
+	transformations.Reserve(initialization_data->_WorldTransforms.Size());
 
 	AxisAlignedBoundingBox3D axis_aligned_bounding_box;
 
-	for (const WorldTransform &world_transform : _initialization_data->_WorldTransforms)
+	for (const WorldTransform &world_transform : initialization_data->_WorldTransforms)
 	{
-		const Matrix4x4 transformation{ world_transform.ToRelativeMatrix4x4(_initialization_data->_PreprocessedData._Cell) };
+		const Matrix4x4 transformation{ world_transform.ToRelativeMatrix4x4(initialization_data->_PreprocessedData._Cell) };
 
 		transformations.Emplace(transformation);
 
 		AxisAlignedBoundingBox3D transformation_axis_aligned_bounding_box;
-		RenderingUtilities::TransformAxisAlignedBoundingBox(_initialization_data->_Model->_ModelSpaceAxisAlignedBoundingBox, transformation, &transformation_axis_aligned_bounding_box);
+		RenderingUtilities::TransformAxisAlignedBoundingBox(initialization_data->_Model->_ModelSpaceAxisAlignedBoundingBox, transformation, &transformation_axis_aligned_bounding_box);
 
 		axis_aligned_bounding_box.Expand(transformation_axis_aligned_bounding_box);
 	}
 
-	RenderingUtilities::CreateTransformationsBuffer(transformations, &_initialization_data->_PreprocessedData._TransformationsBuffer);
+	RenderingUtilities::CreateTransformationsBuffer(transformations, &initialization_data->_PreprocessedData._TransformationsBuffer);
 
 	//Set up the world space axis aligned bounding box.
-	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox = WorldSpaceAxisAlignedBoundingBox3D
+	initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox = WorldSpaceAxisAlignedBoundingBox3D
 	(
-		WorldPosition(_initialization_data->_PreprocessedData._Cell, axis_aligned_bounding_box._Minimum),
-		WorldPosition(_initialization_data->_PreprocessedData._Cell, axis_aligned_bounding_box._Maximum)
+		WorldPosition(initialization_data->_PreprocessedData._Cell, axis_aligned_bounding_box._Minimum),
+		WorldPosition(initialization_data->_PreprocessedData._Cell, axis_aligned_bounding_box._Maximum)
 	);
 
 	//Set the number of transformations.
-	_initialization_data->_PreprocessedData._NumberOfTransformations = static_cast<uint32>(transformations.Size());
+	initialization_data->_PreprocessedData._NumberOfTransformations = static_cast<uint32>(transformations.Size());
 }
 
 /*

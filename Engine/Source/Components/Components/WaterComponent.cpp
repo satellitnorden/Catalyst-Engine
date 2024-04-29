@@ -343,34 +343,23 @@ void WaterComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const u
 }
 
 /*
-*	Returns if this component needs pre-processing.
-*/
-NO_DISCARD bool WaterComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return true;
-}
-
-/*
 *	Preprocessed initialization data an instance.
 */
-void WaterComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void WaterComponent::PreProcess(WaterInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
-	//Cache the initialization data.
-	WaterInitializationData *const RESTRICT _initialization_data{ static_cast<WaterInitializationData *const RESTRICT>(initialization_data) };
-
 	//Calculate the world space axis aligned bounding box.
 	AxisAlignedBoundingBox3D axis_aligned_bounding_box;
 
-	axis_aligned_bounding_box._Minimum._X = -(static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
-	axis_aligned_bounding_box._Minimum._Y = _initialization_data->_WorldPosition.GetLocalPosition()._Y;
-	axis_aligned_bounding_box._Minimum._Z = -(static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Minimum._X = -(static_cast<float32>(initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Minimum._Y = initialization_data->_WorldPosition.GetLocalPosition()._Y;
+	axis_aligned_bounding_box._Minimum._Z = -(static_cast<float32>(initialization_data->_PatchSize) * 0.5f);
 
-	axis_aligned_bounding_box._Maximum._X = (static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
-	axis_aligned_bounding_box._Maximum._Y = _initialization_data->_WorldPosition.GetLocalPosition()._Y;
-	axis_aligned_bounding_box._Maximum._Z = (static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Maximum._X = (static_cast<float32>(initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Maximum._Y = initialization_data->_WorldPosition.GetLocalPosition()._Y;
+	axis_aligned_bounding_box._Maximum._Z = (static_cast<float32>(initialization_data->_PatchSize) * 0.5f);
 
-	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Minimum);
-	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Maximum);
+	initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Minimum);
+	initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Maximum);
 
 	//Construct the plane.
 	DynamicArray<TerrainVertex> vertices;
@@ -378,7 +367,7 @@ void WaterComponent::PreProcess(ComponentInitializationData *const RESTRICT init
 
 	TerrainGeneralUtilities::GenerateTerrainPlane
 	(
-		_initialization_data->_BaseResolution,
+		initialization_data->_BaseResolution,
 		&vertices,
 		&indices
 	);
@@ -393,11 +382,11 @@ void WaterComponent::PreProcess(ComponentInitializationData *const RESTRICT init
 	buffer_data_sizes[0] = sizeof(TerrainVertex) * vertices.Size();
 	buffer_data_sizes[1] = sizeof(uint32) * indices.Size();
 
-	RenderingSystem::Instance->CreateBuffer(buffer_data_sizes[0] + buffer_data_sizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &_initialization_data->_PreprocessedData._Buffer);
-	RenderingSystem::Instance->UploadDataToBuffer(buffer_data.Data(), buffer_data_sizes.Data(), 2, &_initialization_data->_PreprocessedData._Buffer);
+	RenderingSystem::Instance->CreateBuffer(buffer_data_sizes[0] + buffer_data_sizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &initialization_data->_PreprocessedData._Buffer);
+	RenderingSystem::Instance->UploadDataToBuffer(buffer_data.Data(), buffer_data_sizes.Data(), 2, &initialization_data->_PreprocessedData._Buffer);
 
-	_initialization_data->_PreprocessedData._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
-	_initialization_data->_PreprocessedData._IndexCount = static_cast<uint32>(indices.Size());
+	initialization_data->_PreprocessedData._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
+	initialization_data->_PreprocessedData._IndexCount = static_cast<uint32>(indices.Size());
 }
 
 /*

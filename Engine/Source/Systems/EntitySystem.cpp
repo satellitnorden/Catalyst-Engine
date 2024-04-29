@@ -296,7 +296,7 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 
 			do
 			{
-				any_component_needs_pre_processing = component_configuration->_Component->NeedsPreProcessing();
+				any_component_needs_pre_processing = Components::ShouldPreProcess(component_configuration->_Component);
 				component_configuration = component_configuration->_NextComponentInitializationData;
 			} while (component_configuration && !any_component_needs_pre_processing);
 		}
@@ -317,9 +317,9 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 
 					do
 					{
-						if (component_configuration->_Component->NeedsPreProcessing())
+						if (Components::ShouldPreProcess(component_configuration->_Component))
 						{
-							component_configuration->_Component->PreProcess(component_configuration);
+							Components::PreProcess(component_configuration->_Component, component_configuration);
 						}
 						component_configuration = component_configuration->_NextComponentInitializationData;
 					} while (component_configuration);

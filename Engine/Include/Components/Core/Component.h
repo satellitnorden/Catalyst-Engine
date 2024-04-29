@@ -57,22 +57,6 @@ public:
 	}
 
 	/*
-	*	Returns if this component needs pre-processing.
-	*/
-	FORCE_INLINE virtual NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT
-	{
-		return false;
-	}
-
-	/*
-	*	Preprocessed initialization data an instance.
-	*/
-	FORCE_INLINE virtual void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-	{
-
-	}
-
-	/*
 	*	Creates an instance.
 	*/
 	virtual void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
@@ -353,6 +337,16 @@ public:
 	static void FreeInitializationData(Component *const RESTRICT component, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT;
 
 	/*
+	*	Returns if the given component needs pre processing.
+	*/
+	static NO_DISCARD bool ShouldPreProcess(Component *const RESTRICT component) NOEXCEPT;
+
+	/*
+	*	Pre processed the initialization data for the given component.
+	*/
+	static void PreProcess(Component *const RESTRICT component, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT;
+
+	/*
 	*	Updates components during the specific update phase.
 	*/
 	static void Update(const UpdatePhase update_phase) NOEXCEPT;
@@ -377,6 +371,13 @@ public:								\
 #define COMPONENT_POST_INITIALIZE()	\
 public:								\
 	void PostInitialize() NOEXCEPT;
+
+/*
+*	Put this in your component declaration and implement it to receive a "PreProcess()" call.
+*/
+#define COMPONENT_PRE_PROCESS(INITIALIZATION_DATA_CLASS)									\
+public:																						\
+	void PreProcess(INITIALIZATION_DATA_CLASS *const RESTRICT initialization_data) NOEXCEPT;
 
 /*
 *	Put this in your component declaration and implement it to receive a "SerialUpdate()" call during the specified update phase.

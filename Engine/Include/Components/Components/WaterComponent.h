@@ -105,24 +105,11 @@ public:
 
 class WaterComponent final : public Component
 {
-
 	//Component declaration.
 	CATALYST_COMPONENT
 	(
 		Water,
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 1)
+		COMPONENT_PRE_PROCESS(WaterInitializationData)
 	);
-
-public:
-
-	/*
-	*	Returns if this component needs pre-processing.
-	*/
-	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;
-
-	/*
-	*	Preprocessed initialization data an instance.
-	*/
-	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
-
 };

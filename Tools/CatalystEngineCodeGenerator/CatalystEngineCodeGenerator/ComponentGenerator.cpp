@@ -46,6 +46,9 @@ public:
 	//The name.
 	std::string _Name;
 
+	//The initialization data name.
+	std::string _InitializationDataName;
+
 	//Denotes whether or not this component wants an "Initialize()" call.
 	bool _Initialize;
 
@@ -54,6 +57,9 @@ public:
 
 	//Denotes whether or not this component wants a "Terminate()" call.
 	bool _Terminate;
+
+	//Denotes whether or not this component wants a "PreProcess()" call.
+	bool _PreProcess;
 
 };
 
@@ -255,6 +261,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 	component_entry["Initialize"] = false;
 	component_entry["PostInitialize"] = false;
 	component_entry["Terminate"] = false;
+	component_entry["PreProcess"] = false;
 
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
@@ -622,6 +629,18 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 				continue;
 			}
 		}
+
+		//Check if this component wants a "PreProcess()" call.
+		{
+			const size_t position{ current_line.find("COMPONENT_PRE_PROCESS(") };
+
+			if (position != std::string::npos)
+			{
+				component_entry["PreProcess"] = true;
+
+				continue;
+			}
+		}
 	}
 }
 
@@ -689,6 +708,11 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 				//Set the name.
 				new_component_data._Name = component_iterator.key().c_str();
 
+				//Figure out the initialization data name.
+				new_component_data._InitializationDataName = new_component_data._Name;
+				for (size_t i{ 0 }; i < strlen("Component"); ++i) new_component_data._InitializationDataName.pop_back();
+				new_component_data._InitializationDataName += "InitializationData";
+
 				//Set whether or not this component wants an "Initialize()" call.
 				new_component_data._Initialize = component_entry["Initialize"];
 
@@ -697,6 +721,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this component wants a "Terminate()" call.
 				new_component_data._Terminate = component_entry["Terminate"];
+
+				//Set whether or not this component wants a "PreProcess()" call.
+				new_component_data._PreProcess = component_entry["PreProcess"];
 
 				//Check if this component wants any serial updates.
 				if (component_entry.contains("SerialUpdates"))
@@ -1109,6 +1136,68 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		file << "\t\tcase " << component_identifier << ":" << std::endl;
 		file << "\t\t{" << std::endl;
 		file << "\t\t\t" << component_data[i]._Name.c_str() << "::Instance->FreeInitializationData(initialization_data);" << std::endl;
+		file << "\t\t\tbreak;" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
+	file << "\t\tdefault:" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tASSERT(false, \"Unknown component!\");" << std::endl;
+	file << "\t\t\tbreak;" << std::endl;
+	file << "\t\t}" << std::endl;
+
+	file << "\t}" << std::endl;
+
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::ShouldPreProcess()" function.
+	file << "NO_DISCARD bool Components::ShouldPreProcess(Component *const RESTRICT component) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	file << "\tswitch(component->_Identifier)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (uint64 i{ 0 }; i < component_data.size(); ++i)
+	{
+		const uint64 component_identifier{ CatalystHash(component_data[i]._Name.data(), component_data[i]._Name.length()) };
+
+		file << "\t\tcase " << component_identifier << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\treturn " << (component_data[i]._PreProcess ? "true" : "false") << ";" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
+	file << "\t\tdefault:" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tASSERT(false, \"Unknown component!\");" << std::endl;
+	file << "\t\t\treturn false;" << std::endl;
+	file << "\t\t}" << std::endl;
+
+	file << "\t}" << std::endl;
+
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::PreProcess()" function.
+	file << "void Components::PreProcess(Component *const RESTRICT component, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	file << "\tswitch(component->_Identifier)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (const ComponentData &_component_data : component_data)
+	{
+		if (!_component_data._PreProcess)
+		{
+			continue;
+		}
+
+		const uint64 component_identifier{ CatalystHash(_component_data._Name.data(), _component_data._Name.length()) };
+
+		file << "\t\tcase " << component_identifier << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\t" << _component_data._Name.c_str() << "::Instance->PreProcess(static_cast<" << _component_data._InitializationDataName.c_str() << " *const RESTRICT>(initialization_data));" << std::endl;
 		file << "\t\t\tbreak;" << std::endl;
 		file << "\t\t}" << std::endl;
 	}

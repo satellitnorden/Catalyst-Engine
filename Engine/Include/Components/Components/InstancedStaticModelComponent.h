@@ -103,24 +103,11 @@ public:
 
 class InstancedStaticModelComponent final : public Component
 {
-
 	//Component declaration.
 	CATALYST_COMPONENT
 	(
 		InstancedStaticModel,
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
+		COMPONENT_PRE_PROCESS(InstancedStaticModelInitializationData)
 	);
-
-public:
-
-	/*
-	*	Returns if this component needs pre-processing.
-	*/
-	NO_DISCARD bool NeedsPreProcessing() const NOEXCEPT override;
-
-	/*
-	*	Preprocessed initialization data an instance.
-	*/
-	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
-
 };

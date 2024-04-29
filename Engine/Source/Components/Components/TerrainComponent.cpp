@@ -527,43 +527,32 @@ void TerrainComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const
 }
 
 /*
-*	Returns if this component needs pre-processing.
-*/
-NO_DISCARD bool TerrainComponent::NeedsPreProcessing() const NOEXCEPT
-{
-	return true;
-}
-
-/*
 *	Preprocessed initialization data an instance.
 */
-void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void TerrainComponent::PreProcess(TerrainInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
-	//Cache the initialization data.
-	TerrainInitializationData *const RESTRICT _initialization_data{ static_cast<TerrainInitializationData *const RESTRICT>(initialization_data) };
-
 	//Calculate the world space axis aligned bounding box.
 	AxisAlignedBoundingBox3D axis_aligned_bounding_box;
 
-	axis_aligned_bounding_box._Minimum._X = -(static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
-	axis_aligned_bounding_box._Minimum._Z = -(static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Minimum._X = -(static_cast<float32>(initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Minimum._Z = -(static_cast<float32>(initialization_data->_PatchSize) * 0.5f);
 
-	axis_aligned_bounding_box._Maximum._X = (static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
-	axis_aligned_bounding_box._Maximum._Z = (static_cast<float32>(_initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Maximum._X = (static_cast<float32>(initialization_data->_PatchSize) * 0.5f);
+	axis_aligned_bounding_box._Maximum._Z = (static_cast<float32>(initialization_data->_PatchSize) * 0.5f);
 
-	for (uint32 Y{ 0 }; Y < _initialization_data->_HeightMap.GetResolution(); ++Y)
+	for (uint32 Y{ 0 }; Y < initialization_data->_HeightMap.GetResolution(); ++Y)
 	{
-		for (uint32 X{ 0 }; X < _initialization_data->_HeightMap.GetResolution(); ++X)
+		for (uint32 X{ 0 }; X < initialization_data->_HeightMap.GetResolution(); ++X)
 		{
-			const float32 height{ _initialization_data->_HeightMap.At(X, Y) };
+			const float32 height{ initialization_data->_HeightMap.At(X, Y) };
 
 			axis_aligned_bounding_box._Minimum._Y = BaseMath::Minimum<float32>(axis_aligned_bounding_box._Minimum._Y, height);
 			axis_aligned_bounding_box._Maximum._Y = BaseMath::Maximum<float32>(axis_aligned_bounding_box._Maximum._Y, height);
 		}
 	}
 
-	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Minimum);
-	_initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(_initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Maximum);
+	initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Minimum = WorldPosition(initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Minimum);
+	initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox._Maximum = WorldPosition(initialization_data->_WorldPosition.GetCell(), axis_aligned_bounding_box._Maximum);
 
 	//Construct the plane.
 	DynamicArray<TerrainVertex> vertices;
@@ -571,7 +560,7 @@ void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT in
 
 	TerrainGeneralUtilities::GenerateTerrainPlane
 	(
-		_initialization_data->_BaseResolution,
+		initialization_data->_BaseResolution,
 		&vertices,
 		&indices
 	);
@@ -586,27 +575,27 @@ void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT in
 	buffer_data_sizes[0] = sizeof(TerrainVertex) * vertices.Size();
 	buffer_data_sizes[1] = sizeof(uint32) * indices.Size();
 
-	RenderingSystem::Instance->CreateBuffer(buffer_data_sizes[0] + buffer_data_sizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &_initialization_data->_PreprocessedData._Buffer);
-	RenderingSystem::Instance->UploadDataToBuffer(buffer_data.Data(), buffer_data_sizes.Data(), 2, &_initialization_data->_PreprocessedData._Buffer);
+	RenderingSystem::Instance->CreateBuffer(buffer_data_sizes[0] + buffer_data_sizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &initialization_data->_PreprocessedData._Buffer);
+	RenderingSystem::Instance->UploadDataToBuffer(buffer_data.Data(), buffer_data_sizes.Data(), 2, &initialization_data->_PreprocessedData._Buffer);
 
-	_initialization_data->_PreprocessedData._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
-	_initialization_data->_PreprocessedData._IndexCount = static_cast<uint32>(indices.Size());
+	initialization_data->_PreprocessedData._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
+	initialization_data->_PreprocessedData._IndexCount = static_cast<uint32>(indices.Size());
 
 	//Create the height map texture.
 	{
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_initialization_data->_HeightMap), TextureFormat::R_FLOAT32, TextureUsage::NONE, false), &_initialization_data->_PreprocessedData._HeightMapTexture);
-		_initialization_data->_PreprocessedData._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_initialization_data->_PreprocessedData._HeightMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(initialization_data->_HeightMap), TextureFormat::R_FLOAT32, TextureUsage::NONE, false), &initialization_data->_PreprocessedData._HeightMapTexture);
+		initialization_data->_PreprocessedData._HeightMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(initialization_data->_PreprocessedData._HeightMapTexture);
 	}
 
 	//Create the normal map texture.
 	{
-		Texture2D<Vector4<uint8>> converted_normal_map_texture{ _initialization_data->_NormalMap.GetResolution() };
+		Texture2D<Vector4<uint8>> converted_normal_map_texture{ initialization_data->_NormalMap.GetResolution() };
 
 		for (uint32 Y{ 0 }; Y < converted_normal_map_texture.GetResolution(); ++Y)
 		{
 			for (uint32 X{ 0 }; X < converted_normal_map_texture.GetResolution(); ++X)
 			{
-				const Vector3<float32> &actual_normal{ _initialization_data->_NormalMap.At(X, Y) };
+				const Vector3<float32> &actual_normal{ initialization_data->_NormalMap.At(X, Y) };
 
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
@@ -615,17 +604,17 @@ void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT in
 			}
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_normal_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &_initialization_data->_PreprocessedData._NormalMapTexture);
-		_initialization_data->_PreprocessedData._NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_initialization_data->_PreprocessedData._NormalMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_normal_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &initialization_data->_PreprocessedData._NormalMapTexture);
+		initialization_data->_PreprocessedData._NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(initialization_data->_PreprocessedData._NormalMapTexture);
 	}
 
 	//Create the index map texture.
-	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_initialization_data->_IndexMap), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &_initialization_data->_PreprocessedData._IndexMapTexture);
-	_initialization_data->_PreprocessedData._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_initialization_data->_PreprocessedData._IndexMapTexture);
+	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(initialization_data->_IndexMap), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &initialization_data->_PreprocessedData._IndexMapTexture);
+	initialization_data->_PreprocessedData._IndexMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(initialization_data->_PreprocessedData._IndexMapTexture);
 
 	//Create the blend map texture.
 	{
-		Texture2D<Vector4<uint8>> converted_blend_map_texture{ _initialization_data->_NormalMap.GetResolution() };
+		Texture2D<Vector4<uint8>> converted_blend_map_texture{ initialization_data->_NormalMap.GetResolution() };
 
 		for (uint32 Y{ 0 }; Y < converted_blend_map_texture.GetResolution(); ++Y)
 		{
@@ -633,13 +622,13 @@ void TerrainComponent::PreProcess(ComponentInitializationData *const RESTRICT in
 			{
 				for (uint8 i{ 0 }; i < 4; ++i)
 				{
-					converted_blend_map_texture.At(X, Y)[i] = static_cast<uint8>(_initialization_data->_BlendMap.At(X, Y)[i] * static_cast<float32>(UINT8_MAXIMUM));
+					converted_blend_map_texture.At(X, Y)[i] = static_cast<uint8>(initialization_data->_BlendMap.At(X, Y)[i] * static_cast<float32>(UINT8_MAXIMUM));
 				}
 			}
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &_initialization_data->_PreprocessedData._BlendMapTexture);
-		_initialization_data->_PreprocessedData._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_initialization_data->_PreprocessedData._BlendMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &initialization_data->_PreprocessedData._BlendMapTexture);
+		initialization_data->_PreprocessedData._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(initialization_data->_PreprocessedData._BlendMapTexture);
 	}
 }
 
