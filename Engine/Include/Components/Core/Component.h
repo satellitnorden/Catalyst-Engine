@@ -29,6 +29,9 @@ class Component
 
 public:
 
+	//The name.
+	const char *RESTRICT _Name;
+
 	//The identifier.
 	HashString _Identifier;
 
@@ -41,9 +44,10 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE Component(const HashString identifier) NOEXCEPT
+	FORCE_INLINE Component(const char *const RESTRICT name) NOEXCEPT
 		:
-		_Identifier(identifier)
+		_Name(name),
+		_Identifier(name)
 	{
 
 	}
@@ -107,11 +111,6 @@ public:
 	{
 		return static_cast<TYPE *const RESTRICT>(SubEditableFieldData(entity, editable_field));
 	}
-
-	/*
-	*	Returns the name of this component.
-	*/
-	virtual NO_DISCARD const char *const RESTRICT Name() const NOEXCEPT = 0;
 
 	/*
 	*	Returns the editable fields.
@@ -434,7 +433,7 @@ public:																																		\
 	X##Component(X##Component &&other) = delete;																							\
 	FORCE_INLINE X##Component() NOEXCEPT																									\
 		:																																	\
-		Component(HashString(#X "Component"))																								\
+		Component(#X "Component")																											\
 	{																																		\
 	}																																		\
 	FORCE_INLINE X##InitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT												\
@@ -490,10 +489,6 @@ public:																																		\
 	{																																		\
 		X##InstanceData &instance_data{ InstanceData(entity) };																				\
 		return AdvancePointer(&instance_data, editable_field._InstanceDataOffset);															\
-	}																																		\
-	FORCE_INLINE NO_DISCARD const char *const RESTRICT Name() const NOEXCEPT override														\
-	{																																		\
-		return #X "Component";																												\
 	}																																		\
 private:																																	\
 	Spinlock POOL_ALLOCATOR_LOCK;																											\

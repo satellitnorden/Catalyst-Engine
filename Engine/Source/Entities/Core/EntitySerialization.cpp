@@ -48,7 +48,7 @@ namespace EntitySerialization
 				continue;
 			}
 
-			nlohmann::json &component_entry{ components[component->Name()] };
+			nlohmann::json &component_entry{ components[component->_Name] };
 
 			for (const ComponentEditableField &editable_field : component->EditableFields())
 			{

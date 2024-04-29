@@ -1037,7 +1037,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 						continue;
 					}
 
-					if (ImGui::MenuItem(component->Name()))
+					if (ImGui::MenuItem(component->_Name))
 					{
 						ComponentInitializationData *const RESTRICT initialization_data{ Components::AllocateInitializationData(component) };
 						EntitySystem::Instance->AddComponentToEntity(selected_entity, initialization_data);
@@ -1193,7 +1193,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		}
 
 		//Add widgets for the world transform component.
-		if (ImGui::CollapsingHeader(WorldTransformComponent::Instance->Name()))
+		if (ImGui::CollapsingHeader(WorldTransformComponent::Instance->_Name))
 		{
 			//Retrieve the editable field.
 			const ComponentEditableField &editable_field{ WorldTransformComponent::Instance->EditableFields()[0]};
@@ -1422,7 +1422,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 			if (component->Has(selected_entity))
 			{
-				if (ImGui::CollapsingHeader(component->Name()))
+				if (ImGui::CollapsingHeader(component->_Name))
 				{
 					//Add widgets for all editable fields.
 					for (const ComponentEditableField &editable_field : component->EditableFields())
