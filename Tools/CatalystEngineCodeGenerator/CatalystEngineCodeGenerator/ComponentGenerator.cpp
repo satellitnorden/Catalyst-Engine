@@ -1067,6 +1067,63 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "}" << std::endl;
 	file << std::endl;
 
+	//Set up the "Components::AllocateInitializationData()" function.
+	file << "NO_DISCARD ComponentInitializationData *const RESTRICT Components::AllocateInitializationData(Component *const RESTRICT component) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	file << "\tswitch(component->_Identifier)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (uint64 i{ 0 }; i < component_data.size(); ++i)
+	{
+		const uint64 component_identifier{ CatalystHash(component_data[i]._Name.data(), component_data[i]._Name.length()) };
+
+		file << "\t\tcase " << component_identifier << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\treturn " << component_data[i]._Name.c_str() << "::Instance->AllocateInitializationData();" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
+	file << "\t\tdefault:" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tASSERT(false, \"Unknown component!\");" << std::endl;
+	file << "\t\t\treturn nullptr;" << std::endl;
+	file << "\t\t}" << std::endl;
+
+	file << "\t}" << std::endl;
+
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::FreeInitializationData()" function.
+	file << "void Components::FreeInitializationData(Component *const RESTRICT component, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	file << "\tswitch(component->_Identifier)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (uint64 i{ 0 }; i < component_data.size(); ++i)
+	{
+		const uint64 component_identifier{ CatalystHash(component_data[i]._Name.data(), component_data[i]._Name.length()) };
+
+		file << "\t\tcase " << component_identifier << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\t" << component_data[i]._Name.c_str() << "::Instance->FreeInitializationData(initialization_data);" << std::endl;
+		file << "\t\t\tbreak;" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
+	file << "\t\tdefault:" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tASSERT(false, \"Unknown component!\");" << std::endl;
+	file << "\t\t\tbreak;" << std::endl;
+	file << "\t\t}" << std::endl;
+
+	file << "\t}" << std::endl;
+
+	file << "}" << std::endl;
+	file << std::endl;
+
 	//Set up the "Components::Update()" function.
 	file << "void Components::Update(const UpdatePhase update_phase) NOEXCEPT" << std::endl;
 	file << "{" << std::endl;

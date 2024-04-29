@@ -80,7 +80,7 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 
 	//Create the sky light.
 	{
-		LightInitializationData *const RESTRICT data{ LightComponent::Instance->AllocateDerivedInitializationData() };
+		LightInitializationData *const RESTRICT data{ LightComponent::Instance->AllocateInitializationData() };
 
 		data->_DirectionalLightData._Rotation = EulerAngles();
 		data->_Color = VectorConstants::ONE;

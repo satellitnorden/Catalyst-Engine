@@ -497,7 +497,7 @@ namespace EntitySerialization
 			}
 
 			//Allocate the initialization data.
-			ComponentInitializationData *const RESTRICT component_configuration{ component->AllocateInitializationData() };
+			ComponentInitializationData *const RESTRICT component_configuration{ Components::AllocateInitializationData(component) };
 			component_configurations[current_component_configuration++] = component_configuration;
 
 			//Apply all editable fields.

@@ -292,16 +292,6 @@ public:
 public:
 
 	/*
-	*	Allocations initialization data.
-	*/
-	virtual NO_DISCARD ComponentInitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT = 0;
-
-	/*
-	*	Frees initialization data.
-	*/
-	virtual void FreeInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
-
-	/*
 	*	Returns the number of instances.
 	*/
 	virtual NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT = 0;
@@ -340,7 +330,7 @@ public:
 	/*
 	*	Returns the component at the given index.
 	*/
-	static NO_DISCARD Component* const RESTRICT At(const uint64 index) NOEXCEPT;
+	static NO_DISCARD Component *const RESTRICT At(const uint64 index) NOEXCEPT;
 
 	/*
 	*	Initializes components.
@@ -351,6 +341,16 @@ public:
 	*	Post-initializes components.
 	*/
 	static void PostInitialize() NOEXCEPT;
+
+	/*
+	*	Allocates initialization data from the given component.
+	*/
+	static NO_DISCARD ComponentInitializationData *const RESTRICT AllocateInitializationData(Component *const RESTRICT component) NOEXCEPT;
+
+	/*
+	*	Frees initialization data for the given component.
+	*/
+	static void FreeInitializationData(Component *const RESTRICT component, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT;
 
 	/*
 	*	Updates components during the specific update phase.
@@ -431,7 +431,12 @@ public:																																		\
 	static X##Component *RESTRICT Instance;																									\
 	X##Component(const X##Component &other) = delete;																						\
 	X##Component(X##Component &&other) = delete;																							\
-	FORCE_INLINE X##InitializationData *const RESTRICT AllocateDerivedInitializationData() NOEXCEPT											\
+	FORCE_INLINE X##Component() NOEXCEPT																									\
+		:																																	\
+		Component(HashString(#X "Component"))																								\
+	{																																		\
+	}																																		\
+	FORCE_INLINE X##InitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT												\
 	{																																		\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																									\
 		X##InitializationData* const RESTRICT data{ new (POOL_ALLOCATOR.Allocate()) X##InitializationData() };								\
@@ -439,19 +444,10 @@ public:																																		\
 		data->_Component = Instance;																										\
 		return data;																														\
 	}																																		\
-	FORCE_INLINE NO_DISCARD ComponentInitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT override						\
-	{																																		\
-		return AllocateDerivedInitializationData();																							\
-	}																																		\
-	FORCE_INLINE void FreeInitializationData(ComponentInitializationData *const RESTRICT data) NOEXCEPT override							\
+	FORCE_INLINE void FreeInitializationData(ComponentInitializationData *const RESTRICT data) NOEXCEPT										\
 	{																																		\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																									\
 		POOL_ALLOCATOR.Free(data);																											\
-	}																																		\
-	FORCE_INLINE X##Component() NOEXCEPT																									\
-		:																																	\
-		Component(HashString(#X "Component"))																								\
-	{																																		\
 	}																																		\
 	void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;	\
 	void DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT override;																	\

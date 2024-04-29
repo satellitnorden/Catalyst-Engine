@@ -574,7 +574,7 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 	StaticArray<ComponentInitializationData *RESTRICT, 1> component_configurations;
 
 	{
-		WorldTransformInitializationData* const RESTRICT data{ WorldTransformComponent::Instance->AllocateDerivedInitializationData() };
+		WorldTransformInitializationData *const RESTRICT data{ WorldTransformComponent::Instance->AllocateInitializationData() };
 
 		data->_WorldTransform = WorldTransform();
 
@@ -1039,7 +1039,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 					if (ImGui::MenuItem(component->Name()))
 					{
-						ComponentInitializationData *const RESTRICT initialization_data{ component->AllocateInitializationData() };
+						ComponentInitializationData *const RESTRICT initialization_data{ Components::AllocateInitializationData(component) };
 						EntitySystem::Instance->AddComponentToEntity(selected_entity, initialization_data);
 
 						//For any hash string editable fields this component has, add a hash string data to the editor entity data as well.

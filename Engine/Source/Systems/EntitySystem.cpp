@@ -254,7 +254,7 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 				do
 				{
 					ComponentInitializationData *RESTRICT next_component_configuration{ component_configuration->_NextComponentInitializationData };
-					component_configuration->_Component->FreeInitializationData(component_configuration);
+					Components::FreeInitializationData(component_configuration->_Component, component_configuration);
 					component_configuration = next_component_configuration;
 				} while (component_configuration);
 			}
@@ -378,7 +378,7 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 				do
 				{
 					ComponentInitializationData *RESTRICT next_component_configuration{ component_configuration->_NextComponentInitializationData };
-					component_configuration->_Component->FreeInitializationData(component_configuration);
+					Components::FreeInitializationData(component_configuration->_Component, component_configuration);
 					component_configuration = next_component_configuration;
 				} while (component_configuration);
 			}
