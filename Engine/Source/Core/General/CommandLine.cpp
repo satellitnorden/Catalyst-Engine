@@ -6,9 +6,6 @@
 #include <Platform/Windows/CatalystPlatformWindows.h>
 #endif
 
-//Singleton definition.
-DEFINE_SINGLETON(CommandLine);
-
 /*
 *	Initializes the command line.
 */

@@ -7,13 +7,19 @@
 //Content.
 #include <Content/Core/AssetCompiler.h>
 
-class ALIGN(8) ImpostorMaterialAssetCompiler final : public AssetCompiler
+//Systems.
+#include <Systems/System.h>
+
+class ImpostorMaterialAssetCompiler final : public AssetCompiler
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(ImpostorMaterialAssetCompiler);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		ImpostorMaterialAssetCompiler
+	);
 
 	/*
 	*	Default constructor.

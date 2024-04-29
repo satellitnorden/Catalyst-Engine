@@ -4,9 +4,6 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(MemorySystem);
-
 /*
 *	Initializes the memory system.
 */

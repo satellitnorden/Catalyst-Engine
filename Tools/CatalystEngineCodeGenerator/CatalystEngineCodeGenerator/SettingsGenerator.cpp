@@ -394,14 +394,14 @@ void SettingsGenerator::Run()
 	//Set up the cache.
 	nlohmann::ordered_json cache;
 
-#if defined(NDEBUG)
+//#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\SettingsCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\SettingsCache.json" };
 		input_file >> cache;
 		input_file.close();
 	}
-#endif
+//#endif
 
 	//Gather settings definitions!
 	GatherSettingsDefinitions(ASSETS_DIRECTORY, cache);

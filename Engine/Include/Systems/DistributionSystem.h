@@ -6,13 +6,19 @@
 //Distribution.
 #include <Distribution/AchievementIdentifier.h>
 
-class ALIGN(8) DistributionSystem final
+//Systems.
+#include <Systems/System.h>
+
+class DistributionSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(DistributionSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		DistributionSystem
+	);
 
 	/*
 	*	Default constructor.

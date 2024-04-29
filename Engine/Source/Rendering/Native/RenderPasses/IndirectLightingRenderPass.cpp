@@ -8,9 +8,6 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(IndirectLightingRenderPass);
-
 //TEMP
 #include <Systems/InputSystem.h>
 

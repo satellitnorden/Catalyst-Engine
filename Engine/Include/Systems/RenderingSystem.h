@@ -40,6 +40,9 @@
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //World.
 #include <World/Core/WorldTransform.h>
 
@@ -48,13 +51,16 @@ class Entity;
 class Resolution;
 class TextureCubeData;
 
-class ALIGN(8) RenderingSystem final
+class RenderingSystem final
 {
 
 public:
 
 	//System declaration.
-	DECLARE_SINGLETON(RenderingSystem);
+	CATALYST_SYSTEM
+	(
+		RenderingSystem
+	);
 
 	/*
 	*	Default constructor.

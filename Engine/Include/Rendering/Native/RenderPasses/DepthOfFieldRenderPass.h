@@ -10,13 +10,19 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DepthOfFieldFloodfillBlurGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) DepthOfFieldRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class DepthOfFieldRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(DepthOfFieldRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		DepthOfFieldRenderPass
+	);
 
 	/*
 	*	Default constructor.

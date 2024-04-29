@@ -196,15 +196,18 @@ public:
 
 };
 
-DECLARE_COMPONENT
-(
-	ParticleSystemComponent,
-	ParticleSystemInitializationData,
-	ParticleSystemInstanceData,
-	COMPONENT_INITIALIZE()
-	COMPONENT_POST_INITIALIZE()
-	COMPONENT_PARALLEL_SUB_INSTANCE_UPDATE(UpdatePhase::PRE_RENDER)
-	COMPONENT_POST_UPDATE(UpdatePhase::PRE_RENDER)
+class ParticleSystemComponent final : public Component
+{
+
+	//Component declaration.
+	CATALYST_COMPONENT
+	(
+		ParticleSystem,
+		COMPONENT_INITIALIZE()
+		COMPONENT_POST_INITIALIZE()
+		COMPONENT_PARALLEL_SUB_INSTANCE_UPDATE(UpdatePhase::PRE_RENDER)
+		COMPONENT_POST_UPDATE(UpdatePhase::PRE_RENDER)
+	);
 
 public:
 
@@ -232,4 +235,5 @@ public:
 private:
 
 	ParticleSystemSharedData _SharedData;
-);
+
+};

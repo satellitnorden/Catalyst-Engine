@@ -7,13 +7,19 @@
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) WaterRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class WaterRenderPass final : public RenderPass
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(WaterRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		WaterRenderPass
+	);
 
 	/*
 	*	Default constructor.

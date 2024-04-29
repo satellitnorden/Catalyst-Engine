@@ -7,13 +7,19 @@
 //Rendering.
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
+//Systems.
+#include <Systems/System.h>
+
 class VirtualRealityVisualizationRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(VirtualRealityVisualizationRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		VirtualRealityVisualizationRenderPass
+	);
 
 	/*
 	*	Default constructor.

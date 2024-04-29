@@ -13,13 +13,19 @@
 //Math.
 #include <Math/General/Vector.h>
 
-class ALIGN(8) InputSystem final
+//Systems.
+#include <Systems/System.h>
+
+class InputSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(InputSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		InputSystem
+	);
 
 	/*
 	*	Default constructor.

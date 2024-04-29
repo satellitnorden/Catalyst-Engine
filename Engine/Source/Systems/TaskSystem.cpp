@@ -7,9 +7,6 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(TaskSystem);
-
 /*
 *	Initializes the task system.
 */

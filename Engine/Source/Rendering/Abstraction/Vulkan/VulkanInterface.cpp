@@ -16,9 +16,6 @@
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanErrorReporting.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(VulkanInterface);
-
 /*
 *	Initializes this Vulkan interface.
 */

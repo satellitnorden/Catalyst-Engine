@@ -28,9 +28,6 @@
 //STL.
 #include <fstream>
 
-//Singleton definition.
-DEFINE_SINGLETON(ImpostorMaterialAssetCompiler);
-
 /*
 *	Impostor material parameters class definition.
 */

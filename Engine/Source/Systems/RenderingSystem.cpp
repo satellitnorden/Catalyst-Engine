@@ -52,9 +52,6 @@
 	#define RENDERING_PERFORMANCE_QUERY (0)
 #endif
 
-//Singleton definition.
-DEFINE_SINGLETON(RenderingSystem);
-
 /*
 *	Initializes the rendering system.
 */

@@ -12,13 +12,19 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ShadowsSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) ShadowsRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class ShadowsRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(ShadowsRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		ShadowsRenderPass
+	);
 
 	/*
 	*	Default constructor.

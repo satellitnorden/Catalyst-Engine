@@ -26,12 +26,15 @@ public:
 
 };
 
-DECLARE_COMPONENT
-(
-	CircleMarkerComponent,
-	CircleMarkerInitializationData,
-	CircleMarkerInstanceData,
-	COMPONENT_INITIALIZE()
+class CircleMarkerComponent final : public Component
+{
+
+	//Component declaration.
+	CATALYST_COMPONENT
+	(
+		CircleMarker,
+		COMPONENT_INITIALIZE()
+	);
 
 public:
 
@@ -41,4 +44,4 @@ public:
 	*/
 	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;
 
-);
+};

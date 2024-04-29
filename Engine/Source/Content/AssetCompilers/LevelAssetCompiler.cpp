@@ -26,9 +26,6 @@
 //STL.
 #include <fstream>
 
-//Singleton definition.
-DEFINE_SINGLETON(LevelAssetCompiler);
-
 /*
 *	Default constructor.
 */

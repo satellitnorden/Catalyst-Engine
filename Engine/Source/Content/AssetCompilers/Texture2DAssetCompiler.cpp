@@ -30,9 +30,6 @@
 #include <fstream>
 #include <string>
 
-//Singleton definition.
-DEFINE_SINGLETON(Texture2DAssetCompiler);
-
 /*
 *	Texture 2D channel mapping class definition.
 */

@@ -9,13 +9,19 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Assets/Texture2DAsset.h>
 
-class ALIGN(8) Texture2DAssetCompiler final : public AssetCompiler
+//Systems.
+#include <Systems/System.h>
+
+class Texture2DAssetCompiler final : public AssetCompiler
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(Texture2DAssetCompiler);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		Texture2DAssetCompiler
+	);
 
 	/*
 	*	Default constructor.

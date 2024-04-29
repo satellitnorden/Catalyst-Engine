@@ -20,9 +20,6 @@
 #include <fstream>
 #include <string>
 
-//Singleton definition.
-DEFINE_SINGLETON(AnimatedModelAssetCompiler);
-
 /*
 *	Animated model parameters class definition.
 */

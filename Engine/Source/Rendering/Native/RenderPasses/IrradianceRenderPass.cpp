@@ -11,9 +11,6 @@
 #define TEMPORAL_DENOISING (1)
 #define SPATIAL_DENOISING (1)
 
-//Singleton definition.
-DEFINE_SINGLETON(IrradianceRenderPass);
-
 /*
 *	Diffuse irradiance spatial denoising push constant data class definition.
 */

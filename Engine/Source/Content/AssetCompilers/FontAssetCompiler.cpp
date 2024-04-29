@@ -24,9 +24,6 @@
 #include <fstream>
 #include <string>
 
-//Singleton definition.
-DEFINE_SINGLETON(FontAssetCompiler);
-
 /*
 *	Font parameters class definition.
 */

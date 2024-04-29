@@ -4,6 +4,7 @@
 #include "EnumerationGenerator.h"
 #include "ScriptGenerator.h"
 #include "SettingsGenerator.h"
+#include "SystemGenerator.h"
 
 class CatalystCodeGenerator final
 {
@@ -28,5 +29,8 @@ private:
 
 	//The settings generator.
 	SettingsGenerator _SettingsGenerator;
+
+	//The system generator.
+	SystemGenerator _SystemGenerator;
 
 };

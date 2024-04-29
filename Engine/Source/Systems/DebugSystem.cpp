@@ -13,9 +13,6 @@
 //STL.
 #include <string>
 
-//Singleton definition.
-DEFINE_SINGLETON(DebugSystem);
-
 /*
 *	Initializes the debug system.
 */

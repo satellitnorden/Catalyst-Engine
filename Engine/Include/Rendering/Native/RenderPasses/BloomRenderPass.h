@@ -9,13 +9,19 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) BloomRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class BloomRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(BloomRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		BloomRenderPass
+	);
 
 	/*
 	*	Default constructor.

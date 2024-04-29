@@ -43,9 +43,6 @@
 #include <Systems/UserInterfaceSystem.h>
 #include <Systems/WorldSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(CatalystEngineSystem);
-
 //Catalyst engine system data.
 namespace CatalystEngineSystemData
 {

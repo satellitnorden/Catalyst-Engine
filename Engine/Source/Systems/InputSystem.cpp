@@ -11,9 +11,6 @@
 #endif
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(InputSystem);
-
 /*
 *	Initializes the input system.
 */

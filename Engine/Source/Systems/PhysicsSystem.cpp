@@ -10,9 +10,6 @@
 //Terrain.
 #include <Terrain/TerrainGeneralUtilities.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(PhysicsSystem);
-
 /*
 *	Initializes the physics system.
 */

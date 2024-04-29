@@ -15,9 +15,6 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 
-//Define the singleton.
-DEFINE_SINGLETON(SoundSystem);
-
 /*
 *	Queued play sound request class definition.
 */

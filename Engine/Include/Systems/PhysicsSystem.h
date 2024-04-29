@@ -25,16 +25,22 @@
 //Rendering.
 #include <Rendering/Native/Texture2D.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //World.
 #include <World/Core/WorldTransform.h>
 
-class ALIGN(8) PhysicsSystem final
+class PhysicsSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(PhysicsSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		PhysicsSystem
+	);
 
 	/*
 	*	Default constructor.

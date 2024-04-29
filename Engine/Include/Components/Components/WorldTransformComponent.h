@@ -32,11 +32,13 @@ public:
 
 };
 
-DECLARE_COMPONENT
-(
-	WorldTransformComponent,
-	WorldTransformInitializationData,
-	WorldTransformInstanceData,
-	COMPONENT_INITIALIZE()
-	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE, 512)
-);
+class WorldTransformComponent final : public Component
+{
+	//Component declaration.
+	CATALYST_COMPONENT
+	(
+		WorldTransform,
+		COMPONENT_INITIALIZE()
+		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE, 512)
+	);
+};

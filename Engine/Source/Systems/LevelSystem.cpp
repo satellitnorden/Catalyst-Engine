@@ -7,9 +7,6 @@
 //Systems.
 #include <Systems/EntitySystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(LevelSystem);
-
 /*
 *	Spawns a level.
 */

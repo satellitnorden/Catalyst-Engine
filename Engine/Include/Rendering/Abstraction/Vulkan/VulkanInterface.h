@@ -42,13 +42,20 @@
 #include <Rendering/Abstraction/Vulkan/VulkanSurface.h>
 #include <Rendering/Abstraction/Vulkan/VulkanSwapChain.h>
 
-class ALIGN(8) VulkanInterface final
+//Systems.
+#include <Systems/System.h>
+
+class VulkanInterface final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(VulkanInterface);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		VulkanInterface,
+		DEFINED_REQUIREMENT(CATALYST_RENDERING_VULKAN)
+	);
 
 	/*
 	*	Default constructor.

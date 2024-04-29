@@ -19,7 +19,10 @@
 #include <Sound/SoundMixComponent.h>
 #include <Sound/SoundSubSystem.h>
 
-class ALIGN(8) SoundSystem final
+//Systems.
+#include <Systems/System.h>
+
+class SoundSystem final
 {
 
 public:
@@ -30,8 +33,11 @@ public:
 	//The default number of samples in each mixing buffer.
 	static constexpr uint32 DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER{ 128 };
 
-	//Declare the singleton.
-	DECLARE_SINGLETON(SoundSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		SoundSystem
+	);
 
 	/*
 	*	Default constructor.

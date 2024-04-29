@@ -11,13 +11,20 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DebugRenderSphereGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) DebugRenderingRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class DebugRenderingRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(DebugRenderingRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		DebugRenderingRenderPass,
+		NOT_DEFINED_REQUIREMENT(CATALYST_CONFIGURATION_FINAL)
+	);
 
 	/*
 	*	Default constructor.

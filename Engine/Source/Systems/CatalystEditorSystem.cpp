@@ -13,9 +13,6 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(CatalystEditorSystem);
-
 /*
 *	Initializes the Catalyst editor system.
 */

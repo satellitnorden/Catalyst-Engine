@@ -32,9 +32,6 @@ namespace EntitySystemConstants
 #endif
 }
 
-//Singleton definition.
-DEFINE_SINGLETON(EntitySystem);
-
 /*
 *	Initializes the entity system.
 */

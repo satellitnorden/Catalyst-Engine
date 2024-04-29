@@ -9,7 +9,10 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DebugGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) DebugRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class DebugRenderPass final : public RenderPass
 {
 	
 public:
@@ -29,8 +32,12 @@ public:
 		DIFFUSE_IRRADIANCE
 	};
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(DebugRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		DebugRenderPass,
+		NOT_DEFINED_REQUIREMENT(CATALYST_CONFIGURATION_FINAL)
+	);
 
 	/*
 	*	Default constructor.

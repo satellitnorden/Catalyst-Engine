@@ -83,10 +83,12 @@ public:
 
 };
 
-DECLARE_COMPONENT
-(
-	InstancedImpostorComponent,
-	InstancedImpostorInitializationData,
-	InstancedImpostorInstanceData,
-	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
-);
+class InstancedImpostorComponent final : public Component
+{
+	//Component declaration.
+	CATALYST_COMPONENT
+	(
+		InstancedImpostor,
+		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
+	);
+};

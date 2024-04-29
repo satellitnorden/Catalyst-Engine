@@ -8,13 +8,19 @@
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) SkyRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class SkyRenderPass final : public RenderPass
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(SkyRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		SkyRenderPass
+	);
 
 	/*
 	*	Default constructor.

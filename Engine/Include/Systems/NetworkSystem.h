@@ -3,13 +3,19 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-class ALIGN(8) NetworkSystem final
+//Systems.
+#include <Systems/System.h>
+
+class NetworkSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(NetworkSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		NetworkSystem
+	);
 
 	/*
 	*	Default constructor.

@@ -7,13 +7,19 @@
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) PostProcessingRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class PostProcessingRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(PostProcessingRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		PostProcessingRenderPass
+	);
 
 	/*
 	*	Default constructor.

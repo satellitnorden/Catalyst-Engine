@@ -19,9 +19,6 @@
 #include <fstream>
 #include <stdarg.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(LogSystem);
-
 //Log system constants.
 namespace LogSystemConstants
 {

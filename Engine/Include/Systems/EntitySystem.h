@@ -23,6 +23,7 @@
 
 //Systems.
 #include <Systems/MemorySystem.h>
+#include <Systems/System.h>
 
 //World.
 #include <World/Core/WorldTransform.h>
@@ -30,13 +31,16 @@
 //Forward declarations.
 class ComponentInitializationData;
 
-class ALIGN(8) EntitySystem final
+class EntitySystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(EntitySystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		EntitySystem
+	);
 
 	/*
 	*	Default constructor.

@@ -12,9 +12,6 @@
 //STL.
 #include <stdio.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(ShadowsRenderPass);
-
 /*
 *	Default constructor.
 */

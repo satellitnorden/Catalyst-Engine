@@ -4,13 +4,20 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-class ALIGN(8) RenderingCompiler final
+//Systems.
+#include <Systems/System.h>
+
+class RenderingCompiler final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(RenderingCompiler);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		RenderingCompiler,
+		DEFINED_REQUIREMENT(CATALYST_ENABLE_RESOURCE_BUILDING)
+	);
 
 	/*
 	*	Default constructor.

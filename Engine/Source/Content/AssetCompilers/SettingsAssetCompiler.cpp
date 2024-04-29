@@ -20,9 +20,6 @@
 //STL.
 #include <fstream>
 
-//Singleton definition.
-DEFINE_SINGLETON(SettingsAssetCompiler);
-
 /*
 *	Default constructor.
 */

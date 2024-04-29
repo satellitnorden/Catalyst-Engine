@@ -9,13 +9,19 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Assets/ModelAsset.h>
 
-class ALIGN(8) ModelAssetCompiler final : public AssetCompiler
+//Systems.
+#include <Systems/System.h>
+
+class ModelAssetCompiler final : public AssetCompiler
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(ModelAssetCompiler);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		ModelAssetCompiler
+	);
 
 	/*
 	*	Default constructor.

@@ -19,9 +19,6 @@
 //Systems.
 #include <Systems/WorldSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(WorldTracingSystem);
-
 //World tracing system constants.
 namespace WorldTracingSystemConstants
 {

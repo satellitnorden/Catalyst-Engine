@@ -13,9 +13,6 @@
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(SaveSystem);
-
 /*
 *	Initializes the save system.
 */

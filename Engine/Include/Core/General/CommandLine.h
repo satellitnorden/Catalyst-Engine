@@ -5,13 +5,19 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
 
-class ALIGN(8) CommandLine final
+//Systems.
+#include <Systems/System.h>
+
+class CommandLine final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(CommandLine);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		CommandLine
+	);
 
 	/*
 	*	Default constructor.

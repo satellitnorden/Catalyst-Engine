@@ -8,6 +8,9 @@
 #include <Content/Core/AssetPointer.h>
 #include <Content/Assets/LevelAsset.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //World.
 #include <World/Core/WorldTransform.h>
 #include <World/Level/Level.h>
@@ -15,13 +18,16 @@
 //Forward declarations.
 class ComponentInitializationData;
 
-class ALIGN(8) LevelSystem final
+class LevelSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(LevelSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		LevelSystem
+	);
 
 	//Type aliases.
 	using SpawnFunction = void(*)

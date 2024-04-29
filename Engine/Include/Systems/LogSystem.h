@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Utilities/StringUtilities.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //Macros.
 #define LOG_DEBUG(MESSAGE, ...) LogSystem::Instance->Log(LogSystem::LogLevel::DEBUG, StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
 #define LOG_INFORMATION(MESSAGE, ...) LogSystem::Instance->Log(LogSystem::LogLevel::INFORMATION, StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
@@ -11,13 +14,16 @@
 #define LOG_ERROR(MESSAGE, ...) LogSystem::Instance->Log(LogSystem::LogLevel::ERROR, StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
 #define LOG_FATAL(MESSAGE, ...) LogSystem::Instance->Log(LogSystem::LogLevel::FATAL, StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
 
-class ALIGN(8) LogSystem final
+class LogSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(LogSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		LogSystem
+	);
 
 	//Enumeration covering all log levels.
 	enum class LogLevel : uint8

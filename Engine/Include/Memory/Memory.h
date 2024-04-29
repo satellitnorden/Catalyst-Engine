@@ -1,17 +1,8 @@
 #pragma once
 
-//Memory.
-#include <Memory/DestructorPointer.h>
-#include <Memory/LinearAllocator.h>
-
 //STL.
 #include <cstring>
-
-//Memory constants.
-namespace MemoryConstants
-{
-	constexpr uint64 GLOBAL_LINEAR_ALLOCATOR_SIZE{ 1'024 * 1'024 };
-}
+#include <stdlib.h>
 
 class Memory
 {
@@ -69,16 +60,6 @@ public:
 	FORCE_INLINE static NO_DISCARD bool Compare(const TYPE *const RESTRICT first, const TYPE *const RESTRICT second, const uint64 size) NOEXCEPT
 	{
 		return memcmp(first, second, size) == 0;
-	}
-
-	/*
-	*	Returns the global linear allocator.
-	*/
-	FORCE_INLINE RESTRICTED static NO_DISCARD LinearAllocator<MemoryConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> *const RESTRICT GlobalLinearAllocator() NOEXCEPT
-	{
-		static LinearAllocator<MemoryConstants::GLOBAL_LINEAR_ALLOCATOR_SIZE> allocator;
-
-		return &allocator;
 	}
 
 };

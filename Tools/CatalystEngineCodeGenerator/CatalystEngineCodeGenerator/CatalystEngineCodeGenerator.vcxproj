@@ -144,6 +144,7 @@
     <ClCompile Include="ScriptGenerator.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SettingsGenerator.cpp" />
+    <ClCompile Include="SystemGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CatalystCodeGenerator.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="json.hpp" />
     <ClInclude Include="ScriptGenerator.h" />
     <ClInclude Include="SettingsGenerator.h" />
+    <ClInclude Include="SystemGenerator.h" />
     <ClInclude Include="TextParsing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

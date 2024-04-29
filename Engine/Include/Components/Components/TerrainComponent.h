@@ -175,13 +175,16 @@ public:
 
 };
 
-DECLARE_COMPONENT
-(
-	TerrainComponent,
-	TerrainInitializationData,
-	TerrainInstanceData,
-	COMPONENT_INITIALIZE()
-	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 1)
+class TerrainComponent final : public Component
+{
+
+	//Component declaration.
+	CATALYST_COMPONENT
+	(
+		Terrain,
+		COMPONENT_INITIALIZE()
+		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 1)
+	);
 
 public:
 
@@ -195,4 +198,4 @@ public:
 	*/
 	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
 
-);
+};

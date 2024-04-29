@@ -11,13 +11,19 @@
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/RenderingConfiguration.h>
 
-class ALIGN(8) AmbientOcclusionRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class AmbientOcclusionRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(AmbientOcclusionRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		AmbientOcclusionRenderPass
+	);
 
 	/*
 	*	Default constructor.

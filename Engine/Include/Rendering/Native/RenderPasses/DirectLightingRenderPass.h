@@ -11,13 +11,19 @@
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) DirectLightingRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class DirectLightingRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(DirectLightingRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		DirectLightingRenderPass
+	);
 
 	/*
 	*	Default constructor.

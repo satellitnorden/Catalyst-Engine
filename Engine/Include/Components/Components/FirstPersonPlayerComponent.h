@@ -84,13 +84,16 @@ public:
 
 };
 
-DECLARE_COMPONENT
-(
-	FirstPersonPlayerComponent,
-	FirstPersonPlayerInitializationData,
-	FirstPersonPlayerInstanceData,
-	COMPONENT_SERIAL_UPDATE(UpdatePhase::GAMEPLAY)
-	
+class FirstPersonPlayerComponent final : public Component
+{
+
+	//Component declaration.
+	CATALYST_COMPONENT
+	(
+		FirstPersonPlayer,
+		COMPONENT_SERIAL_UPDATE(UpdatePhase::GAMEPLAY)
+	);
+
 public:
 
 	/*
@@ -99,4 +102,4 @@ public:
 	*/
 	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;
 
-);
+};

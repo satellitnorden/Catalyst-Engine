@@ -18,16 +18,22 @@
 #include <Resources/Creation/ResourceCreationSystem.h>
 #include <Resources/Loading/ResourceLoadingSystem.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //Forward declarations.
 class BinaryInputFile;
 
-class ALIGN(8) ResourceSystem final
+class ResourceSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(ResourceSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		ResourceSystem
+	);
 
 	/*
 	*	Default constructor.

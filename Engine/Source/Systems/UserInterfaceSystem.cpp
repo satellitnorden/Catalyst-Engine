@@ -12,9 +12,6 @@
 #include <UserInterface/TextUserInterfacePrimitive.h>
 #include <UserInterface/TextUserInterfacePrimitiveDescription.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(UserInterfaceSystem);
-
 /*
 *	Initializes the user interface system.
 */

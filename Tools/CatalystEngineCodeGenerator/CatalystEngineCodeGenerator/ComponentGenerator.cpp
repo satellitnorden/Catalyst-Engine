@@ -69,14 +69,14 @@ void ComponentGenerator::Run()
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
-//#if defined(NDEBUG)
+#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
-//#endif
+#endif
 
 	//Gather components!
 	bool new_files_parsed{ false };
@@ -184,10 +184,11 @@ bool ComponentGenerator::GatherComponents(const char *const directory_path, nloh
 				//Parse components.
 				{
 					const size_t define_position{ current_line.find("#define") };
-					const size_t macro_position{ current_line.find("DECLARE_COMPONENT") };
+					const size_t macro_position_1{ current_line.find("DECLARE_COMPONENT") };
+					const size_t macro_position_2{ current_line.find("CATALYST_COMPONENT") };
 
 					if (define_position == std::string::npos
-						&& macro_position != std::string::npos
+						&& (macro_position_1 != std::string::npos || macro_position_2 != std::string::npos)
 						&& !OnlyComment(current_line.c_str(), current_line.length()))
 					{
 						nlohmann::json &components_entry{ entry["Components"] };
@@ -218,23 +219,30 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 		//Retrieve the line.
 		std::getline(file, current_line);
 
+		char character;
+		size_t position{ 0 };
+		TextParsing::GetNextNonWhitespaceCharacter(current_line.c_str(), 0, &character, &position);
+
+		const std::string _current_line{ &current_line[position] };
+
 		//Ignore the opening parantheses.
-		if (current_line == "(")
+		if (_current_line == "(")
 		{
 			continue;
 		}
 
 		//Otherwise, this should be the name.
-		size_t start_position{ 0 };
+		name = _current_line;
 
-		while (current_line[start_position] == '\t')
+		if (name[name.length() - 1] == ',')
 		{
-			++start_position;
+			name.pop_back();
 		}
 
-		name = &current_line[start_position];
-
-		name[name.length() - 1] = '\0';
+		if (name.find("Component") == std::string::npos)
+		{
+			name += "Component";
+		}
 	}
 
 	//Add the entry for this component.
@@ -645,57 +653,8 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "#include <Systems/TaskSystem.h>" << std::endl;
 	file << std::endl;
 
-	//Add the "ParallelUpdate" class definition.
-	file << "/*" << std::endl;
-	file << "*\tParallel update class definition." << std::endl;
-	file << "*/" << std::endl;
-
-	file << "class ParallelUpdate final" << std::endl;
-	file << "{" << std::endl;
-	file << std::endl;
-	file << "public:" << std::endl;
-	file << std::endl;
-
-	file << "\t//The task." << std::endl;
-	file << "\tTask _Task;" << std::endl;
-	file << std::endl;
-
-	file << "\tunion" << std::endl;
-	file << "\t{" << std::endl;
-
-	file << "\t\tstruct" << std::endl;
-	file << "\t\t{" << std::endl;
-
-	file << "\t\t\t//The start instance index." << std::endl;
-	file << "\t\t\tuint64 _StartInstanceIndex;" << std::endl;
-	file << std::endl;
-
-	file << "\t\t\t//The end instance index." << std::endl;
-	file << "\t\t\tuint64 _EndInstanceIndex;" << std::endl;
-
-	file << "\t\t};" << std::endl;
-
-	file << "\t\tstruct" << std::endl;
-	file << "\t\t{" << std::endl;
-
-	file << "\t\t\t//The instance index." << std::endl;
-	file << "\t\t\tuint64 _InstanceIndex;" << std::endl;
-	file << std::endl;
-
-	file << "\t\t\t//The sub instance index." << std::endl;
-	file << "\t\t\tuint64 _SubInstanceIndex;" << std::endl;
-
-	file << "\t\t};" << std::endl;
-
-	file << "\t};" << std::endl;
-
-	file << "};" << std::endl;
-	file << std::endl;
-
-	//Add the parallel updates container.
-	file << "//Container for all parallel updates." << std::endl;
-	file << "DynamicArray<ParallelUpdate> PARALLEL_UPDATES;" << std::endl;
-	file << std::endl;
+	//Add includes for all components.
+	file << "//Components." << std::endl;
 
 	//Add all component data.
 	std::vector<ComponentData> component_data;
@@ -713,19 +672,15 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			continue;
 		}
 
-		const nlohmann::json &components_entry{ file_entry["Components"] };
+		const nlohmann::json& components_entry{ file_entry["Components"] };
 
 		//Add the include.
 		file << "#include \"" << file_iterator.key().c_str() << "\"" << std::endl;
-		file << std::endl;
 
 		for (auto component_iterator{ components_entry.begin() }; component_iterator != components_entry.end(); ++component_iterator)
 		{
 			//Cache the component entry.
 			const nlohmann::json &component_entry{ *component_iterator };
-
-			//Add the singleton definition.
-			file << "DEFINE_SINGLETON(" << component_iterator.key().c_str() << ");" << std::endl;
 
 			//Add the component data.
 			{
@@ -886,9 +841,76 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 				}
 			}
 		}
-
-		file << std::endl;
 	}
+
+	file << std::endl;
+
+	//Add the static variable definitions for all component instances.
+	file << "//Static variable definitions." << std::endl;
+
+	for (const ComponentData &_component_data : component_data)
+	{
+		file << _component_data._Name.c_str() << " *RESTRICT " << _component_data._Name.c_str() << "::Instance;" << std::endl;
+	}
+
+	file << std::endl;
+
+	//Add the components memory.
+	file << "void *RESTRICT COMPONENTS_MEMORY;" << std::endl;
+
+	file << std::endl;
+
+	//Add the "ParallelUpdate" class definition.
+	file << "/*" << std::endl;
+	file << "*\tParallel update class definition." << std::endl;
+	file << "*/" << std::endl;
+
+	file << "class ParallelUpdate final" << std::endl;
+	file << "{" << std::endl;
+	file << std::endl;
+	file << "public:" << std::endl;
+	file << std::endl;
+
+	file << "\t//The task." << std::endl;
+	file << "\tTask _Task;" << std::endl;
+	file << std::endl;
+
+	file << "\tunion" << std::endl;
+	file << "\t{" << std::endl;
+
+	file << "\t\tstruct" << std::endl;
+	file << "\t\t{" << std::endl;
+
+	file << "\t\t\t//The start instance index." << std::endl;
+	file << "\t\t\tuint64 _StartInstanceIndex;" << std::endl;
+	file << std::endl;
+
+	file << "\t\t\t//The end instance index." << std::endl;
+	file << "\t\t\tuint64 _EndInstanceIndex;" << std::endl;
+
+	file << "\t\t};" << std::endl;
+
+	file << "\t\tstruct" << std::endl;
+	file << "\t\t{" << std::endl;
+
+	file << "\t\t\t//The instance index." << std::endl;
+	file << "\t\t\tuint64 _InstanceIndex;" << std::endl;
+	file << std::endl;
+
+	file << "\t\t\t//The sub instance index." << std::endl;
+	file << "\t\t\tuint64 _SubInstanceIndex;" << std::endl;
+
+	file << "\t\t};" << std::endl;
+
+	file << "\t};" << std::endl;
+
+	file << "};" << std::endl;
+	file << std::endl;
+
+	//Add the parallel updates container.
+	file << "//Container for all parallel updates." << std::endl;
+	file << "DynamicArray<ParallelUpdate> PARALLEL_UPDATES;" << std::endl;
+	file << std::endl;
 
 	//Try to satisfy befores/afters for all updates.
 	const auto BEFORE_AFTER_SORT
@@ -970,7 +992,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	{
 		file << "\t\tcase " << i << ":" << std::endl;
 		file << "\t\t{" << std::endl;
-		file << "\t\t\treturn " << component_data[i]._Name.c_str() << "::Instance.Get();" << std::endl;
+		file << "\t\t\treturn " << component_data[i]._Name.c_str() << "::Instance;" << std::endl;
 		file << "\t\t}" << std::endl;
 	}
 
@@ -988,6 +1010,36 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	//Set up the "Components::Initialize()" function.
 	file << "void Components::Initialize() NOEXCEPT" << std::endl;
 	file << "{" << std::endl;
+
+	file << "\t{" << std::endl;
+
+	file << "\t\tconstexpr uint64 COMPONENTS_SIZE" << std::endl;
+	file << "\t\t{" << std::endl;
+	
+	for (uint64 i{ 0 }; i < component_data.size(); ++i)
+	{
+		file << "\t\t\t";
+
+		if (i > 0)
+		{
+			file << "+ ";
+		}
+
+		file << "sizeof(" << component_data[i]._Name.c_str() << ")" << std::endl;
+	}
+
+	file << "\t\t};" << std::endl;
+
+	file << "\t\tCOMPONENTS_MEMORY = Memory::Allocate(COMPONENTS_SIZE);" << std::endl;
+	file << "\t\tbyte *RESTRICT cursor{ static_cast<byte *RESTRICT>(COMPONENTS_MEMORY) };" << std::endl;
+
+	for (uint64 i{ 0 }; i < component_data.size(); ++i)
+	{
+		file << "\t\t" << component_data[i]._Name.c_str() << "::Instance = new (cursor) " << component_data[i]._Name.c_str() << "();" << std::endl;
+		file << "\t\tcursor += sizeof(" << component_data[i]._Name.c_str() << ");" << std::endl;
+	}
+
+	file << "\t}" << std::endl;
 
 	for (uint64 i{ 0 }; i < component_data.size(); ++i)
 	{
@@ -1185,6 +1237,13 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "\t" << component_data[i]._Name.c_str() << "::Instance->Terminate();" << std::endl;
 		}
 	}
+
+	for (uint64 i{ 0 }; i < component_data.size(); ++i)
+	{
+		file << "\t" << component_data[i]._Name.c_str() << "::Instance->~" << component_data[i]._Name.c_str() << "();" << std::endl;
+	}
+
+	file << "\tMemory::Free(COMPONENTS_MEMORY);" << std::endl;
 
 	file << "}";
 }

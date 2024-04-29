@@ -8,9 +8,6 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(VirtualRealityVisualizationRenderPass);
-
 /*
 *	Default constructor.
 */

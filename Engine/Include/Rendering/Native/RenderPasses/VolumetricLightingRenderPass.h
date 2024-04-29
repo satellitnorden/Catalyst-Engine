@@ -10,13 +10,19 @@
 #include <Rendering/Native/Pipelines/Core/RayTracingRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) VolumetricLightingRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class VolumetricLightingRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(VolumetricLightingRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		VolumetricLightingRenderPass
+	);
 
 	/*
 	*	Default constructor.

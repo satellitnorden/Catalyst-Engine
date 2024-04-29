@@ -7,17 +7,23 @@
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //Forward declarations.
 class AnimatedModelInstanceData;
 class Bone;
 
-class ALIGN(8) AnimationSystem final
+class AnimationSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(AnimationSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		AnimationSystem
+	);
 
 	/*
 	*	Default constructor.

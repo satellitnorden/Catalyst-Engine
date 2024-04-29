@@ -11,13 +11,19 @@
 #include <Save/SaveCore.h>
 #include <Save/SaveEntry.h>
 
-class ALIGN(8) SaveSystem final
+//Systems.
+#include <Systems/System.h>
+
+class SaveSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(SaveSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		SaveSystem
+	);
 
 	/*
 	*	Default constructor.

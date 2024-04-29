@@ -16,9 +16,6 @@
 #include <ThirdParty/ImGuizmo/ImGuizmo.h>
 #endif
 
-//Singleton definition.
-DEFINE_SINGLETON(ImGuiSystem);
-
 /*
 *	Initializes the ImGui system.
 */

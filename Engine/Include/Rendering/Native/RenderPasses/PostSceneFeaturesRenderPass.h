@@ -9,7 +9,10 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/DepthDownsampleGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) PostSceneFeaturesRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class PostSceneFeaturesRenderPass final : public RenderPass
 {
 	
 public:
@@ -17,8 +20,11 @@ public:
 	//Constants.
 	constexpr static uint64 DEPTH_MIP_CHAIN_DEPTH{ 8 };
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(PostSceneFeaturesRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		PostSceneFeaturesRenderPass
+	);
 
 	/*
 	*	Default constructor.

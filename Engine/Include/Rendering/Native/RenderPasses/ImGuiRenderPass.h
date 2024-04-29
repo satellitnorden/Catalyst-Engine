@@ -8,13 +8,20 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/ImGuiGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
+//Systems.
+#include <Systems/System.h>
+
 class ImGuiRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(ImGuiRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		ImGuiRenderPass,
+		NOT_DEFINED_REQUIREMENT(CATALYST_CONFIGURATION_FINAL)
+	);
 
 	/*
 	*	Default constructor.

@@ -13,9 +13,6 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(WorldSystem);
-
 /*
 *	Initializes the world system.
 */

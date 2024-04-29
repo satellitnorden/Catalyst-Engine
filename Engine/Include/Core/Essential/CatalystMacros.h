@@ -42,16 +42,6 @@
 #define CLEAR_BIT(BIT_FIELD, BIT) (BIT_FIELD = BIT_FIELD & ~(BIT))
 
 /*
-*	Declares a singleton class. Must be done inside the class in the header file.
-*/
-#define DECLARE_SINGLETON(CLASS) public: static DestructorPointer<CLASS> Instance; CLASS(const CLASS &other) = delete; CLASS(CLASS &&other) = delete;
-
-/*
-*	Defines a singleton class. Must be done in the source file.
-*/
-#define DEFINE_SINGLETON(CLASS) DestructorPointer<CLASS> CLASS::Instance{ new (Memory::GlobalLinearAllocator()->Allocate(sizeof(CLASS))) CLASS() }; static_assert(sizeof(CLASS) % 8 == 0, "Singleton classes needs to be 8-byte aligned!");
-
-/*
 *	Defines bit operations for an enumeration. Must be placed in the global namespace.
 */
 #define ENUMERATION_BIT_OPERATIONS(ENUMERATION)																				\

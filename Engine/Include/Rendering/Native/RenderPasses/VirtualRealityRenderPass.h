@@ -7,13 +7,19 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/VirtualRealityGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) VirtualRealityRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class VirtualRealityRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(VirtualRealityRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		VirtualRealityRenderPass
+	);
 
 	/*
 	*	Default constructor.

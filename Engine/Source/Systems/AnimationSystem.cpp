@@ -14,9 +14,6 @@
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(AnimationSystem);
-
 /*
 *	Post initializes the animation system.
 */

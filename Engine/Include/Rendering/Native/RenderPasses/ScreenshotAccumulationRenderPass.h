@@ -7,13 +7,19 @@
 #include <Rendering/Native/Pipelines/Core/ComputeRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) ScreenshotAccumulationRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class ScreenshotAccumulationRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(ScreenshotAccumulationRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		ScreenshotAccumulationRenderPass
+	);
 
 	/*
 	*	Default constructor.

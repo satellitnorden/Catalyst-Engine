@@ -13,19 +13,26 @@
 #include <Editor/EditorRenderingSystem.h>
 #include <Editor/EditorSelectionSystem.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //Third party.
 #include <ThirdParty/ImGui/imgui.h>
 
 //Type aliases.
 using TopBarMenuCallback = void(*)();
 
-class ALIGN(8) CatalystEditorSystem final
+class CatalystEditorSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(CatalystEditorSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		CatalystEditorSystem,
+		DEFINED_REQUIREMENT(CATALYST_EDITOR)
+	);
 
 	/*
 	*	Default constructor.

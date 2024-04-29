@@ -8,9 +8,6 @@
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(ComponentSystem);
-
 /*
 *	Initializes the component system.
 */

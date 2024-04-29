@@ -11,13 +11,19 @@
 #include <Concurrency/Task.h>
 #include <Concurrency/Thread.h>
 
-class ALIGN(8) TaskSystem final
+//Systems.
+#include <Systems/System.h>
+
+class TaskSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(TaskSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		TaskSystem
+	);
 
 	/*
 	*	Default constructor.

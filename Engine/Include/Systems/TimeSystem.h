@@ -3,13 +3,19 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-class ALIGN(8) TimeSystem final
+//Systems.
+#include <Systems/System.h>
+
+class TimeSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(TimeSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		TimeSystem
+	);
 
 	/*
 	*	Default constructor.

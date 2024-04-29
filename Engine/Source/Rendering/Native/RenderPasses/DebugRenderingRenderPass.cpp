@@ -11,9 +11,6 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Singleton definition.
-DEFINE_SINGLETON(DebugRenderingRenderPass);
-
 /*
 *	Default constructor.
 */

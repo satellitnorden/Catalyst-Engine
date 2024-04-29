@@ -32,13 +32,17 @@ public:
 
 };
 
-DECLARE_COMPONENT
-(
-	ScriptComponent,
-	ScriptInitializationData,
-	ScriptInstanceData,
-	COMPONENT_INITIALIZE()
-	COMPONENT_SERIAL_UPDATE(UpdatePhase::GAMEPLAY, After(FirstPersonPlayerComponent))
+class ScriptComponent final : public Component
+{
+
+	//Component declaration.
+	CATALYST_COMPONENT
+	(
+		Script,
+		COMPONENT_INITIALIZE()
+		COMPONENT_SERIAL_UPDATE(UpdatePhase::GAMEPLAY, After(FirstPersonPlayerComponent))
+	);
+
 public:
 
 	/*
@@ -51,7 +55,7 @@ public:
 	*	Callback for before an editable field change happens.
 	*/
 	void PreEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
-	
+
 	/*
 	*	Callback for after an editable field change happens.
 	*/
@@ -62,4 +66,4 @@ public:
 	*/
 	void Event(Entity *const RESTRICT entity, const HashString event) NOEXCEPT;
 
-);
+};

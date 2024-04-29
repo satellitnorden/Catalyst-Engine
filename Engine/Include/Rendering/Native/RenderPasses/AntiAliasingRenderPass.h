@@ -9,13 +9,19 @@
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 
-class ALIGN(8) AntiAliasingRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class AntiAliasingRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(AntiAliasingRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		AntiAliasingRenderPass
+	);
 
 	/*
 	*	Default constructor.

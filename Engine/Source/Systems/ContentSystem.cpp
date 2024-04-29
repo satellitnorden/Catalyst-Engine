@@ -38,25 +38,22 @@
 #define GAME_ASSETS "..\\..\\..\\Content\\Assets"
 #define GAME_COMPILED "..\\..\\..\\Content\\Compiled"
 
-//Singleton definition.
-DEFINE_SINGLETON(ContentSystem);
-
 /*
 *	Initializes the content system.
 */
 void ContentSystem::Initialize() NOEXCEPT
 {
 	//Register the native asset compilers
-	RegisterAssetCompiler(AnimatedModelAssetCompiler::Instance.Get());
-	RegisterAssetCompiler(EntityAssetCompiler::Instance.Get());
-	RegisterAssetCompiler(FontAssetCompiler::Instance.Get());
-	RegisterAssetCompiler(ImpostorMaterialAssetCompiler::Instance.Get());
-	RegisterAssetCompiler(LevelAssetCompiler::Instance.Get());
-	RegisterAssetCompiler(MaterialAssetCompiler::Instance.Get());
-	RegisterAssetCompiler(ModelAssetCompiler::Instance.Get());
-	RegisterAssetCompiler(SettingsAssetCompiler::Instance.Get());
-	RegisterAssetCompiler(Texture2DAssetCompiler::Instance.Get());
-	RegisterAssetCompiler(TextureCubeAssetCompiler::Instance.Get());
+	RegisterAssetCompiler(AnimatedModelAssetCompiler::Instance);
+	RegisterAssetCompiler(EntityAssetCompiler::Instance);
+	RegisterAssetCompiler(FontAssetCompiler::Instance);
+	RegisterAssetCompiler(ImpostorMaterialAssetCompiler::Instance);
+	RegisterAssetCompiler(LevelAssetCompiler::Instance);
+	RegisterAssetCompiler(MaterialAssetCompiler::Instance);
+	RegisterAssetCompiler(ModelAssetCompiler::Instance);
+	RegisterAssetCompiler(SettingsAssetCompiler::Instance);
+	RegisterAssetCompiler(Texture2DAssetCompiler::Instance);
+	RegisterAssetCompiler(TextureCubeAssetCompiler::Instance);
 }
 
 /*

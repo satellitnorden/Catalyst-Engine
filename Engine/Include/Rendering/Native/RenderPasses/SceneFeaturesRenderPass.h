@@ -9,13 +9,19 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/AnimatedModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) SceneFeaturesRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class SceneFeaturesRenderPass final : public RenderPass
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(SceneFeaturesRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		SceneFeaturesRenderPass
+	);
 
 	/*
 	*	Default constructor.

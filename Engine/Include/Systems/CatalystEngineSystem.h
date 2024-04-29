@@ -10,13 +10,19 @@
 //Concurrency.
 #include <Concurrency/Task.h>
 
-class ALIGN(8) CatalystEngineSystem final
+//Systems.
+#include <Systems/System.h>
+
+class CatalystEngineSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(CatalystEngineSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		CatalystEngineSystem
+	);
 
 	//Type aliases.
 	using UpdateFunction = void(*)(void *const RESTRICT arguments);

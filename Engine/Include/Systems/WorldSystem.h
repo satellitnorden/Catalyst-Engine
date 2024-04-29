@@ -5,6 +5,9 @@
 #include <Core/General/CatalystProjectConfiguration.h>
 #include <Core/General/Padding.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //World.
 #include <World/Core/EnvironmentSystem.h>
 #include <World/Core/SkySystem.h>
@@ -15,13 +18,16 @@
 //Forward declarations.
 class LevelResource;
 
-class ALIGN(8) WorldSystem final
+class WorldSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(WorldSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		WorldSystem
+	);
 
 	/*
 	*	Default constructor.

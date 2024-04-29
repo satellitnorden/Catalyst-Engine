@@ -12,13 +12,19 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Assets/TextureCubeAsset.h>
 
-class ALIGN(8) TextureCubeAssetCompiler final : public AssetCompiler
+//Systems.
+#include <Systems/System.h>
+
+class TextureCubeAssetCompiler final : public AssetCompiler
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(TextureCubeAssetCompiler);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		TextureCubeAssetCompiler
+	);
 
 	/*
 	*	Default constructor.

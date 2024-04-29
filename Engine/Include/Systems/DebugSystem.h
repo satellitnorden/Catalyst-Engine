@@ -6,6 +6,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //Type aliases.
 using DebugCommandFunction = void(*)(class DebugCommand *const RESTRICT command, void *const RESTRICT user_data);
 
@@ -65,13 +68,17 @@ public:
 
 };
 
-class ALIGN(8) DebugSystem final
+class DebugSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(DebugSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		DebugSystem,
+		NOT_DEFINED_REQUIREMENT(CATALYST_CONFIGURATION_FINAL)
+	);
 
 	/*
 	*	Default constructor.

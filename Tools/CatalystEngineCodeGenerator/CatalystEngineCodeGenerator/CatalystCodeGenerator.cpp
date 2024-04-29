@@ -17,4 +17,7 @@ void CatalystCodeGenerator::Run(int32 command_line_argument_count, char *command
 
 	//Run the enumeration generator.
 	_EnumerationGenerator.Run();
+
+	//Run the system generator.
+	_SystemGenerator.Run();
 }

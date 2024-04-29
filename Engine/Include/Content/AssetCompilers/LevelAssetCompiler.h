@@ -9,13 +9,19 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Assets/LevelAsset.h>
 
-class ALIGN(8) LevelAssetCompiler final : public AssetCompiler
+//Systems.
+#include <Systems/System.h>
+
+class LevelAssetCompiler final : public AssetCompiler
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(LevelAssetCompiler);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		LevelAssetCompiler
+	);
 
 	/*
 	*	Default constructor.

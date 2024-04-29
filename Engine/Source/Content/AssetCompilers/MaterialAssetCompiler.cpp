@@ -22,9 +22,6 @@
 #include <fstream>
 #include <string>
 
-//Singleton definition.
-DEFINE_SINGLETON(MaterialAssetCompiler);
-
 /*
 *	Material parameters class definition.
 */

@@ -8,10 +8,13 @@
 //Math.
 #include <Math/General/Vector.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //Type aliases.
 using WindowCallback = bool(*)(const Vector2<float32> minimum, const Vector2<float32> maximum);
 
-class ALIGN(8) ImGuiSystem final
+class ImGuiSystem final
 {
 
 public:
@@ -70,8 +73,12 @@ public:
 
 	};
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(ImGuiSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		ImGuiSystem,
+		NOT_DEFINED_REQUIREMENT(CATALYST_CONFIGURATION_FINAL)
+	);
 
 	/*
 	*	Default constructor.

@@ -11,13 +11,19 @@
 #include <Memory/FrameAllocator.h>
 #include <Memory/PoolAllocator.h>
 
-class ALIGN(8) MemorySystem final
+//Systems.
+#include <Systems/System.h>
+
+class MemorySystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(MemorySystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		MemorySystem
+	);
 
 	/*
 	*	Default constructor.

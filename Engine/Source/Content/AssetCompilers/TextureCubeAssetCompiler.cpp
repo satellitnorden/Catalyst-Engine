@@ -25,9 +25,6 @@
 #include <fstream>
 #include <string>
 
-//Singleton definition.
-DEFINE_SINGLETON(TextureCubeAssetCompiler);
-
 /*
 *	Samples the given HDR texture in the given direction.
 */

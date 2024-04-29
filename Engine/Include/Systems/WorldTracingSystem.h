@@ -18,13 +18,19 @@
 #include <Rendering/Native/SurfaceDescription.h>
 #include <Rendering/Native/Vertex.h>
 
-class ALIGN(8) WorldTracingSystem final
+//Systems.
+#include <Systems/System.h>
+
+class WorldTracingSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(WorldTracingSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		WorldTracingSystem
+	);
 
 	/*
 	*	Default constructor.

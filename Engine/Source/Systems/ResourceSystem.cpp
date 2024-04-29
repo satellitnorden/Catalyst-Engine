@@ -11,9 +11,6 @@
 //STL.
 #include <filesystem>
 
-//Singleton definition.
-DEFINE_SINGLETON(ResourceSystem);
-
 /*
 *	Terminates the resource system.
 */

@@ -92,10 +92,12 @@ public:
 
 };
 
-DECLARE_COMPONENT
-(
-	GrassComponent,
-	GrassInitializationData,
-	GrassInstanceData,
-	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
-);
+class GrassComponent final : public Component
+{
+	//Component declaration.
+	CATALYST_COMPONENT
+	(
+		Grass,
+		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
+	);
+};

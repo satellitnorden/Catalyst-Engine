@@ -9,13 +9,19 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Assets/EntityAsset.h>
 
-class ALIGN(8) EntityAssetCompiler final : public AssetCompiler
+//Systems.
+#include <Systems/System.h>
+
+class EntityAssetCompiler final : public AssetCompiler
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(EntityAssetCompiler);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		EntityAssetCompiler
+	);
 
 	/*
 	*	Default constructor.

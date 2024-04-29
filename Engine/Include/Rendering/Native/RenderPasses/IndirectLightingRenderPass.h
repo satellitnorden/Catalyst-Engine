@@ -13,13 +13,19 @@
 #include <Rendering/Native/Pipelines/RayTracingPipelines/RayTracedIndirectLightingRayTracingPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
-class ALIGN(8) IndirectLightingRenderPass final : public RenderPass
+//Systems.
+#include <Systems/System.h>
+
+class IndirectLightingRenderPass final : public RenderPass
 {
 	
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(IndirectLightingRenderPass);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		IndirectLightingRenderPass
+	);
 
 	//Denotes the size of the previous scene mip chain.
 	constexpr static uint64 PREVIOUS_SCENE_MIP_CHAIN_SIZE{ 8 };

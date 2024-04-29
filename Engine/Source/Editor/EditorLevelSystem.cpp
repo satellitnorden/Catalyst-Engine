@@ -1217,7 +1217,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					TransformWidgetFloat
 					(
 						"Position",
-						WorldTransformComponent::Instance.Get(),
+						WorldTransformComponent::Instance,
 						selected_entity,
 						editable_field,
 						&position._X,
@@ -1251,7 +1251,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					TransformWidgetFloat
 					(
 						"Rotation",
-						WorldTransformComponent::Instance.Get(),
+						WorldTransformComponent::Instance,
 						selected_entity,
 						editable_field,
 						&rotation._Roll,
@@ -1286,7 +1286,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					TransformWidgetFloat
 					(
 						"Scale",
-						WorldTransformComponent::Instance.Get(),
+						WorldTransformComponent::Instance,
 						selected_entity,
 						editable_field,
 						&scale._X,
@@ -1415,7 +1415,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 			Component *const RESTRICT component{ Components::At(component_index) };
 
 			//Ignore editor data and world transform components, as they are always implicitly added.
-			if (component == WorldTransformComponent::Instance.Get())
+			if (component == WorldTransformComponent::Instance)
 			{
 				continue;
 			}

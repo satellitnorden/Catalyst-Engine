@@ -72,13 +72,16 @@ public:
 
 };
 
-DECLARE_COMPONENT
-(
-	StaticModelComponent,
-	StaticModelInitializationData,
-	StaticModelInstanceData,
-	COMPONENT_INITIALIZE()
-	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
+class StaticModelComponent final : public Component
+{
+
+	//Component declaration.
+	CATALYST_COMPONENT
+	(
+		StaticModel,
+		COMPONENT_INITIALIZE()
+		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
+	);
 
 public:
 
@@ -103,4 +106,4 @@ public:
 	*/
 	void PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
 
-);
+};

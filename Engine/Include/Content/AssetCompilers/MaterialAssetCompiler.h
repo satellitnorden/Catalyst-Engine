@@ -12,13 +12,19 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Assets/MaterialAsset.h>
 
-class ALIGN(8) MaterialAssetCompiler final : public AssetCompiler
+//Systems.
+#include <Systems/System.h>
+
+class MaterialAssetCompiler final : public AssetCompiler
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(MaterialAssetCompiler);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		MaterialAssetCompiler
+	);
 
 	/*
 	*	Default constructor.

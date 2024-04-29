@@ -103,13 +103,16 @@ public:
 
 };
 
-DECLARE_COMPONENT
-(
-	WaterComponent,
-	WaterInitializationData,
-	WaterInstanceData,
-	COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 1)
-	
+class WaterComponent final : public Component
+{
+
+	//Component declaration.
+	CATALYST_COMPONENT
+	(
+		Water,
+		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 1)
+	);
+
 public:
 
 	/*
@@ -122,4 +125,4 @@ public:
 	*/
 	void PreProcess(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
 
-);
+};

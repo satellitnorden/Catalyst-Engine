@@ -11,18 +11,24 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Core/AssetPointer.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //Forward declarations.
 class BinaryInputFile;
 class BinaryOutputFile;
 class ContentCache;
 
-class ALIGN(8) ContentSystem final
+class ContentSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(ContentSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		ContentSystem
+	);
 
 	/*
 	*	Default constructor.

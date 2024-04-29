@@ -7,16 +7,22 @@
 //Concurrency.
 #include <Concurrency/Task.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //Forward declarations.
 class Component;
 
-class ALIGN(8) ComponentSystem final
+class ComponentSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(ComponentSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		ComponentSystem
+	);
 
 	/*
 	*	Default constructor.

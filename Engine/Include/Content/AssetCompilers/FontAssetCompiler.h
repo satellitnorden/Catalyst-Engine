@@ -9,13 +9,19 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Assets/FontAsset.h>
 
-class ALIGN(8) FontAssetCompiler final : public AssetCompiler
+//Systems.
+#include <Systems/System.h>
+
+class FontAssetCompiler final : public AssetCompiler
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(FontAssetCompiler);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		FontAssetCompiler
+	);
 
 	/*
 	*	Default constructor.

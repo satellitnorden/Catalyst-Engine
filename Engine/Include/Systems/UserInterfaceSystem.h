@@ -7,19 +7,25 @@
 //Concurrency.
 #include <Concurrency/AtomicQueue.h>
 
+//Systems.
+#include <Systems/System.h>
+
 //User interface.
 #include <UserInterface/UserInterfacePrimitive.h>
 #include <UserInterface/UserInterfacePrimitiveDescription.h>
 #include <UserInterface/UserInterfaceScene.h>
 #include <UserInterface/UserInterfaceSceneFactory.h>
 
-class ALIGN(8) UserInterfaceSystem final
+class UserInterfaceSystem final
 {
 
 public:
 
-	//Singleton declaration.
-	DECLARE_SINGLETON(UserInterfaceSystem);
+	//System declaration.
+	CATALYST_SYSTEM
+	(
+		UserInterfaceSystem
+	);
 
 	/*
 	*	Default constructor.
