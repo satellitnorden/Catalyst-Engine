@@ -175,8 +175,35 @@ void LevelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 	//Cache the entities JSON object.
 	const nlohmann::json &entities{ JSON["Entities"] };
 
-	//Retrieve the number of entities.
-	const uint64 number_of_entities{ entities.size() };
+	//Count the number of entities.
+	uint64 number_of_entities{ 0 };
+
+	for (auto entity_iterator{ entities.begin() }; entity_iterator != entities.end(); ++entity_iterator)
+	{
+		//Cache the entity entry.
+		const nlohmann::json &entity_entry{ *entity_iterator };
+
+		//Figure out if this entity should be serialized.
+		bool serialize{ true };
+
+		if (entity_entry.contains("EditorData"))
+		{
+			const nlohmann::json &editor_data_entry{ entity_entry["EditorData"] };
+
+			if (editor_data_entry.contains("Serialize"))
+			{
+				serialize = editor_data_entry["Serialize"];
+			}
+		}
+
+		if (serialize)
+		{
+			++number_of_entities;
+		}
+	}
+
+
+	//Write the number of entities.
 	stream_archive.Write(&number_of_entities, sizeof(uint64));
 
 	//Write all the entries!
@@ -184,6 +211,24 @@ void LevelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 	{
 		//Cache the entity entry.
 		const nlohmann::json &entity_entry{ *entity_iterator };
+
+		//Figure out if this entity should be serialized.
+		bool serialize{ true };
+
+		if (entity_entry.contains("EditorData"))
+		{
+			const nlohmann::json &editor_data_entry{ entity_entry["EditorData"] };
+
+			if (editor_data_entry.contains("Serialize"))
+			{
+				serialize = editor_data_entry["Serialize"];
+			}
+		}
+
+		if (!serialize)
+		{
+			continue;
+		}
 
 		//Write the identifier.
 		const uint64 identifier{ entity_entry["Identifier"] };

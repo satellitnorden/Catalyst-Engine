@@ -7,11 +7,9 @@
 //Editor.
 #include <Editor/EditorCore.h>
 #include <Editor/EditorCameraSystem.h>
+#include <Editor/EditorContentSystem.h>
 #include <Editor/EditorContentBrowser.h>
 #include <Editor/EditorLevelSystem.h>
-#include <Editor/EditorPostProcessingSystem.h>
-#include <Editor/EditorRenderingSystem.h>
-#include <Editor/EditorSelectionSystem.h>
 
 //Systems.
 #include <Systems/System.h>
@@ -69,6 +67,14 @@ public:
 	}
 
 	/*
+	*	Returns the editor content system.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD EditorContentSystem *const RESTRICT GetEditorContentSystem() NOEXCEPT
+	{
+		return &_EditorContentSystem;
+	}
+
+	/*
 	*	Returns the editor content browser.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD EditorContentBrowser *const RESTRICT GetEditorContentBrowser() NOEXCEPT
@@ -82,22 +88,6 @@ public:
 	FORCE_INLINE RESTRICTED NO_DISCARD EditorLevelSystem *const RESTRICT GetEditorLevelSystem() NOEXCEPT
 	{
 		return &_EditorLevelSystem;
-	}
-
-	/*
-	*	Returns the editor post-processing system.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD EditorPostProcessingSystem *const RESTRICT GetEditorPostProcessingSystem() NOEXCEPT
-	{
-		return &_EditorPostProcessingSystem;
-	}
-
-	/*
-	*	Returns the editor selection system.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD EditorSelectionSystem *const RESTRICT GetEditorSelectionSystem() NOEXCEPT
-	{
-		return &_EditorSelectionSystem;
 	}
 
 	/*
@@ -116,20 +106,14 @@ private:
 	//The editor camera system.
 	EditorCameraSystem _EditorCameraSystem;
 
+	//The editor content system.
+	EditorContentSystem _EditorContentSystem;
+
 	//The editor content browser.
 	EditorContentBrowser _EditorContentBrowser;
 
 	//The editor level system.
 	EditorLevelSystem _EditorLevelSystem;
-
-	//The editor post-processing system.
-	EditorPostProcessingSystem _EditorPostProcessingSystem;
-
-	//The editor rendering system.
-	EditorRenderingSystem _EditorRenderingSystem;
-
-	//The editor selection system.
-	EditorSelectionSystem _EditorSelectionSystem;
 
 	//The editor icons.
 	StaticArray<ImTextureID, UNDERLYING(EditorIcon::NUMBER_OF_EDITOR_ICONS)> _EditorIcons;

@@ -53,14 +53,6 @@ public:
 	}
 
 	/*
-	*	Sets default values for initialization data.
-	*/
-	FORCE_INLINE virtual void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
-	{
-
-	}
-
-	/*
 	*	Creates an instance.
 	*/
 	virtual void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
@@ -331,6 +323,11 @@ public:
 	static NO_DISCARD ComponentInitializationData *const RESTRICT AllocateInitializationData(Component *const RESTRICT component) NOEXCEPT;
 
 	/*
+	*	Defaults initialization data for the given component.
+	*/
+	static void DefaultInitializationData(Component *const RESTRICT component, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT;
+
+	/*
 	*	Frees initialization data for the given component.
 	*/
 	static void FreeInitializationData(Component *const RESTRICT component, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT;
@@ -370,6 +367,13 @@ public:								\
 #define COMPONENT_POST_INITIALIZE()	\
 public:								\
 	void PostInitialize() NOEXCEPT;
+
+/*
+*	Put this in your component declaration and implement it to receive a "DefaultInitializationData()" call.
+*/
+#define COMPONENT_DEFAULT_INITIALIZATION_DATA(INITIALIZATION_DATA_CLASS)									\
+public:																										\
+	void DefaultInitializationData(INITIALIZATION_DATA_CLASS *const RESTRICT initialization_data) NOEXCEPT;
 
 /*
 *	Put this in your component declaration and implement it to receive a "PreProcess()" call.
@@ -439,8 +443,8 @@ public:																																		\
 	FORCE_INLINE X##InitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT												\
 	{																																		\
 		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																									\
-		X##InitializationData* const RESTRICT data{ new (POOL_ALLOCATOR.Allocate()) X##InitializationData() };								\
-		DefaultInitializationData(data);																									\
+		X##InitializationData *const RESTRICT data{ new (POOL_ALLOCATOR.Allocate()) X##InitializationData() };								\
+		Components::DefaultInitializationData(this, data);																									\
 		data->_Component = Instance;																										\
 		return data;																														\
 	}																																		\

@@ -353,19 +353,17 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 	}
 }
 
-void StaticModelComponent::DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void StaticModelComponent::DefaultInitializationData(StaticModelInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
-	StaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<StaticModelInitializationData* const RESTRICT>(initialization_data) };
-
-	_initialization_data->_Model = ContentSystem::Instance->GetAsset<ModelAsset>(HashString("Cube"));
+	initialization_data->_Model = ContentSystem::Instance->GetAsset<ModelAsset>(HashString("Cube"));
 
 	for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++i)
 	{
-		_initialization_data->_Materials[i] = ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"));
+		initialization_data->_Materials[i] = ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"));
 	}
 	
-	_initialization_data->_CollisionType = ModelCollisionType::NONE;
-	_initialization_data->_ModelSimulationConfiguration._SimulatePhysics = false;
+	initialization_data->_CollisionType = ModelCollisionType::NONE;
+	initialization_data->_ModelSimulationConfiguration._SimulatePhysics = false;
 }
 
 /*

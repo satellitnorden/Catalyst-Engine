@@ -32,10 +32,10 @@ void EditorContentBrowser::Request
 		_FilteredAssets.Emplace(asset);
 	}
 
-	//Register for the floating 1 editor window.
+	//Register for the floating editor window.
 	ImGuiSystem::Instance->RegisterEditorWindow
 	(
-		ImGuiSystem::EditorWindow::FLOATING_1,
+		ImGuiSystem::EditorWindow::FLOATING,
 		[](const Vector2<float32> minimum, const Vector2<float32> maximum)
 		{
 			return CatalystEditorSystem::Instance->GetEditorContentBrowser()->UpdateFloatingWindow(minimum, maximum);

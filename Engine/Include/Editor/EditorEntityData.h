@@ -49,6 +49,9 @@ public:
 	//The hash string data.
 	DynamicArray<HashStringData> _HashStringData;
 
+	//Denotes whether or not this entity should be serialized.
+	bool _Serialize{ true };
+
 };
 
 #endif

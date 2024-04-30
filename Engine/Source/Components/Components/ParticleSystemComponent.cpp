@@ -497,16 +497,14 @@ void ParticleSystemComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEP
 /*
 *	Sets default values for initialization data.
 */
-void ParticleSystemComponent::DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void ParticleSystemComponent::DefaultInitializationData(ParticleSystemInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
-	ParticleSystemInitializationData *const RESTRICT _initialization_data{ static_cast<ParticleSystemInitializationData *const RESTRICT>(initialization_data) };
-
-	_initialization_data->_Material = ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"));
-	_initialization_data->_Emitter._MinimumSize = Vector2<float32>(1.0f);
-	_initialization_data->_Emitter._MaximumSize = Vector2<float32>(1.0f);
-	_initialization_data->_Emitter._MinimumLifetime = 1.0f;
-	_initialization_data->_Emitter._MaximumLifetime = 1.0f;
-	_initialization_data->_Emitter._SpawnRate = 1;
+	initialization_data->_Material = ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"));
+	initialization_data->_Emitter._MinimumSize = Vector2<float32>(1.0f);
+	initialization_data->_Emitter._MaximumSize = Vector2<float32>(1.0f);
+	initialization_data->_Emitter._MinimumLifetime = 1.0f;
+	initialization_data->_Emitter._MaximumLifetime = 1.0f;
+	initialization_data->_Emitter._SpawnRate = 1;
 }
 
 /*

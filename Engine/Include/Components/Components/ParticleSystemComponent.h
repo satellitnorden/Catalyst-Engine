@@ -205,16 +205,10 @@ class ParticleSystemComponent final : public Component
 		ParticleSystem,
 		COMPONENT_INITIALIZE()
 		COMPONENT_POST_INITIALIZE()
+		COMPONENT_DEFAULT_INITIALIZATION_DATA(ParticleSystemInitializationData)
 		COMPONENT_PARALLEL_SUB_INSTANCE_UPDATE(UpdatePhase::PRE_RENDER)
 		COMPONENT_POST_UPDATE(UpdatePhase::PRE_RENDER)
 	);
-
-public:
-
-	/*
-	*	Sets default values for initialization data.
-	*/
-	void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
 
 	/*
 	*	Runs after all components have created their instance for the given entity.

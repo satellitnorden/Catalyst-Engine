@@ -7,11 +7,83 @@
 //File.
 #include <File/Core/File.h>
 
+//Systems.
+#include <Systems/LogSystem.h>
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Third party.
 #include <ThirdParty/assimp/assimp/Importer.hpp>
 #include <ThirdParty/assimp/assimp/postprocess.h>
 #include <ThirdParty/assimp/assimp/scene.h>
+
+/*
+*	Lists all of the meta data.
+*/
+FORCE_INLINE void ListMetaData(const aiMetadata *meta_data) NOEXCEPT
+{
+	for (uint32 i{ 0 }; i < meta_data->mNumProperties; ++i)
+	{
+		LOG_INFORMATION("Key %s:", meta_data->mKeys[i].C_Str());
+
+		switch (meta_data->mValues[i].mType)
+		{
+			case aiMetadataType::AI_BOOL:
+			{
+				LOG_INFORMATION("\t%s", *((bool*)meta_data->mValues[i].mData) ? "true" : "false");
+
+				break;
+			}
+
+			case aiMetadataType::AI_INT32:
+			{
+				LOG_INFORMATION("\t%i", *((int32*)meta_data->mValues[i].mData));
+
+				break;
+			}
+
+			case aiMetadataType::AI_UINT64:
+			{
+				LOG_INFORMATION("\t%llu", *((uint64*)meta_data->mValues[i].mData));
+
+				break;
+			}
+
+			case aiMetadataType::AI_FLOAT:
+			{
+				LOG_INFORMATION("\t%f", *((float32*)meta_data->mValues[i].mData));
+
+				break;
+			}
+
+			case aiMetadataType::AI_AISTRING:
+			{
+				const aiString &string{ *((aiString*)meta_data->mValues[i].mData) };
+
+				LOG_INFORMATION("\t%s", string.C_Str());
+
+				break;
+			}
+
+			case aiMetadataType::AI_AIVECTOR3D:
+			{
+				const aiVector3D &vector{ *((aiVector3D*)meta_data->mValues[i].mData) };
+
+				LOG_INFORMATION("\tX: %f", vector.x);
+				LOG_INFORMATION("\tY: %f", vector.y);
+				LOG_INFORMATION("\tZ: %f", vector.z);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
+}
 
 /*
 *	Processes a single mesh.
@@ -237,6 +309,12 @@ FORCE_INLINE void ProcessNode(const aiScene *const RESTRICT scene, const aiNode 
 */
 FORCE_INLINE void ProcessNode(const aiScene *const RESTRICT scene, const aiNode *const RESTRICT node, ModelFile *const RESTRICT model_file) NOEXCEPT
 {
+	//List the meta data.
+	if (node->mMetaData)
+	{
+		ListMetaData(node->mMetaData);
+	}
+
 	//Process all meshes.
 	for (uint32 i{ 0 }; i < node->mNumMeshes; ++i)
 	{
@@ -300,7 +378,6 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 	{
 		aiProcess_CalcTangentSpace
 		| aiProcess_JoinIdenticalVertices
-		//| aiProcess_MakeLeftHanded
 		| aiProcess_Triangulate
 		| aiProcess_ImproveCacheLocality
 	};
@@ -321,43 +398,42 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 		return false;
 	}
 
-#if 0
-	//List all of the meta data.
-	for (uint32 i{ 0 }; i < scene->mMetaData->mNumProperties; ++i)
-	{
-		PRINT_TO_OUTPUT("Key " << scene->mMetaData->mKeys[i].C_Str() << ":");
-
-		switch (scene->mMetaData->mValues[i].mType)
-		{
-			case aiMetadataType::AI_INT32:
-			{
-				PRINT_TO_OUTPUT("\t" << *((int32*)scene->mMetaData->mValues[i].mData));
-
-				break;
-			}
-
-			case aiMetadataType::AI_FLOAT:
-			{
-				PRINT_TO_OUTPUT("\t" << *((float32*)scene->mMetaData->mValues[i].mData));
-
-				break;
-			}
-
-			default:
-			{
-				//ASSERT(false, "Invalid case!");
-
-				break;
-			}
-		}
-	}
-#endif
+	//List the meta data.
+	ListMetaData(scene->mMetaData);
 
 	//Assume Blender, for now. :x
 	model_file->_Creator = ModelFile::Creator::BLENDER;
 
 	//Process the root node.
 	ProcessNode(scene, scene->mRootNode, model_file);
+
+	//If the source asset format is Autodesk something something, assume we're importing a Quixel model and apply the correct transformation...
+	for (uint32 i{ 0 }; i < scene->mMetaData->mNumProperties; ++i)
+	{
+		if (StringUtilities::Contains(scene->mMetaData->mKeys[i].C_Str(), "SourceAsset_Format")
+			&& StringUtilities::Contains(((const aiString* const RESTRICT)scene->mMetaData->mValues[i].mData)->C_Str(), "Autodesk FBX Importer"))
+		{
+			for (ModelFile::Mesh &mesh : model_file->_Meshes)
+			{
+				for (Vertex &vertex : mesh._Vertices)
+				{
+					//Apply rotation.
+					{
+						const EulerAngles rotation{ BaseMath::DegreesToRadians(90.0f), 0.0f, 0.0f };
+
+						vertex._Position.Rotate(rotation);
+						vertex._Normal.Rotate(rotation);
+						vertex._Tangent.Rotate(rotation);
+					}
+
+					//Apply scale.
+					vertex._Position *= 0.01f;
+				}
+			}
+
+			break;
+		}
+	}
 
 	//Post process the model file.
 	model_file->PostProcess();

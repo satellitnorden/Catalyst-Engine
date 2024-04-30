@@ -109,10 +109,8 @@ class LightComponent final : public Component
 	//Component declaration.
 	CATALYST_COMPONENT
 	(
-		Light
+		Light,
+		COMPONENT_DEFAULT_INITIALIZATION_DATA(LightInitializationData)
 	);
-
-public:
-	void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
 
 };

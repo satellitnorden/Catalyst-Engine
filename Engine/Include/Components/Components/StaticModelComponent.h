@@ -80,6 +80,7 @@ class StaticModelComponent final : public Component
 	(
 		StaticModel,
 		COMPONENT_INITIALIZE()
+		COMPONENT_DEFAULT_INITIALIZATION_DATA(StaticModelInitializationData)
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
 	);
 
@@ -90,11 +91,6 @@ public:
 	*	Useful if there is some setup needed involving multiple components.
 	*/
 	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;
-
-	/*
-	*	Sets default values for initialization data.
-	*/
-	void DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;
 
 	/*
 	*	Callback for before an editable field change happens.

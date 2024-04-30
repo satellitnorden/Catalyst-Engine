@@ -6,6 +6,37 @@ class StringUtilities
 public:
 
 	/*
+	*	Returns if string A contains string B.
+	*/
+	FORCE_INLINE static NO_DISCARD bool Contains(const char *const RESTRICT A, const char *const RESTRICT B) NOEXCEPT
+	{
+		const uint64 A_length{ StringLength(A) };
+		const uint64 B_length{ StringLength(B) };
+
+		uint64 count{ 0 };
+
+		for (uint64 i{ 0 }; i < A_length; ++i)
+		{
+			if (A[i] == B[count])
+			{
+				++count;
+
+				if (count == B_length)
+				{
+					return true;
+				}
+			}
+
+			else
+			{
+				count = 0;
+			}
+		}
+
+		return false;
+	}
+
+	/*
 	*	Returns the full name from a full file path.
 	*/
 	FORCE_INLINE RESTRICTED static constexpr NO_DISCARD const char *const RESTRICT GetFileNameFromFilePath(const char* const RESTRICT file_path) NOEXCEPT

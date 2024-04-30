@@ -498,12 +498,14 @@ void CatalystPlatform::PrintToOutput(const char *const RESTRICT format, ...) NOE
 		format_buffer[format_length] = '\0';
 	}
 
-	char buffer[4096];
-
 	va_list variadic_arguments{ nullptr };
 	va_start(variadic_arguments, format_buffer);
 
+	char buffer[4096];
+
 	vsprintf_s(buffer, format_buffer, variadic_arguments);
+
+	va_end(variadic_arguments);
 
 	const uint64 length{ strlen(buffer) };
 

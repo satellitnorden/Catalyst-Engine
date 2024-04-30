@@ -672,7 +672,7 @@ namespace EntitySerialization
 					//Apply rotation.
 					{
 						Quaternion local_rotation{ world_transform_component_configuration->_WorldTransform.GetRotation() };
-						local_rotation = local_rotation * world_transform->GetRotation();
+						local_rotation = world_transform->GetRotation() * local_rotation;
 						world_transform_component_configuration->_WorldTransform.SetRotation(local_rotation);
 					}
 

@@ -4,13 +4,11 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
-void LightComponent::DefaultInitializationData(ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void LightComponent::DefaultInitializationData(LightInitializationData *const RESTRICT initialization_data) NOEXCEPT
 {
-	LightInitializationData *const RESTRICT _initialization_data{ static_cast<LightInitializationData* const RESTRICT>(initialization_data) };
-
-	_initialization_data->_DirectionalLightData._Rotation = EulerAngles(1.0f, 0.0f, 0.0f);
-	_initialization_data->_Color = Vector3<float32>(1.0f, 1.0f, 1.0f);
-	_initialization_data->_Intensity = 1.0f;
+	initialization_data->_DirectionalLightData._Rotation = EulerAngles(1.0f, 0.0f, 0.0f);
+	initialization_data->_Color = Vector3<float32>(1.0f, 1.0f, 1.0f);
+	initialization_data->_Intensity = 1.0f;
 }
 
 /*

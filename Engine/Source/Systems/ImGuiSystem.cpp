@@ -82,9 +82,9 @@ void ImGuiSystem::Initialize() NOEXCEPT
 	_EditorWindowData[UNDERLYING(EditorWindow::BOTTOM_RIGHT)]._Maximum = Vector2<float32>(1.0f, 0.5f);
 	_EditorWindowData[UNDERLYING(EditorWindow::BOTTOM_RIGHT)]._WindowCallback = nullptr;
 
-	_EditorWindowData[UNDERLYING(EditorWindow::FLOATING_1)]._Minimum = Vector2<float32>(0.25f, 0.25f);
-	_EditorWindowData[UNDERLYING(EditorWindow::FLOATING_1)]._Maximum = Vector2<float32>(0.75f, 0.75f);
-	_EditorWindowData[UNDERLYING(EditorWindow::FLOATING_1)]._WindowCallback = nullptr;
+	_EditorWindowData[UNDERLYING(EditorWindow::FLOATING)]._Minimum = Vector2<float32>(0.25f, 0.25f);
+	_EditorWindowData[UNDERLYING(EditorWindow::FLOATING)]._Maximum = Vector2<float32>(0.75f, 0.75f);
+	_EditorWindowData[UNDERLYING(EditorWindow::FLOATING)]._WindowCallback = nullptr;
 
 	//Set up the game window data.
 	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._Minimum = Vector2<float32>(0.8f, 0.0f);

@@ -736,6 +736,9 @@ void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT
 			}
 		}
 
+		//Serialize whether or not this entity should be serialized.
+		editor_data_entry["Serialize"] = editor_entity_data._Serialize;
+
 		//Serialize the identifier.
 		entity_entry["Identifier"] = editor_entity_data._Identifier;
 
@@ -904,6 +907,17 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 				new_hash_string_data._ComponentIdentifier = _hash_string_data_entry["ComponentIdentifier"].get<uint64>();
 				new_hash_string_data._EditableFieldIdentifier = _hash_string_data_entry["EditableFieldIdentifier"].get<uint64>();
 			}
+		}
+
+		//Deserialize whether or not this entity should be serialized.
+		if (editor_data_entry.contains("Serialize"))
+		{
+			new_editor_entity_data._Serialize = editor_data_entry["Serialize"];
+		}
+
+		else
+		{
+			new_editor_entity_data._Serialize = true;
 		}
 
 		//Update the current entity identifier, since it's supposed to be a long chain of identifiers.
@@ -1111,6 +1125,9 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		{
 			should_duplicate = true;
 		}
+
+		//Add a checkbox for whether or not to serialize this entity.
+		ImGui::Checkbox("Serialize", &selected_editor_entity_data._Serialize);
 
 		//Add widgets for entity links.
 		if (ImGui::CollapsingHeader("Entity Links"))

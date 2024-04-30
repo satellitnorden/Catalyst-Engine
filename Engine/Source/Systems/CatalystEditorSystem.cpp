@@ -21,8 +21,8 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 	//Initialize the editor camera system.
 	_EditorCameraSystem.Initialize();
 
-	//Initialize the editor selection system.
-	_EditorSelectionSystem.Initialize();
+	//Initialize the editor content system.
+	_EditorContentSystem.Initialize();
 
 	//Register the update.
 	CatalystEngineSystem::Instance->RegisterUpdate
@@ -180,15 +180,6 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 
 	//Update the editor camera system.
 	_EditorCameraSystem.Update();
-
-	//Update the editor post-processing system.
-	_EditorPostProcessingSystem.Update();
-
-	//Update the editor rendering system.
-	_EditorRenderingSystem.Update();
-
-	//Update the editor selection system.
-	_EditorSelectionSystem.Update();
 }
 
 /*

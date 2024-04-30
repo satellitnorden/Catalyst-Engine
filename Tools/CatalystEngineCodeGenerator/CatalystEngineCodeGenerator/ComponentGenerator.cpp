@@ -58,6 +58,9 @@ public:
 	//Denotes whether or not this component wants a "Terminate()" call.
 	bool _Terminate;
 
+	//Denotes whether or not this component wants a "DefaultInitializationData()" call.
+	bool _DefaultInitializationData;
+
 	//Denotes whether or not this component wants a "PreProcess()" call.
 	bool _PreProcess;
 
@@ -261,6 +264,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 	component_entry["Initialize"] = false;
 	component_entry["PostInitialize"] = false;
 	component_entry["Terminate"] = false;
+	component_entry["DefaultInitializationData"] = false;
 	component_entry["PreProcess"] = false;
 
 	//Set up the arguments.
@@ -630,6 +634,18 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 			}
 		}
 
+		//Check if this component wants an "DefaultInitializationData()" call.
+		{
+			const size_t position{ current_line.find("COMPONENT_DEFAULT_INITIALIZATION_DATA(") };
+
+			if (position != std::string::npos)
+			{
+				component_entry["DefaultInitializationData"] = true;
+
+				continue;
+			}
+		}
+
 		//Check if this component wants a "PreProcess()" call.
 		{
 			const size_t position{ current_line.find("COMPONENT_PRE_PROCESS(") };
@@ -721,6 +737,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this component wants a "Terminate()" call.
 				new_component_data._Terminate = component_entry["Terminate"];
+
+				//Set whether or not this component wants a "DefaultInitializationData()" call.
+				new_component_data._DefaultInitializationData = component_entry["DefaultInitializationData"];
 
 				//Set whether or not this component wants a "PreProcess()" call.
 				new_component_data._PreProcess = component_entry["PreProcess"];
@@ -1116,6 +1135,34 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "\t\t\tASSERT(false, \"Unknown component!\");" << std::endl;
 	file << "\t\t\treturn nullptr;" << std::endl;
 	file << "\t\t}" << std::endl;
+
+	file << "\t}" << std::endl;
+
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::PreProcess()" function.
+	file << "void Components::DefaultInitializationData(Component *const RESTRICT component, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	file << "\tswitch(component->_Identifier)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (const ComponentData &_component_data : component_data)
+	{
+		if (!_component_data._DefaultInitializationData)
+		{
+			continue;
+		}
+
+		const uint64 component_identifier{ CatalystHash(_component_data._Name.data(), _component_data._Name.length()) };
+
+		file << "\t\tcase " << component_identifier << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\t" << _component_data._Name.c_str() << "::Instance->DefaultInitializationData(static_cast<" << _component_data._InitializationDataName.c_str() << " *const RESTRICT>(initialization_data));" << std::endl;
+		file << "\t\t\tbreak;" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
 
 	file << "\t}" << std::endl;
 

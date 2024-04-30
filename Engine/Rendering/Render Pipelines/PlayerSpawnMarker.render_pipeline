@@ -1,0 +1,86 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(Scene);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set the cull mode.
+CullMode(NONE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER);
+DepthTestEnable();
+DepthWriteEnable();
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(REPLACE);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(ALWAYS);
+StencilCompareMask(0);
+StencilWriteMask(1);
+StencilReferenceMask(1);
+
+//Set the topology.
+Topology(TRIANGLE_LIST);
+
+//Declare push constant data.
+PushConstantData(mat4, TRANSFORMATION);
+
+//Subscribe to input streams.
+SubscribeToInputStream(PlayerSpawnMarker);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec3, InPosition);
+    InputParameter(vec3, InNormal);
+    InputParameter(vec3, InTangent);
+    InputParameter(vec2, InTextureCoordinate);
+
+    //Declare output parameters.
+    OutputParameter(vec3, OutWorldPosition);
+    OutputParameter(vec3, OutNormal);
+
+    //Write data for the fragment shader.
+    OutWorldPosition = vec3(TRANSFORMATION * vec4(InPosition, 1.0f));
+    OutNormal = vec3(TRANSFORMATION * vec4(InNormal, 0.0f));
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Constants.
+    #define COLOR (vec3(1.0f, 0.0f, 1.0f) * 2.0f)
+
+    //Declare input parameters.
+    InputParameter(vec3, InWorldPosition);
+    InputParameter(vec3, InNormal);
+
+    //Calculate the view direction.
+    vec3 view_direction = normalize(CAMERA_WORLD_POSITION - InWorldPosition);
+
+    //Calculate the fresnel factor.
+    float fresnel_factor = pow(1.0f - max(dot(view_direction, InNormal), 0.0f), 2.0f);
+
+    //Output the fragments.
+    OutputFragment(Scene, vec4(mix(vec3(0.0f, 0.0f, 0.0f), COLOR, fresnel_factor), 1.0f));
+}
