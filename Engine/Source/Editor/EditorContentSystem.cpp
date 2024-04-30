@@ -133,6 +133,23 @@ NO_DISCARD bool EditorContentSystem::WindowCallback(const Vector2<float32> minim
 			ImGui::EndCombo();
 		}
 
+		//Add a selector for the base model.
+		ImGui::Text("Collision Model:");
+		ImGui::SameLine();
+
+		if (ImGui::BeginCombo("##COLLISION_MODEL_SELECTOR", _CreateModelState._CollisionModelFile ? _CreateModelState._CollisionModelFile.Data() : "None"))
+		{
+			for (const DynamicString &model_file : _CreateModelState._ModelFiles)
+			{
+				if (ImGui::Selectable(model_file.Data(), _CreateModelState._CollisionModelFile && _CreateModelState._CollisionModelFile == model_file))
+				{
+					_CreateModelState._CollisionModelFile = model_file;
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
 		//Add a selector for the albedo texture.
 		ImGui::Text("Albedo Texture:");
 		ImGui::SameLine();
@@ -365,6 +382,11 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 		std::ofstream file{ buffer };
 
 		file << "LevelOfDetail(" << _CreateModelState._BaseModelFile.Data() << ");" << std::endl;
+
+		if (_CreateModelState._CollisionModelFile)
+		{
+			file << "Collision(" << _CreateModelState._CollisionModelFile.Data() << ");" << std::endl;
+		}
 
 		file.close();
 	}
