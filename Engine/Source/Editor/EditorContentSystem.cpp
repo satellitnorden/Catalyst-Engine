@@ -116,21 +116,51 @@ NO_DISCARD bool EditorContentSystem::WindowCallback(const Vector2<float32> minim
 	//Add selectors.
 	if (_CreateModelState._InputFolder)
 	{
-		//Add a selector for the base model.
-		ImGui::Text("Base Model:");
-		ImGui::SameLine();
-
-		if (ImGui::BeginCombo("##BASE_MODEL_SELECTOR", _CreateModelState._BaseModelFile ? _CreateModelState._BaseModelFile.Data() : "None"))
+		//Add a selectors for the level of detail models.
+		if (ImGui::Button("Add Level Of Detail"))
 		{
-			for (const DynamicString &model_file : _CreateModelState._ModelFiles)
+			_CreateModelState._LevelOfDetailModelFiles.Emplace();
+		}
+
+		for (uint64 i{ 0 }; i < _CreateModelState._LevelOfDetailModelFiles.Size();)
+		{
+			char text_buffer[32];
+			sprintf_s(text_buffer, "Level Of Detail %llu:", i + 1);
+
+			ImGui::Text(text_buffer);
+			ImGui::SameLine();
+
+			char id_buffer[32];
+			sprintf_s(id_buffer, "##LEVEL_OF_DETAIL_%llu", i + 1);
+
+			ImGui::PushID(id_buffer);
+
+			if (ImGui::BeginCombo("##LEVEL_OF_DETAIL_SELECTOR", _CreateModelState._LevelOfDetailModelFiles[i] ? _CreateModelState._LevelOfDetailModelFiles[i].Data() : "None"))
 			{
-				if (ImGui::Selectable(model_file.Data(), _CreateModelState._BaseModelFile == model_file))
+				for (const DynamicString &model_file : _CreateModelState._ModelFiles)
 				{
-					_CreateModelState._BaseModelFile = model_file;
+					if (ImGui::Selectable(model_file.Data(), _CreateModelState._LevelOfDetailModelFiles[i] == model_file))
+					{
+						_CreateModelState._LevelOfDetailModelFiles[i] = model_file;
+					}
 				}
+
+				ImGui::EndCombo();
 			}
 
-			ImGui::EndCombo();
+			ImGui::SameLine();
+
+			if (ImGui::Button("Delete"))
+			{
+				_CreateModelState._LevelOfDetailModelFiles.EraseAt<true>(i);
+			}
+
+			else
+			{
+				++i;
+			}
+
+			ImGui::PopID();
 		}
 
 		//Add a selector for the base model.
@@ -308,11 +338,8 @@ void EditorContentSystem::CreateModelGatherFiles(const char *const RESTRICT dire
 */
 void EditorContentSystem::CreateModelEstimateFiles() NOEXCEPT
 {
-	//Estimate the base model file.
-	{
-		//TODO: Just pick the first one. (:
-		_CreateModelState._BaseModelFile = _CreateModelState._ModelFiles[0];
-	}
+	//Estimate the level detail model files. For now, just add every one.
+	_CreateModelState._LevelOfDetailModelFiles = _CreateModelState._ModelFiles;
 
 	//Estimate the albedo texture file.
 	for (const DynamicString &texture_file : _CreateModelState._TextureFiles)
@@ -381,7 +408,10 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 
 		std::ofstream file{ buffer };
 
-		file << "LevelOfDetail(" << _CreateModelState._BaseModelFile.Data() << ");" << std::endl;
+		for (const DynamicString &level_of_detail_model_file : _CreateModelState._LevelOfDetailModelFiles)
+		{
+			file << "LevelOfDetail(" << level_of_detail_model_file.Data() << ");" << std::endl;
+		}
 
 		if (_CreateModelState._CollisionModelFile)
 		{

@@ -41,8 +41,8 @@ private:
 		//The texture files.
 		DynamicArray<DynamicString> _TextureFiles;
 
-		//The base model file.
-		DynamicString _BaseModelFile;
+		//The level model files.
+		DynamicArray<DynamicString> _LevelOfDetailModelFiles;
 
 		//The collision model file.
 		DynamicString _CollisionModelFile;
