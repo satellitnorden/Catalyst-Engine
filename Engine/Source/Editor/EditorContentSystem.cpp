@@ -463,6 +463,7 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 		file << "Default(0.0, 0.0, 0.0, 1.0);" << std::endl;
 		file << "ApplyGammaCorrection();" << std::endl;
 		file << "BaseMipLevel(" << _CreateModelState._AlbedoThicknessBaseMipLevel << ");" << std::endl;
+		file << "Compression(BC7, true);";
 
 		file.close();
 	}
@@ -502,6 +503,7 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 
 		file << "Default(0.5, 0.5, 1.0, 0.5);" << std::endl;
 		file << "BaseMipLevel(" << _CreateModelState._NormalMapDisplacementBaseMipLevel << ");" << std::endl;
+		file << "Compression(BC7, false);";
 
 		file.close();
 	}
@@ -530,6 +532,7 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 
 		file << "Default(1.0, 0.0, 1.0, 0.0);" << std::endl;
 		file << "BaseMipLevel(" << _CreateModelState._MaterialPropertiesBaseMipLevel << ");" << std::endl;
+		file << "Compression(BC7, false);";
 
 		file.close();
 	}

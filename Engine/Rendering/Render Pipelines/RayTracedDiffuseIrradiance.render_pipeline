@@ -71,6 +71,9 @@ RayGeneration
         //Flip the direction, if needed.
         random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
 
+        //Lil' trick to make cosine-weighted directions.
+        random_direction = normalize(normal + random_direction);
+
         //Trace the ray!
         TraceRay(0, 0, world_position, random_direction, FLOAT32_MAXIMUM);
 

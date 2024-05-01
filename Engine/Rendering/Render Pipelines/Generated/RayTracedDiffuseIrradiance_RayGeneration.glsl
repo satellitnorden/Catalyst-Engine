@@ -796,6 +796,7 @@ void main()
         vec3 random_hemisphere_direction = IRRADIANCE_HEMISPHERE_SAMPLES[random_hemisphere_sample_index].xyz;
         vec3 random_direction = random_rotation * random_hemisphere_direction;
         random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
+        random_direction = normalize(normal + random_direction);
 traceNV
 (
 	TOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/

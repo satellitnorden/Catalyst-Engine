@@ -820,6 +820,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			asset_file << "ChannelMapping(ALPHA, FILE_1, ALPHA);" << std::endl;
 			asset_file << "ApplyGammaCorrection();" << std::endl;
 			asset_file << "BaseMipLevel(" << parameters._SuperSample << ");" << std::endl;
+			asset_file << "Compression(BC7, true);";
 
 			asset_file.close();
 		}
@@ -842,6 +843,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			asset_file << "ChannelMapping(BLUE, FILE_1, BLUE);" << std::endl;
 			asset_file << "ChannelMapping(ALPHA, FILE_1, ALPHA);" << std::endl;
 			asset_file << "BaseMipLevel(" << parameters._SuperSample << ");" << std::endl;
+			asset_file << "Compression(BC7, false);";
 
 			asset_file.close();
 		}
@@ -864,6 +866,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			asset_file << "ChannelMapping(BLUE, FILE_1, BLUE);" << std::endl;
 			asset_file << "ChannelMapping(ALPHA, FILE_1, ALPHA);" << std::endl;
 			asset_file << "BaseMipLevel(" << parameters._SuperSample << ");" << std::endl;
+			asset_file << "Compression(BC7, false);";
 
 			asset_file.close();
 		}
@@ -886,7 +889,8 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 			asset_file << "ChannelMapping(BLUE, FILE_1, BLUE);" << std::endl;
 			asset_file << "ChannelMapping(ALPHA, FILE_1, ALPHA);" << std::endl;
 			asset_file << "BaseMipLevel(" << parameters._SuperSample << ");" << std::endl;
-			asset_file << "MipmapGenerationMode(OPACITY);";
+			asset_file << "MipmapGenerationMode(OPACITY);" << std::endl;
+			asset_file << "Compression(BC7, false);";
 
 			asset_file.close();
 		}
