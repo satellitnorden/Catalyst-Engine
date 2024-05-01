@@ -4,6 +4,7 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/ImGuiSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -184,6 +185,15 @@ void DebugSystem::Update() NOEXCEPT
 		{
 			InputSystem::Instance->LockInputLayer(InputLayer::GAME);
 			InputSystem::Instance->ShowCursor(InputLayer::DEBUG);
+
+			ImGuiSystem::Instance->RegisterGameWindow
+			(
+				ImGuiSystem::GameWindow::RIGHT,
+				[](const Vector2<float32> minimum, const Vector2<float32> maximum)
+				{
+					return DebugSystem::Instance->DrawDebugWindow(minimum, maximum);
+				}
+			);
 		}
 
 		else
@@ -191,34 +201,28 @@ void DebugSystem::Update() NOEXCEPT
 			InputSystem::Instance->UnlockInputLayer(InputLayer::GAME);
 		}
 	}
-
-	//No need to update if the debug window isn't displayed.
-	if (!_DisplayDebugWindow)
-	{
-		return;
-	}
-
-	//Draw the debug window.
-	DrawDebugWindow();
 }
 
 /*
 *	Draws the debug window.
 */
-void DebugSystem::DrawDebugWindow() NOEXCEPT
+NO_DISCARD bool DebugSystem::DrawDebugWindow(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
-	//Retrieve the window resolution.
-	const Vector2<float32> window_resolution{ static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height) };
+	//Begin the window.
+	ImGuiSystem::BeginWindowParameters parameters;
 
-	//Add the window.
-	ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowPos(ImVec2(window_resolution._X * 0.8f, 0.0f));
-	ImGui::SetWindowSize(ImVec2(window_resolution._X * 0.2f, window_resolution._Y));
+	parameters._Name = "Debug";
+	parameters._Minimum = minimum;
+	parameters._Maximum = maximum;
+
+	ImGuiSystem::Instance->BeginWindow(parameters);
 
 	//Draw the root category.
 	DrawDebugCategory(_RootDebugCategory, true);
 
 	ImGui::End();
+
+	return _DisplayDebugWindow;
 }
 
 /*

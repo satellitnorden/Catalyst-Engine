@@ -26,8 +26,17 @@
 #include <Profiling/Profiling.h>
 
 //Systems.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	#include <Systems/DebugSystem.h>
+	#include <Systems/ImGuiSystem.h>
+#endif
 #include <Systems/LogSystem.h>
 #include <Systems/TaskSystem.h>
+
+//Third party.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	#include <ThirdParty/ImGui/imgui.h>
+#endif
 
 //STL.
 #include <filesystem>
@@ -37,6 +46,11 @@
 #define ENGINE_COMPILED "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled"
 #define GAME_ASSETS "..\\..\\..\\Content\\Assets"
 #define GAME_COMPILED "..\\..\\..\\Content\\Compiled"
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+//Denotes whether or not the statistics window is open.
+bool STATISTICS_WINDOW_OPEN{ false };
+#endif
 
 /*
 *	Initializes the content system.
@@ -54,6 +68,33 @@ void ContentSystem::Initialize() NOEXCEPT
 	RegisterAssetCompiler(SettingsAssetCompiler::Instance);
 	RegisterAssetCompiler(Texture2DAssetCompiler::Instance);
 	RegisterAssetCompiler(TextureCubeAssetCompiler::Instance);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Register debug commands.
+	DebugSystem::Instance->RegisterCheckboxDebugCommand
+	(
+		"Statistics\\Assets",
+		[](DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			const bool is_checked{ debug_command->_State._CheckboxState._IsChecked };
+
+			if (debug_command->_State._CheckboxState._IsChecked && !STATISTICS_WINDOW_OPEN)
+			{
+				ImGuiSystem::Instance->RegisterGameWindow
+				(
+					ImGuiSystem::GameWindow::LEFT,
+					[](const Vector2<float32> minimum, const Vector2<float32> maximum)
+					{
+						return ContentSystem::Instance->WindowCallback(minimum, maximum);
+					}
+				);
+			}
+
+			STATISTICS_WINDOW_OPEN = is_checked;
+		},
+		nullptr
+	);
+#endif
 }
 
 /*
@@ -683,3 +724,104 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 		input_file.Close();
 	}
 }
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Prints a memory string into the given buffer.
+*/
+FORCE_INLINE void PrintMemoryString(char *buffer, const uint64 buffer_size, const char *const RESTRICT prefix, const uint64 input_bytes) NOEXCEPT
+{
+	if (input_bytes > 1'000)
+	{
+		if (input_bytes > 1'000'000)
+		{
+			const float64 memory{ static_cast<float64>(input_bytes) / 1'000'000.0 };
+
+			sprintf_s(buffer, buffer_size, "%s: %.2f MB", prefix, memory);
+		}
+
+		else
+		{
+			const float64 memory{ static_cast<float64>(input_bytes) / 1'000.0 };
+
+			sprintf_s(buffer, buffer_size, "%s: %.2f KB", prefix, memory);
+		}
+	}
+
+	else
+	{
+		const float64 memory{ static_cast<float64>(input_bytes) };
+
+		sprintf_s(buffer, buffer_size, "%s: %.2f B", prefix, memory);
+	}
+}
+
+/*
+*	The window callback.
+*/
+NO_DISCARD bool ContentSystem::WindowCallback(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
+{
+	//Begin the window.
+	ImGuiSystem::BeginWindowParameters parameters;
+
+	parameters._Name = "Asset Statistics";
+	parameters._Minimum = minimum;
+	parameters._Maximum = maximum;
+
+	ImGuiSystem::Instance->BeginWindow(parameters);
+
+	//Add all the statistics, counting up some totals as we go.
+	uint64 total_cpu_memory{ 0 };
+	uint64 total_gpu_memory{ 0 };
+
+	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
+	{
+		AssetCompiler::Statistics statistics;
+
+		if (asset_compiler->GetStatistics(&statistics))
+		{
+			ImGui::Text(statistics._AssetTypeName);
+
+			{
+				char buffer[64];
+				PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "CPU Memory", statistics._TotalCPUMemory);
+
+				ImGui::Text(buffer);
+			}
+
+			{
+				char buffer[64];
+				PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "GPU Memory", statistics._TotalGPUMemory);
+
+				ImGui::Text(buffer);
+			}
+
+			ImGui::Separator();
+
+			total_cpu_memory += statistics._TotalCPUMemory;
+			total_gpu_memory += statistics._TotalGPUMemory;
+		}
+	}
+
+	ImGui::Text("Total");
+
+	{
+		char buffer[64];
+		PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "CPU Memory", total_cpu_memory);
+
+		ImGui::Text(buffer);
+	}
+
+	{
+		char buffer[64];
+		PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "GPU Memory", total_gpu_memory);
+
+		ImGui::Text(buffer);
+	}
+
+	//End the window.
+	ImGui::End();
+
+	return STATISTICS_WINDOW_OPEN;
+}
+#endif

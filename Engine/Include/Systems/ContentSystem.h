@@ -11,6 +11,9 @@
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Core/AssetPointer.h>
 
+//Math.
+#include <Math/General/Vector.h>
+
 //Systems.
 #include <Systems/System.h>
 
@@ -157,5 +160,12 @@ private:
 	*	Creates asset collections from the given directory path.
 	*/
 	void CreateAssetCollections(const char *const RESTRICT directory_path, BinaryOutputFile *const RESTRICT file) NOEXCEPT;
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	The window callback.
+	*/
+	NO_DISCARD bool WindowCallback(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
+#endif
 
 };

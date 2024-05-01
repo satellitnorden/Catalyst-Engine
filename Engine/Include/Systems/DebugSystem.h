@@ -6,6 +6,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
 
+//Math.
+#include <Math/General/Vector.h>
+
 //Systems.
 #include <Systems/System.h>
 
@@ -148,7 +151,7 @@ private:
 	/*
 	*	Draws the debug window.
 	*/
-	void DrawDebugWindow() NOEXCEPT;
+	NO_DISCARD bool DrawDebugWindow(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;
 
 	/*
 	*	Draws a debug category.

@@ -34,6 +34,7 @@ public:
 	//Enumeration covering all game windows.
 	enum class GameWindow : uint8
 	{
+		LEFT,
 		RIGHT,
 
 		NUMBER_OF_GAME_WINDOWS
@@ -107,6 +108,11 @@ public:
 	*	Registers an editor window.
 	*/
 	void RegisterEditorWindow(const EditorWindow window, const WindowCallback callback) NOEXCEPT;
+
+	/*
+	*	Registers a game window.
+	*/
+	void RegisterGameWindow(const GameWindow window, const WindowCallback callback) NOEXCEPT;
 
 	/*
 	*	Utility function for beginning an ImGui window.

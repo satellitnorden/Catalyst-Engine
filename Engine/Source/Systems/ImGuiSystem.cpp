@@ -87,6 +87,10 @@ void ImGuiSystem::Initialize() NOEXCEPT
 	_EditorWindowData[UNDERLYING(EditorWindow::FLOATING)]._WindowCallback = nullptr;
 
 	//Set up the game window data.
+	_GameWindowData[UNDERLYING(GameWindow::LEFT)]._Minimum = Vector2<float32>(0.0f, 0.0f);
+	_GameWindowData[UNDERLYING(GameWindow::LEFT)]._Maximum = Vector2<float32>(0.2f, 1.0f);
+	_GameWindowData[UNDERLYING(GameWindow::LEFT)]._WindowCallback = nullptr;
+
 	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._Minimum = Vector2<float32>(0.8f, 0.0f);
 	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._Maximum = Vector2<float32>(1.0f, 1.0f);
 	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._WindowCallback = nullptr;
@@ -214,6 +218,14 @@ void ImGuiSystem::OnInputAvailable() NOEXCEPT
 void ImGuiSystem::RegisterEditorWindow(const EditorWindow window, const WindowCallback callback) NOEXCEPT
 {
 	_EditorWindowData[UNDERLYING(window)]._WindowCallback = callback;
+}
+
+/*
+*	Registers a game window.
+*/
+void ImGuiSystem::RegisterGameWindow(const GameWindow window, const WindowCallback callback) NOEXCEPT
+{
+	_GameWindowData[UNDERLYING(window)]._WindowCallback = callback;
 }
 
 /*

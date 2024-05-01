@@ -971,4 +971,25 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	//Create the texture 2D.
 	load_data->_Asset->_Texture2D.Initialize(final_width, final_height);
 	Memory::Copy(load_data->_Asset->_Texture2D.Data(), data[0].Data(), final_width * final_height * sizeof(Vector4<byte>));
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Update the total CPU memory.
+	{
+		const uint64 cpu_memory{ final_width * final_height * sizeof(Vector4<byte>) };
+
+		_TotalCPUMemory += cpu_memory;
+	}
+
+	//Update the total GPU memory.
+	{
+		uint64 gpu_memory{ 0 };
+
+		for (const DynamicArray<byte> &_data : data)
+		{
+			gpu_memory += _data.Size();
+		}
+
+		_TotalGPUMemory += gpu_memory;
+	}
+#endif
 }

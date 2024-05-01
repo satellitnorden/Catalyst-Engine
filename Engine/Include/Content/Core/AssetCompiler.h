@@ -96,8 +96,28 @@ public:
 		//The asset. Only set if the asset is being reloaded.
 		Asset *RESTRICT _Asset;
 
-		
 	};
+
+#if !defined (CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Statistics class definition.
+	*/
+	class Statistics final
+	{
+
+	public:
+
+		//The asset type name.
+		const char *RESTRICT _AssetTypeName;
+
+		//The total CPU memory.
+		uint64 _TotalCPUMemory;
+
+		//The total GPU memory.
+		uint64 _TotalGPUMemory;
+
+	};
+#endif
 
 	//The flags.
 	Flags _Flags{ Flags::NONE };
@@ -151,6 +171,16 @@ public:
 	{
 
 	}
+
+#if !defined (CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Statistics. Returns if the retrieval succeeded.
+	*/
+	FORCE_INLINE virtual NO_DISCARD bool GetStatistics(Statistics *const RESTRICT statistics) NOEXCEPT
+	{
+		return false;
+	}
+#endif
 
 protected:
 

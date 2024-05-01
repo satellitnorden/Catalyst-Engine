@@ -498,4 +498,39 @@ void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 
 	//Read the level of detail multiplier.
 	load_data->_StreamArchive->Read(&load_data->_Asset->_LevelOfDetailMultiplier, sizeof(float32), &stream_archive_position);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Update the total CPU/GPU memory.
+	{
+		uint64 cpu_memory{ 0 };
+		uint64 gpu_memory{ 0 };
+
+		cpu_memory += sizeof(AxisAlignedBoundingBox3D);
+
+		for (uint64 mesh_index{ 0 }; mesh_index < number_of_meshes; ++mesh_index)
+		{
+			for (uint64 level_of_detail_index{ 0 }; level_of_detail_index < number_of_level_of_details; ++level_of_detail_index)
+			{
+				const uint64 vertices_size{ sizeof(Vertex) * load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Vertices.Size() };
+				const uint64 indices_size{ sizeof(uint32) * load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices.Size() };
+
+				cpu_memory += vertices_size;
+				cpu_memory += indices_size;
+
+				gpu_memory += vertices_size;
+				gpu_memory += indices_size;
+
+				cpu_memory += sizeof(BufferHandle);
+				cpu_memory += sizeof(BufferHandle);
+				cpu_memory += sizeof(uint32);
+			}
+		}
+
+		cpu_memory += collision_model_data._Data.Size();
+		cpu_memory += sizeof(float32);
+
+		_TotalCPUMemory += cpu_memory;
+		_TotalGPUMemory += gpu_memory;
+	}
+#endif
 }
