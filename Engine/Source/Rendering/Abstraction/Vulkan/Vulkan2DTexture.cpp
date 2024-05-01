@@ -37,6 +37,9 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 	//Set the texture texel size.
 	_TextureTexelSize = textureTexelSize;
 
+	//Figure out the compression ratio.
+	uint32 compression_ratio{ 1 };
+
 	//Create the command pool.
 	static thread_local VulkanCommandPool *const RESTRICT command_pool{ VulkanInterface::Instance->CreateAsyncTransferCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
 
@@ -78,7 +81,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 
 		for (uint32 i{ 0 }; i < textureMipmapLevels; ++i)
 		{
-			image_size += (textureWidth >> i) * (textureHeight >> i) * textureChannels * textureTexelSize;
+			image_size += (textureWidth >> i) * (textureHeight >> i) * textureChannels * textureTexelSize / compression_ratio;
 		}
 
 		//Set up the staging buffer.
@@ -98,6 +101,16 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 			VULKAN_ERROR_CHECK(vmaCreateBuffer(VULKAN_MEMORY_ALLOCATOR, &buffer_info, &allocation_info, &staging_buffer, &staging_allocation, nullptr));
 		}
 
+		switch (_VulkanFormat)
+		{
+			case VkFormat::VK_FORMAT_BC7_UNORM_BLOCK:
+			{
+				compression_ratio = 4;
+
+				break;
+			}
+		}
+
 		//Copy the data into the staging buffer.
 		void* mapped_memory;
 		VULKAN_ERROR_CHECK(vmaMapMemory(VULKAN_MEMORY_ALLOCATOR, staging_allocation, &mapped_memory));
@@ -106,7 +119,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 
 		for (uint8 i{ 0 }; i < textureMipmapLevels; ++i)
 		{
-			const VkDeviceSize mip_size{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * static_cast<uint64>(textureTexelSize) };
+			const VkDeviceSize mip_size{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * static_cast<uint64>(textureTexelSize) / compression_ratio };
 			Memory::Copy(static_cast<byte*>(mapped_memory) + current_offset, textureData[i], mip_size);
 
 			current_offset += mip_size;
@@ -115,7 +128,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 		vmaUnmapMemory(VULKAN_MEMORY_ALLOCATOR, staging_allocation);
 
 		//Copy the buffer to the Vulkan image.
-		VulkanUtilities::CopyBufferToImage(&command_buffer, staging_buffer, _VulkanImage, textureMipmapLevels, 1, textureWidth, textureHeight, 1, textureChannels, sizeof(uint8));
+		VulkanUtilities::CopyBufferToImage(&command_buffer, staging_buffer, _VulkanImage, textureMipmapLevels, 1, textureWidth, textureHeight, 1, textureChannels, sizeof(uint8), compression_ratio);
 
 		//Transition the Vulkan image to the correct layout for reading.
 		VulkanUtilities::TransitionImageToLayout(&command_buffer, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_NONE, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, textureMipmapLevels, 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, _VulkanImage);

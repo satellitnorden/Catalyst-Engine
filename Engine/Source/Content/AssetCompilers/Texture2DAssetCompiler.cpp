@@ -20,6 +20,7 @@
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/Texture2D.h>
+#include <Rendering/Native/TextureCompression.h>
 
 //Systems.
 #include <Systems/LogSystem.h>
@@ -119,6 +120,9 @@ public:
 
 	//The mipmap generation mode.
 	MipmapGenerationMode _MipmapGenerationMode{ MipmapGenerationMode::DEFAULT };
+
+	//The compression.
+	TextureCompression _Compression;
 
 };
 
@@ -568,6 +572,58 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 				}
 			}
 
+			//Is this a compression declaration?
+			{
+				const size_t position{ current_line.find("Compression(") };
+
+				if (position != std::string::npos)
+				{
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							current_line.c_str(),
+							current_line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 2, "Compression() needs two arguments!");
+
+					if (arguments[0] == "NONE")
+					{
+						parameters._Compression._Mode = TextureCompression::Mode::NONE;
+					}
+
+					else if (arguments[0] == "BC7")
+					{
+						parameters._Compression._Mode = TextureCompression::Mode::BC7;
+					}
+
+					else
+					{
+						ASSERT(false, "Unknown argument %s", arguments[0].Data());
+					}
+
+					if (arguments[1] == "true")
+					{
+						parameters._Compression._Perceptual = true;
+					}
+
+					else if (arguments[1] == "false")
+					{
+						parameters._Compression._Perceptual = false;
+					}
+
+					else
+					{
+						ASSERT(false, "Unknown argument %s", arguments[1].Data());
+					}
+
+					continue;
+				}
+			}
+
 			//Couldn't figure out what this line is?
 			ASSERT(false, "Unknown line %s", current_line.c_str());
 		}
@@ -830,6 +886,36 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 		}
 	}
 
+	//Create the output data.
+	DynamicArray<DynamicArray<byte>> output_data;
+
+	for (uint64 mip_index{ parameters._BaseMipLevel }; mip_index < output_textures.Size(); ++mip_index)
+	{
+		output_data.Emplace();
+
+		const uint64 raw_texture_size{ output_textures[mip_index].GetWidth() * output_textures[mip_index].GetHeight() * sizeof(Vector4<byte>) };
+
+		if (parameters._Compression._Mode == TextureCompression::Mode::NONE)
+		{
+			output_data.Back().Upsize<false>(raw_texture_size);
+			Memory::Copy(output_data.Back().Data(), output_textures[mip_index].Data(), raw_texture_size);
+		}
+
+		else
+		{
+			const uint32 compression_ratio{ parameters._Compression.CompressionRatio() };
+			const uint64 compressed_texture_size{ raw_texture_size / compression_ratio };
+
+			DynamicArray<byte> input_data;
+			input_data.Upsize<false>(raw_texture_size);
+			Memory::Copy(input_data.Data(), output_textures[mip_index].Data(), raw_texture_size);
+
+			output_data.Back().Upsize<false>(compressed_texture_size);
+
+			parameters._Compression.Compress2D(input_data.Data(), output_textures[mip_index].GetWidth(), output_textures[mip_index].GetHeight(), output_data.Back().Data());
+		}
+	}
+
 	//Determine the collection directory.
 	char collection_directory_path[MAXIMUM_FILE_PATH_LENGTH];
 
@@ -877,10 +963,13 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	const uint32 output_height{ output_textures[parameters._BaseMipLevel].GetHeight() };
 	output_file.Write(&output_height, sizeof(uint32));
 
+	//Write the compression to the file.
+	output_file.Write(&parameters._Compression, sizeof(TextureCompression));
+
 	//Write the texture data to the file.
-	for (uint64 mip_index{ parameters._BaseMipLevel }; mip_index < output_textures.Size(); ++mip_index)
+	for (const DynamicArray<byte> &_output_data : output_data)
 	{
-		output_file.Write(output_textures[mip_index].Data(), sizeof(Vector4<uint8>) * output_textures[mip_index].GetWidth() * output_textures[mip_index].GetHeight());
+		output_file.Write(_output_data.Data(), _output_data.Size());
 	}
 
 	//Close the output file.
@@ -911,6 +1000,10 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	uint32 height;
 	load_data->_StreamArchive->Read(&height, sizeof(uint32), &stream_archive_position);
 
+	//Read the compression.
+	TextureCompression texture_compression;
+	load_data->_StreamArchive->Read(&texture_compression, sizeof(TextureCompression), &stream_archive_position);
+
 	//Read the data.
 	DynamicArray<DynamicArray<byte>> data;
 	data.Reserve(number_of_mip_levels);
@@ -921,7 +1014,7 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	{
 		const uint32 mip_width{ width >> mip_index };
 		const uint32 mip_height{ height >> mip_index };
-		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) };
+		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) / texture_compression.CompressionRatio() };
 
 #if 0 //Low-resolution textures. (:
 		if (mip_index < number_of_mip_levels - 1)
@@ -942,6 +1035,33 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 		load_data->_StreamArchive->Read(data.Back().Data(), mip_size, &stream_archive_position);
 	}
 
+	//Figure out the texture format.
+	TextureFormat texture_format;
+
+	switch (texture_compression._Mode)
+	{
+		case TextureCompression::Mode::NONE:
+		{
+			texture_format = TextureFormat::RGBA_UINT8;
+
+			break;
+		}
+
+		case TextureCompression::Mode::BC7:
+		{
+			texture_format = TextureFormat::RGBA_BC7;
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
 	//Create the texture.
 	{
 		PROFILING_SCOPE("Texture2DAssetCompiler::Load::CreateTexture2D");
@@ -957,7 +1077,7 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 					final_height,
 					4
 				),
-				TextureFormat::RGBA_UINT8,
+				texture_format,
 				TextureUsage::NONE,
 				false
 			),
@@ -969,13 +1089,13 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	load_data->_Asset->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(load_data->_Asset->_Texture2DHandle);
 
 	//Create the texture 2D.
-	load_data->_Asset->_Texture2D.Initialize(final_width, final_height);
-	Memory::Copy(load_data->_Asset->_Texture2D.Data(), data[0].Data(), final_width * final_height * sizeof(Vector4<byte>));
+	//load_data->_Asset->_Texture2D.Initialize(final_width, final_height);
+	//Memory::Copy(load_data->_Asset->_Texture2D.Data(), data[0].Data(), final_width * final_height * sizeof(Vector4<byte>));
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Update the total CPU memory.
 	{
-		const uint64 cpu_memory{ final_width * final_height * sizeof(Vector4<byte>) };
+		const uint64 cpu_memory{ data[0].Size() };
 
 		_TotalCPUMemory += cpu_memory;
 	}

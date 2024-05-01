@@ -270,6 +270,7 @@ public:
 			case TextureFormat::R_UINT16: return VkFormat::VK_FORMAT_R16_UNORM;
 			case TextureFormat::RGB_UINT8: return VkFormat::VK_FORMAT_R8G8B8_UNORM;
 			case TextureFormat::RGBA_UINT8: return VkFormat::VK_FORMAT_R8G8B8A8_UNORM;
+			case TextureFormat::RGBA_BC7: return VkFormat::VK_FORMAT_BC7_UNORM_BLOCK;
 			case TextureFormat::RG_FLOAT16: return VkFormat::VK_FORMAT_R16G16_SFLOAT;
 			case TextureFormat::R_FLOAT32: return VkFormat::VK_FORMAT_R32_SFLOAT;
 			case TextureFormat::RG_FLOAT32: return VkFormat::VK_FORMAT_R32G32_SFLOAT;

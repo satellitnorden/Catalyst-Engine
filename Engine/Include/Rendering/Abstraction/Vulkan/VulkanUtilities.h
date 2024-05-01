@@ -117,7 +117,7 @@ public:
 	/*
 	*	Copies a Vulkan buffer to a Vulkan image.
 	*/
-	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 mipLevels, const uint32 layerCount, const uint32 width, const uint32 height, const uint32 depth, const uint32 texture_channels, const VkDeviceSize texel_size) NOEXCEPT
+	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 mipLevels, const uint32 layerCount, const uint32 width, const uint32 height, const uint32 depth, const uint32 texture_channels, const VkDeviceSize texel_size, const uint32 compression_ratio) NOEXCEPT
 	{
 		//Create the command pool.
 		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateAsyncTransferCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
@@ -148,7 +148,7 @@ public:
 
 			bufferImageCopies.Emplace(bufferImageCopy);
 
-			currentOffset += (width >> i) * (height >> i) * BaseMath::Maximum<uint32>(depth >> i, 1) * texture_channels * texel_size * layerCount;
+			currentOffset += (width >> i) * (height >> i) * BaseMath::Maximum<uint32>(depth >> i, 1) * texture_channels * texel_size * layerCount / compression_ratio;
 		}
 
 		//Begin the transfer ommand buffer.
@@ -178,7 +178,7 @@ public:
 	/*
 	*	Copies a Vulkan buffer to a Vulkan image.
 	*/
-	static void CopyBufferToImage(VulkanCommandBuffer* const RESTRICT command_buffer, const VkBuffer& vulkanBuffer, VkImage& vulkanImage, const uint32 mipLevels, const uint32 layerCount, const uint32 width, const uint32 height, const uint32 depth, const uint32 texture_channels, const VkDeviceSize texel_size) NOEXCEPT
+	static void CopyBufferToImage(VulkanCommandBuffer* const RESTRICT command_buffer, const VkBuffer& vulkanBuffer, VkImage& vulkanImage, const uint32 mipLevels, const uint32 layerCount, const uint32 width, const uint32 height, const uint32 depth, const uint32 texture_channels, const VkDeviceSize texel_size, const uint32 compression_ratio) NOEXCEPT
 	{
 		//Create the buffer image copy.
 		DynamicArray<VkBufferImageCopy> bufferImageCopies;
@@ -202,7 +202,7 @@ public:
 
 			bufferImageCopies.Emplace(bufferImageCopy);
 
-			currentOffset += (width >> i) * (height >> i) * BaseMath::Maximum<uint32>(depth >> i, 1) * texture_channels * texel_size * layerCount;
+			currentOffset += (width >> i) * (height >> i) * BaseMath::Maximum<uint32>(depth >> i, 1) * texture_channels * texel_size * layerCount / compression_ratio;
 		}
 
 		//Record the copy command to the transfer command buffer.
