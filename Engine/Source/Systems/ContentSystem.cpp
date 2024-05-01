@@ -628,6 +628,22 @@ void ContentSystem::CompileAssetsInDirectory
 		//Compile!
 		asset_compiler->Compile(compile_context);
 
+#if 0 //Force single-threaded compiles.
+		{
+			bool all_done{ _Tasks.Empty() };
+
+			while (!all_done)
+			{
+				all_done = true;
+
+				for (Task *const RESTRICT task : _Tasks)
+				{
+					all_done &= task->IsExecuted();
+				}
+			}
+		}
+#endif
+
 		//Update the last write time.
 		content_cache->UpdateLastWriteTime(identifier, last_write_time);
 

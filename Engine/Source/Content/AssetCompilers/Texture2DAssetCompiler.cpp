@@ -911,21 +911,21 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	//Create the output data.
 	DynamicArray<DynamicArray<byte>> output_data;
 
-	output_data.Reserve(mip_chain.Size() - parameters._BaseMipLevel);
+	output_data.Reserve(output_textures.Size());
 
 	{
 		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Create output data");
 
-		for (uint64 mip_index{ parameters._BaseMipLevel }; mip_index < output_textures.Size(); ++mip_index)
+		for (uint64 mip_index{ 0 }; mip_index < output_textures.Size(); ++mip_index)
 		{
 			output_data.Emplace();
 
-			const uint64 raw_texture_size{ output_textures[mip_index - parameters._BaseMipLevel].GetWidth() * output_textures[mip_index - parameters._BaseMipLevel].GetHeight() * sizeof(Vector4<byte>) };
+			const uint64 raw_texture_size{ output_textures[mip_index].GetWidth() * output_textures[mip_index].GetHeight() * sizeof(Vector4<byte>) };
 
 			if (parameters._Compression._Mode == TextureCompression::Mode::NONE)
 			{
 				output_data.Back().Upsize<false>(raw_texture_size);
-				Memory::Copy(output_data.Back().Data(), output_textures[mip_index - parameters._BaseMipLevel].Data(), raw_texture_size);
+				Memory::Copy(output_data.Back().Data(), output_textures[mip_index].Data(), raw_texture_size);
 			}
 
 			else
@@ -935,11 +935,11 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 
 				DynamicArray<byte> input_data;
 				input_data.Upsize<false>(raw_texture_size);
-				Memory::Copy(input_data.Data(), output_textures[mip_index - parameters._BaseMipLevel].Data(), raw_texture_size);
+				Memory::Copy(input_data.Data(), output_textures[mip_index].Data(), raw_texture_size);
 
 				output_data.Back().Upsize<false>(compressed_texture_size);
 
-				parameters._Compression.Compress2D(input_data.Data(), output_textures[mip_index - parameters._BaseMipLevel].GetWidth(), output_textures[mip_index - parameters._BaseMipLevel].GetHeight(), output_data.Back().Data());
+				parameters._Compression.Compress2D(input_data.Data(), output_textures[mip_index].GetWidth(), output_textures[mip_index].GetHeight(), output_data.Back().Data());
 			}
 		}
 	}
