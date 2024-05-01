@@ -50,6 +50,7 @@
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Denotes whether or not the statistics window is open.
 bool STATISTICS_WINDOW_OPEN{ false };
+bool UNCOMPRESSED_TEXTURES_WINDOW_OPEN{ false };
 #endif
 
 /*
@@ -88,9 +89,37 @@ void ContentSystem::Initialize() NOEXCEPT
 						return ContentSystem::Instance->WindowCallback(minimum, maximum);
 					}
 				);
+
+				UNCOMPRESSED_TEXTURES_WINDOW_OPEN = false;
 			}
 
 			STATISTICS_WINDOW_OPEN = is_checked;
+		},
+		nullptr
+	);
+
+	DebugSystem::Instance->RegisterCheckboxDebugCommand
+	(
+		"Statistics\\Uncompressed Textures",
+		[](DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			const bool is_checked{ debug_command->_State._CheckboxState._IsChecked };
+
+			if (debug_command->_State._CheckboxState._IsChecked && !UNCOMPRESSED_TEXTURES_WINDOW_OPEN)
+			{
+				ImGuiSystem::Instance->RegisterGameWindow
+				(
+					ImGuiSystem::GameWindow::LEFT,
+					[](const Vector2<float32> minimum, const Vector2<float32> maximum)
+					{
+						return ContentSystem::Instance->WindowCallback(minimum, maximum);
+					}
+				);
+
+				STATISTICS_WINDOW_OPEN = false;
+			}
+
+			UNCOMPRESSED_TEXTURES_WINDOW_OPEN = is_checked;
 		},
 		nullptr
 	);
@@ -777,67 +806,111 @@ FORCE_INLINE void PrintMemoryString(char *buffer, const uint64 buffer_size, cons
 */
 NO_DISCARD bool ContentSystem::WindowCallback(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
-	//Begin the window.
-	ImGuiSystem::BeginWindowParameters parameters;
 
-	parameters._Name = "Asset Statistics";
-	parameters._Minimum = minimum;
-	parameters._Maximum = maximum;
-
-	ImGuiSystem::Instance->BeginWindow(parameters);
-
-	//Add all the statistics, counting up some totals as we go.
-	uint64 total_cpu_memory{ 0 };
-	uint64 total_gpu_memory{ 0 };
-
-	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
+	if (STATISTICS_WINDOW_OPEN)
 	{
-		AssetCompiler::Statistics statistics;
+		//Begin the window.
+		ImGuiSystem::BeginWindowParameters parameters;
 
-		if (asset_compiler->GetStatistics(&statistics))
+		parameters._Name = "Asset Statistics";
+		parameters._Minimum = minimum;
+		parameters._Maximum = maximum;
+
+		ImGuiSystem::Instance->BeginWindow(parameters);
+
+		//Add all the statistics, counting up some totals as we go.
+		uint64 total_cpu_memory{ 0 };
+		uint64 total_gpu_memory{ 0 };
+
+		for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
 		{
-			ImGui::Text(statistics._AssetTypeName);
+			AssetCompiler::Statistics statistics;
 
+			if (asset_compiler->GetStatistics(&statistics))
 			{
-				char buffer[64];
-				PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "CPU Memory", statistics._TotalCPUMemory);
+				ImGui::Text(statistics._AssetTypeName);
 
-				ImGui::Text(buffer);
+				{
+					char buffer[64];
+					sprintf_s(buffer, "Count: %llu", _Assets[asset_compiler->AssetTypeIdentifier()].Size());
+
+					ImGui::Text(buffer);
+				}
+
+				{
+					char buffer[64];
+					PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "CPU Memory", statistics._TotalCPUMemory);
+
+					ImGui::Text(buffer);
+				}
+
+				{
+					char buffer[64];
+					PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "GPU Memory", statistics._TotalGPUMemory);
+
+					ImGui::Text(buffer);
+				}
+
+				ImGui::Separator();
+
+				total_cpu_memory += statistics._TotalCPUMemory;
+				total_gpu_memory += statistics._TotalGPUMemory;
 			}
-
-			{
-				char buffer[64];
-				PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "GPU Memory", statistics._TotalGPUMemory);
-
-				ImGui::Text(buffer);
-			}
-
-			ImGui::Separator();
-
-			total_cpu_memory += statistics._TotalCPUMemory;
-			total_gpu_memory += statistics._TotalGPUMemory;
 		}
+
+		ImGui::Text("Total");
+
+		{
+			char buffer[64];
+			PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "CPU Memory", total_cpu_memory);
+
+			ImGui::Text(buffer);
+		}
+
+		{
+			char buffer[64];
+			PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "GPU Memory", total_gpu_memory);
+
+			ImGui::Text(buffer);
+		}
+
+		//End the window.
+		ImGui::End();
+
+		return STATISTICS_WINDOW_OPEN;
 	}
-
-	ImGui::Text("Total");
-
+	
+	else if (UNCOMPRESSED_TEXTURES_WINDOW_OPEN)
 	{
-		char buffer[64];
-		PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "CPU Memory", total_cpu_memory);
+		//Begin the window.
+		ImGuiSystem::BeginWindowParameters parameters;
 
-		ImGui::Text(buffer);
+		parameters._Name = "Uncompressed Textures";
+		parameters._Minimum = minimum;
+		parameters._Maximum = maximum;
+
+		ImGuiSystem::Instance->BeginWindow(parameters);
+
+		//List all uncompressed textures.
+		for (Asset *const RESTRICT asset : _Assets[HashString("Texture2D")].ValueIterator())
+		{
+			Texture2DAsset *const RESTRICT texture_asset{ static_cast<Texture2DAsset *const RESTRICT>(asset) };
+
+			if (texture_asset->_Compression._Mode == TextureCompression::Mode::NONE)
+			{
+				ImGui::Text(texture_asset->_Header._AssetName.Data());
+			}
+		}
+
+		//End the window.
+		ImGui::End();
+
+		return UNCOMPRESSED_TEXTURES_WINDOW_OPEN;
 	}
 
+	else
 	{
-		char buffer[64];
-		PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "GPU Memory", total_gpu_memory);
-
-		ImGui::Text(buffer);
+		return false;
 	}
-
-	//End the window.
-	ImGui::End();
-
-	return STATISTICS_WINDOW_OPEN;
 }
 #endif

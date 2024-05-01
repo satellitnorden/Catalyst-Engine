@@ -1029,8 +1029,7 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	load_data->_StreamArchive->Read(&height, sizeof(uint32), &stream_archive_position);
 
 	//Read the compression.
-	TextureCompression texture_compression;
-	load_data->_StreamArchive->Read(&texture_compression, sizeof(TextureCompression), &stream_archive_position);
+	load_data->_StreamArchive->Read(&load_data->_Asset->_Compression, sizeof(TextureCompression), &stream_archive_position);
 
 	//Read the data.
 	DynamicArray<DynamicArray<byte>> data;
@@ -1042,7 +1041,7 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	{
 		const uint32 mip_width{ width >> mip_index };
 		const uint32 mip_height{ height >> mip_index };
-		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) / texture_compression.CompressionRatio() };
+		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) / load_data->_Asset->_Compression.CompressionRatio() };
 
 #if 0 //Low-resolution textures. (:
 		if (mip_index < number_of_mip_levels - 1)
@@ -1066,7 +1065,7 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	//Figure out the texture format.
 	TextureFormat texture_format;
 
-	switch (texture_compression._Mode)
+	switch (load_data->_Asset->_Compression._Mode)
 	{
 		case TextureCompression::Mode::NONE:
 		{

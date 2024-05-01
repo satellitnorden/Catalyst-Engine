@@ -9,6 +9,7 @@
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
 #include <Rendering/Native/Texture2D.h>
+#include <Rendering/Native/TextureCompression.h>
 
 class Texture2DAsset final : public Asset
 {
@@ -17,6 +18,9 @@ public:
 
 	//The type identifier.
 	static HashString TYPE_IDENTIFIER;
+
+	//The compression.
+	TextureCompression _Compression;
 
 	//The average value.
 	Vector4<float32> _AverageValue;
