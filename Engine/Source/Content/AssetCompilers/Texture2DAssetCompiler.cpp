@@ -252,6 +252,8 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 
 	//Iterate over the lines and fill in the parameters.
 	{
+		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Parse input file");
+
 		StaticArray<DynamicString, 8> arguments;
 		std::string current_line;
 
@@ -635,118 +637,122 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	//Gather the input textures.
 	StaticArray<Texture2D<Vector4<float32>>, 4> input_textures;
 
-	if (parameters._File1)
 	{
-		ASSERT(File::Exists(parameters._File1.Data()), "File %s does not exist!", parameters._File1.Data());
+		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Read input textures");
 
-		switch (File::GetExtension(parameters._File1.Data()))
+		if (parameters._File1)
 		{
-			case File::Extension::JPG:
+			ASSERT(File::Exists(parameters._File1.Data()), "File %s does not exist!", parameters._File1.Data());
+
+			switch (File::GetExtension(parameters._File1.Data()))
 			{
-				JPGReader::Read(parameters._File1.Data(), &input_textures[0]);
+				case File::Extension::JPG:
+				{
+					JPGReader::Read(parameters._File1.Data(), &input_textures[0]);
 
-				break;
-			}
+					break;
+				}
 
-			case File::Extension::PNG:
-			{
-				PNGReader::Read(parameters._File1.Data(), &input_textures[0]);
+				case File::Extension::PNG:
+				{
+					PNGReader::Read(parameters._File1.Data(), &input_textures[0]);
 
-				break;
-			}
+					break;
+				}
 
-			default:
-			{
-				ASSERT(false, "Invalid case!");
+				default:
+				{
+					ASSERT(false, "Invalid case!");
 
-				break;
+					break;
+				}
 			}
 		}
-	}
 
-	if (parameters._File2)
-	{
-		ASSERT(File::Exists(parameters._File2.Data()), "File %s does not exist!", parameters._File2.Data());
-
-		switch (File::GetExtension(parameters._File2.Data()))
+		if (parameters._File2)
 		{
-			case File::Extension::JPG:
+			ASSERT(File::Exists(parameters._File2.Data()), "File %s does not exist!", parameters._File2.Data());
+
+			switch (File::GetExtension(parameters._File2.Data()))
 			{
-				JPGReader::Read(parameters._File2.Data(), &input_textures[1]);
+				case File::Extension::JPG:
+				{
+					JPGReader::Read(parameters._File2.Data(), &input_textures[1]);
 
-				break;
-			}
+					break;
+				}
 
-			case File::Extension::PNG:
-			{
-				PNGReader::Read(parameters._File2.Data(), &input_textures[1]);
+				case File::Extension::PNG:
+				{
+					PNGReader::Read(parameters._File2.Data(), &input_textures[1]);
 
-				break;
-			}
+					break;
+				}
 
-			default:
-			{
-				ASSERT(false, "Invalid case!");
+				default:
+				{
+					ASSERT(false, "Invalid case!");
 
-				break;
+					break;
+				}
 			}
 		}
-	}
 
-	if (parameters._File3)
-	{
-		ASSERT(File::Exists(parameters._File3.Data()), "File %s does not exist!", parameters._File3.Data());
-
-		switch (File::GetExtension(parameters._File3.Data()))
+		if (parameters._File3)
 		{
-			case File::Extension::JPG:
+			ASSERT(File::Exists(parameters._File3.Data()), "File %s does not exist!", parameters._File3.Data());
+
+			switch (File::GetExtension(parameters._File3.Data()))
 			{
-				JPGReader::Read(parameters._File3.Data(), &input_textures[2]);
+				case File::Extension::JPG:
+				{
+					JPGReader::Read(parameters._File3.Data(), &input_textures[2]);
 
-				break;
-			}
+					break;
+				}
 
-			case File::Extension::PNG:
-			{
-				PNGReader::Read(parameters._File3.Data(), &input_textures[2]);
+				case File::Extension::PNG:
+				{
+					PNGReader::Read(parameters._File3.Data(), &input_textures[2]);
 
-				break;
-			}
+					break;
+				}
 
-			default:
-			{
-				ASSERT(false, "Invalid case!");
+				default:
+				{
+					ASSERT(false, "Invalid case!");
 
-				break;
+					break;
+				}
 			}
 		}
-	}
 
-	if (parameters._File4)
-	{
-		ASSERT(File::Exists(parameters._File4.Data()), "File %s does not exist!", parameters._File4.Data());
-
-		switch (File::GetExtension(parameters._File4.Data()))
+		if (parameters._File4)
 		{
-			case File::Extension::JPG:
+			ASSERT(File::Exists(parameters._File4.Data()), "File %s does not exist!", parameters._File4.Data());
+
+			switch (File::GetExtension(parameters._File4.Data()))
 			{
-				JPGReader::Read(parameters._File4.Data(), &input_textures[3]);
+				case File::Extension::JPG:
+				{
+					JPGReader::Read(parameters._File4.Data(), &input_textures[3]);
 
-				break;
-			}
+					break;
+				}
 
-			case File::Extension::PNG:
-			{
-				PNGReader::Read(parameters._File4.Data(), &input_textures[3]);
+				case File::Extension::PNG:
+				{
+					PNGReader::Read(parameters._File4.Data(), &input_textures[3]);
 
-				break;
-			}
+					break;
+				}
 
-			default:
-			{
-				ASSERT(false, "Invalid case!");
+				default:
+				{
+					ASSERT(false, "Invalid case!");
 
-				break;
+					break;
+				}
 			}
 		}
 	}
@@ -778,26 +784,30 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	//Create the composite texture.
 	Texture2D<Vector4<float32>> composite_texture{ width, height };
 
-	for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
 	{
-		for (uint32 X{ 0 }; X < composite_texture.GetWidth(); ++X)
+		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Create composite texture");
+
+		for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
 		{
-			//Calculate the texel.
-			Vector4<float32> &texel{ composite_texture.At(X, Y) };
-
-			for (uint8 i{ 0 }; i < 4; ++i)
+			for (uint32 X{ 0 }; X < composite_texture.GetWidth(); ++X)
 			{
-				if (UNDERLYING(parameters._ChannelMappings[i]._File) <= UNDERLYING(Texture2DChannelMapping::File::FILE_4))
-				{
-					texel[i] = input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].At(X, Y)[UNDERLYING(parameters._ChannelMappings[i]._Channel)];
-				}
+				//Calculate the texel.
+				Vector4<float32> &texel{ composite_texture.At(X, Y) };
 
-				else
+				for (uint8 i{ 0 }; i < 4; ++i)
 				{
-					texel[i] = parameters._Default[UNDERLYING(parameters._ChannelMappings[i]._Channel)];
-				}
+					if (UNDERLYING(parameters._ChannelMappings[i]._File) <= UNDERLYING(Texture2DChannelMapping::File::FILE_4))
+					{
+						texel[i] = input_textures[UNDERLYING(parameters._ChannelMappings[i]._File)].At(X, Y)[UNDERLYING(parameters._ChannelMappings[i]._Channel)];
+					}
 
-				texel[i] *= parameters._Tint[i];
+					else
+					{
+						texel[i] = parameters._Default[UNDERLYING(parameters._ChannelMappings[i]._Channel)];
+					}
+
+					texel[i] *= parameters._Tint[i];
+				}
 			}
 		}
 	}
@@ -811,6 +821,8 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	//Apply gamma correction, if desired.
 	if (parameters._ApplyGammaCorrection)
 	{
+		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Apply gamma correction");
+
 		for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
 		{
 			for (uint32 X{ 0 }; X < composite_texture.GetWidth(); ++X)
@@ -829,6 +841,8 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	Vector4<float32> average_value;
 
 	{
+		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Calculate average value");
+
 		//Calculate the average value with higher precision.
 		Vector4<float64> _average_value{ 0.0, 0.0, 0.0, 0.0 };
 
@@ -857,6 +871,8 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 
 	if (parameters._MipmapGenerationMode != MipmapGenerationMode::NONE)
 	{
+		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Generate mip chain");
+
 		RenderingUtilities::GenerateMipChain(composite_texture, parameters._MipmapGenerationMode, &mip_chain);
 	}
 
@@ -868,19 +884,25 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	//Create the output textures.
 	DynamicArray<Texture2D<Vector4<uint8>>> output_textures;
 
-	output_textures.Upsize<true>(mip_chain.Size());
+	output_textures.Reserve(mip_chain.Size() - parameters._BaseMipLevel);
 
-	for (uint64 mip_index{ 0 }; mip_index < output_textures.Size(); ++mip_index)
 	{
-		output_textures[mip_index].Initialize(mip_chain[mip_index].GetWidth(), mip_chain[mip_index].GetHeight());
+		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Create output textures");
 
-		for (uint32 Y{ 0 }; Y < output_textures[mip_index].GetHeight(); ++Y)
+		for (uint64 mip_index{ parameters._BaseMipLevel }; mip_index < mip_chain.Size(); ++mip_index)
 		{
-			for (uint32 X{ 0 }; X < output_textures[mip_index].GetWidth(); ++X)
+			output_textures.Emplace();
+
+			output_textures.Back().Initialize(mip_chain[mip_index].GetWidth(), mip_chain[mip_index].GetHeight());
+
+			for (uint32 Y{ 0 }; Y < output_textures.Back().GetHeight(); ++Y)
 			{
-				for (uint8 texel_index{ 0 }; texel_index < 4; ++texel_index)
+				for (uint32 X{ 0 }; X < output_textures.Back().GetWidth(); ++X)
 				{
-					output_textures[mip_index].At(X, Y)[texel_index] = static_cast<uint8>(mip_chain[mip_index].At(X, Y)[texel_index] * static_cast<float32>(UINT8_MAXIMUM));
+					for (uint8 texel_index{ 0 }; texel_index < 4; ++texel_index)
+					{
+						output_textures.Back().At(X, Y)[texel_index] = static_cast<uint8>(mip_chain[mip_index].At(X, Y)[texel_index] * static_cast<float32>(UINT8_MAXIMUM));
+					}
 				}
 			}
 		}
@@ -889,30 +911,36 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	//Create the output data.
 	DynamicArray<DynamicArray<byte>> output_data;
 
-	for (uint64 mip_index{ parameters._BaseMipLevel }; mip_index < output_textures.Size(); ++mip_index)
+	output_data.Reserve(mip_chain.Size() - parameters._BaseMipLevel);
+
 	{
-		output_data.Emplace();
+		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Create output data");
 
-		const uint64 raw_texture_size{ output_textures[mip_index].GetWidth() * output_textures[mip_index].GetHeight() * sizeof(Vector4<byte>) };
-
-		if (parameters._Compression._Mode == TextureCompression::Mode::NONE)
+		for (uint64 mip_index{ parameters._BaseMipLevel }; mip_index < output_textures.Size(); ++mip_index)
 		{
-			output_data.Back().Upsize<false>(raw_texture_size);
-			Memory::Copy(output_data.Back().Data(), output_textures[mip_index].Data(), raw_texture_size);
-		}
+			output_data.Emplace();
 
-		else
-		{
-			const uint32 compression_ratio{ parameters._Compression.CompressionRatio() };
-			const uint64 compressed_texture_size{ raw_texture_size / compression_ratio };
+			const uint64 raw_texture_size{ output_textures[mip_index - parameters._BaseMipLevel].GetWidth() * output_textures[mip_index - parameters._BaseMipLevel].GetHeight() * sizeof(Vector4<byte>) };
 
-			DynamicArray<byte> input_data;
-			input_data.Upsize<false>(raw_texture_size);
-			Memory::Copy(input_data.Data(), output_textures[mip_index].Data(), raw_texture_size);
+			if (parameters._Compression._Mode == TextureCompression::Mode::NONE)
+			{
+				output_data.Back().Upsize<false>(raw_texture_size);
+				Memory::Copy(output_data.Back().Data(), output_textures[mip_index - parameters._BaseMipLevel].Data(), raw_texture_size);
+			}
 
-			output_data.Back().Upsize<false>(compressed_texture_size);
+			else
+			{
+				const uint32 compression_ratio{ parameters._Compression.CompressionRatio() };
+				const uint64 compressed_texture_size{ raw_texture_size / compression_ratio };
 
-			parameters._Compression.Compress2D(input_data.Data(), output_textures[mip_index].GetWidth(), output_textures[mip_index].GetHeight(), output_data.Back().Data());
+				DynamicArray<byte> input_data;
+				input_data.Upsize<false>(raw_texture_size);
+				Memory::Copy(input_data.Data(), output_textures[mip_index - parameters._BaseMipLevel].Data(), raw_texture_size);
+
+				output_data.Back().Upsize<false>(compressed_texture_size);
+
+				parameters._Compression.Compress2D(input_data.Data(), output_textures[mip_index - parameters._BaseMipLevel].GetWidth(), output_textures[mip_index - parameters._BaseMipLevel].GetHeight(), output_data.Back().Data());
+			}
 		}
 	}
 
@@ -954,13 +982,13 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	output_file.Write(&average_value, sizeof(Vector4<float32>));
 
 	//Write the number of mipmap levels to the file.
-	const uint8 mipmap_levels{ static_cast<uint8>(output_textures.Size() - parameters._BaseMipLevel) };
+	const uint8 mipmap_levels{ static_cast<uint8>(output_textures.Size()) };
 	output_file.Write(&mipmap_levels, sizeof(uint8));
 
 	//Write the width and height of the texture to the file.
-	const uint32 output_width{ output_textures[parameters._BaseMipLevel].GetWidth() };
+	const uint32 output_width{ output_textures[0].GetWidth() };
 	output_file.Write(&output_width, sizeof(uint32));
-	const uint32 output_height{ output_textures[parameters._BaseMipLevel].GetHeight() };
+	const uint32 output_height{ output_textures[0].GetHeight() };
 	output_file.Write(&output_height, sizeof(uint32));
 
 	//Write the compression to the file.
