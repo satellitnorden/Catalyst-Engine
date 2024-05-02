@@ -17,6 +17,9 @@ ColorStoreOperator(STORE);
 //Set the topology.
 Topology(TRIANGLE_FAN);
 
+//Declare push constant data.
+PushConstantData(mat4, TRANSFORMATION);
+
 //Set blend properties.
 BlendEnable();
 BlendColorSourceFactor(SOURCE_ALPHA);
@@ -48,7 +51,7 @@ Vertex
     OutInstanceIndex = INSTANCE_INDEX;
 
     //Output the position.
-    OutputVertexPosition(position);
+    OutputVertexPosition(TRANSFORMATION * position);
 }
 
 //The fragment shader.

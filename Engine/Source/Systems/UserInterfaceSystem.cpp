@@ -19,6 +19,19 @@
 #define USER_INTERFACE_INSTANCE_FLAG_TEXTURE (BIT(2))
 
 /*
+*	User interface push constant data class definition.
+*/
+class UserInterfacePushConstantData final
+{
+
+public:
+
+	//The transformation.
+	Matrix4x4 _Transformation;
+
+};
+
+/*
 *	Initializes the user interface system.
 */
 void UserInterfaceSystem::Initialize() NOEXCEPT
@@ -41,7 +54,7 @@ void UserInterfaceSystem::Initialize() NOEXCEPT
 		HashString("UserInterface"),
 		DynamicArray<VertexInputAttributeDescription>(),
 		DynamicArray<VertexInputBindingDescription>(),
-		0,
+		sizeof(UserInterfacePushConstantData),
 		[](void *const RESTRICT, RenderInputStream *const RESTRICT input_stream)
 		{
 			UserInterfaceSystem::Instance->RenderInputStreamUpdate(input_stream);
@@ -408,6 +421,9 @@ void UserInterfaceSystem::RenderInputStreamUpdate(RenderInputStream *const RESTR
 	//Clear the entries.
 	input_stream->_Entries.Clear();
 
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
 	//Add a new entry.
 	input_stream->_Entries.Emplace();
 	RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
@@ -420,4 +436,14 @@ void UserInterfaceSystem::RenderInputStreamUpdate(RenderInputStream *const RESTR
 	new_entry._VertexCount = 4;
 	new_entry._IndexCount = 0;
 	new_entry._InstanceCount = static_cast<uint32>(_Instances.Size());
+
+	//Set up the push constant data.
+	UserInterfacePushConstantData push_constant_data;
+
+	push_constant_data._Transformation = Matrix4x4();
+
+	for (uint64 i{ 0 }; i < sizeof(UserInterfacePushConstantData); ++i)
+	{
+		input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+	}
 }
