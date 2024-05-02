@@ -46,36 +46,27 @@ void UserInterfaceScene::OnActivated() NOEXCEPT
 
 	_Font = ContentSystem::Instance->GetAsset<FontAsset>(HashString("Default"));
 
-	_ButtonIdleMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f));
-	_ButtonIdleMaterial.SetBorderOffset(0.0f);
+	_ButtonIdleMaterial.SetColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f));
 
-	_ButtonHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 0.75f));
-	_ButtonHoveredMaterial.SetBorderOffset(0.0f);
+	_ButtonHoveredMaterial.SetColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 0.75f));
 
-	_ButtonPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_ButtonPressedMaterial.SetBorderOffset(0.0f);
+	_ButtonPressedMaterial.SetColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 
-	_CheckboxUncheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f));
-	_CheckboxUncheckedIdleMaterial.SetBorderOffset(0.0f);
+	_CheckboxUncheckedIdleMaterial.SetColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f));
 
-	_CheckboxUncheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 0.75f));
-	_CheckboxUncheckedHoveredMaterial.SetBorderOffset(0.0f);
+	_CheckboxUncheckedHoveredMaterial.SetColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 0.75f));
 
-	_CheckboxUncheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_CheckboxUncheckedPressedMaterial.SetBorderOffset(0.0f);
+	_CheckboxUncheckedPressedMaterial.SetColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 
-	_CheckboxCheckedIdleMaterial.SetPrimaryColor(Vector4<float32>(0.75f, 0.75f, 0.75f, 0.75f));
-	_CheckboxCheckedIdleMaterial.SetBorderOffset(0.0f);
+	_CheckboxCheckedIdleMaterial.SetColor(Vector4<float32>(0.75f, 0.75f, 0.75f, 0.75f));
 
-	_CheckboxCheckedHoveredMaterial.SetPrimaryColor(Vector4<float32>(0.875f, 0.875f, 0.875f, 0.875f));
-	_CheckboxCheckedHoveredMaterial.SetBorderOffset(0.0f);
+	_CheckboxCheckedHoveredMaterial.SetColor(Vector4<float32>(0.875f, 0.875f, 0.875f, 0.875f));
 
-	_CheckboxCheckedPressedMaterial.SetPrimaryColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
-	_CheckboxCheckedPressedMaterial.SetBorderOffset(0.0f);
+	_CheckboxCheckedPressedMaterial.SetColor(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
 
-	_ProgressBarBottomMaterial.SetPrimaryColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 0.5f));
+	_ProgressBarBottomMaterial.SetColor(Vector4<float32>(0.125f, 0.125f, 0.125f, 0.5f));
 
-	_ProgressBarTopMaterial.SetPrimaryColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
+	_ProgressBarTopMaterial.SetColor(Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f));
 
 	_TextScale = 0.02'50f;
 }
@@ -158,7 +149,7 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 /*
 *	Returns the user interface primitives for this scene.
 */
-void UserInterfaceScene::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) NOEXCEPT
+void UserInterfaceScene::RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) NOEXCEPT
 {
 	//First of all, clear.
 	output->Clear();
@@ -232,8 +223,7 @@ RESTRICTED UserInterfaceButton* const RESTRICT UserInterfaceScene::AddButtonByNo
 																			pressed_material_override ? *pressed_material_override : _ButtonPressedMaterial,
 																			text,
 																			_Font,
-																			text_scale_override ? *text_scale_override : _TextScale,
-																			_Entity != nullptr) };
+																			text_scale_override ? *text_scale_override : _TextScale) };
 
 	//Add the button to the container.
 	_Buttons.Emplace(new_button);
@@ -346,8 +336,7 @@ RESTRICTED UserInterfaceCheckbox* const RESTRICT UserInterfaceScene::AddCheckbox
 			scale_override ? *scale_override : _TextScale,
 			horizontal_alignment,
 			vertical_alignment,
-			_Font,
-			_Entity != nullptr
+			_Font
 		) 
 	};
 
@@ -411,8 +400,7 @@ RESTRICTED UserInterfaceImage* const RESTRICT UserInterfaceScene::AddImageByNorm
 	UserInterfaceImage *const RESTRICT new_image{ new (MemorySystem::Instance->TypeAllocate<UserInterfaceImage>()) UserInterfaceImage(	minimum,
 																			maximum,
 																			material,
-																			opacity,
-																			_Entity != nullptr) };
+																			opacity) };
 
 	//Add the image to the container.
 	_Images.Emplace(new_image);
@@ -477,8 +465,7 @@ RESTRICTED UserInterfaceProgressBar* const RESTRICT UserInterfaceScene::AddProgr
 																							bottom_material_override ? *bottom_material_override : _ProgressBarBottomMaterial,
 																							top_material_override ? *top_material_override : _ProgressBarTopMaterial,
 																							text,
-																							_Font,
-																							_Entity != nullptr) };
+																							_Font) };
 
 	//Add the progress bar to the container.
 	_ProgressBars.Emplace(new_progress_bar);
@@ -535,8 +522,7 @@ RESTRICTED UserInterfaceText* const RESTRICT UserInterfaceScene::AddTextByNormal
 																		_Font,
 																		scale_override ? *scale_override : _TextScale,
 																		horizontal_alignment,
-																		vertical_alignment,
-																		_Entity != nullptr) };
+																		vertical_alignment) };
 
 	//Add the text to the container.
 	_Texts.Emplace(new_text);

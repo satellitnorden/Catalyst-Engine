@@ -407,6 +407,7 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 	//Process the root node.
 	ProcessNode(scene, scene->mRootNode, model_file);
 
+#if 0
 	//If the source asset format is Autodesk something something, assume we're importing a Quixel model and apply the correct transformation...
 	for (uint32 i{ 0 }; i < scene->mMetaData->mNumProperties; ++i)
 	{
@@ -434,6 +435,7 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 			break;
 		}
 	}
+#endif
 
 	//Post process the model file.
 	model_file->PostProcess();

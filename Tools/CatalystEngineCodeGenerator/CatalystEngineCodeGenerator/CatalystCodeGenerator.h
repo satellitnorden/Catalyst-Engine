@@ -5,6 +5,7 @@
 #include "ScriptGenerator.h"
 #include "SettingsGenerator.h"
 #include "SystemGenerator.h"
+#include "UserInterfaceGenerator.h"
 
 class CatalystCodeGenerator final
 {
@@ -32,5 +33,8 @@ private:
 
 	//The system generator.
 	SystemGenerator _SystemGenerator;
+
+	//The user interface generator.
+	UserInterfaceGenerator _UserInterfaceGenerator;
 
 };

@@ -449,7 +449,7 @@ void FindStorageBufferDefinitionFilePath(const char *const RESTRICT name, Dynami
 /*
 *	Finds the file path for the shader function library with the given name.
 */
-void FindShaderFunctionLibraryFilePath(const char* const RESTRICT name, DynamicString* const RESTRICT file_path) NOEXCEPT
+void FindShaderFunctionLibraryFilePath(const char *const RESTRICT name, DynamicString* const RESTRICT file_path) NOEXCEPT
 {
 	//Try the engine directory.
 	{
@@ -1388,7 +1388,14 @@ void GenerateFragmentShader
 
 			for (const InputParameter &input_parameter : input_parameters)
 			{
-				glsl_file << "layout (location = " << location_index << ") in " << input_parameter._Type.Data() << " " << input_parameter._Name.Data() << ";" << std::endl;
+				bool flat{ false };
+
+				if (input_parameter._Type == "uint")
+				{
+					flat = true;
+				}
+
+				glsl_file << "layout (location = " << location_index << ") " << (flat ? "flat " : "") << "in " << input_parameter._Type.Data() << " " << input_parameter._Name.Data() << ";" << std::endl;
 			
 				location_index += GLSLCompilation::GetLocationOffsetForType(input_parameter._Type.Data());
 			}

@@ -145,6 +145,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SettingsGenerator.cpp" />
     <ClCompile Include="SystemGenerator.cpp" />
+    <ClCompile Include="UserInterfaceGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CatalystCodeGenerator.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="SettingsGenerator.h" />
     <ClInclude Include="SystemGenerator.h" />
     <ClInclude Include="TextParsing.h" />
+    <ClInclude Include="UserInterfaceGenerator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

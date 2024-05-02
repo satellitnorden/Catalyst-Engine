@@ -31,9 +31,8 @@ public:
 private:
 
 	//The graphics render pipelines.
-	StaticArray<GraphicsRenderPipeline, 15> _GraphicsRenderPipelines
+	StaticArray<GraphicsRenderPipeline, 16> _GraphicsRenderPipelines
 	{
-		//GraphicsRenderPipeline(HashString("Clear_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelDepthSingleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelDepthDoubleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("InstancedModelDepthSingleSided_RenderPipeline")),
@@ -48,7 +47,8 @@ private:
 		GraphicsRenderPipeline(HashString("InstancedModelColorDoubleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("InstancedImpostorColor_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("Terrain_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("Particles_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("Particles_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("UserInterface3DBackground_RenderPipeline"))
 	};
 
 	//The animated model scene features graphics pipeline.

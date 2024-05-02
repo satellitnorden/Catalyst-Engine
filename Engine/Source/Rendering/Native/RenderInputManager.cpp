@@ -22,14 +22,10 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
-#include <Systems/UserInterfaceSystem.h>
 #include <Systems/WorldSystem.h>
 
 //Terrain.
 #include <Terrain/TerrainVertex.h>
-
-//User interface.
-#include <UserInterface/UserInterfaceUtilities.h>
 
 //Push constant data struct definitions.
 struct ModelDepthPushConstantData
@@ -109,17 +105,6 @@ struct GrassPushConstantData
 	float32 _Tilt;
 	float32 _Bend;
 	float32 _FadeOutDistance;
-};
-
-struct UserInterfaceTextPushConstantData
-{
-	Vector4<float32> _ColorOpacity;
-	Vector2<float32> _BoundsMinimum;
-	Vector2<float32> _BoundsMaximum;
-	Vector2<float32> _TextureMinimum;
-	Vector2<float32> _TextureMaximum;
-	uint32 _TextureIndex;
-	float32 _SmoothingFactor;
 };
 
 /*
@@ -609,21 +594,6 @@ void RenderInputManager::Initialize() NOEXCEPT
 			this
 		);
 	}
-
-	//Register the user interface text input stream.
-	RegisterInputStream
-	(
-		HashString("UserInterfaceText"),
-		DynamicArray<VertexInputAttributeDescription>(),
-		DynamicArray<VertexInputBindingDescription>(),
-		sizeof(UserInterfaceTextPushConstantData),
-		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-		{
-			static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherUserInterfaceTextInputStream(input_stream);
-		},
-		RenderInputStream::Mode::DRAW,
-		this
-	);
 }
 
 /*
@@ -1286,120 +1256,5 @@ void RenderInputManager::GatherGrassInputStream
 				return first->_SortValue < second->_SortValue;
 			}
 		);
-	}
-}
-
-/*
-*	Gathers a user interface text input stream.
-*/
-void RenderInputManager::GatherUserInterfaceTextInputStream
-(
-	RenderInputStream *const RESTRICT input_stream
-) NOEXCEPT
-{
-	//Clear the entries.
-	input_stream->_Entries.Clear();
-
-	//Clear the push constant data memory.
-	input_stream->_PushConstantDataMemory.Clear();
-
-	//Calculate the aspect ratio reciprocal.
-	const float32 aspect_ratio_reciprocal{ 1.0f / RenderingSystem::Instance->GetFullAspectRatio() };
-
-	//Gather user interface text primitives.
-	for (const UserInterfacePrimitive *const RESTRICT primitive : *UserInterfaceSystem::Instance->GetUserInterfacePrimitives())
-	{
-		//Don't care about primitives that aren't visible.
-		if (primitive->_Opacity <= 0.0f)
-		{
-			continue;
-		}
-
-		//Don't care about primitives that aren't text.
-		if (primitive->_Type != UserInterfacePrimitiveType::TEXT)
-		{
-			continue;
-		}
-		
-		//Cast to the proper type primitive.
-		const TextUserInterfacePrimitive *const RESTRICT type_primitive{ static_cast<const TextUserInterfacePrimitive *const RESTRICT>(primitive) };
-
-		//Calculate the aligned minimum/maximum.
-		Vector2<float32> aligned_minimum;
-		Vector2<float32> aligned_maximum;
-
-		UserInterfaceUtilities::CalculateAlignedBoundingBox
-		(
-			type_primitive->_Minimum,
-			type_primitive->_Maximum,
-			type_primitive->_Font,
-			type_primitive->_Text,
-			type_primitive->_Scale,
-			type_primitive->_HorizontalAlignment,
-			type_primitive->_VerticalAlignment,
-			&aligned_minimum,
-			&aligned_maximum
-		);
-
-		//Gather all characters.
-		float32 current_offset{ 0.0f };
-
-		for (uint64 i{ 0 }, length{ type_primitive->_Text.Length() }; i < length; ++i)
-		{
-			//Cache the chartacter.
-			const char character{ type_primitive->_Text[i] };
-
-			//Only draw if it's a valid character.
-			if (character < 0)
-			{
-				continue;
-			}
-
-			if (character == '\n')
-			{
-				continue;
-			}
-
-			//Add a new entry.
-			input_stream->_Entries.Emplace();
-			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
-
-			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-			new_entry._VertexBuffer = EMPTY_HANDLE;
-			new_entry._IndexBuffer = EMPTY_HANDLE;
-			new_entry._IndexBufferOffset = 0;
-			new_entry._InstanceBuffer = EMPTY_HANDLE;
-			new_entry._VertexCount = 4;
-			new_entry._IndexCount = 0;
-			new_entry._InstanceCount = 0;
-
-			//Set up the push constant data.
-			UserInterfaceTextPushConstantData push_constant_data;
-
-			push_constant_data._ColorOpacity = Vector4<float32>(1.0f, 1.0f, 1.0f, type_primitive->_Opacity);
-			push_constant_data._BoundsMinimum._X = aligned_minimum._X + current_offset;
-			push_constant_data._BoundsMinimum._Y = aligned_minimum._Y;
-			push_constant_data._BoundsMaximum._X = aligned_minimum._X + current_offset + type_primitive->_Font->_CharacterDescriptions[character]._Size._X * type_primitive->_Scale * aspect_ratio_reciprocal;
-			push_constant_data._BoundsMaximum._Y = aligned_minimum._Y + type_primitive->_Font->_CharacterDescriptions[character]._Size._Y * type_primitive->_Scale;
-
-			push_constant_data._BoundsMinimum._X += type_primitive->_Font->_CharacterDescriptions[character]._Offset._X * type_primitive->_Scale * aspect_ratio_reciprocal;
-			push_constant_data._BoundsMaximum._X += type_primitive->_Font->_CharacterDescriptions[character]._Offset._X * type_primitive->_Scale * aspect_ratio_reciprocal;
-
-			push_constant_data._BoundsMinimum._Y += type_primitive->_Font->_CharacterDescriptions[character]._Offset._Y * type_primitive->_Scale;
-			push_constant_data._BoundsMaximum._Y += type_primitive->_Font->_CharacterDescriptions[character]._Offset._Y * type_primitive->_Scale;
-			
-			push_constant_data._TextureMinimum = type_primitive->_Font->_CharacterDescriptions[character]._TextureBounds._Minimum;
-			push_constant_data._TextureMaximum = type_primitive->_Font->_CharacterDescriptions[character]._TextureBounds._Maximum;
-			push_constant_data._TextureIndex = type_primitive->_Font->_MasterTextureIndex;
-			push_constant_data._SmoothingFactor = 0.3'25f;
-
-			for (uint64 i{ 0 }; i < sizeof(UserInterfaceTextPushConstantData); ++i)
-			{
-				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
-			}
-
-			//Update the current offset.
-			current_offset += type_primitive->_Font->_CharacterDescriptions[character]._Advance * type_primitive->_Scale * aspect_ratio_reciprocal;
-		}
 	}
 }

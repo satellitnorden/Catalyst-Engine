@@ -56,7 +56,7 @@ UserInterfaceTextInput::UserInterfaceTextInput(	const Vector2<float32> initial_m
 		description._Opacity = 1.0f;
 		description._Material = initial_idle_material;
 
-		_ImagePrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, false));
+		_ImagePrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 	}
 
 	//Set the text.
@@ -167,7 +167,7 @@ void UserInterfaceTextInput::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._VerticalAlignment = TextVerticalAlignment::CENTER;
 			description._Text = text;
 
-			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, false));
+			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 		}
 
 		else
@@ -201,7 +201,7 @@ void UserInterfaceTextInput::SetTextOpacity(const float32 value) NOEXCEPT
 /*
 *	Returns the user interface primitives.
 */
-void UserInterfaceTextInput::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
+void UserInterfaceTextInput::RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
 {
 	output->Emplace(_ImagePrimitive);
 	

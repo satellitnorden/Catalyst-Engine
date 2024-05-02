@@ -17,17 +17,13 @@ UserInterfaceProgressBar::UserInterfaceProgressBar(	const Vector2<float32> initi
 													const UserInterfaceMaterial &initial_bottom_material,
 													const UserInterfaceMaterial &initial_top_material,
 													const char *const RESTRICT text,
-													const AssetPointer<FontAsset> font,
-													const bool is_three_dimensional) NOEXCEPT
+													const AssetPointer<FontAsset> font) NOEXCEPT
 {
 	//Set the type.
 	SetType(UserInterfaceElementType::PROGRESS_BAR);
 
 	//Set the font.
 	_Font = font;
-
-	//Remember whether or not this progress bar is three dimensional.
-	_IsThreeDimensional = is_three_dimensional;
 
 	//Create the bottom and top primitive.
 	{
@@ -39,7 +35,7 @@ UserInterfaceProgressBar::UserInterfaceProgressBar(	const Vector2<float32> initi
 		description._Opacity = 1.0f;
 		description._Material = initial_bottom_material;
 
-		_BottomPrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
+		_BottomPrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 	}
 
 	{
@@ -51,7 +47,7 @@ UserInterfaceProgressBar::UserInterfaceProgressBar(	const Vector2<float32> initi
 		description._Opacity = 1.0f;
 		description._Material = initial_top_material;
 
-		_TopPrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
+		_TopPrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 	}
 
 	//Set the text.
@@ -106,7 +102,7 @@ void UserInterfaceProgressBar::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._VerticalAlignment = TextVerticalAlignment::CENTER;
 			description._Text = text;
 
-			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
+			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 		}
 
 		else
@@ -129,7 +125,7 @@ void UserInterfaceProgressBar::SetText(const char *const RESTRICT text) NOEXCEPT
 /*
 *	Returns the user interface primitives.
 */
-void UserInterfaceProgressBar::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
+void UserInterfaceProgressBar::RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
 {
 	output->Emplace(_BottomPrimitive);
 	output->Emplace(_TopPrimitive);

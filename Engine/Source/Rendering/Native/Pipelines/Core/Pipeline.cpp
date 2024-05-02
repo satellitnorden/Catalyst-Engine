@@ -79,16 +79,20 @@ void Pipeline::ProcessInputStream(const RenderInputStream &input_stream, Command
 
 		case RenderInputStream::Mode::DRAW_INSTANCED:
 		{
-			for (const RenderInputStreamEntry& entry : input_stream._Entries)
+			for (const RenderInputStreamEntry &entry : input_stream._Entries)
 			{
-				command_buffer->PushConstants
-				(
-					this,
-					ShaderStage::VERTEX | ShaderStage::FRAGMENT,
-					0,
-					static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
-					push_constant_data ? push_constant_data : &input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
-				);
+				if (input_stream._RequiredPushConstantDataSize != 0)
+				{
+					command_buffer->PushConstants
+					(
+						this,
+						ShaderStage::VERTEX | ShaderStage::FRAGMENT,
+						0,
+						static_cast<uint32>(input_stream._RequiredPushConstantDataSize),
+						push_constant_data ? push_constant_data : &input_stream._PushConstantDataMemory[entry._PushConstantDataOffset]
+					);
+				}
+				
 
 				if (entry._InstanceBuffer != EMPTY_HANDLE)
 				{

@@ -118,7 +118,7 @@ public:
 	/*
 	*	Returns the user interface primitives for this scene.
 	*/
-	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) NOEXCEPT;
+	void RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) NOEXCEPT;
 
 protected:
 

@@ -14,14 +14,10 @@
 UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
 										const Vector2<float32> initial_maximum,
 										const UserInterfaceMaterial &initial_material,
-										const float32 opacity,
-										const bool is_three_dimensional) NOEXCEPT
+										const float32 opacity) NOEXCEPT
 {
 	//Set the type.
 	SetType(UserInterfaceElementType::IMAGE);
-
-	//Remember whether or not this image is three dimensional.
-	_IsThreeDimensional = is_three_dimensional;
 
 	//Create the primitive.
 	{
@@ -33,7 +29,7 @@ UserInterfaceImage::UserInterfaceImage(	const Vector2<float32> initial_minimum,
 		description._Opacity = opacity;
 		description._Material = initial_material;
 
-		_Primitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
+		_Primitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 	}
 }
 
@@ -95,7 +91,7 @@ void UserInterfaceImage::SetOpacity(const float32 value) NOEXCEPT
 /*
 *	Returns the user interface primitives.
 */
-void UserInterfaceImage::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
+void UserInterfaceImage::RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
 {
 	output->Emplace(_Primitive);
 }

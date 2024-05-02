@@ -30,8 +30,7 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 												const float32 text_scale,
 												const TextHorizontalAlignment horizontal_alignment,
 												const TextVerticalAlignment vertical_alignment,
-												const AssetPointer<FontAsset> font,
-												const bool is_three_dimensional) NOEXCEPT
+												const AssetPointer<FontAsset> font) NOEXCEPT
 {
 	//Set the type.
 	SetType(UserInterfaceElementType::CHECKBOX);
@@ -86,9 +85,6 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 	//Set the font.
 	_Font = font;
 
-	//Remember whether or not this checkbox is three dimensional.
-	_IsThreeDimensional = is_three_dimensional;
-
 	//Add the image primitive.
 	{
 		ImageUserInterfacePrimitiveDescription description;
@@ -99,7 +95,7 @@ UserInterfaceCheckbox::UserInterfaceCheckbox(	const Vector2<float32> initial_min
 		description._Opacity = 1.0f;
 		description._Material = initial_unchecked_idle_material;
 
-		_ImagePrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
+		_ImagePrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 	}
 
 	//Set the text.
@@ -164,7 +160,7 @@ void UserInterfaceCheckbox::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._VerticalAlignment = _VerticalAlignment;
 			description._Text = text;
 
-			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
+			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 		}
 
 		else
@@ -187,7 +183,7 @@ void UserInterfaceCheckbox::SetText(const char *const RESTRICT text) NOEXCEPT
 /*
 *	Returns the user interface primitives.
 */
-void UserInterfaceCheckbox::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
+void UserInterfaceCheckbox::RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
 {
 	output->Emplace(_ImagePrimitive);
 

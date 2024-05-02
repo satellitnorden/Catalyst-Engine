@@ -1265,28 +1265,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\UserInterfaceFragmentShader";
-		parameters._ID = "UserInterfaceFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\UserInterfaceVertexShader";
-		parameters._ID = "UserInterfaceVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\UserInterfaceVertexShader.vert";
-		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ViewportVertexShader";
 		parameters._ID = "ViewportVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ViewportVertexShader.vert";

@@ -44,13 +44,11 @@ void UserInterfaceRenderPass::Initialize() NOEXCEPT
 	ResetRenderPass();
 
 	//Add the pipelines.
-	SetNumberOfPipelines(2);
-	AddPipeline(&_UserInterfaceGraphicsPipeline);
-	AddPipeline(&_UserInterfaceTextRenderPipeline);
+	SetNumberOfPipelines(1);
+	AddPipeline(&_Pipeline);
 
 	//Initialize all pipelines.
-	_UserInterfaceGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
-	_UserInterfaceTextRenderPipeline.Initialize();
+	_Pipeline.Initialize();
 }
 
 /*
@@ -59,8 +57,7 @@ void UserInterfaceRenderPass::Initialize() NOEXCEPT
 void UserInterfaceRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
-	_UserInterfaceGraphicsPipeline.Execute();
-	_UserInterfaceTextRenderPipeline.Execute();
+	_Pipeline.Execute();
 }
 
 /*
@@ -69,6 +66,5 @@ void UserInterfaceRenderPass::Execute() NOEXCEPT
 void UserInterfaceRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	_UserInterfaceGraphicsPipeline.Terminate();
-	_UserInterfaceTextRenderPipeline.Terminate();
+	_Pipeline.Terminate();
 }

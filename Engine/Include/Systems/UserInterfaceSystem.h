@@ -14,7 +14,6 @@
 #include <UserInterface/UserInterfacePrimitive.h>
 #include <UserInterface/UserInterfacePrimitiveDescription.h>
 #include <UserInterface/UserInterfaceScene.h>
-#include <UserInterface/UserInterfaceSceneFactory.h>
 
 class UserInterfaceSystem final
 {
@@ -48,58 +47,12 @@ public:
 	/*
 	*	Creates a user interface primitive.
 	*/
-	RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT CreateUserInterfacePrimitive(const UserInterfacePrimitiveDescription *const RESTRICT description, const bool is_three_dimensional) NOEXCEPT;
+	RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT CreateUserInterfacePrimitive(const UserInterfacePrimitiveDescription *const RESTRICT description) NOEXCEPT;
 
 	/*
 	*	Destroys a user interface primitive.
 	*/
 	void DestroyUserInterfacePrimitive(UserInterfacePrimitive *const RESTRICT primitive) NOEXCEPT;
-
-	/*
-	*	Returns the user interface primitives.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT GetUserInterfacePrimitives() const NOEXCEPT
-	{
-		return &_UserInterfacePrimitives;
-	}
-
-	/*
-	*	Registers a user interface scene factory.
-	*/
-	FORCE_INLINE void RegisterUserInterfaceSceneFactory(const UserInterfaceSceneFactory &value) NOEXCEPT
-	{
-		_RegisteredUserInterfaceSceneFactories.Emplace(value);
-	}
-
-	/*
-	*	Returns all the registered user interface scene factories.
-	*/
-	FORCE_INLINE NO_DISCARD const DynamicArray<UserInterfaceSceneFactory> &GetRegisteredUserInterfaceSceneFactories() const NOEXCEPT
-	{
-		return _RegisteredUserInterfaceSceneFactories;
-	}
-
-	/*
-	*	Creates a user interface scene with the given identifier.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD UserInterfaceScene *const RESTRICT CreateUserInterfaceScene(const HashString identifier) NOEXCEPT
-	{
-		UserInterfaceScene *RESTRICT new_user_interface_scene{ nullptr };
-
-		for (const UserInterfaceSceneFactory &factory : _RegisteredUserInterfaceSceneFactories)
-		{
-			if (factory.GetIdentifier() == identifier)
-			{
-				new_user_interface_scene = factory.Create();
-				new_user_interface_scene->SetName(factory.GetName());
-				new_user_interface_scene->SetIdentifier(factory.GetIdentifier());
-
-				break;
-			}
-		}
-
-		return new_user_interface_scene;
-	}
 
 	/*
 	*	Activates the given scene.
@@ -138,8 +91,31 @@ public:
 
 private:
 
-	//The registered user interface scene factories.
-	DynamicArray<UserInterfaceSceneFactory> _RegisteredUserInterfaceSceneFactories;
+	/*
+	*	User interface instance class definition.
+	*	This is the data that is sent to the GPU.
+	*/
+	class ALIGN(16) UserInterfaceInstance final
+	{
+
+	public:
+
+		//The positions.
+		StaticArray<Vector4<float32>, 4> _Positions;
+
+		//The texture coordinates.
+		StaticArray<Vector2<float32>, 4> _TextureCoordinates;
+
+		//The flags.
+		uint32 _Flags;
+
+		//The color/texture.
+		uint32 _ColorOrTexture;
+
+		//The color/opacity.
+		uint32 _ColorOpacity;
+
+	};
 
 	//The active user interface scenes.
 	DynamicArray<UserInterfaceScene *RESTRICT> _ActiveUserInterfaceScenes;
@@ -156,9 +132,22 @@ private:
 	//Container for all user interface primitives.
 	DynamicArray<UserInterfacePrimitive *RESTRICT> _UserInterfacePrimitives;
 
+	//The instances.
+	DynamicArray<UserInterfaceInstance> _Instances;
+
 	/*
 	*	Updates the user interface system during the user interface update phase.
 	*/
 	void UserInterfaceUpdate() NOEXCEPT;
+
+	/*
+	*	The storage buffer update.
+	*/
+	void StorageBufferUpdate(DynamicArray<byte> *const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	The render input stream update.
+	*/
+	void RenderInputStreamUpdate(RenderInputStream *const RESTRICT input_stream) NOEXCEPT;
 
 };

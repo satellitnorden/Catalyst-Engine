@@ -5,7 +5,6 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/GraphicsPipelines/MobileGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/UserInterfaceGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 //Systems.
@@ -34,9 +33,6 @@ private:
 
 	//The mobile graphics pipeline.
 	MobileGraphicsPipeline _MobileGraphicsPipeline;
-
-	//The user interface graphics pipeline.
-	UserInterfaceGraphicsPipeline _UserInterfaceGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

@@ -51,13 +51,11 @@ void MobileRenderPass::Initialize() NOEXCEPT
 	RenderingSystem::Instance->CreateDepthBuffer(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::D_UINT24_S_UINT8, SampleCount::SAMPLE_COUNT_1, &_SceneDepthBuffer);
 
 	//Add the pipelines.
-	SetNumberOfPipelines(2);
+	SetNumberOfPipelines(1);
 	AddPipeline(&_MobileGraphicsPipeline);
-	AddPipeline(&_UserInterfaceGraphicsPipeline);
 
 	//Initialize all pipelines.
 	_MobileGraphicsPipeline.Initialize(_SceneDepthBuffer);
-	_UserInterfaceGraphicsPipeline.Initialize(EMPTY_HANDLE);
 }
 
 /*
@@ -67,7 +65,6 @@ void MobileRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
 	_MobileGraphicsPipeline.Execute();
-	_UserInterfaceGraphicsPipeline.Execute();
 
 	//Enable this render pass.
 	SetEnabled(true);
@@ -80,5 +77,4 @@ void MobileRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
 	_MobileGraphicsPipeline.Terminate();
-	_UserInterfaceGraphicsPipeline.Terminate();
 }

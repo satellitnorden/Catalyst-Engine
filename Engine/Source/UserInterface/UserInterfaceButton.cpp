@@ -23,8 +23,7 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 											const UserInterfaceMaterial &initial_pressed_material,
 											const char *const RESTRICT text,
 											const AssetPointer<FontAsset> font,
-											const float32 text_scale,
-											const bool is_three_dimensional) NOEXCEPT
+											const float32 text_scale) NOEXCEPT
 {
 	//Set the type.
 	SetType(UserInterfaceElementType::BUTTON);
@@ -53,9 +52,6 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 	//Set the text scale.
 	_TextScale = text_scale;
 
-	//Set whether or not this button is three dimensional.
-	_IsThreeDimensional = is_three_dimensional;
-
 	//Add the image Primitive.
 	{
 		ImageUserInterfacePrimitiveDescription description;
@@ -66,7 +62,7 @@ UserInterfaceButton::UserInterfaceButton(	const Vector2<float32> initial_minimum
 		description._Opacity = 1.0f;
 		description._Material = initial_idle_material;
 
-		_ImagePrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
+		_ImagePrimitive = static_cast<ImageUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 	}
 
 	//Set the text.
@@ -186,7 +182,7 @@ void UserInterfaceButton::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._VerticalAlignment = TextVerticalAlignment::CENTER;
 			description._Text = text;
 
-			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description, _IsThreeDimensional));
+			_TextPrimitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
 		}
 
 		else
@@ -222,7 +218,7 @@ void UserInterfaceButton::SetOpacity(const float32 value) NOEXCEPT
 /*
 *	Returns the user interface primitives.
 */
-void UserInterfaceButton::RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
+void UserInterfaceButton::RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT
 {
 	output->Emplace(_ImagePrimitive);
 	

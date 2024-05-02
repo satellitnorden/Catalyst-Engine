@@ -70,7 +70,7 @@ public:
 	/*
 	*	Returns the user interface primitives.
 	*/
-	FORCE_INLINE virtual void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT = 0;
+	FORCE_INLINE virtual void RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT = 0;
 
 private:
 

@@ -224,6 +224,11 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NONE);
 				}
 
+				else if (ImGui::MenuItem("Visualization: Normal"))
+				{
+					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NORMAL);
+				}
+
 				else if (ImGui::MenuItem("Visualization: Diffuse Irradiance"))
 				{
 					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::DIFFUSE_IRRADIANCE);
@@ -536,18 +541,18 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 		AnimationSystem::Instance->RenderUpdate();
 	}
 
-	//Update the render input manager.
-	{
-		PROFILING_SCOPE("RenderingSystem_RenderInputManager_RenderUpdate");
-
-		_RenderInputManager.RenderUpdate();
-	}
-
 	//Update the buffer manager.
 	{
 		PROFILING_SCOPE("RenderingSystem_BufferManager_RenderUpdate");
 
 		_BufferManager.RenderUpdate();
+	}
+
+	//Update the render input manager.
+	{
+		PROFILING_SCOPE("RenderingSystem_RenderInputManager_RenderUpdate");
+
+		_RenderInputManager.RenderUpdate();
 	}
 
 	//Record the frame command buffer.

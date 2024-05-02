@@ -34,8 +34,7 @@ public:
 						const UserInterfaceMaterial &initial_pressed_material,
 						const char *const RESTRICT text,
 						const AssetPointer<FontAsset> font,
-						const float32 text_scale,
-						const bool is_three_dimensional) NOEXCEPT;
+						const float32 text_scale) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -183,7 +182,7 @@ public:
 	/*
 	*	Returns the user interface primitives.
 	*/
-	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
+	void RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
 
 private:
 
@@ -231,8 +230,5 @@ private:
 
 	//The text primitive.
 	TextUserInterfacePrimitive *RESTRICT _TextPrimitive{ nullptr };
-
-	//Denotes whether or not this button is three dimensional.
-	bool _IsThreeDimensional{ false };
 
 };

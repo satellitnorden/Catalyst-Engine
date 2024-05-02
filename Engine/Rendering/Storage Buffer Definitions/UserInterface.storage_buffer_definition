@@ -1,0 +1,19 @@
+//Constants.
+#define USER_INTERFACE_INSTANCE_FLAG_IMAGE (BIT(0))
+#define USER_INTERFACE_INSTANCE_FLAG_TEXT (BIT(1))
+#define USER_INTERFACE_INSTANCE_FLAG_TEXTURE (BIT(2))
+
+//User interface instance struct definition.
+struct UserInterfaceInstance
+{
+	vec4 _Positions[4];
+	vec2 _TextureCoordinates[4];
+	uint _Flags;
+	uint _ColorOrTexture;
+	uint _ColorOpacity;
+};
+
+StorageBuffer(UserInterface)
+{
+	UserInterfaceInstance[] USER_INTERFACE_INSTANCES;
+};

@@ -22,8 +22,7 @@ public:
 	UserInterfaceImage(	const Vector2<float32> initial_minimum,
 						const Vector2<float32> initial_maximum,
 						const UserInterfaceMaterial &initial_material,
-						const float32 opacity,
-						const bool is_three_dimensional) NOEXCEPT;
+						const float32 opacity) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -58,14 +57,11 @@ public:
 	/*
 	*	Returns the user interface primitives.
 	*/
-	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
+	void RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
 
 private:
 
 	//The primitive.
 	ImageUserInterfacePrimitive *RESTRICT _Primitive;
-
-	//Denotes whether or not this image is three dimensional.
-	bool _IsThreeDimensional{ false };
 
 };

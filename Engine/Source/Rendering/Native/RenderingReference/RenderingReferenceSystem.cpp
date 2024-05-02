@@ -48,8 +48,7 @@ public:
 		//Add the image.
 		{
 			UserInterfaceMaterial material;
-			material.SetPrimaryColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
-			material.SetBorderOffset(0.0f);
+			material.SetColor(Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f));
 
 			_Image = AddImageByNormalizedCoordinate(Vector2<float32>(0.0f, 0.0f),
 													Vector2<float32>(1.0f, 1.0f),
@@ -82,8 +81,7 @@ public:
 	FORCE_INLINE void SetTextureIndex(const uint32 value) NOEXCEPT
 	{
 		UserInterfaceMaterial material;
-		material.SetPrimaryTextureIndex(value);
-		material.SetBorderOffset(0.0f);
+		material.SetTextureIndex(value);
 
 		_Image->SetMaterial(material);
 	}

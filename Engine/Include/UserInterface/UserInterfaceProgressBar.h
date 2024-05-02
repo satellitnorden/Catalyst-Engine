@@ -25,8 +25,7 @@ public:
 								const UserInterfaceMaterial &initial_bottom_material,
 								const UserInterfaceMaterial &initial_top_material,
 								const char *const RESTRICT text,
-								const AssetPointer<FontAsset> font,
-								const bool is_three_dimensional) NOEXCEPT;
+								const AssetPointer<FontAsset> font) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -54,7 +53,7 @@ public:
 	/*
 	*	Returns the user interface primitives.
 	*/
-	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
+	void RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
 
 private:
 
@@ -72,8 +71,5 @@ private:
 
 	//The current progress.
 	float32 _CurrentProgress{ 0.0f };
-	
-	//Denotes whether or not this progress bar is three dimensional.
-	bool _IsThreeDimensional{ false };
 
 };

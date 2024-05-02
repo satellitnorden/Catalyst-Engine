@@ -40,8 +40,7 @@ public:
 							const float32 text_scale,
 							const TextHorizontalAlignment horizontal_alignment,
 							const TextVerticalAlignment vertical_alignment,
-							const AssetPointer<FontAsset> font,
-							const bool is_three_dimensional) NOEXCEPT;
+							const AssetPointer<FontAsset> font) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -176,7 +175,7 @@ public:
 	/*
 	*	Returns the user interface primitives.
 	*/
-	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
+	void RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
 
 private:
 
@@ -248,9 +247,6 @@ private:
 
 	//The text primitive.
 	TextUserInterfacePrimitive *RESTRICT _TextPrimitive{ nullptr };
-
-	//Denotes whether or not this checkbox is three dimensional.
-	bool _IsThreeDimensional{ false };
 
 	/*
 	*	Updates the material.

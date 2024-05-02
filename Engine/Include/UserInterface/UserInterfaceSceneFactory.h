@@ -2,78 +2,29 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/DynamicString.h>
-#include <Core/General/HashString.h>
+
+//Generated.
+#include <Generated/UserInterface.Generated.h>
 
 //User interface.
 #include <UserInterface/UserInterfaceScene.h>
 
-class UserInterfaceSceneFactory final
+/*
+*	Adds this in the header file of your user interface scene to automatically generate a factory. (:
+*/
+#define CATALYST_USER_INTERFACE_SCENE(X)
+
+namespace UserInterfaceSceneFactory
 {
 
-public:
-
-	//Type aliases.
-	using CreateCallback = UserInterfaceScene *const RESTRICT(*)();
-	using DestroyCallback = void(*)(UserInterfaceScene *const RESTRICT);
+	/*
+	*	Creates a user interface scene with the given identifier.
+	*/
+	NO_DISCARD UserInterfaceScene *const RESTRICT Create(const UserInterfaceSceneIdentifier identifier) NOEXCEPT;
 
 	/*
-	*	Initializes this user interface scene factory.
+	*	Destroys the given user interface scene.
 	*/
-	FORCE_INLINE void Initialize(	const char *const RESTRICT initial_name,
-									const CreateCallback initial_create_callback,
-									const DestroyCallback initial_destroy_callback) NOEXCEPT
-	{
-		_Name = initial_name;
-		_Identifier = HashString(initial_name);
-		_CreateCallback = initial_create_callback;
-		_DestroyCallback = initial_destroy_callback;
-	}
+	void Destroy(const UserInterfaceSceneIdentifier identifier, UserInterfaceScene *const RESTRICT user_interface_scene) NOEXCEPT;
 
-	/*
-	*	Returns the name.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const char *const RESTRICT GetName() const NOEXCEPT
-	{
-		return _Name.Data();
-	}
-
-	/*
-	*	Returns the identifier.
-	*/
-	FORCE_INLINE NO_DISCARD HashString GetIdentifier() const NOEXCEPT
-	{
-		return _Identifier;
-	}
-
-	/*
-	*	Creates a user interface scene.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD UserInterfaceScene *const RESTRICT Create() const NOEXCEPT
-	{
-		return _CreateCallback();
-	}
-
-	/*
-	*	Destroys a user interface scene.
-	*/
-	FORCE_INLINE void Destroy(UserInterfaceScene *const RESTRICT scene) const NOEXCEPT
-	{
-		_DestroyCallback(scene);
-	}
-
-private:
-
-	//The name.
-	DynamicString _Name;
-
-	//The identifier.
-	HashString _Identifier;
-
-	//The create callback.
-	CreateCallback _CreateCallback;
-
-	//The destroy callback.
-	DestroyCallback _DestroyCallback;
-	
-};
+}

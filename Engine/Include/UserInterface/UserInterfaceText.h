@@ -25,8 +25,7 @@ public:
 						const AssetPointer<FontAsset> font,
 						const float32 scale,
 						const TextHorizontalAlignment horizontal_alignment,
-						const TextVerticalAlignment vertical_alignment,
-						const bool is_three_dimensional) NOEXCEPT;
+						const TextVerticalAlignment vertical_alignment) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -51,7 +50,7 @@ public:
 	/*
 	*	Returns the user interface primitives.
 	*/
-	void RetrieveUserInterfacePrimitives(DynamicArray<const UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
+	void RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
 
 private:
 
@@ -75,8 +74,5 @@ private:
 
 	//The primitive.
 	TextUserInterfacePrimitive *RESTRICT _Primitive{ nullptr };
-
-	//Denotes whether or not this text is three dimensional.
-	bool _IsThreeDimensional{ false };
 
 };
