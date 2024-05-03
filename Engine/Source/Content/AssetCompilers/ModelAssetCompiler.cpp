@@ -37,6 +37,9 @@ public:
 	//The level of detail multiplier.
 	float32 _LevelOfDetailMultiplier;
 
+	//Denotes whether or not to apply quixel transformation.
+	bool _QuixelTransformation;
+
 };
 
 /*
@@ -148,6 +151,7 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 
 	//Set defaults.
 	parameters._LevelOfDetailMultiplier = 32.0f;
+	parameters._QuixelTransformation = false;
 
 	//Open the input file.
 	std::ifstream input_file{ compile_data->_FilePath.Data() };
@@ -231,6 +235,18 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 				}
 			}
 
+			//Is this a quixel transformation declaration?
+			{
+				const size_t position{ current_line.find("QuixelTransformation()") };
+
+				if (position != std::string::npos)
+				{
+					parameters._QuixelTransformation = true;
+
+					continue;
+				}
+			}
+
 			//Couldn't figure out what this line is?
 			ASSERT(false, "Unknown line %s", current_line.c_str());
 		}
@@ -283,6 +299,20 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 	for (uint64 i{ 0 }, size{ model_files.Size() }; i < size; ++i)
 	{
 		FBXReader::Read(parameters._LevelOfDetails[i].Data(), &model_files[i]);
+
+		//Apply transformation, if necessary.
+		if (parameters._QuixelTransformation)
+		{
+			Matrix4x4 transformation{ Vector3<float32>(0.0f, 0.0f, 0.0f), EulerAngles(BaseMath::DegreesToRadians(-90.0f), 0.0f, 0.0f), Vector3<float32>(0.01f, 0.01f, 0.01f) };
+
+			for (ModelFile::Mesh &mesh : model_files[i]._Meshes)
+			{
+				for (Vertex &vertex : mesh._Vertices)
+				{
+					vertex.Transform(transformation, 0.0f);
+				}
+			}
+		}
 	}
 
 	//Determine the model space axis aligned bounding box.
@@ -346,6 +376,20 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 		if (!collision_model_file.IsValid())
 		{
 			FBXReader::Read(parameters._Collision.Data(), &collision_model_file);
+
+			//Apply transformation, if necessary.
+			if (parameters._QuixelTransformation)
+			{
+				Matrix4x4 transformation{ Vector3<float32>(0.0f, 0.0f, 0.0f), EulerAngles(BaseMath::DegreesToRadians(-90.0f), 0.0f, 0.0f), Vector3<float32>(0.01f, 0.01f, 0.01f) };
+
+				for (ModelFile::Mesh &mesh : collision_model_file._Meshes)
+				{
+					for (Vertex &vertex : mesh._Vertices)
+					{
+						vertex.Transform(transformation, 0.0f);
+					}
+				}
+			}
 		}
 
 		//Build the collision model.

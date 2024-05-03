@@ -52,4 +52,12 @@ public:
 		return SkyGradient(_UpperSkyColor * scalar, _LowerSkyColor * scalar);
 	}
 
+	/*
+	*	Substraction by sky gradient operator overload.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD SkyGradient operator-(const SkyGradient &other) const NOEXCEPT
+	{
+		return SkyGradient(_UpperSkyColor - other._UpperSkyColor, _LowerSkyColor - other._LowerSkyColor);
+	}
+
 };

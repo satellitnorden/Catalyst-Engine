@@ -63,7 +63,7 @@ public:
 	FORCE_INLINE DynamicString(const char *const RESTRICT new_string) NOEXCEPT
 	{
 		//Determine how long the C string is.
-		_Length = strlen(new_string);
+		_Length = StringUtilities::StringLength(new_string);
 
 		//Allocate sufficient memory to host the string.
 		_String = static_cast<char *RESTRICT>(Memory::Allocate(_Length + 1));
@@ -128,7 +128,7 @@ public:
 		if (new_string)
 		{
 			//Calculate the length of the new string.
-			const uint64 new_string_length{ strlen(new_string) };
+			const uint64 new_string_length{ StringUtilities::StringLength(new_string) };
 
 			//It's possible the string hasn't been constructed yet - if so, allocate the required memory.
 			if (!_String)
@@ -192,7 +192,7 @@ public:
 		DynamicString new_dynamic_string;
 
 		//Determine how long the new dynamic string will be.
-		uint64 new_string_length{ strlen(new_string) };
+		uint64 new_string_length{ StringUtilities::StringLength(new_string) };
 		uint64 new_length{ this->_Length + new_string_length };
 
 		//Allocate sufficient memory to host the string.
@@ -217,7 +217,7 @@ public:
 	FORCE_INLINE void operator+=(const char *const RESTRICT new_string) NOEXCEPT
 	{
 		//Calculate the new length.
-		const uint64 new_string_length = strlen(new_string) + 1;
+		const uint64 new_string_length = StringUtilities::StringLength(new_string) + 1;
 		const uint64 new_length = _Length + new_string_length - 1;
 
 		//Allocate sufficient memory to host the concatenated string.

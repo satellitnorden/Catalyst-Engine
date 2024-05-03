@@ -40,7 +40,7 @@ namespace File
 	FORCE_INLINE NO_DISCARD Extension GetExtension(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Search for the position of the . character.
-		const uint64 string_length{ strlen(file_path) };
+		const uint64 string_length{ StringUtilities::StringLength(file_path) };
 		const char *RESTRICT dot_position{ nullptr };
 
 		for (int64 i{ static_cast<int64>(string_length) - 1 }; i >= 0; --i)
@@ -58,87 +58,87 @@ namespace File
 			return Extension::UNKNOWN;
 		}
 
-		if (strcmp(dot_position, ".ca") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".ca"))
 		{
 			return Extension::CA;
 		}
 
-		if (strcmp(dot_position, ".cac") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".cac"))
 		{
 			return Extension::CAC;
 		}
 
-		if (strcmp(dot_position, ".cr") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".cr"))
 		{
 			return Extension::CR;
 		}
 
-		if (strcmp(dot_position, ".crc") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".crc"))
 		{
 			return Extension::CRC;
 		}
 
-		if (strcmp(dot_position, ".fbx") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".fbx"))
 		{
 			return Extension::FBX;
 		}
 
-		if (strcmp(dot_position, ".jpg") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".jpg"))
 		{
 			return Extension::JPG;
 		}
 
-		if (strcmp(dot_position, ".mid") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".mid"))
 		{
 			return Extension::MID;
 		}
 
-		if (strcmp(dot_position, ".mp3") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".mp3"))
 		{
 			return Extension::MP3;
 		}
 
-		if (strcmp(dot_position, ".mtl") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".mtl"))
 		{
 			return Extension::MTL;
 		}
 
-		if (strcmp(dot_position, ".obj") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".obj"))
 		{
 			return Extension::OBJ;
 		}
 
-		if (strcmp(dot_position, ".ogg") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".ogg"))
 		{
 			return Extension::OGG;
 		}
 
-		if (strcmp(dot_position, ".opus") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".opus"))
 		{
 			return Extension::OPUS;
 		}
 
-		if (strcmp(dot_position, ".png") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".png"))
 		{
 			return Extension::PNG;
 		}
 
-		if (strcmp(dot_position, ".tga") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".tga"))
 		{
 			return Extension::TGA;
 		}
 
-		if (strcmp(dot_position, ".txt") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".txt"))
 		{
 			return Extension::TXT;
 		}
 
-		if (strcmp(dot_position, ".wav") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".wav"))
 		{
 			return Extension::WAV;
 		}
 
-		if (strcmp(dot_position, ".xml") == 0)
+		if (StringUtilities::IsEqual(dot_position, ".xml"))
 		{
 			return Extension::XML;
 		}

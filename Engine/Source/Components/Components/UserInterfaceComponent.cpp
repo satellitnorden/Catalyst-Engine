@@ -8,6 +8,9 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
+//User interface.
+#include <UserInterface/UserInterfaceSceneFactory.h>
+
 /*
 *	User interface background push constant data class definition.
 */
@@ -62,6 +65,19 @@ void UserInterfaceComponent::CreateInstance(Entity *const RESTRICT entity, Compo
 
 	//Copy data.
 	instance_data._Identifier = _initialization_data->_Identifier;
+
+	//Create the scene.
+	if (instance_data._Identifier != UserInterfaceSceneIdentifier::None)
+	{
+		instance_data._Scene = UserInterfaceSceneFactory::Create(instance_data._Identifier);
+		instance_data._Scene->SetEntity(entity);
+		instance_data._Scene->OnActivated();
+	}
+
+	else
+	{
+		instance_data._Scene = nullptr;
+	}
 }
 
 /*

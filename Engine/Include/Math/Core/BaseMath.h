@@ -234,7 +234,7 @@ public:
 	template <typename TYPE_TYPE, typename ALPHA_TYPE>
 	FORCE_INLINE constexpr static NO_DISCARD TYPE_TYPE LinearlyInterpolate(const TYPE_TYPE A, const TYPE_TYPE B, const ALPHA_TYPE alpha) NOEXCEPT
 	{
-		return (A * (1.0f - alpha)) + (B * alpha);
+		return A + ((B - A) * alpha);
 	}
 
 	/*

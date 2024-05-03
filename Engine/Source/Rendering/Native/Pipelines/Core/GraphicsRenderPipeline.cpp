@@ -182,6 +182,11 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 		SetDepthBuffer(depth_buffer);
 	}
 
+	else if (parameters._DepthBuffer.Valid())
+	{
+		SetDepthBuffer(parameters._DepthBuffer.Get()._Second);
+	}
+
 	//Add the output render targets.
 	if (_RenderPipelineResource->_OutputRenderTargets.Size() == 1 && _RenderPipelineResource->_OutputRenderTargets[0] == HashString("Screen"))
 	{
@@ -302,7 +307,7 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 	SetBlendFactorDestinationAlpha(_RenderPipelineResource->_BlendAlphaDestinationFactor);
 	SetAlphaBlendOperator(_RenderPipelineResource->_BlendAlphaOperator);
 	SetCullMode(_RenderPipelineResource->_CullMode);
-	SetDepthTestEnabled(_RenderPipelineResource->_DepthTestEnabled);
+	SetDepthTestEnabled(parameters._DepthTestEnabled.Valid() ? parameters._DepthTestEnabled.Get() : _RenderPipelineResource->_DepthTestEnabled);
 	SetDepthWriteEnabled(_RenderPipelineResource->_DepthWriteEnabled);
 	SetDepthCompareOperator(_RenderPipelineResource->_DepthCompareOperator);
 	SetStencilTestEnabled(_RenderPipelineResource->_StencilTestEnabled);

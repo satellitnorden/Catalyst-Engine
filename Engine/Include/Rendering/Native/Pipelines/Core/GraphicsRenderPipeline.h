@@ -28,6 +28,9 @@ public:
 	//The input stream subscriptions.
 	DynamicArray<HashString> _InputStreamSubscriptions;
 
+	//Denotes whether or not to enable depth test.
+	Optional<bool> _DepthTestEnabled;
+
 };
 
 class GraphicsRenderPipelineExecuteParameters final

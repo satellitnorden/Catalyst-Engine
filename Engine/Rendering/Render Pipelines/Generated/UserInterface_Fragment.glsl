@@ -216,6 +216,7 @@ layout (set = 1, binding = 1) uniform sampler SAMPLER;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) mat4 TRANSFORMATION;
+	layout (offset = 64) uint START_INSTANCE;
 };
 
 layout (location = 0) in vec2 InTextureCoordinate;
@@ -227,10 +228,6 @@ void main()
 {
     #define SMOOTHING_FACTOR (0.325f)
     vec2 texture_coordinate = InTextureCoordinate;
-    if (TEST_BIT(USER_INTERFACE_INSTANCES[InInstanceIndex]._Flags, USER_INTERFACE_INSTANCE_FLAG_IMAGE))
-    {
-        texture_coordinate.y = 1.0f - texture_coordinate.y;
-    }
     vec4 color;
     if (TEST_BIT(USER_INTERFACE_INSTANCES[InInstanceIndex]._Flags, USER_INTERFACE_INSTANCE_FLAG_TEXTURE))
     {

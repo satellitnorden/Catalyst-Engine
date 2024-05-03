@@ -117,6 +117,25 @@ private:
 
 	};
 
+	/*
+	*	User interface render information.
+	*/
+	class UserInterfaceRenderInformation final
+	{
+
+	public:
+
+		//The transformation.
+		Matrix4x4 _Transformation;
+
+		//The start instance.
+		uint32 _StartInstance;
+
+		//The number of instances.
+		uint32 _NumberOfInstances;
+
+	};
+
 	//The active user interface scenes.
 	DynamicArray<UserInterfaceScene *RESTRICT> _ActiveUserInterfaceScenes;
 
@@ -135,6 +154,12 @@ private:
 	//The instances.
 	DynamicArray<UserInterfaceInstance> _Instances;
 
+	//The render information.
+	UserInterfaceRenderInformation _RenderInformation;
+
+	//The render informations for the 3D user interface scenes.
+	DynamicArray<UserInterfaceRenderInformation> _3DRenderInformations;
+
 	/*
 	*	Updates the user interface system during the user interface update phase.
 	*/
@@ -146,8 +171,18 @@ private:
 	void StorageBufferUpdate(DynamicArray<byte> *const RESTRICT data) NOEXCEPT;
 
 	/*
+	*	Adds instances for the given primitive.
+	*/
+	void AddInstances(const UserInterfacePrimitive *const RESTRICT primitive, const bool is_3D, const float32 opacity) NOEXCEPT;
+
+	/*
 	*	The render input stream update.
 	*/
 	void RenderInputStreamUpdate(RenderInputStream *const RESTRICT input_stream) NOEXCEPT;
+
+	/*
+	*	The render input stream 3Dupdate.
+	*/
+	void RenderInputStream3DUpdate(RenderInputStream *const RESTRICT input_stream) NOEXCEPT;
 
 };

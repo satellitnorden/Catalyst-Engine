@@ -63,6 +63,8 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
+	AddPipeline(&_UserInterface3DPipeline);
+
 	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VelocityGraphicsPipeline);
 
@@ -70,6 +72,17 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 	for (GraphicsRenderPipeline &pipeline : _GraphicsRenderPipelines)
 	{
 		pipeline.Initialize();
+	}
+
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("DepthBuffer"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+		parameters._OutputRenderTargets.Emplace(HashString("SceneLowDynamicRange1"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
+		parameters._InputStreamSubscriptions.Emplace(HashString("UserInterface3D"));
+		parameters._DepthTestEnabled = true;
+
+		_UserInterface3DPipeline.Initialize(parameters);
 	}
 
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
@@ -83,6 +96,7 @@ void SceneFeaturesRenderPass::PreRecord(CommandBuffer *const RESTRICT command_bu
 {
 	//Clear the depth buffer.
 	command_buffer->ClearDepthStencilImage(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
+	command_buffer->ClearColorImage(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
 }
 
 /*
@@ -95,6 +109,8 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 	{
 		pipeline.Execute();
 	}
+
+	_UserInterface3DPipeline.Execute();
 
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();
 	_VelocityGraphicsPipeline.Execute();
@@ -110,6 +126,8 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 	{
 		pipeline.Terminate();
 	}
+
+	_UserInterface3DPipeline.Terminate();
 
 	_AnimatedModelSceneFeaturesGraphicsPipeline.Terminate();
 	_VelocityGraphicsPipeline.Terminate();

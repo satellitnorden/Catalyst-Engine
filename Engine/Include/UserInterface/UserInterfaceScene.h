@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Entities.
+#include <Entities/Core/Entity.h>
+
 //Input.
 #include <Input/InputCore.h>
 
@@ -14,9 +17,6 @@
 #include <UserInterface/UserInterfaceProgressBar.h>
 #include <UserInterface/UserInterfaceText.h>
 #include <UserInterface/UserInterfaceTextInput.h>
-
-//Forward declarations.
-class UserInterfaceEntity;
 
 class UserInterfaceScene
 {
@@ -102,7 +102,7 @@ public:
 	/*
 	*	Returns the entity.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD UserInterfaceEntity *const RESTRICT GetEntity() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD Entity *const RESTRICT GetEntity() NOEXCEPT
 	{
 		return _Entity;
 	}
@@ -110,7 +110,7 @@ public:
 	/*
 	*	Sets the entity.
 	*/
-	FORCE_INLINE void SetEntity(UserInterfaceEntity *const RESTRICT value) NOEXCEPT
+	FORCE_INLINE void SetEntity(Entity *const RESTRICT value) NOEXCEPT
 	{
 		_Entity = value;
 	}
@@ -909,7 +909,7 @@ private:
 	DynamicArray<ButtonInterface> _ButtonInterfaces;
 
 	//The entity.
-	UserInterfaceEntity *RESTRICT _Entity{ nullptr };
+	Entity *RESTRICT _Entity{ nullptr };
 
 	/*
 	*	Updates buttons.

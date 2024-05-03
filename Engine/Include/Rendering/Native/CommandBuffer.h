@@ -76,6 +76,11 @@ public:
 	void ClearDepthStencilImage(const OpaqueHandle image) NOEXCEPT;
 
 	/*
+	*	Clears a color image.
+	*/
+	void ClearColorImage(const OpaqueHandle image) NOEXCEPT;
+
+	/*
 	*	Dispatches.
 	*/
 	void Dispatch(const Pipeline *const RESTRICT pipeline, const uint32 width, const uint32 height, const uint32 depth) NOEXCEPT;

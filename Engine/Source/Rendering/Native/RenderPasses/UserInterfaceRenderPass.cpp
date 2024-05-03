@@ -48,7 +48,13 @@ void UserInterfaceRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_Pipeline);
 
 	//Initialize all pipelines.
-	_Pipeline.Initialize();
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		parameters._InputStreamSubscriptions.Emplace(HashString("UserInterface"));
+
+		_Pipeline.Initialize(parameters);
+	}
 }
 
 /*

@@ -216,6 +216,7 @@ layout (set = 1, binding = 1) uniform sampler SAMPLER;
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) mat4 TRANSFORMATION;
+	layout (offset = 64) uint START_INSTANCE;
 };
 
 layout (location = 0) out vec2 OutTextureCoordinate;
@@ -223,9 +224,10 @@ layout (location = 1) out uint OutInstanceIndex;
 
 void main()
 {
-    vec4 position = USER_INTERFACE_INSTANCES[gl_InstanceIndex]._Positions[gl_VertexIndex];
-    vec2 texture_coordinate = USER_INTERFACE_INSTANCES[gl_InstanceIndex]._TextureCoordinates[gl_VertexIndex];
+    uint instance_index = START_INSTANCE + gl_InstanceIndex;
+    vec4 position = USER_INTERFACE_INSTANCES[instance_index]._Positions[gl_VertexIndex];
+    vec2 texture_coordinate = USER_INTERFACE_INSTANCES[instance_index]._TextureCoordinates[gl_VertexIndex];
     OutTextureCoordinate = texture_coordinate;
-    OutInstanceIndex = gl_InstanceIndex;
+    OutInstanceIndex = instance_index;
 	gl_Position = TRANSFORMATION*position;
 }

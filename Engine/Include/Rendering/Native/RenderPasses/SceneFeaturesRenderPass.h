@@ -51,6 +51,9 @@ private:
 		GraphicsRenderPipeline(HashString("UserInterface3DBackground_RenderPipeline"))
 	};
 
+	//The user interface 3D pipeline.
+	GraphicsRenderPipeline _UserInterface3DPipeline{ HashString("UserInterface_RenderPipeline") };
+
 	//The animated model scene features graphics pipeline.
 	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;
 

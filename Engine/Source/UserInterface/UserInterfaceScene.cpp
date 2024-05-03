@@ -1,6 +1,9 @@
 ﻿//Header file.
 #include <UserInterface/UserInterfaceScene.h>
 
+//Components.
+#include <Components/Components/WorldTransformComponent.h>
+
 //Math.
 #include <Math/Core/CatalystgeometryMath.h>
 
@@ -1039,9 +1042,11 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 	output._Position = Vector2<float32>(0.0f, 0.0f);
 	output._Pressed = false;
 
-	/*
-	if (_Entity != nullptr)
+	if (_Entity)
 	{
+		//Cache the world transform.
+		const WorldTransform &world_transform{ WorldTransformComponent::Instance->InstanceData(_Entity)._CurrentWorldTransform };
+
 		//Construct the ray.
 		Ray ray;
 
@@ -1051,8 +1056,8 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 		//Construct the plane.
 		Plane plane;
 
-		plane._Position = _Entity->GetWorldPosition().GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
-		plane._Normal = CatalystCoordinateSpacesUtilities::RotatedWorldBackwardVector(_Entity->GetRotation());
+		plane._Position = world_transform.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
+		plane._Normal = CatalystCoordinateSpacesUtilities::RotatedWorldBackwardVector(world_transform.GetRotation().ToEulerAngles());
 
 		//Intersect the plane!
 		float32 intersection_distance;
@@ -1063,14 +1068,14 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 			Vector3<float32> world_position{ ray._Origin + ray._Direction * intersection_distance };
 
 			//Undo the translation.
-			world_position -= _Entity->GetWorldPosition().GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
+			world_position -= world_transform.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell());
 
 			//Undo the rotation.
-			world_position.Rotate(-_Entity->GetRotation());
+			world_position.Rotate(-world_transform.GetRotation().ToEulerAngles());
 
 			//Undo the scale.
-			world_position._X /= _Entity->GetScale()._X;
-			world_position._Y /= _Entity->GetScale()._Y;
+			world_position._X /= world_transform.GetScale()._X;
+			world_position._Y /= world_transform.GetScale()._Y;
 
 			//Shift the world position into the [0.0f, 1.0f] range.
 			world_position._X += 0.5f;
@@ -1101,7 +1106,6 @@ NO_DISCARD UserInterfaceScene::CursorState UserInterfaceScene::RetrieveCursorSta
 	}
 
 	else
-	*/
 	{
 		switch (output._InputDeviceType)
 		{

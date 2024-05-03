@@ -10,15 +10,21 @@ RenderResolution(MAIN_FULL);
 //Set the cull mode.
 CullMode(NONE);
 
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER_OR_EQUAL);
+
 //Set the load/store operators.
 ColorLoadOperator(LOAD);
 ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
 
 //Set the topology.
 Topology(TRIANGLE_FAN);
 
 //Declare push constant data.
 PushConstantData(mat4, TRANSFORMATION);
+PushConstantData(uint, START_INSTANCE);
 
 //Set blend properties.
 BlendEnable();
@@ -32,9 +38,6 @@ BlendAlphaOperator(ADD);
 //Declare samplers.
 Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */, 0 /* Anisotropic Samples */);
 
-//Subscribe to input streams.
-SubscribeToInputStream(UserInterface);
-
 //The vertex shader.
 Vertex
 {
@@ -42,13 +45,16 @@ Vertex
     OutputParameter(vec2, OutTextureCoordinate);
     OutputParameter(uint, OutInstanceIndex);
 
+    //Calculate the instance index.
+    uint instance_index = START_INSTANCE + INSTANCE_INDEX;
+
     //Retrieve the position and texture coordinate.
-    vec4 position = USER_INTERFACE_INSTANCES[INSTANCE_INDEX]._Positions[VERTEX_INDEX];
-    vec2 texture_coordinate = USER_INTERFACE_INSTANCES[INSTANCE_INDEX]._TextureCoordinates[VERTEX_INDEX];
+    vec4 position = USER_INTERFACE_INSTANCES[instance_index]._Positions[VERTEX_INDEX];
+    vec2 texture_coordinate = USER_INTERFACE_INSTANCES[instance_index]._TextureCoordinates[VERTEX_INDEX];
 
     //Pass data to the fragment shader.
     OutTextureCoordinate = texture_coordinate;
-    OutInstanceIndex = INSTANCE_INDEX;
+    OutInstanceIndex = instance_index;
 
     //Output the position.
     OutputVertexPosition(TRANSFORMATION * position);
@@ -66,12 +72,6 @@ Fragment
 
     //Retrieve the texture coordinate.
     vec2 texture_coordinate = InTextureCoordinate;
-
-    //Flip if it's an image... (:
-    if (TEST_BIT(USER_INTERFACE_INSTANCES[InInstanceIndex]._Flags, USER_INTERFACE_INSTANCE_FLAG_IMAGE))
-    {
-        texture_coordinate.y = 1.0f - texture_coordinate.y;
-    }
 
     //Calculate the color.
     vec4 color;

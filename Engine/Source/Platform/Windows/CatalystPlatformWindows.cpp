@@ -489,6 +489,12 @@ void CatalystPlatform::PrintToOutput(const char *const RESTRICT format, ...) NOE
 				format_buffer[i] = '_';
 			}
 
+			//Guard against '%%'.
+			if (format[i] == '%' && (i + 1) < format_length && format[i + 1] == '%')
+			{
+				format_buffer[i] = '_';
+			}
+
 			else
 			{
 				format_buffer[i] = format[i];

@@ -9,6 +9,9 @@
 //Generated.
 #include <Generated/UserInterface.Generated.h>
 
+//User interface.
+#include <UserInterface/UserInterfaceScene.h>
+
 //Forward declarations.
 class RenderInputStream;
 
@@ -29,6 +32,9 @@ public:
 
 	//The identifier.
 	UserInterfaceSceneIdentifier _Identifier;
+
+	//The scene.
+	UserInterfaceScene *RESTRICT _Scene;
 
 };
 

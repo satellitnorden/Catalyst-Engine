@@ -1,9 +1,5 @@
 #pragma once
 
-//STL.
-#include <cstring>
-#include <stdlib.h>
-
 class Memory
 {
 
@@ -14,7 +10,7 @@ public:
 	*/
 	FORCE_INLINE RESTRICTED static NO_DISCARD void *const RESTRICT Allocate(const uint64 size) NOEXCEPT
 	{
-		return malloc(size);
+		return AllocateInternal(size);
 	}
 
 	/*
@@ -23,7 +19,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE RESTRICTED static NO_DISCARD void *const RESTRICT Reallocate(TYPE *const RESTRICT memory, const uint64 size) NOEXCEPT
 	{
-		return realloc((void *const RESTRICT) memory, size);
+		return ReallocateInternal((void *const RESTRICT) memory, size);
 	}
 
 	/*
@@ -32,7 +28,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE static void Free(TYPE *const RESTRICT memory) NOEXCEPT
 	{
-		free((void *const RESTRICT) memory);
+		FreeInternal((void *const RESTRICT) memory);
 	}
 
 	/*
@@ -41,7 +37,7 @@ public:
 	template <typename TYPE_1, typename TYPE_2>
 	FORCE_INLINE static void Copy(TYPE_1 *const RESTRICT destination, const TYPE_2 *const RESTRICT source, const uint64 size) NOEXCEPT
 	{
-		memcpy((void *const RESTRICT) destination, (const void *const RESTRICT) source, size);
+		CopyInternal((void *const RESTRICT) destination, (const void *const RESTRICT) source, size);
 	}
 
 	/*
@@ -50,7 +46,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE static void Set(TYPE *const RESTRICT destination, const byte value, const uint64 size) NOEXCEPT
 	{
-		memset((void *const RESTRICT) destination, value, size);
+		SetInternal((void *const RESTRICT) destination, value, size);
 	}
 
 	/*
@@ -59,7 +55,39 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE static NO_DISCARD bool Compare(const TYPE *const RESTRICT first, const TYPE *const RESTRICT second, const uint64 size) NOEXCEPT
 	{
-		return memcmp(first, second, size) == 0;
+		return CompareInternal(first, second, size);
 	}
+
+private:
+
+	/*
+	*	Allocates a chunk of memory internally.
+	*/
+	RESTRICTED static NO_DISCARD void *const RESTRICT AllocateInternal(const uint64 size) NOEXCEPT;
+
+	/*
+	*	Reallocates a chunk of memory previously allocated with Allocate() internally.
+	*/
+	RESTRICTED static NO_DISCARD void *const RESTRICT ReallocateInternal(void *const RESTRICT memory, const uint64 size) NOEXCEPT;
+
+	/*
+	*	Frees internally.
+	*/
+	static void FreeInternal(void *const RESTRICT memory) NOEXCEPT;
+
+	/*
+	*	Copies memory from the destination to the source internally.
+	*/
+	static void CopyInternal(void *const RESTRICT destination, const void *const RESTRICT source, const uint64 size) NOEXCEPT;
+
+	/*
+	*	Sets a chunk of memory to the specified value internally.
+	*/
+	static void SetInternal(void *const RESTRICT destination, const byte value, const uint64 size) NOEXCEPT;
+
+	/*
+	*	Compares two chunks of memory. Returns true if the chunks are identical, false otherwise internally.
+	*/
+	static NO_DISCARD bool CompareInternal(const void *const RESTRICT first, const void *const RESTRICT second, const uint64 size) NOEXCEPT;
 
 };
