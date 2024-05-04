@@ -327,9 +327,8 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 }
 
 //Constants.
-#define TERRAIN_SAMPLED_MATERIALS (4) //For performance. (:
 #define TERRAIN_MINIMUM_DISPLACEMENT (0.0001f)
-#define BIAS_DISPLACEMENT(X) (pow(X, 12.0f))
+#define BIAS_DISPLACEMENT(X) (pow(X, 16.0f))
 #define TERRAIN_MATERIAL_SCALE (0.5f)
 
 /*
@@ -373,6 +372,35 @@ vec2 CalculateTerrainMaterialCoordinate(vec3 world_position, vec2 tile_index, ve
 #else
     return vec2(world_position.x, world_position.z) * 0.5f;
 #endif
+}
+
+/*
+*   Returns the highest index.
+*/
+uint HighestIndex(float value_1, float value_2, float value_3, float value_4)
+{
+    uint highest_index = 0;
+    float highest_value = value_1;
+
+    if (highest_value < value_2)
+    {
+        highest_index = 1;
+        highest_value = value_2;
+    }
+
+    if (highest_value < value_3)
+    {
+        highest_index = 2;
+        highest_value = value_3;
+    }
+
+    if (highest_value < value_4)
+    {
+        highest_index = 3;
+        highest_value = value_4;
+    }
+
+    return highest_index;
 }
 
 layout (push_constant) uniform PushConstantData

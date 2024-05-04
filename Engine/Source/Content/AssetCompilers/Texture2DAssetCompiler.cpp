@@ -106,6 +106,12 @@ public:
 		Texture2DChannelMapping(Texture2DChannelMapping::File::FILE_1, Texture2DChannelMapping::Channel::ALPHA)
 	};
 
+	//The channel biases.
+	StaticArray<float32, 4> _ChannelBiases;
+
+	//Denotes whether or not to normalize channels.
+	StaticArray<bool, 4> _NormalizeChannels;
+
 	//The default.
 	Vector4<float32> _Default{ 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -246,6 +252,17 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 
 	//Set up the parameters.
 	Texture2DParameters parameters;
+
+	//Set some defaults.
+	parameters._ChannelBiases[0] = 0.5f;
+	parameters._ChannelBiases[1] = 0.5f;
+	parameters._ChannelBiases[2] = 0.5f;
+	parameters._ChannelBiases[3] = 0.5f;
+
+	parameters._NormalizeChannels[0] = false;
+	parameters._NormalizeChannels[1] = false;
+	parameters._NormalizeChannels[2] = false;
+	parameters._NormalizeChannels[3] = false;
 
 	//Open the input file.
 	std::ifstream input_file{ compile_data->_FilePath.Data() };
@@ -453,6 +470,104 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 					else
 					{
 						ASSERT(false, "Unknown argument %s", arguments[2].Data());
+					}
+
+					continue;
+				}
+			}
+
+			//Is this a channel bias declarations?
+			{
+				const size_t position{ current_line.find("BiasChannel(") };
+
+				if (position != std::string::npos)
+				{
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							current_line.c_str(),
+							current_line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 2, "BiasChannel() needs two arguments!");
+
+					uint64 channel_bias_index{ 0 };
+
+					if (arguments[0] == "RED")
+					{
+						channel_bias_index = 0;
+					}
+
+					else if (arguments[0] == "GREEN")
+					{
+						channel_bias_index = 1;
+					}
+
+					else if (arguments[0] == "BLUE")
+					{
+						channel_bias_index = 2;
+					}
+
+					else if (arguments[0] == "ALPHA")
+					{
+						channel_bias_index = 3;
+					}
+
+					else
+					{
+						ASSERT(false, "Unknown argument %s", arguments[0].Data());
+					}
+
+					parameters._ChannelBiases[channel_bias_index] = std::stof(arguments[1].Data());
+
+					continue;
+				}
+			}
+
+			//Is this a normalize channel declarations?
+			{
+				const size_t position{ current_line.find("NormalizeChannel(") };
+
+				if (position != std::string::npos)
+				{
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							current_line.c_str(),
+							current_line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 1, "NormalizeChannel() needs one argument!");
+
+					if (arguments[0] == "RED")
+					{
+						parameters._NormalizeChannels[0] = true;
+					}
+
+					else if (arguments[0] == "GREEN")
+					{
+						parameters._NormalizeChannels[1] = true;
+					}
+
+					else if (arguments[0] == "BLUE")
+					{
+						parameters._NormalizeChannels[2] = true;
+					}
+
+					else if (arguments[0] == "ALPHA")
+					{
+						parameters._NormalizeChannels[3] = true;
+					}
+
+					else
+					{
+						ASSERT(false, "Unknown argument %s", arguments[0].Data());
 					}
 
 					continue;
@@ -832,6 +947,74 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
 					texel[i] = powf(texel[i], 2.2f);
+				}
+			}
+		}
+	}
+
+	//Apply channel normalizations.
+	for (uint8 channel_index{ 0 }; channel_index < 4; ++channel_index)
+	{
+		if (!parameters._NormalizeChannels[channel_index])
+		{
+			continue;
+		}
+
+		float32 minimum{ 1.0f };
+		float32 maximum{ 0.0f };
+
+		for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
+		{
+			for (uint32 X{ 0 }; X < composite_texture.GetWidth(); ++X)
+			{
+				Vector4<float32> &texel{ composite_texture.At(X, Y) };
+
+				minimum = BaseMath::Minimum<float32>(minimum, texel[channel_index]);
+				maximum = BaseMath::Maximum<float32>(maximum, texel[channel_index]);
+			}
+		}
+
+		for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
+		{
+			for (uint32 X{ 0 }; X < composite_texture.GetWidth(); ++X)
+			{
+				Vector4<float32> &texel{ composite_texture.At(X, Y) };
+
+				texel[channel_index] = BaseMath::Scale(texel[channel_index], minimum, maximum, 0.0f, 1.0f);
+			}
+		}
+	}
+
+	//Apply channel biases.
+	if (parameters._ChannelBiases[0] != 0.5f
+		|| parameters._ChannelBiases[1] != 0.5f
+		|| parameters._ChannelBiases[2] != 0.5f
+		|| parameters._ChannelBiases[3] != 0.5f)
+	{
+		for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
+		{
+			for (uint32 X{ 0 }; X < composite_texture.GetWidth(); ++X)
+			{
+				Vector4<float32>& texel{ composite_texture.At(X, Y) };
+
+				for (uint8 i{ 0 }; i < 3; ++i)
+				{
+					if (parameters._ChannelBiases[i] > 1.0f)
+					{
+						const uint32 iterations{ static_cast<uint32>(parameters._ChannelBiases[i]) };
+
+						for (uint32 i{ 0 }; i < iterations; ++i)
+						{
+							texel[i] = BaseMath::Bias(texel[i], 1.0f);
+						}
+
+						texel[i] = BaseMath::Bias(texel[i], BaseMath::Fractional(parameters._ChannelBiases[i]));
+					}
+
+					else
+					{
+						texel[i] = BaseMath::Bias(texel[i], parameters._ChannelBiases[i]);
+					}
 				}
 			}
 		}

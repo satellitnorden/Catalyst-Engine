@@ -614,7 +614,7 @@ void TerrainComponent::PreProcess(TerrainInitializationData *const RESTRICT init
 
 	//Create the blend map texture.
 	{
-		Texture2D<Vector4<uint8>> converted_blend_map_texture{ initialization_data->_NormalMap.GetResolution() };
+		Texture2D<Vector4<uint8>> converted_blend_map_texture{ initialization_data->_BlendMap.GetResolution() };
 
 		for (uint32 Y{ 0 }; Y < converted_blend_map_texture.GetResolution(); ++Y)
 		{
