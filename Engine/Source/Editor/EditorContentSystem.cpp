@@ -188,7 +188,7 @@ NO_DISCARD bool EditorContentSystem::WindowCallback(const Vector2<float32> minim
 		{
 			for (const DynamicString &texture_file : _CreateModelState._TextureFiles)
 			{
-				if (ImGui::Selectable(texture_file.Data(), _CreateModelState._AlbedoTextureFile == texture_file))
+				if (ImGui::Selectable(texture_file.Data(), _CreateModelState._AlbedoTextureFile && _CreateModelState._AlbedoTextureFile == texture_file))
 				{
 					_CreateModelState._AlbedoTextureFile = texture_file;
 				}
@@ -242,6 +242,40 @@ NO_DISCARD bool EditorContentSystem::WindowCallback(const Vector2<float32> minim
 				if (ImGui::Selectable(texture_file.Data(), _CreateModelState._RoughnessTextureFile == texture_file))
 				{
 					_CreateModelState._RoughnessTextureFile = texture_file;
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		//Add a selector for the metallic texture.
+		ImGui::Text("Metallic Texture:");
+		ImGui::SameLine();
+
+		if (ImGui::BeginCombo("##METALLIC_TEXTURE_SELECTOR", _CreateModelState._MetallicTextureFile ? _CreateModelState._MetallicTextureFile.Data() : "None"))
+		{
+			for (const DynamicString &texture_file : _CreateModelState._TextureFiles)
+			{
+				if (ImGui::Selectable(texture_file.Data(), _CreateModelState._MetallicTextureFile && _CreateModelState._MetallicTextureFile == texture_file))
+				{
+					_CreateModelState._MetallicTextureFile = texture_file;
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		//Add a selector for the ambient occlusion texture.
+		ImGui::Text("Ambient Occlusion Texture:");
+		ImGui::SameLine();
+
+		if (ImGui::BeginCombo("##AMBIENT_OCCLUSION_TEXTURE_SELECTOR", _CreateModelState._AmbientOcclusionTextureFile ? _CreateModelState._AmbientOcclusionTextureFile.Data() : "None"))
+		{
+			for (const DynamicString &texture_file : _CreateModelState._TextureFiles)
+			{
+				if (ImGui::Selectable(texture_file.Data(), _CreateModelState._AmbientOcclusionTextureFile && _CreateModelState._AmbientOcclusionTextureFile == texture_file))
+				{
+					_CreateModelState._AmbientOcclusionTextureFile = texture_file;
 				}
 			}
 
@@ -344,7 +378,8 @@ void EditorContentSystem::CreateModelEstimateFiles() NOEXCEPT
 	//Estimate the albedo texture file.
 	for (const DynamicString &texture_file : _CreateModelState._TextureFiles)
 	{
-		if (texture_file.Find("Albedo"))
+		if (texture_file.Find("Albedo")
+			|| texture_file.Find("Color"))
 		{
 			_CreateModelState._AlbedoTextureFile = texture_file;
 
@@ -380,6 +415,28 @@ void EditorContentSystem::CreateModelEstimateFiles() NOEXCEPT
 		if (texture_file.Find("Roughness"))
 		{
 			_CreateModelState._RoughnessTextureFile = texture_file;
+
+			break;
+		}
+	}
+
+	//Estimate the metallic texture file.
+	for (const DynamicString &texture_file : _CreateModelState._TextureFiles)
+	{
+		if (texture_file.Find("Metalness"))
+		{
+			_CreateModelState._MetallicTextureFile = texture_file;
+
+			break;
+		}
+	}
+
+	//Estimate the ambient occlusion texture file.
+	for (const DynamicString &texture_file : _CreateModelState._TextureFiles)
+	{
+		if (texture_file.Find("AmbientOcclusion"))
+		{
+			_CreateModelState._AmbientOcclusionTextureFile = texture_file;
 
 			break;
 		}
@@ -526,8 +583,28 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 			file << "ChannelMapping(RED, DEFAULT, RED);" << std::endl;
 		}
 
-		file << "ChannelMapping(GREEN, DEFAULT, GREEN);" << std::endl;
-		file << "ChannelMapping(BLUE, DEFAULT, BLUE);" << std::endl;
+		if (_CreateModelState._MetallicTextureFile)
+		{
+			file << "File2(" << _CreateModelState._MetallicTextureFile.Data() << ");" << std::endl;
+			file << "ChannelMapping(GREEN, FILE_2, RED);" << std::endl;
+		}
+
+		else
+		{
+			file << "ChannelMapping(GREEN, DEFAULT, GREEN);" << std::endl;
+		}
+
+		if (_CreateModelState._AmbientOcclusionTextureFile)
+		{
+			file << "File3(" << _CreateModelState._AmbientOcclusionTextureFile.Data() << ");" << std::endl;
+			file << "ChannelMapping(BLUE, FILE_3, RED);" << std::endl;
+		}
+
+		else
+		{
+			file << "ChannelMapping(BLUE, DEFAULT, BLUE);" << std::endl;
+		}
+		
 		file << "ChannelMapping(ALPHA, DEFAULT, ALPHA);" << std::endl;
 
 		file << "Default(1.0, 0.0, 1.0, 0.0);" << std::endl;

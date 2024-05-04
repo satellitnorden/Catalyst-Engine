@@ -59,6 +59,12 @@ private:
 		//The roughness texture file.
 		DynamicString _RoughnessTextureFile;
 
+		//The metallic texture file.
+		DynamicString _MetallicTextureFile;
+
+		//The ambient occlusion texture file.
+		DynamicString _AmbientOcclusionTextureFile;
+
 		//The albedo/thickness base mip level.
 		uint32 _AlbedoThicknessBaseMipLevel{ 2 };
 
@@ -66,7 +72,7 @@ private:
 		uint32 _NormalMapDisplacementBaseMipLevel{ 2 };
 
 		//The material properties base mip level.
-		uint32 _MaterialPropertiesBaseMipLevel{ 3 };
+		uint32 _MaterialPropertiesBaseMipLevel{ 2 };
 
 	};
 

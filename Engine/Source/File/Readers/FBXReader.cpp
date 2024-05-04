@@ -21,6 +21,7 @@
 */
 FORCE_INLINE void ListMetaData(const aiMetadata *meta_data) NOEXCEPT
 {
+#if 0
 	for (uint32 i{ 0 }; i < meta_data->mNumProperties; ++i)
 	{
 		LOG_INFORMATION("Key %s:", meta_data->mKeys[i].C_Str());
@@ -83,6 +84,7 @@ FORCE_INLINE void ListMetaData(const aiMetadata *meta_data) NOEXCEPT
 			}
 		}
 	}
+#endif
 }
 
 /*

@@ -224,9 +224,44 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NONE);
 				}
 
+				else if (ImGui::MenuItem("Visualization: Albedo"))
+				{
+					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::ALBEDO);
+				}
+
+				else if (ImGui::MenuItem("Visualization: Thickness"))
+				{
+					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::THICKNESS);
+				}
+
 				else if (ImGui::MenuItem("Visualization: Normal"))
 				{
 					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NORMAL);
+				}
+
+				else if (ImGui::MenuItem("Visualization: Depth"))
+				{
+					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::DEPTH);
+				}
+
+				else if (ImGui::MenuItem("Visualization: Roughness"))
+				{
+					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::ROUGHNESS);
+				}
+
+				else if (ImGui::MenuItem("Visualization: Metallic"))
+				{
+					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::METALLIC);
+				}
+
+				else if (ImGui::MenuItem("Visualization: Ambient Occlusion"))
+				{
+					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::AMBIENT_OCCLUSION);
+				}
+
+				else if (ImGui::MenuItem("Visualization: Emissive"))
+				{
+					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::EMISSIVE);
 				}
 
 				else if (ImGui::MenuItem("Visualization: Diffuse Irradiance"))
