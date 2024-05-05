@@ -9,6 +9,7 @@
 
 //Third party.
 #include <ThirdParty/bc7enc/bc7enc.h>
+#include <ThirdParty/bc7enc/bc7decomp.h>
 
 class TextureCompressionInitializer final
 {
@@ -93,6 +94,36 @@ void TextureCompression::Compress2D(const byte *const RESTRICT input_data, const
 }
 
 /*
+*	Decompresses a 2D texture.
+*/
+void TextureCompression::Decompress2D(const byte *const RESTRICT input_data, const uint32 width, const uint32 height, byte *const RESTRICT output_data) NOEXCEPT
+{
+	switch (_Mode)
+	{
+		case Mode::NONE:
+		{
+			ASSERT(false, "Don't call this function without a mode set!");
+
+			break;
+		}
+
+		case Mode::BC7:
+		{
+			Decompress2DBC7(input_data, width, height, output_data);
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+}
+
+/*
 *	Compresses a 2D texture with the BC7 mode.
 */
 void TextureCompression::Compress2DBC7(const byte *const RESTRICT input_data, const uint32 width, const uint32 height, byte *const RESTRICT output_data) const NOEXCEPT
@@ -139,6 +170,37 @@ void TextureCompression::Compress2DBC7(const byte *const RESTRICT input_data, co
 
 			((uint64 *const RESTRICT)output_data)[output_cursor++] = output[0];
 			((uint64 *const RESTRICT)output_data)[output_cursor++] = output[1];
+		}
+	}
+}
+
+/*
+*	Decompresses a 2D texture with the BC7 mode.
+*/
+void TextureCompression::Decompress2DBC7(const byte *const RESTRICT input_data, const uint32 width, const uint32 height, byte *const RESTRICT output_data) NOEXCEPT
+{
+	uint32 cursor{ 0 };
+
+	StaticArray<Vector4<byte>, 16> block;
+
+	for (uint32 Y{ 0 }; Y < height; Y += 4)
+	{
+		for (uint32 X{ 0 }; X < width; X += 4)
+		{
+			bc7decomp::unpack_bc7(&input_data[cursor * 16], reinterpret_cast<bc7decomp::color_rgba *const RESTRICT>(block.Data()));
+
+			for (uint32 _Y{ 0 }; _Y < 4; ++_Y)
+			{
+				for (uint32 _X{ 0 }; _X < 4; ++_X)
+				{
+					const uint32 __X{ X + _X };
+					const uint32 __Y{ Y + _Y };
+
+					reinterpret_cast<Vector4<byte> *const RESTRICT>(output_data)[__X + (__Y * width)] = block[_X + (_Y * 4)];
+				}
+			}
+
+			++cursor;
 		}
 	}
 }

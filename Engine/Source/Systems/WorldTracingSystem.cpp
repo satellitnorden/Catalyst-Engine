@@ -13,6 +13,9 @@
 #include <Math/Core/CatalystGeometryMath.h>
 #include <Math/Core/CatalystRandomMath.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
 #include <Rendering/Native/Shader/CatalystAtmosphericScattering.h>
 
@@ -333,9 +336,9 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 /*
 *	Casts a ray into the world and returns the radiance.
 */
-NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRay(const Ray &ray) NOEXCEPT
+NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRay(const Ray &ray, const RadianceRayParameters *const RESTRICT parameters) NOEXCEPT
 {
-	return RadianceRayInternal(ray, 0);
+	return RadianceRayInternal(ray, parameters, 0);
 }
 
 /*
@@ -417,7 +420,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::SkyRay(const Ray& ray) NOEXCEPT
 /*
 *	Casts a ray into the world and returns the radiance internally.
 */
-NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &ray, const uint8 depth) NOEXCEPT
+NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &ray, const RadianceRayParameters *const RESTRICT parameters, const uint8 depth) NOEXCEPT
 {
 	//Don't go over the maximum depth.
 	if (depth > WorldTracingSystemConstants::MAXIMUM_RADIANCE_DEPTH)
@@ -428,7 +431,13 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 	//Retrieve the surface description.
 	float32 intersection_distance{ FLOAT32_MAXIMUM };
 	SurfaceDescription surface_description;
-	const bool could_get_surface_description{ SurfaceDescriptionRay(ray, &intersection_distance, &surface_description) };
+	bool could_get_surface_description;
+
+	{
+		PROFILING_SCOPE("WorldTracingSystem::RadianceRayInternal::SurfaceDescriptionRay");
+
+		could_get_surface_description = SurfaceDescriptionRay(ray, &intersection_distance, &surface_description);
+	}
 
 	//Did the ray hit anything?
 	if (could_get_surface_description)
@@ -574,34 +583,17 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 		{
 			//Calculate the indirect lighting direction.
 			Vector3<float32> indirect_lighting_direction;
+			float32 indirect_lighting_probability_density;
 
-			//Choose if we should shoot a diffuse ray.
-			if (CatalystRandomMath::RandomChance(surface_description._Roughness))
-			{
-				indirect_lighting_direction = CatalystRandomMath::RandomPointInSphere();
-				indirect_lighting_direction.Normalize();
-
-				if (Vector3<float32>::DotProduct(indirect_lighting_direction, surface_description._GeometryNormal) < 0.0f)
-				{
-					indirect_lighting_direction *= -1.0f;
-				}
-			}
-
-			//Otherwise, shoot a specular ray.
-			else
-			{
-				Vector3<float32> diffuse_direction = CatalystRandomMath::RandomPointInSphere();
-				diffuse_direction.Normalize();
-
-				if (Vector3<float32>::DotProduct(diffuse_direction, surface_description._GeometryNormal) < 0.0f)
-				{
-					diffuse_direction *= -1.0f;
-				}
-
-				Vector3<float32> specular_direction = Vector3<float32>::Reflect(ray._Direction, surface_description._GeometryNormal);
-
-				indirect_lighting_direction = Vector3<float32>::Normalize(BaseMath::LinearlyInterpolate(specular_direction, diffuse_direction, surface_description._Roughness));
-			}
+			GenerateIrradianceRay
+			(
+				ray._Direction,
+				surface_description._GeometryNormal,
+				surface_description._Roughness,
+				surface_description._Metallic,
+				&indirect_lighting_direction,
+				&indirect_lighting_probability_density
+			);
 
 			//Construct the indirect ray.
 			Ray indirect_ray;
@@ -610,21 +602,34 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 			indirect_ray.SetDirection(indirect_lighting_direction);
 
 			//Cast the ray!
-			const Vector3<float32> indirect_radiance{ RadianceRayInternal(indirect_ray, depth + 1) };
+			Vector3<float32> indirect_radiance;
+
+			{
+				PROFILING_SCOPE("WorldTracingSystem::RadianceRayInternal::RadianceRayInternal");
+
+				indirect_radiance = RadianceRayInternal(indirect_ray, parameters, depth + 1);
+			}
+
+			//Normalize.
+			const float32 indirect_lighting_probability_density_reciprocal{ 1.0f / indirect_lighting_probability_density };
+
+			indirect_radiance *= indirect_lighting_probability_density_reciprocal;
 
 			//Add the indirect lighting.
-			final_radiance += PhysicallyBasedLighting::CalculateLighting
-			(
-				-ray._Direction,
-				surface_description._Albedo,
-				surface_description._ShadingNormal,
-				surface_description._Roughness,
-				surface_description._Metallic,
-				surface_description._AmbientOcclusion,
-				1.0f,
-				-indirect_lighting_direction,
-				indirect_radiance
-			);
+			{
+				PROFILING_SCOPE("WorldTracingSystem::RadianceRayInternal::CalculateLighting");
+
+				final_radiance += indirect_radiance * PhysicallyBasedLighting::BidirectionalReflectanceDistribution
+				(
+					-ray._Direction,
+					surface_description._Albedo,
+					surface_description._ShadingNormal,
+					surface_description._Roughness,
+					surface_description._Metallic,
+					1.0f,
+					-indirect_lighting_direction
+				);
+			}
 		}
 
 		//Return the final radiance.
@@ -633,6 +638,8 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 
 	else
 	{
+		PROFILING_SCOPE("WorldTracingSystem::RadianceRayInternal::SkyRay");
+
 		return SkyRay(ray);
 	}
 }
@@ -780,4 +787,81 @@ NO_DISCARD bool WorldTracingSystem::DistanceRayModels(const Ray &ray, const floa
 		//Return if there was a hit.
 		return hit;
 	}
+}
+
+/*
+*	The probability density function.
+*/
+NO_DISCARD float32 WorldTracingSystem::ProbabilityDensityFunction
+(
+	const Vector3<float32> &view_direction,
+	const Vector3<float32> &normal,
+	const float32 roughness,
+	const float32 metallic,
+	const Vector3<float32> &direction
+) NOEXCEPT
+{
+	//Consider the BRDF.
+	const float32 BRDF
+	{
+		PhysicallyBasedLighting::BidirectionalReflectanceDistribution
+		(
+			-view_direction,
+			Vector3<float32>(1.0f, 1.0f, 1.0f),
+			normal,
+			roughness,
+			metallic,
+			1.0f,
+			-direction
+		)._X
+	};
+
+	//Combine the terms.
+	return BRDF;
+}
+
+/*
+*	Generates an irradiance ray.
+*/
+void WorldTracingSystem::GenerateIrradianceRay
+(
+	const Vector3<float32> &view_direction,
+	const Vector3<float32> &normal,
+	const float32 roughness,
+	const float32 metallic,
+	Vector3<float32> *const RESTRICT direction,
+	float32 *const RESTRICT probability_density
+) NOEXCEPT
+{
+	PROFILING_SCOPE("WorldTracingSystem::GenerateIrradianceRay");
+
+	/*
+	*	This is quite crude, but let's do it like this until I have figured out a better way to do it.
+	*	Generate N random direction, then randomly pick one of them weighted based on the probability density function.
+	*/
+	constexpr uint64 NUMBER_OF_SAMPLES{ 4 };
+
+	StaticArray<Vector3<float32>, NUMBER_OF_SAMPLES> directions;
+	StaticArray<float32, NUMBER_OF_SAMPLES> weights;
+
+	for (uint64 i{ 0 }; i < NUMBER_OF_SAMPLES; ++i)
+	{
+		Vector3<float32> random_direction{ CatalystRandomMath::RandomPointOnSphere() };
+
+		if (Vector3<float32>::DotProduct(normal, random_direction) < 0.0f)
+		{
+			random_direction *= -1.0f;
+		}
+
+		directions[i] = random_direction;
+		weights[i] = ProbabilityDensityFunction(view_direction, normal, roughness, metallic, random_direction);
+	}
+
+	ArrayProxy<Vector3<float32>> directions_proxy{ directions };
+	ArrayProxy<float32> weights_proxy{ weights };
+
+	const uint64 chosen_index{ CatalystRandomMath::WeightedRandomIndex(directions_proxy, weights_proxy) };
+
+	*direction = directions[chosen_index];
+	*probability_density = weights[chosen_index];
 }

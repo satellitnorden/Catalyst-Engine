@@ -14,6 +14,9 @@
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 #include <Rendering/Native/Texture2D.h>
@@ -306,19 +309,29 @@ public:
 		RenderingReferenceSystemData::_CurrentNumberOfPixels = 0;
 
 		//Fill the queued task data, in an interleaved manner so that there are less false sharing.
-		for (uint32 Y{ 0 }; Y < RenderingReferenceSystemData::_IntermediateTexture.GetHeight(); Y += 2)
+		for (uint32 Y{ 0 }; Y < RenderingReferenceSystemData::_IntermediateTexture.GetHeight(); Y += 4)
 		{
 			RenderingReferenceSystemData::_QueuedTaskData.Push(Y);
 		}
 
-		for (uint32 Y{ 1 }; Y < RenderingReferenceSystemData::_IntermediateTexture.GetHeight(); Y += 2)
+		for (uint32 Y{ 2 }; Y < RenderingReferenceSystemData::_IntermediateTexture.GetHeight(); Y += 4)
+		{
+			RenderingReferenceSystemData::_QueuedTaskData.Push(Y);
+		}
+
+		for (uint32 Y{ 1 }; Y < RenderingReferenceSystemData::_IntermediateTexture.GetHeight(); Y += 4)
+		{
+			RenderingReferenceSystemData::_QueuedTaskData.Push(Y);
+		}
+
+		for (uint32 Y{ 3 }; Y < RenderingReferenceSystemData::_IntermediateTexture.GetHeight(); Y += 4)
 		{
 			RenderingReferenceSystemData::_QueuedTaskData.Push(Y);
 		}
 
 		for (Task &task : RenderingReferenceSystemData::_Tasks)
 		{
-			TaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &task);
+			TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &task);
 		}
 	}
 
@@ -360,7 +373,13 @@ public:
 				ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(normalized_coordinate));
 
 				//Retrieve the radiance.
-				const Vector3<float32> radiance{ WorldTracingSystem::Instance->RadianceRay(ray) };
+				Vector3<float32> radiance;
+
+				{
+					PROFILING_SCOPE("RenderingReferenceSystem::TaskUpdate::RadianceRay");
+
+					radiance = WorldTracingSystem::Instance->RadianceRay(ray, nullptr);
+				}
 
 				//Write to the intermediate texture.
 				Vector4<float64>& intermediate_sample{ RenderingReferenceSystemData::_IntermediateTexture.At(X, *Y) };

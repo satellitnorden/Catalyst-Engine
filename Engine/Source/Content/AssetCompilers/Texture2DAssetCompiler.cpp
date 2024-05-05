@@ -1299,8 +1299,17 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	load_data->_Asset->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(load_data->_Asset->_Texture2DHandle);
 
 	//Create the texture 2D.
-	//load_data->_Asset->_Texture2D.Initialize(final_width, final_height);
-	//Memory::Copy(load_data->_Asset->_Texture2D.Data(), data[0].Data(), final_width * final_height * sizeof(Vector4<byte>));
+	load_data->_Asset->_Texture2D.Initialize(final_width, final_height);
+
+	if (load_data->_Asset->_Compression._Mode == TextureCompression::Mode::NONE)
+	{
+		Memory::Copy(load_data->_Asset->_Texture2D.Data(), data[0].Data(), final_width * final_height * sizeof(Vector4<byte>));
+	}
+	
+	else
+	{
+		load_data->_Asset->_Compression.Decompress2D(data[0].Data(), final_width, final_height, reinterpret_cast<byte *const RESTRICT>(load_data->_Asset->_Texture2D.Data()));
+	}
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Update the total CPU memory.

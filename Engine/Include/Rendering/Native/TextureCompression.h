@@ -43,11 +43,21 @@ public:
 	*/
 	void Compress2D(const byte *const RESTRICT input_data, const uint32 width, const uint32 height, byte *const RESTRICT output_data) const NOEXCEPT;
 
+	/*
+	*	Decompresses a 2D texture.
+	*/
+	void Decompress2D(const byte *const RESTRICT input_data, const uint32 width, const uint32 height, byte *const RESTRICT output_data) NOEXCEPT;
+
 private:
 
 	/*
 	*	Compresses a 2D texture with the BC7 mode.
 	*/
 	void Compress2DBC7(const byte *const RESTRICT input_data, const uint32 width, const uint32 height, byte *const RESTRICT output_data) const NOEXCEPT;
+
+	/*
+	*	Decompresses a 2D texture with the BC7 mode.
+	*/
+	void Decompress2DBC7(const byte *const RESTRICT input_data, const uint32 width, const uint32 height, byte *const RESTRICT output_data) NOEXCEPT;
 
 };

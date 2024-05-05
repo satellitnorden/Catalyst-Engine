@@ -33,6 +33,16 @@ public:
 	);
 
 	/*
+	*	Radiance ray parameters class definition.
+	*/
+	class RadianceRayParameters final
+	{
+
+	public:
+
+	};
+
+	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE WorldTracingSystem() NOEXCEPT
@@ -53,7 +63,7 @@ public:
 	/*
 	*	Casts a ray into the world and returns the radiance.
 	*/
-	NO_DISCARD Vector3<float32> RadianceRay(const Ray &ray) NOEXCEPT;
+	NO_DISCARD Vector3<float32> RadianceRay(const Ray &ray, const RadianceRayParameters *const RESTRICT parameters) NOEXCEPT;
 
 	/*
 	*	Casts a ray into the world and returns if there was occlusion.
@@ -110,11 +120,36 @@ private:
 	/*
 	*	Casts a ray into the world and returns the radiance internally.
 	*/
-	NO_DISCARD Vector3<float32> RadianceRayInternal(const Ray &ray, const uint8 depth) NOEXCEPT;
+	NO_DISCARD Vector3<float32> RadianceRayInternal(const Ray &ray, const RadianceRayParameters *const RESTRICT parameters, const uint8 depth) NOEXCEPT;
 
 	/*
 	*	Casts an distance ray against models.
 	*/
 	NO_DISCARD bool DistanceRayModels(const Ray &ray, const float32 maximum_distance, float32 *const RESTRICT hit_distance, const bool use_cached_world_state) NOEXCEPT;
+
+	/*
+	*	The probability density function.
+	*/
+	NO_DISCARD float32 ProbabilityDensityFunction
+	(
+		const Vector3<float32> &view_direction,
+		const Vector3<float32> &normal,
+		const float32 roughness,
+		const float32 metallic,
+		const Vector3<float32> &direction
+	) NOEXCEPT;
+
+	/*
+	*	Generates an irradiance ray.
+	*/
+	void GenerateIrradianceRay
+	(
+		const Vector3<float32> &view_direction,
+		const Vector3<float32> &normal,
+		const float32 roughness,
+		const float32 metallic,
+		Vector3<float32> *const RESTRICT direction,
+		float32 *const RESTRICT probability_density
+	) NOEXCEPT;
 
 };

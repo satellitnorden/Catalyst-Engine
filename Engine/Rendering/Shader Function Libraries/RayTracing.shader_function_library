@@ -1,0 +1,93 @@
+//The seed.
+int SEED;
+
+/*
+*	Seeds the random number generator.
+*/
+void Seed(ivec2 coordinate, int frame)
+{
+	int n = frame;
+    n = (n<<13)^n; n=n*(n*n*15731+789221) + 1376312589;
+    n += coordinate.y;
+    n = (n<<13)^n; n=n*(n*n*15731+789221) + 1376312589;
+    n += coordinate.x;
+    n = (n<<13)^n; n=n*(n*n*15731+789221) + 1376312589;
+    SEED = n;
+}
+
+/*
+*	Generates a random float with the given seed (and modifies it, so subsequent calls result in different values).
+*/
+float Random()
+{
+	SEED = SEED * 0x343fd + 0x269ec3;
+
+	return float((SEED >> 16 & 32767)) / 32767.0f;
+}
+
+/*
+*	The diffuse probability density function.
+*/
+float DiffuseProbabilityDensityFunction(vec3 direction, vec3 normal)
+{
+	return max(dot(normal, direction), 0.0f);
+}
+
+/*
+*   Generates a diffuse direction.
+*/
+vec3 GenerateDiffuseDirection(vec3 normal)
+{
+    #define NUMBER_OF_CANDIDATES (64)
+
+    vec3 candidate_directions[NUMBER_OF_CANDIDATES];
+    float candidate_weights[NUMBER_OF_CANDIDATES];
+
+    for (uint i = 0; i < NUMBER_OF_CANDIDATES; ++i)
+    {
+        float random_x = Random();
+		float random_y = Random();
+
+		float spherical_coordinate_x = acos(2.0f * random_x - 1.0f) - (PI / 2.0f);
+		float spherical_coordinate_y = 2.0f * PI  * random_y;
+
+		float cosine_a = cos(spherical_coordinate_x);
+		float cosine_b = cos(spherical_coordinate_y);
+		float sine_a = sin(spherical_coordinate_x);
+		float sine_b = sin(spherical_coordinate_y);
+
+		vec3 random_direction = vec3(cosine_a * cosine_b, cosine_a * sine_b, sine_a);
+    
+        random_direction = dot(normal, random_direction) >= 0.0f ? random_direction : -random_direction;
+
+        candidate_directions[i] = random_direction;
+        candidate_weights[i] = DiffuseProbabilityDensityFunction(random_direction, normal);
+    }
+
+    //Calculate the sum of the weights.
+    float weights_sum = 0.0f;
+
+    for (uint i = 0; i < NUMBER_OF_CANDIDATES; ++i)
+    {
+        weights_sum += candidate_weights[i];
+    }
+
+    //Randomize the picked weight.
+    float picked_weight = Random() * weights_sum;
+
+    //Pick the candidate!
+    for (uint i = 0; i < NUMBER_OF_CANDIDATES; ++i)
+    {
+        if (picked_weight < candidate_weights[i])
+        {
+        	return candidate_directions[i];
+        }
+
+        else
+        {
+            picked_weight -= candidate_weights[i];
+        }
+    }
+
+    return candidate_directions[NUMBER_OF_CANDIDATES - 1];
+}
