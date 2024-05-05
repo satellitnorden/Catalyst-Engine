@@ -131,8 +131,8 @@ void WorldTracingSystem::CacheWorldState() NOEXCEPT
 					VertexData vertex_data;
 
 					vertex_data._Material = static_model_instance_data._Materials[mesh_index];
-					vertex_data._Normal = vertex._Normal;
-					vertex_data._Tangent = vertex._Tangent;
+					vertex_data._Normal = Vector3<float32>::Normalize(vertex._Normal);
+					vertex_data._Tangent = Vector3<float32>::Normalize(vertex._Tangent);
 					vertex_data._TextureCoordinate = vertex._TextureCoordinate;
 
 					//Add the vertex data!
@@ -802,15 +802,19 @@ void WorldTracingSystem::GenerateIrradianceRay
 
 	for (uint64 i{ 0 }; i < NUMBER_OF_SAMPLES; ++i)
 	{
-		Vector3<float32> random_direction{ CatalystRandomMath::RandomPointOnSphere() };
+		Vector3<float32> diffuse_direction{ CatalystRandomMath::RandomPointOnSphere() };
 
-		if (Vector3<float32>::DotProduct(normal, random_direction) < 0.0f)
+		if (Vector3<float32>::DotProduct(normal, diffuse_direction) < 0.0f)
 		{
-			random_direction *= -1.0f;
+			diffuse_direction *= -1.0f;
 		}
 
-		directions[i] = random_direction;
-		weights[i] = ProbabilityDensityFunction(view_direction, normal, roughness, metallic, random_direction);
+		const Vector3<float32> specular_direction{ Vector3<float32>::Reflect(view_direction, normal) };
+
+		const Vector3<float32> final_direction{ Vector3<float32>::Normalize(BaseMath::LinearlyInterpolate(specular_direction, diffuse_direction, roughness)) };
+
+		directions[i] = final_direction;
+		weights[i] = ProbabilityDensityFunction(view_direction, normal, roughness, metallic, final_direction);
 	}
 
 	ArrayProxy<Vector3<float32>> directions_proxy{ directions };

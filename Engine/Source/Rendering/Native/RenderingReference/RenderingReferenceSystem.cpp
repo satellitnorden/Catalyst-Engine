@@ -387,7 +387,7 @@ public:
 				}
 
 				//Write to the intermediate texture.
-				Vector4<float64>& intermediate_sample{ RenderingReferenceSystemData::_IntermediateTexture.At(X, *Y) };
+				Vector4<float64> &intermediate_sample{ RenderingReferenceSystemData::_IntermediateTexture.At(X, *Y) };
 				intermediate_sample += Vector4<float64>(static_cast<float64>(radiance._R), static_cast<float64>(radiance._G), static_cast<float64>(radiance._B), 1.0);
 
 				//Calculate the final radiance.
@@ -401,7 +401,7 @@ public:
 				final_radiance = CatalystToneMapping::ApplyToneMapping(final_radiance);
 
 				//Write to the final texture.
-				Vector4<float32>& final_sample{ RenderingReferenceSystemData::_FinalTexture.At(X, *Y) };
+				Vector4<float32> &final_sample{ RenderingReferenceSystemData::_FinalTexture.At(X, *Y) };
 
 				final_sample._R = BaseMath::Clamp<float32>(final_radiance._R, 0.0f, 1.0f);
 				final_sample._G = BaseMath::Clamp<float32>(final_radiance._G, 0.0f, 1.0f);
