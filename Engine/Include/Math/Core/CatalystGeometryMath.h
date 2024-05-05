@@ -241,14 +241,14 @@ public:
 	{
 		constexpr float EPSILON{ 0.0000001f };
 
-		Vector3<float> edge1, edge2, h, s, q;
-		float a{ 0.0f }, f{ 0.0f }, u{ 0.0f }, v{ 0.0f };
+		Vector3<float32> edge1, edge2, h, s, q;
+		float32 a{ 0.0f }, f{ 0.0f }, u{ 0.0f }, v{ 0.0f };
 
 		edge1 = triangle._Vertices[1] - triangle._Vertices[0];
 		edge2 = triangle._Vertices[2] - triangle._Vertices[0];
 
-		h = Vector3<float>::CrossProduct(ray._Direction, edge2);
-		a = Vector3<float>::DotProduct(edge1, h);
+		h = Vector3<float32>::CrossProduct(ray._Direction, edge2);
+		a = Vector3<float32>::DotProduct(edge1, h);
 
 		if (a > -EPSILON && a < EPSILON)
 		{
@@ -258,22 +258,22 @@ public:
 		f = 1.0f / a;
 		s = ray._Origin - triangle._Vertices[0];
 
-		u = f * Vector3<float>::DotProduct(s, h);
+		u = f * Vector3<float32>::DotProduct(s, h);
 
 		if (u < 0.0f || u > 1.0f)
 		{
 			return false;
 		}
 
-		q = Vector3<float>::CrossProduct(s, edge1);
-		v = f * Vector3<float>::DotProduct(ray._Direction, q);
+		q = Vector3<float32>::CrossProduct(s, edge1);
+		v = f * Vector3<float32>::DotProduct(ray._Direction, q);
 
 		if (v < 0.0 || u + v > 1.0)
 		{
 			return false;
 		}
 			
-		float t = f * Vector3<float>::DotProduct(edge2, q);
+		float t = f * Vector3<float32>::DotProduct(edge2, q);
 
 		if (t > EPSILON)
 		{

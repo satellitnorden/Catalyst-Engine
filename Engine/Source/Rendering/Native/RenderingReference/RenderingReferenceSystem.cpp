@@ -378,7 +378,12 @@ public:
 				{
 					PROFILING_SCOPE("RenderingReferenceSystem::TaskUpdate::RadianceRay");
 
-					radiance = WorldTracingSystem::Instance->RadianceRay(ray, nullptr);
+					//Set up the parameters.
+					WorldTracingSystem::RadianceRayParameters parameters;
+
+					parameters._ImprovedRayGeneration = X > 960;
+
+					radiance = WorldTracingSystem::Instance->RadianceRay(ray, &parameters);
 				}
 
 				//Write to the intermediate texture.

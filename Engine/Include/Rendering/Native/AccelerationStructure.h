@@ -596,9 +596,9 @@ private:
 		{
 			for (uint64 i{ 0 }; i < node._TriangleDataSize; ++i)
 			{
-				const TriangleData& triangle_data{ node._TriangleDataMemory[i] };
+				const TriangleData &triangle_data{ node._TriangleDataMemory[i] };
 
-				float intersection_distance_temporary{ FLOAT32_MAXIMUM };
+				float32 intersection_distance_temporary{ FLOAT32_MAXIMUM };
 
 				//Cache the triangle.
 				Triangle triangle;

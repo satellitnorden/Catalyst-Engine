@@ -2,6 +2,7 @@
 #include <Systems/WorldTracingSystem.h>
 
 //Components.
+#include <Components/Components/LightComponent.h>
 #include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
@@ -457,127 +458,82 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 		}
 
 		//Add direct lighting.
-		/*
+		for (uint64 instance_index{ 0 }; instance_index < LightComponent::Instance->NumberOfInstances(); ++instance_index)
 		{
-			const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
-			const LightComponent *RESTRICT component{ ComponentManager::GetLightLightComponents() };
+			//Cache the instance data.
+			const LightInstanceData &instance_data{ LightComponent::Instance->InstanceData()[instance_index] };
 
-			for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+			//Calculate the direction to the light and the distance.
+			Vector3<float32> direction_to_light;
+			float32 light_distance;
+
+			switch (instance_data._LightType)
 			{
-				switch (component->_LightType)
+				case LightType::DIRECTIONAL:
 				{
-					case LightType::DIRECTIONAL:
+					//Calculate the direction.
+					direction_to_light = -CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(instance_data._DirectionalLightData._Rotation);
+
+					/*
+					*   This assumes the directional light is representing a sun.
+					*   The sun is on average 150 million kilometers away from the earth,
+					*   with a radius of 696 340 kilometers.
+					*   If we scale those values down a bit for floating point precision's sake,
+					*   we can imagine a sphere offset in the directional light direction from the origin,
+					*   and grab a random point in that sphere.
+					*/
+					Vector3<float32> random_point_on_sphere{ CatalystRandomMath::RandomPointOnSphere() };
+
+					if (Vector3<float32>::DotProduct(direction_to_light, random_point_on_sphere) >= 0.0f)
 					{
-						//Calculate the direction to the light.
-						const Vector3<float32> direction_to_light{ Vector3<float32>::Normalize(-CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation) + CatalystRandomMath::RandomVector3InRange(-WorldTracingSystemConstants::DIRECTIONAL_LIGHT_SOFTNESS, WorldTracingSystemConstants::DIRECTIONAL_LIGHT_SOFTNESS)) };
-
-						//Determine if there is occlusion.
-						{
-							Ray occlusion_ray;
-
-							occlusion_ray.SetOrigin(offset_hit_position);
-							occlusion_ray.SetDirection(direction_to_light);
-
-							if (OcclusionRay(occlusion_ray, FLOAT32_MAXIMUM))
-							{
-								continue;
-							}
-						}
-
-						//Calculate the lighting.
-						final_radiance += CatalystLighting::CalculateLighting(	-ray._Direction,
-																				surface_description._Albedo,
-																				surface_description._ShadingNormal,
-																				surface_description._Roughness,
-																				surface_description._Metallic,
-																				surface_description._AmbientOcclusion,
-																				1.0f,
-																				-direction_to_light,
-																				component->_Color * component->_Intensity);
-
-						break;
+						random_point_on_sphere = -random_point_on_sphere;
 					}
 
-					case LightType::POINT:
-					case LightType::BOX: //Box lights are kinda like points lights.
-					{
-						//Calculate the direction to the light.
-						Vector3 <float32> light_position;
+					random_point_on_sphere *= 0.0046422666666667f;
 
-						if (component->_LightType == LightType::POINT)
-						{
-							light_position = component->_WorldPosition.GetAbsolutePosition();
+					direction_to_light = Vector3<float32>::Normalize(direction_to_light + random_point_on_sphere);
 
-							light_position += CatalystRandomMath::RandomPointInSphere(component->_Size);
-						}
+					//Set the light distance.
+					light_distance = FLOAT32_MAXIMUM;
 
-						else if (component->_LightType == LightType::BOX)
-						{
-							const Vector3<float32> minimum{ component->_MinimumWorldPosition.GetAbsolutePosition() };
-							const Vector3<float32> maximum{ component->_MaximumWorldPosition.GetAbsolutePosition() };
+					break;
+				}
 
-							light_position = Vector3<float32>
-							(
-								BaseMath::Clamp<float32>(offset_hit_position._X, minimum._X, maximum._X),
-								BaseMath::Clamp<float32>(offset_hit_position._Y, minimum._Y, maximum._Y),
-								BaseMath::Clamp<float32>(offset_hit_position._Z, minimum._Z, maximum._Z)
-							);
+				default:
+				{
+					ASSERT(false, "Invalid case!");
 
-							light_position += CatalystRandomMath::RandomPointInSphere(component->_Size);
-						}
-
-						else
-						{
-							ASSERT(false, "Unknown light type!");
-						}
-
-						ASSERT(light_position != offset_hit_position, "oh no");
-
-						Vector3<float32> direction_to_light{ light_position - offset_hit_position };
-						const float32 distance_to_light{ Vector3<float32>::Length(direction_to_light) };
-						const float32 distance_to_light_reciprocal{ 1.0f / distance_to_light };
-						direction_to_light *= distance_to_light_reciprocal;
-
-						//Determine if there is occlusion.
-						{
-							Ray occlusion_ray;
-
-							occlusion_ray.SetOrigin(offset_hit_position);
-							occlusion_ray.SetDirection(direction_to_light);
-
-							if (OcclusionRay(occlusion_ray, distance_to_light))
-							{
-								continue;
-							}
-						}
-
-						//Calculate the attenuation.
-						const float32 attenuation{ CatalystLighting::CalculateAttenuation(distance_to_light, component->_Radius) };
-
-						//Calculate the lighting.
-						final_radiance += CatalystLighting::CalculateLighting(	-ray._Direction,
-																				surface_description._Albedo,
-																				surface_description._ShadingNormal,
-																				surface_description._Roughness,
-																				surface_description._Metallic,
-																				surface_description._AmbientOcclusion,
-																				1.0f,
-																				-direction_to_light,
-																				component->_Color * component->_Intensity * attenuation);
-
-						break;
-					}
-
-					default:
-					{
-						ASSERT(false, "Invalid case!");
-
-						break;
-					}
+					break;
 				}
 			}
+
+			//Determine if there is occlusion.
+			{
+				Ray occlusion_ray;
+
+				occlusion_ray.SetOrigin(offset_hit_position);
+				occlusion_ray.SetDirection(direction_to_light);
+
+				if (OcclusionRay(occlusion_ray, light_distance))
+				{
+					continue;
+				}
+			}
+
+			//Otherwise, add the lighting.
+			const Vector3<float32> light_radiance{ instance_data._Color * instance_data._Intensity };
+
+			final_radiance += light_radiance * PhysicallyBasedLighting::BidirectionalReflectanceDistribution
+			(
+				-ray._Direction,
+				surface_description._Albedo,
+				surface_description._ShadingNormal,
+				surface_description._Roughness,
+				surface_description._Metallic,
+				1.0f,
+				-direction_to_light
+			);
 		}
-		*/
 
 		//Add indirect lighting.
 		{
@@ -588,7 +544,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 			GenerateIrradianceRay
 			(
 				ray._Direction,
-				surface_description._GeometryNormal,
+				surface_description._ShadingNormal,
 				surface_description._Roughness,
 				surface_description._Metallic,
 				&indirect_lighting_direction,
@@ -839,7 +795,7 @@ void WorldTracingSystem::GenerateIrradianceRay
 	*	This is quite crude, but let's do it like this until I have figured out a better way to do it.
 	*	Generate N random direction, then randomly pick one of them weighted based on the probability density function.
 	*/
-	constexpr uint64 NUMBER_OF_SAMPLES{ 4 };
+	constexpr uint64 NUMBER_OF_SAMPLES{ 2 };
 
 	StaticArray<Vector3<float32>, NUMBER_OF_SAMPLES> directions;
 	StaticArray<float32, NUMBER_OF_SAMPLES> weights;

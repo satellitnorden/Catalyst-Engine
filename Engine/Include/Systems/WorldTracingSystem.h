@@ -40,6 +40,9 @@ public:
 
 	public:
 
+		//Denotes whether or not to do improved ray generation.
+		bool _ImprovedRayGeneration;
+
 	};
 
 	/*
