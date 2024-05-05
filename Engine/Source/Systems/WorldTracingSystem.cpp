@@ -551,6 +551,11 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 				&indirect_lighting_probability_density
 			);
 
+			if (indirect_lighting_probability_density <= 0.0f)
+			{
+				return Vector3<float32>(0.0f, 0.0f, 0.0f);
+			}
+
 			//Construct the indirect ray.
 			Ray indirect_ray;
 
