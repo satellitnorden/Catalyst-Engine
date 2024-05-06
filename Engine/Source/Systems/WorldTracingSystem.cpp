@@ -26,8 +26,7 @@
 //World tracing system constants.
 namespace WorldTracingSystemConstants
 {
-	constexpr float32 DIRECTIONAL_LIGHT_SOFTNESS{ 0.01f };
-	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 128.0f };
+	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 1'024.0f };
 	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 3 };
 }
 
@@ -548,7 +547,8 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 				surface_description._Roughness,
 				surface_description._Metallic,
 				&indirect_lighting_direction,
-				&indirect_lighting_probability_density
+				&indirect_lighting_probability_density,
+				parameters && parameters->_ImprovedRayGeneration
 			);
 
 			if (indirect_lighting_probability_density <= 0.0f)
@@ -791,7 +791,8 @@ void WorldTracingSystem::GenerateIrradianceRay
 	const float32 roughness,
 	const float32 metallic,
 	Vector3<float32> *const RESTRICT direction,
-	float32 *const RESTRICT probability_density
+	float32 *const RESTRICT probability_density,
+	const bool improved_ray_generation
 ) NOEXCEPT
 {
 	PROFILING_SCOPE("WorldTracingSystem::GenerateIrradianceRay");

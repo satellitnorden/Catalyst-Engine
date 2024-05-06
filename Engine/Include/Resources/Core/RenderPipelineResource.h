@@ -49,8 +49,8 @@ public:
 	//The ray generation shader handle.
 	ShaderHandle _RayGenerationShaderHandle{ EMPTY_HANDLE };
 
-	//The ray miss shader handle.
-	ShaderHandle _RayMissShaderHandle{ EMPTY_HANDLE };
+	//The ray miss shader handles.
+	DynamicArray<ShaderHandle> _RayMissShaderHandles;
 
 	//The ray hit group shader data.
 	DynamicArray<RayHitGroupShaderData> _RayHitGroupShaderData;

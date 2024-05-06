@@ -988,18 +988,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DynamicModelRayClosestHitShader";
-		parameters._ID = "DynamicModelRayClosestHitShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelRayClosestHitShader.rchit";
-		parameters._Defines.Emplace("DYNAMIC_MODELS");
-		parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\EditorUserInterfaceFragmentShader";
 		parameters._ID = "EditorUserInterfaceFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorUserInterfaceFragmentShader.frag";
@@ -1165,17 +1153,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RayTracedIndirectLightingRayGenerationShader";
-		parameters._ID = "RayTracedIndirectLightingRayGenerationShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedIndirectLightingRayGenerationShader.rgen";
-		parameters._Stage = ShaderStage::RAY_GENERATION;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RenderingReferenceFragmentShader";
 		parameters._ID = "RenderingReferenceFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RenderingReferenceFragmentShader.frag";
@@ -1235,18 +1212,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		parameters._ID = "SphereVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\SphereVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\StaticModelRayClosestHitShader";
-		parameters._ID = "StaticModelRayClosestHitShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ModelRayClosestHitShader.rchit";
-		parameters._Defines.Emplace("STATIC_MODELS");
-		parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}

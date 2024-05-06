@@ -115,7 +115,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 0
+#if 1
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -1493,6 +1493,7 @@ void GenerateRayGenerationShader
 	//Struct definitions.
 	struct Payload final
 	{
+		uint32 _Index;
 		DynamicString _Type;
 		DynamicString _Name;
 	};
@@ -1510,18 +1511,24 @@ void GenerateRayGenerationShader
 
 		if (position != std::string::npos)
 		{
-			StaticArray<DynamicString, 2> arguments;
+			StaticArray<DynamicString, 3> arguments;
 
-			TextParsingUtilities::ParseFunctionArguments
-			(
-				lines[i].data(),
-				lines[i].length(),
-				arguments.Data()
-			);
+			const uint64 number_of_arguments
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					lines[i].data(),
+					lines[i].length(),
+					arguments.Data()
+				)
+			};
+
+			ASSERT(number_of_arguments == 3, "Payload() requires three arguments!");
 
 			payloads.Emplace();
-			payloads.Back()._Type = std::move(arguments[0]);
-			payloads.Back()._Name = std::move(arguments[1]);
+			payloads.Back()._Index = static_cast<uint32>(std::stoull(arguments[0].Data()));
+			payloads.Back()._Type = std::move(arguments[1]);
+			payloads.Back()._Name = std::move(arguments[2]);
 
 			lines.EraseAt<true>(i);
 		}
@@ -1563,14 +1570,9 @@ void GenerateRayGenerationShader
 		//Write the payloads.
 		if (!payloads.Empty())
 		{
-			//Remember the current location index.
-			uint32 location_index{ 0 };
-
 			for (const Payload &payload : payloads)
 			{
-				glsl_file << "layout (location = " << location_index << ") rayPayloadNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
-
-				++location_index;
+				glsl_file << "layout (location = " << payload._Index << ") rayPayloadNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;
@@ -1668,7 +1670,7 @@ void GenerateRayGenerationShader
 
 				if (position != std::string::npos)
 				{
-					StaticArray<DynamicString, 5> arguments;
+					StaticArray<DynamicString, 6> arguments;
 
 					const uint64 number_of_arguments
 					{
@@ -1680,7 +1682,7 @@ void GenerateRayGenerationShader
 						)
 					};
 
-					ASSERT(number_of_arguments == 5, "TraceRay needs 5 arguments!");
+					ASSERT(number_of_arguments == 6, "TraceRay needs 6 arguments!");
 
 					line = "traceNV\n";
 					line += "(\n";
@@ -1694,7 +1696,7 @@ void GenerateRayGenerationShader
 					line += "\tFLOAT32_EPSILON * 8.0f, /*Tmin*/\n";
 					line += std::string("\t") + std::string(arguments[3].Data()) + ", /*direction*/\n";
 					line += std::string("\t") + std::string(arguments[4].Data()) + ", /*Tmax*/\n";
-					line += "\t0 /*payload*/\n";
+					line += std::string("\t") + std::string(arguments[5].Data()) + " /*payload*/\n";
 					line += ");";
 				}
 			}
@@ -1726,6 +1728,7 @@ void GenerateRayMissShader
 	//Struct definitions.
 	struct Payload final
 	{
+		uint32 _Index;
 		DynamicString _Type;
 		DynamicString _Name;
 	};
@@ -1743,7 +1746,7 @@ void GenerateRayMissShader
 
 		if (position != std::string::npos)
 		{
-			StaticArray<DynamicString, 2> arguments;
+			StaticArray<DynamicString, 3> arguments;
 
 			const uint64 number_of_arguments
 			{
@@ -1755,9 +1758,12 @@ void GenerateRayMissShader
 				)
 			};
 
+			ASSERT(number_of_arguments == 3, "Payload() requires three arguments!");
+
 			payloads.Emplace();
-			payloads.Back()._Type = std::move(arguments[0]);
-			payloads.Back()._Name = std::move(arguments[1]);
+			payloads.Back()._Index = static_cast<uint32>(std::stoull(arguments[0].Data()));
+			payloads.Back()._Type = std::move(arguments[1]);
+			payloads.Back()._Name = std::move(arguments[2]);
 
 			lines.EraseAt<true>(i);
 		}
@@ -1799,14 +1805,9 @@ void GenerateRayMissShader
 		//Write the payloads.
 		if (!payloads.Empty())
 		{
-			//Remember the current location index.
-			uint32 location_index{ 0 };
-
 			for (const Payload &payload : payloads)
 			{
-				glsl_file << "layout (location = " << location_index << ") rayPayloadInNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
-
-				++location_index;
+				glsl_file << "layout (location = " << payload._Index << ") rayPayloadInNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;
@@ -1821,6 +1822,17 @@ void GenerateRayMissShader
 			//Cache the line.
 			std::string &line{ glsl_lines[i] };
 
+			//Replace "WORLD_RAY_ORIGIN" with "gl_WorldRayOriginNV".
+			{
+				size_t position{ line.find("WORLD_RAY_ORIGIN") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("WORLD_RAY_ORIGIN"), "gl_WorldRayOriginNV");
+					position = line.find("WORLD_RAY_ORIGIN");
+				}
+			}
+
 			//Replace "WORLD_RAY_DIRECTION" with "gl_WorldRayDirectionNV".
 			{
 				size_t position{ line.find("WORLD_RAY_DIRECTION") };
@@ -1832,6 +1844,17 @@ void GenerateRayMissShader
 				}
 			}
 
+			//Replace "RAY_HIT_DISTANCE" with "gl_HitTNV".
+			{
+				size_t position{ line.find("RAY_HIT_DISTANCE") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("RAY_HIT_DISTANCE"), "gl_HitTNV");
+					position = line.find("RAY_HIT_DISTANCE");
+				}
+			}
+
 			//Write the line.
 			glsl_file << line << std::endl;
 		}
@@ -1840,7 +1863,8 @@ void GenerateRayMissShader
 		glsl_file.close();
 
 		//Compile the GLSL shader.
-		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_miss_shader, &parameters->_RayMissShaderData._GLSLData);
+		parameters->_RayMissShaderData.Emplace();
+		CompileGLSLShader(glsl_file_path, shaderc_shader_kind::shaderc_miss_shader, &parameters->_RayMissShaderData.Back()._GLSLData);
 	}
 }
 
@@ -1859,6 +1883,7 @@ void GenerateRayClosestHitShader
 	//Struct definitions.
 	struct Payload final
 	{
+		uint32 _Index;
 		DynamicString _Type;
 		DynamicString _Name;
 	};
@@ -1868,26 +1893,67 @@ void GenerateRayClosestHitShader
 	GatherShaderLines(file, lines);
 
 	//Gather the payloads.
-	DynamicArray<Payload> payloads;
+	DynamicArray<Payload> incoming_payloads;
+	DynamicArray<Payload> outgoing_payloads;
 
 	for (uint64 i{ 0 }; i < lines.Size();)
 	{
-		const size_t position{ lines[i].find("Payload(") };
+		const size_t position{ lines[i].find("IncomingPayload(") };
 
 		if (position != std::string::npos)
 		{
-			StaticArray<DynamicString, 2> arguments;
+			StaticArray<DynamicString, 3> arguments;
 
-			TextParsingUtilities::ParseFunctionArguments
-			(
-				lines[i].data(),
-				lines[i].length(),
-				arguments.Data()
-			);
+			const uint64 number_of_arguments
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					lines[i].data(),
+					lines[i].length(),
+					arguments.Data()
+				)
+			};
 
-			payloads.Emplace();
-			payloads.Back()._Type = std::move(arguments[0]);
-			payloads.Back()._Name = std::move(arguments[1]);
+			ASSERT(number_of_arguments == 3, "Payload() requires three arguments!");
+
+			incoming_payloads.Emplace();
+			incoming_payloads.Back()._Index = static_cast<uint32>(std::stoull(arguments[0].Data()));
+			incoming_payloads.Back()._Type = std::move(arguments[1]);
+			incoming_payloads.Back()._Name = std::move(arguments[2]);
+
+			lines.EraseAt<true>(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
+
+	for (uint64 i{ 0 }; i < lines.Size();)
+	{
+		const size_t position{ lines[i].find("OutgoingPayload(") };
+
+		if (position != std::string::npos)
+		{
+			StaticArray<DynamicString, 3> arguments;
+
+			const uint64 number_of_arguments
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					lines[i].data(),
+					lines[i].length(),
+					arguments.Data()
+				)
+			};
+
+			ASSERT(number_of_arguments == 3, "Payload() requires three arguments!");
+
+			outgoing_payloads.Emplace();
+			outgoing_payloads.Back()._Index = static_cast<uint32>(std::stoull(arguments[0].Data()));
+			outgoing_payloads.Back()._Type = std::move(arguments[1]);
+			outgoing_payloads.Back()._Name = std::move(arguments[2]);
 
 			lines.EraseAt<true>(i);
 		}
@@ -1930,16 +1996,21 @@ void GenerateRayClosestHitShader
 		InsertRayTracingHitShaderUtilityFunctions(render_pipeline_information._HitGroupNames.Back(), glsl_file);
 
 		//Write the payloads.
-		if (!payloads.Empty())
+		if (!incoming_payloads.Empty())
 		{
-			//Remember the current location index.
-			uint32 location_index{ 0 };
-
-			for (const Payload &payload : payloads)
+			for (const Payload &payload : incoming_payloads)
 			{
-				glsl_file << "layout (location = " << location_index << ") rayPayloadInNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
+				glsl_file << "layout (location = " << payload._Index << ") rayPayloadInNV " << payload._Type.Data() << " " << payload._Name.Data() << "; " << std::endl;
+			}
 
-				++location_index;
+			glsl_file << std::endl;
+		}
+
+		if (!outgoing_payloads.Empty())
+		{
+			for (const Payload &payload : outgoing_payloads)
+			{
+				glsl_file << "layout (location = " << payload._Index << ") rayPayloadNV " << payload._Type.Data() << " " << payload._Name.Data() << "; " << std::endl;
 			}
 
 			glsl_file << std::endl;
@@ -1954,6 +2025,39 @@ void GenerateRayClosestHitShader
 			//Cache the line.
 			std::string &line{ glsl_lines[i] };
 
+			//Replace "RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT" with "gl_RayFlagsTerminateOnFirstHitNV".
+			{
+				size_t position{ line.find("RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT"), "gl_RayFlagsTerminateOnFirstHitNV");
+					position = line.find("RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT");
+				}
+			}
+
+			//Replace "RAY_TRACING_FLAG_SKIP_CLOSEST_HIT" with "gl_RayFlagsSkipClosestHitShaderNV".
+			{
+				size_t position{ line.find("RAY_TRACING_FLAG_SKIP_CLOSEST_HIT") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("RAY_TRACING_FLAG_SKIP_CLOSEST_HIT"), "gl_RayFlagsSkipClosestHitShaderNV");
+					position = line.find("RAY_TRACING_FLAG_SKIP_CLOSEST_HIT");
+				}
+			}
+
+			//Replace "WORLD_RAY_ORIGIN" with "gl_WorldRayOriginNV".
+			{
+				size_t position{ line.find("WORLD_RAY_ORIGIN") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("WORLD_RAY_ORIGIN"), "gl_WorldRayOriginNV");
+					position = line.find("WORLD_RAY_ORIGIN");
+				}
+			}
+
 			//Replace "WORLD_RAY_DIRECTION" with "gl_WorldRayDirectionNV".
 			{
 				size_t position{ line.find("WORLD_RAY_DIRECTION") };
@@ -1962,6 +2066,54 @@ void GenerateRayClosestHitShader
 				{
 					line.replace(position, strlen("WORLD_RAY_DIRECTION"), "gl_WorldRayDirectionNV");
 					position = line.find("WORLD_RAY_DIRECTION");
+				}
+			}
+
+			//Replace "RAY_HIT_DISTANCE" with "gl_HitTNV".
+			{
+				size_t position{ line.find("RAY_HIT_DISTANCE") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("RAY_HIT_DISTANCE"), "gl_HitTNV");
+					position = line.find("RAY_HIT_DISTANCE");
+				}
+			}
+
+			//Process "TraceRay()" calls
+			{
+				size_t position{ line.find("TraceRay(") };
+
+				if (position != std::string::npos)
+				{
+					StaticArray<DynamicString, 6> arguments;
+
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							line.data(),
+							line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 6, "TraceRay needs 6 arguments!");
+
+					line = "traceNV\n";
+					line += "(\n";
+					line += "\tTOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/\n";
+					line += std::string("\t") + std::string(arguments[0].Data()) + ", /*rayFlags*/\n";
+					line += "\t0xff, /*cullMask*/\n";
+					line += "\t0, /*sbtRecordOffset*/\n";
+					line += "\t0, /*sbtRecordStride*/\n";
+					line += std::string("\t") + std::string(arguments[1].Data()) + ", /*missIndex*/\n";
+					line += std::string("\t") + std::string(arguments[2].Data()) + ", /*origin*/\n";
+					line += "\tFLOAT32_EPSILON * 8.0f, /*Tmin*/\n";
+					line += std::string("\t") + std::string(arguments[3].Data()) + ", /*direction*/\n";
+					line += std::string("\t") + std::string(arguments[4].Data()) + ", /*Tmax*/\n";
+					line += std::string("\t") + std::string(arguments[5].Data()) + " /*payload*/\n";
+					line += ");";
 				}
 			}
 
@@ -1992,6 +2144,7 @@ void GenerateRayAnyHitShader
 	//Struct definitions.
 	struct Payload final
 	{
+		uint32 _Index;
 		DynamicString _Type;
 		DynamicString _Name;
 	};
@@ -2009,18 +2162,24 @@ void GenerateRayAnyHitShader
 
 		if (position != std::string::npos)
 		{
-			StaticArray<DynamicString, 2> arguments;
+			StaticArray<DynamicString, 3> arguments;
 
-			TextParsingUtilities::ParseFunctionArguments
-			(
-				lines[i].data(),
-				lines[i].length(),
-				arguments.Data()
-			);
+			const uint64 number_of_arguments
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					lines[i].data(),
+					lines[i].length(),
+					arguments.Data()
+				)
+			};
+
+			ASSERT(number_of_arguments == 3, "Payload() requires three arguments!");
 
 			payloads.Emplace();
-			payloads.Back()._Type = std::move(arguments[0]);
-			payloads.Back()._Name = std::move(arguments[1]);
+			payloads.Back()._Index = static_cast<uint32>(std::stoull(arguments[0].Data()));
+			payloads.Back()._Type = std::move(arguments[1]);
+			payloads.Back()._Name = std::move(arguments[2]);
 
 			lines.EraseAt<true>(i);
 		}
@@ -2065,14 +2224,9 @@ void GenerateRayAnyHitShader
 		//Write the payloads.
 		if (!payloads.Empty())
 		{
-			//Remember the current location index.
-			uint32 location_index{ 0 };
-
-			for (const Payload& payload : payloads)
+			for (const Payload &payload : payloads)
 			{
-				glsl_file << "layout (location = " << location_index << ") rayPayloadInNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
-
-				++location_index;
+				glsl_file << "layout (location = " << payload._Index << ") rayPayloadInNV " << payload._Type.Data() << " " << payload._Name.Data() << ";" << std::endl;
 			}
 
 			glsl_file << std::endl;
@@ -2087,6 +2241,17 @@ void GenerateRayAnyHitShader
 			//Cache the line.
 			std::string &line{ glsl_lines[i] };
 
+			//Replace "WORLD_RAY_ORIGIN" with "gl_WorldRayOriginNV".
+			{
+				size_t position{ line.find("WORLD_RAY_ORIGIN") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("WORLD_RAY_ORIGIN"), "gl_WorldRayOriginNV");
+					position = line.find("WORLD_RAY_ORIGIN");
+				}
+			}
+
 			//Replace "WORLD_RAY_DIRECTION" with "gl_WorldRayDirectionNV".
 			{
 				size_t position{ line.find("WORLD_RAY_DIRECTION") };
@@ -2095,6 +2260,17 @@ void GenerateRayAnyHitShader
 				{
 					line.replace(position, strlen("WORLD_RAY_DIRECTION"), "gl_WorldRayDirectionNV");
 					position = line.find("WORLD_RAY_DIRECTION");
+				}
+			}
+
+			//Replace "RAY_HIT_DISTANCE" with "gl_HitTNV".
+			{
+				size_t position{ line.find("RAY_HIT_DISTANCE") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("RAY_HIT_DISTANCE"), "gl_HitTNV");
+					position = line.find("RAY_HIT_DISTANCE");
 				}
 			}
 
@@ -3596,6 +3772,31 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					std::ifstream common_vertex_shader_file{ common_vertex_shader_file_path.Data() };
 
 					GenerateVertexShader(common_vertex_shader_file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
+
+					continue;
+				}
+			}
+
+			//Is this a common ray closest hit shader include?
+			{
+				const size_t position{ current_line.find("IncludeCommonRayClosestHitShader(") };
+
+				if (position != std::string::npos)
+				{
+					DynamicString string;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						&string
+					);
+
+					DynamicString common_vertex_shader_file_path;
+					FindCommonShaderFilePath(string.Data(), &common_vertex_shader_file_path);
+					std::ifstream common_vertex_shader_file{ common_vertex_shader_file_path.Data() };
+
+					GenerateRayClosestHitShader(common_vertex_shader_file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
 
 					continue;
 				}

@@ -60,7 +60,7 @@ public:
 	ShaderData _RayGenerationShaderData;
 
 	//The ray miss shader data.
-	ShaderData _RayMissShaderData;
+	DynamicArray<ShaderData> _RayMissShaderData;
 
 	//The ray hit group shader data.
 	DynamicArray<RayHitGroupShaderData> _RayHitGroupShaderData;

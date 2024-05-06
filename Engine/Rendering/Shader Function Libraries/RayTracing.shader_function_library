@@ -90,4 +90,6 @@ vec3 GenerateDiffuseDirection(vec3 normal)
     }
 
     return candidate_directions[NUMBER_OF_CANDIDATES - 1];
+
+    #undef NUMBER_OF_CANDIDATES
 }

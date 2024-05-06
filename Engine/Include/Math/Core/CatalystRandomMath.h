@@ -136,18 +136,11 @@ public:
 	*/
 	FORCE_INLINE static NO_DISCARD Vector3<float32> RandomPointOnSphere(const float32 radius = 1.0f) NOEXCEPT
 	{
-		const float32 random_x{ RandomFloat() };
-		const float32 random_y{ RandomFloat() };
+		const float32 theta{ RandomFloat() * BaseMathConstants::DOUBLE_PI };
+		const float32 u{ 2.0f * RandomFloat() - 1.0f };
+		const float32 r{ BaseMath::SquareRoot(1.0f - u * u) };
 
-		const float32 spherical_coordinate_x{ BaseMath::ArcCosine(2.0f * random_x - 1.0f) - (BaseMathConstants::PI / 2.0f) };
-		const float32 spherical_coordinate_y{ 2.0f * BaseMathConstants::PI  * random_y };
-
-		const float32 cosine_a{ BaseMath::Cosine(spherical_coordinate_x) };
-		const float32 cosine_b{ BaseMath::Cosine(spherical_coordinate_y) };
-		const float32 sine_a{ BaseMath::Sine(spherical_coordinate_x) };
-		const float32 sine_b{ BaseMath::Sine(spherical_coordinate_y) };
-
-		return Vector3<float32>(cosine_a * cosine_b, cosine_a * sine_b, sine_a) * radius;
+		return Vector3<float32>(r * BaseMath::Cosine(theta), r * BaseMath::Sine(theta), u) * radius;
 	}
 
 	/*

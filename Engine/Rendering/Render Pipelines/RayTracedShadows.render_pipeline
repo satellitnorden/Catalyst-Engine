@@ -24,7 +24,7 @@ SubscribeToInputStream(RayTracingViewportHalf);
 RayGeneration
 {
     //Declare payloads.
-    Payload(float, VISIBILITY);
+    Payload(0, float, VISIBILITY);
 
     //Calculate the screen coordinate.
     vec2 screen_coordinate = (vec2(RAY_TRACING_ID.xy) + vec2(0.5f)) / vec2(RAY_TRACING_SIZE.xy);
@@ -99,7 +99,7 @@ RayGeneration
                     float maximum_distance = FLOAT32_MAXIMUM;
 
                     //Trace the ray!
-                    TraceRay(ray_tracing_flags, 0, world_position, direction, maximum_distance);
+                    TraceRay(ray_tracing_flags, 1, world_position, direction, maximum_distance, 1);
 
                     //Write to the shadows.
                     shadows[current_shadow_index++] = VISIBILITY;
@@ -119,7 +119,7 @@ RayGeneration
 RayMiss
 {
     //Declare payloads.
-    Payload(float, VISIBILITY);
+    Payload(0, float, VISIBILITY);
 
     //Set the visibility.
     VISIBILITY = 1.0f;

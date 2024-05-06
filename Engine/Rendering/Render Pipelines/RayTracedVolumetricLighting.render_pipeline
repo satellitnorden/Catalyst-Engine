@@ -28,7 +28,7 @@ SubscribeToInputStream(RayTracingViewportHalf);
 RayGeneration
 {
     //Declare payloads.
-    Payload(float, VISIBILITY);
+    Payload(0, float, VISIBILITY);
 
     //Constants.
     #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
@@ -142,7 +142,7 @@ RayGeneration
                             vec3 direction = -light._TransformData1;
 
                             //Trace the ray!
-                            TraceRay(ray_tracing_flags, 0, sample_position, direction, FLOAT32_MAXIMUM);
+                            TraceRay(ray_tracing_flags, 0, sample_position, direction, FLOAT32_MAXIMUM, 0);
                         }
 
                         scattering *= VISIBILITY;
@@ -168,7 +168,7 @@ RayGeneration
 RayMiss
 {
     //Declare payloads.
-    Payload(float, VISIBILITY);
+    Payload(0, float, VISIBILITY);
 
     //Set the visibility.
     VISIBILITY = 1.0f;

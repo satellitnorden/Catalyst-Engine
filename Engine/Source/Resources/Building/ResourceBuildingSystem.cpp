@@ -294,25 +294,17 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 
 	//Write the ray miss shader data.
 	{
-		if (!parameters._RayMissShaderData._GLSLData.Empty())
-		{
-			//Write that it has GLSL shader data.
-			const bool has_data{ true };
-			output_file.Write(&has_data, sizeof(bool));
+		const uint64 number_of_ray_miss_shaders{ parameters._RayMissShaderData.Size() };
+		output_file.Write(&number_of_ray_miss_shaders, sizeof(uint64));
 
+		for (const RenderPipelineBuildParameters::ShaderData &ray_miss_shader_data : parameters._RayMissShaderData)
+		{
 			//Write the data size.
-			const uint64 data_size{ parameters._RayMissShaderData._GLSLData.Size() };
+			const uint64 data_size{ ray_miss_shader_data._GLSLData.Size() };
 			output_file.Write(&data_size, sizeof(uint64));
 
 			//Write the data.
-			output_file.Write(parameters._RayMissShaderData._GLSLData.Data(), parameters._RayMissShaderData._GLSLData.Size());
-		}
-
-		else
-		{
-			//Write that it doesn't GLSL shader data.
-			const bool has_data{ false };
-			output_file.Write(&has_data, sizeof(bool));
+			output_file.Write(ray_miss_shader_data._GLSLData.Data(), ray_miss_shader_data._GLSLData.Size());
 		}
 	}
 

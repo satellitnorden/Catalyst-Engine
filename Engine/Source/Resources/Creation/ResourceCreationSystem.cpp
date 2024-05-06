@@ -46,9 +46,15 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 	}
 
 	//Create the ray miss shader.
-	if (!data->_RayMissShaderData._GLSLData.Empty())
+	if (!data->_RayMissShaderData.Empty())
 	{
-		RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_RayMissShaderData._GLSLData), ShaderStage::RAY_MISS, &resource->_RayMissShaderHandle);
+		resource->_RayMissShaderHandles.Reserve(data->_RayMissShaderData.Size());
+
+		for (RenderPipelineData::ShaderData &ray_miss_shader_data : data->_RayMissShaderData)
+		{
+			resource->_RayMissShaderHandles.Emplace();
+			RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(ray_miss_shader_data._GLSLData), ShaderStage::RAY_MISS, &resource->_RayMissShaderHandles.Back());
+		}
 	}
 
 	//Create the ray hit groups.

@@ -439,12 +439,12 @@ float SmoothStep(float number)
 ////////////
 
 /*
-*	The distribution function for direct lighting.
+*	The distribution function.
 *	This approximates the amount the surface's microfacets are aligned to the halfway vector,
 *	influenced by the roughness of the surface; this is the primary function approximating the microfacets.
 *	Trowbridge-Reitz GGX.
 */
-float DistributionDirect(float roughness, float microsurface_angle)
+float Distribution(float roughness, float microsurface_angle)
 {
 	float roughness_squared = pow(roughness, 4.0f);
 	float microsurface_angle_squared = microsurface_angle * microsurface_angle;
@@ -457,12 +457,12 @@ float DistributionDirect(float roughness, float microsurface_angle)
 }
 
 /*
-*	The geometry function for direct lighting.
+*	The geometry function.
 *	This describes the self-shadowing property of the microfacets.
 *	When a surface is relatively rough, the surface's microfacets can overshadow other microfacets reducing the light the surface reflects.
 *	Schlick-GGX.
 */
-float GeometryDirect(vec3 normal, vec3 outgoing_direction, vec3 radiance_direction, float roughness)
+float Geometry(vec3 normal, vec3 outgoing_direction, vec3 radiance_direction, float roughness)
 {
 	//Calculate the outgoing direction coefficient.
 	float outgoing_direction_coefficient = max(dot(normal, outgoing_direction), 0.0f);
@@ -505,6 +505,119 @@ float GeometryDirect(vec3 normal, vec3 outgoing_direction, vec3 radiance_directi
 }
 
 /*
+*	The fresnel function for direct lighting.
+*	The Fresnel equation describes the ratio of surface reflection at different surface angles.
+*/
+vec3 Fresnel(vec3 surface_color, float difference_angle)
+{
+	//Calculate the fresnel.
+	return surface_color + (vec3(1.0f) - surface_color) * pow(1.0f - difference_angle, 5.0f);
+}
+
+/*
+*	The lambert diffuse function.
+*/
+vec3 LambertDiffuse(vec3 albedo)
+{
+	return albedo / PI;
+}
+
+/*
+*	The disney diffuse function.
+*	Inspired by: https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf
+*/
+vec3 DisneyDiffuse(vec3 albedo, float roughness, float difference_angle, float radiance_angle, float outgoing_angle)
+{
+	//Calculate some stuff.
+	float FD90 = 0.5f + 2.0f * roughness * pow(cos(difference_angle), 2.0f);
+
+	//Set up terms.
+	vec3 term_1 = albedo / PI;
+	float term_2 = 1.0f + (FD90 - 1.0f) * pow(1.0f - cos(radiance_angle), 5.0f);
+	float term_3 = 1.0f + (FD90 - 1.0f) * pow(1.0f - cos(outgoing_angle), 5.0f);
+
+	return term_1 * term_2 * term_3;
+}
+
+////////////////////////////////////////////
+// BIDIRECTIONAL REFLECTANCE DISTRIBUTION //
+////////////////////////////////////////////
+/*
+*	Samples the bidirectional reflectance distribution with the given parameters.
+*	
+*	Parameters;
+*
+*	- outgoing_direction: A direction vector from the point on the surface being shaded in the outgoing direction.
+*	- albedo: The albedo of the surface point being shaded.
+*	- normal: The normal of the surface point being shaded.
+*	- roughness: The roughness of the surface point being shaded.
+*	- metallic: The metallic of the surface point being shaded.
+*	- thickness: The thickness of the surface point being shaded.
+*	- radiance_direction: A direction vector going from the entity emitting irradiance toward the surface point being shaded.
+*/
+vec3 BidirectionalReflectanceDistribution
+(
+	vec3 outgoing_direction,
+	vec3 albedo,
+	vec3 normal,
+	float roughness,
+	float metallic,
+	float thickness,
+	vec3 radiance_direction
+)
+{
+	//Calculate the microsurface normal.
+	vec3 microsurface_normal = normalize(outgoing_direction + -radiance_direction);
+
+	//Calculate the surface color.
+	vec3 surface_color = mix(vec3(0.04f), albedo, metallic);
+
+	//Calculate the angle values.
+	float outgoing_angle = max(dot(normal, outgoing_direction), 0.0f);
+	float radiance_angle = max(dot(normal, -radiance_direction), 0.0f);
+	float microsurface_angle = max(dot(normal, microsurface_normal), 0.0f);
+	float difference_angle = max(dot(-radiance_direction, microsurface_normal), 0.0f);
+
+	//Calculate the normal distribution.
+	float distribution = Distribution(roughness, microsurface_angle);
+
+	//Calculate the geometry.
+	float geometry = Geometry(normal, outgoing_direction, radiance_direction, roughness);
+
+	//Calculate the fresnel.
+	vec3 fresnel = Fresnel(surface_color, difference_angle);
+
+	//Calculate the diffuse component.
+	vec3 diffuse_component;
+
+	{
+		diffuse_component = DisneyDiffuse(albedo, roughness, difference_angle, radiance_angle, outgoing_angle);
+
+		diffuse_component *= (1.0f - fresnel) * (1.0f - metallic);
+	}
+
+	//Calculate the specular component.
+	vec3 specular_component;
+
+	{
+		vec3 nominator = vec3(distribution) * vec3(geometry) * fresnel;
+		float denominator = max(4.0f * outgoing_angle * radiance_angle, 0.00001f);
+
+		specular_component = nominator / denominator;
+	}
+
+	//Calculate the weakening factor.
+	float weakening_factor = dot(normal, -radiance_direction);
+	weakening_factor = mix(weakening_factor * 0.5f + 0.5f, max(weakening_factor, 0.0f), thickness);
+
+	return (diffuse_component + specular_component) * weakening_factor;
+}
+
+///////////////////////
+// INDIRECT LIGHTING //
+///////////////////////
+
+/*
 *	The geometry function for indirect lighting.
 *	This describes the self-shadowing property of the microfacets.
 *	When a surface is relatively rough, the surface's microfacets can overshadow other microfacets reducing the light the surface reflects.
@@ -533,16 +646,6 @@ float GeometryIndirect(float roughness, float outgoing_angle)
 }
 
 /*
-*	The fresnel function for direct lighting.
-*	The Fresnel equation describes the ratio of surface reflection at different surface angles.
-*/
-vec3 FresnelDirect(vec3 surface_color, float difference_angle)
-{
-	//Calculate the fresnel.
-	return surface_color + (vec3(1.0f) - surface_color) * pow(1.0f - difference_angle, 5.0f);
-}
-
-/*
 *	The fresnel function for indirect lighting.
 *	The Fresnel equation describes the ratio of surface reflection at different surface angles.
 */
@@ -551,122 +654,6 @@ vec3 FresnelIndirect(vec3 surface_color, float outgoing_angle)
 	//Calculate the fresnel.
 	return surface_color + (vec3(1.0f) - surface_color) * pow(1.0f - outgoing_angle, 5.0f);
 }
-
-/*
-*	The lambert diffuse function.
-*/
-vec3 LambertDiffuse(vec3 albedo)
-{
-	return albedo / PI;
-}
-
-/*
-*	The disney diffuse function.
-*	Inspired by: https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf
-*/
-vec3 DisneyDiffuse(vec3 albedo, float roughness, float difference_angle, float radiance_angle, float outgoing_angle)
-{
-	//Calculate some stuff.
-	float FD90 = 0.5f + 2.0f * roughness * pow(cos(difference_angle), 2.0f);
-
-	//Set up terms.
-	vec3 term_1 = albedo / PI;
-	float term_2 = 1.0f + (FD90 - 1.0f) * pow(1.0f - cos(radiance_angle), 5.0f);
-	float term_3 = 1.0f + (FD90 - 1.0f) * pow(1.0f - cos(outgoing_angle), 5.0f);
-
-	return term_1 * term_2 * term_3;
-}
-
-/////////////////////
-// DIRECT LIGHTING //
-/////////////////////
-
-float CrossScalar(vec3 A, vec3 B)
-{
-	vec3 _cross = cross(A, B);
-
-	return _cross.x + _cross.y + _cross.z;
-}
-
-/*
-*	Calculates direct lighting. Returns the radiance transmitted from the surface in the outgoing direction.
-*
-*	Arguments;
-*	
-*	- outgoing_direction: A direction vector from the point on the surface being shaded in the outgoing direction.
-*	- albedo: The albedo of the surface point being shaded.
-*	- normal: The normal of the surface point being shaded.
-*	- roughness: The roughness of the surface point being shaded.
-*	- metallic: The metallic of the surface point being shaded.
-*	- ambient_occlusion: The ambient occlusion of the surface point being shaded.
-*	- thickness: The thickness of the surface point being shaded.
-*	- radiance_direction: A direction vector going from the entity emitting irradiance toward the surface point being shaded.
-*	- radiance: The incoming irradiance towards the surface point being shaded.
-*/
-vec3 CalculateDirectLighting
-(
-	vec3 outgoing_direction,
-	vec3 albedo,
-	vec3 normal,
-	float roughness,
-	float metallic,
-	float ambient_occlusion,
-	float thickness,
-	vec3 radiance_direction,
-	vec3 radiance,
-	uint flags
-)
-{
-	//Calculate the microsurface normal.
-	vec3 microsurface_normal = normalize(outgoing_direction + -radiance_direction);
-
-	//Calculate the surface color.
-	vec3 surface_color = mix(vec3(0.04f), albedo, metallic);
-
-	//Calculate the angle values.
-	float outgoing_angle = max(dot(normal, outgoing_direction), 0.0f);
-	float radiance_angle = max(dot(normal, -radiance_direction), 0.0f);
-	float microsurface_angle = max(dot(normal, microsurface_normal), 0.0f);
-	float difference_angle = max(dot(-radiance_direction, microsurface_normal), 0.0f);
-
-	//Calculate the normal distribution.
-	float distribution = DistributionDirect(roughness, microsurface_angle);
-
-	//Calculate the geometry.
-	float geometry = GeometryDirect(normal, outgoing_direction, radiance_direction, roughness);
-
-	//Calculate the fresnel.
-	vec3 fresnel = FresnelDirect(surface_color, difference_angle);
-
-	//Calculate the diffuse component.
-	vec3 diffuse_component;
-
-	{
-		diffuse_component = DisneyDiffuse(albedo, roughness, difference_angle, radiance_angle, outgoing_angle);
-
-		diffuse_component *= (1.0f - fresnel) * (1.0f - metallic);
-	}
-
-	//Calculate the specular component.
-	vec3 specular_component;
-
-	{
-		vec3 nominator = vec3(distribution) * vec3(geometry) * fresnel;
-		float denominator = max(4.0f * outgoing_angle * radiance_angle, 0.00001f);
-
-		specular_component = nominator / denominator;
-	}
-
-	//Calculate the weakening factor.
-	float weakening_factor = dot(normal, -radiance_direction);
-	weakening_factor = mix(weakening_factor * 0.5f + 0.5f, max(weakening_factor, 0.0f), thickness);
-
-	return (diffuse_component + specular_component) * radiance * weakening_factor;
-}
-
-///////////////////////
-// INDIRECT LIGHTING //
-///////////////////////
 
 /*
 *	Calculates inddirect lighting. Returns the radiance transmitted from the surface in the outgoing direction.
@@ -699,19 +686,13 @@ vec3 CalculateIndirectLighting
 	vec3 surface_color = mix(vec3(0.04f), albedo, metallic);
 
 	//Calculate the angle values.
-	//float outgoing_angle = max(dot(normal, outgoing_direction), 0.0f);
-	float outgoing_angle = dot(normal, outgoing_direction);
-	outgoing_angle = mix(max(outgoing_angle, 0.0f), outgoing_angle * 0.5f + 0.5f, pow(0.5f, 20.0f)); //Add some "thinness" to the angle. (:
+	float outgoing_angle = max(dot(normal, outgoing_direction), 0.0f);
 
 	//Calculate the geometry.
 	float geometry = GeometryIndirect(roughness, outgoing_angle);
 
-	/*
-	*	Calculate the fresnel.
-	*	Multiplying by ((1.0f - roughness) * 0.5f + 0.5f) is technically incorrect here,
-	*	but it looks better, so let's do that. (:
-	*/
-	vec3 fresnel = FresnelIndirect(surface_color, outgoing_angle) * ((1.0f - roughness) * 0.5f + 0.5f);
+	//Calculate the fresnel.
+	vec3 fresnel = FresnelIndirect(surface_color, outgoing_angle);
 
 	//Calculate the diffuse component.
 	vec3 diffuse_component;
@@ -730,7 +711,7 @@ vec3 CalculateIndirectLighting
 		specular_component = nominator / denominator;
 	}
 
-	return (diffuse_component * diffuse_irradiance * ambient_occlusion) + (specular_component * specular_irradiance * mix(ambient_occlusion, 1.0f, 0.5f));
+	return (diffuse_component * diffuse_irradiance * ambient_occlusion) + (specular_component * specular_irradiance * ambient_occlusion);
 }
 
 //Constants.
@@ -781,7 +762,7 @@ layout (location = 0) rayPayloadNV vec3 RADIANCE;
 
 void main()
 {
-    #define NUMBER_OF_SAMPLES (2)
+    #define NUMBER_OF_SAMPLES (1)
     vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
     vec4 scene_features_2 = imageLoad(SceneFeatures2Half, ivec2(gl_LaunchIDNV.xy));
     vec3 normal = scene_features_2.xyz;
@@ -790,13 +771,14 @@ void main()
     vec3 accumulated_radiance = vec3(0.0f);
     for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
     {
-	    vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i);
+        vec3 ray_direction;
+        vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i);
         mat3 random_rotation = CalculateGramSchmidtRotationMatrix(normal, noise_texture_sample.xyz * 2.0f - 1.0f);
-	    uint random_hemisphere_sample_index = uint(noise_texture_sample.w * 64.0f) & 63;
+        uint random_hemisphere_sample_index = uint(noise_texture_sample.w * 64.0f) & 63;
         vec3 random_hemisphere_direction = IRRADIANCE_HEMISPHERE_SAMPLES[random_hemisphere_sample_index].xyz;
-        vec3 random_direction = random_rotation * random_hemisphere_direction;
-        random_direction = dot(random_direction, normal) >= 0.0f ? random_direction : -random_direction;
-        random_direction = normalize(normal + random_direction);
+        ray_direction = random_rotation * random_hemisphere_direction;
+        ray_direction = dot(ray_direction, normal) >= 0.0f ? ray_direction : -ray_direction;
+        ray_direction = normalize(normal + ray_direction);
 traceNV
 (
 	TOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/
@@ -807,7 +789,7 @@ traceNV
 	0, /*missIndex*/
 	world_position, /*origin*/
 	FLOAT32_EPSILON * 8.0f, /*Tmin*/
-	random_direction, /*direction*/
+	ray_direction, /*direction*/
 	FLOAT32_MAXIMUM, /*Tmax*/
 	0 /*payload*/
 );

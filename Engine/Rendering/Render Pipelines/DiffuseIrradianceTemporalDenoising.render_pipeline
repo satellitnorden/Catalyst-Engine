@@ -34,7 +34,7 @@ IncludeCommonVertexShader(ViewportScreenCoordinate);
 Fragment
 {
     //Constants.
-    #define FEEDBACK_FACTOR (0.9f)
+    #define FEEDBACK_FACTOR (0.95f)
 
     //Declare input parameters.
     InputParameter(vec2, InScreenCoordinate);

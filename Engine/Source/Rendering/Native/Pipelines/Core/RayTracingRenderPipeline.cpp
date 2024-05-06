@@ -27,7 +27,7 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 		shader_stages |= ShaderStage::RAY_GENERATION;
 	}
 
-	if (_RenderPipelineResource->_RayMissShaderHandle != EMPTY_HANDLE)
+	if (!_RenderPipelineResource->_RayMissShaderHandles.Empty())
 	{
 		shader_stages |= ShaderStage::RAY_MISS;
 	}
@@ -223,10 +223,14 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 		SetRayGenerationShader(_RenderPipelineResource->_RayGenerationShaderHandle);
 	}
 
-	if (_RenderPipelineResource->_RayMissShaderHandle)
+	if (!_RenderPipelineResource->_RayMissShaderHandles.Empty())
 	{
-		SetNumberOfMissShaders(1);
-		AddMissShader(_RenderPipelineResource->_RayMissShaderHandle);
+		SetNumberOfMissShaders(_RenderPipelineResource->_RayMissShaderHandles.Size());
+
+		for (const ShaderHandle ray_miss_shader : _RenderPipelineResource->_RayMissShaderHandles)
+		{
+			AddMissShader(ray_miss_shader);
+		}
 	}
 
 	//Add the hit groups.

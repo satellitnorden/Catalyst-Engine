@@ -127,11 +127,6 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 			AddPipeline(&_ScreenSpaceIndirectLightingResolveGraphicsPipeline);
 		}
 		
-		else if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::RAY_TRACED)
-		{
-			AddPipeline(&_RayTracedIndirectLightingRayTracingPipeline);
-		}
-
 		for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
 		{
 			AddPipeline(&pipeline);
@@ -194,11 +189,6 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 			}
 		}
 
-		else if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::RAY_TRACED)
-		{
-			_RayTracedIndirectLightingRayTracingPipeline.Initialize(RenderingConfiguration::IndirectLightingQuality::HIGH);
-		}
-
 		//Initialize the temporal denoising graphics pipelines.
 		_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	_TemporalReprojectionBuffer,
 																			_TemporalIndirectLightingBuffers[0],
@@ -250,11 +240,6 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 		_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Execute();
 	}
 
-	else if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::RAY_TRACED)
-	{
-		_RayTracedIndirectLightingRayTracingPipeline.Execute();
-	}
-
 	if (USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING
 		&& _CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
 	{
@@ -302,11 +287,6 @@ void IndirectLightingRenderPass::Terminate() NOEXCEPT
 		}
 
 		_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Terminate();
-	}
-
-	if (_PreviousIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::RAY_TRACED)
-	{
-		_RayTracedIndirectLightingRayTracingPipeline.Terminate();
 	}
 
 	if (_PreviousIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)

@@ -152,7 +152,8 @@ private:
 		const float32 roughness,
 		const float32 metallic,
 		Vector3<float32> *const RESTRICT direction,
-		float32 *const RESTRICT probability_density
+		float32 *const RESTRICT probability_density,
+		const bool improved_ray_generation
 	) NOEXCEPT;
 
 };

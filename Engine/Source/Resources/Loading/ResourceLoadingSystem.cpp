@@ -93,16 +93,21 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryInputFile *const RESTRICT f
 
 	//Read the ray miss shader data.
 	{
-		bool has_data{ false };
-		file->Read(&has_data, sizeof(bool));
+		uint64 number_of_ray_miss_shaders{ 0 };
+		file->Read(&number_of_ray_miss_shaders, sizeof(uint64));
 
-		if (has_data)
+		if (number_of_ray_miss_shaders > 0)
 		{
-			uint64 data_size{ 0 };
-			file->Read(&data_size, sizeof(uint64));
-			data->_RayMissShaderData._GLSLData.Upsize<false>(data_size);
+			data->_RayMissShaderData.Upsize<true>(number_of_ray_miss_shaders);
 
-			file->Read(data->_RayMissShaderData._GLSLData.Data(), data_size);
+			for (uint64 i{ 0 }; i < number_of_ray_miss_shaders; ++i)
+			{
+				uint64 data_size{ 0 };
+				file->Read(&data_size, sizeof(uint64));
+				data->_RayMissShaderData[i]._GLSLData.Upsize<false>(data_size);
+
+				file->Read(data->_RayMissShaderData[i]._GLSLData.Data(), data_size);
+			}
 		}
 	}
 

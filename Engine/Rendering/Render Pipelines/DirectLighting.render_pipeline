@@ -105,19 +105,16 @@ Fragment
                 float shadow_factor = texture(INTERMEDIATE_RGBA_FLOAT32_HALF_1, InScreenCoordinate).x;
 
                 //Add direct light.
-                lighting += CalculateDirectLighting
+                lighting += BidirectionalReflectanceDistribution
                 (
                     view_direction,
                     albedo,
                     normal,
                     roughness,
                     metallic,
-                    ambient_occlusion,
                     thickness,
-                    light._TransformData1,
-                    light_radiance,
-                    0
-                ) * shadow_factor * ambient_occlusion;
+                    light._TransformData1
+                ) * light_radiance * shadow_factor * (ambient_occlusion * 0.5f + 0.5f);
 
                 break;
             }

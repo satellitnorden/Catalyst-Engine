@@ -1,0 +1,71 @@
+{
+    //Declare payloads.
+    IncomingPayload(0, vec3, RADIANCE);
+    OutgoingPayload(1, float, VISIBILITY);
+
+    //Retrieve the hit vertex information.
+    HitVertexInformation hit_vertex_information = GetHitVertexInformation();
+
+    //Retrieve the hit material index.
+    uint hit_material_index = GetHitMaterialIndex();
+
+    //Evaluate the material.
+    vec4 albedo_thickness;
+    EVALUATE_ALBEDO_THICKNESS(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, albedo_thickness);
+    vec4 normal_map_displacement;
+    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, normal_map_displacement);
+    vec4 material_properties;
+    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, material_properties);
+
+    //Calculate the hit distance.
+    vec3 hit_position = WORLD_RAY_ORIGIN + WORLD_RAY_DIRECTION * RAY_HIT_DISTANCE;
+
+    //Calculate the radiance.
+    RADIANCE = vec3(0.0f, 0.0f, 0.0f);
+
+    //Add emissive lighting.
+    RADIANCE += albedo_thickness.rgb * material_properties.w * MATERIALS[hit_material_index]._EmissiveMultiplier;
+
+    //Add direct lighting.
+    {
+        //Iterate over all lights.
+        for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
+        {
+            //Unpack the light.
+	        Light light = UnpackLight(i);
+
+            //Calculate the light radiance.
+            vec3 light_radiance = light._Color * light._Intensity;
+
+            switch (light._LightType)
+            {
+                case LIGHT_TYPE_DIRECTIONAL:
+                {
+                    //Reset the visibility.
+                    VISIBILITY = 0.0f;
+
+                    //Set up the ray tracing flags.
+                    uint ray_tracing_flags =    RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT
+                                                | RAY_TRACING_FLAG_SKIP_CLOSEST_HIT;
+
+                    //Trace the ray!
+                    TraceRay(ray_tracing_flags, 1, hit_position, -light._TransformData1, FLOAT32_MAXIMUM, 1);
+
+                    //Add direct light.
+                    RADIANCE += BidirectionalReflectanceDistribution
+                    (
+                        -WORLD_RAY_DIRECTION,
+                        albedo_thickness.rgb,
+                        hit_vertex_information._Normal,
+                        material_properties.x,
+                        material_properties.y,
+                        albedo_thickness.w,
+                        light._TransformData1
+                    ) * light_radiance * VISIBILITY;
+
+                    break;
+                }
+            }
+        }
+    }
+}
