@@ -26,6 +26,8 @@
 #define MAXIMUM_8_BIT_UINT (255)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
+#define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
+
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -453,10 +455,10 @@ void main()
 	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
 	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
 	    float weight_4 = horizontal_weight * vertical_weight;
-        weight_1 = max(weight_1 * exp(-abs(depth - linearized_depth_1)), FLOAT32_EPSILON);
-        weight_2 = max(weight_2 * exp(-abs(depth - linearized_depth_2)), FLOAT32_EPSILON);
-        weight_3 = max(weight_3 * exp(-abs(depth - linearized_depth_3)), FLOAT32_EPSILON);
-        weight_4 = max(weight_4 * exp(-abs(depth - linearized_depth_4)), FLOAT32_EPSILON);
+        weight_1 = max(weight_1 * exp(-abs(linearized_depth - linearized_depth_1)), FLOAT32_EPSILON * 1.0f);
+        weight_2 = max(weight_2 * exp(-abs(linearized_depth - linearized_depth_2)), FLOAT32_EPSILON * 1.0f);
+        weight_3 = max(weight_3 * exp(-abs(linearized_depth - linearized_depth_3)), FLOAT32_EPSILON * 1.0f);
+        weight_4 = max(weight_4 * exp(-abs(linearized_depth - linearized_depth_4)), FLOAT32_EPSILON * 1.0f);
         float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
 	    weight_1 *= total_weight_reciprocal;
 	    weight_2 *= total_weight_reciprocal;

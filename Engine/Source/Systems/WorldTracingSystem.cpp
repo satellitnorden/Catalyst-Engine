@@ -573,7 +573,6 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 
 			//Normalize.
 			const float32 indirect_lighting_probability_density_reciprocal{ 1.0f / indirect_lighting_probability_density };
-
 			indirect_radiance *= indirect_lighting_probability_density_reciprocal;
 
 			//Add the indirect lighting.
@@ -830,4 +829,31 @@ void WorldTracingSystem::GenerateIrradianceRay
 
 	*direction = directions[chosen_index];
 	*probability_density = weights[chosen_index];
+}
+
+/*
+*	Returns the ambient occlusion at the given position.
+*/
+NO_DISCARD float32 WorldTracingSystem::SampleAmbientOcclusion(const Vector3<float32> &position, const Vector3<float32> &normal) NOEXCEPT
+{
+	//Construct the ray direction.
+	Vector3<float32> ray_direction{ CatalystRandomMath::RandomPointOnSphere() };
+
+	if (Vector3<float32>::DotProduct(normal, ray_direction) < 0.0f)
+	{
+		ray_direction *= -1.0f;
+	}
+
+	//Construct the ray.
+	Ray ray;
+
+	ray.SetOrigin(position);
+	ray.SetDirection(ray_direction);
+
+	//Cast the ray!
+	float32 hit_distance;
+	const bool hit{ DistanceRay(ray, 2.0f, &hit_distance) };
+
+	//Return the ambient occlusion.
+	return hit ? hit_distance / 2.0f : 1.0f;
 }

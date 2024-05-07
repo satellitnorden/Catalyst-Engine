@@ -24,22 +24,6 @@ public:
 	void RenderUpdate() NOEXCEPT;
 
 	/*
-	*	Returns the bloom threshold.
-	*/
-	FORCE_INLINE NO_DISCARD float32 GetBloomThreshold() const NOEXCEPT
-	{
-		return _BloomThreshold;
-	}
-
-	/*
-	*	Sets the bloom threshold.
-	*/
-	FORCE_INLINE void SetBloomThreshold(const float32 value) NOEXCEPT
-	{
-		_BloomThreshold = value;
-	}
-
-	/*
 	*	Returns the bloom intensity.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetBloomIntensity() const NOEXCEPT
@@ -260,9 +244,6 @@ private:
 		//The tint.
 		Vector4<float32> _Tint;
 
-		//The bloom threshold.
-		float32 _BloomThreshold;
-
 		//The bloom intensity.
 		float32 _BloomIntensity;
 
@@ -292,11 +273,8 @@ private:
 
 	};
 
-	//The bloom threshold.
-	float32 _BloomThreshold{ 1.0f };
-
 	//The bloom intensity.
-	float32 _BloomIntensity{ 1.0f };
+	float32 _BloomIntensity{ 0.05f };
 
 	//The tint color.
 	Vector3<float32> _TintColor{ 1.0f, 1.0f, 1.0f };

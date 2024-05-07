@@ -376,6 +376,27 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		},
 		nullptr
 	);
+	DebugSystem::Instance->RegisterButtonDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Bloom Half",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::BLOOM_HALF);
+		},
+		nullptr
+	);
+	DebugSystem::Instance->RegisterSliderDebugCommand
+	(
+		"Rendering\\Post Processing\\Bloom Intensity",
+		[](class DebugCommand* const RESTRICT debug_command, void* const RESTRICT user_data)
+		{
+			RenderingSystem::Instance->GetPostProcessingSystem()->SetBloomIntensity(debug_command->_State._SliderState._Value);
+		},
+		nullptr,
+		0.0f,
+		1.0f,
+		_PostProcessingSystem.GetBloomIntensity()
+	);
 #endif
 }
 

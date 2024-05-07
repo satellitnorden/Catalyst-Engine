@@ -28,6 +28,8 @@ layout (early_fragment_tests) in;
 #define MAXIMUM_8_BIT_UINT (255)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
+#define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
+
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -588,7 +590,7 @@ float GeometryIndirect(float roughness, float outgoing_angle)
 		//Calculate the denominator.
 		float denominator = outgoing_angle * (1.0f - roughness_coefficient) + roughness_coefficient;
 
-		coefficient = nominator / denominator;
+		coefficient = nominator / max(denominator, DIVIDE_BY_ZERO_SAFE_EPSILON);
 	}
 
 	//Calculate the geometry.
@@ -768,7 +770,7 @@ void main()
                 weights[i] *= exp(-abs(center_depth - depth_samples[i]));
             }
             float weight_sum = weights[0] + weights[1] + weights[2] + weights[3];
-            float inverse_weight_sum = 1.0f / weight_sum;
+            float inverse_weight_sum = weight_sum > 0.0f ? 1.0f / weight_sum : 1.0f;
             for (uint i = 0; i < 4; ++i)
             {
                 weights[i] *= inverse_weight_sum;

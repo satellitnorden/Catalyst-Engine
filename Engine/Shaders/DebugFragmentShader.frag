@@ -9,6 +9,7 @@
 #define MODE_AMBIENT_OCCLUSION (7)
 #define MODE_EMISSIVE (8)
 #define MODE_DIFFUSE_IRRADIANCE (9)
+#define MODE_BLOOM_HALF (10)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -96,6 +97,13 @@ void CatalystShaderMain()
 		}
 
 		case MODE_DIFFUSE_IRRADIANCE:
+		{
+			fragment = vec4(vec3(texture(SOURCE_TEXTURE, fragment_texture_coordinate).rgb), 1.0f);
+
+			break;
+		}
+
+		case MODE_BLOOM_HALF:
 		{
 			fragment = vec4(vec3(texture(SOURCE_TEXTURE, fragment_texture_coordinate).rgb), 1.0f);
 

@@ -8,6 +8,19 @@
 #include <Systems/RenderingSystem.h>
 
 /*
+*	Bloom downsample push constant data class definition.
+*/
+class BloomDownsamplePushConstantData final
+{
+
+public:
+
+	//The inverse source resolution.
+	Vector2<float32> _InverseSourceResolution;
+
+};
+
+/*
 *	Default constructor.
 */
 BloomRenderPass::BloomRenderPass() NOEXCEPT
@@ -40,113 +53,164 @@ BloomRenderPass::BloomRenderPass() NOEXCEPT
 */
 void BloomRenderPass::Initialize() NOEXCEPT
 {
+	//Register the "BloomDownsample" input stream.
+	RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+	(
+		HashString("BloomDownsample"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		sizeof(BloomDownsamplePushConstantData),
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			if (input_stream->_Entries.Empty())
+			{
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._VertexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBufferOffset = 0;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 3;
+				new_entry._IndexCount = 0;
+				new_entry._InstanceCount = 0;
+			}
+		},
+		RenderInputStream::Mode::DRAW,
+		nullptr
+	);
+
 	//Reset this render pass.
 	ResetRenderPass();
 
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _BloomDownsampleGraphicsPipelines.Size() + _BloomUpsampleGraphicsPipelines.Size() + 1);
-	AddPipeline(&_BloomIsolationGraphicsPipeline);
+	SetNumberOfPipelines(_BloomDownsamplePipelines.Size() + _BloomUpsamplePipelines.Size() + 1);
 
-	for (ResampleGraphicsPipeline &pipeline : _BloomDownsampleGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _BloomDownsamplePipelines)
 	{
 		AddPipeline(&pipeline);
 	}
 
-	for (ResampleGraphicsPipeline &pipeline : _BloomUpsampleGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _BloomUpsamplePipelines)
 	{
 		AddPipeline(&pipeline);
 	}
 
-	AddPipeline(&_BloomApplicationGraphicsPipeline);
+	AddPipeline(&_BloomApplicationPipeline);
 
 	//Initialize all pipelines.
-	_BloomIsolationGraphicsPipeline.Initialize();
+	for (uint64 i{ 0 }; i < _BloomDownsamplePipelines.Size(); ++i)
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
 
-	_BloomDownsampleGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE),
-													RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(0)._Height)),
-													RenderingSystem::Instance->GetScaledResolution(1),
-													false);
+		switch (i)
+		{
+			case 0:
+			{
+				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
+				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_HALF));
 
-	_BloomDownsampleGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-													RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height)),
-													RenderingSystem::Instance->GetScaledResolution(2),
-													false);
+				break;
+			}
 
-	_BloomDownsampleGraphicsPipelines[2].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1),
-													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(2)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(2)._Height)),
-													RenderingSystem::Instance->GetScaledResolution(3),
-													false);
+			case 1:
+			{
+				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_HALF));
+				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_QUARTER));
 
-	_BloomDownsampleGraphicsPipelines[3].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH),
-													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(3)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(3)._Height)),
-													RenderingSystem::Instance->GetScaledResolution(4),
-													false);
+				break;
+			}
 
-	_BloomDownsampleGraphicsPipelines[4].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH),
-													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(4)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(4)._Height)),
-													RenderingSystem::Instance->GetScaledResolution(5),
-													false);
+			case 2:
+			{
+				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_QUARTER));
+				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_EIGHTH));
 
-	_BloomDownsampleGraphicsPipelines[5].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND),
-													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(5)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(5)._Height)),
-													RenderingSystem::Instance->GetScaledResolution(6),
-													false);
+				break;
+			}
 
-	_BloomDownsampleGraphicsPipelines[6].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH),
-													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(6)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(6)._Height)),
-													RenderingSystem::Instance->GetScaledResolution(7),
-													false);
+			case 3:
+			{
+				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_EIGHTH));
+				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_SIXTEENTH));
 
-	_BloomUpsampleGraphicsPipelines[0].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH),
-													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(7)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(7)._Height)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution(6),
-													true);
+				break;
+			}
 
-	_BloomUpsampleGraphicsPipelines[1].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH),
-													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(6)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(6)._Height)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution(5),
-													true);
+			case 4:
+			{
+				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_SIXTEENTH));
+				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_THIRTYSECOND));
 
-	_BloomUpsampleGraphicsPipelines[2].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND),
-													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(5)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(5)._Height)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution(4),
-													true);
+				break;
+			}
 
-	_BloomUpsampleGraphicsPipelines[3].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH),
-													RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(4)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(4)._Height)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution(3),
-													true);
+			default:
+			{
+				ASSERT(false, "Invalid case!");
 
-	_BloomUpsampleGraphicsPipelines[4].Initialize(	RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH),
-													RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(3)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(3)._Height)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution(2),
-													true);
+				break;
+			}
+		}
 
-	_BloomUpsampleGraphicsPipelines[5].Initialize(	RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1),
-													RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(2)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(2)._Height)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution(1),
-													true);
+		parameters._RenderResolution = RenderingSystem::Instance->GetScaledResolution(i + 1);
 
-	_BloomUpsampleGraphicsPipelines[6].Initialize(	RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-													RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE),
-													1.0f / Vector2<float>(static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Width), static_cast<float>(RenderingSystem::Instance->GetScaledResolution(1)._Height)) * 0.5f,
-													RenderingSystem::Instance->GetScaledResolution(0),
-													true);
+		_BloomDownsamplePipelines[i].Initialize(parameters);
+	}
 
-	_BloomApplicationGraphicsPipeline.Initialize();
+	for (uint64 i{ 0 }; i < _BloomUpsamplePipelines.Size(); ++i)
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		switch (i)
+		{
+			case 0:
+			{
+				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_THIRTYSECOND));
+				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_SIXTEENTH));
+
+				break;
+			}
+
+			case 1:
+			{
+				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_SIXTEENTH));
+				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_EIGHTH));
+
+				break;
+			}
+
+			case 2:
+			{
+				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_EIGHTH));
+				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_QUARTER));
+
+				break;
+			}
+
+			case 3:
+			{
+				parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_QUARTER));
+				parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_HALF));
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+
+		parameters._RenderResolution = RenderingSystem::Instance->GetScaledResolution(4 - i);
+
+		_BloomUpsamplePipelines[i].Initialize(parameters);
+	}
+
+	_BloomApplicationPipeline.Initialize();
 }
 
 /*
@@ -155,27 +219,39 @@ void BloomRenderPass::Initialize() NOEXCEPT
 void BloomRenderPass::Execute() NOEXCEPT
 {
 	//No need to perform bloom if it's turned off.
-	if (RenderingSystem::Instance->GetPostProcessingSystem()->GetBloomIntensity() == 0.0f)
+	if (RenderingSystem::Instance->GetPostProcessingSystem()->GetBloomIntensity() <= 0.0f)
 	{
 		SetEnabled(false);
 
 		return;
 	}
 
+	else
+	{
+		SetEnabled(true);
+	}
+
 	//Execute all pipelines.
-	_BloomIsolationGraphicsPipeline.Execute();
+	for (uint64 i{ 0 }; i < _BloomDownsamplePipelines.Size(); ++i)
+	{
+		BloomDownsamplePushConstantData push_constant_data;
 
-	for (ResampleGraphicsPipeline &pipeline : _BloomDownsampleGraphicsPipelines)
+		push_constant_data._InverseSourceResolution._X = 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(i)._Width);
+		push_constant_data._InverseSourceResolution._Y = 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(i)._Height);
+
+		GraphicsRenderPipelineExecuteParameters parameters;
+
+		parameters._PushConstantData = &push_constant_data;
+
+		_BloomDownsamplePipelines[i].Execute(&parameters);
+	}
+
+	for (GraphicsRenderPipeline &pipeline : _BloomUpsamplePipelines)
 	{
 		pipeline.Execute();
 	}
 
-	for (ResampleGraphicsPipeline &pipeline : _BloomUpsampleGraphicsPipelines)
-	{
-		pipeline.Execute();
-	}
-
-	_BloomApplicationGraphicsPipeline.Execute();
+	_BloomApplicationPipeline.Execute();
 }
 
 /*
@@ -184,17 +260,15 @@ void BloomRenderPass::Execute() NOEXCEPT
 void BloomRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	_BloomIsolationGraphicsPipeline.Terminate();
-
-	for (ResampleGraphicsPipeline &pipeline : _BloomDownsampleGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _BloomDownsamplePipelines)
 	{
 		pipeline.Terminate();
 	}
 
-	for (ResampleGraphicsPipeline &pipeline : _BloomUpsampleGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _BloomUpsamplePipelines)
 	{
 		pipeline.Terminate();
 	}
 
-	_BloomApplicationGraphicsPipeline.Terminate();
+	_BloomApplicationPipeline.Terminate();
 }

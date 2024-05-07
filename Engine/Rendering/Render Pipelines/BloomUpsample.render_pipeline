@@ -1,0 +1,68 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(General);
+
+//Declare input render targets.
+InputRenderTarget(InputRenderTarget /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(OutputRenderTarget);
+
+//Declare render resolution.
+RenderResolution(MAIN_HALF);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Set blend properties.
+BlendEnable();
+BlendColorSourceFactor(ONE);
+BlendColorDestinationFactor(ONE);
+BlendColorOperator(ADD);
+BlendAlphaSourceFactor(ONE);
+BlendAlphaDestinationFactor(ZERO);
+BlendAlphaOperator(ADD);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Constants.
+    #define FILTER_RADIUS (INVERSE_FULL_MAIN_RESOLUTION * 1.5f)
+
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample the input render target at various locations.
+    vec3 A = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, FILTER_RADIUS.y)).rgb;
+    vec3 B = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             FILTER_RADIUS.y)).rgb;
+    vec3 C = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  FILTER_RADIUS.y)).rgb;
+
+    vec3 D = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, 0.0f)).rgb;
+    vec3 E = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             0.0f)).rgb;
+    vec3 F = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  0.0f)).rgb;
+
+    vec3 G = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, -FILTER_RADIUS.y)).rgb;
+    vec3 H = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             -FILTER_RADIUS.y)).rgb;
+    vec3 I = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  -FILTER_RADIUS.y)).rgb;
+
+    //Perform the blend.
+    vec3 blend = vec3(0.0f);
+
+    blend += E * 4.0f;
+    blend += (B + D + F + H) * 2.0f;
+    blend += (A + C + G + I);
+
+    blend *= 1.0f / 16.0f;
+
+    //Output the fragment.
+    OutputFragment(OutputRenderTarget, vec4(blend, 1.0f));
+}

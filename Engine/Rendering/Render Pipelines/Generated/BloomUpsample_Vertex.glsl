@@ -26,6 +26,8 @@
 #define MAXIMUM_8_BIT_UINT (255)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
+#define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
+
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -193,33 +195,24 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (std140, set = 1, binding = 0) uniform Camera
+layout (std140, set = 1, binding = 0) uniform General
 {
-	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;
-	layout (offset = 64) mat4 WORLD_TO_CAMERA_MATRIX;
-	layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
-	layout (offset = 192) mat4 INVERSE_WORLD_TO_CAMERA_MATRIX;
-	layout (offset = 256) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;
-	layout (offset = 320) vec3 CAMERA_WORLD_POSITION;
-	layout (offset = 336) vec3 CAMERA_FORWARD_VECTOR;
-	layout (offset = 352) vec2 CURRENT_FRAME_JITTER;
-	layout (offset = 360) float NEAR_PLANE;
-	layout (offset = 364) float FAR_PLANE;
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
 };
 
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) mat4 TRANSFORMATION;
-	layout (offset = 64) vec3 COLOR;
-};
+layout (set = 1, binding = 1) uniform sampler2D InputRenderTarget;
 
-layout (location = 0) in vec3 InPosition;
-layout (location = 1) in vec3 InNormal;
-layout (location = 2) in vec3 InTangent;
-layout (location = 3) in vec2 InTextureCoordinate;
+layout (location = 0) out vec2 OutScreenCoordinate;
 
 void main()
 {
-    vec3 world_position = vec3(TRANSFORMATION * vec4(InPosition, 1.0f));
-	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(world_position,1.0f);
+	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
+    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+	gl_Position = vec4(x,y,0.0f,1.0f);
 }

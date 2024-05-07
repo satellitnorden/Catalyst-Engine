@@ -116,6 +116,56 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE)]._IsDepthBuffer = false;
 
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_HALF)]._Identifier = HashString("BloomHalf");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_HALF)]._Resolution = RenderingSystem::Instance->GetScaledResolution(1);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_HALF)]._TextureFormat = TextureFormat::RGBA_FLOAT32;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_HALF)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_HALF)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_HALF)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_HALF)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_HALF)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_HALF)]._IsDepthBuffer = false;
+
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_QUARTER)]._Identifier = HashString("BloomQuarter");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_QUARTER)]._Resolution = RenderingSystem::Instance->GetScaledResolution(2);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_QUARTER)]._TextureFormat = TextureFormat::RGBA_FLOAT32;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_QUARTER)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_QUARTER)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_QUARTER)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_QUARTER)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_QUARTER)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_QUARTER)]._IsDepthBuffer = false;
+
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_EIGHTH)]._Identifier = HashString("BloomEighth");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_EIGHTH)]._Resolution = RenderingSystem::Instance->GetScaledResolution(3);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_EIGHTH)]._TextureFormat = TextureFormat::RGBA_FLOAT32;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_EIGHTH)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_EIGHTH)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_EIGHTH)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_EIGHTH)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_EIGHTH)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_EIGHTH)]._IsDepthBuffer = false;
+
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_SIXTEENTH)]._Identifier = HashString("BloomSixteenth");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_SIXTEENTH)]._Resolution = RenderingSystem::Instance->GetScaledResolution(4);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_SIXTEENTH)]._TextureFormat = TextureFormat::RGBA_FLOAT32;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_SIXTEENTH)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_SIXTEENTH)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_SIXTEENTH)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_SIXTEENTH)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_SIXTEENTH)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_SIXTEENTH)]._IsDepthBuffer = false;
+
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_THIRTYSECOND)]._Identifier = HashString("BloomThirtySecond");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_THIRTYSECOND)]._Resolution = RenderingSystem::Instance->GetScaledResolution(5);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_THIRTYSECOND)]._TextureFormat = TextureFormat::RGBA_FLOAT32;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_THIRTYSECOND)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_THIRTYSECOND)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_THIRTYSECOND)]._IsNeeded[UNDERLYING(RenderingPath::MOBILE)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_THIRTYSECOND)]._IsNeeded[UNDERLYING(RenderingPath::VIRTUAL_REALITY)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_THIRTYSECOND)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::BLOOM_THIRTYSECOND)]._IsDepthBuffer = false;
+
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::PREVIOUS_SCENE)]._Identifier = HashString("PreviousScene");
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::PREVIOUS_SCENE)]._Resolution = RenderingSystem::Instance->GetScaledResolution(0);
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::PREVIOUS_SCENE)]._TextureFormat = TextureFormat::RGBA_FLOAT32;

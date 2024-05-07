@@ -1,8 +1,12 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(General);
+IncludeUniformBuffer(PostProcessing);
+
 //Declare input render targets.
-InputRenderTarget(Scene /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(BloomHalf /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
-OutputRenderTarget(INTERMEDIATE_RGBA_FLOAT32_1);
+OutputRenderTarget(Scene);
 
 //Declare render resolution.
 RenderResolution(MAIN_FULL);
@@ -16,8 +20,8 @@ Topology(TRIANGLE_FAN);
 
 //Set blend properties.
 BlendEnable();
-BlendColorSourceFactor(ONE);
-BlendColorDestinationFactor(ONE);
+BlendColorSourceFactor(SOURCE_ALPHA);
+BlendColorDestinationFactor(ONE_MINUS_SOURCE_ALPHA);
 BlendColorOperator(ADD);
 BlendAlphaSourceFactor(ONE);
 BlendAlphaDestinationFactor(ZERO);
@@ -32,12 +36,34 @@ IncludeCommonVertexShader(ViewportScreenCoordinate);
 //The fragment shader.
 Fragment
 {
-    //Declare input parameters.
-    InputParameter(vec2, InTextureCoordinate);
+    //Constants.
+    #define FILTER_RADIUS (INVERSE_FULL_MAIN_RESOLUTION * 1.5f)
 
-    //Sample the scene texture.
-    vec4 scene_texture_sample = texture(Scene, InTextureCoordinate);
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample the input render target at various locations.
+    vec3 A = texture(BloomHalf, InScreenCoordinate + vec2(-FILTER_RADIUS.x, FILTER_RADIUS.y)).rgb;
+    vec3 B = texture(BloomHalf, InScreenCoordinate + vec2(0.0f,             FILTER_RADIUS.y)).rgb;
+    vec3 C = texture(BloomHalf, InScreenCoordinate + vec2(FILTER_RADIUS.x,  FILTER_RADIUS.y)).rgb;
+
+    vec3 D = texture(BloomHalf, InScreenCoordinate + vec2(-FILTER_RADIUS.x, 0.0f)).rgb;
+    vec3 E = texture(BloomHalf, InScreenCoordinate + vec2(0.0f,             0.0f)).rgb;
+    vec3 F = texture(BloomHalf, InScreenCoordinate + vec2(FILTER_RADIUS.x,  0.0f)).rgb;
+
+    vec3 G = texture(BloomHalf, InScreenCoordinate + vec2(-FILTER_RADIUS.x, -FILTER_RADIUS.y)).rgb;
+    vec3 H = texture(BloomHalf, InScreenCoordinate + vec2(0.0f,             -FILTER_RADIUS.y)).rgb;
+    vec3 I = texture(BloomHalf, InScreenCoordinate + vec2(FILTER_RADIUS.x,  -FILTER_RADIUS.y)).rgb;
+
+    //Perform the blend.
+    vec3 blend = vec3(0.0f);
+
+    blend += E * 4.0f;
+    blend += (B + D + F + H) * 2.0f;
+    blend += (A + C + G + I);
+
+    blend *= 1.0f / 16.0f;
 
     //Write the fragment.
-    OutputFragment(INTERMEDIATE_RGBA_FLOAT32_1, scene_texture_sample);
+    OutputFragment(Scene, vec4(blend, BLOOM_INTENSITY));
 }

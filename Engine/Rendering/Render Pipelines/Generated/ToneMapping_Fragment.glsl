@@ -26,6 +26,8 @@
 #define MAXIMUM_8_BIT_UINT (255)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
+#define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
+
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -196,16 +198,15 @@ bool ValidScreenCoordinate(vec2 X)
 layout (std140, set = 1, binding = 0) uniform PostProcessing
 {
 	layout (offset = 0) vec4 TINT;
-	layout (offset = 16) float BLOOM_THRESHOLD;
-	layout (offset = 20) float BLOOM_INTENSITY;
-	layout (offset = 24) float BRIGHTNESS;
-	layout (offset = 28) float CONTRAST;
-	layout (offset = 32) float CHROMATIC_ABERRATION_INTENSITY;
-	layout (offset = 36) float EXPOSURE;
-	layout (offset = 40) float FILM_GRAIN_INTENSITY;
-	layout (offset = 44) float HORIZONTAL_BORDER;
-	layout (offset = 48) float MOTION_BLUR_INTENSITY;
-	layout (offset = 52) float SATURATION;
+	layout (offset = 16) float BLOOM_INTENSITY;
+	layout (offset = 20) float BRIGHTNESS;
+	layout (offset = 24) float CONTRAST;
+	layout (offset = 28) float CHROMATIC_ABERRATION_INTENSITY;
+	layout (offset = 32) float EXPOSURE;
+	layout (offset = 36) float FILM_GRAIN_INTENSITY;
+	layout (offset = 40) float HORIZONTAL_BORDER;
+	layout (offset = 44) float MOTION_BLUR_INTENSITY;
+	layout (offset = 48) float SATURATION;
 };
 
 /*

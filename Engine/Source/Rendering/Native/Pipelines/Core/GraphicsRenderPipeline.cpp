@@ -231,7 +231,12 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 	}
 	
 	//Set the render resolution.
-	if (_RenderPipelineResource->_RenderResolution == HashString("MAIN_FULL"))
+	if (parameters._RenderResolution.Valid())
+	{
+		SetRenderResolution(parameters._RenderResolution.Get());
+	}
+	
+	else if (_RenderPipelineResource->_RenderResolution == HashString("MAIN_FULL"))
 	{
 		SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 	}

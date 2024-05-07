@@ -28,6 +28,9 @@ public:
 	//The input stream subscriptions.
 	DynamicArray<HashString> _InputStreamSubscriptions;
 
+	//The render resolution.
+	Optional<Resolution> _RenderResolution;
+
 	//Denotes whether or not to enable depth test.
 	Optional<bool> _DepthTestEnabled;
 

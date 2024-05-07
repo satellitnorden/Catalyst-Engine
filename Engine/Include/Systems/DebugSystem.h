@@ -27,6 +27,18 @@ public:
 			//Denotes whether or not this checkbox is checked.
 			bool _IsChecked;
 		} _CheckboxState;
+
+		struct
+		{
+			//The minimum.
+			float32 _Minimum;
+
+			//The maximum.
+			float32 _Maximum;
+
+			//The value.
+			float32 _Value;
+		} _SliderState;
 	};
 
 	/*
@@ -48,7 +60,8 @@ public:
 	enum class Type : uint8
 	{
 		BUTTON,
-		CHECKBOX
+		CHECKBOX,
+		SLIDER
 	};
 
 	//The full name.
@@ -114,6 +127,19 @@ public:
 		const char *const RESTRICT name,
 		DebugCommandFunction function,
 		void *const RESTRICT user_data
+	) NOEXCEPT;
+
+	/*
+	*	Registers a slider debug command.
+	*/
+	void RegisterSliderDebugCommand
+	(
+		const char *const RESTRICT name,
+		DebugCommandFunction function,
+		void *const RESTRICT user_data,
+		const float32 minimum,
+		const float32 maximum,
+		const float32 initial_value
 	) NOEXCEPT;
 
 private:

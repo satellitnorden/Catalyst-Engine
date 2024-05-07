@@ -27,6 +27,8 @@
 #define MAXIMUM_8_BIT_UINT (255)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
+#define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
+
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -638,7 +640,7 @@ float GeometryIndirect(float roughness, float outgoing_angle)
 		//Calculate the denominator.
 		float denominator = outgoing_angle * (1.0f - roughness_coefficient) + roughness_coefficient;
 
-		coefficient = nominator / denominator;
+		coefficient = nominator / max(denominator, DIVIDE_BY_ZERO_SAFE_EPSILON);
 	}
 
 	//Calculate the geometry.

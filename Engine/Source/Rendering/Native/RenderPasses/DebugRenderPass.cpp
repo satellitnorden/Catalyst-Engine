@@ -186,6 +186,18 @@ void DebugRenderPass::Execute() NOEXCEPT
 				break;
 			}
 
+			case Mode::BLOOM_HALF:
+			{
+				if (_CurrentMode != Mode::NONE)
+				{
+					_DebugGraphicsPipeline.Terminate();
+				}
+
+				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::BLOOM_HALF));
+
+				break;
+			}
+
 			default:
 			{
 				ASSERT(false, "Invalid case!");

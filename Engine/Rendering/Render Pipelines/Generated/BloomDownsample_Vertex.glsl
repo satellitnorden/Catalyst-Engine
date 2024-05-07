@@ -26,6 +26,8 @@
 #define MAXIMUM_8_BIT_UINT (255)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
+#define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
+
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -193,26 +195,20 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (set = 1, binding = 0) uniform sampler SAMPLER;
-
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec4 COLOR_OPACITY;
-	layout (offset = 16) vec2 BOUNDS_MINIMUM;
-	layout (offset = 24) vec2 BOUNDS_MAXIMUM;
-	layout (offset = 32) vec2 TEXTURE_MINIMUM;
-	layout (offset = 40) vec2 TEXTURE_MAXIMUM;
-	layout (offset = 48) uint TEXTURE_INDEX;
-	layout (offset = 52) float SMOOTHING_FACTOR;
+	layout (offset = 0) vec2 INVERSE_SOURCE_RESOLUTION;
 };
 
-layout (location = 0) in vec2 InTextureCoordinate;
+layout (set = 1, binding = 0) uniform sampler2D InputRenderTarget;
 
-layout (location = 0) out vec4 SceneLowDynamicRange1;
+layout (location = 0) out vec2 OutScreenCoordinate;
 
 void main()
 {
-    float texture_sample = texture(sampler2D(TEXTURES[TEXTURE_INDEX], SAMPLER), InTextureCoordinate).x;
-    float opacity = smoothstep(0.5f - SMOOTHING_FACTOR, 0.5f, texture_sample) * COLOR_OPACITY.a;
-	SceneLowDynamicRange1 = vec4(COLOR_OPACITY.rgb,opacity);
+	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
+    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+	gl_Position = vec4(x,y,0.0f,1.0f);
 }

@@ -26,6 +26,8 @@
 #define MAXIMUM_8_BIT_UINT (255)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
+#define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
+
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -193,33 +195,36 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (std140, set = 1, binding = 0) uniform PostProcessing
+layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec4 TINT;
-	layout (offset = 16) float BLOOM_THRESHOLD;
-	layout (offset = 20) float BLOOM_INTENSITY;
-	layout (offset = 24) float BRIGHTNESS;
-	layout (offset = 28) float CONTRAST;
-	layout (offset = 32) float CHROMATIC_ABERRATION_INTENSITY;
-	layout (offset = 36) float EXPOSURE;
-	layout (offset = 40) float FILM_GRAIN_INTENSITY;
-	layout (offset = 44) float HORIZONTAL_BORDER;
-	layout (offset = 48) float MOTION_BLUR_INTENSITY;
-	layout (offset = 52) float SATURATION;
+	layout (offset = 0) vec2 INVERSE_SOURCE_RESOLUTION;
 };
 
-layout (set = 1, binding = 1) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_1;
+layout (set = 1, binding = 0) uniform sampler2D InputRenderTarget;
 
 layout (location = 0) in vec2 InScreenCoordinate;
 
-layout (location = 0) out vec4 Scene;
+layout (location = 0) out vec4 OutputRenderTarget;
 
 void main()
 {
-    vec4 scene = texture(INTERMEDIATE_RGBA_FLOAT32_1, InScreenCoordinate);
-    float brightness = max(scene.r, max(scene.g, scene.b));
-    float contribution = max(brightness - BLOOM_THRESHOLD, 0.0f);
-    contribution /= max(brightness, FLOAT32_EPSILON);
-    contribution *= 0.5f;
-	Scene = vec4(scene*contribution);
+    vec3 A = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+    vec3 B = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+    vec3 C = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+    vec3 D = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  0.0f)).rgb;
+    vec3 E = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 0.0f)).rgb;
+    vec3 F = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   0.0f)).rgb;
+    vec3 G = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  -INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+    vec3 H = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 -INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+    vec3 I = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   -INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+    vec3 J = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x,         INVERSE_SOURCE_RESOLUTION.y)).rgb;
+    vec3 K = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x,          INVERSE_SOURCE_RESOLUTION.y)).rgb;
+    vec3 L = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x,         -INVERSE_SOURCE_RESOLUTION.y)).rgb;
+    vec3 M = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x,          -INVERSE_SOURCE_RESOLUTION.y)).rgb;
+    vec3 blend = vec3(0.0f);
+    blend += E * 0.125f;
+    blend += (A + C + G + I) * 0.03125f;
+    blend += (B + D + F + H) * 0.0625f;
+    blend += (J + K + L + M) * 0.125f;
+	OutputRenderTarget = vec4(blend,1.0f);
 }

@@ -453,6 +453,31 @@ enum class SharedRenderTarget : uint8
 	SCENE,
 
 	/*
+	*	Contains the downsampled bloom at half resolution.
+	*/
+	BLOOM_HALF,
+
+	/*
+	*	Contains the downsampled bloom at quarter resolution.
+	*/
+	BLOOM_QUARTER,
+
+	/*
+	*	Contains the downsampled bloom at eighth resolution.
+	*/
+	BLOOM_EIGHTH,
+
+	/*
+	*	Contains the downsampled bloom at sixteenth resolution.
+	*/
+	BLOOM_SIXTEENTH,
+
+	/*
+	*	Contains the downsampled bloom at thirtysecond resolution.
+	*/
+	BLOOM_THIRTYSECOND,
+
+	/*
 	*	Contains the final color for the previous scene, in high dynamic range.
 	*/
 	PREVIOUS_SCENE,

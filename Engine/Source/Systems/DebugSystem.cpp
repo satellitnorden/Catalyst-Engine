@@ -167,6 +167,78 @@ void DebugSystem::RegisterCheckboxDebugCommand
 }
 
 /*
+*	Registers a slider debug command.
+*/
+void DebugSystem::RegisterSliderDebugCommand
+(
+	const char *const RESTRICT name,
+	DebugCommandFunction function,
+	void *const RESTRICT user_data,
+	const float32 minimum,
+	const float32 maximum,
+	const float32 initial_value
+) NOEXCEPT
+{
+	//Remember some stuff.
+	DebugCategory *RESTRICT parent_category{ &_RootDebugCategory };
+	std::string current_name{ name };
+
+	for (;;)
+	{
+		//Figure out the category.
+		const size_t first_slash_position{ current_name.find_first_of("\\") };
+
+		if (first_slash_position != std::string::npos)
+		{
+			const std::string category_name{ current_name.substr(0, first_slash_position) };
+
+			bool category_exists{ false };
+
+			for (DebugCategory &sub_category : parent_category->_SubCategories)
+			{
+				if (StringUtilities::IsEqual(sub_category._Name.Data(), category_name.data()))
+				{
+					parent_category = &sub_category;
+					current_name = current_name.substr(first_slash_position + 1);
+
+					category_exists = true;
+
+					break;
+				}
+			}
+
+			if (!category_exists)
+			{
+				parent_category->_SubCategories.Emplace();
+				DebugCategory &new_sub_category{ parent_category->_SubCategories.Back() };
+
+				new_sub_category._Name = category_name.data();
+
+				parent_category = &new_sub_category;
+				current_name = current_name.substr(first_slash_position + 1);
+			}
+		}
+
+		else
+		{
+			parent_category->_DebugCommands.Emplace();
+			DebugCommand &new_debug_command{ parent_category->_DebugCommands.Back() };
+
+			new_debug_command._FullName = name;
+			new_debug_command._Name = current_name.data();
+			new_debug_command._Type = DebugCommand::Type::SLIDER;
+			new_debug_command._Function = function;
+			new_debug_command._UserData = user_data;
+			new_debug_command._State._SliderState._Minimum = minimum;
+			new_debug_command._State._SliderState._Maximum = maximum;
+			new_debug_command._State._SliderState._Value = initial_value;
+
+			break;
+		}
+	}
+}
+
+/*
 *	Updates the debug system.
 */
 void DebugSystem::Update() NOEXCEPT
@@ -257,6 +329,22 @@ void DebugSystem::DrawDebugCategory(DebugCategory &debug_category, const bool is
 				case DebugCommand::Type::CHECKBOX:
 				{
 					if (ImGui::Checkbox(debug_command._Name.Data(), &debug_command._State._CheckboxState._IsChecked))
+					{
+						debug_command._Function(&debug_command, debug_command._UserData);
+					}
+
+					break;
+				}
+
+				case DebugCommand::Type::SLIDER:
+				{
+					if (ImGui::SliderFloat
+					(
+						debug_command._Name.Data(),
+						&debug_command._State._SliderState._Value,
+						debug_command._State._SliderState._Minimum,
+						debug_command._State._SliderState._Maximum
+					))
 					{
 						debug_command._Function(&debug_command, debug_command._UserData);
 					}

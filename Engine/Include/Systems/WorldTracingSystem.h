@@ -156,4 +156,9 @@ private:
 		const bool improved_ray_generation
 	) NOEXCEPT;
 
+	/*
+	*	Returns the ambient occlusion at the given position.
+	*/
+	NO_DISCARD float32 SampleAmbientOcclusion(const Vector3<float32> &position, const Vector3<float32> &normal) NOEXCEPT;
+
 };

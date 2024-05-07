@@ -132,7 +132,7 @@ Fragment
     vec3 water_normal = WaterNormalAtPosition(InWorldPosition, TEXTURE_INDEX);
 
     //Calculate the screen coordinate.
-    vec2 screen_coordinate = (vec2(FRAGMENT_COORDINATE.xy) + 0.5f) * INVERSE_FULL_MAIN_RESOLUTION;
+    vec2 screen_coordinate = vec2(FRAGMENT_COORDINATE.xy) * INVERSE_FULL_MAIN_RESOLUTION;
 
     //Sample scene features 2.
     vec4 scene_features_2 = texture(SceneFeatures2, screen_coordinate);

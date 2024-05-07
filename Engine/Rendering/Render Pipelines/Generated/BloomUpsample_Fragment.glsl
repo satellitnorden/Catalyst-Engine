@@ -26,6 +26,8 @@
 #define MAXIMUM_8_BIT_UINT (255)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
+#define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
+
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -193,30 +195,37 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (std140, set = 1, binding = 0) uniform PostProcessing
+layout (std140, set = 1, binding = 0) uniform General
 {
-	layout (offset = 0) vec4 TINT;
-	layout (offset = 16) float BLOOM_THRESHOLD;
-	layout (offset = 20) float BLOOM_INTENSITY;
-	layout (offset = 24) float BRIGHTNESS;
-	layout (offset = 28) float CONTRAST;
-	layout (offset = 32) float CHROMATIC_ABERRATION_INTENSITY;
-	layout (offset = 36) float EXPOSURE;
-	layout (offset = 40) float FILM_GRAIN_INTENSITY;
-	layout (offset = 44) float HORIZONTAL_BORDER;
-	layout (offset = 48) float MOTION_BLUR_INTENSITY;
-	layout (offset = 52) float SATURATION;
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
 };
 
-layout (set = 1, binding = 1) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_1;
+layout (set = 1, binding = 1) uniform sampler2D InputRenderTarget;
 
-layout (location = 0) out vec2 OutScreenCoordinate;
+layout (location = 0) in vec2 InScreenCoordinate;
+
+layout (location = 0) out vec4 OutputRenderTarget;
 
 void main()
 {
-	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
-    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
-    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
-    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
-	gl_Position = vec4(x,y,0.0f,1.0f);
+    #define FILTER_RADIUS (INVERSE_FULL_MAIN_RESOLUTION * 1.5f)
+    vec3 A = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, FILTER_RADIUS.y)).rgb;
+    vec3 B = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             FILTER_RADIUS.y)).rgb;
+    vec3 C = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  FILTER_RADIUS.y)).rgb;
+    vec3 D = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, 0.0f)).rgb;
+    vec3 E = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             0.0f)).rgb;
+    vec3 F = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  0.0f)).rgb;
+    vec3 G = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, -FILTER_RADIUS.y)).rgb;
+    vec3 H = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             -FILTER_RADIUS.y)).rgb;
+    vec3 I = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  -FILTER_RADIUS.y)).rgb;
+    vec3 blend = vec3(0.0f);
+    blend += E * 4.0f;
+    blend += (B + D + F + H) * 2.0f;
+    blend += (A + C + G + I);
+    blend *= 1.0f / 16.0f;
+	OutputRenderTarget = vec4(blend,1.0f);
 }

@@ -6,7 +6,6 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ResampleGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 //Systems.
@@ -30,17 +29,26 @@ public:
 
 private:
 
-	//The bloom isolation graphics pipeline.
-	GraphicsRenderPipeline _BloomIsolationGraphicsPipeline{ HashString("BloomIsolation_RenderPipeline") };
+	//The bloom downsample pipelines.
+	StaticArray<GraphicsRenderPipeline, 5> _BloomDownsamplePipelines
+	{
+		GraphicsRenderPipeline(HashString("BloomDownsample_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("BloomDownsample_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("BloomDownsample_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("BloomDownsample_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("BloomDownsample_RenderPipeline"))
+	};
 
-	//The bloom downsample graphics pipelines.
-	StaticArray<ResampleGraphicsPipeline, 7> _BloomDownsampleGraphicsPipelines;
+	StaticArray<GraphicsRenderPipeline, 4> _BloomUpsamplePipelines
+	{
+		GraphicsRenderPipeline(HashString("BloomUpsample_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("BloomUpsample_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("BloomUpsample_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("BloomUpsample_RenderPipeline"))
+	};
 
-	//The bloom upsample graphics pipelines.
-	StaticArray<ResampleGraphicsPipeline, 7> _BloomUpsampleGraphicsPipelines;
-
-	//The bloom application graphics pipeline.
-	GraphicsRenderPipeline _BloomApplicationGraphicsPipeline{ HashString("BloomApplication_RenderPipeline") };
+	//The bloom application pipeline.
+	GraphicsRenderPipeline _BloomApplicationPipeline{ HashString("BloomApplication_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

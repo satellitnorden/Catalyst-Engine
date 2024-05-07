@@ -1,0 +1,61 @@
+//Declare input render targets.
+InputRenderTarget(InputRenderTarget /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(OutputRenderTarget);
+
+//Declare render resolution.
+RenderResolution(MAIN_HALF);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Declare push constant data.
+PushConstantData(vec2, INVERSE_SOURCE_RESOLUTION);
+
+//Subscribe to input streams.
+SubscribeToInputStream(BloomDownsample);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample the input render target at various locations.
+    vec3 A = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+    vec3 B = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+    vec3 C = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+
+    vec3 D = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  0.0f)).rgb;
+    vec3 E = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 0.0f)).rgb;
+    vec3 F = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   0.0f)).rgb;
+
+    vec3 G = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  -INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+    vec3 H = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 -INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+    vec3 I = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   -INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
+
+    vec3 J = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x,         INVERSE_SOURCE_RESOLUTION.y)).rgb;
+    vec3 K = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x,          INVERSE_SOURCE_RESOLUTION.y)).rgb;
+    vec3 L = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x,         -INVERSE_SOURCE_RESOLUTION.y)).rgb;
+    vec3 M = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x,          -INVERSE_SOURCE_RESOLUTION.y)).rgb;
+
+    //Perform the blend.
+    vec3 blend = vec3(0.0f);
+
+    blend += E * 0.125f;
+    blend += (A + C + G + I) * 0.03125f;
+    blend += (B + D + F + H) * 0.0625f;
+    blend += (J + K + L + M) * 0.125f;
+
+    //blend = max(blend, vec3(0.0001f));
+
+    //Output the fragment.
+    OutputFragment(OutputRenderTarget, vec4(blend, 1.0f));
+}

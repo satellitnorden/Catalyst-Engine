@@ -28,6 +28,8 @@ layout (early_fragment_tests) in;
 #define MAXIMUM_8_BIT_UINT (255)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
+#define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
+
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -430,7 +432,7 @@ void main()
     #define WATER_ALBEDO (vec3(0.0f, 0.25f, 0.25f))
     vec3 view_direction = normalize(CAMERA_WORLD_POSITION - InWorldPosition);
     vec3 water_normal = WaterNormalAtPosition(InWorldPosition, TEXTURE_INDEX);
-    vec2 screen_coordinate = (vec2(gl_FragCoord.xy) + 0.5f) * INVERSE_FULL_MAIN_RESOLUTION;
+    vec2 screen_coordinate = vec2(gl_FragCoord.xy) * INVERSE_FULL_MAIN_RESOLUTION;
     vec4 scene_features_2 = texture(SceneFeatures2, screen_coordinate);
     float surface_depth = LinearizeDepth(gl_FragCoord.z);
     float underwater_depth = LinearizeDepth(scene_features_2.w);

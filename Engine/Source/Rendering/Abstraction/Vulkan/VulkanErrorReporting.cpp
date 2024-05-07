@@ -5,6 +5,9 @@
 //Core.
 #include <Core/General/DynamicString.h>
 
+//Systems.
+#include <Systems/LogSystem.h>
+
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 
@@ -50,9 +53,9 @@ void VulkanErrorReporting::Release() NOEXCEPT
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanErrorReporting::ErrorCallback(	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 																	VkDebugUtilsMessageTypeFlagsEXT messageType,
 																	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-																	void* pUserData)
+																	void *pUserData)
 {
-	PRINT_TO_OUTPUT(pCallbackData->pMessage);
+	LOG_ERROR(pCallbackData->pMessage);
 
 #if 0
 	{

@@ -29,7 +29,8 @@ public:
 		METALLIC,
 		AMBIENT_OCCLUSION,
 		EMISSIVE,
-		DIFFUSE_IRRADIANCE
+		DIFFUSE_IRRADIANCE,
+		BLOOM_HALF
 	};
 
 	//System declaration.

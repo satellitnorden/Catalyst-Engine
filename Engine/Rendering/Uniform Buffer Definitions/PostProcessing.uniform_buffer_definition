@@ -1,7 +1,6 @@
 UniformBuffer(PostProcessing)
 {
     vec4 TINT;
-    float BLOOM_THRESHOLD;
     float BLOOM_INTENSITY;
     float BRIGHTNESS;
     float CONTRAST;

@@ -26,6 +26,8 @@
 #define MAXIMUM_8_BIT_UINT (255)
 #define UINT32_MAXIMUM_RECIPROCAL (2.328306437080797e-10f)
 
+#define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
+
 #define PI (3.141592f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -193,7 +195,30 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (set = 1, binding = 0) uniform sampler2D Scene;
+layout (std140, set = 1, binding = 0) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+};
+
+layout (std140, set = 1, binding = 1) uniform PostProcessing
+{
+	layout (offset = 0) vec4 TINT;
+	layout (offset = 16) float BLOOM_INTENSITY;
+	layout (offset = 20) float BRIGHTNESS;
+	layout (offset = 24) float CONTRAST;
+	layout (offset = 28) float CHROMATIC_ABERRATION_INTENSITY;
+	layout (offset = 32) float EXPOSURE;
+	layout (offset = 36) float FILM_GRAIN_INTENSITY;
+	layout (offset = 40) float HORIZONTAL_BORDER;
+	layout (offset = 44) float MOTION_BLUR_INTENSITY;
+	layout (offset = 48) float SATURATION;
+};
+
+layout (set = 1, binding = 2) uniform sampler2D BloomHalf;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 
