@@ -195,7 +195,16 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (std140, set = 1, binding = 0) uniform PostProcessing
+layout (std140, set = 1, binding = 0) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+};
+
+layout (std140, set = 1, binding = 1) uniform PostProcessing
 {
 	layout (offset = 0) vec4 TINT;
 	layout (offset = 16) float BLOOM_INTENSITY;
@@ -208,6 +217,21 @@ layout (std140, set = 1, binding = 0) uniform PostProcessing
 	layout (offset = 44) float MOTION_BLUR_INTENSITY;
 	layout (offset = 48) float SATURATION;
 };
+
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    uint offset_index = (FRAME + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1);
+
+    uvec2 offset_coordinate;
+
+    offset_coordinate.x = coordinate.x + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+    offset_coordinate.y = coordinate.y + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+
+    return texture(BLUE_NOISE_TEXTURES[offset_index], vec2(offset_coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
 
 /*
 *	Applis tone mapping.
@@ -277,7 +301,7 @@ vec3 ApplyColorGrading(vec3 fragment)
 }
 #endif
 
-layout (set = 1, binding = 1) uniform sampler2D Scene;
+layout (set = 1, binding = 2) uniform sampler2D Scene;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 

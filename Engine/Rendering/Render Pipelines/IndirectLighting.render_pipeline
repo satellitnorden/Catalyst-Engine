@@ -17,6 +17,7 @@ InputRenderTarget(SceneFeatures2 /* Identifier */, NEAREST /* Magnification Filt
 InputRenderTarget(SceneFeatures3 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures2Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(DiffuseIrradiance /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SpecularIrradiance /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output depth buffer.
 OutputDepthBuffer(SceneDepthBuffer);
@@ -87,7 +88,7 @@ Fragment
     //Calculate the view direction.
     vec3 view_direction = normalize(CAMERA_WORLD_POSITION - world_position);
 
-    //Calculate the incoming indirect light.
+    //Calculate the incoming diffuse irradiance.
     vec3 incoming_diffuse_irradiance = vec3(0.0f, 0.0f, 0.0f);
 
     switch (DIFFUSE_IRRADIANCE_MODE)
@@ -153,7 +154,71 @@ Fragment
         }
     }
 
-    vec3 incoming_specular_irradiance = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
+    //Calculate the incoming specular irradiance.
+    vec3 incoming_specular_irradiance = vec3(0.0f, 0.0f, 0.0f);
+
+    switch (SPECULAR_IRRADIANCE_MODE)
+    {
+        case SPECULAR_IRRADIANCE_MODE_NONE:
+        {
+            incoming_specular_irradiance = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
+
+            break;
+        }
+
+        case DIFFUSE_IRRADIANCE_MODE_RAY_TRACED:
+        {
+            vec2 sample_coordinates[4];
+            
+            sample_coordinates[0] = InScreenCoordinate;
+            sample_coordinates[1] = InScreenCoordinate + vec2(INVERSE_HALF_MAIN_RESOLUTION.x, 0.0f);
+            sample_coordinates[2] = InScreenCoordinate + vec2(0.0f, INVERSE_HALF_MAIN_RESOLUTION.y);
+            sample_coordinates[3] = InScreenCoordinate + vec2(INVERSE_HALF_MAIN_RESOLUTION.x, INVERSE_HALF_MAIN_RESOLUTION.y);
+
+            vec3 specular_irradiance_samples[4];
+            float depth_samples[4];
+
+            for (uint i = 0; i < 4; ++i)
+            {
+                specular_irradiance_samples[i] = texture(SpecularIrradiance, sample_coordinates[i]).rgb;
+                depth_samples[i] = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinates[i]).w);
+            }
+
+            vec2 fractions = fract(InScreenCoordinate * HALF_MAIN_RESOLUTION);
+
+            float weights[4];
+            
+            weights[0] = (1.0f - fractions.x) * (1.0f - fractions.y);
+            weights[1] = fractions.x * (1.0f - fractions.y);
+            weights[2] = (1.0f - fractions.x) * fractions.y;
+            weights[3] = fractions.x * fractions.y;
+
+            float center_depth = LinearizeDepth(depth);
+
+            for (uint i = 0; i < 4; ++i)
+            {
+                weights[i] *= exp(-abs(center_depth - depth_samples[i]));
+            }
+
+            float weight_sum = weights[0] + weights[1] + weights[2] + weights[3];
+            float inverse_weight_sum = weight_sum > 0.0f ? 1.0f / weight_sum : 1.0f;
+
+            for (uint i = 0; i < 4; ++i)
+            {
+                weights[i] *= inverse_weight_sum;
+            }
+
+            for (uint i = 0; i < 4; ++i)
+            {
+                incoming_specular_irradiance += specular_irradiance_samples[i] * weights[i];
+            }
+
+            //Add some noise to the diffuse irradiance so that the temporal anti aliasing pass has an easier time cleaning it up.
+            incoming_specular_irradiance *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), FRAME));
+
+            break;
+        }
+    }
 
     //Calculate the indirect lighting.
     vec3 indirect_lighting = CalculateIndirectLighting

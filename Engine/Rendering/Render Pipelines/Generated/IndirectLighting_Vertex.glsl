@@ -221,7 +221,8 @@ layout (std140, set = 1, binding = 1) uniform General
 layout (std140, set = 1, binding = 2) uniform RenderingConfiguration
 {
 	layout (offset = 0) uint DIFFUSE_IRRADIANCE_MODE;
-	layout (offset = 4) uint VOLUMETRIC_SHADOWS_MODE;
+	layout (offset = 4) uint SPECULAR_IRRADIANCE_MODE;
+	layout (offset = 8) uint VOLUMETRIC_SHADOWS_MODE;
 };
 
 layout (std140, set = 1, binding = 3) uniform Wind
@@ -588,7 +589,7 @@ float GeometryIndirect(float roughness, float outgoing_angle)
 		//Calculate the denominator.
 		float denominator = outgoing_angle * (1.0f - roughness_coefficient) + roughness_coefficient;
 
-		coefficient = nominator / max(denominator, DIVIDE_BY_ZERO_SAFE_EPSILON);
+		coefficient = denominator > 0.0f ? nominator / denominator : 0.0f;
 	}
 
 	//Calculate the geometry.
@@ -668,6 +669,9 @@ vec3 CalculateIndirectLighting
 #define DIFFUSE_IRRADIANCE_MODE_NONE (0)
 #define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
 
+#define SPECULAR_IRRADIANCE_MODE_NONE (0)
+#define SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE (1)
+
 #define VOLUMETRIC_SHADOWS_MODE_NONE (0)
 #define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
 #define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
@@ -714,6 +718,7 @@ layout (set = 1, binding = 5) uniform sampler2D SceneFeatures2;
 layout (set = 1, binding = 6) uniform sampler2D SceneFeatures3;
 layout (set = 1, binding = 7) uniform sampler2D SceneFeatures2Half;
 layout (set = 1, binding = 8) uniform sampler2D DiffuseIrradiance;
+layout (set = 1, binding = 9) uniform sampler2D SpecularIrradiance;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 

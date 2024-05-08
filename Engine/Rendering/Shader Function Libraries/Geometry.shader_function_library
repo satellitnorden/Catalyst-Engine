@@ -17,6 +17,58 @@ struct Ray
 };
 
 /*
+*   Axis aligned bounding box struct definition.
+*/
+struct AxisAlignedBoundingBox
+{
+
+    //The minimum.
+    vec3 _Minimum;
+
+    //The maximum.
+    vec3 _Maximum;
+
+};
+
+/*
+*   Returns the axis aligned bounding box component at the given index.
+*/
+vec3 AxisAlignedBoundingBoxComponent(AxisAlignedBoundingBox axis_aligned_bounding_box, uint index)
+{
+    return index == 0 ? axis_aligned_bounding_box._Minimum : axis_aligned_bounding_box._Maximum;
+}
+
+/*
+*   Performs a ray/axis aligned bounding box intersection.
+*/
+vec3 RayAxisAlignedBoundingBoxIntersection(Ray ray, AxisAlignedBoundingBox axis_aligned_bounding_box)
+{
+    //Calculate the ray reciprocals.
+    vec3 ray_reciprocals = vec3(1.0f) / ray._Direction;
+
+    //Calculate the ray signs.
+    uvec3 ray_signs = uvec3(ray._Direction.x >= 0.0f ? 1 : 0, ray._Direction.y >= 0.0f ? 1 : 0, ray._Direction.z >= 0.0f ? 1 : 0);
+
+    //Find the minimum/maximum.
+    float minimum = -FLOAT32_MAXIMUM;
+    float maximum = FLOAT32_MAXIMUM;
+
+    //Test the X-axis slab.
+    minimum = max(minimum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, 1 - ray_signs[0]).x - ray._Origin.x) * ray_reciprocals.x);
+    maximum = min(maximum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, ray_signs[0]).x - ray._Origin.x) * ray_reciprocals.x);
+
+    //Test the Y-axis slab.
+    minimum = max(minimum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, 1 - ray_signs[1]).y - ray._Origin.y) * ray_reciprocals.y);
+    maximum = min(maximum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, ray_signs[1]).y - ray._Origin.y) * ray_reciprocals.y);
+
+    //Test the Z-axis slab.
+    minimum = max(minimum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, 1 - ray_signs[2]).z - ray._Origin.z) * ray_reciprocals.z);
+    maximum = min(maximum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, ray_signs[2]).z - ray._Origin.z) * ray_reciprocals.z);
+
+    return ray._Origin + ray._Direction * minimum;
+}
+
+/*
 *   Performs a ray/viewport intersection.
 */
 vec3 RayViewportIntersection(Ray ray)
@@ -24,6 +76,7 @@ vec3 RayViewportIntersection(Ray ray)
     //Calculate the dots.
     float horizontal_dot = dot(ray._Direction, vec3(1.0f, 0.0f, 0.0f));
     float vertical_dot = dot(ray._Direction, vec3(0.0f, 1.0f, 0.0f));
+    float depth_dot = dot(ray._Direction, vec3(0.0f, 0.0f, 1.0f));
 
     //Perform the horizontal intersection.
     float horizontal_intersection_distance = FLOAT32_MAXIMUM;
@@ -63,6 +116,25 @@ vec3 RayViewportIntersection(Ray ray)
         vertical_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
     }
 
+    //Perform the depth intersection.
+    float depth_intersection_distance = FLOAT32_MAXIMUM;
+
+    if (depth_dot > 0.0f)
+    {   
+        vec3 plane_position = vec3(0.0f, 0.0f, FLOAT32_MAXIMUM);
+        vec3 plane_normal = vec3(0.0f, 0.0f, -1.0f);
+
+        depth_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    else if (depth_dot < 0.0f)
+    {
+        vec3 plane_position = vec3(0.0f, 0.0f, 0.0f);
+        vec3 plane_normal = vec3(0.0f, 0.0f, 1.0f);
+
+        depth_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
     //Return the intersection point.
-    return ray._Origin + ray._Direction * min(horizontal_intersection_distance, vertical_intersection_distance);
+    return ray._Origin + ray._Direction * min(horizontal_intersection_distance, min(vertical_intersection_distance, depth_intersection_distance));
 }

@@ -61,6 +61,9 @@ private:
 		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline"))
 	};
 
+	//The screen space specular irradiance pipeline.
+	GraphicsRenderPipeline _ScreenSpaceSpecularIrradiance{ HashString("ScreenSpaceSpecularIrradiance_RenderPipeline") };
+
 	/*
 	*	Initializes this render pass.
 	*/

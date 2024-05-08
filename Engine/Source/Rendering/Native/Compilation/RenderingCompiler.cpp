@@ -553,9 +553,9 @@ void CompileGLSLShader(const char *const RESTRICT file_path, const shaderc_shade
 	shaderc_compile_options_set_source_language(options, shaderc_source_language::shaderc_source_language_glsl);
 
 	//Set the optimization level.
-	shaderc_compile_options_set_optimization_level(options, shaderc_optimization_level::shaderc_optimization_level_performance);
-	//shaderc_compile_options_set_optimization_level(options, shaderc_optimization_level::shaderc_optimization_level_zero);
-	//shaderc_compile_options_set_generate_debug_info(options);
+	//shaderc_compile_options_set_optimization_level(options, shaderc_optimization_level::shaderc_optimization_level_performance);
+	shaderc_compile_options_set_optimization_level(options, shaderc_optimization_level::shaderc_optimization_level_zero);
+	shaderc_compile_options_set_generate_debug_info(options);
 
 	//Compile!
 	shaderc_compilation_result_t result{ shaderc_compile_into_spv(compiler, shader_source.c_str(), shader_source.size(), shader_kind, file_path, "main", options) };

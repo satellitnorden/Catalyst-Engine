@@ -63,6 +63,13 @@ public:
 		HIGH
 	};
 
+	//Enumeration covering all specular irradiance modes.
+	enum class SpecularIrradianceMode : uint8
+	{
+		NONE,
+		SCREEN_SPACE
+	};
+
 	//Enumeration covering all surface shadows modes.
 	enum class SurfaceShadowsMode : uint8
 	{
@@ -186,6 +193,22 @@ public:
 	}
 
 	/*
+	*	Returns the specular irradiance mode.
+	*/
+	FORCE_INLINE NO_DISCARD SpecularIrradianceMode GetSpecularIrradianceMode() const NOEXCEPT
+	{
+		return _SpecularIrradianceMode;
+	}
+
+	/*
+	*	Sets the specular irradiance mode.
+	*/
+	FORCE_INLINE void SetSpecularIrradianceMode(const SpecularIrradianceMode value) NOEXCEPT
+	{
+		_SpecularIrradianceMode = value;
+	}
+
+	/*
 	*	Returns the surface shadows mode.
 	*/
 	FORCE_INLINE NO_DISCARD SurfaceShadowsMode GetSurfaceShadowsMode() const NOEXCEPT
@@ -230,6 +253,9 @@ private:
 		//The diffuse irradiance mode.
 		uint32 _DiffuseIrradianceMode;
 
+		//The specular irradiance mode.
+		uint32 _SpecularIrradianceMode;
+
 		//The volumetric shadows mode.
 		uint32 _VolumetricShadowsMode;
 
@@ -252,6 +278,9 @@ private:
 
 	//The indirect lighting quality.
 	IndirectLightingQuality _IndirectLightingQuality{ IndirectLightingQuality::LOW };
+
+	//The specular irradiance mode.
+	SpecularIrradianceMode _SpecularIrradianceMode{ SpecularIrradianceMode::NONE };
 
 	//The surface shadows mode.
 	SurfaceShadowsMode _SurfaceShadowsMode{ SurfaceShadowsMode::RASTERIZED };

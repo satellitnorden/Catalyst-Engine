@@ -223,7 +223,8 @@ layout (std140, set = 1, binding = 1) uniform General
 layout (std140, set = 1, binding = 2) uniform RenderingConfiguration
 {
 	layout (offset = 0) uint DIFFUSE_IRRADIANCE_MODE;
-	layout (offset = 4) uint VOLUMETRIC_SHADOWS_MODE;
+	layout (offset = 4) uint SPECULAR_IRRADIANCE_MODE;
+	layout (offset = 8) uint VOLUMETRIC_SHADOWS_MODE;
 };
 
 layout (std140, set = 1, binding = 3) uniform Wind
@@ -590,7 +591,7 @@ float GeometryIndirect(float roughness, float outgoing_angle)
 		//Calculate the denominator.
 		float denominator = outgoing_angle * (1.0f - roughness_coefficient) + roughness_coefficient;
 
-		coefficient = nominator / max(denominator, DIVIDE_BY_ZERO_SAFE_EPSILON);
+		coefficient = denominator > 0.0f ? nominator / denominator : 0.0f;
 	}
 
 	//Calculate the geometry.
@@ -670,6 +671,9 @@ vec3 CalculateIndirectLighting
 #define DIFFUSE_IRRADIANCE_MODE_NONE (0)
 #define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
 
+#define SPECULAR_IRRADIANCE_MODE_NONE (0)
+#define SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE (1)
+
 #define VOLUMETRIC_SHADOWS_MODE_NONE (0)
 #define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
 #define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
@@ -716,6 +720,7 @@ layout (set = 1, binding = 5) uniform sampler2D SceneFeatures2;
 layout (set = 1, binding = 6) uniform sampler2D SceneFeatures3;
 layout (set = 1, binding = 7) uniform sampler2D SceneFeatures2Half;
 layout (set = 1, binding = 8) uniform sampler2D DiffuseIrradiance;
+layout (set = 1, binding = 9) uniform sampler2D SpecularIrradiance;
 
 layout (location = 0) in vec2 InScreenCoordinate;
 
@@ -783,7 +788,53 @@ void main()
             break;
         }
     }
-    vec3 incoming_specular_irradiance = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
+    vec3 incoming_specular_irradiance = vec3(0.0f, 0.0f, 0.0f);
+    switch (SPECULAR_IRRADIANCE_MODE)
+    {
+        case SPECULAR_IRRADIANCE_MODE_NONE:
+        {
+            incoming_specular_irradiance = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
+            break;
+        }
+        case DIFFUSE_IRRADIANCE_MODE_RAY_TRACED:
+        {
+            vec2 sample_coordinates[4];
+            sample_coordinates[0] = InScreenCoordinate;
+            sample_coordinates[1] = InScreenCoordinate + vec2(INVERSE_HALF_MAIN_RESOLUTION.x, 0.0f);
+            sample_coordinates[2] = InScreenCoordinate + vec2(0.0f, INVERSE_HALF_MAIN_RESOLUTION.y);
+            sample_coordinates[3] = InScreenCoordinate + vec2(INVERSE_HALF_MAIN_RESOLUTION.x, INVERSE_HALF_MAIN_RESOLUTION.y);
+            vec3 specular_irradiance_samples[4];
+            float depth_samples[4];
+            for (uint i = 0; i < 4; ++i)
+            {
+                specular_irradiance_samples[i] = texture(SpecularIrradiance, sample_coordinates[i]).rgb;
+                depth_samples[i] = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinates[i]).w);
+            }
+            vec2 fractions = fract(InScreenCoordinate * HALF_MAIN_RESOLUTION);
+            float weights[4];
+            weights[0] = (1.0f - fractions.x) * (1.0f - fractions.y);
+            weights[1] = fractions.x * (1.0f - fractions.y);
+            weights[2] = (1.0f - fractions.x) * fractions.y;
+            weights[3] = fractions.x * fractions.y;
+            float center_depth = LinearizeDepth(depth);
+            for (uint i = 0; i < 4; ++i)
+            {
+                weights[i] *= exp(-abs(center_depth - depth_samples[i]));
+            }
+            float weight_sum = weights[0] + weights[1] + weights[2] + weights[3];
+            float inverse_weight_sum = weight_sum > 0.0f ? 1.0f / weight_sum : 1.0f;
+            for (uint i = 0; i < 4; ++i)
+            {
+                weights[i] *= inverse_weight_sum;
+            }
+            for (uint i = 0; i < 4; ++i)
+            {
+                incoming_specular_irradiance += specular_irradiance_samples[i] * weights[i];
+            }
+            incoming_specular_irradiance *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME));
+            break;
+        }
+    }
     vec3 indirect_lighting = CalculateIndirectLighting
     (
         view_direction,

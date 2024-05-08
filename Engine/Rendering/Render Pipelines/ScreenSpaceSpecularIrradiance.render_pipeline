@@ -1,0 +1,120 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+IncludeUniformBuffer(World);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(BlueNoise);
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Geometry);
+IncludeShaderFunctionLibrary(RayTracing);
+IncludeShaderFunctionLibrary(World);
+
+//Declare input render targets.
+InputRenderTarget(SceneFeatures2Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures3Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures4Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(PreviousScene /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(SpecularIrradiance);
+
+//Declare render resolution.
+RenderResolution(MAIN_HALF);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample the scene featues.
+    vec4 scene_features_2 = texture(SceneFeatures2Half, InScreenCoordinate);
+    vec4 scene_features_3 = texture(SceneFeatures3Half, InScreenCoordinate);
+
+    vec3 normal = scene_features_2.xyz;
+    float depth = scene_features_2.w;
+    float roughness = scene_features_3.x;
+
+    //Calculate the world position.
+    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, scene_features_2.w);
+
+    //Calculate the view direction.
+    vec3 view_direction = normalize(world_position - CAMERA_WORLD_POSITION);
+
+    //Sample the noise texture.
+	vec4 noise_texture_sample = SampleBlueNoiseTexture(uvec2(FRAGMENT_COORDINATE.xy), FRAME);
+
+    //Calculate the ray direction.
+    vec3 ray_direction = GenerateSpecularLobeDirection(noise_texture_sample.xy, reflect(view_direction, normal), roughness);
+
+    //Calculate the screen space origin/direction.
+    vec3 screen_space_origin;
+    vec3 screen_space_direction;
+
+    {
+        screen_space_origin = CalculateScreenPosition(world_position);
+        screen_space_direction = normalize(CalculateScreenPosition(world_position + ray_direction) - screen_space_origin);
+    }
+
+    //Find the end screen space position.
+    vec3 end_screen_space_position;
+
+    {
+        Ray ray;
+
+        ray._Origin = screen_space_origin;
+        ray._Direction = screen_space_direction;
+
+        end_screen_space_position = RayViewportIntersection(ray);
+    }
+
+    //Randomize the start offset.
+    float start_offset = noise_texture_sample.z / 16.0f;
+
+    //Do the intersection!
+    bool found_intersection = false;
+    vec3 intersected_radiance = vec3(0.0f);
+
+    for (uint i = 0; i < 16; ++i)
+    {
+        vec3 sample_position = mix(screen_space_origin, end_screen_space_position, mix(start_offset, 1.0f, float(i + 1) / 16.0f));
+        vec4 sample_scene_features_2 = texture(SceneFeatures2Half, sample_position.xy);
+        float sample_depth = LinearizeDepth(sample_scene_features_2.w);
+
+        //Do we (possibly) have an intersection?
+        if (sample_depth < sample_position.z)
+        {
+            //Reject if the normal isn't facing the ray direction.
+            if (dot(ray_direction, sample_scene_features_2.xyz) < 0.0f)
+            {
+                //Reject if it's behind the ray.
+                if (dot(screen_space_direction, vec3(sample_position.xy, sample_depth) - screen_space_origin) >= 0.0f)
+                {
+                    //We have an intersection - Now figure out where it was last frame.
+                    vec2 sample_coordinate = sample_position.xy - texture(SceneFeatures4Half, sample_position.xy).xy;
+
+                    found_intersection = true;
+                    intersected_radiance = texture(PreviousScene, sample_coordinate).rgb;
+
+                    break;
+                }
+            }
+        }
+    }
+
+    //Output the fragment.
+    OutputFragment(SpecularIrradiance, vec4(intersected_radiance, float(found_intersection)));
+}

@@ -567,7 +567,7 @@ float GeometryIndirect(float roughness, float outgoing_angle)
 		//Calculate the denominator.
 		float denominator = outgoing_angle * (1.0f - roughness_coefficient) + roughness_coefficient;
 
-		coefficient = nominator / max(denominator, DIVIDE_BY_ZERO_SAFE_EPSILON);
+		coefficient = denominator > 0.0f ? nominator / denominator : 0.0f;
 	}
 
 	//Calculate the geometry.

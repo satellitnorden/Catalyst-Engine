@@ -221,7 +221,8 @@ layout (std140, set = 1, binding = 1) uniform General
 layout (std140, set = 1, binding = 2) uniform RenderingConfiguration
 {
 	layout (offset = 0) uint DIFFUSE_IRRADIANCE_MODE;
-	layout (offset = 4) uint VOLUMETRIC_SHADOWS_MODE;
+	layout (offset = 4) uint SPECULAR_IRRADIANCE_MODE;
+	layout (offset = 8) uint VOLUMETRIC_SHADOWS_MODE;
 };
 
 layout (std140, set = 1, binding = 3) uniform Wind
@@ -472,6 +473,9 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 //Constants.
 #define DIFFUSE_IRRADIANCE_MODE_NONE (0)
 #define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
+
+#define SPECULAR_IRRADIANCE_MODE_NONE (0)
+#define SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE (1)
 
 #define VOLUMETRIC_SHADOWS_MODE_NONE (0)
 #define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)

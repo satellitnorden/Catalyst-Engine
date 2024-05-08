@@ -378,10 +378,10 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	);
 	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
-		"Rendering\\Visualization Modes\\Bloom Half",
+		"Rendering\\Visualization Modes\\Specular Irradiance",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::BLOOM_HALF);
+			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::SPECULAR_IRRADIANCE);
 		},
 		nullptr
 	);
@@ -909,41 +909,6 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_ta
 			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2:
 			{
 				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]);
-
-				break;
-			}
-
-			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH:
-			{
-				CreateRenderTarget(GetScaledResolution(3), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH)]);
-
-				break;
-			}
-
-			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH:
-			{
-				CreateRenderTarget(GetScaledResolution(4), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH)]);
-
-				break;
-			}
-
-			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND:
-			{
-				CreateRenderTarget(GetScaledResolution(5), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND)]);
-
-				break;
-			}
-
-			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH:
-			{
-				CreateRenderTarget(GetScaledResolution(6), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH)]);
-
-				break;
-			}
-
-			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH:
-			{
-				CreateRenderTarget(GetScaledResolution(7), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH)]);
 
 				break;
 			}
@@ -1587,11 +1552,6 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all render targets.
 	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]);
-	CreateRenderTarget(GetScaledResolution(3), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_EIGHTH)]);
-	CreateRenderTarget(GetScaledResolution(4), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH)]);
-	CreateRenderTarget(GetScaledResolution(5), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND)]);
-	CreateRenderTarget(GetScaledResolution(6), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH)]);
-	CreateRenderTarget(GetScaledResolution(7), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH)]);
 }
 
 /*

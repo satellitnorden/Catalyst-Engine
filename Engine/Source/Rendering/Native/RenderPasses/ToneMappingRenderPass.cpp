@@ -22,6 +22,12 @@ ToneMappingRenderPass::ToneMappingRenderPass() NOEXCEPT
 		ToneMappingRenderPass::Instance->Initialize();
 	});
 
+	//Set the pre-record function.
+	SetPreRecordFunction([](CommandBuffer* const RESTRICT command_buffer)
+	{
+		ToneMappingRenderPass::Instance->PreRecord(command_buffer);
+	});
+
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
@@ -49,6 +55,20 @@ void ToneMappingRenderPass::Initialize() NOEXCEPT
 
 	//Initialize all pipelines.
 	_ToneMappingPipeline.Initialize();
+}
+
+/*
+*	Pre-record.
+*/
+void ToneMappingRenderPass::PreRecord(CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
+{
+	//Blit the scene.
+	command_buffer->BlitImage
+	(
+		nullptr,
+		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE),
+		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::PREVIOUS_SCENE)
+	);
 }
 
 /*

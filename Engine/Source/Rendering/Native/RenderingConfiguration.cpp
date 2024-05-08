@@ -24,6 +24,16 @@ void RenderingConfiguration::Initialize() NOEXCEPT
 void RenderingConfiguration::Update() NOEXCEPT
 {
 	//Update the rendering configuration uniform data
-	_RenderingConfigurationUniformData._DiffuseIrradianceMode = static_cast<uint32>(_DiffuseIrradianceMode);
+	if (_DiffuseIrradianceMode == DiffuseIrradianceMode::RAY_TRACED && !RenderingSystem::Instance->IsRayTracingPossible())
+	{
+		_RenderingConfigurationUniformData._DiffuseIrradianceMode = static_cast<uint32>(DiffuseIrradianceMode::NONE);
+	}
+
+	else
+	{
+		_RenderingConfigurationUniformData._DiffuseIrradianceMode = static_cast<uint32>(_DiffuseIrradianceMode);
+	}
+
+	_RenderingConfigurationUniformData._SpecularIrradianceMode = static_cast<uint32>(_SpecularIrradianceMode);
 	_RenderingConfigurationUniformData._VolumetricShadowsMode = static_cast<uint32>(_VolumetricShadowsMode);
 }

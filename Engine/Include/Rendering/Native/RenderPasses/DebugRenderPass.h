@@ -30,7 +30,7 @@ public:
 		AMBIENT_OCCLUSION,
 		EMISSIVE,
 		DIFFUSE_IRRADIANCE,
-		BLOOM_HALF
+		SPECULAR_IRRADIANCE
 	};
 
 	//System declaration.

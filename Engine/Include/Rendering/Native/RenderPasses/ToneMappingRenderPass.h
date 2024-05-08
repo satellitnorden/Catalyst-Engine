@@ -37,6 +37,11 @@ private:
 	void Initialize() NOEXCEPT;
 
 	/*
+	*	Pre-record.
+	*/
+	void PreRecord(CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;
+
+	/*
 	*	Executes this render pass.
 	*/
 	void Execute() NOEXCEPT;

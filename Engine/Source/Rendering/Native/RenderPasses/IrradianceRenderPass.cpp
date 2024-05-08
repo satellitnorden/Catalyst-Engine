@@ -118,6 +118,7 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 		+ _DiffuseIrradianceTemporalDenoisingPipelines.Size()
 		+ 1
 		+ _DiffuseIrradianceSpatialDenoisingPipelines.Size()
+		+ 1
 	);
 
 	AddPipeline(&_RayTracedDiffuseIrradiancePipeline);
@@ -133,6 +134,8 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 	{
 		AddPipeline(&pipeline);
 	}
+
+	AddPipeline(&_ScreenSpaceSpecularIrradiance);
 
 	//Initialize all pipelines.
 	_RayTracedDiffuseIrradiancePipeline.Initialize();
@@ -188,6 +191,8 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 			_DiffuseIrradianceSpatialDenoisingPipelines[i + 1].Initialize(parameters);
 		}
 	}
+
+	_ScreenSpaceSpecularIrradiance.Initialize();
 }
 
 /*
@@ -291,6 +296,30 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 		}
 	}
 	
+	switch (RenderingSystem::Instance->GetRenderingConfiguration()->GetSpecularIrradianceMode())
+	{
+		case RenderingConfiguration::SpecularIrradianceMode::NONE:
+		{
+			_ScreenSpaceSpecularIrradiance.SetIncludeInRender(false);
+
+			break;
+		}
+
+		case RenderingConfiguration::SpecularIrradianceMode::SCREEN_SPACE:
+		{
+			_ScreenSpaceSpecularIrradiance.SetIncludeInRender(true);
+			_ScreenSpaceSpecularIrradiance.Execute();
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
 }
 
 /*
@@ -312,4 +341,6 @@ void IrradianceRenderPass::Terminate() NOEXCEPT
 	{
 		pipeline.Terminate();
 	}
+
+	_ScreenSpaceSpecularIrradiance.Terminate();
 }

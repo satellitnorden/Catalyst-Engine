@@ -371,31 +371,6 @@ enum class RenderTarget : uint8
 	*/
 	INTERMEDIATE_RGBA_FLOAT32_HALF_2,
 
-	/*
-	*	Intermediate render target at eighth resolution.
-	*/
-	INTERMEDIATE_RGBA_FLOAT32_EIGHTH,
-
-	/*
-	*	Intermediate render target at sixteenth resolution.
-	*/
-	INTERMEDIATE_RGBA_FLOAT32_SIXTEENTH,
-
-	/*
-	*	Intermediate render target at thirtysecond resolution.
-	*/
-	INTERMEDIATE_RGBA_FLOAT32_THIRTYSECOND,
-
-	/*
-	*	Intermediate render target at sixtyfourth resolution.
-	*/
-	INTERMEDIATE_RGBA_FLOAT32_SIXTYFOURTH,
-
-	/*
-	*	Intermediate render target at hundredtwentyeighth resolution.
-	*/
-	INTERMEDIATE_RGBA_FLOAT32_HUNDREDTWENTYEIGHTH,
-
 	NUMBER_OF_RENDER_TARGETS
 };
 
@@ -446,6 +421,11 @@ enum class SharedRenderTarget : uint8
 	*	Contains the diffuse irradiance.
 	*/
 	DIFFUSE_IRRADIANCE,
+
+	/*
+	*	Contains the specular irradiance.
+	*/
+	SPECULAR_IRRADIANCE,
 
 	/*
 	*	Contains the final color for the scene, in high dynamic range.

@@ -218,31 +218,12 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 32) uint FRAME;
 };
 
-layout (std140, set = 1, binding = 2) uniform RenderingConfiguration
-{
-	layout (offset = 0) uint DIFFUSE_IRRADIANCE_MODE;
-	layout (offset = 4) uint SPECULAR_IRRADIANCE_MODE;
-	layout (offset = 8) uint VOLUMETRIC_SHADOWS_MODE;
-};
-
-layout (std140, set = 1, binding = 3) uniform Wind
+layout (std140, set = 1, binding = 2) uniform Wind
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
 	layout (offset = 32) uint SKY_MODE;
 	layout (offset = 36) float MAXIMUM_SKY_TEXTURE_MIP_LEVEL;
-};
-
-//Lighting header struct definition.
-struct LightingHeader
-{
-	uint _NumberOfLights;
-	uint _MaximumNumberOfShadowCastingLights;	
-};
-layout (std430, set = 1, binding = 4) buffer Lighting
-{
-	layout (offset = 0) LightingHeader LIGHTING_HEADER;
-	layout (offset = 16) vec4[] LIGHT_DATA;
 };
 
 /*
@@ -334,206 +315,311 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
-//Constants.
-#define LIGHT_TYPE_DIRECTIONAL (0)
-#define LIGHT_TYPE_POINT (1)
-#define LIGHT_TYPE_BOX (2)
-
-#define LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT (BIT(0))
-#define LIGHT_PROPERTY_VOLUMETRIC_BIT (BIT(1))
-#define LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT (BIT(2))
+/////////////
+// GENERAL //
+/////////////
 
 /*
-*	Light struct definition.
+*   Ray struct definition.
 */
-struct Light
+struct Ray
 {
-	/*
-	*	First transform data.
-	*	Direction for directional lights, position for point lights, minimum world position for box lights.
-	*/
-	vec3 _TransformData1;
 
-	/*
-	*	Second transform data.
-	*	Maximum word position for box lights.
-	*/
-	vec3 _TransformData2;
-	vec3 _Color;
-	uint _LightType;
-	uint _LightProperties;
-	float _Intensity;
-	float _Radius;
-	float _Size;
+    //The origin.
+    vec3 _Origin;
+
+    //The direction.
+    vec3 _Direction;
+
 };
 
 /*
-*	Unpacks the light at the given index.
-*   Requies the Lighting storage buffer to be included.
+*   Axis aligned bounding box struct definition.
 */
-Light UnpackLight(uint index)
+struct AxisAlignedBoundingBox
 {
-	Light light;
 
-  	vec4 light_data_1 = LIGHT_DATA[index * 4 + 0];
-  	vec4 light_data_2 = LIGHT_DATA[index * 4 + 1];
-  	vec4 light_data_3 = LIGHT_DATA[index * 4 + 2];
-  	vec4 light_data_4 = LIGHT_DATA[index * 4 + 3];
+    //The minimum.
+    vec3 _Minimum;
 
-  	light._TransformData1 = vec3(light_data_1.x, light_data_1.y, light_data_1.z);
-  	light._TransformData2 = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
-  	light._Color = vec3(light_data_2.z, light_data_2.w, light_data_3.x);
-  	light._LightType = floatBitsToUint(light_data_3.y);
-  	light._LightProperties = floatBitsToUint(light_data_3.z);
-  	light._Intensity = light_data_3.w;
-  	light._Radius = light_data_4.x;
-  	light._Size = light_data_4.y;
+    //The maximum.
+    vec3 _Maximum;
 
-	return light;
+};
+
+/*
+*   Returns the axis aligned bounding box component at the given index.
+*/
+vec3 AxisAlignedBoundingBoxComponent(AxisAlignedBoundingBox axis_aligned_bounding_box, uint index)
+{
+    return index == 0 ? axis_aligned_bounding_box._Minimum : axis_aligned_bounding_box._Maximum;
 }
 
 /*
-*   Combines two hashes.
+*   Performs a ray/axis aligned bounding box intersection.
 */
-uint CombineHash(uint hash_1, uint hash_2)
+vec3 RayAxisAlignedBoundingBoxIntersection(Ray ray, AxisAlignedBoundingBox axis_aligned_bounding_box)
 {
-    return 3141592653 * hash_1 + hash_2;
+    //Calculate the ray reciprocals.
+    vec3 ray_reciprocals = vec3(1.0f) / ray._Direction;
+
+    //Calculate the ray signs.
+    uvec3 ray_signs = uvec3(ray._Direction.x >= 0.0f ? 1 : 0, ray._Direction.y >= 0.0f ? 1 : 0, ray._Direction.z >= 0.0f ? 1 : 0);
+
+    //Find the minimum/maximum.
+    float minimum = -FLOAT32_MAXIMUM;
+    float maximum = FLOAT32_MAXIMUM;
+
+    //Test the X-axis slab.
+    minimum = max(minimum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, 1 - ray_signs[0]).x - ray._Origin.x) * ray_reciprocals.x);
+    maximum = min(maximum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, ray_signs[0]).x - ray._Origin.x) * ray_reciprocals.x);
+
+    //Test the Y-axis slab.
+    minimum = max(minimum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, 1 - ray_signs[1]).y - ray._Origin.y) * ray_reciprocals.y);
+    maximum = min(maximum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, ray_signs[1]).y - ray._Origin.y) * ray_reciprocals.y);
+
+    //Test the Z-axis slab.
+    minimum = max(minimum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, 1 - ray_signs[2]).z - ray._Origin.z) * ray_reciprocals.z);
+    maximum = min(maximum, (AxisAlignedBoundingBoxComponent(axis_aligned_bounding_box, ray_signs[2]).z - ray._Origin.z) * ray_reciprocals.z);
+
+    return ray._Origin + ray._Direction * minimum;
 }
 
 /*
-*   Hash function taking a uint.
+*   Performs a ray/viewport intersection.
 */
-uint Hash(uint seed)
+vec3 RayViewportIntersection(Ray ray)
 {
-    seed ^= seed >> 17;
-    seed *= 0xed5ad4bbU;
-    seed ^= seed >> 11;
-    seed *= 0xac4c1b51U;
-    seed ^= seed >> 15;
-    seed *= 0x31848babU;
-    seed ^= seed >> 14;
-    return seed;
+    //Calculate the dots.
+    float horizontal_dot = dot(ray._Direction, vec3(1.0f, 0.0f, 0.0f));
+    float vertical_dot = dot(ray._Direction, vec3(0.0f, 1.0f, 0.0f));
+    float depth_dot = dot(ray._Direction, vec3(0.0f, 0.0f, 1.0f));
+
+    //Perform the horizontal intersection.
+    float horizontal_intersection_distance = FLOAT32_MAXIMUM;
+
+    if (horizontal_dot > 0.0f)
+    {   
+        vec3 plane_position = vec3(1.0f, 0.0f, 0.0f);
+        vec3 plane_normal = vec3(-1.0f, 0.0f, 0.0f);
+
+        horizontal_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    else if (horizontal_dot < 0.0f)
+    {
+        vec3 plane_position = vec3(0.0f, 0.0f, 0.0f);
+        vec3 plane_normal = vec3(1.0f, 0.0f, 0.0f);
+
+        horizontal_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    //Perform the vertical intersection.
+    float vertical_intersection_distance = FLOAT32_MAXIMUM;
+
+    if (vertical_dot > 0.0f)
+    {   
+        vec3 plane_position = vec3(0.0f, 1.0f, 0.0f);
+        vec3 plane_normal = vec3(0.0f, -1.0f, 0.0f);
+
+        vertical_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    else if (vertical_dot < 0.0f)
+    {
+        vec3 plane_position = vec3(0.0f, 0.0f, 0.0f);
+        vec3 plane_normal = vec3(0.0f, 1.0f, 0.0f);
+
+        vertical_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    //Perform the depth intersection.
+    float depth_intersection_distance = FLOAT32_MAXIMUM;
+
+    if (depth_dot > 0.0f)
+    {   
+        vec3 plane_position = vec3(0.0f, 0.0f, FLOAT32_MAXIMUM);
+        vec3 plane_normal = vec3(0.0f, 0.0f, -1.0f);
+
+        depth_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    else if (depth_dot < 0.0f)
+    {
+        vec3 plane_position = vec3(0.0f, 0.0f, 0.0f);
+        vec3 plane_normal = vec3(0.0f, 0.0f, 1.0f);
+
+        depth_intersection_distance = dot(plane_position - ray._Origin, plane_normal) / dot(ray._Direction, plane_normal);
+    }
+
+    //Return the intersection point.
+    return ray._Origin + ray._Direction * min(horizontal_intersection_distance, min(vertical_intersection_distance, depth_intersection_distance));
+}
+
+//The seed.
+int SEED;
+
+/*
+*	Seeds the random number generator.
+*/
+void Seed(ivec2 coordinate, int frame)
+{
+	int n = frame;
+    n = (n<<13)^n; n=n*(n*n*15731+789221) + 1376312589;
+    n += coordinate.y;
+    n = (n<<13)^n; n=n*(n*n*15731+789221) + 1376312589;
+    n += coordinate.x;
+    n = (n<<13)^n; n=n*(n*n*15731+789221) + 1376312589;
+    SEED = n;
 }
 
 /*
-*   Hash function taking a uvec2.
+*	Generates a random float with the given seed (and modifies it, so subsequent calls result in different values).
 */
-uint Hash2(uvec2 seed)
+float Random()
 {
-    return Hash(seed.x) ^ Hash(seed.y);
+	SEED = SEED * 0x343fd + 0x269ec3;
+
+	return float((SEED >> 16 & 32767)) / 32767.0f;
 }
 
 /*
-*   Hash function taking a uvec3.
+*	The diffuse probability density function.
 */
-uint Hash3(uvec3 seed)
+float DiffuseProbabilityDensityFunction(vec3 direction, vec3 normal)
 {
-    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
-    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
-    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
+	return max(dot(normal, direction), 0.0f);
 }
 
 /*
-*   Given a seed, returns a random number.
+*   Generates a diffuse direction.
 */
-float RandomFloat(inout uint seed)
+vec3 GenerateDiffuseDirection(vec3 normal)
 {
-    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+    #define NUMBER_OF_CANDIDATES (64)
+
+    vec3 candidate_directions[NUMBER_OF_CANDIDATES];
+    float candidate_weights[NUMBER_OF_CANDIDATES];
+
+    for (uint i = 0; i < NUMBER_OF_CANDIDATES; ++i)
+    {
+        float random_x = Random();
+		float random_y = Random();
+
+		float spherical_coordinate_x = acos(2.0f * random_x - 1.0f) - (PI / 2.0f);
+		float spherical_coordinate_y = 2.0f * PI  * random_y;
+
+		float cosine_a = cos(spherical_coordinate_x);
+		float cosine_b = cos(spherical_coordinate_y);
+		float sine_a = sin(spherical_coordinate_x);
+		float sine_b = sin(spherical_coordinate_y);
+
+		vec3 random_direction = vec3(cosine_a * cosine_b, cosine_a * sine_b, sine_a);
+    
+        random_direction = dot(normal, random_direction) >= 0.0f ? random_direction : -random_direction;
+
+        candidate_directions[i] = random_direction;
+        candidate_weights[i] = DiffuseProbabilityDensityFunction(random_direction, normal);
+    }
+
+    //Calculate the sum of the weights.
+    float weights_sum = 0.0f;
+
+    for (uint i = 0; i < NUMBER_OF_CANDIDATES; ++i)
+    {
+        weights_sum += candidate_weights[i];
+    }
+
+    //Randomize the picked weight.
+    float picked_weight = Random() * weights_sum;
+
+    //Pick the candidate!
+    for (uint i = 0; i < NUMBER_OF_CANDIDATES; ++i)
+    {
+        if (picked_weight < candidate_weights[i])
+        {
+        	return candidate_directions[i];
+        }
+
+        else
+        {
+            picked_weight -= candidate_weights[i];
+        }
+    }
+
+    return candidate_directions[NUMBER_OF_CANDIDATES - 1];
+
+    #undef NUMBER_OF_CANDIDATES
 }
 
 /*
-*   Given a coordinate and a seed, returns a random number.
+*   Generates a specular lobe direction.
 */
-float RandomFloat(uvec2 coordinate, uint seed)
+vec3 GenerateSpecularLobeDirection(vec2 jitter, vec3 normal, float roughness)
 {
-    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
-}
+	float a = roughness * roughness;
 
-/*
-*   Given a coordinate, returns a random number.
-*/
-float RandomFloat(vec2 coordinate)
-{
-    return fract(sin(dot(coordinate, vec2(12.9898f, 78.233f))) * 43758.5453f);
-}
+	float phi = 2.0f * PI * jitter.x;
+	float cosTheta = sqrt((1.0f - jitter.y) / (1.0f + (a*a - 1.0f) * jitter.y));
+	float sinTheta = sqrt(1.0f - cosTheta*cosTheta);
 
-/*
-*	Returns the interleaved gradient noise for the given coordinate at the given frame.
-*/
-float InterleavedGradientNoise(uvec2 coordinate, uint frame)
-{
-	frame = frame % 64;
+	// from spherical coordinates to cartesian coordinates
+	vec3 H;
+	H.x = cos(phi) * sinTheta;
+	H.y = sin(phi) * sinTheta;
+	H.z = cosTheta;
 
-	float x = float(coordinate.x) + 5.588238f * float(frame);
-	float y = float(coordinate.y) + 5.588238f * float(frame);
+	// from tangent-space vector to world-space sample vector
+	vec3 up        = abs(normal.z) < 0.999f ? vec3(0.0f, 0.0f, 1.0f) : vec3(1.0f, 0.0f, 0.0f);
+	vec3 tangent   = normalize(cross(up, normal));
+	vec3 bitangent = cross(normal, tangent);
 
-	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+	vec3 sampleVec = tangent * H.x + bitangent * H.y + normal * H.z;
+
+	return normalize(sampleVec);
 }
 
 //Constants.
-#define DIFFUSE_IRRADIANCE_MODE_NONE (0)
-#define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
-
-#define SPECULAR_IRRADIANCE_MODE_NONE (0)
-#define SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE (1)
-
-#define VOLUMETRIC_SHADOWS_MODE_NONE (0)
-#define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
-#define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
+#define SKY_MODE_ATMOSPHERIC_SCATTERING (0)
+#define SKY_MODE_GRADIENT (1)
+#define SKY_MODE_TEXTURE (2)
 
 /*
-*	Returns the extinction at the given position.
+*	Samples the sky.
+*	Requires the "World" uniform buffer to be bound.
 */
-float GetExtinctionAtPosition(vec3 position)
+vec3 SampleSky(vec3 direction, float mip_level)
 {
-	#define BASE_EXTINCTION (0.00125f)
-
-	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.125f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
-
-	#undef BASE_EXTINCTION
-}
-
-/*
-*	Calculates the attenuation in the given direction.
-*/
-float CalculateAttenuationInDirection(vec3 position, vec3 direction, float distance)
-{
-	#define NUMBER_OF_SAMPLES (4)
-
-	float attenuation = 1.0f;
-	float step_size = distance / float(NUMBER_OF_SAMPLES);
-
-	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+	switch (SKY_MODE)
 	{
-		vec3 sample_position = position + direction * float(i) * step_size;
-		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * step_size);
-	}
+		case SKY_MODE_ATMOSPHERIC_SCATTERING:
+		{
+			//Oh no!
+			return vec3(0.0f);
+		}
 
-	return attenuation;
+		case SKY_MODE_GRADIENT:
+		{
+			return mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f);
+		}
+
+		case SKY_MODE_TEXTURE:
+		{
+			return textureLod(SKY_TEXTURE, direction, mip_level).rgb;
+		}
 	
-	#undef NUMBER_OF_SAMPLES
+		default:
+		{
+			//Oh no!
+			return vec3(0.0f);
+		}
+	}
 }
 
-/*
-*	The Henyey-Greenstein phase function.
-*/
-float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
-{
-	float G = 0.5f;
-	float dot_product = dot(outgoing_direction, -incoming_direction);
-
-	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
-}
-
-/*
-*	Calculates the scattering with the given properties.
-*/
-vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
-{
-	return vec3(0.0f, 0.0f, 0.0f);
-}
-
-layout (set = 1, binding = 5) uniform sampler2D SceneFeatures2Half;
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2Half;
+layout (set = 1, binding = 4) uniform sampler2D SceneFeatures3Half;
+layout (set = 1, binding = 5) uniform sampler2D SceneFeatures4Half;
+layout (set = 1, binding = 6) uniform sampler2D PreviousScene;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 
