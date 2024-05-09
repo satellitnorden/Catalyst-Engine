@@ -116,7 +116,7 @@ void RenderInputManager::Initialize() NOEXCEPT
 	RegisterInputStream
 	(
 		HashString("Viewport"),
-		DynamicArray< VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputAttributeDescription>(),
 		DynamicArray<VertexInputBindingDescription>(),
 		0,
 		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)

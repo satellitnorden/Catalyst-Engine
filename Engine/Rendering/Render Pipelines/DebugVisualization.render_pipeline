@@ -1,0 +1,136 @@
+//Declare input render targets.
+InputRenderTarget(InputRenderTarget /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(SceneLowDynamicRange1);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Declare push constant data.
+PushConstantData(uint, MODE);
+
+//Subscribe to input streams.
+SubscribeToInputStream(DebugVisualization);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Constants.
+    #define MODE_NONE (0)
+    #define MODE_ALBEDO (1)
+    #define MODE_THICKNESS (2)
+    #define MODE_NORMAL (3)
+    #define MODE_DEPTH (4)
+    #define MODE_ROUGHNESS (5)
+    #define MODE_METALLIC (6)
+    #define MODE_AMBIENT_OCCLUSION (7)
+    #define MODE_EMISSIVE (8)
+    #define MODE_DIFFUSE_IRRADIANCE (9)
+    #define MODE_SPECULAR_IRRADIANCE (10)
+
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Retrieve the color.
+    vec3 color;
+
+    switch (MODE)
+    {
+        case MODE_NONE:
+		{
+			color = vec3(1.0f, 0.0f, 0.0f);
+
+			break;
+		}
+
+		case MODE_ALBEDO:
+		{
+			color = texture(InputRenderTarget, InScreenCoordinate).rgb;
+
+			break;
+		}
+
+		case MODE_THICKNESS:
+		{
+			color = vec3(texture(InputRenderTarget, InScreenCoordinate).a);
+
+			break;
+		}
+
+		case MODE_NORMAL:
+		{
+			color = texture(InputRenderTarget, InScreenCoordinate).rgb * 0.5f + 0.5f;
+
+			break;
+		}
+
+		case MODE_DEPTH:
+		{
+			color = vec3(texture(InputRenderTarget, InScreenCoordinate).a);
+
+			break;
+		}
+
+		case MODE_ROUGHNESS:
+		{
+			color = vec3(texture(InputRenderTarget, InScreenCoordinate).r);
+
+			break;
+		}
+
+		case MODE_METALLIC:
+		{
+			color = vec3(texture(InputRenderTarget, InScreenCoordinate).g);
+
+			break;
+		}
+
+		case MODE_AMBIENT_OCCLUSION:
+		{
+			color = vec3(texture(InputRenderTarget, InScreenCoordinate).b);
+
+			break;
+		}
+
+		case MODE_EMISSIVE:
+		{
+			color = vec3(texture(InputRenderTarget, InScreenCoordinate).a);
+
+			break;
+		}
+
+		case MODE_DIFFUSE_IRRADIANCE:
+		{
+			color = vec3(texture(InputRenderTarget, InScreenCoordinate).rgb);
+
+			break;
+		}
+
+		case MODE_SPECULAR_IRRADIANCE:
+		{
+			color = vec3(texture(InputRenderTarget, InScreenCoordinate).rgb);
+
+			break;
+		}
+
+		default:
+		{
+			color = vec3(1.0f, 0.0f, 0.0f);
+
+			break;
+		}
+    }
+
+    //Write the fragment.
+    OutputFragment(SceneLowDynamicRange1, vec4(color, 1.0f));
+}

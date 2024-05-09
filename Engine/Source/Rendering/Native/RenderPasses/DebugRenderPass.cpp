@@ -8,6 +8,17 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
+//Debug visualization push constant data.
+class DebugVisualizationPushConstantData final
+{
+
+public:
+
+	//The mode.
+	uint32 _Mode;
+
+};
+
 /*
 *	Default constructor.
 */
@@ -40,12 +51,40 @@ DebugRenderPass::DebugRenderPass() NOEXCEPT
 */
 void DebugRenderPass::Initialize() NOEXCEPT
 {
+	//Register the "DebugVisualization" input stream.
+	RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+	(
+		HashString("DebugVisualization"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		sizeof(DebugVisualizationPushConstantData),
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			if (input_stream->_Entries.Empty())
+			{
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._VertexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBufferOffset = 0;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 3;
+				new_entry._IndexCount = 0;
+				new_entry._InstanceCount = 0;
+			}
+		},
+		RenderInputStream::Mode::DRAW,
+		nullptr
+	);
+
 	//Reset this render pass.
 	ResetRenderPass();
 
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
-	AddPipeline(&_DebugGraphicsPipeline);
+	SetNumberOfPipelines(1 + _RenderPipelines.Size());
+	AddPipeline(&_DebugVisualizationPipeline);
 
 	for (GraphicsRenderPipeline &pipeline : _RenderPipelines)
 	{
@@ -53,7 +92,13 @@ void DebugRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Initialize all pipelines.
-	_DebugGraphicsPipeline.Initialize(static_cast<uint32>(Mode::NONE), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
+
+		_DebugVisualizationPipeline.Initialize(parameters);
+	}
 
 	for (GraphicsRenderPipeline &pipeline : _RenderPipelines)
 	{
@@ -66,134 +111,194 @@ void DebugRenderPass::Initialize() NOEXCEPT
 */
 void DebugRenderPass::Execute() NOEXCEPT
 {	
-	//Should the mode be switched?
-	if (_CurrentMode != _RequestedMode)
+	//Should the visualizationmode be switched?
+	if (_CurrentVisualizationMode != _RequestedVisualizationMode)
 	{
-		switch (_RequestedMode)
+		switch (_RequestedVisualizationMode)
 		{
-			case Mode::NONE:
+			case VisualizationMode::NONE:
 			{
-				_DebugGraphicsPipeline.Terminate();
+				_DebugVisualizationPipeline.Terminate();
 
 				break;
 			}
 
-			case Mode::ALBEDO:
+			case VisualizationMode::ALBEDO:
 			{
-				if (_CurrentMode != Mode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE)
 				{
-					_DebugGraphicsPipeline.Terminate();
+					_DebugVisualizationPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
+				{
+					GraphicsRenderPipelineInitializeParameters parameters;
+
+					parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
+
+					_DebugVisualizationPipeline.Initialize(parameters);
+				}
 
 				break;
 			}
 
-			case Mode::THICKNESS:
+			case VisualizationMode::THICKNESS:
 			{
-				if (_CurrentMode != Mode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE)
 				{
-					_DebugGraphicsPipeline.Terminate();
+					_DebugVisualizationPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
+				{
+					GraphicsRenderPipelineInitializeParameters parameters;
+
+					parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_1));
+
+					_DebugVisualizationPipeline.Initialize(parameters);
+				}
 
 				break;
 			}
 
-			case Mode::NORMAL:
+			case VisualizationMode::NORMAL:
 			{
-				if (_CurrentMode != Mode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE)
 				{
-					_DebugGraphicsPipeline.Terminate();
+					_DebugVisualizationPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2));
+				{
+					GraphicsRenderPipelineInitializeParameters parameters;
+
+					parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2));
+
+					_DebugVisualizationPipeline.Initialize(parameters);
+				}
 
 				break;
 			}
 
-			case Mode::DEPTH:
+			case VisualizationMode::DEPTH:
 			{
-				if (_CurrentMode != Mode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE)
 				{
-					_DebugGraphicsPipeline.Terminate();
+					_DebugVisualizationPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2));
+				{
+					GraphicsRenderPipelineInitializeParameters parameters;
+
+					parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_2));
+
+					_DebugVisualizationPipeline.Initialize(parameters);
+				}
 
 				break;
 			}
 
-			case Mode::ROUGHNESS:
+			case VisualizationMode::ROUGHNESS:
 			{
-				if (_CurrentMode != Mode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE)
 				{
-					_DebugGraphicsPipeline.Terminate();
+					_DebugVisualizationPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
+				{
+					GraphicsRenderPipelineInitializeParameters parameters;
+
+					parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
+
+					_DebugVisualizationPipeline.Initialize(parameters);
+				}
 
 				break;
 			}
 
-			case Mode::METALLIC:
+			case VisualizationMode::METALLIC:
 			{
-				if (_CurrentMode != Mode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE)
 				{
-					_DebugGraphicsPipeline.Terminate();
+					_DebugVisualizationPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
+				{
+					GraphicsRenderPipelineInitializeParameters parameters;
+
+					parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
+
+					_DebugVisualizationPipeline.Initialize(parameters);
+				}
 
 				break;
 			}
 
-			case Mode::AMBIENT_OCCLUSION:
+			case VisualizationMode::AMBIENT_OCCLUSION:
 			{
-				if (_CurrentMode != Mode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE)
 				{
-					_DebugGraphicsPipeline.Terminate();
+					_DebugVisualizationPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
+				{
+					GraphicsRenderPipelineInitializeParameters parameters;
+
+					parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
+
+					_DebugVisualizationPipeline.Initialize(parameters);
+				}
 
 				break;
 			}
 
-			case Mode::EMISSIVE:
+			case VisualizationMode::EMISSIVE:
 			{
-				if (_CurrentMode != Mode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE)
 				{
-					_DebugGraphicsPipeline.Terminate();
+					_DebugVisualizationPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
+				{
+					GraphicsRenderPipelineInitializeParameters parameters;
+
+					parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_FEATURES_3));
+
+					_DebugVisualizationPipeline.Initialize(parameters);
+				}
 
 				break;
 			}
 
-			case Mode::DIFFUSE_IRRADIANCE:
+			case VisualizationMode::DIFFUSE_IRRADIANCE:
 			{
-				if (_CurrentMode != Mode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE)
 				{
-					_DebugGraphicsPipeline.Terminate();
+					_DebugVisualizationPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::DIFFUSE_IRRADIANCE));
+				{
+					GraphicsRenderPipelineInitializeParameters parameters;
+
+					parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::DIFFUSE_IRRADIANCE));
+
+					_DebugVisualizationPipeline.Initialize(parameters);
+				}
 
 				break;
 			}
 
-			case Mode::SPECULAR_IRRADIANCE:
+			case VisualizationMode::SPECULAR_IRRADIANCE:
 			{
-				if (_CurrentMode != Mode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE)
 				{
-					_DebugGraphicsPipeline.Terminate();
+					_DebugVisualizationPipeline.Terminate();
 				}
 
-				_DebugGraphicsPipeline.Initialize(static_cast<uint32>(_RequestedMode), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SPECULAR_IRRADIANCE));
+				{
+					GraphicsRenderPipelineInitializeParameters parameters;
+
+					parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SPECULAR_IRRADIANCE));
+
+					_DebugVisualizationPipeline.Initialize(parameters);
+				}
 
 				break;
 			}
@@ -206,19 +311,30 @@ void DebugRenderPass::Execute() NOEXCEPT
 			}
 		}
 
-		_CurrentMode = _RequestedMode;
+		_CurrentVisualizationMode = _RequestedVisualizationMode;
 	}
 
 	//Set execution depending on the current mode.
-	if (_CurrentMode != Mode::NONE)
+	if (_CurrentVisualizationMode != VisualizationMode::NONE)
 	{
-		_DebugGraphicsPipeline.SetIncludeInRender(true);
-		_DebugGraphicsPipeline.Execute();
+		_DebugVisualizationPipeline.SetIncludeInRender(true);
+
+		{
+			DebugVisualizationPushConstantData push_constant_data;
+
+			push_constant_data._Mode = static_cast<uint32>(_CurrentVisualizationMode);
+
+			GraphicsRenderPipelineExecuteParameters parameters;
+
+			parameters._PushConstantData = &push_constant_data;
+
+			_DebugVisualizationPipeline.Execute(&parameters);
+		}
 	}
 
 	else
 	{
-		_DebugGraphicsPipeline.SetIncludeInRender(false);
+		_DebugVisualizationPipeline.SetIncludeInRender(false);
 	}
 
 	//Execute all pipelines.
@@ -234,9 +350,9 @@ void DebugRenderPass::Execute() NOEXCEPT
 void DebugRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	if (_CurrentMode != Mode::NONE)
+	if (_CurrentVisualizationMode != VisualizationMode::NONE)
 	{
-		_DebugGraphicsPipeline.Terminate();
+		_DebugVisualizationPipeline.Terminate();
 	}
 
 	for (GraphicsRenderPipeline &pipeline : _RenderPipelines)

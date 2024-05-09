@@ -6,7 +6,6 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DebugGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 //Systems.
@@ -17,8 +16,8 @@ class DebugRenderPass final : public RenderPass
 	
 public:
 
-	//Enumeration covering all modes.
-	enum class Mode : uint8
+	//Enumeration covering all visualization modes.
+	enum class VisualizationMode : uint8
 	{
 		NONE,
 		ALBEDO,
@@ -46,23 +45,23 @@ public:
 	DebugRenderPass() NOEXCEPT;
 
 	/*
-	*	Sets the mode.
+	*	Sets the visualization mode.
 	*/
-	FORCE_INLINE void SetMode(const Mode value) NOEXCEPT
+	FORCE_INLINE void SetVisualizationMode(const VisualizationMode value) NOEXCEPT
 	{
-		_RequestedMode = value;
+		_RequestedVisualizationMode = value;
 	}
 
 private:
 
-	//The requested mode.
-	Mode _RequestedMode{ Mode::NONE };
+	//The requested visualization mode.
+	VisualizationMode _RequestedVisualizationMode{ VisualizationMode::NONE };
 
-	//The current mode.
-	Mode _CurrentMode{ Mode::NONE };
+	//The current visualization mode.
+	VisualizationMode _CurrentVisualizationMode{ VisualizationMode::NONE };
 
-	//The debug graphics pipeline.
-	DebugGraphicsPipeline _DebugGraphicsPipeline;
+	//The debug visualization pipeline.
+	GraphicsRenderPipeline _DebugVisualizationPipeline{ HashString("DebugVisualization_RenderPipeline") };
 
 	//The render pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _RenderPipelines

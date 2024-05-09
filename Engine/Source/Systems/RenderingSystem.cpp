@@ -221,52 +221,57 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 
 				if (ImGui::MenuItem("Visualization: None"))
 				{
-					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NONE);
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::NONE);
 				}
 
 				else if (ImGui::MenuItem("Visualization: Albedo"))
 				{
-					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::ALBEDO);
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::ALBEDO);
 				}
 
 				else if (ImGui::MenuItem("Visualization: Thickness"))
 				{
-					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::THICKNESS);
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::THICKNESS);
 				}
 
 				else if (ImGui::MenuItem("Visualization: Normal"))
 				{
-					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NORMAL);
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::NORMAL);
 				}
 
 				else if (ImGui::MenuItem("Visualization: Depth"))
 				{
-					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::DEPTH);
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::DEPTH);
 				}
 
 				else if (ImGui::MenuItem("Visualization: Roughness"))
 				{
-					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::ROUGHNESS);
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::ROUGHNESS);
 				}
 
 				else if (ImGui::MenuItem("Visualization: Metallic"))
 				{
-					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::METALLIC);
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::METALLIC);
 				}
 
 				else if (ImGui::MenuItem("Visualization: Ambient Occlusion"))
 				{
-					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::AMBIENT_OCCLUSION);
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::AMBIENT_OCCLUSION);
 				}
 
 				else if (ImGui::MenuItem("Visualization: Emissive"))
 				{
-					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::EMISSIVE);
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::EMISSIVE);
 				}
 
 				else if (ImGui::MenuItem("Visualization: Diffuse Irradiance"))
 				{
-					DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::DIFFUSE_IRRADIANCE);
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::DIFFUSE_IRRADIANCE);
+				}
+
+				else if (ImGui::MenuItem("Visualization: Specular Irradiance"))
+				{
+					DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::SPECULAR_IRRADIANCE);
 				}
 
 				ImGui::EndMenu();
@@ -291,7 +296,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\None",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NONE);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::NONE);
 		},
 		nullptr
 	);
@@ -300,7 +305,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\Albedo",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::ALBEDO);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::ALBEDO);
 		},
 		nullptr
 	);
@@ -309,7 +314,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\Thickness",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::THICKNESS);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::THICKNESS);
 		},
 		nullptr
 	);
@@ -318,7 +323,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\Normal",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::NORMAL);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::NORMAL);
 		},
 		nullptr
 	);
@@ -327,7 +332,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\Depth",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::DEPTH);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::DEPTH);
 		},
 		nullptr
 	);
@@ -336,7 +341,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\Roughness",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::ROUGHNESS);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::ROUGHNESS);
 		},
 		nullptr
 	);
@@ -345,7 +350,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\Metallic",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::METALLIC);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::METALLIC);
 		},
 		nullptr
 	);
@@ -354,7 +359,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\Ambient Occlusion",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::AMBIENT_OCCLUSION);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::AMBIENT_OCCLUSION);
 		},
 		nullptr
 	);
@@ -363,7 +368,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\Emissive",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::EMISSIVE);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::EMISSIVE);
 		},
 		nullptr
 	);
@@ -372,7 +377,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\Diffuse Irradiance",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::DIFFUSE_IRRADIANCE);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::DIFFUSE_IRRADIANCE);
 		},
 		nullptr
 	);
@@ -381,7 +386,7 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 		"Rendering\\Visualization Modes\\Specular Irradiance",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{
-			DebugRenderPass::Instance->SetMode(DebugRenderPass::Mode::SPECULAR_IRRADIANCE);
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::SPECULAR_IRRADIANCE);
 		},
 		nullptr
 	);

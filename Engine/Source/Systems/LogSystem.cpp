@@ -22,7 +22,7 @@
 //Log system constants.
 namespace LogSystemConstants
 {
-	constexpr uint64 MAXIMUM_LINE_LENGTH{ 512 };
+	constexpr uint64 MAXIMUM_LINE_LENGTH{ 1'024 };
 }
 
 /*

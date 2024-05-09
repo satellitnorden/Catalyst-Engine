@@ -922,17 +922,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Base\\DebugFragmentShader";
-		parameters._ID = "DebugFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DebugFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DebugRenderFragmentShader";
 		parameters._ID = "DebugRenderFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DebugRenderFragmentShader.frag";
@@ -1035,83 +1024,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\MobileVertexShader";
 		parameters._ID = "MobileVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\MobileVertexShader.vert";
-		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemComputeShader";
-		parameters._ID = "ParticleSystemComputeShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemComputeShader.comp";
-		parameters._Stage = ShaderStage::COMPUTE;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedColorSceneFeaturesFragmentShader";
-		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedColorSceneFeaturesGeometryShader";
-		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesGeometryShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesGeometryShader.geom";
-		parameters._Stage = ShaderStage::GEOMETRY;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedColorSceneFeaturesVertexShader";
-		parameters._ID = "ParticleSystemMaskedColorSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedColorSceneFeaturesVertexShader.vert";
-		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
-		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
-		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesGeometryShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesGeometryShader.geom";
-		parameters._Stage = ShaderStage::GEOMETRY;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ParticleSystemMaskedDepthSceneFeaturesVertexShader";
-		parameters._ID = "ParticleSystemMaskedDepthSceneFeaturesVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ParticleSystemMaskedDepthSceneFeaturesVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);

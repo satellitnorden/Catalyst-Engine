@@ -115,7 +115,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 1
+#if 0
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -563,7 +563,8 @@ void CompileGLSLShader(const char *const RESTRICT file_path, const shaderc_shade
 	//Check for errors.
 	if (shaderc_result_get_num_errors(result) > 0)
 	{
-		ASSERT(false, shaderc_result_get_error_message(result));
+		LOG_ERROR(shaderc_result_get_error_message(result));
+		ASSERT(false, "Error!");
 	}
 
 	//Retrieve the compiled file size.
