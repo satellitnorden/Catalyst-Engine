@@ -31,6 +31,9 @@ public:
 		//The identifier.
 		uint64 _Identifier;
 
+		//The version.
+		uint64 _Version;
+
 		//The last write time.
 		std::filesystem::file_time_type _LastWriteTime;
 
@@ -86,7 +89,7 @@ public:
 	/*
 	*	Returns if the given identifier with the given last write time needs a recompile.
 	*/
-	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const uint64 version, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
 #if 0
 		return true;
@@ -95,7 +98,12 @@ public:
 		{
 			if (entry._Identifier == identifier)
 			{
-				if (entry._LastWriteTime < last_write_time)
+				if (entry._Version != version)
+				{
+					return true;
+				}
+
+				else if (entry._LastWriteTime < last_write_time)
 				{
 					return true;
 				}
@@ -111,6 +119,7 @@ public:
 		Entry &new_entry{ _Entries.Back() };
 
 		new_entry._Identifier = identifier;
+		new_entry._Version = version;
 		new_entry._LastWriteTime = last_write_time;
 
 		return true;
@@ -118,14 +127,15 @@ public:
 	}
 
 	/*
-	*	Updates the last write time for the given identifier.
+	*	Updates the entry with the given identifier.
 	*/
-	FORCE_INLINE void UpdateLastWriteTime(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
+	FORCE_INLINE void UpdateEntry(const uint64 identifier, const uint64 version, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
 		for (Entry &entry : _Entries)
 		{
 			if (entry._Identifier == identifier)
 			{
+				entry._Version = version;
 				entry._LastWriteTime = last_write_time;
 
 				break;
@@ -150,10 +160,9 @@ public:
 		file.Write(&number_of_entries, sizeof(uint64));
 
 		//Write the entries.
-		for (const Entry& entry : _Entries)
+		for (const Entry &entry : _Entries)
 		{
-			file.Write(&entry._Identifier, sizeof(uint64));
-			file.Write(&entry._LastWriteTime, sizeof(std::filesystem::file_time_type));
+			file.Write(&entry, sizeof(Entry));
 		}
 
 		//Close the file.

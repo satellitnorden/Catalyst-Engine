@@ -636,7 +636,7 @@ void ContentSystem::CompileAssetsInDirectory
 		}
 
 		//Check if it needs a recompile.
-		if (!TEST_BIT(asset_compiler->_Flags, AssetCompiler::Flags::ALWAYS_COMPILE) && !content_cache->NeedsRecompile(identifier, last_write_time))
+		if (!TEST_BIT(asset_compiler->_Flags, AssetCompiler::Flags::ALWAYS_COMPILE) && !content_cache->NeedsRecompile(identifier, asset_compiler->CurrentVersion(), last_write_time))
 		{
 			continue;
 		}
@@ -673,8 +673,8 @@ void ContentSystem::CompileAssetsInDirectory
 		}
 #endif
 
-		//Update the last write time.
-		content_cache->UpdateLastWriteTime(identifier, last_write_time);
+		//Update the entry.
+		content_cache->UpdateEntry(identifier, asset_compiler->CurrentVersion(), last_write_time);
 
 		//New asset was compiled!
 		compile_result->_NewAssetsCompiled = true;
