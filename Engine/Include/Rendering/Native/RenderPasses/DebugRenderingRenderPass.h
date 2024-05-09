@@ -7,8 +7,6 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/DebugRenderSphereGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 //Systems.
@@ -35,18 +33,13 @@ private:
 
 #if defined(CATALYST_EDITOR)
 	//The editor graphics render pipelines.
-	StaticArray<GraphicsRenderPipeline, 2> _EditorGraphicsRenderPipelines
+	StaticArray<GraphicsRenderPipeline, 3> _EditorGraphicsRenderPipelines
 	{
+		GraphicsRenderPipeline(HashString("DebugRenderCircle_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("PlayerSpawnMarker_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("CircleMarker_RenderPipeline"))
 	};
 #endif
-
-	//The debug render axis aligned bounding box 3D graphics pipelines.
-	StaticArray<DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline, 4> _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines;
-
-	//The debug render sphere graphics pipeline
-	DebugRenderSphereGraphicsPipeline _DebugRenderSphereGraphicsPipeline;
 
 	/*
 	*	Initializes this render pass.

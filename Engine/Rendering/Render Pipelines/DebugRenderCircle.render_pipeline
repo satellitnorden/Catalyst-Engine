@@ -1,0 +1,103 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Math);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(Scene);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set the cull mode.
+CullMode(NONE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER_OR_EQUAL);
+DepthTestEnable();
+
+//Set the topology.
+Topology(TRIANGLE_STRIP);
+
+//Set blend properties.
+BlendEnable();
+BlendColorSourceFactor(SOURCE_ALPHA);
+BlendColorDestinationFactor(ONE_MINUS_SOURCE_ALPHA);
+BlendColorOperator(ADD);
+BlendAlphaSourceFactor(ONE);
+BlendAlphaDestinationFactor(ZERO);
+BlendAlphaOperator(ADD);
+
+//Declare push constant data.
+PushConstantData(vec4, POSITION_RADIUS);
+PushConstantData(vec4, COLOR);
+
+//Subscribe to input streams.
+SubscribeToInputStream(DebugRenderCircle);
+
+//The vertex shader.
+Vertex
+{
+    //Declare output parameters.
+    OutputParameter(vec3, OutWorldPosition);
+
+    //Calculate the world position.
+    OutWorldPosition = vec3
+    (
+        POSITION_RADIUS.x + mix(-1.0f, 1.0f, float(VERTEX_INDEX / 2)) * POSITION_RADIUS.w,
+        POSITION_RADIUS.y,
+        POSITION_RADIUS.z + mix(-1.0f, 1.0f, float(VERTEX_INDEX & 1)) * POSITION_RADIUS.w
+    );
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec3, InWorldPosition);
+
+    //Calculate the distance from the center.
+    float distance_from_center = length(POSITION_RADIUS.xyz - InWorldPosition);
+
+    //Discard if less than the radius.
+    if (distance_from_center > POSITION_RADIUS.w)
+    {
+        discard;
+    }
+
+    //Calculate the color/alpha multiplier.
+    float color_multiplier = 1.0f;
+    float alpha_multiplier = 1.0f;
+
+    //Add some nice fade based on the distance from the center.
+    {
+        float fade_factor = distance_from_center / POSITION_RADIUS.w;
+
+        color_multiplier = mix(0.75f, 1.25f, smoothstep(0.0f, 1.0f, fade_factor));
+    }
+
+    //Add a nice ring at the edges of the circle.
+    {
+        float ring_factor = float(distance_from_center > POSITION_RADIUS.w * 0.9f);
+        
+        color_multiplier = mix(color_multiplier, color_multiplier * 2.0f, ring_factor);
+        alpha_multiplier = mix(alpha_multiplier, alpha_multiplier * 2.0f, ring_factor);
+    }
+
+    //Output the fragments.
+    OutputFragment(Scene, vec4(COLOR.rgb * color_multiplier, min(COLOR.a * alpha_multiplier, 1.0f)));
+}

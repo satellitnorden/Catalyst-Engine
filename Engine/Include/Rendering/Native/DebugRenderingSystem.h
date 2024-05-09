@@ -9,8 +9,7 @@
 #include <Concurrency/Spinlock.h>
 
 //Math.
-#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
-#include <Math/Geometry/Sphere.h>
+#include <Math/General/Vector.h>
 
 class DebugRenderingSystem final
 {
@@ -28,18 +27,21 @@ public:
 		//The color.
 		Vector4<float32> _Color;
 
+		//The current lifetime.
+		float32 _CurrentLifetime;
+
+		//The maximum lifetime.
+		float32 _MaximumLifetime;
+
 		//Whether or not to perform depth test.
 		bool _DepthTest;
 
-		//Whether or not to render as wireframe.
-		bool _Wireframe;
-
 	};
 
 	/*
-	*	Debug axis aligned bounding box 3D render class definition.
+	*	Debug circle render class definition.
 	*/
-	class DebugAxisAlignedBoundingBox3DRender final
+	class DebugCircleRender final
 	{
 
 	public:
@@ -47,39 +49,11 @@ public:
 		//The debug render.
 		DebugRender _DebugRender;
 
-		//The axis aligned bounding box 3D.
-		AxisAlignedBoundingBox3D _AxisAlignedBoundingBox3D;
+		//The position.
+		Vector3<float32> _Position;
 
-		//The current lifetime.
-		float32 _CurrentLifetime;
-
-		//The maximum lifetime.
-		float32 _MaximumLifetime;
-
-	};
-
-	/*
-	*	Debug sphere render class definition.
-	*/
-	class DebugSphereRender final
-	{
-
-	public:
-
-		//The debug render.
-		DebugRender _DebugRender;
-
-		//The sphere.
-		Sphere _Sphere;
-
-		//The number of segments.
-		uint32 _NumberOfSegments;
-
-		//The current lifetime.
-		float32 _CurrentLifetime;
-
-		//The maximum lifetime.
-		float32 _MaximumLifetime;
+		//The radius.
+		float32 _Radius;
 
 	};
 
@@ -91,67 +65,27 @@ public:
 	/*
 	*	Debug renders an axis aligned bounding box 3D.
 	*/
-	void DebugRenderAxisAlignedBoundingBox3D(	const Vector4<float32> &color,
-												const bool depth_test,
-												const bool wireframe,
-												const AxisAlignedBoundingBox3D &axis_aligned_bounding_box_3D,
-												const float32 lifetime) NOEXCEPT;
-
-	/*
-	*	Debug renders a sphere.
-	*/
-	void DebugRenderSphere(	const Vector4<float32> &color,
-							const bool depth_test,
-							const bool wireframe,
-							const Sphere &sphere,
-							const uint32 number_of_segments,
-							const float32 lifetime) NOEXCEPT;
-
-	/*
-	*	Returns the debug axis aligned bounding box 3D renders lock.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD Spinlock *const RESTRICT GetDebugAxisAlignedBoundingBox3DRendersLock() NOEXCEPT
-	{
-		return &_DebugAxisAlignedBoundingBox3DRendersLock;
-	}
-
-	/*
-	*	Returns the debug axis aligned bounding box 3D renders.
-	*/
-	FORCE_INLINE NO_DISCARD const DynamicArray<DebugAxisAlignedBoundingBox3DRender> &GetDebugAxisAlignedBoundingBox3DRenders() const NOEXCEPT
-	{
-		return _DebugAxisAlignedBoundingBox3DRenders;
-	}
-
-	/*
-	*	Returns the debug sphere renders lock.
-	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD Spinlock *const RESTRICT GetDebugSphereRendersLock() NOEXCEPT
-	{
-		return &_DebugSphereRendersLock;
-	}
-
-	/*
-	*	Returns the debug sphere renders.
-	*/
-	FORCE_INLINE NO_DISCARD const DynamicArray<DebugSphereRender> &GetDebugSphereRenders() const NOEXCEPT
-	{
-		return _DebugSphereRenders;
-	}
+	void DebugRenderCircle
+	(
+		const Vector4<float32>& color,
+		const float32 lifetime,
+		const bool depth_test,
+		const Vector3<float32>& position,
+		const float32 radius
+	) NOEXCEPT;
 
 private:
 
-	//The debug axis aligned bounding box 3D renders lock.
-	Spinlock _DebugAxisAlignedBoundingBox3DRendersLock;
+	//The debug circle renders lock.
+	Spinlock _DebugCircleRendersLock;
 
-	//Container for all debug axis aligned bounding box 3D renders.
-	DynamicArray<DebugAxisAlignedBoundingBox3DRender> _DebugAxisAlignedBoundingBox3DRenders;
+	//Container for all debug circle renders.
+	DynamicArray<DebugCircleRender> _DebugCircleRenders;
 
-	//The debug sphere renders lock.
-	Spinlock _DebugSphereRendersLock;
-
-	//Container for all debug sphere renders.
-	DynamicArray<DebugSphereRender> _DebugSphereRenders;
+	/*
+	*	Gathers the debug render circle render input stream.
+	*/
+	void GatherDebugRenderCircleInputStream(class RenderInputStream *const RESTRICT input_stream) NOEXCEPT;
 
 	/*
 	*	Updates the debug rendering system during the post update phase.

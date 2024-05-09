@@ -50,10 +50,10 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 	//Add the pipelines.
 	SetNumberOfPipelines
 	(
+		1
 #if defined(CATALYST_EDITOR)
-		_EditorGraphicsRenderPipelines.Size() +
+		+ _EditorGraphicsRenderPipelines.Size()
 #endif
-		_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines.Size() + 1
 	);
 
 #if defined(CATALYST_EDITOR)
@@ -63,13 +63,6 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 	}
 #endif
 
-	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
-	{
-		AddPipeline(&pipeline);
-	}
-
-	AddPipeline(&_DebugRenderSphereGraphicsPipeline);
-
 	//Initialize all pipelines.
 #if defined(CATALYST_EDITOR)
 	for (GraphicsRenderPipeline &pipeline : _EditorGraphicsRenderPipelines)
@@ -77,12 +70,6 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 		pipeline.Initialize();
 	}
 #endif
-
-	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[0].Initialize(EMPTY_HANDLE, false, false);
-	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[1].Initialize(EMPTY_HANDLE, false, true);
-	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[2].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true, false);
-	_DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines[3].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER), true, true);
-	_DebugRenderSphereGraphicsPipeline.Initialize();
 }
 
 /*
@@ -97,13 +84,6 @@ void DebugRenderingRenderPass::Execute() NOEXCEPT
 		pipeline.Execute();
 	}
 #endif
-
-	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
-	{
-		pipeline.Execute();
-	}
-
-	_DebugRenderSphereGraphicsPipeline.Execute();
 }
 
 /*
@@ -117,12 +97,5 @@ void DebugRenderingRenderPass::Terminate() NOEXCEPT
 		pipeline.Terminate();
 	}
 #endif
-
-	for (DebugRenderAxisAlignedBoundingBox3DGraphicsPipeline &pipeline : _DebugRenderAxisAlignedBoundingBox3DGraphicsPipelines)
-	{
-		pipeline.Terminate();
-	}
-
-	_DebugRenderSphereGraphicsPipeline.Terminate();
 }
 #endif
