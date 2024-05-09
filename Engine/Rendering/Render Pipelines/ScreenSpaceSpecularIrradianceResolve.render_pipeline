@@ -1,0 +1,105 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
+IncludeUniformBuffer(World);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(BlueNoise);
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Geometry);
+IncludeShaderFunctionLibrary(PhysicallyBasedLighting);
+IncludeShaderFunctionLibrary(RayTracing);
+IncludeShaderFunctionLibrary(World);
+
+//Declare input render targets.
+InputRenderTarget(SpecularIrradianceData /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures1 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures2 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures3 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures2Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures4Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(PreviousScene /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(SpecularIrradiance);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample the scene features.
+    vec4 scene_features_1 = texture(SceneFeatures1, InScreenCoordinate);
+    vec4 scene_features_2 = texture(SceneFeatures2, InScreenCoordinate);
+    vec4 scene_features_3 = texture(SceneFeatures3, InScreenCoordinate);
+
+    vec3 albedo = scene_features_1.rgb;
+    vec3 normal = scene_features_2.xyz;
+    float depth = scene_features_2.w;
+    float roughness = scene_features_3.x;
+    float metallic = scene_features_3.y;
+
+    //Calculate the world position.
+    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
+
+    //Calculate the view direction.
+    vec3 view_direction = normalize(world_position - CAMERA_WORLD_POSITION);
+
+    //Calculate the reflection vector.
+    vec3 reflection_vector = reflect(view_direction, normal);
+
+    //Sample the specular irradiance.
+    vec3 specular_irradiance = vec3(0.0f);
+    float weight = 0.0f;
+    
+    for (int Y = -1; Y <= 1; ++Y)
+    {
+        for (int X = -1; X <= 1; ++X)
+        {
+            vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_HALF_MAIN_RESOLUTION;
+
+            vec2 hit_coordinate = texture(SpecularIrradianceData, sample_coordinate).xy;
+
+            if (hit_coordinate.x < 1.0f && hit_coordinate.y < 1.0f)
+            {
+                vec2 velocity = texture(SceneFeatures4Half, sample_coordinate).xy;
+
+                vec2 offset_coordinate = hit_coordinate - velocity;
+
+                vec4 sample_scene_features_2 = texture(SceneFeatures2Half, sample_coordinate);
+                vec3 sample_world_position = CalculateWorldPosition(sample_coordinate, sample_scene_features_2.w);
+
+                vec3 radiance_direction = normalize(sample_world_position - world_position);
+
+                //Base the sample weight on how much it aligns with the reflection vector.
+                float sample_weight = max(dot(reflection_vector, radiance_direction), 0.0f);
+
+                vec3 radiance = texture(PreviousScene, offset_coordinate).rgb;
+
+                specular_irradiance += radiance * sample_weight;
+                weight += sample_weight;
+            }
+        }
+    }
+
+    specular_irradiance = weight > 0.0f ? specular_irradiance / weight : vec3(0.0f);
+
+    //Output the fragment.
+    OutputFragment(SpecularIrradiance, vec4(specular_irradiance, float(weight > 0.0f)));
+}

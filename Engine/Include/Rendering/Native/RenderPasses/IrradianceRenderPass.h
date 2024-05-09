@@ -30,6 +30,10 @@ public:
 
 private:
 
+	////////////////////////
+	// DIFFUSE IRRADIANCE //
+	////////////////////////
+
 	//The intermediate diffuse irradiance render target.
 	RenderTargetHandle _IntermediateDiffuseIrradianceRenderTarget;
 
@@ -61,8 +65,14 @@ private:
 		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline"))
 	};
 
+	//The screen space specular irradiance data render target
+	RenderTargetHandle _ScreenSpaceSpecularIrradianceDataRenderTarget;
+
 	//The screen space specular irradiance pipeline.
 	GraphicsRenderPipeline _ScreenSpaceSpecularIrradiance{ HashString("ScreenSpaceSpecularIrradiance_RenderPipeline") };
+
+	//The screen space specular irradiance resolve pipeline.
+	GraphicsRenderPipeline _ScreenSpaceSpecularIrradianceResolve{ HashString("ScreenSpaceSpecularIrradianceResolve_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

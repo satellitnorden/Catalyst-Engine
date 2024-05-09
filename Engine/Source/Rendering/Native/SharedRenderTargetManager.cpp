@@ -107,7 +107,7 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::DIFFUSE_IRRADIANCE)]._IsDepthBuffer = false;
 
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SPECULAR_IRRADIANCE)]._Identifier = HashString("SpecularIrradiance");
-	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SPECULAR_IRRADIANCE)]._Resolution = RenderingSystem::Instance->GetScaledResolution(1);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SPECULAR_IRRADIANCE)]._Resolution = RenderingSystem::Instance->GetScaledResolution(0);
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SPECULAR_IRRADIANCE)]._TextureFormat = TextureFormat::RGBA_FLOAT32;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SPECULAR_IRRADIANCE)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SPECULAR_IRRADIANCE)]._IsNeeded[UNDERLYING(RenderingPath::PATH_TRACING)] = false;

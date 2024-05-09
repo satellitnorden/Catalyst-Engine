@@ -437,7 +437,7 @@ float Geometry(vec3 normal, vec3 outgoing_direction, vec3 radiance_direction, fl
 		//Calculate the denominator.
 		float denominator = outgoing_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient;
 
-		first_coefficient = nominator / denominator;
+		first_coefficient = denominator > 0.0f ? nominator / denominator : 0.0f;
 	}
 
 	//Calculate the second coefficient.
@@ -450,7 +450,7 @@ float Geometry(vec3 normal, vec3 outgoing_direction, vec3 radiance_direction, fl
 		//Calculate the denominator.
 		float denominator = irradiance_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient;
 
-		second_coefficient = nominator / denominator;
+		second_coefficient = denominator > 0.0f ? nominator / denominator : 0.0f;
 	}
 
 	//Calculate the geometry.
@@ -554,9 +554,9 @@ vec3 BidirectionalReflectanceDistribution
 
 	{
 		vec3 nominator = vec3(distribution) * vec3(geometry) * fresnel;
-		float denominator = max(4.0f * outgoing_angle * radiance_angle, 0.00001f);
+		float denominator = 4.0f * outgoing_angle * radiance_angle;
 
-		specular_component = nominator / denominator;
+		specular_component = denominator > 0.0f ? nominator / denominator : vec3(0.0f);
 	}
 
 	//Calculate the weakening factor.
@@ -796,42 +796,13 @@ void main()
             incoming_specular_irradiance = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
             break;
         }
-        case DIFFUSE_IRRADIANCE_MODE_RAY_TRACED:
+        case SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE:
         {
-            vec2 sample_coordinates[4];
-            sample_coordinates[0] = InScreenCoordinate;
-            sample_coordinates[1] = InScreenCoordinate + vec2(INVERSE_HALF_MAIN_RESOLUTION.x, 0.0f);
-            sample_coordinates[2] = InScreenCoordinate + vec2(0.0f, INVERSE_HALF_MAIN_RESOLUTION.y);
-            sample_coordinates[3] = InScreenCoordinate + vec2(INVERSE_HALF_MAIN_RESOLUTION.x, INVERSE_HALF_MAIN_RESOLUTION.y);
-            vec3 specular_irradiance_samples[4];
-            float depth_samples[4];
-            for (uint i = 0; i < 4; ++i)
-            {
-                specular_irradiance_samples[i] = texture(SpecularIrradiance, sample_coordinates[i]).rgb;
-                depth_samples[i] = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinates[i]).w);
-            }
-            vec2 fractions = fract(InScreenCoordinate * HALF_MAIN_RESOLUTION);
-            float weights[4];
-            weights[0] = (1.0f - fractions.x) * (1.0f - fractions.y);
-            weights[1] = fractions.x * (1.0f - fractions.y);
-            weights[2] = (1.0f - fractions.x) * fractions.y;
-            weights[3] = fractions.x * fractions.y;
-            float center_depth = LinearizeDepth(depth);
-            for (uint i = 0; i < 4; ++i)
-            {
-                weights[i] *= exp(-abs(center_depth - depth_samples[i]));
-            }
-            float weight_sum = weights[0] + weights[1] + weights[2] + weights[3];
-            float inverse_weight_sum = weight_sum > 0.0f ? 1.0f / weight_sum : 1.0f;
-            for (uint i = 0; i < 4; ++i)
-            {
-                weights[i] *= inverse_weight_sum;
-            }
-            for (uint i = 0; i < 4; ++i)
-            {
-                incoming_specular_irradiance += specular_irradiance_samples[i] * weights[i];
-            }
+            vec4 specular_irradiance_sample = texture(SpecularIrradiance, InScreenCoordinate);
+            incoming_specular_irradiance = specular_irradiance_sample.rgb;
             incoming_specular_irradiance *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME));
+            vec3 sky_sample = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
+            incoming_specular_irradiance = mix(sky_sample, incoming_specular_irradiance, specular_irradiance_sample.a);
             break;
         }
     }

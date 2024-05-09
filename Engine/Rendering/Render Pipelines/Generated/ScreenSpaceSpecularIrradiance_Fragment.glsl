@@ -623,7 +623,7 @@ layout (set = 1, binding = 6) uniform sampler2D PreviousScene;
 
 layout (location = 0) in vec2 InScreenCoordinate;
 
-layout (location = 0) out vec4 SpecularIrradiance;
+layout (location = 0) out vec4 SpecularIrradianceData;
 
 void main()
 {
@@ -651,7 +651,7 @@ void main()
     }
     float start_offset = noise_texture_sample.z / 16.0f;
     bool found_intersection = false;
-    vec3 intersected_radiance = vec3(0.0f);
+    vec2 intersected_coordinate = vec2(2.0f, 2.0f);
     for (uint i = 0; i < 16; ++i)
     {
         vec3 sample_position = mix(screen_space_origin, end_screen_space_position, mix(start_offset, 1.0f, float(i + 1) / 16.0f));
@@ -663,13 +663,12 @@ void main()
             {
                 if (dot(screen_space_direction, vec3(sample_position.xy, sample_depth) - screen_space_origin) >= 0.0f)
                 {
-                    vec2 sample_coordinate = sample_position.xy - texture(SceneFeatures4Half, sample_position.xy).xy;
                     found_intersection = true;
-                    intersected_radiance = texture(PreviousScene, sample_coordinate).rgb;
+                    intersected_coordinate = sample_position.xy;
                     break;
                 }
             }
         }
     }
-	SpecularIrradiance = vec4(intersected_radiance,float(found_intersection));
+	SpecularIrradianceData = vec4(intersected_coordinate,0.0f,0.0f);
 }

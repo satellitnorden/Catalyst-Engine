@@ -111,6 +111,9 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 		);
 	}
 
+	//Create the screen space specular irradiance data render target.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::RG_FLOAT16, SampleCount::SAMPLE_COUNT_1, &_ScreenSpaceSpecularIrradianceDataRenderTarget);
+
 	//Add the pipelines.
 	SetNumberOfPipelines
 	(
@@ -118,7 +121,7 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 		+ _DiffuseIrradianceTemporalDenoisingPipelines.Size()
 		+ 1
 		+ _DiffuseIrradianceSpatialDenoisingPipelines.Size()
-		+ 1
+		+ 2
 	);
 
 	AddPipeline(&_RayTracedDiffuseIrradiancePipeline);
@@ -136,6 +139,7 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 	}
 
 	AddPipeline(&_ScreenSpaceSpecularIrradiance);
+	AddPipeline(&_ScreenSpaceSpecularIrradianceResolve);
 
 	//Initialize all pipelines.
 	_RayTracedDiffuseIrradiancePipeline.Initialize();
@@ -192,7 +196,21 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 		}
 	}
 
-	_ScreenSpaceSpecularIrradiance.Initialize();
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		parameters._OutputRenderTargets.Emplace(HashString("SpecularIrradianceData"), _ScreenSpaceSpecularIrradianceDataRenderTarget);
+
+		_ScreenSpaceSpecularIrradiance.Initialize(parameters);
+	}
+
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("SpecularIrradianceData"), _ScreenSpaceSpecularIrradianceDataRenderTarget);
+
+		_ScreenSpaceSpecularIrradianceResolve.Initialize(parameters);
+	}
 }
 
 /*
@@ -301,6 +319,7 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 		case RenderingConfiguration::SpecularIrradianceMode::NONE:
 		{
 			_ScreenSpaceSpecularIrradiance.SetIncludeInRender(false);
+			_ScreenSpaceSpecularIrradianceResolve.SetIncludeInRender(false);
 
 			break;
 		}
@@ -309,6 +328,9 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 		{
 			_ScreenSpaceSpecularIrradiance.SetIncludeInRender(true);
 			_ScreenSpaceSpecularIrradiance.Execute();
+
+			_ScreenSpaceSpecularIrradianceResolve.SetIncludeInRender(true);
+			_ScreenSpaceSpecularIrradianceResolve.Execute();
 
 			break;
 		}
@@ -343,4 +365,5 @@ void IrradianceRenderPass::Terminate() NOEXCEPT
 	}
 
 	_ScreenSpaceSpecularIrradiance.Terminate();
+	_ScreenSpaceSpecularIrradianceResolve.Terminate();
 }

@@ -486,7 +486,7 @@ float Geometry(vec3 normal, vec3 outgoing_direction, vec3 radiance_direction, fl
 		//Calculate the denominator.
 		float denominator = outgoing_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient;
 
-		first_coefficient = nominator / denominator;
+		first_coefficient = denominator > 0.0f ? nominator / denominator : 0.0f;
 	}
 
 	//Calculate the second coefficient.
@@ -499,7 +499,7 @@ float Geometry(vec3 normal, vec3 outgoing_direction, vec3 radiance_direction, fl
 		//Calculate the denominator.
 		float denominator = irradiance_direction_coefficient * (1.0f - roughness_coefficient) + roughness_coefficient;
 
-		second_coefficient = nominator / denominator;
+		second_coefficient = denominator > 0.0f ? nominator / denominator : 0.0f;
 	}
 
 	//Calculate the geometry.
@@ -603,9 +603,9 @@ vec3 BidirectionalReflectanceDistribution
 
 	{
 		vec3 nominator = vec3(distribution) * vec3(geometry) * fresnel;
-		float denominator = max(4.0f * outgoing_angle * radiance_angle, 0.00001f);
+		float denominator = 4.0f * outgoing_angle * radiance_angle;
 
-		specular_component = nominator / denominator;
+		specular_component = denominator > 0.0f ? nominator / denominator : vec3(0.0f);
 	}
 
 	//Calculate the weakening factor.

@@ -17,7 +17,7 @@ InputRenderTarget(SceneFeatures4Half /* Identifier */, NEAREST /* Magnification 
 InputRenderTarget(PreviousScene /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
-OutputRenderTarget(SpecularIrradiance);
+OutputRenderTarget(SpecularIrradianceData);
 
 //Declare render resolution.
 RenderResolution(MAIN_HALF);
@@ -86,7 +86,7 @@ Fragment
 
     //Do the intersection!
     bool found_intersection = false;
-    vec3 intersected_radiance = vec3(0.0f);
+    vec2 intersected_coordinate = vec2(2.0f, 2.0f);
 
     for (uint i = 0; i < 16; ++i)
     {
@@ -103,11 +103,8 @@ Fragment
                 //Reject if it's behind the ray.
                 if (dot(screen_space_direction, vec3(sample_position.xy, sample_depth) - screen_space_origin) >= 0.0f)
                 {
-                    //We have an intersection - Now figure out where it was last frame.
-                    vec2 sample_coordinate = sample_position.xy - texture(SceneFeatures4Half, sample_position.xy).xy;
-
                     found_intersection = true;
-                    intersected_radiance = texture(PreviousScene, sample_coordinate).rgb;
+                    intersected_coordinate = sample_position.xy;
 
                     break;
                 }
@@ -116,5 +113,5 @@ Fragment
     }
 
     //Output the fragment.
-    OutputFragment(SpecularIrradiance, vec4(intersected_radiance, float(found_intersection)));
+    OutputFragment(SpecularIrradianceData, vec4(intersected_coordinate, 0.0f, 0.0f));
 }
