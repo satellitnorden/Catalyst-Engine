@@ -34,10 +34,10 @@ void EditorCameraSystem::Update() NOEXCEPT
 	}
 
 	//Only update if no window is hovered.
-	if (ImGui::GetIO().WantCaptureMouse)
-	{
-		return;
-	}
+	//if (ImGui::GetIO().WantCaptureMouse)
+	//{
+	//	return;
+	//}
 
 	//Cache the input state.
 	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::GAME) };

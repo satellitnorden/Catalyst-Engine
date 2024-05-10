@@ -33,9 +33,10 @@ private:
 
 #if defined(CATALYST_EDITOR)
 	//The editor graphics render pipelines.
-	StaticArray<GraphicsRenderPipeline, 3> _EditorGraphicsRenderPipelines
+	StaticArray<GraphicsRenderPipeline, 4> _EditorGraphicsRenderPipelines
 	{
 		GraphicsRenderPipeline(HashString("DebugRenderCircle_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("DebugRenderRectangle_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("PlayerSpawnMarker_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("CircleMarker_RenderPipeline"))
 	};

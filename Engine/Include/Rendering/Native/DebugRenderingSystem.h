@@ -33,9 +33,6 @@ public:
 		//The maximum lifetime.
 		float32 _MaximumLifetime;
 
-		//Whether or not to perform depth test.
-		bool _DepthTest;
-
 	};
 
 	/*
@@ -58,20 +55,53 @@ public:
 	};
 
 	/*
+	*	Debug rectangle render class definition.
+	*/
+	class DebugRectangleRender final
+	{
+
+	public:
+
+		//The debug render.
+		DebugRender _DebugRender;
+
+		//The position.
+		Vector3<float32> _Position;
+
+		//The size.
+		Vector2<float32> _Size;
+
+		//The rotation.
+		float32 _Rotation;
+
+	};
+
+	/*
 	*	Initializes the debug rendering system.
 	*/
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Debug renders an axis aligned bounding box 3D.
+	*	Debug renders a circle.
 	*/
 	void DebugRenderCircle
 	(
-		const Vector4<float32>& color,
+		const Vector4<float32> &color,
 		const float32 lifetime,
-		const bool depth_test,
-		const Vector3<float32>& position,
+		const Vector3<float32> &position,
 		const float32 radius
+	) NOEXCEPT;
+
+	/*
+	*	Debug renders a rectangle.
+	*/
+	void DebugRenderRectangle
+	(
+		const Vector4<float32> &color,
+		const float32 lifetime,
+		const Vector3<float32> &position,
+		const Vector2<float32> &size,
+		const float32 rotation
 	) NOEXCEPT;
 
 private:
@@ -82,10 +112,21 @@ private:
 	//Container for all debug circle renders.
 	DynamicArray<DebugCircleRender> _DebugCircleRenders;
 
+	//The debug rectangle renders lock.
+	Spinlock _DebugRectangleRendersLock;
+
+	//Container for all debug rectangle renders.
+	DynamicArray<DebugRectangleRender> _DebugRectangleRenders;
+
 	/*
 	*	Gathers the debug render circle render input stream.
 	*/
 	void GatherDebugRenderCircleInputStream(class RenderInputStream *const RESTRICT input_stream) NOEXCEPT;
+
+	/*
+	*	Gathers the debug render rectangle render input stream.
+	*/
+	void GatherDebugRenderRectangleInputStream(class RenderInputStream *const RESTRICT input_stream) NOEXCEPT;
 
 	/*
 	*	Updates the debug rendering system during the post update phase.

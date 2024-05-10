@@ -1,0 +1,103 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+IncludeShaderFunctionLibrary(Math);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(Scene);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set the cull mode.
+CullMode(NONE);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER_OR_EQUAL);
+DepthTestEnable();
+
+//Set the topology.
+Topology(TRIANGLE_STRIP);
+
+//Set blend properties.
+BlendEnable();
+BlendColorSourceFactor(SOURCE_ALPHA);
+BlendColorDestinationFactor(ONE_MINUS_SOURCE_ALPHA);
+BlendColorOperator(ADD);
+BlendAlphaSourceFactor(ONE);
+BlendAlphaDestinationFactor(ZERO);
+BlendAlphaOperator(ADD);
+
+//Declare push constant data.
+PushConstantData(vec4, POSITION_ROTATION);
+PushConstantData(vec4, COLOR);
+PushConstantData(vec2, SIZE);
+
+//Subscribe to input streams.
+SubscribeToInputStream(DebugRenderRectangle);
+
+//The vertex shader.
+Vertex
+{
+    //Declare output parameters.
+    OutputParameter(vec2, OutPreRotationPosition);
+    OutputParameter(vec3, OutWorldPosition);
+
+    //Calculate the pre rotation position.
+    OutPreRotationPosition = vec2
+    (
+        mix(-0.5f, 0.5f, float(VERTEX_INDEX / 2)) * SIZE.x,
+        mix(-0.5f, 0.5f, float(VERTEX_INDEX & 1)) * SIZE.y
+    );
+
+    //Calculate the world position.
+    OutWorldPosition = POSITION_ROTATION.xyz + RotateYaw(vec3(OutPreRotationPosition.x, 0.0f, OutPreRotationPosition.y), POSITION_ROTATION.w);
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InPreRotationPosition);
+    InputParameter(vec3, InWorldPosition);
+
+    //Calculate the color/alpha multiplier.
+    float color_multiplier = 1.0f;
+    float alpha_multiplier = 1.0f;
+
+    //Add some nice fade based on the distance from the center.
+    {
+        float fade_factor_x = abs(InPreRotationPosition.x) / (SIZE.x * 0.5f);
+        float fade_factor_y = abs(InPreRotationPosition.y) / (SIZE.y * 0.5f);
+        float fade_factor = max(fade_factor_x, fade_factor_y);
+
+        color_multiplier = mix(0.75f, 1.25f, smoothstep(0.0f, 1.0f, fade_factor));
+    }
+
+    //Add a nice ring at the edges of the rectangle.
+    {
+        float ring_factor_x = float((abs(InPreRotationPosition.x) / SIZE.x) * 2.0f > 0.9f);
+        float ring_factor_y = float((abs(InPreRotationPosition.y) / SIZE.y) * 2.0f > 0.9f);
+        float ring_factor = max(ring_factor_x, ring_factor_y);
+        
+        color_multiplier = mix(color_multiplier, color_multiplier * 2.0f, ring_factor);
+        alpha_multiplier = mix(alpha_multiplier, alpha_multiplier * 2.0f, ring_factor);
+    }
+
+    //Output the fragments.
+    OutputFragment(Scene, vec4(COLOR.rgb * color_multiplier, min(COLOR.a * alpha_multiplier, 1.0f)));
+}

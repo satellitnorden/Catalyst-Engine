@@ -128,6 +128,8 @@ void ImGuiSystem::Initialize() NOEXCEPT
 		style.TranslationLineArrowSize = 8.0f;
 		style.HatchedAxisLineThickness = 0.0f;
 	}
+
+	ImGuizmo::AllowAxisFlip(false);
 #endif
 }
 
@@ -152,12 +154,21 @@ void ImGuiSystem::OnInputAvailable() NOEXCEPT
 	//Fill in ImGui's IO struct.
 	ImGuiIO &io{ ImGui::GetIO() };
 
+	if (mouse_state->_Left == ButtonState::PRESSED)
+	{
+		io.AddMouseButtonEvent(0, true);
+	}
+
+	else if (mouse_state->_Left == ButtonState::RELEASED)
+	{
+		io.AddMouseButtonEvent(0, false);
+	}
+
 	io.DisplaySize.x = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width);
 	io.DisplaySize.y = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
 	io.DeltaTime = BaseMath::Maximum<float32>(CatalystEngineSystem::Instance->GetDeltaTime(), FLOAT32_EPSILON);
 	io.IniFilename = nullptr;
 	io.MousePos = ImVec2(mouse_state->_CurrentX * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width), (1.0f - mouse_state->_CurrentY) * static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height));
-	io.MouseDown[0] = mouse_state->_Left == ButtonState::PRESSED || mouse_state->_Left == ButtonState::PRESSED_HELD;
 	io.MouseDown[1] = mouse_state->_Right == ButtonState::PRESSED || mouse_state->_Right == ButtonState::PRESSED_HELD;
 	io.MouseDown[2] = mouse_state->_ScrollWheel == ButtonState::PRESSED || mouse_state->_ScrollWheel == ButtonState::PRESSED_HELD;
 	io.MouseWheel = static_cast<float32>(mouse_state->_ScrollWheelStep);

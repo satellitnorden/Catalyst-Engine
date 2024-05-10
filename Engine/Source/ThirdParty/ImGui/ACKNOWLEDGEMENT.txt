@@ -1,4 +1,4 @@
-This version of the "ImGui" library was downloaded 2024-04-20 from https://github.com/ocornut/imgui with the following license:
+This version of the "ImGui" library was downloaded 2024-05-10 from https://github.com/ocornut/imgui with the following license:
 
 	The MIT License (MIT)
 
