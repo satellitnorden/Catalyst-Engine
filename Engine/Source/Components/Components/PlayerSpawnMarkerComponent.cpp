@@ -5,9 +5,7 @@
 #include <Components/Components/WorldTransformComponent.h>
 
 //Content.
-#if defined(CATALYST_EDITOR)
 #include <Content/Assets/ModelAsset.h>
-#endif
 
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
@@ -21,14 +19,11 @@
 //Systems.
 #if defined(CATALYST_EDITOR)
 #include <Systems/CatalystEditorSystem.h>
+#endif
 #include <Systems/ContentSystem.h>
-#endif
 #include <Systems/RenderingSystem.h>
-#if defined(CATALYST_EDITOR)
 #include <Systems/WorldSystem.h>
-#endif
 
-#if defined(CATALYST_EDITOR)
 /*
 *	Player spawn marker push constant data.
 */
@@ -47,13 +42,19 @@ public:
 */
 void GatherPlayerSpawnMarkerRenderInputStream(RenderInputStream *const RESTRICT input_stream) NOEXCEPT
 {
+#if defined(CATALYST_EDITOR)
+	const bool SHOULD_RENDER{ !CatalystEditorSystem::Instance->IsInGame() };
+#else
+	constexpr bool SHOULD_RENDER{ false };
+#endif
+
 	//Clear the entries.
 	input_stream->_Entries.Clear();
 
 	//Clear the push constant data memory.
 	input_stream->_PushConstantDataMemory.Clear();
 
-	if (!CatalystEditorSystem::Instance->IsInGame())
+	if (SHOULD_RENDER)
 	{
 		//Cache the model.
 		AssetPointer<ModelAsset> model{ ContentSystem::Instance->GetAsset<ModelAsset>(HashString("PlayerSpawnMarker")) };
@@ -95,14 +96,12 @@ void GatherPlayerSpawnMarkerRenderInputStream(RenderInputStream *const RESTRICT 
 		}
 	}
 }
-#endif
 
 /*
 *	Initializes this component.
 */
 void PlayerSpawnMarkerComponent::Initialize() NOEXCEPT
 {
-#if defined(CATALYST_EDITOR)
 	{
 		//Set up the required vertex input attribute/binding descriptions for models.
 		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
@@ -131,7 +130,6 @@ void PlayerSpawnMarkerComponent::Initialize() NOEXCEPT
 			nullptr
 		);
 	}
-#endif
 }
 
 /*

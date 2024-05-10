@@ -50,26 +50,19 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 	//Add the pipelines.
 	SetNumberOfPipelines
 	(
-		1
-#if defined(CATALYST_EDITOR)
-		+ _EditorGraphicsRenderPipelines.Size()
-#endif
+		_Pipelines.Size()
 	);
 
-#if defined(CATALYST_EDITOR)
-	for (GraphicsRenderPipeline &pipeline : _EditorGraphicsRenderPipelines)
+	for (GraphicsRenderPipeline &pipeline : _Pipelines)
 	{
 		AddPipeline(&pipeline);
 	}
-#endif
 
 	//Initialize all pipelines.
-#if defined(CATALYST_EDITOR)
-	for (GraphicsRenderPipeline &pipeline : _EditorGraphicsRenderPipelines)
+	for (GraphicsRenderPipeline &pipeline : _Pipelines)
 	{
 		pipeline.Initialize();
 	}
-#endif
 }
 
 /*
@@ -78,12 +71,10 @@ void DebugRenderingRenderPass::Initialize() NOEXCEPT
 void DebugRenderingRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
-#if defined(CATALYST_EDITOR)
-	for (GraphicsRenderPipeline &pipeline : _EditorGraphicsRenderPipelines)
+	for (GraphicsRenderPipeline &pipeline : _Pipelines)
 	{
 		pipeline.Execute();
 	}
-#endif
 }
 
 /*
@@ -91,11 +82,9 @@ void DebugRenderingRenderPass::Execute() NOEXCEPT
 */
 void DebugRenderingRenderPass::Terminate() NOEXCEPT
 {
-#if defined(CATALYST_EDITOR)
-	for (GraphicsRenderPipeline &pipeline : _EditorGraphicsRenderPipelines)
+	for (GraphicsRenderPipeline &pipeline : _Pipelines)
 	{
 		pipeline.Terminate();
 	}
-#endif
 }
 #endif

@@ -12,11 +12,8 @@
 #include <Systems/CatalystEditorSystem.h>
 #endif
 #include <Systems/RenderingSystem.h>
-#if defined(CATALYST_EDITOR)
 #include <Systems/WorldSystem.h>
-#endif
 
-#if defined(CATALYST_EDITOR)
 /*
 *	Circle marker push constant data.
 */
@@ -35,13 +32,19 @@ public:
 */
 void GatherCircleMarkerRenderInputStream(RenderInputStream *const RESTRICT input_stream) NOEXCEPT
 {
+#if defined(CATALYST_EDITOR)
+	const bool SHOULD_RENDER{ !CatalystEditorSystem::Instance->IsInGame() };
+#else
+	constexpr bool SHOULD_RENDER{ false };
+#endif
+
 	//Clear the entries.
 	input_stream->_Entries.Clear();
 
 	//Clear the push constant data memory.
 	input_stream->_PushConstantDataMemory.Clear();
 
-	if (!CatalystEditorSystem::Instance->IsInGame())
+	if (SHOULD_RENDER)
 	{
 		//Go through all instances.
 		for (uint64 instance_index{ 0 }; instance_index < CircleMarkerComponent::Instance->NumberOfInstances(); ++instance_index)
@@ -80,14 +83,12 @@ void GatherCircleMarkerRenderInputStream(RenderInputStream *const RESTRICT input
 		}
 	}
 }
-#endif
 
 /*
 *	Initializes this component.
 */
 void CircleMarkerComponent::Initialize() NOEXCEPT
 {
-#if defined(CATALYST_EDITOR)
 	//Register the input stream.
 	RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
 	(
@@ -102,7 +103,6 @@ void CircleMarkerComponent::Initialize() NOEXCEPT
 		RenderInputStream::Mode::DRAW,
 		nullptr
 	);
-#endif
 
 	//Add the editable fields.
 	AddEditableFloatField
