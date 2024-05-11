@@ -222,7 +222,7 @@ NO_DISCARD bool EditorContentSystem::WindowCallback(const Vector2<float32> minim
 		{
 			for (const DynamicString &texture_file : _CreateModelState._TextureFiles)
 			{
-				if (ImGui::Selectable(texture_file.Data(), _CreateModelState._DisplacementTextureFile == texture_file))
+				if (ImGui::Selectable(texture_file.Data(), _CreateModelState._DisplacementTextureFile && _CreateModelState._DisplacementTextureFile == texture_file))
 				{
 					_CreateModelState._DisplacementTextureFile = texture_file;
 				}
@@ -401,7 +401,8 @@ void EditorContentSystem::CreateModelEstimateFiles() NOEXCEPT
 	//Estimate the displacement texture file.
 	for (const DynamicString &texture_file : _CreateModelState._TextureFiles)
 	{
-		if (texture_file.Find("Displacement"))
+		if (texture_file.Find("Cavity")
+			|| texture_file.Find("Displacement"))
 		{
 			_CreateModelState._DisplacementTextureFile = texture_file;
 
@@ -434,7 +435,8 @@ void EditorContentSystem::CreateModelEstimateFiles() NOEXCEPT
 	//Estimate the ambient occlusion texture file.
 	for (const DynamicString &texture_file : _CreateModelState._TextureFiles)
 	{
-		if (texture_file.Find("AmbientOcclusion"))
+		if (texture_file.Find("AO")
+			|| texture_file.Find("AmbientOcclusion"))
 		{
 			_CreateModelState._AmbientOcclusionTextureFile = texture_file;
 
