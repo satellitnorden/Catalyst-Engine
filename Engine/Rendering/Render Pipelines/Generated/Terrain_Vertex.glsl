@@ -550,6 +550,8 @@ void main()
         normal = normalize(normal);
     }
     OutHeightMapTextureCoordinate = height_map_coordinate;
+    float displacement_multiplier = 1.0f - min(length(OutWorldPosition - CAMERA_WORLD_POSITION) / 64.0f, 1.0f);
+    if (displacement_multiplier > 0.0f)
     {
         float displacements[4];
         vec2 sample_offsets[4];
@@ -595,7 +597,7 @@ void main()
             displacements[3] * blends[3]
         );
 	    float final_displacement = displacements[highest_index];
-        OutWorldPosition += normal * mix(-0.125f, 0.1875f, final_displacement); //Slight bias for upward displacement.
+        OutWorldPosition += normal * mix(-0.125f, 0.1875f, final_displacement) * displacement_multiplier; //Slight bias for upward displacement.
     }
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

@@ -153,7 +153,11 @@ Vertex
     //Calculate the heightmap texture coordinate.
     OutHeightMapTextureCoordinate = height_map_coordinate;
 
+    //Calculate the displacement multiplier.
+    float displacement_multiplier = 1.0f - min(length(OutWorldPosition - CAMERA_WORLD_POSITION) / 64.0f, 1.0f);
+
     //Apply displacement.
+    if (displacement_multiplier > 0.0f)
     {
         //Sample the displacements.
         float displacements[4];
@@ -226,7 +230,7 @@ Vertex
 	    float final_displacement = displacements[highest_index];
 
         //Apply the displacement!
-        OutWorldPosition += normal * mix(-0.125f, 0.1875f, final_displacement); //Slight bias for upward displacement.
+        OutWorldPosition += normal * mix(-0.125f, 0.1875f, final_displacement) * displacement_multiplier; //Slight bias for upward displacement.
     }
 
     //Output the position.
