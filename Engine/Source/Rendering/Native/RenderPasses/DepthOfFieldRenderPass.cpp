@@ -14,7 +14,6 @@ DepthOfFieldRenderPass::DepthOfFieldRenderPass() NOEXCEPT
 {
 	//Register this render pass.
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::DEPTH_OF_FIELD, this);
-	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::DEPTH_OF_FIELD, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

@@ -14,7 +14,6 @@ PostSceneFeaturesRenderPass::PostSceneFeaturesRenderPass() NOEXCEPT
 {
 	//Register this render pass.
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::POST_SCENE_FEATURES, this);
-	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::POST_SCENE_FEATURES, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

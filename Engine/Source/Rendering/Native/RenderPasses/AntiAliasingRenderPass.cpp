@@ -14,7 +14,6 @@ AntiAliasingRenderPass::AntiAliasingRenderPass() NOEXCEPT
 {
 	//Register this render pass.
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::ANTI_ALIASING, this);
-	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::ANTI_ALIASING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

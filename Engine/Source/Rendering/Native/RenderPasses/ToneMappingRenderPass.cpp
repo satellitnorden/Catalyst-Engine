@@ -14,7 +14,6 @@ ToneMappingRenderPass::ToneMappingRenderPass() NOEXCEPT
 {
 	//Register this render pass.
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::TONE_MAPPING, this);
-	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::TONE_MAPPING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

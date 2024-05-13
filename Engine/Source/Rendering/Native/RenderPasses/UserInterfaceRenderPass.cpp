@@ -14,7 +14,6 @@ UserInterfaceRenderPass::UserInterfaceRenderPass() NOEXCEPT
 {
 	//Register this render pass.
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::USER_INTERFACE, this);
-	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::USER_INTERFACE, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

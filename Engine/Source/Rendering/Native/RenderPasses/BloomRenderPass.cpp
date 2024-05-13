@@ -27,7 +27,6 @@ BloomRenderPass::BloomRenderPass() NOEXCEPT
 {
 	//Register this render pass.
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::BLOOM, this);
-	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::BLOOM, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

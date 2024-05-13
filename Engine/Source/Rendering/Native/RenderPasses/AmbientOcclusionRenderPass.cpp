@@ -222,10 +222,9 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 	}
 
 	//Add the pipelines.
-	SetNumberOfPipelines(3 + _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size() + _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() + 1);
+	SetNumberOfPipelines(2 + _AmbientOcclusionSpatialDenoisingGraphicsPipelines.Size() + _AmbientOcclusionTemporalDenoisingGraphicsPipelines.Size() + 1);
 	AddPipeline(&_ScreenSpaceAmbientOcclusionGraphicsPipeline);
 	AddPipeline(&_HorizonBasedAmbientOcclusionGraphicsPipeline);
-	AddPipeline(&_AmbientOcclusionRayTracingPipeline);
 
 	for (GraphicsRenderPipeline &pipeline : _AmbientOcclusionTemporalDenoisingGraphicsPipelines)
 	{
@@ -255,8 +254,6 @@ void AmbientOcclusionRenderPass::Initialize() NOEXCEPT
 
 		_HorizonBasedAmbientOcclusionGraphicsPipeline.Initialize(parameters);
 	}
-
-	_AmbientOcclusionRayTracingPipeline.Initialize(_AmbientOcclusionRenderTarget);
 
 	{
 		GraphicsRenderPipelineInitializeParameters parameters;
@@ -346,21 +343,12 @@ void AmbientOcclusionRenderPass::Execute() NOEXCEPT
 	{
 		_ScreenSpaceAmbientOcclusionGraphicsPipeline.Execute();
 		_HorizonBasedAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
-		_AmbientOcclusionRayTracingPipeline.SetIncludeInRender(false);
 	}
 
 	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::HORIZON_BASED)
 	{
 		_ScreenSpaceAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
 		_HorizonBasedAmbientOcclusionGraphicsPipeline.Execute();
-		_AmbientOcclusionRayTracingPipeline.SetIncludeInRender(false);
-	}
-
-	else if (RenderingSystem::Instance->GetRenderingConfiguration()->GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED)
-	{
-		_ScreenSpaceAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
-		_HorizonBasedAmbientOcclusionGraphicsPipeline.SetIncludeInRender(false);
-		_AmbientOcclusionRayTracingPipeline.Execute();
 	}
 
 	if (!RenderingSystem::Instance->IsTakingScreenshot())
@@ -411,7 +399,6 @@ void AmbientOcclusionRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
 	_ScreenSpaceAmbientOcclusionGraphicsPipeline.Terminate();
-	_AmbientOcclusionRayTracingPipeline.Terminate();
 
 	for (GraphicsRenderPipeline &pipeline : _AmbientOcclusionSpatialDenoisingGraphicsPipelines)
 	{

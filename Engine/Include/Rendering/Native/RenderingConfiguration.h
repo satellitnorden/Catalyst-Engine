@@ -13,8 +13,7 @@ public:
 	{
 		NONE,
 		SCREEN_SPACE,
-		HORIZON_BASED,
-		RAY_TRACED
+		HORIZON_BASED
 	};
 
 	//Enumeration covering all ambient occlusion qualities.

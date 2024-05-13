@@ -73,8 +73,7 @@ void CameraSystem::RenderUpdate() NOEXCEPT
 	else if (	(RenderingSystem::Instance->GetRenderingConfiguration()->GetAntiAliasingMode() == RenderingConfiguration::AntiAliasingMode::TEMPORAL
 				|| RenderingSystem::Instance->GetRenderingConfiguration()->GetAntiAliasingMode() == RenderingConfiguration::AntiAliasingMode::FAST_APPROXIMATE_PLUS_TEMPORAL)
 				&& 
-				(RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::DEFAULT
-				|| RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::PATH_TRACING))
+				RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::DEFAULT)
 	{
 		current_jitter = JITTER_SAMPLES[_CurrentJitterIndex] * RenderingSystem::Instance->GetInverseScaledResolution(0);
 	}

@@ -18,7 +18,6 @@ DebugRenderingRenderPass::DebugRenderingRenderPass() NOEXCEPT
 {
 	//Register this render pass.
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::DEBUG_RENDERING, this);
-	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::DEBUG_RENDERING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

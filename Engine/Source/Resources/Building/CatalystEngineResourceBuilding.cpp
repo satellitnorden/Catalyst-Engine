@@ -1010,39 +1010,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\PathTracingRayGenerationShader";
-		parameters._ID = "PathTracingRayGenerationShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayGenerationShader.rgen";
-		parameters._Stage = ShaderStage::RAY_GENERATION;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\PathTracingRayMissShader";
-		parameters._ID = "PathTracingRayMissShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\PathTracingRayMissShader.rmiss";
-		parameters._Stage = ShaderStage::RAY_MISS;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RayTracedAmbientOcclusionRayGenerationShader";
-		parameters._ID = "RayTracedAmbientOcclusionRayGenerationShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RayTracedAmbientOcclusionRayGenerationShader.rgen";
-		parameters._Stage = ShaderStage::RAY_GENERATION;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\RenderingReferenceFragmentShader";
 		parameters._ID = "RenderingReferenceFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\RenderingReferenceFragmentShader.frag";
@@ -1098,17 +1065,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\TerrainRayClosestHitShader";
-		parameters._ID = "TerrainRayClosestHitShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\TerrainRayClosestHitShader.rchit";
-		parameters._Stage = ShaderStage::RAY_CLOSEST_HIT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ViewportVertexShader";
 		parameters._ID = "ViewportVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ViewportVertexShader.vert";
@@ -1135,17 +1091,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		parameters._ID = "VirtualRealityVertexShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VirtualRealityVertexShader.vert";
 		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\VisibilityRayMissShader";
-		parameters._ID = "VisibilityRayMissShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\VisibilityRayMissShader.rmiss";
-		parameters._Stage = ShaderStage::RAY_MISS;
 
 		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
 	}

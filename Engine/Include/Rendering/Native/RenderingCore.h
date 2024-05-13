@@ -89,7 +89,6 @@ enum class RenderingPath : uint8
 	NONE,
 
 	DEFAULT,
-	PATH_TRACING,
 	MOBILE,
 	VIRTUAL_REALITY,
 
@@ -130,32 +129,6 @@ enum class DefaultNativeRenderPassStage : uint8
 	IMGUI,
 #endif
 	SCREENSHOT_ACCUMULATION,
-	SCREEN,
-
-	NUMBER_OF_STAGES
-};
-
-/*
-*	Enumeration covering all path tracing native render pass stages.
-*	The order of the stages define in what order they will execute in.
-*/
-enum class PathTracingNativeRenderPassStage : uint8
-{
-	PATH_TRACING,
-	POST_SCENE_FEATURES,
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	DEBUG_RENDERING,
-#endif
-	DEPTH_OF_FIELD,
-	MOTION_BLUR,
-	BLOOM,
-	TONE_MAPPING,
-	ANTI_ALIASING,
-	POST_PROCESSING,
-	USER_INTERFACE,
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	IMGUI,
-#endif
 	SCREEN,
 
 	NUMBER_OF_STAGES

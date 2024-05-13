@@ -819,9 +819,7 @@ NO_DISCARD bool RenderingSystem::IsRayTracingSupported() const NOEXCEPT
 NO_DISCARD bool RenderingSystem::IsRayTracingActive() const NOEXCEPT
 {
 	return	IsRayTracingSupported() &&
-			(GetCurrentRenderingPath() == RenderingPath::PATH_TRACING
-			|| _RenderingConfiguration.GetAmbientOcclusionMode() == RenderingConfiguration::AmbientOcclusionMode::RAY_TRACED
-			|| _RenderingConfiguration.GetDiffuseIrradianceMode() == RenderingConfiguration::DiffuseIrradianceMode::RAY_TRACED
+			(_RenderingConfiguration.GetDiffuseIrradianceMode() == RenderingConfiguration::DiffuseIrradianceMode::RAY_TRACED
 			|| _RenderingConfiguration.GetIndirectLightingMode() == RenderingConfiguration::IndirectLightingMode::RAY_TRACED
 			|| _RenderingConfiguration.GetSurfaceShadowsMode() == RenderingConfiguration::SurfaceShadowsMode::RAY_TRACED
 			|| _RenderingConfiguration.GetVolumetricShadowsMode() == RenderingConfiguration::VolumetricShadowsMode::RAY_TRACED);

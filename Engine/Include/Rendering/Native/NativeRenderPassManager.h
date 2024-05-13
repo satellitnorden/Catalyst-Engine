@@ -25,14 +25,6 @@ public:
 	}
 
 	/*
-	*	Registers a render pass for the PATH_TRACING rendering path.
-	*/
-	FORCE_INLINE static void RegisterPathTracingRenderPass(const PathTracingNativeRenderPassStage stage, RenderPass *const RESTRICT render_pass) NOEXCEPT
-	{
-		GetPathTracingRenderPasses()->At(UNDERLYING(stage)) = render_pass;
-	}
-
-	/*
 	*	Registers a render pass for the MOBILE rendering path.
 	*/
 	FORCE_INLINE static void RegisterMobileRenderPass(const MobileNativeRenderPassStage stage, RenderPass *const RESTRICT render_pass) NOEXCEPT
@@ -69,18 +61,6 @@ public:
 				render_passes->Reserve(UNDERLYING(DefaultNativeRenderPassStage::NUMBER_OF_STAGES));
 
 				for (RenderPass *const RESTRICT render_pass : *GetDefaultRenderPasses())
-				{
-					render_passes->Emplace(render_pass);
-				}
-
-				break;
-			}
-
-			case RenderingPath::PATH_TRACING:
-			{
-				render_passes->Reserve(UNDERLYING(PathTracingNativeRenderPassStage::NUMBER_OF_STAGES));
-
-				for (RenderPass *const RESTRICT render_pass : *GetPathTracingRenderPasses())
 				{
 					render_passes->Emplace(render_pass);
 				}
@@ -129,16 +109,6 @@ private:
 	FORCE_INLINE NO_DISCARD static StaticArray<RenderPass *RESTRICT, UNDERLYING(DefaultNativeRenderPassStage::NUMBER_OF_STAGES)> *const RESTRICT GetDefaultRenderPasses() NOEXCEPT
 	{
 		static StaticArray<RenderPass *RESTRICT, UNDERLYING(DefaultNativeRenderPassStage::NUMBER_OF_STAGES)> render_passes;
-
-		return &render_passes;
-	}
-
-	/*
-	*	Returns the render passes for the PATH_TRACING rendering path.
-	*/
-	FORCE_INLINE NO_DISCARD static StaticArray<RenderPass *RESTRICT, UNDERLYING(PathTracingNativeRenderPassStage::NUMBER_OF_STAGES)> *const RESTRICT GetPathTracingRenderPasses() NOEXCEPT
-	{
-		static StaticArray<RenderPass *RESTRICT, UNDERLYING(PathTracingNativeRenderPassStage::NUMBER_OF_STAGES)> render_passes;
 
 		return &render_passes;
 	}

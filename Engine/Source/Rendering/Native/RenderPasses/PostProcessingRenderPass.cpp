@@ -14,7 +14,6 @@ PostProcessingRenderPass::PostProcessingRenderPass() NOEXCEPT
 {
 	//Register this render pass.
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::POST_PROCESSING, this);
-	NativeRenderPassManager::RegisterPathTracingRenderPass(PathTracingNativeRenderPassStage::POST_PROCESSING, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()
