@@ -100,6 +100,18 @@ public:
 	}
 
 	/*
+	*	Returns a random point on a sphere with the given radius.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float32> RandomPointOnSphere(const float32 radius = 1.0f) NOEXCEPT
+	{
+		const float32 theta{ RandomFloat<float32>() * BaseMathConstants::DOUBLE_PI };
+		const float32 u{ 2.0f * RandomFloat<float32>() - 1.0f };
+		const float32 r{ BaseMath::SquareRoot(1.0f - u * u) };
+
+		return Vector3<float32>(r * BaseMath::Cosine(theta), r * BaseMath::Sine(theta), u) * radius;
+	}
+
+	/*
 	*	Given one or more arguments, picks a random entry and returns it.
 	*/
 	template <typename TYPE, typename ... LIST>

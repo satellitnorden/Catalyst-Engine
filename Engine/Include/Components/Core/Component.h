@@ -206,6 +206,16 @@ protected:
 	) NOEXCEPT;
 
 	/*
+	*	Adds an editable uint64 field.
+	*/
+	void AddEditableUint64Field
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
 	*	Adds an editable vector 2 field.
 	*/
 	void AddEditableVector2Field

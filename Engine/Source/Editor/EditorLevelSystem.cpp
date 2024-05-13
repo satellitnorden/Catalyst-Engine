@@ -1533,6 +1533,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 							}
 
 							case ComponentEditableField::Type::UINT32:
+							case ComponentEditableField::Type::UINT64:
 							{
 								uint32 *const RESTRICT value{ component->EditableFieldData<uint32>(selected_entity, editable_field) };
 

@@ -126,6 +126,19 @@ public:
 	}
 
 	/*
+	*	Quaternion by Vector3<float32> multiplication operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float32> operator*(const Vector3<float32> &other) const NOEXCEPT
+	{
+		const Vector3<float32> U{ _X, _Y, _Z };
+		const float32 S{ _W };
+
+		return	2.0f * Vector3<float32>::DotProduct(U, other) * U
+				+ (S * S - Vector3<float32>::DotProduct(U, U)) * other
+				+ 2.0f * S * Vector3<float32>::CrossProduct(U, other);
+	}
+
+	/*
 	*	Returns if this quaternion is normalized or not (is a unit quaternion).
 	*/
 	FORCE_INLINE NO_DISCARD bool IsNormalized() const NOEXCEPT

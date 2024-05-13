@@ -136,6 +136,15 @@ namespace EntitySerialization
 						break;
 					}
 
+					case ComponentEditableField::Type::UINT64:
+					{
+						const uint64 *const RESTRICT data{ component->EditableFieldData<uint64>(entity, editable_field) };
+
+						component_entry[editable_field._Name] = *data;
+
+						break;
+					}
+
 					case ComponentEditableField::Type::VECTOR2:
 					{
 						const Vector2<float32> *const RESTRICT data{ component->EditableFieldData<Vector2<float32>>(entity, editable_field) };
@@ -352,6 +361,15 @@ namespace EntitySerialization
 								const uint32 value{ editable_field_entry.get<uint32>() };
 
 								stream_archive->Write(&value, sizeof(uint32));
+
+								break;
+							}
+
+							case ComponentEditableField::Type::UINT64:
+							{
+								const uint64 value{ editable_field_entry.get<uint64>() };
+
+								stream_archive->Write(&value, sizeof(uint64));
 
 								break;
 							}
@@ -602,6 +620,18 @@ namespace EntitySerialization
 						stream_archive.Read(&data, sizeof(uint32), stream_archive_position);
 
 						uint32 *const RESTRICT value{ static_cast<uint32 *const RESTRICT>(static_cast<void* const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset))) };
+
+						*value = data;
+
+						break;
+					}
+
+					case ComponentEditableField::Type::UINT64:
+					{
+						uint64 data;
+						stream_archive.Read(&data, sizeof(uint64), stream_archive_position);
+
+						uint64 *const RESTRICT value{ static_cast<uint64 *const RESTRICT>(static_cast<void *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset))) };
 
 						*value = data;
 

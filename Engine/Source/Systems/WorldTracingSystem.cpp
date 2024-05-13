@@ -27,7 +27,7 @@
 namespace WorldTracingSystemConstants
 {
 	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 1'024.0f };
-	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 3 };
+	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 2 };
 }
 
 //Discard funtions.
