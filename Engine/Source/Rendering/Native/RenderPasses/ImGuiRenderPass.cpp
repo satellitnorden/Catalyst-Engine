@@ -15,8 +15,6 @@ ImGuiRenderPass::ImGuiRenderPass() NOEXCEPT
 {
 	//Register this render pass.
 	NativeRenderPassManager::RegisterDefaultRenderPass(DefaultNativeRenderPassStage::IMGUI, this);
-	NativeRenderPassManager::RegisterMobileRenderPass(MobileNativeRenderPassStage::IMGUI, this);
-	NativeRenderPassManager::RegisterVirtualRealityRenderPass(VirtualRealityNativeRenderPassStage::IMGUI, this);
 
 	//Set the initialization function.
 	SetInitializationFunction([]()

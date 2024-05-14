@@ -89,8 +89,6 @@ enum class RenderingPath : uint8
 	NONE,
 
 	DEFAULT,
-	MOBILE,
-	VIRTUAL_REALITY,
 
 	CUSTOM,
 
@@ -130,37 +128,6 @@ enum class DefaultNativeRenderPassStage : uint8
 #endif
 	SCREENSHOT_ACCUMULATION,
 	SCREEN,
-
-	NUMBER_OF_STAGES
-};
-
-/*
-*	Enumeration covering all mobile native render pass stages.
-*	The order of the stages define in what order they will execute in.
-*/
-enum class MobileNativeRenderPassStage : uint8
-{
-	MOBILE,
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	IMGUI,
-#endif
-
-	NUMBER_OF_STAGES
-};
-
-/*
-*	Enumeration covering all virtual reality native render pass stages.
-*	The order of the stages define in what order they will execute in.
-*/
-enum class VirtualRealityNativeRenderPassStage : uint8
-{
-	VIRTUAL_REALITY,
-#if defined(CATALYST_PLATFORM_WINDOWS)
-	VIRTUAL_REALITY_VISUALIZATION,
-#endif
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	IMGUI,
-#endif
 
 	NUMBER_OF_STAGES
 };

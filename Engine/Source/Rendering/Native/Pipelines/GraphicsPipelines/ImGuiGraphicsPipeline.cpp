@@ -47,18 +47,10 @@ void ImGuiGraphicsPipeline::Initialize() NOEXCEPT
 	SetFragmentShader(ResourceSystem::Instance->GetShaderResource(HashString("EditorUserInterfaceFragmentShader"))->_Handle);
 
 	//Add the output render targets.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::MOBILE)
-	{
-		SetIsRenderingDirectlyToScreen(true);
-	}
-	
-	else
-	{
-		SetIsRenderingDirectlyToScreen(false);
+	SetIsRenderingDirectlyToScreen(false);
 
-		SetNumberOfOutputRenderTargets(1);
-		AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
-	}
+	SetNumberOfOutputRenderTargets(1);
+	AddOutputRenderTarget(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
