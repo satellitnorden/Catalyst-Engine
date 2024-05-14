@@ -117,7 +117,6 @@ enum class DefaultNativeRenderPassStage : uint8
 	BLOOM,
 	TONE_MAPPING,
 	ANTI_ALIASING,
-	DEPTH_OF_FIELD,
 	POST_PROCESSING,
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DEBUG,

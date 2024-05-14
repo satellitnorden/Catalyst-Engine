@@ -900,39 +900,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	{
 		ShaderBuildParameters parameters;
 
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DepthOfFieldApplicationFragmentShader";
-		parameters._ID = "DepthOfFieldApplicationFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldApplicationFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DepthOfFieldBokehBlurFragmentShader";
-		parameters._ID = "DepthOfFieldBokehBlurFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldBokehBlurFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\DepthOfFieldFloodfillBlurFragmentShader";
-		parameters._ID = "DepthOfFieldFloodfillBlurFragmentShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\DepthOfFieldFloodfillBlurFragmentShader.frag";
-		parameters._Stage = ShaderStage::FRAGMENT;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-
-	{
-		ShaderBuildParameters parameters;
-
 		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\EditorUserInterfaceFragmentShader";
 		parameters._ID = "EditorUserInterfaceFragmentShader";
 		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\EditorUserInterfaceFragmentShader.frag";
