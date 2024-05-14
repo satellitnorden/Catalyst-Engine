@@ -8,22 +8,6 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 
-//TEMP
-#include <Systems/InputSystem.h>
-
-bool USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING{ true };
-
-void UpdateIndirectLightingOptions()
-{
-	if (InputSystem::Instance->GetKeyboardState(InputLayer::GAME)->GetButtonState(KeyboardButton::F1) == ButtonState::PRESSED)
-	{
-		USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING = !USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING;
-
-		PRINT_TO_OUTPUT("Indirect lighting temporal denoising is now %s", (USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING ? "on." : "off"));
-	}
-}
-//TEMP
-
 /*
 *	Default constructor.
 */
@@ -49,21 +33,6 @@ IndirectLightingRenderPass::IndirectLightingRenderPass() NOEXCEPT
 	{
 		IndirectLightingRenderPass::Instance->Terminate();
 	});
-
-	//Reset the previous scene mip chain.
-	for (uint64 i{ 0 }; i < _PreviousSceneMipChain.Size(); ++i)
-	{
-		_PreviousSceneMipChain[i] = EMPTY_HANDLE;
-	}
-
-	//Reset the temporal reprojection buffer.
-	_TemporalReprojectionBuffer = EMPTY_HANDLE;
-
-	//Reset the temporal indirect lighting buffers.
-	for (uint8 i{ 0 }; i < 2; ++i)
-	{
-		_TemporalIndirectLightingBuffers[i] = EMPTY_HANDLE;
-	}
 }
 
 /*
@@ -74,130 +43,10 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
-	//Create the specular bias lookup texture.
-	{
-		//Retrieve the data.
-		ResourcePointer<RawDataResource> data{ ResourceSystem::Instance->GetRawDataResource(HashString("Specular_Bias_Lookup_Texture_Raw_Data")) };
-
-		//Create the texture.
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(static_cast<float32 *const RESTRICT>(static_cast<void *const RESTRICT>(data->_Data.Data())), 512, 512, 1, 2), TextureFormat::RG_FLOAT32, TextureUsage::NONE, false), &_SpecularBiasLookupTexture);
-
-		//Add the texture to the global render data.
-		_SpecularBiasLookupTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(_SpecularBiasLookupTexture);
-	}
-
-	//Create the appropriate render targets.
-	if (_CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
-	{
-		//Create the previous scene mip chain.
-		if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
-		{
-			_PreviousSceneMipChain[0] = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::PREVIOUS_SCENE);
-
-			for (uint8 i{ 1 }; i < _PreviousSceneMipChain.Size(); ++i)
-			{
-				RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(i), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_PreviousSceneMipChain[i]);
-			}
-		}
-
-		//Create the temporal reprojection buffer.
-		RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RG_FLOAT16, SampleCount::SAMPLE_COUNT_1, &_TemporalReprojectionBuffer);
-
-		//Create the temporal indirect lighting buffers.
-		for (uint8 i{ 0 }; i < 2; ++i)
-		{
-			RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_TemporalIndirectLightingBuffers[i]);
-		}
-	}
-
 	//Add the pipelines.
-	SetNumberOfPipelines(1 + _PreviousSceneResampleGraphicsPipelines.Size() + 1 + 1 + _IndirectLightingTemporalDenoisingGraphicsPipelines.Size() + 1);
-
-	if (_CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
-	{
-		if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
-		{
-			AddPipeline(&_ScreenSpaceIndirectLightingGraphicsPipeline);
-
-			for (ResampleGraphicsPipeline &pipeline : _PreviousSceneResampleGraphicsPipelines)
-			{
-				AddPipeline(&pipeline);
-			}
-
-			AddPipeline(&_ScreenSpaceIndirectLightingResolveGraphicsPipeline);
-		}
-		
-		for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
-		{
-			AddPipeline(&pipeline);
-		}
-	}
+	SetNumberOfPipelines(1);
 
 	AddPipeline(&_IndirectLightingPipeline);
-
-	//Initialize all pipelines.
-	if (_CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
-	{
-		if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
-		{
-			_ScreenSpaceIndirectLightingGraphicsPipeline.Initialize(_CurrentIndirectLightingQuality);
-
-			for (uint8 i{ 0 }; i < PREVIOUS_SCENE_MIP_CHAIN_SIZE - 1; ++i)
-			{
-				_PreviousSceneResampleGraphicsPipelines[i].Initialize
-				(
-					_PreviousSceneMipChain[i],
-					_PreviousSceneMipChain[i + 1],
-					Vector2<float32>(1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(i)._Width), 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(i)._Height)),
-					RenderingSystem::Instance->GetScaledResolution(i + 1),
-					false
-				);
-			}
-
-			switch (_CurrentIndirectLightingQuality)
-			{
-				case RenderingConfiguration::IndirectLightingQuality::LOW:
-				{
-					_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Initialize
-					(
-						RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-						RenderingSystem::Instance->GetScaledResolution(1),
-						_TemporalReprojectionBuffer
-					);
-
-					break;
-				}
-
-				case RenderingConfiguration::IndirectLightingQuality::HIGH:
-				{
-					_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Initialize
-					(
-						RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_1),
-						RenderingSystem::Instance->GetScaledResolution(0),
-						_TemporalReprojectionBuffer
-					);
-
-					break;
-				}
-
-				default:
-				{
-					ASSERT(false, "Invalid case!");
-
-					break;
-				}
-			}
-		}
-
-		//Initialize the temporal denoising graphics pipelines.
-		_IndirectLightingTemporalDenoisingGraphicsPipelines[0].Initialize(	_TemporalReprojectionBuffer,
-																			_TemporalIndirectLightingBuffers[0],
-																			_TemporalIndirectLightingBuffers[1]);
-		_IndirectLightingTemporalDenoisingGraphicsPipelines[1].Initialize(	_TemporalReprojectionBuffer,
-																			_TemporalIndirectLightingBuffers[1],
-																			_TemporalIndirectLightingBuffers[0]);
-	}
-
 	_IndirectLightingPipeline.Initialize();
 }
 
@@ -206,69 +55,8 @@ void IndirectLightingRenderPass::Initialize() NOEXCEPT
 */
 void IndirectLightingRenderPass::Execute() NOEXCEPT
 {	
-	//UpdateIndirectLightingOptions();
-
-	//Check the indirect lighting mode/quality.
-	{
-		_PreviousIndirectLightingMode = _CurrentIndirectLightingMode;
-		_CurrentIndirectLightingMode = RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingMode();
-
-		_PreviousIndirectLightingQuality = _CurrentIndirectLightingQuality;
-		_CurrentIndirectLightingQuality = RenderingSystem::Instance->GetRenderingConfiguration()->GetIndirectLightingQuality();
-	
-		//Was indirect lighting settings changed?
-		if (_PreviousIndirectLightingMode != _CurrentIndirectLightingMode
-			|| _PreviousIndirectLightingQuality != _CurrentIndirectLightingQuality)
-		{
-			Terminate();
-			RenderingSystem::Instance->TerminateRenderPass(this);
-
-			Initialize();
-		}
-	}
-
 	//Execute all pipelines.
-	if (_CurrentIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
-	{
-		_ScreenSpaceIndirectLightingGraphicsPipeline.Execute();
-
-		for (ResampleGraphicsPipeline &pipeline : _PreviousSceneResampleGraphicsPipelines)
-		{
-			pipeline.Execute();
-		}
-
-		_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Execute();
-	}
-
-	if (USE_INDIRECT_LIGHTING_TEMPORAL_DENOISING
-		&& _CurrentIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
-	{
-		for (uint8 i{ 0 }; i < 2; ++i)
-		{
-			if (i == _CurrentTemporalBufferIndex)
-			{
-				_IndirectLightingTemporalDenoisingGraphicsPipelines[i].Execute();
-			}
-
-			else
-			{
-				_IndirectLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
-			}
-		}
-	}
-
-	else
-	{
-		for (uint8 i{ 0 }; i < 2; ++i)
-		{
-			_IndirectLightingTemporalDenoisingGraphicsPipelines[i].SetIncludeInRender(false);
-		}
-	}
-
 	_IndirectLightingPipeline.Execute();
-
-	//Update the current buffer index.
-	_CurrentTemporalBufferIndex ^= static_cast<uint8>(1);
 }
 
 /*
@@ -277,55 +65,5 @@ void IndirectLightingRenderPass::Execute() NOEXCEPT
 void IndirectLightingRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines
-	if (_PreviousIndirectLightingMode == RenderingConfiguration::IndirectLightingMode::SCREEN_SPACE)
-	{
-		_ScreenSpaceIndirectLightingGraphicsPipeline.Terminate();
-
-		for (ResampleGraphicsPipeline &pipeline : _PreviousSceneResampleGraphicsPipelines)
-		{
-			pipeline.Terminate();
-		}
-
-		_ScreenSpaceIndirectLightingResolveGraphicsPipeline.Terminate();
-	}
-
-	if (_PreviousIndirectLightingMode != RenderingConfiguration::IndirectLightingMode::NONE)
-	{
-		for (IndirectLightingTemporalDenoisingGraphicsPipeline &pipeline : _IndirectLightingTemporalDenoisingGraphicsPipelines)
-		{
-			pipeline.Terminate();
-		}
-	}
-
 	_IndirectLightingPipeline.Terminate();
-
-	//Destroy the previous scene mip chain.
-	for (uint64 i{ 1 }; i < _PreviousSceneMipChain.Size(); ++i)
-	{
-		if (_PreviousSceneMipChain[i])
-		{
-			RenderingSystem::Instance->DestroyRenderTarget(&_PreviousSceneMipChain[i]);
-			_PreviousSceneMipChain[i] = EMPTY_HANDLE;
-		}
-	}
-
-	//Destroy the temporal reprojection buffer.
-	if (_TemporalReprojectionBuffer)
-	{
-		RenderingSystem::Instance->DestroyRenderTarget(&_TemporalReprojectionBuffer);
-	}
-
-	//Destroy the temporal indirect lighting buffers.
-	for (uint8 i{ 0 }; i < 2; ++i)
-	{
-		if (_TemporalIndirectLightingBuffers[i])
-		{
-			RenderingSystem::Instance->DestroyRenderTarget(&_TemporalIndirectLightingBuffers[i]);
-			_TemporalIndirectLightingBuffers[i] = EMPTY_HANDLE;
-		}
-	}
-
-	//Destroy the specular bias lookup texture.
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_SpecularBiasLookupTextureIndex);
-	RenderingSystem::Instance->DestroyTexture2D(&_SpecularBiasLookupTexture);
 }

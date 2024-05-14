@@ -6,7 +6,6 @@
 
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/AnimatedModelSceneFeaturesGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 //Systems.
@@ -53,9 +52,6 @@ private:
 
 	//The user interface 3D pipeline.
 	GraphicsRenderPipeline _UserInterface3DPipeline{ HashString("UserInterface_RenderPipeline") };
-
-	//The animated model scene features graphics pipeline.
-	AnimatedModelSceneFeaturesGraphicsPipeline _AnimatedModelSceneFeaturesGraphicsPipeline;
 
 	//The velocity graphics pipeline.
 	GraphicsRenderPipeline _VelocityGraphicsPipeline{ HashString("Velocity_RenderPipeline") };

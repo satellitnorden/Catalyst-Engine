@@ -65,7 +65,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 
 	AddPipeline(&_UserInterface3DPipeline);
 
-	AddPipeline(&_AnimatedModelSceneFeaturesGraphicsPipeline);
 	AddPipeline(&_VelocityGraphicsPipeline);
 
 	//Initialize all pipelines.
@@ -85,7 +84,6 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		_UserInterface3DPipeline.Initialize(parameters);
 	}
 
-	_AnimatedModelSceneFeaturesGraphicsPipeline.Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_DEPTH_BUFFER));
 	_VelocityGraphicsPipeline.Initialize();
 }
 
@@ -111,8 +109,6 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 	}
 
 	_UserInterface3DPipeline.Execute();
-
-	_AnimatedModelSceneFeaturesGraphicsPipeline.Execute();
 	_VelocityGraphicsPipeline.Execute();
 }
 
@@ -128,7 +124,5 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 	}
 
 	_UserInterface3DPipeline.Terminate();
-
-	_AnimatedModelSceneFeaturesGraphicsPipeline.Terminate();
 	_VelocityGraphicsPipeline.Terminate();
 }
