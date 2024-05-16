@@ -80,50 +80,20 @@ public:
 	//The input render targets.
 	DynamicArray<Pair<HashString, SamplerProperties>> _InputRenderTargets;
 
-	//The output depth buffer.
-	HashString _OutputDepthBuffer;
-
 	//The output render targets.
 	DynamicArray<HashString> _OutputRenderTargets;
-
-	//The render resolution.
-	HashString _RenderResolution;
-
-	//The color load operator.
-	AttachmentLoadOperator _ColorLoadOperator;
-
-	//The color store operator.
-	AttachmentStoreOperator _ColorStoreOperator;
-
-	//The depth/stencil load operator.
-	AttachmentLoadOperator _DepthStencilLoadOperator;
-
-	//The depth/stencil store operator.
-	AttachmentStoreOperator _DepthStencilStoreOperator;
-
-	//Denotes whether or not blend is enabled.
-	bool _BlendEnabled{ false };
-
-	//The blend color source factor.
-	BlendFactor _BlendColorSourceFactor{ BlendFactor::SourceAlpha };
-
-	//The blend color destination factor.
-	BlendFactor _BlendColorDestinationFactor{ BlendFactor::OneMinusSourceAlpha };
 
 	//The blend color operator.
 	BlendOperator _BlendColorOperator{ BlendOperator::ADD };
 
 	//The blend alpha source factor.
-	BlendFactor _BlendAlphaSourceFactor{ BlendFactor::SourceAlpha };
+	BlendFactor _BlendAlphaSourceFactor{ BlendFactor::SOURCE_ALPHA };
 
 	//The blend alpha destination factor.
-	BlendFactor _BlendAlphaDestinationFactor{ BlendFactor::OneMinusSourceAlpha };
+	BlendFactor _BlendAlphaDestinationFactor{ BlendFactor::ONE_MINUS_SOURCE_ALPHA };
 
 	//The blend alpha operator.
 	BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
-
-	//The cull mode.
-	CullMode _CullMode;
 
 	//Denotes whether or not depth test is enabled.
 	bool _DepthTestEnabled;

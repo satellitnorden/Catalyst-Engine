@@ -284,7 +284,7 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 
 					DiffuseIrradianceSpatialDenoisingPushConstantData push_constant_data;
 
-					push_constant_data._Stride = 1 + (i / 2);
+					push_constant_data._Stride = static_cast<int32>(1 + (i / 2));
 					push_constant_data._Direction = BaseMath::IsEven(i) ? 0 : 1;
 
 					GraphicsRenderPipelineExecuteParameters parameters;

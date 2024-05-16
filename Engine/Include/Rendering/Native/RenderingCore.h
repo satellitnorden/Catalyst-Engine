@@ -163,16 +163,16 @@ enum class AttachmentStoreOperator : uint8
 //Enumeration covering all blend factors.
 enum class BlendFactor : uint8
 {
-	Zero,
-	One,
-	SourceColor,
-	OneMinusSourceColor,
-	DestinationColor,
-	OneMinusDestinationColor,
-	SourceAlpha,
-	OneMinusSourceAlpha,
-	DestinationAlpha,
-	OneMinusDestinationAlpha,
+	ZERO,
+	ONE,
+	SOURCE_COLOR,
+	ONE_MINUS_SOURCE_COLOR,
+	DESTINATION_COLOR,
+	ONE_MINUS_DESTINATION_COLOR,
+	SOURCE_ALPHA,
+	ONE_MINUS_SOURCE_ALPHA,
+	DESTINATION_ALPHA,
+	ONE_MINUS_DESTINATION_ALPHA
 };
 
 //Enumeration covering all blender operators.
@@ -249,10 +249,10 @@ enum class CompareOperator : uint8
 //Enumeration covering all cull modes.
 enum class CullMode : uint8
 {
-	None,
-	Back,
-	Front,
-	FrontAndBack
+	NONE,
+	BACK,
+	FRONT,
+	FRONT_AND_BACK
 };
 
 //Enumeration covering all image layouts.

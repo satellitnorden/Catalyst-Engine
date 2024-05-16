@@ -153,7 +153,7 @@ void BloomRenderPass::Initialize() NOEXCEPT
 			}
 		}
 
-		parameters._RenderResolution = RenderingSystem::Instance->GetScaledResolution(i + 1);
+		parameters._RenderResolution = RenderingSystem::Instance->GetScaledResolution(static_cast<uint8>(i + 1));
 
 		_BloomDownsamplePipelines[i].Initialize(parameters);
 	}
@@ -204,7 +204,7 @@ void BloomRenderPass::Initialize() NOEXCEPT
 			}
 		}
 
-		parameters._RenderResolution = RenderingSystem::Instance->GetScaledResolution(4 - i);
+		parameters._RenderResolution = RenderingSystem::Instance->GetScaledResolution(static_cast<uint8>(4 - i));
 
 		_BloomUpsamplePipelines[i].Initialize(parameters);
 	}
@@ -235,8 +235,8 @@ void BloomRenderPass::Execute() NOEXCEPT
 	{
 		BloomDownsamplePushConstantData push_constant_data;
 
-		push_constant_data._InverseSourceResolution._X = 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(i)._Width);
-		push_constant_data._InverseSourceResolution._Y = 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(i)._Height);
+		push_constant_data._InverseSourceResolution._X = 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(static_cast<uint8>(i))._Width);
+		push_constant_data._InverseSourceResolution._Y = 1.0f / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(static_cast<uint8>(i))._Height);
 
 		GraphicsRenderPipelineExecuteParameters parameters;
 

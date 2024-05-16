@@ -128,16 +128,16 @@ public:
 	{
 		switch (blendFactor)
 		{
-			case BlendFactor::Zero: return VkBlendFactor::VK_BLEND_FACTOR_ZERO;
-			case BlendFactor::One: return VkBlendFactor::VK_BLEND_FACTOR_ONE;
-			case BlendFactor::SourceColor: return VkBlendFactor::VK_BLEND_FACTOR_SRC_COLOR;
-			case BlendFactor::OneMinusSourceColor: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
-			case BlendFactor::DestinationColor: return VkBlendFactor::VK_BLEND_FACTOR_DST_COLOR;
-			case BlendFactor::OneMinusDestinationColor: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
-			case BlendFactor::SourceAlpha: return VkBlendFactor::VK_BLEND_FACTOR_SRC_ALPHA;
-			case BlendFactor::OneMinusSourceAlpha: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-			case BlendFactor::DestinationAlpha: return VkBlendFactor::VK_BLEND_FACTOR_DST_ALPHA;
-			case BlendFactor::OneMinusDestinationAlpha: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+			case BlendFactor::ZERO: return VkBlendFactor::VK_BLEND_FACTOR_ZERO;
+			case BlendFactor::ONE: return VkBlendFactor::VK_BLEND_FACTOR_ONE;
+			case BlendFactor::SOURCE_COLOR: return VkBlendFactor::VK_BLEND_FACTOR_SRC_COLOR;
+			case BlendFactor::ONE_MINUS_SOURCE_COLOR: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+			case BlendFactor::DESTINATION_COLOR: return VkBlendFactor::VK_BLEND_FACTOR_DST_COLOR;
+			case BlendFactor::ONE_MINUS_DESTINATION_COLOR: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+			case BlendFactor::SOURCE_ALPHA: return VkBlendFactor::VK_BLEND_FACTOR_SRC_ALPHA;
+			case BlendFactor::ONE_MINUS_SOURCE_ALPHA: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			case BlendFactor::DESTINATION_ALPHA: return VkBlendFactor::VK_BLEND_FACTOR_DST_ALPHA;
+			case BlendFactor::ONE_MINUS_DESTINATION_ALPHA: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
 
 			default:
 			{
@@ -219,10 +219,10 @@ public:
 		switch (cullMode)
 		{
 			default: return VK_CULL_MODE_NONE;
-			case CullMode::None: return VK_CULL_MODE_NONE;
-			case CullMode::Back: return VK_CULL_MODE_BACK_BIT;
-			case CullMode::Front: return VK_CULL_MODE_FRONT_BIT;
-			case CullMode::FrontAndBack: return VK_CULL_MODE_FRONT_AND_BACK;
+			case CullMode::NONE: return VK_CULL_MODE_NONE;
+			case CullMode::BACK: return VK_CULL_MODE_BACK_BIT;
+			case CullMode::FRONT: return VK_CULL_MODE_FRONT_BIT;
+			case CullMode::FRONT_AND_BACK: return VK_CULL_MODE_FRONT_AND_BACK;
 		}
 	}
 

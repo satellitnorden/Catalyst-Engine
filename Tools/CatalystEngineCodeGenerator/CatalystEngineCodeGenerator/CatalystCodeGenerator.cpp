@@ -15,6 +15,9 @@ void CatalystCodeGenerator::Run(int32 command_line_argument_count, char *command
 	//Likewise, the user interface generator might generate code that might be basis for further code generation, so run that before as well.
 	_UserInterfaceGenerator.Run();
 
+	//Run the render pipeline generator.
+	_RenderPipelineGenerator.Run();
+
 	//Run the component generator.
 	_ComponentGenerator.Run();
 

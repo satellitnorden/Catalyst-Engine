@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Native/CommandBuffer.h>
+#include <Rendering/Native/RenderPipelineInformation.h>
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
@@ -17,6 +18,10 @@
 */
 void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializeParameters &parameters) NOEXCEPT
 {
+	//Retrieve the graphics render pipeline information.
+	GraphicsRenderPipelineInformation graphics_render_pipeline_information;
+	RenderPipelineInformation::RetrieveGraphicsRenderPipelineInformation(_RenderPipelineIdentifier, &graphics_render_pipeline_information);
+
 	//Retrieve the render pipeline resource.
 	_RenderPipelineResource = ResourceSystem::Instance->GetRenderPipelineResource(_RenderPipelineIdentifier);
 
@@ -165,18 +170,18 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 	SetFragmentShader(_RenderPipelineResource->_FragmentShaderHandle);
 
 	//Set the depth buffer.
-	if (_RenderPipelineResource->_OutputDepthBuffer)
+	if (graphics_render_pipeline_information._OutputDepthBuffer)
 	{
 		DepthBufferHandle depth_buffer{ EMPTY_HANDLE };
 
-		if (parameters._DepthBuffer.Valid() && parameters._DepthBuffer.Get()._First == _RenderPipelineResource->_OutputDepthBuffer)
+		if (parameters._DepthBuffer.Valid() && parameters._DepthBuffer.Get()._First == graphics_render_pipeline_information._OutputDepthBuffer)
 		{
 			depth_buffer = parameters._DepthBuffer.Get()._Second;
 		}
 
 		else
 		{
-			depth_buffer = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(_RenderPipelineResource->_OutputDepthBuffer);
+			depth_buffer = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(graphics_render_pipeline_information._OutputDepthBuffer);
 		}
 
 		SetDepthBuffer(depth_buffer);
@@ -236,17 +241,17 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 		SetRenderResolution(parameters._RenderResolution.Get());
 	}
 	
-	else if (_RenderPipelineResource->_RenderResolution == HashString("MAIN_FULL"))
+	else if (graphics_render_pipeline_information._RenderResolution == HashString("MAIN_FULL"))
 	{
 		SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(0));
 	}
 
-	else if (_RenderPipelineResource->_RenderResolution == HashString("MAIN_HALF"))
+	else if (graphics_render_pipeline_information._RenderResolution == HashString("MAIN_HALF"))
 	{
 		SetRenderResolution(RenderingSystem::Instance->GetScaledResolution(1));
 	}
 
-	else if (_RenderPipelineResource->_RenderResolution == HashString("SHADOW_MAP"))
+	else if (graphics_render_pipeline_information._RenderResolution == HashString("SHADOW_MAP"))
 	{
 		SetRenderResolution(Resolution(CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ShadowMapResolution));
 	}
@@ -300,18 +305,18 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 	}
 
 	//Set the properties of the render pass.
-	SetDepthStencilAttachmentLoadOperator(_RenderPipelineResource->_DepthStencilLoadOperator);
-	SetDepthStencilAttachmentStoreOperator(_RenderPipelineResource->_DepthStencilStoreOperator);
-	SetColorAttachmentLoadOperator(_RenderPipelineResource->_ColorLoadOperator);
-	SetColorAttachmentStoreOperator(_RenderPipelineResource->_ColorStoreOperator);
-	SetBlendEnabled(_RenderPipelineResource->_BlendEnabled);
-	SetBlendFactorSourceColor(_RenderPipelineResource->_BlendColorSourceFactor);
-	SetBlendFactorDestinationColor(_RenderPipelineResource->_BlendColorDestinationFactor);
+	SetColorAttachmentLoadOperator(graphics_render_pipeline_information._ColorLoadOperator);
+	SetColorAttachmentStoreOperator(graphics_render_pipeline_information._ColorStoreOperator);
+	SetDepthStencilAttachmentLoadOperator(graphics_render_pipeline_information._DepthStencilLoadOperator);
+	SetDepthStencilAttachmentStoreOperator(graphics_render_pipeline_information._DepthStencilStoreOperator);
+	SetBlendEnabled(graphics_render_pipeline_information._BlendEnabled);
+	SetBlendFactorSourceColor(graphics_render_pipeline_information._BlendColorSourceFactor);
+	SetBlendFactorDestinationColor(graphics_render_pipeline_information._BlendColorDestinationFactor);
 	SetColorBlendOperator(_RenderPipelineResource->_BlendColorOperator);
 	SetBlendFactorSourceAlpha(_RenderPipelineResource->_BlendAlphaSourceFactor);
 	SetBlendFactorDestinationAlpha(_RenderPipelineResource->_BlendAlphaDestinationFactor);
 	SetAlphaBlendOperator(_RenderPipelineResource->_BlendAlphaOperator);
-	SetCullMode(_RenderPipelineResource->_CullMode);
+	SetCullMode(graphics_render_pipeline_information._CullMode);
 	SetDepthTestEnabled(parameters._DepthTestEnabled.Valid() ? parameters._DepthTestEnabled.Get() : _RenderPipelineResource->_DepthTestEnabled);
 	SetDepthWriteEnabled(_RenderPipelineResource->_DepthWriteEnabled);
 	SetDepthCompareOperator(_RenderPipelineResource->_DepthCompareOperator);

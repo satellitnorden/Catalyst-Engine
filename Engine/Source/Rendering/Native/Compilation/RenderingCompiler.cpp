@@ -115,7 +115,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 0
+#if 1
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -277,50 +277,20 @@ public:
 	//The input render targets.
 	DynamicArray<InputRenderTarget> _InputRenderTargets;
 
-	//The output depth buffers.
-	DynamicString _OutputDepthBuffer;
-
 	//The output render targets.
 	DynamicArray<DynamicString> _OutputRenderTargets;
-
-	//The render resolution.
-	HashString _RenderResolution;
-
-	//The color load operator.
-	AttachmentLoadOperator _ColorLoadOperator{ AttachmentLoadOperator::DONT_CARE };
-
-	//The color store operator.
-	AttachmentStoreOperator _ColorStoreOperator{ AttachmentStoreOperator::DONT_CARE };
-
-	//The depth/stencil load operator.
-	AttachmentLoadOperator _DepthStencilLoadOperator{ AttachmentLoadOperator::DONT_CARE };
-
-	//The depth/stencil store operator.
-	AttachmentStoreOperator _DepthStencilStoreOperator{ AttachmentStoreOperator::DONT_CARE };
-
-	//Denotes whether or not blend is enabled.
-	bool _BlendEnabled{ false };
-
-	//The blend color source factor.
-	BlendFactor _BlendColorSourceFactor{ BlendFactor::SourceAlpha };
-
-	//The blend color destination factor.
-	BlendFactor _BlendColorDestinationFactor{ BlendFactor::OneMinusSourceAlpha };
 
 	//The blend color operator.
 	BlendOperator _BlendColorOperator{ BlendOperator::ADD };
 
 	//The blend alpha source factor.
-	BlendFactor _BlendAlphaSourceFactor{ BlendFactor::SourceAlpha };
+	BlendFactor _BlendAlphaSourceFactor{ BlendFactor::SOURCE_ALPHA };
 
 	//The blend alpha destination factor.
-	BlendFactor _BlendAlphaDestinationFactor{ BlendFactor::OneMinusSourceAlpha };
+	BlendFactor _BlendAlphaDestinationFactor{ BlendFactor::ONE_MINUS_SOURCE_ALPHA };
 
 	//The blend alpha operator.
 	BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
-
-	//The cull mode.
-	CullMode _CullMode{ CullMode::None };
 
 	//Denotes whether or not depth test is enabled.
 	bool _DepthTestEnabled{ false };
@@ -2615,23 +2585,6 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 				}
 			}
 
-			//Is this an output depth buffer declaration?
-			{
-				const size_t output_depth_buffer_position{ current_line.find("OutputDepthBuffer") };
-
-				if (output_depth_buffer_position != std::string::npos)
-				{
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&render_pipeline_information._OutputDepthBuffer
-					);
-
-					continue;
-				}
-			}
-
 			//Is this an output render target declaration?
 			{
 				const size_t output_render_target_position{ current_line.find("OutputRenderTarget") };
@@ -2646,333 +2599,6 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 						current_line.length(),
 						&render_pipeline_information._OutputRenderTargets.Back()
 					);
-
-					continue;
-				}
-			}
-
-			//Is this a render resolution declaration?
-			{
-				const size_t position{ current_line.find("RenderResolution") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString argument;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&argument
-					);
-
-					render_pipeline_information._RenderResolution = HashString(argument.Data());
-
-					continue;
-				}
-			}
-
-			//Is this a color load operator declaration?
-			{
-				const size_t position{ current_line.find("ColorLoadOperator") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "LOAD")
-					{
-						render_pipeline_information._ColorLoadOperator = AttachmentLoadOperator::LOAD;
-					}
-
-					else if (string == "CLEAR")
-					{
-						render_pipeline_information._ColorLoadOperator = AttachmentLoadOperator::CLEAR;
-					}
-
-					else if (string == "DONT_CARE")
-					{
-						render_pipeline_information._ColorLoadOperator = AttachmentLoadOperator::DONT_CARE;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
-
-					continue;
-				}
-			}
-
-			//Is this a color store operator declaration?
-			{
-				const size_t position{ current_line.find("ColorStoreOperator") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "STORE")
-					{
-						render_pipeline_information._ColorStoreOperator = AttachmentStoreOperator::STORE;
-					}
-
-					else if (string == "DONT_CARE")
-					{
-						render_pipeline_information._ColorStoreOperator = AttachmentStoreOperator::DONT_CARE;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
-
-					continue;
-				}
-			}
-
-			//Is this a depth/stencil load operator declaration?
-			{
-				const size_t position{ current_line.find("DepthStencilLoadOperator") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "LOAD")
-					{
-						render_pipeline_information._DepthStencilLoadOperator = AttachmentLoadOperator::LOAD;
-					}
-
-					else if (string == "CLEAR")
-					{
-						render_pipeline_information._DepthStencilLoadOperator = AttachmentLoadOperator::CLEAR;
-					}
-
-					else if (string == "DONT_CARE")
-					{
-						render_pipeline_information._DepthStencilLoadOperator = AttachmentLoadOperator::DONT_CARE;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
-
-					continue;
-				}
-			}
-
-			//Is this a depth/stencil store operator declaration?
-			{
-				const size_t position{ current_line.find("DepthStencilStoreOperator") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "STORE")
-					{
-						render_pipeline_information._DepthStencilStoreOperator = AttachmentStoreOperator::STORE;
-					}
-
-					else if (string == "DONT_CARE")
-					{
-						render_pipeline_information._DepthStencilStoreOperator = AttachmentStoreOperator::DONT_CARE;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
-
-					continue;
-				}
-			}
-
-			//Is this a blend enable declaration?
-			{
-				const size_t position{ current_line.find("BlendEnable") };
-
-				if (position != std::string::npos)
-				{
-					render_pipeline_information._BlendEnabled = true;
-
-					continue;
-				}
-			}
-
-			//Is this a blend color source factor declaration?
-			{
-				const size_t position{ current_line.find("BlendColorSourceFactor") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "ZERO")
-					{
-						render_pipeline_information._BlendColorSourceFactor = BlendFactor::Zero;
-					}
-
-					else if (string == "ONE")
-					{
-						render_pipeline_information._BlendColorSourceFactor = BlendFactor::One;
-					}
-
-					else if (string == "SOURCE_COLOR")
-					{
-						render_pipeline_information._BlendColorSourceFactor = BlendFactor::SourceColor;
-					}
-
-					else if (string == "ONE_MINUS_SOURCE_COLOR")
-					{
-						render_pipeline_information._BlendColorSourceFactor = BlendFactor::OneMinusSourceColor;
-					}
-
-					else if (string == "DESTINATION_COLOR")
-					{
-						render_pipeline_information._BlendColorSourceFactor = BlendFactor::DestinationColor;
-					}
-
-					else if (string == "ONE_MINUS_DESTINATION_COLOR")
-					{
-						render_pipeline_information._BlendColorSourceFactor = BlendFactor::OneMinusDestinationColor;
-					}
-
-					else if (string == "SOURCE_ALPHA")
-					{
-						render_pipeline_information._BlendColorSourceFactor = BlendFactor::SourceAlpha;
-					}
-
-					else if (string == "ONE_MINUS_SOURCE_ALPHA")
-					{
-						render_pipeline_information._BlendColorSourceFactor = BlendFactor::OneMinusSourceAlpha;
-					}
-
-					else if (string == "DESTINATION_ALPHA")
-					{
-						render_pipeline_information._BlendColorSourceFactor = BlendFactor::DestinationAlpha;
-					}
-
-					else if (string == "ONE_MINUS_DESTINATION_ALPHA")
-					{
-						render_pipeline_information._BlendColorSourceFactor = BlendFactor::OneMinusDestinationAlpha;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
-
-					continue;
-				}
-			}
-
-			//Is this a blend color destination factor declaration?
-			{
-				const size_t position{ current_line.find("BlendColorDestinationFactor") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "ZERO")
-					{
-						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::Zero;
-					}
-
-					else if (string == "ONE")
-					{
-						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::One;
-					}
-
-					else if (string == "SOURCE_COLOR")
-					{
-						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::SourceColor;
-					}
-
-					else if (string == "ONE_MINUS_SOURCE_COLOR")
-					{
-						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::OneMinusSourceColor;
-					}
-
-					else if (string == "DESTINATION_COLOR")
-					{
-						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::DestinationColor;
-					}
-
-					else if (string == "ONE_MINUS_DESTINATION_COLOR")
-					{
-						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::OneMinusDestinationColor;
-					}
-
-					else if (string == "SOURCE_ALPHA")
-					{
-						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::SourceAlpha;
-					}
-
-					else if (string == "ONE_MINUS_SOURCE_ALPHA")
-					{
-						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::OneMinusSourceAlpha;
-					}
-
-					else if (string == "DESTINATION_ALPHA")
-					{
-						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::DestinationAlpha;
-					}
-
-					else if (string == "ONE_MINUS_DESTINATION_ALPHA")
-					{
-						render_pipeline_information._BlendColorDestinationFactor = BlendFactor::OneMinusDestinationAlpha;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
 
 					continue;
 				}
@@ -3044,52 +2670,52 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 					if (string == "ZERO")
 					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::Zero;
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ZERO;
 					}
 
 					else if (string == "ONE")
 					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::One;
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ONE;
 					}
 
 					else if (string == "SOURCE_COLOR")
 					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::SourceColor;
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::SOURCE_COLOR;
 					}
 
 					else if (string == "ONE_MINUS_SOURCE_COLOR")
 					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::OneMinusSourceColor;
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ONE_MINUS_SOURCE_COLOR;
 					}
 
 					else if (string == "DESTINATION_COLOR")
 					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::DestinationColor;
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::DESTINATION_COLOR;
 					}
 
 					else if (string == "ONE_MINUS_DESTINATION_COLOR")
 					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::OneMinusDestinationColor;
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ONE_MINUS_DESTINATION_COLOR;
 					}
 
 					else if (string == "SOURCE_ALPHA")
 					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::SourceAlpha;
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::SOURCE_ALPHA;
 					}
 
 					else if (string == "ONE_MINUS_SOURCE_ALPHA")
 					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::OneMinusSourceAlpha;
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ONE_MINUS_SOURCE_ALPHA;
 					}
 
 					else if (string == "DESTINATION_ALPHA")
 					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::DestinationAlpha;
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::DESTINATION_ALPHA;
 					}
 
 					else if (string == "ONE_MINUS_DESTINATION_ALPHA")
 					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::OneMinusDestinationAlpha;
+						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ONE_MINUS_DESTINATION_ALPHA;
 					}
 
 					else
@@ -3118,52 +2744,52 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 					if (string == "ZERO")
 					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::Zero;
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ZERO;
 					}
 
 					else if (string == "ONE")
 					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::One;
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ONE;
 					}
 
 					else if (string == "SOURCE_COLOR")
 					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::SourceColor;
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::SOURCE_COLOR;
 					}
 
 					else if (string == "ONE_MINUS_SOURCE_COLOR")
 					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::OneMinusSourceColor;
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ONE_MINUS_SOURCE_COLOR;
 					}
 
 					else if (string == "DESTINATION_COLOR")
 					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::DestinationColor;
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::DESTINATION_COLOR;
 					}
 
 					else if (string == "ONE_MINUS_DESTINATION_COLOR")
 					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::OneMinusDestinationColor;
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ONE_MINUS_DESTINATION_COLOR;
 					}
 
 					else if (string == "SOURCE_ALPHA")
 					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::SourceAlpha;
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::SOURCE_ALPHA;
 					}
 
 					else if (string == "ONE_MINUS_SOURCE_ALPHA")
 					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::OneMinusSourceAlpha;
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ONE_MINUS_SOURCE_ALPHA;
 					}
 
 					else if (string == "DESTINATION_ALPHA")
 					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::DestinationAlpha;
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::DESTINATION_ALPHA;
 					}
 
 					else if (string == "ONE_MINUS_DESTINATION_ALPHA")
 					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::OneMinusDestinationAlpha;
+						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ONE_MINUS_DESTINATION_ALPHA;
 					}
 
 					else
@@ -3213,50 +2839,6 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 					else if (string == "MAX")
 					{
 						render_pipeline_information._BlendAlphaOperator = BlendOperator::MAX;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
-
-					continue;
-				}
-			}
-
-			//Is this a cull mode declaration?
-			{
-				const size_t position{ current_line.find("CullMode") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "NONE")
-					{
-						render_pipeline_information._CullMode = CullMode::None;
-					}
-
-					else if (string == "BACK")
-					{
-						render_pipeline_information._CullMode = CullMode::Back;
-					}
-
-					else if (string == "FRONT")
-					{
-						render_pipeline_information._CullMode = CullMode::Front;
-					}
-
-					else if (string == "FRONT_AND_BACK")
-					{
-						render_pipeline_information._CullMode = CullMode::FrontAndBack;
 					}
 
 					else
@@ -3870,6 +3452,21 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 				GenerateRayAnyHitShader(file, generated_file_path, render_pipeline_name, render_pipeline_information, &parameters);
 			}
 
+			//Ignore lines that are consumed by code generation.
+			else if (	current_line.find("OutputDepthBuffer(") != std::string::npos
+						|| current_line.find("RenderResolution(") != std::string::npos
+						|| current_line.find("ColorLoadOperator(") != std::string::npos
+						|| current_line.find("ColorStoreOperator(") != std::string::npos
+						|| current_line.find("DepthStencilLoadOperator(") != std::string::npos
+						|| current_line.find("DepthStencilStoreOperator(") != std::string::npos
+						|| current_line.find("CullMode(") != std::string::npos
+						|| current_line.find("BlendEnable(") != std::string::npos
+						|| current_line.find("BlendColorSourceFactor(") != std::string::npos
+						|| current_line.find("BlendColorDestinationFactor(") != std::string::npos)
+			{
+				continue;
+			}
+
 			else
 			{
 				ASSERT(false, "Unknown line %s", current_line.data());
@@ -3920,12 +3517,6 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 			}
 		}
 
-		//Fill in the output depth buffer.
-		if (render_pipeline_information._OutputDepthBuffer)
-		{
-			parameters._OutputDepthBuffer = HashString(render_pipeline_information._OutputDepthBuffer.Data());
-		}
-
 		//Fill in the output render targets.
 		if (!render_pipeline_information._OutputRenderTargets.Empty())
 		{
@@ -3937,26 +3528,11 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 			}
 		}
 
-		//Fill in the render resolution.
-		parameters._RenderResolution = render_pipeline_information._RenderResolution;
-
-		//Fill in the load/store operators.
-		parameters._ColorLoadOperator = render_pipeline_information._ColorLoadOperator;
-		parameters._ColorStoreOperator = render_pipeline_information._ColorStoreOperator;
-		parameters._DepthStencilLoadOperator = render_pipeline_information._DepthStencilLoadOperator;
-		parameters._DepthStencilStoreOperator = render_pipeline_information._DepthStencilStoreOperator;
-
 		//Copy the blend properties.
-		parameters._BlendEnabled = render_pipeline_information._BlendEnabled;
-		parameters._BlendColorSourceFactor = render_pipeline_information._BlendColorSourceFactor;
-		parameters._BlendColorDestinationFactor = render_pipeline_information._BlendColorDestinationFactor;
 		parameters._BlendColorOperator = render_pipeline_information._BlendColorOperator;
 		parameters._BlendAlphaSourceFactor = render_pipeline_information._BlendAlphaSourceFactor;
 		parameters._BlendAlphaDestinationFactor = render_pipeline_information._BlendAlphaDestinationFactor;
 		parameters._BlendAlphaOperator = render_pipeline_information._BlendAlphaOperator;
-
-		//Copy the cull mode.
-		parameters._CullMode = render_pipeline_information._CullMode;
 
 		//Copy depth/stencil properties.
 		parameters._DepthTestEnabled = render_pipeline_information._DepthTestEnabled;

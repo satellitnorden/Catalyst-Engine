@@ -414,9 +414,6 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 		}
 	}
 
-	//Write the output depth buffer.
-	output_file.Write(&parameters._OutputDepthBuffer, sizeof(HashString));
-
 	//Write the output render targets.
 	{
 		//Write the count.
@@ -430,26 +427,11 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 		}
 	}
 
-	//Write the render resolution.
-	output_file.Write(&parameters._RenderResolution, sizeof(HashString));
-
-	//Write the load/store operators.
-	output_file.Write(&parameters._ColorLoadOperator, sizeof(AttachmentLoadOperator));
-	output_file.Write(&parameters._ColorStoreOperator, sizeof(AttachmentStoreOperator));
-	output_file.Write(&parameters._DepthStencilLoadOperator, sizeof(AttachmentLoadOperator));
-	output_file.Write(&parameters._DepthStencilStoreOperator, sizeof(AttachmentStoreOperator));
-
 	//Write the blend properties.
-	output_file.Write(&parameters._BlendEnabled, sizeof(bool));
-	output_file.Write(&parameters._BlendColorSourceFactor, sizeof(BlendFactor));
-	output_file.Write(&parameters._BlendColorDestinationFactor, sizeof(BlendFactor));
 	output_file.Write(&parameters._BlendColorOperator, sizeof(BlendOperator));
 	output_file.Write(&parameters._BlendAlphaSourceFactor, sizeof(BlendFactor));
 	output_file.Write(&parameters._BlendAlphaDestinationFactor, sizeof(BlendFactor));
 	output_file.Write(&parameters._BlendAlphaOperator, sizeof(BlendOperator));
-
-	//Write the cull mode.
-	output_file.Write(&parameters._CullMode, sizeof(CullMode));
 
 	//Write the depth/stencil properties.
 	output_file.Write(&parameters._DepthTestEnabled, sizeof(bool));

@@ -87,29 +87,13 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 
 	//Copy the input/output depth buffer/render targets.
 	resource->_InputRenderTargets = std::move(data->_InputRenderTargets);
-	resource->_OutputDepthBuffer = data->_OutputDepthBuffer;
 	resource->_OutputRenderTargets = std::move(data->_OutputRenderTargets);
 
-	//Copy the render resolution.
-	resource->_RenderResolution = data->_RenderResolution;
-
-	//Copy the load/store operators.
-	resource->_ColorLoadOperator = data->_ColorLoadOperator;
-	resource->_ColorStoreOperator = data->_ColorStoreOperator;
-	resource->_DepthStencilLoadOperator = data->_DepthStencilLoadOperator;
-	resource->_DepthStencilStoreOperator = data->_DepthStencilStoreOperator;
-
 	//Copy the blend properties.
-	resource->_BlendEnabled = data->_BlendEnabled;
-	resource->_BlendColorSourceFactor = data->_BlendColorSourceFactor;
-	resource->_BlendColorDestinationFactor = data->_BlendColorDestinationFactor;
 	resource->_BlendColorOperator = data->_BlendColorOperator;
 	resource->_BlendAlphaSourceFactor = data->_BlendAlphaSourceFactor;
 	resource->_BlendAlphaDestinationFactor = data->_BlendAlphaDestinationFactor;
 	resource->_BlendAlphaOperator = data->_BlendAlphaOperator;
-
-	//Copy the cull mode.
-	resource->_CullMode = data->_CullMode;
 
 	//Copy the depth/stencil properties.
 	resource->_DepthTestEnabled = data->_DepthTestEnabled;

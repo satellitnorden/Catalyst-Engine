@@ -38,14 +38,14 @@ void UserInterfaceGenerator::Run()
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
-#if defined(NDEBUG)
+//#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\UserInterfaceCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\UserInterfaceCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
-#endif
+//#endif
 
 	//Gather user interface scenes!
 	bool new_files_parsed{ false };

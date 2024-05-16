@@ -65,11 +65,11 @@ void ShadowsSpatialDenoisingGraphicsPipeline::Initialize(const RenderTargetHandl
 	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DONT_CARE);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(false);
-	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
-	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
-	SetBlendFactorSourceAlpha(BlendFactor::One);
-	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::None);
+	SetBlendFactorSourceColor(BlendFactor::SOURCE_ALPHA);
+	SetBlendFactorDestinationColor(BlendFactor::ONE_MINUS_SOURCE_ALPHA);
+	SetBlendFactorSourceAlpha(BlendFactor::ONE);
+	SetBlendFactorDestinationAlpha(BlendFactor::ZERO);
+	SetCullMode(CullMode::NONE);
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
 	SetDepthWriteEnabled(false);

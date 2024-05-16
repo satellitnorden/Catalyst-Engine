@@ -89,11 +89,11 @@ void ImGuiGraphicsPipeline::Initialize() NOEXCEPT
 	SetColorAttachmentLoadOperator(AttachmentLoadOperator::LOAD);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::STORE);
 	SetBlendEnabled(true);
-	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
-	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
-	SetBlendFactorSourceAlpha(BlendFactor::One);
-	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
-	SetCullMode(CullMode::None);
+	SetBlendFactorSourceColor(BlendFactor::SOURCE_ALPHA);
+	SetBlendFactorDestinationColor(BlendFactor::ONE_MINUS_SOURCE_ALPHA);
+	SetBlendFactorSourceAlpha(BlendFactor::ONE);
+	SetBlendFactorDestinationAlpha(BlendFactor::ZERO);
+	SetCullMode(CullMode::NONE);
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
 	SetDepthWriteEnabled(false);

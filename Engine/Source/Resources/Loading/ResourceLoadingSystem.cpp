@@ -203,9 +203,6 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryInputFile *const RESTRICT f
 		}
 	}
 
-	//Read the output depth buffer.
-	file->Read(&data->_OutputDepthBuffer, sizeof(HashString));
-
 	//Read the output render targets.
 	{
 		uint64 length{ 0 };
@@ -218,26 +215,11 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryInputFile *const RESTRICT f
 		}
 	}
 
-	//Read the render resolution.
-	file->Read(&data->_RenderResolution, sizeof(HashString));
-
-	//Read the load/store operators.
-	file->Read(&data->_ColorLoadOperator, sizeof(AttachmentLoadOperator));
-	file->Read(&data->_ColorStoreOperator, sizeof(AttachmentStoreOperator));
-	file->Read(&data->_DepthStencilLoadOperator, sizeof(AttachmentLoadOperator));
-	file->Read(&data->_DepthStencilStoreOperator, sizeof(AttachmentStoreOperator));
-
 	//Read the blend properties.
-	file->Read(&data->_BlendEnabled, sizeof(bool));
-	file->Read(&data->_BlendColorSourceFactor, sizeof(BlendFactor));
-	file->Read(&data->_BlendColorDestinationFactor, sizeof(BlendFactor));
 	file->Read(&data->_BlendColorOperator, sizeof(BlendOperator));
 	file->Read(&data->_BlendAlphaSourceFactor, sizeof(BlendFactor));
 	file->Read(&data->_BlendAlphaDestinationFactor, sizeof(BlendFactor));
 	file->Read(&data->_BlendAlphaOperator, sizeof(BlendOperator));
-
-	//Read the cull mode.
-	file->Read(&data->_CullMode, sizeof(CullMode));
 
 	//Read the depth/stencil properties.
 	file->Read(&data->_DepthTestEnabled, sizeof(bool));

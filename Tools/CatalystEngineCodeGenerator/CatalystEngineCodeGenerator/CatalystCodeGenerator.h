@@ -2,6 +2,7 @@
 
 #include "ComponentGenerator.h"
 #include "EnumerationGenerator.h"
+#include "RenderPipelineGenerator.h"
 #include "ScriptGenerator.h"
 #include "SettingsGenerator.h"
 #include "SystemGenerator.h"
@@ -19,11 +20,14 @@ public:
 
 private:
 
-	//The component generators.
+	//The component generator.
 	ComponentGenerator _ComponentGenerator;
 
-	//The enumeration generators.
+	//The enumeration generator.
 	EnumerationGenerator _EnumerationGenerator;
+
+	//The render pipeline generator.
+	RenderPipelineGenerator _RenderPipelineGenerator;
 
 	//The script generator.
 	ScriptGenerator _ScriptGenerator;
