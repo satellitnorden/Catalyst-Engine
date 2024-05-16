@@ -89,12 +89,6 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 	resource->_InputRenderTargets = std::move(data->_InputRenderTargets);
 	resource->_OutputRenderTargets = std::move(data->_OutputRenderTargets);
 
-	//Copy the blend properties.
-	resource->_BlendColorOperator = data->_BlendColorOperator;
-	resource->_BlendAlphaSourceFactor = data->_BlendAlphaSourceFactor;
-	resource->_BlendAlphaDestinationFactor = data->_BlendAlphaDestinationFactor;
-	resource->_BlendAlphaOperator = data->_BlendAlphaOperator;
-
 	//Copy the depth/stencil properties.
 	resource->_DepthTestEnabled = data->_DepthTestEnabled;
 	resource->_DepthWriteEnabled = data->_DepthWriteEnabled;

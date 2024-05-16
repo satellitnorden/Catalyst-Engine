@@ -427,12 +427,6 @@ void ResourceBuildingSystem::BuildRenderPipeline(const RenderPipelineBuildParame
 		}
 	}
 
-	//Write the blend properties.
-	output_file.Write(&parameters._BlendColorOperator, sizeof(BlendOperator));
-	output_file.Write(&parameters._BlendAlphaSourceFactor, sizeof(BlendFactor));
-	output_file.Write(&parameters._BlendAlphaDestinationFactor, sizeof(BlendFactor));
-	output_file.Write(&parameters._BlendAlphaOperator, sizeof(BlendOperator));
-
 	//Write the depth/stencil properties.
 	output_file.Write(&parameters._DepthTestEnabled, sizeof(bool));
 	output_file.Write(&parameters._DepthWriteEnabled, sizeof(bool));

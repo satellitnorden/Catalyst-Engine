@@ -280,18 +280,6 @@ public:
 	//The output render targets.
 	DynamicArray<DynamicString> _OutputRenderTargets;
 
-	//The blend color operator.
-	BlendOperator _BlendColorOperator{ BlendOperator::ADD };
-
-	//The blend alpha source factor.
-	BlendFactor _BlendAlphaSourceFactor{ BlendFactor::SOURCE_ALPHA };
-
-	//The blend alpha destination factor.
-	BlendFactor _BlendAlphaDestinationFactor{ BlendFactor::ONE_MINUS_SOURCE_ALPHA };
-
-	//The blend alpha operator.
-	BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
-
 	//Denotes whether or not depth test is enabled.
 	bool _DepthTestEnabled{ false };
 
@@ -2604,252 +2592,6 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 				}
 			}
 
-			//Is this a blend color operator declaration?
-			{
-				const size_t position{ current_line.find("BlendColorOperator") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "ADD")
-					{
-						render_pipeline_information._BlendColorOperator = BlendOperator::ADD;
-					}
-
-					else if (string == "SUBTRACT")
-					{
-						render_pipeline_information._BlendColorOperator = BlendOperator::SUBTRACT;
-					}
-
-					else if (string == "REVERSE_SUBTRACT")
-					{
-						render_pipeline_information._BlendColorOperator = BlendOperator::REVERSE_SUBTRACT;
-					}
-
-					else if (string == "MIN")
-					{
-						render_pipeline_information._BlendColorOperator = BlendOperator::MIN;
-					}
-
-					else if (string == "MAX")
-					{
-						render_pipeline_information._BlendColorOperator = BlendOperator::MAX;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
-
-					continue;
-				}
-			}
-
-			//Is this a blend alpha source factor declaration?
-			{
-				const size_t position{ current_line.find("BlendAlphaSourceFactor") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "ZERO")
-					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ZERO;
-					}
-
-					else if (string == "ONE")
-					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ONE;
-					}
-
-					else if (string == "SOURCE_COLOR")
-					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::SOURCE_COLOR;
-					}
-
-					else if (string == "ONE_MINUS_SOURCE_COLOR")
-					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ONE_MINUS_SOURCE_COLOR;
-					}
-
-					else if (string == "DESTINATION_COLOR")
-					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::DESTINATION_COLOR;
-					}
-
-					else if (string == "ONE_MINUS_DESTINATION_COLOR")
-					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ONE_MINUS_DESTINATION_COLOR;
-					}
-
-					else if (string == "SOURCE_ALPHA")
-					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::SOURCE_ALPHA;
-					}
-
-					else if (string == "ONE_MINUS_SOURCE_ALPHA")
-					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ONE_MINUS_SOURCE_ALPHA;
-					}
-
-					else if (string == "DESTINATION_ALPHA")
-					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::DESTINATION_ALPHA;
-					}
-
-					else if (string == "ONE_MINUS_DESTINATION_ALPHA")
-					{
-						render_pipeline_information._BlendAlphaSourceFactor = BlendFactor::ONE_MINUS_DESTINATION_ALPHA;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
-
-					continue;
-				}
-			}
-
-			//Is this a blend alpha destination factor declaration?
-			{
-				const size_t position{ current_line.find("BlendAlphaDestinationFactor") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "ZERO")
-					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ZERO;
-					}
-
-					else if (string == "ONE")
-					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ONE;
-					}
-
-					else if (string == "SOURCE_COLOR")
-					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::SOURCE_COLOR;
-					}
-
-					else if (string == "ONE_MINUS_SOURCE_COLOR")
-					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ONE_MINUS_SOURCE_COLOR;
-					}
-
-					else if (string == "DESTINATION_COLOR")
-					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::DESTINATION_COLOR;
-					}
-
-					else if (string == "ONE_MINUS_DESTINATION_COLOR")
-					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ONE_MINUS_DESTINATION_COLOR;
-					}
-
-					else if (string == "SOURCE_ALPHA")
-					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::SOURCE_ALPHA;
-					}
-
-					else if (string == "ONE_MINUS_SOURCE_ALPHA")
-					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ONE_MINUS_SOURCE_ALPHA;
-					}
-
-					else if (string == "DESTINATION_ALPHA")
-					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::DESTINATION_ALPHA;
-					}
-
-					else if (string == "ONE_MINUS_DESTINATION_ALPHA")
-					{
-						render_pipeline_information._BlendAlphaDestinationFactor = BlendFactor::ONE_MINUS_DESTINATION_ALPHA;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
-
-					continue;
-				}
-			}
-
-			//Is this a blend alpha operator declaration?
-			{
-				const size_t position{ current_line.find("BlendAlphaOperator") };
-
-				if (position != std::string::npos)
-				{
-					DynamicString string;
-
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.data(),
-						current_line.length(),
-						&string
-					);
-
-					if (string == "ADD")
-					{
-						render_pipeline_information._BlendAlphaOperator = BlendOperator::ADD;
-					}
-
-					else if (string == "SUBTRACT")
-					{
-						render_pipeline_information._BlendAlphaOperator = BlendOperator::SUBTRACT;
-					}
-
-					else if (string == "REVERSE_SUBTRACT")
-					{
-						render_pipeline_information._BlendAlphaOperator = BlendOperator::REVERSE_SUBTRACT;
-					}
-
-					else if (string == "MIN")
-					{
-						render_pipeline_information._BlendAlphaOperator = BlendOperator::MIN;
-					}
-
-					else if (string == "MAX")
-					{
-						render_pipeline_information._BlendAlphaOperator = BlendOperator::MAX;
-					}
-
-					else
-					{
-						ASSERT(false, "Invalid argument!");
-					}
-
-					continue;
-				}
-			}
-
 			//Is this a depth test enable declaration?
 			{
 				const size_t position{ current_line.find("DepthTestEnable") };
@@ -3462,7 +3204,11 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 						|| current_line.find("CullMode(") != std::string::npos
 						|| current_line.find("BlendEnable(") != std::string::npos
 						|| current_line.find("BlendColorSourceFactor(") != std::string::npos
-						|| current_line.find("BlendColorDestinationFactor(") != std::string::npos)
+						|| current_line.find("BlendColorDestinationFactor(") != std::string::npos
+						|| current_line.find("BlendColorOperator(") != std::string::npos
+					|| current_line.find("BlendAlphaSourceFactor(") != std::string::npos
+					|| current_line.find("BlendAlphaDestinationFactor(") != std::string::npos
+					|| current_line.find("BlendAlphaOperator(") != std::string::npos)
 			{
 				continue;
 			}
@@ -3527,12 +3273,6 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 				parameters._OutputRenderTargets.Emplace(HashString(output_render_target.Data()));
 			}
 		}
-
-		//Copy the blend properties.
-		parameters._BlendColorOperator = render_pipeline_information._BlendColorOperator;
-		parameters._BlendAlphaSourceFactor = render_pipeline_information._BlendAlphaSourceFactor;
-		parameters._BlendAlphaDestinationFactor = render_pipeline_information._BlendAlphaDestinationFactor;
-		parameters._BlendAlphaOperator = render_pipeline_information._BlendAlphaOperator;
 
 		//Copy depth/stencil properties.
 		parameters._DepthTestEnabled = render_pipeline_information._DepthTestEnabled;

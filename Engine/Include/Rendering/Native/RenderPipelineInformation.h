@@ -45,6 +45,18 @@ public:
 	//The blend color destination factor.
 	BlendFactor _BlendColorDestinationFactor;
 
+	//The blend color operator.
+	BlendOperator _BlendColorOperator;
+
+	//The blend alpha source factor.
+	BlendFactor _BlendAlphaSourceFactor;
+
+	//The blend alpha destination factor.
+	BlendFactor _BlendAlphaDestinationFactor;
+
+	//The blend alpha operator.
+	BlendOperator _BlendAlphaOperator;
+
 };
 
 /*

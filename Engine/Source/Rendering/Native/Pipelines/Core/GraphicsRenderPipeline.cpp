@@ -312,10 +312,10 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 	SetBlendEnabled(graphics_render_pipeline_information._BlendEnabled);
 	SetBlendFactorSourceColor(graphics_render_pipeline_information._BlendColorSourceFactor);
 	SetBlendFactorDestinationColor(graphics_render_pipeline_information._BlendColorDestinationFactor);
-	SetColorBlendOperator(_RenderPipelineResource->_BlendColorOperator);
-	SetBlendFactorSourceAlpha(_RenderPipelineResource->_BlendAlphaSourceFactor);
-	SetBlendFactorDestinationAlpha(_RenderPipelineResource->_BlendAlphaDestinationFactor);
-	SetAlphaBlendOperator(_RenderPipelineResource->_BlendAlphaOperator);
+	SetColorBlendOperator(graphics_render_pipeline_information._BlendColorOperator);
+	SetBlendFactorSourceAlpha(graphics_render_pipeline_information._BlendAlphaSourceFactor);
+	SetBlendFactorDestinationAlpha(graphics_render_pipeline_information._BlendAlphaDestinationFactor);
+	SetAlphaBlendOperator(graphics_render_pipeline_information._BlendAlphaOperator);
 	SetCullMode(graphics_render_pipeline_information._CullMode);
 	SetDepthTestEnabled(parameters._DepthTestEnabled.Valid() ? parameters._DepthTestEnabled.Get() : _RenderPipelineResource->_DepthTestEnabled);
 	SetDepthWriteEnabled(_RenderPipelineResource->_DepthWriteEnabled);

@@ -409,6 +409,106 @@ void RenderPipelineGenerator::ParseRenderPipeline(std::ifstream &file, nlohmann:
 				continue;
 			}
 		}
+
+		//Check if this is a blend color color declaration.
+		{
+			const size_t position{ current_line.find("BlendColorOperator(") };
+
+			if (position != std::string::npos)
+			{
+				//Parse the function arguments.
+				std::array<std::string, 1> arguments;
+
+				const uint64 number_of_arguments
+				{
+					TextParsing::ParseFunctionArguments
+					(
+						current_line.c_str(),
+						current_line.length(),
+						arguments.data()
+					)
+				};
+
+				JSON["BlendColorOperator"] = arguments[0].c_str();
+
+				continue;
+			}
+		}
+
+		//Check if this is a blend alpha source factor declaration.
+		{
+			const size_t position{ current_line.find("BlendAlphaSourceFactor(") };
+
+			if (position != std::string::npos)
+			{
+				//Parse the function arguments.
+				std::array<std::string, 1> arguments;
+
+				const uint64 number_of_arguments
+				{
+					TextParsing::ParseFunctionArguments
+					(
+						current_line.c_str(),
+						current_line.length(),
+						arguments.data()
+					)
+				};
+
+				JSON["BlendAlphaSourceFactor"] = arguments[0].c_str();
+
+				continue;
+			}
+		}
+
+		//Check if this is a blend alpha destination factor declaration.
+		{
+			const size_t position{ current_line.find("BlendAlphaDestinationFactor(") };
+
+			if (position != std::string::npos)
+			{
+				//Parse the function arguments.
+				std::array<std::string, 1> arguments;
+
+				const uint64 number_of_arguments
+				{
+					TextParsing::ParseFunctionArguments
+					(
+						current_line.c_str(),
+						current_line.length(),
+						arguments.data()
+					)
+				};
+
+				JSON["BlendAlphaDestinationFactor"] = arguments[0].c_str();
+
+				continue;
+			}
+		}
+
+		//Check if this is a blend alpha color declaration.
+		{
+			const size_t position{ current_line.find("BlendAlphaOperator(") };
+
+			if (position != std::string::npos)
+			{
+				//Parse the function arguments.
+				std::array<std::string, 1> arguments;
+
+				const uint64 number_of_arguments
+				{
+					TextParsing::ParseFunctionArguments
+					(
+						current_line.c_str(),
+						current_line.length(),
+						arguments.data()
+					)
+				};
+
+				JSON["BlendAlphaOperator"] = arguments[0].c_str();
+
+				continue;
+			}
+		}
 	}
 }
 
@@ -551,6 +651,46 @@ void RenderPipelineGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		else
 		{
 			file << "\t\t\tinformation->_BlendColorDestinationFactor = BlendFactor::ZERO;" << std::endl;
+		}
+
+		if (entry.contains("BlendColorOperator"))
+		{
+			file << "\t\t\tinformation->_BlendColorOperator = BlendOperator::" << entry["BlendColorOperator"].get<std::string>().c_str() << ";" << std::endl;
+		}
+
+		else
+		{
+			file << "\t\t\tinformation->_BlendColorOperator = BlendOperator::ADD;" << std::endl;
+		}
+
+		if (entry.contains("BlendAlphaSourceFactor"))
+		{
+			file << "\t\t\tinformation->_BlendAlphaSourceFactor = BlendFactor::" << entry["BlendAlphaSourceFactor"].get<std::string>().c_str() << ";" << std::endl;
+		}
+
+		else
+		{
+			file << "\t\t\tinformation->_BlendAlphaSourceFactor = BlendFactor::ZERO;" << std::endl;
+		}
+
+		if (entry.contains("BlendAlphaDestinationFactor"))
+		{
+			file << "\t\t\tinformation->_BlendAlphaDestinationFactor = BlendFactor::" << entry["BlendAlphaDestinationFactor"].get<std::string>().c_str() << ";" << std::endl;
+		}
+
+		else
+		{
+			file << "\t\t\tinformation->_BlendAlphaDestinationFactor = BlendFactor::ZERO;" << std::endl;
+		}
+
+		if (entry.contains("BlendAlphaOperator"))
+		{
+			file << "\t\t\tinformation->_BlendAlphaOperator = BlendOperator::" << entry["BlendAlphaOperator"].get<std::string>().c_str() << ";" << std::endl;
+		}
+
+		else
+		{
+			file << "\t\t\tinformation->_BlendAlphaOperator = BlendOperator::ADD;" << std::endl;
 		}
 
 		file << "\t\t\tbreak;" << std::endl;

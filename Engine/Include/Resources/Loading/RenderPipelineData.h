@@ -80,18 +80,6 @@ public:
 	//The output render targets.
 	DynamicArray<HashString> _OutputRenderTargets;
 
-	//The blend color operator.
-	BlendOperator _BlendColorOperator{ BlendOperator::ADD };
-
-	//The blend alpha source factor.
-	BlendFactor _BlendAlphaSourceFactor{ BlendFactor::SOURCE_ALPHA };
-
-	//The blend alpha destination factor.
-	BlendFactor _BlendAlphaDestinationFactor{ BlendFactor::ONE_MINUS_SOURCE_ALPHA };
-
-	//The blend alpha operator.
-	BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
-
 	//Denotes whether or not depth test is enabled.
 	bool _DepthTestEnabled;
 

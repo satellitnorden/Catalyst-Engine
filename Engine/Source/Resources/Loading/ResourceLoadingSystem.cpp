@@ -215,12 +215,6 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryInputFile *const RESTRICT f
 		}
 	}
 
-	//Read the blend properties.
-	file->Read(&data->_BlendColorOperator, sizeof(BlendOperator));
-	file->Read(&data->_BlendAlphaSourceFactor, sizeof(BlendFactor));
-	file->Read(&data->_BlendAlphaDestinationFactor, sizeof(BlendFactor));
-	file->Read(&data->_BlendAlphaOperator, sizeof(BlendOperator));
-
 	//Read the depth/stencil properties.
 	file->Read(&data->_DepthTestEnabled, sizeof(bool));
 	file->Read(&data->_DepthWriteEnabled, sizeof(bool));
