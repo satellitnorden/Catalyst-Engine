@@ -213,19 +213,19 @@ layout (location = 0) out vec4 OutputRenderTarget;
 void main()
 {
     #define FILTER_RADIUS (INVERSE_FULL_MAIN_RESOLUTION * 1.5f)
-    vec3 A = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, FILTER_RADIUS.y)).rgb;
-    vec3 B = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             FILTER_RADIUS.y)).rgb;
-    vec3 C = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  FILTER_RADIUS.y)).rgb;
-    vec3 D = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, 0.0f)).rgb;
-    vec3 E = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             0.0f)).rgb;
-    vec3 F = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  0.0f)).rgb;
-    vec3 G = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, -FILTER_RADIUS.y)).rgb;
-    vec3 H = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             -FILTER_RADIUS.y)).rgb;
-    vec3 I = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  -FILTER_RADIUS.y)).rgb;
-    vec3 blend = vec3(0.0f);
+    vec4 A = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, FILTER_RADIUS.y));
+    vec4 B = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             FILTER_RADIUS.y));
+    vec4 C = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  FILTER_RADIUS.y));
+    vec4 D = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, 0.0f));
+    vec4 E = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             0.0f));
+    vec4 F = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  0.0f));
+    vec4 G = texture(InputRenderTarget, InScreenCoordinate + vec2(-FILTER_RADIUS.x, -FILTER_RADIUS.y));
+    vec4 H = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,             -FILTER_RADIUS.y));
+    vec4 I = texture(InputRenderTarget, InScreenCoordinate + vec2(FILTER_RADIUS.x,  -FILTER_RADIUS.y));
+    vec4 blend = vec4(0.0f);
     blend += E * 4.0f;
     blend += (B + D + F + H) * 2.0f;
     blend += (A + C + G + I);
     blend *= 1.0f / 16.0f;
-	OutputRenderTarget = vec4(blend,1.0f);
+	OutputRenderTarget = blend;
 }

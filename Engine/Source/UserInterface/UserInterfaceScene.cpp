@@ -91,6 +91,9 @@ void UserInterfaceScene::Update() NOEXCEPT
 */
 void UserInterfaceScene::OnDeactivated() NOEXCEPT
 {
+	//Clear the elements.
+	_Elements.Clear();
+
 	//Free all buttons.
 	for (UserInterfaceButton *const RESTRICT button : _Buttons)
 	{

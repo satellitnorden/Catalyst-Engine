@@ -208,23 +208,23 @@ layout (location = 0) out vec4 OutputRenderTarget;
 
 void main()
 {
-    vec3 A = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
-    vec3 B = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
-    vec3 C = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
-    vec3 D = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  0.0f)).rgb;
-    vec3 E = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 0.0f)).rgb;
-    vec3 F = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   0.0f)).rgb;
-    vec3 G = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  -INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
-    vec3 H = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 -INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
-    vec3 I = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   -INVERSE_SOURCE_RESOLUTION.y * 2.0f)).rgb;
-    vec3 J = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x,         INVERSE_SOURCE_RESOLUTION.y)).rgb;
-    vec3 K = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x,          INVERSE_SOURCE_RESOLUTION.y)).rgb;
-    vec3 L = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x,         -INVERSE_SOURCE_RESOLUTION.y)).rgb;
-    vec3 M = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x,          -INVERSE_SOURCE_RESOLUTION.y)).rgb;
-    vec3 blend = vec3(0.0f);
+    vec4 A = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  INVERSE_SOURCE_RESOLUTION.y * 2.0f));
+    vec4 B = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 INVERSE_SOURCE_RESOLUTION.y * 2.0f));
+    vec4 C = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   INVERSE_SOURCE_RESOLUTION.y * 2.0f));
+    vec4 D = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  0.0f));
+    vec4 E = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 0.0f));
+    vec4 F = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   0.0f));
+    vec4 G = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x * 2.0f,  -INVERSE_SOURCE_RESOLUTION.y * 2.0f));
+    vec4 H = texture(InputRenderTarget, InScreenCoordinate + vec2(0.0f,                                 -INVERSE_SOURCE_RESOLUTION.y * 2.0f));
+    vec4 I = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x * 2.0f,   -INVERSE_SOURCE_RESOLUTION.y * 2.0f));
+    vec4 J = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x,         INVERSE_SOURCE_RESOLUTION.y));
+    vec4 K = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x,          INVERSE_SOURCE_RESOLUTION.y));
+    vec4 L = texture(InputRenderTarget, InScreenCoordinate + vec2(-INVERSE_SOURCE_RESOLUTION.x,         -INVERSE_SOURCE_RESOLUTION.y));
+    vec4 M = texture(InputRenderTarget, InScreenCoordinate + vec2(INVERSE_SOURCE_RESOLUTION.x,          -INVERSE_SOURCE_RESOLUTION.y));
+    vec4 blend = vec4(0.0f);
     blend += E * 0.125f;
     blend += (A + C + G + I) * 0.03125f;
     blend += (B + D + F + H) * 0.0625f;
     blend += (J + K + L + M) * 0.125f;
-	OutputRenderTarget = vec4(blend,1.0f);
+	OutputRenderTarget = blend;
 }
