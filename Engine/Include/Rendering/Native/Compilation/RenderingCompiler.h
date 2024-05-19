@@ -39,7 +39,7 @@ private:
 	*	Parses render pipelines in the given directory.
 	*	Returns if new rendering data was compiled.
 	*/
-	NO_DISCARD bool ParseRenderPipelinesInDirectory(const char *const RESTRICT directory_path) NOEXCEPT;
+	NO_DISCARD bool ParseRenderPipelinesInDirectory(const bool is_game, const char *const RESTRICT directory_path) NOEXCEPT;
 
 };
 #endif

@@ -35,6 +35,7 @@
 
 //Constants.
 #define ENGINE_RENDERING_DIRECTORY_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering"
+#define GAME_RENDERING_DIRECTORY_PATH "..\\..\\..\\Rendering"
 #define GLOBAL_RENDER_DATA_FILE_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data"
 
 /*
@@ -115,7 +116,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const std::filesystem::file_time_type last_write_time) NOEXCEPT
 	{
-#if 1
+#if 0
 		return true;
 #else
 		for (Entry &entry : _Entries)
@@ -2270,7 +2271,8 @@ NO_DISCARD bool RenderingCompiler::Run() NOEXCEPT
 
 	//Parse render pipelines.
 	{
-		new_rendering_data_compiled |= ParseRenderPipelinesInDirectory(ENGINE_RENDERING_DIRECTORY_PATH "\\Render Pipelines");
+		new_rendering_data_compiled |= ParseRenderPipelinesInDirectory(false, ENGINE_RENDERING_DIRECTORY_PATH "\\Render Pipelines");
+		new_rendering_data_compiled |= ParseRenderPipelinesInDirectory(true, GAME_RENDERING_DIRECTORY_PATH "\\Render Pipelines");
 	}
 
 	LOG_INFORMATION("Rendering Compiler took %f seconds.", start_time.GetSecondsSince());
@@ -2282,8 +2284,14 @@ NO_DISCARD bool RenderingCompiler::Run() NOEXCEPT
 *	Parses render pipelines in the given directory.
 *	Returns if new rendering data was compiled.
 */
-NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *const RESTRICT directory_path) NOEXCEPT
+NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const bool is_game, const char *const RESTRICT directory_path) NOEXCEPT
 {
+	//Skip if the directory doesn't exist.
+	if (!std::filesystem::exists(std::string(directory_path)))
+	{
+		return false;
+	}
+
 	//Remember if new rendering data was compiled.
 	bool new_rendering_data_compiled{ false };
 
@@ -2331,7 +2339,16 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const char *c
 
 		//Fill in the output.
 		char output_buffer[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(output_buffer, "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Base\\Render Pipelines\\%s_RenderPipeline", render_pipeline_name.data());
+
+		if (is_game)
+		{
+			sprintf_s(output_buffer, "..\\..\\..\\Content\\Intermediate\\Render Pipelines\\%s_RenderPipeline", render_pipeline_name.data());
+		}
+
+		else
+		{
+			sprintf_s(output_buffer, "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Intermediate\\Base\\Render Pipelines\\%s_RenderPipeline", render_pipeline_name.data());
+		}
 
 		parameters._Output = output_buffer;
 
