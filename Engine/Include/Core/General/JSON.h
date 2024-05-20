@@ -13,6 +13,47 @@ public:
 	constexpr static uint64 ANY_SIZE{ 32 };
 
 	/*
+	*	Iterator class definition.
+	*/
+	class Iterator final
+	{
+
+	public:
+
+		//Constants.
+		constexpr static uint64 ITERATOR_ANY_SIZE{ 64 };
+
+		//Friend declaration.
+		friend class JSON;
+
+		/*
+		*	Dereference operator overload.
+		*/
+		JSON operator*() NOEXCEPT;
+
+		/*
+		*	Increment operator overload.
+		*/
+		void operator++() NOEXCEPT;
+
+		/*
+		*	Equality operator overload.
+		*/
+		NO_DISCARD bool operator==(const Iterator &other) NOEXCEPT;
+
+		/*
+		*	Inequality operator overload.
+		*/
+		NO_DISCARD bool operator!=(const Iterator &other) NOEXCEPT;
+
+	private:
+
+		//The implementation.
+		Any<ITERATOR_ANY_SIZE> _Implementation;
+
+	};
+
+	/*
 	*	Default constructor.
 	*/
 	JSON() NOEXCEPT;
@@ -38,6 +79,11 @@ public:
 	void operator=(const float64 value) NOEXCEPT;
 
 	/*
+	*	Assignment operator taking an int32.
+	*/
+	void operator=(const int32 value) NOEXCEPT;
+
+	/*
 	*	Assignment operator taking a uint64.
 	*/
 	void operator=(const uint64 value) NOEXCEPT;
@@ -46,6 +92,16 @@ public:
 	*	Subscript operator overload.
 	*/
 	JSON operator[](const char *const RESTRICT key) NOEXCEPT;
+
+	/*
+	*	Begin operator overload.
+	*/
+	Iterator begin() NOEXCEPT;
+
+	/*
+	*	End operator overload.
+	*/
+	Iterator end() NOEXCEPT;
 
 	/*
 	*	Reads from the given file path.
@@ -58,9 +114,29 @@ public:
 	void Write(const char *const RESTRICT file_path) NOEXCEPT;
 
 	/*
+	*	Returns if this JSON object contains the given key.
+	*/
+	NO_DISCARD bool Contains(const char *const RESTRICT key) NOEXCEPT;
+
+	/*
 	*	Emplaces a new object under this JSON object.
 	*/
 	JSON Emplace() NOEXCEPT;
+
+	/*
+	*	Converts this JSON object to a string.
+	*/
+	NO_DISCARD DynamicString ToString() const NOEXCEPT;
+
+	/*
+	*	Converts this JSON object to an int32.
+	*/
+	NO_DISCARD int32 ToInt32() const NOEXCEPT;
+
+	/*
+	*	Converts this JSON object to a bool.
+	*/
+	NO_DISCARD bool ToBool() const NOEXCEPT;
 
 private:
 

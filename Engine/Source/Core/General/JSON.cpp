@@ -32,7 +32,45 @@ public:
 
 };
 
+static_assert(JSON::Iterator::ITERATOR_ANY_SIZE >= sizeof(nlohmann::json_abi_v3_11_3::detail::iter_impl<nlohmann::json_abi_v3_11_3::ordered_json>), "Insufficient size!");
 static_assert(JSON::ANY_SIZE >= sizeof(Implementation), "Insufficient size!");
+
+/*
+*	Dereference operator overload.
+*/
+JSON JSON::Iterator::operator*() NOEXCEPT
+{
+	JSON sub_object;
+
+	sub_object._Implementation.Get<Implementation>()->_JSON = &_Implementation.Get<nlohmann::json_abi_v3_11_3::detail::iter_impl<nlohmann::json_abi_v3_11_3::ordered_json>>()->operator*();
+	sub_object._Implementation.Get<Implementation>()->_IsSubObject = true;
+
+	return sub_object;
+}
+
+/*
+*	Increment operator overload.
+*/
+void JSON::Iterator::operator++() NOEXCEPT
+{
+	_Implementation.Get<nlohmann::json_abi_v3_11_3::detail::iter_impl<nlohmann::json_abi_v3_11_3::ordered_json>>()->operator++();
+}
+
+/*
+*	Equality operator overload.
+*/
+NO_DISCARD bool JSON::Iterator::operator==(const Iterator &other) NOEXCEPT
+{
+	return *_Implementation.Get<nlohmann::json_abi_v3_11_3::detail::iter_impl<nlohmann::json_abi_v3_11_3::ordered_json>>() == *other._Implementation.Get<nlohmann::json_abi_v3_11_3::detail::iter_impl<nlohmann::json_abi_v3_11_3::ordered_json>>();
+}
+
+/*
+*	Inequality operator overload.
+*/
+NO_DISCARD bool JSON::Iterator::operator!=(const Iterator &other) NOEXCEPT
+{
+	return *_Implementation.Get<nlohmann::json_abi_v3_11_3::detail::iter_impl<nlohmann::json_abi_v3_11_3::ordered_json>>() != *other._Implementation.Get<nlohmann::json_abi_v3_11_3::detail::iter_impl<nlohmann::json_abi_v3_11_3::ordered_json>>();
+}
 
 /*
 *	Default constructor.
@@ -80,6 +118,14 @@ void JSON::operator=(const float64 value) NOEXCEPT
 }
 
 /*
+*	Assignment operator taking an int32.
+*/
+void JSON::operator=(const int32 value) NOEXCEPT
+{
+	(*IMPLEMENTATION->_JSON) = value;
+}
+
+/*
 *	Assignment operator taking a uint64.
 */
 void JSON::operator=(const uint64 value) NOEXCEPT
@@ -98,6 +144,30 @@ JSON JSON::operator[](const char *const RESTRICT key) NOEXCEPT
 	sub_object._Implementation.Get<Implementation>()->_IsSubObject = true;
 
 	return sub_object;
+}
+
+/*
+*	Begin operator overload.
+*/
+JSON::Iterator JSON::begin() NOEXCEPT
+{
+	Iterator iterator;
+
+	*iterator._Implementation.Get<nlohmann::json_abi_v3_11_3::detail::iter_impl<nlohmann::json_abi_v3_11_3::ordered_json>>() = IMPLEMENTATION->_JSON->begin();
+
+	return iterator;
+}
+
+/*
+*	End operator overload.
+*/
+JSON::Iterator JSON::end() NOEXCEPT
+{
+	Iterator iterator;
+
+	*iterator._Implementation.Get<nlohmann::json_abi_v3_11_3::detail::iter_impl<nlohmann::json_abi_v3_11_3::ordered_json>>() = IMPLEMENTATION->_JSON->end();
+
+	return iterator;
 }
 
 /*
@@ -131,7 +201,7 @@ void JSON::Read(const char *const RESTRICT file_path) NOEXCEPT
 	file.close();
 
 	//Now parse into the JSON object.
-	IMPLEMENTATION->_JSON->parse(source.c_str());
+	*IMPLEMENTATION->_JSON = nlohmann::ordered_json::parse(source.c_str());
 }
 
 /*
@@ -150,6 +220,14 @@ void JSON::Write(const char *const RESTRICT file_path) NOEXCEPT
 }
 
 /*
+*	Returns if this JSON object contains the given key.
+*/
+NO_DISCARD bool JSON::Contains(const char *const RESTRICT key) NOEXCEPT
+{
+	return IMPLEMENTATION->_JSON->contains(key);
+}
+
+/*
 *	Emplaces a new object under this JSON object.
 */
 JSON JSON::Emplace() NOEXCEPT
@@ -160,4 +238,28 @@ JSON JSON::Emplace() NOEXCEPT
 	sub_object._Implementation.Get<Implementation>()->_IsSubObject = true;
 
 	return sub_object;
+}
+
+/*
+*	Converts this JSON object to a string.
+*/
+NO_DISCARD DynamicString JSON::ToString() const NOEXCEPT
+{
+	return DynamicString(IMPLEMENTATION->_JSON->get<std::string>().c_str());
+}
+
+/*
+*	Converts this JSON object to an int32
+*/
+NO_DISCARD int32 JSON::ToInt32() const NOEXCEPT
+{
+	return IMPLEMENTATION->_JSON->get<int32>();
+}
+
+/*
+*	Converts this JSON object to a bool.
+*/
+NO_DISCARD bool JSON::ToBool() const NOEXCEPT
+{
+	return IMPLEMENTATION->_JSON->get<bool>();
 }

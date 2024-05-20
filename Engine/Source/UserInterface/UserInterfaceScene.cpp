@@ -157,9 +157,6 @@ void UserInterfaceScene::OnDeactivated() NOEXCEPT
 */
 void UserInterfaceScene::RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) NOEXCEPT
 {
-	//First of all, clear.
-	output->Clear();
-
 	//Retrieve all the primitives from the elements.
 	for (UserInterfaceElement *const RESTRICT element : _Elements)
 	{
