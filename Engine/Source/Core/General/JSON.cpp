@@ -241,11 +241,19 @@ JSON JSON::Emplace() NOEXCEPT
 }
 
 /*
-*	Converts this JSON object to a string.
+*	Converts this JSON object to a bool.
 */
-NO_DISCARD DynamicString JSON::ToString() const NOEXCEPT
+NO_DISCARD bool JSON::ToBool() const NOEXCEPT
 {
-	return DynamicString(IMPLEMENTATION->_JSON->get<std::string>().c_str());
+	return IMPLEMENTATION->_JSON->get<bool>();
+}
+
+/*
+*	Converts this JSON object to a float64.
+*/
+NO_DISCARD float64 JSON::ToFloat64() const NOEXCEPT
+{
+	return IMPLEMENTATION->_JSON->get<float64>();
 }
 
 /*
@@ -257,9 +265,17 @@ NO_DISCARD int32 JSON::ToInt32() const NOEXCEPT
 }
 
 /*
-*	Converts this JSON object to a bool.
+*	Converts this JSON object to a string.
 */
-NO_DISCARD bool JSON::ToBool() const NOEXCEPT
+NO_DISCARD DynamicString JSON::ToString() const NOEXCEPT
 {
-	return IMPLEMENTATION->_JSON->get<bool>();
+	return DynamicString(IMPLEMENTATION->_JSON->get<std::string>().c_str());
+}
+
+/*
+*	Converts this JSON object to a uint64.
+*/
+NO_DISCARD uint64 JSON::ToUint64() const NOEXCEPT
+{
+	return IMPLEMENTATION->_JSON->get<uint64>();
 }

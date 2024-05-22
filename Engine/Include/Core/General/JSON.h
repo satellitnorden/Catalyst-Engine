@@ -124,9 +124,14 @@ public:
 	JSON Emplace() NOEXCEPT;
 
 	/*
-	*	Converts this JSON object to a string.
+	*	Converts this JSON object to a bool.
 	*/
-	NO_DISCARD DynamicString ToString() const NOEXCEPT;
+	NO_DISCARD bool ToBool() const NOEXCEPT;
+
+	/*
+	*	Converts this JSON object to a float64.
+	*/
+	NO_DISCARD float64 ToFloat64() const NOEXCEPT;
 
 	/*
 	*	Converts this JSON object to an int32.
@@ -134,9 +139,14 @@ public:
 	NO_DISCARD int32 ToInt32() const NOEXCEPT;
 
 	/*
-	*	Converts this JSON object to a bool.
+	*	Converts this JSON object to a string.
 	*/
-	NO_DISCARD bool ToBool() const NOEXCEPT;
+	NO_DISCARD DynamicString ToString() const NOEXCEPT;
+
+	/*
+	*	Converts this JSON object to a uint64.
+	*/
+	NO_DISCARD uint64 ToUint64() const NOEXCEPT;
 
 private:
 
