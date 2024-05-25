@@ -257,6 +257,14 @@ NO_DISCARD float64 JSON::ToFloat64() const NOEXCEPT
 }
 
 /*
+*	Converts this JSON object to an int8.
+*/
+NO_DISCARD int8 JSON::ToInt8() const NOEXCEPT
+{
+	return IMPLEMENTATION->_JSON->get<int8>();
+}
+
+/*
 *	Converts this JSON object to an int32
 */
 NO_DISCARD int32 JSON::ToInt32() const NOEXCEPT
@@ -270,6 +278,14 @@ NO_DISCARD int32 JSON::ToInt32() const NOEXCEPT
 NO_DISCARD DynamicString JSON::ToString() const NOEXCEPT
 {
 	return DynamicString(IMPLEMENTATION->_JSON->get<std::string>().c_str());
+}
+
+/*
+*	Converts this JSON object to a uint8.
+*/
+NO_DISCARD uint8 JSON::ToUint8() const NOEXCEPT
+{
+	return IMPLEMENTATION->_JSON->get<uint8>();
 }
 
 /*

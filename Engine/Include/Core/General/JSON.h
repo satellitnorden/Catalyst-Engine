@@ -134,6 +134,11 @@ public:
 	NO_DISCARD float64 ToFloat64() const NOEXCEPT;
 
 	/*
+	*	Converts this JSON object to an int8.
+	*/
+	NO_DISCARD int8 ToInt8() const NOEXCEPT;
+
+	/*
 	*	Converts this JSON object to an int32.
 	*/
 	NO_DISCARD int32 ToInt32() const NOEXCEPT;
@@ -142,6 +147,11 @@ public:
 	*	Converts this JSON object to a string.
 	*/
 	NO_DISCARD DynamicString ToString() const NOEXCEPT;
+
+	/*
+	*	Converts this JSON object to a uint8.
+	*/
+	NO_DISCARD uint8 ToUint8() const NOEXCEPT;
 
 	/*
 	*	Converts this JSON object to a uint64.
