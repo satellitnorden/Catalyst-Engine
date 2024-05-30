@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <Math/Core/BaseMath.h>
+
 class StreamArchive final
 {
 
@@ -86,7 +89,7 @@ public:
 		//Re-allocate if we need more memory.
 		if (_Capacity < needed_memory)
 		{
-			Allocate(needed_memory);
+			Allocate(BaseMath::Maximum<uint64>(_Capacity > 0 ? _Capacity * 2 : 64, needed_memory));
 		}
 
 		//Copy the value.
