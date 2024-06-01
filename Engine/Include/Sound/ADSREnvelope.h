@@ -246,7 +246,7 @@ private:
   StaticArray<float32, 4> _StageValues;
 
   //The sample rate.
-  float32 _SampleRate{ 48'000.0f };
+  float32 _SampleRate{ 44'100.0f };
 
   //The current sample.
   uint32 _CurrentSample{ 0 };
