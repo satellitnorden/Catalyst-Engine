@@ -63,9 +63,9 @@ public:
 	}
 
 	/*
-	*	Callback for when this plugin receives a MIDI message.
+	*	Callback for when this plugin receives MIDI messages.
 	*/
-	FORCE_INLINE virtual void OnMIDIMessage(const MIDIMessage &message) NOEXCEPT
+	FORCE_INLINE virtual void OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT
 	{
 
 	}
