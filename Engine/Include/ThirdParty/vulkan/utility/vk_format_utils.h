@@ -8,6 +8,8 @@
 
 #pragma once
 
+// clang-format off
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,6 +24,7 @@ extern "C" {
 
 enum VKU_FORMAT_NUMERICAL_TYPE {
     VKU_FORMAT_NUMERICAL_TYPE_NONE = 0,
+    VKU_FORMAT_NUMERICAL_TYPE_SFIXED5,
     VKU_FORMAT_NUMERICAL_TYPE_SFLOAT,
     VKU_FORMAT_NUMERICAL_TYPE_SINT,
     VKU_FORMAT_NUMERICAL_TYPE_SNORM,
@@ -125,6 +128,10 @@ enum VKU_FORMAT_COMPATIBILITY_CLASS {
 //     VK_IMAGE_ASPECT_PLANE_2_BIT -> 2
 //     <any other value> -> VKU_FORMAT_INVALID_INDEX
 inline uint32_t vkuGetPlaneIndex(VkImageAspectFlagBits aspect);
+
+// Returns whether a VkFormat is of the numerical format SFIXED5
+// Format must only contain one numerical format, so formats like D16_UNORM_S8_UINT always return false
+inline bool vkuFormatIsSFIXED5(VkFormat format);
 
 // Returns whether a VkFormat is of the numerical format SFLOAT
 // Format must only contain one numerical format, so formats like D16_UNORM_S8_UINT always return false
@@ -348,7 +355,6 @@ struct VKU_FORMAT_INFO {
     uint32_t component_count;
     struct VKU_FORMAT_COMPONENT_INFO components[VKU_FORMAT_MAX_COMPONENTS];
 };
-// clang-format off
 inline const struct VKU_FORMAT_INFO vkuGetFormatInfo(VkFormat format) {
     switch (format) {
         case VK_FORMAT_R4G4_UNORM_PACK8: {
@@ -1095,7 +1101,7 @@ inline const struct VKU_FORMAT_INFO vkuGetFormatInfo(VkFormat format) {
         case VK_FORMAT_A4B4G4R4_UNORM_PACK16: {
             struct VKU_FORMAT_INFO out = {VKU_FORMAT_COMPATIBILITY_CLASS_16BIT, 2, 1, {1, 1, 1}, 4, {{VKU_FORMAT_COMPONENT_TYPE_A, 4}, {VKU_FORMAT_COMPONENT_TYPE_B, 4}, {VKU_FORMAT_COMPONENT_TYPE_G, 4}, {VKU_FORMAT_COMPONENT_TYPE_R, 4}}};
             return out; }
-        case VK_FORMAT_R16G16_S10_5_NV: {
+        case VK_FORMAT_R16G16_SFIXED5_NV: {
             struct VKU_FORMAT_INFO out = {VKU_FORMAT_COMPATIBILITY_CLASS_32BIT, 4, 1, {1, 1, 1}, 2, {{VKU_FORMAT_COMPONENT_TYPE_R, 16}, {VKU_FORMAT_COMPONENT_TYPE_G, 16}}};
             return out; }
 
@@ -1106,7 +1112,6 @@ inline const struct VKU_FORMAT_INFO vkuGetFormatInfo(VkFormat format) {
         }
     };
 }
-// clang-format on
 
 struct VKU_FORMAT_PER_PLANE_COMPATIBILITY {
     uint32_t width_divisor;
@@ -1120,7 +1125,6 @@ struct VKU_FORMAT_MULTIPLANE_COMPATIBILITY {
 };
 
 // Source: Vulkan spec Table 47. Plane Format Compatibility Table
-// clang-format off
 inline const struct VKU_FORMAT_MULTIPLANE_COMPATIBILITY vkuGetFormatCompatibility(VkFormat format) {
     switch (format) {
         case VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM: {
@@ -1200,7 +1204,16 @@ inline const struct VKU_FORMAT_MULTIPLANE_COMPATIBILITY vkuGetFormatCompatibilit
             return out; }
     };
 }
-// clang-format on
+
+// Return true if all components in a format are an SFIXED5
+bool vkuFormatIsSFIXED5(VkFormat format) {
+    switch (format) {
+        case VK_FORMAT_R16G16_SFIXED5_NV:
+            return true;
+        default:
+            return false;
+    }
+}
 
 // Return true if all components in a format are an SFLOAT
 bool vkuFormatIsSFLOAT(VkFormat format) {
@@ -1263,7 +1276,6 @@ bool vkuFormatIsSINT(VkFormat format) {
         case VK_FORMAT_R64G64_SINT:
         case VK_FORMAT_R64G64B64_SINT:
         case VK_FORMAT_R64G64B64A64_SINT:
-        case VK_FORMAT_R16G16_S10_5_NV:
             return true;
         default:
             return false;
@@ -1666,8 +1678,6 @@ bool vkuFormatIsCompressed_PVRTC(VkFormat format) {
             return false;
     }
 }
-
-// clang-format off
 // Return true if a format is any compressed image format
 bool vkuFormatIsCompressed(VkFormat format) {
     return
@@ -1678,7 +1688,6 @@ bool vkuFormatIsCompressed(VkFormat format) {
         vkuFormatIsCompressed_ETC2(format) ||
         vkuFormatIsCompressed_PVRTC(format);
 }
-// clang-format on
 
 // Return true if format is a depth OR stencil format
 bool vkuFormatIsDepthOrStencil(VkFormat format) {
@@ -2174,7 +2183,7 @@ inline bool vkuFormatIs16bit(VkFormat format) {
         case VK_FORMAT_G16_B16R16_2PLANE_422_UNORM:
         case VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM:
         case VK_FORMAT_G16_B16R16_2PLANE_444_UNORM:
-        case VK_FORMAT_R16G16_S10_5_NV:
+        case VK_FORMAT_R16G16_SFIXED5_NV:
             return true;
         default:
             return false;
@@ -2262,3 +2271,5 @@ inline uint32_t vkuGetPlaneIndex(VkImageAspectFlagBits aspect) {
 #ifdef __cplusplus
 }
 #endif
+
+// clang-format off

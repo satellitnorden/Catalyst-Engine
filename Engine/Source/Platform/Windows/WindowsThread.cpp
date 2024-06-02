@@ -6,6 +6,7 @@
 #include <Platform/Windows/CatalystPlatformWindows.h>
 
 //STL.
+#include <string>
 #include <thread>
 
 /*
