@@ -26,6 +26,9 @@ public:
 		//The directory that this plugin operates in.
 		DynamicString _Directory;
 
+		//The sample rate.
+		float32 _SampleRate;
+
 	};
 
 	/*
@@ -43,6 +46,18 @@ public:
 	{
 		//Store the parameters.
 		_Parameters = parameters;
+	}
+
+	/*
+	*	Sets the sample rate.
+	*/
+	FORCE_INLINE void SetSampleRate(const float32 value) NOEXCEPT
+	{
+		if (_Parameters._SampleRate != value)
+		{
+			_Parameters._SampleRate = value;
+			OnSampleRateChanged();
+		}
 	}
 
 	/*
@@ -74,5 +89,13 @@ protected:
 
 	//The parameters.
 	Parameters _Parameters;
+
+	/*
+	*	Callback for when the sample rate changed.
+	*/
+	FORCE_INLINE virtual void OnSampleRateChanged() NOEXCEPT
+	{
+
+	}
 
 };
