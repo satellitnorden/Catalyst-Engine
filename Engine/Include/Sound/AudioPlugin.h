@@ -10,6 +10,9 @@
 //Sound.
 #include <Sound/MIDIMessage.h>
 
+//User interface.
+#include <UserInterface/UserInterfaceCore.h>
+
 /*
 *	This is a base class for audio plugins, meant to represent some generic processing unit that can be reused in different contexts.
 */
@@ -87,6 +90,7 @@ public:
 		//Enumeration covering all types.
 		enum class Type : uint8
 		{
+			TEXT,
 			KNOB
 		};
 
@@ -98,6 +102,15 @@ public:
 
 		//The parameter.
 		HashString _Parameter;
+
+		struct
+		{
+			//The text.
+			const char *RESTRICT _Text;
+
+			//The horizontal alignment.
+			TextHorizontalAlignment _HorizontalAlignment{ TextHorizontalAlignment::CENTER };
+		} _TextData;
 
 	};
 

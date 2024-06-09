@@ -6,6 +6,9 @@
 //Sound.
 #include <Sound/SoundCore.h>
 
+//STL.
+#include <cmath>
+
 namespace SoundUtilities
 {
 
