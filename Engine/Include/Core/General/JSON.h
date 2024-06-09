@@ -129,6 +129,11 @@ public:
 	NO_DISCARD bool ToBool() const NOEXCEPT;
 
 	/*
+	*	Converts this JSON object to a float32.
+	*/
+	NO_DISCARD float32 ToFloat32() const NOEXCEPT;
+
+	/*
 	*	Converts this JSON object to a float64.
 	*/
 	NO_DISCARD float64 ToFloat64() const NOEXCEPT;

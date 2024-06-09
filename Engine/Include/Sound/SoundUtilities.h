@@ -10,6 +10,22 @@ namespace SoundUtilities
 {
 
 	/*
+	*	Converts gain to decibels.
+	*/
+	FORCE_INLINE NO_DISCARD float32 GainToDecibels(const float32 gain) NOEXCEPT
+	{
+		return 20.0f * log10(gain);
+	}
+
+	/*
+	*	Converts decibels to gain.
+	*/
+	FORCE_INLINE NO_DISCARD float32 DecibelsToGain(const float32 decibels) NOEXCEPT
+	{
+		return pow(10.0f, decibels * 0.05f);
+	}
+
+	/*
 	*	Calculates the realy note duration in seconds in regards to the beats per minute.
 	*/
 	template <typename TYPE>

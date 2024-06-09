@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/DynamicString.h>
 
+//Math.
+#include <Math/Geometry/AxisAlignedBoundingBox2D.h>
+
 //Sound.
 #include <Sound/MIDIMessage.h>
 
@@ -16,9 +19,9 @@ class AudioPlugin
 public:
 
 	/*
-	*	Parameters class definition.
+	*	Initialize parameters class definition.
 	*/
-	class Parameters final
+	class InitializeParameters final
 	{
 
 	public:
@@ -32,6 +35,102 @@ public:
 	};
 
 	/*
+	*	Parameter class definition.
+	*/
+	class Parameter final
+	{
+
+	public:
+
+		//Enumeration covering all formats.
+		enum class Format : uint8
+		{
+			GAIN,
+			PERCENT,
+			MILLISECONDS
+		};
+
+		//The name.
+		const char *RESTRICT _Name;
+
+		//The identifier.
+		HashString _Identifier;
+
+		//The index.
+		uint64 _Index;
+
+		//The data.
+		float32 *RESTRICT _Data;
+
+		//The minimum.
+		float32 _Minimum;
+
+		//The maximum.
+		float32 _Maximum;
+
+		//The step.
+		float64 _Step;
+
+		//The format.
+		Format _Format;
+
+	};
+
+	/*
+	*	Control class definition.
+	*/
+	class Control final
+	{
+
+	public:
+
+		//Enumeration covering all types.
+		enum class Type : uint8
+		{
+			KNOB
+		};
+
+		//The bounding box.
+		AxisAlignedBoundingBox2D _BoundingBox;
+
+		//The type.
+		Type _Type;
+
+		//The parameter.
+		HashString _Parameter;
+
+	};
+
+	/*
+	*	Control tab class definition.
+	*/
+	class ControlTab final
+	{
+
+	public:
+
+		//The name.
+		const char *RESTRICT _Name;
+
+		//The controls.
+		DynamicArray<Control> _Controls;
+
+	};
+
+	/*
+	*	Control layout class definition.
+	*/
+	class ControlLayout final
+	{
+
+	public:
+
+		//The tabs.
+		DynamicArray<ControlTab> _Tabs;
+
+	};
+
+	/*
 	*	Default destructor.
 	*/
 	FORCE_INLINE virtual ~AudioPlugin() NOEXCEPT
@@ -40,12 +139,36 @@ public:
 	}
 
 	/*
+	*	Returns the latency, in seconds.
+	*/
+	FORCE_INLINE virtual NO_DISCARD float32 GetLatency() NOEXCEPT
+	{
+		return 0.0f;
+	}
+
+	/*
+	*	Returns the parameters.
+	*/
+	FORCE_INLINE NO_DISCARD const DynamicArray<Parameter> &GetParameters() const NOEXCEPT
+	{
+		return _Parameters;
+	}
+
+	/*
+	*	Returns the control layout.
+	*/
+	FORCE_INLINE NO_DISCARD const ControlLayout* const RESTRICT GetControlLayout() const NOEXCEPT
+	{
+		return &_ControlLayout;
+	}
+
+	/*
 	*	Initializes this audio plugin.
 	*/
-	FORCE_INLINE virtual void Initialize(const Parameters &parameters) NOEXCEPT
+	FORCE_INLINE virtual void Initialize(const InitializeParameters &parameters) NOEXCEPT
 	{
-		//Store the parameters.
-		_Parameters = parameters;
+		//Store the initialize parameters.
+		_InitializeParameters = parameters;
 	}
 
 	/*
@@ -53,9 +176,9 @@ public:
 	*/
 	FORCE_INLINE void SetSampleRate(const float32 value) NOEXCEPT
 	{
-		if (_Parameters._SampleRate != value)
+		if (_InitializeParameters._SampleRate != value)
 		{
-			_Parameters._SampleRate = value;
+			_InitializeParameters._SampleRate = value;
 			OnSampleRateChanged();
 		}
 	}
@@ -87,8 +210,14 @@ public:
 
 protected:
 
+	//The initialize parameters.
+	InitializeParameters _InitializeParameters;
+
 	//The parameters.
-	Parameters _Parameters;
+	DynamicArray<Parameter> _Parameters;
+
+	//The control layout.
+	ControlLayout _ControlLayout;
 
 	/*
 	*	Callback for when the sample rate changed.

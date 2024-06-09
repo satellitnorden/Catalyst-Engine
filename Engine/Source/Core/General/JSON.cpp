@@ -249,6 +249,14 @@ NO_DISCARD bool JSON::ToBool() const NOEXCEPT
 }
 
 /*
+*	Converts this JSON object to a float32.
+*/
+NO_DISCARD float32 JSON::ToFloat32() const NOEXCEPT
+{
+	return IMPLEMENTATION->_JSON->get<float32>();
+}
+
+/*
 *	Converts this JSON object to a float64.
 */
 NO_DISCARD float64 JSON::ToFloat64() const NOEXCEPT
