@@ -48,6 +48,7 @@ public:
 		//Enumeration covering all formats.
 		enum class Format : uint8
 		{
+			NATIVE,
 			GAIN,
 			PERCENT,
 			MILLISECONDS
@@ -144,9 +145,51 @@ public:
 	};
 
 	/*
+	*	Piano roll information class definition.
+	*/
+	class PianoRollInformation final
+	{
+
+	public:
+
+		/*
+		*	Key information class definition.
+		*/
+		class KeyInformation final
+		{
+
+		public:
+
+			//The color.
+			Vector3<float32> _Color{ -1.0f, -1.0f, -1.0f };
+		
+		};
+
+		//The key information.
+		StaticArray<KeyInformation, 127> _KeyInformation;
+
+	};
+
+	/*
 	*	Default destructor.
 	*/
 	FORCE_INLINE virtual ~AudioPlugin() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Returns if this audio plugin wants a piano roll.
+	*/
+	FORCE_INLINE virtual NO_DISCARD bool WantsPianoRoll() const NOEXCEPT
+	{
+		return false;
+	}
+
+	/*
+	*	Returns the piano roll information.
+	*/
+	FORCE_INLINE virtual void GetPianoRollInformation(PianoRollInformation *const RESTRICT information) NOEXCEPT
 	{
 
 	}
