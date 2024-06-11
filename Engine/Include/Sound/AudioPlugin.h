@@ -57,6 +57,9 @@ public:
 		//The name.
 		const char *RESTRICT _Name;
 
+		//The tooltip.
+		const char *RESTRICT _Tooltip{ "" };
+
 		//The identifier.
 		HashString _Identifier;
 
@@ -162,6 +165,9 @@ public:
 
 			//The color.
 			Vector3<float32> _Color{ -1.0f, -1.0f, -1.0f };
+
+			//The tooltip.
+			const char *RESTRICT _Tooltip{ "" };
 		
 		};
 
