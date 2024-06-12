@@ -2,7 +2,9 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
+#include <Core/General/HashString.h>
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox2D.h>
@@ -49,6 +51,8 @@ public:
 		enum class Format : uint8
 		{
 			NATIVE,
+			BOOL,
+			FREQUENCY,
 			GAIN,
 			PERCENT,
 			MILLISECONDS
@@ -67,7 +71,7 @@ public:
 		uint64 _Index;
 
 		//The data.
-		float32 *RESTRICT _Data;
+		void *RESTRICT _Data;
 
 		//The minimum.
 		float32 _Minimum;
@@ -95,7 +99,8 @@ public:
 		enum class Type : uint8
 		{
 			TEXT,
-			KNOB
+			KNOB,
+			CHECKBOX
 		};
 
 		//The bounding box.
