@@ -61,6 +61,9 @@ public:
 		//The name.
 		const char *RESTRICT _Name;
 
+		//The display name.
+		const char *RESTRICT _DisplayName{ nullptr };
+
 		//The tooltip.
 		const char *RESTRICT _Tooltip{ "" };
 

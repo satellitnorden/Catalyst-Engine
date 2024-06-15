@@ -17,7 +17,7 @@ namespace SoundUtilities
 	*/
 	FORCE_INLINE NO_DISCARD float32 GainToDecibels(const float32 gain) NOEXCEPT
 	{
-		return 20.0f * log10(gain);
+		return 20.0f * std::log10(gain);
 	}
 
 	/*
@@ -25,7 +25,15 @@ namespace SoundUtilities
 	*/
 	FORCE_INLINE NO_DISCARD float32 DecibelsToGain(const float32 decibels) NOEXCEPT
 	{
-		return pow(10.0f, decibels * 0.05f);
+		return std::pow(10.0f, decibels * 0.05f);
+	}
+
+	/*
+	*	Converts quality (Q) to bandwidth.
+	*/
+	FORCE_INLINE NO_DISCARD float32 QualityToBandwidth(const float32 Q) NOEXCEPT
+	{
+		return std::log(std::sqrt((std::pow((2.0f + (1.0f / std::pow(Q, 2.0f))), 2.0f) / 4.0f) - 1.0f) + (1.0f / (2.0f * std::pow(Q, 2.0f))) + 1.0f) / std::log(2.0f);
 	}
 
 	/*
