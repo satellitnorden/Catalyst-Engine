@@ -111,6 +111,9 @@ public:
 					//Denotes if this is a slide event.
 					bool _IsSlideEvent;
 
+					//Denotes whether or not this event slides out.
+					bool _SlideOut;
+
 					//The text (if any) associated with this event.
 					DynamicString _Text;
 
@@ -456,7 +459,7 @@ public:
 
 					last_played_note._FretIndex = -1;
 					last_played_note._WasTieOrigin = false;
-					last_played_note._WasSlideOrigin = false;
+					last_played_note._WasLegatoSlideOrigin = false;
 					last_played_note._BarIndex = UINT64_MAXIMUM;
 					last_played_note._EventIndex = UINT64_MAXIMUM;
 				}
@@ -644,8 +647,18 @@ public:
 
 					else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "Slide"))
 					{
+						const uint32 flags{ std::stoul(property_node.child("Flags").child_value()) };
+
 						//Add the flag.
-						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::SLIDE_ORIGIN));
+						if (flags == 2) //Legato slide.
+						{
+							new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::LEGATO_SLIDE));
+						}
+
+						if (flags == 4) //Slide out.
+						{
+							new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::SLIDE_OUT));
+						}
 					}
 
 					else if (	StringUtilities::IsEqual(property_node.attribute("name").value(), "BendDestinationOffset")
@@ -900,7 +913,10 @@ public:
 								new_event._BendValues = note._BendValues;
 
 								//Set whether or not this is a slide event.
-								new_event._IsSlideEvent = last_played_note._WasSlideOrigin;
+								new_event._IsSlideEvent = last_played_note._WasLegatoSlideOrigin;
+
+								//Set whether or not this event slides out.
+								new_event._SlideOut = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::SLIDE_OUT));
 
 								//Set the text.
 								new_event._Text = beat._Text;
@@ -908,7 +924,7 @@ public:
 								//Update the last played note.
 								last_played_note._FretIndex = note._FretIndex;
 								last_played_note._WasTieOrigin = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::TIE_ORIGIN));
-								last_played_note._WasSlideOrigin = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::SLIDE_ORIGIN));
+								last_played_note._WasLegatoSlideOrigin = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::LEGATO_SLIDE));
 								last_played_note._BarIndex = bar_index;
 								last_played_note._EventIndex = track_bar._Events.LastIndex();
 							}
@@ -983,9 +999,10 @@ private:
 				HOPO_DESTINATION = BIT(1),
 				NATURAL_HARMONIC = BIT(2),
 				PALM_MUTED = BIT(3),
-				SLIDE_ORIGIN = BIT(4),
-				TIE_ORIGIN = BIT(5),
-				TIE_DESTINATION = BIT(6)
+				LEGATO_SLIDE = BIT(4),
+				SLIDE_OUT = BIT(5),
+				TIE_ORIGIN = BIT(6),
+				TIE_DESTINATION = BIT(7)
 			};
 
 			//The string index.
@@ -1035,8 +1052,8 @@ private:
 			//Whether or not this was a tie origin.
 			bool _WasTieOrigin;
 
-			//Whether or not this was a slide origin.
-			bool _WasSlideOrigin;
+			//Whether or not this was a legato slide origin.
+			bool _WasLegatoSlideOrigin;
 
 			//The bar index.
 			uint64 _BarIndex;
