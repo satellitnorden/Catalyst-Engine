@@ -327,7 +327,7 @@ private:
 /*
 *	Specialized function for sampling Texture2D<Vector4<byte>> texures with bilinear filtering.
 */
-FORCE_INLINE NO_DISCARD Vector4<float32> Sample(const Texture2D<Vector4<byte>> &texture, const Vector2<float32> &coordinate) NOEXCEPT
+FORCE_INLINE NO_DISCARD Vector4<float32> SampleConvert(const Texture2D<Vector4<byte>> &texture, const Vector2<float32> &coordinate) NOEXCEPT
 {
 	//Cache the width/height.
 	const uint32 width{ texture.GetWidth() };

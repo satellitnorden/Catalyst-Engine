@@ -34,9 +34,6 @@ public:
 		//The directory that this plugin operates in.
 		DynamicString _Directory;
 
-		//The sample rate.
-		float32 _SampleRate;
-
 	};
 
 	/*
@@ -91,6 +88,42 @@ public:
 	};
 
 	/*
+	*	Preset class definition.
+	*/
+	class Preset final
+	{
+
+	public:
+
+		/*
+		*	Parameter class definition.
+		*/
+		class Parameter final
+		{
+
+		public:
+
+			//The identifier.
+			HashString _Identifier;
+
+			//The value.
+			union
+			{
+				float32 _Value_float32;
+				bool _Value_bool;
+			};
+
+		};
+
+		//The name.
+		const char *RESTRICT _Name;
+
+		//The parameters.
+		DynamicArray<Parameter> _Parameters;
+
+	};
+
+	/*
 	*	Control class definition.
 	*/
 	class Control final
@@ -103,7 +136,8 @@ public:
 		{
 			TEXT,
 			KNOB,
-			CHECKBOX
+			CHECKBOX,
+			SWITCH
 		};
 
 		//The bounding box.
@@ -119,6 +153,9 @@ public:
 		{
 			//The text.
 			const char *RESTRICT _Text;
+
+			//The size.
+			float32 _Size{ 16.0f };
 
 			//The horizontal alignment.
 			TextHorizontalAlignment _HorizontalAlignment{ TextHorizontalAlignment::CENTER };
@@ -149,6 +186,9 @@ public:
 	{
 
 	public:
+
+		//The controls.
+		DynamicArray<Control> _Controls;
 
 		//The tabs.
 		DynamicArray<ControlTab> _Tabs;
@@ -225,6 +265,14 @@ public:
 	}
 
 	/*
+	*	Returns the presets.
+	*/
+	FORCE_INLINE NO_DISCARD const DynamicArray<Preset> &GetPresets() const NOEXCEPT
+	{
+		return _Presets;
+	}
+
+	/*
 	*	Returns the control layout.
 	*/
 	FORCE_INLINE NO_DISCARD const ControlLayout* const RESTRICT GetControlLayout() const NOEXCEPT
@@ -246,9 +294,9 @@ public:
 	*/
 	FORCE_INLINE void SetSampleRate(const float32 value) NOEXCEPT
 	{
-		if (_InitializeParameters._SampleRate != value)
+		if (_SampleRate != value)
 		{
-			_InitializeParameters._SampleRate = value;
+			_SampleRate = value;
 			OnSampleRateChanged();
 		}
 	}
@@ -286,8 +334,14 @@ protected:
 	//The parameters.
 	DynamicArray<Parameter> _Parameters;
 
+	//The presets.
+	DynamicArray<Preset> _Presets;
+
 	//The control layout.
 	ControlLayout _ControlLayout;
+
+	//The sample rate.
+	float32 _SampleRate{ 44'100.0f };
 
 	/*
 	*	Callback for when the sample rate changed.

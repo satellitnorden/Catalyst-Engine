@@ -81,7 +81,7 @@ public:
 				texture_coordinate += vertex_data[i]._UserData._TextureCoordinate * barycentric_coordinates[i];
 			}
 
-			const Vector4<float32> color{ Sample(vertex_data[0]._UserData._Material->_OpacityComponent._Texture->_Texture2D, texture_coordinate) };
+			const Vector4<float32> color{ SampleConvert(vertex_data[0]._UserData._Material->_OpacityComponent._Texture->_Texture2D, texture_coordinate) };
 
 			return color[0] >= 0.5f;
 		}
@@ -211,7 +211,7 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 
 				case MaterialAsset::Component::Type::TEXTURE:
 				{
-					const Vector4<float32> color{ Sample(vertex_data[0]._UserData._Material->_AlbedoThicknessComponent._Texture->_Texture2D, texture_coordinate) };
+					const Vector4<float32> color{ SampleConvert(vertex_data[0]._UserData._Material->_AlbedoThicknessComponent._Texture->_Texture2D, texture_coordinate) };
 
 					for (uint8 i{ 0 }; i < 3; ++i)
 					{
@@ -271,7 +271,7 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 
 						case MaterialAsset::Component::Type::TEXTURE:
 						{
-							normal_map_displacement = Sample(vertex_data[0]._UserData._Material->_NormalMapDisplacementComponent._Texture->_Texture2D, texture_coordinate);
+							normal_map_displacement = SampleConvert(vertex_data[0]._UserData._Material->_NormalMapDisplacementComponent._Texture->_Texture2D, texture_coordinate);
 
 							break;
 						}
@@ -305,7 +305,7 @@ NO_DISCARD bool WorldTracingSystem::SurfaceDescriptionRay(const Ray &ray, float3
 
 				case MaterialAsset::Component::Type::TEXTURE:
 				{
-					material_properties = Sample(vertex_data[0]._UserData._Material->_MaterialPropertiesComponent._Texture->_Texture2D, texture_coordinate);
+					material_properties = SampleConvert(vertex_data[0]._UserData._Material->_MaterialPropertiesComponent._Texture->_Texture2D, texture_coordinate);
 
 					break;
 				}
