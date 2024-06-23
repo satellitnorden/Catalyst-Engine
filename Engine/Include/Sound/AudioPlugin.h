@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/ArrayProxy.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
@@ -49,6 +50,7 @@ public:
 		{
 			NATIVE,
 			BOOL,
+			ENUMERATION,
 			FREQUENCY,
 			GAIN,
 			PERCENT,
@@ -84,6 +86,12 @@ public:
 
 		//The format.
 		Format _Format;
+
+		//The enumeration names. Only used if _Format is Format::ENUMERATION.
+		ArrayProxy<const char*> _EnumerationNames;
+
+		//The enumeration tooltips. Only used if _Format is Format::ENUMERATION.
+		ArrayProxy<const char*> _EnumerationTooltips;
 
 	};
 
@@ -121,6 +129,56 @@ public:
 		//The parameters.
 		DynamicArray<Parameter> _Parameters;
 
+		/*
+		*	Adds the parameter with the given identifier with the given value.
+		*/
+		FORCE_INLINE void Add(const HashString identifier, const float32 value) NOEXCEPT
+		{
+			_Parameters.Emplace();
+			Parameter &parameter{ _Parameters.Back() };
+
+			parameter._Identifier = identifier;
+			parameter._Value_float32 = value;
+		}
+
+		FORCE_INLINE void Add(const HashString identifier, const bool value) NOEXCEPT
+		{
+			_Parameters.Emplace();
+			Parameter &parameter{ _Parameters.Back() };
+
+			parameter._Identifier = identifier;
+			parameter._Value_bool = value;
+		}
+
+		/*
+		*	Replaces the parameter with the given identifier with the given value. Useful if you want to "base" presets on others.
+		*/
+		FORCE_INLINE void Replace(const HashString identifier, const float32 value) NOEXCEPT
+		{
+			for (Parameter &parameter : _Parameters)
+			{
+				if (parameter._Identifier == identifier)
+				{
+					parameter._Value_float32 = value;
+
+					return;
+				}
+			}
+		}
+
+		FORCE_INLINE void Replace(const HashString identifier, const bool value) NOEXCEPT
+		{
+			for (Parameter &parameter : _Parameters)
+			{
+				if (parameter._Identifier == identifier)
+				{
+					parameter._Value_bool = value;
+
+					return;
+				}
+			}
+		}
+
 	};
 
 	/*
@@ -137,6 +195,7 @@ public:
 			TEXT,
 			KNOB,
 			CHECKBOX,
+			SELECTOR,
 			SWITCH
 		};
 
@@ -349,6 +408,24 @@ protected:
 	FORCE_INLINE virtual void OnSampleRateChanged() NOEXCEPT
 	{
 
+	}
+
+	/*
+	*	Returns the preset with the given name.
+	*/
+	FORCE_INLINE NO_DISCARD Preset *const RESTRICT FindPreset(const char *const RESTRICT name) NOEXCEPT
+	{
+		for (Preset &preset : _Presets)
+		{
+			if (StringUtilities::IsEqual(preset._Name, name))
+			{
+				return &preset;
+			}
+		}
+
+		ASSERT(false, "Couldn't preset with name %s!", name);
+
+		return nullptr;
 	}
 
 };
