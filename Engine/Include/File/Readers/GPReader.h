@@ -83,6 +83,7 @@ public:
 						PALM_MUTED,
 						HAMMER_ON,
 						PULL_OFF,
+						TAPPED,
 						DEAD,
 						NATURAL_HARMONIC
 					};
@@ -647,15 +648,18 @@ public:
 
 					else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "Slide"))
 					{
+						constexpr uint32 LEGATO_SLIDE_BIT{ BIT(1) };
+						constexpr uint32 SLIDE_OUT_BIT{ BIT(2) };
+
 						const uint32 flags{ std::stoul(property_node.child("Flags").child_value()) };
 
 						//Add the flag.
-						if (flags == 2) //Legato slide.
+						if (TEST_BIT(flags, LEGATO_SLIDE_BIT)) //Legato slide.
 						{
 							new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::LEGATO_SLIDE));
 						}
 
-						if (flags == 4) //Slide out.
+						if (TEST_BIT(flags, SLIDE_OUT_BIT)) //Slide out.
 						{
 							new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::SLIDE_OUT));
 						}
@@ -677,6 +681,12 @@ public:
 						const float32 value{ std::stof(float_node.child_value()) };
 
 						new_note._BendValues.Emplace(value / 100.0f * 4.0f);
+					}
+
+					else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "Tapped"))
+					{
+						//Add the flag.
+						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::TAPPED));
 					}
 				}
 
@@ -903,6 +913,11 @@ public:
 									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::PALM_MUTED;
 								}
 
+								else if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::TAPPED)))
+								{
+									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::TAPPED;
+								}
+
 								else if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::DEAD)))
 								{
 									new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::DEAD;
@@ -992,7 +1007,7 @@ private:
 		public:
 
 			//Enumeration covering all flags.
-			enum class Flags : uint8
+			enum class Flags : uint64
 			{
 				NONE = 0,
 				DEAD = BIT(0),
@@ -1001,8 +1016,9 @@ private:
 				PALM_MUTED = BIT(3),
 				LEGATO_SLIDE = BIT(4),
 				SLIDE_OUT = BIT(5),
-				TIE_ORIGIN = BIT(6),
-				TIE_DESTINATION = BIT(7)
+				TAPPED = BIT(6),
+				TIE_ORIGIN = BIT(7),
+				TIE_DESTINATION = BIT(8)
 			};
 
 			//The string index.
