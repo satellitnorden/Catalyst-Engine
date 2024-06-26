@@ -159,6 +159,11 @@ public:
 	NO_DISCARD uint8 ToUint8() const NOEXCEPT;
 
 	/*
+	*	Converts this JSON object to a uint32.
+	*/
+	NO_DISCARD uint32 ToUint32() const NOEXCEPT;
+
+	/*
 	*	Converts this JSON object to a uint64.
 	*/
 	NO_DISCARD uint64 ToUint64() const NOEXCEPT;

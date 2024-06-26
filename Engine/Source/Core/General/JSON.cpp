@@ -297,6 +297,14 @@ NO_DISCARD uint8 JSON::ToUint8() const NOEXCEPT
 }
 
 /*
+*	Converts this JSON object to a uint32.
+*/
+NO_DISCARD uint32 JSON::ToUint32() const NOEXCEPT
+{
+	return IMPLEMENTATION->_JSON->get<uint32>();
+}
+
+/*
 *	Converts this JSON object to a uint64.
 */
 NO_DISCARD uint64 JSON::ToUint64() const NOEXCEPT
