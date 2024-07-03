@@ -363,18 +363,21 @@ public:
 	/*
 	*	Callback for this audio plugin to process the given buffer.
 	*/
-	FORCE_INLINE virtual void Process(const float32 input, float32 *const RESTRICT output, const uint8 channel_index) NOEXCEPT
+	FORCE_INLINE virtual void Process
+	(
+		const DynamicArray<DynamicArray<float32>> &inputs,
+		DynamicArray<DynamicArray<float32>> *const RESTRICT outputs,
+		const uint32 number_of_samples,
+		const uint8 number_of_channels
+	) NOEXCEPT
 	{
-		//Default to passthrough.
-		*output = input;
-	}
-
-	/*
-	*	Advances this audio plugin.
-	*/
-	FORCE_INLINE virtual void Advance() NOEXCEPT
-	{
-
+		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+		{
+			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+			{
+				outputs->At(channel_index).At(sample_index) = inputs.At(channel_index).At(sample_index);
+			}
+		}
 	}
 
 	/*
