@@ -124,7 +124,7 @@ public:
     int getBitDepth() const;
     
     /** @Returns the number of samples per channel */
-    int getNumSamplesPerChannel() const;
+    size_t getNumSamplesPerChannel() const;
     
     /** @Returns the length in seconds of the audio file based on the number of samples and sample rate */
     double getLengthInSeconds() const;
@@ -198,6 +198,7 @@ private:
     
     //=============================================================
     int32_t fourBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
+    uint32_t fourBytesToUint32(std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int16_t twoBytesToInt (std::vector<uint8_t>& source, int startIndex, Endianness endianness = Endianness::LittleEndian);
     int getIndexOfString (std::vector<uint8_t>& source, std::string s);
     int getIndexOfChunk (std::vector<uint8_t>& source, const std::string& chunkHeaderID, int startIndex, Endianness endianness = Endianness::LittleEndian);
@@ -211,6 +212,7 @@ private:
     void addStringToFileData (std::vector<uint8_t>& fileData, std::string s);
     void addInt32ToFileData (std::vector<uint8_t>& fileData, int32_t i, Endianness endianness = Endianness::LittleEndian);
     void addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i, Endianness endianness = Endianness::LittleEndian);
+    void addUint32ToFileData(std::vector<uint8_t>& fileData, uint32_t i, Endianness endianness = Endianness::LittleEndian);
     
     //=============================================================
     bool writeDataToFile (std::vector<uint8_t>& fileData, std::string filePath);
@@ -371,10 +373,10 @@ int AudioFile<T>::getBitDepth() const
 
 //=============================================================
 template <class T>
-int AudioFile<T>::getNumSamplesPerChannel() const
+size_t AudioFile<T>::getNumSamplesPerChannel() const
 {
     if (samples.size() > 0)
-        return (int) samples[0].size();
+        return samples[0].size();
     else
         return 0;
 }
@@ -646,19 +648,19 @@ bool AudioFile<T>::decodeWaveFile (std::vector<uint8_t>& fileData)
     // DATA CHUNK
     int d = indexOfDataChunk;
     std::string dataChunkID (fileData.begin() + d, fileData.begin() + d + 4);
-    int32_t dataChunkSize = fourBytesToInt (fileData, d + 4);
-    
-    int numSamples = dataChunkSize / (numChannels * bitDepth / 8);
+    uint32_t dataChunkSize = fourBytesToUint32 (fileData, d + 4);
+
+    size_t numSamples = dataChunkSize / (numChannels * bitDepth / 8);
     int samplesStartIndex = indexOfDataChunk + 8;
     
     clearAudioBuffer();
     samples.resize (numChannels);
     
-    for (int i = 0; i < numSamples; i++)
+    for (size_t i = 0; i < numSamples; i++)
     {
         for (int channel = 0; channel < numChannels; channel++)
         {
-            int sampleIndex = samplesStartIndex + (numBytesPerBlock * i) + channel * numBytesPerSample;
+            uint32_t sampleIndex = samplesStartIndex + (numBytesPerBlock * i) + channel * numBytesPerSample;
             
             if ((sampleIndex + (bitDepth / 8) - 1) >= fileData.size())
             {
@@ -938,7 +940,7 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
 {
     std::vector<uint8_t> fileData;
     
-    int32_t dataChunkSize = getNumSamplesPerChannel() * (getNumChannels() * bitDepth / 8);
+    uint32_t dataChunkSize = getNumSamplesPerChannel() * (getNumChannels() * bitDepth / 8);
     int16_t audioFormat = bitDepth == 32 && std::is_floating_point_v<T> ? WavAudioFormat::IEEEFloat : WavAudioFormat::PCM;
     int32_t formatChunkSize = audioFormat == WavAudioFormat::PCM ? 16 : 18;
     int32_t iXMLChunkSize = static_cast<int32_t> (iXMLChunk.size());
@@ -949,13 +951,13 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
     
     // The file size in bytes is the header chunk size (4, not counting RIFF and WAVE) + the format
     // chunk size (24) + the metadata part of the data chunk plus the actual data chunk size
-    int32_t fileSizeInBytes = 4 + formatChunkSize + 8 + 8 + dataChunkSize;
+    uint32_t fileSizeInBytes = 4 + formatChunkSize + 8 + 8 + dataChunkSize;
     if (iXMLChunkSize > 0)
     {
         fileSizeInBytes += (8 + iXMLChunkSize);
     }
 
-    addInt32ToFileData (fileData, fileSizeInBytes);
+    addUint32ToFileData (fileData, fileSizeInBytes);
     
     addStringToFileData (fileData, "WAVE");
     
@@ -981,9 +983,9 @@ bool AudioFile<T>::saveToWaveFile (std::string filePath)
     // -----------------------------------------------------------
     // DATA CHUNK
     addStringToFileData (fileData, "data");
-    addInt32ToFileData (fileData, dataChunkSize);
+    addUint32ToFileData (fileData, dataChunkSize);
     
-    for (int i = 0; i < getNumSamplesPerChannel(); i++)
+    for (size_t i = 0; i < getNumSamplesPerChannel(); i++)
     {
         for (int channel = 0; channel < getNumChannels(); channel++)
         {
@@ -1232,6 +1234,31 @@ void AudioFile<T>::addInt16ToFileData (std::vector<uint8_t>& fileData, int16_t i
 
 //=============================================================
 template <class T>
+void AudioFile<T>::addUint32ToFileData(std::vector<uint8_t>& fileData, uint32_t i, Endianness endianness)
+{
+    uint8_t bytes[4];
+
+    if (endianness == Endianness::LittleEndian)
+    {
+        bytes[3] = (i >> 24) & 0xFF;
+        bytes[2] = (i >> 16) & 0xFF;
+        bytes[1] = (i >> 8) & 0xFF;
+        bytes[0] = i & 0xFF;
+    }
+    else
+    {
+        bytes[0] = (i >> 24) & 0xFF;
+        bytes[1] = (i >> 16) & 0xFF;
+        bytes[2] = (i >> 8) & 0xFF;
+        bytes[3] = i & 0xFF;
+    }
+
+    for (int i = 0; i < 4; i++)
+        fileData.push_back(bytes[i]);
+}
+
+//=============================================================
+template <class T>
 void AudioFile<T>::clearAudioBuffer()
 {
     for (size_t i = 0; i < samples.size();i++)
@@ -1274,6 +1301,28 @@ int32_t AudioFile<T>::fourBytesToInt (std::vector<uint8_t>& source, int startInd
     else
     {
         assert (false && "Attempted to read four bytes from vector at position where out of bounds access would occur");
+        return 0; // this is a dummy value as we don't have one to return
+    }
+}
+
+//=============================================================
+template <class T>
+uint32_t AudioFile<T>::fourBytesToUint32(std::vector<uint8_t>& source, int startIndex, Endianness endianness)
+{
+    if (source.size() >= (startIndex + 4))
+    {
+        uint32_t result;
+
+        if (endianness == Endianness::LittleEndian)
+            result = (source[startIndex + 3] << 24) | (source[startIndex + 2] << 16) | (source[startIndex + 1] << 8) | source[startIndex];
+        else
+            result = (source[startIndex] << 24) | (source[startIndex + 1] << 16) | (source[startIndex + 2] << 8) | source[startIndex + 3];
+
+        return result;
+    }
+    else
+    {
+        assert(false && "Attempted to read four bytes from vector at position where out of bounds access would occur");
         return 0; // this is a dummy value as we don't have one to return
     }
 }

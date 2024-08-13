@@ -54,7 +54,8 @@ public:
 			FREQUENCY,
 			GAIN,
 			PERCENT,
-			MILLISECONDS
+			MILLISECONDS,
+			UNSIGNED_INTEGER_32
 		};
 
 		//The name.

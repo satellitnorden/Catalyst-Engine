@@ -124,6 +124,11 @@ public:
 	JSON Emplace() NOEXCEPT;
 
 	/*
+	*	Returns the size of this JSON object.
+	*/
+	NO_DISCARD uint64 Size() const NOEXCEPT;
+
+	/*
 	*	Converts this JSON object to a bool.
 	*/
 	NO_DISCARD bool ToBool() const NOEXCEPT;

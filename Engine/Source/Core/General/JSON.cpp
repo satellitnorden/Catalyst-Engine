@@ -241,6 +241,14 @@ JSON JSON::Emplace() NOEXCEPT
 }
 
 /*
+*	Returns the size of this JSON object.
+*/
+NO_DISCARD uint64 JSON::Size() const NOEXCEPT
+{
+	return IMPLEMENTATION->_JSON->size();
+}
+
+/*
 *	Converts this JSON object to a bool.
 */
 NO_DISCARD bool JSON::ToBool() const NOEXCEPT
