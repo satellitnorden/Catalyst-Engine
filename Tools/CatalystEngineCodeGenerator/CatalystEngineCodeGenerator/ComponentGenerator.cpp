@@ -64,6 +64,9 @@ public:
 	//Denotes whether or not this component wants a "PreProcess()" call.
 	bool _PreProcess;
 
+	//Denotes whether or not this component wants a "PostCreateInstance()" call.
+	bool _PostCreateInstance;
+
 };
 
 /*
@@ -78,14 +81,14 @@ void ComponentGenerator::Run()
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
-//#if defined(NDEBUG)
+#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
-//#endif
+#endif
 
 	//Gather components!
 	bool new_files_parsed{ false };
@@ -266,6 +269,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 	component_entry["Terminate"] = false;
 	component_entry["DefaultInitializationData"] = false;
 	component_entry["PreProcess"] = false;
+	component_entry["PostCreateInstance"] = false;
 
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
@@ -301,6 +305,18 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 			if (position != std::string::npos)
 			{
 				component_entry["PostInitialize"] = true;
+
+				continue;
+			}
+		}
+
+		//Check if this component wants an "PostCreateInstance()" call.
+		{
+			const size_t position{ current_line.find("COMPONENT_POST_CREATE_INSTANCE(") };
+
+			if (position != std::string::npos)
+			{
+				component_entry["PostCreateInstance"] = true;
 
 				continue;
 			}
@@ -743,6 +759,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this component wants a "PreProcess()" call.
 				new_component_data._PreProcess = component_entry["PreProcess"];
+
+				//Set whether or not this component wants an "PostCreateInstance()" call.
+				new_component_data._PostCreateInstance = component_entry["PostCreateInstance"];
 
 				//Check if this component wants any serial updates.
 				if (component_entry.contains("SerialUpdates"))
@@ -1254,6 +1273,34 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "\t\t\tASSERT(false, \"Unknown component!\");" << std::endl;
 	file << "\t\t\tbreak;" << std::endl;
 	file << "\t\t}" << std::endl;
+
+	file << "\t}" << std::endl;
+
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::PostCreateInstance()" function.
+	file << "void Components::PostCreateInstance(Component *const RESTRICT component, Entity *const RESTRICT entity) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	file << "\tswitch(component->_Identifier)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (const ComponentData &_component_data : component_data)
+	{
+		if (!_component_data._PostCreateInstance)
+		{
+			continue;
+		}
+
+		const uint64 component_identifier{ CatalystHash(_component_data._Name.data(), _component_data._Name.length()) };
+
+		file << "\t\tcase " << component_identifier << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\t" << _component_data._Name.c_str() << "::Instance->PostCreateInstance(entity);" << std::endl;
+		file << "\t\t\tbreak;" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
 
 	file << "\t}" << std::endl;
 

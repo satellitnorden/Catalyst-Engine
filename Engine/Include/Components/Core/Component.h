@@ -58,15 +58,6 @@ public:
 	virtual void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
 
 	/*
-	*	Runs after all components have created their instance for the given entity.
-	*	Useful if there is some setup needed involving multiple components.
-	*/
-	FORCE_INLINE virtual void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
-	{
-
-	}
-
-	/*
 	*	Destroys an instance.
 	*/
 	virtual void DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT = 0;
@@ -353,6 +344,11 @@ public:
 	static void PreProcess(Component *const RESTRICT component, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT;
 
 	/*
+	*	Calls 'PostCreateInstance' for the given component with the given entity.
+	*/
+	static void PostCreateInstance(Component *const RESTRICT component, Entity *const RESTRICT entity) NOEXCEPT;
+
+	/*
 	*	Updates components during the specific update phase.
 	*/
 	static void Update(const UpdatePhase update_phase) NOEXCEPT;
@@ -391,6 +387,15 @@ public:																										\
 #define COMPONENT_PRE_PROCESS(INITIALIZATION_DATA_CLASS)									\
 public:																						\
 	void PreProcess(INITIALIZATION_DATA_CLASS *const RESTRICT initialization_data) NOEXCEPT;
+
+/*
+*	Put this in your component declaration and implement it to receive a "PostCreatInstance()" call.
+*	This function runs after all components have created their instance for the given entity.
+*	Useful if there is some setup needed involving multiple components.
+*/
+#define COMPONENT_POST_CREATE_INSTANCE()							\
+public:																\
+	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT;
 
 /*
 *	Put this in your component declaration and implement it to receive a "SerialUpdate()" call during the specified update phase.

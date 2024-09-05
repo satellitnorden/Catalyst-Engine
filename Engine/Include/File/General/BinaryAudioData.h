@@ -15,6 +15,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //File.
+#include <File/Core/BinaryInputFile.h>
 #include <File/Core/BinaryOutputFile.h>
 
 //Third party.
@@ -43,6 +44,34 @@ public:
 	}
 
 	/*
+	*	Creates this binary audio data object from a .bad file.
+	*	If data already exists in this object, it will be appended.
+	*/
+	FORCE_INLINE void FromBADFile(const char const *RESTRICT file_path) NOEXCEPT
+	{
+		//Open the file.
+		BinaryInputFile file{ file_path };
+
+		//Read the sample rate.
+		{
+			const uint32 old_sample_rate{ _SampleRate };
+			file.Read(&_SampleRate, sizeof(uint32));
+			ASSERT(old_sample_rate == 0 || old_sample_rate == _SampleRate, "Mismatching sample rate!");
+		}
+
+		//Read the number of samples.
+		uint64 number_of_samples;
+		file.Read(&number_of_samples, sizeof(uint64));
+
+		//Read the samples.
+		_Samples.Upsize<false>(number_of_samples);
+		file.Read(_Samples.Data(), sizeof(float32) * number_of_samples);
+
+		//Close the file.
+		file.Close();
+	}
+
+	/*
 	*	Creates this binary audio data object from a .wav file.
 	*	If data already exists in this object, it will be appended.
 	*/
@@ -57,7 +86,7 @@ public:
 		}
 
 		//Do some sanity checks.
-		ASSERT(_SampleRate == 0 || _SampleRate == audio_file.getSampleRate(), "Only mono files are not supported!");
+		ASSERT(_SampleRate == 0 || _SampleRate == audio_file.getSampleRate(), "Mismatching sample rate!");
 		ASSERT(audio_file.getNumChannels() == 1, "Only mono files are not supported!");
 
 		//Set the sample rate.

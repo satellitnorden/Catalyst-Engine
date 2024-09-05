@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/Any.h>
+#include <Core/General/DynamicString.h>
 
 class JSON final
 {
@@ -45,6 +46,11 @@ public:
 		*	Inequality operator overload.
 		*/
 		NO_DISCARD bool operator!=(const Iterator &other) NOEXCEPT;
+
+		/*
+		*	Returns the name.
+		*/
+		NO_DISCARD DynamicString Name() NOEXCEPT;
 
 	private:
 

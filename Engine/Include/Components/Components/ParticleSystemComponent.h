@@ -205,16 +205,11 @@ class ParticleSystemComponent final : public Component
 		ParticleSystem,
 		COMPONENT_INITIALIZE()
 		COMPONENT_POST_INITIALIZE()
+		COMPONENT_POST_CREATE_INSTANCE()
 		COMPONENT_DEFAULT_INITIALIZATION_DATA(ParticleSystemInitializationData)
 		COMPONENT_PARALLEL_SUB_INSTANCE_UPDATE(UpdatePhase::PRE_RENDER)
 		COMPONENT_POST_UPDATE(UpdatePhase::PRE_RENDER)
 	);
-
-	/*
-	*	Runs after all components have created their instance for the given entity.
-	*	Useful if there is some setup needed involving multiple components.
-	*/
-	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;
 
 	/*
 	*	Callback for after an editable field change happens.

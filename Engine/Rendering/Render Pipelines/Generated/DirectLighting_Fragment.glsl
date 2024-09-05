@@ -686,7 +686,7 @@ void main()
                     metallic,
                     thickness,
                     light._TransformData1
-                ) * light_radiance * shadow_factor * (ambient_occlusion * 0.5f + 0.5f);
+                ) * light_radiance * shadow_factor * mix(0.125f, 1.0f, ambient_occlusion);
                 break;
             }
         }

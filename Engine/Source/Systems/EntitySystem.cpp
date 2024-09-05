@@ -242,7 +242,7 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 
 				do
 				{
-					component_configuration->_Component->PostCreateInstance(queue_item->_CreationQueueItem._Entity);
+					Components::PostCreateInstance(component_configuration->_Component, queue_item->_CreationQueueItem._Entity);
 					component_configuration = component_configuration->_NextComponentInitializationData;
 				} while (component_configuration);
 			}
@@ -351,7 +351,7 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 
 			//Create all instances.
 			{
-				ComponentInitializationData* RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
+				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
 
 				do
 				{
@@ -362,11 +362,11 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 
 			//Notify all components that all instances has been created.
 			{
-				ComponentInitializationData* RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
+				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
 
 				do
 				{
-					component_configuration->_Component->PostCreateInstance(queue_item->_Entity);
+					Components::PostCreateInstance(component_configuration->_Component, queue_item->_Entity);
 					component_configuration = component_configuration->_NextComponentInitializationData;
 				} while (component_configuration);
 			}

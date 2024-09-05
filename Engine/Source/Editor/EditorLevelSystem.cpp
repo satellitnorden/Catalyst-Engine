@@ -896,7 +896,7 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 		{
 			const nlohmann::json &hash_string_data_entry{ editor_data_entry["HashStringData"] };
 			const uint64 hash_string_data_size{ hash_string_data_entry.size() };
-			new_editor_entity_data._HashStringData.Upsize<true>(hash_string_data_size);
+			new_editor_entity_data._HashStringData.Reserve(hash_string_data_size);
 
 			for (const nlohmann::json &_hash_string_data_entry : hash_string_data_entry)
 			{
@@ -1687,7 +1687,7 @@ void EditorLevelSystem::LoadEntity(const char *const RESTRICT file_path, Entity 
 	{
 		const nlohmann::json &hash_string_data_entry{ editor_data_entry["HashStringData"] };
 		const uint64 hash_string_data_size{ hash_string_data_entry.size() };
-		editor_data->_HashStringData.Upsize<true>(hash_string_data_size);
+		editor_data->_HashStringData.Reserve(hash_string_data_size);
 
 		for (const nlohmann::json &_hash_string_data_entry : hash_string_data_entry)
 		{

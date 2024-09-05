@@ -81,16 +81,11 @@ class StaticModelComponent final : public Component
 		StaticModel,
 		COMPONENT_INITIALIZE()
 		COMPONENT_DEFAULT_INITIALIZATION_DATA(StaticModelInitializationData)
+		COMPONENT_POST_CREATE_INSTANCE()
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
 	);
 
 public:
-
-	/*
-	*	Runs after all components have created their instance for the given entity.
-	*	Useful if there is some setup needed involving multiple components.
-	*/
-	void PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT override;
 
 	/*
 	*	Callback for before an editable field change happens.

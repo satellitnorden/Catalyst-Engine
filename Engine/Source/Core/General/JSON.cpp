@@ -73,6 +73,14 @@ NO_DISCARD bool JSON::Iterator::operator!=(const Iterator &other) NOEXCEPT
 }
 
 /*
+*	Returns the name.
+*/
+NO_DISCARD DynamicString JSON::Iterator::Name() NOEXCEPT
+{
+	return _Implementation.Get<nlohmann::json_abi_v3_11_3::detail::iter_impl<nlohmann::json_abi_v3_11_3::ordered_json>>()->key().c_str();
+}
+
+/*
 *	Default constructor.
 */
 JSON::JSON() NOEXCEPT

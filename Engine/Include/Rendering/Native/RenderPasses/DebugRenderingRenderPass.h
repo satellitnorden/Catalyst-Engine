@@ -32,12 +32,11 @@ public:
 private:
 
 	//The pipelines.
-	StaticArray<GraphicsRenderPipeline, 4> _Pipelines
+	StaticArray<GraphicsRenderPipeline, 3> _Pipelines
 	{
 		GraphicsRenderPipeline(HashString("DebugRenderCircle_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("DebugRenderRectangle_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("PlayerSpawnMarker_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("CircleMarker_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("PlayerSpawnMarker_RenderPipeline"))
 	};
 
 	/*

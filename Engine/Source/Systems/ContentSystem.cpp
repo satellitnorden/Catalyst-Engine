@@ -149,6 +149,16 @@ void ContentSystem::RegisterAssetCompiler(AssetCompiler *const RESTRICT asset_co
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 /*
+*	Registers a callback for when an asset is compiled.
+*	Should return if the compilation should be re-run, for example if one asset being compiled generates other assets that then need to be compiled.
+*/
+void ContentSystem::RegisterOnAssetCompiledCallback(OnAssetCompiledCallback callback) NOEXCEPT
+{
+	//Add the callback.
+	_OnAssetCompiledCallbacks.Emplace(callback);
+}
+
+/*
 *	Compiles the content for engine.
 *	Returns if new content was compiled.
 */
@@ -622,10 +632,10 @@ void ContentSystem::CompileAssetsInDirectory
 		}
 
 		//Find the asset compiler for this file type.
-		AssetCompiler* RESTRICT asset_compiler;
+		AssetCompiler *RESTRICT asset_compiler;
 
 		{
-			AssetCompiler* const RESTRICT* const RESTRICT _asset_compiler{ _AssetCompilers.Find(HashString(extension.c_str())) };
+			AssetCompiler *const RESTRICT *const RESTRICT _asset_compiler{ _AssetCompilers.Find(HashString(extension.c_str())) };
 			asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
 		}
 
@@ -683,6 +693,12 @@ void ContentSystem::CompileAssetsInDirectory
 		if (asset_compiler->_TriggerRecompile)
 		{
 			compile_result->_TriggerRecompile = true;
+		}
+
+		//Call any callbacks for when an asset is compiled.
+		for (OnAssetCompiledCallback callback : _OnAssetCompiledCallbacks)
+		{
+			asset_compiler->_TriggerRecompile |= callback(asset_compiler->AssetTypeIdentifier(), file_path.c_str());
 		}
 	}
 }

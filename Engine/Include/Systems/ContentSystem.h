@@ -22,6 +22,9 @@ class BinaryInputFile;
 class BinaryOutputFile;
 class ContentCache;
 
+//Type aliases.
+using OnAssetCompiledCallback = bool(*)(const HashString asset_type_identifier, const char *const RESTRICT file_path);
+
 class ContentSystem final
 {
 
@@ -57,6 +60,12 @@ public:
 	void RegisterAssetCompiler(AssetCompiler *const RESTRICT asset_compiler) NOEXCEPT;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Registers a callback for when an asset is compiled.
+	*	Should return if the compilation should be re-run, for example if one asset being compiled generates other assets that then need to be compiled.
+	*/
+	void RegisterOnAssetCompiledCallback(OnAssetCompiledCallback callback) NOEXCEPT;
+
 	/*
 	*	Compiles the content for engine.
 	*	Returns if new content was compiled.
@@ -143,6 +152,9 @@ private:
 
 	//The assets. Divided up into asset types.
 	HashTable<HashString, HashTable<HashString, Asset *RESTRICT>> _Assets;
+
+	//The on asset compiled callbacks.
+	DynamicArray<OnAssetCompiledCallback> _OnAssetCompiledCallbacks;
 
 	/*
 	*	Compiles assets in the given directory.
