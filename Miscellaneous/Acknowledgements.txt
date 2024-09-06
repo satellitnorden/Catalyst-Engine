@@ -479,7 +479,7 @@ This version of the "mio" library was downloaded 2024-03-08 from https://github.
 JSON
 
 This software uses the "json" library for parsing/outputting json files.
-This version of the "json" library was downloaded 2024-03-11 from https://github.com/nlohmann/json with the following license:
+This version of the "json" library was downloaded 2024-09-05 from https://github.com/nlohmann/json with the following license:
 
 	MIT License 
 

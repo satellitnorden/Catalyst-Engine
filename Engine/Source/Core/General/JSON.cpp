@@ -257,6 +257,14 @@ NO_DISCARD uint64 JSON::Size() const NOEXCEPT
 }
 
 /*
+*	Clears this JSON object.
+*/
+void JSON::Clear() NOEXCEPT
+{
+	IMPLEMENTATION->_JSON->clear();
+}
+
+/*
 *	Converts this JSON object to a bool.
 */
 NO_DISCARD bool JSON::ToBool() const NOEXCEPT

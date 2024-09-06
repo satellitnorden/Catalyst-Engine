@@ -135,6 +135,11 @@ public:
 	NO_DISCARD uint64 Size() const NOEXCEPT;
 
 	/*
+	*	Clears this JSON object.
+	*/
+	void Clear() NOEXCEPT;
+
+	/*
 	*	Converts this JSON object to a bool.
 	*/
 	NO_DISCARD bool ToBool() const NOEXCEPT;
