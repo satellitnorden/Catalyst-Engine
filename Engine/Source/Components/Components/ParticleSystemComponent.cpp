@@ -510,19 +510,14 @@ void ParticleSystemComponent::DefaultInitializationData(ParticleSystemInitializa
 /*
 *	Creates an instance.
 */
-void ParticleSystemComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void ParticleSystemComponent::CreateInstance(Entity *const RESTRICT entity, ParticleSystemInitializationData *const RESTRICT initialization_data, ParticleSystemInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
-	//Set up the instance data.
-	ParticleSystemInitializationData *const RESTRICT _initialization_data{ static_cast<ParticleSystemInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	ParticleSystemInstanceData &instance_data{ _InstanceData.Back() };
-
 	//Copy data.
-	instance_data._Material = _initialization_data->_Material;
-	instance_data._MasterEmitter = _initialization_data->_Emitter;
+	instance_data->_Material = initialization_data->_Material;
+	instance_data->_MasterEmitter = initialization_data->_Emitter;
 
 	//Split into sub emitters.
-	SplitIntoSubEmitters(instance_data._MasterEmitter, &instance_data._SubEmitters);
+	SplitIntoSubEmitters(instance_data->_MasterEmitter, &instance_data->_SubEmitters);
 }
 
 /*

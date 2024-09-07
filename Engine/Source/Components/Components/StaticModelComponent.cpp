@@ -369,18 +369,14 @@ void StaticModelComponent::DefaultInitializationData(StaticModelInitializationDa
 /*
 *	Creates an instance.
 */
-void StaticModelComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void StaticModelComponent::CreateInstance(Entity *const RESTRICT entity, StaticModelInitializationData *const RESTRICT initialization_data, StaticModelInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
 	//Set up the instance data.
-	StaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<StaticModelInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	StaticModelInstanceData &instance_data{ _InstanceData.Back() };
-
-	instance_data._Model = _initialization_data->_Model;
-	instance_data._Materials = _initialization_data->_Materials;
-	instance_data._CollisionType = _initialization_data->_CollisionType;
-	instance_data._ModelSimulationConfiguration = _initialization_data->_ModelSimulationConfiguration;
-	instance_data._MeshesVisibleMask = UINT8_MAXIMUM;
+	instance_data->_Model = initialization_data->_Model;
+	instance_data->_Materials = initialization_data->_Materials;
+	instance_data->_CollisionType = initialization_data->_CollisionType;
+	instance_data->_ModelSimulationConfiguration = initialization_data->_ModelSimulationConfiguration;
+	instance_data->_MeshesVisibleMask = UINT8_MAXIMUM;
 }
 
 /*

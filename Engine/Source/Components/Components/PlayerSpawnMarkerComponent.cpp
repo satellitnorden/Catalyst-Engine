@@ -135,12 +135,9 @@ void PlayerSpawnMarkerComponent::Initialize() NOEXCEPT
 /*
 *	Creates an instance.
 */
-void PlayerSpawnMarkerComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void PlayerSpawnMarkerComponent::CreateInstance(Entity *const RESTRICT entity, PlayerSpawnMarkerInitializationData *const RESTRICT initialization_data, PlayerSpawnMarkerInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
-	//Set up the instance data.
-	PlayerSpawnMarkerInitializationData *const RESTRICT _initialization_data{ static_cast<PlayerSpawnMarkerInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	PlayerSpawnMarkerInstanceData &instance_data{ _InstanceData.Back() };
+
 }
 
 /*

@@ -151,15 +151,10 @@ void ProceduralTreeComponent::Initialize() NOEXCEPT
 /*
 *	Creates an instance.
 */
-void ProceduralTreeComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void ProceduralTreeComponent::CreateInstance(Entity *const RESTRICT entity, ProceduralTreeInitializationData *const RESTRICT initialization_data, ProceduralTreeInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
-	//Set up the instance data.
-	ProceduralTreeInitializationData *const RESTRICT _initialization_data{ static_cast<ProceduralTreeInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	ProceduralTreeInstanceData &instance_data{ _InstanceData.Back() };
-
 	//Copy data.
-	instance_data._Parameters = _initialization_data->_Parameters;
+	instance_data->_Parameters = initialization_data->_Parameters;
 }
 
 /*

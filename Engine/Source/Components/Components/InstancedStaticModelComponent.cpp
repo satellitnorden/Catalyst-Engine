@@ -126,21 +126,17 @@ void InstancedStaticModelComponent::PreProcess(InstancedStaticModelInitializatio
 /*
 *	Creates an instance.
 */
-void InstancedStaticModelComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void InstancedStaticModelComponent::CreateInstance(Entity *const RESTRICT entity, InstancedStaticModelInitializationData *const RESTRICT initialization_data, InstancedStaticModelInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
 	//Set up the instance data.
-	InstancedStaticModelInitializationData *const RESTRICT _initialization_data{ static_cast<InstancedStaticModelInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	InstancedStaticModelInstanceData &instance_data{ _InstanceData.Back() };
-
-	instance_data._WorldSpaceAxisAlignedBoundingBox = _initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
-	instance_data._Model = _initialization_data->_Model;
-	instance_data._Materials = _initialization_data->_Materials;
-	instance_data._Cell = _initialization_data->_PreprocessedData._Cell;
-	instance_data._TransformationsBuffer = _initialization_data->_PreprocessedData._TransformationsBuffer;
-	instance_data._NumberOfTransformations = _initialization_data->_PreprocessedData._NumberOfTransformations;
-	instance_data._ModelFlags = _initialization_data->_ModelFlags;
-	instance_data._ModelFadeData = _initialization_data->_ModelFadeData;
+	instance_data->_WorldSpaceAxisAlignedBoundingBox = initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
+	instance_data->_Model = initialization_data->_Model;
+	instance_data->_Materials = initialization_data->_Materials;
+	instance_data->_Cell = initialization_data->_PreprocessedData._Cell;
+	instance_data->_TransformationsBuffer = initialization_data->_PreprocessedData._TransformationsBuffer;
+	instance_data->_NumberOfTransformations = initialization_data->_PreprocessedData._NumberOfTransformations;
+	instance_data->_ModelFlags = initialization_data->_ModelFlags;
+	instance_data->_ModelFadeData = initialization_data->_ModelFadeData;
 }
 
 /*

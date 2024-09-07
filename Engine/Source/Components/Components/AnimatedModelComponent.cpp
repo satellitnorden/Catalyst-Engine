@@ -20,13 +20,8 @@
 /*
 *	Creates an instance.
 */
-void AnimatedModelComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void AnimatedModelComponent::CreateInstance(Entity *const RESTRICT entity, AnimatedModelInitializationData *const RESTRICT initialization_data, AnimatedModelInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
-	//Set up the instance data.
-	AnimatedModelInitializationData *const RESTRICT _initialization_data{ static_cast<AnimatedModelInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	AnimatedModelInstanceData &instance_data{ _InstanceData.Back() };
-
 	//Copy data.
 	//instance_data._AnimatedModelResource = _initialization_data->_AnimatedModelResource;
 	//instance_data._MaterialResource = _initialization_data->_MaterialResource;
@@ -35,22 +30,22 @@ void AnimatedModelComponent::CreateInstance(Entity *const RESTRICT entity, Compo
 	//Create the animation data buffers and render data tables.
 	const uint8 number_of_framebuffers{ RenderingSystem::Instance->GetNumberOfFramebuffers() };
 
-	instance_data._AnimationDataBuffers.Upsize<false>(number_of_framebuffers);
-	instance_data._AnimationDataRenderDataTables.Upsize<false>(number_of_framebuffers);
+	instance_data->_AnimationDataBuffers.Upsize<false>(number_of_framebuffers);
+	instance_data->_AnimationDataRenderDataTables.Upsize<false>(number_of_framebuffers);
 
 	for (uint8 i{ 0 }; i < number_of_framebuffers; ++i)
 	{
-		RenderingSystem::Instance->CreateBuffer(sizeof(Matrix4x4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &instance_data._AnimationDataBuffers[i]);
+		RenderingSystem::Instance->CreateBuffer(sizeof(Matrix4x4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &instance_data->_AnimationDataBuffers[i]);
 
 		StaticArray<Matrix4x4, AnimationConstants::MAXIMUM_BONE_TRANSFORMS> initial_bone_transforms;
 
 		const void *const RESTRICT dataChunks[]{ initial_bone_transforms.Data() };
 		const uint64 dataSizes[]{ sizeof(Matrix4x4) * AnimationConstants::MAXIMUM_BONE_TRANSFORMS };
 
-		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &instance_data._AnimationDataBuffers[i]);
+		RenderingSystem::Instance->UploadDataToBuffer(dataChunks, dataSizes, 1, &instance_data->_AnimationDataBuffers[i]);
 
-		RenderingSystem::Instance->CreateRenderDataTable(AnimationSystem::Instance->GetAnimationDataRenderDataTableLayout(), &instance_data._AnimationDataRenderDataTables[i]);
-		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &instance_data._AnimationDataRenderDataTables[i], instance_data._AnimationDataBuffers[i]);
+		RenderingSystem::Instance->CreateRenderDataTable(AnimationSystem::Instance->GetAnimationDataRenderDataTableLayout(), &instance_data->_AnimationDataRenderDataTables[i]);
+		RenderingSystem::Instance->BindUniformBufferToRenderDataTable(0, 0, &instance_data->_AnimationDataRenderDataTables[i], instance_data->_AnimationDataBuffers[i]);
 	}
 }
 

@@ -92,34 +92,29 @@ void GrassComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const u
 /*
 *	Creates an instance.
 */
-void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void GrassComponent::CreateInstance(Entity *const RESTRICT entity, GrassInitializationData *const RESTRICT initialization_data, GrassInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
-	//Set up the instance data.
-	GrassInitializationData *const RESTRICT _initialization_data{ static_cast<GrassInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	GrassInstanceData &instance_data{ _InstanceData.Back() };
-
 	//Copy the data.
-	ASSERT(!_initialization_data->_GrassInstances.Empty(), "Trying to add grass component without any instances!");
+	ASSERT(!initialization_data->_GrassInstances.Empty(), "Trying to add grass component without any instances!");
 
 	//Set the world grid cell.
-	instance_data._WorldGridCell = _initialization_data->_WorldGridCell;
+	instance_data->_WorldGridCell = initialization_data->_WorldGridCell;
 
 	//Calculate the axis aligned bounding box.
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum.SetCell(instance_data._WorldGridCell);
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum.SetCell(instance_data._WorldGridCell);
+	instance_data->_WorldSpaceAxisAlignedBoundingBox._Minimum.SetCell(instance_data->_WorldGridCell);
+	instance_data->_WorldSpaceAxisAlignedBoundingBox._Maximum.SetCell(instance_data->_WorldGridCell);
 
 	Vector3<float32> minimum{ FLOAT32_MAXIMUM };
 	Vector3<float32> maximum{ -FLOAT32_MAXIMUM };
 
-	for (const GrassInstance &grass_instance : _initialization_data->_GrassInstances)
+	for (const GrassInstance &grass_instance : initialization_data->_GrassInstances)
 	{
 		minimum = BaseMath::Minimum(minimum, grass_instance._Position);
 		maximum = BaseMath::Maximum(maximum, grass_instance._Position);
 	}
 
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum.SetLocalPosition(minimum);
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum.SetLocalPosition(maximum);
+	instance_data->_WorldSpaceAxisAlignedBoundingBox._Minimum.SetLocalPosition(minimum);
+	instance_data->_WorldSpaceAxisAlignedBoundingBox._Maximum.SetLocalPosition(maximum);
 
 	//Pack the grass instances.
 	struct PackedGrassInstance final
@@ -129,9 +124,9 @@ void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 	};
 
 	DynamicArray<PackedGrassInstance> packed_instances;
-	packed_instances.Reserve(_initialization_data->_GrassInstances.Size());
+	packed_instances.Reserve(initialization_data->_GrassInstances.Size());
 
-	for (const GrassInstance &grass_instance : _initialization_data->_GrassInstances)
+	for (const GrassInstance &grass_instance : initialization_data->_GrassInstances)
 	{
 		packed_instances.Emplace();
 		PackedGrassInstance &new_packed_grass_instance{ packed_instances.Back() };
@@ -160,18 +155,18 @@ void GrassComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInit
 
 	const void *RESTRICT positions_data[]{ packed_instances.Data() };
 	const uint64 positions_data_sizes[]{ sizeof(PackedGrassInstance) * packed_instances.Size() };
-	RenderingSystem::Instance->CreateBuffer(positions_data_sizes[0], BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &instance_data._InstanceBuffer);
-	RenderingSystem::Instance->UploadDataToBuffer(positions_data, positions_data_sizes, 1, &instance_data._InstanceBuffer);
+	RenderingSystem::Instance->CreateBuffer(positions_data_sizes[0], BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &instance_data->_InstanceBuffer);
+	RenderingSystem::Instance->UploadDataToBuffer(positions_data, positions_data_sizes, 1, &instance_data->_InstanceBuffer);
 
-	instance_data._NumberOfInstances = static_cast<uint32>(packed_instances.Size());
+	instance_data->_NumberOfInstances = static_cast<uint32>(packed_instances.Size());
 
 	//Copy other properties.
-	instance_data._Material = _initialization_data->_Material;
-	instance_data._Thickness = _initialization_data->_Thickness;
-	instance_data._Height = _initialization_data->_Height;
-	instance_data._Tilt = _initialization_data->_Tilt;
-	instance_data._Bend = _initialization_data->_Bend;
-	instance_data._FadeOutDistance = _initialization_data->_FadeOutDistance;
+	instance_data->_Material = initialization_data->_Material;
+	instance_data->_Thickness = initialization_data->_Thickness;
+	instance_data->_Height = initialization_data->_Height;
+	instance_data->_Tilt = initialization_data->_Tilt;
+	instance_data->_Bend = initialization_data->_Bend;
+	instance_data->_FadeOutDistance = initialization_data->_FadeOutDistance;
 }
 
 /*

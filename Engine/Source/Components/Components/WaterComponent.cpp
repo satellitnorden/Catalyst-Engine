@@ -392,34 +392,30 @@ void WaterComponent::PreProcess(WaterInitializationData *const RESTRICT initiali
 /*
 *	Creates an instance.
 */
-void WaterComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void WaterComponent::CreateInstance(Entity *const RESTRICT entity, WaterInitializationData *const RESTRICT initialization_data, WaterInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
 	//Set up the instance data.
-	WaterInitializationData *const RESTRICT _initialization_data{ static_cast<WaterInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	WaterInstanceData &instance_data{ _InstanceData.Back() };
+	instance_data->_WorldPosition = initialization_data->_WorldPosition;
+	instance_data->_WorldSpaceAxisAlignedBoundingBox = initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
+	instance_data->_PatchSize = initialization_data->_PatchSize;
+	instance_data->_BaseResolution = initialization_data->_BaseResolution;
+	instance_data->_MaximumSubdivisionSteps = initialization_data->_MaximumSubdivisionSteps;
 
-	instance_data._WorldPosition = _initialization_data->_WorldPosition;
-	instance_data._WorldSpaceAxisAlignedBoundingBox = _initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
-	instance_data._PatchSize = _initialization_data->_PatchSize;
-	instance_data._BaseResolution = _initialization_data->_BaseResolution;
-	instance_data._MaximumSubdivisionSteps = _initialization_data->_MaximumSubdivisionSteps;
+	instance_data->_Buffer = initialization_data->_PreprocessedData._Buffer;
+	instance_data->_IndexOffset = initialization_data->_PreprocessedData._IndexOffset;
+	instance_data->_IndexCount = initialization_data->_PreprocessedData._IndexCount;
+	instance_data->_Texture = initialization_data->_Texture;
 
-	instance_data._Buffer = _initialization_data->_PreprocessedData._Buffer;
-	instance_data._IndexOffset = _initialization_data->_PreprocessedData._IndexOffset;
-	instance_data._IndexCount = _initialization_data->_PreprocessedData._IndexCount;
-	instance_data._Texture = _initialization_data->_Texture;
-
-	instance_data._QuadTree._RootNode._Depth = 0;
-	instance_data._QuadTree._RootNode._Borders = 0;
-	instance_data._QuadTree._RootNode._Minimum = instance_data._QuadTree._RootNode._Maximum = Vector2<float32>(instance_data._WorldPosition.GetLocalPosition()._X, instance_data._WorldPosition.GetLocalPosition()._Z);
-	instance_data._QuadTree._RootNode._Minimum -= Vector2<float32>(static_cast<float32>(instance_data._PatchSize) * 0.5f);
-	instance_data._QuadTree._RootNode._Maximum = Vector2<float32>(static_cast<float32>(instance_data._PatchSize) * 0.5f);
-	instance_data._QuadTree._RootNode._AxisAlignedBoundingBox = instance_data._WorldSpaceAxisAlignedBoundingBox.GetLocalAxisAlignedBoundingBox();
-	instance_data._QuadTree._RootNode._Position = Vector2<float32>(instance_data._WorldPosition.GetLocalPosition()._X, instance_data._WorldPosition.GetLocalPosition()._Z);
-	instance_data._QuadTree._RootNode._MinimumHeightMapCoordinate = Vector2<float32>(0.0f);
-	instance_data._QuadTree._RootNode._MaximumHeightMapCoordinate = Vector2<float32>(1.0f);
-	instance_data._QuadTree._RootNode._PatchSize = static_cast<float32>(instance_data._PatchSize);
+	instance_data->_QuadTree._RootNode._Depth = 0;
+	instance_data->_QuadTree._RootNode._Borders = 0;
+	instance_data->_QuadTree._RootNode._Minimum = instance_data->_QuadTree._RootNode._Maximum = Vector2<float32>(instance_data->_WorldPosition.GetLocalPosition()._X, instance_data->_WorldPosition.GetLocalPosition()._Z);
+	instance_data->_QuadTree._RootNode._Minimum -= Vector2<float32>(static_cast<float32>(instance_data->_PatchSize) * 0.5f);
+	instance_data->_QuadTree._RootNode._Maximum = Vector2<float32>(static_cast<float32>(instance_data->_PatchSize) * 0.5f);
+	instance_data->_QuadTree._RootNode._AxisAlignedBoundingBox = instance_data->_WorldSpaceAxisAlignedBoundingBox.GetLocalAxisAlignedBoundingBox();
+	instance_data->_QuadTree._RootNode._Position = Vector2<float32>(instance_data->_WorldPosition.GetLocalPosition()._X, instance_data->_WorldPosition.GetLocalPosition()._Z);
+	instance_data->_QuadTree._RootNode._MinimumHeightMapCoordinate = Vector2<float32>(0.0f);
+	instance_data->_QuadTree._RootNode._MaximumHeightMapCoordinate = Vector2<float32>(1.0f);
+	instance_data->_QuadTree._RootNode._PatchSize = static_cast<float32>(instance_data->_PatchSize);
 }
 
 /*

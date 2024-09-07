@@ -334,13 +334,8 @@ void FirstPersonPlayerComponent::SerialUpdate(const UpdatePhase update_phase) NO
 /*
 *	Creates an instance.
 */
-void FirstPersonPlayerComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void FirstPersonPlayerComponent::CreateInstance(Entity *const RESTRICT entity, FirstPersonPlayerInitializationData *const RESTRICT initialization_data, FirstPersonPlayerInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
-	//Set up the instance data.
-	FirstPersonPlayerInitializationData *const RESTRICT _initialization_data{ static_cast<FirstPersonPlayerInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	FirstPersonPlayerInstanceData &instance_data{ _InstanceData.Back() };
-
 	//Create the character controller.
 	{
 		CharacterControllerConfiguration configuration;
@@ -348,20 +343,20 @@ void FirstPersonPlayerComponent::CreateInstance(Entity *const RESTRICT entity, C
 		configuration._CapsuleRadius = 0.2'75f;
 		configuration._CapsuleHeight = 2.0f;
 
-		instance_data._CharacterController = PhysicsSystem::Instance->CreateCharacterController(configuration);
+		instance_data->_CharacterController = PhysicsSystem::Instance->CreateCharacterController(configuration);
 	}
 
 	//Set up the height spring damping system.
-	instance_data._HeightSpringDampingSystem.SetCurrent(FirstPersonPlayerComponentConstants::STANDING_HEIGHT);
-	instance_data._HeightSpringDampingSystem.SetDesired(FirstPersonPlayerComponentConstants::STANDING_HEIGHT);
-	instance_data._HeightSpringDampingSystem.SetDampingCoefficient(32.0f);
-	instance_data._HeightSpringDampingSystem.SetSpringConstant(256.0f);
+	instance_data->_HeightSpringDampingSystem.SetCurrent(FirstPersonPlayerComponentConstants::STANDING_HEIGHT);
+	instance_data->_HeightSpringDampingSystem.SetDesired(FirstPersonPlayerComponentConstants::STANDING_HEIGHT);
+	instance_data->_HeightSpringDampingSystem.SetDampingCoefficient(32.0f);
+	instance_data->_HeightSpringDampingSystem.SetSpringConstant(256.0f);
 
 	//Set up the speed spring damping system.
-	instance_data._SpeedSpringDampingSystem.SetCurrent(FirstPersonPlayerComponentConstants::STANDING_WALKING_SPEED);
-	instance_data._SpeedSpringDampingSystem.SetDesired(FirstPersonPlayerComponentConstants::STANDING_WALKING_SPEED);
-	instance_data._SpeedSpringDampingSystem.SetDampingCoefficient(16.0f);
-	instance_data._SpeedSpringDampingSystem.SetSpringConstant(128.0f);
+	instance_data->_SpeedSpringDampingSystem.SetCurrent(FirstPersonPlayerComponentConstants::STANDING_WALKING_SPEED);
+	instance_data->_SpeedSpringDampingSystem.SetDesired(FirstPersonPlayerComponentConstants::STANDING_WALKING_SPEED);
+	instance_data->_SpeedSpringDampingSystem.SetDampingCoefficient(16.0f);
+	instance_data->_SpeedSpringDampingSystem.SetSpringConstant(128.0f);
 }
 
 /*

@@ -63,15 +63,10 @@ void ScriptComponent::SerialUpdate(const UpdatePhase update_phase) NOEXCEPT
 /*
 *	Creates an instance.
 */
-void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void ScriptComponent::CreateInstance(Entity *const RESTRICT entity, ScriptInitializationData *const RESTRICT initialization_data, ScriptInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
-	//Set up the instance data.
-	ScriptInitializationData *const RESTRICT _initialization_data{ static_cast<ScriptInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	ScriptInstanceData &instance_data{ _InstanceData.Back() };
-
 	//Copy data.
-	instance_data._ScriptIdentifier = _initialization_data->_ScriptIdentifier;
+	instance_data->_ScriptIdentifier = initialization_data->_ScriptIdentifier;
 }
 
 /*

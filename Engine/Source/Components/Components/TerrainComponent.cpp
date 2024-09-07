@@ -635,54 +635,50 @@ void TerrainComponent::PreProcess(TerrainInitializationData *const RESTRICT init
 /*
 *	Creates an instance.
 */
-void TerrainComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void TerrainComponent::CreateInstance(Entity *const RESTRICT entity, TerrainInitializationData *const RESTRICT initialization_data, TerrainInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
 	//Set up the instance data.
-	TerrainInitializationData *const RESTRICT _initialization_data{ static_cast<TerrainInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	TerrainInstanceData &instance_data{ _InstanceData.Back() };
+	ASSERT(initialization_data->_HeightMap.GetWidth() == initialization_data->_HeightMap.GetHeight(), "Terrain height map width and height doesn't match - This isn't okay.");
 
-	ASSERT(_initialization_data->_HeightMap.GetWidth() == _initialization_data->_HeightMap.GetHeight(), "Terrain height map width and height doesn't match - This isn't okay.");
+	instance_data->_WorldPosition = initialization_data->_WorldPosition;
+	instance_data->_WorldSpaceAxisAlignedBoundingBox = initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
+	instance_data->_PatchSize = initialization_data->_PatchSize;
+	instance_data->_HeightMap = std::move(initialization_data->_HeightMap);
+	instance_data->_NormalMap = std::move(initialization_data->_NormalMap);
+	instance_data->_IndexMap = std::move(initialization_data->_IndexMap);
+	instance_data->_BlendMap = std::move(initialization_data->_BlendMap);
+	instance_data->_BaseResolution = initialization_data->_BaseResolution;
+	instance_data->_MaximumSubdivisionSteps = initialization_data->_MaximumSubdivisionSteps;
 
-	instance_data._WorldPosition = _initialization_data->_WorldPosition;
-	instance_data._WorldSpaceAxisAlignedBoundingBox = _initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
-	instance_data._PatchSize = _initialization_data->_PatchSize;
-	instance_data._HeightMap = std::move(_initialization_data->_HeightMap);
-	instance_data._NormalMap = std::move(_initialization_data->_NormalMap);
-	instance_data._IndexMap = std::move(_initialization_data->_IndexMap);
-	instance_data._BlendMap = std::move(_initialization_data->_BlendMap);
-	instance_data._BaseResolution = _initialization_data->_BaseResolution;
-	instance_data._MaximumSubdivisionSteps = _initialization_data->_MaximumSubdivisionSteps;
+	instance_data->_Buffer = initialization_data->_PreprocessedData._Buffer;
+	instance_data->_IndexOffset = initialization_data->_PreprocessedData._IndexOffset;
+	instance_data->_IndexCount = initialization_data->_PreprocessedData._IndexCount;
+	instance_data->_HeightMapTexture = initialization_data->_PreprocessedData._HeightMapTexture;
+	instance_data->_HeightMapTextureIndex = initialization_data->_PreprocessedData._HeightMapTextureIndex;
+	instance_data->_NormalMapTexture = initialization_data->_PreprocessedData._NormalMapTexture;
+	instance_data->_NormalMapTextureIndex = initialization_data->_PreprocessedData._NormalMapTextureIndex;
+	instance_data->_IndexMapTexture = initialization_data->_PreprocessedData._IndexMapTexture;
+	instance_data->_IndexMapTextureIndex = initialization_data->_PreprocessedData._IndexMapTextureIndex;
+	instance_data->_BlendMapTexture = initialization_data->_PreprocessedData._BlendMapTexture;
+	instance_data->_BlendMapTextureIndex = initialization_data->_PreprocessedData._BlendMapTextureIndex;
 
-	instance_data._Buffer = _initialization_data->_PreprocessedData._Buffer;
-	instance_data._IndexOffset = _initialization_data->_PreprocessedData._IndexOffset;
-	instance_data._IndexCount = _initialization_data->_PreprocessedData._IndexCount;
-	instance_data._HeightMapTexture = _initialization_data->_PreprocessedData._HeightMapTexture;
-	instance_data._HeightMapTextureIndex = _initialization_data->_PreprocessedData._HeightMapTextureIndex;
-	instance_data._NormalMapTexture = _initialization_data->_PreprocessedData._NormalMapTexture;
-	instance_data._NormalMapTextureIndex = _initialization_data->_PreprocessedData._NormalMapTextureIndex;
-	instance_data._IndexMapTexture = _initialization_data->_PreprocessedData._IndexMapTexture;
-	instance_data._IndexMapTextureIndex = _initialization_data->_PreprocessedData._IndexMapTextureIndex;
-	instance_data._BlendMapTexture = _initialization_data->_PreprocessedData._BlendMapTexture;
-	instance_data._BlendMapTextureIndex = _initialization_data->_PreprocessedData._BlendMapTextureIndex;
-
-	instance_data._QuadTree._RootNode._Depth = 0;
-	instance_data._QuadTree._RootNode._Borders = 0;
-	instance_data._QuadTree._RootNode._Minimum = instance_data._QuadTree._RootNode._Maximum = Vector2<float32>(instance_data._WorldPosition.GetLocalPosition()._X, instance_data._WorldPosition.GetLocalPosition()._Z);
-	instance_data._QuadTree._RootNode._Minimum -= Vector2<float32>(static_cast<float32>(instance_data._PatchSize) * 0.5f);
-	instance_data._QuadTree._RootNode._Maximum = Vector2<float32>(static_cast<float32>(instance_data._PatchSize) * 0.5f);
-	instance_data._QuadTree._RootNode._AxisAlignedBoundingBox = instance_data._WorldSpaceAxisAlignedBoundingBox.GetLocalAxisAlignedBoundingBox();
-	instance_data._QuadTree._RootNode._Position = Vector2<float32>(instance_data._WorldPosition.GetLocalPosition()._X, instance_data._WorldPosition.GetLocalPosition()._Z);
-	instance_data._QuadTree._RootNode._MinimumHeightMapCoordinate = Vector2<float32>(0.0f);
-	instance_data._QuadTree._RootNode._MaximumHeightMapCoordinate = Vector2<float32>(1.0f);
-	instance_data._QuadTree._RootNode._PatchSize = static_cast<float32>(instance_data._PatchSize);
+	instance_data->_QuadTree._RootNode._Depth = 0;
+	instance_data->_QuadTree._RootNode._Borders = 0;
+	instance_data->_QuadTree._RootNode._Minimum = instance_data->_QuadTree._RootNode._Maximum = Vector2<float32>(instance_data->_WorldPosition.GetLocalPosition()._X, instance_data->_WorldPosition.GetLocalPosition()._Z);
+	instance_data->_QuadTree._RootNode._Minimum -= Vector2<float32>(static_cast<float32>(instance_data->_PatchSize) * 0.5f);
+	instance_data->_QuadTree._RootNode._Maximum = Vector2<float32>(static_cast<float32>(instance_data->_PatchSize) * 0.5f);
+	instance_data->_QuadTree._RootNode._AxisAlignedBoundingBox = instance_data->_WorldSpaceAxisAlignedBoundingBox.GetLocalAxisAlignedBoundingBox();
+	instance_data->_QuadTree._RootNode._Position = Vector2<float32>(instance_data->_WorldPosition.GetLocalPosition()._X, instance_data->_WorldPosition.GetLocalPosition()._Z);
+	instance_data->_QuadTree._RootNode._MinimumHeightMapCoordinate = Vector2<float32>(0.0f);
+	instance_data->_QuadTree._RootNode._MaximumHeightMapCoordinate = Vector2<float32>(1.0f);
+	instance_data->_QuadTree._RootNode._PatchSize = static_cast<float32>(instance_data->_PatchSize);
 
 	//Create the physics actor.
 	PhysicsSystem::Instance->CreateHeightFieldActor
 	(
-		instance_data._WorldPosition,
-		instance_data._HeightMap,
-		&instance_data._PhysicsActorHandle
+		instance_data->_WorldPosition,
+		instance_data->_HeightMap,
+		&instance_data->_PhysicsActorHandle
 	);
 }
 

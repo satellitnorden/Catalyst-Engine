@@ -77,23 +77,19 @@ void InstancedImpostorComponent::ParallelBatchUpdate(const UpdatePhase update_ph
 /*
 *	Creates an instance.
 */
-void InstancedImpostorComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void InstancedImpostorComponent::CreateInstance(Entity *const RESTRICT entity, InstancedImpostorInitializationData *const RESTRICT initialization_data, InstancedImpostorInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
 	//Set up the instance data.
-	InstancedImpostorInitializationData *const RESTRICT _initialization_data{ static_cast<InstancedImpostorInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	InstancedImpostorInstanceData &instance_data{ _InstanceData.Back() };
-
-	instance_data._Material = _initialization_data->_Material;
-	instance_data._Dimensions = _initialization_data->_Dimensions;
-	instance_data._StartFadeInDistance = _initialization_data->_StartFadeInDistance;
-	instance_data._EndFadeInDistance = _initialization_data->_EndFadeInDistance;
-	instance_data._StartFadeOutDistance = _initialization_data->_StartFadeOutDistance;
-	instance_data._EndFadeOutDistance = _initialization_data->_EndFadeOutDistance;
+	instance_data->_Material = initialization_data->_Material;
+	instance_data->_Dimensions = initialization_data->_Dimensions;
+	instance_data->_StartFadeInDistance = initialization_data->_StartFadeInDistance;
+	instance_data->_EndFadeInDistance = initialization_data->_EndFadeInDistance;
+	instance_data->_StartFadeOutDistance = initialization_data->_StartFadeOutDistance;
+	instance_data->_EndFadeOutDistance = initialization_data->_EndFadeOutDistance;
 
 	Vector3<float32> average_cell{ 0.0f, 0.0f, 0.0f };
 
-	for (const WorldPosition &world_position : _initialization_data->_WorldPositions)
+	for (const WorldPosition &world_position : initialization_data->_WorldPositions)
 	{
 		for (uint8 i{ 0 }; i < 3; ++i)
 		{
@@ -101,48 +97,48 @@ void InstancedImpostorComponent::CreateInstance(Entity *const RESTRICT entity, C
 		}
 	}
 
-	average_cell /= static_cast<float32>(_initialization_data->_WorldPositions.Size());
+	average_cell /= static_cast<float32>(initialization_data->_WorldPositions.Size());
 
 	for (uint8 i{ 0 }; i < 3; ++i)
 	{
-		instance_data._Cell[i] = BaseMath::Round<int32>(average_cell[i]);
+		instance_data->_Cell[i] = BaseMath::Round<int32>(average_cell[i]);
 	}
 
 	//Calculate the axis aligned bounding box.
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum.SetCell(instance_data._Cell);
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum.SetCell(instance_data._Cell);
+	instance_data->_WorldSpaceAxisAlignedBoundingBox._Minimum.SetCell(instance_data->_Cell);
+	instance_data->_WorldSpaceAxisAlignedBoundingBox._Maximum.SetCell(instance_data->_Cell);
 
 	Vector3<float32> minimum{ FLOAT32_MAXIMUM };
 	Vector3<float32> maximum{ -FLOAT32_MAXIMUM };
 
-	for (const WorldPosition &world_position : _initialization_data->_WorldPositions)
+	for (const WorldPosition &world_position : initialization_data->_WorldPositions)
 	{
-		const Vector3<float32> relative_position{ world_position.GetRelativePosition(instance_data._Cell) };
+		const Vector3<float32> relative_position{ world_position.GetRelativePosition(instance_data->_Cell) };
 
 		minimum = BaseMath::Minimum(minimum, relative_position);
 		maximum = BaseMath::Maximum(maximum, relative_position);
 	}
 
-	minimum -= Vector3<float32>(instance_data._Dimensions._X * 0.5f, 0.0f, instance_data._Dimensions._X * 0.5f);
-	maximum += Vector3<float32>(instance_data._Dimensions._X * 0.5f, instance_data._Dimensions._Y, instance_data._Dimensions._X * 0.5f);
+	minimum -= Vector3<float32>(instance_data->_Dimensions._X * 0.5f, 0.0f, instance_data->_Dimensions._X * 0.5f);
+	maximum += Vector3<float32>(instance_data->_Dimensions._X * 0.5f, instance_data->_Dimensions._Y, instance_data->_Dimensions._X * 0.5f);
 
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Minimum.SetLocalPosition(minimum);
-	instance_data._WorldSpaceAxisAlignedBoundingBox._Maximum.SetLocalPosition(maximum);
+	instance_data->_WorldSpaceAxisAlignedBoundingBox._Minimum.SetLocalPosition(minimum);
+	instance_data->_WorldSpaceAxisAlignedBoundingBox._Maximum.SetLocalPosition(maximum);
 
 	DynamicArray<Vector3<float32>> transformations;
-	transformations.Reserve(_initialization_data->_WorldPositions.Size());
+	transformations.Reserve(initialization_data->_WorldPositions.Size());
 
-	for (const WorldPosition &world_position : _initialization_data->_WorldPositions)
+	for (const WorldPosition &world_position : initialization_data->_WorldPositions)
 	{
-		transformations.Emplace(world_position.GetRelativePosition(instance_data._Cell));
+		transformations.Emplace(world_position.GetRelativePosition(instance_data->_Cell));
 	}
 
 	const void *RESTRICT transformation_data[]{ transformations.Data() };
 	const uint64 transformation_data_sizes[]{ sizeof(Vector3<float32>) * transformations.Size() };
-	RenderingSystem::Instance->CreateBuffer(transformation_data_sizes[0], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &instance_data._TransformationsBuffer);
-	RenderingSystem::Instance->UploadDataToBuffer(transformation_data, transformation_data_sizes, 1, &instance_data._TransformationsBuffer);
+	RenderingSystem::Instance->CreateBuffer(transformation_data_sizes[0], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &instance_data->_TransformationsBuffer);
+	RenderingSystem::Instance->UploadDataToBuffer(transformation_data, transformation_data_sizes, 1, &instance_data->_TransformationsBuffer);
 
-	instance_data._NumberOfTransformations = static_cast<uint32>(transformations.Size());
+	instance_data->_NumberOfTransformations = static_cast<uint32>(transformations.Size());
 }
 
 /*

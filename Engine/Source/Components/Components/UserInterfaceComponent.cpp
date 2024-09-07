@@ -56,27 +56,22 @@ void UserInterfaceComponent::Initialize() NOEXCEPT
 /*
 *	Creates an instance.
 */
-void UserInterfaceComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void UserInterfaceComponent::CreateInstance(Entity *const RESTRICT entity, UserInterfaceInitializationData *const RESTRICT initialization_data, UserInterfaceInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
-	//Set up the instance data.
-	UserInterfaceInitializationData *const RESTRICT _initialization_data{ static_cast<UserInterfaceInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	UserInterfaceInstanceData &instance_data{ _InstanceData.Back() };
-
 	//Copy data.
-	instance_data._Identifier = _initialization_data->_Identifier;
+	instance_data->_Identifier = initialization_data->_Identifier;
 
 	//Create the scene.
-	if (instance_data._Identifier != UserInterfaceSceneIdentifier::None)
+	if (instance_data->_Identifier != UserInterfaceSceneIdentifier::None)
 	{
-		instance_data._Scene = UserInterfaceSceneFactory::Create(instance_data._Identifier);
-		instance_data._Scene->SetEntity(entity);
-		instance_data._Scene->OnActivated();
+		instance_data->_Scene = UserInterfaceSceneFactory::Create(instance_data->_Identifier);
+		instance_data->_Scene->SetEntity(entity);
+		instance_data->_Scene->OnActivated();
 	}
 
 	else
 	{
-		instance_data._Scene = nullptr;
+		instance_data->_Scene = nullptr;
 	}
 }
 

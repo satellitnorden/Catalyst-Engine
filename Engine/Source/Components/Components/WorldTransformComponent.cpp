@@ -54,15 +54,10 @@ void WorldTransformComponent::ParallelBatchUpdate(const UpdatePhase update_phase
 /*
 *	Creates an instance.
 */
-void WorldTransformComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void WorldTransformComponent::CreateInstance(Entity *const RESTRICT entity, WorldTransformInitializationData *const RESTRICT initialization_data, WorldTransformInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
-	//Set up the instance data.
-	WorldTransformInitializationData *const RESTRICT _initialization_data{ static_cast<WorldTransformInitializationData*const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	WorldTransformInstanceData &instance_data{ _InstanceData.Back() };
-
 	//Copy data.
-	instance_data._PreviousWorldTransform = instance_data._CurrentWorldTransform = _initialization_data->_WorldTransform;
+	instance_data->_PreviousWorldTransform = instance_data->_CurrentWorldTransform = initialization_data->_WorldTransform;
 }
 
 /*

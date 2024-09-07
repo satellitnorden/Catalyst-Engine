@@ -1279,6 +1279,36 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "}" << std::endl;
 	file << std::endl;
 
+	//Set up the "Components::CreateInstance()" function.
+	file << "void Components::CreateInstance(Component *const RESTRICT component, Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	file << "\tswitch(component->_Identifier)" << std::endl;
+	file << "\t{" << std::endl;
+
+	for (const ComponentData &_component_data : component_data)
+	{
+		const uint64 component_identifier{ CatalystHash(_component_data._Name.data(), _component_data._Name.length()) };
+
+		file << "\t\tcase " << component_identifier << ":" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\t" << _component_data._Name.c_str() << "::Instance->_InstanceData.Emplace();" << std::endl;
+		file << "\t\t\t" << _component_data._Name.c_str() << "::Instance->CreateInstance(entity, static_cast<" << _component_data._InitializationDataName.c_str() << " *const RESTRICT>(initialization_data), &" << _component_data._Name.c_str() << "::Instance->_InstanceData.Back());" << std::endl;
+		file << "\t\t\tbreak;" << std::endl;
+		file << "\t\t}" << std::endl;
+	}
+
+	file << "\t\tdefault:" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tASSERT(false, \"Unknown component!\");" << std::endl;
+	file << "\t\t\tbreak;" << std::endl;
+	file << "\t\t}" << std::endl;
+
+	file << "\t}" << std::endl;
+
+	file << "}" << std::endl;
+	file << std::endl;
+
 	//Set up the "Components::PostCreateInstance()" function.
 	file << "void Components::PostCreateInstance(Component *const RESTRICT component, Entity *const RESTRICT entity) NOEXCEPT" << std::endl;
 	file << "{" << std::endl;

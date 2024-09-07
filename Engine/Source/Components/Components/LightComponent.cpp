@@ -14,35 +14,30 @@ void LightComponent::DefaultInitializationData(LightInitializationData *const RE
 /*
 *	Creates an instance.
 */
-void LightComponent::CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT
+void LightComponent::CreateInstance(Entity *const RESTRICT entity, LightInitializationData *const RESTRICT initialization_data, LightInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
-	//Set up the instance data.
-	LightInitializationData *const RESTRICT _initialization_data{ static_cast<LightInitializationData *const RESTRICT>(initialization_data) };
-	_InstanceData.Emplace();
-	LightInstanceData &instance_data{ _InstanceData.Back() };
-
 	//Copy the data.
-	switch (_initialization_data->_LightType)
+	switch (initialization_data->_LightType)
 	{
 		case LightType::DIRECTIONAL:
 		{
-			Memory::Copy(&instance_data._DirectionalLightData, &_initialization_data->_DirectionalLightData, sizeof(instance_data._DirectionalLightData));
+			Memory::Copy(&instance_data->_DirectionalLightData, &initialization_data->_DirectionalLightData, sizeof(instance_data->_DirectionalLightData));
 
 			break;
 		}
 
 		case LightType::POINT:
 		{
-			Memory::Copy(&instance_data._PointLightData, &_initialization_data->_PointLightData, sizeof(instance_data._PointLightData));
+			Memory::Copy(&instance_data->_PointLightData, &initialization_data->_PointLightData, sizeof(instance_data->_PointLightData));
 
 			break;
 		}
 	}
 
-	instance_data._Color = _initialization_data->_Color;
-	instance_data._LightType = _initialization_data->_LightType;
-	instance_data._LightProperties = _initialization_data->_LightProperties;
-	instance_data._Intensity = _initialization_data->_Intensity;
+	instance_data->_Color = initialization_data->_Color;
+	instance_data->_LightType = initialization_data->_LightType;
+	instance_data->_LightProperties = initialization_data->_LightProperties;
+	instance_data->_Intensity = initialization_data->_Intensity;
 }
 
 /*

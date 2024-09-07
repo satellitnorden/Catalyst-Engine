@@ -53,11 +53,6 @@ public:
 	}
 
 	/*
-	*	Creates an instance.
-	*/
-	virtual void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT = 0;
-
-	/*
 	*	Destroys an instance.
 	*/
 	virtual void DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT = 0;
@@ -344,6 +339,11 @@ public:
 	static void PreProcess(Component *const RESTRICT component, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT;
 
 	/*
+	*	Creates an instance and calls 'CreateInstance' for the given component.
+	*/
+	static void CreateInstance(Component *const RESTRICT component, Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT;
+
+	/*
 	*	Calls 'PostCreateInstance' for the given component with the given entity.
 	*/
 	static void PostCreateInstance(Component *const RESTRICT component, Entity *const RESTRICT entity) NOEXCEPT;
@@ -445,73 +445,74 @@ public:							\
 *
 *	Can optionally add arguments, see above which ones is supported.
 */
-#define CATALYST_COMPONENT(X, ...)																											\
-public:																																		\
-	static X##Component *RESTRICT Instance;																									\
-	X##Component(const X##Component &other) = delete;																						\
-	X##Component(X##Component &&other) = delete;																							\
-	FORCE_INLINE X##Component() NOEXCEPT																									\
-		:																																	\
-		Component(#X "Component")																											\
-	{																																		\
-	}																																		\
-	FORCE_INLINE X##InitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT												\
-	{																																		\
-		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																									\
-		X##InitializationData *const RESTRICT data{ new (POOL_ALLOCATOR.Allocate()) X##InitializationData() };								\
-		Components::DefaultInitializationData(this, data);																									\
-		data->_Component = Instance;																										\
-		return data;																														\
-	}																																		\
-	FORCE_INLINE void FreeInitializationData(ComponentInitializationData *const RESTRICT data) NOEXCEPT										\
-	{																																		\
-		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																									\
-		POOL_ALLOCATOR.Free(data);																											\
-	}																																		\
-	void CreateInstance(Entity *const RESTRICT entity, ComponentInitializationData *const RESTRICT initialization_data) NOEXCEPT override;	\
-	void DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT override;																	\
-	FORCE_INLINE NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT override																\
-	{																																		\
-		return _InstanceData.Size();																										\
-	}																																		\
-	FORCE_INLINE NO_DISCARD DynamicArray<X##InstanceData> &InstanceData() NOEXCEPT															\
-	{																																		\
-		return _InstanceData;																												\
-	}																																		\
-	FORCE_INLINE NO_DISCARD X##InstanceData &InstanceData(Entity *const RESTRICT entity) NOEXCEPT											\
-	{																																		\
-		return _InstanceData[EntityToInstance(entity)];																						\
-	}																																		\
-	FORCE_INLINE void RemoveInstance(Entity *const RESTRICT entity) NOEXCEPT																\
-	{																																		\
-		const uint64 instance_index{ _EntityToInstanceMappings[entity->_EntityIdentifier] };												\
-		if (instance_index == _InstanceData.LastIndex())																					\
-		{																																	\
-			_InstanceData.Pop();																											\
-			_InstanceToEntityMappings.Pop();																								\
-			_EntityToInstanceMappings[entity->_EntityIdentifier] = UINT64_MAXIMUM;															\
-		}																																	\
-		else																																\
-		{																																	\
-			Entity *const RESTRICT moved_entity{ _InstanceToEntityMappings.Back() };														\
-			_InstanceData.EraseAt<false>(instance_index);																					\
-			_InstanceToEntityMappings.EraseAt<false>(instance_index);																		\
-			_EntityToInstanceMappings[entity->_EntityIdentifier] = UINT64_MAXIMUM;															\
-			_EntityToInstanceMappings[moved_entity->_EntityIdentifier] = instance_index;													\
-		}																																	\
-	}																																		\
-	FORCE_INLINE NO_DISCARD void *const RESTRICT SubEditableFieldData																		\
-	(																																		\
-		Entity *const RESTRICT entity,																										\
-		const ComponentEditableField &editable_field																						\
-	) NOEXCEPT override																														\
-	{																																		\
-		X##InstanceData &instance_data{ InstanceData(entity) };																				\
-		return AdvancePointer(&instance_data, editable_field._InstanceDataOffset);															\
-	}																																		\
-private:																																	\
-	Spinlock POOL_ALLOCATOR_LOCK;																											\
-	PoolAllocator<sizeof(X##InitializationData)> POOL_ALLOCATOR;																			\
-	DynamicArray<X##InstanceData> _InstanceData;																							\
-																																			\
-	__VA_ARGS__																																\
+#define CATALYST_COMPONENT(X, ...)																																			\
+public:																																										\
+	static X##Component *RESTRICT Instance;																																	\
+	X##Component(const X##Component &other) = delete;																														\
+	X##Component(X##Component &&other) = delete;																															\
+	FORCE_INLINE X##Component() NOEXCEPT																																	\
+		:																																									\
+		Component(#X "Component")																																			\
+	{																																										\
+	}																																										\
+	FORCE_INLINE X##InitializationData *const RESTRICT AllocateInitializationData() NOEXCEPT																				\
+	{																																										\
+		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																																	\
+		X##InitializationData *const RESTRICT data{ new (POOL_ALLOCATOR.Allocate()) X##InitializationData() };																\
+		Components::DefaultInitializationData(this, data);																													\
+		data->_Component = Instance;																																		\
+		return data;																																						\
+	}																																										\
+	FORCE_INLINE void FreeInitializationData(ComponentInitializationData *const RESTRICT data) NOEXCEPT																		\
+	{																																										\
+		SCOPED_LOCK(POOL_ALLOCATOR_LOCK);																																	\
+		POOL_ALLOCATOR.Free(data);																																			\
+	}																																										\
+	void CreateInstance(Entity *const RESTRICT entity, X##InitializationData *const RESTRICT initialization_data, X##InstanceData *const RESTRICT instance_data) NOEXCEPT;	\
+	void DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT override;																									\
+	FORCE_INLINE NO_DISCARD uint64 NumberOfInstances() const NOEXCEPT override																								\
+	{																																										\
+		return _InstanceData.Size();																																		\
+	}																																										\
+	FORCE_INLINE NO_DISCARD DynamicArray<X##InstanceData> &InstanceData() NOEXCEPT																							\
+	{																																										\
+		return _InstanceData;																																				\
+	}																																										\
+	FORCE_INLINE NO_DISCARD X##InstanceData &InstanceData(Entity *const RESTRICT entity) NOEXCEPT																			\
+	{																																										\
+		return _InstanceData[EntityToInstance(entity)];																														\
+	}																																										\
+	FORCE_INLINE void RemoveInstance(Entity *const RESTRICT entity) NOEXCEPT																								\
+	{																																										\
+		const uint64 instance_index{ _EntityToInstanceMappings[entity->_EntityIdentifier] };																				\
+		if (instance_index == _InstanceData.LastIndex())																													\
+		{																																									\
+			_InstanceData.Pop();																																			\
+			_InstanceToEntityMappings.Pop();																																\
+			_EntityToInstanceMappings[entity->_EntityIdentifier] = UINT64_MAXIMUM;																							\
+		}																																									\
+		else																																								\
+		{																																									\
+			Entity *const RESTRICT moved_entity{ _InstanceToEntityMappings.Back() };																						\
+			_InstanceData.EraseAt<false>(instance_index);																													\
+			_InstanceToEntityMappings.EraseAt<false>(instance_index);																										\
+			_EntityToInstanceMappings[entity->_EntityIdentifier] = UINT64_MAXIMUM;																							\
+			_EntityToInstanceMappings[moved_entity->_EntityIdentifier] = instance_index;																					\
+		}																																									\
+	}																																										\
+	FORCE_INLINE NO_DISCARD void *const RESTRICT SubEditableFieldData																										\
+	(																																										\
+		Entity *const RESTRICT entity,																																		\
+		const ComponentEditableField &editable_field																														\
+	) NOEXCEPT override																																						\
+	{																																										\
+		X##InstanceData &instance_data{ InstanceData(entity) };																												\
+		return AdvancePointer(&instance_data, editable_field._InstanceDataOffset);																							\
+	}																																										\
+private:																																									\
+	friend class Components;																																				\
+	Spinlock POOL_ALLOCATOR_LOCK;																																			\
+	PoolAllocator<sizeof(X##InitializationData)> POOL_ALLOCATOR;																											\
+	DynamicArray<X##InstanceData> _InstanceData;																															\
+																																											\
+	__VA_ARGS__																																								\
