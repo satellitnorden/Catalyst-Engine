@@ -357,6 +357,11 @@ protected:
 	void RemoveTextInput(UserInterfaceTextInput *const RESTRICT text_input) NOEXCEPT;
 
 	/*
+	*	Removes the given element.
+	*/
+	void Remove(UserInterfaceElement *const RESTRICT element) NOEXCEPT;
+
+	/*
 	*	Removes all user interface elements.
 	*/
 	void RemoveAll() NOEXCEPT;

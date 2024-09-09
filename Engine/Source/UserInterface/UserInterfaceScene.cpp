@@ -622,6 +622,66 @@ void UserInterfaceScene::RemoveTextInput(UserInterfaceTextInput *const RESTRICT 
 }
 
 /*
+*	Removes the given element.
+*/
+void UserInterfaceScene::Remove(UserInterfaceElement *const RESTRICT element) NOEXCEPT
+{
+	switch (element->GetType())
+	{
+		case UserInterfaceElementType::BUTTON:
+		{
+			RemoveButton(static_cast<UserInterfaceButton *const RESTRICT>(element));
+
+			break;
+		}
+
+		case UserInterfaceElementType::CHECKBOX:
+		{
+			RemoveCheckbox(static_cast<UserInterfaceCheckbox *const RESTRICT>(element));
+
+			break;
+		}
+
+		case UserInterfaceElementType::IMAGE:
+		{
+			RemoveImage(static_cast<UserInterfaceImage *const RESTRICT>(element));
+
+			break;
+		}
+
+		/* TODO!
+		case UserInterfaceElementType::PROGRESS_BAR:
+		{
+			RemoveProgressBar(static_cast<UserInterfaceProgressBar *const RESTRICT>(element));
+
+			break;
+		}
+		*/
+
+		case UserInterfaceElementType::TEXT:
+		{
+			RemoveText(static_cast<UserInterfaceText *const RESTRICT>(element));
+
+			break;
+		}
+
+		case UserInterfaceElementType::TEXT_INPUT:
+		{
+			RemoveTextInput(static_cast<UserInterfaceTextInput *const RESTRICT>(element));
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+}
+
+/*
 *	Removes all user interface elements.
 */
 void UserInterfaceScene::RemoveAll() NOEXCEPT
