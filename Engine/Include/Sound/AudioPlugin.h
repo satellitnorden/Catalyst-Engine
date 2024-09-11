@@ -193,6 +193,7 @@ public:
 		//Enumeration covering all types.
 		enum class Type : uint8
 		{
+			BUTTON,
 			TEXT,
 			KNOB,
 			CHECKBOX,
@@ -208,6 +209,18 @@ public:
 
 		//The parameter.
 		HashString _Parameter;
+
+		//The update function.
+		void(*_UpdateFunction)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control) { nullptr };
+
+		struct
+		{
+			//The text.
+			const char *RESTRICT _Text;
+
+			//The callback.
+			void(*_Callback)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control) { nullptr };
+		} _ButtonData;
 
 		struct
 		{
@@ -335,7 +348,7 @@ public:
 	/*
 	*	Returns the control layout.
 	*/
-	FORCE_INLINE NO_DISCARD const ControlLayout* const RESTRICT GetControlLayout() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD ControlLayout *const RESTRICT GetControlLayout() NOEXCEPT
 	{
 		return &_ControlLayout;
 	}
