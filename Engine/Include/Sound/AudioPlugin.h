@@ -35,6 +35,9 @@ public:
 		//The directory that this plugin operates in.
 		DynamicString _Directory;
 
+		//The sample rate.
+		float32 _SampleRate;
+
 	};
 
 	/*
@@ -398,6 +401,14 @@ public:
 	*	Callback for when this plugin receives MIDI messages.
 	*/
 	FORCE_INLINE virtual void OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Callback for when a parameter is changed.
+	*/
+	FORCE_INLINE virtual void OnParameterChanged(const Parameter &parameter) NOEXCEPT
 	{
 
 	}
