@@ -123,6 +123,7 @@ public:
 			{
 				float32 _Value_float32;
 				bool _Value_bool;
+				uint32 _Value_uint32;
 			};
 
 		};
@@ -154,6 +155,15 @@ public:
 			parameter._Value_bool = value;
 		}
 
+		FORCE_INLINE void Add(const HashString identifier, const uint32 value) NOEXCEPT
+		{
+			_Parameters.Emplace();
+			Parameter &parameter{ _Parameters.Back() };
+
+			parameter._Identifier = identifier;
+			parameter._Value_uint32 = value;
+		}
+
 		/*
 		*	Replaces the parameter with the given identifier with the given value. Useful if you want to "base" presets on others.
 		*/
@@ -177,6 +187,19 @@ public:
 				if (parameter._Identifier == identifier)
 				{
 					parameter._Value_bool = value;
+
+					return;
+				}
+			}
+		}
+
+		FORCE_INLINE void Replace(const HashString identifier, const uint32 value) NOEXCEPT
+		{
+			for (Parameter &parameter : _Parameters)
+			{
+				if (parameter._Identifier == identifier)
+				{
+					parameter._Value_uint32 = value;
 
 					return;
 				}

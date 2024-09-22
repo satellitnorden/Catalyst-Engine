@@ -26,9 +26,9 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD TYPE Sample(const float32 alpha) NOEXCEPT
 	{
-		const uint64 first_index{ BaseMath::Minimum<uint64>(static_cast<uint64>(alpha * static_cast<float32>(SIZE)), SIZE - 1) };
+		const uint64 first_index{ BaseMath::Minimum<uint64>(static_cast<uint64>(alpha * static_cast<float32>(SIZE - 1)), SIZE - 1) };
 		const uint64 second_index{ BaseMath::Minimum<uint64>(first_index + 1, SIZE - 1) };
-		const float32 _alpha{ BaseMath::SmoothStep<1>(BaseMath::Fractional(alpha * static_cast<float32>(SIZE))) };
+		const float32 _alpha{ BaseMath::Fractional(alpha * static_cast<float32>(SIZE - 1)) };
 
 		return BaseMath::LinearlyInterpolate(_Values[first_index], _Values[second_index], _alpha);
 	}
