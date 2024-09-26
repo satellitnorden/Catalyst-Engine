@@ -129,7 +129,12 @@ int main(int argument_count, char *arguments[])
 
 					file << std::endl;
 
-					file << "class ALIGN(8) " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem final" << std::endl;
+					file << "//Systems." << std::endl;
+					file << "#include <Systems/System.h>" << std::endl;
+
+					file << std::endl;
+
+					file << "class " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem final" << std::endl;
 					file << "{" << std::endl;
 
 					file << std::endl;
@@ -138,8 +143,11 @@ int main(int argument_count, char *arguments[])
 
 					file << std::endl;
 
-					file << "\t//Singleton declaration." << std::endl;
-					file << "\tDECLARE_SINGLETON(" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem); " << std::endl;
+					file << "\t//System declaration." << std::endl;
+					file << "\tCATALYST_SYSTEM" << std::endl;
+					file << "\t(" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem" << std::endl;
+					file << "\t);" << std::endl;
 
 					file << std::endl;
 
@@ -236,11 +244,6 @@ int main(int argument_count, char *arguments[])
 
 					file << "//Header file." << std::endl;
 					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem.h>" << std::endl;
-
-					file << std::endl;
-
-					file << "//Singleton definition." << std::endl;
-					file << "DEFINE_SINGLETON(" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem); " << std::endl;
 
 					file << std::endl;
 
@@ -356,6 +359,11 @@ int main(int argument_count, char *arguments[])
 
 					file << "//Main." << std::endl;
 					file << "#include <Main/" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem.h>" << std::endl;
+
+					file << std::endl;
+
+					file << "//Platform." << std::endl;
+					file << "#include <Platform/Windows/CatalystPlatformWindows.h> //Only supports Windows currently, so just include that straight up." << std::endl;
 
 					file << std::endl;
 

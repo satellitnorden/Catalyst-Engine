@@ -447,6 +447,16 @@ void PhysicsSystem::SubCreateModelActor
 			_axis_aligned_bounding_box._Minimum *= world_transform.GetScale();
 			_axis_aligned_bounding_box._Maximum *= world_transform.GetScale();
 
+			//For shapes like planes and stuff like that, the axis aligned bounding box might be the same on one axis, so fix that by thickening it slightly.
+			for (uint8 axis_index{ 0 }; axis_index < 3; ++axis_index)
+			{
+				if (_axis_aligned_bounding_box._Minimum[axis_index] == _axis_aligned_bounding_box._Maximum[axis_index])
+				{
+					_axis_aligned_bounding_box._Minimum[axis_index] -= FLOAT32_EPSILON;
+					_axis_aligned_bounding_box._Maximum[axis_index] += FLOAT32_EPSILON;
+				}
+			}
+
 			//Retrieve the dimensions.
 			const Vector3<float32> dimensions{ _axis_aligned_bounding_box.Dimensions() };
 

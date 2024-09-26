@@ -18,43 +18,32 @@ class LightInitializationData final : public ComponentInitializationData
 
 public:
 
-	union
+	//The light type.
+	LightType _LightType;
+
+	struct
 	{
-		struct
-		{
-			//The rotation.
-			EulerAngles _Rotation;
-		} _DirectionalLightData;
+		//The rotation.
+		EulerAngles _Rotation;
+	} _DirectionalLightData;
 
-		struct
-		{
-			//The radius.
-			float32 _Radius;
+	struct
+	{
+		//The radius.
+		float32 _Radius{ 1.0f };
 
-			//The size.
-			float32 _Size;
-		} _PointLightData;
-	};
+		//The size.
+		float32 _Size{ 1.0f };
+	} _PointLightData;
 
 	//The color.
 	Vector3<float32> _Color;
-
-	//The light type.
-	LightType _LightType;
 
 	//The light properties.
 	uint32 _LightProperties;
 
 	//The intensity.
 	float32 _Intensity;
-
-	/*
-	*	Default constructor.
-	*/
-	FORCE_INLINE LightInitializationData() NOEXCEPT
-	{
-		Memory::Set(this, 0, sizeof(LightInitializationData));
-	}
 
 };
 
@@ -63,43 +52,32 @@ class LightInstanceData final
 
 public:
 
-	union
+	//The light type.
+	LightType _LightType;
+
+	struct
 	{
-		struct
-		{
-			//The rotation.
-			EulerAngles _Rotation;
-		} _DirectionalLightData;
+		//The rotation.
+		EulerAngles _Rotation;
+	} _DirectionalLightData;
 
-		struct
-		{
-			//The radius.
-			float32 _Radius;
+	struct
+	{
+		//The radius.
+		float32 _Radius{ 1.0f };
 
-			//The size.
-			float32 _Size;
-		} _PointLightData;
-	};
+		//The size.
+		float32 _Size{ 1.0f };
+	} _PointLightData;
 
 	//The color.
 	Vector3<float32> _Color;
-
-	//The light type.
-	LightType _LightType;
 
 	//The light properties.
 	uint32 _LightProperties;
 
 	//The intensity.
 	float32 _Intensity;
-
-	/*
-	*	Default constructor.
-	*/
-	FORCE_INLINE LightInstanceData() NOEXCEPT
-	{
-		Memory::Set(this, 0, sizeof(LightInstanceData));
-	}
 
 };
 
@@ -110,6 +88,7 @@ class LightComponent final : public Component
 	CATALYST_COMPONENT
 	(
 		Light,
+		COMPONENT_INITIALIZE()
 		COMPONENT_DEFAULT_INITIALIZATION_DATA(LightInitializationData)
 	);
 

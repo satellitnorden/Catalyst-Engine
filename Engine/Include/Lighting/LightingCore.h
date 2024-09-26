@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Enumeration.h>
 
 //Lighting constants.
 namespace LightingConstants
@@ -10,8 +11,10 @@ namespace LightingConstants
 }
 
 //Enumeration covering all light types.
-enum class LightType : uint32
-{
+CATALYST_ENUMERATION
+(
+	LightType,
+	uint8,
 	DIRECTIONAL,
 	POINT
-};
+);

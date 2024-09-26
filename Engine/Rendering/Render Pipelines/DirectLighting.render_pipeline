@@ -118,6 +118,26 @@ Fragment
 
                 break;
             }
+
+            case LIGHT_TYPE_POINT:
+            {
+                //Calculate the direction from the light.
+                vec3 direction_from_light = normalize(world_position - light._TransformData1);
+
+                //Add direct light.
+                lighting += BidirectionalReflectanceDistribution
+                (
+                    view_direction,
+                    albedo,
+                    normal,
+                    roughness,
+                    metallic,
+                    thickness,
+                    direction_from_light
+                ) * light_radiance * mix(0.5f, 1.0f, ambient_occlusion);
+
+                break;
+            }
         }
     }
 

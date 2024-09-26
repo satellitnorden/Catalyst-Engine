@@ -22,14 +22,14 @@ void RenderPipelineGenerator::Run()
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
-#if defined(NDEBUG)
+//#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\RenderPipelineCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\RenderPipelineCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
-#endif
+//#endif
 
 	//Gather render pipelines!
 	bool new_files_parsed{ false };

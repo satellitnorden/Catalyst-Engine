@@ -20,7 +20,7 @@ struct Light
 
 	/*
 	*	Second transform data.
-	*	Maximum word position for box lights.
+	*	Maximum world position for box lights.
 	*/
 	vec3 _TransformData2;
 	vec3 _Color;

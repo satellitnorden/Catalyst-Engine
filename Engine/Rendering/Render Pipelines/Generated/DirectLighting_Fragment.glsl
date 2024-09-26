@@ -327,7 +327,7 @@ struct Light
 
 	/*
 	*	Second transform data.
-	*	Maximum word position for box lights.
+	*	Maximum world position for box lights.
 	*/
 	vec3 _TransformData2;
 	vec3 _Color;
@@ -687,6 +687,21 @@ void main()
                     thickness,
                     light._TransformData1
                 ) * light_radiance * shadow_factor * mix(0.125f, 1.0f, ambient_occlusion);
+                break;
+            }
+            case LIGHT_TYPE_POINT:
+            {
+                vec3 direction_from_light = normalize(world_position - light._TransformData1);
+                lighting += BidirectionalReflectanceDistribution
+                (
+                    view_direction,
+                    albedo,
+                    normal,
+                    roughness,
+                    metallic,
+                    thickness,
+                    direction_from_light
+                ) * light_radiance * mix(0.5f, 1.0f, ambient_occlusion);
                 break;
             }
         }

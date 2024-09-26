@@ -762,6 +762,12 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 		//Cache the file path.
 		const std::string file_path{ entry.path().string() };
 
+		//Ignore the .gitignore file.
+		if (file_path.find(".gitignore") != std::string::npos)
+		{
+			continue;
+		}
+
 		//Ignore the content cache.
 		if (file_path.find("ContentCache") != std::string::npos)
 		{

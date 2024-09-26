@@ -9,6 +9,14 @@ class Enumeration
 public:
 
 	/*
+	*	Default destructor.
+	*/
+	FORCE_INLINE virtual ~Enumeration() NOEXCEPT
+	{
+
+	}
+
+	/*
 	*	Returns the size of this enumeration.
 	*/
 	virtual NO_DISCARD uint64 Size() const NOEXCEPT = 0;
