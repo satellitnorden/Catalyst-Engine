@@ -1,0 +1,18 @@
+/*
+*	Editor metadata struct definition.
+*/
+struct EditorMetadataStruct
+{
+	//Denotes whether or not the pixel is selected.
+    bool _PixelIsSelected;
+};
+
+//Unpacks editor metadata.
+EditorMetadataStruct UnpackEditorMetadata(vec4 data)
+{
+	EditorMetadataStruct editor_metadata;
+
+  	editor_metadata._PixelIsSelected = data.x > 0.0f;
+
+	return editor_metadata;
+}

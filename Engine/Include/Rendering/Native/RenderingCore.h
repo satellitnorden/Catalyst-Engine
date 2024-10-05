@@ -111,6 +111,9 @@ enum class DefaultNativeRenderPassStage : uint8
 	SKY,
 	VOLUMETRIC_LIGHTING,
 	WATER,
+#if defined(CATALYST_EDITOR)
+	EDITOR,
+#endif
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	DEBUG_RENDERING,
 #endif
@@ -442,6 +445,11 @@ enum class SharedRenderTarget : uint8
 	SCENE_DEPTH_BUFFER,
 
 #if defined(CATALYST_EDITOR)
+	/*
+	*	The editor metadata.
+	*/
+	EDITOR_METADATA,
+
 	/*
 	*	The editor viewport.	
 	*/

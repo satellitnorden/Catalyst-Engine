@@ -192,6 +192,13 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::SCENE_DEPTH_BUFFER)]._IsDepthBuffer = true;
 
 #if defined(CATALYST_EDITOR)
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_METADATA)]._Identifier = HashString("EditorMetadata");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_METADATA)]._Resolution = RenderingSystem::Instance->GetScaledResolution(0);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_METADATA)]._TextureFormat = TextureFormat::R_UINT8;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_METADATA)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_METADATA)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_METADATA)]._IsDepthBuffer = false;
+
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._Identifier = HashString("EditorViewport");
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._Resolution = RenderingSystem::Instance->GetScaledResolution(0);
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::EDITOR_VIEWPORT)]._TextureFormat = TextureFormat::RGBA_UINT8;

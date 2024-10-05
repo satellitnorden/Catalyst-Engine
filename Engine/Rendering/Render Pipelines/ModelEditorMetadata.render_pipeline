@@ -1,0 +1,44 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+
+//Declare output render targets.
+OutputRenderTarget(EditorMetadata);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+
+//Set the cull mode.
+CullMode(NONE);
+
+//Set the topology.
+Topology(TRIANGLE_LIST);
+
+//Declare push constant data.
+PushConstantData(mat4, MODEL_MATRIX);
+
+//Subscribe to input streams.
+SubscribeToInputStream(ModelEditorMetadata);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec3, InPosition);
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * MODEL_MATRIX * vec4(InPosition, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Output the fragment.
+    OutputFragment(EditorMetadata, vec4(float(BIT(0)), 0.0f, 0.0f, 0.0f)); //Just output bit 0, that this is selected. (:
+}

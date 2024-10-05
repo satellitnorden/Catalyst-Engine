@@ -1,0 +1,69 @@
+//Declare uniform buffer includes.
+IncludeUniformBuffer(General);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Editor);
+
+//Declare input render targets.
+InputRenderTarget(EditorMetadata /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(Scene);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Set blend properties.
+BlendEnable();
+BlendColorSourceFactor(ONE);
+BlendColorDestinationFactor(ONE);
+BlendColorOperator(ADD);
+BlendAlphaSourceFactor(ONE);
+BlendAlphaDestinationFactor(ONE);
+BlendAlphaOperator(ADD);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Sample and unpack the editor metadata.
+    EditorMetadataStruct editor_metadata = UnpackEditorMetadata(texture(EditorMetadata, InScreenCoordinate));
+
+    //Sample and unpack the neighboring metadata.
+    bool any_neighboring_pixel_not_selected = false;
+    bool any_neighboring_pixel_selected = false;
+
+    for (int Y = -1; Y <= 1; ++Y)
+    {
+        for (int X = -1; X <= 1; ++X)
+        {
+            EditorMetadataStruct neighboring_editor_metadata = UnpackEditorMetadata(texture(EditorMetadata, InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_FULL_MAIN_RESOLUTION));
+        
+            any_neighboring_pixel_not_selected = any_neighboring_pixel_not_selected || !neighboring_editor_metadata._PixelIsSelected;
+            any_neighboring_pixel_selected = any_neighboring_pixel_selected || neighboring_editor_metadata._PixelIsSelected;
+        }
+    }
+
+    //Calculate the color.
+    vec3 color = vec3(0.0f, 0.0f, 0.0f);
+    
+    color += vec3(0.0f, 1.0f, 1.0f) * 4.0f * float(editor_metadata._PixelIsSelected && any_neighboring_pixel_not_selected);
+    color += vec3(1.0f, 0.0f, 0.0f) * 4.0f * float(!editor_metadata._PixelIsSelected && any_neighboring_pixel_selected);
+
+    //Output the fragment.
+    OutputFragment(Scene, vec4(color, 1.0f));
+}
