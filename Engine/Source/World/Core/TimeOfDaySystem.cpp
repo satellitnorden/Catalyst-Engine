@@ -220,7 +220,7 @@ void TimeOfDaySystem::UpdateSkyLight() NOEXCEPT
 	constexpr float32 DAY_SKY_INTENSITY{ 32.0f };
 
 	//Need that sky light.
-	if (!_SkyLight->_Initialized)
+	if (!TEST_BIT(_SkyLight->_Flags, Entity::Flags::INITIALIZED))
 	{
 		return;
 	}

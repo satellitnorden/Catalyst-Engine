@@ -660,7 +660,7 @@ void EditorLevelSystem::Update() NOEXCEPT
 			{
 				ASSERT(hit_distance < previous_hit_distance, "A component didn't properly check hit distance!");
 
-				_SelectedEntityIndex = entity_index;
+				SetSelectedEntityIndex(entity_index);
 			}
 		}
 	}
@@ -699,7 +699,7 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 	new_entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT>(component_configurations));
 
 	//The entity is now the selected entity. (:
-	_SelectedEntityIndex = _Entities.LastIndex();
+	SetSelectedEntityIndex(_Entities.LastIndex());
 }
 
 /*
@@ -955,7 +955,7 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 	_EditorEntityData.Clear();
 
 	//Reset the selected entity.
-	_SelectedEntityIndex = UINT64_MAXIMUM;
+	SetSelectedEntityIndex(UINT64_MAXIMUM);
 
 	//Set up the stream archive.
 	StreamArchive stream_archive;
@@ -1073,6 +1073,27 @@ void EditorLevelSystem::GenerateEntityIdentifier(uint64 *const RESTRICT identifi
 }
 
 /*
+*	Sets the selected entity index.
+*/
+void EditorLevelSystem::SetSelectedEntityIndex(const uint64 selected_entity_index) NOEXCEPT
+{
+	//If we had a previous selected entity, clear the flag.
+	if (_SelectedEntityIndex != UINT64_MAXIMUM && _SelectedEntityIndex < _Entities.Size())
+	{
+		CLEAR_BIT(_Entities[_SelectedEntityIndex]->_Flags, Entity::Flags::EDITOR_SELECTED);
+	}
+
+	//Set the new selected entity index.
+	_SelectedEntityIndex = selected_entity_index;
+
+	//Set the flag on the new selected entity.
+	if (_SelectedEntityIndex != UINT64_MAXIMUM)
+	{
+		SET_BIT(_Entities[_SelectedEntityIndex]->_Flags, Entity::Flags::EDITOR_SELECTED);
+	}
+}
+
+/*
 *	The top right window update.
 */
 NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
@@ -1099,7 +1120,7 @@ NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> m
 
 		if (ImGui::Selectable(name_length == 0 ? "EMPTY" : editor_entity_data._Name.Data(), _SelectedEntityIndex == entity_index))
 		{
-			_SelectedEntityIndex = entity_index;
+			SetSelectedEntityIndex(entity_index);
 		}
 	}
 
@@ -1146,7 +1167,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 	ImGuiSystem::Instance->BeginWindow(begin_window_parameters);
 
 	//Set up stuff for the selected entity.
-	if (_SelectedEntityIndex != UINT64_MAXIMUM && _Entities[_SelectedEntityIndex]->_Initialized)
+	if (_SelectedEntityIndex != UINT64_MAXIMUM && TEST_BIT(_Entities[_SelectedEntityIndex]->_Flags, Entity::Flags::INITIALIZED))
 	{
 		//Cache the selected entity and entity editor data.
 		Entity *const RESTRICT selected_entity{ _Entities[_SelectedEntityIndex] };
@@ -1761,7 +1782,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 			EntitySystem::Instance->DestroyEntity(selected_entity);
 			_Entities.EraseAt<true>(_SelectedEntityIndex);
 			_EditorEntityData.EraseAt<true>(_SelectedEntityIndex);
-			_SelectedEntityIndex = UINT64_MAXIMUM;
+			SetSelectedEntityIndex(UINT64_MAXIMUM);
 		}
 
 		//Duplicate the entity, if requested.
@@ -1962,7 +1983,7 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity, const Edi
 	new_entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
 
 	//Set the new selected entity index.
-	_SelectedEntityIndex = _Entities.LastIndex();
+	SetSelectedEntityIndex(_Entities.LastIndex());
 }
 
 /*

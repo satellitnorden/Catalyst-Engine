@@ -122,6 +122,11 @@ private:
 	void GenerateEntityIdentifier(uint64 *const RESTRICT identifier) NOEXCEPT;
 
 	/*
+	*	Sets the selected entity index.
+	*/
+	void SetSelectedEntityIndex(const uint64 selected_entity_index) NOEXCEPT;
+
+	/*
 	*	The top right window update.
 	*/
 	NO_DISCARD bool TopRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT;

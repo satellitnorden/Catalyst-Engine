@@ -84,7 +84,7 @@ NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<Componen
 	entity->_EntityIdentifier = GenerateEntityIdentifier();
 
 	//Reset whether or not this entity is initialized.
-	entity->_Initialized = false;
+	CLEAR_BIT(entity->_Flags, Entity::Flags::INITIALIZED);
 
 	//Add it to the creation queue.
 	EntityCreationQueueItem queue_item;
@@ -260,7 +260,7 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 			}
 
 			//This entity is now initialized. (:
-			queue_item->_CreationQueueItem._Entity->_Initialized = true;
+			SET_BIT(queue_item->_CreationQueueItem._Entity->_Flags, Entity::Flags::INITIALIZED);
 
 			//Free the queue item.
 			_PreProcessingAllocator.Free(queue_item);
@@ -384,7 +384,7 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 			}
 
 			//This entity is now initialized. (:
-			queue_item->_Entity->_Initialized = true;
+			SET_BIT(queue_item->_Entity->_Flags, Entity::Flags::INITIALIZED);
 		}
 
 		//Break if we've run over time.
@@ -420,9 +420,9 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 			/*
 			*	If the entity isn't initialized yet, we have to assume it's somewhere in the creation queue.
 			*	Best we can do right now is just put it back into the queue at the end, and destroy it once initialized.
-			*	Set the "looparound" entity here, if it's not set, or check if we have reached the "looparound" entity here (and if so, return).
+			*	Set the "looparound" entity here, if it's not set.
 			*/
-			if (!queue_item->_Entity->_Initialized)
+			if (!TEST_BIT(queue_item->_Entity->_Flags, Entity::Flags::INITIALIZED))
 			{
 				if (looparound_entity == UINT64_MAXIMUM)
 				{
