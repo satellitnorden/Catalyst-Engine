@@ -5,6 +5,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
 
+//Concurrency.
+#include <Concurrency/AtomicQueue.h>
+
 //Content.
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Assets/ModelAsset.h>
@@ -47,6 +50,11 @@ public:
 	*	Loads a single asset with the given load context.
 	*/
 	NO_DISCARD Asset *const RESTRICT Load(const LoadContext &load_context) NOEXCEPT override;
+
+	/*
+	*	Runs after load.
+	*/
+	void PostLoad() NOEXCEPT override;
 
 #if !defined (CATALYST_CONFIGURATION_FINAL)
 	/*
@@ -105,6 +113,22 @@ private:
 
 	};
 
+	/*
+	*	Post link data class definition.
+	*/
+	class PostLinkData final
+	{
+
+	public:
+
+		//The texture.
+		ModelAsset *RESTRICT _Asset;
+
+		//The default materials.
+		StaticArray<HashString, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _DefaultMaterials;
+
+	};
+
 	//The compile data allocator.
 	PoolAllocator<sizeof(CompileData)> _CompileDataAllocator;
 
@@ -113,6 +137,9 @@ private:
 
 	//The asset allocator.
 	PoolAllocator<sizeof(ModelAsset)> _AssetAllocator;
+
+	//The post link queue.
+	AtomicQueue<PostLinkData, 4'096, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _PostLinkQueue;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//The total CPU memory.

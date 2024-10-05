@@ -10,17 +10,23 @@
 void LightComponent::Initialize() NOEXCEPT
 {
 	//Add the editable fields.
-	AddEditableEnumerationField
+	AddEditableColorField
 	(
-		"Light Type",
-		offsetof(LightInitializationData, _LightType),
-		offsetof(LightInstanceData, _LightType)
+		"Color",
+		offsetof(LightInitializationData, _Color),
+		offsetof(LightInstanceData, _Color)
 	);
 	AddEditableFloatField
 	(
 		"Intensity",
 		offsetof(LightInitializationData, _Intensity),
 		offsetof(LightInstanceData, _Intensity)
+	);
+	AddEditableEnumerationField
+	(
+		"Light Type",
+		offsetof(LightInitializationData, _LightType),
+		offsetof(LightInstanceData, _LightType)
 	);
 	AddEditableFloatField
 	(

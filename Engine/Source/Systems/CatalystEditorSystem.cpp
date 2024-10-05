@@ -180,6 +180,9 @@ void CatalystEditorSystem::UpdateNotInGame() NOEXCEPT
 
 	//Update the editor camera system.
 	_EditorCameraSystem.Update();
+
+	//Update the editor level system.
+	_EditorLevelSystem.Update();
 }
 
 /*

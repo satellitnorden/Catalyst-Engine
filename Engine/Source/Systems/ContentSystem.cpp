@@ -552,7 +552,7 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 		{
 			number_of_tasks_left = _number_of_tasks_left;
 
-			LOG_INFORMATION("Number of ascynhronous compile tasks left: %llu", number_of_tasks_left);
+			LOG_INFORMATION("Number of ascynhronous load tasks left: %llu", number_of_tasks_left);
 		}
 	}
 

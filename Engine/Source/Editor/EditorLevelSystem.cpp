@@ -22,6 +22,9 @@
 //File.
 #include <File/Core/File.h>
 
+//Rendering.
+#include <Rendering/Native/RenderingUtilities.h>
+
 //Systems.
 #include <Systems/CatalystEditorSystem.h>
 #include <Systems/ContentSystem.h>
@@ -78,6 +81,50 @@ FORCE_INLINE NO_DISCARD bool TextInputWidget(const char *const RESTRICT label, c
 
 	//Return if there was a change!
 	return changed;
+}
+
+/*
+*	Creates a custom color widget.
+*/
+FORCE_INLINE void ColorWidget
+(
+	const char *const RESTRICT label,
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField &editable_field,
+	Vector3<float32> *const RESTRICT value
+) NOEXCEPT
+{
+	ImGui::Columns(2);
+
+	ImGui::SetColumnWidth(0, 64.0f);
+	ImGui::Text(label);
+	ImGui::NextColumn();
+
+	ImGui::PushMultiItemsWidths(1, ImGui::CalcItemWidth());
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+	const float32 line_height{ GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f };
+	const ImVec2 button_size{ line_height + 3.0f, line_height };
+
+	ImGui::SameLine();
+
+	float32 _value[3]{ value->_R, value->_G, value->_B };
+
+	if (ImGui::ColorEdit3("##COLOR_VALUE", _value))
+	{
+		component->PreEditableFieldChange(entity, editable_field);
+		value->_R = _value[0];
+		value->_G = _value[1];
+		value->_B = _value[2];
+		component->PostEditableFieldChange(entity, editable_field);
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+
+	ImGui::PopStyleVar();
+	ImGui::Columns(1);
 }
 
 /*
@@ -186,7 +233,13 @@ FORCE_INLINE void HashStringWidget
 /*
 *	Creates a custom material asset widget. Returns if there was a change.
 */
-FORCE_INLINE NO_DISCARD bool MaterialAssetWidget(const char *const RESTRICT label, AssetPointer<MaterialAsset> *const RESTRICT asset) NOEXCEPT
+FORCE_INLINE NO_DISCARD bool MaterialAssetWidget
+(
+	const char *const RESTRICT label,
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField &editable_field,
+	AssetPointer<MaterialAsset> *const RESTRICT asset) NOEXCEPT
 {
 	char buffer[256];
 	sprintf_s(buffer, "%s: %s", label, (*asset)->_Header._AssetName.Data());
@@ -197,13 +250,18 @@ FORCE_INLINE NO_DISCARD bool MaterialAssetWidget(const char *const RESTRICT labe
 		(
 			"Select Material",
 			MaterialAsset::TYPE_IDENTIFIER,
-			[](Asset *const RESTRICT asset, void *const RESTRICT arguments)
+			component,
+			entity,
+			&editable_field,
+			asset,
+			[](Component *const RESTRICT component, Entity *const RESTRICT entity, const ComponentEditableField *const RESTRICT editable_field, Asset *const RESTRICT asset, void *const RESTRICT user_data)
 			{
-				AssetPointer<MaterialAsset> *const RESTRICT material_asset{ static_cast<AssetPointer<MaterialAsset> *const RESTRICT>(arguments) };
+				AssetPointer<MaterialAsset> *const RESTRICT material_asset{ static_cast<AssetPointer<MaterialAsset> *const RESTRICT>(user_data) };
 
+				component->PreEditableFieldChange(entity, *editable_field);
 				(*material_asset) = AssetPointer<MaterialAsset>((MaterialAsset *const RESTRICT)asset);
-			},
-			asset
+				component->PostEditableFieldChange(entity, *editable_field);
+			}
 		);
 	}
 
@@ -214,7 +272,14 @@ FORCE_INLINE NO_DISCARD bool MaterialAssetWidget(const char *const RESTRICT labe
 /*
 *	Creates a custom model asset widget. Returns if there was a change.
 */
-FORCE_INLINE NO_DISCARD bool ModelAssetWidget(const char *const RESTRICT label, AssetPointer<ModelAsset> *const RESTRICT model_asset) NOEXCEPT
+FORCE_INLINE NO_DISCARD bool ModelAssetWidget
+(
+	const char *const RESTRICT label,
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField &editable_field,
+	AssetPointer<ModelAsset> *const RESTRICT model_asset
+) NOEXCEPT
 {
 	char buffer[256];
 	sprintf_s(buffer, "%s: %s", label, (*model_asset)->_Header._AssetName.Data());
@@ -225,13 +290,18 @@ FORCE_INLINE NO_DISCARD bool ModelAssetWidget(const char *const RESTRICT label, 
 		(
 			"Select Model",
 			ModelAsset::TYPE_IDENTIFIER,
-			[](Asset *const RESTRICT asset, void *const RESTRICT arguments)
+			component,
+			entity,
+			&editable_field,
+			model_asset,
+			[](Component *const RESTRICT component, Entity *const RESTRICT entity, const ComponentEditableField *const RESTRICT editable_field, Asset *const RESTRICT asset, void* const RESTRICT user_data)
 			{
-				AssetPointer<ModelAsset> *const RESTRICT model_asset{ static_cast<AssetPointer<ModelAsset> *const RESTRICT>(arguments) };
-			
+				AssetPointer<ModelAsset> *const RESTRICT model_asset{ static_cast<AssetPointer<ModelAsset> *const RESTRICT>(user_data) };
+
+				component->PreEditableFieldChange(entity, *editable_field);
 				(*model_asset) = AssetPointer<ModelAsset>((ModelAsset *const RESTRICT)asset);
-			},
-			model_asset
+				component->PostEditableFieldChange(entity, *editable_field);
+			}
 		);
 	}
 
@@ -553,6 +623,50 @@ void EditorLevelSystem::PostInitialize() NOEXCEPT
 }
 
 /*
+*	Updates the editor level system.
+*/
+void EditorLevelSystem::Update() NOEXCEPT
+{
+	//Only update if no window is hovered.
+	if (ImGui::GetIO().WantCaptureMouse)
+	{
+		return;
+	}
+	 
+	//Cache the input state.
+	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::GAME) };
+
+	//If the left mouse button is clicked, try to select an entity. (:
+	if (mouse_state->_Left == ButtonState::PRESSED)
+	{
+		Ray ray;
+
+		ray.SetOrigin(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
+		ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(mouse_state->_CurrentX, mouse_state->_CurrentY)));
+
+		//Track the current hit distance.
+		float32 hit_distance{ FLOAT32_MAXIMUM };
+
+		//Iterate over all entities.
+		for (uint64 entity_index{ 0 }; entity_index < _Entities.Size(); ++entity_index)
+		{
+			//Cache the entity.
+			Entity *const RESTRICT entity{ _Entities[entity_index] };
+
+			//Perform the editor selection for this entity!
+			float32 previous_hit_distance{ hit_distance };
+
+			if (Components::EditorSelect(ray, entity, &hit_distance))
+			{
+				ASSERT(hit_distance < previous_hit_distance, "A component didn't properly check hit distance!");
+
+				_SelectedEntityIndex = entity_index;
+			}
+		}
+	}
+}
+
+/*
 *	Creates an entity.
 */
 void EditorLevelSystem::CreateEntity() NOEXCEPT
@@ -582,7 +696,10 @@ void EditorLevelSystem::CreateEntity() NOEXCEPT
 	}
 
 	//Create the entity!
-	new_entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData * RESTRICT>(component_configurations));
+	new_entity = EntitySystem::Instance->CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT>(component_configurations));
+
+	//The entity is now the selected entity. (:
+	_SelectedEntityIndex = _Entities.LastIndex();
 }
 
 /*
@@ -665,7 +782,7 @@ void EditorLevelSystem::StartGame() NOEXCEPT
 	//Save down the level, so we can restore if once the game is ended.
 	SaveLevelInternal(_CurrentlyPlayedLevel);
 
-	//Write the JSON to a file for debug purpises..
+	//Write the JSON to a file for debug purposes..
 	std::ofstream file{ "CurrentlyPlayedLevel.Level" };
 	file << std::setw(4) << _CurrentlyPlayedLevel;
 	file.close();
@@ -1029,7 +1146,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 	ImGuiSystem::Instance->BeginWindow(begin_window_parameters);
 
 	//Set up stuff for the selected entity.
-	if (_SelectedEntityIndex != UINT64_MAXIMUM)
+	if (_SelectedEntityIndex != UINT64_MAXIMUM && _Entities[_SelectedEntityIndex]->_Initialized)
 	{
 		//Cache the selected entity and entity editor data.
 		Entity *const RESTRICT selected_entity{ _Entities[_SelectedEntityIndex] };
@@ -1446,6 +1563,22 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					{
 						switch (editable_field._Type)
 						{
+							case ComponentEditableField::Type::COLOR:
+							{
+								Vector3<float32> *const RESTRICT value{ component->EditableFieldData<Vector3<float32>>(selected_entity, editable_field) };
+
+								ColorWidget
+								(
+									editable_field._Name,
+									component,
+									selected_entity,
+									editable_field,
+									value
+								);
+
+								break;
+							}
+
 							case ComponentEditableField::Type::FLOAT:
 							{
 								float32 *const RESTRICT value{ component->EditableFieldData<float32>(selected_entity, editable_field) };
@@ -1518,7 +1651,14 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 							{
 								AssetPointer<MaterialAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<MaterialAsset>>(selected_entity, editable_field) };
 
-								MaterialAssetWidget(editable_field._Name, asset);
+								MaterialAssetWidget
+								(
+									editable_field._Name,
+									component,
+									selected_entity,
+									editable_field,
+									asset
+								);
 
 								break;
 							}
@@ -1527,7 +1667,14 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 							{
 								AssetPointer<ModelAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<ModelAsset>>(selected_entity, editable_field) };
 
-								ModelAssetWidget(editable_field._Name, asset);
+								ModelAssetWidget
+								(
+									editable_field._Name,
+									component,
+									selected_entity,
+									editable_field,
+									asset
+								);
 
 								break;
 							}

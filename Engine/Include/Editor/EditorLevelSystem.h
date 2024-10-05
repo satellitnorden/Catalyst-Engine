@@ -33,6 +33,11 @@ public:
 	void PostInitialize() NOEXCEPT;
 
 	/*
+	*	Updates the editor level system.
+	*/
+	void Update() NOEXCEPT;
+
+	/*
 	*	Creates an entity.
 	*/
 	void CreateEntity() NOEXCEPT;

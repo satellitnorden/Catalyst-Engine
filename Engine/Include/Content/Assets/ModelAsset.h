@@ -6,6 +6,7 @@
 
 //Content.
 #include <Content/Core/Asset.h>
+#include <Content/Assets/MaterialAsset.h>
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox3D.h>
@@ -35,5 +36,8 @@ public:
 
 	//The level of detail multiplier.
 	float32 _LevelOfDetailMultiplier;
+
+	//The materials.
+	StaticArray<AssetPointer<MaterialAsset>, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _DefaultMaterials;
 
 };

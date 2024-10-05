@@ -14,15 +14,21 @@ void EditorContentBrowser::Request
 (
 	const char *const RESTRICT prompt,
 	const HashString asset_type_identifier,
-	const ContentBrowserCallbackFunction callback_function,
-	void *const RESTRICT user_data
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField *const RESTRICT editable_field,
+	void *const RESTRICT user_data,
+	const ContentBrowserCallbackFunction callback_function
 ) NOEXCEPT
 {
 	//Set the data.
 	_Prompt = prompt;
 	_AssetTypeIdentifier = asset_type_identifier;
-	_CallbackFunction = callback_function;
+	_Component = component;
+	_Entity = entity;
+	_EditableField = editable_field;
 	_UserData = user_data;
+	_CallbackFunction = callback_function;
 
 	//Set up the filtered assets.
 	_FilteredAssets.Clear();
@@ -67,7 +73,7 @@ NO_DISCARD bool EditorContentBrowser::UpdateFloatingWindow(const Vector2<float32
 	{
 		if (ImGui::Selectable(asset->_Header._AssetName.Data()))
 		{
-			_CallbackFunction(asset, _UserData);
+			_CallbackFunction(_Component, _Entity, _EditableField, asset, _UserData);
 
 			_ShouldBeOpen = false;
 

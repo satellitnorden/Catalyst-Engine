@@ -11,6 +11,7 @@
 #include <Profiling/Profiling.h>
 
 //Systems.
+#include <Systems/ContentSystem.h>
 #include <Systems/LogSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -30,6 +31,9 @@ public:
 
 	//The level of details.
 	DynamicArray<StaticString<MAXIMUM_FILE_PATH_LENGTH>> _LevelOfDetails;
+
+	//The default materials.
+	StaticArray<HashString, RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL> _DefaultMaterials;
 
 	//The collision.
 	StaticString<MAXIMUM_FILE_PATH_LENGTH> _Collision;
@@ -64,7 +68,16 @@ NO_DISCARD HashString ModelAssetCompiler::AssetTypeIdentifier() const NOEXCEPT
 */
 NO_DISCARD uint64 ModelAssetCompiler::CurrentVersion() const NOEXCEPT
 {
-	return 1;
+	//Enumeration covering all versions.
+	enum class Version : uint64
+	{
+		DEFAULT,
+		ADD_DEFAULT_MATERIALS,
+
+		CURRENT_VERSION
+	};
+
+	return static_cast<uint64>(Version::CURRENT_VERSION);
 }
 
 /*
@@ -140,6 +153,23 @@ NO_DISCARD Asset *const RESTRICT ModelAssetCompiler::Load(const LoadContext &loa
 }
 
 /*
+*	Runs after load.
+*/
+void ModelAssetCompiler::PostLoad() NOEXCEPT
+{
+	while (PostLinkData *const RESTRICT post_link_data{ _PostLinkQueue.Pop() })
+	{
+		for (uint64 mesh_index{ 0 }; mesh_index < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++mesh_index)
+		{
+			if (post_link_data->_DefaultMaterials[mesh_index])
+			{
+				post_link_data->_Asset->_DefaultMaterials[mesh_index] = ContentSystem::Instance->GetAsset<MaterialAsset>(post_link_data->_DefaultMaterials[mesh_index]);
+			}
+		}
+	}
+}
+
+/*
 *	Compiles internally.
 */
 void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
@@ -150,6 +180,7 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 	ModelParameters parameters;
 
 	//Set defaults.
+	Memory::Set(parameters._DefaultMaterials.Data(), 0, sizeof(HashString) * RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL);
 	parameters._LevelOfDetailMultiplier = 32.0f;
 	parameters._QuixelTransformation = false;
 
@@ -182,6 +213,30 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 					ASSERT(number_of_arguments == 1, "LevelOfDetail() needs one argument!");
 
 					parameters._LevelOfDetails.Emplace(arguments[0].Data());
+
+					continue;
+				}
+			}
+
+			//Is this a default material declaration?
+			{
+				const size_t position{ current_line.find("DefaultMaterial(") };
+
+				if (position != std::string::npos)
+				{
+					const uint64 number_of_arguments
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							current_line.c_str(),
+							current_line.length(),
+							arguments.Data()
+						)
+					};
+
+					ASSERT(number_of_arguments == 2, "LevelOfDetail() needs one argument!");
+
+					parameters._DefaultMaterials[std::stoull(arguments[0].Data())] = HashString(arguments[1].Data());
 
 					continue;
 				}
@@ -365,6 +420,9 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 		}
 	}
 
+	//Write the default materials.
+	output_file.Write(parameters._DefaultMaterials.Data(), sizeof(HashString) * RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL);
+
 	//Check if there exists a collision model.
 	if (parameters._Collision)
 	{
@@ -425,6 +483,11 @@ void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 {
 	PROFILING_SCOPE("ModelAssetCompiler::LoadInternal");
 
+	//Set up the post link data.
+	PostLinkData post_link_data;
+
+	post_link_data._Asset = load_data->_Asset;
+
 	//Read the data.
 	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
 
@@ -470,6 +533,9 @@ void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 			load_data->_StreamArchive->Read(indices[mesh_index][j].Data(), sizeof(uint32) * number_of_indices, &stream_archive_position);
 		}
 	}
+
+	//Read the default materials.
+	load_data->_StreamArchive->Read(post_link_data._DefaultMaterials.Data(), sizeof(HashString) * RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL, &stream_archive_position);
 
 	//Set up the collision model data.
 	CollisionModelData collision_model_data;
@@ -542,6 +608,9 @@ void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 
 	//Read the level of detail multiplier.
 	load_data->_StreamArchive->Read(&load_data->_Asset->_LevelOfDetailMultiplier, sizeof(float32), &stream_archive_position);
+
+	//Add the post link data to the post link queue.
+	_PostLinkQueue.Push(post_link_data);
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Update the total CPU/GPU memory.

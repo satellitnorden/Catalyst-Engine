@@ -54,6 +54,19 @@ namespace EntitySerialization
 			{
 				switch (editable_field._Type)
 				{
+					case ComponentEditableField::Type::COLOR:
+					{
+						const Vector3<float32> *const RESTRICT data{ component->EditableFieldData<Vector3<float32>>(entity, editable_field) };
+
+						nlohmann::json &color_entry{ component_entry[editable_field._Name] };
+
+						color_entry["R"] = data->_R;
+						color_entry["G"] = data->_G;
+						color_entry["B"] = data->_B;
+
+						break;
+					}
+
 					case ComponentEditableField::Type::FLOAT:
 					{
 						const float32 *const RESTRICT data{ component->EditableFieldData<float32>(entity, editable_field) };
@@ -296,6 +309,19 @@ namespace EntitySerialization
 					{
 						switch (editable_field._Type)
 						{
+							case ComponentEditableField::Type::COLOR:
+							{
+								Vector3<float32> color;
+
+								color._X = editable_field_entry["R"];
+								color._Y = editable_field_entry["G"];
+								color._Z = editable_field_entry["B"];
+
+								stream_archive->Write(&color, sizeof(Vector3<float32>));
+
+								break;
+							}
+
 							case ComponentEditableField::Type::FLOAT:
 							{
 								const float32 value{ editable_field_entry.get<float32>() };
@@ -550,6 +576,16 @@ namespace EntitySerialization
 
 				switch (editable_field->_Type)
 				{
+					case ComponentEditableField::Type::COLOR:
+					{
+						Vector3<float32> data;
+						stream_archive.Read(&data, sizeof(Vector3<float32>), stream_archive_position);
+
+						Memory::Copy(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset), &data, sizeof(Vector3<float32>));
+
+						break;
+					}
+
 					case ComponentEditableField::Type::FLOAT:
 					{
 						float32 data;

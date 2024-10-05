@@ -18,6 +18,15 @@ class LightInitializationData final : public ComponentInitializationData
 
 public:
 
+	//The color.
+	Vector3<float32> _Color;
+
+	//The intensity.
+	float32 _Intensity;
+
+	//The light properties.
+	uint32 _LightProperties;
+
 	//The light type.
 	LightType _LightType;
 
@@ -35,15 +44,6 @@ public:
 		//The size.
 		float32 _Size{ 1.0f };
 	} _PointLightData;
-
-	//The color.
-	Vector3<float32> _Color;
-
-	//The light properties.
-	uint32 _LightProperties;
-
-	//The intensity.
-	float32 _Intensity;
 
 };
 
@@ -52,6 +52,15 @@ class LightInstanceData final
 
 public:
 
+	//The color.
+	Vector3<float32> _Color;
+
+	//The intensity.
+	float32 _Intensity;
+
+	//The light properties.
+	uint32 _LightProperties;
+
 	//The light type.
 	LightType _LightType;
 
@@ -69,15 +78,6 @@ public:
 		//The size.
 		float32 _Size{ 1.0f };
 	} _PointLightData;
-
-	//The color.
-	Vector3<float32> _Color;
-
-	//The light properties.
-	uint32 _LightProperties;
-
-	//The intensity.
-	float32 _Intensity;
 
 };
 

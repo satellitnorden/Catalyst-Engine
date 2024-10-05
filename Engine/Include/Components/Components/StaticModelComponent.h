@@ -83,6 +83,7 @@ class StaticModelComponent final : public Component
 		COMPONENT_DEFAULT_INITIALIZATION_DATA(StaticModelInitializationData)
 		COMPONENT_POST_CREATE_INSTANCE()
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
+		COMPONENT_EDITOR_SELECT()
 	);
 
 public:
@@ -96,5 +97,12 @@ public:
 	*	Callback for after an editable field change happens.
 	*/
 	void PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
+
+private:
+
+	/*
+	*	Sets up default materials.
+	*/
+	void SetupDefaultMaterials(Entity *const RESTRICT entity, const bool force) NOEXCEPT;
 
 };

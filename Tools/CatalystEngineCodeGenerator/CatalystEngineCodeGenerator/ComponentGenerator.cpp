@@ -67,6 +67,9 @@ public:
 	//Denotes whether or not this component wants a "PostCreateInstance()" call.
 	bool _PostCreateInstance;
 
+	//Denotes whether or not this component is editor selectable.
+	bool _EditorSelectable;
+
 };
 
 /*
@@ -81,14 +84,14 @@ void ComponentGenerator::Run()
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
-//#if defined(NDEBUG)
+#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
-//#endif
+#endif
 
 	//Gather components!
 	bool new_files_parsed{ false };
@@ -270,6 +273,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 	component_entry["DefaultInitializationData"] = false;
 	component_entry["PreProcess"] = false;
 	component_entry["PostCreateInstance"] = false;
+	component_entry["EditorSelectable"] = false;
 
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
@@ -673,6 +677,18 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 				continue;
 			}
 		}
+
+		//Check if this component is editor selectable.
+		{
+			const size_t position{ current_line.find("COMPONENT_EDITOR_SELECT(") };
+
+			if (position != std::string::npos)
+			{
+				component_entry["EditorSelectable"] = true;
+
+				continue;
+			}
+		}
 	}
 }
 
@@ -762,6 +778,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this component wants an "PostCreateInstance()" call.
 				new_component_data._PostCreateInstance = component_entry["PostCreateInstance"];
+
+				//Set whether or not this component wants an "PostCreateInstance()" call.
+				new_component_data._EditorSelectable = component_entry["EditorSelectable"];
 
 				//Check if this component wants any serial updates.
 				if (component_entry.contains("SerialUpdates"))
@@ -1515,5 +1534,38 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	file << "\tMemory::Free(COMPONENTS_MEMORY);" << std::endl;
 
+	file << "}" << std::endl;
+	file << std::endl;
+	
+	//Calculate the number of editor selectable components.
+	size_t number_of_editor_selectable_components{ 0 };
+
+	for (const ComponentData &_component_data : component_data)
+	{
+		if (_component_data._EditorSelectable)
+		{
+			++number_of_editor_selectable_components;
+		}
+	}
+
+	//Set up the "Components::EditorSelect" function.
+	file << "NO_DISCARD bool Components::EditorSelect(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+	file << "\tbool was_hit{ false };" << std::endl;
+	file << std::endl;
+	
+	for (const ComponentData &_component_data : component_data)
+	{
+		if (_component_data._EditorSelectable)
+		{
+			file << "\tif (" << _component_data._Name.data() << "::Instance->Has(entity))" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\twas_hit |= " << _component_data._Name.data() << "::Instance->EditorSelect(ray, entity, hit_distance);" << std::endl;
+			file << "\t}" << std::endl;
+		}
+	}
+
+	file << std::endl;
+	file << "\treturn was_hit;" << std::endl;
 	file << "}";
 }

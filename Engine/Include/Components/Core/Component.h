@@ -15,6 +15,9 @@
 //Entities.
 #include <Entities/Core/Entity.h>
 
+//Math.
+#include <Math/Geometry/Ray.h>
+
 //Memory.
 #include <Memory/PoolAllocator.h>
 
@@ -120,6 +123,16 @@ protected:
 	*	Sub-editable field data function.
 	*/
 	virtual NO_DISCARD void *const RESTRICT SubEditableFieldData(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT = 0;
+
+	/*
+	*	Adds an editable color field.
+	*/
+	void AddEditableColorField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
 
 	/*
 	*	Adds an editable float field.
@@ -358,6 +371,11 @@ public:
 	*/
 	static void Terminate() NOEXCEPT;
 
+	/*
+	*	Tries to select the given entity. Returns if it was hit, and updates the hit distance if so.
+	*/
+	static NO_DISCARD bool EditorSelect(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT;
+
 };
 
 /*
@@ -436,6 +454,14 @@ public:															\
 #define COMPONENT_TERMINATE()	\
 public:							\
 	void Terminate() NOEXCEPT;
+
+/*
+*	Put this in your component declaration and implement the "EditorSelect()" function for entities with this component to be able to be selected in the editor.
+*	Should return whether or not this entity was hit, and if so, update the 'hit_distance' argument.
+*/
+#define COMPONENT_EDITOR_SELECT()																								\
+public:																															\
+	NO_DISCARD bool EditorSelect(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT;
 
 /*
 *	Declares a Catalyst component.

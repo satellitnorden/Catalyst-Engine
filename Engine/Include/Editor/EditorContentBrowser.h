@@ -6,6 +6,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/HashString.h>
 
+//Components.
+#include <Components/Core/Component.h>
+
 //Math.
 #include <Math/General/Vector.h>
 
@@ -13,7 +16,7 @@
 class Asset;
 
 //Type aliases.
-using ContentBrowserCallbackFunction = void(*)(Asset *const RESTRICT asset, void *const RESTRICT arguments);
+using ContentBrowserCallbackFunction = void(*)(Component *const RESTRICT component, Entity *const RESTRICT entity, const ComponentEditableField *const RESTRICT editable_field, Asset *const RESTRICT asset, void *const RESTRICT user_data);
 
 class EditorContentBrowser final
 {
@@ -26,9 +29,12 @@ public:
 	void Request
 	(
 		const char *const RESTRICT prompt,
-		const HashString asset_tyoe_identifier,
-		const ContentBrowserCallbackFunction callback_function,
-		void *const RESTRICT user_data
+		const HashString asset_type_identifier,
+		Component *const RESTRICT component,
+		Entity *const RESTRICT entity,
+		const ComponentEditableField *const RESTRICT editable_field,
+		void *const RESTRICT user_data,
+		const ContentBrowserCallbackFunction callback_function
 	) NOEXCEPT;
 
 private:
@@ -42,11 +48,20 @@ private:
 	//The asset type identifier.
 	HashString _AssetTypeIdentifier;
 
-	//The callback function.
-	ContentBrowserCallbackFunction _CallbackFunction;
+	//The component.
+	Component *RESTRICT _Component;
+
+	//The entity.
+	Entity *RESTRICT _Entity;
+
+	//The editable field.
+	const ComponentEditableField *RESTRICT _EditableField;
 
 	//The user data.
-	void *RESTRICT _UserData;
+	void* RESTRICT _UserData;
+
+	//The callback function.
+	ContentBrowserCallbackFunction _CallbackFunction;
 
 	//Denotes if the content browser should be open.
 	bool _ShouldBeOpen;
