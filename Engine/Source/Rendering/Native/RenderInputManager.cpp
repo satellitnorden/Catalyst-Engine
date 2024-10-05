@@ -8,6 +8,7 @@
 #include <Components/Components/GrassComponent.h>
 #include <Components/Components/InstancedImpostorComponent.h>
 #include <Components/Components/InstancedStaticModelComponent.h>
+#include <Components/Components/PlayerSpawnMarkerComponent.h>
 #include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/TerrainComponent.h>
 #include <Components/Components/WaterComponent.h>
@@ -20,6 +21,10 @@
 #include <Rendering/Native/GrassCore.h>
 
 //Systems.
+#if defined(CATALYST_EDITOR)
+	#include <Systems/CatalystEditorSystem.h>
+#endif
+#include <Systems/ContentSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/WorldSystem.h>
@@ -106,6 +111,16 @@ struct GrassPushConstantData
 	float32 _Bend;
 	float32 _FadeOutDistance;
 };
+
+#if defined(CATALYST_EDITOR)
+struct ModelEditorMetadataPushConstantData
+{
+
+	//The transformation.
+	Matrix4x4 _Transformation;
+
+};
+#endif
 
 /*
 *	Initializes the render input manager.
@@ -594,6 +609,33 @@ void RenderInputManager::Initialize() NOEXCEPT
 			this
 		);
 	}
+
+#if defined(CATALYST_EDITOR)
+	{
+		//Set up the required vertex input attribute/binding descriptions for models.
+		DynamicArray<VertexInputAttributeDescription> models_required_vertex_input_attribute_descriptions;
+
+		models_required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Position)));
+
+		DynamicArray<VertexInputBindingDescription> models_required_vertex_input_binding_descriptions;
+
+		models_required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
+
+		RegisterInputStream
+		(
+			HashString("ModelEditorMetadata"),
+			models_required_vertex_input_attribute_descriptions,
+			models_required_vertex_input_binding_descriptions,
+			sizeof(ModelEditorMetadataPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherModelEditorMetadataInputStream(input_stream);
+			},
+			RenderInputStream::Mode::DRAW_INDEXED,
+			this
+		);
+	}
+#endif
 }
 
 /*
@@ -1258,3 +1300,112 @@ void RenderInputManager::GatherGrassInputStream
 		);
 	}
 }
+
+#if defined(CATALYST_EDITOR)
+/*
+*	Gathers a model editor metadata input stream.
+*/
+void RenderInputManager::GatherModelEditorMetadataInputStream
+(
+	RenderInputStream *const RESTRICT input_stream
+) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Only draw when in the editor.
+	if (CatalystEditorSystem::Instance->IsInGame())
+	{
+		return;
+	}
+
+	//Cache the selected entity.
+	Entity *const RESTRICT selected_entity{ CatalystEditorSystem::Instance->GetEditorLevelSystem()->GetSelectedEntity() };
+
+	if (!selected_entity)
+	{
+		return;
+	}
+
+	//Cache the world transform instance data.
+	const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(selected_entity) };
+
+	//Add an entry if this entity has a player spawn marker component.
+	if (PlayerSpawnMarkerComponent::Instance->Has(selected_entity))
+	{
+		//Cache the model.
+		AssetPointer<ModelAsset> model{ ContentSystem::Instance->GetAsset<ModelAsset>(HashString("PlayerSpawnMarker")) };
+
+		//Go through all meshes.
+		for (uint64 i{ 0 }, size{ model->_Meshes.Size() }; i < size; ++i)
+		{
+			//Cache the mesh.
+			const Mesh &mesh{ model->_Meshes[i] };
+
+			//Add a new entry.
+			input_stream->_Entries.Emplace();
+			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+			new_entry._VertexBuffer = mesh._MeshLevelOfDetails[0]._VertexBuffer;
+			new_entry._IndexBuffer = mesh._MeshLevelOfDetails[0]._IndexBuffer;
+			new_entry._IndexBufferOffset = 0;
+			new_entry._InstanceBuffer = EMPTY_HANDLE;
+			new_entry._VertexCount = 0;
+			new_entry._IndexCount = mesh._MeshLevelOfDetails[0]._IndexCount;
+			new_entry._InstanceCount = 0;
+
+			//Set up the push constant data.
+			ModelEditorMetadataPushConstantData push_constant_data;
+
+			push_constant_data._Transformation = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+
+			for (uint64 i{ 0 }; i < sizeof(ModelEditorMetadataPushConstantData); ++i)
+			{
+				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+			}
+		}
+	}
+
+	//Add an entry if this entity has a static model component.
+	if (StaticModelComponent::Instance->Has(selected_entity))
+	{
+		//Cache the instance data.
+		const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(selected_entity) };
+		const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(selected_entity) };
+
+		//Go through all meshes.
+		for (uint64 i{ 0 }, size{ static_model_instance_data._Model->_Meshes.Size() }; i < size; ++i)
+		{
+			//Cache the mesh.
+			const Mesh &mesh{ static_model_instance_data._Model->_Meshes[i] };
+
+			//Add a new entry.
+			input_stream->_Entries.Emplace();
+			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+			new_entry._VertexBuffer = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._VertexBuffer;
+			new_entry._IndexBuffer = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._IndexBuffer;
+			new_entry._IndexBufferOffset = 0;
+			new_entry._InstanceBuffer = EMPTY_HANDLE;
+			new_entry._VertexCount = 0;
+			new_entry._IndexCount = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._IndexCount;
+			new_entry._InstanceCount = 0;
+
+			//Set up the push constant data.
+			ModelEditorMetadataPushConstantData push_constant_data;
+
+			push_constant_data._Transformation = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+
+			for (uint64 i{ 0 }; i < sizeof(ModelEditorMetadataPushConstantData); ++i)
+			{
+				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+			}
+		}
+	}
+}
+#endif

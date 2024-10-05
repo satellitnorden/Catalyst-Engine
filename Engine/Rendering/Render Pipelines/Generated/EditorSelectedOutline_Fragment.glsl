@@ -234,17 +234,22 @@ void main()
     EditorMetadataStruct editor_metadata = UnpackEditorMetadata(texture(EditorMetadata, InScreenCoordinate));
     bool any_neighboring_pixel_not_selected = false;
     bool any_neighboring_pixel_selected = false;
-    for (int Y = -1; Y <= 1; ++Y)
+    for (int Y = -2; Y <= 2; ++Y)
     {
-        for (int X = -1; X <= 1; ++X)
+        for (int X = -2; X <= 2; ++X)
         {
+            if (X == 0 && Y == 0)
+            {
+                continue;
+            }
             EditorMetadataStruct neighboring_editor_metadata = UnpackEditorMetadata(texture(EditorMetadata, InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_FULL_MAIN_RESOLUTION));
             any_neighboring_pixel_not_selected = any_neighboring_pixel_not_selected || !neighboring_editor_metadata._PixelIsSelected;
             any_neighboring_pixel_selected = any_neighboring_pixel_selected || neighboring_editor_metadata._PixelIsSelected;
         }
     }
     vec3 color = vec3(0.0f, 0.0f, 0.0f);
-    color += vec3(0.0f, 1.0f, 1.0f) * 4.0f * float(editor_metadata._PixelIsSelected && any_neighboring_pixel_not_selected);
-    color += vec3(1.0f, 0.0f, 0.0f) * 4.0f * float(!editor_metadata._PixelIsSelected && any_neighboring_pixel_selected);
-	Scene = vec4(color,1.0f);
+    float inner_color_weight = float(editor_metadata._PixelIsSelected && any_neighboring_pixel_not_selected);
+    float outer_color_weight = float(!editor_metadata._PixelIsSelected && any_neighboring_pixel_selected);
+    color += vec3(1.0f, 1.0f, 1.0f) * 4.0f * inner_color_weight;
+	Scene = vec4(color,min(inner_color_weight+outer_color_weight,1.0f));
 }

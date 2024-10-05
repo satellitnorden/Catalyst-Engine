@@ -297,8 +297,8 @@ layout (location = 0) out vec4 Scene;
 
 void main()
 {
-    #define COLOR (vec3(1.0f, 0.0f, 1.0f) * 2.0f)
+    #define COLOR (vec3(0.25f, 0.0f, 1.0f) * 4.0f)
     vec3 view_direction = normalize(CAMERA_WORLD_POSITION - InWorldPosition);
     float fresnel_factor = pow(1.0f - max(dot(view_direction, InNormal), 0.0f), 2.0f);
-	Scene = vec4(mix(vec3(0.0f,0.0f,0.0f),COLOR,fresnel_factor),1.0f);
+	Scene = vec4(mix(COLOR*0.125f*0.5f,COLOR,fresnel_factor),1.0f);
 }

@@ -85,6 +85,22 @@ public:
 		return _Asset != nullptr;
 	}
 
+	/*
+	*	Returns the underlying asset, const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const TYPE *const RESTRICT Get() const NOEXCEPT
+	{
+		return _Asset;
+	}
+
+	/*
+	*	Returns the underlying asset, non-const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD TYPE *const RESTRICT Get() NOEXCEPT
+	{
+		return _Asset;
+	}
+
 private:
 
 	//The underlying asset.

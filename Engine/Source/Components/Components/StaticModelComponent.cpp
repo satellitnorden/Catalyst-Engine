@@ -25,80 +25,6 @@
 #include <Systems/WorldSystem.h>
 #endif
 
-#if defined(CATALYST_EDITOR)
-/*
-*	Model editor metadata push constant data.
-*/
-class ModelEditorMetadataPushConstantData final
-{
-
-public:
-
-	//The transformation.
-	Matrix4x4 _Transformation;
-
-};
-
-/*
-*	Gathers a model editor metadata render input stream.
-*/
-void GatherModelEditorMetadataRenderInputStream(RenderInputStream *const RESTRICT input_stream) NOEXCEPT
-{
-	//Clear the entries.
-	input_stream->_Entries.Clear();
-
-	//Clear the push constant data memory.
-	input_stream->_PushConstantDataMemory.Clear();
-
-	//Go through all instances.
-	for (uint64 instance_index{ 0 }; instance_index < StaticModelComponent::Instance->NumberOfInstances(); ++instance_index)
-	{
-		//Cache the entity.
-		Entity *const RESTRICT entity{ StaticModelComponent::Instance->InstanceToEntity(instance_index) };
-
-		//Only care about editor selected entities for now.
-		if (!TEST_BIT(entity->_Flags, Entity::Flags::EDITOR_SELECTED))
-		{
-			continue;
-		}
-
-		//Cache the instance data.
-		const StaticModelInstanceData &static_model_instance_data{ StaticModelComponent::Instance->InstanceData(entity) };
-		const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
-
-		//Go through all meshes.
-		for (uint64 i{ 0 }, size{ static_model_instance_data._Model->_Meshes.Size() }; i < size; ++i)
-		{
-			//Cache the mesh.
-			const Mesh &mesh{ static_model_instance_data._Model->_Meshes[i] };
-
-			//Add a new entry.
-			input_stream->_Entries.Emplace();
-			RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
-
-			new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
-			new_entry._VertexBuffer = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._VertexBuffer;
-			new_entry._IndexBuffer = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._IndexBuffer;
-			new_entry._IndexBufferOffset = 0;
-			new_entry._InstanceBuffer = EMPTY_HANDLE;
-			new_entry._VertexCount = 0;
-			new_entry._IndexCount = mesh._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[i]]._IndexCount;
-			new_entry._InstanceCount = 0;
-
-			//Set up the push constant data.
-			ModelEditorMetadataPushConstantData push_constant_data;
-
-			push_constant_data._Transformation = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
-			
-			for (uint64 i{ 0 }; i < sizeof(ModelEditorMetadataPushConstantData); ++i)
-			{
-				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
-			}
-		}
-	}
-}
-#endif
-
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Denotes whether or not static model wireframe is enabled.
 bool STATIC_MODEL_WIREFRAME_ENABLED{ false };
@@ -226,33 +152,6 @@ void StaticModelComponent::Initialize() NOEXCEPT
 		offsetof(StaticModelInitializationData, _CollisionType),
 		offsetof(StaticModelInstanceData, _CollisionType)
 	);
-
-#if defined(CATALYST_EDITOR)
-	//Register the input stream.
-	{
-		DynamicArray<VertexInputAttributeDescription> required_vertex_input_attribute_descriptions;
-
-		required_vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(Vertex, _Position)));
-		
-		DynamicArray<VertexInputBindingDescription> required_vertex_input_binding_descriptions;
-
-		required_vertex_input_binding_descriptions.Emplace(0, static_cast<uint32>(sizeof(Vertex)), VertexInputBindingDescription::InputRate::Vertex);
-
-		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
-		(
-			HashString("ModelEditorMetadata"),
-			required_vertex_input_attribute_descriptions,
-			required_vertex_input_binding_descriptions,
-			sizeof(StaticModelWireframePushConstantData),
-			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
-			{
-				GatherModelEditorMetadataRenderInputStream(input_stream);
-			},
-			RenderInputStream::Mode::DRAW_INDEXED,
-			nullptr
-		);
-	}
-#endif
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Register the debug command.

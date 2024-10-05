@@ -801,6 +801,22 @@ void EditorLevelSystem::EndGame() NOEXCEPT
 }
 
 /*
+*	Returns the selected entity.
+*/
+NO_DISCARD Entity *const RESTRICT EditorLevelSystem::GetSelectedEntity() NOEXCEPT
+{
+	if (_SelectedEntityIndex != UINT64_MAXIMUM && _SelectedEntityIndex < _Entities.Size())
+	{
+		return _Entities[_SelectedEntityIndex];
+	}
+
+	else
+	{
+		return nullptr;
+	}
+}
+
+/*
 *	Saves a level internally.
 */
 void EditorLevelSystem::SaveLevelInternal(nlohmann::json &JSON) NOEXCEPT

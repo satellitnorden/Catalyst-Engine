@@ -7,7 +7,11 @@
 //Content.
 #include <Content/Assets/ModelAsset.h>
 
+//Editor.
+#include <Editor/EditorUtilities.h>
+
 //Math.
+#include <Math/Core/CatalystGeometryMath.h>
 #include <Math/Core/CatalystRandomMath.h>
 
 //Profiling.
@@ -147,6 +151,25 @@ void PlayerSpawnMarkerComponent::CreateInstance(Entity *const RESTRICT entity, P
 void PlayerSpawnMarkerComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 	ASSERT(WorldTransformComponent::Instance->Has(entity), "Circle marker component needs a world transform component!");
+}
+
+/*
+*	Performs an editor selection.
+*/
+NO_DISCARD bool PlayerSpawnMarkerComponent::EditorSelect(const Ray& ray, Entity* const RESTRICT entity, float32* const RESTRICT hit_distance) NOEXCEPT
+{
+	//Cache the instance data.
+	const PlayerSpawnMarkerInstanceData &instance_data{ InstanceData(entity) };
+	const WorldTransformInstanceData &world_transform_data{ WorldTransformComponent::Instance->InstanceData(entity) };
+
+	//Cache the model transform.
+	const Matrix4x4 model_transform{ world_transform_data._CurrentWorldTransform.ToAbsoluteMatrix4x4() };
+
+	//Cache the model.
+	AssetPointer<ModelAsset> model{ ContentSystem::Instance->GetAsset<ModelAsset>(HashString("PlayerSpawnMarker")) };
+
+	//Cast the selection ray!
+	return EditorUtilities::SelectionRay(ray, model_transform, model.Get(), hit_distance);
 }
 
 /*

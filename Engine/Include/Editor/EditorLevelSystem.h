@@ -67,6 +67,11 @@ public:
 	*/
 	void EndGame() NOEXCEPT;
 
+	/*
+	*	Returns the selected entity.
+	*/
+	NO_DISCARD Entity *const RESTRICT GetSelectedEntity() NOEXCEPT;
+
 private:
 
 	//Enumeration covering all gizmo modes.

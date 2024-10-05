@@ -109,12 +109,14 @@ private:
 		RenderInputStream *const RESTRICT input_stream
 	) NOEXCEPT;
 
+#if defined(CATALYST_EDITOR)
 	/*
-	*	Gathers a user interface text input stream.
+	*	Gathers a model editor metadata input stream.
 	*/
-	void GatherUserInterfaceTextInputStream
+	void GatherModelEditorMetadataInputStream
 	(
 		RenderInputStream *const RESTRICT input_stream
 	) NOEXCEPT;
+#endif
 
 };
