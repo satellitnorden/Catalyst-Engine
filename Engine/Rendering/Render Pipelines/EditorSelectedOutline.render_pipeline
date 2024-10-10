@@ -38,6 +38,9 @@ IncludeCommonVertexShader(ViewportScreenCoordinate);
 //The fragment shader.
 Fragment
 {
+    //Constants.
+    #define OUTLINE_WIDTH (2)
+
     //Declare input parameters.
     InputParameter(vec2, InScreenCoordinate);
 
@@ -48,9 +51,9 @@ Fragment
     bool any_neighboring_pixel_not_selected = false;
     bool any_neighboring_pixel_selected = false;
 
-    for (int Y = -2; Y <= 2; ++Y)
+    for (int Y = -OUTLINE_WIDTH; Y <= OUTLINE_WIDTH; ++Y)
     {
-        for (int X = -2; X <= 2; ++X)
+        for (int X = -OUTLINE_WIDTH; X <= OUTLINE_WIDTH; ++X)
         {
             if (X == 0 && Y == 0)
             {

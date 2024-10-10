@@ -67,8 +67,8 @@ public:
 	//Denotes whether or not this component wants a "PostCreateInstance()" call.
 	bool _PostCreateInstance;
 
-	//Denotes whether or not this component is editor selectable.
-	bool _EditorSelectable;
+	//Denotes whether or not this component is selectable.
+	bool _Selectable;
 
 };
 
@@ -273,7 +273,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 	component_entry["DefaultInitializationData"] = false;
 	component_entry["PreProcess"] = false;
 	component_entry["PostCreateInstance"] = false;
-	component_entry["EditorSelectable"] = false;
+	component_entry["Selectable"] = false;
 
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
@@ -678,13 +678,13 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 			}
 		}
 
-		//Check if this component is editor selectable.
+		//Check if this component is selectable.
 		{
-			const size_t position{ current_line.find("COMPONENT_EDITOR_SELECT(") };
+			const size_t position{ current_line.find("COMPONENT_SELECT(") };
 
 			if (position != std::string::npos)
 			{
-				component_entry["EditorSelectable"] = true;
+				component_entry["Selectable"] = true;
 
 				continue;
 			}
@@ -779,8 +779,8 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 				//Set whether or not this component wants an "PostCreateInstance()" call.
 				new_component_data._PostCreateInstance = component_entry["PostCreateInstance"];
 
-				//Set whether or not this component wants an "PostCreateInstance()" call.
-				new_component_data._EditorSelectable = component_entry["EditorSelectable"];
+				//Set whether or not this component wants a "Select()" call.
+				new_component_data._Selectable = component_entry["Selectable"];
 
 				//Check if this component wants any serial updates.
 				if (component_entry.contains("SerialUpdates"))
@@ -1537,30 +1537,52 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "}" << std::endl;
 	file << std::endl;
 	
-	//Calculate the number of editor selectable components.
-	size_t number_of_editor_selectable_components{ 0 };
+	//Set up the "Components::Select" function.
+	file << "NO_DISCARD Entity *const RESTRICT Components::Select(const Ray &ray, const ArrayProxy<Entity *RESTRICT> entities) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	file << "\tEntity *RESTRICT selected_entity{ nullptr };" << std::endl;
+	file << "\tfloat32 hit_distance{ FLOAT32_MAXIMUM };" << std::endl;
+	file << std::endl;
+
+	file << "\tfor (Entity *const RESTRICT entity : entities)" << std::endl;
+	file << "\t{" << std::endl;
 
 	for (const ComponentData &_component_data : component_data)
 	{
-		if (_component_data._EditorSelectable)
+		if (_component_data._Selectable)
 		{
-			++number_of_editor_selectable_components;
+			file << "\t\tif (" << _component_data._Name.data() << "::Instance->Has(entity))" << std::endl;
+			file << "\t\t{" << std::endl;
+			file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+			file << "\t\t\tfloat32 previous_hit_distance{ hit_distance };" << std::endl;
+			file << "#endif" << std::endl;
+			file << "\t\t\tif (" << _component_data._Name.data() << "::Instance->Select(ray, entity, &hit_distance))" << std::endl;
+			file << "\t\t\t{" << std::endl;
+			file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+			file << "\t\t\t\tASSERT(hit_distance < previous_hit_distance, \"A component didn't properly check hit distance!\");" << std::endl;
+			file << "\t\t\t\tselected_entity = entity;" << std::endl;
+			file << "#endif" << std::endl;
+			file << "\t\t\t}" << std::endl;
+			file << "\t\t}" << std::endl;
 		}
 	}
 
-	//Set up the "Components::EditorSelect" function.
-	file << "NO_DISCARD bool Components::EditorSelect(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT" << std::endl;
-	file << "{" << std::endl;
+	file << "\t}" << std::endl;
+
+	file << "\treturn selected_entity;" << std::endl;
+	file << "}";
+#if 0
 	file << "\tbool was_hit{ false };" << std::endl;
 	file << std::endl;
 	
 	for (const ComponentData &_component_data : component_data)
 	{
-		if (_component_data._EditorSelectable)
+		if (_component_data._Selectable)
 		{
 			file << "\tif (" << _component_data._Name.data() << "::Instance->Has(entity))" << std::endl;
 			file << "\t{" << std::endl;
-			file << "\t\twas_hit |= " << _component_data._Name.data() << "::Instance->EditorSelect(ray, entity, hit_distance);" << std::endl;
+			file << "\t\twas_hit |= " << _component_data._Name.data() << "::Instance->Select(ray, entity, hit_distance);" << std::endl;
 			file << "\t}" << std::endl;
 		}
 	}
@@ -1568,4 +1590,5 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << std::endl;
 	file << "\treturn was_hit;" << std::endl;
 	file << "}";
+#endif
 }

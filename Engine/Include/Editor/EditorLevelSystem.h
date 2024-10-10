@@ -152,9 +152,9 @@ private:
 	void SaveEntity(const char *const RESTRICT file_path, Entity *const RESTRICT entity, const EditorEntityData &entity_editor_data) NOEXCEPT;
 
 	/*
-	*	Duplicates an entry.
+	*	Duplicates the selected entry.
 	*/
-	void DuplicateEntity(Entity *const RESTRICT entity, const EditorEntityData &entity_editor_data) NOEXCEPT;
+	void DuplicateSelectedEntity() NOEXCEPT;
 
 	/*
 	*	Returns the index for the given entity identifier.

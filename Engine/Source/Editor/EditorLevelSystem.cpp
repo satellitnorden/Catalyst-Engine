@@ -644,24 +644,31 @@ void EditorLevelSystem::Update() NOEXCEPT
 		ray.SetOrigin(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
 		ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(mouse_state->_CurrentX, mouse_state->_CurrentY)));
 
-		//Track the current hit distance.
-		float32 hit_distance{ FLOAT32_MAXIMUM };
+		//Perform the selection!
+		Entity *RESTRICT selected_entity;
 
-		//Iterate over all entities.
-		for (uint64 entity_index{ 0 }; entity_index < _Entities.Size(); ++entity_index)
 		{
-			//Cache the entity.
-			Entity *const RESTRICT entity{ _Entities[entity_index] };
-
-			//Perform the editor selection for this entity!
-			float32 previous_hit_distance{ hit_distance };
-
-			if (Components::EditorSelect(ray, entity, &hit_distance))
+			const ArrayProxy<Entity *RESTRICT> entities_proxy{ _Entities };
+			selected_entity = Components::Select(ray, entities_proxy);
+		}
+		
+		if (selected_entity)
+		{
+			//Find the index.
+			for (uint64 entity_index{ 0 }; entity_index < _Entities.Size(); ++entity_index)
 			{
-				ASSERT(hit_distance < previous_hit_distance, "A component didn't properly check hit distance!");
+				if (_Entities[entity_index] == selected_entity)
+				{
+					SetSelectedEntityIndex(entity_index);
 
-				SetSelectedEntityIndex(entity_index);
+					break;
+				}
 			}
+		}
+
+		else
+		{
+			SetSelectedEntityIndex(UINT64_MAXIMUM);
 		}
 	}
 }
@@ -1804,7 +1811,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 		//Duplicate the entity, if requested.
 		if (should_duplicate)
 		{
-			DuplicateEntity(selected_entity, selected_editor_entity_data);
+			DuplicateSelectedEntity();
 		}
 	}
 
@@ -1969,13 +1976,15 @@ void EditorLevelSystem::SaveEntity(const char *const RESTRICT file_path, Entity 
 }
 
 /*
-*	Duplicates an entry.
+*	Duplicates the selected entry.
 */
-void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity, const EditorEntityData &entity_editor_data) NOEXCEPT
+void EditorLevelSystem::DuplicateSelectedEntity() NOEXCEPT
 {
+	//The entity editor data might be invalid after we add a new one, 
+
 	//Add a new entity.
 	_Entities.Emplace();
-	Entity *RESTRICT& new_entity{ _Entities.Back() };
+	Entity *RESTRICT &new_entity{ _Entities.Back() };
 
 	_EditorEntityData.Emplace();
 	EditorEntityData &new_editor_entity_data{ _EditorEntityData.Back() };
@@ -1986,6 +1995,9 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity, const Edi
 	//Generate the entity identifier.
 	GenerateEntityIdentifier(&new_editor_entity_data._Identifier);
 
+	//Copy over some stuff to the newentity editor data.
+	new_editor_entity_data._Rotation = _EditorEntityData[_SelectedEntityIndex]._Rotation;
+
 	/*
 	*	Maybe a bit overkill to do this whole round trip, but it keeps me from having to write more code here.
 	*	Shouldn't be too bad. (:
@@ -1994,7 +2006,7 @@ void EditorLevelSystem::DuplicateEntity(Entity *const RESTRICT entity, const Edi
 	StreamArchive stream_archive;
 	uint64 stream_archive_position{ 0 };
 
-	EntitySerialization::SerializeToJSON(entity_editor_data, JSON, entity);
+	EntitySerialization::SerializeToJSON(_EditorEntityData[_SelectedEntityIndex], JSON, _Entities[_SelectedEntityIndex]);
 	EntitySerialization::SerializeToStreamArchive(JSON, &stream_archive);
 	new_entity = EntitySerialization::DeserializeFromStreamArchive(stream_archive, &stream_archive_position, nullptr);
 

@@ -117,6 +117,14 @@ private:
 	(
 		RenderInputStream *const RESTRICT input_stream
 	) NOEXCEPT;
+
+	/*
+	*	Gathers a plane editor metadata input stream.
+	*/
+	void GatherPlaneEditorMetadataInputStream
+	(
+		RenderInputStream *const RESTRICT input_stream
+	) NOEXCEPT;
 #endif
 
 };

@@ -12,6 +12,7 @@
 #include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/TerrainComponent.h>
 #include <Components/Components/WaterComponent.h>
+#include <Components/Components/UserInterfaceComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
 
 //Profiling.
@@ -114,6 +115,13 @@ struct GrassPushConstantData
 
 #if defined(CATALYST_EDITOR)
 struct ModelEditorMetadataPushConstantData
+{
+
+	//The transformation.
+	Matrix4x4 _Transformation;
+
+};
+struct PlaneEditorMetadataPushConstantData
 {
 
 	//The transformation.
@@ -611,6 +619,7 @@ void RenderInputManager::Initialize() NOEXCEPT
 	}
 
 #if defined(CATALYST_EDITOR)
+	//Register the model editor metadata input stream.
 	{
 		//Set up the required vertex input attribute/binding descriptions for models.
 		DynamicArray<VertexInputAttributeDescription> models_required_vertex_input_attribute_descriptions;
@@ -635,6 +644,21 @@ void RenderInputManager::Initialize() NOEXCEPT
 			this
 		);
 	}
+
+	//Register the plane editor metadata input stream.
+	RegisterInputStream
+	(
+		HashString("PlaneEditorMetadata"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		sizeof(PlaneEditorMetadataPushConstantData),
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			static_cast<RenderInputManager *const RESTRICT>(user_data)->GatherPlaneEditorMetadataInputStream(input_stream);
+		},
+		RenderInputStream::Mode::DRAW,
+		this
+	);
 #endif
 }
 
@@ -1325,7 +1349,7 @@ void RenderInputManager::GatherModelEditorMetadataInputStream
 	//Cache the selected entity.
 	Entity *const RESTRICT selected_entity{ CatalystEditorSystem::Instance->GetEditorLevelSystem()->GetSelectedEntity() };
 
-	if (!selected_entity)
+	if (!selected_entity || !TEST_BIT(selected_entity->_Flags, Entity::Flags::INITIALIZED))
 	{
 		return;
 	}
@@ -1405,6 +1429,65 @@ void RenderInputManager::GatherModelEditorMetadataInputStream
 			{
 				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
 			}
+		}
+	}
+}
+
+/*
+*	Gathers a plane editor metadata input stream.
+*/
+void RenderInputManager::GatherPlaneEditorMetadataInputStream
+(
+	RenderInputStream *const RESTRICT input_stream
+) NOEXCEPT
+{
+	//Clear the entries.
+	input_stream->_Entries.Clear();
+
+	//Clear the push constant data memory.
+	input_stream->_PushConstantDataMemory.Clear();
+
+	//Only draw when in the editor.
+	if (CatalystEditorSystem::Instance->IsInGame())
+	{
+		return;
+	}
+
+	//Cache the selected entity.
+	Entity *const RESTRICT selected_entity{ CatalystEditorSystem::Instance->GetEditorLevelSystem()->GetSelectedEntity() };
+
+	if (!selected_entity || !TEST_BIT(selected_entity->_Flags, Entity::Flags::INITIALIZED))
+	{
+		return;
+	}
+
+	//Cache the world transform instance data.
+	const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(selected_entity) };
+
+	//Add an entry if this entity has a user interface component.
+	if (UserInterfaceComponent::Instance->Has(selected_entity))
+	{
+		//Add a new entry.
+		input_stream->_Entries.Emplace();
+		RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+		new_entry._PushConstantDataOffset = input_stream->_PushConstantDataMemory.Size();
+		new_entry._VertexBuffer = EMPTY_HANDLE;
+		new_entry._IndexBuffer = EMPTY_HANDLE;
+		new_entry._IndexBufferOffset = 0;
+		new_entry._InstanceBuffer = EMPTY_HANDLE;
+		new_entry._VertexCount = 4;
+		new_entry._IndexCount = 0;
+		new_entry._InstanceCount = 0;
+
+		//Set up the push constant data.
+		PlaneEditorMetadataPushConstantData push_constant_data;
+
+		push_constant_data._Transformation = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+
+		for (uint64 i{ 0 }; i < sizeof(PlaneEditorMetadataPushConstantData); ++i)
+		{
+			input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
 		}
 	}
 }

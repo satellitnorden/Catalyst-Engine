@@ -4,8 +4,8 @@
 //Components.
 #include <Components/Components/WorldTransformComponent.h>
 
-//Math.
-#include <Math/Core/CatalystGeometryMath.h>
+//Editor.
+#include <Editor/EditorUtilities.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -357,69 +357,19 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 }
 
 /*
-*	Performs an editor selection.
+*	Performs a selection.
 */
-NO_DISCARD bool StaticModelComponent::EditorSelect(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT
+NO_DISCARD bool StaticModelComponent::Select(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT
 {
 	//Cache the instance data.
-	const StaticModelInstanceData &instance_data{ InstanceData(entity) };
+	const StaticModelInstanceData &static_model_instance_data{ InstanceData(entity) };
+	const WorldTransformInstanceData &world_transform_data{ WorldTransformComponent::Instance->InstanceData(entity) };
 
-	//Cache the axis aligned bounding box.
-	AxisAlignedBoundingBox3D axis_aligned_bounding_box{ instance_data._WorldSpaceAxisAlignedBoundingBox.GetAbsoluteAxisAlignedBoundingBox() };
+	//Cache the model transform.
+	const Matrix4x4 model_transform{ world_transform_data._CurrentWorldTransform.ToAbsoluteMatrix4x4() };
 
-	//Check if the ray hit the axis aligned bounding box.
-	float32 axis_aligned_bounding_box_hit_distance{ *hit_distance };
-
-	if (CatalystGeometryMath::RayBoxIntersection(ray, axis_aligned_bounding_box, &axis_aligned_bounding_box_hit_distance) && *hit_distance > axis_aligned_bounding_box_hit_distance)
-	{
-		//Cache the model transform.
-		const Matrix4x4 model_transform{ WorldTransformComponent::Instance->InstanceData(entity)._CurrentWorldTransform.ToAbsoluteMatrix4x4() };
-
-		//Now actually ray cast against all the triangles. (:
-		bool was_hit{ false };
-
-		for (uint64 mesh_index{ 0 }; mesh_index < instance_data._Model->_Meshes.Size(); ++mesh_index)
-		{
-			//Cache the mesh.
-			const Mesh &mesh{ instance_data._Model->_Meshes[mesh_index] };
-
-			//Cache the mesh level of detail.
-			const Mesh::MeshLevelOfDetail &mesh_level_of_detail{ mesh._MeshLevelOfDetails[instance_data._LevelOfDetailIndices[mesh_index]] };
-
-			//Ray-cast against all triangles.
-			for (uint64 index_index{ 0 }; index_index < mesh_level_of_detail._Indices.Size(); index_index += 3)
-			{
-				StaticArray<Vertex, 3> vertices;
-
-				vertices[0] = mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index_index + 0]];
-				vertices[1] = mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index_index + 1]];
-				vertices[2] = mesh_level_of_detail._Vertices[mesh_level_of_detail._Indices[index_index + 2]];
-
-				vertices[0].Transform(model_transform, 0.0f);
-				vertices[1].Transform(model_transform, 0.0f);
-				vertices[2].Transform(model_transform, 0.0f);
-
-				Triangle triangle;
-
-				triangle._Vertices[0] = vertices[0]._Position;
-				triangle._Vertices[1] = vertices[1]._Position;
-				triangle._Vertices[2] = vertices[2]._Position;
-
-				float32 triangle_hit_distance{ FLOAT32_MAXIMUM };
-
-				if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &triangle_hit_distance) && *hit_distance > triangle_hit_distance)
-				{
-					*hit_distance = triangle_hit_distance;
-					was_hit = true;
-				}
-			}
-		}
-
-		return was_hit;
-	}
-
-	//Didn't hit. (:
-	return false;
+	//Cast the selection ray!
+	return EditorUtilities::SelectionRay(ray, model_transform, static_model_instance_data._Model.Get(), hit_distance, static_model_instance_data._LevelOfDetailIndices.Data());
 }
 
 void StaticModelComponent::DefaultInitializationData(StaticModelInitializationData *const RESTRICT initialization_data) NOEXCEPT

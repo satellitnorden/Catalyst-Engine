@@ -9,21 +9,26 @@
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
 
+//Rendering.
+#include <Rendering/Native/RenderingUtilities.h>
+
 namespace EditorUtilities
 {
 
 	/*
 	*	Casts a ray against the given model.
 	*/
-	FORCE_INLINE NO_DISCARD bool SelectionRay(const Ray &ray, const Matrix4x4 &model_transform, const ModelAsset *const RESTRICT model, float32 *const RESTRICT hit_distance) NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool SelectionRay
+	(
+		const Ray &ray,
+		const Matrix4x4 &model_transform,
+		const ModelAsset *const RESTRICT model,
+		float32 *const RESTRICT hit_distance,
+		const uint8 *const RESTRICT level_of_detail_indicies = nullptr) NOEXCEPT
 	{
 		//Set up the axis aligned bounding box.
-		AxisAlignedBoundingBox3D axis_aligned_bounding_box{ model->_ModelSpaceAxisAlignedBoundingBox };
-
-		for (uint8 i{ 0 }; i < 2; ++i)
-		{
-			const Vector4<float32> transformed_position{ model_transform * Vector4<float32>(axis_aligned_bounding_box[i]) };
-		}
+		AxisAlignedBoundingBox3D axis_aligned_bounding_box;
+		RenderingUtilities::TransformAxisAlignedBoundingBox(model->_ModelSpaceAxisAlignedBoundingBox, model_transform, &axis_aligned_bounding_box);
 
 		//Check if the ray hit the axis aligned bounding box.
 		float32 axis_aligned_bounding_box_hit_distance{ *hit_distance };
@@ -36,10 +41,10 @@ namespace EditorUtilities
 			for (uint64 mesh_index{ 0 }; mesh_index < model->_Meshes.Size(); ++mesh_index)
 			{
 				//Cache the mesh.
-				const Mesh& mesh{ model->_Meshes[mesh_index] };
+				const Mesh &mesh{ model->_Meshes[mesh_index] };
 
 				//Cache the mesh level of detail.
-				const Mesh::MeshLevelOfDetail& mesh_level_of_detail{ mesh._MeshLevelOfDetails[0] };
+				const Mesh::MeshLevelOfDetail &mesh_level_of_detail{ mesh._MeshLevelOfDetails[level_of_detail_indicies ? level_of_detail_indicies[mesh_index] : 0] };
 
 				//Ray-cast against all triangles.
 				for (uint64 index_index{ 0 }; index_index < mesh_level_of_detail._Indices.Size(); index_index += 3)

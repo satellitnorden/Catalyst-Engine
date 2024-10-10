@@ -31,7 +31,7 @@ namespace UserInterfaceSceneConstants
 UserInterfaceScene::~UserInterfaceScene()
 {
 	//Deactivate this user interface scene, if it is active.
-	if (!CatalystEngineSystem::Instance->ShouldTerminate() && _IsActive)
+	if (_IsActive && !CatalystEngineSystem::Instance->ShouldTerminate())
 	{
 		OnDeactivated();
 		_IsActive = false;

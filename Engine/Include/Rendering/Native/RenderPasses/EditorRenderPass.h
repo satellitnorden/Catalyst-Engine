@@ -32,10 +32,11 @@ public:
 private:
 
 	//The pipelines.
-	StaticArray<GraphicsRenderPipeline, 3> _Pipelines
+	StaticArray<GraphicsRenderPipeline, 4> _Pipelines
 	{
 		GraphicsRenderPipeline(HashString("PlayerSpawnMarker_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("ModelEditorMetadata_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("PlaneEditorMetadata_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("EditorSelectedOutline_RenderPipeline"))
 	};
 

@@ -195,62 +195,102 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (std140, set = 1, binding = 0) uniform General
+layout (std140, set = 1, binding = 0) uniform Camera
 {
-	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
-	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
-	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
-	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
-	layout (offset = 32) uint FRAME;
+	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;
+	layout (offset = 64) mat4 WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
+	layout (offset = 192) mat4 INVERSE_WORLD_TO_CAMERA_MATRIX;
+	layout (offset = 256) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;
+	layout (offset = 320) vec3 CAMERA_WORLD_POSITION;
+	layout (offset = 336) vec3 CAMERA_FORWARD_VECTOR;
+	layout (offset = 352) vec2 CURRENT_FRAME_JITTER;
+	layout (offset = 360) float NEAR_PLANE;
+	layout (offset = 364) float FAR_PLANE;
 };
 
 /*
-*	Editor metadata struct definition.
+*   Linearizes a depth value.
 */
-struct EditorMetadataStruct
+float LinearizeDepth(float depth)
 {
-	//Denotes whether or not the pixel is selected.
-    bool _PixelIsSelected;
-};
-
-//Unpacks editor metadata.
-EditorMetadataStruct UnpackEditorMetadata(vec4 data)
-{
-	EditorMetadataStruct editor_metadata;
-
-  	editor_metadata._PixelIsSelected = data.x > 0.0f;
-
-	return editor_metadata;
+    return ((FAR_PLANE * NEAR_PLANE) / (depth * (FAR_PLANE - NEAR_PLANE) + NEAR_PLANE));
 }
 
-layout (set = 1, binding = 1) uniform sampler2D EditorMetadata;
+/*
+*   Calculates the view space position.
+*/
+vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position.xyz *= inverse_view_space_position_denominator;
 
-layout (location = 0) in vec2 InScreenCoordinate;
+    return view_space_position.xyz;
+}
 
-layout (location = 0) out vec4 Scene;
+/*
+*   Calculates the world position.
+*/
+vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
+{
+    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
+    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
+    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
+    view_space_position *= inverse_view_space_position_denominator;
+    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
+
+    return world_space_position.xyz;
+}
+
+/*
+*   Returns the current screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Returns the previous screen coordinate with the given view matrix and world position.
+*/
+vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
+{
+  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+  float denominator = 1.0f / view_space_position.w;
+  view_space_position.xy *= denominator;
+
+  return view_space_position.xy * 0.5f + 0.5f;
+}
+
+/*
+*   Calculates a screen position, including the (linearized) depth from the given world position.
+*/
+vec3 CalculateScreenPosition(vec3 world_position)
+{
+    vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
+    float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
+    view_space_position.xyz *= view_space_position_coefficient_reciprocal;
+
+    view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
+    view_space_position.z = LinearizeDepth(view_space_position.z);
+    
+    return view_space_position.xyz;
+}
+
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) mat4 TRANSFORMATION;
+};
+
+layout (location = 0) out vec4 EditorMetadata;
 
 void main()
 {
-    #define OUTLINE_WIDTH (2)
-    EditorMetadataStruct editor_metadata = UnpackEditorMetadata(texture(EditorMetadata, InScreenCoordinate));
-    bool any_neighboring_pixel_not_selected = false;
-    bool any_neighboring_pixel_selected = false;
-    for (int Y = -OUTLINE_WIDTH; Y <= OUTLINE_WIDTH; ++Y)
-    {
-        for (int X = -OUTLINE_WIDTH; X <= OUTLINE_WIDTH; ++X)
-        {
-            if (X == 0 && Y == 0)
-            {
-                continue;
-            }
-            EditorMetadataStruct neighboring_editor_metadata = UnpackEditorMetadata(texture(EditorMetadata, InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_FULL_MAIN_RESOLUTION));
-            any_neighboring_pixel_not_selected = any_neighboring_pixel_not_selected || !neighboring_editor_metadata._PixelIsSelected;
-            any_neighboring_pixel_selected = any_neighboring_pixel_selected || neighboring_editor_metadata._PixelIsSelected;
-        }
-    }
-    vec3 color = vec3(0.0f, 0.0f, 0.0f);
-    float inner_color_weight = float(editor_metadata._PixelIsSelected && any_neighboring_pixel_not_selected);
-    float outer_color_weight = float(!editor_metadata._PixelIsSelected && any_neighboring_pixel_selected);
-    color += vec3(1.0f, 1.0f, 1.0f) * 4.0f * inner_color_weight;
-	Scene = vec4(color,min(inner_color_weight+outer_color_weight,1.0f));
+	EditorMetadata = vec4(float(BIT(0)),0.0f,0.0f,0.0f);
 }

@@ -154,9 +154,9 @@ void PlayerSpawnMarkerComponent::PostCreateInstance(Entity *const RESTRICT entit
 }
 
 /*
-*	Performs an editor selection.
+*	Performs a selection.
 */
-NO_DISCARD bool PlayerSpawnMarkerComponent::EditorSelect(const Ray& ray, Entity* const RESTRICT entity, float32* const RESTRICT hit_distance) NOEXCEPT
+NO_DISCARD bool PlayerSpawnMarkerComponent::Select(const Ray& ray, Entity* const RESTRICT entity, float32* const RESTRICT hit_distance) NOEXCEPT
 {
 	//Cache the instance data.
 	const PlayerSpawnMarkerInstanceData &instance_data{ InstanceData(entity) };

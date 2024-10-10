@@ -83,7 +83,7 @@ class StaticModelComponent final : public Component
 		COMPONENT_DEFAULT_INITIALIZATION_DATA(StaticModelInitializationData)
 		COMPONENT_POST_CREATE_INSTANCE()
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
-		COMPONENT_EDITOR_SELECT()
+		COMPONENT_SELECT()
 	);
 
 public:

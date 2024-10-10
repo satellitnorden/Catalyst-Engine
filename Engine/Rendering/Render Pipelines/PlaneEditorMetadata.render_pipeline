@@ -1,0 +1,50 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+
+//Declare output render targets.
+OutputRenderTarget(EditorMetadata);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+
+//Set the cull mode.
+CullMode(NONE);
+
+//Set the topology.
+Topology(TRIANGLE_STRIP);
+
+//Declare push constant data.
+PushConstantData(mat4, TRANSFORMATION);
+
+//Subscribe to input streams.
+SubscribeToInputStream(PlaneEditorMetadata);
+
+//The vertex shader.
+Vertex
+{
+    //Calculate the world position.
+    float X = float(VERTEX_INDEX / 2);
+    float Y = float(VERTEX_INDEX & 1);
+
+    X -= 0.5f;
+    Y -= 0.5f;
+
+    vec3 world_position = vec3(TRANSFORMATION * vec4(X, Y, 0.0f, 1.0f));
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Output the fragment.
+    OutputFragment(EditorMetadata, vec4(float(BIT(0)), 0.0f, 0.0f, 0.0f)); //Just output bit 0, that this is selected. (:
+}

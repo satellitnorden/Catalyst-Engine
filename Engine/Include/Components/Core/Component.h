@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/ArrayProxy.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/HashString.h>
 
@@ -372,9 +373,9 @@ public:
 	static void Terminate() NOEXCEPT;
 
 	/*
-	*	Tries to select the given entity. Returns if it was hit, and updates the hit distance if so.
+	*	Given a ray and a collection of entities, tries to select an entity and returns the selected entity, or nullptr of none was selected.
 	*/
-	static NO_DISCARD bool EditorSelect(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT;
+	static NO_DISCARD Entity *const RESTRICT Select(const Ray &ray, const ArrayProxy<Entity *RESTRICT> entities) NOEXCEPT;
 
 };
 
@@ -456,12 +457,12 @@ public:							\
 	void Terminate() NOEXCEPT;
 
 /*
-*	Put this in your component declaration and implement the "EditorSelect()" function for entities with this component to be able to be selected in the editor.
+*	Put this in your component declaration and implement the "Select()" function for entities with this component to be able to be selected.
 *	Should return whether or not this entity was hit, and if so, update the 'hit_distance' argument.
 */
-#define COMPONENT_EDITOR_SELECT()																								\
-public:																															\
-	NO_DISCARD bool EditorSelect(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT;
+#define COMPONENT_SELECT()																									\
+public:																														\
+	NO_DISCARD bool Select(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT;
 
 /*
 *	Declares a Catalyst component.

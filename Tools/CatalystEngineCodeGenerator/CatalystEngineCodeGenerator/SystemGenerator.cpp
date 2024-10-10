@@ -360,6 +360,17 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	file << std::endl;
 
+	//Add the macros.
+	file << "//Macros." << std::endl;
+
+	{
+		constexpr uint64 ALIGNMENT{ 8 };
+
+		file << "#define ALIGNED_SIZE_OF(X) ((sizeof(X) + " << (ALIGNMENT - 1) << ") & ~(" << (ALIGNMENT - 1) << "))" << std::endl;
+	}
+
+	file << std::endl;
+
 	//Add the static variable definitions for all systems.
 	file << "//Static variable definitions." << std::endl;
 
@@ -375,7 +386,7 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
 		}
 
-		file << _system_data._Name.c_str() << " *RESTRICT " << _system_data._Name.c_str() << "::Instance;" << std::endl;
+		file << _system_data._Name.c_str() << " *RESTRICT " << _system_data._Name.c_str() << "::Instance = nullptr;" << std::endl;
 
 		for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
 		{
@@ -408,7 +419,7 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "+ ";
 		}
 
-		file << "sizeof(" << system_data[i]._Name.c_str() << ")" << std::endl;
+		file << "ALIGNED_SIZE_OF(" << system_data[i]._Name.c_str() << ")" << std::endl;
 
 		for (size_t j{ 0 }; j < (system_data[i]._NotDefinedRequirements.size() + system_data[i]._DefinedRequirements.size()); ++j)
 		{
@@ -444,7 +455,7 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		}
 
 		file << "\t\t" << _system_data._Name.c_str() << "::Instance = new (cursor) " << _system_data._Name.c_str() << "();" << std::endl;
-		file << "\t\tcursor += sizeof(" << _system_data._Name.c_str() << ");" << std::endl;
+		file << "\t\tcursor += ALIGNED_SIZE_OF(" << _system_data._Name.c_str() << ");" << std::endl;
 
 		for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
 		{
@@ -470,6 +481,7 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		}
 
 		file << "\t\t" << _system_data._Name.c_str() << "::Instance->~" << _system_data._Name.c_str() << "();" << std::endl;
+		file << "\t\t" << _system_data._Name.c_str() << "::Instance = nullptr;" << std::endl;
 
 		for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
 		{

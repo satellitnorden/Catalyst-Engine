@@ -4,6 +4,9 @@
 //Components.
 #include <Components/Components/WorldTransformComponent.h>
 
+//Math.
+#include <Math/Core/CatalystGeometryMath.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
@@ -82,6 +85,51 @@ void UserInterfaceComponent::CreateInstance(Entity *const RESTRICT entity, UserI
 void UserInterfaceComponent::PostCreateInstance(Entity *const RESTRICT entity) NOEXCEPT
 {
 	ASSERT(WorldTransformComponent::Instance->Has(entity), "Animated model component needs a world transform component!");
+}
+
+/*
+*	Performs a selection.
+*/
+NO_DISCARD bool UserInterfaceComponent::Select(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT
+{
+	//Cache the transform.
+	const Matrix4x4 transform{ WorldTransformComponent::Instance->InstanceData(entity)._CurrentWorldTransform.ToAbsoluteMatrix4x4() };
+
+	//Set up the triangles.
+	StaticArray<Triangle, 2> triangles;
+
+	triangles[0]._Vertices[0] = Vector3<float32>(-0.5f, -0.5f, 0.0f);
+	triangles[0]._Vertices[1] = Vector3<float32>(-0.5f, 0.5f, 0.0f);
+	triangles[0]._Vertices[2] = Vector3<float32>(0.5f, 0.5f, 0.0f);
+
+	triangles[1]._Vertices[0] = Vector3<float32>(-0.5f, -0.5f, 0.0f);
+	triangles[1]._Vertices[1] = Vector3<float32>(0.5f, -0.5f, 0.0f);
+	triangles[1]._Vertices[2] = Vector3<float32>(0.5f, 0.5f, 0.0f);
+
+	//Ray cast against all the triangles. (:
+	bool was_hit{ false };
+
+	for (Triangle &triangle : triangles)
+	{
+		for (Vector3<float32> &vertex : triangle._Vertices)
+		{
+			const Vector4<float32> transformed_position{ transform * Vector4<float32>(vertex, 1.0f) };
+
+			vertex._X = transformed_position._X;
+			vertex._Y = transformed_position._Y;
+			vertex._Z = transformed_position._Z;
+		}
+
+		float32 triangle_hit_distance{ FLOAT32_MAXIMUM };
+
+		if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &triangle_hit_distance) && *hit_distance > triangle_hit_distance)
+		{
+			*hit_distance = triangle_hit_distance;
+			was_hit = true;
+		}
+	}
+
+	return was_hit;
 }
 
 /*

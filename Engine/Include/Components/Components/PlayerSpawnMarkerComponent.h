@@ -32,7 +32,7 @@ class PlayerSpawnMarkerComponent final : public Component
 		PlayerSpawnMarker,
 		COMPONENT_INITIALIZE()
 		COMPONENT_POST_CREATE_INSTANCE()
-		COMPONENT_EDITOR_SELECT()
+		COMPONENT_SELECT()
 	);
 
 public:

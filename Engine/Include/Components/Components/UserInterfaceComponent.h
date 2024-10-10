@@ -47,6 +47,7 @@ class UserInterfaceComponent final : public Component
 		UserInterface,
 		COMPONENT_INITIALIZE()
 		COMPONENT_POST_CREATE_INSTANCE()
+		COMPONENT_SELECT()
 	);
 
 private:
