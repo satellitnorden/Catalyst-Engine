@@ -322,7 +322,8 @@ FORCE_INLINE bool TransformWidgetFloat
 	float32 *const RESTRICT data,
 	const uint64 data_size,
 	const float32 reset_value,
-	const float32 drag_speed
+	const float32 drag_speed,
+	const char *const RESTRICT format = nullptr
 ) NOEXCEPT
 {
 	//Remember if there was a change.
@@ -360,7 +361,7 @@ FORCE_INLINE bool TransformWidgetFloat
 
 		float32 value{ data[0] };
 
-		if (ImGui::DragFloat("##X", &value, drag_speed))
+		if (ImGui::DragFloat("##X", &value, drag_speed, 0.0f, 0.0f, format ? format : "%.3f"))
 		{
 			component->PreEditableFieldChange(entity, editable_field);
 			data[0] = value;
@@ -397,7 +398,7 @@ FORCE_INLINE bool TransformWidgetFloat
 
 		float32 value{ data[1] };
 
-		if (ImGui::DragFloat("##Y", &value, drag_speed))
+		if (ImGui::DragFloat("##Y", &value, drag_speed, 0.0f, 0.0f, format ? format : "%.3f"))
 		{
 			component->PreEditableFieldChange(entity, editable_field);
 			data[1] = value;
@@ -434,7 +435,7 @@ FORCE_INLINE bool TransformWidgetFloat
 
 		float32 value{ data[2] };
 
-		if (ImGui::DragFloat("##Z", &value, drag_speed))
+		if (ImGui::DragFloat("##Z", &value, drag_speed, 0.0f, 0.0f, format ? format : "%.3f"))
 		{
 			component->PreEditableFieldChange(entity, editable_field);
 			data[2] = value;
@@ -1401,7 +1402,8 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 						&position._X,
 						3,
 						0.0f,
-						0.01f
+						0.01f,
+						"%.2f"
 					)
 				};
 
@@ -1435,7 +1437,8 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 						&rotation._Roll,
 						3,
 						0.0f,
-						0.1f
+						0.1f,
+						"%.1f"
 					)
 				};
 
@@ -1470,7 +1473,8 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 						&scale._X,
 						3,
 						1.0f,
-						0.01f
+						0.01f,
+						"%.2f"
 					)
 				};
 
@@ -1866,7 +1870,7 @@ void EditorLevelSystem::LoadEntity(const char *const RESTRICT file_path, Entity 
 
 	//Deserialize the rotation.
 	{
-		const nlohmann::json& rotation_entry{ editor_data_entry["Rotation"] };
+		const nlohmann::json &rotation_entry{ editor_data_entry["Rotation"] };
 
 		editor_data->_Rotation._Roll = BaseMath::DegreesToRadians(rotation_entry["Roll"]);
 		editor_data->_Rotation._Yaw = BaseMath::DegreesToRadians(rotation_entry["Yaw"]);
