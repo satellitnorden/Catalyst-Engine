@@ -35,7 +35,7 @@ void UpdateInputState(FirstPersonPlayerInputState *const RESTRICT input_state, c
 {
 	//Define constants.
 	constexpr float32 GAMEPAD_ROTATION_SPEED{ 2.5f };
-	constexpr float32 MOUSE_ROTATION_SPEED{ 100.0f };
+	constexpr float32 MOUSE_ROTATION_SPEED{ 200.0f };
 
 	//Retrieve the input states.
 	const GamepadState *const RESTRICT gamepad_state{ InputSystem::Instance->GetGamepadState(InputLayer::GAME) };

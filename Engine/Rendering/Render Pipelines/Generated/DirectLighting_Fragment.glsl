@@ -691,7 +691,9 @@ void main()
             }
             case LIGHT_TYPE_POINT:
             {
-                vec3 direction_from_light = normalize(world_position - light._TransformData1);
+                float distance_from_light = length(world_position - light._TransformData1);
+                vec3 direction_from_light = (world_position - light._TransformData1) * (1.0f / distance_from_light);
+                float attenuation = distance_from_light > 0.0f ? 1.0f / distance_from_light : 1.0f;
                 lighting += BidirectionalReflectanceDistribution
                 (
                     view_direction,
@@ -701,7 +703,7 @@ void main()
                     metallic,
                     thickness,
                     direction_from_light
-                ) * light_radiance * mix(0.5f, 1.0f, ambient_occlusion);
+                ) * light_radiance * attenuation * mix(0.5f, 1.0f, ambient_occlusion);
                 break;
             }
         }

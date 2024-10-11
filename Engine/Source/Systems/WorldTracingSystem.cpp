@@ -465,6 +465,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 			//Calculate the direction to the light and the distance.
 			Vector3<float32> direction_to_light;
 			float32 light_distance;
+			float32 attenuation{ 1.0f };
 
 			switch (instance_data._LightType)
 			{
@@ -498,6 +499,32 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 					break;
 				}
 
+				case LightType::POINT:
+				{
+					//Cache the world transform instance data.
+					const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(LightComponent::Instance->InstanceToEntity(instance_index)) };
+
+					//Cache the light position.
+					Vector3<float32> light_position{ world_transform_instance_data._CurrentWorldTransform.GetAbsolutePosition() };
+
+					//Randomize the position a bit. (:
+					light_position += CatalystRandomMath::RandomPointOnSphere(0.25f);
+
+					//Calculate the distance to the light.
+					const float32 distance_to_light{ Vector3<float32>::Length(light_position - hit_position) };
+
+					//Calculate the direction to the light.
+					direction_to_light = (light_position - hit_position) * (1.0f / distance_to_light);
+
+					//Set the light distance.
+					light_distance = distance_to_light;
+
+					//Set the attenuation.
+					attenuation = 1.0f / distance_to_light;
+
+					break;
+				}
+
 				default:
 				{
 					ASSERT(false, "Invalid case!");
@@ -522,7 +549,7 @@ NO_DISCARD Vector3<float32> WorldTracingSystem::RadianceRayInternal(const Ray &r
 			//Otherwise, add the lighting.
 			const Vector3<float32> light_radiance{ instance_data._Color * instance_data._Intensity };
 
-			final_radiance += light_radiance * PhysicallyBasedLighting::BidirectionalReflectanceDistribution
+			final_radiance += light_radiance * attenuation * PhysicallyBasedLighting::BidirectionalReflectanceDistribution
 			(
 				-ray._Direction,
 				surface_description._Albedo,

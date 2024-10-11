@@ -166,6 +166,11 @@ private:
 	*/
 	NO_DISCARD bool AreEntitiesLinked(const uint64 entity_index_1, const uint64 entity_index_2) NOEXCEPT;
 
+	/*
+	*	Returns if the given entity name is available.
+	*/
+	NO_DISCARD bool IsEntityNameAvailable(const char *const RESTRICT name) NOEXCEPT;
+
 };
 
 #endif

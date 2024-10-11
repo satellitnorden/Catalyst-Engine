@@ -33,6 +33,13 @@ void EditorCameraSystem::Update() NOEXCEPT
 		return;
 	}
 
+	//Don't update if the left control button is pressed.
+	if (InputSystem::Instance->GetKeyboardState(InputLayer::GAME)->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED
+		|| InputSystem::Instance->GetKeyboardState(InputLayer::GAME)->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED_HELD)
+	{
+		return;
+	}
+
 	//Only update if no window is hovered.
 	//if (ImGui::GetIO().WantCaptureMouse)
 	//{
@@ -54,7 +61,7 @@ void EditorCameraSystem::Update() NOEXCEPT
 	{
 		if (update_keyboard_mouse_rotation)
 		{
-			_FreeflyCamera.SetRotationFactor(1.0f);
+			_FreeflyCamera.SetRotationFactor(2.0f);
 			CatalystPlatform::HideCursor();
 		}
 		

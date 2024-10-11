@@ -9,9 +9,11 @@ class Enumeration
 public:
 
 	/*
-	*	Default destructor.
+	*	Default constructor.
 	*/
-	FORCE_INLINE virtual ~Enumeration() NOEXCEPT
+	FORCE_INLINE Enumeration(const uint64 identifier) NOEXCEPT
+		:
+		_Identifier(identifier)
 	{
 
 	}
@@ -19,27 +21,32 @@ public:
 	/*
 	*	Returns the size of this enumeration.
 	*/
-	virtual NO_DISCARD uint64 Size() const NOEXCEPT = 0;
+	NO_DISCARD uint64 Size() const NOEXCEPT;
 
 	/*
 	*	Sets this enumeration from the given index.
 	*/
-	virtual void SetFromIndex(const uint64 index) NOEXCEPT = 0;
+	void SetFromIndex(const uint64 index) NOEXCEPT;
 
 	/*
 	*	Sets this enumeration from the given hash.
 	*/
-	virtual void SetFromHash(const uint64 hash) NOEXCEPT = 0;
+	void SetFromHash(const uint64 hash) NOEXCEPT;
 
 	/*
 	*	Returns the string for this enumeration.
 	*/
-	virtual NO_DISCARD const char *const RESTRICT ToString() const NOEXCEPT = 0;
+	NO_DISCARD const char *const RESTRICT ToString() const NOEXCEPT;
 
 	/*
 	*	Returns the string for the given index.
 	*/
-	virtual NO_DISCARD const char *const RESTRICT IndexToString(const uint64 index) const NOEXCEPT = 0;
+	NO_DISCARD const char *const RESTRICT IndexToString(const uint64 index) const NOEXCEPT;
+
+private:
+
+	//The identifier.
+	uint64 _Identifier{ 0 };
 
 };
 
@@ -58,11 +65,6 @@ public:																									\
 	NAME() NOEXCEPT;																					\
 	NAME(const TYPE value) NOEXCEPT;																	\
 	operator TYPE() const NOEXCEPT;																		\
-	NO_DISCARD uint64 Size() const NOEXCEPT override;													\
-	void SetFromIndex(const uint64 index) NOEXCEPT override;											\
-	void SetFromHash(const uint64 hash) NOEXCEPT override;												\
-	NO_DISCARD const char *const RESTRICT ToString() const NOEXCEPT override;							\
-	NO_DISCARD const char *const RESTRICT IndexToString(const uint64 index) const NOEXCEPT override;	\
 private:																								\
 	TYPE _VALUE;																						\
 };

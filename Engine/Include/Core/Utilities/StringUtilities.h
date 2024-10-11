@@ -95,6 +95,14 @@ public:
 	}
 
 	/*
+	*	Returns if the given character is a number.
+	*/
+	FORCE_INLINE static constexpr NO_DISCARD bool IsNumber(const char character) NOEXCEPT
+	{
+		return character >= '0' && character <= '9';
+	}
+
+	/*
 	*	Returns the length of the provided string.
 	*/
 	FORCE_INLINE static constexpr NO_DISCARD uint64 StringLength(const char *RESTRICT string) NOEXCEPT

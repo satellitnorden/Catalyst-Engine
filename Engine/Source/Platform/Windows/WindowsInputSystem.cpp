@@ -322,8 +322,10 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 
 		Pair<uint64, KeyboardButton>(VK_NUMLOCK, KeyboardButton::NumLock),
 		Pair<uint64, KeyboardButton>(VK_SCROLL, KeyboardButton::ScrollLock),
-		Pair<uint64, KeyboardButton>(VK_LCONTROL, KeyboardButton::LeftControl),
-		Pair<uint64, KeyboardButton>(VK_RCONTROL, KeyboardButton::RightControl),
+
+		//These two control buttons could be differentiated with 'GetKeyState()', but probably no need right now.
+		Pair<uint64, KeyboardButton>(VK_CONTROL, KeyboardButton::LeftControl),
+		Pair<uint64, KeyboardButton>(VK_CONTROL, KeyboardButton::RightControl),
 		Pair<uint64, KeyboardButton>(VK_LMENU, KeyboardButton::LeftAlt),
 		Pair<uint64, KeyboardButton>(VK_RMENU, KeyboardButton::RightAlt),
 

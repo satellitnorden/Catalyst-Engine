@@ -38,9 +38,33 @@ public:
 	}
 
 	/*
+	*	Subscript operator overload, const.
+	*/
+	FORCE_INLINE NO_DISCARD const char &operator[](const uint64 index) const NOEXCEPT
+	{
+		return _Data[index];
+	}
+
+	/*
+	*	Subscript operator overload, mutable.
+	*/
+	FORCE_INLINE NO_DISCARD char &operator[](const uint64 index) NOEXCEPT
+	{
+		return _Data[index];
+	}
+
+	/*
+	*	Returns the length.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 Length() const NOEXCEPT
+	{
+		return StringUtilities::StringLength(Data());
+	}
+
+	/*
 	*	Returns the size.
 	*/
-	FORCE_INLINE NO_DISCARD uint64 Size() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD uint64 Size() const NOEXCEPT
 	{
 		return SIZE;
 	}

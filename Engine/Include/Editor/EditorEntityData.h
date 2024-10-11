@@ -15,6 +15,9 @@ class EditorEntityData final
 
 public:
 
+	//Constants.
+	constexpr static uint64 NAME_SIZE{ 128 };
+
 	/*
 	*	Hash string data class definition.
 	*/
@@ -35,7 +38,7 @@ public:
 	};
 
 	//The name.
-	StaticString<128> _Name;
+	StaticString<NAME_SIZE> _Name;
 
 	//The identifier.
 	uint64 _Identifier;

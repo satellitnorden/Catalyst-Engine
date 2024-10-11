@@ -1160,20 +1160,23 @@ NO_DISCARD bool EditorLevelSystem::TopRightWindowUpdate(const Vector2<float32> m
 */
 NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
+	//Cache the keyboard state.
+	const KeyboardState *const RESTRICT keyboard_state{ InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE) };
+
 	//Update the Gizmo mode.
 	if (!ImGui::GetIO().WantTextInput)
 	{
-		if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::ONE) == ButtonState::PRESSED)
+		if (keyboard_state->GetButtonState(KeyboardButton::ONE) == ButtonState::PRESSED)
 		{
 			_CurrentGizmoMode = GizmoMode::TRANSLATE;
 		}
 
-		else if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::TWO) == ButtonState::PRESSED)
+		else if (keyboard_state->GetButtonState(KeyboardButton::TWO) == ButtonState::PRESSED)
 		{
 			_CurrentGizmoMode = GizmoMode::ROTATE;
 		}
 
-		else if (InputSystem::Instance->GetKeyboardState(InputLayer::USER_INTERFACE)->GetButtonState(KeyboardButton::THREE) == ButtonState::PRESSED)
+		else if (keyboard_state->GetButtonState(KeyboardButton::THREE) == ButtonState::PRESSED)
 		{
 			_CurrentGizmoMode = GizmoMode::SCALE;
 		}
@@ -1278,12 +1281,22 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 			should_delete = true;
 		}
 
+		if (keyboard_state->GetButtonState(KeyboardButton::Delete) == ButtonState::PRESSED)
+		{
+			should_delete = true;
+		}
+
 		//Add a duplicate button.
 		bool should_duplicate{ false };
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Duplicate"))
+		{
+			should_duplicate = true;
+		}
+
+		if ((keyboard_state->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED_HELD) && keyboard_state->GetButtonState(KeyboardButton::D) == ButtonState::PRESSED)
 		{
 			should_duplicate = true;
 		}
@@ -1578,6 +1591,16 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
 					rotation[i] = BaseMath::DegreesToRadians(rotation[i]);
+				}
+
+				//If the user is holding in the left control key, then snap to... Hrrm, 1 meter. TODO: Expose this as a setting maybe?
+				if (keyboard_state->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED
+					|| keyboard_state->GetButtonState(KeyboardButton::LeftControl) == ButtonState::PRESSED_HELD)
+				{
+					for (uint8 i{ 0 }; i < 3; ++i)
+					{
+						position[i] = static_cast<float32>(static_cast<int32>(position[i]));
+					}
 				}
 
 				world_transform->SetAbsolutePosition(position);
@@ -1994,7 +2017,69 @@ void EditorLevelSystem::DuplicateSelectedEntity() NOEXCEPT
 	EditorEntityData &new_editor_entity_data{ _EditorEntityData.Back() };
 
 	//Generate the entity name.
-	GenerateEntityName(new_editor_entity_data._Name.Data(), new_editor_entity_data._Name.Size());
+	{
+		//If the name contains numbers at the end, maybe named something like "Object N", try to just add one to that number. Otherwise, just generate a new entity name.
+		bool could_extend_entity_name{ false };
+		
+		{
+			const char *const RESTRICT selected_entity_name{ _EditorEntityData[_SelectedEntityIndex]._Name.Data() };
+			const uint64 selected_entity_name_length{ _EditorEntityData[_SelectedEntityIndex]._Name.Length() };
+
+			uint64 numbers_start{ UINT64_MAXIMUM };
+
+			for (int64 i{ static_cast<int64>(selected_entity_name_length - 1) }; i >= 0; --i)
+			{
+				if (StringUtilities::IsNumber(selected_entity_name[i]))
+				{
+					numbers_start = static_cast<uint64>(i);
+				}
+
+				else
+				{
+					break;
+				}
+			}
+
+			if (numbers_start != UINT64_MAXIMUM)
+			{
+				uint64 numbers{ std::stoull(&selected_entity_name[numbers_start]) };
+
+				char name_buffer[EditorEntityData::NAME_SIZE];
+
+				for (uint64 i{ 0 }; i < numbers_start; ++i)
+				{
+					name_buffer[i] = selected_entity_name[i];
+				}
+
+				name_buffer[numbers_start] = '\0';
+
+				char final_buffer[EditorEntityData::NAME_SIZE];
+
+				/*
+				*	This is a bit crude, but unless someone has created over ~2 quintillion entities with the same naming structure,
+				*	we're bound to find a free name after a while.
+				*/
+				for (;;)
+				{
+					sprintf_s(final_buffer, "%s%llu", name_buffer, ++numbers);
+
+					if (IsEntityNameAvailable(final_buffer))
+					{
+						new_editor_entity_data._Name = final_buffer;
+
+						break;
+					}
+				}
+				
+				could_extend_entity_name = true;
+			}
+		}
+
+		if (!could_extend_entity_name)
+		{
+			GenerateEntityName(new_editor_entity_data._Name.Data(), new_editor_entity_data._Name.Size());
+		}
+	}
 
 	//Generate the entity identifier.
 	GenerateEntityIdentifier(&new_editor_entity_data._Identifier);
@@ -2048,5 +2133,21 @@ NO_DISCARD bool EditorLevelSystem::AreEntitiesLinked(const uint64 entity_index_1
 	}
 
 	return false;
+}
+
+/*
+*	Returns if the given entity name is available.
+*/
+NO_DISCARD bool EditorLevelSystem::IsEntityNameAvailable(const char *const RESTRICT name) NOEXCEPT
+{
+	for (const EditorEntityData &editor_entity_data : _EditorEntityData)
+	{
+		if (StringUtilities::IsEqual(editor_entity_data._Name.Data(), name))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 #endif
