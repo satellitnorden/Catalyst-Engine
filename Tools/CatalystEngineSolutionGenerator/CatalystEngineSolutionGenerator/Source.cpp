@@ -848,7 +848,7 @@ void GenerateOculusQuest(const GeneralParameters& general_parameters, const Ocul
 			std::cout << error_code.message() << std::endl;
 		}
 
-		for (const auto& entry : std::filesystem::directory_iterator(std::string("..\\Resources\\Final")))
+		for (const auto &entry : std::filesystem::directory_iterator(std::string("..\\Resources\\Final")))
 		{
 			const std::string file_path{ entry.path().string() };
 
@@ -873,8 +873,22 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 	//Remember the error code for filesystem functions.
 	std::error_code error_code;
 
+	//Remove everything (but the .gitignore file) in the code generation folder.
+	if (std::filesystem::exists("..\\Code\\CodeGeneration"))
+	{
+		for (const auto &entry : std::filesystem::directory_iterator(std::string("..\\Code\\CodeGeneration")))
+		{
+			const std::string file_path{ entry.path().string() };
+
+			if (file_path != ".gitignore")
+			{
+				std::filesystem::remove(file_path, error_code); CHECK_ERROR_CODE();
+			}
+		}
+	}
+
 	//Read the template CMakeLists.txt file and output a new file.
-	std::ifstream cmake_lists_input_file{ "C:\\Github\\Catalyst-Engine\\Templates\\CMakeLists_Win64_Template.txt" };
+	std::ifstream cmake_lists_input_file{ "..\\..\\Catalyst-Engine\\Templates\\CMakeLists_Win64_Template.txt" };
 	std::ofstream cmake_lists_output_file{ "CMakeLists.txt" };
 
 	std::string cmake_lists_line;
