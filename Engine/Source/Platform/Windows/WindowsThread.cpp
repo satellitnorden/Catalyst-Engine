@@ -144,6 +144,7 @@ void Thread::Launch() NOEXCEPT
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Set the thread name.
+	if (_Name)
 	{
 		const std::string string_name{ _Name.Data() };
 		const std::wstring name{ string_name.begin(), string_name.end() };

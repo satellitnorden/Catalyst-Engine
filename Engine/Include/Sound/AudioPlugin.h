@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/ArrayProxy.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/Containers/StreamArchive.h>
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
 
@@ -220,6 +221,8 @@ public:
 		enum class Type : uint8
 		{
 			BUTTON,
+			DROP_DOWN,
+			FADER,
 			TEXT,
 			KNOB,
 			CHECKBOX,
@@ -239,14 +242,35 @@ public:
 		//The update function.
 		void(*_UpdateFunction)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control) { nullptr };
 
+		//Denotes whether or not this control is visible.
+		bool _Visible{ true };
+
+		//The user data.
+		void *RESTRICT _UserData;
+
 		struct
 		{
+			//Denotes whether or not this button is enabled.
+			bool _Enabled{ true };
+
 			//The text.
 			const char *RESTRICT _Text;
 
 			//The callback.
 			void(*_Callback)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control) { nullptr };
 		} _ButtonData;
+
+		struct
+		{
+			//The text.
+			const char *RESTRICT _Text;
+
+			//The drop down items.
+			ArrayProxy<const char *> _DropDownItems;
+
+			//The callback.
+			void(*_Callback)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control, const uint32 chosen_item_index) { nullptr };
+		} _DropDownData;
 
 		struct
 		{
@@ -377,6 +401,22 @@ public:
 	FORCE_INLINE NO_DISCARD ControlLayout *const RESTRICT GetControlLayout() NOEXCEPT
 	{
 		return &_ControlLayout;
+	}
+
+	/*
+	*	Serializes state.
+	*/
+	FORCE_INLINE virtual void SerializeState(StreamArchive *const RESTRICT stream_archive) NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Un-serializes state.
+	*/
+	FORCE_INLINE virtual void UnSerializeState(StreamArchive *const RESTRICT stream_archive, uint64 *const RESTRICT stream_archive_position) NOEXCEPT
+	{
+
 	}
 
 	/*
