@@ -103,6 +103,16 @@ NO_DISCARD uint32 MaterialSystem::RegisterMaterial(const MaterialAsset *const RE
 }
 
 /*
+*	Returns the material asset at the given index.
+*/
+NO_DISCARD const MaterialAsset *const RESTRICT MaterialSystem::GetMaterial(const uint32 index) NOEXCEPT
+{
+	SCOPED_LOCK(_MaterialsLock);
+
+	return _Materials[index];
+}
+
+/*
 *	Returns the current material uniform buffer.
 */
 BufferHandle MaterialSystem::GetCurrentMaterialUnifomBuffer() NOEXCEPT
