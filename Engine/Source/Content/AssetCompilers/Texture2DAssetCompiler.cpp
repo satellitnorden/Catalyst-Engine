@@ -1316,7 +1316,7 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	{
 		const uint64 cpu_memory{ data[0].Size() };
 
-		_TotalCPUMemory += cpu_memory;
+		_TotalCPUMemory.FetchAdd(cpu_memory);
 	}
 
 	//Update the total GPU memory.
@@ -1328,7 +1328,7 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 			gpu_memory += _data.Size();
 		}
 
-		_TotalGPUMemory += gpu_memory;
+		_TotalGPUMemory.FetchAdd(gpu_memory);
 	}
 #endif
 }

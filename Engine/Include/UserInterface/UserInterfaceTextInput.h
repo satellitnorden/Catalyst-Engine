@@ -17,16 +17,23 @@ class UserInterfaceTextInput final : public UserInterfaceElement
 
 public:
 
+	//Type aliases.
+	using Callback = void(*)(UserInterfaceTextInput*const RESTRICT button);
+
 	/*
 	*	Default constructor.
 	*/
 	UserInterfaceTextInput(	const Vector2<float32> initial_minimum,
 							const Vector2<float32> initial_maximum,
 							const UserInterfaceMaterial &initial_idle_material,
+							const UserInterfaceMaterial &initial_active_material,
+							const UserInterfaceMaterial &initial_hovered_material,
+							const UserInterfaceMaterial &initial_pressed_material,
 							const AssetPointer<FontAsset> font,
 							const float32 text_scale,
 							const char *const RESTRICT prompt_text,
-							const char *const RESTRICT text) NOEXCEPT;
+							const char *const RESTRICT text,
+							const Callback callback) NOEXCEPT;
 
 	/*
 	*	Default destructor.
@@ -101,6 +108,15 @@ private:
 	//The idle material.
 	UserInterfaceMaterial _IdleMaterial;
 
+	//The active material.
+	UserInterfaceMaterial _ActiveMaterial;
+
+	//The hovered material.
+	UserInterfaceMaterial _HoveredMaterial;
+
+	//The pressed material.
+	UserInterfaceMaterial _PressedMaterial;
+
 	//The font.
 	AssetPointer<FontAsset> _Font;
 
@@ -118,5 +134,8 @@ private:
 
 	//The text primitive.
 	TextUserInterfacePrimitive *RESTRICT _TextPrimitive{ nullptr };
+
+	//The callback.
+	Callback _Callback;
 
 };

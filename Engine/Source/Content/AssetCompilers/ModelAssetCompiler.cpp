@@ -642,8 +642,8 @@ void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 		cpu_memory += collision_model_data._Data.Size();
 		cpu_memory += sizeof(float32);
 
-		_TotalCPUMemory += cpu_memory;
-		_TotalGPUMemory += gpu_memory;
+		_TotalCPUMemory.FetchAdd(cpu_memory);
+		_TotalGPUMemory.FetchAdd(gpu_memory);
 	}
 #endif
 }

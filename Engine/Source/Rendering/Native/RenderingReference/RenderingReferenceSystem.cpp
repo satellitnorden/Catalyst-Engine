@@ -256,7 +256,7 @@ public:
 	FORCE_INLINE static void PreUpdate() NOEXCEPT
 	{
 		//Update the progress.
-		RenderingReferenceSystemData::_RenderingReferenceUserInterfaceScene.SetProgress(static_cast<float32>(RenderingReferenceSystemData::_CurrentNumberOfPixels) / static_cast<float32>(RenderingReferenceSystemData::_TotalNumberOfPixels));
+		RenderingReferenceSystemData::_RenderingReferenceUserInterfaceScene.SetProgress(static_cast<float32>(RenderingReferenceSystemData::_CurrentNumberOfPixels.Load()) / static_cast<float32>(RenderingReferenceSystemData::_TotalNumberOfPixels));
 
 		//Are all tasks done?
 		if (AllTasksDone())
@@ -306,7 +306,7 @@ public:
 		LOG_INFORMATION("Performing iteration %llu", RenderingReferenceSystemData::_CurrentNumberOfSamples);
 
 		//Reset the current number of pixels.
-		RenderingReferenceSystemData::_CurrentNumberOfPixels = 0;
+		RenderingReferenceSystemData::_CurrentNumberOfPixels.Store(0);
 
 		//Fill the queued task data, in an interleaved manner so that there are less false sharing.
 		for (uint32 Y{ 0 }; Y < RenderingReferenceSystemData::_IntermediateTexture.GetHeight(); Y += 4)
@@ -409,7 +409,7 @@ public:
 				final_sample._A = 1.0f;
 
 				//Update the current number of pixels.
-				++RenderingReferenceSystemData::_CurrentNumberOfPixels;
+				RenderingReferenceSystemData::_CurrentNumberOfPixels.FetchAdd(1);
 			}
 		}
 	}

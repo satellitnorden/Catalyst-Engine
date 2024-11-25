@@ -27,7 +27,7 @@ public:
 			//If a write began during the transaction, decrease the number of readers and try again.
 			if (_WriteInProgress.load(std::memory_order_consume))
 			{
-				_NumberOfReaders.fetch_sub(1, std::memory_order_release);
+				_NumberOfReaders.fetch_sub(1, std::memory_order_acq_rel);
 			}
 
 			else
@@ -43,7 +43,7 @@ public:
 	void ReadUnlock() NOEXCEPT
 	{
 		//Decrease the number of readers.
-		_NumberOfReaders.fetch_sub(1, std::memory_order_release);
+		_NumberOfReaders.fetch_sub(1, std::memory_order_acq_rel);
 	}
 
 	/*

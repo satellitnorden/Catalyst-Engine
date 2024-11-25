@@ -328,6 +328,9 @@ void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data
 				)
 			};
 
+			//Not really sure how to handle when this happens, but just clamping for now should work decently-ish. :x
+			height = BaseMath::Minimum<int32>(height, bitmap_height);
+
 			//Retrieve the bounding box for the glyph.
 			Vector2<int32> glyph_minimum;
 			Vector2<int32> glyph_maximum;

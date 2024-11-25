@@ -349,7 +349,8 @@ protected:
 	RESTRICTED UserInterfaceTextInput *const RESTRICT AddTextInputByNormalizedCoordinate(	const Vector2<float32> &minimum,
 																							const Vector2<float32> &maximum,
 																							const char *const RESTRICT prompt_text,
-																							const char *const RESTRICT text = "") NOEXCEPT;
+																							const char *const RESTRICT text = "",
+																							const UserInterfaceTextInput::Callback callback = nullptr) NOEXCEPT;
 
 	/*
 	*	Removes a text input.
@@ -852,6 +853,9 @@ private:
 
 	//The font.
 	AssetPointer<FontAsset> _Font;
+
+	//The active material.
+	UserInterfaceMaterial _ActiveMaterial;
 
 	//The button idle material.
 	UserInterfaceMaterial _ButtonIdleMaterial;

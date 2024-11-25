@@ -56,7 +56,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool IsInitialized() const NOEXCEPT override
 	{
-		return _Initialized;
+		return _Initialized.Load();
 	}
 
 	/*
@@ -65,7 +65,7 @@ public:
 	FORCE_INLINE NO_DISCARD uint8 GetNumberOfChannels() const NOEXCEPT override
 	{
 		//Don't do anything if this sound sub system isn't initialized.
-		if (!_Initialized)
+		if (!_Initialized.Load())
 		{
 			return 0;
 		}
@@ -81,7 +81,7 @@ public:
 	FORCE_INLINE NO_DISCARD float32 GetSampleRate() const NOEXCEPT override
 	{
 		//Don't do anything if this sound sub system isn't initialized.
-		if (!_Initialized)
+		if (!_Initialized.Load())
 		{
 			return 0.0f;
 		}
@@ -97,7 +97,7 @@ public:
 	FORCE_INLINE NO_DISCARD SoundFormat GetSoundFormat() const NOEXCEPT override
 	{
 		//Don't do anything if this sound sub system isn't initialized.
-		if (!_Initialized)
+		if (!_Initialized.Load())
 		{
 			return SoundFormat::UNKNOWN;
 		}
@@ -113,7 +113,7 @@ public:
 	FORCE_INLINE NO_DISCARD uint32 GetBufferSize() const NOEXCEPT override
 	{
 		//Don't do anything if this sound sub system isn't initialized.
-		if (!_Initialized)
+		if (!_Initialized.Load())
 		{
 			return 0;
 		}

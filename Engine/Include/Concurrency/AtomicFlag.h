@@ -37,7 +37,7 @@ public:
 	*/
 	FORCE_INLINE void Set() NOEXCEPT
 	{
-		_Flag.store(true, std::memory_order_release);
+		_Flag.Store(true);
 	}
 
 	/*
@@ -45,7 +45,7 @@ public:
 	*/
 	FORCE_INLINE void Clear() NOEXCEPT
 	{
-		_Flag.store(false, std::memory_order_release);
+		_Flag.Store(false);
 	}
 
 	/*
@@ -53,7 +53,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool IsSet() const NOEXCEPT
 	{
-		return _Flag.load(std::memory_order_acquire);
+		return _Flag.Load();
 	}
 
 	/*
@@ -95,5 +95,3 @@ private:
 	Atomic<bool> _Flag;
 
 };
-
-static_assert(Atomic<bool>::is_always_lock_free, "Atomic bools are assumed to be lock-free!");

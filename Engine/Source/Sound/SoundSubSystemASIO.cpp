@@ -566,7 +566,7 @@ void SoundSubSystemASIO::StartStream() NOEXCEPT
 	_BufferSize = buffer_frames;
 
 	//This sound sub system is successfully initialized!
-	_Initialized = true;
+	_Initialized.Store(true);
 
 	//Initialize the mixing buffers.
 	_SoundSystem->InitializeMixingBuffers(stream_options.numberOfBuffers + 2 /* 2 extra to avoid stutters. (: */, buffer_frames);

@@ -65,7 +65,7 @@ NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(const WorldTransfor
 */
 NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT> component_configurations) NOEXCEPT
 {
-	while (_NumberOfItemsInCreationQueue.load() > 1024)
+	while (_NumberOfItemsInCreationQueue.Load() > 1024)
 	{
 		Concurrency::CurrentThread::Yield();
 	}
@@ -109,7 +109,7 @@ NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<Componen
 	_CreationQueue.Push(queue_item);
 
 	//Increment the number of items in the creation queue.
-	++_NumberOfItemsInCreationQueue;
+	_NumberOfItemsInCreationQueue.FetchAdd(1);
 
 	//Return the entity.
 	return entity;
@@ -132,7 +132,7 @@ void EntitySystem::AddComponentToEntity(Entity *const RESTRICT entity, Component
 	_CreationQueue.Push(queue_item);
 
 	//Increment the number of items in the creation queue.
-	++_NumberOfItemsInCreationQueue;
+	_NumberOfItemsInCreationQueue.FetchAdd(1);
 }
 
 /*
@@ -285,7 +285,7 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 	while (EntityCreationQueueItem *const RESTRICT queue_item{ _CreationQueue.Pop() })
 	{
 		//Decrement the number of items in the creation queue.
-		--_NumberOfItemsInCreationQueue;
+		_NumberOfItemsInCreationQueue.FetchSub(1);
 
 		//Check if any component needs pre-processing.
 		bool any_component_needs_pre_processing{ false };

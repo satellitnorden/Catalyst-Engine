@@ -33,7 +33,7 @@ namespace Concurrency
 		{
 			static Atomic<uint64> INDEX_COUNTER{ 0 };
 
-			Index() = INDEX_COUNTER.fetch_add(1);
+			Index() = INDEX_COUNTER.FetchAdd(1);
 		}
 
 		/*

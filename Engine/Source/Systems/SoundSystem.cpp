@@ -706,7 +706,7 @@ void SoundSystem::TerminateMixingBuffers() NOEXCEPT
 	_CurrentMixingBufferReadIndex = 0;
 
 	//Reset the number of mixing buffers ready.
-	_MixingBuffersReady = 0;
+	_MixingBuffersReady.Store(0);
 
 	//Reset the current sample read index.
 	_CurrentSampleReadIndex = 0;
@@ -797,7 +797,7 @@ void SoundSystem::Mix() NOEXCEPT
 
 			if (new_playing_sound._AudioTimeTracker)
 			{
-				new_playing_sound._AudioTimeTracker->store(static_cast<float64>(queued_play_sound_request->_StartTime));
+				new_playing_sound._AudioTimeTracker->Store(static_cast<float64>(queued_play_sound_request->_StartTime));
 			}
 
 			SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
@@ -825,7 +825,7 @@ void SoundSystem::Mix() NOEXCEPT
 		}
 
 		//Make mixing buffers ready. (:
-		if (_MixingBuffersReady < _NumberOfMixingBuffers)
+		if (_MixingBuffersReady.Load() < _NumberOfMixingBuffers)
 		{
 			//Reset the intermediate mixing buffer.
 			Memory::Set(_IntermediateMixingBuffer, 0, _NumberOfSamplesPerMixingBuffer * number_of_channels * sizeof(float32));
@@ -844,7 +844,7 @@ void SoundSystem::Mix() NOEXCEPT
 					//Update the audio time tracker, if it exists.
 					if (playing_sound._AudioTimeTracker)
 					{
-						playing_sound._AudioTimeTracker->store(playing_sound._SoundResourcePlayer.GetCurrentAudioTime(), std::memory_order_release);
+						playing_sound._AudioTimeTracker->Store(playing_sound._SoundResourcePlayer.GetCurrentAudioTime());
 					}
 				}
 			}
@@ -997,7 +997,7 @@ void SoundSystem::Mix() NOEXCEPT
 			_CurrentMixingBufferWriteIndex = (_CurrentMixingBufferWriteIndex + 1) % _NumberOfMixingBuffers;
 
 			//A new mixing buffer is ready.
-			++_MixingBuffersReady;
+			_MixingBuffersReady.FetchAdd(1);
 		}
 
 		//Remove any inactive sounds.
@@ -1019,7 +1019,7 @@ void SoundSystem::Mix() NOEXCEPT
 			}
 		}
 
-		while (_MixingBuffersReady == _NumberOfMixingBuffers)
+		while (_MixingBuffersReady.Load() == _NumberOfMixingBuffers)
 		{
 			Concurrency::CurrentThread::Yield();
 		}
@@ -1047,7 +1047,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 		{	
 			//Cache local values.
 			uint8 local_mixing_buffer_read_index{ _CurrentMixingBufferReadIndex };
-			int32 local_mixing_buffers_ready{ _MixingBuffersReady };
+			int32 local_mixing_buffers_ready{ _MixingBuffersReady.Load() };
 			uint32 local_sample_read_index{ _CurrentSampleReadIndex };
 
             //Read all samples.
@@ -1178,7 +1178,7 @@ void SoundSystem::SoundCallback(const float32 sample_rate,
 		while (_CurrentSampleReadIndex >= _NumberOfSamplesPerMixingBuffer)
 		{
 			_CurrentMixingBufferReadIndex = (_CurrentMixingBufferReadIndex + 1) & (_NumberOfMixingBuffers - 1);
-			--_MixingBuffersReady;
+			_MixingBuffersReady.FetchSub(1);
 			_CurrentSampleReadIndex -= _NumberOfSamplesPerMixingBuffer;
 		}
 	}

@@ -18,7 +18,7 @@ public:
 	FORCE_INLINE void Lock() NOEXCEPT
 	{
 		//Increment the lock count.
-		const uint32 previous_lock_count{ _LockCount.fetch_add(1, std::memory_order_release) };
+		const uint32 previous_lock_count{ _LockCount.FetchAdd(1) };
 
 		ASSERT(previous_lock_count == 0, "There is contention on this lock!");
 	}
@@ -29,7 +29,7 @@ public:
 	FORCE_INLINE void Unlock() NOEXCEPT
 	{
 		//Decrement the lock count.
-		const uint32 previous_lock_count{ _LockCount.fetch_sub(1, std::memory_order_release) };
+		const uint32 previous_lock_count{ _LockCount.FetchSub(1) };
 
 		ASSERT(previous_lock_count == 1, "There is contention on this lock!");
 	}

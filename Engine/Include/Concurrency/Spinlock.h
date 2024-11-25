@@ -76,7 +76,7 @@ public:
 	*/
 	FORCE_INLINE void Unlock() NOEXCEPT
 	{
-		_Locked.store(false, std::memory_order_release);
+		_Locked.Store(false);
 	}
 
 private:
@@ -89,7 +89,7 @@ private:
 	*/
 	FORCE_INLINE NO_DISCARD bool TryLock() NOEXCEPT
 	{
-		return !_Locked.load(std::memory_order_relaxed) && !_Locked.exchange(true, std::memory_order_acquire);
+		return !_Locked.Load() && !_Locked.Exchange(true);
 	}
 
 };

@@ -31,7 +31,7 @@ namespace UserInterfaceSceneConstants
 UserInterfaceScene::~UserInterfaceScene()
 {
 	//Deactivate this user interface scene, if it is active.
-	if (_IsActive && !CatalystEngineSystem::Instance->ShouldTerminate())
+	if (_IsActive && CatalystEngineSystem::Instance && !CatalystEngineSystem::Instance->ShouldTerminate())
 	{
 		OnDeactivated();
 		_IsActive = false;
@@ -48,6 +48,8 @@ void UserInterfaceScene::OnActivated() NOEXCEPT
 	SetVerticalSubdivision(33);
 
 	_Font = ContentSystem::Instance->GetAsset<FontAsset>(HashString("Default"));
+
+	_ActiveMaterial.SetColor(Vector4<float32>(0.375f, 0.375f, 0.375f, 0.625f));
 
 	_ButtonIdleMaterial.SetColor(Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f));
 
@@ -579,7 +581,8 @@ RESTRICTED UserInterfaceTextInput *const RESTRICT UserInterfaceScene::AddTextInp
 RESTRICTED UserInterfaceTextInput *const RESTRICT UserInterfaceScene::AddTextInputByNormalizedCoordinate(	const Vector2<float32> &minimum,
 																											const Vector2<float32> &maximum,
 																											const char *const RESTRICT prompt_text,
-																											const char *const RESTRICT text) NOEXCEPT
+																											const char *const RESTRICT text,
+																											const UserInterfaceTextInput::Callback callback) NOEXCEPT
 {
 	//Allocate the text input.
 	UserInterfaceTextInput *const RESTRICT new_text_input
@@ -589,10 +592,14 @@ RESTRICTED UserInterfaceTextInput *const RESTRICT UserInterfaceScene::AddTextInp
 			minimum,
 			maximum,
 			_ButtonIdleMaterial,
+			_ActiveMaterial,
+			_ButtonHoveredMaterial,
+			_ButtonPressedMaterial,
 			_Font,
 			_TextScale,
 			prompt_text,
-			text
+			text,
+			callback
 		)
 	};
 

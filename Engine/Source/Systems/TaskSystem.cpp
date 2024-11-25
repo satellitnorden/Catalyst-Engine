@@ -93,7 +93,7 @@ void TaskSystem::Initialize(const CatalystProjectConcurrencyConfiguration &confi
 		//Reset the tasks in queue array.
 		for (uint8 i{ 0 }; i < UNDERLYING(Task::Priority::NUMBER_OF_TASK_PRIORITIES); ++i)
 		{
-			_TasksInQueue[i] = 0;
+			_TasksInQueue[i].Store(0);
 		}
 
 		//The task system is now initialized.
@@ -114,7 +114,7 @@ void TaskSystem::Terminate() NOEXCEPT
 	//Wait for there to be no tasks left in the queue, since there might be tasks depending on other tasks.
 	for (uint8 i{ 0 }; i < UNDERLYING(Task::Priority::NUMBER_OF_TASK_PRIORITIES); ++i)
 	{
-		while (_TasksInQueue[i] > 0)
+		while (_TasksInQueue[i].Load() > 0)
 		{
 			//Help out with finishing the tasks.
 			DoWork(static_cast<Task::Priority>(0));
@@ -141,7 +141,7 @@ void TaskSystem::Terminate() NOEXCEPT
 */
 void TaskSystem::ExecuteTask(const Task::Priority priority, Task *const RESTRICT task) NOEXCEPT
 {
-	ASSERT(_TasksInQueue[UNDERLYING(priority)] < MAXIMUM_NUMBER_OF_TASKS, "Pushing too many tasks to the task queue, increase maximum number of tasks!");
+	ASSERT(_TasksInQueue[UNDERLYING(priority)].Load() < MAXIMUM_NUMBER_OF_TASKS, "Pushing too many tasks to the task queue, increase maximum number of tasks!");
 
 	//Clear the atomic flag denoting whether or not this task is executed.
 	task->_IsExecuted.Clear();
@@ -150,7 +150,7 @@ void TaskSystem::ExecuteTask(const Task::Priority priority, Task *const RESTRICT
 	*	If the number of tasks in queue is the same as the number of task executors, try to run this task on the same thread.
 	*	Also, is the task system isn't initialized (possibly due to the engine running single-threaded), we have no choice but to execute it immediately.
 	*/
-	if ((_TasksInQueue[UNDERLYING(priority)] >= _NumberOfTaskExecutors && task->_ExecutableOnSameThread)
+	if ((_TasksInQueue[UNDERLYING(priority)].Load() >= _NumberOfTaskExecutors && task->_ExecutableOnSameThread)
 		|| !_IsInitialized)
 	{
 		task->Execute();
@@ -158,11 +158,20 @@ void TaskSystem::ExecuteTask(const Task::Priority priority, Task *const RESTRICT
 
 	else
 	{
+		//Update the number of tasks in the queue.
+		{
+			uint64 old_tasks_in_queue;
+			uint64 new_tasks_in_queue;
+
+			do
+			{
+				old_tasks_in_queue = _TasksInQueue[UNDERLYING(priority)].Load();
+				new_tasks_in_queue = old_tasks_in_queue + 1;
+			} while (!_TasksInQueue[UNDERLYING(priority)].CompareExchangeWeak(old_tasks_in_queue, new_tasks_in_queue));
+		}
+
 		//Push the task into the task queue.
 		_TaskQueues[UNDERLYING(priority)].Push(task);
-
-		//Update the number of tasks in the queue.
-		++_TasksInQueue[UNDERLYING(priority)];
 	}
 }
 
@@ -174,10 +183,20 @@ void TaskSystem::DoWork(const Task::Priority priority) NOEXCEPT
 	//Try to execute higher priority tasks first.
 	for (int16 i{ UNDERLYING(Task::Priority::NUMBER_OF_TASK_PRIORITIES) - 1 }; i >= UNDERLYING(priority); --i)
 	{
-		if (Task *const RESTRICT *const RESTRICT new_task{ _TaskQueues[i].Pop()})
+		if (Task *const RESTRICT *const RESTRICT new_task{ _TaskQueues[i].Pop() })
 		{
 			(*new_task)->Execute();
-			--_TasksInQueue[i];
+			
+			{
+				uint64 old_tasks_in_queue;
+				uint64 new_tasks_in_queue;
+
+				do
+				{
+					old_tasks_in_queue = BaseMath::Maximum<uint64>(_TasksInQueue[i].Load(), 1);
+					new_tasks_in_queue = old_tasks_in_queue - 1;
+				} while (!_TasksInQueue[i].CompareExchangeWeak(old_tasks_in_queue, new_tasks_in_queue));
+			}
 
 			return;
 		}
@@ -191,7 +210,7 @@ void TaskSystem::WaitForAllTasksToFinish() NOEXCEPT
 {
 	for (uint8 i{ 0 }; i < UNDERLYING(Task::Priority::NUMBER_OF_TASK_PRIORITIES); ++i)
 	{
-		while (_TasksInQueue[i] > 0)
+		while (_TasksInQueue[i].Load() > 0)
 		{
 			//Might as well help out since we're waiting.
 			DoWork(static_cast<Task::Priority>(0));
@@ -217,7 +236,17 @@ void TaskSystem::ExecuteTasks() NOEXCEPT
 			if (Task *const RESTRICT *const RESTRICT new_task{ _TaskQueues[i].Pop() })
 			{
 				(*new_task)->Execute();
-				--_TasksInQueue[i];
+				
+				{
+					uint64 old_tasks_in_queue;
+					uint64 new_tasks_in_queue;
+
+					do
+					{
+						old_tasks_in_queue = BaseMath::Maximum<uint64>(_TasksInQueue[i].Load(), 1);
+						new_tasks_in_queue = old_tasks_in_queue - 1;
+					} while (!_TasksInQueue[i].CompareExchangeWeak(old_tasks_in_queue, new_tasks_in_queue));
+				}
 
 				any_task_executed = true;
 

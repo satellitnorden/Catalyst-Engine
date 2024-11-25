@@ -374,7 +374,7 @@ void SoundSubSystemWASAPI::Initialize(const InitializationParameters &initializa
 	_BufferSize = buffer_frames;
 
 	//This sound sub system is successfully initialized!
-	_Initialized = true;
+	_Initialized.Store(true);
 
 	//Initialize the mixing buffers.
 	_SoundSystem->InitializeMixingBuffers(SoundSystem::DEFAULT_NUMBER_OF_MIXING_BUFFERS, SoundSystem::DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER);

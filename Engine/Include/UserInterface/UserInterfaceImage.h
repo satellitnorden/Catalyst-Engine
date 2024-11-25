@@ -30,6 +30,16 @@ public:
 	~UserInterfaceImage() NOEXCEPT;
 
 	/*
+	*	Sets the minimum.
+	*/
+	void SetMinimum(const Vector2<float32> &minimum) NOEXCEPT;
+
+	/*
+	*	Sets the maximum.
+	*/
+	void SetMaximum(const Vector2<float32> &maximum) NOEXCEPT;
+
+	/*
 	*	Sets the position.
 	*/
 	void SetPosition(const Vector2<float32> &position) NOEXCEPT;

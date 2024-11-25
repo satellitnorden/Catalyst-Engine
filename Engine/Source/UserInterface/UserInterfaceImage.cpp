@@ -43,6 +43,22 @@ UserInterfaceImage::~UserInterfaceImage() NOEXCEPT
 }
 
 /*
+*	Sets the minimum.
+*/
+void UserInterfaceImage::SetMinimum(const Vector2<float32> &minimum) NOEXCEPT
+{
+	_Primitive->_Minimum = minimum;
+}
+
+/*
+*	Sets the maximum.
+*/
+void UserInterfaceImage::SetMaximum(const Vector2<float32> &maximum) NOEXCEPT
+{
+	_Primitive->_Maximum = maximum;
+}
+
+/*
 *	Sets the position.
 */
 void UserInterfaceImage::SetPosition(const Vector2<float32>& position) NOEXCEPT

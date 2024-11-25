@@ -635,11 +635,14 @@ public:
 		//Allocate the new array.
 		TYPE *const RESTRICT new_array{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * new_capacity)) };
 
-		//Move over all objects from the old array to the new array.
-		Memory::Copy(new_array, _Array, sizeof(TYPE) * _Size);
+		if (_Size > 0)
+		{
+			//Move over all objects from the old array to the new array.
+			Memory::Copy(new_array, _Array, sizeof(TYPE) * (_Size > new_capacity ? new_capacity : _Size));
 
-		//Free the old array.
-		Memory::Free(_Array);
+			//Free the old array.
+			Memory::Free(_Array);
+		}
 
 		//Update the array and the capacity.
 		_Array = new_array;

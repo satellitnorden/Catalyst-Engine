@@ -63,8 +63,8 @@ public:
 	FORCE_INLINE NO_DISCARD bool GetStatistics(Statistics *const RESTRICT statistics) NOEXCEPT
 	{
 		statistics->_AssetTypeName = "Model";
-		statistics->_TotalCPUMemory = _TotalCPUMemory;
-		statistics->_TotalGPUMemory = _TotalGPUMemory;
+		statistics->_TotalCPUMemory = _TotalCPUMemory.Load();
+		statistics->_TotalGPUMemory = _TotalGPUMemory.Load();
 
 		return true;
 	}

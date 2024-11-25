@@ -299,7 +299,7 @@ public:
 	*/
 	void LockFrustum() NOEXCEPT
 	{
-		_FrustumLocked = true;
+		_FrustumLocked.Store(true);
 	}
 #endif
 

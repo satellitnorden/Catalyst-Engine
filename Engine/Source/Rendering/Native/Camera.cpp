@@ -21,7 +21,7 @@ void Camera::CheckUpdates() NOEXCEPT
 
 	if (_FrustumDirty
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-		&& !_FrustumLocked
+		&& !_FrustumLocked.Load()
 #endif
 		)
 	{

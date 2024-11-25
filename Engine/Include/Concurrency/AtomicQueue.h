@@ -55,18 +55,25 @@ public:
 	FORCE_INLINE void Push(const TYPE &new_value) NOEXCEPT
 	{
 		//Cache the current last index.
-		const uint64 current_last_index{ _LastIndex.load(std::memory_order_acquire) };
+		const uint64 current_last_index{ _LastIndex.Load() };
 
 		//Write the new value into the last index.
 		_Queue[current_last_index] = new_value;
 
 		//Increment the last index.
-		_LastIndex.store((current_last_index + 1) & (SIZE - 1), std::memory_order_release);
+		_LastIndex.Store((current_last_index + 1) & (SIZE - 1));
 
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
-		++_NumberOfQueuedItems;
+		uint64 old_number_of_queued_items;
+		uint64 new_number_of_queued_items;
 
-		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.load(), SIZE);
+		do
+		{
+			old_number_of_queued_items = _NumberOfQueuedItems.Load();
+			new_number_of_queued_items = old_number_of_queued_items + 1;
+		} while (!_NumberOfQueuedItems.CompareExchangeWeak(old_number_of_queued_items, new_number_of_queued_items));
+
+		ASSERT(_NumberOfQueuedItems.Load() < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.Load(), SIZE);
 #endif
 	}
 
@@ -76,8 +83,8 @@ public:
 	FORCE_INLINE RESTRICTED NO_DISCARD TYPE *const RESTRICT Pop() NOEXCEPT
 	{
 		//Cache the current first and last index.
-		const uint64 current_first_index{ _FirstIndex.load(std::memory_order_acquire) };
-		const uint64 current_last_index{ _LastIndex.load(std::memory_order_acquire) };
+		const uint64 current_first_index{ _FirstIndex.Load() };
+		const uint64 current_last_index{ _LastIndex.Load() };
 
 		//If the first and last index are the same, the queue is empty.
 		if (current_first_index == current_last_index)
@@ -89,10 +96,19 @@ public:
 		TYPE* const RESTRICT current_first_value{ &_Queue[current_first_index] };
 
 		//Increment the first index.
-		_FirstIndex.store((current_first_index + 1) & (SIZE - 1), std::memory_order_release);
+		_FirstIndex.Store((current_first_index + 1) & (SIZE - 1));
 
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
-		--_NumberOfQueuedItems;
+		uint64 old_number_of_queued_items;
+		uint64 new_number_of_queued_items;
+
+		do
+		{
+			old_number_of_queued_items = BaseMath::Maximum<uint64>(_NumberOfQueuedItems.Load(), 1);
+			new_number_of_queued_items = old_number_of_queued_items - 1;
+		} while (!_NumberOfQueuedItems.CompareExchangeWeak(old_number_of_queued_items, new_number_of_queued_items));
+
+		ASSERT(_NumberOfQueuedItems.Load() < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.Load(), SIZE);
 #endif
 
 		//Return the value.
@@ -134,18 +150,25 @@ public:
 	FORCE_INLINE void Push(const TYPE &new_value) NOEXCEPT
 	{
 		//Cache the current last index.
-		const uint64 current_last_index{ _LastIndex.load(std::memory_order_acquire) };
+		const uint64 current_last_index{ _LastIndex.Load() };
 
 		//Write the new value into the last index.
 		_Queue[current_last_index] = new_value;
 
 		//Increment the last index.
-		_LastIndex.store((current_last_index + 1) & (SIZE - 1), std::memory_order_release);
+		_LastIndex.Store((current_last_index + 1) & (SIZE - 1));
 
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
-		++_NumberOfQueuedItems;
+		uint64 old_number_of_queued_items;
+		uint64 new_number_of_queued_items;
 
-		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.load(), SIZE);
+		do
+		{
+			old_number_of_queued_items = _NumberOfQueuedItems.Load();
+			new_number_of_queued_items = old_number_of_queued_items + 1;
+		} while (!_NumberOfQueuedItems.CompareExchangeWeak(old_number_of_queued_items, new_number_of_queued_items));
+
+		ASSERT(_NumberOfQueuedItems.Load() < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.Load(), SIZE);
 #endif
 	}
 
@@ -160,8 +183,8 @@ public:
 
 		do
 		{
-			old_first_index = _FirstIndex.load(std::memory_order_acquire);
-			old_last_index = _LastIndex.load(std::memory_order_acquire);
+			old_first_index = _FirstIndex.Load();
+			old_last_index = _LastIndex.Load();
 
 			if (old_first_index == old_last_index)
 			{
@@ -169,10 +192,19 @@ public:
 			}
 
 			new_first_index = old_first_index < (SIZE - 1) ? old_first_index + 1 : 0;
-		} while (!_FirstIndex.compare_exchange_weak(old_first_index, new_first_index, std::memory_order_release));
+		} while (!_FirstIndex.CompareExchangeWeak(old_first_index, new_first_index));
 
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
-		--_NumberOfQueuedItems;
+		uint64 old_number_of_queued_items;
+		uint64 new_number_of_queued_items;
+
+		do
+		{
+			old_number_of_queued_items = BaseMath::Maximum<uint64>(_NumberOfQueuedItems.Load(), 1);
+			new_number_of_queued_items = old_number_of_queued_items - 1;
+		} while (!_NumberOfQueuedItems.CompareExchangeWeak(old_number_of_queued_items, new_number_of_queued_items));
+
+		ASSERT(_NumberOfQueuedItems.Load() < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.Load(), SIZE);
 #endif
 
 		return &_Queue[old_first_index];
@@ -217,22 +249,26 @@ public:
 
 		do
 		{
-			old_write_index = _WriteIndex.load(std::memory_order_acquire);
+			old_write_index = _WriteIndex.Load();
 
 			new_write_index = (old_write_index + 1) & (SIZE - 1);
-		} while (!_WriteIndex.compare_exchange_weak(old_write_index, new_write_index, std::memory_order_release));
+		} while (!_WriteIndex.CompareExchangeWeak(old_write_index, new_write_index));
 
 		_Queue[old_write_index] = new_value;
 
-		uint64 expected_last_index{ new_write_index > 0 ? new_write_index - 1 : SIZE - 1 };
-		uint64 new_last_index{ (expected_last_index + 1) & (SIZE - 1) };
-
-		while (!_LastIndex.compare_exchange_weak(expected_last_index, new_last_index, std::memory_order_release));
+		while (!_LastIndex.CompareExchangeWeak(old_write_index, new_write_index));
 
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
-		++_NumberOfQueuedItems;
+		uint64 old_number_of_queued_items;
+		uint64 new_number_of_queued_items;
 
-		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.load(), SIZE);
+		do
+		{
+			old_number_of_queued_items = _NumberOfQueuedItems.Load();
+			new_number_of_queued_items = old_number_of_queued_items + 1;
+		} while (!_NumberOfQueuedItems.CompareExchangeWeak(old_number_of_queued_items, new_number_of_queued_items));
+
+		ASSERT(_NumberOfQueuedItems.Load() < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.Load(), SIZE);
 #endif
 	}
 
@@ -242,8 +278,8 @@ public:
 	FORCE_INLINE RESTRICTED NO_DISCARD TYPE *const RESTRICT Pop() NOEXCEPT
 	{
 		//Cache the current first and last index.
-		const uint64 current_first_index{ _FirstIndex.load(std::memory_order_acquire) };
-		const uint64 current_last_index{ _LastIndex.load(std::memory_order_acquire) };
+		const uint64 current_first_index{ _FirstIndex.Load() };
+		const uint64 current_last_index{ _LastIndex.Load() };
 
 		//If the first and last index are the same, the queue is empty.
 		if (current_first_index == current_last_index)
@@ -255,10 +291,19 @@ public:
 		TYPE* const RESTRICT current_first_value{ &_Queue[current_first_index] };
 
 		//Increment the first index.
-		_FirstIndex.store((current_first_index + 1) & (SIZE - 1), std::memory_order_release);
+		_FirstIndex.Store((current_first_index + 1) & (SIZE - 1));
 
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
-		--_NumberOfQueuedItems;
+		uint64 old_number_of_queued_items;
+		uint64 new_number_of_queued_items;
+
+		do
+		{
+			old_number_of_queued_items = BaseMath::Maximum<uint64>(_NumberOfQueuedItems.Load(), 1);
+			new_number_of_queued_items = old_number_of_queued_items - 1;
+		} while (!_NumberOfQueuedItems.CompareExchangeWeak(old_number_of_queued_items, new_number_of_queued_items));
+
+		ASSERT(_NumberOfQueuedItems.Load() < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.Load(), SIZE);
 #endif
 
 		//Return the value.
@@ -300,29 +345,32 @@ public:
 	/*
 	*	Pushes a new value into the queue.
 	*/
-	FORCE_INLINE void Push(const TYPE& new_value) NOEXCEPT
+	FORCE_INLINE void Push(const TYPE &new_value) NOEXCEPT
 	{
 		uint64 old_write_index;
 		uint64 new_write_index;
 
 		do
 		{
-			old_write_index = _WriteIndex.load(std::memory_order_acquire);
-
-			new_write_index = old_write_index < (SIZE - 1) ? old_write_index + 1 : 0;
-		} while (!_WriteIndex.compare_exchange_weak(old_write_index, new_write_index, std::memory_order_release));
+			old_write_index = _WriteIndex.Load();
+			new_write_index = (old_write_index + 1) & (SIZE - 1);
+		} while (!_WriteIndex.CompareExchangeWeak(old_write_index, new_write_index));
 
 		_Queue[old_write_index] = new_value;
 
-		uint64 expected_last_index{ new_write_index > 0 ? new_write_index - 1 : SIZE - 1 };
-		uint64 new_last_index{ expected_last_index < (SIZE - 1) ? expected_last_index + 1 : 0 };
-
-		while (!_LastIndex.compare_exchange_weak(expected_last_index, new_last_index, std::memory_order_release));
+		while (!_LastIndex.CompareExchangeWeak(old_write_index, new_write_index));
 
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
-		++_NumberOfQueuedItems;
+		uint64 old_number_of_queued_items;
+		uint64 new_number_of_queued_items;
 
-		ASSERT(_NumberOfQueuedItems < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.load(), SIZE);
+		do
+		{
+			old_number_of_queued_items = _NumberOfQueuedItems.Load();
+			new_number_of_queued_items = old_number_of_queued_items + 1;
+		} while (!_NumberOfQueuedItems.CompareExchangeWeak(old_number_of_queued_items, new_number_of_queued_items));
+
+		ASSERT(_NumberOfQueuedItems.Load() < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.Load(), SIZE);
 #endif
 	}
 
@@ -337,19 +385,28 @@ public:
 
 		do
 		{
-			old_first_index = _FirstIndex.load(std::memory_order_acquire);
-			old_last_index = _LastIndex.load(std::memory_order_acquire);
+			old_first_index = _FirstIndex.Load();
+			old_last_index = _LastIndex.Load();
 
 			if (old_first_index == old_last_index)
 			{
 				return nullptr;
 			}
 
-			new_first_index = old_first_index < (SIZE - 1) ? old_first_index + 1 : 0;
-		} while (!_FirstIndex.compare_exchange_weak(old_first_index, new_first_index, std::memory_order_release));
+			new_first_index = (old_first_index + 1) & (SIZE - 1);
+		} while (!_FirstIndex.CompareExchangeWeak(old_first_index, new_first_index));
 
 #if VALIDATE_NUMBER_OF_QUEUED_ITEMS
-		--_NumberOfQueuedItems;
+		uint64 old_number_of_queued_items;
+		uint64 new_number_of_queued_items;
+
+		do
+		{
+			old_number_of_queued_items = BaseMath::Maximum<uint64>(_NumberOfQueuedItems.Load(), 1);
+			new_number_of_queued_items = old_number_of_queued_items - 1;
+		} while (!_NumberOfQueuedItems.CompareExchangeWeak(old_number_of_queued_items, new_number_of_queued_items));
+
+		ASSERT(_NumberOfQueuedItems.Load() < SIZE, "Number of queued items is too high! Number of queued items: %llu, SIZE: %llu.", _NumberOfQueuedItems.Load(), SIZE);
 #endif
 
 		return &_Queue[old_first_index];
