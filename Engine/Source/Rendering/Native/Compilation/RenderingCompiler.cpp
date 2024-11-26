@@ -436,6 +436,19 @@ void FindShaderFunctionLibraryFilePath(const char *const RESTRICT name, DynamicS
 		}
 	}
 
+	//Try the game directory.
+	{
+		char buffer[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(buffer, "%s\\Shader Function Libraries\\%s.shader_function_library", GAME_RENDERING_DIRECTORY_PATH, name);
+
+		if (File::Exists(buffer))
+		{
+			*file_path = buffer;
+
+			return;
+		}
+	}
+
 	ASSERT(false, "Couldn't find shader function library file!");
 }
 
