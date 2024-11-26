@@ -135,6 +135,12 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	//Pre-initialize the sub rendering system.
 	_SubRenderingSystem->PreInitialize();
 
+	//Call the pre-render initialize function.
+	if (configuration._PreRenderInitializeFunction)
+	{
+		configuration._PreRenderInitializeFunction();
+	}
+
 	//Initialize the render input manager.
 	_RenderInputManager.Initialize();
 

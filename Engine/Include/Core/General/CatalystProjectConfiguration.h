@@ -131,6 +131,12 @@ class CatalystProjectRenderingConfiguration final
 public:
 
 	/*
+	*	The pre-render initialize function.
+	*	Use this if a game needs to register render things before rendering is initialized.
+	*/
+	void(*_PreRenderInitializeFunction)(){ nullptr };
+
+	/*
 	*	Determines the sub rendering system.
 	*/
 	OptionalWithDefault<SubRenderingSystem> _SubRenderingSystem{ SubRenderingSystem::VULKAN };

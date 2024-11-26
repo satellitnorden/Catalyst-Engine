@@ -381,6 +381,19 @@ void FindUniformBufferDefinitionFilePath(const char *const RESTRICT name, Dynami
 		}
 	}
 
+	//Try the game directory.
+	{
+		char buffer[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(buffer, "%s\\Uniform Buffer Definitions\\%s.uniform_buffer_definition", GAME_RENDERING_DIRECTORY_PATH, name);
+
+		if (File::Exists(buffer))
+		{
+			*file_path = buffer;
+
+			return;
+		}
+	}
+
 	ASSERT(false, "Couldn't find uniform buffer definition file!");
 }
 
