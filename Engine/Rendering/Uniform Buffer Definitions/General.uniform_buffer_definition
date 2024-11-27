@@ -6,4 +6,6 @@ UniformBuffer(General)
     vec2 INVERSE_HALF_MAIN_RESOLUTION;
 
     uint FRAME;
+
+    float VIEW_DISTANCE;
 };

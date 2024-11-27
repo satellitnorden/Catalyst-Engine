@@ -21,6 +21,7 @@
 #define UINT8_MAXIMUM (0xff)
 #define UINT16_MAXIMUM (0xffff)
 #define UINT16_RECIPROCAL (1.525902189669642e-5f)
+#define UINT32_MAXIMUM (0xffffffff)
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
@@ -202,6 +203,7 @@ layout (std140, set = 1, binding = 0) uniform General
 	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
 	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
 	layout (offset = 32) uint FRAME;
+	layout (offset = 36) float VIEW_DISTANCE;
 };
 
 layout (set = 1, binding = 1) uniform sampler2D InputRenderTarget;

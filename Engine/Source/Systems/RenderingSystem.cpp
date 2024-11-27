@@ -503,6 +503,7 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 	_GeneralUniformData._HalfResolution = Vector2<float32>(static_cast<float32>(GetScaledResolution(1)._Width), static_cast<float32>(GetScaledResolution(1)._Height));
 	_GeneralUniformData._InverseHalfResolution = Vector2<float32>(1.0f / _GeneralUniformData._HalfResolution._X, 1.0f / _GeneralUniformData._HalfResolution._Y);
 	_GeneralUniformData._FrameIndex = static_cast<uint32>(CatalystEngineSystem::Instance->GetTotalFrames());
+	_GeneralUniformData._ViewDistance = _Configuration._ViewDistance;
 
 	//Tell the sub rendering to begin the frame.
 	{

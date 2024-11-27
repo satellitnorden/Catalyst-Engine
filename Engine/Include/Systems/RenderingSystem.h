@@ -670,6 +670,9 @@ private:
 		//The frame index.
 		uint32 _FrameIndex;
 
+		//The view distance.
+		float32 _ViewDistance;
+
 	};
 
 	/*

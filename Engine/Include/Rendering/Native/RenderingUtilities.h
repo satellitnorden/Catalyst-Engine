@@ -191,8 +191,8 @@ public:
 		while (current_width > LOWEST_MIP_RESOLUTION && current_height > LOWEST_MIP_RESOLUTION)
 		{
 			//Cache stuff.
-			const uint32 new_width{ current_width >> 1 };
-			const uint32 new_height{ current_height >> 1 };
+			const uint32 new_width{ current_width / 2 };
+			const uint32 new_height{ current_height / 2 };
 
 			//Initialize this mip level.
 			output_textures->Emplace();
