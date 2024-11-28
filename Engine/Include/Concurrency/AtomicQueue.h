@@ -1,5 +1,110 @@
 #pragma once
 
+//Constants.
+#define SAFE_ATOMIC_QUEUE (1) //There seems to be some problems with the default atomic queue, so this implements a slower, but more threadsafe atomic queue.
+
+#if SAFE_ATOMIC_QUEUE
+//Core.
+#include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
+
+//Concurrency.
+#include <Concurrency/ScopedLock.h>
+#include <Concurrency/Spinlock.h>
+
+//Enumeration for all atomic queue modes.
+enum class AtomicQueueMode : uint8
+{
+	SINGLE,
+	MULTIPLE
+};
+
+/*
+*	Varied producer - varied consumers queue - there are overloads for all combinations.
+*	WILL overwrite values once the circular buffer has reached the beginning again.
+*	This is to avoid reallocations when pushing/popping, so the atomic queue MUST be initialized with large enough storage to ensure that this never happens.
+*
+*	TYPE should preferably be a small/builtin type that is easily copied.
+*	SIZE MUST be a power of two.
+*/
+template <typename TYPE, uint64 SIZE, AtomicQueueMode PRODUCER_MODE, AtomicQueueMode CONSUMER_MODE>
+class AtomicQueue final
+{
+
+public:
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE AtomicQueue() NOEXCEPT
+	{
+		//Resize the queue.
+		_Queue.Resize<true>(SIZE);
+	}
+
+	/*
+	*	Pushes a new value into the queue.
+	*/
+	FORCE_INLINE void Push(const TYPE &new_value) NOEXCEPT
+	{
+		//Lock the queue.
+		SCOPED_LOCK(_Lock);
+
+		//Add the item.
+		_Queue[_LastIndex] = new_value;
+
+		//Increment the last index.
+		_LastIndex = (_LastIndex + 1) % _Queue.Size();
+
+		//Increment the number of items in the queue.
+		++_NumberOfItemsInQueue;
+
+		ASSERT(_NumberOfItemsInQueue <= SIZE, "Overflow!");
+	}
+
+	/*
+	*	Pops a value from the queue, if the queue is not empty. If the pop was succesful, a pointer to the popped value is returned, otherwise nullptr.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD TYPE* const RESTRICT Pop() NOEXCEPT
+	{
+		//Lock the queue.
+		SCOPED_LOCK(_Lock);
+
+		//If the first and last index is the same, return nullptr.
+		if (_FirstIndex == _LastIndex)
+		{
+			return nullptr;
+		}
+
+		//Otherwise, retrieve the correct item.
+		const uint64 item_index{ _FirstIndex };
+
+		_FirstIndex = (_FirstIndex + 1) % _Queue.Size();
+
+		--_NumberOfItemsInQueue;
+
+		return &_Queue[item_index];
+	}
+
+private:
+
+	//The lock.
+	Spinlock _Lock;
+
+	//The underlying queue.
+	DynamicArray<TYPE> _Queue;
+
+	//The first index.
+	uint64 _FirstIndex{ 0 };
+
+	//The last index.
+	uint64 _LastIndex{ 0 };
+
+	//The number of items in the queue.
+	uint64 _NumberOfItemsInQueue{ 0 };
+
+};
+#else
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
@@ -10,7 +115,6 @@
 //Math.
 #include <Math/Core/BaseMath.h>
 
-//Constants.
 #if defined(CATALYST_CONFIGURATION_FINAL)
 	#define VALIDATE_NUMBER_OF_QUEUED_ITEMS (0)
 #else
@@ -432,3 +536,4 @@ private:
 #endif
 
 };
+#endif

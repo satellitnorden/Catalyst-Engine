@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/Containers/StaticArray.h>
 #include <Core/General/CatalystProjectConfiguration.h>
 
 //Concurrency.
