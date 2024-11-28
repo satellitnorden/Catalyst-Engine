@@ -404,6 +404,6 @@ void main()
     {
         final_screen_coordinate.x += final_offset * step_length;
     }
-    vec3 final_color = texture(InputRenderTarget, final_screen_coordinate).rgb;
-	OutputRenderTarget = vec4(final_color,1.0f);
+    vec4 final_color = texture(InputRenderTarget, final_screen_coordinate);
+	OutputRenderTarget = final_color;
 }

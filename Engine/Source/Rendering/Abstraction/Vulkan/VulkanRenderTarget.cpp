@@ -34,7 +34,7 @@ void VulkanRenderTarget::Initialize(const VkExtent2D extent, const VkFormat form
 	image_info.arrayLayers = 1;
 	image_info.samples = _SampleCount;
 	image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
-	image_info.usage = VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+	image_info.usage = VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | (_SampleCount == VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT ? VK_IMAGE_USAGE_STORAGE_BIT : 0);
 
 	VmaAllocationCreateInfo allocation_info = { };
 

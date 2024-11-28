@@ -33,6 +33,8 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 
 	VulkanPlatform::RequiredLogicalDeviceExtensions(&extensions);
 
+	extensions.Emplace(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+
 	if (VulkanInterface::Instance->GetPhysicalDevice().HasMultiviewSupport())
 	{
 		extensions.Emplace(VK_KHR_MULTIVIEW_EXTENSION_NAME);

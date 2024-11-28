@@ -312,10 +312,8 @@ void CommandBuffer::ClearColorImage(const OpaqueHandle image) NOEXCEPT
 
 	//Actually clear the image.
 	{
-		VkClearDepthStencilValue clear_value;
-
-		clear_value.depth = 0.0f;
-		clear_value.stencil = 0;
+		VkClearColorValue clear_value;
+		memset(&clear_value, 0, sizeof(VkClearColorValue));
 
 		VkImageSubresourceRange range;
 
@@ -325,7 +323,7 @@ void CommandBuffer::ClearColorImage(const OpaqueHandle image) NOEXCEPT
 		range.baseArrayLayer = 0;
 		range.layerCount = 1;
 
-		vkCmdClearDepthStencilImage
+		vkCmdClearColorImage
 		(
 			command_buffer,
 			_image->GetImage(),

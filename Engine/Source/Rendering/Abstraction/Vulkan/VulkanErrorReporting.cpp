@@ -64,7 +64,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanErrorReporting::ErrorCallback(	VkDebugUtils
 		ASSERT(!message.Find("Validation Error:"), "Validation error detected!");
 		ASSERT(!message.Find("Validation Performance Warning:"), "Validation performance warning detected!");
 	}
-#endif 
+#endif
 
 	return VK_FALSE;
 }

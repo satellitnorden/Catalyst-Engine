@@ -243,8 +243,8 @@ Fragment
     }
 
     //Sample the final color.
-    vec3 final_color = texture(InputRenderTarget, final_screen_coordinate).rgb;
+    vec4 final_color = texture(InputRenderTarget, final_screen_coordinate);
 
     //Output the fragment.
-    OutputFragment(OutputRenderTarget, vec4(final_color, 1.0f));
+    OutputFragment(OutputRenderTarget, final_color);
 }
