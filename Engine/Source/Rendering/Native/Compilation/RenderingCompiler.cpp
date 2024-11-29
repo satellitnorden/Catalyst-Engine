@@ -1412,6 +1412,28 @@ void GenerateFragmentShader
 			//Cache the line.
 			std::string &line{ glsl_lines[i] };
 
+			//Replace "DerivativeX" with "dFdx".
+			{
+				size_t position{ line.find("DerivativeX") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("DerivativeX"), "dFdx");
+					position = line.find("DerivativeX");
+				}
+			}
+
+			//Replace "DerivativeY" with "dFdy".
+			{
+				size_t position{ line.find("DerivativeY") };
+
+				while (position != std::string::npos)
+				{
+					line.replace(position, strlen("DerivativeY"), "dFdy");
+					position = line.find("DerivativeY");
+				}
+			}
+
 			//Replace "FRAGMENT_COORDINATE" with "gl_FragCoord".
 			{
 				size_t position{ line.find("FRAGMENT_COORDINATE") };

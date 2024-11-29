@@ -157,15 +157,19 @@ NO_DISCARD Asset *const RESTRICT ModelAssetCompiler::Load(const LoadContext &loa
 */
 void ModelAssetCompiler::PostLoad() NOEXCEPT
 {
-	while (PostLinkData *const RESTRICT post_link_data{ _PostLinkQueue.Pop() })
+	Optional<PostLinkData> post_link_data{ _PostLinkQueue.Pop() };
+
+	while (post_link_data.Valid())
 	{
 		for (uint64 mesh_index{ 0 }; mesh_index < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++mesh_index)
 		{
-			if (post_link_data->_DefaultMaterials[mesh_index])
+			if (post_link_data.Get()._DefaultMaterials[mesh_index])
 			{
-				post_link_data->_Asset->_DefaultMaterials[mesh_index] = ContentSystem::Instance->GetAsset<MaterialAsset>(post_link_data->_DefaultMaterials[mesh_index]);
+				post_link_data.Get()._Asset->_DefaultMaterials[mesh_index] = ContentSystem::Instance->GetAsset<MaterialAsset>(post_link_data.Get()._DefaultMaterials[mesh_index]);
 			}
 		}
+
+		post_link_data = _PostLinkQueue.Pop();
 	}
 }
 

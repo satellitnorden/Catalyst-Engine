@@ -744,83 +744,110 @@ void SoundSystem::Mix() NOEXCEPT
 		const SoundFormat sound_format{ GetSoundFormat() };
 
 		//Remove all queued master channel sound mix components.
-		while (uint64 *const RESTRICT identifier{ SoundSystemData::_QueuedRemoveMasterChannelSoundMixComponents.Pop() })
 		{
-			for (uint8 channel_index{ 0 }; channel_index < 2; ++channel_index)
-			{
-				for (uint64 component_index{ 0 }, size{ _MasterChannelMixComponents[channel_index].Size() }; component_index < size; ++component_index)
-				{
-					if (_MasterChannelMixComponents[channel_index][component_index]._Identifier == *identifier)
-					{
-						_MasterChannelMixComponents[channel_index].EraseAt<false>(component_index);
+			Optional<uint64> identifier{ SoundSystemData::_QueuedRemoveMasterChannelSoundMixComponents.Pop() };
 
-						break;
+			while (identifier.Valid())
+			{
+				for (uint8 channel_index{ 0 }; channel_index < 2; ++channel_index)
+				{
+					for (uint64 component_index{ 0 }, size{ _MasterChannelMixComponents[channel_index].Size() }; component_index < size; ++component_index)
+					{
+						if (_MasterChannelMixComponents[channel_index][component_index]._Identifier == identifier.Get())
+						{
+							_MasterChannelMixComponents[channel_index].EraseAt<false>(component_index);
+
+							break;
+						}
 					}
 				}
+
+				identifier = SoundSystemData::_QueuedRemoveMasterChannelSoundMixComponents.Pop();
 			}
 		}
 
 		//Add all queued master channel sound mix components.
-		while (SoundMixComponent *const RESTRICT component{ SoundSystemData::_QueuedAddMasterChannelSoundMixComponents.Pop() })
 		{
-			for (uint8 channel_index{ 0 }; channel_index < 2; ++channel_index)
+			Optional<SoundMixComponent> component{ SoundSystemData::_QueuedAddMasterChannelSoundMixComponents.Pop() };
+
+			while (component.Valid())
 			{
-				_MasterChannelMixComponents[channel_index].Emplace(*component);
+				for (uint8 channel_index{ 0 }; channel_index < 2; ++channel_index)
+				{
+					_MasterChannelMixComponents[channel_index].Emplace(component.Get());
+				}
+
+				component = SoundSystemData::_QueuedAddMasterChannelSoundMixComponents.Pop();
 			}
 		}
 
 		//Add all queued play sound requests to the playing sounds.
-		while (QueuedPlaySoundRequest *const RESTRICT queued_play_sound_request{ SoundSystemData::_QueuedPlaySoundRequests.Pop() })
 		{
-			PlayingSound new_playing_sound;
+			Optional<QueuedPlaySoundRequest> queued_play_sound_request{ SoundSystemData::_QueuedPlaySoundRequests.Pop() };
 
-			new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound_request->_SoundResource);
-			new_playing_sound._SoundResourcePlayer.SetGain(queued_play_sound_request->_Gain);
-			new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request->_Pan);
-			new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request->_SoundResource->_SampleRate / GetSampleRate() * queued_play_sound_request->_PlaybackRate);
-			new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request->_IsLooping);
-
-			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+			while (queued_play_sound_request.Valid())
 			{
-				new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).SetSampleRate(GetSampleRate());
-				new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).SetStageValues(	queued_play_sound_request->_AttackTime,
-																										queued_play_sound_request->_DecayTime,
-																										queued_play_sound_request->_SustainGain,
-																										queued_play_sound_request->_ReleaseTime);
-				new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).EnterAttackStage();
-			}
-			
-			new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request->_StartTime * queued_play_sound_request->_SoundResource->_SampleRate));
-			new_playing_sound._SoundInstanceHandle = queued_play_sound_request->_SoundInstanceHandle;
-			new_playing_sound._SoundStoppedCallback = queued_play_sound_request->_SoundStoppedCallback;
-			new_playing_sound._AudioTimeTracker = queued_play_sound_request->_AudioTimeTracker;
+				PlayingSound new_playing_sound;
 
-			if (new_playing_sound._AudioTimeTracker)
-			{
-				new_playing_sound._AudioTimeTracker->Store(static_cast<float64>(queued_play_sound_request->_StartTime));
-			}
+				new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound_request.Get()._SoundResource);
+				new_playing_sound._SoundResourcePlayer.SetGain(queued_play_sound_request.Get()._Gain);
+				new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request.Get()._Pan);
+				new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request.Get()._SoundResource->_SampleRate / GetSampleRate() * queued_play_sound_request.Get()._PlaybackRate);
+				new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request.Get()._IsLooping);
 
-			SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
+				for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+				{
+					new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).SetSampleRate(GetSampleRate());
+					new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).SetStageValues
+					(
+						queued_play_sound_request.Get()._AttackTime,
+						queued_play_sound_request.Get()._DecayTime,
+						queued_play_sound_request.Get()._SustainGain,
+						queued_play_sound_request.Get()._ReleaseTime
+					);
+					new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).EnterAttackStage();
+				}
 
-			ASSERT(SoundSystemData::_PlayingSounds.Capacity() == SoundSystemConstants::MAXIMUM_NUMBER_OF_PLAYING_SOUNDS, "Growing dynamic array in SoundSystem::Mix(), this is bad!");
-		
-			if (queued_play_sound_request->_SoundStartedCallback)
-			{
-				queued_play_sound_request->_SoundStartedCallback(queued_play_sound_request->_SoundInstanceHandle);
+				new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request.Get()._StartTime * queued_play_sound_request.Get()._SoundResource->_SampleRate));
+				new_playing_sound._SoundInstanceHandle = queued_play_sound_request.Get()._SoundInstanceHandle;
+				new_playing_sound._SoundStoppedCallback = queued_play_sound_request.Get()._SoundStoppedCallback;
+				new_playing_sound._AudioTimeTracker = queued_play_sound_request.Get()._AudioTimeTracker;
+
+				if (new_playing_sound._AudioTimeTracker)
+				{
+					new_playing_sound._AudioTimeTracker->Store(static_cast<float64>(queued_play_sound_request.Get()._StartTime));
+				}
+
+				SoundSystemData::_PlayingSounds.Emplace(new_playing_sound);
+
+				ASSERT(SoundSystemData::_PlayingSounds.Capacity() == SoundSystemConstants::MAXIMUM_NUMBER_OF_PLAYING_SOUNDS, "Growing dynamic array in SoundSystem::Mix(), this is bad!");
+
+				if (queued_play_sound_request.Get()._SoundStartedCallback)
+				{
+					queued_play_sound_request.Get()._SoundStartedCallback(queued_play_sound_request.Get()._SoundInstanceHandle);
+				}
+
+				queued_play_sound_request = SoundSystemData::_QueuedPlaySoundRequests.Pop();
 			}
 		}
 
 		//Stop all queued stop sound requests.
-		while (QueuedStopSoundRequest *const RESTRICT queued_stop_sound_request{ SoundSystemData::_QueuedStopSoundRequests.Pop() })
 		{
-			for (uint64 i{ 0 }, size{ SoundSystemData::_PlayingSounds.Size() }; i < size; ++i)
-			{
-				if (SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle == queued_stop_sound_request->_SoundInstanceHandle)
-				{
-					SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.Stop();
+			Optional<QueuedStopSoundRequest> queued_stop_sound_request{ SoundSystemData::_QueuedStopSoundRequests.Pop() };
 
-					break;
+			while (queued_stop_sound_request.Valid())
+			{
+				for (uint64 i{ 0 }, size{ SoundSystemData::_PlayingSounds.Size() }; i < size; ++i)
+				{
+					if (SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle == queued_stop_sound_request.Get()._SoundInstanceHandle)
+					{
+						SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.Stop();
+
+						break;
+					}
 				}
+
+				queued_stop_sound_request = SoundSystemData::_QueuedStopSoundRequests.Pop();
 			}
 		}
 

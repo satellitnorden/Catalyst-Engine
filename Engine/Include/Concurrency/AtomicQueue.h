@@ -7,6 +7,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/General/Optional.h>
 
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
@@ -63,9 +64,9 @@ public:
 	}
 
 	/*
-	*	Pops a value from the queue, if the queue is not empty. If the pop was succesful, a pointer to the popped value is returned, otherwise nullptr.
+	*	Pops a value from the queue, if the queue is not empty. 
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD TYPE* const RESTRICT Pop() NOEXCEPT
+	FORCE_INLINE NO_DISCARD Optional<TYPE> Pop() NOEXCEPT
 	{
 		//Lock the queue.
 		SCOPED_LOCK(_Lock);
@@ -73,7 +74,7 @@ public:
 		//If the first and last index is the same, return nullptr.
 		if (_FirstIndex == _LastIndex)
 		{
-			return nullptr;
+			return Optional<TYPE>();
 		}
 
 		//Otherwise, retrieve the correct item.
@@ -83,7 +84,7 @@ public:
 
 		--_NumberOfItemsInQueue;
 
-		return &_Queue[item_index];
+		return Optional<TYPE>(_Queue[item_index]);
 	}
 
 private:

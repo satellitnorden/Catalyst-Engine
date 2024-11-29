@@ -197,42 +197,60 @@ void UserInterfaceSystem::DestroyUserInterfacePrimitive(UserInterfacePrimitive *
 void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
 {
 	//Process the destruction queue.
-	while (UserInterfaceScene *const RESTRICT *const RESTRICT scene{ _DestructionQueue.Pop() })
 	{
-		//Deactivate this scene if is active.
-		if ((*scene)->GetIsActive())
+		Optional<UserInterfaceScene *RESTRICT> scene{ _DestructionQueue.Pop() };
+
+		while (scene.Valid())
 		{
-			(*scene)->OnDeactivated();
+			//Deactivate this scene if is active.
+			if (scene.Get()->GetIsActive())
+			{
+				scene.Get()->OnDeactivated();
 
-			_ActiveUserInterfaceScenes.Erase<false>(*scene);
+				_ActiveUserInterfaceScenes.Erase<false>(scene.Get());
 
-			(*scene)->SetIsActive(false);
+				scene.Get()->SetIsActive(false);
+			}
+
+			scene = _DestructionQueue.Pop();
 		}
 	}
 
 	//Process the deactivation queue.
-	while (UserInterfaceScene *const RESTRICT *const RESTRICT scene{ _DeactivationQueue.Pop() })
 	{
-		if ((*scene)->GetIsActive())
+		Optional<UserInterfaceScene *RESTRICT> scene{ _DeactivationQueue.Pop() };
+
+		while (scene.Valid())
 		{
-			(*scene)->OnDeactivated();
+			if (scene.Get()->GetIsActive())
+			{
+				scene.Get()->OnDeactivated();
 
-			_ActiveUserInterfaceScenes.Erase<false>(*scene);
+				_ActiveUserInterfaceScenes.Erase<false>(scene.Get());
 
-			(*scene)->SetIsActive(false);
+				scene.Get()->SetIsActive(false);
+			}
+
+			scene = _DeactivationQueue.Pop();
 		}
 	}
 
 	//Process the activation queue.
-	while (UserInterfaceScene *const RESTRICT *const RESTRICT scene{ _ActivationQueue.Pop() })
 	{
-		if (!(*scene)->GetIsActive())
+		Optional<UserInterfaceScene *RESTRICT> scene{ _ActivationQueue.Pop() };
+
+		while (scene.Valid())
 		{
-			_ActiveUserInterfaceScenes.Emplace(*scene);
+			if (!scene.Get()->GetIsActive())
+			{
+				_ActiveUserInterfaceScenes.Emplace(scene.Get());
 
-			(*scene)->OnActivated();
+				scene.Get()->OnActivated();
 
-			(*scene)->SetIsActive(true);
+				scene.Get()->SetIsActive(true);
+			}
+
+			scene = _ActivationQueue.Pop();
 		}
 	}
 

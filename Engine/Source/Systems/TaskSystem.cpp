@@ -183,9 +183,11 @@ void TaskSystem::DoWork(const Task::Priority priority) NOEXCEPT
 	//Try to execute higher priority tasks first.
 	for (int16 i{ UNDERLYING(Task::Priority::NUMBER_OF_TASK_PRIORITIES) - 1 }; i >= UNDERLYING(priority); --i)
 	{
-		if (Task *const RESTRICT *const RESTRICT new_task{ _TaskQueues[i].Pop() })
+		Optional<Task *RESTRICT> new_task{ _TaskQueues[i].Pop() };
+
+		if (new_task.Valid())
 		{
-			(*new_task)->Execute();
+			new_task.Get()->Execute();
 			
 			{
 				uint64 old_tasks_in_queue;
@@ -233,9 +235,11 @@ void TaskSystem::ExecuteTasks() NOEXCEPT
 
 		for (int16 i{ UNDERLYING(Task::Priority::NUMBER_OF_TASK_PRIORITIES) - 1 }; i >= 0; --i)
 		{
-			if (Task *const RESTRICT *const RESTRICT new_task{ _TaskQueues[i].Pop() })
+			Optional<Task *RESTRICT> new_task{ _TaskQueues[i].Pop() };
+
+			if (new_task.Valid())
 			{
-				(*new_task)->Execute();
+				new_task.Get()->Execute();
 				
 				{
 					uint64 old_tasks_in_queue;

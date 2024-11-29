@@ -204,9 +204,13 @@ NO_DISCARD Asset *const RESTRICT MaterialAssetCompiler::Load(const LoadContext &
 */
 void MaterialAssetCompiler::PostLoad() NOEXCEPT
 {
-	while (PostLinkData *const RESTRICT post_link_data{ _PostLinkQueue.Pop() })
+	Optional<PostLinkData> post_link_data{ _PostLinkQueue.Pop() };
+
+	while (post_link_data.Valid())
 	{
-		*post_link_data->_Asset = ContentSystem::Instance->GetAsset<Texture2DAsset>(post_link_data->_Identifier);
+		*post_link_data.Get()._Asset = ContentSystem::Instance->GetAsset<Texture2DAsset>(post_link_data.Get()._Identifier);
+
+		post_link_data = _PostLinkQueue.Pop();
 	}
 }
 

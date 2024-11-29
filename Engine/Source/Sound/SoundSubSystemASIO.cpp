@@ -406,9 +406,15 @@ void SoundSubSystemASIO::SequentialUpdate() NOEXCEPT
 		}
 
 		//Add any pending opened input streams.
-		while (OpenedInputStream *const RESTRICT* const RESTRICT opened_input_stream{ _PendingOpenedInputStreams.Pop() })
 		{
-			_OpenedInputStreams.Emplace(*opened_input_stream);
+			Optional<OpenedInputStream *RESTRICT> opened_input_stream{ _PendingOpenedInputStreams.Pop() };
+
+			while (opened_input_stream.Valid())
+			{
+				_OpenedInputStreams.Emplace(opened_input_stream.Get());
+
+				opened_input_stream = _PendingOpenedInputStreams.Pop();
+			}
 		}
 
 		//Start the stream again!

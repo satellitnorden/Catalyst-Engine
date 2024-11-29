@@ -7,15 +7,27 @@
 void EntityLinks::Update() NOEXCEPT
 {
 	//Process the remove links queue.
-	while (RemoveLinksRequest *const RESTRICT request{ _RemoveLinksQueue.Pop() })
 	{
-		RemoveLinksInternal(request->_Entity);
+		Optional<RemoveLinksRequest> request{ _RemoveLinksQueue.Pop() };
+
+		while (request.Valid())
+		{
+			RemoveLinksInternal(request.Get()._Entity);
+
+			request = _RemoveLinksQueue.Pop();
+		}
 	}
 
 	//Process the add link queue.
-	while (AddLinkRequest *const RESTRICT request{ _AddLinkQueue.Pop() })
 	{
-		AddLinkInternal(request->_From, request->_To);
+		Optional<AddLinkRequest> request{ _AddLinkQueue.Pop() };
+
+		while (request.Valid())
+		{
+			AddLinkInternal(request.Get()._From, request.Get()._To);
+
+			request = _AddLinkQueue.Pop();
+		}
 	}
 }
 

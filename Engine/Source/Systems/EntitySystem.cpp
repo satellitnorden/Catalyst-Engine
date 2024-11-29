@@ -282,115 +282,121 @@ void EntitySystem::ProcessCreationQueue() NOEXCEPT
 	}
 
 	//Check the creation queue.
-	while (EntityCreationQueueItem *const RESTRICT queue_item{ _CreationQueue.Pop() })
 	{
-		//Decrement the number of items in the creation queue.
-		_NumberOfItemsInCreationQueue.FetchSub(1);
+		Optional<EntityCreationQueueItem> queue_item{ _CreationQueue.Pop() };
 
-		//Check if any component needs pre-processing.
-		bool any_component_needs_pre_processing{ false };
-
-		//Notify all components that an instance is about to be created.
+		while (queue_item.Valid())
 		{
-			ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
+			//Decrement the number of items in the creation queue.
+			_NumberOfItemsInCreationQueue.FetchSub(1);
 
-			do
+			//Check if any component needs pre-processing.
+			bool any_component_needs_pre_processing{ false };
+
+			//Notify all components that an instance is about to be created.
 			{
-				any_component_needs_pre_processing = Components::ShouldPreProcess(component_configuration->_Component);
-				component_configuration = component_configuration->_NextComponentInitializationData;
-			} while (component_configuration && !any_component_needs_pre_processing);
-		}
+				ComponentInitializationData *RESTRICT component_configuration{ queue_item.Get()._ComponentConfigurations };
 
-		//If any component needs pre-processing, launch a task for it.
-		if (any_component_needs_pre_processing)
-		{
-			//Set up the queue item.
-			EntityPreProcessingQueueItem *const RESTRICT pre_processing_queue_item{ static_cast<EntityPreProcessingQueueItem *const RESTRICT>(_PreProcessingAllocator.Allocate()) };
-
-			pre_processing_queue_item->_CreationQueueItem = *queue_item;
-			pre_processing_queue_item->_Task._Function = [](void *const RESTRICT arguments)
-			{
-				EntityCreationQueueItem *const RESTRICT queue_item{ static_cast<EntityCreationQueueItem *const RESTRICT>(arguments) };
-
+				do
 				{
-					ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
+					any_component_needs_pre_processing = Components::ShouldPreProcess(component_configuration->_Component);
+					component_configuration = component_configuration->_NextComponentInitializationData;
+				} while (component_configuration && !any_component_needs_pre_processing);
+			}
+
+			//If any component needs pre-processing, launch a task for it.
+			if (any_component_needs_pre_processing)
+			{
+				//Set up the queue item.
+				EntityPreProcessingQueueItem *const RESTRICT pre_processing_queue_item{ static_cast<EntityPreProcessingQueueItem *const RESTRICT>(_PreProcessingAllocator.Allocate()) };
+
+				pre_processing_queue_item->_CreationQueueItem = queue_item.Get();
+				pre_processing_queue_item->_Task._Function = [](void *const RESTRICT arguments)
+				{
+					EntityCreationQueueItem *const RESTRICT queue_item{ static_cast<EntityCreationQueueItem *const RESTRICT>(arguments) };
+
+					{
+						ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
+
+						do
+						{
+							if (Components::ShouldPreProcess(component_configuration->_Component))
+							{
+								Components::PreProcess(component_configuration->_Component, component_configuration);
+							}
+							component_configuration = component_configuration->_NextComponentInitializationData;
+						} while (component_configuration);
+					}
+				};
+				pre_processing_queue_item->_Task._Arguments = &pre_processing_queue_item->_CreationQueueItem;
+				pre_processing_queue_item->_Task._ExecutableOnSameThread = false;
+
+				//Execute the task!
+				TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &pre_processing_queue_item->_Task);
+
+				//Add it to the queue.
+				_PreProcessingQueue.Emplace(pre_processing_queue_item);
+			}
+
+			//Otherwise, create the entity as usual!
+			else
+			{
+				//Notify all components that an instance is about to be created.
+				{
+					ComponentInitializationData *RESTRICT component_configuration{ queue_item.Get()._ComponentConfigurations };
 
 					do
 					{
-						if (Components::ShouldPreProcess(component_configuration->_Component))
-						{
-							Components::PreProcess(component_configuration->_Component, component_configuration);
-						}
+						component_configuration->_Component->PreCreateInstance(queue_item.Get()._Entity);
 						component_configuration = component_configuration->_NextComponentInitializationData;
 					} while (component_configuration);
 				}
-			};
-			pre_processing_queue_item->_Task._Arguments = &pre_processing_queue_item->_CreationQueueItem;
-			pre_processing_queue_item->_Task._ExecutableOnSameThread = false;
 
-			//Execute the task!
-			TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &pre_processing_queue_item->_Task);
-
-			//Add it to the queue.
-			_PreProcessingQueue.Emplace(pre_processing_queue_item);
-		}
-
-		//Otherwise, create the entity as usual!
-		else
-		{
-			//Notify all components that an instance is about to be created.
-			{
-				ComponentInitializationData* RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
-
-				do
+				//Create all instances.
 				{
-					component_configuration->_Component->PreCreateInstance(queue_item->_Entity);
-					component_configuration = component_configuration->_NextComponentInitializationData;
-				} while (component_configuration);
+					ComponentInitializationData *RESTRICT component_configuration{ queue_item.Get()._ComponentConfigurations };
+
+					do
+					{
+						Components::CreateInstance(component_configuration->_Component, queue_item.Get()._Entity, component_configuration);
+						component_configuration = component_configuration->_NextComponentInitializationData;
+					} while (component_configuration);
+				}
+
+				//Notify all components that all instances has been created.
+				{
+					ComponentInitializationData *RESTRICT component_configuration{ queue_item.Get()._ComponentConfigurations };
+
+					do
+					{
+						Components::PostCreateInstance(component_configuration->_Component, queue_item.Get()._Entity);
+						component_configuration = component_configuration->_NextComponentInitializationData;
+					} while (component_configuration);
+				}
+
+				//Free all initialization data.
+				{
+					ComponentInitializationData *RESTRICT component_configuration{ queue_item.Get()._ComponentConfigurations };
+
+					do
+					{
+						ComponentInitializationData *RESTRICT next_component_configuration{ component_configuration->_NextComponentInitializationData };
+						Components::FreeInitializationData(component_configuration->_Component, component_configuration);
+						component_configuration = next_component_configuration;
+					} while (component_configuration);
+				}
+
+				//This entity is now initialized. (:
+				SET_BIT(queue_item.Get()._Entity->_Flags, Entity::Flags::INITIALIZED);
 			}
 
-			//Create all instances.
+			//Break if we've run over time.
+			if (start_time.GetSecondsSince() >= EntitySystemConstants::MAXIMUM_CREATION_TIME)
 			{
-				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
-
-				do
-				{
-					Components::CreateInstance(component_configuration->_Component, queue_item->_Entity, component_configuration);
-					component_configuration = component_configuration->_NextComponentInitializationData;
-				} while (component_configuration);
+				break;
 			}
 
-			//Notify all components that all instances has been created.
-			{
-				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
-
-				do
-				{
-					Components::PostCreateInstance(component_configuration->_Component, queue_item->_Entity);
-					component_configuration = component_configuration->_NextComponentInitializationData;
-				} while (component_configuration);
-			}
-
-			//Free all initialization data.
-			{
-				ComponentInitializationData *RESTRICT component_configuration{ queue_item->_ComponentConfigurations };
-
-				do
-				{
-					ComponentInitializationData *RESTRICT next_component_configuration{ component_configuration->_NextComponentInitializationData };
-					Components::FreeInitializationData(component_configuration->_Component, component_configuration);
-					component_configuration = next_component_configuration;
-				} while (component_configuration);
-			}
-
-			//This entity is now initialized. (:
-			SET_BIT(queue_item->_Entity->_Flags, Entity::Flags::INITIALIZED);
-		}
-
-		//Break if we've run over time.
-		if (start_time.GetSecondsSince() >= EntitySystemConstants::MAXIMUM_CREATION_TIME)
-		{
-			break;
+			queue_item = _CreationQueue.Pop();
 		}
 	}
 }
@@ -407,12 +413,14 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 
 	while (start_time.GetSecondsSince() < EntitySystemConstants::MAXIMUM_DESTRUCTION_TIME)
 	{
-		if (EntityDestructionQueueItem *const RESTRICT queue_item{ _DestructionQueue.Pop() })
+		Optional<EntityDestructionQueueItem> queue_item{ _DestructionQueue.Pop() };
+
+		if (queue_item.Valid())
 		{
 			//Check if we have looped around.
-			if (looparound_entity != UINT64_MAXIMUM && queue_item->_Entity->_EntityIdentifier == looparound_entity)
+			if (looparound_entity != UINT64_MAXIMUM && queue_item.Get()._Entity->_EntityIdentifier == looparound_entity)
 			{
-				_DestructionQueue.Push(*queue_item);
+				_DestructionQueue.Push(queue_item.Get());
 
 				return;
 			}
@@ -422,14 +430,14 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 			*	Best we can do right now is just put it back into the queue at the end, and destroy it once initialized.
 			*	Set the "looparound" entity here, if it's not set.
 			*/
-			if (!TEST_BIT(queue_item->_Entity->_Flags, Entity::Flags::INITIALIZED))
+			if (!TEST_BIT(queue_item.Get()._Entity->_Flags, Entity::Flags::INITIALIZED))
 			{
 				if (looparound_entity == UINT64_MAXIMUM)
 				{
-					looparound_entity = queue_item->_Entity->_EntityIdentifier;
+					looparound_entity = queue_item.Get()._Entity->_EntityIdentifier;
 				}
 
-				_DestructionQueue.Push(*queue_item);
+				_DestructionQueue.Push(queue_item.Get());
 
 				continue;
 			}
@@ -440,9 +448,9 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 				//Cache the component.
 				Component *const RESTRICT component{ Components::At(component_index) };
 
-				if (component->Has(queue_item->_Entity))
+				if (component->Has(queue_item.Get()._Entity))
 				{
-					component->DestroyInstance(queue_item->_Entity);
+					component->DestroyInstance(queue_item.Get()._Entity);
 				}
 			}
 
@@ -450,21 +458,21 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 			{
 				SCOPED_LOCK(_EntityIdentifierLock);
 
-				_EntityIdentifierFreeList.Emplace(queue_item->_Entity->_EntityIdentifier);
+				_EntityIdentifierFreeList.Emplace(queue_item.Get()._Entity->_EntityIdentifier);
 			}
 
 			//Free the memory for this entity.
 			{
 				SCOPED_LOCK(_EntityAllocatorLock);
 
-				_EntityAllocator.Free(queue_item->_Entity);
-				_Entities.Erase<false>(queue_item->_Entity);
+				_EntityAllocator.Free(queue_item.Get()._Entity);
+				_Entities.Erase<false>(queue_item.Get()._Entity);
 			}
 
 			//Remove the links for this entity as well.
-			if (_EntityLinks.HasLinks(queue_item->_Entity))
+			if (_EntityLinks.HasLinks(queue_item.Get()._Entity))
 			{
-				_EntityLinks.RemoveLinks(queue_item->_Entity);
+				_EntityLinks.RemoveLinks(queue_item.Get()._Entity);
 			}
 		}
 

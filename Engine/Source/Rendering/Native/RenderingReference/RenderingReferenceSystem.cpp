@@ -355,7 +355,9 @@ public:
 	*/
 	FORCE_INLINE static void TaskUpdate() NOEXCEPT
 	{
-		while (const uint32 *const RESTRICT Y{ RenderingReferenceSystemData::_QueuedTaskData.Pop() })
+		Optional<uint32> Y{ RenderingReferenceSystemData::_QueuedTaskData.Pop() };
+
+		while (Y.Valid())
 		{
 			for (uint32 X{ 0 }; X < RenderingReferenceSystemData::_IntermediateTexture.GetWidth(); ++X)
 			{
@@ -364,7 +366,7 @@ public:
 
 				//Calculate the normalized coordinate.
 				const Vector2<float32> normalized_coordinate{	(static_cast<float32>(X) + 0.5f + jitter._X) / static_cast<float32>(RenderingReferenceSystemData::_IntermediateTexture.GetWidth()),
-																1.0f - ((static_cast<float32>(*Y) + 0.5f + jitter._Y) / static_cast<float32>(RenderingReferenceSystemData::_IntermediateTexture.GetHeight())) };
+																1.0f - ((static_cast<float32>(Y.Get()) + 0.5f + jitter._Y) / static_cast<float32>(RenderingReferenceSystemData::_IntermediateTexture.GetHeight())) };
 
 				//Calculate the ray.
 				Ray ray;
@@ -387,7 +389,7 @@ public:
 				}
 
 				//Write to the intermediate texture.
-				Vector4<float64> &intermediate_sample{ RenderingReferenceSystemData::_IntermediateTexture.At(X, *Y) };
+				Vector4<float64> &intermediate_sample{ RenderingReferenceSystemData::_IntermediateTexture.At(X, Y.Get()) };
 				intermediate_sample += Vector4<float64>(static_cast<float64>(radiance._R), static_cast<float64>(radiance._G), static_cast<float64>(radiance._B), 1.0);
 
 				//Calculate the final radiance.
@@ -401,7 +403,7 @@ public:
 				final_radiance = CatalystToneMapping::ApplyToneMapping(final_radiance);
 
 				//Write to the final texture.
-				Vector4<float32> &final_sample{ RenderingReferenceSystemData::_FinalTexture.At(X, *Y) };
+				Vector4<float32> &final_sample{ RenderingReferenceSystemData::_FinalTexture.At(X, Y.Get()) };
 
 				final_sample._R = BaseMath::Clamp<float32>(final_radiance._R, 0.0f, 1.0f);
 				final_sample._G = BaseMath::Clamp<float32>(final_radiance._G, 0.0f, 1.0f);
@@ -411,6 +413,8 @@ public:
 				//Update the current number of pixels.
 				RenderingReferenceSystemData::_CurrentNumberOfPixels.FetchAdd(1);
 			}
+
+			Y = RenderingReferenceSystemData::_QueuedTaskData.Pop();
 		}
 	}
 
