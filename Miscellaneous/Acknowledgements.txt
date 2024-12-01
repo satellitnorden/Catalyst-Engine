@@ -20,7 +20,7 @@ This version of the "Density" library was downloaded 2023-07-18 from https://git
 LIBSOUNDWAVE
 
 This software uses the "libsoundwave" library for loading audio files.
-This version of the "libsoundwave" library was downloaded 2024-04-28 from https://github.com/warrengalyen/libsoundwave with the following license:
+This version of the "libsoundwave" library was downloaded 2024-12-01 from https://github.com/warrengalyen/libsoundwave with the following license:
 
 	Copyright (c) 2015, Warren Galyen All rights reserved.
 
