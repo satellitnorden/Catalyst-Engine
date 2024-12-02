@@ -60,6 +60,9 @@ public:
 	//Denotes whether or not to use the mlpack library.
 	bool _UseMlpackLibrary{ false };
 
+	//Denotes whether or not to use the ONNX Runtime library.
+	bool _UseONNXRuntimeLibrary{ false };
+
 	//Denotes whether or not to include environment resource collection.
 	bool _IncludeEnvironmentResourceCollection{ false };
 
@@ -1040,6 +1043,23 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 		}
 
 		{
+			const size_t position{ cmake_lists_line.find("[LINK_ONNX_RUNTIME_LIBRARIES]") };
+
+			if (position != std::string::npos)
+			{
+				if (general_parameters._UseONNXRuntimeLibrary)
+				{
+					cmake_lists_line = "target_link_libraries(${PROJECT_NAME} onnxruntime)";
+				}
+
+				else
+				{
+					include_line = false;
+				}
+			}
+		}
+
+		{
 			const size_t position{ cmake_lists_line.find("[MLPACK_CXX_FLAGS]") };
 
 			if (position != std::string::npos)
@@ -1191,6 +1211,16 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
+
+		//Copy onnxruntime.dll.
+		if (general_parameters._UseONNXRuntimeLibrary)
+		{
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", "Win64\\Win64\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		}
 	}
 
 	//Copy the CMakeLists.txt file to CMakeLists_Windows, and remove CMakeLists.txt. Nice to save the CMakeLists.txt file, to look at it later. (:
@@ -1316,6 +1346,12 @@ int main(int argument_count, char* arguments[])
 			else if (identifier == "USE_MLPACK_LIBRARY")
 			{
 				general_parameters._UseMlpackLibrary = true;
+			}
+
+			//Should the ONNX Runtime library be used?
+			else if (identifier == "USE_ONNX_RUNTIME_LIBRARY")
+			{
+				general_parameters._UseONNXRuntimeLibrary = true;
 			}
 
 			//Should the environment resource collection be included?

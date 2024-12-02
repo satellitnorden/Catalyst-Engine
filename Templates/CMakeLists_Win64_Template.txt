@@ -118,6 +118,7 @@ target_link_libraries(${PROJECT_NAME} 	$<$<CONFIG:Debug>:Debug/assimp-vc143-mtd>
 										$<$<CONFIG:ProfileEditor>:Profile/assimp-vc143-mt>
 										)
 [LINK_MLPACK_LIBRARIES]
+[LINK_ONNX_RUNTIME_LIBRARIES]
 
 #Set the startup project.
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
