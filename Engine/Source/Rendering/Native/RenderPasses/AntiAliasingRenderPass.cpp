@@ -100,7 +100,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 
 					case RenderingConfiguration::AntiAliasingMode::TEMPORAL:
 					{
-						push_constant_data._SharpenStrength = 2.0f;
+						push_constant_data._SharpenStrength = 4.0f;
 						push_constant_data._SharpenClamp = 1.0f;
 
 						break;
@@ -193,8 +193,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 			{
 				GraphicsRenderPipelineInitializeParameters parameters;
 
-				parameters._InputRenderTargets.Emplace(HashString("SceneNearest"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
-				parameters._InputRenderTargets.Emplace(HashString("SceneLinear"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
+				parameters._InputRenderTargets.Emplace(HashString("SceneInput"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1));
 				parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), BaseMath::IsEven(i) ? _TemporalAntiAliasingRenderTargets[0] : _TemporalAntiAliasingRenderTargets[1]);
 				
 				parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), BaseMath::IsEven(i) ? _TemporalAntiAliasingRenderTargets[1] : _TemporalAntiAliasingRenderTargets[0]);
@@ -250,8 +249,7 @@ void AntiAliasingRenderPass::Initialize() NOEXCEPT
 			{
 				GraphicsRenderPipelineInitializeParameters parameters;
 
-				parameters._InputRenderTargets.Emplace(HashString("SceneNearest"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
-				parameters._InputRenderTargets.Emplace(HashString("SceneLinear"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
+				parameters._InputRenderTargets.Emplace(HashString("SceneInput"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_2));
 				parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), BaseMath::IsEven(i) ? _TemporalAntiAliasingRenderTargets[0] : _TemporalAntiAliasingRenderTargets[1]);
 
 				parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), BaseMath::IsEven(i) ? _TemporalAntiAliasingRenderTargets[1] : _TemporalAntiAliasingRenderTargets[0]);

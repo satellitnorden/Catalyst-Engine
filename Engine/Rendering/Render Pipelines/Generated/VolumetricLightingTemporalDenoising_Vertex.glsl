@@ -326,9 +326,8 @@ vec3 Constrain(vec3 _sample, vec3 minimum, vec3 maximum)
 
 layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2Half;
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4Half;
-layout (set = 1, binding = 4) uniform sampler2D VolumetricLightingNearest;
-layout (set = 1, binding = 5) uniform sampler2D VolumetricLightingLinear;
-layout (set = 1, binding = 6) uniform sampler2D PreviousTemporalBuffer;
+layout (set = 1, binding = 4) uniform sampler2D VolumetricLighting;
+layout (set = 1, binding = 5) uniform sampler2D PreviousTemporalBuffer;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 

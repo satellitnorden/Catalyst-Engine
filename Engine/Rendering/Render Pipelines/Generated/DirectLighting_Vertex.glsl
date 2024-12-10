@@ -536,7 +536,7 @@ vec3 BidirectionalReflectanceDistribution
 
 	//Calculate the weakening factor.
 	float weakening_factor = dot(normal, -radiance_direction);
-	weakening_factor = mix(weakening_factor * 0.5f + 0.5f, max(weakening_factor, 0.0f), thickness);
+	weakening_factor = mix(clamp(weakening_factor * 0.5f + 0.5f, 0.0f, 1.0f), max(weakening_factor, 0.0f), thickness);
 
 	return (diffuse_component + specular_component) * weakening_factor;
 }

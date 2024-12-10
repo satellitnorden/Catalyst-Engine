@@ -520,7 +520,7 @@ float CalculateAttenuationInDirection(vec3 position, vec3 direction, float dista
 */
 float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
 {
-	float G = 0.5f;
+	float G = 0.25f;
 	float dot_product = dot(outgoing_direction, -incoming_direction);
 
 	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));

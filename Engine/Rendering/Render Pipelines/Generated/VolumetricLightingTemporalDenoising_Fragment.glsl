@@ -326,9 +326,8 @@ vec3 Constrain(vec3 _sample, vec3 minimum, vec3 maximum)
 
 layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2Half;
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4Half;
-layout (set = 1, binding = 4) uniform sampler2D VolumetricLightingNearest;
-layout (set = 1, binding = 5) uniform sampler2D VolumetricLightingLinear;
-layout (set = 1, binding = 6) uniform sampler2D PreviousTemporalBuffer;
+layout (set = 1, binding = 4) uniform sampler2D VolumetricLighting;
+layout (set = 1, binding = 5) uniform sampler2D PreviousTemporalBuffer;
 
 layout (location = 0) in vec2 InScreenCoordinate;
 
@@ -348,7 +347,7 @@ void main()
 		for (int X = -3; X <= 3; ++X)
 		{
 			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_FULL_MAIN_RESOLUTION;
-			vec4 neighborhood_sample = texture(VolumetricLightingNearest, sample_coordinate);
+			vec4 neighborhood_sample = texture(VolumetricLighting, sample_coordinate);
 			minimum = min(minimum, neighborhood_sample.rgb);
 			center += neighborhood_sample.rgb * float(X == 0 && Y == 0);
 			maximum = max(maximum, neighborhood_sample.rgb);
@@ -370,8 +369,7 @@ void main()
 	*/
 	float previous_frame_weight = 1.0f;
 	previous_frame_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
-	vec3 blended_frame_1 = mix(texture(VolumetricLightingLinear, InScreenCoordinate - CURRENT_FRAME_JITTER).rgb, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
-	vec3 blended_frame_2 = mix(center, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
-	CurrentTemporalBuffer = vec4(blended_frame_1,1.0f);
-	CurrentVolumetricLighting = vec4(blended_frame_2,1.0f);
+	vec3 blended_frame = mix(center, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
+	CurrentTemporalBuffer = vec4(blended_frame,1.0f);
+	CurrentVolumetricLighting = vec4(blended_frame,1.0f);
 }

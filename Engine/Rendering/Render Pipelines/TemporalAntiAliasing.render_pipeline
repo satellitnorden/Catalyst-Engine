@@ -9,8 +9,7 @@ IncludeShaderFunctionLibrary(Temporal);
 //Declare input render targets.
 InputRenderTarget(SceneFeatures2 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures4 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
-InputRenderTarget(SceneNearest /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
-InputRenderTarget(SceneLinear /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneInput /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(PreviousTemporalBuffer /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
@@ -53,7 +52,7 @@ Fragment
 		{
 			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_FULL_MAIN_RESOLUTION;
 			
-			vec3 neighbordhood_sample = texture(SceneNearest, sample_coordinate).rgb;
+			vec3 neighbordhood_sample = texture(SceneInput, sample_coordinate).rgb;
 
 			minimum = min(minimum, neighbordhood_sample);
 			maximum = max(maximum, neighbordhood_sample);
@@ -87,7 +86,7 @@ Fragment
 	previous_frame_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
 
 	//Sample the current frame.
-	vec3 current_frame = texture(SceneLinear, InScreenCoordinate - CURRENT_FRAME_JITTER).rgb;
+	vec3 current_frame = texture(SceneInput, InScreenCoordinate).rgb;
 
 	//Blend the frames.
 	vec3 blended_frame = mix(current_frame, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);

@@ -101,7 +101,7 @@ Fragment
     }
 
     //Add some noise to the volumetric lighting so that the temporal anti aliasing pass has an easier time cleaning it up.
-    //volumetric_lighting *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), FRAME));
+    volumetric_lighting *= mix(0.875f, 1.25f, InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), FRAME));
 
     //Calculate the world position.
     vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);

@@ -326,9 +326,8 @@ vec3 Constrain(vec3 _sample, vec3 minimum, vec3 maximum)
 
 layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2;
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4;
-layout (set = 1, binding = 4) uniform sampler2D SceneNearest;
-layout (set = 1, binding = 5) uniform sampler2D SceneLinear;
-layout (set = 1, binding = 6) uniform sampler2D PreviousTemporalBuffer;
+layout (set = 1, binding = 4) uniform sampler2D SceneInput;
+layout (set = 1, binding = 5) uniform sampler2D PreviousTemporalBuffer;
 
 layout (location = 0) in vec2 InScreenCoordinate;
 
@@ -347,7 +346,7 @@ void main()
 		for (int X = -1; X <= 1; ++X)
 		{
 			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_FULL_MAIN_RESOLUTION;
-			vec3 neighbordhood_sample = texture(SceneNearest, sample_coordinate).rgb;
+			vec3 neighbordhood_sample = texture(SceneInput, sample_coordinate).rgb;
 			minimum = min(minimum, neighbordhood_sample);
 			maximum = max(maximum, neighbordhood_sample);
 			float neighborhood_depth = texture(SceneFeatures2, sample_coordinate).w;
@@ -368,7 +367,7 @@ void main()
 	*/
 	float previous_frame_weight = 1.0f;
 	previous_frame_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
-	vec3 current_frame = texture(SceneLinear, InScreenCoordinate - CURRENT_FRAME_JITTER).rgb;
+	vec3 current_frame = texture(SceneInput, InScreenCoordinate).rgb;
 	vec3 blended_frame = mix(current_frame, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
 	CurrentTemporalBuffer = vec4(blended_frame,1.0f);
 	CurrentScene = vec4(blended_frame,1.0f);

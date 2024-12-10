@@ -9,8 +9,7 @@ IncludeShaderFunctionLibrary(Temporal);
 //Declare input render targets.
 InputRenderTarget(SceneFeatures2Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures4Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
-InputRenderTarget(VolumetricLightingNearest /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
-InputRenderTarget(VolumetricLightingLinear /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(VolumetricLighting /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(PreviousTemporalBuffer /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
@@ -54,7 +53,7 @@ Fragment
 		{
 			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_FULL_MAIN_RESOLUTION;
 			
-			vec4 neighborhood_sample = texture(VolumetricLightingNearest, sample_coordinate);
+			vec4 neighborhood_sample = texture(VolumetricLighting, sample_coordinate);
 
 			minimum = min(minimum, neighborhood_sample.rgb);
 			center += neighborhood_sample.rgb * float(X == 0 && Y == 0);
@@ -89,10 +88,9 @@ Fragment
 	previous_frame_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
 
 	//Blend the frames.
-	vec3 blended_frame_1 = mix(texture(VolumetricLightingLinear, InScreenCoordinate - CURRENT_FRAME_JITTER).rgb, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
-	vec3 blended_frame_2 = mix(center, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
+	vec3 blended_frame = mix(center, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
 
     //Output the fragments.
-    OutputFragment(CurrentTemporalBuffer, vec4(blended_frame_1, 1.0f));
-    OutputFragment(CurrentVolumetricLighting, vec4(blended_frame_2, 1.0f));
+    OutputFragment(CurrentTemporalBuffer, vec4(blended_frame, 1.0f));
+    OutputFragment(CurrentVolumetricLighting, vec4(blended_frame, 1.0f));
 }

@@ -520,7 +520,7 @@ float CalculateAttenuationInDirection(vec3 position, vec3 direction, float dista
 */
 float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
 {
-	float G = 0.5f;
+	float G = 0.25f;
 	float dot_product = dot(outgoing_direction, -incoming_direction);
 
 	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
@@ -546,7 +546,7 @@ layout (location = 0) rayPayloadNV float VISIBILITY;
 void main()
 {
     #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
-    #define NUMBER_OF_SAMPLES (4)
+    #define NUMBER_OF_SAMPLES (8)
     #define SAMPLE_RECIPROCAL (1.0f / NUMBER_OF_SAMPLES)
     #define HALF_SAMPLE_RECIPROCAL (SAMPLE_RECIPROCAL / 2)
     vec3 start_position = CAMERA_WORLD_POSITION;
@@ -622,7 +622,7 @@ traceNV
 	0 /*payload*/
 );
                         }
-                        scattering *= VISIBILITY;
+                        scattering *= mix(0.125f, 1.0f, VISIBILITY); //Still let a little light through.
                         vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
                         volumetric_lighting += transmittance * scattering_integral;
                         break;

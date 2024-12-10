@@ -94,8 +94,7 @@ void VolumetricLightingRenderPass::Initialize() NOEXCEPT
 	{
 		GraphicsRenderPipelineInitializeParameters parameters;
 
-		parameters._InputRenderTargets.Emplace(HashString("VolumetricLightingNearest"), _VolumetricLightingRenderTarget);
-		parameters._InputRenderTargets.Emplace(HashString("VolumetricLightingLinear"), _VolumetricLightingRenderTarget);
+		parameters._InputRenderTargets.Emplace(HashString("VolumetricLighting"), _VolumetricLightingRenderTarget);
 		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), BaseMath::IsEven(i) ? _VolumetricLightingTemporalBufferRenderTargets[0] : _VolumetricLightingTemporalBufferRenderTargets[1]);
 
 		parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), BaseMath::IsEven(i) ? _VolumetricLightingTemporalBufferRenderTargets[1] : _VolumetricLightingTemporalBufferRenderTargets[0]);

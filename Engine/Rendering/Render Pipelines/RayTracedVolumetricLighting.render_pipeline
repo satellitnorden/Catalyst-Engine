@@ -32,7 +32,7 @@ RayGeneration
 
     //Constants.
     #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
-    #define NUMBER_OF_SAMPLES (4)
+    #define NUMBER_OF_SAMPLES (8)
     #define SAMPLE_RECIPROCAL (1.0f / NUMBER_OF_SAMPLES)
     #define HALF_SAMPLE_RECIPROCAL (SAMPLE_RECIPROCAL / 2)
 
@@ -145,7 +145,7 @@ RayGeneration
                             TraceRay(ray_tracing_flags, 0, sample_position, direction, FLOAT32_MAXIMUM, 0);
                         }
 
-                        scattering *= VISIBILITY;
+                        scattering *= mix(0.125f, 1.0f, VISIBILITY); //Still let a little light through.
                         
                         vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
                         volumetric_lighting += transmittance * scattering_integral;
