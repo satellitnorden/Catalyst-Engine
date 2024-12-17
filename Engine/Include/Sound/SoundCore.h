@@ -37,6 +37,71 @@ enum class NoteType : uint8
 	TRIPLET
 };
 
+//Enumeration covering all combined note durations. Useful for when effects wants a knob to control the time of something.
+enum class CombinedNoteDuration : uint32
+{
+	WHOLE_DOTTED,
+	WHOLE_REGULAR,
+	WHOLE_TRIPLET,
+	HALF_DOTTED,
+	HALF_REGULAR,
+	HALF_TRIPLET,
+	QUARTER_DOTTED,
+	QUARTER_REGULAR,
+	QUARTER_TRIPLET,
+	EIGHTH_DOTTED,
+	EIGHTH_REGULAR,
+	EIGHTH_TRIPLET,
+	SIXTEENTH_DOTTED,
+	SIXTEENTH_REGULAR,
+	SIXTEENTH_TRIPLET,
+	THIRTYSECOND_DOTTED,
+	THIRTYSECOND_REGULAR,
+	THIRTYSECOND_TRIPLET,
+	SIXTYFOURTH_DOTTED,
+	SIXTYFOURTH_REGULAR,
+	SIXTYFOURTH_TRIPLET,
+	HUNDREDTWENTYEIGHTH_DOTTED,
+	HUNDREDTWENTYEIGHTH_REGULAR,
+	HUNDREDTWENTYEIGHTH_TRIPLET
+};
+
+//List for all names of the combined note durations.
+static const char *COMBINED_NOTE_DURATION_NAMES[]
+{
+	"1/1 D",
+	"1/1",
+	"1/1 T",
+
+	"1/2 D",
+	"1/2",
+	"1/2 T",
+
+	"1/4 D",
+	"1/4",
+	"1/4 T",
+
+	"1/8 D",
+	"1/8",
+	"1/8 T",
+
+	"1/16 D",
+	"1/16",
+	"1/16 T",
+
+	"1/32 D",
+	"1/32",
+	"1/32 T",
+
+	"1/64 D",
+	"1/64",
+	"1/64 T",
+
+	"1/128 D",
+	"1/128",
+	"1/128 T"
+};
+
 //Sound constants.
 namespace SoundConstants
 {

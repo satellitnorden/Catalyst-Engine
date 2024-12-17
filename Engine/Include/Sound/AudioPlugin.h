@@ -39,6 +39,9 @@ public:
 		//The sample rate.
 		float32 _SampleRate;
 
+		//The beats per minute.
+		float32 _BeatsPerMinute;
+
 	};
 
 	/*
@@ -441,6 +444,18 @@ public:
 	}
 
 	/*
+	*	Sets the beats per minute.
+	*/
+	FORCE_INLINE void SetBeatsPerMinute(const float32 value) NOEXCEPT
+	{
+		if (_BeatsPerMinute != value)
+		{
+			_BeatsPerMinute = value;
+			OnBeatsPerMinuteChanged();
+		}
+	}
+
+	/*
 	*	Callback for this audio plugin to process the given buffer.
 	*/
 	FORCE_INLINE virtual void Process
@@ -491,12 +506,23 @@ protected:
 	ControlLayout _ControlLayout;
 
 	//The sample rate.
-	float32 _SampleRate{ 44'100.0f };
+	float32 _SampleRate{ 48'000.0f };
+
+	//The beats per minute.
+	float32 _BeatsPerMinute{ 120.0f };
 
 	/*
 	*	Callback for when the sample rate changed.
 	*/
 	FORCE_INLINE virtual void OnSampleRateChanged() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Callback for when the beats per minute changed.
+	*/
+	FORCE_INLINE virtual void OnBeatsPerMinuteChanged() NOEXCEPT
 	{
 
 	}

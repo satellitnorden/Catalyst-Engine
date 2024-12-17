@@ -153,6 +153,144 @@ namespace SoundUtilities
 		//Return the calculated note duration.
 		return calculated_note_duration;
 	}
+	
+	/*
+	*	Calculates the realy note duration in seconds in regards to the beats per minute.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD TYPE CalculateNoteDuration(const CombinedNoteDuration note_duration, const TYPE beats_per_minute) NOEXCEPT
+	{
+		
+		switch (note_duration)
+		{
+			case CombinedNoteDuration::WHOLE_DOTTED:
+			{
+				return CalculateNoteDuration(NoteDuration::WHOLE, NoteType::DOTTED, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::WHOLE_REGULAR:
+			{
+				return CalculateNoteDuration(NoteDuration::WHOLE, NoteType::REGULAR, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::WHOLE_TRIPLET:
+			{
+				return CalculateNoteDuration(NoteDuration::WHOLE, NoteType::TRIPLET, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::HALF_DOTTED:
+			{
+				return CalculateNoteDuration(NoteDuration::HALF, NoteType::DOTTED, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::HALF_REGULAR:
+			{
+				return CalculateNoteDuration(NoteDuration::HALF, NoteType::REGULAR, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::HALF_TRIPLET:
+			{
+				return CalculateNoteDuration(NoteDuration::HALF, NoteType::TRIPLET, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::QUARTER_DOTTED:
+			{
+				return CalculateNoteDuration(NoteDuration::QUARTER, NoteType::DOTTED, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::QUARTER_REGULAR:
+			{
+				return CalculateNoteDuration(NoteDuration::QUARTER, NoteType::REGULAR, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::QUARTER_TRIPLET:
+			{
+				return CalculateNoteDuration(NoteDuration::QUARTER, NoteType::TRIPLET, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::EIGHTH_DOTTED:
+			{
+				return CalculateNoteDuration(NoteDuration::EIGHTH, NoteType::DOTTED, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::EIGHTH_REGULAR:
+			{
+				return CalculateNoteDuration(NoteDuration::EIGHTH, NoteType::REGULAR, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::EIGHTH_TRIPLET:
+			{
+				return CalculateNoteDuration(NoteDuration::EIGHTH, NoteType::TRIPLET, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::SIXTEENTH_DOTTED:
+			{
+				return CalculateNoteDuration(NoteDuration::SIXTEENTH, NoteType::DOTTED, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::SIXTEENTH_REGULAR:
+			{
+				return CalculateNoteDuration(NoteDuration::SIXTEENTH, NoteType::REGULAR, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::SIXTEENTH_TRIPLET:
+			{
+				return CalculateNoteDuration(NoteDuration::SIXTEENTH, NoteType::TRIPLET, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::THIRTYSECOND_DOTTED:
+			{
+				return CalculateNoteDuration(NoteDuration::THIRTYSECOND, NoteType::DOTTED, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::THIRTYSECOND_REGULAR:
+			{
+				return CalculateNoteDuration(NoteDuration::THIRTYSECOND, NoteType::REGULAR, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::THIRTYSECOND_TRIPLET:
+			{
+				return CalculateNoteDuration(NoteDuration::THIRTYSECOND, NoteType::TRIPLET, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::SIXTYFOURTH_DOTTED:
+			{
+				return CalculateNoteDuration(NoteDuration::SIXTYFOURTH, NoteType::DOTTED, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::SIXTYFOURTH_REGULAR:
+			{
+				return CalculateNoteDuration(NoteDuration::SIXTYFOURTH, NoteType::REGULAR, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::SIXTYFOURTH_TRIPLET:
+			{
+				return CalculateNoteDuration(NoteDuration::SIXTYFOURTH, NoteType::TRIPLET, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::HUNDREDTWENTYEIGHTH_DOTTED:
+			{
+				return CalculateNoteDuration(NoteDuration::HUNDREDTWENTYEIGHTH, NoteType::DOTTED, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::HUNDREDTWENTYEIGHTH_REGULAR:
+			{
+				return CalculateNoteDuration(NoteDuration::HUNDREDTWENTYEIGHTH, NoteType::REGULAR, beats_per_minute);
+			}
+
+			case CombinedNoteDuration::HUNDREDTWENTYEIGHTH_TRIPLET:
+			{
+				return CalculateNoteDuration(NoteDuration::HUNDREDTWENTYEIGHTH, NoteType::TRIPLET, beats_per_minute);
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return static_cast<TYPE>(0);
+			}
+		}
+	}
 
 	/*
 	*	Performs a crossfade between two sources, and returns the weights for each source.
