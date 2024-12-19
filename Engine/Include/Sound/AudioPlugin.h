@@ -143,36 +143,7 @@ public:
 		*/
 		FORCE_INLINE void Add(const HashString identifier, const float32 value) NOEXCEPT
 		{
-			_Parameters.Emplace();
-			Parameter &parameter{ _Parameters.Back() };
-
-			parameter._Identifier = identifier;
-			parameter._Value_float32 = value;
-		}
-
-		FORCE_INLINE void Add(const HashString identifier, const bool value) NOEXCEPT
-		{
-			_Parameters.Emplace();
-			Parameter &parameter{ _Parameters.Back() };
-
-			parameter._Identifier = identifier;
-			parameter._Value_bool = value;
-		}
-
-		FORCE_INLINE void Add(const HashString identifier, const uint32 value) NOEXCEPT
-		{
-			_Parameters.Emplace();
-			Parameter &parameter{ _Parameters.Back() };
-
-			parameter._Identifier = identifier;
-			parameter._Value_uint32 = value;
-		}
-
-		/*
-		*	Replaces the parameter with the given identifier with the given value. Useful if you want to "base" presets on others.
-		*/
-		FORCE_INLINE void Replace(const HashString identifier, const float32 value) NOEXCEPT
-		{
+			//Check if there's already a parameter with this identifer.
 			for (Parameter &parameter : _Parameters)
 			{
 				if (parameter._Identifier == identifier)
@@ -182,10 +153,18 @@ public:
 					return;
 				}
 			}
+
+			//Otherwise, add it!
+			_Parameters.Emplace();
+			Parameter &parameter{ _Parameters.Back() };
+
+			parameter._Identifier = identifier;
+			parameter._Value_float32 = value;
 		}
 
-		FORCE_INLINE void Replace(const HashString identifier, const bool value) NOEXCEPT
+		FORCE_INLINE void Add(const HashString identifier, const bool value) NOEXCEPT
 		{
+			//Check if there's already a parameter with this identifer.
 			for (Parameter &parameter : _Parameters)
 			{
 				if (parameter._Identifier == identifier)
@@ -195,10 +174,18 @@ public:
 					return;
 				}
 			}
+
+			//Otherwise, add it!
+			_Parameters.Emplace();
+			Parameter &parameter{ _Parameters.Back() };
+
+			parameter._Identifier = identifier;
+			parameter._Value_bool = value;
 		}
 
-		FORCE_INLINE void Replace(const HashString identifier, const uint32 value) NOEXCEPT
+		FORCE_INLINE void Add(const HashString identifier, const uint32 value) NOEXCEPT
 		{
+			//Check if there's already a parameter with this identifer.
 			for (Parameter &parameter : _Parameters)
 			{
 				if (parameter._Identifier == identifier)
@@ -208,6 +195,13 @@ public:
 					return;
 				}
 			}
+
+			//Otherwise, add it!
+			_Parameters.Emplace();
+			Parameter &parameter{ _Parameters.Back() };
+
+			parameter._Identifier = identifier;
+			parameter._Value_uint32 = value;
 		}
 
 	};
