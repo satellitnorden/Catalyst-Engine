@@ -99,7 +99,7 @@ RayGeneration
                     float maximum_distance = FLOAT32_MAXIMUM;
 
                     //Trace the ray!
-                    TraceRay(ray_tracing_flags, 1, world_position, direction, maximum_distance, 1);
+                    TraceRay(ray_tracing_flags, 0, world_position, direction, maximum_distance, 0);
 
                     //Write to the shadows.
                     shadows[current_shadow_index++] = VISIBILITY;

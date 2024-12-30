@@ -450,12 +450,12 @@ traceNV
 	0xff, /*cullMask*/
 	0, /*sbtRecordOffset*/
 	0, /*sbtRecordStride*/
-	1, /*missIndex*/
+	0, /*missIndex*/
 	world_position, /*origin*/
 	FLOAT32_EPSILON * 8.0f, /*Tmin*/
 	direction, /*direction*/
 	maximum_distance, /*Tmax*/
-	1 /*payload*/
+	0 /*payload*/
 );
                     shadows[current_shadow_index++] = VISIBILITY;
                     break;
