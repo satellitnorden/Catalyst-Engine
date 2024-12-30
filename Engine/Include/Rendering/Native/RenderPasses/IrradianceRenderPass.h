@@ -74,6 +74,9 @@ private:
 	//The screen space specular irradiance resolve pipeline.
 	GraphicsRenderPipeline _ScreenSpaceSpecularIrradianceResolve{ HashString("ScreenSpaceSpecularIrradianceResolve_RenderPipeline") };
 
+	//The ray traced specular irradiance pipeline.
+	RayTracingRenderPipeline _RayTracedSpecularIrradiancePipeline{ HashString("RayTracedSpecularIrradiance_RenderPipeline") };
+
 	/*
 	*	Initializes this render pass.
 	*/

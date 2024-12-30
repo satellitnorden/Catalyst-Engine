@@ -2,8 +2,7 @@
 
 #extension GL_ARB_separate_shader_objects : require
 #extension GL_EXT_nonuniform_qualifier : require
-layout (early_fragment_tests) in;
-
+#extension GL_NV_ray_tracing : require
 //Constants.
 #define MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES (4096)
 #define MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS (512)
@@ -222,20 +221,57 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 36) float VIEW_DISTANCE;
 };
 
-layout (std140, set = 1, binding = 2) uniform RenderingConfiguration
+layout (std140, set = 1, binding = 2) uniform HammersleyHemisphereSamples
 {
-	layout (offset = 0) uint DIFFUSE_IRRADIANCE_MODE;
-	layout (offset = 4) uint SPECULAR_IRRADIANCE_MODE;
-	layout (offset = 8) uint VOLUMETRIC_SHADOWS_MODE;
+	layout (offset = 0) vec4 HAMMERSLEY_COSINUS_SAMPLES[64];
+	layout (offset = 1024) vec4 HAMMERSLEY_UNIFORM_SAMPLES[64];
 };
 
-layout (std140, set = 1, binding = 3) uniform Wind
+layout (std140, set = 1, binding = 3) uniform Irradiance
+{
+	layout (offset = 0) vec4 IRRADIANCE_HEMISPHERE_SAMPLES[64];
+};
+
+layout (std140, set = 1, binding = 4) uniform Wind
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
 	layout (offset = 32) uint SKY_MODE;
 	layout (offset = 36) float MAXIMUM_SKY_TEXTURE_MIP_LEVEL;
 };
+
+//Lighting header struct definition.
+struct LightingHeader
+{
+	uint _NumberOfLights;
+	uint _MaximumNumberOfShadowCastingLights;	
+};
+layout (std430, set = 1, binding = 5) buffer Lighting
+{
+	layout (offset = 0) LightingHeader LIGHTING_HEADER;
+	layout (offset = 16) vec4[] LIGHT_DATA;
+};
+
+layout (set = 1, binding = 6) uniform sampler SAMPLER;
+
+layout (set = 1, binding = 7, rgba32f) uniform image2D SceneFeatures2; 
+layout (set = 1, binding = 8, rgba32f) uniform image2D SceneFeatures3; 
+layout (set = 1, binding = 9, rgba32f) uniform image2D SpecularIrradiance; 
+
+/*
+*   Samples the current blue noise texture at the given coordinate and index.
+*/
+vec4 SampleBlueNoiseTexture(uvec2 coordinate, uint index)
+{
+    uint offset_index = (FRAME + index) & (NUMBER_OF_BLUE_NOISE_TEXTURES - 1);
+
+    uvec2 offset_coordinate;
+
+    offset_coordinate.x = coordinate.x + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+    offset_coordinate.y = coordinate.y + ((FRAME / NUMBER_OF_BLUE_NOISE_TEXTURES / NUMBER_OF_BLUE_NOISE_TEXTURES) & (BLUE_NOISE_TEXTURE_RESOLUTION - 1));
+
+    return texture(BLUE_NOISE_TEXTURES[offset_index], vec2(offset_coordinate) / float(BLUE_NOISE_TEXTURE_RESOLUTION));
+}
 
 /*
 *   Linearizes a depth value.
@@ -311,82 +347,96 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
+//Constants.
+#define LIGHT_TYPE_DIRECTIONAL (0)
+#define LIGHT_TYPE_POINT (1)
+#define LIGHT_TYPE_BOX (2)
+
+#define LIGHT_PROPERTY_SURFACE_SHADOW_CASTING_BIT (BIT(0))
+#define LIGHT_PROPERTY_VOLUMETRIC_BIT (BIT(1))
+#define LIGHT_PROPERTY_VOLUMETRIC_SHADOW_CASTING_BIT (BIT(2))
+
 /*
-*   Combines two hashes.
+*	Light struct definition.
 */
-uint CombineHash(uint hash_1, uint hash_2)
+struct Light
 {
-    return 3141592653 * hash_1 + hash_2;
+	/*
+	*	First transform data.
+	*	Direction for directional lights, position for point lights, minimum world position for box lights.
+	*/
+	vec3 _TransformData1;
+
+	/*
+	*	Second transform data.
+	*	Maximum world position for box lights.
+	*/
+	vec3 _TransformData2;
+	vec3 _Color;
+	uint _LightType;
+	uint _LightProperties;
+	float _Intensity;
+	float _Radius;
+	float _Size;
+};
+
+/*
+*	Unpacks the light at the given index.
+*   Requies the Lighting storage buffer to be included.
+*/
+Light UnpackLight(uint index)
+{
+	Light light;
+
+  	vec4 light_data_1 = LIGHT_DATA[index * 4 + 0];
+  	vec4 light_data_2 = LIGHT_DATA[index * 4 + 1];
+  	vec4 light_data_3 = LIGHT_DATA[index * 4 + 2];
+  	vec4 light_data_4 = LIGHT_DATA[index * 4 + 3];
+
+  	light._TransformData1 = vec3(light_data_1.x, light_data_1.y, light_data_1.z);
+  	light._TransformData2 = vec3(light_data_1.w, light_data_2.x, light_data_2.y);
+  	light._Color = vec3(light_data_2.z, light_data_2.w, light_data_3.x);
+  	light._LightType = floatBitsToUint(light_data_3.y);
+  	light._LightProperties = floatBitsToUint(light_data_3.z);
+  	light._Intensity = light_data_3.w;
+  	light._Radius = light_data_4.x;
+  	light._Size = light_data_4.y;
+
+	return light;
 }
 
 /*
-*   Hash function taking a uint.
+*	Rotates the given vector around the yaw.
 */
-uint Hash(uint seed)
+vec3 RotateYaw(vec3 X, float angle)
 {
-    seed ^= seed >> 17;
-    seed *= 0xed5ad4bbU;
-    seed ^= seed >> 11;
-    seed *= 0xac4c1b51U;
-    seed ^= seed >> 15;
-    seed *= 0x31848babU;
-    seed ^= seed >> 14;
-    return seed;
+	float sine = sin(angle);
+    float cosine = cos(angle);
+
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
+
+    return X;
 }
 
 /*
-*   Hash function taking a uvec2.
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
 */
-uint Hash2(uvec2 seed)
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
 {
-    return Hash(seed.x) ^ Hash(seed.y);
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
 }
 
 /*
-*   Hash function taking a uvec3.
+*   Returns a smoothed number in the range 0.0f-1.0f.
 */
-uint Hash3(uvec3 seed)
+float SmoothStep(float number)
 {
-    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
-    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
-    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
-}
-
-/*
-*   Given a seed, returns a random number.
-*/
-float RandomFloat(inout uint seed)
-{
-    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
-}
-
-/*
-*   Given a coordinate and a seed, returns a random number.
-*/
-float RandomFloat(uvec2 coordinate, uint seed)
-{
-    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
-}
-
-/*
-*   Given a coordinate, returns a random number.
-*/
-float RandomFloat(vec2 coordinate)
-{
-    return fract(sin(dot(coordinate, vec2(12.9898f, 78.233f))) * 43758.5453f);
-}
-
-/*
-*	Returns the interleaved gradient noise for the given coordinate at the given frame.
-*/
-float InterleavedGradientNoise(uvec2 coordinate, uint frame)
-{
-	frame = frame % 64;
-
-	float x = float(coordinate.x) + 5.588238f * float(frame);
-	float y = float(coordinate.y) + 5.588238f * float(frame);
-
-	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+    return number * number * (3.0f - 2.0f * number);
 }
 
 ////////////
@@ -670,18 +720,6 @@ vec3 CalculateIndirectLighting
 }
 
 //Constants.
-#define DIFFUSE_IRRADIANCE_MODE_NONE (0)
-#define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
-
-#define SPECULAR_IRRADIANCE_MODE_NONE (0)
-#define SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE (1)
-#define SPECULAR_IRRADIANCE_MODE_RAY_TRACED (2)
-
-#define VOLUMETRIC_SHADOWS_MODE_NONE (0)
-#define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
-#define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
-
-//Constants.
 #define SKY_MODE_ATMOSPHERIC_SCATTERING (0)
 #define SKY_MODE_GRADIENT (1)
 #define SKY_MODE_TEXTURE (2)
@@ -718,116 +756,16 @@ vec3 SampleSky(vec3 direction, float mip_level)
 	}
 }
 
-layout (set = 1, binding = 4) uniform sampler2D SceneFeatures1;
-layout (set = 1, binding = 5) uniform sampler2D SceneFeatures2;
-layout (set = 1, binding = 6) uniform sampler2D SceneFeatures3;
-layout (set = 1, binding = 7) uniform sampler2D SceneFeatures2Half;
-layout (set = 1, binding = 8) uniform sampler2D DiffuseIrradiance;
-layout (set = 1, binding = 9) uniform sampler2D SpecularIrradiance;
-
-layout (location = 0) in vec2 InScreenCoordinate;
-
-layout (location = 0) out vec4 Scene;
+layout (set = 2, binding = 0) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;
+layout (set = 2, binding = 1) buffer OpaqueModels_VERTEX_DATA_BUFFER { vec4 OpaqueModels_VERTEX_DATA[]; } OpaqueModels_VERTEX_BUFFERS[];
+layout (set = 2, binding = 2) buffer OpaqueModels_INDEX_DATA_BUFFER { uint OpaqueModels_INDEX_DATA[]; } OpaqueModels_INDEX_BUFFERS[];
+layout (set = 2, binding = 3) buffer OpaqueModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] OpaqueModels_MATERIAL_INDICES; };
+layout (set = 2, binding = 4) buffer MaskedModels_VERTEX_DATA_BUFFER { vec4 MaskedModels_VERTEX_DATA[]; } MaskedModels_VERTEX_BUFFERS[];
+layout (set = 2, binding = 5) buffer MaskedModels_INDEX_DATA_BUFFER { uint MaskedModels_INDEX_DATA[]; } MaskedModels_INDEX_BUFFERS[];
+layout (set = 2, binding = 6) buffer MaskedModels_MATERIAL_BUFFER { layout (offset = 0) uvec4[] MaskedModels_MATERIAL_INDICES; };
+layout (location = 1) rayPayloadInNV float VISIBILITY;
 
 void main()
 {
-    vec4 scene_features_1 = texture(SceneFeatures1, InScreenCoordinate);
-    vec4 scene_features_2 = texture(SceneFeatures2, InScreenCoordinate);
-    vec4 scene_features_3 = texture(SceneFeatures3, InScreenCoordinate);
-    vec3 albedo = scene_features_1.rgb;
-    float thickness = scene_features_1.w;
-    vec3 normal = scene_features_2.xyz;
-    float depth = scene_features_2.w;
-    float roughness = scene_features_3.x;
-    float metallic = scene_features_3.y;
-    float ambient_occlusion = scene_features_3.z;
-    float emissive = scene_features_3.w;
-    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
-    vec3 view_direction = normalize(CAMERA_WORLD_POSITION - world_position);
-    vec3 incoming_diffuse_irradiance = vec3(0.0f, 0.0f, 0.0f);
-    switch (DIFFUSE_IRRADIANCE_MODE)
-    {
-        case DIFFUSE_IRRADIANCE_MODE_NONE:
-        {
-            incoming_diffuse_irradiance = SampleSky(normal, MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
-            break;
-        }
-        case DIFFUSE_IRRADIANCE_MODE_RAY_TRACED:
-        {
-            vec2 sample_coordinates[4];
-            sample_coordinates[0] = InScreenCoordinate;
-            sample_coordinates[1] = InScreenCoordinate + vec2(INVERSE_HALF_MAIN_RESOLUTION.x, 0.0f);
-            sample_coordinates[2] = InScreenCoordinate + vec2(0.0f, INVERSE_HALF_MAIN_RESOLUTION.y);
-            sample_coordinates[3] = InScreenCoordinate + vec2(INVERSE_HALF_MAIN_RESOLUTION.x, INVERSE_HALF_MAIN_RESOLUTION.y);
-            vec3 diffuse_irradiance_samples[4];
-            float depth_samples[4];
-            for (uint i = 0; i < 4; ++i)
-            {
-                diffuse_irradiance_samples[i] = texture(DiffuseIrradiance, sample_coordinates[i]).rgb;
-                depth_samples[i] = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinates[i]).w);
-            }
-            vec2 fractions = fract(InScreenCoordinate * HALF_MAIN_RESOLUTION);
-            float weights[4];
-            weights[0] = (1.0f - fractions.x) * (1.0f - fractions.y);
-            weights[1] = fractions.x * (1.0f - fractions.y);
-            weights[2] = (1.0f - fractions.x) * fractions.y;
-            weights[3] = fractions.x * fractions.y;
-            float center_depth = LinearizeDepth(depth);
-            for (uint i = 0; i < 4; ++i)
-            {
-                weights[i] *= exp(-abs(center_depth - depth_samples[i]));
-            }
-            float weight_sum = weights[0] + weights[1] + weights[2] + weights[3];
-            float inverse_weight_sum = weight_sum > 0.0f ? 1.0f / weight_sum : 1.0f;
-            for (uint i = 0; i < 4; ++i)
-            {
-                weights[i] *= inverse_weight_sum;
-            }
-            for (uint i = 0; i < 4; ++i)
-            {
-                incoming_diffuse_irradiance += diffuse_irradiance_samples[i] * weights[i];
-            }
-            incoming_diffuse_irradiance *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME));
-            break;
-        }
-    }
-    vec3 incoming_specular_irradiance = vec3(0.0f, 0.0f, 0.0f);
-    switch (SPECULAR_IRRADIANCE_MODE)
-    {
-        case SPECULAR_IRRADIANCE_MODE_NONE:
-        {
-            incoming_specular_irradiance = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
-            break;
-        }
-        case SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE:
-        {
-            vec4 specular_irradiance_sample = texture(SpecularIrradiance, InScreenCoordinate);
-            incoming_specular_irradiance = specular_irradiance_sample.rgb;
-            incoming_specular_irradiance *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME));
-            vec3 sky_sample = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
-            incoming_specular_irradiance = mix(sky_sample, incoming_specular_irradiance, specular_irradiance_sample.a);
-            break;
-        }
-        case SPECULAR_IRRADIANCE_MODE_RAY_TRACED:
-        {
-            vec4 specular_irradiance_sample = texture(SpecularIrradiance, InScreenCoordinate);
-            incoming_specular_irradiance = specular_irradiance_sample.rgb;
-            vec3 sky_sample = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
-            incoming_specular_irradiance = mix(sky_sample, incoming_specular_irradiance, specular_irradiance_sample.a);
-            break;
-        }
-    }
-    vec3 indirect_lighting = CalculateIndirectLighting
-    (
-        view_direction,
-        albedo,
-        normal,
-        roughness,
-        metallic,
-        ambient_occlusion,
-        thickness,
-        incoming_diffuse_irradiance,
-        incoming_specular_irradiance
-    );
-	Scene = vec4(indirect_lighting,1.0f);
+    VISIBILITY = 1.0f;
 }

@@ -6,10 +6,10 @@ IncludeUniformBuffer(General);
 IncludeShaderFunctionLibrary(Camera);
 
 //Declare input render targets.
-InputRenderTarget(PreviousTemporalBuffer /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
-InputRenderTarget(InputDiffuseIrradiance /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures2Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures4Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(InputDiffuseIrradiance /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(PreviousTemporalBuffer /* Identifier */, LINEAR /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output render targets.
 OutputRenderTarget(CurrentTemporalBuffer);
@@ -34,7 +34,7 @@ IncludeCommonVertexShader(ViewportScreenCoordinate);
 Fragment
 {
     //Constants.
-    #define FEEDBACK_FACTOR (0.95f)
+    #define FEEDBACK_FACTOR (0.99f)
 
     //Declare input parameters.
     InputParameter(vec2, InScreenCoordinate);
@@ -106,17 +106,7 @@ Fragment
     previous_sample_weight *= FEEDBACK_FACTOR;
 
     //Blend the previous and the current diffuse irradiance.
-    vec3 blended_diffuse_irradiance;
-
-    if (!isnan(previous_diffuse_irradiance.x))
-    {
-        blended_diffuse_irradiance = mix(current_diffuse_irradiance, previous_diffuse_irradiance, previous_sample_weight);
-    }
-
-    else
-    {
-        blended_diffuse_irradiance = current_diffuse_irradiance;
-    }
+    vec3 blended_diffuse_irradiance = mix(current_diffuse_irradiance, previous_diffuse_irradiance, previous_sample_weight);
 
     //Output the fragments.
     OutputFragment(CurrentTemporalBuffer, vec4(blended_diffuse_irradiance, current_depth));

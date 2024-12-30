@@ -294,10 +294,10 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
-layout (set = 1, binding = 2) uniform sampler2D PreviousTemporalBuffer;
-layout (set = 1, binding = 3) uniform sampler2D InputDiffuseIrradiance;
-layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2Half;
-layout (set = 1, binding = 5) uniform sampler2D SceneFeatures4Half;
+layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2Half;
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4Half;
+layout (set = 1, binding = 4) uniform sampler2D InputDiffuseIrradiance;
+layout (set = 1, binding = 5) uniform sampler2D PreviousTemporalBuffer;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 

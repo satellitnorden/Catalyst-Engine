@@ -294,10 +294,10 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
-layout (set = 1, binding = 2) uniform sampler2D PreviousTemporalBuffer;
-layout (set = 1, binding = 3) uniform sampler2D InputDiffuseIrradiance;
-layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2Half;
-layout (set = 1, binding = 5) uniform sampler2D SceneFeatures4Half;
+layout (set = 1, binding = 2) uniform sampler2D SceneFeatures2Half;
+layout (set = 1, binding = 3) uniform sampler2D SceneFeatures4Half;
+layout (set = 1, binding = 4) uniform sampler2D InputDiffuseIrradiance;
+layout (set = 1, binding = 5) uniform sampler2D PreviousTemporalBuffer;
 
 layout (location = 0) in vec2 InScreenCoordinate;
 
@@ -306,7 +306,7 @@ layout (location = 1) out vec4 OutputDiffuseIrradiance;
 
 void main()
 {
-    #define FEEDBACK_FACTOR (0.95f)
+    #define FEEDBACK_FACTOR (0.99f)
     vec3 current_diffuse_irradiance = texture(InputDiffuseIrradiance, InScreenCoordinate).rgb;
     float current_depth = LinearizeDepth(texture(SceneFeatures2Half, InScreenCoordinate).w);
     vec2 velocity = texture(SceneFeatures4Half, InScreenCoordinate).xy;
@@ -349,15 +349,7 @@ void main()
 	*/
 	previous_sample_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
     previous_sample_weight *= FEEDBACK_FACTOR;
-    vec3 blended_diffuse_irradiance;
-    if (!isnan(previous_diffuse_irradiance.x))
-    {
-        blended_diffuse_irradiance = mix(current_diffuse_irradiance, previous_diffuse_irradiance, previous_sample_weight);
-    }
-    else
-    {
-        blended_diffuse_irradiance = current_diffuse_irradiance;
-    }
+    vec3 blended_diffuse_irradiance = mix(current_diffuse_irradiance, previous_diffuse_irradiance, previous_sample_weight);
 	CurrentTemporalBuffer = vec4(blended_diffuse_irradiance,current_depth);
 	OutputDiffuseIrradiance = vec4(blended_diffuse_irradiance,1.0f);
 }

@@ -766,7 +766,7 @@ layout (location = 0) rayPayloadNV vec3 RADIANCE;
 
 void main()
 {
-    #define NUMBER_OF_SAMPLES (1)
+    #define NUMBER_OF_SAMPLES (2)
     vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
     vec4 scene_features_2 = imageLoad(SceneFeatures2Half, ivec2(gl_LaunchIDNV.xy));
     vec3 normal = scene_features_2.xyz;
@@ -792,7 +792,7 @@ traceNV
 	0, /*sbtRecordStride*/
 	0, /*missIndex*/
 	world_position, /*origin*/
-	FLOAT32_EPSILON * 8.0f, /*Tmin*/
+	FLOAT32_EPSILON * 16.0f, /*Tmin*/
 	ray_direction, /*direction*/
 	FLOAT32_MAXIMUM, /*Tmax*/
 	0 /*payload*/

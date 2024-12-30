@@ -314,8 +314,8 @@ void main()
 	float center_depth = LinearizeDepth(center_scene_features_2.w);
 	vec3 denoised_diffuse_irradiance = vec3(0.0f);
 	float weight_sum = 0.0f;
-	int start = -STRIDE * 4;
-	int end = STRIDE * 4;
+	int start = -STRIDE * 1;
+	int end = STRIDE * 1;
 	for (int sample_index = start; sample_index <= end; sample_index += STRIDE)
 	{
 		vec2 sample_coordinate = InScreenCoordinate + vec2(float(sample_index) * float(DIRECTION == 0), float(sample_index) * float(DIRECTION == 1)) * INVERSE_HALF_MAIN_RESOLUTION;
@@ -337,6 +337,6 @@ void main()
 		denoised_diffuse_irradiance += sample_diffuse_irradiance * sample_weight;
 		weight_sum += sample_weight;
 	}
-	denoised_diffuse_irradiance = denoised_diffuse_irradiance / weight_sum;
+	denoised_diffuse_irradiance = weight_sum > 0.0f ? denoised_diffuse_irradiance / weight_sum : vec3(0.0f);
 	OutputDiffuseIrradiance = vec4(denoised_diffuse_irradiance,1.0f);
 }

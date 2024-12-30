@@ -1701,7 +1701,7 @@ void GenerateRayGenerationShader
 					line += "\t0, /*sbtRecordStride*/\n";
 					line += std::string("\t") + std::string(arguments[1].Data()) + ", /*missIndex*/\n";
 					line += std::string("\t") + std::string(arguments[2].Data()) + ", /*origin*/\n";
-					line += "\tFLOAT32_EPSILON * 8.0f, /*Tmin*/\n";
+					line += "\tFLOAT32_EPSILON * 16.0f, /*Tmin*/\n";
 					line += std::string("\t") + std::string(arguments[3].Data()) + ", /*direction*/\n";
 					line += std::string("\t") + std::string(arguments[4].Data()) + ", /*Tmax*/\n";
 					line += std::string("\t") + std::string(arguments[5].Data()) + " /*payload*/\n";

@@ -66,7 +66,8 @@ public:
 	enum class SpecularIrradianceMode : uint8
 	{
 		NONE,
-		SCREEN_SPACE
+		SCREEN_SPACE,
+		RAY_TRACED
 	};
 
 	//Enumeration covering all surface shadows modes.

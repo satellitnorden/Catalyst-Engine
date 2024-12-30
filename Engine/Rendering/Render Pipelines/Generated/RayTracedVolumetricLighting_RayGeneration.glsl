@@ -477,6 +477,7 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 
 #define SPECULAR_IRRADIANCE_MODE_NONE (0)
 #define SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE (1)
+#define SPECULAR_IRRADIANCE_MODE_RAY_TRACED (2)
 
 #define VOLUMETRIC_SHADOWS_MODE_NONE (0)
 #define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
@@ -616,7 +617,7 @@ traceNV
 	0, /*sbtRecordStride*/
 	0, /*missIndex*/
 	sample_position, /*origin*/
-	FLOAT32_EPSILON * 8.0f, /*Tmin*/
+	FLOAT32_EPSILON * 16.0f, /*Tmin*/
 	direction, /*direction*/
 	FLOAT32_MAXIMUM, /*Tmax*/
 	0 /*payload*/

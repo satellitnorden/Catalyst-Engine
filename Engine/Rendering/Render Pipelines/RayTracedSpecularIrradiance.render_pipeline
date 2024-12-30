@@ -17,14 +17,15 @@ IncludeShaderFunctionLibrary(PhysicallyBasedLighting);
 IncludeShaderFunctionLibrary(World);
 
 //Declare compute render targets.
-ComputeRenderTarget(SceneFeatures2Half, RGBA_FLOAT32);
-ComputeRenderTarget(DiffuseIrradiance, RGBA_FLOAT32);
+ComputeRenderTarget(SceneFeatures2, RGBA_FLOAT32);
+ComputeRenderTarget(SceneFeatures3, RGBA_FLOAT32);
+ComputeRenderTarget(SpecularIrradiance, RGBA_FLOAT32);
 
 //Declare samplers.
 Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
 
 //Subscribe to input streams.
-SubscribeToInputStream(RayTracingViewportHalf);
+SubscribeToInputStream(RayTracingViewportFull);
 
 //The ray generation shader.
 RayGeneration
@@ -33,20 +34,25 @@ RayGeneration
     Payload(0, vec3, RADIANCE);
 
     //Constants.
-    #define NUMBER_OF_SAMPLES (2)
+    #define NUMBER_OF_SAMPLES (1)
 
     //Calculate the screen coordinate.
     vec2 screen_coordinate = (vec2(RAY_TRACING_ID.xy) + vec2(0.5f)) / vec2(RAY_TRACING_SIZE.xy);
 
     //Sample the scene features.
-    vec4 scene_features_2 = ImageLoad(SceneFeatures2Half, ivec2(RAY_TRACING_ID.xy));
+    vec4 scene_features_2 = ImageLoad(SceneFeatures2, ivec2(RAY_TRACING_ID.xy));
+    vec4 scene_features_3 = ImageLoad(SceneFeatures3, ivec2(RAY_TRACING_ID.xy));
 
     //Cache properties.
     vec3 normal = scene_features_2.xyz;
     float depth = scene_features_2.w;
+    float roughness = scene_features_3.x;
 
     //Calculate the world position.
     vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
+
+    //Calculate the view direction.
+    vec3 view_direction = normalize(world_position - CAMERA_WORLD_POSITION);
 
     //Accumulate the radiance over a number of samples.
     vec3 accumulated_radiance = vec3(0.0f);
@@ -77,15 +83,21 @@ RayGeneration
         //Lil' trick to make cosine-weighted directions.
         ray_direction = normalize(normal + ray_direction);
 
+        //Calculate the specular direction.
+        vec3 specular_direction = reflect(view_direction, normal);
+
+        //Blend the diffuse direction and the specular direction.
+        ray_direction = normalize(mix(specular_direction, ray_direction, roughness));
+
         //Trace the ray!
-        TraceRay(0, 0, world_position, ray_direction, FLOAT32_MAXIMUM, 0);
+        TraceRay(0, 0, world_position + normal * FLOAT32_EPSILON * 4096.0f, ray_direction, FLOAT32_MAXIMUM, 0);
 
         //Accumulate radiance.
         accumulated_radiance += RADIANCE;
     }
 
     //Store the shadows.
-    ImageStore(DiffuseIrradiance, ivec2(RAY_TRACING_ID.xy), vec4(accumulated_radiance / NUMBER_OF_SAMPLES, 1.0f));
+    ImageStore(SpecularIrradiance, ivec2(RAY_TRACING_ID.xy), vec4(accumulated_radiance / NUMBER_OF_SAMPLES, 1.0f));
 }
 
 //The ray miss shader.

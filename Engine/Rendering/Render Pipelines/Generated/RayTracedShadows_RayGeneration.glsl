@@ -452,7 +452,7 @@ traceNV
 	0, /*sbtRecordStride*/
 	0, /*missIndex*/
 	world_position, /*origin*/
-	FLOAT32_EPSILON * 8.0f, /*Tmin*/
+	FLOAT32_EPSILON * 16.0f, /*Tmin*/
 	direction, /*direction*/
 	maximum_distance, /*Tmax*/
 	0 /*payload*/

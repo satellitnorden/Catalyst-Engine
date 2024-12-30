@@ -180,6 +180,21 @@ Fragment
 
             break;
         }
+
+        case SPECULAR_IRRADIANCE_MODE_RAY_TRACED:
+        {
+            vec4 specular_irradiance_sample = texture(SpecularIrradiance, InScreenCoordinate);
+            incoming_specular_irradiance = specular_irradiance_sample.rgb;
+
+            //Add some noise to the diffuse irradiance so that the temporal anti aliasing pass has an easier time cleaning it up.
+            //incoming_specular_irradiance *= mix(0.875f, 1.125f, InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), FRAME));
+
+            vec3 sky_sample = SampleSky(reflect(-view_direction, normal), roughness * MAXIMUM_SKY_TEXTURE_MIP_LEVEL);
+
+            incoming_specular_irradiance = mix(sky_sample, incoming_specular_irradiance, specular_irradiance_sample.a);
+
+            break;
+        }
     }
 
     //Calculate the indirect lighting.
@@ -192,7 +207,7 @@ Fragment
         metallic,
         ambient_occlusion,
         thickness,
-        incoming_diffuse_irradiance * (1.0f + roughness),
+        incoming_diffuse_irradiance,
         incoming_specular_irradiance
     );
 
