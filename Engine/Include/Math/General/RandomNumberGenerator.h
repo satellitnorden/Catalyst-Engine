@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/ArrayProxy.h>
 
+//Math.
+#include <Math/General/Vector.h>
+
 //STL.
 #include <random>
 
