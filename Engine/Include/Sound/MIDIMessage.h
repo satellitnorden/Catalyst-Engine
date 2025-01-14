@@ -60,4 +60,38 @@ public:
 		};
 	};
 
+	/*
+	*	Returns the note.
+	*/
+	FORCE_INLINE NO_DISCARD uint8 GetNote() const NOEXCEPT
+	{
+		switch (_Type)
+		{
+			case Type::NOTE_ON:
+			{
+				return _NoteOnNote;
+			}
+
+			case Type::NOTE_OFF:
+			{
+				return _NoteOffNote;
+			}
+
+			case Type::AFTERTOUCH:
+			{
+				return _AftertouchNote;
+			}
+
+			case Type::CONTROL_CHANGE:
+			{
+				return _ControlChangeNote;
+			}
+
+			default:
+			{
+				return 0;
+			}
+		}
+	}
+
 };
