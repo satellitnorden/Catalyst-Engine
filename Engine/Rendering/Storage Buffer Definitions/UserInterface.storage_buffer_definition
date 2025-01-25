@@ -11,6 +11,7 @@ struct UserInterfaceInstance
 	uint _Flags;
 	uint _ColorOrTexture;
 	uint _ColorOpacity;
+	float _SmoothingFactor;
 };
 
 StorageBuffer(UserInterface)

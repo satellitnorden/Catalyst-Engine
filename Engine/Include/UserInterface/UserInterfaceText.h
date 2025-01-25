@@ -43,6 +43,11 @@ public:
 	void SetText(const char *const RESTRICT text) NOEXCEPT;
 
 	/*
+	*	Sets the color.
+	*/
+	void SetColor(const Vector3<float32> &color) NOEXCEPT;
+
+	/*
 	*	Sets the opacity.
 	*/
 	void SetOpacity(const float32 opacity) NOEXCEPT;

@@ -7,6 +7,9 @@
 //Concurrency.
 #include <Concurrency/AtomicQueue.h>
 
+//Math.
+#include <Math/General/Curve.h>
+
 //Systems.
 #include <Systems/System.h>
 
@@ -115,6 +118,9 @@ private:
 		//The color/opacity.
 		uint32 _ColorOpacity;
 
+		//The smoothing factor.
+		float32 _SmoothingFactor;
+
 	};
 
 	/*
@@ -135,6 +141,9 @@ private:
 		uint32 _NumberOfInstances;
 
 	};
+
+	//The text smoothing factor curve.
+	Curve<float32, 5> _TextSmoothingFactorCurve;
 
 	//The active user interface scenes.
 	DynamicArray<UserInterfaceScene *RESTRICT> _ActiveUserInterfaceScenes;

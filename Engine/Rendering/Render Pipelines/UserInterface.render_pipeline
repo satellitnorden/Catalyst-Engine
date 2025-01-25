@@ -63,9 +63,6 @@ Vertex
 //The fragment shader.
 Fragment
 {
-    //Constants.
-    #define SMOOTHING_FACTOR (0.325f)
-
     //Declare input parameters.
     InputParameter(vec2, InTextureCoordinate);
     InputParameter(uint, InInstanceIndex);
@@ -90,10 +87,18 @@ Fragment
     if (TEST_BIT(USER_INTERFACE_INSTANCES[InInstanceIndex]._Flags, USER_INTERFACE_INSTANCE_FLAG_TEXT))
     {
         //Calculate the opacity.
-        float opacity = smoothstep(0.5f - SMOOTHING_FACTOR, 0.5f, color.x);
+        float opacity = smoothstep(0.5f - USER_INTERFACE_INSTANCES[InInstanceIndex]._SmoothingFactor, 0.5f, color.x);
 
         //Set the color.
         color = vec4(1.0f, 1.0f, 1.0f, opacity);
+
+        //Drop shadow. (:
+        if (false)
+        {
+            float drop_shadow_opacity = max(1.0f - smoothstep(0.0f, 0.5f, color.x) - opacity, 0.0f);
+            color.rgb *= 1.0f - drop_shadow_opacity;
+            color.a = max(drop_shadow_opacity, opacity);
+        }
     }
 
     //Unpack the color/opacity.

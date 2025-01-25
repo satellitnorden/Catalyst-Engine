@@ -1692,6 +1692,13 @@ void MidiFile::addEvent(const int track,
 	note_on_event->linkEvent(note_off_event);
 }
 
+void MidiFile::removeEvent(int aTrack, int aIndex)
+{
+	std::vector<MidiEvent*> &list = (*m_events[aTrack]).list;
+	list[aIndex] = std::move(list[list.size() - 1]);
+	list.pop_back();
+}
+
 ///////////////////////////////
 //
 // MidiFile::addMetaEvent --

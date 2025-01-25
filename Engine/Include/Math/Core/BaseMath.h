@@ -351,9 +351,10 @@ public:
 	/*
 	*	Scales a value from one range to another.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float32 Scale(const float32 value, const float32 originalMinimum, const float32 originalMaximum, const float32 newMinimum, const float32 newMaximum) NOEXCEPT
+	template <typename TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD TYPE Scale(const TYPE value, const TYPE original_minimum, const TYPE original_maximum, const TYPE new_minimum, const TYPE new_maximum) NOEXCEPT
 	{
-		return (((value - originalMinimum) * (newMaximum - newMinimum)) / (originalMaximum - originalMinimum)) + newMinimum;
+		return (((value - original_minimum) * (new_maximum - new_minimum)) / (original_maximum - original_minimum)) + new_minimum;
 	}
 
 	/*

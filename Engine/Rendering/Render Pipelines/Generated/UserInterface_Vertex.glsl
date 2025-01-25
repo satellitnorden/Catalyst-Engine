@@ -208,6 +208,7 @@ struct UserInterfaceInstance
 	uint _Flags;
 	uint _ColorOrTexture;
 	uint _ColorOpacity;
+	float _SmoothingFactor;
 };
 layout (std430, set = 1, binding = 0) buffer UserInterface
 {

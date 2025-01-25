@@ -208,6 +208,7 @@ struct UserInterfaceInstance
 	uint _Flags;
 	uint _ColorOrTexture;
 	uint _ColorOpacity;
+	float _SmoothingFactor;
 };
 layout (std430, set = 1, binding = 0) buffer UserInterface
 {
@@ -229,7 +230,6 @@ layout (location = 0) out vec4 SceneLowDynamicRange1;
 
 void main()
 {
-    #define SMOOTHING_FACTOR (0.325f)
     vec2 texture_coordinate = InTextureCoordinate;
     vec4 color;
     if (TEST_BIT(USER_INTERFACE_INSTANCES[InInstanceIndex]._Flags, USER_INTERFACE_INSTANCE_FLAG_TEXTURE))
@@ -242,8 +242,14 @@ void main()
     }
     if (TEST_BIT(USER_INTERFACE_INSTANCES[InInstanceIndex]._Flags, USER_INTERFACE_INSTANCE_FLAG_TEXT))
     {
-        float opacity = smoothstep(0.5f - SMOOTHING_FACTOR, 0.5f, color.x);
+        float opacity = smoothstep(0.5f - USER_INTERFACE_INSTANCES[InInstanceIndex]._SmoothingFactor, 0.5f, color.x);
         color = vec4(1.0f, 1.0f, 1.0f, opacity);
+        if (false)
+        {
+            float drop_shadow_opacity = max(1.0f - smoothstep(0.0f, 0.5f, color.x) - opacity, 0.0f);
+            color.rgb *= 1.0f - drop_shadow_opacity;
+            color.a = max(drop_shadow_opacity, opacity);
+        }
     }
     vec4 color_opacity = UnpackColor(USER_INTERFACE_INSTANCES[InInstanceIndex]._ColorOpacity);
     color *= color_opacity;

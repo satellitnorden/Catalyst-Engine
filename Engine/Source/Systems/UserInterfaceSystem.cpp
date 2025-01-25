@@ -47,6 +47,13 @@ public:
 */
 void UserInterfaceSystem::Initialize() NOEXCEPT
 {
+	//Set up the text smoothing factor curve.
+	_TextSmoothingFactorCurve.SetValue(0, 0.5f);
+	_TextSmoothingFactorCurve.SetValue(1, 0.04'00f);
+	_TextSmoothingFactorCurve.SetValue(2, 0.0'25f);
+	_TextSmoothingFactorCurve.SetValue(3, 0.0'125f);
+	_TextSmoothingFactorCurve.SetValue(4, 0.0'0625f);
+
 	//Register the storage buffer.
 	RenderingSystem::Instance->GetBufferManager()->RegisterStorageBuffer
 	(
@@ -127,6 +134,7 @@ RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem
 			primitive->_Type = UserInterfacePrimitiveType::IMAGE;
 			primitive->_Minimum = type_description->_Minimum;
 			primitive->_Maximum = type_description->_Maximum;
+			primitive->_Color = type_description->_Color;
 			primitive->_Opacity = type_description->_Opacity;
 			primitive->_Material = type_description->_Material;
 
@@ -142,6 +150,7 @@ RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem
 			primitive->_Minimum = type_description->_Minimum;
 			primitive->_Maximum = type_description->_Maximum;
 			primitive->_Opacity = type_description->_Opacity;
+			primitive->_Color = type_description->_Color;
 			primitive->_Font = type_description->_Font;
 			primitive->_Scale = type_description->_Scale;
 			primitive->_HorizontalAlignment = type_description->_HorizontalAlignment;
@@ -452,7 +461,10 @@ void UserInterfaceSystem::AddInstances(const UserInterfacePrimitive *const RESTR
 			instance._ColorOrTexture = image_primitive->_Material.GetValue();
 
 			//Set the color/opacity.
-			instance._ColorOpacity = *Color(Vector4<float32>(1.0f, 1.0f, 1.0f, primitive->_Opacity * opacity)).Data();
+			instance._ColorOpacity = *Color(Vector4<float32>(primitive->_Color, primitive->_Opacity * opacity)).Data();
+
+			//Set the smoothing factor.
+			instance._SmoothingFactor = 0.0f;
 
 			break;
 		}
@@ -576,7 +588,10 @@ void UserInterfaceSystem::AddInstances(const UserInterfacePrimitive *const RESTR
 				instance._ColorOrTexture = text_primitive->_Font->_MasterTextureIndex;
 
 				//Set the color/opacity.
-				instance._ColorOpacity = *Color(Vector4<float32>(1.0f, 1.0f, 1.0f, primitive->_Opacity * opacity)).Data();
+				instance._ColorOpacity = *Color(Vector4<float32>(primitive->_Color, primitive->_Opacity * opacity)).Data();
+
+				//Set the smoothing factor.
+				instance._SmoothingFactor = _TextSmoothingFactorCurve.Sample(text_primitive->_Scale);
 
 				//Update the current offset.
 				current_offset += text_primitive->_Font->_CharacterDescriptions[character]._Advance * text_primitive->_Scale * aspect_ratio_reciprocal;

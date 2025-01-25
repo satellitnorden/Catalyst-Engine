@@ -153,6 +153,7 @@ class MidiFile {
 													const int duration,
 													const int note_number,
 													const int velocity);
+		void			 removeEvent			   (int aTrack, int aIndex);
 		MidiEvent&       getEvent                  (int aTrack, int anIndex);
 		const MidiEvent& getEvent                  (int aTrack, int anIndex) const;
 		int              getEventCount             (int aTrack) const;

@@ -142,8 +142,8 @@ void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data
 	PROFILING_SCOPE("FontAssetCompiler::CompileInternal");
 
 	//Define constants.
-	constexpr uint32 PADDING{ 4 };
-	constexpr uint32 PIXEL_HEIGHT{ 64 };
+	constexpr uint32 PADDING{ 8 };
+	constexpr uint32 PIXEL_HEIGHT{ 128 };
 
 	//Set up the parameters.
 	FontParameters parameters;
@@ -266,7 +266,7 @@ void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data
 					i,
 					PADDING,
 					127,
-					127.0f / static_cast<float32>(PADDING / 2),
+					127.0f / static_cast<float32>(PADDING - 2),
 					&width,
 					&height,
 					&x_offset,
@@ -320,7 +320,7 @@ void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data
 					i,
 					PADDING,
 					127,
-					127.0f / static_cast<float32>(PADDING),
+					127.0f / static_cast<float32>(PADDING - 2),
 					&width,
 					&height,
 					&x_offset,

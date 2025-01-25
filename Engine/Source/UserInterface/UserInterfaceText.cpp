@@ -113,6 +113,17 @@ void UserInterfaceText::SetText(const char *const RESTRICT text) NOEXCEPT
 }
 
 /*
+*	Sets the color.
+*/
+void UserInterfaceText::SetColor(const Vector3<float32> &color) NOEXCEPT
+{
+	if (_Primitive)
+	{
+		_Primitive->_Color = color;
+	}
+}
+
+/*
 *	Sets the opacity.
 */
 void UserInterfaceText::SetOpacity(const float32 opacity) NOEXCEPT
