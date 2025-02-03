@@ -90,6 +90,7 @@ void UserInterfaceText::SetText(const char *const RESTRICT text) NOEXCEPT
 			description._Scale = _Scale;
 			description._HorizontalAlignment = _HorizontalAlignment;
 			description._VerticalAlignment = _VerticalAlignment;
+			description._TextBounds = _TextBounds;
 			description._Text = text;
 
 			_Primitive = static_cast<TextUserInterfacePrimitive *RESTRICT>(UserInterfaceSystem::Instance->CreateUserInterfacePrimitive(&description));
@@ -131,6 +132,19 @@ void UserInterfaceText::SetOpacity(const float32 opacity) NOEXCEPT
 	if (_Primitive)
 	{
 		_Primitive->_Opacity = opacity;
+	}
+}
+
+/*
+*	Sets the text bounds.
+*/
+void UserInterfaceText::SetTextBounds(const AxisAlignedBoundingBox2D &text_bounds) NOEXCEPT
+{
+	_TextBounds = text_bounds;
+
+	if (_Primitive)
+	{
+		_Primitive->_TextBounds = _TextBounds;
 	}
 }
 

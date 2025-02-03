@@ -3271,9 +3271,9 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const bool is
 						|| current_line.find("BlendColorSourceFactor(") != std::string::npos
 						|| current_line.find("BlendColorDestinationFactor(") != std::string::npos
 						|| current_line.find("BlendColorOperator(") != std::string::npos
-					|| current_line.find("BlendAlphaSourceFactor(") != std::string::npos
-					|| current_line.find("BlendAlphaDestinationFactor(") != std::string::npos
-					|| current_line.find("BlendAlphaOperator(") != std::string::npos)
+						|| current_line.find("BlendAlphaSourceFactor(") != std::string::npos
+						|| current_line.find("BlendAlphaDestinationFactor(") != std::string::npos
+						|| current_line.find("BlendAlphaOperator(") != std::string::npos)
 			{
 				continue;
 			}

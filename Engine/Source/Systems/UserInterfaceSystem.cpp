@@ -155,6 +155,7 @@ RESTRICTED NO_DISCARD UserInterfacePrimitive *const RESTRICT UserInterfaceSystem
 			primitive->_Scale = type_description->_Scale;
 			primitive->_HorizontalAlignment = type_description->_HorizontalAlignment;
 			primitive->_VerticalAlignment = type_description->_VerticalAlignment;
+			primitive->_TextBounds = type_description->_TextBounds;
 			primitive->_Opacity = type_description->_Opacity;
 			primitive->_Text = std::move(type_description->_Text);
 
@@ -494,6 +495,37 @@ void UserInterfaceSystem::AddInstances(const UserInterfacePrimitive *const RESTR
 				&aligned_maximum
 			);
 
+			//Calculate the scale.
+			float32 scale{ text_primitive->_Scale };
+
+			if (text_primitive->_TextBounds.IsValid())
+			{
+				float32 largest_outside{ 0.0f };
+
+				largest_outside = BaseMath::Maximum<float32>(largest_outside, text_primitive->_TextBounds._Minimum._X - aligned_minimum._X);
+				largest_outside = BaseMath::Maximum<float32>(largest_outside, text_primitive->_TextBounds._Minimum._Y - aligned_minimum._Y);
+				largest_outside = BaseMath::Maximum<float32>(largest_outside, aligned_maximum._X - text_primitive->_TextBounds._Maximum._X);
+				largest_outside = BaseMath::Maximum<float32>(largest_outside, aligned_maximum._Y - text_primitive->_TextBounds._Maximum._Y);
+
+				if (largest_outside > 0.0f)
+				{
+					scale *= 1.0f / (1.0f + (largest_outside * 2.0f));
+
+					UserInterfaceUtilities::CalculateAlignedBoundingBox
+					(
+						text_primitive->_Minimum,
+						text_primitive->_Maximum,
+						text_primitive->_Font,
+						text_primitive->_Text,
+						scale,
+						text_primitive->_HorizontalAlignment,
+						text_primitive->_VerticalAlignment,
+						&aligned_minimum,
+						&aligned_maximum
+					);
+				}
+			}
+
 			//Gather all characters.
 			float32 current_offset{ 0.0f };
 
@@ -523,14 +555,14 @@ void UserInterfaceSystem::AddInstances(const UserInterfacePrimitive *const RESTR
 
 				bounds_minimum._X = aligned_minimum._X + current_offset;
 				bounds_minimum._Y = aligned_minimum._Y;
-				bounds_maximum._X = aligned_minimum._X + current_offset + text_primitive->_Font->_CharacterDescriptions[character]._Size._X * text_primitive->_Scale * aspect_ratio_reciprocal;
-				bounds_maximum._Y = aligned_minimum._Y + text_primitive->_Font->_CharacterDescriptions[character]._Size._Y * text_primitive->_Scale;
+				bounds_maximum._X = aligned_minimum._X + current_offset + text_primitive->_Font->_CharacterDescriptions[character]._Size._X * scale * aspect_ratio_reciprocal;
+				bounds_maximum._Y = aligned_minimum._Y + text_primitive->_Font->_CharacterDescriptions[character]._Size._Y * scale;
 
-				bounds_minimum._X += text_primitive->_Font->_CharacterDescriptions[character]._Offset._X * text_primitive->_Scale * aspect_ratio_reciprocal;
-				bounds_maximum._X += text_primitive->_Font->_CharacterDescriptions[character]._Offset._X * text_primitive->_Scale * aspect_ratio_reciprocal;
+				bounds_minimum._X += text_primitive->_Font->_CharacterDescriptions[character]._Offset._X * scale * aspect_ratio_reciprocal;
+				bounds_maximum._X += text_primitive->_Font->_CharacterDescriptions[character]._Offset._X * scale * aspect_ratio_reciprocal;
 
-				bounds_minimum._Y += text_primitive->_Font->_CharacterDescriptions[character]._Offset._Y * text_primitive->_Scale;
-				bounds_maximum._Y += text_primitive->_Font->_CharacterDescriptions[character]._Offset._Y * text_primitive->_Scale;
+				bounds_minimum._Y += text_primitive->_Font->_CharacterDescriptions[character]._Offset._Y * scale;
+				bounds_maximum._Y += text_primitive->_Font->_CharacterDescriptions[character]._Offset._Y * scale;
 
 				//Set the positions.
 				instance._Positions[0] = Vector4<float32>(bounds_minimum._X, bounds_minimum._Y, 0.0f, 1.0f);
@@ -591,10 +623,10 @@ void UserInterfaceSystem::AddInstances(const UserInterfacePrimitive *const RESTR
 				instance._ColorOpacity = *Color(Vector4<float32>(primitive->_Color, primitive->_Opacity * opacity)).Data();
 
 				//Set the smoothing factor.
-				instance._SmoothingFactor = _TextSmoothingFactorCurve.Sample(text_primitive->_Scale);
+				instance._SmoothingFactor = _TextSmoothingFactorCurve.Sample(scale);
 
 				//Update the current offset.
-				current_offset += text_primitive->_Font->_CharacterDescriptions[character]._Advance * text_primitive->_Scale * aspect_ratio_reciprocal;
+				current_offset += text_primitive->_Font->_CharacterDescriptions[character]._Advance * scale * aspect_ratio_reciprocal;
 			}
 
 			break;

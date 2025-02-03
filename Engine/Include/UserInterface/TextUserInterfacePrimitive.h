@@ -28,6 +28,9 @@ public:
 	//The vertical alignment.
 	TextVerticalAlignment _VerticalAlignment;
 
+	//The text bounds.
+	AxisAlignedBoundingBox2D _TextBounds;
+
 	//The text.
 	DynamicString _Text;
 

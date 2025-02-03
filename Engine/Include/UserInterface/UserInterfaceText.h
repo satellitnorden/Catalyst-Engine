@@ -53,6 +53,11 @@ public:
 	void SetOpacity(const float32 opacity) NOEXCEPT;
 
 	/*
+	*	Sets the text bounds.
+	*/
+	void SetTextBounds(const AxisAlignedBoundingBox2D &text_bounds) NOEXCEPT;
+
+	/*
 	*	Returns the user interface primitives.
 	*/
 	void RetrieveUserInterfacePrimitives(DynamicArray<UserInterfacePrimitive *RESTRICT> *const RESTRICT output) const NOEXCEPT override;
@@ -76,6 +81,9 @@ private:
 
 	//The vertical alignment.
 	TextVerticalAlignment _VerticalAlignment;
+
+	//The text bounds.
+	AxisAlignedBoundingBox2D _TextBounds;
 
 	//The primitive.
 	TextUserInterfacePrimitive *RESTRICT _Primitive{ nullptr };
