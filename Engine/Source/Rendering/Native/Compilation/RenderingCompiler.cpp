@@ -415,6 +415,19 @@ void FindStorageBufferDefinitionFilePath(const char *const RESTRICT name, Dynami
 		}
 	}
 
+	//Try the game directory.
+	{
+		char buffer[MAXIMUM_FILE_PATH_LENGTH];
+		sprintf_s(buffer, "%s\\Storage Buffer Definitions\\%s.storage_buffer_definition", GAME_RENDERING_DIRECTORY_PATH, name);
+
+		if (File::Exists(buffer))
+		{
+			*file_path = buffer;
+
+			return;
+		}
+	}
+
 	ASSERT(false, "Couldn't find storage buffer definition file!");
 }
 
