@@ -78,7 +78,10 @@ public:
 	FORCE_INLINE ~DynamicString() NOEXCEPT
 	{
 		//Free the underlying string.
-		Memory::Free(_String);
+		if (_String)
+		{
+			Memory::Free(_String);
+		}
 	}
 
 	/*

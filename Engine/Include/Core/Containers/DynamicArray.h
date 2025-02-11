@@ -452,10 +452,16 @@ public:
 		}
 
 		//Copy all elements after the index.
-		for (uint64 i{ _Size }; i > index; --i)
+		if (_Size > index)
 		{
-			_Array[i] = _Array[i - 1];
+			new (&_Array[_Size]) TYPE(_Array[_Size - 1]);
+
+			for (uint64 i{ _Size - 1 }; i > index; --i)
+			{
+				_Array[i] = _Array[i - 1];
+			}
 		}
+		
 
 		//Insert the element.
 		_Array[index] = element;
