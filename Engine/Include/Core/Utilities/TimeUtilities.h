@@ -14,6 +14,30 @@ namespace TimeUtilities
 {
 
 	/*
+	*	Prints a time string with hours, minutes and seconds, given a seconds value.
+	*/
+	template <uint64 BUFFER_SIZE>
+	FORCE_INLINE void PrintTimeString(float64 seconds, char (&buffer)[BUFFER_SIZE]) NOEXCEPT
+	{
+		uint32 total_hours{ 0 };
+		uint32 total_minutes{ 0 };
+
+		while (seconds >= 60.0)
+		{
+			++total_minutes;
+			seconds -= 60.0;
+		}
+
+		while (total_minutes >= 60)
+		{
+			++total_hours;
+			total_minutes -= 60;
+		}
+
+		sprintf_s(buffer, "%u hours, %u minutes, %f seconds", total_hours, total_minutes, seconds);
+	}
+
+	/*
 	*	Returns the current date and time as a string in the format YEAR-MONTH-DAY HOUR.MINUTE.SECOND
 	*/
 	FORCE_INLINE void GetCurrentDateAndTime(DynamicString *const RESTRICT output) NOEXCEPT
