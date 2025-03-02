@@ -69,16 +69,10 @@ public:
 		};
 
 		//Fill up the input buffer.
-		for (uint64 i{ 0 }; i < _InputBuffer.Size(); ++i)
-		{
-			_InputBuffer[i] = inputs[i];
-		}
-
-		//Set up the run options.
-		Ort::RunOptions run_options;
+		Memory::Copy(_InputBuffer.Data(), inputs, _InputBuffer.Size() * sizeof(float32));
 
 		//Run the session!
-		_Session.Run(run_options, &INPUT_NAMES[0], &_InputTensor, static_cast<size_t>(1), &OUTPUT_NAMES[0], &_OutputTensor, static_cast<size_t>(1));
+		_Session.Run(_RunOptions, &INPUT_NAMES[0], &_InputTensor, static_cast<size_t>(1), &OUTPUT_NAMES[0], &_OutputTensor, static_cast<size_t>(1));
 
 		//Return the output.
 		return _OutputBuffer.Data();
@@ -106,6 +100,9 @@ private:
 
 	//The output tensor.
 	Ort::Value _OutputTensor;
+
+	//The run options.
+	Ort::RunOptions _RunOptions;
 
 	/*
 	*	Returns the model file path.
