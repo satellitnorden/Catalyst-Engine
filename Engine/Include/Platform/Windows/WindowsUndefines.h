@@ -23,4 +23,5 @@
 #undef IN
 #undef OUT
 #undef ERROR
+#undef DEFAULT_QUALITY
 #endif
