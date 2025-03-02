@@ -1,3 +1,0 @@
-This version of the "armadillo" library was downloaded 2023-10-10 from https://arma.sourceforge.net/ with the following license:
-
-https://www.apache.org/licenses/LICENSE-2.0

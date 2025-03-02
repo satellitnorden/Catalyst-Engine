@@ -57,9 +57,6 @@ public:
 	//The physics.
 	Physics _Physics{ Physics::NULL };
 
-	//Denotes whether or not to use the mlpack library.
-	bool _UseMlpackLibrary{ false };
-
 	//Denotes whether or not to use the ONNX Runtime library.
 	bool _UseONNXRuntimeLibrary{ false };
 
@@ -871,7 +868,7 @@ void GenerateOculusQuest(const GeneralParameters& general_parameters, const Ocul
 /*
 *	Generates Win64.
 */
-void GenerateWin64(const GeneralParameters& general_parameters, const Win64Parameters& platform_parameters)
+void GenerateWin64(const GeneralParameters &general_parameters, const Win64Parameters &platform_parameters)
 {
 	//Remember the error code for filesystem functions.
 	std::error_code error_code;
@@ -890,230 +887,267 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 		}
 	}
 
-	//Read the template CMakeLists.txt file and output a new file.
-	std::ifstream cmake_lists_input_file{ "..\\..\\Catalyst-Engine\\Templates\\CMakeLists_Win64_Template.txt" };
-	std::ofstream cmake_lists_output_file{ "CMakeLists.txt" };
+	//Open the "CMakeLists.txt" file.
+	std::ofstream cmake_lists_file{ "CMakeLists.txt" };
 
-	std::string cmake_lists_line;
+	cmake_lists_file << "#Set the CMake minimum required version." << std::endl;
+	cmake_lists_file << "cmake_minimum_required(VERSION 3.10)" << std::endl;
+	cmake_lists_file << std::endl;
 
-	while (std::getline(cmake_lists_input_file, cmake_lists_line))
+	cmake_lists_file << "#Set the project name." << std::endl;
+	cmake_lists_file << "set(PROJECT_NAME " << general_parameters._ProjectNameNoSpaces.c_str() << "_Win64 C CXX ASM_MASM)" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Set the project." << std::endl;
+	cmake_lists_file << "project(${PROJECT_NAME})" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Set the C++ standard." << std::endl;
+	cmake_lists_file << "set(CMAKE_CXX_STANDARD 20)" << std::endl;
+	cmake_lists_file << "set(CMAKE_CXX_STANDARD_REQUIRED True)" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Set the configuration types." << std::endl;
+	cmake_lists_file << "set(CMAKE_CONFIGURATION_TYPES \"Debug;DebugEditor;Profile;ProfileEditor;Final\")" << std::endl;
+	cmake_lists_file << "set(CMAKE_CONFIGURATION_TYPES \"${CMAKE_CONFIGURATION_TYPES}\" CACHE STRING \"Reset config to what we need\" FORCE)" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "set(CMAKE_EXE_LINKER_FLAGS_DEBUG \"/DEBUG /LTCG:incremental\")" << std::endl;
+	cmake_lists_file << "set(CMAKE_EXE_LINKER_FLAGS_DEBUGEDITOR \"/DEBUG /LTCG:incremental\")" << std::endl;
+	cmake_lists_file << "set(CMAKE_EXE_LINKER_FLAGS_PROFILE \"/DEBUG /LTCG:incremental\")" << std::endl;
+	cmake_lists_file << "set(CMAKE_EXE_LINKER_FLAGS_PROFILEEDITOR \"/DEBUG /LTCG:incremental\")" << std::endl;
+	cmake_lists_file << "set(CMAKE_EXE_LINKER_FLAGS_FINAL \"/LTCG:incremental\")" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Add defines." << std::endl;
+	cmake_lists_file << "add_compile_definitions($<$<CONFIG:Debug>:_DEBUG>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:DebugEditor>:_DEBUG>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:Profile>:NDEBUG>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:ProfileEditor>:NDEBUG>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:Final>:NDEBUG>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t)" << std::endl;
+	cmake_lists_file << "add_compile_definitions(__WINDOWS_WASAPI__)" << std::endl;
+	cmake_lists_file << "add_compile_definitions(__WINDOWS_ASIO__)" << std::endl;
+	cmake_lists_file << "add_compile_definitions(__WINDOWS_MM__)" << std::endl;
+	cmake_lists_file << "add_compile_definitions($<$<CONFIG:Debug>:CATALYST_CONFIGURATION_DEBUG>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:DebugEditor>:CATALYST_CONFIGURATION_DEBUG>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:Profile>:CATALYST_CONFIGURATION_PROFILE>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:ProfileEditor>:CATALYST_CONFIGURATION_PROFILE>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:Final>:CATALYST_CONFIGURATION_FINAL>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t)" << std::endl;
+
 	{
-		bool include_line{ true };
+		const char *distribution_string{ "CATALYST_DISTRIBUTION_NULL" };
 
+		switch (platform_parameters._Distribution)
 		{
-			const size_t project_name_position{ cmake_lists_line.find("[PROJECT_NAME]") };
-
-			if (project_name_position != std::string::npos)
+			case Win64Distribution::STEAM:
 			{
-				cmake_lists_line.replace(project_name_position, strlen("[PROJECT_NAME]"), general_parameters._ProjectNameNoSpaces);
+				distribution_string = "CATALYST_DISTRIBUTION_STEAM";
+
+				break;
 			}
 		}
 
-		{
-			const size_t catalyst_distribution_position{ cmake_lists_line.find("[CATALYST_DISTRIBUTION]") };
-
-			if (catalyst_distribution_position != std::string::npos)
-			{
-				const char* distribution_string{ "CATALYST_DISTRIBUTION_NULL" };
-
-				switch (platform_parameters._Distribution)
-				{
-				case Win64Distribution::STEAM:
-				{
-					distribution_string = "CATALYST_DISTRIBUTION_STEAM";
-
-					break;
-				}
-				}
-
-				cmake_lists_line.replace(catalyst_distribution_position, strlen("[CATALYST_DISTRIBUTION]"), distribution_string);
-			}
-		}
-
-		{
-			const size_t catalyst_physics_position{ cmake_lists_line.find("[CATALYST_PHYSICS]") };
-
-			if (catalyst_physics_position != std::string::npos)
-			{
-				const char* physics_string{ "CATALYST_PHYSICS_NULL" };
-
-				switch (general_parameters._Physics)
-				{
-					case Physics::PHYSX:
-					{
-						physics_string = "CATALYST_PHYSICS_PHYSX";
-
-						break;
-					}
-				}
-
-				cmake_lists_line.replace(catalyst_physics_position, strlen("[CATALYST_PHYSICS]"), physics_string);
-			}
-		}
-
-		{
-			const size_t position{ cmake_lists_line.find("[SET_MLPACK_INCLUDE_DIRECTORIES]") };
-
-			if (position != std::string::npos)
-			{
-				if (general_parameters._UseMlpackLibrary)
-				{
-					cmake_lists_line = "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/mlpack)\n";
-					cmake_lists_line += "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/armadillo)\n";
-					cmake_lists_line += "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/cereal)\n";
-					cmake_lists_line += "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/ensmallen)\n";
-				}
-
-				else
-				{
-					include_line = false;
-				}
-			}
-		}
-
-		{
-			const size_t position{ cmake_lists_line.find("[LINK_PHYSX_LIBRARIES]") };
-
-			if (position != std::string::npos)
-			{
-				switch (general_parameters._Physics)
-				{
-					case Physics::NULL:
-					{
-						cmake_lists_line.replace(position, strlen("[LINK_PHYSX_LIBRARIES]"), "");
-
-						break;
-					}
-
-					case Physics::PHYSX:
-					{
-						cmake_lists_line = "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysX_64> $<$<CONFIG:DebugEditor>:Debug/PhysX_64> $<$<CONFIG:Profile>:Profile/PhysX_64> $<$<CONFIG:ProfileEditor>:Profile/PhysX_64> $<$<CONFIG:Final>:Final/PhysX_64>)\n";
-						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCharacterKinematic_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCharacterKinematic_static_64> $<$<CONFIG:Profile>:Profile/PhysXCharacterKinematic_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCharacterKinematic_static_64> $<$<CONFIG:Final>:Final/PhysXCharacterKinematic_static_64>)\n";
-						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCommon_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCommon_64> $<$<CONFIG:Profile>:Profile/PhysXCommon_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCommon_64> $<$<CONFIG:Final>:Final/PhysXCommon_64>)\n";
-						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCooking_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCooking_64> $<$<CONFIG:Profile>:Profile/PhysXCooking_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCooking_64> $<$<CONFIG:Final>:Final/PhysXCooking_64>)\n";
-						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXExtensions_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXExtensions_static_64> $<$<CONFIG:Profile>:Profile/PhysXExtensions_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXExtensions_static_64> $<$<CONFIG:Final>:Final/PhysXExtensions_static_64>)\n";
-						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXFoundation_64> $<$<CONFIG:DebugEditor>:Debug/PhysXFoundation_64> $<$<CONFIG:Profile>:Profile/PhysXFoundation_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXFoundation_64> $<$<CONFIG:Final>:Final/PhysXFoundation_64>)\n";
-						cmake_lists_line += "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXPvdSDK_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXPvdSDK_static_64> $<$<CONFIG:Profile>:Profile/PhysXPvdSDK_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXPvdSDK_static_64>)\n";
-
-						break;
-					}
-				}
-			}
-		}
-
-		{
-			const size_t position{ cmake_lists_line.find("[LINK_STEAM_LIBRARIES]") };
-
-			if (position != std::string::npos)
-			{
-				switch (platform_parameters._Distribution)
-				{
-					case Win64Distribution::NULL:
-					{
-						cmake_lists_line.replace(position, strlen("[LINK_STEAM_LIBRARIES]"), "");
-
-						break;
-					}
-
-					case Win64Distribution::STEAM:
-					{
-						cmake_lists_line.replace(position, strlen("[LINK_STEAM_LIBRARIES]"), "target_link_libraries(${PROJECT_NAME} steam_api64)");
-
-						break;
-					}
-				}
-			}
-		}
-
-		{
-			const size_t position{ cmake_lists_line.find("[LINK_MLPACK_LIBRARIES]") };
-
-			if (position != std::string::npos)
-			{
-				if (general_parameters._UseMlpackLibrary)
-				{
-					cmake_lists_line = "target_link_libraries(${PROJECT_NAME} libopenblas)";
-				}
-
-				else
-				{
-					include_line = false;
-				}
-			}
-		}
-
-		{
-			const size_t position{ cmake_lists_line.find("[LINK_ONNX_RUNTIME_LIBRARIES]") };
-
-			if (position != std::string::npos)
-			{
-				if (general_parameters._UseONNXRuntimeLibrary)
-				{
-					cmake_lists_line = "target_link_libraries(${PROJECT_NAME} onnxruntime)";
-				}
-
-				else
-				{
-					include_line = false;
-				}
-			}
-		}
-
-		{
-			const size_t position{ cmake_lists_line.find("[MLPACK_CXX_FLAGS]") };
-
-			if (position != std::string::npos)
-			{
-				if (general_parameters._UseMlpackLibrary)
-				{
-					cmake_lists_line.replace(position, strlen("[MLPACK_CXX_FLAGS]"), "/Zc:__cplusplus");
-				}
-
-				else
-				{
-					cmake_lists_line.replace(position, strlen("[MLPACK_CXX_FLAGS]"), "");
-				}
-			}
-		}
-
-		if (include_line)
-		{
-			cmake_lists_output_file << cmake_lists_line << std::endl;
-		}
+		cmake_lists_file << "add_compile_definitions(" << distribution_string << ")" << std::endl;
 	}
+
+	cmake_lists_file << "add_compile_definitions($<$<CONFIG:Debug>:CATALYST_ENABLE_RESOURCE_BUILDING>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:DebugEditor>:CATALYST_ENABLE_RESOURCE_BUILDING>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:Profile>:CATALYST_ENABLE_RESOURCE_BUILDING>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:ProfileEditor>:CATALYST_ENABLE_RESOURCE_BUILDING>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t)" << std::endl;
+	cmake_lists_file << "add_compile_definitions($<$<CONFIG:DebugEditor>:CATALYST_EDITOR>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:ProfileEditor>:CATALYST_EDITOR>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t)" << std::endl;
+
+	{
+		const char *physics_string{ "CATALYST_PHYSICS_NULL" };
+
+		switch (general_parameters._Physics)
+		{
+			case Physics::PHYSX:
+			{
+				physics_string = "CATALYST_PHYSICS_PHYSX";
+
+				break;
+			}
+		}
+
+		cmake_lists_file << "add_compile_definitions(" << physics_string << ")" << std::endl;
+	}
+
+	cmake_lists_file << "add_compile_definitions(CATALYST_PLATFORM_WINDOWS)" << std::endl;
+	cmake_lists_file << "add_compile_definitions(CATALYST_RENDERING_VULKAN)" << std::endl;
+	cmake_lists_file << "add_compile_definitions($<$<CONFIG:Debug>:TRACY_ENABLE>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:DebugEditor>:TRACY_ENABLE>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:Profile>:TRACY_ENABLE>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:ProfileEditor>:TRACY_ENABLE>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t)" << std::endl;
+	cmake_lists_file << "add_compile_definitions($<$<CONFIG:Debug>:TRACY_ON_DEMAND>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:DebugEditor>:TRACY_ON_DEMAND>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:Profile>:TRACY_ON_DEMAND>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:ProfileEditor>:TRACY_ON_DEMAND>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t)" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Add the include/source files." << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE ENGINE_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/*.h ../../Catalyst-Engine/Engine/Include/*.hpp)" << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE ENGINE_INLINE_FILES ../../Catalyst-Engine/Engine/Include/*.inl)" << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE ENGINE_SOURCE_FILES ../../Catalyst-Engine/Engine/Source/*.c ../../Catalyst-Engine/Engine/Source/*.cpp  ../../Catalyst-Engine/Engine/Source/*.asm)" << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE ENGINE_RENDERING_FILES ../../Catalyst-Engine/Engine/Rendering/*.common_shader ../../Catalyst-Engine/Engine/Rendering/*.global_render_data ../../Catalyst-Engine/Engine/Rendering/*.render_pipeline ../../Catalyst-Engine/Engine/Rendering/*.shader_function_library ../../Catalyst-Engine/Engine/Rendering/*.storage_buffer_definition ../../Catalyst-Engine/Engine/Rendering/*.uniform_buffer_definition)" << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE GAME_INCLUDE_FILES ../Code/Include/*.h ../Code/Include/*.hpp)" << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE GAME_RENDERING_FILES ../Rendering/*.common_shader ../Rendering/*.global_render_data ../Rendering/*.render_pipeline ../Rendering/*.shader_function_library ../Rendering/*.storage_buffer_definition ../Rendering/*.uniform_buffer_definition)" << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE GAME_SCRIPT_FILES ../Content/Assets/*.Script)" << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.c ../Code/Source/*.cpp  ../Code/Source/*.asm)" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Add the third party include files." << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE ASSIMP_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/ThirdParty/assimp/*.h ../../Catalyst-Engine/Engine/Include/ThirdParty/assimp/*.hpp)" << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE BC7ENC_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/ThirdParty/bc7enc/*.h)" << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE IMGUI_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/ThirdParty/ImGui/*.h)" << std::endl;
+	cmake_lists_file << "file(GLOB_RECURSE IMGUINODEEDITOR_INCLUDE_FILES ../../Catalyst-Engine/Engine/Include/ThirdParty/imguinodeeditor/*.h ../../Catalyst-Engine/Engine/Include/ThirdParty/imguinodeeditor/*.inl)" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Add the executable." << std::endl;
+	cmake_lists_file << "add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES}  ${ENGINE_RENDERING_FILES} ${GAME_INCLUDE_FILES} ${GAME_RENDERING_FILES} ${GAME_SCRIPT_FILES} ${GAME_SOURCE_FILES} ${ASSIMP_INCLUDE_FILES} ${BC7ENC_INCLUDE_FILES} ${IMGUI_INCLUDE_FILES} ${IMGUINODEEDITOR_INCLUDE_FILES})" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Set the core include paths." << std::endl;
+	cmake_lists_file << "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include)" << std::endl;
+	cmake_lists_file << "target_include_directories(${PROJECT_NAME} PUBLIC ../Code/Include)" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Set the third party include paths." << std::endl;
+	cmake_lists_file << "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/assimp)" << std::endl;
+	cmake_lists_file << "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/bc7enc)" << std::endl;
+	cmake_lists_file << "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/ImGui)" << std::endl;
+	cmake_lists_file << "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/imguinodeeditor)" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Set the library paths." << std::endl;
+	cmake_lists_file << "target_link_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Libraries/Static)" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Link the libraries." << std::endl;
+
+	if (general_parameters._Physics == Physics::PHYSX)
+	{
+		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysX_64> $<$<CONFIG:DebugEditor>:Debug/PhysX_64> $<$<CONFIG:Profile>:Profile/PhysX_64> $<$<CONFIG:ProfileEditor>:Profile/PhysX_64> $<$<CONFIG:Final>:Final/PhysX_64>)" << std::endl;
+		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCharacterKinematic_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCharacterKinematic_static_64> $<$<CONFIG:Profile>:Profile/PhysXCharacterKinematic_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCharacterKinematic_static_64> $<$<CONFIG:Final>:Final/PhysXCharacterKinematic_static_64>)" << std::endl;
+		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCommon_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCommon_64> $<$<CONFIG:Profile>:Profile/PhysXCommon_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCommon_64> $<$<CONFIG:Final>:Final/PhysXCommon_64>)" << std::endl;
+		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCooking_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCooking_64> $<$<CONFIG:Profile>:Profile/PhysXCooking_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCooking_64> $<$<CONFIG:Final>:Final/PhysXCooking_64>)" << std::endl;
+		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXExtensions_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXExtensions_static_64> $<$<CONFIG:Profile>:Profile/PhysXExtensions_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXExtensions_static_64> $<$<CONFIG:Final>:Final/PhysXExtensions_static_64>)" << std::endl;
+		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXFoundation_64> $<$<CONFIG:DebugEditor>:Debug/PhysXFoundation_64> $<$<CONFIG:Profile>:Profile/PhysXFoundation_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXFoundation_64> $<$<CONFIG:Final>:Final/PhysXFoundation_64>)" << std::endl;
+		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXPvdSDK_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXPvdSDK_static_64> $<$<CONFIG:Profile>:Profile/PhysXPvdSDK_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXPvdSDK_static_64>)" << std::endl;
+	}
+
+	if (platform_parameters._Distribution == Win64Distribution::STEAM)
+	{
+		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} steam_api64)" << std::endl;
+	}
+
+	cmake_lists_file << "target_link_libraries(${PROJECT_NAME} vulkan-1)" << std::endl;
+	cmake_lists_file << "target_link_libraries(${PROJECT_NAME}\t$<$<CONFIG:Debug>:Debug/shaderc_shared>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t$<$<CONFIG:DebugEditor>:Debug/shaderc_shared>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t$<$<CONFIG:Profile>:Profile/shaderc_shared>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t$<$<CONFIG:ProfileEditor>:Profile/shaderc_shared>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t)" << std::endl;
+	cmake_lists_file << "target_link_libraries(${PROJECT_NAME} Winmm)" << std::endl;
+	cmake_lists_file << "target_link_libraries(${PROJECT_NAME} xinput)" << std::endl;
+	cmake_lists_file << "target_link_libraries(${PROJECT_NAME}\t$<$<CONFIG:Debug>:Debug/libsoundwave>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t$<$<CONFIG:DebugEditor>:Debug/libsoundwave>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t$<$<CONFIG:Profile>:Profile/libsoundwave>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t$<$<CONFIG:ProfileEditor>:Profile/libsoundwave>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t$<$<CONFIG:Final>:Final/libsoundwave>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t)" << std::endl;
+	cmake_lists_file << "target_link_libraries(${PROJECT_NAME}\t$<$<CONFIG:Debug>:Debug/assimp-vc143-mtd>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t$<$<CONFIG:DebugEditor>:Debug/assimp-vc143-mtd>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t$<$<CONFIG:Profile>:Profile/assimp-vc143-mt>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t$<$<CONFIG:ProfileEditor>:Profile/assimp-vc143-mt>" << std::endl;
+	cmake_lists_file << "\t\t\t\t\t\t\t\t\t\t)" << std::endl;
+
+	if (general_parameters._UseONNXRuntimeLibrary)
+	{
+		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} onnxruntime)" << std::endl;
+	}
+
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Set the startup project." << std::endl;
+	cmake_lists_file << "set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Add the Visual Studio filters." << std::endl;
+	cmake_lists_file << "set(ENGINE_INCLUDE_FILES_ROOT \"${CMAKE_SOURCE_DIR}/../../Catalyst-Engine/Engine/Include\")" << std::endl;
+	cmake_lists_file << "source_group(TREE ${ENGINE_INCLUDE_FILES_ROOT} PREFIX \"Catalyst Engine Include\" FILES ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES})" << std::endl;
+	cmake_lists_file << std::endl;
+	cmake_lists_file << "set(ENGINE_SOURCE_FILES_ROOT \"${CMAKE_SOURCE_DIR}/../../Catalyst-Engine/Engine/Source\")" << std::endl;
+	cmake_lists_file << "source_group(TREE ${ENGINE_SOURCE_FILES_ROOT} PREFIX \"Catalyst Engine Source\" FILES ${ENGINE_SOURCE_FILES})" << std::endl;
+	cmake_lists_file << std::endl;
+	cmake_lists_file << "set(ENGINE_RENDERING_FILES_ROOT \"${CMAKE_SOURCE_DIR}/../../Catalyst-Engine/Engine/Rendering\")" << std::endl;
+	cmake_lists_file << "source_group(TREE ${ENGINE_RENDERING_FILES_ROOT} PREFIX \"Catalyst Engine Rendering\" FILES ${ENGINE_RENDERING_FILES})" << std::endl;
+	cmake_lists_file << std::endl;
+	cmake_lists_file << "set(GAME_INCLUDE_FILES_ROOT \"${CMAKE_SOURCE_DIR}/../Code/Include\")" << std::endl;
+	cmake_lists_file << "source_group(TREE ${GAME_INCLUDE_FILES_ROOT} PREFIX \"${PROJECT_NAME} Include\" FILES ${GAME_INCLUDE_FILES})" << std::endl;
+	cmake_lists_file << std::endl;
+	cmake_lists_file << "set(GAME_RENDERING_FILES_ROOT \"${CMAKE_SOURCE_DIR}/../Rendering\")" << std::endl;
+	cmake_lists_file << "source_group(TREE ${GAME_RENDERING_FILES_ROOT} PREFIX \"${PROJECT_NAME} Rendering\" FILES ${GAME_RENDERING_FILES})" << std::endl;
+	cmake_lists_file << std::endl;
+	cmake_lists_file << "set(GAME_SCRIPT_FILES_ROOT \"${CMAKE_SOURCE_DIR}/../Content/Assets\")" << std::endl;
+	cmake_lists_file << "source_group(TREE ${GAME_SCRIPT_FILES_ROOT} PREFIX \"${PROJECT_NAME} Script\" FILES ${GAME_SCRIPT_FILES})" << std::endl;
+	cmake_lists_file << std::endl;
+	cmake_lists_file << "set(GAME_SOURCE_FILES_ROOT \"${CMAKE_SOURCE_DIR}/../Code/Source\")" << std::endl;
+	cmake_lists_file << "source_group(TREE ${GAME_SOURCE_FILES_ROOT} PREFIX \"${PROJECT_NAME} Source\" FILES ${GAME_SOURCE_FILES})" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Set optimization levels." << std::endl;
+	cmake_lists_file << "set(CMAKE_CXX_FLAGS_DEBUG \"/Od /Oi /MTd /sdl- /GL /Zi\")" << std::endl;
+	cmake_lists_file << "set(CMAKE_CXX_FLAGS_DEBUGEDITOR \"/Od /Oi /MTd /sdl- /GL /Zi\")" << std::endl;
+	cmake_lists_file << "set(CMAKE_CXX_FLAGS_PROFILE \"/O2 /Oi /MT /sdl- /GL /Zi\")" << std::endl;
+	cmake_lists_file << "set(CMAKE_CXX_FLAGS_PROFILEEDITOR \"/O2 /Oi /MT /sdl- /GL /Zi\")" << std::endl;
+	cmake_lists_file << "set(CMAKE_CXX_FLAGS_FINAL \"/O2 /Oi /MT /sdl- /GL\")" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Remove the ZERO_CHECK project." << std::endl;
+	cmake_lists_file << "set(CMAKE_SUPPRESS_REGENERATION true)" << std::endl;
+	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "#Add build generation for the Final config." << std::endl;
+	cmake_lists_file << "add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND if $(Configuration) == Final call \"RunBuildGeneration.bat\")" << std::endl;
+	cmake_lists_file << std::endl;
 
 	//Add the CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION define.
 	if (general_parameters._IncludeEnvironmentResourceCollection)
 	{
-		cmake_lists_output_file << std::endl;
-		cmake_lists_output_file << "#Include the enviroment resource collection." << std::endl;
-		cmake_lists_output_file << "add_compile_definitions(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)" << std::endl;
+		cmake_lists_file << std::endl;
+		cmake_lists_file << "#Include the enviroment resource collection." << std::endl;
+		cmake_lists_file << "add_compile_definitions(CATALYST_INCLUDE_ENVIROMENT_RESOURCE_COLLECTION)" << std::endl;
 	}
 
 	//Add the CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION define.
 	if (general_parameters._IncludeExtraResourceCollection)
 	{
-		cmake_lists_output_file << std::endl;
-		cmake_lists_output_file << "#Include the extra resource collection." << std::endl;
-		cmake_lists_output_file << "add_compile_definitions(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)" << std::endl;
+		cmake_lists_file << std::endl;
+		cmake_lists_file << "#Include the extra resource collection." << std::endl;
+		cmake_lists_file << "add_compile_definitions(CATALYST_INCLUDE_EXTRA_RESOURCE_COLLECTION)" << std::endl;
 	}
 
 	//Add the code generation pre-build step, if requested.
 	if (general_parameters._EnableCodeGeneration)
 	{
-		cmake_lists_output_file << std::endl;
-		cmake_lists_output_file << "#Add the code generation pre-build step." << std::endl;
-		cmake_lists_output_file << "add_custom_command(" << std::endl;
-		cmake_lists_output_file << "TARGET ${PROJECT_NAME}" << std::endl;
-		cmake_lists_output_file << "PRE_BUILD" << std::endl;
-		cmake_lists_output_file << "COMMAND" << std::endl;
-		cmake_lists_output_file << "call \"RunCodeGeneration.bat\"";
-		cmake_lists_output_file << ")" << std::endl;
+		cmake_lists_file << std::endl;
+		cmake_lists_file << "#Add the code generation pre-build step." << std::endl;
+		cmake_lists_file << "add_custom_command(" << std::endl;
+		cmake_lists_file << "TARGET ${PROJECT_NAME}" << std::endl;
+		cmake_lists_file << "PRE_BUILD" << std::endl;
+		cmake_lists_file << "COMMAND" << std::endl;
+		cmake_lists_file << "call \"RunCodeGeneration.bat\"";
+		cmake_lists_file << ")" << std::endl;
 	}
 
-	//Close the files.
-	cmake_lists_input_file.close();
-	cmake_lists_output_file.close();
+	//Close the file.
+	cmake_lists_file.close();
 
 	//Remove all the contents of the Win64 folder.
 	std::filesystem::remove_all("Win64", error_code); CHECK_ERROR_CODE();
@@ -1200,16 +1234,6 @@ void GenerateWin64(const GeneralParameters& general_parameters, const Win64Param
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Final\\PhysXCommon_64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Final\\PhysXCooking_64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Final\\PhysXFoundation_64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		}
-
-		//Copy libopenblas.dll.
-		if (general_parameters._UseMlpackLibrary)
-		{
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\libopenblas.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
 
 		//Copy onnxruntime.dll.
@@ -1340,12 +1364,6 @@ int main(int argument_count, char* arguments[])
 				{
 					general_parameters._Physics = Physics::PHYSX;
 				}
-			}
-
-			//Should the mlpack library be used?
-			else if (identifier == "USE_MLPACK_LIBRARY")
-			{
-				general_parameters._UseMlpackLibrary = true;
 			}
 
 			//Should the ONNX Runtime library be used?

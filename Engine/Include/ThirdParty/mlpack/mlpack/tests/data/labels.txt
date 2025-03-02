@@ -1,3 +1,0 @@
-lab1.csv
-lab2.csv
-lab3.csv
