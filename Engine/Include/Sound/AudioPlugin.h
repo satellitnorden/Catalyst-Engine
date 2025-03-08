@@ -12,6 +12,7 @@
 #include <Math/Geometry/AxisAlignedBoundingBox2D.h>
 
 //Sound.
+#include <Sound/AudioProcessContext.h>
 #include <Sound/MIDIMessage.h>
 
 //User interface.
@@ -454,6 +455,7 @@ public:
 	*/
 	FORCE_INLINE virtual void Process
 	(
+		const AudioProcessContext &context,
 		const DynamicArray<DynamicArray<float32>> &inputs,
 		DynamicArray<DynamicArray<float32>> *const RESTRICT outputs,
 		const uint32 number_of_samples,
