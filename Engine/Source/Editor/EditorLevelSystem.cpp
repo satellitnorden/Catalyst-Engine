@@ -84,6 +84,28 @@ FORCE_INLINE NO_DISCARD bool TextInputWidget(const char *const RESTRICT label, c
 }
 
 /*
+*	Creates a custom bool widget.
+*/
+FORCE_INLINE void BoolWidget
+(
+	const char *const RESTRICT label,
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField &editable_field,
+	bool *const RESTRICT value
+) NOEXCEPT
+{
+	bool _value{ *value };
+
+	if (ImGui::Checkbox(label, &_value))
+	{
+		component->PreEditableFieldChange(entity, editable_field);
+		*value = _value;
+		component->PostEditableFieldChange(entity, editable_field);
+	}
+}
+
+/*
 *	Creates a custom color widget.
 */
 FORCE_INLINE void ColorWidget
@@ -1634,6 +1656,22 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 					{
 						switch (editable_field._Type)
 						{
+							case ComponentEditableField::Type::BOOL:
+							{
+								bool *const RESTRICT value{ component->EditableFieldData<bool>(selected_entity, editable_field) };
+
+								BoolWidget
+								(
+									editable_field._Name,
+									component,
+									selected_entity,
+									editable_field,
+									value
+								);
+
+								break;
+							}
+
 							case ComponentEditableField::Type::COLOR:
 							{
 								Vector3<float32> *const RESTRICT value{ component->EditableFieldData<Vector3<float32>>(selected_entity, editable_field) };

@@ -54,6 +54,15 @@ namespace EntitySerialization
 			{
 				switch (editable_field._Type)
 				{
+					case ComponentEditableField::Type::BOOL:
+					{
+						const bool *const RESTRICT data{ component->EditableFieldData<bool>(entity, editable_field) };
+
+						component_entry[editable_field._Name] = *data;
+
+						break;
+					}
+
 					case ComponentEditableField::Type::COLOR:
 					{
 						const Vector3<float32> *const RESTRICT data{ component->EditableFieldData<Vector3<float32>>(entity, editable_field) };
@@ -309,6 +318,15 @@ namespace EntitySerialization
 					{
 						switch (editable_field._Type)
 						{
+							case ComponentEditableField::Type::BOOL:
+							{
+								const bool value{ editable_field_entry.get<bool>() };
+
+								stream_archive->Write(&value, sizeof(bool));
+
+								break;
+							}
+
 							case ComponentEditableField::Type::COLOR:
 							{
 								Vector3<float32> color;
@@ -576,6 +594,16 @@ namespace EntitySerialization
 
 				switch (editable_field->_Type)
 				{
+					case ComponentEditableField::Type::BOOL:
+					{
+						bool data;
+						stream_archive.Read(&data, sizeof(bool), stream_archive_position);
+
+						Memory::Copy(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset), &data, sizeof(bool));
+
+						break;
+					}
+
 					case ComponentEditableField::Type::COLOR:
 					{
 						Vector3<float32> data;

@@ -1,3 +1,4 @@
+#if defined(CATALYST_HAS_ONNX)
 //Header file.
 #include <AI/ONNXModel.h>
 
@@ -151,3 +152,4 @@ NO_DISCARD const float32 *const RESTRICT ONNXModel::Run(const float32 *const RES
 	//Run the model.
 	return static_cast<ONNXData *const RESTRICT>(_Data)->Run(inputs);
 }
+#endif

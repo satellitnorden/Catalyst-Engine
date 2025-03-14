@@ -622,7 +622,7 @@ void PhysicsSystem::SubGetActorWorldTransform(const ActorHandle actor_handle, Wo
 
 	//Fill in the world transform.
 	world_transform->SetAbsolutePosition(*static_cast<const Vector3<float32> *const RESTRICT>(static_cast<const void *const RESTRICT>(&transform.p)));
-	world_transform->SetRotation(*static_cast<const Quaternion* const RESTRICT>(static_cast<const void* const RESTRICT>(&transform.q)));
+	world_transform->SetRotation(*static_cast<const Quaternion *const RESTRICT>(static_cast<const void* const RESTRICT>(&transform.q)));
 	world_transform->SetScale(1.0f);
 }
 

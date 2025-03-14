@@ -126,6 +126,16 @@ protected:
 	virtual NO_DISCARD void *const RESTRICT SubEditableFieldData(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT = 0;
 
 	/*
+	*	Adds an editable bool field.
+	*/
+	void AddEditableBoolField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
 	*	Adds an editable color field.
 	*/
 	void AddEditableColorField

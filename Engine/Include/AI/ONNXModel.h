@@ -1,3 +1,4 @@
+#if defined(CATALYST_HAS_ONNX)
 #pragma once
 
 //Core.
@@ -32,3 +33,4 @@ private:
 	void *RESTRICT _Data{ nullptr };
 
 };
+#endif

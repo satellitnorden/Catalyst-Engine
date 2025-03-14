@@ -153,6 +153,13 @@ void StaticModelComponent::Initialize() NOEXCEPT
 		offsetof(StaticModelInstanceData, _CollisionType)
 	);
 
+	AddEditableBoolField
+	(
+		"Simulate Physics",
+		offsetof(StaticModelInitializationData, _ModelSimulationConfiguration._SimulatePhysics),
+		offsetof(StaticModelInstanceData, _ModelSimulationConfiguration._SimulatePhysics)
+	);
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Register the debug command.
 	DebugSystem::Instance->RegisterCheckboxDebugCommand

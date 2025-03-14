@@ -989,6 +989,12 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:Profile>:TRACY_ON_DEMAND>" << std::endl;
 	cmake_lists_file << "\t\t\t\t\t\t$<$<CONFIG:ProfileEditor>:TRACY_ON_DEMAND>" << std::endl;
 	cmake_lists_file << "\t\t\t\t\t\t)" << std::endl;
+
+	if (general_parameters._UseONNXRuntimeLibrary)
+	{
+		cmake_lists_file << "add_compile_definitions(CATALYST_HAS_ONNX>" << std::endl;
+	}
+
 	cmake_lists_file << std::endl;
 
 	cmake_lists_file << "#Add the include/source files." << std::endl;
