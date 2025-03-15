@@ -31,7 +31,8 @@ enum class Win64Distribution
 enum class Physics
 {
 	NULL,
-	PHYSX
+	PHYSX,
+	JOLT
 };
 
 /*
@@ -880,7 +881,7 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 		{
 			const std::string file_path{ entry.path().string() };
 
-			if (file_path != ".gitignore")
+			if (file_path.find(".gitignore") != std::string::npos)
 			{
 				std::filesystem::remove(file_path, error_code); CHECK_ERROR_CODE();
 			}
@@ -972,6 +973,13 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 
 				break;
 			}
+
+			case Physics::JOLT:
+			{
+				physics_string = "CATALYST_PHYSICS_JOLT";
+
+				break;
+			}
 		}
 
 		cmake_lists_file << "add_compile_definitions(" << physics_string << ")" << std::endl;
@@ -1006,6 +1014,13 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 	cmake_lists_file << "file(GLOB_RECURSE GAME_RENDERING_FILES ../Rendering/*.common_shader ../Rendering/*.global_render_data ../Rendering/*.render_pipeline ../Rendering/*.shader_function_library ../Rendering/*.storage_buffer_definition ../Rendering/*.uniform_buffer_definition)" << std::endl;
 	cmake_lists_file << "file(GLOB_RECURSE GAME_SCRIPT_FILES ../Content/Assets/*.Script)" << std::endl;
 	cmake_lists_file << "file(GLOB_RECURSE GAME_SOURCE_FILES ../Code/Source/*.c ../Code/Source/*.cpp  ../Code/Source/*.asm)" << std::endl;
+
+	if (general_parameters._Physics == Physics::JOLT)
+	{
+		cmake_lists_file << "file(GLOB_RECURSE THIRD_PARTY_JOLT_INCLUDE_FILES \"../../Catalyst-Engine/Engine/Third Party/Jolt/*.h\")" << std::endl;
+		cmake_lists_file << "file(GLOB_RECURSE THIRD_PARTY_JOLT_SOURCE_FILES \"../../Catalyst-Engine/Engine/Third Party/Jolt/*.cpp\")" << std::endl;
+	}
+
 	cmake_lists_file << std::endl;
 
 	cmake_lists_file << "#Add the third party include files." << std::endl;
@@ -1016,7 +1031,15 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 	cmake_lists_file << std::endl;
 
 	cmake_lists_file << "#Add the executable." << std::endl;
-	cmake_lists_file << "add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES}  ${ENGINE_RENDERING_FILES} ${GAME_INCLUDE_FILES} ${GAME_RENDERING_FILES} ${GAME_SCRIPT_FILES} ${GAME_SOURCE_FILES} ${ASSIMP_INCLUDE_FILES} ${BC7ENC_INCLUDE_FILES} ${IMGUI_INCLUDE_FILES} ${IMGUINODEEDITOR_INCLUDE_FILES})" << std::endl;
+	cmake_lists_file << "add_executable(${PROJECT_NAME} WIN32 ${ENGINE_INCLUDE_FILES} ${ENGINE_INLINE_FILES} ${ENGINE_SOURCE_FILES} ${ENGINE_RENDERING_FILES} ${GAME_INCLUDE_FILES} ${GAME_RENDERING_FILES} ${GAME_SCRIPT_FILES} ${GAME_SOURCE_FILES} ${ASSIMP_INCLUDE_FILES} ${BC7ENC_INCLUDE_FILES} ${IMGUI_INCLUDE_FILES} ${IMGUINODEEDITOR_INCLUDE_FILES}";
+	
+	if (general_parameters._Physics == Physics::JOLT)
+	{
+		cmake_lists_file << " ${THIRD_PARTY_JOLT_INCLUDE_FILES} ${THIRD_PARTY_JOLT_SOURCE_FILES}";
+	}
+	
+	cmake_lists_file << ")" << std::endl;
+
 	cmake_lists_file << std::endl;
 
 	cmake_lists_file << "#Set the core include paths." << std::endl;
@@ -1029,6 +1052,12 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 	cmake_lists_file << "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/bc7enc)" << std::endl;
 	cmake_lists_file << "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/ImGui)" << std::endl;
 	cmake_lists_file << "target_include_directories(${PROJECT_NAME} PUBLIC ../../Catalyst-Engine/Engine/Include/ThirdParty/imguinodeeditor)" << std::endl;
+
+	if (general_parameters._Physics == Physics::JOLT)
+	{
+		cmake_lists_file << "target_include_directories(${PROJECT_NAME} PUBLIC \"../../Catalyst-Engine/Engine/Third Party/Jolt\")" << std::endl;
+	}
+
 	cmake_lists_file << std::endl;
 
 	cmake_lists_file << "#Set the library paths." << std::endl;
@@ -1094,6 +1123,19 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 	cmake_lists_file << "set(ENGINE_RENDERING_FILES_ROOT \"${CMAKE_SOURCE_DIR}/../../Catalyst-Engine/Engine/Rendering\")" << std::endl;
 	cmake_lists_file << "source_group(TREE ${ENGINE_RENDERING_FILES_ROOT} PREFIX \"Catalyst Engine Rendering\" FILES ${ENGINE_RENDERING_FILES})" << std::endl;
 	cmake_lists_file << std::endl;
+
+	cmake_lists_file << "set(ENGINE_THIRD_PARTY_FILES_ROOT \"${CMAKE_SOURCE_DIR}/../../Catalyst-Engine/Engine/Third Party\")" << std::endl;
+	cmake_lists_file << "source_group(TREE ${ENGINE_THIRD_PARTY_FILES_ROOT} PREFIX \"Catalyst Engine Third Party\" FILES ";
+
+	if (general_parameters._Physics == Physics::JOLT)
+	{
+		cmake_lists_file << "${THIRD_PARTY_JOLT_INCLUDE_FILES} ${THIRD_PARTY_JOLT_SOURCE_FILES}";
+	}
+
+	cmake_lists_file << ")" << std::endl;
+
+	cmake_lists_file << std::endl;
+
 	cmake_lists_file << "set(GAME_INCLUDE_FILES_ROOT \"${CMAKE_SOURCE_DIR}/../Code/Include\")" << std::endl;
 	cmake_lists_file << "source_group(TREE ${GAME_INCLUDE_FILES_ROOT} PREFIX \"${PROJECT_NAME} Include\" FILES ${GAME_INCLUDE_FILES})" << std::endl;
 	cmake_lists_file << std::endl;
@@ -1369,6 +1411,11 @@ int main(int argument_count, char* arguments[])
 				if (argument == "PHYSX")
 				{
 					general_parameters._Physics = Physics::PHYSX;
+				}
+
+				else if (argument == "JOLT")
+				{
+					general_parameters._Physics = Physics::JOLT;
 				}
 			}
 
