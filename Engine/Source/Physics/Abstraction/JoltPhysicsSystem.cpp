@@ -2,6 +2,9 @@
 //Header file.
 #include <Systems/PhysicsSystem.h>
 
+//Physics.
+#include <Physics/Abstraction/JoltCharacterControllerAbstractionData.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/MemorySystem.h>
@@ -13,6 +16,8 @@
 #include <Jolt/Core/JobSystemThreadPool.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
+#include <Jolt/Physics/Character/Character.h>
+#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/HeightFieldShape.h>
 
 //Enumeration covering all physics layers.
@@ -150,6 +155,9 @@ namespace JoltPhysicsSystemData
 	//The job system thread pool.
 	JPH::JobSystemThreadPool *RESTRICT _JobSystemThreadPool;
 
+	//Container for all characters.
+	DynamicArray<JPH::Character *RESTRICT> _Characters;
+
 }
 
 /*
@@ -206,6 +214,12 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 
 	//Update the physics system!
 	JoltPhysicsSystemData::_System.Update(delta_time, number_of_collision_steps, JoltPhysicsSystemData::_TemporaryAllocator, JoltPhysicsSystemData::_JobSystemThreadPool);
+
+	//Post-update all characters.
+	for (JPH::Character *const RESTRICT character : JoltPhysicsSystemData::_Characters)
+	{
+		character->PostSimulation(0.1f);
+	}
 }
 
 /*
@@ -242,6 +256,9 @@ void PhysicsSystem::SubCreateHeightFieldActor
 	//Retrieve the absolute world position.
 	const Vector3<float32> absolute_world_position{ world_position.GetAbsolutePosition() };
 
+	//Calculate the offset.
+	const float32 offset{ static_cast<float32>(height_field.GetResolution()) * 0.5f };
+
 	//Retrieve the body interface.
 	JPH::BodyInterface &body_interface = JoltPhysicsSystemData::_System.GetBodyInterface();
 
@@ -249,7 +266,7 @@ void PhysicsSystem::SubCreateHeightFieldActor
 	const JPH::HeightFieldShapeSettings height_field_shape_settings
 	{
 		height_field.Data(),
-		JPH::Vec3(absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z),
+		JPH::Vec3(absolute_world_position._X - offset, absolute_world_position._Y, absolute_world_position._Z - offset),
 		JPH::Vec3(1.0f, 1.0f, 1.0f),
 		height_field.GetResolution()
 	};
@@ -330,6 +347,38 @@ RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCrea
 {
 	//Set up the abstraction data.
 	Any<CharacterController::ABSTRACTION_DATA_SIZE> abstraction_data;
+
+	{
+		//Set up the capsule shape settings.
+		const JPH::CapsuleShapeSettings capsule_shape_settings
+		{
+			configuration._CapsuleHeight * 0.5f,
+			configuration._CapsuleRadius
+		};
+
+		//Create the shape.
+		const JPH::ShapeSettings::ShapeResult capsule_shape_result{ capsule_shape_settings.Create() };
+
+		//Set up the character settings.
+		JPH::CharacterSettings character_settings;
+
+		character_settings.mShape = capsule_shape_result.Get();
+		character_settings.mSupportingVolume = JPH::Plane(JPH::Vec3::sAxisY(), -configuration._CapsuleRadius);
+		character_settings.mMaxSlopeAngle = BaseMath::DegreesToRadians(90.0f);
+		character_settings.mLayer = static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC);
+		character_settings.mMass = 80.0f;
+		character_settings.mFriction = 1.0f;
+		character_settings.mGravityFactor = 1.0f;
+
+		//Allocate the character.
+		abstraction_data.Get<JoltCharacterControllerAbstractionData>()->_Character = new JPH::Character(&character_settings, JPH::Vec3(0.0f, 0.0f, 0.0f), JPH::Quat::sIdentity(), 0, &JoltPhysicsSystemData::_System);
+	
+		//Add the character to the physics system.
+		abstraction_data.Get<JoltCharacterControllerAbstractionData>()->_Character->AddToPhysicsSystem();
+	}
+
+	//Add the character.
+	JoltPhysicsSystemData::_Characters.Emplace(abstraction_data.Get<JoltCharacterControllerAbstractionData>()->_Character);
 
 	return new (MemorySystem::Instance->TypeAllocate<CharacterController>()) CharacterController(abstraction_data);
 }
