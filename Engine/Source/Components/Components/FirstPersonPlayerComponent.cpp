@@ -284,6 +284,7 @@ void FirstPersonPlayerComponent::SerialUpdate(const UpdatePhase update_phase) NO
 					instance_data._VerticalVelocity += -PhysicsConstants::GRAVITY * delta_time;
 				}
 
+#if defined(CATALYST_PHYSICS_PHYSX)
 				//Calculate the total displacement.
 				Vector3<float32> total_displacement{ 0.0f, 0.0f, 0.0f };
 
@@ -292,6 +293,21 @@ void FirstPersonPlayerComponent::SerialUpdate(const UpdatePhase update_phase) NO
 
 				//Move the character controller.
 				instance_data._CharacterController->Move(total_displacement);
+#endif
+
+#if defined(CATALYST_PHYSICS_JOLT)
+				Vector3<float32> linear_velocity{ instance_data._CharacterController->GetLinearVelocity() };
+
+				linear_velocity._X = movement._X * current_speed;
+				linear_velocity._Z = movement._Z * current_speed;
+
+				if (instance_data._WantsToJump && instance_data._CharacterController->IsOnGround())
+				{
+					linear_velocity._Y = FirstPersonPlayerComponentConstants::JUMP_FORCE;
+				}
+
+				instance_data._CharacterController->SetLinearVelocity(linear_velocity);
+#endif
 
 				//Update the current height.
 				instance_data._HeightSpringDampingSystem.SetDesired(instance_data._IsCrouching ? FirstPersonPlayerComponentConstants::CROUCHING_HEIGHT : FirstPersonPlayerComponentConstants::STANDING_HEIGHT);

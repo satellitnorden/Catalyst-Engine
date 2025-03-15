@@ -218,7 +218,7 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 	//Post-update all characters.
 	for (JPH::Character *const RESTRICT character : JoltPhysicsSystemData::_Characters)
 	{
-		character->PostSimulation(0.1f);
+		character->PostSimulation(0.05f);
 	}
 }
 
@@ -329,7 +329,9 @@ void PhysicsSystem::SubUpdateWorldTransform(const WorldTransform &world_transfor
 */
 void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
-	
+	result->_HasHit = false;
+	result->_HitDistance = FLOAT32_MAXIMUM;
+	result->_Type = RaycastResult::Type::NONE;
 }
 
 /*
@@ -364,7 +366,7 @@ RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCrea
 
 		character_settings.mShape = capsule_shape_result.Get();
 		character_settings.mSupportingVolume = JPH::Plane(JPH::Vec3::sAxisY(), -configuration._CapsuleRadius);
-		character_settings.mMaxSlopeAngle = BaseMath::DegreesToRadians(90.0f);
+		character_settings.mMaxSlopeAngle = BaseMath::DegreesToRadians(45.0f);
 		character_settings.mLayer = static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC);
 		character_settings.mMass = 80.0f;
 		character_settings.mFriction = 1.0f;

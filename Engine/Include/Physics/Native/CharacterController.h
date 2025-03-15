@@ -50,6 +50,16 @@ public:
 	*/
 	void ResizeCapsuleHeight(const float32 new_height) NOEXCEPT;
 
+	/*
+	*	Returns the linear velocity.
+	*/
+	NO_DISCARD Vector3<float32> GetLinearVelocity() NOEXCEPT;
+
+	/*
+	*	Sets the linear velocity.
+	*/
+	void SetLinearVelocity(const Vector3<float32> &value) NOEXCEPT;
+
 private:
 
 	//The abstraction data.
