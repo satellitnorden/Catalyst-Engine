@@ -9,9 +9,11 @@
 //Third party.
 #include <Jolt/Jolt.h>
 #include <Jolt/RegisterTypes.h>
-#include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Core/Factory.h>
 #include <Jolt/Core/JobSystemThreadPool.h>
+#include <Jolt/Physics/PhysicsSystem.h>
+#include <Jolt/Physics/Body/BodyCreationSettings.h>
+#include <Jolt/Physics/Collision/Shape/HeightFieldShape.h>
 
 //Enumeration covering all physics layers.
 enum class PhysicsLayer : uint8
@@ -237,7 +239,32 @@ void PhysicsSystem::SubCreateHeightFieldActor
 	ActorHandle *const RESTRICT actor_handle
 ) NOEXCEPT
 {
-	
+	//Retrieve the absolute world position.
+	const Vector3<float32> absolute_world_position{ world_position.GetAbsolutePosition() };
+
+	//Retrieve the body interface.
+	JPH::BodyInterface &body_interface = JoltPhysicsSystemData::_System.GetBodyInterface();
+
+	//Set up the height field shape settings.
+	const JPH::HeightFieldShapeSettings height_field_shape_settings
+	{
+		height_field.Data(),
+		JPH::Vec3(absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z),
+		JPH::Vec3(1.0f, 1.0f, 1.0f),
+		height_field.GetResolution()
+	};
+
+	//Create the shape.
+	const JPH::ShapeSettings::ShapeResult height_field_shape_result{ height_field_shape_settings.Create() };
+
+	//Set up the body creationg settings.
+	const JPH::BodyCreationSettings body_creation_settings{ height_field_shape_result.Get(), JPH::Vec3(0.0f, 0.0f, 0.0f), JPH::Quat::sIdentity(), JPH::EMotionType::Static, static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
+
+	//Create the body.
+	const JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
+
+	//Add the body!
+	body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
 }
 
 /*
