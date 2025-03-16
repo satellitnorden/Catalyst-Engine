@@ -15,6 +15,9 @@
 #include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
+#if defined(CATALYST_EDITOR)
+#include <Systems/CatalystEditorSystem.h>
+#endif
 #include <Systems/ContentSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Systems/DebugSystem.h>
@@ -118,6 +121,28 @@ void GatherStaticModelWireframeRenderInputStream(RenderInputStream *const RESTRI
 	}
 }
 #endif
+
+/*
+*	Patches a model simulation configuration.
+*/
+FORCE_INLINE NO_DISCARD const ModelSimulationConfiguration PatchModelSimulationConfiguration(ModelSimulationConfiguration &configuration) NOEXCEPT
+{
+#if defined(CATALYST_EDITOR)
+	if (!CatalystEditorSystem::Instance->IsInGame())
+	{
+		ModelSimulationConfiguration _configuration{ configuration };
+		_configuration._SimulatePhysics = false;
+		return _configuration;
+	}
+
+	else
+	{
+		return configuration;
+	}
+#else
+	return configuration;
+#endif
+}
 
 /*
 *	Initializes this component.
@@ -232,7 +257,7 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 				WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(InstanceToEntity(instance_index)) };
 
 				//Update the world transform is this static model instance is physics-simulated.
-				if (instance_data._PhysicsActorHandle && instance_data._ModelSimulationConfiguration._SimulatePhysics)
+				if (instance_data._PhysicsActorHandle && PatchModelSimulationConfiguration(instance_data._ModelSimulationConfiguration)._SimulatePhysics)
 				{
 					PhysicsSystem::Instance->GetActorWorldTransform(instance_data._PhysicsActorHandle, &world_transform_instance_data._CurrentWorldTransform);
 				}
@@ -440,7 +465,7 @@ void StaticModelComponent::PostCreateInstance(Entity *const RESTRICT entity) NOE
 			static_model_instance_data._CollisionType,
 			static_model_instance_data._Model->_ModelSpaceAxisAlignedBoundingBox,
 			static_model_instance_data._Model->_CollisionModel,
-			static_model_instance_data._ModelSimulationConfiguration,
+			PatchModelSimulationConfiguration(static_model_instance_data._ModelSimulationConfiguration),
 			&static_model_instance_data._PhysicsActorHandle
 		);
 	}
@@ -517,7 +542,7 @@ void StaticModelComponent::PostEditableFieldChange(Entity *const RESTRICT entity
 				instance_data._CollisionType,
 				instance_data._Model->_ModelSpaceAxisAlignedBoundingBox,
 				instance_data._Model->_CollisionModel,
-				instance_data._ModelSimulationConfiguration,
+				PatchModelSimulationConfiguration(instance_data._ModelSimulationConfiguration),
 				&instance_data._PhysicsActorHandle
 			);
 		}

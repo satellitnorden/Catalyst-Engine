@@ -312,24 +312,32 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 */
 void PhysicsSystem::SubCreateCollisionModel(const CollisionModelData &collision_model_data, CollisionModelHandle *const RESTRICT collision_model) NOEXCEPT
 {
-	/*
-	//Allocate the shape.
-	JPH::MeshShape *const RESTRICT shape{ new JPH::MeshShape() };
+	//Fill up the triangles.
+	JPH::Array<JPH::Triangle> triangles;
 
-	//Construct the stream in.
-	StreamIn stream_in{ collision_model_data._Data.Data(), collision_model_data._Data.Size() };
+	{
+		const uint64 number_of_triangles{ collision_model_data._Data.Size() / sizeof(JPH::Triangle) };
+		triangles.resize(number_of_triangles);
+		Memory::Copy(triangles.data(), collision_model_data._Data.Data(), number_of_triangles * sizeof(JPH::Triangle));
+	}
 
-	//Restore the binary state.
-	JPH::Shape::IDToShapeMap shape_map;
-	JPH::Shape::IDToMaterialMap material_map;
-	const JPH::Shape::ShapeResult result{ shape->sRestoreWithChildren(stream_in, shape_map, material_map) };
+	//Fill in the mesh shape settings.
+	JPH::MeshShapeSettings mesh_shape_settings{ triangles };
+
+	//Create the shape.
+	JPH::MeshShape::ShapeResult mesh_shape_result{ mesh_shape_settings.Create() };
+
+	//Retrieve the shape.
+	JPH::MeshShape *const RESTRICT shape{ static_cast<JPH::MeshShape *const RESTRICT>(mesh_shape_result.Get().GetPtr()) };
+	
+	//Add a ref so it gets kept around.
+	shape->AddRef();
 
 	//Add the mesh shape.
 	JoltPhysicsSystemData::_MeshShapes.Emplace(shape);
 
 	//Set the shape!
 	*collision_model = shape;
-	*/
 }
 
 /*
@@ -504,9 +512,14 @@ void PhysicsSystem::SubCreateModelActor
 			break;
 		}
 
-		/*
 		case ModelCollisionType::COLLISION_MODEL:
 		{
+			//Cache the absolute world position.
+			const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
+
+			//Cache the rotation.
+			const Quaternion &rotation{ world_transform.GetRotation() };
+
 			//Cache the mesh shape.
 			const JPH::MeshShape *const RESTRICT mesh_shape{ static_cast<const JPH::MeshShape *const RESTRICT>(collision_model) };
 
@@ -514,17 +527,19 @@ void PhysicsSystem::SubCreateModelActor
 			JPH::BodyInterface &body_interface = JoltPhysicsSystemData::_System.GetBodyInterface();
 
 			//Set up the body creation settings.
-			const JPH::BodyCreationSettings body_creation_settings{ mesh_shape, JPH::Vec3(0.0f, 0.0f, 0.0f), JPH::Quat::sIdentity(), JPH::EMotionType::Static, static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
+			const JPH::BodyCreationSettings body_creation_settings{ mesh_shape, JPH::Vec3(absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), simulation_configuration._SimulatePhysics ? JPH::EMotionType::Dynamic : JPH::EMotionType::Static, simulation_configuration._SimulatePhysics ? static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC) : static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
 
 			//Create the body.
-			const JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
+			JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
 
 			//Add the body!
-			body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
+			body_interface.AddBody(body->GetID(), simulation_configuration._SimulatePhysics ? JPH::EActivation::Activate : JPH::EActivation::DontActivate);
+
+			//Set the actor handle.
+			*actor_handle = body;
 
 			break;
 		}
-		*/
 	}
 }
 
@@ -724,25 +739,9 @@ void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, Collisio
 		}
 	}
 
-	//Fill in the mesh shape settings.
-	JPH::MeshShapeSettings mesh_shape_settings{ triangles };
-
-	//Create the shape.
-	JPH::MeshShape::ShapeResult mesh_shape_result{ mesh_shape_settings.Create() };
-
-	//Retrieve the shape.
-	JPH::Ref<JPH::Shape> shape{ mesh_shape_result.Get() };
-
-	//Serialize the shape.
-	StreamArchiveOut stream_out;
-	JPH::Shape::ShapeToIDMap shape_map;
-	JPH::Shape::MaterialToIDMap material_map;
-	shape->SaveWithChildren(stream_out, shape_map, material_map);
-	//shape->SaveBinaryState(stream_out);
-
-	//Write the collision model data.
+	//Just fill the data up with triangles, cook it on boot. (:
 	collision_model_data->_Type = CollisionModelData::Type::CONVEX; //Doesn't really matter.
-	collision_model_data->_Data.Upsize<false>(stream_out.Size());
-	Memory::Copy(collision_model_data->_Data.Data(), stream_out.Data(), stream_out.Size());
+	collision_model_data->_Data.Upsize<false>(sizeof(JPH::Triangle) * triangles.size());
+	Memory::Copy(collision_model_data->_Data.Data(), triangles.data(), sizeof(JPH::Triangle) * triangles.size());
 }
 #endif
