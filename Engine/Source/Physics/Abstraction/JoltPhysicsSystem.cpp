@@ -20,6 +20,7 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Character/Character.h>
+#include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/HeightFieldShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
@@ -239,7 +240,7 @@ private:
 //Jolt physics system constants.
 namespace JoltPhysicsSystemConstants
 {
-	constexpr JPH::uint MAXIMUM_BODIES{ 1'024 };
+	constexpr JPH::uint MAXIMUM_BODIES{ 8'192 };
 	constexpr JPH::uint MAXIMUM_BODY_PAIRS{ 1'024 };
 	constexpr JPH::uint MAXIMUM_CONTACT_CONSTRAINTS{ 1'024 };
 }
@@ -443,9 +444,61 @@ void PhysicsSystem::SubCreateModelActor
 	ActorHandle *const RESTRICT actor_handle
 ) NOEXCEPT
 {
-	/*
 	switch (collision_type)
 	{
+		case ModelCollisionType::BOX:
+		{
+			//Cache the absolute world position.
+			const Vector3<float32> absolute_world_position{ world_transform.GetAbsolutePosition() };
+
+			//Cache the rotation.
+			const Quaternion &rotation{ world_transform.GetRotation() };
+
+			//Cache a local copy of the axis aligned bounding box.
+			AxisAlignedBoundingBox3D _axis_aligned_bounding_box{ axis_aligned_bounding_box };
+
+			//Apply the scale.
+			_axis_aligned_bounding_box._Minimum *= world_transform.GetScale();
+			_axis_aligned_bounding_box._Maximum *= world_transform.GetScale();
+
+			//For shapes like planes and stuff like that, the axis aligned bounding box might be the same on one axis, so fix that by thickening it slightly.
+			for (uint8 axis_index{ 0 }; axis_index < 3; ++axis_index)
+			{
+				if (_axis_aligned_bounding_box._Minimum[axis_index] == _axis_aligned_bounding_box._Maximum[axis_index])
+				{
+					_axis_aligned_bounding_box._Minimum[axis_index] -= FLOAT32_EPSILON;
+					_axis_aligned_bounding_box._Maximum[axis_index] += FLOAT32_EPSILON;
+				}
+			}
+
+			//Retrieve the dimensions.
+			const Vector3<float32> dimensions{ _axis_aligned_bounding_box.Dimensions() };
+
+			//Set up the half extent.
+			const JPH::Vec3 half_extent{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
+
+			//Set up the shape extent.
+			JPH::BoxShapeSettings shape_settings{ half_extent, FLOAT32_EPSILON };
+
+			//Create the shape!
+			const JPH::Shape::ShapeResult shape_result{ shape_settings.Create() };
+
+			//Set up the body creation settings.
+			const JPH::BodyCreationSettings body_creation_settings{ shape_result.Get(), JPH::Vec3(absolute_world_position._X, absolute_world_position._Y + half_extent.GetY(), absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), JPH::EMotionType::Static, static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC)};
+
+			//Retrieve the body interface.
+			JPH::BodyInterface &body_interface{ JoltPhysicsSystemData::_System.GetBodyInterface() };
+
+			//Create the body.
+			const JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
+
+			//Add the body!
+			body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
+
+			break;
+		}
+
+		/*
 		case ModelCollisionType::COLLISION_MODEL:
 		{
 			//Cache the mesh shape.
@@ -465,8 +518,8 @@ void PhysicsSystem::SubCreateModelActor
 
 			break;
 		}
+		*/
 	}
-	*/
 }
 
 /*
