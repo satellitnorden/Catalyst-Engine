@@ -533,8 +533,15 @@ void PhysicsSystem::SubCreateModelActor
 */
 void PhysicsSystem::SubDestroyActor(ActorHandle *const RESTRICT actor_handle) NOEXCEPT
 {
+	//Retrieve the body interface.
+	JPH::BodyInterface &body_interface{ JoltPhysicsSystemData::_System.GetBodyInterface() };
+
 	//Cache the body.
 	JPH::Body *const RESTRICT body{ static_cast<JPH::Body *const RESTRICT>(*actor_handle) };
+
+	//Remove and destroy the body.
+	body_interface.RemoveBody(body->GetID());
+	body_interface.DestroyBody(body->GetID());
 }
 
 /*
