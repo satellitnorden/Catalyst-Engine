@@ -268,15 +268,15 @@ void main()
 {
     #define NUMBER_OF_SAMPLES (8)
     vec2 velocity = texture(SceneFeatures4, InScreenCoordinate).xy;
-    vec2 blur_direction = velocity * -1.0f * MOTION_BLUR_INTENSITY * 0.0f;
+    vec2 blur_direction = velocity * -1.0f * MOTION_BLUR_INTENSITY;
     float offsets[NUMBER_OF_SAMPLES];
     for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
     {
         vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_FragCoord.xy), i / 4);
-        offsets[i * 4 + 0] = blue_noise_texture_sample.x;
-        offsets[i * 4 + 1] = blue_noise_texture_sample.y;
-        offsets[i * 4 + 2] = blue_noise_texture_sample.z;
-        offsets[i * 4 + 3] = blue_noise_texture_sample.w;
+        offsets[i + 0] = blue_noise_texture_sample.x;
+        offsets[i + 1] = blue_noise_texture_sample.y;
+        offsets[i + 2] = blue_noise_texture_sample.z;
+        offsets[i + 3] = blue_noise_texture_sample.w;
     }
     vec3 center_scene = texture(InputRenderTarget, InScreenCoordinate).rgb;
     vec3 blurred_scene = vec3(0.0f);
@@ -292,6 +292,6 @@ void main()
             weight += sample_weight;
         }
     }
-    blurred_scene = weight > 0.0f ? blurred_scene / float(weight) : center_scene;
+    blurred_scene = weight > 0.0f ? blurred_scene / weight : center_scene;
 	OutputRenderTarget = vec4(blurred_scene,1.0f);
 }
