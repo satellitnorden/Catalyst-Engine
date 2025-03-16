@@ -2,6 +2,9 @@
 //Header file.
 #include <Systems/PhysicsSystem.h>
 
+//Core.
+#include <Core/Containers/StreamArchive.h>
+
 //Physics.
 #include <Physics/Abstraction/JoltCharacterControllerAbstractionData.h>
 
@@ -19,6 +22,7 @@
 #include <Jolt/Physics/Character/Character.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/HeightFieldShape.h>
+#include <Jolt/Physics/Collision/Shape/MeshShape.h>
 
 //Enumeration covering all physics layers.
 enum class PhysicsLayer : uint8
@@ -124,6 +128,112 @@ public:
 			}
 		}
 	}
+
+};
+
+/*
+*	Stream archive out class definition.
+*/
+class StreamArchiveOut final : public JPH::StreamOut
+{
+
+public:
+
+	/*
+	*	Writes a number of bytes.
+	*/
+	FORCE_INLINE void WriteBytes(const void *data, size_t number_of_bytes) NOEXCEPT override
+	{
+		_StreamArchive.Write(data, number_of_bytes);
+	}
+
+	
+	/*
+	*	Returns if there was an IO failure.
+	*/
+	FORCE_INLINE bool IsFailed() const NOEXCEPT override
+	{
+		return false;
+	}
+
+	/*
+	*	Returns the data.
+	*/
+	FORCE_INLINE NO_DISCARD const void *const RESTRICT Data() const NOEXCEPT
+	{
+		return _StreamArchive.Data();
+	}
+
+	/*
+	*	Returns the size.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 Size() const NOEXCEPT
+	{
+		return _StreamArchive.Size();
+	}
+
+private:
+
+	//The underlying stream archive.
+	StreamArchive _StreamArchive;
+
+};
+
+/*
+*	Stream in class definition.
+*/
+class StreamIn final : public JPH::StreamIn
+{
+
+public:
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE StreamIn(const byte *const RESTRICT data, const uint64 size) NOEXCEPT
+		:
+		_Data(data),
+		_Size(size)
+	{
+
+	}
+
+	/*
+	*	Reads a number of bytes.
+	*/
+	FORCE_INLINE void ReadBytes(void *data, size_t number_of_bytes) NOEXCEPT override
+	{
+		Memory::Copy(data, &_Data[_CurrentPosition], number_of_bytes);
+		_CurrentPosition += number_of_bytes;
+	}
+
+	/*
+	*	Returns when an attempt has been made to read past the end of the file
+	*/
+	FORCE_INLINE bool IsEOF() const NOEXCEPT override
+	{
+		return _CurrentPosition == _Size;
+	}
+
+	/*
+	*	Returns if there was an IO failure.
+	*/
+	FORCE_INLINE bool IsFailed() const NOEXCEPT override
+	{
+		return _CurrentPosition > _Size;
+	}
+
+private:
+
+	//The underlying data.
+	const byte *RESTRICT _Data;
+
+	//The underlying size.
+	uint64 _Size;
+
+	//The current position.
+	uint64 _CurrentPosition{ 0 };
+
 };
 
 //Jolt physics system constants.
@@ -154,6 +264,9 @@ namespace JoltPhysicsSystemData
 
 	//The job system thread pool.
 	JPH::JobSystemThreadPool *RESTRICT _JobSystemThreadPool;
+
+	//Container for all mesh shapes.
+	DynamicArray<JPH::MeshShape *RESTRICT> _MeshShapes;
 
 	//Container for all characters.
 	DynamicArray<JPH::Character *RESTRICT> _Characters;
@@ -198,7 +311,24 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 */
 void PhysicsSystem::SubCreateCollisionModel(const CollisionModelData &collision_model_data, CollisionModelHandle *const RESTRICT collision_model) NOEXCEPT
 {
-	
+	/*
+	//Allocate the shape.
+	JPH::MeshShape *const RESTRICT shape{ new JPH::MeshShape() };
+
+	//Construct the stream in.
+	StreamIn stream_in{ collision_model_data._Data.Data(), collision_model_data._Data.Size() };
+
+	//Restore the binary state.
+	JPH::Shape::IDToShapeMap shape_map;
+	JPH::Shape::IDToMaterialMap material_map;
+	const JPH::Shape::ShapeResult result{ shape->sRestoreWithChildren(stream_in, shape_map, material_map) };
+
+	//Add the mesh shape.
+	JoltPhysicsSystemData::_MeshShapes.Emplace(shape);
+
+	//Set the shape!
+	*collision_model = shape;
+	*/
 }
 
 /*
@@ -241,6 +371,22 @@ void PhysicsSystem::SubTerminate() NOEXCEPT
 	//Destroy the job system thread pool.
 	delete JoltPhysicsSystemData::_JobSystemThreadPool;
 	JoltPhysicsSystemData::_JobSystemThreadPool = nullptr;
+
+	//Destroy all mesh shapes.
+	for (JPH::MeshShape *const RESTRICT mesh_shape : JoltPhysicsSystemData::_MeshShapes)
+	{
+		delete mesh_shape;
+	}
+
+	JoltPhysicsSystemData::_MeshShapes.Clear();
+
+	//Destroy all characters.
+	for (JPH::Character *const RESTRICT character : JoltPhysicsSystemData::_Characters)
+	{
+		delete character;
+	}
+
+	JoltPhysicsSystemData::_Characters.Clear();
 }
 
 /*
@@ -297,7 +443,30 @@ void PhysicsSystem::SubCreateModelActor
 	ActorHandle *const RESTRICT actor_handle
 ) NOEXCEPT
 {
-	
+	/*
+	switch (collision_type)
+	{
+		case ModelCollisionType::COLLISION_MODEL:
+		{
+			//Cache the mesh shape.
+			const JPH::MeshShape *const RESTRICT mesh_shape{ static_cast<const JPH::MeshShape *const RESTRICT>(collision_model) };
+
+			//Retrieve the body interface.
+			JPH::BodyInterface &body_interface = JoltPhysicsSystemData::_System.GetBodyInterface();
+
+			//Set up the body creation settings.
+			const JPH::BodyCreationSettings body_creation_settings{ mesh_shape, JPH::Vec3(0.0f, 0.0f, 0.0f), JPH::Quat::sIdentity(), JPH::EMotionType::Static, static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
+
+			//Create the body.
+			const JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
+
+			//Add the body!
+			body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
+
+			break;
+		}
+	}
+	*/
 }
 
 /*
@@ -390,6 +559,62 @@ RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCrea
 */
 void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, CollisionModelData *const RESTRICT collision_model_data) NOEXCEPT
 {
-	
+	//Fill up the triangles.
+	JPH::Array<JPH::Triangle> triangles;
+
+	//Calculate the total number of triangles.
+	size_t total_number_of_triangles{ 0 };
+
+	for (const ModelFile::Mesh &mesh : model_file._Meshes)
+	{
+		total_number_of_triangles += mesh._Indices.Size() / 3;
+	}
+
+	//Reserve the necessary amount of data for the triangles.
+	triangles.reserve(total_number_of_triangles);
+
+	//Now actually add the triangles!
+	for (const ModelFile::Mesh &mesh : model_file._Meshes)
+	{
+		for (uint64 index_index{ 0 }; index_index < mesh._Indices.Size(); index_index += 3)
+		{
+			StaticArray<const Vertex *const RESTRICT, 3> vertices
+			{
+				&mesh._Vertices[mesh._Indices[index_index + 0]],
+				&mesh._Vertices[mesh._Indices[index_index + 1]],
+				&mesh._Vertices[mesh._Indices[index_index + 2]]
+			};
+
+			JPH::Triangle new_triangle
+			{
+				JPH::Float3(vertices[0]->_Position._X, vertices[0]->_Position._Y, vertices[0]->_Position._Z),
+				JPH::Float3(vertices[1]->_Position._X, vertices[1]->_Position._Y, vertices[1]->_Position._Z),
+				JPH::Float3(vertices[2]->_Position._X, vertices[2]->_Position._Y, vertices[2]->_Position._Z)
+			};
+
+			triangles.emplace_back(new_triangle);
+		}
+	}
+
+	//Fill in the mesh shape settings.
+	JPH::MeshShapeSettings mesh_shape_settings{ triangles };
+
+	//Create the shape.
+	JPH::MeshShape::ShapeResult mesh_shape_result{ mesh_shape_settings.Create() };
+
+	//Retrieve the shape.
+	JPH::Ref<JPH::Shape> shape{ mesh_shape_result.Get() };
+
+	//Serialize the shape.
+	StreamArchiveOut stream_out;
+	JPH::Shape::ShapeToIDMap shape_map;
+	JPH::Shape::MaterialToIDMap material_map;
+	shape->SaveWithChildren(stream_out, shape_map, material_map);
+	//shape->SaveBinaryState(stream_out);
+
+	//Write the collision model data.
+	collision_model_data->_Type = CollisionModelData::Type::CONVEX; //Doesn't really matter.
+	collision_model_data->_Data.Upsize<false>(stream_out.Size());
+	Memory::Copy(collision_model_data->_Data.Data(), stream_out.Data(), stream_out.Size());
 }
 #endif
