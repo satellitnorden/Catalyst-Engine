@@ -268,7 +268,7 @@ void main()
 {
     #define NUMBER_OF_SAMPLES (8)
     vec2 velocity = texture(SceneFeatures4, InScreenCoordinate).xy;
-    vec2 blur_direction = velocity * -1.0f * MOTION_BLUR_INTENSITY;
+    vec2 blur_direction = velocity * -1.0f * MOTION_BLUR_INTENSITY * 0.0f;
     float offsets[NUMBER_OF_SAMPLES];
     for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
     {

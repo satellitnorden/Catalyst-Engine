@@ -425,10 +425,13 @@ void PhysicsSystem::SubCreateHeightFieldActor
 	const JPH::BodyCreationSettings body_creation_settings{ height_field_shape_result.Get(), JPH::Vec3(0.0f, 0.0f, 0.0f), JPH::Quat::sIdentity(), JPH::EMotionType::Static, static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
 
 	//Create the body.
-	const JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
+	JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
 
 	//Add the body!
 	body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
+
+	//Set the actor handle.
+	*actor_handle = body;
 }
 
 /*
@@ -484,16 +487,19 @@ void PhysicsSystem::SubCreateModelActor
 			const JPH::Shape::ShapeResult shape_result{ shape_settings.Create() };
 
 			//Set up the body creation settings.
-			const JPH::BodyCreationSettings body_creation_settings{ shape_result.Get(), JPH::Vec3(absolute_world_position._X, absolute_world_position._Y + half_extent.GetY(), absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), JPH::EMotionType::Static, static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC)};
+			const JPH::BodyCreationSettings body_creation_settings{ shape_result.Get(), JPH::Vec3(absolute_world_position._X, absolute_world_position._Y + half_extent.GetY(), absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), simulation_configuration._SimulatePhysics ? JPH::EMotionType::Dynamic : JPH::EMotionType::Static, simulation_configuration._SimulatePhysics ? static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC) : static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
 
 			//Retrieve the body interface.
 			JPH::BodyInterface &body_interface{ JoltPhysicsSystemData::_System.GetBodyInterface() };
 
 			//Create the body.
-			const JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
+			JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
 
 			//Add the body!
-			body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
+			body_interface.AddBody(body->GetID(), simulation_configuration._SimulatePhysics ? JPH::EActivation::Activate : JPH::EActivation::DontActivate);
+
+			//Set the actor handle.
+			*actor_handle = body;
 
 			break;
 		}
@@ -527,7 +533,8 @@ void PhysicsSystem::SubCreateModelActor
 */
 void PhysicsSystem::SubDestroyActor(ActorHandle *const RESTRICT actor_handle) NOEXCEPT
 {
-	
+	//Cache the body.
+	JPH::Body *const RESTRICT body{ static_cast<JPH::Body *const RESTRICT>(*actor_handle) };
 }
 
 /*
@@ -535,7 +542,43 @@ void PhysicsSystem::SubDestroyActor(ActorHandle *const RESTRICT actor_handle) NO
 */
 void PhysicsSystem::SubGetActorWorldTransform(const ActorHandle actor_handle, WorldTransform *const RESTRICT world_transform) NOEXCEPT
 {
-	
+	//Cache the body.
+	JPH::Body *const RESTRICT body{ static_cast<JPH::Body *const RESTRICT>(actor_handle) };
+
+	//Cache the shape.
+	const JPH::Shape *const RESTRICT shape{ body->GetShape() };
+
+	//Retrieve the transform.
+	const JPH::RMat44 transform{ body->GetWorldTransform() };
+
+	//Write in the translation.
+	{
+		JPH::Vec3 translation{ transform.GetTranslation() };
+
+		//If this is a box, apply the appropriate offset.
+		if (shape->GetSubType() == JPH::EShapeSubType::Box)
+		{
+			const JPH::BoxShape *const RESTRICT box_shape{ static_cast<const JPH::BoxShape *const RESTRICT>(shape) };
+			const JPH::Vec3 offset{ transform.Multiply3x3(JPH::Vec3(0.0f, box_shape->GetHalfExtent().GetY() , 0.0f)) };
+			translation -= offset;
+		}
+
+		world_transform->SetAbsolutePosition(Vector3<float32>(translation.GetX(), translation.GetY(), translation.GetZ()));
+	}
+
+	//Write in the rotation.
+	{
+		const JPH::Quat rotation{ transform.GetQuaternion() };
+
+		world_transform->SetRotation(Quaternion(rotation.GetX(), rotation.GetY(), rotation.GetZ(), rotation.GetW()));
+	}
+
+	//Write in scale.
+	{
+		const Vector3<float32> scale{ 1.0f, 1.0f, 1.0f }; //TODO: Do Jolt bodies even have scale?
+
+		world_transform->SetScale(scale);
+	}
 }
 
 /*
@@ -543,7 +586,32 @@ void PhysicsSystem::SubGetActorWorldTransform(const ActorHandle actor_handle, Wo
 */
 void PhysicsSystem::SubUpdateWorldTransform(const WorldTransform &world_transform, ActorHandle *const RESTRICT actor_handle) NOEXCEPT
 {
-	
+	//Retrieve the body interface.
+	JPH::BodyInterface &body_interface{ JoltPhysicsSystemData::_System.GetBodyInterface() };
+
+	//Cache the body.
+	JPH::Body *const RESTRICT body{ static_cast<JPH::Body *const RESTRICT>(*actor_handle) };
+
+	//Set up the position/rotation.
+	JPH::Vec3 position;
+	JPH::Quat rotation;
+
+	//Write in the position.
+	{
+		const Vector3<float32> _position{ world_transform.GetAbsolutePosition() };
+
+		position = JPH::Vec3(_position._X, _position._Y, _position._Z);
+	}
+
+	//Write in the rotation.
+	{
+		const Quaternion &_rotation{ world_transform.GetRotation() };
+
+		rotation = JPH::Quat(_rotation._X, _rotation._Y, _rotation._Z, _rotation._W);
+	}
+
+	//Update the body!
+	body_interface.SetPositionAndRotation(body->GetID(), position, rotation, JPH::EActivation::DontActivate);
 }
 
 /*
