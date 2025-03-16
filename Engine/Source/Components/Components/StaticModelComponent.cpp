@@ -259,9 +259,8 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 				//Update the world transform is this static model instance is physics-simulated.
 				if (instance_data._PhysicsActorHandle && instance_data._ModelSimulationConfiguration._SimulatePhysics
 #if defined(CATALYST_EDITOR)
-
+					&& !CatalystEditorSystem::Instance->IsInGame()
 #endif
-
 					)
 				{
 					PhysicsSystem::Instance->GetActorWorldTransform(instance_data._PhysicsActorHandle, &world_transform_instance_data._CurrentWorldTransform);
