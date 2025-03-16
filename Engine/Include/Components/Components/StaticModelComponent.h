@@ -84,6 +84,7 @@ class StaticModelComponent final : public Component
 		COMPONENT_POST_CREATE_INSTANCE()
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
 		COMPONENT_SELECT()
+		COMPONENT_START_GAME()
 	);
 
 public:

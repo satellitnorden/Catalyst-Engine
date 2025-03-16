@@ -116,6 +116,7 @@ void CatalystEditorSystem::SetIsInGame(const bool value) NOEXCEPT
 		{
 			StartGame();
 
+			Components::StartGame();
 			CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._StartGameFunction();
 		}
 

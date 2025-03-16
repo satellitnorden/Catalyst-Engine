@@ -70,6 +70,9 @@ public:
 	//Denotes whether or not this component is selectable.
 	bool _Selectable;
 
+	//Denotes whether or not this component wants a "StartGame()" call.
+	bool _StartGame;
+
 };
 
 /*
@@ -274,6 +277,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 	component_entry["PreProcess"] = false;
 	component_entry["PostCreateInstance"] = false;
 	component_entry["Selectable"] = false;
+	component_entry["StartGame"] = false;
 
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
@@ -689,6 +693,18 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 				continue;
 			}
 		}
+
+		//Check if this component wants a "StartGame()" call.
+		{
+			const size_t position{ current_line.find("COMPONENT_START_GAME(") };
+
+			if (position != std::string::npos)
+			{
+				component_entry["StartGame"] = true;
+
+				continue;
+			}
+		}
 	}
 }
 
@@ -781,6 +797,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this component wants a "Select()" call.
 				new_component_data._Selectable = component_entry["Selectable"];
+
+				//Set whether or not this component wants a "StartGame()" call.
+				new_component_data._StartGame = component_entry["StartGame"];
 
 				//Check if this component wants any serial updates.
 				if (component_entry.contains("SerialUpdates"))
@@ -1571,7 +1590,8 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "\t}" << std::endl;
 
 	file << "\treturn selected_entity;" << std::endl;
-	file << "}";
+	file << "}" << std::endl;
+	file << std::endl;
 #if 0
 	file << "\tbool was_hit{ false };" << std::endl;
 	file << std::endl;
@@ -1590,5 +1610,19 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << std::endl;
 	file << "\treturn was_hit;" << std::endl;
 	file << "}";
+	file << std::endl;
 #endif
+
+	//Set up the "Components::StartGane" function.
+	file << "void Components::StartGame() NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	for (const ComponentData &_component_data : component_data)
+	{
+		if (_component_data._StartGame)
+		{
+			file << "\t" << _component_data._Name.data() << "::Instance->StartGame();" << std::endl;
+		}
+	}
+	file << "}";
 }

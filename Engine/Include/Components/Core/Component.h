@@ -387,6 +387,11 @@ public:
 	*/
 	static NO_DISCARD Entity *const RESTRICT Select(const Ray &ray, const ArrayProxy<Entity *RESTRICT> entities) NOEXCEPT;
 
+	/*
+	*	Let's components know that the game is starting.
+	*/
+	static void StartGame() NOEXCEPT;
+
 };
 
 /*
@@ -473,6 +478,13 @@ public:							\
 #define COMPONENT_SELECT()																									\
 public:																														\
 	NO_DISCARD bool Select(const Ray &ray, Entity *const RESTRICT entity, float32 *const RESTRICT hit_distance) NOEXCEPT;
+
+/*
+*	Put this in your component declaration and implement the "StartGame()" function for this component to get a callback when the game starts.
+*/
+#define COMPONENT_START_GAME()	\
+public:							\
+	void StartGame() NOEXCEPT;
 
 /*
 *	Declares a Catalyst component.

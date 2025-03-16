@@ -4,6 +4,9 @@
 //Core.
 #include <Core/General/DeltaTimer.h>
 
+//Components.
+#include <Components/Core/Component.h>
+
 //Concurrency.
 #include <Concurrency/Concurrency.h>
 
@@ -165,6 +168,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 #if !defined(CATALYST_EDITOR)
 	//If this is a pure game build, start the game immediately.
+	Components::StartGame();
 	_ProjectConfiguration._GeneralConfiguration._StartGameFunction();
 #endif
 

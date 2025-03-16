@@ -257,7 +257,12 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 				WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(InstanceToEntity(instance_index)) };
 
 				//Update the world transform is this static model instance is physics-simulated.
-				if (instance_data._PhysicsActorHandle && PatchModelSimulationConfiguration(instance_data._ModelSimulationConfiguration)._SimulatePhysics)
+				if (instance_data._PhysicsActorHandle && instance_data._ModelSimulationConfiguration._SimulatePhysics
+#if defined(CATALYST_EDITOR)
+
+#endif
+
+					)
 				{
 					PhysicsSystem::Instance->GetActorWorldTransform(instance_data._PhysicsActorHandle, &world_transform_instance_data._CurrentWorldTransform);
 				}
@@ -402,6 +407,36 @@ NO_DISCARD bool StaticModelComponent::Select(const Ray &ray, Entity *const RESTR
 
 	//Cast the selection ray!
 	return EditorUtilities::SelectionRay(ray, model_transform, static_model_instance_data._Model.Get(), hit_distance, static_model_instance_data._LevelOfDetailIndices.Data());
+}
+
+/*
+*	Callback for when the game starts.
+*/
+void StaticModelComponent::StartGame() NOEXCEPT
+{
+#if defined(CATALYST_EDITOR)
+	for (uint64 instance_index{ 0 }; instance_index < NumberOfInstances(); ++instance_index)
+	{
+		Entity *const RESTRICT entity{ InstanceToEntity(instance_index) };
+		const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
+		StaticModelInstanceData &static_model_instance_data{ _InstanceData[instance_index] };
+
+		if (static_model_instance_data._ModelSimulationConfiguration._SimulatePhysics)
+		{
+			PhysicsSystem::Instance->DestroyActor(&static_model_instance_data._PhysicsActorHandle);
+
+			PhysicsSystem::Instance->CreateModelActor
+			(
+				world_transform_instance_data._CurrentWorldTransform,
+				static_model_instance_data._CollisionType,
+				static_model_instance_data._Model->_ModelSpaceAxisAlignedBoundingBox,
+				static_model_instance_data._Model->_CollisionModel,
+				static_model_instance_data._ModelSimulationConfiguration,
+				&static_model_instance_data._PhysicsActorHandle
+			);
+		}
+	}
+#endif
 }
 
 void StaticModelComponent::DefaultInitializationData(StaticModelInitializationData *const RESTRICT initialization_data) NOEXCEPT
