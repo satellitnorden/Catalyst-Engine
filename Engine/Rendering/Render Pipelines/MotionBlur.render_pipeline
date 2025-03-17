@@ -38,7 +38,26 @@ Fragment
     #define NUMBER_OF_SAMPLES (8)
 
     //Retrieve the velocity.
-    vec2 velocity = texture(SceneFeatures4, InScreenCoordinate).xy;
+    vec2 velocity = vec2(0.0f, 0.0f);
+
+    {
+        float highest_velocity_magnitude = 0.0f;
+
+        for (int Y = -1; Y <= 1; ++Y)
+        {
+            for (int X = -1; X <= 1; ++X)
+            {
+                vec2 sample_velocity = texture(SceneFeatures4, InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_FULL_MAIN_RESOLUTION).xy;
+                float velocity_magnitude = dot(sample_velocity, sample_velocity);
+
+                if (highest_velocity_magnitude < velocity_magnitude)
+                {
+                    velocity = sample_velocity;
+                    highest_velocity_magnitude = velocity_magnitude;
+                }
+            }
+        }
+    }
 
     //Calculate the blur direction.
     vec2 blur_direction = velocity * -1.0f * MOTION_BLUR_INTENSITY;
