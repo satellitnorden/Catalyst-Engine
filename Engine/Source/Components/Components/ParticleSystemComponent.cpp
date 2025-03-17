@@ -88,7 +88,7 @@ void GatherParticlesInputStream(RenderInputStream *const RESTRICT input_stream) 
 FORCE_INLINE void SplitIntoSubEmitters(const ParticleEmitter &master_emitter, DynamicArray<ParticleSubEmitter> *const RESTRICT sub_emitters) NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER{ 256 };
+	constexpr uint32 MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER{ 64 };
 
 	//Clear the sub emitters.
 	sub_emitters->Clear();
@@ -260,14 +260,11 @@ NO_DISCARD uint64 ParticleSystemComponent::NumberOfSubInstances(const uint64 ins
 	return _InstanceData[instance_index]._SubEmitters.Size();
 }
 
-
 /*
 *	Updates this component.
 */
 void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update_phase, const uint64 instance_index, const uint64 sub_instance_index) NOEXCEPT
 {
-	PROFILING_SCOPE("ParticleSystemComponent::Update");
-
 	switch (update_phase)
 	{
 		case UpdatePhase::PRE_RENDER:

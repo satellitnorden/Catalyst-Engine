@@ -92,7 +92,7 @@ RayGeneration
                     }
                     
                     random_point_on_sphere = dot(random_point_on_sphere, direction) >= 0.0f ? random_point_on_sphere : -random_point_on_sphere;
-                    random_point_on_sphere *= 0.0046422666666667f * 0.125f;
+                    random_point_on_sphere *= 0.0046422666666667f * 0.0625f;
                     direction = normalize(sphere_position + random_point_on_sphere - world_position);
 
                     //Set the maximum distance.

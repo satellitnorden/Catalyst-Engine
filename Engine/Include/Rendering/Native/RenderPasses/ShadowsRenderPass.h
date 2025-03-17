@@ -9,7 +9,6 @@
 #include <Rendering/Native/ShadowsSystem.h>
 #include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/Pipelines/Core/RayTracingRenderPipeline.h>
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ShadowsSpatialDenoisingGraphicsPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 //Systems.
@@ -129,8 +128,12 @@ private:
 	//The ray traced shadows pipeline.
 	RayTracingRenderPipeline _RayTracedShadowsPipeline{ HashString("RayTracedShadows_RenderPipeline") };
 
-	//The shadows spatial denoising graphics pipelines.
-	StaticArray<ShadowsSpatialDenoisingGraphicsPipeline, 2> _ShadowsSpatialDenoisingGraphicsPipelines;
+	//The shadows spatial denoising pipelines.
+	StaticArray<GraphicsRenderPipeline, 2> _ShadowsSpatialDenoisingPipelines
+	{
+		GraphicsRenderPipeline(HashString("ShadowsSpatialDenoising_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("ShadowsSpatialDenoising_RenderPipeline"))
+	};
 
 	/*
 	*	Initializes this render pass.

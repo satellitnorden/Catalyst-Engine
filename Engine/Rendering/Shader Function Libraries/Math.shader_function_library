@@ -23,11 +23,3 @@ mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
 
     return mat3(random_tangent, random_bitangent, normal);
 }
-
-/*
-*   Returns a smoothed number in the range 0.0f-1.0f.
-*/
-float SmoothStep(float number)
-{
-    return number * number * (3.0f - 2.0f * number);
-}

@@ -1,9 +1,6 @@
 //Header file.
 #include <Components/Components/ScriptComponent.h>
 
-//Profiling.
-#include <Profiling/Profiling.h>
-
 //Generated
 #include <Generated/Script.Generated.h>
 
@@ -26,8 +23,6 @@ void ScriptComponent::Initialize() NOEXCEPT
 */
 void ScriptComponent::SerialUpdate(const UpdatePhase update_phase) NOEXCEPT
 {
-	PROFILING_SCOPE("ScriptComponent::SerialUpdate");
-
 	switch (update_phase)
 	{
 		case UpdatePhase::GAMEPLAY:

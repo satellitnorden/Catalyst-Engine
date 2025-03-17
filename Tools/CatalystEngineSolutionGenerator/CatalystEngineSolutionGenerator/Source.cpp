@@ -31,7 +31,6 @@ enum class Win64Distribution
 enum class Physics
 {
 	NULL,
-	PHYSX,
 	JOLT
 };
 
@@ -145,7 +144,6 @@ void PrintOptions()
 	std::cout << "\t\tINCLUDE_ENVIRONMENT_RESOURCE_COLLECTION: Defines that the project should include the environment resource collection." << std::endl;
 	std::cout << "\t\tINCLUDE_EXTRA_RESOURCE_COLLECTION: Defines that the project should include the extra resource collection." << std::endl;
 	std::cout << "\t\tDISTRIBUTION_STEAM: Defines that the project should use STEAM as it's distribution system." << std::endl;
-	std::cout << "\t\tPHYSICS_PHYSX: Defines that the project should use PHYSX as it's physics system." << std::endl;
 	std::cout << "\t\tANDROID_FORCE_LANDSCAPE_MODE: Defines that the Android build of this project should force landscape mode." << std::endl;
 	std::cout << std::endl;
 }
@@ -967,13 +965,6 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 
 		switch (general_parameters._Physics)
 		{
-			case Physics::PHYSX:
-			{
-				physics_string = "CATALYST_PHYSICS_PHYSX";
-
-				break;
-			}
-
 			case Physics::JOLT:
 			{
 				physics_string = "CATALYST_PHYSICS_JOLT";
@@ -1065,17 +1056,6 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 	cmake_lists_file << std::endl;
 
 	cmake_lists_file << "#Link the libraries." << std::endl;
-
-	if (general_parameters._Physics == Physics::PHYSX)
-	{
-		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysX_64> $<$<CONFIG:DebugEditor>:Debug/PhysX_64> $<$<CONFIG:Profile>:Profile/PhysX_64> $<$<CONFIG:ProfileEditor>:Profile/PhysX_64> $<$<CONFIG:Final>:Final/PhysX_64>)" << std::endl;
-		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCharacterKinematic_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCharacterKinematic_static_64> $<$<CONFIG:Profile>:Profile/PhysXCharacterKinematic_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCharacterKinematic_static_64> $<$<CONFIG:Final>:Final/PhysXCharacterKinematic_static_64>)" << std::endl;
-		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCommon_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCommon_64> $<$<CONFIG:Profile>:Profile/PhysXCommon_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCommon_64> $<$<CONFIG:Final>:Final/PhysXCommon_64>)" << std::endl;
-		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXCooking_64> $<$<CONFIG:DebugEditor>:Debug/PhysXCooking_64> $<$<CONFIG:Profile>:Profile/PhysXCooking_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXCooking_64> $<$<CONFIG:Final>:Final/PhysXCooking_64>)" << std::endl;
-		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXExtensions_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXExtensions_static_64> $<$<CONFIG:Profile>:Profile/PhysXExtensions_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXExtensions_static_64> $<$<CONFIG:Final>:Final/PhysXExtensions_static_64>)" << std::endl;
-		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXFoundation_64> $<$<CONFIG:DebugEditor>:Debug/PhysXFoundation_64> $<$<CONFIG:Profile>:Profile/PhysXFoundation_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXFoundation_64> $<$<CONFIG:Final>:Final/PhysXFoundation_64>)" << std::endl;
-		cmake_lists_file << "target_link_libraries(${PROJECT_NAME} $<$<CONFIG:Debug>:Debug/PhysXPvdSDK_static_64> $<$<CONFIG:DebugEditor>:Debug/PhysXPvdSDK_static_64> $<$<CONFIG:Profile>:Profile/PhysXPvdSDK_static_64> $<$<CONFIG:ProfileEditor>:Profile/PhysXPvdSDK_static_64>)" << std::endl;
-	}
 
 	if (platform_parameters._Distribution == Win64Distribution::STEAM)
 	{
@@ -1255,35 +1235,6 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\steam_api64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
 
-		//Copy PhysX dll's.
-		if (general_parameters._Physics == Physics::PHYSX)
-		{
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\PhysX_64.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\PhysXCommon_64.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\PhysXCooking_64.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\PhysXFoundation_64.dll", "Win64\\Win64\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\PhysX_64.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\PhysXCommon_64.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\PhysXCooking_64.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\PhysXFoundation_64.dll", "Win64\\Win64\\DebugEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\PhysX_64.dll", "Win64\\Win64\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\PhysXCommon_64.dll", "Win64\\Win64\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\PhysXCooking_64.dll", "Win64\\Win64\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\PhysXFoundation_64.dll", "Win64\\Win64\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\PhysX_64.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\PhysXCommon_64.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\PhysXCooking_64.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\PhysXFoundation_64.dll", "Win64\\Win64\\ProfileEditor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Final\\PhysX_64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Final\\PhysXCommon_64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Final\\PhysXCooking_64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Final\\PhysXFoundation_64.dll", "Win64\\Win64\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		}
-
 		//Copy onnxruntime.dll.
 		if (general_parameters._UseONNXRuntimeLibrary)
 		{
@@ -1408,12 +1359,7 @@ int main(int argument_count, char* arguments[])
 			//Is this the physics?
 			else if (identifier == "PHYSICS")
 			{
-				if (argument == "PHYSX")
-				{
-					general_parameters._Physics = Physics::PHYSX;
-				}
-
-				else if (argument == "JOLT")
+				if (argument == "JOLT")
 				{
 					general_parameters._Physics = Physics::JOLT;
 				}

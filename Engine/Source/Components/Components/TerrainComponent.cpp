@@ -1,9 +1,6 @@
 //Header file.
 #include <Components/Components/TerrainComponent.h>
 
-//Profiling.
-#include <Profiling/Profiling.h>
-
 //Rendering.
 #include <Rendering/Native/Culling.h>
 
@@ -454,8 +451,6 @@ void TerrainComponent::Initialize() NOEXCEPT
 */
 void TerrainComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT
 {
-	PROFILING_SCOPE("TerrainComponent::ParallelBatchUpdate");
-
 	switch (update_phase)
 	{
 		case UpdatePhase::PRE_RENDER:

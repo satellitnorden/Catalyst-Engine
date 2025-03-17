@@ -7,9 +7,6 @@
 //Editor.
 #include <Editor/EditorUtilities.h>
 
-//Profiling.
-#include <Profiling/Profiling.h>
-
 //Rendering.
 #include <Rendering/Native/Culling.h>
 #include <Rendering/Native/RenderingUtilities.h>
@@ -185,6 +182,13 @@ void StaticModelComponent::Initialize() NOEXCEPT
 		offsetof(StaticModelInstanceData, _ModelSimulationConfiguration._SimulatePhysics)
 	);
 
+	AddEditableFloatField
+	(
+		"Mass",
+		offsetof(StaticModelInitializationData, _ModelSimulationConfiguration._InitialMass),
+		offsetof(StaticModelInstanceData, _ModelSimulationConfiguration._InitialMass)
+	);
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Register the debug command.
 	DebugSystem::Instance->RegisterCheckboxDebugCommand
@@ -235,8 +239,6 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 	//Define constants.
 	constexpr float32 BASE_CULLING_DIMENSION_MULTIPLIER{ 64.0f };
 
-	PROFILING_SCOPE("StaticModelComponent::ParallelBatchUpdate");
-
 	switch (update_phase)
 	{
 		case UpdatePhase::PRE_RENDER:
@@ -259,7 +261,7 @@ void StaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, c
 				//Update the world transform is this static model instance is physics-simulated.
 				if (instance_data._PhysicsActorHandle && instance_data._ModelSimulationConfiguration._SimulatePhysics
 #if defined(CATALYST_EDITOR)
-					&& !CatalystEditorSystem::Instance->IsInGame()
+					&& CatalystEditorSystem::Instance->IsInGame()
 #endif
 					)
 				{

@@ -1245,8 +1245,6 @@ void RenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const u
 */
 void RenderingSystem::BindStorageBufferToRenderDataTable(const uint32 binding, const uint32 array_element, RenderDataTableHandle *const RESTRICT handle, const BufferHandle buffer) const NOEXCEPT
 {
-	PROFILING_SCOPE("RenderingSystem::BindStorageBufferToRenderDataTable");
-
 	_SubRenderingSystem->BindStorageBufferToRenderDataTable(binding, array_element, handle, buffer);
 }
 

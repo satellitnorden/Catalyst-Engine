@@ -1,9 +1,6 @@
 //Header file.
 #include <Components/Components/InstancedImpostorComponent.h>
 
-//Profiling.
-#include <Profiling/Profiling.h>
-
 //Rendering.
 #include <Rendering/Native/Culling.h>
 
@@ -15,8 +12,6 @@
 */
 void InstancedImpostorComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT
 {
-	PROFILING_SCOPE("InstancedImpostorComponent::ParallelBatchUpdate");
-
 	switch (update_phase)
 	{
 		case UpdatePhase::PRE_RENDER:

@@ -171,6 +171,14 @@ float Luminance(vec3 color)
 }
 
 /*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -210,7 +218,17 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (std140, set = 1, binding = 1) uniform Wind
+layout (std140, set = 1, binding = 1) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) float VIEW_DISTANCE;
+};
+
+layout (std140, set = 1, binding = 2) uniform Wind
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
@@ -224,7 +242,7 @@ struct LightingHeader
 	uint _NumberOfLights;
 	uint _MaximumNumberOfShadowCastingLights;	
 };
-layout (std430, set = 1, binding = 2) buffer Lighting
+layout (std430, set = 1, binding = 3) buffer Lighting
 {
 	layout (offset = 0) LightingHeader LIGHTING_HEADER;
 	layout (offset = 16) vec4[] LIGHT_DATA;
@@ -360,6 +378,84 @@ Light UnpackLight(uint index)
   	light._Size = light_data_4.y;
 
 	return light;
+}
+
+/*
+*   Combines two hashes.
+*/
+uint CombineHash(uint hash_1, uint hash_2)
+{
+    return 3141592653 * hash_1 + hash_2;
+}
+
+/*
+*   Hash function taking a uint.
+*/
+uint Hash(uint seed)
+{
+    seed ^= seed >> 17;
+    seed *= 0xed5ad4bbU;
+    seed ^= seed >> 11;
+    seed *= 0xac4c1b51U;
+    seed ^= seed >> 15;
+    seed *= 0x31848babU;
+    seed ^= seed >> 14;
+    return seed;
+}
+
+/*
+*   Hash function taking a uvec2.
+*/
+uint Hash2(uvec2 seed)
+{
+    return Hash(seed.x) ^ Hash(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
+    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
+    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
+}
+
+/*
+*   Given a seed, returns a random number.
+*/
+float RandomFloat(inout uint seed)
+{
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate and a seed, returns a random number.
+*/
+float RandomFloat(uvec2 coordinate, uint seed)
+{
+    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate, returns a random number.
+*/
+float RandomFloat(vec2 coordinate)
+{
+    return fract(sin(dot(coordinate, vec2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
+/*
+*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*/
+float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+{
+	frame = frame % 64;
+
+	float x = float(coordinate.x) + 5.588238f * float(frame);
+	float y = float(coordinate.y) + 5.588238f * float(frame);
+
+	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
 }
 
 ////////////
@@ -642,10 +738,11 @@ vec3 CalculateIndirectLighting
 	return (diffuse_component * diffuse_irradiance * ambient_occlusion) + (specular_component * specular_irradiance * ambient_occlusion);
 }
 
-layout (set = 1, binding = 3) uniform sampler2D SceneFeatures1;
-layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2;
-layout (set = 1, binding = 5) uniform sampler2D SceneFeatures3;
-layout (set = 1, binding = 6) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_HALF_1;
+layout (set = 1, binding = 4) uniform sampler2D SceneFeatures1;
+layout (set = 1, binding = 5) uniform sampler2D SceneFeatures2;
+layout (set = 1, binding = 6) uniform sampler2D SceneFeatures3;
+layout (set = 1, binding = 7) uniform sampler2D SceneFeatures2Half;
+layout (set = 1, binding = 8) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_HALF_1;
 
 layout (location = 0) out vec2 OutScreenCoordinate;
 

@@ -732,6 +732,10 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "#include <Components/Core/Component.h>" << std::endl;
 	file << std::endl;
 
+	file << "//Profiling." << std::endl;
+	file << "#include <Profiling/Profiling.h>" << std::endl;
+	file << std::endl;
+
 	file << "//Systems." << std::endl;
 	file << "#include <Systems/TaskSystem.h>" << std::endl;
 	file << std::endl;
@@ -1404,6 +1408,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "\t\t\t\t\tParallelUpdate &parallel_batch_update{ PARALLEL_UPDATES.Back() };" << std::endl;
 			file << "\t\t\t\t\tparallel_batch_update._Task._Function = [](void *const RESTRICT arguments)" << std::endl;
 			file << "\t\t\t\t\t{" << std::endl;
+			file << "\t\t\t\t\t\tPROFILING_SCOPE(\"" << update._ComponentName.c_str()  << "::ParallelBatchUpdate\");" << std::endl;
 			file << "\t\t\t\t\t\tParallelUpdate *const RESTRICT parallel_batch_update{ static_cast<ParallelUpdate *const RESTRICT>(arguments) };" << std::endl;
 			file << "\t\t\t\t\t\t" << update._ComponentName.c_str() << "::Instance->ParallelBatchUpdate(" << parallel_batch_update.first.c_str() << ", parallel_batch_update->_StartInstanceIndex, parallel_batch_update->_EndInstanceIndex);" << std::endl;
 			file << "\t\t\t\t\t};" << std::endl;
@@ -1445,6 +1450,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "\t\t\t\t\t\tParallelUpdate &parallel_sub_instance_update{ PARALLEL_UPDATES.Back() };" << std::endl;
 			file << "\t\t\t\t\t\tparallel_sub_instance_update._Task._Function = [](void *const RESTRICT arguments)" << std::endl;
 			file << "\t\t\t\t\t\t{" << std::endl;
+			file << "\t\t\t\t\t\tPROFILING_SCOPE(\"" << update._ComponentName.c_str() << "::ParallelSubInstanceUpdate\");" << std::endl;
 			file << "\t\t\t\t\t\t\tParallelUpdate *const RESTRICT parallel_sub_instance_update{ static_cast<ParallelUpdate *const RESTRICT>(arguments) };" << std::endl;
 			file << "\t\t\t\t\t\t\t" << update._ComponentName.c_str() << "::Instance->ParallelSubInstanceUpdate(" << parallel_sub_instance_update.first.c_str() << ", parallel_sub_instance_update->_InstanceIndex, parallel_sub_instance_update->_SubInstanceIndex);" << std::endl;
 			file << "\t\t\t\t\t\t};" << std::endl;
@@ -1485,7 +1491,10 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 		for (const ComponentUpdate &update : serial_update.second)
 		{
-			file << "\t\t\t" << update._ComponentName.c_str() << "::Instance->SerialUpdate(update_phase);" << std::endl;
+			file << "\t\t\t{" << std::endl;
+			file << "\t\t\t\tPROFILING_SCOPE(\"" << update._ComponentName.c_str() << "::SerialUpdate\");" << std::endl;
+			file << "\t\t\t\t" << update._ComponentName.c_str() << "::Instance->SerialUpdate(update_phase);" << std::endl;
+			file << "\t\t\t}" << std::endl;
 		}
 
 		file << "\t\t\tbreak;" << std::endl;
@@ -1522,7 +1531,10 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 		for (const ComponentUpdate &update : post_update.second)
 		{
-			file << "\t\t\t" << update._ComponentName.c_str() << "::Instance->PostUpdate(update_phase);" << std::endl;
+			file << "\t\t\t{" << std::endl;
+			file << "\t\t\t\tPROFILING_SCOPE(\"" << update._ComponentName.c_str() << "::PostUpdate\");" << std::endl;
+			file << "\t\t\t\t" << update._ComponentName.c_str() << "::Instance->PostUpdate(update_phase);" << std::endl;
+			file << "\t\t\t}" << std::endl;
 		}
 
 		file << "\t\t\tbreak;" << std::endl;
@@ -1580,8 +1592,8 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "\t\t\t{" << std::endl;
 			file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
 			file << "\t\t\t\tASSERT(hit_distance < previous_hit_distance, \"A component didn't properly check hit distance!\");" << std::endl;
-			file << "\t\t\t\tselected_entity = entity;" << std::endl;
 			file << "#endif" << std::endl;
+			file << "\t\t\t\tselected_entity = entity;" << std::endl;
 			file << "\t\t\t}" << std::endl;
 			file << "\t\t}" << std::endl;
 		}

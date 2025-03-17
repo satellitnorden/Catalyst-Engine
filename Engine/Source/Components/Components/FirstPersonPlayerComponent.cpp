@@ -7,9 +7,6 @@
 //Math.
 #include <Math/Core/CatalystCoordinateSpaces.h>
 
-//Profiling.
-#include <Profiling/Profiling.h>
-
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
@@ -144,8 +141,6 @@ NO_DISCARD bool CanStandUp(const WorldPosition &world_position) NOEXCEPT
 */
 void FirstPersonPlayerComponent::SerialUpdate(const UpdatePhase update_phase) NOEXCEPT
 {
-	PROFILING_SCOPE("FirstPersonPlayerComponent::SerialUpdate");
-
 	switch (update_phase)
 	{
 		case UpdatePhase::GAMEPLAY:
@@ -284,18 +279,6 @@ void FirstPersonPlayerComponent::SerialUpdate(const UpdatePhase update_phase) NO
 					instance_data._VerticalVelocity += -PhysicsConstants::GRAVITY * delta_time;
 				}
 
-#if defined(CATALYST_PHYSICS_PHYSX)
-				//Calculate the total displacement.
-				Vector3<float32> total_displacement{ 0.0f, 0.0f, 0.0f };
-
-				total_displacement += movement * current_speed * delta_time;
-				total_displacement += Vector3<float32>(0.0f, instance_data._VerticalVelocity, 0.0f) * delta_time;
-
-				//Move the character controller.
-				instance_data._CharacterController->Move(total_displacement);
-#endif
-
-#if defined(CATALYST_PHYSICS_JOLT)
 				Vector3<float32> linear_velocity{ instance_data._CharacterController->GetLinearVelocity() };
 
 				linear_velocity._X = movement._X * current_speed;
@@ -307,7 +290,6 @@ void FirstPersonPlayerComponent::SerialUpdate(const UpdatePhase update_phase) NO
 				}
 
 				instance_data._CharacterController->SetLinearVelocity(linear_velocity);
-#endif
 
 				//Update the current height.
 				instance_data._HeightSpringDampingSystem.SetDesired(instance_data._IsCrouching ? FirstPersonPlayerComponentConstants::CROUCHING_HEIGHT : FirstPersonPlayerComponentConstants::STANDING_HEIGHT);

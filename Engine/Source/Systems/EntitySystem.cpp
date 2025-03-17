@@ -13,6 +13,9 @@
 //Entities.
 #include <Entities/Core/EntitySerialization.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
@@ -187,6 +190,8 @@ NO_DISCARD EntityIdentifier EntitySystem::GenerateEntityIdentifier() NOEXCEPT
 */
 void EntitySystem::EntityUpdate() NOEXCEPT
 {
+	PROFILING_SCOPE("EntitySystem::EntityUpdate");
+
 	//Process the creation queue.
 	ProcessCreationQueue();
 

@@ -1,5 +1,6 @@
 //Declare uniform buffer includes.
 IncludeUniformBuffer(Camera);
+IncludeUniformBuffer(General);
 IncludeUniformBuffer(World);
 
 //Declare storage buffer includes.
@@ -8,12 +9,14 @@ IncludeStorageBuffer(Lighting);
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
 IncludeShaderFunctionLibrary(Lighting);
+IncludeShaderFunctionLibrary(Noise);
 IncludeShaderFunctionLibrary(PhysicallyBasedLighting);
 
 //Declare input render targets.
 InputRenderTarget(SceneFeatures1 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures2 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(SceneFeatures3 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+InputRenderTarget(SceneFeatures2Half /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 InputRenderTarget(INTERMEDIATE_RGBA_FLOAT32_HALF_1 /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
 
 //Declare output depth buffer.
@@ -85,6 +88,67 @@ Fragment
     //Calculate the view direction.
     vec3 view_direction = normalize(CAMERA_WORLD_POSITION - world_position);
 
+    //Calculate the linearized depth.
+    float linearized_depth = LinearizeDepth(depth);
+
+    //Retrieve the shadows.
+    vec4 shadows;
+
+    {
+#if 0
+        shadows = texture(INTERMEDIATE_RGBA_FLOAT32_HALF_1, InScreenCoordinate);
+#else
+        vec2 sample_coordinate_1 = InScreenCoordinate;
+        vec2 sample_coordinate_2 = InScreenCoordinate + vec2(0.0f, 1.0f) * INVERSE_HALF_MAIN_RESOLUTION;
+        vec2 sample_coordinate_3 = InScreenCoordinate + vec2(1.0f, 0.0f) * INVERSE_HALF_MAIN_RESOLUTION;
+        vec2 sample_coordinate_4 = InScreenCoordinate + vec2(1.0f, 1.0f) * INVERSE_HALF_MAIN_RESOLUTION;
+        
+        vec4 shadows_1 = texture(INTERMEDIATE_RGBA_FLOAT32_HALF_1, sample_coordinate_1);
+        vec4 shadows_2 = texture(INTERMEDIATE_RGBA_FLOAT32_HALF_1, sample_coordinate_2);
+        vec4 shadows_3 = texture(INTERMEDIATE_RGBA_FLOAT32_HALF_1, sample_coordinate_3);
+        vec4 shadows_4 = texture(INTERMEDIATE_RGBA_FLOAT32_HALF_1, sample_coordinate_4);
+        
+        float linearized_depth_1 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_1).w);
+        float linearized_depth_2 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_2).w);
+        float linearized_depth_3 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_3).w);
+        float linearized_depth_4 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_4).w);
+
+        float horizontal_weight = fract(InScreenCoordinate.x * HALF_MAIN_RESOLUTION.x);
+        float vertical_weight = fract(InScreenCoordinate.y * HALF_MAIN_RESOLUTION.y);
+
+        float weight_1 = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
+	    float weight_2 = (1.0f - horizontal_weight) * vertical_weight;
+	    float weight_3 = horizontal_weight * (1.0f - vertical_weight);
+	    float weight_4 = horizontal_weight * vertical_weight;
+
+        weight_1 = max(weight_1 * exp(-abs(linearized_depth - linearized_depth_1)), FLOAT32_EPSILON * 1.0f);
+        weight_2 = max(weight_2 * exp(-abs(linearized_depth - linearized_depth_2)), FLOAT32_EPSILON * 1.0f);
+        weight_3 = max(weight_3 * exp(-abs(linearized_depth - linearized_depth_3)), FLOAT32_EPSILON * 1.0f);
+        weight_4 = max(weight_4 * exp(-abs(linearized_depth - linearized_depth_4)), FLOAT32_EPSILON * 1.0f);
+
+        float total_weight_reciprocal = 1.0f / (weight_1 + weight_2 + weight_3 + weight_4);
+
+	    weight_1 *= total_weight_reciprocal;
+	    weight_2 *= total_weight_reciprocal;
+	    weight_3 *= total_weight_reciprocal;
+        weight_4 *= total_weight_reciprocal;
+
+        shadows =   shadows_1 * weight_1
+                    + shadows_2 * weight_2
+                    + shadows_3 * weight_3
+                    + shadows_4 * weight_4;
+#endif
+
+        /*
+        //If the shadows are a bit noisy, add some noise to them to help temporal anti aliasing.
+        for (uint i = 0; i < 4; ++i)
+        {
+            float noise_weight = InverseSquare(1.0f - (abs(shadows[i] - 0.5f) * 2.0f));
+            shadows[i] = mix(shadows[i], InterleavedGradientNoise(uvec2(FRAGMENT_COORDINATE.xy), FRAME), noise_weight);
+        }
+        */
+    }
+
     //Calculate the lighting.
     vec3 lighting = vec3(0.0f);
 
@@ -102,7 +166,7 @@ Fragment
             case LIGHT_TYPE_DIRECTIONAL:
             {
                 //Retrieve the shadow factor.
-                float shadow_factor = texture(INTERMEDIATE_RGBA_FLOAT32_HALF_1, InScreenCoordinate).x;
+                float shadow_factor = shadows[0];
 
                 //Add direct light.
                 lighting += BidirectionalReflectanceDistribution

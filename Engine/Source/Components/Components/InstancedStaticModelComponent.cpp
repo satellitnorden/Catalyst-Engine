@@ -1,9 +1,6 @@
 //Header file.
 #include <Components/Components/InstancedStaticModelComponent.h>
 
-//Profiling.
-#include <Profiling/Profiling.h>
-
 //Rendering.
 #include <Rendering/Native/Culling.h>
 #include <Rendering/Native/RenderingUtilities.h>
@@ -13,8 +10,6 @@
 */
 void InstancedStaticModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT
 {
-	PROFILING_SCOPE("InstancedStaticModelComponent::ParallelBatchUpdate");
-
 	switch (update_phase)
 	{
 		case UpdatePhase::PRE_RENDER:

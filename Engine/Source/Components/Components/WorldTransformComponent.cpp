@@ -1,9 +1,6 @@
 //Header file.
 #include <Components/Components/WorldTransformComponent.h>
 
-//Profiling.
-#include <Profiling/Profiling.h>
-
 /*
 *	Initializes this component.
 */
@@ -23,8 +20,6 @@ void WorldTransformComponent::Initialize() NOEXCEPT
 */
 void WorldTransformComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT
 {
-	PROFILING_SCOPE("WorldTransformComponent::ParallelBatchUpdate");
-
 	switch (update_phase)
 	{
 		case UpdatePhase::PRE:

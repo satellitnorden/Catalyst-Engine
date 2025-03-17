@@ -47,8 +47,98 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
+	//Register the input stream(s).
+	{
+		struct ShadowsSpatialDenoisingPushConstantData final
+		{
+			uint32 _Direction;
+		};
+
+		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+		(
+			HashString("ShadowsHorizontalSpatialDenoising"),
+			DynamicArray<VertexInputAttributeDescription>(),
+			DynamicArray<VertexInputBindingDescription>(),
+			sizeof(ShadowsSpatialDenoisingPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				//Clear the entries.
+				input_stream->_Entries.Clear();
+
+				//Clear the push constant data memory.
+				input_stream->_PushConstantDataMemory.Clear();
+
+				//Add an entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._VertexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBufferOffset = 0;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 3;
+				new_entry._IndexCount = 0;
+				new_entry._InstanceCount = 0;
+
+				//Set up the push constant data.
+				ShadowsSpatialDenoisingPushConstantData push_constant_data;
+
+				push_constant_data._Direction = 0;
+
+				for (uint64 i{ 0 }; i < sizeof(ShadowsSpatialDenoisingPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			},
+			RenderInputStream::Mode::DRAW,
+			nullptr
+		);
+
+		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+		(
+			HashString("ShadowsVerticalSpatialDenoising"),
+			DynamicArray<VertexInputAttributeDescription>(),
+			DynamicArray<VertexInputBindingDescription>(),
+			sizeof(ShadowsSpatialDenoisingPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				//Clear the entries.
+				input_stream->_Entries.Clear();
+
+				//Clear the push constant data memory.
+				input_stream->_PushConstantDataMemory.Clear();
+
+				//Add an entry.
+				input_stream->_Entries.Emplace();
+				RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+				new_entry._PushConstantDataOffset = 0;
+				new_entry._VertexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBuffer = EMPTY_HANDLE;
+				new_entry._IndexBufferOffset = 0;
+				new_entry._InstanceBuffer = EMPTY_HANDLE;
+				new_entry._VertexCount = 3;
+				new_entry._IndexCount = 0;
+				new_entry._InstanceCount = 0;
+
+				//Set up the push constant data.
+				ShadowsSpatialDenoisingPushConstantData push_constant_data;
+
+				push_constant_data._Direction = 1;
+
+				for (uint64 i{ 0 }; i < sizeof(ShadowsSpatialDenoisingPushConstantData); ++i)
+				{
+					input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
+				}
+			},
+			RenderInputStream::Mode::DRAW,
+			nullptr
+		);
+	}
+
 	//Add the pipelines.
-	SetNumberOfPipelines(_ClearShadowMapPipelines.Size() + _OpaqueModelShadowMapPipelines.Size() + _MaskedModelShadowMapPipelines.Size() + 2 + _ShadowsSpatialDenoisingGraphicsPipelines.Size());
+	SetNumberOfPipelines(_ClearShadowMapPipelines.Size() + _OpaqueModelShadowMapPipelines.Size() + _MaskedModelShadowMapPipelines.Size() + 2 + _ShadowsSpatialDenoisingPipelines.Size());
 
 	//Add all pipelines.
 	for (uint8 i{ 0 }; i < 4; ++i)
@@ -69,7 +159,7 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_ShadowMapResolvePipeline);
 	AddPipeline(&_RayTracedShadowsPipeline);
 
-	for (ShadowsSpatialDenoisingGraphicsPipeline &pipeline : _ShadowsSpatialDenoisingGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _ShadowsSpatialDenoisingPipelines)
 	{
 		AddPipeline(&pipeline);
 	}
@@ -100,12 +190,16 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 		_RayTracedShadowsPipeline.Initialize(parameters);
 	}
 
-	_ShadowsSpatialDenoisingGraphicsPipelines[0].Initialize(RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1),
-															1,
-															RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
-	_ShadowsSpatialDenoisingGraphicsPipelines[1].Initialize(RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2),
-															1,
-															RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+	for (uint64 i{ 0 }; i < _ShadowsSpatialDenoisingPipelines.Size(); ++i)
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("InputShadows"), i == 0 ? RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1) : RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
+		parameters._OutputRenderTargets.Emplace(HashString("OutputShadows"), i == 0 ? RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2) : RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+		parameters._InputStreamSubscriptions.Emplace(i == 0 ? HashString("ShadowsHorizontalSpatialDenoising") : HashString("ShadowsVerticalSpatialDenoising"));
+
+		_ShadowsSpatialDenoisingPipelines[i].Initialize(parameters);
+	}
 }
 
 /*
@@ -206,7 +300,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 		_RayTracedShadowsPipeline.Execute();
 	}
 
-	for (ShadowsSpatialDenoisingGraphicsPipeline &pipeline : _ShadowsSpatialDenoisingGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _ShadowsSpatialDenoisingPipelines)
 	{
 		pipeline.Execute();
 	}
@@ -236,7 +330,7 @@ void ShadowsRenderPass::Terminate() NOEXCEPT
 	_ShadowMapResolvePipeline.Terminate();
 	_RayTracedShadowsPipeline.Terminate();
 
-	for (ShadowsSpatialDenoisingGraphicsPipeline &pipeline : _ShadowsSpatialDenoisingGraphicsPipelines)
+	for (GraphicsRenderPipeline &pipeline : _ShadowsSpatialDenoisingPipelines)
 	{
 		pipeline.Terminate();
 	}

@@ -172,8 +172,6 @@ NO_DISCARD BufferHandle BufferManager::GetUniformBuffer(const HashString identif
 */
 NO_DISCARD BufferHandle BufferManager::GetStorageBuffer(const HashString identifier, const uint8 framebuffer_index) NOEXCEPT
 {
-	PROFILING_SCOPE("BufferManager::GetStorageBuffer");
-
 	for (RegisteredStorageBuffer &registered_storage_buffer : _RegisteredStorageBuffers)
 	{
 		if (registered_storage_buffer._Identifier == identifier)

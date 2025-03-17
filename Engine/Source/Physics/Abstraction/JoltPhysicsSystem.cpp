@@ -489,7 +489,7 @@ void PhysicsSystem::SubCreateModelActor
 			const JPH::Vec3 half_extent{ dimensions._X * 0.5f, dimensions._Y * 0.5f, dimensions._Z * 0.5f };
 
 			//Set up the shape extent.
-			JPH::BoxShapeSettings shape_settings{ half_extent, FLOAT32_EPSILON };
+			JPH::BoxShapeSettings shape_settings{ half_extent, 0.0f };
 
 			//Create the shape!
 			const JPH::Shape::ShapeResult shape_result{ shape_settings.Create() };
@@ -504,7 +504,7 @@ void PhysicsSystem::SubCreateModelActor
 			JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
 
 			//Add the body!
-			body_interface.AddBody(body->GetID(), simulation_configuration._SimulatePhysics ? JPH::EActivation::Activate : JPH::EActivation::DontActivate);
+			body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
 
 			//Set the actor handle.
 			*actor_handle = body;
@@ -527,13 +527,41 @@ void PhysicsSystem::SubCreateModelActor
 			JPH::BodyInterface &body_interface = JoltPhysicsSystemData::_System.GetBodyInterface();
 
 			//Set up the body creation settings.
-			const JPH::BodyCreationSettings body_creation_settings{ mesh_shape, JPH::Vec3(absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), simulation_configuration._SimulatePhysics ? JPH::EMotionType::Dynamic : JPH::EMotionType::Static, simulation_configuration._SimulatePhysics ? static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC) : static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
+			JPH::BodyCreationSettings body_creation_settings{ mesh_shape, JPH::Vec3(absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), simulation_configuration._SimulatePhysics ? JPH::EMotionType::Dynamic : JPH::EMotionType::Static, simulation_configuration._SimulatePhysics ? static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC) : static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
+
+			//Fill in the mass/intertia settings.
+			if (simulation_configuration._SimulatePhysics)
+			{
+				//Cache a local copy of the axis aligned bounding box.
+				AxisAlignedBoundingBox3D _axis_aligned_bounding_box{ axis_aligned_bounding_box };
+
+				//Apply the scale.
+				_axis_aligned_bounding_box._Minimum *= world_transform.GetScale();
+				_axis_aligned_bounding_box._Maximum *= world_transform.GetScale();
+
+				//For shapes like planes and stuff like that, the axis aligned bounding box might be the same on one axis, so fix that by thickening it slightly.
+				for (uint8 axis_index{ 0 }; axis_index < 3; ++axis_index)
+				{
+					if (_axis_aligned_bounding_box._Minimum[axis_index] == _axis_aligned_bounding_box._Maximum[axis_index])
+					{
+						_axis_aligned_bounding_box._Minimum[axis_index] -= FLOAT32_EPSILON;
+						_axis_aligned_bounding_box._Maximum[axis_index] += FLOAT32_EPSILON;
+					}
+				}
+
+				//Retrieve the dimensions.
+				const Vector3<float32> dimensions{ _axis_aligned_bounding_box.Dimensions() };
+
+				//Override the mass/intertia.
+				body_creation_settings.mOverrideMassProperties = JPH::EOverrideMassProperties::MassAndInertiaProvided;
+				body_creation_settings.mMassPropertiesOverride.SetMassAndInertiaOfSolidBox(JPH::Vec3(dimensions._X, dimensions._Y, dimensions._Z), simulation_configuration._InitialMass);
+			}
 
 			//Create the body.
 			JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
 
 			//Add the body!
-			body_interface.AddBody(body->GetID(), simulation_configuration._SimulatePhysics ? JPH::EActivation::Activate : JPH::EActivation::DontActivate);
+			body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
 
 			//Set the actor handle.
 			*actor_handle = body;
