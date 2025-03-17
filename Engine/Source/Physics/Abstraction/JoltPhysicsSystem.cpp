@@ -387,7 +387,7 @@ void PhysicsSystem::SubTerminate() NOEXCEPT
 	//Destroy all mesh shapes.
 	for (JPH::MeshShape *const RESTRICT mesh_shape : JoltPhysicsSystemData::_MeshShapes)
 	{
-		delete mesh_shape;
+		mesh_shape->Release();
 	}
 
 	JoltPhysicsSystemData::_MeshShapes.Clear();
@@ -395,7 +395,7 @@ void PhysicsSystem::SubTerminate() NOEXCEPT
 	//Destroy all characters.
 	for (JPH::Character *const RESTRICT character : JoltPhysicsSystemData::_Characters)
 	{
-		delete character;
+		character->Release();
 	}
 
 	JoltPhysicsSystemData::_Characters.Clear();
