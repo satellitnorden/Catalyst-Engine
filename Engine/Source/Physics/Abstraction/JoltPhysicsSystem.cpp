@@ -246,6 +246,7 @@ namespace JoltPhysicsSystemConstants
 	constexpr JPH::uint MAXIMUM_BODIES{ 8'192 };
 	constexpr JPH::uint MAXIMUM_BODY_PAIRS{ 1'024 };
 	constexpr JPH::uint MAXIMUM_CONTACT_CONSTRAINTS{ 1'024 };
+	constexpr float32 DEFAULT_FRICTION{ 1.0f };
 }
 
 //Jolt physics system data.
@@ -441,6 +442,9 @@ void PhysicsSystem::SubCreateHeightFieldActor
 	//Create the body.
 	JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
 
+	//Set the friction.
+	body->SetFriction(JoltPhysicsSystemConstants::DEFAULT_FRICTION);
+
 	//Add the body!
 	if (add_to_world)
 	{
@@ -504,13 +508,23 @@ void PhysicsSystem::SubCreateModelActor
 			const JPH::Shape::ShapeResult shape_result{ shape_settings.Create() };
 
 			//Set up the body creation settings.
-			const JPH::BodyCreationSettings body_creation_settings{ shape_result.Get(), JPH::Vec3(absolute_world_position._X, absolute_world_position._Y + half_extent.GetY(), absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), simulation_configuration._SimulatePhysics ? JPH::EMotionType::Dynamic : JPH::EMotionType::Static, simulation_configuration._SimulatePhysics ? static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC) : static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
+			JPH::BodyCreationSettings body_creation_settings{ shape_result.Get(), JPH::Vec3(absolute_world_position._X, absolute_world_position._Y + half_extent.GetY(), absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), simulation_configuration._SimulatePhysics ? JPH::EMotionType::Dynamic : JPH::EMotionType::Static, simulation_configuration._SimulatePhysics ? static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC) : static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
+
+			if (simulation_configuration._SimulatePhysics)
+			{
+				//Set the mass.
+				body_creation_settings.mOverrideMassProperties = JPH::EOverrideMassProperties::CalculateInertia;
+				body_creation_settings.mMassPropertiesOverride.mMass = simulation_configuration._InitialMass;
+			}
 
 			//Retrieve the body interface.
 			JPH::BodyInterface &body_interface{ JoltPhysicsSystemData::_System.GetBodyInterface() };
 
 			//Create the body.
 			JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
+
+			//Set the friction.
+			body->SetFriction(JoltPhysicsSystemConstants::DEFAULT_FRICTION);
 
 			//Add the body!
 			body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
@@ -538,8 +552,18 @@ void PhysicsSystem::SubCreateModelActor
 			//Set up the body creation settings.
 			JPH::BodyCreationSettings body_creation_settings{ convex_hull_shape, JPH::Vec3(absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), simulation_configuration._SimulatePhysics ? JPH::EMotionType::Dynamic : JPH::EMotionType::Static, simulation_configuration._SimulatePhysics ? static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC) : static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
 
+			if (simulation_configuration._SimulatePhysics)
+			{
+				//Set the mass.
+				body_creation_settings.mOverrideMassProperties = JPH::EOverrideMassProperties::CalculateInertia;
+				body_creation_settings.mMassPropertiesOverride.mMass = simulation_configuration._InitialMass;
+			}
+
 			//Create the body.
 			JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
+
+			//Set the friction.
+			body->SetFriction(JoltPhysicsSystemConstants::DEFAULT_FRICTION);
 
 			//Add the body!
 			body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
@@ -706,7 +730,7 @@ RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCrea
 		character_settings.mMaxSlopeAngle = BaseMath::DegreesToRadians(45.0f);
 		character_settings.mLayer = static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC);
 		character_settings.mMass = 80.0f;
-		character_settings.mFriction = 1.0f;
+		character_settings.mFriction = JoltPhysicsSystemConstants::DEFAULT_FRICTION;
 		character_settings.mGravityFactor = 1.0f;
 
 		//Allocate the character.
