@@ -73,11 +73,12 @@ void PhysicsSystem::CreateHeightFieldActor
 (
 	const WorldPosition &world_position,
 	const Texture2D<float32> &height_field,
+	const bool add_to_world,
 	ActorHandle *const RESTRICT actor_handle
 ) NOEXCEPT
 {
 	//Create the height field on the sub-system.
-	SubCreateHeightFieldActor(world_position, height_field, actor_handle);
+	SubCreateHeightFieldActor(world_position, height_field, add_to_world, actor_handle);
 }
 
 /*
@@ -103,6 +104,15 @@ void PhysicsSystem::CreateModelActor
 		simulation_configuration,
 		actor_handle
 	);
+}
+
+/*
+*	Adds the given actor to the world.
+*/
+void PhysicsSystem::AddToWorld(const ActorHandle actor_handle) NOEXCEPT
+{
+	//Add the actor to the world on the sub-system.
+	SubAddToWorld(actor_handle);
 }
 
 /*

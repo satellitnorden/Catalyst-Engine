@@ -1,6 +1,9 @@
 //Header file.
 #include <Components/Components/TerrainComponent.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
 #include <Rendering/Native/Culling.h>
 
@@ -625,6 +628,15 @@ void TerrainComponent::PreProcess(TerrainInitializationData *const RESTRICT init
 		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &initialization_data->_PreprocessedData._BlendMapTexture);
 		initialization_data->_PreprocessedData._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(initialization_data->_PreprocessedData._BlendMapTexture);
 	}
+
+	//Create the physics actor.
+	PhysicsSystem::Instance->CreateHeightFieldActor
+	(
+		initialization_data->_WorldPosition,
+		initialization_data->_HeightMap,
+		false,
+		&initialization_data->_PreprocessedData._PhysicsActorHandle
+	);
 }
 
 /*
@@ -632,6 +644,8 @@ void TerrainComponent::PreProcess(TerrainInitializationData *const RESTRICT init
 */
 void TerrainComponent::CreateInstance(Entity *const RESTRICT entity, TerrainInitializationData *const RESTRICT initialization_data, TerrainInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
+	PROFILING_SCOPE("TerrainComponent::CreateInstance");
+
 	//Set up the instance data.
 	ASSERT(initialization_data->_HeightMap.GetWidth() == initialization_data->_HeightMap.GetHeight(), "Terrain height map width and height doesn't match - This isn't okay.");
 
@@ -668,13 +682,10 @@ void TerrainComponent::CreateInstance(Entity *const RESTRICT entity, TerrainInit
 	instance_data->_QuadTree._RootNode._MaximumHeightMapCoordinate = Vector2<float32>(1.0f);
 	instance_data->_QuadTree._RootNode._PatchSize = static_cast<float32>(instance_data->_PatchSize);
 
-	//Create the physics actor.
-	PhysicsSystem::Instance->CreateHeightFieldActor
-	(
-		instance_data->_WorldPosition,
-		instance_data->_HeightMap,
-		&instance_data->_PhysicsActorHandle
-	);
+	instance_data->_PhysicsActorHandle = initialization_data->_PreprocessedData._PhysicsActorHandle;
+
+	//Add the actor to the world.
+	PhysicsSystem::Instance->AddToWorld(instance_data->_PhysicsActorHandle);
 }
 
 /*

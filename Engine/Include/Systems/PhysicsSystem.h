@@ -72,6 +72,7 @@ public:
 	(
 		const WorldPosition &world_position,
 		const Texture2D<float32> &height_field,
+		const bool add_to_world,
 		ActorHandle *const RESTRICT actor_handle
 	) NOEXCEPT;
 
@@ -87,6 +88,11 @@ public:
 		const ModelSimulationConfiguration &simulation_configuration,
 		ActorHandle *const RESTRICT actor_handle
 	) NOEXCEPT;
+
+	/*
+	*	Adds the given actor to the world.
+	*/
+	void AddToWorld(const ActorHandle actor_handle) NOEXCEPT;
 
 	/*
 	*	Destroys an actor.
@@ -163,6 +169,7 @@ private:
 	(
 		const WorldPosition &world_position,
 		const Texture2D<float32> &height_field,
+		const bool add_to_world,
 		ActorHandle *const RESTRICT actor_handle
 	) NOEXCEPT;
 
@@ -178,6 +185,11 @@ private:
 		const ModelSimulationConfiguration &simulation_configuration,
 		ActorHandle *const RESTRICT actor_handle
 	) NOEXCEPT;
+
+	/*
+	*	Adds the given actor to the world on the sub-system.
+	*/
+	void SubAddToWorld(const ActorHandle actor_handle) NOEXCEPT;
 
 	/*
 	*	Destroys an actor on the sub-system.

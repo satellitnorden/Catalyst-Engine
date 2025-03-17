@@ -68,6 +68,9 @@ public:
 		//The blend map texture index.
 		uint32 _BlendMapTextureIndex;
 
+		//The physics actor handle.
+		ActorHandle _PhysicsActorHandle;
+
 	};
 
 	//The world position.

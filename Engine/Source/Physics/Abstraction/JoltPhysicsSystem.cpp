@@ -8,6 +8,9 @@
 //Physics.
 #include <Physics/Abstraction/JoltCharacterControllerAbstractionData.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/MemorySystem.h>
@@ -405,9 +408,12 @@ void PhysicsSystem::SubCreateHeightFieldActor
 (
 	const WorldPosition &world_position,
 	const Texture2D<float32> &height_field,
+	const bool add_to_world,
 	ActorHandle *const RESTRICT actor_handle
 ) NOEXCEPT
 {
+	PROFILING_SCOPE("PhysicsSystem::SubCreateHeightFieldActor");
+
 	//Retrieve the absolute world position.
 	const Vector3<float32> absolute_world_position{ world_position.GetAbsolutePosition() };
 
@@ -436,7 +442,10 @@ void PhysicsSystem::SubCreateHeightFieldActor
 	JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
 
 	//Add the body!
-	body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
+	if (add_to_world)
+	{
+		body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
+	}
 
 	//Set the actor handle.
 	*actor_handle = body;
@@ -569,6 +578,22 @@ void PhysicsSystem::SubCreateModelActor
 			break;
 		}
 	}
+}
+
+/*
+*	Adds the given actor to the world on the sub-system.
+*/
+void PhysicsSystem::SubAddToWorld(const ActorHandle actor_handle) NOEXCEPT
+{
+	//Retrieve the body interface.
+	JPH::BodyInterface &body_interface = JoltPhysicsSystemData::_System.GetBodyInterface();
+
+	//Cache the body.
+	JPH::Body *const RESTRICT body{ static_cast<JPH::Body *const RESTRICT>(actor_handle) };
+
+	//Add the body!
+	body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
+
 }
 
 /*
