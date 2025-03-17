@@ -25,8 +25,8 @@
 #include <Jolt/Physics/Character/Character.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Physics/Collision/Shape/HeightFieldShape.h>
-#include <Jolt/Physics/Collision/Shape/MeshShape.h>
 
 //Enumeration covering all physics layers.
 enum class PhysicsLayer : uint8
@@ -269,8 +269,8 @@ namespace JoltPhysicsSystemData
 	//The job system thread pool.
 	JPH::JobSystemThreadPool *RESTRICT _JobSystemThreadPool;
 
-	//Container for all mesh shapes.
-	DynamicArray<JPH::MeshShape *RESTRICT> _MeshShapes;
+	//Container for all convex hull shapes.
+	DynamicArray<JPH::ConvexHullShape *RESTRICT> _ConvexHullShapes;
 
 	//Container for all characters.
 	DynamicArray<JPH::Character *RESTRICT> _Characters;
@@ -315,29 +315,29 @@ void PhysicsSystem::SubInitialize() NOEXCEPT
 */
 void PhysicsSystem::SubCreateCollisionModel(const CollisionModelData &collision_model_data, CollisionModelHandle *const RESTRICT collision_model) NOEXCEPT
 {
-	//Fill up the triangles.
-	JPH::Array<JPH::Triangle> triangles;
+	//Fill up the points.
+	JPH::Array<JPH::Vec3> points;
 
 	{
-		const uint64 number_of_triangles{ collision_model_data._Data.Size() / sizeof(JPH::Triangle) };
-		triangles.resize(number_of_triangles);
-		Memory::Copy(triangles.data(), collision_model_data._Data.Data(), number_of_triangles * sizeof(JPH::Triangle));
+		const uint64 number_of_points{ collision_model_data._Data.Size() / sizeof(JPH::Vec3) };
+		points.resize(number_of_points);
+		Memory::Copy(points.data(), collision_model_data._Data.Data(), number_of_points * sizeof(JPH::Vec3));
 	}
 
-	//Fill in the mesh shape settings.
-	JPH::MeshShapeSettings mesh_shape_settings{ triangles };
+	//Fill in the convex hull shape settings.
+	JPH::ConvexHullShapeSettings convex_hull_shape_settings{ points };
 
 	//Create the shape.
-	JPH::MeshShape::ShapeResult mesh_shape_result{ mesh_shape_settings.Create() };
+	JPH::ConvexHullShape::ShapeResult convex_hull_shape_result{ convex_hull_shape_settings.Create() };
 
 	//Retrieve the shape.
-	JPH::MeshShape *const RESTRICT shape{ static_cast<JPH::MeshShape *const RESTRICT>(mesh_shape_result.Get().GetPtr()) };
+	JPH::ConvexHullShape *const RESTRICT shape{ static_cast<JPH::ConvexHullShape*const RESTRICT>(convex_hull_shape_result.Get().GetPtr()) };
 	
 	//Add a ref so it gets kept around.
 	shape->AddRef();
 
-	//Add the mesh shape.
-	JoltPhysicsSystemData::_MeshShapes.Emplace(shape);
+	//Add the convex hull shape.
+	JoltPhysicsSystemData::_ConvexHullShapes.Emplace(shape);
 
 	//Set the shape!
 	*collision_model = shape;
@@ -384,13 +384,13 @@ void PhysicsSystem::SubTerminate() NOEXCEPT
 	delete JoltPhysicsSystemData::_JobSystemThreadPool;
 	JoltPhysicsSystemData::_JobSystemThreadPool = nullptr;
 
-	//Destroy all mesh shapes.
-	for (JPH::MeshShape *const RESTRICT mesh_shape : JoltPhysicsSystemData::_MeshShapes)
+	//Destroy all convex hull shapes.
+	for (JPH::ConvexHullShape *const RESTRICT convex_hull_shape : JoltPhysicsSystemData::_ConvexHullShapes)
 	{
-		mesh_shape->Release();
+		convex_hull_shape->Release();
 	}
 
-	JoltPhysicsSystemData::_MeshShapes.Clear();
+	JoltPhysicsSystemData::_ConvexHullShapes.Clear();
 
 	//Destroy all characters.
 	for (JPH::Character *const RESTRICT character : JoltPhysicsSystemData::_Characters)
@@ -529,42 +529,14 @@ void PhysicsSystem::SubCreateModelActor
 			//Cache the rotation.
 			const Quaternion &rotation{ world_transform.GetRotation() };
 
-			//Cache the mesh shape.
-			const JPH::MeshShape *const RESTRICT mesh_shape{ static_cast<const JPH::MeshShape *const RESTRICT>(collision_model) };
+			//Cache the convex hull shape.
+			const JPH::ConvexHullShape *const RESTRICT convex_hull_shape{ static_cast<const JPH::ConvexHullShape *const RESTRICT>(collision_model) };
 
 			//Retrieve the body interface.
 			JPH::BodyInterface &body_interface = JoltPhysicsSystemData::_System.GetBodyInterface();
 
 			//Set up the body creation settings.
-			JPH::BodyCreationSettings body_creation_settings{ mesh_shape, JPH::Vec3(absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), simulation_configuration._SimulatePhysics ? JPH::EMotionType::Dynamic : JPH::EMotionType::Static, simulation_configuration._SimulatePhysics ? static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC) : static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
-
-			//Fill in the mass/intertia settings.
-			if (simulation_configuration._SimulatePhysics)
-			{
-				//Cache a local copy of the axis aligned bounding box.
-				AxisAlignedBoundingBox3D _axis_aligned_bounding_box{ axis_aligned_bounding_box };
-
-				//Apply the scale.
-				_axis_aligned_bounding_box._Minimum *= world_transform.GetScale();
-				_axis_aligned_bounding_box._Maximum *= world_transform.GetScale();
-
-				//For shapes like planes and stuff like that, the axis aligned bounding box might be the same on one axis, so fix that by thickening it slightly.
-				for (uint8 axis_index{ 0 }; axis_index < 3; ++axis_index)
-				{
-					if (_axis_aligned_bounding_box._Minimum[axis_index] == _axis_aligned_bounding_box._Maximum[axis_index])
-					{
-						_axis_aligned_bounding_box._Minimum[axis_index] -= FLOAT32_EPSILON;
-						_axis_aligned_bounding_box._Maximum[axis_index] += FLOAT32_EPSILON;
-					}
-				}
-
-				//Retrieve the dimensions.
-				const Vector3<float32> dimensions{ _axis_aligned_bounding_box.Dimensions() };
-
-				//Override the mass/intertia.
-				body_creation_settings.mOverrideMassProperties = JPH::EOverrideMassProperties::MassAndInertiaProvided;
-				body_creation_settings.mMassPropertiesOverride.SetMassAndInertiaOfSolidBox(JPH::Vec3(dimensions._X, dimensions._Y, dimensions._Z), simulation_configuration._InitialMass);
-			}
+			JPH::BodyCreationSettings body_creation_settings{ convex_hull_shape, JPH::Vec3(absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z), JPH::Quat(rotation._X, rotation._Y, rotation._Z, rotation._W), simulation_configuration._SimulatePhysics ? JPH::EMotionType::Dynamic : JPH::EMotionType::Static, simulation_configuration._SimulatePhysics ? static_cast<JPH::ObjectLayer>(PhysicsLayer::DYNAMIC) : static_cast<JPH::ObjectLayer>(PhysicsLayer::STATIC) };
 
 			//Create the body.
 			JPH::Body *const RESTRICT body{ body_interface.CreateBody(body_creation_settings) };
@@ -755,46 +727,32 @@ RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCrea
 */
 void PhysicsSystem::SubBuildCollisionModel(const ModelFile &model_file, CollisionModelData *const RESTRICT collision_model_data) NOEXCEPT
 {
-	//Fill up the triangles.
-	JPH::Array<JPH::Triangle> triangles;
+	//Fill up the points.
+	JPH::Array<JPH::Vec3> points;
 
-	//Calculate the total number of triangles.
-	size_t total_number_of_triangles{ 0 };
+	//Calculate the total number of points.
+	size_t total_number_of_points{ 0 };
 
 	for (const ModelFile::Mesh &mesh : model_file._Meshes)
 	{
-		total_number_of_triangles += mesh._Indices.Size() / 3;
+		total_number_of_points += mesh._Vertices.Size();
 	}
 
-	//Reserve the necessary amount of data for the triangles.
-	triangles.reserve(total_number_of_triangles);
+	//Reserve the necessary amount of data for the points.
+	points.reserve(total_number_of_points);
 
-	//Now actually add the triangles!
+	//Now actually add the points!
 	for (const ModelFile::Mesh &mesh : model_file._Meshes)
 	{
-		for (uint64 index_index{ 0 }; index_index < mesh._Indices.Size(); index_index += 3)
+		for (const Vertex &vertex : mesh._Vertices)
 		{
-			StaticArray<const Vertex *const RESTRICT, 3> vertices
-			{
-				&mesh._Vertices[mesh._Indices[index_index + 0]],
-				&mesh._Vertices[mesh._Indices[index_index + 1]],
-				&mesh._Vertices[mesh._Indices[index_index + 2]]
-			};
-
-			JPH::Triangle new_triangle
-			{
-				JPH::Float3(vertices[0]->_Position._X, vertices[0]->_Position._Y, vertices[0]->_Position._Z),
-				JPH::Float3(vertices[1]->_Position._X, vertices[1]->_Position._Y, vertices[1]->_Position._Z),
-				JPH::Float3(vertices[2]->_Position._X, vertices[2]->_Position._Y, vertices[2]->_Position._Z)
-			};
-
-			triangles.emplace_back(new_triangle);
+			points.emplace_back(JPH::Vec3(vertex._Position._X, vertex._Position._Y, vertex._Position._Z));
 		}
 	}
 
-	//Just fill the data up with triangles, cook it on boot. (:
+	//Just fill the data up with points, cook it on boot. (:
 	collision_model_data->_Type = CollisionModelData::Type::CONVEX; //Doesn't really matter.
-	collision_model_data->_Data.Upsize<false>(sizeof(JPH::Triangle) * triangles.size());
-	Memory::Copy(collision_model_data->_Data.Data(), triangles.data(), sizeof(JPH::Triangle) * triangles.size());
+	collision_model_data->_Data.Upsize<false>(sizeof(JPH::Vec3) * points.size());
+	Memory::Copy(collision_model_data->_Data.Data(), points.data(), sizeof(JPH::Vec3) * points.size());
 }
 #endif
