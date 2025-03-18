@@ -81,6 +81,9 @@ private:
 	//The previous camera world transform.
 	WorldTransform _PreviousCameraWorldTransform;
 
+	//The previous projection matrix.
+	Matrix4x4 _PreviousProjectionMatrix;
+
 	//The default camera.
 	Camera *RESTRICT _DefaultCamera{ nullptr };
 
