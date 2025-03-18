@@ -34,6 +34,9 @@ IncludeCommonVertexShader(ViewportScreenCoordinate);
 //The fragment shader.
 Fragment
 {
+	//Constants.
+	#define KERNEL_SIZE (2)
+
     //Declare input parameters.
     InputParameter(vec2, InScreenCoordinate);
 
@@ -47,8 +50,8 @@ Fragment
 	vec3 denoised_diffuse_irradiance = vec3(0.0f);
 	float weight_sum = 0.0f;
 
-	int start = -STRIDE * 1;
-	int end = STRIDE * 1;
+	int start = -STRIDE * KERNEL_SIZE;
+	int end = STRIDE * KERNEL_SIZE;
 
 	for (int sample_index = start; sample_index <= end; sample_index += STRIDE)
 	{

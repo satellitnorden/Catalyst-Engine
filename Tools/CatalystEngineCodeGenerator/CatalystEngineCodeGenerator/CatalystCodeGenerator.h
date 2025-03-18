@@ -2,6 +2,7 @@
 
 #include "ComponentGenerator.h"
 #include "EnumerationGenerator.h"
+#include "EventGenerator.h"
 #include "RenderPipelineGenerator.h"
 #include "ScriptGenerator.h"
 #include "SettingsGenerator.h"
@@ -25,6 +26,9 @@ private:
 
 	//The enumeration generator.
 	EnumerationGenerator _EnumerationGenerator;
+
+	//The event generator.
+	EventGenerator _EventGenerator;
 
 	//The render pipeline generator.
 	RenderPipelineGenerator _RenderPipelineGenerator;

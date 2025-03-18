@@ -184,7 +184,7 @@ public:
 	}
 
 	/*
-	*	Finds the value with the given key and returns a pointer to it, or nullptr if none was found.
+	*	Finds the value with the given key and returns a pointer to it, or nullptr if none was found, mutable.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD VALUE_TYPE *const RESTRICT Find(const KEY_TYPE &key) NOEXCEPT
 	{
@@ -197,6 +197,14 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	/*
+	*	Finds the value with the given key and returns a pointer to it, or nullptr if none was found, const.
+	*/
+	FORCE_INLINE RESTRICTED NO_DISCARD const VALUE_TYPE *const RESTRICT Find(const KEY_TYPE &key) const NOEXCEPT
+	{
+		return const_cast<HashTable<KEY_TYPE, VALUE_TYPE> *const RESTRICT>(this)->Find(key);
 	}
 
 	/*

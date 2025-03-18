@@ -428,6 +428,7 @@ void StaticModelComponent::StartGame() NOEXCEPT
 
 			PhysicsSystem::Instance->CreateModelActor
 			(
+				entity,
 				world_transform_instance_data._CurrentWorldTransform,
 				static_model_instance_data._CollisionType,
 				static_model_instance_data._Model->_ModelSpaceAxisAlignedBoundingBox,
@@ -497,6 +498,7 @@ void StaticModelComponent::PostCreateInstance(Entity *const RESTRICT entity) NOE
 
 		PhysicsSystem::Instance->CreateModelActor
 		(
+			entity,
 			world_transform_instance_data._CurrentWorldTransform,
 			static_model_instance_data._CollisionType,
 			static_model_instance_data._Model->_ModelSpaceAxisAlignedBoundingBox,
@@ -574,6 +576,7 @@ void StaticModelComponent::PostEditableFieldChange(Entity *const RESTRICT entity
 
 			PhysicsSystem::Instance->CreateModelActor
 			(
+				entity,
 				world_transform_instance_data._CurrentWorldTransform,
 				instance_data._CollisionType,
 				instance_data._Model->_ModelSpaceAxisAlignedBoundingBox,
@@ -587,6 +590,21 @@ void StaticModelComponent::PostEditableFieldChange(Entity *const RESTRICT entity
 		{
 			instance_data._PhysicsActorHandle = nullptr;
 		}
+	}
+}
+
+/*
+*	Event for then the world grid cell changes.
+*/
+void StaticModelComponent::OnWorldGridCellChanged(const WorldTransform &previous_world_transform, const WorldTransform &current_world_transform) NOEXCEPT
+{
+	//Let the ray tracing system know.
+	for (uint64 instance_index{ 0 }; instance_index < NumberOfInstances(); ++instance_index)
+	{
+		Entity *const RESTRICT entity{ InstanceToEntity(instance_index) };
+		const StaticModelInstanceData &instance_data{ _InstanceData[instance_index] };
+
+		RenderingSystem::Instance->GetRayTracingSystem()->UpdateStaticModelInstanceWorldTransform(entity, instance_data);
 	}
 }
 

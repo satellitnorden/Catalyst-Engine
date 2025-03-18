@@ -25,16 +25,3 @@ CATALYST_ENUMERATION
 	BOX,
 	COLLISION_MODEL
 );
-
-//Enumeration covering all physics channels.
-enum class PhysicsChannel : uint8
-{
-	CHARACTERS = BIT(0),
-	DYNAMIC_MODELS = BIT(1),
-	STATIC_MODELS = BIT(2),
-	TERRAIN = BIT(3),
-
-	ALL = CHARACTERS | DYNAMIC_MODELS | STATIC_MODELS | TERRAIN
-};
-
-ENUMERATION_BIT_OPERATIONS(PhysicsChannel);

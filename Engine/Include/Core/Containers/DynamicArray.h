@@ -351,7 +351,7 @@ public:
 			Reserve(_Size > 0 ? _Size * 2 : 2);
 		}
 
-		new ((void *const RESTRICT) &_Array[_Size++]) TYPE(std::forward<Arguments>(arguments)...);
+		::new ((void *const RESTRICT) &_Array[_Size++]) TYPE(std::forward<Arguments>(arguments)...);
 	}
 
 	/*

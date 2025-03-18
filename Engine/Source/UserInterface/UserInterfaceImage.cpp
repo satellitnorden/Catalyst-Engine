@@ -97,6 +97,14 @@ void UserInterfaceImage::SetMaterial(const UserInterfaceMaterial &value) NOEXCEP
 }
 
 /*
+*	Sets the color.
+*/
+void UserInterfaceImage::SetColor(const Vector3<float32> &value) NOEXCEPT
+{
+	_Primitive->_Color = value;
+}
+
+/*
 *	Sets the opacity.
 */
 void UserInterfaceImage::SetOpacity(const float32 value) NOEXCEPT

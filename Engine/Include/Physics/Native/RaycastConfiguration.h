@@ -2,22 +2,23 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/ArrayProxy.h>
 
 //Physics.
 #include <Physics/Native/PhysicsCore.h>
+
+//Forward declarations.
+class Entity;
 
 class RaycastConfiguration final
 {
 
 public:
 
-	//The physics channels.
-	PhysicsChannel _PhysicsChannels;
-
 	//The maximum hit distance.
 	float32 _MaximumHitDistance;
 
-	//The terrain ray march step.
-	float32 _TerrainRayMarchStep;
+	//The ignored entities.
+	ArrayProxy<Entity *RESTRICT> _IgnoredEntities;
 
 };

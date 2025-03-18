@@ -173,6 +173,14 @@ float Luminance(vec3 color)
 }
 
 /*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -310,14 +318,6 @@ mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
     vec3 random_bitangent = cross(normal, random_tangent);
 
     return mat3(random_tangent, random_bitangent, normal);
-}
-
-/*
-*   Returns a smoothed number in the range 0.0f-1.0f.
-*/
-float SmoothStep(float number)
-{
-    return number * number * (3.0f - 2.0f * number);
 }
 
 layout (push_constant) uniform PushConstantData

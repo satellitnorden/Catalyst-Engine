@@ -60,6 +60,11 @@ public:
 	void SetMaterial(const UserInterfaceMaterial &value) NOEXCEPT;
 
 	/*
+	*	Sets the color.
+	*/
+	void SetColor(const Vector3<float32> &value) NOEXCEPT;
+
+	/*
 	*	Sets the opacity.
 	*/
 	void SetOpacity(const float32 value) NOEXCEPT;

@@ -31,7 +31,7 @@ namespace FirstPersonPlayerComponentConstants
 void UpdateInputState(FirstPersonPlayerInputState *const RESTRICT input_state, const float32 delta_time) NOEXCEPT
 {
 	//Define constants.
-	constexpr float32 GAMEPAD_ROTATION_SPEED{ 2.5f };
+	constexpr float32 GAMEPAD_ROTATION_SPEED{ 2.0f };
 	constexpr float32 MOUSE_ROTATION_SPEED{ 200.0f };
 
 	//Retrieve the input states.
@@ -115,7 +115,7 @@ void UpdateInputState(FirstPersonPlayerInputState *const RESTRICT input_state, c
 /*
 *	Returns whether or not the player can stand up.
 */
-NO_DISCARD bool CanStandUp(const WorldPosition &world_position) NOEXCEPT
+NO_DISCARD bool CanStandUp(const WorldPosition &world_position, Entity *RESTRICT entity) NOEXCEPT
 {
 	//Do a raycast up. If it hits something, this character can't stand up.
 	Ray ray;
@@ -125,9 +125,8 @@ NO_DISCARD bool CanStandUp(const WorldPosition &world_position) NOEXCEPT
 
 	RaycastConfiguration raycast_configuration;
 
-	raycast_configuration._PhysicsChannels = PhysicsChannel::DYNAMIC_MODELS | PhysicsChannel::STATIC_MODELS | PhysicsChannel::TERRAIN;
 	raycast_configuration._MaximumHitDistance = 1.1f;
-	raycast_configuration._TerrainRayMarchStep = 1.0f;
+	raycast_configuration._IgnoredEntities = ArrayProxy<Entity *RESTRICT>(entity);
 
 	RaycastResult raycast_result;
 
@@ -204,7 +203,7 @@ void FirstPersonPlayerComponent::SerialUpdate(const UpdatePhase update_phase) NO
 				else
 				{
 					{
-						if (instance_data._IsCrouching && CanStandUp(instance_data._CharacterController->GetWorldPosition()))
+						if (instance_data._IsCrouching && CanStandUp(instance_data._CharacterController->GetWorldPosition(), entity))
 						{
 							instance_data._IsCrouching = false;
 						}
@@ -309,7 +308,6 @@ void FirstPersonPlayerComponent::SerialUpdate(const UpdatePhase update_phase) NO
 					world_transform_instance_data._CurrentWorldTransform = WorldTransform(character_controller_position + Vector3<float32>(0.0f, instance_data._CurrentHeight, 0.0f), roll_rotation * yaw_rotation, 1.0f);
 				}
 
-
 				//Update the camera.
 				RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->SetWorldTransform(world_transform_instance_data._CurrentWorldTransform);
 
@@ -341,7 +339,7 @@ void FirstPersonPlayerComponent::CreateInstance(Entity *const RESTRICT entity, F
 		configuration._CapsuleRadius = 0.2'75f;
 		configuration._CapsuleHeight = 2.0f;
 
-		instance_data->_CharacterController = PhysicsSystem::Instance->CreateCharacterController(configuration);
+		instance_data->_CharacterController = PhysicsSystem::Instance->CreateCharacterController(entity, configuration);
 	}
 
 	//Set up the height spring damping system.

@@ -9,6 +9,12 @@
 */
 vec3 SampleSky(vec3 direction, float mip_level)
 {
+	//Here because ray tracing sometines passes in invalid stuff...
+	if (isnan(direction.x) || isnan(direction.y) || isnan(direction.z))
+	{
+		return vec3(100.0f, 0.0f, 0.0f);
+	}
+
 	switch (SKY_MODE)
 	{
 		case SKY_MODE_ATMOSPHERIC_SCATTERING:

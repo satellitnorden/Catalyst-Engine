@@ -141,6 +141,7 @@
     <ClCompile Include="CatalystCodeGenerator.cpp" />
     <ClCompile Include="ComponentGenerator.cpp" />
     <ClCompile Include="EnumerationGenerator.cpp" />
+    <ClCompile Include="EventGenerator.cpp" />
     <ClCompile Include="RenderPipelineGenerator.cpp" />
     <ClCompile Include="ScriptGenerator.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="CatalystCodeGeneratorCore.h" />
     <ClInclude Include="ComponentGenerator.h" />
     <ClInclude Include="EnumerationGenerator.h" />
+    <ClInclude Include="EventGenerator.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="RenderPipelineGenerator.h" />
     <ClInclude Include="ScriptGenerator.h" />

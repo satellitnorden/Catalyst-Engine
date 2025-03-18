@@ -171,6 +171,14 @@ float Luminance(vec3 color)
 }
 
 /*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)

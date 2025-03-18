@@ -34,6 +34,9 @@
     <ClCompile Include="RenderPipelineGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EventGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EnumerationGenerator.h">
@@ -67,6 +70,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="RenderPipelineGenerator.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventGenerator.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

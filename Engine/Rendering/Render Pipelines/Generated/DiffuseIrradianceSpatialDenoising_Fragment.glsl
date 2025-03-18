@@ -171,6 +171,14 @@ float Luminance(vec3 color)
 }
 
 /*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -309,13 +317,14 @@ layout (location = 0) out vec4 OutputDiffuseIrradiance;
 
 void main()
 {
+	#define KERNEL_SIZE (2)
 	vec4 center_scene_features_2 = texture(SceneFeatures2Half, InScreenCoordinate);
 	vec3 center_normal = center_scene_features_2.xyz;
 	float center_depth = LinearizeDepth(center_scene_features_2.w);
 	vec3 denoised_diffuse_irradiance = vec3(0.0f);
 	float weight_sum = 0.0f;
-	int start = -STRIDE * 1;
-	int end = STRIDE * 1;
+	int start = -STRIDE * KERNEL_SIZE;
+	int end = STRIDE * KERNEL_SIZE;
 	for (int sample_index = start; sample_index <= end; sample_index += STRIDE)
 	{
 		vec2 sample_coordinate = InScreenCoordinate + vec2(float(sample_index) * float(DIRECTION == 0), float(sample_index) * float(DIRECTION == 1)) * INVERSE_HALF_MAIN_RESOLUTION;

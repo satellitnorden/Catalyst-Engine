@@ -719,7 +719,7 @@ public:
 	/*
 	*	Inquality operator overload.
 	*/
-	FORCE_INLINE constexpr NO_DISCARD bool operator!=(const Vector3 &other) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool operator!=(const Vector3 &other) const NOEXCEPT
 	{
 		return !(*this == other);
 	}

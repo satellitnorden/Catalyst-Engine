@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/CameraSystem.h>
 
+//Generated.
+#include <Generated/Event.Generated.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 #include <Math/Noise/HaltonSequence.h>
@@ -123,6 +126,12 @@ void CameraSystem::RenderUpdate() NOEXCEPT
 		{
 			GetCurrentCamera()->SetFocalDistance(hit_distance);
 		}
+	}
+
+	//Check if the world grid cell changed.
+	if (_PreviousCameraWorldTransform.GetCell() != GetCurrentCamera()->GetWorldTransform().GetCell())
+	{
+		SendOnWorldGridCellChanged(_PreviousCameraWorldTransform, GetCurrentCamera()->GetWorldTransform());
 	}
 
 	//Update the previous camera world transform.

@@ -270,9 +270,9 @@ vec3 CalculateIndirectLighting
 
 	{
 		vec3 nominator = vec3(geometry) * fresnel;
-		float denominator = max(4.0f * max(dot(normal, outgoing_direction), 0.0f), 0.00001f);
+		float denominator = 4.0f * outgoing_angle;
 
-		specular_component = nominator / denominator;
+		specular_component = denominator > 0.0f ? nominator / denominator : vec3(0.0f);
 	}
 
 	return (diffuse_component * diffuse_irradiance * ambient_occlusion) + (specular_component * specular_irradiance * ambient_occlusion);

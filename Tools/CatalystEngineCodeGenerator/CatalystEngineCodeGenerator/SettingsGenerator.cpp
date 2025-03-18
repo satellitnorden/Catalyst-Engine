@@ -616,7 +616,17 @@ void SettingsGenerator::GenerateCode()
 						{
 							bool found_type{ false };
 
-							if (new_variable._Type == "float32")
+							if (new_variable._Type == "bool")
+							{
+								char buffer[16];
+								sprintf_s(buffer, "%s", variable_entry["Default"].get<bool>() ? "true" : "false");
+
+								new_variable._Default = buffer;
+
+								found_type = true;
+							}
+
+							else if (new_variable._Type == "float32")
 							{
 								char buffer[16];
 								sprintf_s(buffer, "%f", variable_entry["Default"].get<float32>());
@@ -634,6 +644,16 @@ void SettingsGenerator::GenerateCode()
 							else if (new_variable._Type == "String")
 							{
 								new_variable._Default = variable_entry["Default"].get<std::string>();
+
+								found_type = true;
+							}
+
+							else if (new_variable._Type == "uint8")
+							{
+								char buffer[16];
+								sprintf_s(buffer, "%u", variable_entry["Default"].get<uint32>());
+
+								new_variable._Default = buffer;
 
 								found_type = true;
 							}

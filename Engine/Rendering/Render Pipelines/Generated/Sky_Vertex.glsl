@@ -171,6 +171,14 @@ float Luminance(vec3 color)
 }
 
 /*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -313,6 +321,12 @@ vec3 CalculateScreenPosition(vec3 world_position)
 */
 vec3 SampleSky(vec3 direction, float mip_level)
 {
+	//Here because ray tracing sometines passes in invalid stuff...
+	if (isnan(direction.x) || isnan(direction.y) || isnan(direction.z))
+	{
+		return vec3(100.0f, 0.0f, 0.0f);
+	}
+
 	switch (SKY_MODE)
 	{
 		case SKY_MODE_ATMOSPHERIC_SCATTERING:

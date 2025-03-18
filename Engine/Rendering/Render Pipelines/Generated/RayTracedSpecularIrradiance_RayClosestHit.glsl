@@ -172,6 +172,14 @@ float Luminance(vec3 color)
 }
 
 /*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -429,14 +437,6 @@ mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
     vec3 random_bitangent = cross(normal, random_tangent);
 
     return mat3(random_tangent, random_bitangent, normal);
-}
-
-/*
-*   Returns a smoothed number in the range 0.0f-1.0f.
-*/
-float SmoothStep(float number)
-{
-    return number * number * (3.0f - 2.0f * number);
 }
 
 ////////////
@@ -711,9 +711,9 @@ vec3 CalculateIndirectLighting
 
 	{
 		vec3 nominator = vec3(geometry) * fresnel;
-		float denominator = max(4.0f * max(dot(normal, outgoing_direction), 0.0f), 0.00001f);
+		float denominator = 4.0f * outgoing_angle;
 
-		specular_component = nominator / denominator;
+		specular_component = denominator > 0.0f ? nominator / denominator : vec3(0.0f);
 	}
 
 	return (diffuse_component * diffuse_irradiance * ambient_occlusion) + (specular_component * specular_irradiance * ambient_occlusion);
@@ -730,6 +730,12 @@ vec3 CalculateIndirectLighting
 */
 vec3 SampleSky(vec3 direction, float mip_level)
 {
+	//Here because ray tracing sometines passes in invalid stuff...
+	if (isnan(direction.x) || isnan(direction.y) || isnan(direction.z))
+	{
+		return vec3(100.0f, 0.0f, 0.0f);
+	}
+
 	switch (SKY_MODE)
 	{
 		case SKY_MODE_ATMOSPHERIC_SCATTERING:
@@ -821,6 +827,41 @@ void main()
     vec3 hit_position = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV;
     RADIANCE = vec3(0.0f, 0.0f, 0.0f);
     RADIANCE += albedo_thickness.rgb * material_properties.w * MATERIALS[hit_material_index]._EmissiveMultiplier;
+    {
+        vec3 incoming_diffuse_irradiance;
+        {
+            VISIBILITY = 0.0f;
+            uint ray_tracing_flags =    gl_RayFlagsTerminateOnFirstHitNV
+                                        | gl_RayFlagsSkipClosestHitShaderNV;
+traceNV
+(
+	TOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/
+	ray_tracing_flags, /*rayFlags*/
+	0xff, /*cullMask*/
+	0, /*sbtRecordOffset*/
+	0, /*sbtRecordStride*/
+	1, /*missIndex*/
+	hit_position, /*origin*/
+	FLOAT32_EPSILON * 8.0f, /*Tmin*/
+	hit_vertex_information._Normal, /*direction*/
+	FLOAT32_MAXIMUM, /*Tmax*/
+	1 /*payload*/
+);
+            incoming_diffuse_irradiance = SampleSky(hit_vertex_information._Normal, MAXIMUM_SKY_TEXTURE_MIP_LEVEL) * VISIBILITY;
+        }
+        RADIANCE += CalculateIndirectLighting
+        (
+            -gl_WorldRayDirectionNV,
+            albedo_thickness.rgb,
+            hit_vertex_information._Normal,
+            material_properties.x,
+            material_properties.y,
+            material_properties.z,
+            albedo_thickness.w,
+            incoming_diffuse_irradiance,
+            vec3(0.0f)
+        );
+    }
     {
         for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
         {

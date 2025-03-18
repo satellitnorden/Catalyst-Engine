@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/General/Event.h>
 
 //Components.
 #include <Components/Core/Component.h>
@@ -18,6 +19,7 @@
 
 //World.
 #include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
+#include <World/Core/WorldTransform.h>
 
 class StaticModelInitializationData final : public ComponentInitializationData
 {
@@ -98,6 +100,11 @@ public:
 	*	Callback for after an editable field change happens.
 	*/
 	void PostEditableFieldChange(Entity *const RESTRICT entity, const ComponentEditableField &editable_field) NOEXCEPT override;
+
+	/*
+	*	Event for then the world grid cell changes.
+	*/
+	CATALYST_EVENT(StaticModelComponent, OnWorldGridCellChanged, const WorldTransform &previous_world_transform, const WorldTransform &current_world_transform);
 
 private:
 

@@ -86,6 +86,7 @@ void PhysicsSystem::CreateHeightFieldActor
 */
 void PhysicsSystem::CreateModelActor
 (
+	Entity *const RESTRICT entity,
 	const WorldTransform &world_transform,
 	const ModelCollisionType collision_type,
 	const AxisAlignedBoundingBox3D &axis_aligned_bounding_box,
@@ -97,6 +98,7 @@ void PhysicsSystem::CreateModelActor
 	//Create the model actor on the sub-system.
 	SubCreateModelActor
 	(
+		entity,
 		world_transform,
 		collision_type,
 		axis_aligned_bounding_box,
@@ -145,10 +147,10 @@ void PhysicsSystem::UpdateWorldTransform(const WorldTransform &world_transform, 
 /*
 *	Creates a character controller.
 */
-RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::CreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT
+RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::CreateCharacterController(Entity *const RESTRICT entity, const CharacterControllerConfiguration &configuration) NOEXCEPT
 {
 	//Create the sub-system character controller.
-	return SubCreateCharacterController(configuration);
+	return SubCreateCharacterController(entity, configuration);
 }
 
 /*

@@ -26,6 +26,38 @@
     //Add emissive lighting.
     RADIANCE += albedo_thickness.rgb * material_properties.w * MATERIALS[hit_material_index]._EmissiveMultiplier;
 
+    //Add indirect lighting.
+    {
+        vec3 incoming_diffuse_irradiance;
+
+        {
+            //Reset the visibility.
+            VISIBILITY = 0.0f;
+
+            //Set up the ray tracing flags.
+            uint ray_tracing_flags =    RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT
+                                        | RAY_TRACING_FLAG_SKIP_CLOSEST_HIT;
+
+            //Trace the ray!
+            TraceRay(ray_tracing_flags, 1, hit_position, hit_vertex_information._Normal, FLOAT32_MAXIMUM, 1);
+
+            incoming_diffuse_irradiance = SampleSky(hit_vertex_information._Normal, MAXIMUM_SKY_TEXTURE_MIP_LEVEL) * VISIBILITY;
+        }
+
+        RADIANCE += CalculateIndirectLighting
+        (
+            -WORLD_RAY_DIRECTION,
+            albedo_thickness.rgb,
+            hit_vertex_information._Normal,
+            material_properties.x,
+            material_properties.y,
+            material_properties.z,
+            albedo_thickness.w,
+            incoming_diffuse_irradiance,
+            vec3(0.0f)
+        );
+    }
+
     //Add direct lighting.
     {
         //Iterate over all lights.

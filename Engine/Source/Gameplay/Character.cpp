@@ -16,7 +16,7 @@ void Character::InitializeCharacter() NOEXCEPT
 		configuration._CapsuleRadius = 0.2'75f;
 		configuration._CapsuleHeight = 2.0f;
 
-		_CharacterController = PhysicsSystem::Instance->CreateCharacterController(configuration);
+		_CharacterController = PhysicsSystem::Instance->CreateCharacterController(nullptr, configuration);
 	}
 
 	//Set the character controllers world position.
@@ -176,9 +176,7 @@ NO_DISCARD bool Character::CanStandUp() const NOEXCEPT
 
 	RaycastConfiguration raycast_configuration;
 
-	raycast_configuration._PhysicsChannels = PhysicsChannel::DYNAMIC_MODELS | PhysicsChannel::STATIC_MODELS | PhysicsChannel::TERRAIN;
 	raycast_configuration._MaximumHitDistance = 1.1f;
-	raycast_configuration._TerrainRayMarchStep = 1.0f;
 
 	RaycastResult raycast_result;
 

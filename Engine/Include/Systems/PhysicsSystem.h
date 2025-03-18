@@ -81,6 +81,7 @@ public:
 	*/
 	void CreateModelActor
 	(
+		Entity *const RESTRICT entity,
 		const WorldTransform &world_transform,
 		const ModelCollisionType collision_type,
 		const AxisAlignedBoundingBox3D &axis_aligned_bounding_box,
@@ -112,7 +113,7 @@ public:
 	/*
 	*	Creates a character controller.
 	*/
-	RESTRICTED NO_DISCARD CharacterController *const RESTRICT CreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT;
+	RESTRICTED NO_DISCARD CharacterController *const RESTRICT CreateCharacterController(Entity *const RESTRICT entity, const CharacterControllerConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Casts a ray.
@@ -178,6 +179,7 @@ private:
 	*/
 	void SubCreateModelActor
 	(
+		Entity *const RESTRICT entity,
 		const WorldTransform &world_transform,
 		const ModelCollisionType collision_type,
 		const AxisAlignedBoundingBox3D &axis_aligned_bounding_box,
@@ -219,7 +221,7 @@ private:
 	/*
 	*	Creates a sub-system character controller.
 	*/
-	RESTRICTED NO_DISCARD CharacterController *const RESTRICT SubCreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT;
+	RESTRICTED NO_DISCARD CharacterController *const RESTRICT SubCreateCharacterController(Entity *const RESTRICT entity, const CharacterControllerConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Builds a collision model on the sub-system.

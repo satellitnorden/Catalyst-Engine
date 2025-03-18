@@ -172,6 +172,14 @@ float Luminance(vec3 color)
 }
 
 /*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -429,14 +437,6 @@ mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
     vec3 random_bitangent = cross(normal, random_tangent);
 
     return mat3(random_tangent, random_bitangent, normal);
-}
-
-/*
-*   Returns a smoothed number in the range 0.0f-1.0f.
-*/
-float SmoothStep(float number)
-{
-    return number * number * (3.0f - 2.0f * number);
 }
 
 ////////////
@@ -711,9 +711,9 @@ vec3 CalculateIndirectLighting
 
 	{
 		vec3 nominator = vec3(geometry) * fresnel;
-		float denominator = max(4.0f * max(dot(normal, outgoing_direction), 0.0f), 0.00001f);
+		float denominator = 4.0f * outgoing_angle;
 
-		specular_component = nominator / denominator;
+		specular_component = denominator > 0.0f ? nominator / denominator : vec3(0.0f);
 	}
 
 	return (diffuse_component * diffuse_irradiance * ambient_occlusion) + (specular_component * specular_irradiance * ambient_occlusion);
@@ -730,6 +730,12 @@ vec3 CalculateIndirectLighting
 */
 vec3 SampleSky(vec3 direction, float mip_level)
 {
+	//Here because ray tracing sometines passes in invalid stuff...
+	if (isnan(direction.x) || isnan(direction.y) || isnan(direction.z))
+	{
+		return vec3(100.0f, 0.0f, 0.0f);
+	}
+
 	switch (SKY_MODE)
 	{
 		case SKY_MODE_ATMOSPHERIC_SCATTERING:

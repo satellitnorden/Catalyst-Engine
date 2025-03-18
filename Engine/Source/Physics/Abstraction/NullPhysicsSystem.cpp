@@ -52,6 +52,7 @@ void PhysicsSystem::SubCreateHeightFieldActor
 */
 void PhysicsSystem::SubCreateModelActor
 (
+	Entity *const RESTRICT entity,
 	const WorldTransform &world_transform,
 	const ModelCollisionType collision_type,
 	const AxisAlignedBoundingBox3D &axis_aligned_bounding_box,
@@ -106,7 +107,7 @@ void PhysicsSystem::SubAddImpulse(const WorldPosition &world_position, const flo
 /*
 *	Creates a sub-system character controller.
 */
-RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT
+RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCreateCharacterController(Entity *const RESTRICT entity, const CharacterControllerConfiguration &configuration) NOEXCEPT
 {
 	return nullptr;
 }

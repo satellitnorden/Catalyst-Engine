@@ -3,6 +3,7 @@
 #include <Systems/PhysicsSystem.h>
 
 //Core.
+#include <Core/Containers/HashTable.h>
 #include <Core/Containers/StreamArchive.h>
 
 //Physics.
@@ -27,6 +28,8 @@
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Physics/Collision/Shape/HeightFieldShape.h>
+#include <Jolt/Physics/Collision/CastResult.h>
+#include <Jolt/Physics/Collision/RayCast.h>
 
 //Enumeration covering all physics layers.
 enum class PhysicsLayer : uint8
@@ -240,6 +243,61 @@ private:
 
 };
 
+/*
+*	Ray cast body filter class definition.
+*/
+class RayCastBodyFilter final : public JPH::BodyFilter
+{
+
+public:
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE RayCastBodyFilter(const RaycastConfiguration &configuration, const HashTable<JPH::BodyID, Entity *RESTRICT> &body_id_to_entity_table) NOEXCEPT
+		:
+		_Configuration(configuration),
+		_BodyIDToEntityTable(body_id_to_entity_table)
+	{
+
+	}
+
+	/*
+	*	Filter function. Returns true if we should collide with inBodyID
+	*/
+	FORCE_INLINE NO_DISCARD bool ShouldCollide(const JPH::BodyID &body_id) const NOEXCEPT override
+	{
+		Entity *const RESTRICT *const RESTRICT entity{ _BodyIDToEntityTable.Find(body_id) };
+
+		if (entity)
+		{
+			for (Entity *const RESTRICT ignored_entity : _Configuration._IgnoredEntities)
+			{
+				if (*entity == ignored_entity)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		else
+		{
+			return true;
+		}
+	}
+
+private:
+
+	//The configuration.
+	const RaycastConfiguration &_Configuration;
+
+	//The body ID to entity table.
+	const HashTable<JPH::BodyID, Entity *RESTRICT> &_BodyIDToEntityTable;
+
+};
+
 //Jolt physics system constants.
 namespace JoltPhysicsSystemConstants
 {
@@ -269,6 +327,9 @@ namespace JoltPhysicsSystemData
 
 	//The job system thread pool.
 	JPH::JobSystemThreadPool *RESTRICT _JobSystemThreadPool;
+
+	//The body ID to entity table.
+	HashTable<JPH::BodyID, Entity* RESTRICT> _BodyIDToEntityTable;
 
 	//Container for all convex hull shapes.
 	DynamicArray<JPH::ConvexHullShape *RESTRICT> _ConvexHullShapes;
@@ -460,6 +521,7 @@ void PhysicsSystem::SubCreateHeightFieldActor
 */
 void PhysicsSystem::SubCreateModelActor
 (
+	Entity *const RESTRICT entity,
 	const WorldTransform &world_transform,
 	const ModelCollisionType collision_type,
 	const AxisAlignedBoundingBox3D &axis_aligned_bounding_box,
@@ -529,6 +591,12 @@ void PhysicsSystem::SubCreateModelActor
 			//Add the body!
 			body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
 
+			//Add the body to the body ID to entity table.
+			if (entity)
+			{
+				JoltPhysicsSystemData::_BodyIDToEntityTable.Add(body->GetID(), entity);
+			}
+
 			//Set the actor handle.
 			*actor_handle = body;
 
@@ -568,6 +636,12 @@ void PhysicsSystem::SubCreateModelActor
 			//Add the body!
 			body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
 
+			//Add the body to the body ID to entity table.
+			if (entity)
+			{
+				JoltPhysicsSystemData::_BodyIDToEntityTable.Add(body->GetID(), entity);
+			}
+
 			//Set the actor handle.
 			*actor_handle = body;
 
@@ -602,6 +676,9 @@ void PhysicsSystem::SubDestroyActor(ActorHandle *const RESTRICT actor_handle) NO
 
 	//Cache the body.
 	JPH::Body *const RESTRICT body{ static_cast<JPH::Body *const RESTRICT>(*actor_handle) };
+
+	//Remove the body from the body ID to entity table.
+	JoltPhysicsSystemData::_BodyIDToEntityTable.Remove(body->GetID());
 
 	//Remove and destroy the body.
 	body_interface.RemoveBody(body->GetID());
@@ -690,9 +767,23 @@ void PhysicsSystem::SubUpdateWorldTransform(const WorldTransform &world_transfor
 */
 void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
+	//Reset the result.
 	result->_HasHit = false;
 	result->_HitDistance = FLOAT32_MAXIMUM;
-	result->_Type = RaycastResult::Type::NONE;
+	result->_Entity = nullptr;
+
+	//Construct the ray cast.
+	JPH::RRayCast ray_cast;
+	ray_cast.mOrigin = JPH::Vec3(ray._Origin._X, ray._Origin._Y, ray._Origin._Z);
+	ray_cast.mDirection = JPH::Vec3(ray._Direction._X, ray._Direction._Y, ray._Direction._Z) * configuration._MaximumHitDistance;
+
+	//Cache the query!
+	const JPH::NarrowPhaseQuery &query{ JoltPhysicsSystemData::_System.GetNarrowPhaseQuery() };
+
+	//Cast the ray!
+	JPH::RayCastResult ray_cast_result;
+	RayCastBodyFilter body_filter{ configuration, JoltPhysicsSystemData::_BodyIDToEntityTable };
+	result->_HasHit = query.CastRay(ray_cast, ray_cast_result, { }, { }, body_filter);
 }
 
 /*
@@ -706,7 +797,7 @@ void PhysicsSystem::SubAddImpulse(const WorldPosition &world_position, const flo
 /*
 *	Creates a sub-system character controller.
 */
-RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCreateCharacterController(const CharacterControllerConfiguration &configuration) NOEXCEPT
+RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCreateCharacterController(Entity *const RESTRICT entity, const CharacterControllerConfiguration &configuration) NOEXCEPT
 {
 	//Set up the abstraction data.
 	Any<CharacterController::ABSTRACTION_DATA_SIZE> abstraction_data;
@@ -742,6 +833,12 @@ RESTRICTED NO_DISCARD CharacterController *const RESTRICT PhysicsSystem::SubCrea
 
 	//Add the character.
 	JoltPhysicsSystemData::_Characters.Emplace(abstraction_data.Get<JoltCharacterControllerAbstractionData>()->_Character);
+
+	//Add the body to the body ID to entity table.
+	if (entity)
+	{
+		JoltPhysicsSystemData::_BodyIDToEntityTable.Add(abstraction_data.Get<JoltCharacterControllerAbstractionData>()->_Character->GetBodyID(), entity);
+	}
 
 	return new (MemorySystem::Instance->TypeAllocate<CharacterController>()) CharacterController(abstraction_data);
 }
