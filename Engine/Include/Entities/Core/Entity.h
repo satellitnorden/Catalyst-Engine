@@ -21,11 +21,16 @@ public:
 		*/
 		INITIALIZED = BIT(0),
 
+		/*
+		*	Denotes whether or not this entity is queued for destruction.
+		*/
+		QUEUED_FOR_DESTRUCTION = BIT(1),
+
 #if defined(CATALYST_EDITOR)
 		/*
 		*	Denotes whether or not this entity is selected in the editor.
 		*/
-		EDITOR_SELECTED = BIT(1)
+		EDITOR_SELECTED = BIT(2)
 #endif
 	};
 

@@ -16,6 +16,7 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/ContentSystem.h>
+#include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
@@ -88,15 +89,18 @@ void GatherParticlesInputStream(RenderInputStream *const RESTRICT input_stream) 
 FORCE_INLINE void SplitIntoSubEmitters(const ParticleEmitter &master_emitter, DynamicArray<ParticleSubEmitter> *const RESTRICT sub_emitters) NOEXCEPT
 {
 	//Define constants.
+	constexpr uint32 MAXIMUM_BURST_PER_SUB_EMITTER{ 64 };
 	constexpr uint32 MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER{ 64 };
 
 	//Clear the sub emitters.
 	sub_emitters->Clear();
 
-	//Add the sub emitters.
-	const uint32 number_of_sub_emitters{ BaseMath::Maximum<uint32>(master_emitter._SpawnRate / MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER, 1) };
+	//Calculate the number of sub emitters.
+	const uint32 number_of_burst_sub_emitters{ master_emitter._InitialBurst > 0 ? BaseMath::Maximum<uint32>(master_emitter._InitialBurst / MAXIMUM_BURST_PER_SUB_EMITTER, 1) : 0 };
+	const uint32 number_of_spawn_rate_sub_emitters{ master_emitter._SpawnRate > 0 ? BaseMath::Maximum<uint32>(master_emitter._SpawnRate / MAXIMUM_SPAWN_RATE_PER_SUB_EMITTER, 1) : 0 };
 
-	for (uint32 sub_emitter_index{ 0 }; sub_emitter_index < number_of_sub_emitters; ++sub_emitter_index)
+	//Add the burst sub emitters.
+	for (uint32 sub_emitter_index{ 0 }; sub_emitter_index < number_of_burst_sub_emitters; ++sub_emitter_index)
 	{
 		//Add the new sub emitter.
 		sub_emitters->Emplace();
@@ -105,11 +109,36 @@ FORCE_INLINE void SplitIntoSubEmitters(const ParticleEmitter &master_emitter, Dy
 		//Copy data.
 		Memory::Copy(&new_sub_emitter._Emitter, &master_emitter, sizeof(ParticleEmitter));
 
-		//Modify the spawn rate.
-		new_sub_emitter._Emitter._SpawnRate = BaseMath::Maximum<uint32>(master_emitter._SpawnRate / number_of_sub_emitters, 1);
+		//Modify the initial burst/spawn rate.
+		new_sub_emitter._Emitter._InitialBurst = BaseMath::Maximum<uint32>(master_emitter._InitialBurst / number_of_burst_sub_emitters, 1);
+		new_sub_emitter._Emitter._SpawnRate = 0;
 
 		//Reset the time since the last particle spawn.
 		new_sub_emitter._TimeSinceLastParticleSpawn = 0.0f;
+
+		//Reset if the initial burst has been done.
+		new_sub_emitter._HasDoneInitialBurst = false;
+	}
+
+	//Add the spawn rate sub emitters.
+	for (uint32 sub_emitter_index{ 0 }; sub_emitter_index < number_of_spawn_rate_sub_emitters; ++sub_emitter_index)
+	{
+		//Add the new sub emitter.
+		sub_emitters->Emplace();
+		ParticleSubEmitter &new_sub_emitter{ sub_emitters->Back() };
+
+		//Copy data.
+		Memory::Copy(&new_sub_emitter._Emitter, &master_emitter, sizeof(ParticleEmitter));
+
+		//Modify the initial burst/spawn rate.
+		new_sub_emitter._Emitter._InitialBurst = 0;
+		new_sub_emitter._Emitter._SpawnRate = BaseMath::Maximum<uint32>(master_emitter._SpawnRate / number_of_spawn_rate_sub_emitters, 1);
+
+		//Reset the time since the last particle spawn.
+		new_sub_emitter._TimeSinceLastParticleSpawn = 0.0f;
+
+		//Reset if the initial burst has been done.
+		new_sub_emitter._HasDoneInitialBurst = false;
 	}
 }
 
@@ -146,6 +175,13 @@ void ParticleSystemComponent::Initialize() NOEXCEPT
 		"Emitter Mode",
 		offsetof(ParticleSystemInitializationData, _Emitter._ParticleEmitterMode),
 		offsetof(ParticleSystemInstanceData, _MasterEmitter._ParticleEmitterMode)
+	);
+
+	AddEditableUint32Field
+	(
+		"Initial Burst",
+		offsetof(ParticleSystemInitializationData, _Emitter._InitialBurst),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._InitialBurst)
 	);
 
 	AddEditableFloatField
@@ -238,7 +274,7 @@ void ParticleSystemComponent::PostInitialize() NOEXCEPT
 		sizeof(ParticlePackedInstance) * 4'096,
 		[](DynamicArray<byte> *const RESTRICT data, void *const RESTRICT arguments)
 		{
-			ParticleSystemComponent* const RESTRICT particle_system_component{ static_cast<ParticleSystemComponent* const RESTRICT>(arguments) };
+			ParticleSystemComponent *const RESTRICT particle_system_component{ static_cast<ParticleSystemComponent* const RESTRICT>(arguments) };
 
 			if (particle_system_component->_SharedData._PackedInstances.Empty())
 			{
@@ -298,13 +334,27 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 			{
 				PROFILING_SCOPE("Spawn New Particles");
 
-				//Update the time since the last particle spawn.
+				//Calculate the spawn rate reciprocal.
+				const float32 spawn_rate_reciprocal{ sub_emitter._Emitter._SpawnRate > 0.0f ? 1.0f / static_cast<float32>(sub_emitter._Emitter._SpawnRate) : FLOAT32_MAXIMUM };
+
+				//Calculate the number of particles to spawn.
+				uint32 number_of_particles_to_spawn{ 0 };
+
+				if (sub_emitter._Emitter._InitialBurst > 0 && !sub_emitter._HasDoneInitialBurst)
+				{
+					number_of_particles_to_spawn += sub_emitter._Emitter._InitialBurst;
+					sub_emitter._HasDoneInitialBurst = true;
+				}
+
 				sub_emitter._TimeSinceLastParticleSpawn += delta_time;
 
-				//Spawn new particles.
-				const float32 spawn_rate_reciprocal{ 1.0f / static_cast<float32>(sub_emitter._Emitter._SpawnRate) };
-
 				while (sub_emitter._TimeSinceLastParticleSpawn >= spawn_rate_reciprocal)
+				{
+					++number_of_particles_to_spawn;
+					sub_emitter._TimeSinceLastParticleSpawn -= spawn_rate_reciprocal;
+				}
+
+				for (uint32 particle_to_spawn_index{ 0 }; particle_to_spawn_index < number_of_particles_to_spawn; ++particle_to_spawn_index)
 				{
 					//Create the new particle instance.
 					sub_emitter._Instances.Emplace();
@@ -348,9 +398,6 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 
 					//Randomize the lifetime.
 					new_particle_instance._Lifetime = CatalystRandomMath::RandomFloatInRange(sub_emitter._Emitter._MinimumLifetime, sub_emitter._Emitter._MaximumLifetime);
-
-					//Update the time since the last particle spawn.
-					sub_emitter._TimeSinceLastParticleSpawn -= spawn_rate_reciprocal;
 				}
 			}
 
@@ -447,6 +494,30 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 */
 void ParticleSystemComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
 {
+	//Check if any instance should be deleted.
+	for (uint64 instance_index{ 0 }; instance_index < NumberOfInstances(); ++instance_index)
+	{
+		const ParticleSystemInstanceData &instance_data{ _InstanceData[instance_index] };
+		Entity *const RESTRICT entity{ InstanceToEntity(instance_index) };
+
+		if (TEST_BIT(entity->_Flags, Entity::Flags::QUEUED_FOR_DESTRUCTION))
+		{
+			continue;
+		}
+
+		bool all_sub_emitters_dead{ true };
+
+		for (const ParticleSubEmitter &sub_emitter : instance_data._SubEmitters)
+		{
+			all_sub_emitters_dead &= (sub_emitter._Emitter._InitialBurst == 0 || sub_emitter._HasDoneInitialBurst) && sub_emitter._Emitter._SpawnRate == 0 && sub_emitter._PackedInstances.Empty();
+		}
+
+		if (all_sub_emitters_dead)
+		{
+			EntitySystem::Instance->DestroyEntity(entity);
+		}
+	}
+
 	//Gather all packed instances.
 	_SharedData._PackedInstances.Clear();
 
@@ -464,6 +535,11 @@ void ParticleSystemComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEP
 	//Don't do anything if there's nothing to do. (:
 	if (number_of_packed_instances == 0)
 	{
+		for (ParticleSystemInstanceData &instance_data : InstanceData())
+		{
+			instance_data._NumberOfInstances = 0;
+		}
+
 		return;
 	}
 

@@ -143,6 +143,9 @@ void EntitySystem::AddComponentToEntity(Entity *const RESTRICT entity, Component
 */
 void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
+	//Mark the entity as queued for destruction.
+	SET_BIT(entity->_Flags, Entity::Flags::QUEUED_FOR_DESTRUCTION);
+
 	//Add it to the destruction queue.
 	EntityDestructionQueueItem queue_item;
 

@@ -767,6 +767,9 @@ void PhysicsSystem::SubUpdateWorldTransform(const WorldTransform &world_transfor
 */
 void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &configuration, RaycastResult *const RESTRICT result) NOEXCEPT
 {
+	//Define constants.
+	constexpr float32 MAXIMUM_HIT_DISTANCE{ 4'096.0f };
+
 	//Reset the result.
 	result->_HasHit = false;
 	result->_HitDistance = FLOAT32_MAXIMUM;
@@ -775,7 +778,7 @@ void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &confi
 	//Construct the ray cast.
 	JPH::RRayCast ray_cast;
 	ray_cast.mOrigin = JPH::Vec3(ray._Origin._X, ray._Origin._Y, ray._Origin._Z);
-	ray_cast.mDirection = JPH::Vec3(ray._Direction._X, ray._Direction._Y, ray._Direction._Z) * configuration._MaximumHitDistance;
+	ray_cast.mDirection = JPH::Vec3(ray._Direction._X, ray._Direction._Y, ray._Direction._Z) * BaseMath::Minimum<float32>(configuration._MaximumHitDistance, MAXIMUM_HIT_DISTANCE);
 
 	//Cache the query!
 	const JPH::NarrowPhaseQuery &query{ JoltPhysicsSystemData::_System.GetNarrowPhaseQuery() };
@@ -788,7 +791,7 @@ void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &confi
 	//Fill in the rest of the data if there was a hit.
 	if (result->_HasHit)
 	{
-		result->_HitDistance = ray_cast_result.mFraction * configuration._MaximumHitDistance;
+		result->_HitDistance = ray_cast_result.mFraction * BaseMath::Minimum<float32>(configuration._MaximumHitDistance, MAXIMUM_HIT_DISTANCE);
 		
 		if (Entity *const RESTRICT *const RESTRICT entity{ JoltPhysicsSystemData::_BodyIDToEntityTable.Find(ray_cast_result.mBodyID) })
 		{

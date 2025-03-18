@@ -88,6 +88,9 @@ public:
 		} _SphereMode;
 	};
 
+	//The initial burts.
+	uint32 _InitialBurst;
+
 	//The minimum velocity.
 	Vector3<float32> _MinimumVelocity;
 
@@ -139,6 +142,9 @@ public:
 
 	//The packed instancs.
 	DynamicArray<ParticlePackedInstance> _PackedInstances;
+
+	//Denotes if the initial burst has been done.
+	bool _HasDoneInitialBurst;
 
 };
 
