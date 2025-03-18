@@ -784,6 +784,17 @@ void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &confi
 	JPH::RayCastResult ray_cast_result;
 	RayCastBodyFilter body_filter{ configuration, JoltPhysicsSystemData::_BodyIDToEntityTable };
 	result->_HasHit = query.CastRay(ray_cast, ray_cast_result, { }, { }, body_filter);
+
+	//Fill in the rest of the data if there was a hit.
+	if (result->_HasHit)
+	{
+		result->_HitDistance = ray_cast_result.mFraction * configuration._MaximumHitDistance;
+		
+		if (Entity *const RESTRICT *const RESTRICT entity{ JoltPhysicsSystemData::_BodyIDToEntityTable.Find(ray_cast_result.mBodyID) })
+		{
+			result->_Entity = *entity;
+		}
+	}
 }
 
 /*

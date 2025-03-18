@@ -68,7 +68,7 @@ NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(const WorldTransfor
 */
 NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<ComponentInitializationData *RESTRICT> component_configurations) NOEXCEPT
 {
-	while (_NumberOfItemsInCreationQueue.Load() > 1024)
+	while (_NumberOfItemsInCreationQueue.Load() >= CREATION_QUEUE_SIZE)
 	{
 		Concurrency::CurrentThread::Yield();
 	}
