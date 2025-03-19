@@ -123,7 +123,7 @@ public:
 	/*
 	*	Adds an impulse at the given world position with the given force.
 	*/
-	void AddImpulse(const WorldPosition &world_position, const float32 force) NOEXCEPT;
+	void AddImpulse(const WorldPosition &world_position, const float32 radius, const float32 force) NOEXCEPT;
 
 	/*
 	*	Builds a collision model.
@@ -216,7 +216,7 @@ private:
 	/*
 	*	Adds an sub-system impulse at the given world position with the given force.
 	*/
-	void SubAddImpulse(const WorldPosition &world_position, const float32 force) NOEXCEPT;
+	void SubAddImpulse(const WorldPosition &world_position, const float32 radius, const float32 force) NOEXCEPT;
 
 	/*
 	*	Creates a sub-system character controller.

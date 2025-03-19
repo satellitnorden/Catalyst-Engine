@@ -86,6 +86,9 @@ NO_DISCARD Entity *const RESTRICT EntitySystem::CreateEntity(ArrayProxy<Componen
 	//Generate the entity identifier.
 	entity->_EntityIdentifier = GenerateEntityIdentifier();
 
+	//Reset the flags.
+	Memory::Set(&entity->_Flags, 0, sizeof(Entity::Flags));
+
 	//Reset whether or not this entity is initialized.
 	CLEAR_BIT(entity->_Flags, Entity::Flags::INITIALIZED);
 

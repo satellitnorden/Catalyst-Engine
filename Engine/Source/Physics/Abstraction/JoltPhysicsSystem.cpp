@@ -298,6 +298,50 @@ private:
 
 };
 
+/*
+*	Collide shape body collector class definition.
+*/
+class CollideShapeBodyCollector final : public JPH::CollideShapeBodyCollector
+{
+
+public:
+
+	//The bodies.
+	JPH::BodyID *RESTRICT _Bodies;
+
+	//The size.
+	uint32 _Size;
+
+	//The capacity.
+	uint32 _Capacity;
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE CollideShapeBodyCollector(JPH::BodyID *const RESTRICT bodies, const uint32 capacity) NOEXCEPT
+		:
+		_Bodies(bodies),
+		_Size(0),
+		_Capacity(capacity)
+	{
+
+	}
+
+	/*
+	*	Adds a hit.
+	*/
+	FORCE_INLINE void AddHit(const JPH::BodyID &body_id) NOEXCEPT override
+	{
+		ASSERT(_Size < _Capacity, "Needs bigger buffer!");
+
+		if (_Size < _Capacity)
+		{
+			_Bodies[_Size++] = body_id;
+		}
+	}
+
+};
+
 //Jolt physics system constants.
 namespace JoltPhysicsSystemConstants
 {
@@ -803,9 +847,53 @@ void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &confi
 /*
 *	Adds an sub-system impulse at the given world position with the given force.
 */
-void PhysicsSystem::SubAddImpulse(const WorldPosition &world_position, const float32 force) NOEXCEPT
+void PhysicsSystem::SubAddImpulse(const WorldPosition &world_position, const float32 radius, const float32 force) NOEXCEPT
 {
-	
+	//Calculate the absolute world position.
+	const Vector3<float32> absolute_world_position{ world_position.GetAbsolutePosition() };
+	const JPH::Vec3 jolt_absolute_world_position{ absolute_world_position._X, absolute_world_position._Y, absolute_world_position._Z };
+
+	//Cache the query.
+	const JPH::BroadPhaseQuery &query{ JoltPhysicsSystemData::_System.GetBroadPhaseQuery() };
+
+	//Do a sphere collision to gather (potentially) affected bodies.
+	JPH::BodyID collided_bodies[64];
+	CollideShapeBodyCollector collector{ collided_bodies, ARRAY_LENGTH(collided_bodies) };
+
+	query.CollideSphere
+	(
+		jolt_absolute_world_position,
+		radius, 
+		collector
+	);
+
+	//Retrieve the body interface.
+	JPH::BodyInterface &body_interface = JoltPhysicsSystemData::_System.GetBodyInterface();
+
+	//Iterate over the collided bodies.
+	for (uint32 collided_body_index{ 0 }; collided_body_index < collector._Size; ++collided_body_index)
+	{
+		//Cache the body ID.
+		const JPH::BodyID &body_id{ collided_bodies[collided_body_index] };
+
+		//Retrieve the body center of mass.
+		const JPH::Vec3 body_center_of_mass{ body_interface.GetCenterOfMassPosition(body_id) };
+
+		//Calculate the distance.
+		const float32 distance{ JPH::Vec3(body_center_of_mass - jolt_absolute_world_position).Length() };
+
+		//Calculate the force factor.
+		const float32 force_factor{ 1.0f - BaseMath::Minimum<float32>(distance / radius, 1.0f) };
+
+		//Calculate the distance reciprocal.
+		const float32 distance_reciprocal{ 1.0f / distance };
+
+		//Calculate the impulse.
+		const JPH::Vec3 impulse{ JPH::Vec3(body_center_of_mass - jolt_absolute_world_position) * distance_reciprocal * force * force_factor };
+
+		//Add the impulse!
+		body_interface.AddImpulse(body_id, impulse);
+	}
 }
 
 /*

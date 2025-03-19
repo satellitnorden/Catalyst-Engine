@@ -150,8 +150,10 @@ void InputSystem::UpdateGamepadState(const uint8 index) NOEXCEPT
 	WindowsInputSystemLogic::UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_X, &state->_X);
 	WindowsInputSystemLogic::UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_Y, &state->_Y);
 
-	state->_LeftTrigger = static_cast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
-	state->_RightTrigger = static_cast<float>(xInputState.Gamepad.bRightTrigger) / 255;
+	state->_PreviousLeftTrigger = state->_CurrentLeftTrigger;
+	state->_CurrentLeftTrigger = static_cast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
+	state->_PreviousRightTrigger = state->_CurrentRightTrigger;
+	state->_CurrentRightTrigger = static_cast<float>(xInputState.Gamepad.bRightTrigger) / 255;
 
 	state->_LeftThumbstickX = static_cast<float>(xInputState.Gamepad.sThumbLX) / 32'768;
 	state->_LeftThumbstickY = static_cast<float>(xInputState.Gamepad.sThumbLY) / 32'768;

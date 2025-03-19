@@ -99,8 +99,8 @@ void FreeflyCamera::UpdateCurrentInputState(const float32 delta_time) NOEXCEPT
 	_CurrentInputState._Movement._Z = 0.0f;
 
 	_CurrentInputState._Movement._X += gamepad_state->_LeftThumbstickY;
-	_CurrentInputState._Movement._Y -= gamepad_state->_LeftTrigger;
-	_CurrentInputState._Movement._Y += gamepad_state->_RightTrigger;
+	_CurrentInputState._Movement._Y -= gamepad_state->_CurrentLeftTrigger;
+	_CurrentInputState._Movement._Y += gamepad_state->_CurrentRightTrigger;
 	_CurrentInputState._Movement._Z += gamepad_state->_LeftThumbstickX;
 
 	_CurrentInputState._Movement._X += static_cast<float32>(keyboard_state->GetButtonState(KeyboardButton::W) == ButtonState::PRESSED || keyboard_state->GetButtonState(KeyboardButton::W) == ButtonState::PRESSED_HELD);

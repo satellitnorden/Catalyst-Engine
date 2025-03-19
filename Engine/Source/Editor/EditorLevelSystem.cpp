@@ -1523,6 +1523,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 		//Add a Gizmo for the world transform!
 		{
+			ASSERT(WorldTransformComponent::Instance->Has(selected_entity), "Entity doesn't have world transform component!");
 			WorldTransform *const RESTRICT world_transform{ WorldTransformComponent::Instance->EditableFieldData<WorldTransform>(selected_entity, WorldTransformComponent::Instance->EditableFields()[0]) };
 
 			Matrix4x4 transformation_matrix;

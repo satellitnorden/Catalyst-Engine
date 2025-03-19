@@ -165,10 +165,10 @@ void PhysicsSystem::CastRay(const Ray &ray, const RaycastConfiguration &configur
 /*
 *	Adds an impulse at the given world position with the given force.
 */
-void PhysicsSystem::AddImpulse(const WorldPosition &world_position, const float32 force) NOEXCEPT
+void PhysicsSystem::AddImpulse(const WorldPosition &world_position, const float32 radius, const float32 force) NOEXCEPT
 {
 	//Add a sub-system impulse.
-	SubAddImpulse(world_position, force);
+	SubAddImpulse(world_position, radius, force);
 }
 
 /*
