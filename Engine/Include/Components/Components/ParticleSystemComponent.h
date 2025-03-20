@@ -63,8 +63,11 @@ public:
 	//The normalized age.
 	float32 _NormalizedAge;
 
-	//Padding.
-	Padding<8> _Padding;
+	//The fade in time.
+	float32 _FadeInTime;
+
+	//The fade out time.
+	float32 _FadeOutTime;
 
 };
 
@@ -115,11 +118,23 @@ public:
 	//The position offset.
 	Vector3<float32> _PositionOffset;
 
+	//The drag.
+	float32 _Drag;
+
 	//Denotes how much gravity affects these particles.
 	float32 _GravityAffection;
 
 	//Denotes how much wind affects these particles.
 	float32 _WindAffection;
+
+	//The fade in time (normalized).
+	float32 _FadeInTime;
+
+	//The fade out time (normalized).
+	float32 _FadeOutTime;
+
+	//Denotes whether or not to shrink near the camera.
+	bool _ShrinkNearCamera;
 
 };
 

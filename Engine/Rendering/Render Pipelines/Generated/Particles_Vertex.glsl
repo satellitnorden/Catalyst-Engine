@@ -218,12 +218,22 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (std430, set = 1, binding = 1) buffer Particles
+layout (std140, set = 1, binding = 1) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) float VIEW_DISTANCE;
+};
+
+layout (std430, set = 1, binding = 2) buffer Particles
 {
 	layout (offset = 0) vec4[] PARTICLES;
 };
 
-layout (set = 1, binding = 2) uniform sampler SAMPLER;
+layout (set = 1, binding = 3) uniform sampler SAMPLER;
 
 /*
 *   Linearizes a depth value.
@@ -325,6 +335,84 @@ mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
     return mat3(random_tangent, random_bitangent, normal);
 }
 
+/*
+*   Combines two hashes.
+*/
+uint CombineHash(uint hash_1, uint hash_2)
+{
+    return 3141592653 * hash_1 + hash_2;
+}
+
+/*
+*   Hash function taking a uint.
+*/
+uint Hash(uint seed)
+{
+    seed ^= seed >> 17;
+    seed *= 0xed5ad4bbU;
+    seed ^= seed >> 11;
+    seed *= 0xac4c1b51U;
+    seed ^= seed >> 15;
+    seed *= 0x31848babU;
+    seed ^= seed >> 14;
+    return seed;
+}
+
+/*
+*   Hash function taking a uvec2.
+*/
+uint Hash2(uvec2 seed)
+{
+    return Hash(seed.x) ^ Hash(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
+    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
+    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
+}
+
+/*
+*   Given a seed, returns a random number.
+*/
+float RandomFloat(inout uint seed)
+{
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate and a seed, returns a random number.
+*/
+float RandomFloat(uvec2 coordinate, uint seed)
+{
+    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate, returns a random number.
+*/
+float RandomFloat(vec2 coordinate)
+{
+    return fract(sin(dot(coordinate, vec2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
+/*
+*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*/
+float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+{
+	frame = frame % 64;
+
+	float x = float(coordinate.x) + 5.588238f * float(frame);
+	float y = float(coordinate.y) + 5.588238f * float(frame);
+
+	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+}
+
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) uint MATERIAL_INDEX;
@@ -334,6 +422,8 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) out vec3 OutWorldPosition;
 layout (location = 1) out vec3 OutNormal;
 layout (location = 2) out vec2 OutTextureCoordinate;
+layout (location = 3) out uint OutInstanceIndex;
+layout (location = 4) out float OutOpacity;
 
 void main()
 {
@@ -343,8 +433,13 @@ void main()
     vec2 particle_size = vec2(particle_data_1.w, particle_data_2.x);
     vec2 half_particle_size = particle_size * 0.5f;
     float particle_normalized_age = particle_data_2.y;
-    half_particle_size *= smoothstep(0.0f, 0.1f, particle_normalized_age);
-    half_particle_size *= 1.0f - smoothstep(0.9f, 1.0f, particle_normalized_age);
+    float particle_fade_in_time = particle_data_2.z;
+    float particle_fade_out_time = particle_data_2.w;
+    if (TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_MASKED))
+    {
+        half_particle_size *= smoothstep(0.0f, particle_fade_in_time, particle_normalized_age);
+        half_particle_size *= 1.0f - smoothstep(particle_fade_out_time, 1.0f, particle_normalized_age);
+    }
     vec3 forward_vector = normalize(CAMERA_WORLD_POSITION - particle_position);
     mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(forward_vector, vec3(0.0f, 1.0f, 0.0f));
     vec3 right_vector = tangent_space_matrix[0];
@@ -355,5 +450,16 @@ void main()
     OutNormal = forward_vector;
     OutTextureCoordinate.x = float(gl_VertexIndex > 1);
     OutTextureCoordinate.y = 1.0f - float(gl_VertexIndex & 1);
+    OutInstanceIndex = gl_InstanceIndex;
+    if (TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_MASKED))
+    {
+        OutOpacity = 1.0f;
+    }
+    else if (TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_TRANSLUCENT))
+    {
+        OutOpacity = 1.0f;
+        OutOpacity *= smoothstep(0.0f, particle_fade_in_time, particle_normalized_age);
+        OutOpacity *= 1.0f - smoothstep(particle_fade_out_time, 1.0f, particle_normalized_age);
+    }
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

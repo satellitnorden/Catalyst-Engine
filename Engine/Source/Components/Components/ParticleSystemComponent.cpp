@@ -14,6 +14,9 @@
 #include <Profiling/Profiling.h>
 
 //Systems.
+#if defined(CATALYST_EDITOR)
+	#include <Systems/CatalystEditorSystem.h>
+#endif
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/ContentSystem.h>
 #include <Systems/EntitySystem.h>
@@ -249,6 +252,13 @@ void ParticleSystemComponent::Initialize() NOEXCEPT
 
 	AddEditableFloatField
 	(
+		"Drag",
+		offsetof(ParticleSystemInitializationData, _Emitter._Drag),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._Drag)
+	);
+
+	AddEditableFloatField
+	(
 		"Gravity Affection",
 		offsetof(ParticleSystemInitializationData, _Emitter._GravityAffection),
 		offsetof(ParticleSystemInstanceData, _MasterEmitter._GravityAffection)
@@ -259,6 +269,27 @@ void ParticleSystemComponent::Initialize() NOEXCEPT
 		"Wind Affection",
 		offsetof(ParticleSystemInitializationData, _Emitter._WindAffection),
 		offsetof(ParticleSystemInstanceData, _MasterEmitter._WindAffection)
+	);
+
+	AddEditableBoolField
+	(
+		"Shrink Near Camera",
+		offsetof(ParticleSystemInitializationData, _Emitter._ShrinkNearCamera),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._ShrinkNearCamera)
+	);
+
+	AddEditableFloatField
+	(
+		"Fade In Time",
+		offsetof(ParticleSystemInitializationData, _Emitter._FadeInTime),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._FadeInTime)
+	);
+
+	AddEditableFloatField
+	(
+		"Fade Out Time",
+		offsetof(ParticleSystemInitializationData, _Emitter._FadeOutTime),
+		offsetof(ParticleSystemInstanceData, _MasterEmitter._FadeOutTime)
 	);
 }
 
@@ -416,8 +447,14 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 
 					if (instance._Age < instance._Lifetime)
 					{
-						//Apply gravity
-						if (sub_emitter._Emitter._GravityAffection > 0.0f)
+						//Apply drag.
+						if (sub_emitter._Emitter._Drag > 0.0f)
+						{
+							instance._Velocity -= instance._Velocity * sub_emitter._Emitter._Drag * delta_time;
+						}
+
+						//Apply gravity.
+						if (sub_emitter._Emitter._GravityAffection != 0.0f)
 						{
 							instance._Velocity._Y -= PhysicsConstants::GRAVITY * delta_time * sub_emitter._Emitter._GravityAffection;
 						}
@@ -431,12 +468,6 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 							instance._WorldPosition.SetLocalPosition(local_position);
 						}
 
-						//Calculate the camera relative position.
-						const Vector3<float32> camera_relative_position{ instance._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
-
-						//Calculate modifiers.
-						float32 size_modifier{ 1.0f };
-
 						//Apply wind.
 						if (sub_emitter._Emitter._WindAffection > 0.0f)
 						{
@@ -447,7 +478,14 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 							instance._WorldPosition.SetLocalPosition(local_position);
 						}
 
-						//Modify the size based on the distance to the camera.
+						//Calculate the camera relative position.
+						const Vector3<float32> camera_relative_position{ instance._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
+
+						//Calculate modifiers.
+						float32 size_modifier{ 1.0f };
+
+						//Shrink near camera.
+						if (sub_emitter._Emitter._ShrinkNearCamera)
 						{
 							const float32 distance_to_camera{ Vector3<float32>::Length(camera_relative_position - camera_local_position) };
 
@@ -463,6 +501,8 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 							packed_instance._WorldPosition = camera_relative_position;
 							packed_instance._Size = instance._Size * size_modifier;
 							packed_instance._NormalizedAge = instance._Age / instance._Lifetime;
+							packed_instance._FadeInTime = sub_emitter._Emitter._FadeInTime;
+							packed_instance._FadeOutTime = sub_emitter._Emitter._FadeOutTime;
 						}
 
 						++_instance_index;
@@ -495,26 +535,31 @@ void ParticleSystemComponent::ParallelSubInstanceUpdate(const UpdatePhase update
 void ParticleSystemComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
 {
 	//Check if any instance should be deleted.
-	for (uint64 instance_index{ 0 }; instance_index < NumberOfInstances(); ++instance_index)
+#if defined(CATALYST_EDITOR)
+	if (CatalystEditorSystem::Instance->IsInGame())
+#endif
 	{
-		const ParticleSystemInstanceData &instance_data{ _InstanceData[instance_index] };
-		Entity *const RESTRICT entity{ InstanceToEntity(instance_index) };
-
-		if (TEST_BIT(entity->_Flags, Entity::Flags::QUEUED_FOR_DESTRUCTION))
+		for (uint64 instance_index{ 0 }; instance_index < NumberOfInstances(); ++instance_index)
 		{
-			continue;
-		}
+			const ParticleSystemInstanceData &instance_data{ _InstanceData[instance_index] };
+			Entity *const RESTRICT entity{ InstanceToEntity(instance_index) };
 
-		bool all_sub_emitters_dead{ true };
+			if (TEST_BIT(entity->_Flags, Entity::Flags::QUEUED_FOR_DESTRUCTION))
+			{
+				continue;
+			}
 
-		for (const ParticleSubEmitter &sub_emitter : instance_data._SubEmitters)
-		{
-			all_sub_emitters_dead &= (sub_emitter._Emitter._InitialBurst == 0 || sub_emitter._HasDoneInitialBurst) && sub_emitter._Emitter._SpawnRate == 0 && sub_emitter._PackedInstances.Empty();
-		}
+			bool all_sub_emitters_dead{ true };
 
-		if (all_sub_emitters_dead)
-		{
-			EntitySystem::Instance->DestroyEntity(entity);
+			for (const ParticleSubEmitter& sub_emitter : instance_data._SubEmitters)
+			{
+				all_sub_emitters_dead &= (sub_emitter._Emitter._InitialBurst == 0 || sub_emitter._HasDoneInitialBurst) && sub_emitter._Emitter._SpawnRate == 0 && sub_emitter._PackedInstances.Empty();
+			}
+
+			if (all_sub_emitters_dead)
+			{
+				EntitySystem::Instance->DestroyEntity(entity);
+			}
 		}
 	}
 
@@ -578,6 +623,8 @@ void ParticleSystemComponent::DefaultInitializationData(ParticleSystemInitializa
 	initialization_data->_Emitter._MinimumLifetime = 1.0f;
 	initialization_data->_Emitter._MaximumLifetime = 1.0f;
 	initialization_data->_Emitter._SpawnRate = 1;
+	initialization_data->_Emitter._FadeInTime = 0.1f;
+	initialization_data->_Emitter._FadeOutTime = 0.9f;
 }
 
 /*

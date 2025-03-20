@@ -218,12 +218,22 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (std430, set = 1, binding = 1) buffer Particles
+layout (std140, set = 1, binding = 1) uniform General
+{
+	layout (offset = 0) vec2 FULL_MAIN_RESOLUTION;
+	layout (offset = 8) vec2 INVERSE_FULL_MAIN_RESOLUTION;
+	layout (offset = 16) vec2 HALF_MAIN_RESOLUTION;
+	layout (offset = 24) vec2 INVERSE_HALF_MAIN_RESOLUTION;
+	layout (offset = 32) uint FRAME;
+	layout (offset = 36) float VIEW_DISTANCE;
+};
+
+layout (std430, set = 1, binding = 2) buffer Particles
 {
 	layout (offset = 0) vec4[] PARTICLES;
 };
 
-layout (set = 1, binding = 2) uniform sampler SAMPLER;
+layout (set = 1, binding = 3) uniform sampler SAMPLER;
 
 /*
 *   Linearizes a depth value.
@@ -325,6 +335,84 @@ mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
     return mat3(random_tangent, random_bitangent, normal);
 }
 
+/*
+*   Combines two hashes.
+*/
+uint CombineHash(uint hash_1, uint hash_2)
+{
+    return 3141592653 * hash_1 + hash_2;
+}
+
+/*
+*   Hash function taking a uint.
+*/
+uint Hash(uint seed)
+{
+    seed ^= seed >> 17;
+    seed *= 0xed5ad4bbU;
+    seed ^= seed >> 11;
+    seed *= 0xac4c1b51U;
+    seed ^= seed >> 15;
+    seed *= 0x31848babU;
+    seed ^= seed >> 14;
+    return seed;
+}
+
+/*
+*   Hash function taking a uvec2.
+*/
+uint Hash2(uvec2 seed)
+{
+    return Hash(seed.x) ^ Hash(seed.y);
+}
+
+/*
+*   Hash function taking a uvec3.
+*/
+uint Hash3(uvec3 seed)
+{
+    //return Hash( Hash( Hash( Hash(seed.x) ^ Hash(seed.y) ^ Hash(seed.z) ) ) );
+    //return Hash( Hash( Hash(seed.x) + Hash(seed.y) ) + Hash(seed.z) );
+    return Hash( CombineHash(CombineHash(Hash(seed.x), Hash(seed.y)), Hash(seed.z)) );
+}
+
+/*
+*   Given a seed, returns a random number.
+*/
+float RandomFloat(inout uint seed)
+{
+    return Hash(seed) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate and a seed, returns a random number.
+*/
+float RandomFloat(uvec2 coordinate, uint seed)
+{
+    return float(Hash3(uvec3(coordinate.xy, seed))) * UINT32_MAXIMUM_RECIPROCAL;
+}
+
+/*
+*   Given a coordinate, returns a random number.
+*/
+float RandomFloat(vec2 coordinate)
+{
+    return fract(sin(dot(coordinate, vec2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
+/*
+*	Returns the interleaved gradient noise for the given coordinate at the given frame.
+*/
+float InterleavedGradientNoise(uvec2 coordinate, uint frame)
+{
+	frame = frame % 64;
+
+	float x = float(coordinate.x) + 5.588238f * float(frame);
+	float y = float(coordinate.y) + 5.588238f * float(frame);
+
+	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
+}
+
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) uint MATERIAL_INDEX;
@@ -334,6 +422,8 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec3 InWorldPosition;
 layout (location = 1) in vec3 InNormal;
 layout (location = 2) in vec2 InTextureCoordinate;
+layout (location = 3) flat in uint InInstanceIndex;
+layout (location = 4) in float InOpacity;
 
 layout (location = 0) out vec4 SceneFeatures1;
 layout (location = 1) out vec4 SceneFeatures2;
@@ -350,7 +440,10 @@ void main()
     EVALUATE_MATERIAL_PROPERTIES(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, material_properties);
     float opacity;
     EVALUATE_OPACITY(MATERIALS[MATERIAL_INDEX], InTextureCoordinate, SAMPLER, opacity);
-    if (opacity < 0.5f)
+    opacity *= InOpacity;
+    if ((TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_MASKED) && opacity < 0.5f)
+        ||
+        (TEST_BIT(MATERIALS[MATERIAL_INDEX]._Properties, MATERIAL_PROPERTY_TYPE_TRANSLUCENT) && opacity < InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME + InInstanceIndex)))
     {
         discard;
     }
