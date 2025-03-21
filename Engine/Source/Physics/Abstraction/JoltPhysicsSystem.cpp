@@ -526,6 +526,9 @@ void PhysicsSystem::SubCreateHeightFieldActor
 	//Calculate the offset.
 	const float32 offset{ static_cast<float32>(height_field.GetResolution()) * 0.5f };
 
+	//Calculate the scale.
+	const float32 scale{ 1.0f + (1.0f / static_cast<float32>(height_field.GetResolution())) };
+
 	//Retrieve the body interface.
 	JPH::BodyInterface &body_interface = JoltPhysicsSystemData::_System.GetBodyInterface();
 
@@ -534,7 +537,7 @@ void PhysicsSystem::SubCreateHeightFieldActor
 	{
 		height_field.Data(),
 		JPH::Vec3(absolute_world_position._X - offset, absolute_world_position._Y, absolute_world_position._Z - offset),
-		JPH::Vec3(1.0f, 1.0f, 1.0f),
+		JPH::Vec3(scale, scale, scale),
 		height_field.GetResolution()
 	};
 
