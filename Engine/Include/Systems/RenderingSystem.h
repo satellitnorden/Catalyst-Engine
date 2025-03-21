@@ -38,7 +38,6 @@
 #include <Rendering/Native/VirtualRealitySystem.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
-#include <Rendering/Native/RenderingReference/RenderingReferenceSystem.h>
 
 //Systems.
 #include <Systems/System.h>
@@ -315,14 +314,6 @@ public:
 	RESTRICTED NO_DISCARD ShadowsSystem *const RESTRICT GetShadowsSystem() NOEXCEPT
 	{
 		return &_ShadowsSystem;
-	}
-
-	/*
-	*	Returns the rendering reference system.
-	*/
-	RESTRICTED NO_DISCARD RenderingReferenceSystem *const RESTRICT GetRenderingReferenceSystem() NOEXCEPT
-	{
-		return &_RenderingReferenceSystem;
 	}
 
 	/*
@@ -783,9 +774,6 @@ private:
 
 	//The shadows system.
 	ShadowsSystem _ShadowsSystem;
-
-	//The rendering reference system.
-	RenderingReferenceSystem _RenderingReferenceSystem;
 
 	//The virtual reality system.
 	VirtualRealitySystem _VirtualRealitySystem;

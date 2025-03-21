@@ -73,6 +73,9 @@ public:
 	//Denotes whether or not this component wants a "StartGame()" call.
 	bool _StartGame;
 
+	//Denotes whether or not this component wants a "GatherPathTracingTriangles()" call.
+	bool _GatherPathTracingTriangles;
+
 };
 
 /*
@@ -278,6 +281,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 	component_entry["PostCreateInstance"] = false;
 	component_entry["Selectable"] = false;
 	component_entry["StartGame"] = false;
+	component_entry["GatherPathTracingTriangles"] = false;
 
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
@@ -705,6 +709,18 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 				continue;
 			}
 		}
+
+		//Check if this component wants a "GatherPathTracingTriangles()" call.
+		{
+			const size_t position{ current_line.find("COMPONENT_GATHER_PATH_TRACING_TRIANGLES(") };
+
+			if (position != std::string::npos)
+			{
+				component_entry["GatherPathTracingTriangles"] = true;
+
+				continue;
+			}
+		}
 	}
 }
 
@@ -804,6 +820,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this component wants a "StartGame()" call.
 				new_component_data._StartGame = component_entry["StartGame"];
+
+				//Set whether or not this component wants a "GatherPathTracingTriangles()" call.
+				new_component_data._GatherPathTracingTriangles = component_entry["GatherPathTracingTriangles"];
 
 				//Check if this component wants any serial updates.
 				if (component_entry.contains("SerialUpdates"))
@@ -1634,6 +1653,20 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		if (_component_data._StartGame)
 		{
 			file << "\t" << _component_data._Name.data() << "::Instance->StartGame();" << std::endl;
+		}
+	}
+	file << "}" << std::endl;
+	file << std::endl;
+
+	//Set up the "Components::GatherPathTracingTriangles" function.
+	file << "void Components::GatherPathTracingTriangles(DynamicArray<class Vertex> *const RESTRICT vertices, DynamicArray<class PathTracingTriangle> *const RESTRICT triangles) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+
+	for (const ComponentData &_component_data : component_data)
+	{
+		if (_component_data._GatherPathTracingTriangles)
+		{
+			file << "\t" << _component_data._Name.data() << "::Instance->GatherPathTracingTriangles(vertices, triangles);" << std::endl;
 		}
 	}
 	file << "}";

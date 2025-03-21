@@ -1,6 +1,9 @@
 //Header file.
 #include <Components/Components/TerrainComponent.h>
 
+//Path tracing.
+#include <PathTracing/PathTracingCore.h>
+
 //Profiling.
 #include <Profiling/Profiling.h>
 
@@ -714,4 +717,9 @@ void TerrainComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 
 	//Remove the instance.
 	RemoveInstance(entity);
+}
+
+void TerrainComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *const RESTRICT vertices, DynamicArray<PathTracingTriangle> *const RESTRICT triangles) NOEXCEPT
+{
+
 }

@@ -299,25 +299,6 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	);
 	DebugSystem::Instance->RegisterButtonDebugCommand
 	(
-		"Rendering\\Start Rendering Reference",
-		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
-		{
-			if (RenderingSystem::Instance->GetRenderingReferenceSystem()->IsRenderingReferenceInProgress())
-			{
-				RenderingSystem::Instance->GetRenderingReferenceSystem()->StopRenderingReference("Rendering Reference.png");
-				debug_command->_Name = "Start Rendering Reference";
-			}
-
-			else
-			{
-				RenderingSystem::Instance->GetRenderingReferenceSystem()->StartRenderingReference();
-				debug_command->_Name = "Stop Rendering Reference";
-			}
-		},
-		nullptr
-	);
-	DebugSystem::Instance->RegisterButtonDebugCommand
-	(
 		"Rendering\\Visualization Modes\\None",
 		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
 		{

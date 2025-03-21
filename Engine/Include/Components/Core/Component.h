@@ -392,6 +392,11 @@ public:
 	*/
 	static void StartGame() NOEXCEPT;
 
+	/*
+	*	Gathers path tracing triangles.
+	*/
+	static void GatherPathTracingTriangles(DynamicArray<class Vertex> *const RESTRICT vertices, DynamicArray<class PathTracingTriangle> *const RESTRICT triangles) NOEXCEPT;
+
 };
 
 /*
@@ -485,6 +490,15 @@ public:																														\
 #define COMPONENT_START_GAME()	\
 public:							\
 	void StartGame() NOEXCEPT;
+
+/*
+*	Put this in your component declaration and implement the "GatherPathTracingTriangles()" function
+*	for this component to get a callback when path tracing triangles are being gathered.
+*	Should include "PathTracing/PathTracingCore.h" in the .cpp file.
+*/
+#define COMPONENT_GATHER_PATH_TRACING_TRIANGLES()																														\
+public:																																									\
+	void GatherPathTracingTriangles(DynamicArray<class Vertex> *const RESTRICT vertices, DynamicArray<class PathTracingTriangle> *const RESTRICT triangles) NOEXCEPT;
 
 /*
 *	Declares a Catalyst component.

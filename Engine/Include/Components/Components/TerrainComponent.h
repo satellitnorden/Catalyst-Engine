@@ -187,5 +187,6 @@ class TerrainComponent final : public Component
 		COMPONENT_INITIALIZE()
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 1)
 		COMPONENT_PRE_PROCESS(TerrainInitializationData)
+		COMPONENT_GATHER_PATH_TRACING_TRIANGLES()
 	);
 };
