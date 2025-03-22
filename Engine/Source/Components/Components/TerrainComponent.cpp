@@ -724,7 +724,7 @@ void TerrainComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 */
 FORCE_INLINE void PathTracingShadingFunction(const PathTracingShadingContext &context, PathTracingShadingResult *const RESTRICT result) NOEXCEPT
 {
-	result->_Albedo = Vector3<float32>(0.5f, 0.5f, 0.5f);
+	result->_Albedo = Vector3<float32>(0.25f, 0.25f, 0.25f);
 	result->_ShadingNormal = context._GeometryNormal;
 	result->_Roughness = 1.0f;
 	result->_Metallic = 0.0f;

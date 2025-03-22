@@ -117,6 +117,15 @@ private:
 	/*
 	*	Generates an irradiance ray.
 	*/
-	NO_DISCARD Vector3<float32> GenerateIrradianceRay(const Vector3<float32> &normal) NOEXCEPT;
+	void GenerateIrradianceRay
+	(
+		const Vector3<float32> &view_direction,
+		const Vector3<float32> &normal,
+		const float32 roughness,
+		const float32 metallic,
+		const float32 thickness,
+		Vector3<float32> *const RESTRICT direction,
+		float32 *const RESTRICT probability_density
+	) NOEXCEPT;
 
 };

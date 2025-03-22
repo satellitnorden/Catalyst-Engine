@@ -255,6 +255,9 @@ void PathTracingSystem::Stop(const char* const RESTRICT file_path) NOEXCEPT
 		TaskSystem::Instance->DoWork(Task::Priority::LOW);
 	}
 
+	//Destroy the acceleration structure.
+	delete _AccelerationStructure;
+
 	//Write the rendered image to file, if a file path is specified.
 	if (file_path)
 	{
@@ -531,11 +534,25 @@ NO_DISCARD Vector3<float32> PathTracingSystem::CastRadianceRay(const Ray &ray, c
 
 		//Add indirect lighting.
 		{
+			Vector3<float32> irradiance_ray_direction;
+			float32 irradiance_ray_probability;
+
+			GenerateIrradianceRay
+			(
+				ray._Direction,
+				shading_result._ShadingNormal,
+				shading_result._Roughness,
+				shading_result._Metallic,
+				shading_result._Thickness,
+				&irradiance_ray_direction,
+				&irradiance_ray_probability
+			);
+
 			//Generate the irradiance ray.
 			Ray irradiance_ray;
 
 			irradiance_ray.SetOrigin(offset_hit_position);
-			irradiance_ray.SetDirection(GenerateIrradianceRay(shading_context._GeometryNormal));
+			irradiance_ray.SetDirection(irradiance_ray_direction);
 
 			//Cast the ray!
 			const Vector3<float32> irradiance{ CastRadianceRay(irradiance_ray, depth + 1) };
@@ -550,7 +567,7 @@ NO_DISCARD Vector3<float32> PathTracingSystem::CastRadianceRay(const Ray &ray, c
 				shading_result._Metallic,
 				shading_result._Thickness,
 				-irradiance_ray._Direction
-			);
+			) * shading_result._AmbientOcclusion / irradiance_ray_probability;
 		}
 
 		//Add direct lighting.
@@ -671,14 +688,60 @@ NO_DISCARD Vector3<float32> PathTracingSystem::CastRadianceRay(const Ray &ray, c
 /*
 *	Generates an irradiance ray.
 */
-NO_DISCARD Vector3<float32> PathTracingSystem::GenerateIrradianceRay(const Vector3<float32> &normal) NOEXCEPT
+void PathTracingSystem::GenerateIrradianceRay
+(
+	const Vector3<float32> &view_direction,
+	const Vector3<float32> &normal,
+	const float32 roughness,
+	const float32 metallic,
+	const float32 thickness,
+	Vector3<float32> *const RESTRICT direction,
+	float32 *const RESTRICT probability_density
+) NOEXCEPT
 {
-	Vector3<float32> direction{ CatalystRandomMath::RandomPointOnSphere() };
+	/*
+	*	This is quite crude, but let's do it like this until I have figured out a better way to do it.
+	*	Generate N random direction, then randomly pick one of them weighted based on the probability density function.
+	*/
+	constexpr uint64 NUMBER_OF_SAMPLES{ 8 };
 
-	if (Vector3<float32>::DotProduct(normal, direction) < 0.0f)
+	StaticArray<Vector3<float32>, NUMBER_OF_SAMPLES> directions;
+	StaticArray<float32, NUMBER_OF_SAMPLES> weights;
+
+	for (uint64 i{ 0 }; i < NUMBER_OF_SAMPLES; ++i)
 	{
-		direction *= -1.0f;
+		//Generate the direction.
+		Vector3<float32> direction{ CatalystRandomMath::RandomPointOnSphere() };
+
+		if (Vector3<float32>::DotProduct(normal, direction) < 0.0f)
+		{
+			direction *= -1.0f;
+		}
+
+		//Calculate the BRDF.
+		const float32 BRDF
+		{
+			PhysicallyBasedLighting::BidirectionalReflectanceDistribution
+			(
+				-view_direction,
+				Vector3<float32>(1.0f, 1.0f, 1.0f),
+				normal,
+				roughness,
+				metallic,
+				1.0f,
+				-direction
+			)._X
+		};
+
+		directions[i] = direction;
+		weights[i] = BRDF;
 	}
 
-	return direction;
+	ArrayProxy<Vector3<float32>> directions_proxy{ directions };
+	ArrayProxy<float32> weights_proxy{ weights };
+
+	const uint64 chosen_index{ CatalystRandomMath::WeightedRandomIndex(directions_proxy, weights_proxy) };
+
+	*direction = directions[chosen_index];
+	*probability_density = weights[chosen_index];
 }
