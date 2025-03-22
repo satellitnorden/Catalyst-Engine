@@ -649,9 +649,9 @@ public:
 };
 
 /*
-*	The path tracing discard function.
+*	The static model path tracing discard function.
 */
-FORCE_INLINE NO_DISCARD bool PathTracingDiscardFunction(const PathTracingShadingContext &context) NOEXCEPT
+FORCE_INLINE NO_DISCARD bool StaticModelPathTracingDiscardFunction(const PathTracingShadingContext &context) NOEXCEPT
 {
 	//Cache the user data.
 	const StaticModelPathTracingUserData *const RESTRICT user_data{ context._UserData.Get<StaticModelPathTracingUserData>() };
@@ -687,9 +687,9 @@ FORCE_INLINE NO_DISCARD bool PathTracingDiscardFunction(const PathTracingShading
 }
 
 /*
-*	The path tracing shading function.
+*	The static model path tracing shading function.
 */
-FORCE_INLINE void PathTracingShadingFunction(const PathTracingShadingContext &context, PathTracingShadingResult *const RESTRICT result) NOEXCEPT
+FORCE_INLINE void StaticModelPathTracingShadingFunction(const PathTracingShadingContext &context, PathTracingShadingResult *const RESTRICT result) NOEXCEPT
 {
 	//Cache the user data.
 	const StaticModelPathTracingUserData *const RESTRICT user_data{ context._UserData.Get<StaticModelPathTracingUserData>() };
@@ -804,8 +804,8 @@ void StaticModelComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *cons
 				triangle._Indices[0] = index_offset + indices[triangle_index + 0];
 				triangle._Indices[1] = index_offset + indices[triangle_index + 1];
 				triangle._Indices[2] = index_offset + indices[triangle_index + 2];
-				triangle._DiscardFunction = (material->_Type == MaterialAsset::Type::MASKED || material->_Type == MaterialAsset::Type::TRANSLUCENT) ? PathTracingDiscardFunction : nullptr;
-				triangle._ShadingFunction = PathTracingShadingFunction;
+				triangle._DiscardFunction = (material->_Type == MaterialAsset::Type::MASKED || material->_Type == MaterialAsset::Type::TRANSLUCENT) ? StaticModelPathTracingDiscardFunction : nullptr;
+				triangle._ShadingFunction = StaticModelPathTracingShadingFunction;
 
 				StaticModelPathTracingUserData user_data;
 

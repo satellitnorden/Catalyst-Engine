@@ -720,11 +720,11 @@ void TerrainComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 }
 
 /*
-*	The path tracing shading function.
+*	The terrain path tracing shading function.
 */
-FORCE_INLINE void PathTracingShadingFunction(const PathTracingShadingContext &context, PathTracingShadingResult *const RESTRICT result) NOEXCEPT
+FORCE_INLINE void TerrainPathTracingShadingFunction(const PathTracingShadingContext &context, PathTracingShadingResult *const RESTRICT result) NOEXCEPT
 {
-	result->_Albedo = Vector3<float32>(0.25f, 0.25f, 0.25f);
+	result->_Albedo = Vector3<float32>(0.125f, 0.125f, 0.125f);
 	result->_ShadingNormal = context._GeometryNormal;
 	result->_Roughness = 1.0f;
 	result->_Metallic = 0.0f;
@@ -783,7 +783,7 @@ void TerrainComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *const RE
 						triangle._Indices[1] = vertices->LastIndex() + instance_data._HeightMap.GetWidth();
 						triangle._Indices[2] = vertices->LastIndex() + instance_data._HeightMap.GetWidth() + 1;
 						triangle._DiscardFunction = nullptr;
-						triangle._ShadingFunction = PathTracingShadingFunction;
+						triangle._ShadingFunction = TerrainPathTracingShadingFunction;
 					}
 
 					{
@@ -794,7 +794,7 @@ void TerrainComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *const RE
 						triangle._Indices[1] = vertices->LastIndex() + instance_data._HeightMap.GetWidth() + 1;
 						triangle._Indices[2] = vertices->LastIndex() + 1;
 						triangle._DiscardFunction = nullptr;
-						triangle._ShadingFunction = PathTracingShadingFunction;
+						triangle._ShadingFunction = TerrainPathTracingShadingFunction;
 					}
 				}
 			}

@@ -703,7 +703,7 @@ void PathTracingSystem::GenerateIrradianceRay
 	*	This is quite crude, but let's do it like this until I have figured out a better way to do it.
 	*	Generate N random direction, then randomly pick one of them weighted based on the probability density function.
 	*/
-	constexpr uint64 NUMBER_OF_SAMPLES{ 8 };
+	constexpr uint64 NUMBER_OF_SAMPLES{ 16 };
 
 	StaticArray<Vector3<float32>, NUMBER_OF_SAMPLES> directions;
 	StaticArray<float32, NUMBER_OF_SAMPLES> weights;
