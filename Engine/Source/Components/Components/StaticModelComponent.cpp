@@ -7,6 +7,9 @@
 //Editor.
 #include <Editor/EditorUtilities.h>
 
+//Path tracing.
+#include <PathTracing/PathTracingCore.h>
+
 //Rendering.
 #include <Rendering/Native/Culling.h>
 #include <Rendering/Native/RenderingUtilities.h>
@@ -622,6 +625,72 @@ void StaticModelComponent::SetupDefaultMaterials(Entity *const RESTRICT entity, 
 		if ((force || instance_data->_Materials[mesh_index] == ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"))) && instance_data->_Model->_DefaultMaterials[mesh_index])
 		{
 			instance_data->_Materials[mesh_index] = instance_data->_Model->_DefaultMaterials[mesh_index];
+		}
+	}
+}
+
+/*
+*	The path tracing shading function.
+*/
+FORCE_INLINE void PathTracingShadingFunction(const PathTracingShadingContext &context, PathTracingShadingResult *const RESTRICT result) NOEXCEPT
+{
+	result->_Albedo = Vector3<float32>(0.5f, 0.5f, 0.5f);
+	result->_ShadingNormal = context._GeometryNormal;
+	result->_Roughness = 1.0f;
+	result->_Metallic = 0.0f;
+	result->_AmbientOcclusion = 1.0f;
+	result->_Emissive = 0.0f;
+	result->_Thickness = 1.0f;
+}
+
+/*
+*	Gathers path tracing triangles.
+*/
+void StaticModelComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *const RESTRICT vertices, DynamicArray<PathTracingTriangle> *const RESTRICT triangles) NOEXCEPT
+{
+	//Iterate over all instances.
+	for (uint64 instance_index{ 0 }; instance_index < NumberOfInstances(); ++instance_index)
+	{
+		//Cache data.
+		Entity *const RESTRICT entity{ InstanceToEntity(instance_index) };
+		const StaticModelInstanceData &static_model_instance_data{ _InstanceData[instance_index] };
+		const WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
+
+		//Calculate the model transform.
+		const Matrix4x4 model_transform{ world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell()) };
+
+		//Iterate over all meshes.
+		for (uint64 mesh_index{ 0 }; mesh_index < static_model_instance_data._Model->_Meshes.Size(); ++mesh_index)
+		{
+			//Calculate the index offset.
+			const uint64 index_offset{ vertices->Size() };
+
+			//Cache the vertices and indices.
+			const DynamicArray<Vertex> &_vertices{ static_model_instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[mesh_index]]._Vertices };
+			const DynamicArray<uint32> &indices{ static_model_instance_data._Model->_Meshes[mesh_index]._MeshLevelOfDetails[static_model_instance_data._LevelOfDetailIndices[mesh_index]]._Indices };
+
+			//Add the vertices.
+			for (Vertex vertex : _vertices)
+			{
+				//Transform the vertex.
+				vertex.Transform(model_transform, 0.0f);
+
+				//Add the vertex!
+				vertices->Emplace(vertex);
+			}
+
+			//Add the triangles.
+			for (uint32 triangle_index{ 0 }; triangle_index < indices.Size(); triangle_index += 3)
+			{
+				triangles->Emplace();
+				PathTracingTriangle &triangle{ triangles->Back() };
+
+				triangle._Indices[0] = index_offset + indices[triangle_index + 0];
+				triangle._Indices[1] = index_offset + indices[triangle_index + 1];
+				triangle._Indices[2] = index_offset + indices[triangle_index + 2];
+				triangle._DiscardFunction = nullptr;
+				triangle._ShadingFunction = PathTracingShadingFunction;
+			}
 		}
 	}
 }

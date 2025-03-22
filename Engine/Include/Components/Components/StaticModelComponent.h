@@ -87,6 +87,7 @@ class StaticModelComponent final : public Component
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
 		COMPONENT_SELECT()
 		COMPONENT_START_GAME()
+		COMPONENT_GATHER_PATH_TRACING_TRIANGLES()
 	);
 
 public:
