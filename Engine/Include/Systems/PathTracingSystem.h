@@ -13,6 +13,10 @@
 //Systems.
 #include <Systems/System.h>
 
+//Forward declarations.
+class PathTracingAccelerationStructure;
+class Ray;
+
 class PathTracingSystem final
 {
 
@@ -51,6 +55,9 @@ private:
 
 	//Denotes if path tracing is in progress.
 	bool _IsInProgress{ false };
+
+	//The acceleration structure.
+	PathTracingAccelerationStructure *RESTRICT _AccelerationStructure;
 
 	//The intermediate texture.
 	Texture2D<Vector4<float64>> _IntermediateTexture;
@@ -101,5 +108,15 @@ private:
 	*	Returns if all tasks are done.
 	*/
 	NO_DISCARD bool AllTasksDone() const NOEXCEPT;
+
+	/*
+	*	Casts a radiance ray.
+	*/
+	NO_DISCARD Vector3<float32> CastRadianceRay(const Ray &ray, const uint8 depth) NOEXCEPT;
+
+	/*
+	*	Generates an irradiance ray.
+	*/
+	NO_DISCARD Vector3<float32> GenerateIrradianceRay(const Vector3<float32> &normal) NOEXCEPT;
 
 };

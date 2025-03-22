@@ -20,7 +20,7 @@ namespace PhysicallyBasedLighting
 	*	influenced by the roughness of the surface; this is the primary function approximating the microfacets.
 	*	Trowbridge-Reitz GGX.
 	*/
-	float Distribution(float roughness, float microsurface_angle)
+	static float Distribution(float roughness, float microsurface_angle)
 	{
 		float roughness_squared = powf(roughness, 4.0f);
 		float microsurface_angle_squared = microsurface_angle * microsurface_angle;
@@ -38,7 +38,7 @@ namespace PhysicallyBasedLighting
 	*	When a surface is relatively rough, the surface's microfacets can overshadow other microfacets reducing the light the surface reflects.
 	*	Schlick-GGX.
 	*/
-	float Geometry(Vector3<float32> normal, Vector3<float32> outgoing_direction, Vector3<float32> radiance_direction, float roughness)
+	static float Geometry(Vector3<float32> normal, Vector3<float32> outgoing_direction, Vector3<float32> radiance_direction, float roughness)
 	{
 		//Calculate the outgoing direction coefficient.
 		float outgoing_direction_coefficient = BaseMath::Maximum<float32>(Vector3<float32>::DotProduct(normal, outgoing_direction), 0.0f);
@@ -84,7 +84,7 @@ namespace PhysicallyBasedLighting
 	*	The fresnel function.
 	*	The Fresnel equation describes the ratio of surface reflection at different surface angles.
 	*/
-	Vector3<float32> Fresnel(Vector3<float32> surface_color, float difference_angle)
+	static Vector3<float32> Fresnel(Vector3<float32> surface_color, float difference_angle)
 	{
 		//Calculate the fresnel.
 		return surface_color + (Vector3<float32>(1.0f) - surface_color) * powf(1.0f - difference_angle, 5.0f);
@@ -93,7 +93,7 @@ namespace PhysicallyBasedLighting
 	/*
 	*	The lambert diffuse function.
 	*/
-	Vector3<float32> LambertDiffuse(Vector3<float32> albedo)
+	static Vector3<float32> LambertDiffuse(Vector3<float32> albedo)
 	{
 		return albedo / BaseMathConstants::PI;
 	}
@@ -102,7 +102,7 @@ namespace PhysicallyBasedLighting
 	*	The disney diffuse function.
 	*	Inspired by: https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf
 	*/
-	Vector3<float32> DisneyDiffuse(Vector3<float32> albedo, float roughness, float difference_angle, float radiance_angle, float outgoing_angle)
+	static Vector3<float32> DisneyDiffuse(Vector3<float32> albedo, float roughness, float difference_angle, float radiance_angle, float outgoing_angle)
 	{
 		//Calculate some stuff.
 		float FD90 = 0.5f + 2.0f * roughness * powf(cosf(difference_angle), 2.0f);
@@ -129,7 +129,7 @@ namespace PhysicallyBasedLighting
 	*	- thickness: The thickness of the surface point being shaded.
 	*	- radiance_direction: A direction vector going from the entity emitting irradiance toward the surface point being shaded.
 	*/
-	FORCE_INLINE NO_DISCARD Vector3<float32> BidirectionalReflectanceDistribution
+	FORCE_INLINE static NO_DISCARD Vector3<float32> BidirectionalReflectanceDistribution
 	(
 		const Vector3<float32> &outgoing_direction,
 		const Vector3<float32> &albedo,

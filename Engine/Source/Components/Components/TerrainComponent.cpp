@@ -719,7 +719,85 @@ void TerrainComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 	RemoveInstance(entity);
 }
 
+/*
+*	The path tracing shading function.
+*/
+FORCE_INLINE void PathTracingShadingFunction(const PathTracingShadingContext &context, PathTracingShadingResult *const RESTRICT result) NOEXCEPT
+{
+	result->_Albedo = Vector3<float32>(0.5f, 0.5f, 0.5f);
+	result->_ShadingNormal = context._GeometryNormal;
+	result->_Roughness = 1.0f;
+	result->_Metallic = 0.0f;
+	result->_AmbientOcclusion = 1.0f;
+	result->_Emissive = 0.0f;
+	result->_Thickness = 1.0f;
+}
+
+/*
+*	Gathers path tracing triangles.
+*/
 void TerrainComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *const RESTRICT vertices, DynamicArray<PathTracingTriangle> *const RESTRICT triangles) NOEXCEPT
 {
+	//Iterate over all instances.
+	for (uint64 instance_index{ 0 }; instance_index < NumberOfInstances(); ++instance_index)
+	{
+		//Cache data.
+		const TerrainInstanceData &instance_data{ _InstanceData[instance_index] };
 
+		//Cache the relative world position.
+		const Vector3<float32> relative_world_position{ instance_data._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
+
+		//Triangulate the height map.
+		for (uint32 Y{ 0 }; Y < instance_data._HeightMap.GetHeight(); ++Y)
+		{
+			for (uint32 X{ 0 }; X < instance_data._HeightMap.GetWidth(); ++X)
+			{
+				//Calculate the normalized coordinate.
+				const Vector2<float32> normalized_coordinate
+				{
+					static_cast<float32>(X) / static_cast<float32>(instance_data._HeightMap.GetWidth() - 1),
+					static_cast<float32>(Y) / static_cast<float32>(instance_data._HeightMap.GetHeight() - 1)
+				};
+
+				//Add the vertex.
+				vertices->Emplace();
+				Vertex &vertex{ vertices->Back() };
+
+				vertex._Position = relative_world_position;
+				vertex._Position._X += BaseMath::LinearlyInterpolate(static_cast<float32>(instance_data._PatchSize) * -0.5f, static_cast<float32>(instance_data._PatchSize) * 0.5f, normalized_coordinate._X);
+				vertex._Position._Y += instance_data._HeightMap.At(X, Y);
+				vertex._Position._Z += BaseMath::LinearlyInterpolate(static_cast<float32>(instance_data._PatchSize) * -0.5f, static_cast<float32>(instance_data._PatchSize) * 0.5f, normalized_coordinate._Y);
+				vertex._Normal = instance_data._NormalMap.At(X, Y);
+				vertex._Tangent = Vector3<float32>(1.0f, 0.0f, 0.0f); //TODO - Don't know if this is needed?
+				vertex._TextureCoordinate = normalized_coordinate;
+
+				//Add the triangle.
+				if (X < (instance_data._HeightMap.GetWidth() - 1)
+					&& Y < (instance_data._HeightMap.GetHeight() - 1))
+				{
+					{
+						triangles->Emplace();
+						PathTracingTriangle &triangle{ triangles->Back() };
+
+						triangle._Indices[0] = vertices->LastIndex();
+						triangle._Indices[1] = vertices->LastIndex() + instance_data._HeightMap.GetWidth();
+						triangle._Indices[2] = vertices->LastIndex() + instance_data._HeightMap.GetWidth() + 1;
+						triangle._DiscardFunction = nullptr;
+						triangle._ShadingFunction = PathTracingShadingFunction;
+					}
+
+					{
+						triangles->Emplace();
+						PathTracingTriangle &triangle{ triangles->Back() };
+
+						triangle._Indices[0] = vertices->LastIndex();
+						triangle._Indices[1] = vertices->LastIndex() + instance_data._HeightMap.GetWidth() + 1;
+						triangle._Indices[2] = vertices->LastIndex() + 1;
+						triangle._DiscardFunction = nullptr;
+						triangle._ShadingFunction = PathTracingShadingFunction;
+					}
+				}
+			}
+		}
+	}
 }
