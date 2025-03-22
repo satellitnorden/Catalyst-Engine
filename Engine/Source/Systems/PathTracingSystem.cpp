@@ -208,7 +208,7 @@ void PathTracingSystem::Start() NOEXCEPT
 	_TotalNumberOfPixels = _FinalTexture.GetWidth() * _FinalTexture.GetHeight();
 
 	//Set up the tasks.
-	_Tasks.Upsize<false>(TaskSystem::Instance->GetNumberOfTaskExecutors() - 2);
+	_Tasks.Upsize<false>(TaskSystem::Instance->GetNumberOfTaskExecutors() - 4);
 
 	for (Task &task : _Tasks)
 	{

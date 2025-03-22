@@ -7,6 +7,9 @@
 //Editor.
 #include <Editor/EditorUtilities.h>
 
+//Math.
+#include <Math/Core/CatalystRandomMath.h>
+
 //Path tracing.
 #include <PathTracing/PathTracingCore.h>
 
@@ -646,6 +649,44 @@ public:
 };
 
 /*
+*	The path tracing discard function.
+*/
+FORCE_INLINE NO_DISCARD bool PathTracingDiscardFunction(const PathTracingShadingContext &context) NOEXCEPT
+{
+	//Cache the user data.
+	const StaticModelPathTracingUserData *const RESTRICT user_data{ context._UserData.Get<StaticModelPathTracingUserData>() };
+
+	//Cache the instance data.
+	const StaticModelInstanceData &instance_data{ StaticModelComponent::Instance->InstanceData()[user_data->_InstanceIndex] };
+
+	//Cache the material.
+	const AssetPointer<MaterialAsset> material{ instance_data._Materials[user_data->_MeshIndex] };
+
+	//Retrieve the opacity.
+	Vector4<float32> opacity;
+
+	if (material->_OpacityComponent._Type == MaterialAsset::Component::Type::COLOR)
+	{
+		opacity = material->_OpacityComponent._Color.Get();
+	}
+
+	else
+	{
+		opacity = SampleConvert(material->_OpacityComponent._Texture->_Texture2D, context._TextureCoordinate);
+	}
+
+	if (material->_Type == MaterialAsset::Type::MASKED)
+	{
+		return opacity._X >= 0.5f;
+	}
+
+	else
+	{
+		return CatalystRandomMath::RandomChance(opacity._X);
+	}
+}
+
+/*
 *	The path tracing shading function.
 */
 FORCE_INLINE void PathTracingShadingFunction(const PathTracingShadingContext &context, PathTracingShadingResult *const RESTRICT result) NOEXCEPT
@@ -734,6 +775,9 @@ void StaticModelComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *cons
 		//Iterate over all meshes.
 		for (uint64 mesh_index{ 0 }; mesh_index < static_model_instance_data._Model->_Meshes.Size(); ++mesh_index)
 		{
+			//Cache the material.
+			const AssetPointer<MaterialAsset> material{ static_model_instance_data._Materials[mesh_index] };
+
 			//Calculate the index offset.
 			const uint64 index_offset{ vertices->Size() };
 
@@ -760,7 +804,7 @@ void StaticModelComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *cons
 				triangle._Indices[0] = index_offset + indices[triangle_index + 0];
 				triangle._Indices[1] = index_offset + indices[triangle_index + 1];
 				triangle._Indices[2] = index_offset + indices[triangle_index + 2];
-				triangle._DiscardFunction = nullptr;
+				triangle._DiscardFunction = (material->_Type == MaterialAsset::Type::MASKED || material->_Type == MaterialAsset::Type::TRANSLUCENT) ? PathTracingDiscardFunction : nullptr;
 				triangle._ShadingFunction = PathTracingShadingFunction;
 
 				StaticModelPathTracingUserData user_data;

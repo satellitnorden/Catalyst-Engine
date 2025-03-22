@@ -525,12 +525,50 @@ private:
 				{
 					bool is_actually_a_hit{ true };
 
-					/*
-					if (triangle_data._DiscardFunction)
+					if (triangle._DiscardFunction)
 					{
-						is_actually_a_hit = triangle_data._DiscardFunction(*this, ray, triangle_data._Indices[0], triangle_data._Indices[1], triangle_data._Indices[2], intersection_distance_temporary);
+						//Retrieve the intersected vertices.
+						const StaticArray<Vertex, 3> intersected_vertices
+						{
+							GetVertex(triangle._Indices[0]),
+							GetVertex(triangle._Indices[1]),
+							GetVertex(triangle._Indices[2])
+						};
+
+						//Calculate the hit position.
+						const Vector3<float32> hit_position{ ray._Origin + ray._Direction * intersection_distance_temporary };
+
+						//Calculate the barycentric coordinates.
+						Vector3<float32> barycentric_coordinates;
+
+						{
+							Triangle triangle;
+
+							for (uint8 i{ 0 }; i < 3; ++i)
+							{
+								triangle._Vertices[i] = intersected_vertices[i]._Position;
+							}
+
+							barycentric_coordinates = CatalystGeometryMath::CalculateBarycentricCoordinates(triangle, hit_position);
+						}
+
+						//Construct the shading context.
+						PathTracingShadingContext shading_context;
+
+						shading_context._WorldPosition = hit_position;
+						shading_context._GeometryNormal =	intersected_vertices[0]._Normal * barycentric_coordinates[0]
+															+ intersected_vertices[1]._Normal * barycentric_coordinates[1]
+															+ intersected_vertices[2]._Normal * barycentric_coordinates[2];
+						shading_context._GeometryTangent =	intersected_vertices[0]._Tangent * barycentric_coordinates[0]
+															+ intersected_vertices[1]._Tangent * barycentric_coordinates[1]
+															+ intersected_vertices[2]._Tangent * barycentric_coordinates[2];
+						shading_context._TextureCoordinate =	intersected_vertices[0]._TextureCoordinate * barycentric_coordinates[0]
+																+ intersected_vertices[1]._TextureCoordinate * barycentric_coordinates[1]
+																+ intersected_vertices[2]._TextureCoordinate * barycentric_coordinates[2];
+						shading_context._UserData = triangle._UserData;
+
+						is_actually_a_hit = triangle._DiscardFunction(shading_context);
 					}
-					*/
 
 					if (is_actually_a_hit)
 					{
@@ -606,12 +644,50 @@ private:
 				{
 					bool is_actually_a_hit{ true };
 
-					/*
-					if (triangle_data._DiscardFunction)
+					if (triangle._DiscardFunction)
 					{
-						is_actually_a_hit = triangle_data._DiscardFunction(*this, ray, triangle_data._Indices[0], triangle_data._Indices[1], triangle_data._Indices[2], intersection_distance_temporary);
+						//Retrieve the intersected vertices.
+						const StaticArray<Vertex, 3> intersected_vertices
+						{
+							GetVertex(triangle._Indices[0]),
+							GetVertex(triangle._Indices[1]),
+							GetVertex(triangle._Indices[2])
+						};
+
+						//Calculate the hit position.
+						const Vector3<float32> hit_position{ ray._Origin + ray._Direction * intersection_distance_temporary };
+
+						//Calculate the barycentric coordinates.
+						Vector3<float32> barycentric_coordinates;
+
+						{
+							Triangle triangle;
+
+							for (uint8 i{ 0 }; i < 3; ++i)
+							{
+								triangle._Vertices[i] = intersected_vertices[i]._Position;
+							}
+
+							barycentric_coordinates = CatalystGeometryMath::CalculateBarycentricCoordinates(triangle, hit_position);
+						}
+
+						//Construct the shading context.
+						PathTracingShadingContext shading_context;
+
+						shading_context._WorldPosition = hit_position;
+						shading_context._GeometryNormal =	intersected_vertices[0]._Normal * barycentric_coordinates[0]
+															+ intersected_vertices[1]._Normal * barycentric_coordinates[1]
+															+ intersected_vertices[2]._Normal * barycentric_coordinates[2];
+						shading_context._GeometryTangent =	intersected_vertices[0]._Tangent * barycentric_coordinates[0]
+															+ intersected_vertices[1]._Tangent * barycentric_coordinates[1]
+															+ intersected_vertices[2]._Tangent * barycentric_coordinates[2];
+						shading_context._TextureCoordinate =	intersected_vertices[0]._TextureCoordinate * barycentric_coordinates[0]
+																+ intersected_vertices[1]._TextureCoordinate * barycentric_coordinates[1]
+																+ intersected_vertices[2]._TextureCoordinate * barycentric_coordinates[2];
+						shading_context._UserData = triangle._UserData;
+
+						is_actually_a_hit = triangle._DiscardFunction(shading_context);
 					}
-					*/
 
 					if (is_actually_a_hit)
 					{
