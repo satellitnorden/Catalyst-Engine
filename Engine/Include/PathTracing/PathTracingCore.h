@@ -14,7 +14,7 @@
 //Path Tracing constants.
 namespace PathTracingConstants
 {
-	constexpr uint64 USER_DATA_SIZE{ 8 };
+	constexpr uint64 USER_DATA_SIZE{ 16 };
 }
 
 /*

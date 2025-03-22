@@ -61,21 +61,19 @@ public:
 	}
 
 	/*
-	*	Adds a vertex to the acceleration structure. Must be done before building.
+	*	Returns the build vertices pointer.
 	*/
-	FORCE_INLINE void AddVertex(const Vertex &vertex) NOEXCEPT
+	FORCE_INLINE NO_DISCARD DynamicArray<Vertex> *const RESTRICT GetBuildVerticesPointer() NOEXCEPT
 	{
-		//Add the vertex to the acceleration structure.
-		_BuildData->_Vertices.Emplace(vertex);
+		return &_BuildData->_Vertices;
 	}
 
 	/*
-	*	Adds a triangle to the acceleration structure. Must be done before building.
+	*	Returns the build triangles pointer.
 	*/
-	FORCE_INLINE void AddTriangle(const PathTracingTriangle &triangle) NOEXCEPT
+	FORCE_INLINE NO_DISCARD DynamicArray<PathTracingTriangle> *const RESTRICT GetBuildTrianglesPointer() NOEXCEPT
 	{
-		//Add the triangle to the root.
-		_Root._Triangles.Emplace(triangle);
+		return &_Root._Triangles;
 	}
 
 	/*

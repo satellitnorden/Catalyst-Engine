@@ -630,17 +630,89 @@ void StaticModelComponent::SetupDefaultMaterials(Entity *const RESTRICT entity, 
 }
 
 /*
+*	Static model path tracing user data class definition.
+*/
+class StaticModelPathTracingUserData final
+{
+
+public:
+
+	//The instance index.
+	uint64 _InstanceIndex;
+
+	//The mesh index.
+	uint64 _MeshIndex;
+
+};
+
+/*
 *	The path tracing shading function.
 */
 FORCE_INLINE void PathTracingShadingFunction(const PathTracingShadingContext &context, PathTracingShadingResult *const RESTRICT result) NOEXCEPT
 {
-	result->_Albedo = Vector3<float32>(0.5f, 0.5f, 0.5f);
-	result->_ShadingNormal = context._GeometryNormal;
-	result->_Roughness = 1.0f;
-	result->_Metallic = 0.0f;
-	result->_AmbientOcclusion = 1.0f;
-	result->_Emissive = 0.0f;
-	result->_Thickness = 1.0f;
+	//Cache the user data.
+	const StaticModelPathTracingUserData *const RESTRICT user_data{ context._UserData.Get<StaticModelPathTracingUserData>() };
+
+	//Cache the instance data.
+	const StaticModelInstanceData &instance_data{ StaticModelComponent::Instance->InstanceData()[user_data->_InstanceIndex] };
+
+	//Cache the material.
+	const AssetPointer<MaterialAsset> material{ instance_data._Materials[user_data->_MeshIndex] };
+
+	//Retrieve the albedo/thickness.
+	Vector4<float32> albedo_thickness;
+
+	if (material->_AlbedoThicknessComponent._Type == MaterialAsset::Component::Type::COLOR)
+	{
+		albedo_thickness = material->_AlbedoThicknessComponent._Color.Get();
+	}
+
+	else
+	{
+		albedo_thickness = SampleConvert(material->_AlbedoThicknessComponent._Texture->_Texture2D, context._TextureCoordinate);
+	}
+
+	//Retrieve the normal map/displacement.
+	Vector4<float32> normal_map_displacement;
+
+	if (material->_NormalMapDisplacementComponent._Type == MaterialAsset::Component::Type::COLOR)
+	{
+		normal_map_displacement = material->_NormalMapDisplacementComponent._Color.Get();
+	}
+
+	else
+	{
+		normal_map_displacement = SampleConvert(material->_NormalMapDisplacementComponent._Texture->_Texture2D, context._TextureCoordinate);
+	}
+
+	//Retrieve the material properties.
+	Vector4<float32> material_properties;
+
+	if (material->_MaterialPropertiesComponent._Type == MaterialAsset::Component::Type::COLOR)
+	{
+		material_properties = material->_MaterialPropertiesComponent._Color.Get();
+	}
+
+	else
+	{
+		material_properties = SampleConvert(material->_MaterialPropertiesComponent._Texture->_Texture2D, context._TextureCoordinate);
+	}
+
+	//Fill in the result!
+	result->_Albedo = Vector3<float32>(albedo_thickness._R, albedo_thickness._G, albedo_thickness._B);
+
+	{
+		const Vector3<float32> bitangent{ Vector3<float32>::CrossProduct(context._GeometryNormal, context._GeometryTangent) };
+		const Matrix3x3 tangent_space_matrix{ context._GeometryTangent, bitangent, context._GeometryNormal };
+		const Vector3<float32> normal_map{ normal_map_displacement._X * 2.0f - 1.0f, normal_map_displacement._Y * 2.0f - 1.0f, normal_map_displacement._Z * 2.0f - 1.0f };
+		result->_ShadingNormal = tangent_space_matrix * normal_map;
+	}
+
+	result->_Roughness = material_properties._X;
+	result->_Metallic = material_properties._Y;
+	result->_AmbientOcclusion = material_properties._Z;
+	result->_Emissive = material_properties._W;
+	result->_Thickness = albedo_thickness._W;
 }
 
 /*
@@ -690,6 +762,13 @@ void StaticModelComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *cons
 				triangle._Indices[2] = index_offset + indices[triangle_index + 2];
 				triangle._DiscardFunction = nullptr;
 				triangle._ShadingFunction = PathTracingShadingFunction;
+
+				StaticModelPathTracingUserData user_data;
+
+				user_data._InstanceIndex = instance_index;
+				user_data._MeshIndex = mesh_index;
+
+				(*triangle._UserData.Get<StaticModelPathTracingUserData>()) = user_data;
 			}
 		}
 	}

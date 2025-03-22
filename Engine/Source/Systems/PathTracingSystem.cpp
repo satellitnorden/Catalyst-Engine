@@ -166,26 +166,11 @@ void PathTracingSystem::Start() NOEXCEPT
 	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
 
 #if NEW_GATHER_TRIANGLES
-	//Gather the path tracing triangles.
-	DynamicArray<Vertex> vertices;
-	DynamicArray<PathTracingTriangle> triangles;
-
-	Components::GatherPathTracingTriangles(&vertices, &triangles);
-
 	//Allocate the acceleration structure.
 	_AccelerationStructure = new PathTracingAccelerationStructure();
 
-	//Add all of the vertices.
-	for (const Vertex &vertex : vertices)
-	{
-		_AccelerationStructure->AddVertex(vertex);
-	}
-
-	//Add all of the triangles.
-	for (const PathTracingTriangle &triangle : triangles)
-	{
-		_AccelerationStructure->AddTriangle(triangle);
-	}
+	//Gather the path tracing triangles.
+	Components::GatherPathTracingTriangles(_AccelerationStructure->GetBuildVerticesPointer(), _AccelerationStructure->GetBuildTrianglesPointer());
 
 	//Build!
 	_AccelerationStructure->Build(4);
