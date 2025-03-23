@@ -62,6 +62,22 @@
 }
 
 /*
+*	Evaluates the average albedo/thickness of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_AVERAGE_ALBEDO_THICKNESS(MATERIAL, COORDINATE, SAMPLER, ALBEDO_THICKNESS)					\
+{																											\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE))							\
+	{																										\
+		ALBEDO_THICKNESS = TEXTURE_AVERAGE_VALUES[MATERIAL._AlbedoThickness];								\
+	}																										\
+																											\
+	else																									\
+	{																										\
+		ALBEDO_THICKNESS = UnpackColor(MATERIAL._AlbedoThickness);											\
+	}																										\
+}
+
+/*
 *	Evaluates the normal map/displacement of the given material at the given coordinate with the given sampler.
 */
 #define EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIAL, COORDINATE, SAMPLER, NORMAL_MAP_DISPLACEMENT)						\
@@ -69,6 +85,22 @@
 	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))								\
 	{																													\
 		NORMAL_MAP_DISPLACEMENT = texture(sampler2D(TEXTURES[MATERIAL._NormalMapDisplacement], SAMPLER), COORDINATE);	\
+	}																													\
+																														\
+	else																												\
+	{																													\
+		NORMAL_MAP_DISPLACEMENT = UnpackColor(MATERIAL._NormalMapDisplacement);											\
+	}																													\
+}
+
+/*
+*	Evaluates the average normal map/displacement of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_AVERAGE_NORMAL_MAP_DISPLACEMENT(MATERIAL, COORDINATE, SAMPLER, NORMAL_MAP_DISPLACEMENT)				\
+{																														\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))								\
+	{																													\
+		NORMAL_MAP_DISPLACEMENT = TEXTURE_AVERAGE_VALUES[MATERIAL._NormalMapDisplacement];								\
 	}																													\
 																														\
 	else																												\
@@ -94,6 +126,22 @@
 }
 
 /*
+*	Evaluates the average material properties of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_AVERAGE_MATERIAL_PROPERTIES(MATERIAL, COORDINATE, SAMPLER, MATERIAL_PROPERTIES)					\
+{																													\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))								\
+	{																												\
+		MATERIAL_PROPERTIES = TEXTURE_AVERAGE_VALUES[MATERIAL._MaterialProperties];									\
+	}																												\
+																													\
+	else																											\
+	{																												\
+		MATERIAL_PROPERTIES = UnpackColor(MATERIAL._MaterialProperties);											\
+	}																												\
+}
+
+/*
 *	Evaluates the opacity of the given material at the given coordinate with the given sampler.
 */
 #define EVALUATE_OPACITY(MATERIAL, COORDINATE, SAMPLER, OPACITY)							\
@@ -101,6 +149,22 @@
 	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_OPACITY_TEXTURE))					\
 	{																						\
 		OPACITY = texture(sampler2D(TEXTURES[MATERIAL._Opacity], SAMPLER), COORDINATE).x;	\
+	}																						\
+																							\
+	else																					\
+	{																						\
+		OPACITY = UnpackColor(MATERIAL._Opacity).x;											\
+	}																						\
+}
+
+/*
+*	Evaluates the average opacity of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_AVERAGE_OPACITY(MATERIAL, COORDINATE, SAMPLER, OPACITY)					\
+{																							\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_OPACITY_TEXTURE))					\
+	{																						\
+		OPACITY = TEXTURE_AVERAGE_VALUES[MATERIAL._Opacity];								\
 	}																						\
 																							\
 	else																					\
@@ -127,17 +191,23 @@ struct Material
 //The textures.
 layout (set = 0, binding = 0) uniform texture2D TEXTURES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
 
+//The texture average values.
+layout (std140, set = 0, binding = 1) uniform GlobalTextureAverageValues
+{
+    layout (offset = 0) vec4 TEXTURE_AVERAGE_VALUES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
+};
+
 //Materials.
-layout (std140, set = 0, binding = 1) uniform GlobalMaterials
+layout (std140, set = 0, binding = 2) uniform GlobalMaterials
 {
     layout (offset = 0) Material MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
 };
 
 //The blue noise textures.
-layout (set = 0, binding = 2) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
+layout (set = 0, binding = 3) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
 
 //The sky texture.
-layout (set = 0, binding = 3) uniform samplerCube SKY_TEXTURE;
+layout (set = 0, binding = 4) uniform samplerCube SKY_TEXTURE;
 
 /*
 *	Returns the square of the given number.
@@ -819,11 +889,11 @@ void main()
     HitVertexInformation hit_vertex_information = GetHitVertexInformation();
     uint hit_material_index = GetHitMaterialIndex();
     vec4 albedo_thickness;
-    EVALUATE_ALBEDO_THICKNESS(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, albedo_thickness);
+    EVALUATE_AVERAGE_ALBEDO_THICKNESS(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, albedo_thickness);
     vec4 normal_map_displacement;
-    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, normal_map_displacement);
+    EVALUATE_AVERAGE_NORMAL_MAP_DISPLACEMENT(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, normal_map_displacement);
     vec4 material_properties;
-    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, material_properties);
+    EVALUATE_AVERAGE_MATERIAL_PROPERTIES(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, material_properties);
     vec3 hit_position = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV;
     RADIANCE = vec3(0.0f, 0.0f, 0.0f);
     RADIANCE += albedo_thickness.rgb * material_properties.w * MATERIALS[hit_material_index]._EmissiveMultiplier;

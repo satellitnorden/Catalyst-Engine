@@ -1296,7 +1296,7 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	}
 
 	//Add the texture to global render data.
-	load_data->_Asset->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(load_data->_Asset->_Texture2DHandle);
+	load_data->_Asset->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(load_data->_Asset->_Texture2DHandle, load_data->_Asset->_AverageValue);
 
 	//Create the texture 2D.
 	load_data->_Asset->_Texture2D.Initialize(final_width, final_height);

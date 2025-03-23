@@ -33,7 +33,7 @@ RayGeneration
     Payload(0, vec3, RADIANCE);
 
     //Constants.
-    #define NUMBER_OF_SAMPLES (2)
+    #define NUMBER_OF_SAMPLES (1)
 
     //Calculate the screen coordinate.
     vec2 screen_coordinate = (vec2(RAY_TRACING_ID.xy) + vec2(0.5f)) / vec2(RAY_TRACING_SIZE.xy);

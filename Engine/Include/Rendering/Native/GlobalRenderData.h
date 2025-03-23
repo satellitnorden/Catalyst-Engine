@@ -60,6 +60,25 @@ class GlobalRenderData final
 
 public:
 
+	/*
+	*	Add global texture request class definition.
+	*/
+	class AddGlobalTextureRequest final
+	{
+
+	public:
+
+		//The index.
+		uint32 _Index;
+
+		//The texture.
+		Texture2DHandle _Texture;
+
+		//The average value.
+		Vector4<float32> _AverageValue;
+
+	};
+
 	//The render data tables.
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
@@ -72,14 +91,20 @@ public:
 	//The global texture lock.
 	Spinlock _GlobalTexturesLock;
 
-	//Theglobal texture slots.
+	//The global texture slots.
 	StaticArray<bool, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _GlobalTextureSlots;
+
+	//The global texture average values.
+	StaticArray<Vector4<float32>, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _GlobalTextureAverageValues;
+
+	//The global texture average value buffers.
+	DynamicArray<BufferHandle> _GlobalTextureAverageValueBuffers;;
 
 	//The remove global texture updates.
 	DynamicArray<DynamicArray<uint32>> _RemoveGlobalTextureUpdates;
 
 	//The add global texture updates.
-	DynamicArray<DynamicArray<Pair<uint32, Texture2DHandle>>> _AddGlobalTextureUpdates;
+	DynamicArray<DynamicArray<AddGlobalTextureRequest>> _AddGlobalTextureUpdates;
 
 	//Container for all the global command pool data.
 	DynamicArray<GlobalCommandPoolData> _GlobalCommandPoolData;

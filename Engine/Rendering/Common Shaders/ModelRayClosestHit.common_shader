@@ -11,11 +11,11 @@
 
     //Evaluate the material.
     vec4 albedo_thickness;
-    EVALUATE_ALBEDO_THICKNESS(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, albedo_thickness);
+    EVALUATE_AVERAGE_ALBEDO_THICKNESS(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, albedo_thickness);
     vec4 normal_map_displacement;
-    EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, normal_map_displacement);
+    EVALUATE_AVERAGE_NORMAL_MAP_DISPLACEMENT(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, normal_map_displacement);
     vec4 material_properties;
-    EVALUATE_MATERIAL_PROPERTIES(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, material_properties);
+    EVALUATE_AVERAGE_MATERIAL_PROPERTIES(MATERIALS[hit_material_index], hit_vertex_information._TextureCoordinate, SAMPLER, material_properties);
 
     //Calculate the hit distance.
     vec3 hit_position = WORLD_RAY_ORIGIN + WORLD_RAY_DIRECTION * RAY_HIT_DISTANCE;

@@ -568,7 +568,7 @@ public:
 	/*
 	*	Adds a texture to the global render data and returns it's index.
 	*/
-	uint32 AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;
+	uint32 AddTextureToGlobalRenderData(Texture2DHandle texture, const Vector4<float32> &average_value = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f)) NOEXCEPT;
 
 	/*
 	*	Returns a texture to the global render data and marks it's index as available.
