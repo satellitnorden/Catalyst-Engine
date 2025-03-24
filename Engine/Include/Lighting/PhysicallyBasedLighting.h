@@ -184,6 +184,6 @@ namespace PhysicallyBasedLighting
 		float32 weakening_factor = Vector3<float32>::DotProduct(normal, -radiance_direction);
 		weakening_factor = BaseMath::LinearlyInterpolate(weakening_factor * 0.5f + 0.5f, BaseMath::Maximum<float32>(weakening_factor, 0.0f), thickness);
 
-		return (diffuse_component + specular_component) * weakening_factor;
+		return BaseMath::Minimum((diffuse_component + specular_component) * weakening_factor, VectorConstants::ONE);
 	}
 }

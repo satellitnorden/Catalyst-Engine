@@ -720,17 +720,337 @@ void TerrainComponent::DestroyInstance(Entity *const RESTRICT entity) NOEXCEPT
 }
 
 /*
+*	Terrain path tracing user data class definition.
+*/
+class TerrainPathTracingUserData final
+{
+
+public:
+
+	//The instance index.
+	uint64 _InstanceIndex;
+
+};
+
+/*
 *	The terrain path tracing shading function.
 */
 FORCE_INLINE void TerrainPathTracingShadingFunction(const PathTracingShadingContext &context, PathTracingShadingResult *const RESTRICT result) NOEXCEPT
 {
-	result->_Albedo = Vector3<float32>(0.125f, 0.125f, 0.125f);
-	result->_ShadingNormal = context._GeometryNormal;
-	result->_Roughness = 1.0f;
-	result->_Metallic = 0.0f;
-	result->_AmbientOcclusion = 1.0f;
-	result->_Emissive = 0.0f;
-	result->_Thickness = 1.0f;
+	/*
+	*	Terrain material sample class definition.
+	*/
+	class TerrainMaterialSample final
+	{
+
+	public:
+
+		//The albedo.
+		Vector3<float32> _Albedo;
+
+		//The thickness.
+		float32 _Thickness;
+
+		//The normal map.
+		Vector3<float32> _NormalMap;
+
+		//The displacement.
+		float32 _Displacement;
+
+		//The roughness.
+		float32 _Roughness;
+
+		//The metallic.
+		float32 _Metallic;
+
+		//The ambient occlusion.
+		float32 _AmbientOcclusion;
+
+		//The emissive.
+		float32 _Emissive;
+
+	};
+
+	//Define constants.
+	constexpr float32 MATERIAL_TEXTURE_SCALE{ 0.5f };
+	constexpr float32 DISPLACEMENT_POWER{ 8.0f };
+	constexpr float32 MINIMUM_SAMPLE_WEIGHT{ FLOAT32_EPSILON * 1.0f };
+
+	constexpr auto ROTATION_FOR_TILE
+	{
+		[](const Vector2<uint32> &tile)
+		{
+			constexpr float32 DIVIDER{ 1.0f / static_cast<float32>(UINT32_MAXIMUM) };
+
+			uint32 hash{ tile._X * tile._Y };
+			hash = (hash ^ 61u) ^ (hash >> 16u);
+			hash *= 9u;
+			hash = hash ^ (hash >> 4u);
+			hash *= 0x27d4eb2du;
+			hash = hash ^ (hash >> 15u);
+
+			return BaseMathConstants::DOUBLE_PI * static_cast<float32>(hash) * DIVIDER;
+		}
+	};
+
+	//Cache the user data.
+	const TerrainPathTracingUserData *const RESTRICT user_data{ context._UserData.Get<TerrainPathTracingUserData>() };
+
+	//Cache the instance data.
+	const TerrainInstanceData &instance_data{ TerrainComponent::Instance->InstanceData()[user_data->_InstanceIndex] };
+
+	//Calculate the base coordinate.
+	const Vector2<uint32> base_coordinate
+	{
+		BaseMath::Minimum<uint32>(static_cast<uint32>(context._TextureCoordinate._X * static_cast<float32>(instance_data._HeightMap.GetWidth())), instance_data._HeightMap.GetWidth() - 1),
+		BaseMath::Minimum<uint32>(static_cast<uint32>(context._TextureCoordinate._Y * static_cast<float32>(instance_data._HeightMap.GetHeight())), instance_data._HeightMap.GetHeight() - 1)
+	};
+
+	//Set up the sample coordinates.
+	StaticArray<Vector2<uint32>, 4> sample_coordinates;
+
+	sample_coordinates[0] = base_coordinate;
+	sample_coordinates[1] = Vector2<uint32>(BaseMath::Minimum<uint32>(base_coordinate._X + 1, instance_data._HeightMap.GetWidth() - 1), base_coordinate._Y);
+	sample_coordinates[2] = Vector2<uint32>(base_coordinate._X, BaseMath::Minimum<uint32>(base_coordinate._Y + 1, instance_data._HeightMap.GetHeight() - 1));
+	sample_coordinates[3] = Vector2<uint32>(BaseMath::Minimum<uint32>(base_coordinate._X + 1, instance_data._HeightMap.GetWidth() - 1), BaseMath::Minimum<uint32>(base_coordinate._Y + 1, instance_data._HeightMap.GetHeight() - 1));
+
+	//Sample the materials!
+	StaticArray<TerrainMaterialSample, 4> material_samples;
+
+	for (uint8 sample_index{ 0 }; sample_index < 4; ++sample_index)
+	{
+		//Sample the index map.
+		const Vector4<uint8> index_map_sample{ instance_data._IndexMap.At(sample_coordinates[sample_index]._X, sample_coordinates[sample_index]._Y)};
+
+		//Sample the blend map.
+		const Vector4<float32> blend_map_sample{ instance_data._BlendMap.At(sample_coordinates[sample_index]._X, sample_coordinates[sample_index]._Y) };
+
+		//Calculate the material texture coordinate.
+		Vector2<float32> material_texture_coordinate;
+
+		{
+			//Do triplanar mapping.
+			const Vector3<float32> sample_normal{ instance_data._NormalMap.At(sample_coordinates[sample_index]._X, sample_coordinates[sample_index]._Y) };
+
+			const float32 x_weight{ BaseMath::Absolute(Vector3<float32>::DotProduct(sample_normal, Vector3<float32>(1.0f, 0.0f, 0.0f))) };
+			const float32 y_weight{ BaseMath::Absolute(Vector3<float32>::DotProduct(sample_normal, Vector3<float32>(0.0f, 1.0f, 0.0f))) };
+			const float32 z_weight{ BaseMath::Absolute(Vector3<float32>::DotProduct(sample_normal, Vector3<float32>(0.0f, 0.0f, 1.0f))) };
+
+			if (x_weight > y_weight && x_weight > z_weight)
+			{
+				material_texture_coordinate = Vector2<float32>(context._WorldPosition._Y, context._WorldPosition._Z) * MATERIAL_TEXTURE_SCALE;
+			}
+
+			else if (y_weight > z_weight)
+			{
+				material_texture_coordinate = Vector2<float32>(context._WorldPosition._X, context._WorldPosition._Z) * MATERIAL_TEXTURE_SCALE;
+			}
+
+			else
+			{
+				material_texture_coordinate = Vector2<float32>(context._WorldPosition._X, context._WorldPosition._Y) * MATERIAL_TEXTURE_SCALE;
+			}
+
+			//Calculate the material tile.
+			Vector2<uint32> material_tile;
+
+			{
+				const Vector2<uint32> coordinate_offset{ sample_coordinates[sample_index]._X - base_coordinate._X , sample_coordinates[sample_index]._Y - base_coordinate._Y };
+				const Vector2<float32> world_offset{ static_cast<float32>(coordinate_offset._X) * MATERIAL_TEXTURE_SCALE, static_cast<float32>(coordinate_offset._Y) * MATERIAL_TEXTURE_SCALE };
+				const Vector2<float32> world_material_coordinate{ material_texture_coordinate + world_offset };
+				material_tile = Vector2<uint32>(static_cast<uint32>(world_material_coordinate._X), static_cast<uint32>(world_material_coordinate._Y));
+			}
+
+			//Rotate it based on the coordinate.
+			material_texture_coordinate.Rotate(ROTATION_FOR_TILE(material_tile));
+		}
+
+		//Sample the sub materials.
+		StaticArray<TerrainMaterialSample, 4> sub_material_samples;
+
+		for (uint8 material_index{ 0 }; material_index < 4; ++material_index)
+		{
+			//Cache data.
+			const uint8 _material_index{ index_map_sample[material_index] };
+			const MaterialAsset *const RESTRICT material{ RenderingSystem::Instance->GetMaterialSystem()->GetMaterial(_material_index) };
+
+			//Retrieve the albedo/thickness.
+			Vector4<float32> albedo_thickness;
+
+			if (material->_AlbedoThicknessComponent._Type == MaterialAsset::Component::Type::COLOR)
+			{
+				albedo_thickness = material->_AlbedoThicknessComponent._Color.Get();
+			}
+
+			else
+			{
+				albedo_thickness = SampleConvert(material->_AlbedoThicknessComponent._Texture->_Texture2D, material_texture_coordinate);
+			}
+
+			//Retrieve the normal map/displacement.
+			Vector4<float32> normal_map_displacement;
+
+			if (material->_NormalMapDisplacementComponent._Type == MaterialAsset::Component::Type::COLOR)
+			{
+				normal_map_displacement = material->_NormalMapDisplacementComponent._Color.Get();
+			}
+
+			else
+			{
+				normal_map_displacement = SampleConvert(material->_NormalMapDisplacementComponent._Texture->_Texture2D, material_texture_coordinate);
+			}
+
+			//Retrieve the material properties.
+			Vector4<float32> material_properties;
+
+			if (material->_MaterialPropertiesComponent._Type == MaterialAsset::Component::Type::COLOR)
+			{
+				material_properties = material->_MaterialPropertiesComponent._Color.Get();
+			}
+
+			else
+			{
+				material_properties = SampleConvert(material->_MaterialPropertiesComponent._Texture->_Texture2D, material_texture_coordinate);
+			}
+
+			//Fill in the material sample.
+			sub_material_samples[material_index]._Albedo = Vector3<float32>(albedo_thickness._R, albedo_thickness._G, albedo_thickness._B);
+			sub_material_samples[material_index]._Thickness = albedo_thickness._W;
+			sub_material_samples[material_index]._NormalMap = Vector3<float32>(normal_map_displacement._X, normal_map_displacement._Y, normal_map_displacement._Z);
+			sub_material_samples[material_index]._Displacement = normal_map_displacement._W;
+			sub_material_samples[material_index]._Roughness = material_properties._X;
+			sub_material_samples[material_index]._Metallic = material_properties._Y;
+			sub_material_samples[material_index]._AmbientOcclusion = material_properties._Z;
+			sub_material_samples[material_index]._Emissive = material_properties._W;
+		}
+
+		//Calculate the weights.
+		Vector4<float32> weights;
+		float32 weights_sum{ 0.0f };
+
+		for (uint8 weight_index{ 0 }; weight_index < 4; ++weight_index)
+		{
+			weights[weight_index] = BaseMath::Maximum<float32>(powf(blend_map_sample[weight_index] * sub_material_samples[weight_index]._Displacement, DISPLACEMENT_POWER), MINIMUM_SAMPLE_WEIGHT);
+			weights_sum += weights[weight_index];
+		}
+
+		const float32 inverse_weights_sum{ 1.0f / weights_sum };
+
+		for (uint8 weight_index{ 0 }; weight_index < 4; ++weight_index)
+		{
+			weights[weight_index] *= inverse_weights_sum;
+		}
+
+		//Calculate the final material sample.
+		material_samples[sample_index]._Albedo =	sub_material_samples[0]._Albedo * weights[0]
+													+ sub_material_samples[1]._Albedo * weights[1]
+													+ sub_material_samples[2]._Albedo * weights[2]
+													+ sub_material_samples[3]._Albedo * weights[3];
+		material_samples[sample_index]._Thickness = sub_material_samples[0]._Thickness * weights[0]
+													+ sub_material_samples[1]._Thickness * weights[1]
+													+ sub_material_samples[2]._Thickness * weights[2]
+													+ sub_material_samples[3]._Thickness * weights[3];
+		material_samples[sample_index]._NormalMap = sub_material_samples[0]._NormalMap * weights[0]
+													+ sub_material_samples[1]._NormalMap * weights[1]
+													+ sub_material_samples[2]._NormalMap * weights[2]
+													+ sub_material_samples[3]._NormalMap * weights[3];
+		material_samples[sample_index]._Displacement =	sub_material_samples[0]._Displacement * weights[0]
+														+ sub_material_samples[1]._Displacement * weights[1]
+														+ sub_material_samples[2]._Displacement * weights[2]
+														+ sub_material_samples[3]._Displacement * weights[3];
+		material_samples[sample_index]._Roughness = sub_material_samples[0]._Roughness * weights[0]
+													+ sub_material_samples[1]._Roughness * weights[1]
+													+ sub_material_samples[2]._Roughness * weights[2]
+													+ sub_material_samples[3]._Roughness * weights[3];
+		material_samples[sample_index]._Metallic =	sub_material_samples[0]._Metallic * weights[0]
+													+ sub_material_samples[1]._Metallic * weights[1]
+													+ sub_material_samples[2]._Metallic * weights[2]
+													+ sub_material_samples[3]._Metallic * weights[3];
+		material_samples[sample_index]._AmbientOcclusion =	sub_material_samples[0]._AmbientOcclusion * weights[0]
+															+ sub_material_samples[1]._AmbientOcclusion * weights[1]
+															+ sub_material_samples[2]._AmbientOcclusion * weights[2]
+															+ sub_material_samples[3]._AmbientOcclusion * weights[3];
+		material_samples[sample_index]._Emissive =	sub_material_samples[0]._Emissive * weights[0]
+													+ sub_material_samples[1]._Emissive * weights[1]
+													+ sub_material_samples[2]._Emissive * weights[2]
+													+ sub_material_samples[3]._Emissive * weights[3];
+	}
+
+	//Calculate the weights.
+	Vector4<float32> weights;
+	float32 weights_sum{ 0.0f };
+	
+	{
+		const float32 horizontal_weight{ BaseMath::Fractional(context._TextureCoordinate._X * static_cast<float32>(instance_data._HeightMap.GetWidth())) };
+		const float32 vertical_weight{ BaseMath::Fractional(context._TextureCoordinate._Y * static_cast<float32>(instance_data._HeightMap.GetHeight())) };
+
+		weights[0] = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
+		weights[1] = (horizontal_weight) * (1.0f - vertical_weight);
+		weights[2] = (1.0f - horizontal_weight) * (vertical_weight);
+		weights[3] = (horizontal_weight) * (vertical_weight);
+	}
+
+	for (uint8 weight_index{ 0 }; weight_index < 4; ++weight_index)
+	{
+		weights[weight_index] = BaseMath::Maximum<float32>(powf(weights[weight_index] * material_samples[weight_index]._Displacement, DISPLACEMENT_POWER), MINIMUM_SAMPLE_WEIGHT);
+		weights_sum += weights[weight_index];
+	}
+
+	const float32 inverse_weights_sum{ 1.0f / weights_sum };
+
+	for (uint8 weight_index{ 0 }; weight_index < 4; ++weight_index)
+	{
+		weights[weight_index] *= inverse_weights_sum;
+	}
+
+	//Calculate the final material sample.
+	TerrainMaterialSample final_material_sample;
+
+	final_material_sample._Albedo = material_samples[0]._Albedo * weights[0]
+									+ material_samples[1]._Albedo * weights[1]
+									+ material_samples[2]._Albedo * weights[2]
+									+ material_samples[3]._Albedo * weights[3];
+	final_material_sample._Thickness =	material_samples[0]._Thickness * weights[0]
+										+ material_samples[1]._Thickness * weights[1]
+										+ material_samples[2]._Thickness * weights[2]
+										+ material_samples[3]._Thickness * weights[3];
+	final_material_sample._NormalMap =	material_samples[0]._NormalMap * weights[0]
+										+ material_samples[1]._NormalMap * weights[1]
+										+ material_samples[2]._NormalMap * weights[2]
+										+ material_samples[3]._NormalMap * weights[3];
+	final_material_sample._NormalMap = final_material_sample._NormalMap * 2.0f - 1.0f;
+	final_material_sample._Displacement =	material_samples[0]._Displacement * weights[0]
+											+ material_samples[1]._Displacement * weights[1]
+											+ material_samples[2]._Displacement * weights[2]
+											+ material_samples[3]._Displacement * weights[3];
+	final_material_sample._Roughness =	material_samples[0]._Roughness * weights[0]
+										+ material_samples[1]._Roughness * weights[1]
+										+ material_samples[2]._Roughness * weights[2]
+										+ material_samples[3]._Roughness * weights[3];
+	final_material_sample._Metallic =	material_samples[0]._Metallic * weights[0]
+										+ material_samples[1]._Metallic * weights[1]
+										+ material_samples[2]._Metallic * weights[2]
+										+ material_samples[3]._Metallic * weights[3];
+	final_material_sample._AmbientOcclusion =	material_samples[0]._AmbientOcclusion * weights[0]
+												+ material_samples[1]._AmbientOcclusion * weights[1]
+												+ material_samples[2]._AmbientOcclusion * weights[2]
+												+ material_samples[3]._AmbientOcclusion * weights[3];
+	final_material_sample._Emissive =	material_samples[0]._Emissive * weights[0]
+										+ material_samples[1]._Emissive * weights[1]
+										+ material_samples[2]._Emissive * weights[2]
+										+ material_samples[3]._Emissive * weights[3];
+
+	//Calculate the tangent space matrix.
+	const Matrix3x3 tangent_space_matrix{ context._GeometryTangent, Vector3<float32>::CrossProduct(context._GeometryNormal, context._GeometryTangent), context._GeometryNormal };
+
+	//Fill in the result.
+	result->_Albedo = final_material_sample._Albedo;
+	result->_ShadingNormal = Vector3<float32>::Normalize(tangent_space_matrix * final_material_sample._NormalMap);
+	result->_Roughness = final_material_sample._Roughness;
+	result->_Metallic = final_material_sample._Metallic;
+	result->_AmbientOcclusion = final_material_sample._AmbientOcclusion;
+	result->_Emissive = final_material_sample._Emissive;
+	result->_Thickness = final_material_sample._Thickness;
 }
 
 /*
@@ -768,7 +1088,12 @@ void TerrainComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *const RE
 				vertex._Position._Y += instance_data._HeightMap.At(X, Y);
 				vertex._Position._Z += BaseMath::LinearlyInterpolate(static_cast<float32>(instance_data._PatchSize) * -0.5f, static_cast<float32>(instance_data._PatchSize) * 0.5f, normalized_coordinate._Y);
 				vertex._Normal = instance_data._NormalMap.At(X, Y);
-				vertex._Tangent = Vector3<float32>(1.0f, 0.0f, 0.0f); //TODO - Don't know if this is needed?
+
+				{
+					const float32 height_to_right{ instance_data._HeightMap.At(BaseMath::Minimum<uint32>(X + 1, instance_data._HeightMap.GetWidth() - 1), Y) };
+					vertex._Tangent = Vector3<float32>::Normalize(Vector3<float32>(Vector3<float32>(relative_world_position._X + 1.0f, height_to_right, relative_world_position._Z) - relative_world_position));
+				}
+
 				vertex._TextureCoordinate = normalized_coordinate;
 
 				//Add the triangle.
@@ -784,6 +1109,12 @@ void TerrainComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *const RE
 						triangle._Indices[2] = vertices->LastIndex() + instance_data._HeightMap.GetWidth() + 1;
 						triangle._DiscardFunction = nullptr;
 						triangle._ShadingFunction = TerrainPathTracingShadingFunction;
+
+						TerrainPathTracingUserData user_data;
+
+						user_data._InstanceIndex = instance_index;
+
+						(*triangle._UserData.Get<TerrainPathTracingUserData>()) = user_data;
 					}
 
 					{
@@ -795,6 +1126,12 @@ void TerrainComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *const RE
 						triangle._Indices[2] = vertices->LastIndex() + 1;
 						triangle._DiscardFunction = nullptr;
 						triangle._ShadingFunction = TerrainPathTracingShadingFunction;
+
+						TerrainPathTracingUserData user_data;
+
+						user_data._InstanceIndex = instance_index;
+
+						(*triangle._UserData.Get<TerrainPathTracingUserData>()) = user_data;
 					}
 				}
 			}

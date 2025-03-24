@@ -153,7 +153,7 @@ PathTracingUserInterfaceScene USER_INTERFACE_SCENE;
 //Path tracing system constants.
 namespace PathTracingSystemConstants
 {
-	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 2 };
+	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 3 };
 	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 1'024.0f };
 }
 
@@ -398,7 +398,7 @@ void PathTracingSystem::UpdateTask()
 			//Calculate the ray.
 			Ray ray;
 
-			ray.SetOrigin(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
+			ray.SetOrigin(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetLocalPosition());
 			ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(normalized_coordinate));
 
 			//Retrieve the radiance.
@@ -711,11 +711,48 @@ void PathTracingSystem::GenerateIrradianceRay
 	for (uint64 i{ 0 }; i < NUMBER_OF_SAMPLES; ++i)
 	{
 		//Generate the direction.
-		Vector3<float32> direction{ CatalystRandomMath::RandomPointOnSphere() };
+		Vector3<float32> direction;
 
-		if (Vector3<float32>::DotProduct(normal, direction) < 0.0f)
+		//Randomize whether or not to generate a diffuse or specular ray.
+		if (CatalystRandomMath::RandomChance(roughness))
 		{
-			direction *= -1.0f;
+			//Start with a random point on a sphere.
+			direction = CatalystRandomMath::RandomPointOnSphere();
+
+			//Flip if it's facing away from the normal.
+			if (Vector3<float32>::DotProduct(normal, direction) < 0.0f)
+			{
+				direction *= -1.0f;
+			}
+
+			//Make cosine-weighted sample.
+			direction = Vector3<float32>::Normalize(normal + direction);
+		}
+
+		else
+		{
+			//Calculate the reflection direction.
+			const Vector3<float32> reflection_direction{ Vector3<float32>::Reflect(view_direction, normal) };
+
+			//Generate a random point on a sphere, then align it with the reflection direction.
+			Vector3<float32> random_reflection_hemisphere_direction{ CatalystRandomMath::RandomPointOnSphere() };
+
+			if (Vector3<float32>::DotProduct(reflection_direction, random_reflection_hemisphere_direction) < 0.0f)
+			{
+				random_reflection_hemisphere_direction *= -1.0f;
+			}
+
+			//Make cosine-weighted sample.
+			random_reflection_hemisphere_direction = Vector3<float32>::Normalize(reflection_direction + random_reflection_hemisphere_direction);
+
+			//Calculate the direction.
+			direction = Vector3<float32>::Normalize(BaseMath::LinearlyInterpolate(reflection_direction, random_reflection_hemisphere_direction, roughness));
+
+			//Flip if it's facing away from the normal.
+			if (Vector3<float32>::DotProduct(normal, direction) < 0.0f)
+			{
+				direction *= -1.0f;
+			}
 		}
 
 		//Calculate the BRDF.
