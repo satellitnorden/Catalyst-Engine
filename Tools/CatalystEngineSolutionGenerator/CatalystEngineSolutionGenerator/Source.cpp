@@ -991,7 +991,7 @@ void GenerateWin64(const GeneralParameters &general_parameters, const Win64Param
 
 	if (general_parameters._UseONNXRuntimeLibrary)
 	{
-		cmake_lists_file << "add_compile_definitions(CATALYST_HAS_ONNX>" << std::endl;
+		cmake_lists_file << "add_compile_definitions(CATALYST_HAS_ONNX)" << std::endl;
 	}
 
 	cmake_lists_file << std::endl;

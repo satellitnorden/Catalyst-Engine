@@ -41,6 +41,7 @@ void PhysicsSystem::SubCreateHeightFieldActor
 (
 	const WorldPosition &world_position,
 	const Texture2D<float32> &height_field,
+	const bool add_to_world,
 	ActorHandle *const RESTRICT actor_handle
 ) NOEXCEPT
 {
@@ -60,6 +61,14 @@ void PhysicsSystem::SubCreateModelActor
 	const ModelSimulationConfiguration &simulation_configuration,
 	ActorHandle *const RESTRICT actor_handle
 ) NOEXCEPT
+{
+
+}
+
+/*
+*	Adds the given actor to the world on the sub-system.
+*/
+void PhysicsSystem::SubAddToWorld(const ActorHandle actor_handle) NOEXCEPT
 {
 
 }
@@ -99,7 +108,7 @@ void PhysicsSystem::SubCastRay(const Ray &ray, const RaycastConfiguration &confi
 /*
 *	Adds an sub-system impulse at the given world position with the given force.
 */
-void PhysicsSystem::SubAddImpulse(const WorldPosition &world_position, const float32 force) NOEXCEPT
+void PhysicsSystem::SubAddImpulse(const WorldPosition &world_position, const float32 radius, const float32 force) NOEXCEPT
 {
 	
 }

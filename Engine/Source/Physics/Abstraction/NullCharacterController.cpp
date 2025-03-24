@@ -42,4 +42,20 @@ void CharacterController::ResizeCapsuleHeight(const float32 new_height) NOEXCEPT
 {
 
 }
+
+/*
+*	Returns the linear velocity.
+*/
+NO_DISCARD Vector3<float32> CharacterController::GetLinearVelocity() NOEXCEPT
+{
+	return Vector3<float32>(0.0f, 0.0f, 0.0f);
+}
+
+/*
+*	Sets the linear velocity.
+*/
+void CharacterController::SetLinearVelocity(const Vector3<float32>& value) NOEXCEPT
+{
+	
+}
 #endif

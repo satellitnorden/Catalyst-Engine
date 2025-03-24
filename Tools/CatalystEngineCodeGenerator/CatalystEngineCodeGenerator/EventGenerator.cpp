@@ -10,6 +10,9 @@
 #define GAME_CODE_INCLUDE_DIRECTORY "..\\..\\..\\Code\\Include"
 #define GAME_CODE_SOURCE_DIRECTORY "..\\..\\..\\Code\\Source"
 
+#define HEADER_FILE_PATH "..\\..\\..\\Code\\Include\\Generated\\Event.Generated.h"
+#define SOURCE_FILE_PATH "..\\..\\..\\Code\\Source\\Generated\\Event.Generated.cpp"
+
 /*
 *	Runs this event generator.
 */
@@ -38,7 +41,7 @@ void EventGenerator::Run()
 	new_files_parsed |= GatherEvents(GAME_CODE_INCLUDE_DIRECTORY, &JSON);
 
 	//Generate the header and source file.
-	if (new_files_parsed)
+	if (new_files_parsed || !std::filesystem::exists(HEADER_FILE_PATH) || !std::filesystem::exists(SOURCE_FILE_PATH))
 	{
 		GenerateHeaderFile(JSON);
 		GenerateSourceFile(JSON);
@@ -136,12 +139,10 @@ bool EventGenerator::GatherEvents(const char *const directory_path, nlohmann::js
 				//Parse components.
 				{
 					const size_t define_position{ current_line.find("#define") };
-					const size_t macro_position_1{ current_line.find("CATALYST_FREE_EVENT") };
-					const size_t macro_position_2{ current_line.find("CATALYST_SYSTEM_EVENT") };
-					const size_t macro_position_3{ current_line.find("CATALYST_COMPONENT_EVENT") };
+					const size_t macro_position{ current_line.find("CATALYST_EVENT") };
 
 					if (define_position == std::string::npos
-						&& (macro_position_1 != std::string::npos || macro_position_2 != std::string::npos || macro_position_3 != std::string::npos)
+						&& macro_position != std::string::npos
 						&& !OnlyComment(current_line.c_str(), current_line.length()))
 					{
 						nlohmann::json &events_entry{ entry["Events"] };

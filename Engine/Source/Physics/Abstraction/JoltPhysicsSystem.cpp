@@ -710,7 +710,6 @@ void PhysicsSystem::SubAddToWorld(const ActorHandle actor_handle) NOEXCEPT
 
 	//Add the body!
 	body_interface.AddBody(body->GetID(), JPH::EActivation::DontActivate);
-
 }
 
 /*
