@@ -472,80 +472,68 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 }
 
 //Constants.
-#define TERRAIN_MINIMUM_DISPLACEMENT (0.0001f)
-#define BIAS_DISPLACEMENT(X) (pow(X, 16.0f))
 #define TERRAIN_MATERIAL_SCALE (0.5f)
+#define TERRAIN_DISPLACEMENT_POWER (8.0f)
+#define TERRAIN_MINIMUM_DISPLACEMENT_WEIGHT (FLOAT32_EPSILON)
 
 /*
 *   Terrain material struct definition.
 */
 struct TerrainMaterial
 {
-    vec3 albedo;
-    vec4 normal_map_displacement;
-    vec4 material_properties;
+    //The terrain normal.
+    vec3 _TerrainNormal;
+
+    //The terrain height.
+    float _TerrainHeight;
+
+    //The albedo.
+    vec3 _Albedo;
+
+    //The thickness.
+    float _Thickness;
+
+    //The normal map.
+    vec3 _NormalMap;
+
+    //The displacement.
+    float _Displacement;
+
+    //The material properties.
+    vec4 _MaterialProperties;
 };
 
 /*
 *   Calculates the material coordinate for the given world position.
 */
-vec2 CalculateTerrainMaterialCoordinate(vec3 world_position, vec2 tile_index, vec3 normal)
+vec2 CalculateTerrainMaterialCoordinate(vec3 world_position, vec3 normal, vec2 tile_index)
 {
 #if 1
     //Take the absolute of the normal.
     vec3 absolute_normal = abs(normal);
 
-    //Calculate the tile.
+    //Calculate the material coordinate.
     bool x_dominant = absolute_normal.x > absolute_normal.y && absolute_normal.x > absolute_normal.z;
     bool z_dominant = absolute_normal.z > absolute_normal.x && absolute_normal.z > absolute_normal.y;
-    vec2 tile = world_position.yz * float(x_dominant) + world_position.xy * float(z_dominant) + world_position.xz * float(!x_dominant && !z_dominant);
+    vec2 material_coordinate = world_position.yz * float(x_dominant) + world_position.xy * float(z_dominant) + world_position.xz * float(!x_dominant && !z_dominant);
 
-    tile *= TERRAIN_MATERIAL_SCALE;
+    material_coordinate *= TERRAIN_MATERIAL_SCALE;
 
     //Calculate the random rotation.
     float random_rotation = mix(-PI, PI, RandomFloat(tile_index));
 
     //Randomly rotate the tile.
-    tile -= tile_index;
-    tile -= 0.5f;
-    tile = RotateYaw(vec3(tile.x, 0.0f, tile.y), random_rotation).xz;
-    tile += 0.5f;
-    tile += tile_index;
+    material_coordinate -= tile_index;
+    material_coordinate -= 0.5f;
+    material_coordinate = RotateYaw(vec3(material_coordinate.x, 0.0f, material_coordinate.y), random_rotation).xz;
+    material_coordinate += 0.5f;
+    material_coordinate += tile_index;
 
-    //Return the tile!
-    return tile;
+    //Return the material_coordinate!
+    return material_coordinate;
 #else
     return vec2(world_position.x, world_position.z) * 0.5f;
 #endif
-}
-
-/*
-*   Returns the highest index.
-*/
-uint HighestIndex(float value_1, float value_2, float value_3, float value_4)
-{
-    uint highest_index = 0;
-    float highest_value = value_1;
-
-    if (highest_value < value_2)
-    {
-        highest_index = 1;
-        highest_value = value_2;
-    }
-
-    if (highest_value < value_3)
-    {
-        highest_index = 2;
-        highest_value = value_3;
-    }
-
-    if (highest_value < value_4)
-    {
-        highest_index = 3;
-        highest_value = value_4;
-    }
-
-    return highest_index;
 }
 
 layout (push_constant) uniform PushConstantData
@@ -622,6 +610,7 @@ void main()
     }
     OutHeightMapTextureCoordinate = height_map_coordinate;
     float displacement_multiplier = 1.0f - min(length(OutWorldPosition - CAMERA_WORLD_POSITION) / 64.0f, 1.0f);
+#if 0
     if (displacement_multiplier > 0.0f)
     {
         float displacements[4];
@@ -632,7 +621,7 @@ void main()
         sample_offsets[3] = vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
         for (uint i = 0; i < 4; ++i)
         {
-            vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(OutWorldPosition, (floor(OutHeightMapTextureCoordinate * MAP_RESOLUTION) + sample_offsets[i] * MAP_RESOLUTION), normals[i]);
+            vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(OutWorldPosition, normals[i], (floor(OutHeightMapTextureCoordinate * MAP_RESOLUTION) + sample_offsets[i] * MAP_RESOLUTION));
             vec2 height_map_texture_coordinate = OutHeightMapTextureCoordinate + sample_offsets[i];
             vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
             vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
@@ -670,5 +659,6 @@ void main()
 	    float final_displacement = displacements[highest_index];
         OutWorldPosition += normal * mix(-0.125f, 0.1875f, final_displacement) * displacement_multiplier; //Slight bias for upward displacement.
     }
+#endif
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
 }

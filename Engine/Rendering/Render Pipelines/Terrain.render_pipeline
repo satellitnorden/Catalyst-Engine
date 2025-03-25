@@ -156,6 +156,7 @@ Vertex
     //Calculate the displacement multiplier.
     float displacement_multiplier = 1.0f - min(length(OutWorldPosition - CAMERA_WORLD_POSITION) / 64.0f, 1.0f);
 
+#if 0
     //Apply displacement.
     if (displacement_multiplier > 0.0f)
     {
@@ -171,7 +172,7 @@ Vertex
         for (uint i = 0; i < 4; ++i)
         {
             //Calculate the material texture coordinate.
-            vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(OutWorldPosition, (floor(OutHeightMapTextureCoordinate * MAP_RESOLUTION) + sample_offsets[i] * MAP_RESOLUTION), normals[i]);
+            vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(OutWorldPosition, normals[i], (floor(OutHeightMapTextureCoordinate * MAP_RESOLUTION) + sample_offsets[i] * MAP_RESOLUTION));
 
             //Cache the height map texture coordinate.
             vec2 height_map_texture_coordinate = OutHeightMapTextureCoordinate + sample_offsets[i];
@@ -232,6 +233,7 @@ Vertex
         //Apply the displacement!
         OutWorldPosition += normal * mix(-0.125f, 0.1875f, final_displacement) * displacement_multiplier; //Slight bias for upward displacement.
     }
+#endif
 
     //Output the position.
     OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
@@ -244,48 +246,28 @@ Fragment
     InputParameter(vec3, InWorldPosition);
     InputParameter(vec2, InHeightMapTextureCoordinate);
     
-    //Sample the normal map.
-    vec3 normals[4];
-    vec3 normal;
-
-    {
-        normals[0] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        normals[1] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        normals[2] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        normals[3] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), InHeightMapTextureCoordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+#if 1
+    //Set up the sample coordinates.
+    vec2 sample_coordinates[4];
     
-        vec3 blend_1 = mix(normals[0], normals[1], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
-	    vec3 blend_2 = mix(normals[2], normals[3], fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+    sample_coordinates[0] = InHeightMapTextureCoordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_coordinates[1] = InHeightMapTextureCoordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_coordinates[2] = InHeightMapTextureCoordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_coordinates[3] = InHeightMapTextureCoordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
 
-	    normal = mix(blend_1, blend_2, fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION));
-        normal = normal * 2.0f - 1.0f;
-        normal = normalize(normal);
-    }
-
-    mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(normal, vec3(0.0f, 0.0f, 1.0f));
-
-    //Sample the terrain materials
+    //Sample the terrain materials!
     TerrainMaterial terrain_materials[4];
-    vec2 sample_offsets[4];
-    
-    sample_offsets[0] = vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
-    sample_offsets[1] = vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
-    sample_offsets[2] = vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
-    sample_offsets[3] = vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
 
-    for (uint i = 0; i < 4; ++i)
+    for (uint sample_index = 0; sample_index < 4; ++sample_index)
     {
-        //Calculate the material texture coordinate.
-        vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(InWorldPosition, floor(InHeightMapTextureCoordinate * MAP_RESOLUTION) + sample_offsets[i] * MAP_RESOLUTION, normals[i]);
-
-        //Cache the height map texture coordinate.
-        vec2 height_map_texture_coordinate = InHeightMapTextureCoordinate + sample_offsets[i];
+        //Sample the terrain normal.
+        vec3 terrain_normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), sample_coordinates[sample_index]).xyz * 2.0f - 1.0f;
 
         //Sample the index map.
-        vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
+        vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), sample_coordinates[sample_index]);
 
         //Sample the blend map.
-        vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
+        vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), sample_coordinates[sample_index]);
 
         //Retrieve the materials.
         Material materials[4];
@@ -294,36 +276,172 @@ Fragment
         materials[2] = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
         materials[3] = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
 
-        //Evaluate the normal map/displacement of the materials.
+        //Calculate the material texture coordinate.
+        //vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(InWorldPosition, terrain_normal, floor(sample_coordinates[sample_index]) * MAP_RESOLUTION * TERRAIN_MATERIAL_SCALE);
+        //vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(InWorldPosition, terrain_normal, vec2(0.0f, 0.0f));
+            
+        vec2 material_texture_coordinate;
+
+        {
+            vec2 map_space_offset = (floor(sample_coordinates[sample_index] * MAP_RESOLUTION) - floor(InHeightMapTextureCoordinate * MAP_RESOLUTION));
+            vec2 world_space_offset = map_space_offset; //It is assumed here that 1 unit in map space -> 1 meter in world space.
+            vec2 offset_world_position = floor(world_space_offset) * TERRAIN_MATERIAL_SCALE;
+
+            material_texture_coordinate = CalculateTerrainMaterialCoordinate(InWorldPosition, terrain_normal, offset_world_position);
+        }
+
+        //Sample the normal map/displacements.
         vec4 normal_map_displacements[4];
+
         EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[0], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[0]);
         EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[1], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[1]);
         EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[2], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[2]);
         EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[3], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[3]);
 
-        //Find the highest index.
-        uint highest_index = HighestIndex
-        (
-            normal_map_displacements[0].w * blend_map[0],
-            normal_map_displacements[1].w * blend_map[1],
-            normal_map_displacements[2].w * blend_map[2],
-            normal_map_displacements[3].w * blend_map[3]
-        );
+        //Calculate the weights.
+        float weights[4];
+        float weights_sum = 0.0f;
 
-        //Evaluate the albedo/thickness of the material.
-        vec4 albedo_thickness;
-        EVALUATE_ALBEDO_THICKNESS(materials[highest_index], material_texture_coordinate, MATERIAL_SAMPLER, albedo_thickness);
+        for (uint weight_index = 0; weight_index < 4; ++weight_index)
+        {
+            weights[weight_index] = max(pow(blend_map[weight_index] * normal_map_displacements[weight_index].w, TERRAIN_DISPLACEMENT_POWER), TERRAIN_MINIMUM_DISPLACEMENT_WEIGHT);
+            weights_sum += weights[weight_index];
+        }
 
-        //Evaluate the material properties of the materials.
-        vec4 material_properties;
-        EVALUATE_MATERIAL_PROPERTIES(materials[highest_index], material_texture_coordinate, MATERIAL_SAMPLER, material_properties);
+        //Calculate the weights sum reciprocal.
+        float weights_sum_reciprocal = 1.0f / weights_sum;
 
-        //Set the material.
-        terrain_materials[i].albedo = albedo_thickness.rgb;
-        terrain_materials[i].normal_map_displacement = normal_map_displacements[highest_index];
-        terrain_materials[i].material_properties = material_properties;
+        //Normalize all weights.
+        for (uint weight_index = 0; weight_index < 4; ++weight_index)
+        {
+            weights[weight_index] *= weights_sum_reciprocal;
+        }
+
+        //Sample the albedo/thicknesses.
+        vec4 albedo_thicknesses[4];
+
+        EVALUATE_ALBEDO_THICKNESS(materials[0], material_texture_coordinate, MATERIAL_SAMPLER, albedo_thicknesses[0]);
+        EVALUATE_ALBEDO_THICKNESS(materials[1], material_texture_coordinate, MATERIAL_SAMPLER, albedo_thicknesses[1]);
+        EVALUATE_ALBEDO_THICKNESS(materials[2], material_texture_coordinate, MATERIAL_SAMPLER, albedo_thicknesses[2]);
+        EVALUATE_ALBEDO_THICKNESS(materials[3], material_texture_coordinate, MATERIAL_SAMPLER, albedo_thicknesses[3]);
+
+        //Sample the material properties.
+        vec4 material_properties[4];
+
+        EVALUATE_MATERIAL_PROPERTIES(materials[0], material_texture_coordinate, MATERIAL_SAMPLER, material_properties[0]);
+        EVALUATE_MATERIAL_PROPERTIES(materials[1], material_texture_coordinate, MATERIAL_SAMPLER, material_properties[1]);
+        EVALUATE_MATERIAL_PROPERTIES(materials[2], material_texture_coordinate, MATERIAL_SAMPLER, material_properties[2]);
+        EVALUATE_MATERIAL_PROPERTIES(materials[3], material_texture_coordinate, MATERIAL_SAMPLER, material_properties[3]);
+
+        //Write in the terrain material!
+        terrain_materials[sample_index]._TerrainNormal = terrain_normal;
+        terrain_materials[sample_index]._TerrainHeight = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), sample_coordinates[sample_index]).x;
+        terrain_materials[sample_index]._Albedo =   albedo_thicknesses[0].rgb * weights[0]
+                                                    + albedo_thicknesses[1].rgb * weights[1]
+                                                    + albedo_thicknesses[2].rgb * weights[2]
+                                                    + albedo_thicknesses[3].rgb * weights[3];
+        terrain_materials[sample_index]._Thickness =    albedo_thicknesses[0].w * weights[0]
+                                                        + albedo_thicknesses[1].w * weights[1]
+                                                        + albedo_thicknesses[2].w * weights[2]
+                                                        + albedo_thicknesses[3].w * weights[3];
+        terrain_materials[sample_index]._NormalMap =    normal_map_displacements[0].xyz * weights[0]
+                                                        + normal_map_displacements[1].xyz * weights[1]
+                                                        + normal_map_displacements[2].xyz * weights[2]
+                                                        + normal_map_displacements[3].xyz * weights[3];
+        terrain_materials[sample_index]._Displacement = normal_map_displacements[0].w * weights[0]
+                                                        + normal_map_displacements[1].w * weights[1]
+                                                        + normal_map_displacements[2].w * weights[2]
+                                                        + normal_map_displacements[3].w * weights[3];
+        terrain_materials[sample_index]._MaterialProperties =   material_properties[0] * weights[0]
+                                                                + material_properties[1] * weights[1]
+                                                                + material_properties[2] * weights[2]
+                                                                + material_properties[3] * weights[3];
     }
 
+    //Calculate the horizontal/vertical weight.
+    float horizontal_weight = fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION);
+    float vertical_weight = fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION);
+
+    //Calculate the weights.
+    float weights[4];
+    float biased_weights[4];
+
+    {
+        weights[0] = biased_weights[0] = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
+        weights[1] = biased_weights[1] = (1.0f - horizontal_weight) * (vertical_weight);
+        weights[2] = biased_weights[2] = (horizontal_weight) * (1.0f - vertical_weight);
+        weights[3] = biased_weights[3] = (horizontal_weight) * (vertical_weight);
+
+        float weights_sum = 0.0f;
+
+        for (uint weight_index = 0; weight_index < 4; ++weight_index)
+        {
+            biased_weights[weight_index] = max(pow(biased_weights[weight_index] * terrain_materials[weight_index]._Displacement, TERRAIN_DISPLACEMENT_POWER), TERRAIN_MINIMUM_DISPLACEMENT_WEIGHT);
+            weights_sum += biased_weights[weight_index];
+        }
+
+        //Calculate the weights sum reciprocal.
+        float weights_sum_reciprocal = 1.0f / weights_sum;
+
+        //Normalize all weights.
+        for (uint weight_index = 0; weight_index < 4; ++weight_index)
+        {
+            biased_weights[weight_index] *= weights_sum_reciprocal;
+        }
+    }
+
+    //Calculate the final terrain material.
+    TerrainMaterial final_terrain_material = terrain_materials[0];
+
+    final_terrain_material._TerrainNormal =         terrain_materials[0]._TerrainNormal * weights[0]
+                                                    + terrain_materials[1]._TerrainNormal * weights[1]
+                                                    + terrain_materials[2]._TerrainNormal * weights[2]
+                                                    + terrain_materials[3]._TerrainNormal * weights[3];
+    final_terrain_material._TerrainHeight =         terrain_materials[0]._TerrainHeight * weights[0]
+                                                    + terrain_materials[1]._TerrainHeight * weights[1]
+                                                    + terrain_materials[2]._TerrainHeight * weights[2]
+                                                    + terrain_materials[3]._TerrainHeight * weights[3];
+    final_terrain_material._Albedo =                terrain_materials[0]._Albedo * biased_weights[0]
+                                                    + terrain_materials[1]._Albedo * biased_weights[1]
+                                                    + terrain_materials[2]._Albedo * biased_weights[2]
+                                                    + terrain_materials[3]._Albedo * biased_weights[3];
+    final_terrain_material._Thickness =             terrain_materials[0]._Thickness * biased_weights[0]
+                                                    + terrain_materials[1]._Thickness * biased_weights[1]
+                                                    + terrain_materials[2]._Thickness * biased_weights[2]
+                                                    + terrain_materials[3]._Thickness * biased_weights[3];
+    final_terrain_material._NormalMap =             terrain_materials[0]._NormalMap * biased_weights[0]
+                                                    + terrain_materials[1]._NormalMap * biased_weights[1]
+                                                    + terrain_materials[2]._NormalMap * biased_weights[2]
+                                                    + terrain_materials[3]._NormalMap * biased_weights[3];
+    final_terrain_material._Displacement =          terrain_materials[0]._Displacement * biased_weights[0]
+                                                    + terrain_materials[1]._Displacement * biased_weights[1]
+                                                    + terrain_materials[2]._Displacement * biased_weights[2]
+                                                    + terrain_materials[3]._Displacement * biased_weights[3];
+    final_terrain_material._MaterialProperties =    terrain_materials[0]._MaterialProperties * biased_weights[0]
+                                                    + terrain_materials[1]._MaterialProperties * biased_weights[1]
+                                                    + terrain_materials[2]._MaterialProperties * biased_weights[2]
+                                                    + terrain_materials[3]._MaterialProperties * biased_weights[3];
+
+    //Calculate the shading normal.
+    vec3 shading_normal;
+
+    {
+        //Calculate the tangent space matrix.
+        mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(final_terrain_material._TerrainNormal, vec3(0.0f, 0.0f, 1.0f));
+
+        //Calculate the shading normal!
+        shading_normal = normalize(tangent_space_matrix * normalize(final_terrain_material._NormalMap * 2.0f - 1.0f));
+    }
+
+    //Calculate the velocity.
+    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
+
+    //Output the fragments.
+    OutputFragment(SceneFeatures1, vec4(final_terrain_material._Albedo, final_terrain_material._Thickness));
+    OutputFragment(SceneFeatures2, vec4(shading_normal, gl_FragCoord.z));
+    OutputFragment(SceneFeatures3, final_terrain_material._MaterialProperties);
+    OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
+#else
     //Calculate the blends.
     vec4 blends;
         
@@ -367,4 +485,5 @@ Fragment
     OutputFragment(SceneFeatures2, vec4(shading_normal, gl_FragCoord.z));
     OutputFragment(SceneFeatures3, final_material.material_properties);
     OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
+#endif
 }

@@ -147,6 +147,7 @@ Vertex
     //Calculate the material texture coordinate.
     vec2 material_texture_coordinate = world_position.xz * 0.5f;
 
+#if 0
     //Apply displacement.
     {
         //Sample the displacements.
@@ -219,6 +220,7 @@ Vertex
         //Apply the displacement!
         world_position += normal * mix(-0.125f, 0.25f, final_displacement); //Slight bias for upward displacement.
     }
+#endif
 
     //Output the position.
     OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f));
