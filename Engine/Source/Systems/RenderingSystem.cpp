@@ -36,6 +36,7 @@
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Systems/DebugSystem.h>
 #endif
+#include <Systems/PathTracingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/WorldSystem.h>
@@ -209,19 +210,19 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 					}
 				}
 
-				if (RenderingSystem::Instance->GetRenderingReferenceSystem()->IsRenderingReferenceInProgress())
+				if (PathTracingSystem::Instance->IsInProgress())
 				{
-					if (ImGui::MenuItem("Stop Rendering Reference"))
+					if (ImGui::MenuItem("Stop Path Tracing"))
 					{
-						RenderingSystem::Instance->GetRenderingReferenceSystem()->StopRenderingReference();
+						PathTracingSystem::Instance->Stop();
 					}
 				}
 
 				else
 				{
-					if (ImGui::MenuItem("Start Rendering Reference"))
+					if (ImGui::MenuItem("Start Path Tracing"))
 					{
-						RenderingSystem::Instance->GetRenderingReferenceSystem()->StartRenderingReference();
+						PathTracingSystem::Instance->Start();
 					}
 				}
 
