@@ -27,9 +27,7 @@
 #endif
 #include <Systems/PhysicsSystem.h>
 #include <Systems/ResourceSystem.h>
-#if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Systems/WorldSystem.h>
-#endif
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Denotes whether or not static model wireframe is enabled.
