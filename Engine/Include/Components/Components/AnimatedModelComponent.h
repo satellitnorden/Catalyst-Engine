@@ -6,25 +6,20 @@
 //Components.
 #include <Components/Core/Component.h>
 
-//Rendering.
-#include <Rendering/Native/RenderingCore.h>
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/AnimatedModelAsset.h>
 
-//World.
-#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
+//Forward declarations.
+class RenderInputStream;
 
 class AnimatedModelInitializationData final : public ComponentInitializationData
 {
 
 public:
 
-	//The animated model resource.
-	//ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
-
-	//The material resource.
-	//ResourcePointer<MaterialResource> _MaterialResource;
-
-	//The initial animation resource.
-	//ResourcePointer<AnimationResource> _InitialAnimationResource;
+	//The model.
+	AssetPointer<AnimatedModelAsset> _Model;
 
 };
 
@@ -33,26 +28,8 @@ class AnimatedModelInstanceData final
 
 public:
 
-	//The animated model resource.
-	//ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
-
-	//The material resource.
-	//ResourcePointer<MaterialResource> _MaterialResource;
-
-	//The world space axis aligned bounding box.
-	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
-
-	//The current animated model resource.
-	//ResourcePointer<AnimationResource> _CurrentAnimationResource;
-
-	//The current animation time.
-	float32 _CurrentAnimationTime{ 0.0f };
-
-	//The animation data buffer.
-	DynamicArray<BufferHandle> _AnimationDataBuffers;
-
-	//The animation data render data table.
-	DynamicArray<RenderDataTableHandle> _AnimationDataRenderDataTables;
+	//The model.
+	AssetPointer<AnimatedModelAsset> _Model;
 
 };
 
@@ -63,7 +40,15 @@ class AnimatedModelComponent final : public Component
 	CATALYST_COMPONENT
 	(
 		AnimatedModel,
+		COMPONENT_INITIALIZE()
 		COMPONENT_POST_CREATE_INSTANCE()
 	);
+
+private:
+
+	/*
+	*	Gathers the animated model input stream.
+	*/
+	void GatherAnimatedModelInputStream(RenderInputStream *const RESTRICT input_stream) NOEXCEPT;
 
 };

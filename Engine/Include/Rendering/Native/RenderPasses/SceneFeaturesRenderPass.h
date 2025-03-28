@@ -30,7 +30,7 @@ public:
 private:
 
 	//The graphics render pipelines.
-	StaticArray<GraphicsRenderPipeline, 16> _GraphicsRenderPipelines
+	StaticArray<GraphicsRenderPipeline, 17> _GraphicsRenderPipelines
 	{
 		GraphicsRenderPipeline(HashString("MaskedModelDepthSingleSided_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("MaskedModelDepthDoubleSided_RenderPipeline")),
@@ -47,6 +47,7 @@ private:
 		GraphicsRenderPipeline(HashString("InstancedImpostorColor_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("Terrain_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("Particles_RenderPipeline")),
+		GraphicsRenderPipeline(HashString("AnimatedModel_RenderPipeline")),
 		GraphicsRenderPipeline(HashString("UserInterface3DBackground_RenderPipeline"))
 	};
 

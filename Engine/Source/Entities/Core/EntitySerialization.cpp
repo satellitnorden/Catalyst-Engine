@@ -9,6 +9,7 @@
 
 //Content.
 #include <Content/Core/AssetPointer.h>
+#include <Content/Assets/AnimatedModelAsset.h>
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
 
@@ -127,6 +128,15 @@ namespace EntitySerialization
 						ASSERT(hash_string_data, "Couldn't find hash string data!");
 
 						component_entry[editable_field._Name] = hash_string_data->_String.Data();
+
+						break;
+					}
+
+					case ComponentEditableField::Type::ANIMATED_MODEL_ASSET:
+					{
+						const AssetPointer<AnimatedModelAsset> *const RESTRICT data{ component->EditableFieldData<AssetPointer<AnimatedModelAsset>>(entity, editable_field) };
+
+						component_entry[editable_field._Name] = (*data)->_Header._AssetName.Data();
 
 						break;
 					}
@@ -378,6 +388,15 @@ namespace EntitySerialization
 								const HashString value{ editable_field_entry.get<std::string>().c_str()};
 
 								stream_archive->Write(&value, sizeof(HashString));
+
+								break;
+							}
+
+							case ComponentEditableField::Type::ANIMATED_MODEL_ASSET:
+							{
+								const HashString asset_identifier{ editable_field_entry.get<std::string>().c_str() };
+
+								stream_archive->Write(&asset_identifier, sizeof(HashString));
 
 								break;
 							}
@@ -654,6 +673,16 @@ namespace EntitySerialization
 						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
 
 						Memory::Copy(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset), &data, sizeof(HashString));
+
+						break;
+					}
+
+					case ComponentEditableField::Type::ANIMATED_MODEL_ASSET:
+					{
+						HashString data;
+						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
+
+						*reinterpret_cast<AssetPointer<AnimatedModelAsset> *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset)) = ContentSystem::Instance->GetAsset<AnimatedModelAsset>(data);
 
 						break;
 					}

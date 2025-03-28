@@ -751,6 +751,7 @@ public:
 		X32Y32SignedFloat,
 		X32Y32Z32SignedFloat,
 		X32Y32Z32W32SignedFloat,
+		X32Y32Z32W32UnsignedInt,
 		X32SignedInt,
 		X32UnsignedInt,
 		X32Y32Z32SignedInt

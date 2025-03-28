@@ -145,7 +145,7 @@ void AnimatedModelAssetCompiler::CompileInternal(CompileData *const RESTRICT com
 
 	//Iterate over the lines and fill in the parameters.
 	{
-		StaticArray<DynamicString, 8> arguments;
+		StaticArray<DynamicString, 1> arguments;
 		std::string current_line;
 
 		while (std::getline(input_file, current_line))

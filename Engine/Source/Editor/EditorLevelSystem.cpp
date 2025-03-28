@@ -11,6 +11,7 @@
 
 //Content.
 #include <Content/Core/AssetPointer.h>
+#include <Content/Assets/AnimatedModelAsset.h>
 #include <Content/Assets/LevelAsset.h>
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
@@ -250,6 +251,45 @@ FORCE_INLINE void HashStringWidget
 	}
 
 	ImGui::PopItemWidth();
+}
+
+/*
+*	Creates a custom animated model asset widget. Returns if there was a change.
+*/
+FORCE_INLINE NO_DISCARD bool AnimatedModelAssetWidget
+(
+	const char *const RESTRICT label,
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField &editable_field,
+	AssetPointer<AnimatedModelAsset> *const RESTRICT asset) NOEXCEPT
+{
+	char buffer[256];
+	sprintf_s(buffer, "%s: %s", label, (*asset) ? (*asset)->_Header._AssetName.Data() : "None");
+
+	if (ImGui::Selectable(buffer))
+	{
+		CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
+		(
+			"Select Animated Model",
+			AnimatedModelAsset::TYPE_IDENTIFIER,
+			component,
+			entity,
+			&editable_field,
+			asset,
+			[](Component *const RESTRICT component, Entity *const RESTRICT entity, const ComponentEditableField *const RESTRICT editable_field, Asset *const RESTRICT asset, void *const RESTRICT user_data)
+			{
+				AssetPointer<AnimatedModelAsset> *const RESTRICT animated_model_asset{ static_cast<AssetPointer<AnimatedModelAsset> *const RESTRICT>(user_data) };
+
+				component->PreEditableFieldChange(entity, *editable_field);
+				(*animated_model_asset) = AssetPointer<AnimatedModelAsset>((AnimatedModelAsset* const RESTRICT)asset);
+				component->PostEditableFieldChange(entity, *editable_field);
+			}
+		);
+	}
+
+	//Eh.
+	return false;
 }
 
 /*
@@ -1752,6 +1792,22 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 									editable_field,
 									hash_string_data,
 									hash_string
+								);
+
+								break;
+							}
+
+							case ComponentEditableField::Type::ANIMATED_MODEL_ASSET:
+							{
+								AssetPointer<AnimatedModelAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<AnimatedModelAsset>>(selected_entity, editable_field) };
+
+								AnimatedModelAssetWidget
+								(
+									editable_field._Name,
+									component,
+									selected_entity,
+									editable_field,
+									asset
 								);
 
 								break;

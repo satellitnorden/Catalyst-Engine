@@ -1220,30 +1220,42 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	uint32 final_width{ width };
 	uint32 final_height{ height };
 
+#if ENABLE_STREAMING
+	//Only load the lowest MIP, as a start.
 	for (uint8 mip_index{ 0 }; mip_index < number_of_mip_levels; ++mip_index)
 	{
 		const uint32 mip_width{ width >> mip_index };
 		const uint32 mip_height{ height >> mip_index };
 		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) / load_data->_Asset->_Compression.CompressionRatio() };
 
-#if 0 //Low-resolution textures. (:
 		if (mip_index < number_of_mip_levels - 1)
 		{
-			if (mip_width > 64 || mip_height > 64)
-			{
-				final_width >>= 1;
-				final_height >>= 1;
-				stream_archive_position += mip_size;
+			final_width >>= 1;
+			final_height >>= 1;
+			stream_archive_position += mip_size;
 
-				continue;
-			}
+			continue;
 		}
-#endif
+
+		else
+		{
+			data.Emplace();
+			data.Back().Upsize<false>(mip_size);
+			load_data->_StreamArchive->Read(data.Back().Data(), mip_size, &stream_archive_position);
+		}
+	}
+#else
+	for (uint8 mip_index{ 0 }; mip_index < number_of_mip_levels; ++mip_index)
+	{
+		const uint32 mip_width{ width >> mip_index };
+		const uint32 mip_height{ height >> mip_index };
+		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) / load_data->_Asset->_Compression.CompressionRatio() };
 
 		data.Emplace();
 		data.Back().Upsize<false>(mip_size);
 		load_data->_StreamArchive->Read(data.Back().Data(), mip_size, &stream_archive_position);
 	}
+#endif
 
 	//Figure out the texture format.
 	TextureFormat texture_format;

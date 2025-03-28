@@ -1,0 +1,102 @@
+//Declare unifom buffer includes.
+IncludeUniformBuffer(Camera);
+
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(Camera);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare output render targets.
+OutputRenderTarget(SceneFeatures1);
+OutputRenderTarget(SceneFeatures2);
+OutputRenderTarget(SceneFeatures3);
+OutputRenderTarget(SceneFeatures4);
+OutputRenderTarget(Scene);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorLoadOperator(LOAD);
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set the cull mode.
+CullMode(BACK);
+
+//Set depth/stencil properties.
+DepthCompareOperator(GREATER);
+DepthTestEnable();
+DepthWriteEnable();
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(REPLACE);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(ALWAYS);
+StencilCompareMask(0);
+StencilWriteMask(1);
+StencilReferenceMask(1);
+
+//Set the topology.
+Topology(TRIANGLE_LIST);
+
+//Declare push constant data.
+PushConstantData(mat4, PREVIOUS_TRANSFORMATION);
+PushConstantData(mat4, CURRENT_TRANSFORMATION);
+
+//Declare samplers.
+Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
+
+//Subscribe to input streams.
+SubscribeToInputStream(AnimatedModels);
+
+//The vertex shader.
+Vertex
+{
+    //Declare input parameters.
+    InputParameter(vec3, InPosition);
+    InputParameter(vec3, InNormal);
+    InputParameter(vec3, InTangent);
+    InputParameter(uvec4, InBoneIndices);
+    InputParameter(vec4, InBoneWeights);
+    InputParameter(vec2, InTextureCoordinate);
+
+    //Declare output parameters.
+    OutputParameter(mat3, OutTangentSpaceMatrix);
+    OutputParameter(vec3, OutPreviousWorldPosition);
+    OutputParameter(vec3, OutCurrentWorldPosition);
+
+    //Calculate the tangent space matrix.
+    vec3 tangent = normalize(vec3(CURRENT_TRANSFORMATION * vec4(InTangent, 0.0f)));
+    vec3 bitangent = normalize(vec3(CURRENT_TRANSFORMATION * vec4(cross(InNormal, InTangent), 0.0f)));
+    vec3 normal = normalize(vec3(CURRENT_TRANSFORMATION * vec4(InNormal, 0.0f)));
+
+    //Write data for the fragment shader.
+    OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
+    OutPreviousWorldPosition = vec3(PREVIOUS_TRANSFORMATION * vec4(InPosition, 1.0f));
+    OutCurrentWorldPosition = vec3(CURRENT_TRANSFORMATION * vec4(InPosition, 1.0f));
+
+    //Output the position.
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutPreviousWorldPosition, 1.0f));
+}
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(mat3, InTangentSpaceMatrix);
+    InputParameter(vec3, InPreviousWorldPosition);
+    InputParameter(vec3, InCurrentWorldPosition);
+
+    //Calculate the velocity.
+    vec2 velocity = CalculateCurrentScreenCoordinate(InCurrentWorldPosition) - CalculatePreviousScreenCoordinate(InPreviousWorldPosition) - CURRENT_FRAME_JITTER;
+
+    //Output the fragments.
+    OutputFragment(SceneFeatures1, vec4(0.25f, 0.25f, 0.25f, 1.0f));
+    OutputFragment(SceneFeatures2, vec4(InTangentSpaceMatrix[2], gl_FragCoord.z));
+    OutputFragment(SceneFeatures3, vec4(1.0f, 0.0f, 1.0f, 0.0f));
+    OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
+    OutputFragment(Scene, vec4(0.0f, 0.0f, 0.0f, 1.0f));
+}
