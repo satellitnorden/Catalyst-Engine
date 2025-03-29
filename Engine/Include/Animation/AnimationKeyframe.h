@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/HashString.h>
 
 //Animation.
 #include <Animation/BoneTransform.h>
@@ -13,7 +12,7 @@ class AnimationKeyframe final
 public:
 
 	//The timestamp, denoted in seconds.
-	float _Timestamp;
+	float32 _Timestamp;
 
 	//The bone transform.
 	BoneTransform _BoneTransform;
@@ -21,7 +20,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE AnimationKeyframe(const float initial_timestamp, const BoneTransform &initial_bone_transform) NOEXCEPT
+	FORCE_INLINE AnimationKeyframe(const float32 initial_timestamp, const BoneTransform &initial_bone_transform) NOEXCEPT
 		:
 		_Timestamp(initial_timestamp),
 		_BoneTransform(initial_bone_transform)

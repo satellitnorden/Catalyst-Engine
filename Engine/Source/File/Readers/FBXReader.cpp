@@ -178,7 +178,7 @@ FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode 
 			new_bone._BindTransform._Matrix[0][1] = bone->mOffsetMatrix.b1; new_bone._BindTransform._Matrix[1][1] = bone->mOffsetMatrix.b2; new_bone._BindTransform._Matrix[2][1] = bone->mOffsetMatrix.b3; new_bone._BindTransform._Matrix[3][1] = bone->mOffsetMatrix.b4;
 			new_bone._BindTransform._Matrix[0][2] = bone->mOffsetMatrix.c1; new_bone._BindTransform._Matrix[1][2] = bone->mOffsetMatrix.c2; new_bone._BindTransform._Matrix[2][2] = bone->mOffsetMatrix.c3; new_bone._BindTransform._Matrix[3][2] = bone->mOffsetMatrix.c4;
 			new_bone._BindTransform._Matrix[0][3] = bone->mOffsetMatrix.d1; new_bone._BindTransform._Matrix[1][3] = bone->mOffsetMatrix.d2; new_bone._BindTransform._Matrix[2][3] = bone->mOffsetMatrix.d3; new_bone._BindTransform._Matrix[3][3] = bone->mOffsetMatrix.d4;
-	}
+		}
 #else
 		Memory::Copy(&new_bone._BindTransform, &bone->mOffsetMatrix, sizeof(Matrix4x4));
 		new_bone._BindTransform.Transpose(); //Don't know if this is needed. :x
@@ -377,6 +377,22 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimatedMo
 }
 
 /*
+*	Reads the animation file at the given file path. Returns if the read was succesful.
+*/
+NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimationFile *const RESTRICT animation_file) NOEXCEPT
+{
+	//Define constants.
+	constexpr uint32 POST_PROCESS_FLAGS
+	{
+		aiProcess_CalcTangentSpace
+		| aiProcess_Triangulate
+		| aiProcess_LimitBoneWeights
+	};
+
+	return false;
+}
+
+/*
 *	Reads the model file at the given file path. Returns if the read was succesful.
 */
 NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile *const RESTRICT model_file) NOEXCEPT
@@ -388,6 +404,8 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 		| aiProcess_JoinIdenticalVertices
 		| aiProcess_Triangulate
 		| aiProcess_ImproveCacheLocality
+		| aiProcess_FlipUVs
+		| aiProcess_FlipWindingOrder
 	};
 
 	ASSERT(File::Exists(file_path), "File path: %s doesn't exist!", file_path);

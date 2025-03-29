@@ -4,6 +4,9 @@
 //Core.
 #include <Core/Algorithms/SortingAlgorithms.h>
 
+//File.
+#include <File/Utilities/BlenderUtilities.h>
+
 /*
 *	Post processes this animated model file.
 */
@@ -36,28 +39,20 @@ void AnimatedModelFile::PostProcess() NOEXCEPT
 
 		case Creator::BLENDER:
 		{
-			//Swap the Y and Z axis.
+			//Apply Blender transforms.
 			for (Mesh &mesh : _Meshes)
 			{
 				for (AnimatedVertex &vertex : mesh._Vertices)
 				{
-					Swap(&vertex._Position._Y, &vertex._Position._Z);
-					Swap(&vertex._Normal._Y, &vertex._Normal._Z);
-					Swap(&vertex._Tangent._Y, &vertex._Tangent._Z);
+					BlenderUtilities::Transform(&vertex._Position);
+					BlenderUtilities::Transform(&vertex._Normal);
+					BlenderUtilities::Transform(&vertex._Tangent);
+					BlenderUtilities::Transform(&vertex._TextureCoordinate);
 				}
 
 				for (uint64 i{ 0 }; i < mesh._Indices.Size(); i += 3)
 				{
 					Swap(&mesh._Indices[i], &mesh._Indices[i + 1]);
-				}
-			}
-
-			//Modify the texture coordinates.
-			for (Mesh &mesh : _Meshes)
-			{
-				for (AnimatedVertex &vertex : mesh._Vertices)
-				{
-					vertex._TextureCoordinate._Y = 1.0f - vertex._TextureCoordinate._Y;
 				}
 			}
 
