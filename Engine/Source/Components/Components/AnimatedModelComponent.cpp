@@ -40,6 +40,13 @@ void AnimatedModelComponent::Initialize() NOEXCEPT
 		offsetof(AnimatedModelInstanceData, _Model)
 	);
 
+	AddEditableAnimationAssetField
+	(
+		"Animation",
+		offsetof(AnimatedModelInitializationData, _InitialAnimation),
+		offsetof(AnimatedModelInstanceData, _CurrentAnimation)
+	);
+
 	//Register the "AnimatedModels" render input stream.
 	{
 		//Set up the vertex input attribute descriptions.

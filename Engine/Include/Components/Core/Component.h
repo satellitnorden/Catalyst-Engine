@@ -196,6 +196,16 @@ protected:
 	) NOEXCEPT;
 
 	/*
+	*	Adds an editable animation asset field.
+	*/
+	void AddEditableAnimationAssetField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
 	*	Adds an editable material asset field.
 	*/
 	void AddEditableMaterialAssetField

@@ -384,12 +384,80 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimationF
 	//Define constants.
 	constexpr uint32 POST_PROCESS_FLAGS
 	{
-		aiProcess_CalcTangentSpace
-		| aiProcess_Triangulate
-		| aiProcess_LimitBoneWeights
+		0
 	};
 
-	return false;
+	ASSERT(File::Exists(file_path), "File path: %s does not exist!", file_path);
+
+	//Set up the importer.
+	Assimp::Importer importer;
+
+	//Load the scene.
+	const aiScene *const RESTRICT scene{ importer.ReadFile(file_path, POST_PROCESS_FLAGS) };
+
+	//Check if the import succeeded.
+	if (!scene || !scene->mRootNode)
+	{
+		ASSERT(false, "Import failed: %s", importer.GetErrorString());
+
+		return false;
+	}
+
+	ASSERT(scene->mNumAnimations > 0, "Scene contains no animations!");
+
+	//Assume Blender, for now. :x
+	animation_file->_Creator = AnimationFile::Creator::BLENDER;
+
+	//Just pick the first animation.
+	const aiAnimation *const RESTRICT animation{ scene->mAnimations[0] };
+
+	//Calculate the duration.
+	animation_file->_Duration = static_cast<float32>(animation->mDuration / animation->mTicksPerSecond);
+
+	//Reserve the appropriate amount of channels.
+	animation_file->_Channels.Reserve(animation->mNumChannels);
+
+	//Add the channels!
+	for (uint32 channel_index{ 0 }; channel_index < animation->mNumChannels; ++channel_index)
+	{
+		//Cache the channel.
+		const aiNodeAnim *const RESTRICT channel{ animation->mChannels[channel_index] };
+
+		//Add the new channel.
+		animation_file->_Channels.Emplace();
+		AnimationChannel &new_channel{ animation_file->_Channels.Back() };
+
+		//Set the bone identifier.
+		new_channel._BoneIdentifier = HashString(channel->mNodeName.C_Str());
+
+		//Reserve the appropriate amount of keyframes.
+		new_channel._Keyframes.Reserve(channel->mNumPositionKeys);
+
+		//Add the keyframes.
+		for (uint32 keyframe_index{ 0 }; keyframe_index < channel->mNumPositionKeys; ++keyframe_index)
+		{
+			//Add the new keyframe.
+			new_channel._Keyframes.Emplace();
+			AnimationKeyframe &new_keyframe{ new_channel._Keyframes.Back() };
+
+			//Calculate the timestamp.
+			new_keyframe._Timestamp = static_cast<float32>(channel->mPositionKeys[keyframe_index].mTime / animation->mTicksPerSecond);
+
+			//Set the translation.
+			new_keyframe._BoneTransform._Translation = Vector3<float32>(channel->mPositionKeys[keyframe_index].mValue.x, channel->mPositionKeys[keyframe_index].mValue.y, channel->mPositionKeys[keyframe_index].mValue.z);
+
+			//Set the rotation.
+			new_keyframe._BoneTransform._Rotation = Quaternion(channel->mRotationKeys[keyframe_index].mValue.x, channel->mRotationKeys[keyframe_index].mValue.y, channel->mRotationKeys[keyframe_index].mValue.z, channel->mRotationKeys[keyframe_index].mValue.w);
+
+			//Set the scale to a default value, not supported right now.
+			new_keyframe._BoneTransform._Scale = Vector3<float32>(1.0f, 1.0f, 1.0f);
+		}
+	}
+
+	//Post process the animation file.
+	animation_file->PostProcess();
+
+	return true;
 }
 
 /*

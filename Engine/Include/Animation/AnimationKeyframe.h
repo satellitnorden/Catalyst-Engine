@@ -18,12 +18,9 @@ public:
 	BoneTransform _BoneTransform;
 
 	/*
-	*	Constructor taking all values as arguments.
+	*	Default constructor.
 	*/
-	FORCE_INLINE AnimationKeyframe(const float32 initial_timestamp, const BoneTransform &initial_bone_transform) NOEXCEPT
-		:
-		_Timestamp(initial_timestamp),
-		_BoneTransform(initial_bone_transform)
+	FORCE_INLINE AnimationKeyframe() NOEXCEPT
 	{
 
 	}

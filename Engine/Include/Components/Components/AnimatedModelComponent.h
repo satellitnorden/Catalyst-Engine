@@ -9,6 +9,7 @@
 //Content.
 #include <Content/Core/AssetPointer.h>
 #include <Content/Assets/AnimatedModelAsset.h>
+#include <Content/Assets/AnimationAsset.h>
 
 //Forward declarations.
 class RenderInputStream;
@@ -21,6 +22,9 @@ public:
 	//The model.
 	AssetPointer<AnimatedModelAsset> _Model;
 
+	//The initial animation.
+	AssetPointer<AnimationAsset> _InitialAnimation;
+
 };
 
 class AnimatedModelInstanceData final
@@ -30,6 +34,9 @@ public:
 
 	//The model.
 	AssetPointer<AnimatedModelAsset> _Model;
+
+	//The current animation.
+	AssetPointer<AnimationAsset> _CurrentAnimation;
 
 };
 

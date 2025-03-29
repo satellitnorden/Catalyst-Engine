@@ -9,6 +9,7 @@
 //Content.
 #include <Content/Core/ContentCache.h>
 #include <Content/AssetCompilers/AnimatedModelAssetCompiler.h>
+#include <Content/AssetCompilers/AnimationAssetCompiler.h>
 #include <Content/AssetCompilers/EntityAssetCompiler.h>
 #include <Content/AssetCompilers/FontAssetCompiler.h>
 #include <Content/AssetCompilers/ImpostorMaterialAssetCompiler.h>
@@ -60,6 +61,7 @@ void ContentSystem::Initialize() NOEXCEPT
 {
 	//Register the native asset compilers
 	RegisterAssetCompiler(AnimatedModelAssetCompiler::Instance);
+	RegisterAssetCompiler(AnimationAssetCompiler::Instance);
 	RegisterAssetCompiler(EntityAssetCompiler::Instance);
 	RegisterAssetCompiler(FontAssetCompiler::Instance);
 	RegisterAssetCompiler(ImpostorMaterialAssetCompiler::Instance);

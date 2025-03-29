@@ -22,13 +22,9 @@ public:
 	Vector3<float32> _Scale;
 
 	/*
-	*	Constructor taking all values as arguments.
+	*	Default constructor.
 	*/
-	FORCE_INLINE BoneTransform(const Vector3<float32> &initial_translation, const Quaternion &initial_rotation, const Vector3<float32> &initial_scale) NOEXCEPT
-		:
-		_Translation(initial_translation),
-		_Rotation(initial_rotation),
-		_Scale(initial_scale)
+	FORCE_INLINE BoneTransform() NOEXCEPT
 	{
 
 	}

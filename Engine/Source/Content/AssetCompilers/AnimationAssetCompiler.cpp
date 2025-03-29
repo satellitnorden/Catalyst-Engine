@@ -223,54 +223,33 @@ void AnimationAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
-	/*
-	//Determine the model space axis aligned bounding box.
-	{
-		//Iterate over all vertices in all meshes and expand the bounding box.
-		AxisAlignedBoundingBox3D axis_aligned_bounding_box;
+	//Write the duration.
+	output_file.Write(&animation_file._Duration, sizeof(float32));
 
-		for (AnimatedModelFile::Mesh &mesh : animated_model_file._Meshes)
+	//Write the number of channels.
+	const uint64 number_of_channels{ animation_file._Channels.Size() };
+	output_file.Write(&number_of_channels, sizeof(uint64));
+
+	//Write the channels.
+	for (const AnimationChannel &channel : animation_file._Channels)
+	{
+		//Write the bone identifier.
+		output_file.Write(&channel._BoneIdentifier, sizeof(HashString));
+
+		//Write the number of keyframes.
+		const uint64 number_of_keyframes{ channel._Keyframes.Size() };
+		output_file.Write(&number_of_keyframes, sizeof(uint64));
+
+		//Write the keyframes.
+		for (const AnimationKeyframe &keyframe : channel._Keyframes)
 		{
-			for (AnimatedVertex &vertex : mesh._Vertices)
-			{
-				axis_aligned_bounding_box.Expand(vertex._Position);
-			}
+			//Write the timestamp.
+			output_file.Write(&keyframe._Timestamp, sizeof(float32));
+
+			//Write the bone transform.
+			output_file.Write(&keyframe._BoneTransform, sizeof(BoneTransform));
 		}
-
-		//Write the axis-aligned bounding box to the file.
-		output_file.Write(&axis_aligned_bounding_box, sizeof(AxisAlignedBoundingBox3D));
 	}
-
-	//Write the number of meshes.
-	const uint64 number_of_meshes{ animated_model_file._Meshes.Size() };
-	ASSERT(number_of_meshes <= RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL, "This model has more than the maximum number of meshes, either increase the maximum number of meshes or decrease the number of meshes on this model!");
-	output_file.Write(&number_of_meshes, sizeof(uint64));
-
-	//Process each mesh individually.
-	for (uint64 mesh_index{ 0 }; mesh_index < number_of_meshes; ++mesh_index)
-	{
-		//Write the number of vertices to the file.
-		const uint64 number_of_vertices{ animated_model_file._Meshes[mesh_index]._Vertices.Size() };
-		output_file.Write(&number_of_vertices, sizeof(uint64));
-
-		//Write the vertices to the file.
-		output_file.Write(animated_model_file._Meshes[mesh_index]._Vertices.Data(), sizeof(AnimatedVertex) * number_of_vertices);
-
-		//Write the number of indices to the file.
-		const uint64 number_of_indices{ animated_model_file._Meshes[mesh_index]._Indices.Size() };
-		output_file.Write(&number_of_indices, sizeof(uint64));
-
-		//Write the indices to the file.
-		output_file.Write(animated_model_file._Meshes[mesh_index]._Indices.Data(), sizeof(uint32) * number_of_indices);
-	}
-
-	//Write the number of bones.
-	const uint64 number_of_bones{ animated_model_file._Skeleton._Bones.Size() };
-	output_file.Write(&number_of_bones, sizeof(uint64));
-
-	//Write the bones.
-	output_file.Write(animated_model_file._Skeleton._Bones.Data(), sizeof(Bone) * number_of_bones);
-	*/
 
 	//Close the output file.
 	output_file.Close();
@@ -286,66 +265,37 @@ void AnimationAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	//Read the data.
 	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
 
-	/*
-	//Read the axis aligned bounding box.
-	load_data->_StreamArchive->Read(&load_data->_Asset->_ModelSpaceAxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3D), &stream_archive_position);
+	//Read the duration.
+	load_data->_StreamArchive->Read(&load_data->_Asset->_Duration, sizeof(float32), &stream_archive_position);
 
-	//Read the number of meshes.
-	uint64 number_of_meshes;
-	load_data->_StreamArchive->Read(&number_of_meshes, sizeof(uint64), &stream_archive_position);
+	//Read the number of channels.
+	uint64 number_of_channels;
+	load_data->_StreamArchive->Read(&number_of_channels, sizeof(uint64), &stream_archive_position);
 
-	ASSERT(number_of_meshes == 1, "Hrrm!");
+	//Resize the channels.
+	load_data->_Asset->_Channels.Upsize<true>(number_of_channels);
 
-	//Set up the vertices/indices.
-	DynamicArray<DynamicArray<AnimatedVertex>> vertices;
-	DynamicArray<DynamicArray<uint32>> indices;
-
-	vertices.Upsize<true>(number_of_meshes);
-	indices.Upsize<true>(number_of_meshes);
-
-	for (uint64 mesh_index{ 0 }; mesh_index < number_of_meshes; ++mesh_index)
+	//Read the channels.
+	for (AnimationChannel &channel : load_data->_Asset->_Channels)
 	{
-		//Read the number of vertices.
-		uint64 number_of_vertices;
-		load_data->_StreamArchive->Read(&number_of_vertices, sizeof(uint64), &stream_archive_position);
+		//Read the bone identifier.
+		load_data->_StreamArchive->Read(&channel._BoneIdentifier, sizeof(HashString), &stream_archive_position);
 
-		//Read the vertices.
-		vertices[mesh_index].Upsize<false>(number_of_vertices);
-		load_data->_StreamArchive->Read(vertices[mesh_index].Data(), sizeof(AnimatedVertex) * number_of_vertices, &stream_archive_position);
+		//Read the number of keyframes.
+		uint64 number_of_keyframes;
+		load_data->_StreamArchive->Read(&number_of_keyframes, sizeof(uint64), &stream_archive_position);
 
-		//Read the number of indices.
-		uint64 number_of_indices;
-		load_data->_StreamArchive->Read(&number_of_indices, sizeof(uint64), &stream_archive_position);
+		//Resize the keyframes.
+		channel._Keyframes.Upsize<false>(number_of_keyframes);
 
-		//Read the indices.
-		indices[mesh_index].Upsize<false>(number_of_indices);
-		load_data->_StreamArchive->Read(indices[mesh_index].Data(), sizeof(uint32) * number_of_indices, &stream_archive_position);
+		//Read the keyframes.
+		for (AnimationKeyframe &keyframe : channel._Keyframes)
+		{
+			//Read the timestamp.
+			load_data->_StreamArchive->Read(&keyframe._Timestamp, sizeof(float32), &stream_archive_position);
+
+			//Read the bone transform..
+			load_data->_StreamArchive->Read(&keyframe._BoneTransform, sizeof(BoneTransform), &stream_archive_position);
+		}
 	}
-
-	//Create the buffers.
-	{
-		const void *const RESTRICT data_chunks[]{ vertices[0].Data()};
-		const uint64 data_sizes[]{ sizeof(AnimatedVertex) * vertices[0].Size() };
-		RenderingSystem::Instance->CreateBuffer(data_sizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &load_data->_Asset->_VertexBuffer);
-		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &load_data->_Asset->_VertexBuffer);
-	}
-
-	{
-		const void *const RESTRICT data_chunks[]{ indices[0].Data()};
-		const uint64 data_sizes[]{ sizeof(uint32) * indices[0].Size() };
-		RenderingSystem::Instance->CreateBuffer(data_sizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &load_data->_Asset->_IndexBuffer);
-		RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &load_data->_Asset->_IndexBuffer);
-	}
-
-	//Write the index count.
-	load_data->_Asset->_IndexCount = static_cast<uint32>(indices[0].Size());
-
-	//Read the number of bones.
-	uint64 number_of_bones;
-	load_data->_StreamArchive->Read(&number_of_bones, sizeof(uint64), &stream_archive_position);
-
-	//Read the bones.
-	load_data->_Asset->_Skeleton._Bones.Upsize<false>(number_of_bones);
-	load_data->_StreamArchive->Read(load_data->_Asset->_Skeleton._Bones.Data(), sizeof(Bone) * number_of_bones, &stream_archive_position);
-	*/
 }

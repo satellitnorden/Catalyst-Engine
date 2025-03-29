@@ -10,6 +10,7 @@
 //Content.
 #include <Content/Core/AssetPointer.h>
 #include <Content/Assets/AnimatedModelAsset.h>
+#include <Content/Assets/AnimationAsset.h>
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
 
@@ -135,6 +136,15 @@ namespace EntitySerialization
 					case ComponentEditableField::Type::ANIMATED_MODEL_ASSET:
 					{
 						const AssetPointer<AnimatedModelAsset> *const RESTRICT data{ component->EditableFieldData<AssetPointer<AnimatedModelAsset>>(entity, editable_field) };
+
+						component_entry[editable_field._Name] = (*data)->_Header._AssetName.Data();
+
+						break;
+					}
+
+					case ComponentEditableField::Type::ANIMATION_ASSET:
+					{
+						const AssetPointer<AnimationAsset> *const RESTRICT data{ component->EditableFieldData<AssetPointer<AnimationAsset>>(entity, editable_field) };
 
 						component_entry[editable_field._Name] = (*data)->_Header._AssetName.Data();
 
@@ -393,6 +403,15 @@ namespace EntitySerialization
 							}
 
 							case ComponentEditableField::Type::ANIMATED_MODEL_ASSET:
+							{
+								const HashString asset_identifier{ editable_field_entry.get<std::string>().c_str() };
+
+								stream_archive->Write(&asset_identifier, sizeof(HashString));
+
+								break;
+							}
+
+							case ComponentEditableField::Type::ANIMATION_ASSET:
 							{
 								const HashString asset_identifier{ editable_field_entry.get<std::string>().c_str() };
 
@@ -683,6 +702,16 @@ namespace EntitySerialization
 						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
 
 						*reinterpret_cast<AssetPointer<AnimatedModelAsset> *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset)) = ContentSystem::Instance->GetAsset<AnimatedModelAsset>(data);
+
+						break;
+					}
+
+					case ComponentEditableField::Type::ANIMATION_ASSET:
+					{
+						HashString data;
+						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
+
+						*reinterpret_cast<AssetPointer<AnimationAsset> *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset)) = ContentSystem::Instance->GetAsset<AnimationAsset>(data);
 
 						break;
 					}
