@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Math.
+#include <Math/General/Matrix.h>
 #include <Math/General/Vector.h>
 #include <Math/General/Quaternion.h>
 
@@ -32,6 +33,15 @@ namespace BlenderUtilities
 	FORCE_INLINE void Transform(Vector2<float32> *const RESTRICT value) NOEXCEPT
 	{
 		value->_Y = 1.0f - value->_Y;
+	}
+
+	/*
+	*	Applies Blender transform on a matrix.
+	*/
+	FORCE_INLINE void Transform(Matrix4x4 *const RESTRICT value) NOEXCEPT
+	{
+		//Swap Y and Z axis on the translation.
+		Swap(&value->_Matrix[3]._Y, &value->_Matrix[3]._Z);
 	}
 
 }

@@ -74,19 +74,24 @@ Vertex
 
     //Calculate the world position.
     vec3 world_position = vec3(0.0f, 0.0f, 0.0f);
+    vec3 normal = vec3(0.0f, 0.0f, 0.0f);
+    vec3 tangent = vec3(0.0f, 0.0f, 0.0f);
 
     for (uint bone_index = 0; bone_index < 4; ++bone_index)
     {
-        world_position += vec3(ANIMATION_BONE_TRANSFORMS[START_BONE_TRANSFORM + InBoneIndices[bone_index]] * vec4(InPosition, 1.0f)) * InBoneWeights[bone_index];
+        mat4 bone_transform = ANIMATION_BONE_TRANSFORMS[START_BONE_TRANSFORM + InBoneIndices[bone_index]];
+        world_position += vec3(bone_transform * vec4(InPosition, 1.0f)) * InBoneWeights[bone_index];
+        normal += vec3(bone_transform * vec4(InNormal, 0.0f)) * InBoneWeights[bone_index];
+        tangent += vec3(bone_transform * vec4(InTangent, 0.0f)) * InBoneWeights[bone_index];
     }
 
     //Calculate the tangent space matrix.
-    vec3 tangent = normalize(vec3(CURRENT_TRANSFORMATION * vec4(InTangent, 0.0f)));
-    vec3 bitangent = normalize(vec3(CURRENT_TRANSFORMATION * vec4(cross(InNormal, InTangent), 0.0f)));
-    vec3 normal = normalize(vec3(CURRENT_TRANSFORMATION * vec4(InNormal, 0.0f)));
+    vec3 world_space_tangent = normalize(vec3(CURRENT_TRANSFORMATION * vec4(tangent, 0.0f)));
+    vec3 world_space_bitangent = normalize(vec3(CURRENT_TRANSFORMATION * vec4(cross(normal, tangent), 0.0f)));
+    vec3 world_space_normal = normalize(vec3(CURRENT_TRANSFORMATION * vec4(normal, 0.0f)));
 
     //Write data for the fragment shader.
-    OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
+    OutTangentSpaceMatrix = mat3(world_space_tangent, world_space_bitangent, world_space_normal);
     OutPreviousWorldPosition = vec3(PREVIOUS_TRANSFORMATION * vec4(world_position, 1.0f));
     OutCurrentWorldPosition = vec3(CURRENT_TRANSFORMATION * vec4(world_position, 1.0f));
 

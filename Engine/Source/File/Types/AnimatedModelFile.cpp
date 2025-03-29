@@ -27,7 +27,7 @@ void AnimatedModelFile::PostProcess() NOEXCEPT
 		);
 	}
 
-	//Transform the vertices based on the creator.
+	//Transform the data based on the creator.
 	switch (_Creator)
 	{
 		case Creator::UNKNOWN:
@@ -47,13 +47,14 @@ void AnimatedModelFile::PostProcess() NOEXCEPT
 					BlenderUtilities::Transform(&vertex._Position);
 					BlenderUtilities::Transform(&vertex._Normal);
 					BlenderUtilities::Transform(&vertex._Tangent);
-					BlenderUtilities::Transform(&vertex._TextureCoordinate);
 				}
+			}
 
-				for (uint64 i{ 0 }; i < mesh._Indices.Size(); i += 3)
-				{
-					Swap(&mesh._Indices[i], &mesh._Indices[i + 1]);
-				}
+			for (Bone &bone : _Skeleton._Bones)
+			{
+				BlenderUtilities::Transform(&bone._BindTransform);
+				bone._InverseBindTransform = bone._BindTransform;
+				bone._InverseBindTransform.Inverse();
 			}
 
 			break;

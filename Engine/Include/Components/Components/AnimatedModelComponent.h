@@ -38,6 +38,9 @@ public:
 	//The current animation.
 	AssetPointer<AnimationAsset> _CurrentAnimation;
 
+	//The current animation time.
+	float32 _CurrentAnimationTime;
+
 	//The final bone transforms.
 	DynamicArray<Matrix4x4> _FinalBoneTransforms;
 

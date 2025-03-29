@@ -7,7 +7,8 @@
 //Components.
 #include <Components/Components/WorldTransformComponent.h>
 
-//Systems.
+//Systems
+#include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
@@ -117,6 +118,7 @@ void AnimatedModelComponent::CreateInstance(Entity *const RESTRICT entity, Anima
 {
 	//Copy data.
 	instance_data->_Model = initialization_data->_Model;
+	instance_data->_CurrentAnimation = initialization_data->_InitialAnimation;
 }
 
 /*
@@ -160,12 +162,61 @@ void AnimatedModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase,
 			continue;
 		}
 
-		//Set the final bone transforms to identity, for now.
+		//Ensure the correct size of the final bone transforms.
 		instance_data._FinalBoneTransforms.Resize<false>(instance_data._Model->_Skeleton._Bones.Size());
 
-		for (Matrix4x4 &final_bone_transform : instance_data._FinalBoneTransforms)
+		//If there is a current animation - Animate. Otherwise, just set to identity.
+		if (instance_data._CurrentAnimation)
 		{
-			final_bone_transform = MatrixConstants::IDENTITY;
+			//Walk the skeleton.
+			for (uint64 bone_index{ 0 }; bone_index < instance_data._Model->_Skeleton._Bones.Size(); ++bone_index)
+			{
+				//Cache the bone.
+				const Bone &bone{ instance_data._Model->_Skeleton._Bones[bone_index] };
+
+				//Find the channel for this bone.
+				for (const AnimationChannel &channel : instance_data._CurrentAnimation->_Channels)
+				{
+					if (channel._BoneIdentifier == bone._Name)
+					{
+						//Retrieve the current bone transform.
+						BoneTransform current_bone_transform;
+
+						for (const AnimationKeyframe &keyframe : channel._Keyframes)
+						{
+							if (instance_data._CurrentAnimationTime >= keyframe._Timestamp)
+							{
+								current_bone_transform = keyframe._BoneTransform;
+							}
+						}
+
+						//Construct the local transform.
+						//const Matrix4x4 local_transform{ current_bone_transform._Translation, current_bone_transform._Rotation, current_bone_transform._Scale };
+						const Matrix4x4 local_transform{ Vector3<float32>(0.0f, 0.0f, 0.0f), current_bone_transform._Rotation, current_bone_transform._Scale };
+
+						//Add the final bone transform.
+						instance_data._FinalBoneTransforms[bone._Index] = local_transform;
+
+						break;
+					}
+				}
+			}
+
+			//Update the current animation time.
+			instance_data._CurrentAnimationTime += CatalystEngineSystem::Instance->GetDeltaTime();
+
+			while (instance_data._CurrentAnimationTime >= instance_data._CurrentAnimation->_Duration)
+			{
+				instance_data._CurrentAnimationTime -= instance_data._CurrentAnimation->_Duration;
+			}
+		}
+		
+		else
+		{
+			for (Matrix4x4 &final_bone_transform : instance_data._FinalBoneTransforms)
+			{
+				final_bone_transform = MatrixConstants::IDENTITY;
+			}
 		}
 	}
 }
