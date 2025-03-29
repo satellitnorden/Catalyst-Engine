@@ -191,11 +191,10 @@ void AnimatedModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase,
 						}
 
 						//Construct the local transform.
-						//const Matrix4x4 local_transform{ current_bone_transform._Translation, current_bone_transform._Rotation, current_bone_transform._Scale };
-						const Matrix4x4 local_transform{ Vector3<float32>(0.0f, 0.0f, 0.0f), current_bone_transform._Rotation, current_bone_transform._Scale };
+						const Matrix4x4 local_transform{ current_bone_transform._Translation, current_bone_transform._Rotation, current_bone_transform._Scale };
 
 						//Add the final bone transform.
-						instance_data._FinalBoneTransforms[bone._Index] = local_transform;
+						instance_data._FinalBoneTransforms[bone._Index] = local_transform * bone._BindTransform;
 
 						break;
 					}
