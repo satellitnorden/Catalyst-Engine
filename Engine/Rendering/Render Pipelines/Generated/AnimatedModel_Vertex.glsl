@@ -288,7 +288,12 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (set = 1, binding = 1) uniform sampler SAMPLER;
+layout (std430, set = 1, binding = 1) buffer AnimationBoneTransforms
+{
+	layout (offset = 0) mat4[] ANIMATION_BONE_TRANSFORMS;
+};
+
+layout (set = 1, binding = 2) uniform sampler SAMPLER;
 
 /*
 *   Linearizes a depth value.
@@ -368,6 +373,7 @@ layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) mat4 PREVIOUS_TRANSFORMATION;
 	layout (offset = 64) mat4 CURRENT_TRANSFORMATION;
+	layout (offset = 128) uint START_BONE_TRANSFORM;
 };
 
 layout (location = 0) in vec3 InPosition;
@@ -383,11 +389,16 @@ layout (location = 4) out vec3 OutCurrentWorldPosition;
 
 void main()
 {
+    vec3 world_position = vec3(0.0f, 0.0f, 0.0f);
+    for (uint bone_index = 0; bone_index < 4; ++bone_index)
+    {
+        world_position += vec3(ANIMATION_BONE_TRANSFORMS[START_BONE_TRANSFORM + InBoneIndices[bone_index]] * vec4(InPosition, 1.0f)) * InBoneWeights[bone_index];
+    }
     vec3 tangent = normalize(vec3(CURRENT_TRANSFORMATION * vec4(InTangent, 0.0f)));
     vec3 bitangent = normalize(vec3(CURRENT_TRANSFORMATION * vec4(cross(InNormal, InTangent), 0.0f)));
     vec3 normal = normalize(vec3(CURRENT_TRANSFORMATION * vec4(InNormal, 0.0f)));
     OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
-    OutPreviousWorldPosition = vec3(PREVIOUS_TRANSFORMATION * vec4(InPosition, 1.0f));
-    OutCurrentWorldPosition = vec3(CURRENT_TRANSFORMATION * vec4(InPosition, 1.0f));
-	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutPreviousWorldPosition,1.0f);
+    OutPreviousWorldPosition = vec3(PREVIOUS_TRANSFORMATION * vec4(world_position, 1.0f));
+    OutCurrentWorldPosition = vec3(CURRENT_TRANSFORMATION * vec4(world_position, 1.0f));
+	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutCurrentWorldPosition,1.0f);
 }

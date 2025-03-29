@@ -1,6 +1,9 @@
 //Declare unifom buffer includes.
 IncludeUniformBuffer(Camera);
 
+//Declare storage buffer includes.
+IncludeStorageBuffer(AnimationBoneTransforms);
+
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
 
@@ -45,6 +48,7 @@ Topology(TRIANGLE_LIST);
 //Declare push constant data.
 PushConstantData(mat4, PREVIOUS_TRANSFORMATION);
 PushConstantData(mat4, CURRENT_TRANSFORMATION);
+PushConstantData(uint, START_BONE_TRANSFORM);
 
 //Declare samplers.
 Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
@@ -68,6 +72,14 @@ Vertex
     OutputParameter(vec3, OutPreviousWorldPosition);
     OutputParameter(vec3, OutCurrentWorldPosition);
 
+    //Calculate the world position.
+    vec3 world_position = vec3(0.0f, 0.0f, 0.0f);
+
+    for (uint bone_index = 0; bone_index < 4; ++bone_index)
+    {
+        world_position += vec3(ANIMATION_BONE_TRANSFORMS[START_BONE_TRANSFORM + InBoneIndices[bone_index]] * vec4(InPosition, 1.0f)) * InBoneWeights[bone_index];
+    }
+
     //Calculate the tangent space matrix.
     vec3 tangent = normalize(vec3(CURRENT_TRANSFORMATION * vec4(InTangent, 0.0f)));
     vec3 bitangent = normalize(vec3(CURRENT_TRANSFORMATION * vec4(cross(InNormal, InTangent), 0.0f)));
@@ -75,11 +87,11 @@ Vertex
 
     //Write data for the fragment shader.
     OutTangentSpaceMatrix = mat3(tangent, bitangent, normal);
-    OutPreviousWorldPosition = vec3(PREVIOUS_TRANSFORMATION * vec4(InPosition, 1.0f));
-    OutCurrentWorldPosition = vec3(CURRENT_TRANSFORMATION * vec4(InPosition, 1.0f));
+    OutPreviousWorldPosition = vec3(PREVIOUS_TRANSFORMATION * vec4(world_position, 1.0f));
+    OutCurrentWorldPosition = vec3(CURRENT_TRANSFORMATION * vec4(world_position, 1.0f));
 
     //Output the position.
-    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutPreviousWorldPosition, 1.0f));
+    OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutCurrentWorldPosition, 1.0f));
 }
 
 //The fragment shader.

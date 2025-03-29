@@ -290,7 +290,12 @@ layout (std140, set = 1, binding = 0) uniform Camera
 	layout (offset = 364) float FAR_PLANE;
 };
 
-layout (set = 1, binding = 1) uniform sampler SAMPLER;
+layout (std430, set = 1, binding = 1) buffer AnimationBoneTransforms
+{
+	layout (offset = 0) mat4[] ANIMATION_BONE_TRANSFORMS;
+};
+
+layout (set = 1, binding = 2) uniform sampler SAMPLER;
 
 /*
 *   Linearizes a depth value.
@@ -370,6 +375,7 @@ layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) mat4 PREVIOUS_TRANSFORMATION;
 	layout (offset = 64) mat4 CURRENT_TRANSFORMATION;
+	layout (offset = 128) uint START_BONE_TRANSFORM;
 };
 
 layout (location = 0) in mat3 InTangentSpaceMatrix;

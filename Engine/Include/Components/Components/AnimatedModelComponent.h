@@ -38,6 +38,12 @@ public:
 	//The current animation.
 	AssetPointer<AnimationAsset> _CurrentAnimation;
 
+	//The final bone transforms.
+	DynamicArray<Matrix4x4> _FinalBoneTransforms;
+
+	//The start bone transform.
+	uint32 _StartBoneTransform;
+
 };
 
 class AnimatedModelComponent final : public Component
@@ -48,10 +54,16 @@ class AnimatedModelComponent final : public Component
 	(
 		AnimatedModel,
 		COMPONENT_INITIALIZE()
+		COMPONENT_POST_INITIALIZE()
 		COMPONENT_POST_CREATE_INSTANCE()
+		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 64)
+		COMPONENT_POST_UPDATE(UpdatePhase::PRE_RENDER)
 	);
 
 private:
+
+	//The final bone transforms.
+	DynamicArray<Matrix4x4> _FinalBoneTransforms;
 
 	/*
 	*	Gathers the animated model input stream.

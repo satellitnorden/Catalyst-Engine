@@ -66,4 +66,23 @@ void AnimatedModelFile::PostProcess() NOEXCEPT
 			break;
 		}
 	}
+
+	/*
+	*	Animated vertices with fewer bone influences will have a bone index of -1, which becomes UINT32_MAXIMUM when converted to unsigned.
+	*	Fix those up by setting both the index and the weight to zero.
+	*/
+	for (Mesh &mesh : _Meshes)
+	{
+		for (AnimatedVertex &vertex : mesh._Vertices)
+		{
+			for (uint8 bone_index{ 0 }; bone_index < 4; ++bone_index)
+			{
+				if (vertex._BoneIndices[bone_index] == UINT32_MAXIMUM)
+				{
+					vertex._BoneIndices[bone_index] = 0;
+					vertex._BoneWeights[bone_index] = 0.0f;
+				}
+			}
+		}
+	}
 }

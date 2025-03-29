@@ -25,6 +25,9 @@ public:
 	//The current transformation.
 	Matrix4x4 _CurrentTransformation;
 
+	//The start bone transform.
+	uint32 _StartBoneTransform;
+
 };
 
 /*
@@ -56,7 +59,7 @@ void AnimatedModelComponent::Initialize() NOEXCEPT
 		vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(AnimatedVertex, _Normal)));
 		vertex_input_attribute_descriptions.Emplace(2, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(AnimatedVertex, _Tangent)));
 		vertex_input_attribute_descriptions.Emplace(3, 0, VertexInputAttributeDescription::Format::X32Y32Z32W32UnsignedInt, static_cast<uint32>(offsetof(AnimatedVertex, _BoneIndices)));
-		vertex_input_attribute_descriptions.Emplace(4, 0, VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat, static_cast<uint32>(offsetof(AnimatedVertex, _BoneWeights)));
+		vertex_input_attribute_descriptions.Emplace(4, 0, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, static_cast<uint32>(offsetof(AnimatedVertex, _BoneWeights)));
 		vertex_input_attribute_descriptions.Emplace(5, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, static_cast<uint32>(offsetof(AnimatedVertex, _TextureCoordinate)));
 
 		//Set up the vertex input binding descriptions.
@@ -79,6 +82,32 @@ void AnimatedModelComponent::Initialize() NOEXCEPT
 			this
 		);
 	}
+}
+
+/*
+*	Post-initializes this component.
+*/
+void AnimatedModelComponent::PostInitialize() NOEXCEPT
+{
+	//Register the storage buffer.
+	RenderingSystem::Instance->GetBufferManager()->RegisterStorageBuffer
+	(
+		HashString("AnimationBoneTransforms"),
+		sizeof(Matrix4x4) * 1'024,
+		[](DynamicArray<byte> *const RESTRICT data, void *const RESTRICT arguments)
+		{
+			const DynamicArray<Matrix4x4> *const RESTRICT final_bone_transforms{ static_cast<const DynamicArray<Matrix4x4> *const RESTRICT>(arguments) };
+
+			if (final_bone_transforms->Empty())
+			{
+				return;
+			}
+
+			data->Resize<false>(sizeof(Matrix4x4) * final_bone_transforms->Size());
+			Memory::Copy(data->Data(), final_bone_transforms->Data(), sizeof(Matrix4x4) * final_bone_transforms->Size());
+		},
+		&_FinalBoneTransforms
+	);
 }
 
 /*
@@ -110,6 +139,73 @@ void AnimatedModelComponent::DestroyInstance(Entity *const RESTRICT entity) NOEX
 {
 	//Remove the instance.
 	RemoveInstance(entity);
+}
+
+/*
+*	Updates this component.
+*/
+void AnimatedModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase, const uint64 start_instance_index, const uint64 end_instance_index) NOEXCEPT
+{
+	ASSERT(update_phase == UpdatePhase::PRE_RENDER, "Wrong update phase!");
+
+	//Iterate over the instances.
+	for (uint64 instance_index{ start_instance_index }; instance_index < end_instance_index; ++instance_index)
+	{
+		//Cache the instance data.
+		AnimatedModelInstanceData &instance_data{ _InstanceData[instance_index] };
+
+		//No skeleton, nothing to skin. :x
+		if (!instance_data._Model)
+		{
+			continue;
+		}
+
+		//Set the final bone transforms to identity, for now.
+		instance_data._FinalBoneTransforms.Resize<false>(instance_data._Model->_Skeleton._Bones.Size());
+
+		for (Matrix4x4 &final_bone_transform : instance_data._FinalBoneTransforms)
+		{
+			final_bone_transform = MatrixConstants::IDENTITY;
+		}
+	}
+}
+
+/*
+*	Runs after the given update phase.
+*/
+void AnimatedModelComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
+{
+	ASSERT(update_phase == UpdatePhase::PRE_RENDER, "Wrong update phase!");
+
+	//Clear the final bone transforms.
+	_FinalBoneTransforms.Clear();
+
+	//Calculate the number of final bone transforms.
+	uint64 number_of_final_bone_transforms{ 0 };
+
+	for (const AnimatedModelInstanceData &instance_data : _InstanceData)
+	{
+		number_of_final_bone_transforms += instance_data._FinalBoneTransforms.Size();
+	}
+
+	//Nothing to to here if there's no final bone transforms.
+	if (number_of_final_bone_transforms == 0)
+	{
+		return;
+	}
+
+	//Resize to fit the number of final bone transforms.
+	_FinalBoneTransforms.Resize<false>(number_of_final_bone_transforms);
+
+	//Add all final bone transforms!
+	uint32 start_bone_transform{ 0 };
+
+	for (AnimatedModelInstanceData &instance_data : _InstanceData)
+	{
+		Memory::Copy(&_FinalBoneTransforms[start_bone_transform], instance_data._FinalBoneTransforms.Data(), sizeof(Matrix4x4) * instance_data._FinalBoneTransforms.Size());
+		instance_data._StartBoneTransform = start_bone_transform;
+		start_bone_transform += static_cast<uint32>(instance_data._FinalBoneTransforms.Size());
+	}
 }
 
 /*
@@ -155,6 +251,7 @@ void AnimatedModelComponent::GatherAnimatedModelInputStream(RenderInputStream *c
 
 		push_constant_data._PreviousTransformation = world_transform_instance_data._PreviousWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
 		push_constant_data._CurrentTransformation = world_transform_instance_data._CurrentWorldTransform.ToRelativeMatrix4x4(WorldSystem::Instance->GetCurrentWorldGridCell());
+		push_constant_data._StartBoneTransform = animated_model_instance_data._StartBoneTransform;
 
 		for (uint64 i{ 0 }; i < sizeof(AnimatedModelPushConstantData); ++i)
 		{
