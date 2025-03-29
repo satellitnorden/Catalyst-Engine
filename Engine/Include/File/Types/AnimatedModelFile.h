@@ -17,6 +17,14 @@ class AnimatedModelFile final
 
 public:
 
+	//Enumeration covering all creators.
+	enum class Creator : uint8
+	{
+		BLENDER,
+
+		UNKNOWN
+	};
+
 	/*
 	*	Mesh class definition.
 	*/
@@ -36,10 +44,18 @@ public:
 
 	};
 
+	//The creator.
+	Creator _Creator{ Creator::UNKNOWN };
+
 	//The meshes.
 	DynamicArray<Mesh> _Meshes;
 
 	//The skeleton.
 	Skeleton _Skeleton;
+
+	/*
+	*	Post processes this animated model file.
+	*/
+	void PostProcess() NOEXCEPT;
 
 };

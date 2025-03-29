@@ -363,8 +363,14 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimatedMo
 		return false;
 	}
 
+	//Assume Blender, for now. :x
+	animated_model_file->_Creator = AnimatedModelFile::Creator::BLENDER;
+
 	//Process the root node.
 	ProcessNode(scene, scene->mRootNode, animated_model_file);
+
+	//Post process the animated model file.
+	animated_model_file->PostProcess();
 
 	//Return that the read succeeded!
 	return true;
