@@ -8,6 +8,21 @@
 #include <File/Utilities/BlenderUtilities.h>
 
 /*
+*	Applies a transform to the given bone (and all it's children).
+*/
+FORCE_INLINE void ApplyTransform(Bone *const RESTRICT bone) NOEXCEPT
+{
+	BlenderUtilities::Transform(&bone->_BindTransform);
+	bone->_InverseBindTransform = bone->_BindTransform;
+	bone->_InverseBindTransform.Inverse();
+
+	for (Bone &child : bone->_Children)
+	{
+		ApplyTransform(&child);
+	}
+}
+
+/*
 *	Post processes this animated model file.
 */
 void AnimatedModelFile::PostProcess() NOEXCEPT
@@ -50,14 +65,7 @@ void AnimatedModelFile::PostProcess() NOEXCEPT
 				}
 			}
 
-			/*
-			for (Bone &bone : _Skeleton._Bones)
-			{
-				BlenderUtilities::Transform(&bone._BindTransform);
-				bone._InverseBindTransform = bone._BindTransform;
-				bone._InverseBindTransform.Inverse();
-			}
-			*/
+			//ApplyTransform(&_Skeleton._RootBone);
 
 			break;
 		}
