@@ -69,6 +69,11 @@ private:
 	DynamicArray<Matrix4x4> _FinalBoneTransforms;
 
 	/*
+	*	Skins.
+	*/
+	void Skin(const Bone &bone, const Matrix4x4 &parent_transform, AnimatedModelInstanceData *const RESTRICT instance_data) NOEXCEPT;
+
+	/*
 	*	Gathers the animated model input stream.
 	*/
 	void GatherAnimatedModelInputStream(RenderInputStream *const RESTRICT input_stream) NOEXCEPT;

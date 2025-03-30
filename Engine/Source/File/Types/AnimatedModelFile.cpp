@@ -50,12 +50,14 @@ void AnimatedModelFile::PostProcess() NOEXCEPT
 				}
 			}
 
+			/*
 			for (Bone &bone : _Skeleton._Bones)
 			{
 				BlenderUtilities::Transform(&bone._BindTransform);
 				bone._InverseBindTransform = bone._BindTransform;
 				bone._InverseBindTransform.Inverse();
 			}
+			*/
 
 			break;
 		}

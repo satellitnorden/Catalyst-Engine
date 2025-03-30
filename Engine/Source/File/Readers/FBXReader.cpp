@@ -17,6 +17,25 @@
 #include <ThirdParty/assimp/assimp/scene.h>
 
 /*
+*	Bone information class definition.
+*/
+class BoneInformation final
+{
+
+public:
+
+	//The name.
+	DynamicString _Name;
+
+	//The index.
+	uint32 _Index;
+
+	//The bind transform.
+	Matrix4x4 _BindTransform;
+
+};
+
+/*
 *	Lists all of the meta data.
 */
 FORCE_INLINE void ListMetaData(const aiMetadata *meta_data) NOEXCEPT
@@ -90,7 +109,7 @@ FORCE_INLINE void ListMetaData(const aiMetadata *meta_data) NOEXCEPT
 /*
 *	Processes a single mesh.
 */
-FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode *const RESTRICT node, const aiMesh *const RESTRICT mesh, AnimatedModelFile *const RESTRICT animated_model_file) NOEXCEPT
+FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode *const RESTRICT node, const aiMesh *const RESTRICT mesh, AnimatedModelFile *const RESTRICT animated_model_file, DynamicArray<BoneInformation> *const RESTRICT bone_information) NOEXCEPT
 {
 	//Add a new mesh.
 	animated_model_file->_Meshes.Emplace();
@@ -153,31 +172,32 @@ FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode 
 		}
 	}
 
-	//Set up the skeleton.
-	animated_model_file->_Skeleton._Bones.Reserve(mesh->mNumBones);
-
+	//Add the bone information.
 	for (uint32 bone_index{ 0 }; bone_index < mesh->mNumBones; ++bone_index)
 	{
 		//Cache the bone.
 		const aiBone *const RESTRICT bone{ mesh->mBones[bone_index] };
 
 		//Add the new bone.
-		animated_model_file->_Skeleton._Bones.Emplace();
-		Bone &new_bone{ animated_model_file->_Skeleton._Bones.Back() };
+		bone_information->Emplace();
+		BoneInformation &new_bone_information{ bone_information->Back() };
 
 		//Set the name.
-		new_bone._Name = HashString(bone->mName.C_Str());
+		new_bone_information._Name = DynamicString(bone->mName.C_Str());
 
 		//Set the index.
-		new_bone._Index = bone_index;
+		new_bone_information._Index = bone_index;
 
 		//Set the bind transform.
-		Memory::Copy(&new_bone._BindTransform, &bone->mOffsetMatrix, sizeof(Matrix4x4));
-		new_bone._BindTransform.Transpose();
-
-		//Set the inverse bind transform.
-		new_bone._InverseBindTransform = new_bone._BindTransform;
-		new_bone._InverseBindTransform.Inverse();
+#if 1
+		new_bone_information._BindTransform._Matrix[0][0] = bone->mOffsetMatrix.a1; new_bone_information._BindTransform._Matrix[1][0] = bone->mOffsetMatrix.a2; new_bone_information._BindTransform._Matrix[2][0] = bone->mOffsetMatrix.a3; new_bone_information._BindTransform._Matrix[3][0] = bone->mOffsetMatrix.a4;
+		new_bone_information._BindTransform._Matrix[0][1] = bone->mOffsetMatrix.b1; new_bone_information._BindTransform._Matrix[1][1] = bone->mOffsetMatrix.b2; new_bone_information._BindTransform._Matrix[2][1] = bone->mOffsetMatrix.b3; new_bone_information._BindTransform._Matrix[3][1] = bone->mOffsetMatrix.b4;
+		new_bone_information._BindTransform._Matrix[0][2] = bone->mOffsetMatrix.c1; new_bone_information._BindTransform._Matrix[1][2] = bone->mOffsetMatrix.c2; new_bone_information._BindTransform._Matrix[2][2] = bone->mOffsetMatrix.c3; new_bone_information._BindTransform._Matrix[3][2] = bone->mOffsetMatrix.c4;
+		new_bone_information._BindTransform._Matrix[0][3] = bone->mOffsetMatrix.d1; new_bone_information._BindTransform._Matrix[1][3] = bone->mOffsetMatrix.d2; new_bone_information._BindTransform._Matrix[2][3] = bone->mOffsetMatrix.d3; new_bone_information._BindTransform._Matrix[3][3] = bone->mOffsetMatrix.d4;
+#else
+		Memory::Copy(&new_bone_information._BindTransform, &bone->mOffsetMatrix, sizeof(Matrix4x4));
+		new_bone_information._BindTransform.Transpose();
+#endif
 
 		//Add the vertex weights.
 		for (uint32 vertex_weight_index{ 0 }; vertex_weight_index < bone->mNumWeights; ++vertex_weight_index)
@@ -278,7 +298,7 @@ FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode 
 /*
 *	Processes a single node.
 */
-FORCE_INLINE void ProcessNode(const aiScene *const RESTRICT scene, const aiNode *const RESTRICT node, AnimatedModelFile *const RESTRICT animated_model_file) NOEXCEPT
+FORCE_INLINE void ProcessNode(const aiScene *const RESTRICT scene, const aiNode *const RESTRICT node, AnimatedModelFile *const RESTRICT animated_model_file, DynamicArray<BoneInformation> *const RESTRICT bone_information) NOEXCEPT
 {
 	//Process all meshes.
 	for (uint32 i{ 0 }; i < node->mNumMeshes; ++i)
@@ -287,13 +307,77 @@ FORCE_INLINE void ProcessNode(const aiScene *const RESTRICT scene, const aiNode 
 		const aiMesh *const RESTRICT mesh{ scene->mMeshes[node->mMeshes[i]] };
 
 		//Process the mesh.
-		ProcessMesh(scene, node, mesh, animated_model_file);
+		ProcessMesh(scene, node, mesh, animated_model_file, bone_information);
 	}
 
 	//Process all child nodes.
 	for (uint32 i{ 0 }; i < node->mNumChildren; ++i)
 	{
-		ProcessNode(scene, node->mChildren[i], animated_model_file);
+		ProcessNode(scene, node->mChildren[i], animated_model_file, bone_information);
+	}
+}
+
+/*
+*	Builds a skeleton.
+*/
+FORCE_INLINE void BuildSkeleton(const aiNode *const RESTRICT node, const DynamicArray<BoneInformation> &bone_information, AnimatedModelFile *const RESTRICT animated_model_file, Bone *const RESTRICT parent) NOEXCEPT
+{
+	//Find the bone information.
+	const BoneInformation *RESTRICT _bone_information{ nullptr };
+
+	for (const BoneInformation &__bone_information : bone_information)
+	{
+		if (StringUtilities::IsEqual(__bone_information._Name.Data(), node->mName.C_Str()))
+		{
+			_bone_information = &__bone_information;
+
+			break;
+		}
+	}
+
+	//If we have a parent (i.e. the root bone has been added), then just return if this is not a bone. Otherwise call recursively with this node's children.
+	if (!_bone_information)
+	{
+		if (parent)
+		{
+			return;
+		}
+		
+		else
+		{
+			for (uint32 child_index{ 0 }; child_index < node->mNumChildren; ++child_index)
+			{
+				BuildSkeleton(node->mChildren[child_index], bone_information, animated_model_file, nullptr);
+			}
+
+			return;
+		}
+	}
+
+	//This node is a bone - Set up the bone!
+	Bone bone;
+
+	bone._Name = HashString(_bone_information->_Name.Data());
+	bone._Index = _bone_information->_Index;
+	bone._BindTransform = _bone_information->_BindTransform;
+	bone._InverseBindTransform = bone._BindTransform;
+	bone._InverseBindTransform.Inverse();
+
+	//Call recursively.
+	for (uint32 child_index{ 0 }; child_index < node->mNumChildren; ++child_index)
+	{
+		BuildSkeleton(node->mChildren[child_index], bone_information, animated_model_file, &bone);
+	}
+
+	//If we have a parent, add this bone to its' childrens - Otherwise this is the root node!
+	if (parent)
+	{
+		parent->_Children.Emplace(bone);
+	}
+
+	else
+	{
+		animated_model_file->_Skeleton._RootBone = bone;
 	}
 }
 
@@ -362,7 +446,11 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimatedMo
 	animated_model_file->_Creator = AnimatedModelFile::Creator::BLENDER;
 
 	//Process the root node.
-	ProcessNode(scene, scene->mRootNode, animated_model_file);
+	DynamicArray<BoneInformation> bone_information;
+	ProcessNode(scene, scene->mRootNode, animated_model_file, &bone_information);
+
+	//Build the skeleton.
+	BuildSkeleton(scene->mRootNode, bone_information, animated_model_file, nullptr);
 
 	//Post process the animated model file.
 	animated_model_file->PostProcess();

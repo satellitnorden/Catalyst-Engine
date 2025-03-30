@@ -39,7 +39,7 @@ public:
 AnimatedModelAssetCompiler::AnimatedModelAssetCompiler() NOEXCEPT
 {
 	//Set the flags.
-	_Flags = Flags::NONE;
+	_Flags = Flags::ALWAYS_COMPILE;
 }
 
 /*
@@ -128,6 +128,37 @@ NO_DISCARD Asset *const RESTRICT AnimatedModelAssetCompiler::Load(const LoadCont
 
 	//Return the new asset!
 	return new_asset;
+}
+
+/*
+*	Writes a single bone.
+*/
+FORCE_INLINE void WriteBone(const Bone &bone, BinaryOutputFile *const RESTRICT output_file, uint32 *const RESTRICT total_number_of_bones) NOEXCEPT
+{
+	//Write the name.
+	output_file->Write(&bone._Name, sizeof(HashString));
+
+	//Write the index.
+	output_file->Write(&bone._Index, sizeof(uint32));
+
+	//Write the bind transform.
+	output_file->Write(&bone._BindTransform, sizeof(Matrix4x4));
+
+	//Write the inverse bind transform.
+	output_file->Write(&bone._InverseBindTransform, sizeof(Matrix4x4));
+
+	//Write the number of children.
+	const uint64 number_of_children{ bone._Children.Size() };
+	output_file->Write(&number_of_children, sizeof(uint64));
+
+	//Update the total number of bones.
+	++(*total_number_of_bones);
+
+	//Write all the children!
+	for (const Bone &child : bone._Children)
+	{
+		WriteBone(child, output_file, total_number_of_bones);
+	}
 }
 
 /*
@@ -261,15 +292,46 @@ void AnimatedModelAssetCompiler::CompileInternal(CompileData *const RESTRICT com
 		output_file.Write(animated_model_file._Meshes[mesh_index]._Indices.Data(), sizeof(uint32) * number_of_indices);
 	}
 
-	//Write the number of bones.
-	const uint64 number_of_bones{ animated_model_file._Skeleton._Bones.Size() };
-	output_file.Write(&number_of_bones, sizeof(uint64));
+	//Write the root bone.
+	uint32 total_number_of_bones{ 0 };
+	WriteBone(animated_model_file._Skeleton._RootBone, &output_file, &total_number_of_bones);
 
-	//Write the bones.
-	output_file.Write(animated_model_file._Skeleton._Bones.Data(), sizeof(Bone) * number_of_bones);
+	//Write the total number of bones.
+	output_file.Write(&total_number_of_bones, sizeof(uint32));
 
 	//Close the output file.
 	output_file.Close();
+}
+
+/*
+*	Reads a bone.
+*/
+FORCE_INLINE void ReadBone(Bone *const RESTRICT bone, StreamArchive *const RESTRICT stream_archive, uint64 *const RESTRICT stream_archive_position) NOEXCEPT
+{
+	//Read the name.
+	stream_archive->Read(&bone->_Name, sizeof(HashString), stream_archive_position);
+
+	//Read the index.
+	stream_archive->Read(&bone->_Index, sizeof(uint32), stream_archive_position);
+
+	//Read the bind transform.
+	stream_archive->Read(&bone->_BindTransform, sizeof(Matrix4x4), stream_archive_position);
+
+	//Read the inverse bind transform.
+	stream_archive->Read(&bone->_InverseBindTransform, sizeof(Matrix4x4), stream_archive_position);
+
+	//Read the number of children.
+	uint64 number_of_children;
+	stream_archive->Read(&number_of_children, sizeof(uint64), stream_archive_position);
+
+	//Upsize accordingly.
+	bone->_Children.Upsize<true>(number_of_children);
+
+	//Read all children.
+	for (Bone &child : bone->_Children)
+	{
+		ReadBone(&child, stream_archive, stream_archive_position);
+	}
 }
 
 /*
@@ -335,11 +397,9 @@ void AnimatedModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data
 	//Write the index count.
 	load_data->_Asset->_IndexCount = static_cast<uint32>(indices[0].Size());
 
-	//Read the number of bones.
-	uint64 number_of_bones;
-	load_data->_StreamArchive->Read(&number_of_bones, sizeof(uint64), &stream_archive_position);
-
 	//Read the bones.
-	load_data->_Asset->_Skeleton._Bones.Upsize<false>(number_of_bones);
-	load_data->_StreamArchive->Read(load_data->_Asset->_Skeleton._Bones.Data(), sizeof(Bone) * number_of_bones, &stream_archive_position);
+	ReadBone(&load_data->_Asset->_Skeleton._RootBone, load_data->_StreamArchive, &stream_archive_position);
+
+	//Read the total number of bones.
+	load_data->_StreamArchive->Read(&load_data->_Asset->_Skeleton._TotalNumberOfBones, sizeof(uint32), &stream_archive_position);
 }

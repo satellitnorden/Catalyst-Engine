@@ -163,43 +163,13 @@ void AnimatedModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase,
 		}
 
 		//Ensure the correct size of the final bone transforms.
-		instance_data._FinalBoneTransforms.Resize<false>(instance_data._Model->_Skeleton._Bones.Size());
+		instance_data._FinalBoneTransforms.Resize<false>(instance_data._Model->_Skeleton._TotalNumberOfBones);
 
 		//If there is a current animation - Animate. Otherwise, just set to identity.
 		if (instance_data._CurrentAnimation)
 		{
-			//Walk the skeleton.
-			for (uint64 bone_index{ 0 }; bone_index < instance_data._Model->_Skeleton._Bones.Size(); ++bone_index)
-			{
-				//Cache the bone.
-				const Bone &bone{ instance_data._Model->_Skeleton._Bones[bone_index] };
-
-				//Find the channel for this bone.
-				for (const AnimationChannel &channel : instance_data._CurrentAnimation->_Channels)
-				{
-					if (channel._BoneIdentifier == bone._Name)
-					{
-						//Retrieve the current bone transform.
-						BoneTransform current_bone_transform;
-
-						for (const AnimationKeyframe &keyframe : channel._Keyframes)
-						{
-							if (instance_data._CurrentAnimationTime >= keyframe._Timestamp)
-							{
-								current_bone_transform = keyframe._BoneTransform;
-							}
-						}
-
-						//Construct the local transform.
-						const Matrix4x4 local_transform{ current_bone_transform._Translation, current_bone_transform._Rotation, current_bone_transform._Scale };
-
-						//Add the final bone transform.
-						instance_data._FinalBoneTransforms[bone._Index] = local_transform/* * bone._BindTransform*/;
-
-						break;
-					}
-				}
-			}
+			//Skin the root bone.
+			Skin(instance_data._Model->_Skeleton._RootBone, MatrixConstants::IDENTITY, &instance_data);
 
 			//Update the current animation time.
 			instance_data._CurrentAnimationTime += CatalystEngineSystem::Instance->GetDeltaTime();
@@ -255,6 +225,50 @@ void AnimatedModelComponent::PostUpdate(const UpdatePhase update_phase) NOEXCEPT
 		Memory::Copy(&_FinalBoneTransforms[start_bone_transform], instance_data._FinalBoneTransforms.Data(), sizeof(Matrix4x4) * instance_data._FinalBoneTransforms.Size());
 		instance_data._StartBoneTransform = start_bone_transform;
 		start_bone_transform += static_cast<uint32>(instance_data._FinalBoneTransforms.Size());
+	}
+}
+
+/*
+*	Skins.
+*/
+void AnimatedModelComponent::Skin(const Bone &bone, const Matrix4x4 &parent_transform, AnimatedModelInstanceData *const RESTRICT instance_data) NOEXCEPT
+{
+	//Calculate the local transform.
+	Matrix4x4 local_transform;
+
+	//Find the channel for this bone.
+	for (const AnimationChannel &channel : instance_data->_CurrentAnimation->_Channels)
+	{
+		if (channel._BoneIdentifier == bone._Name)
+		{
+			//Retrieve the current bone transform.
+			BoneTransform current_bone_transform;
+
+			for (const AnimationKeyframe &keyframe : channel._Keyframes)
+			{
+				if (instance_data->_CurrentAnimationTime >= keyframe._Timestamp)
+				{
+					current_bone_transform = keyframe._BoneTransform;
+				}
+			}
+
+			//Construct the local transform.
+			local_transform = Matrix4x4(current_bone_transform._Translation, current_bone_transform._Rotation, current_bone_transform._Scale);
+
+			break;
+		}
+	}
+
+	//Construct the global transform.
+	const Matrix4x4 global_transform{ parent_transform * local_transform };
+
+	//Add the final bone transform.
+	instance_data->_FinalBoneTransforms[bone._Index] = global_transform * bone._BindTransform;
+
+	//Update all children.
+	for (const Bone &child : bone._Children)
+	{
+		Skin(child, global_transform, instance_data);
 	}
 }
 
