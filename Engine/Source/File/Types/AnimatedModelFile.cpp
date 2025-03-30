@@ -86,4 +86,19 @@ void AnimatedModelFile::PostProcess() NOEXCEPT
 			}
 		}
 	}
+
+	//Normalize the vertex weights.
+	for (Mesh &mesh : _Meshes)
+	{
+		for (AnimatedVertex &vertex : mesh._Vertices)
+		{
+			const float32 weights_sum{ vertex._BoneWeights[0] + vertex._BoneWeights[1] + vertex._BoneWeights[2] + vertex._BoneWeights[3] };
+			const float32 weights_sum_reciprocal{ 1.0f / weights_sum };
+
+			vertex._BoneWeights[0] *= weights_sum_reciprocal;
+			vertex._BoneWeights[1] *= weights_sum_reciprocal;
+			vertex._BoneWeights[2] *= weights_sum_reciprocal;
+			vertex._BoneWeights[3] *= weights_sum_reciprocal;
+		}
+	}
 }

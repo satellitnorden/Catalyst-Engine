@@ -19,7 +19,7 @@ public:
 	Quaternion _Rotation;
 
 	//The scale.
-	Vector3<float32> _Scale;
+	Vector3<float32> _Scale{ 1.0f, 1.0f, 1.0f };
 
 	/*
 	*	Default constructor.

@@ -336,6 +336,7 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimatedMo
 		aiProcess_CalcTangentSpace
 		| aiProcess_JoinIdenticalVertices
 		| aiProcess_Triangulate
+		| aiProcess_LimitBoneWeights
 		| aiProcess_ImproveCacheLocality
 		| aiProcess_FlipUVs
 		| aiProcess_FlipWindingOrder
