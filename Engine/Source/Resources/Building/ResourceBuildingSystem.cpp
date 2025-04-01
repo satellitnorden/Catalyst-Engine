@@ -8,9 +8,6 @@
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
 
-//Animation.
-#include <Animation/AnimatedVertex.h>
-
 //Concurrency.
 #include <Concurrency/Task.h>
 

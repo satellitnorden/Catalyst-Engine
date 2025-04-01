@@ -290,7 +290,7 @@ NO_DISCARD bool DebugSystem::DrawDebugWindow(const Vector2<float32> minimum, con
 	ImGuiSystem::Instance->BeginWindow(parameters);
 
 	//Draw the root category.
-	DrawDebugCategory(_RootDebugCategory, true);
+	DrawDebugCategory(_RootDebugCategory, true, 0);
 
 	ImGui::End();
 
@@ -300,17 +300,31 @@ NO_DISCARD bool DebugSystem::DrawDebugWindow(const Vector2<float32> minimum, con
 /*
 *	Draws a debug category.
 */
-void DebugSystem::DrawDebugCategory(DebugCategory &debug_category, const bool is_root) NOEXCEPT
+void DebugSystem::DrawDebugCategory(DebugCategory &debug_category, const bool is_root, const uint8 depth) NOEXCEPT
 {
+	//Add some spacing.
+	for (uint8 i{ 0 }; i < depth; ++i)
+	{
+		ImGui::Text(" ");
+		ImGui::SameLine();
+	}
+
 	if (is_root || ImGui::CollapsingHeader(debug_category._Name.Data()))
 	{
 		for (DebugCategory &sub_category : debug_category._SubCategories)
 		{
-			DrawDebugCategory(sub_category, false);
+			DrawDebugCategory(sub_category, false, depth + (is_root ? 0 : 1));
 		}
 
 		for (DebugCommand &debug_command : debug_category._DebugCommands)
 		{
+			//Add some spacing.
+			for (uint8 i{ 0 }; i < depth; ++i)
+			{
+				ImGui::Text(" ");
+				ImGui::SameLine();
+			}
+
 			//Push the ID.
 			ImGui::PushID(debug_command._FullName.Data());
 

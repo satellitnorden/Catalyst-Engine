@@ -107,6 +107,28 @@ FORCE_INLINE void ListMetaData(const aiMetadata *meta_data) NOEXCEPT
 }
 
 /*
+*	Finds the Assimp node with the given name.
+*/
+FORCE_INLINE NO_DISCARD aiNode *const RESTRICT FindAssimpNode(const char *const RESTRICT name, aiNode *const RESTRICT root_node) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(name, root_node->mName.C_Str()))
+	{
+		return root_node;
+	}
+
+	else
+	{
+		for (uint32 child_index{ 0 }; child_index < root_node->mNumChildren; ++child_index)
+		{
+			if (aiNode *const RESTRICT found_node{ FindAssimpNode(name, root_node->mChildren[child_index]) })
+			{
+				return found_node;
+			}
+		}
+	}
+}
+
+/*
 *	Processes a single mesh.
 */
 FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode *const RESTRICT node, const aiMesh *const RESTRICT mesh, AnimatedModelFile *const RESTRICT animated_model_file, DynamicArray<BoneInformation> *const RESTRICT bone_information) NOEXCEPT
