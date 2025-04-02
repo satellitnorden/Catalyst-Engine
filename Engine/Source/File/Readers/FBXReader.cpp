@@ -36,6 +36,48 @@ public:
 };
 
 /*
+*	Converts an Assimp matrix.
+*/
+FORCE_INLINE NO_DISCARD Matrix4x4 ConvertAssimpMatrix(const aiMatrix4x4 &matrix) NOEXCEPT
+{
+	aiVector3D translation;
+	aiQuaternion rotation;
+	aiVector3D scale;
+	matrix.Decompose(scale, rotation, translation);
+
+	return Matrix4x4
+	(
+		Vector3<float32>(translation.x, translation.z, translation.y),
+		Quaternion(rotation.x, rotation.z, rotation.y, rotation.w),
+		Vector3<float32>(scale.x, scale.z, scale.y)
+	);
+}
+
+/*
+*	Finds the Assimp node with the given name.
+*/
+FORCE_INLINE NO_DISCARD aiNode *const RESTRICT FindAssimpNode(const char *const RESTRICT name, aiNode *const RESTRICT root_node) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(name, root_node->mName.C_Str()))
+	{
+		return root_node;
+	}
+
+	else
+	{
+		for (uint32 child_index{ 0 }; child_index < root_node->mNumChildren; ++child_index)
+		{
+			if (aiNode *const RESTRICT found_node{ FindAssimpNode(name, root_node->mChildren[child_index]) })
+			{
+				return found_node;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+/*
 *	Lists all of the meta data.
 */
 FORCE_INLINE void ListMetaData(const aiMetadata *meta_data) NOEXCEPT
@@ -104,28 +146,6 @@ FORCE_INLINE void ListMetaData(const aiMetadata *meta_data) NOEXCEPT
 		}
 	}
 #endif
-}
-
-/*
-*	Finds the Assimp node with the given name.
-*/
-FORCE_INLINE NO_DISCARD aiNode *const RESTRICT FindAssimpNode(const char *const RESTRICT name, aiNode *const RESTRICT root_node) NOEXCEPT
-{
-	if (StringUtilities::IsEqual(name, root_node->mName.C_Str()))
-	{
-		return root_node;
-	}
-
-	else
-	{
-		for (uint32 child_index{ 0 }; child_index < root_node->mNumChildren; ++child_index)
-		{
-			if (aiNode *const RESTRICT found_node{ FindAssimpNode(name, root_node->mChildren[child_index]) })
-			{
-				return found_node;
-			}
-		}
-	}
 }
 
 /*
@@ -200,6 +220,9 @@ FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode 
 		//Cache the bone.
 		const aiBone *const RESTRICT bone{ mesh->mBones[bone_index] };
 
+		//Retrieve the bone node.
+		const aiNode *const RESTRICT bone_node{ FindAssimpNode(bone->mName.C_Str(), scene->mRootNode) };
+
 		//Add the new bone.
 		bone_information->Emplace();
 		BoneInformation &new_bone_information{ bone_information->Back() };
@@ -211,15 +234,7 @@ FORCE_INLINE void ProcessMesh(const aiScene *const RESTRICT scene, const aiNode 
 		new_bone_information._Index = bone_index;
 
 		//Set the bind transform.
-#if 1
-		new_bone_information._BindTransform._Matrix[0][0] = bone->mOffsetMatrix.a1; new_bone_information._BindTransform._Matrix[1][0] = bone->mOffsetMatrix.a2; new_bone_information._BindTransform._Matrix[2][0] = bone->mOffsetMatrix.a3; new_bone_information._BindTransform._Matrix[3][0] = bone->mOffsetMatrix.a4;
-		new_bone_information._BindTransform._Matrix[0][1] = bone->mOffsetMatrix.b1; new_bone_information._BindTransform._Matrix[1][1] = bone->mOffsetMatrix.b2; new_bone_information._BindTransform._Matrix[2][1] = bone->mOffsetMatrix.b3; new_bone_information._BindTransform._Matrix[3][1] = bone->mOffsetMatrix.b4;
-		new_bone_information._BindTransform._Matrix[0][2] = bone->mOffsetMatrix.c1; new_bone_information._BindTransform._Matrix[1][2] = bone->mOffsetMatrix.c2; new_bone_information._BindTransform._Matrix[2][2] = bone->mOffsetMatrix.c3; new_bone_information._BindTransform._Matrix[3][2] = bone->mOffsetMatrix.c4;
-		new_bone_information._BindTransform._Matrix[0][3] = bone->mOffsetMatrix.d1; new_bone_information._BindTransform._Matrix[1][3] = bone->mOffsetMatrix.d2; new_bone_information._BindTransform._Matrix[2][3] = bone->mOffsetMatrix.d3; new_bone_information._BindTransform._Matrix[3][3] = bone->mOffsetMatrix.d4;
-#else
-		Memory::Copy(&new_bone_information._BindTransform, &bone->mOffsetMatrix, sizeof(Matrix4x4));
-		new_bone_information._BindTransform.Transpose();
-#endif
+		new_bone_information._BindTransform = ConvertAssimpMatrix(bone->mOffsetMatrix);
 
 		//Add the vertex weights.
 		for (uint32 vertex_weight_index{ 0 }; vertex_weight_index < bone->mNumWeights; ++vertex_weight_index)
@@ -559,8 +574,8 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimationF
 			//Set the rotation.
 			new_keyframe._BoneTransform._Rotation = Quaternion(channel->mRotationKeys[keyframe_index].mValue.x, channel->mRotationKeys[keyframe_index].mValue.y, channel->mRotationKeys[keyframe_index].mValue.z, channel->mRotationKeys[keyframe_index].mValue.w);
 
-			//Set the scale to a default value, not supported right now.
-			new_keyframe._BoneTransform._Scale = Vector3<float32>(1.0f, 1.0f, 1.0f);
+			//Set the scale.
+			new_keyframe._BoneTransform._Scale = Vector3<float32>(channel->mScalingKeys[keyframe_index].mValue.x, channel->mScalingKeys[keyframe_index].mValue.y, channel->mScalingKeys[keyframe_index].mValue.z);
 		}
 	}
 

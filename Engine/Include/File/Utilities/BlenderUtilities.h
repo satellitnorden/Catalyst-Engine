@@ -24,11 +24,7 @@ namespace BlenderUtilities
 	*/
 	FORCE_INLINE void Transform(Quaternion *const RESTRICT value) NOEXCEPT
 	{
-#if 1
-		(*value) = Quaternion(-value->_X, -value->_Z, -value->_Y, value->_W);
-#else
 		Swap(&value->_Y, &value->_Z);
-#endif
 	}
 
 	/*
