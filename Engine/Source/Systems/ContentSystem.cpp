@@ -796,36 +796,6 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 /*
-*	Prints a memory string into the given buffer.
-*/
-FORCE_INLINE void PrintMemoryString(char *buffer, const uint64 buffer_size, const char *const RESTRICT prefix, const uint64 input_bytes) NOEXCEPT
-{
-	if (input_bytes > 1'000)
-	{
-		if (input_bytes > 1'000'000)
-		{
-			const float64 memory{ static_cast<float64>(input_bytes) / 1'000'000.0 };
-
-			sprintf_s(buffer, buffer_size, "%s: %.2f MB", prefix, memory);
-		}
-
-		else
-		{
-			const float64 memory{ static_cast<float64>(input_bytes) / 1'000.0 };
-
-			sprintf_s(buffer, buffer_size, "%s: %.2f KB", prefix, memory);
-		}
-	}
-
-	else
-	{
-		const float64 memory{ static_cast<float64>(input_bytes) };
-
-		sprintf_s(buffer, buffer_size, "%s: %.2f B", prefix, memory);
-	}
-}
-
-/*
 *	The window callback.
 */
 NO_DISCARD bool ContentSystem::WindowCallback(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
@@ -863,14 +833,14 @@ NO_DISCARD bool ContentSystem::WindowCallback(const Vector2<float32> minimum, co
 
 				{
 					char buffer[64];
-					PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "CPU Memory", statistics._TotalCPUMemory);
+					Memory::PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "CPU Memory", statistics._TotalCPUMemory);
 
 					ImGui::Text(buffer);
 				}
 
 				{
 					char buffer[64];
-					PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "GPU Memory", statistics._TotalGPUMemory);
+					Memory::PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "GPU Memory", statistics._TotalGPUMemory);
 
 					ImGui::Text(buffer);
 				}
@@ -886,14 +856,14 @@ NO_DISCARD bool ContentSystem::WindowCallback(const Vector2<float32> minimum, co
 
 		{
 			char buffer[64];
-			PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "CPU Memory", total_cpu_memory);
+			Memory::PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "CPU Memory", total_cpu_memory);
 
 			ImGui::Text(buffer);
 		}
 
 		{
 			char buffer[64];
-			PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "GPU Memory", total_gpu_memory);
+			Memory::PrintMemoryString(buffer, ARRAY_LENGTH(buffer), "GPU Memory", total_gpu_memory);
 
 			ImGui::Text(buffer);
 		}

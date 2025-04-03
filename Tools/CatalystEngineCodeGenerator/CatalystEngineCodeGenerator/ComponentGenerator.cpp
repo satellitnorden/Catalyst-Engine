@@ -49,6 +49,9 @@ public:
 	//The initialization data name.
 	std::string _InitializationDataName;
 
+	//The instance data name.
+	std::string _InstanceDataName;
+
 	//Denotes whether or not this component wants an "Initialize()" call.
 	bool _Initialize;
 
@@ -753,7 +756,16 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << std::endl;
 
 	file << "//Systems." << std::endl;
+	file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+	file << "\t#include <Systems/DebugSystem.h>" << std::endl;
+	file << "\t#include <Systems/ImGuiSystem.h>" << std::endl;
+	file << "#endif" << std::endl;
 	file << "#include <Systems/TaskSystem.h>" << std::endl;
+	file << std::endl;
+
+	file << "//STD." << std::endl;
+	file << "#include <stdio.h>" << std::endl;
+
 	file << std::endl;
 
 	//Add includes for all components.
@@ -796,6 +808,11 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 				new_component_data._InitializationDataName = new_component_data._Name;
 				for (size_t i{ 0 }; i < strlen("Component"); ++i) new_component_data._InitializationDataName.pop_back();
 				new_component_data._InitializationDataName += "InitializationData";
+
+				//Figure out the instance data name.
+				new_component_data._InstanceDataName = new_component_data._Name;
+				for (size_t i{ 0 }; i < strlen("Component"); ++i) new_component_data._InstanceDataName.pop_back();
+				new_component_data._InstanceDataName += "InstanceData";
 
 				//Set whether or not this component wants an "Initialize()" call.
 				new_component_data._Initialize = component_entry["Initialize"];
@@ -974,6 +991,11 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	//Add the static variable definitions for all component instances.
 	file << "//Static variable definitions." << std::endl;
 
+	file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+	file << "bool COMPONENT_STATISTICS_WINDOW_OPEN{ false };" << std::endl;
+	file << "#endif" << std::endl;
+	file << std::endl;
+
 	for (const ComponentData &_component_data : component_data)
 	{
 		file << _component_data._Name.c_str() << " *RESTRICT " << _component_data._Name.c_str() << "::Instance;" << std::endl;
@@ -1031,6 +1053,46 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "\t};" << std::endl;
 
 	file << "};" << std::endl;
+	file << std::endl;
+
+	//Add the statistics window callback.
+	file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+	file << "/*" << std::endl;
+	file << "*\tThe statistics window callback." << std::endl;
+	file << "*/" << std::endl;
+	file << "FORCE_INLINE NO_DISCARD bool StatisticsWindowCallback(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT" << std::endl;
+	file << "{" << std::endl;
+	file << "\tif (!COMPONENT_STATISTICS_WINDOW_OPEN) return false;" << std::endl;
+	file << std::endl;
+	file << "\tImGuiSystem::BeginWindowParameters parameters;" << std::endl;
+	file << "\tparameters._Name = \"Component Statistics\";" << std::endl;
+	file << "\tparameters._Minimum = minimum;" << std::endl;
+	file << "\tparameters._Maximum = maximum;" << std::endl;
+	file << "\tImGuiSystem::Instance->BeginWindow(parameters);" << std::endl;
+	file << std::endl;
+
+	file << "\tchar buffer[64];" << std::endl;
+	file << std::endl;
+
+	for (const ComponentData &_component_data : component_data)
+	{
+		file << "\t{" << std::endl;
+		file << "\t\tImGui::Text(\"" << _component_data._Name.c_str() << "\");" << std::endl;
+		file << "\t\tsprintf_s(buffer, \"Number of instances: %llu\", " << _component_data._Name.c_str() << "::Instance->NumberOfInstances());" << std::endl;
+		file << "\t\tImGui::Text(buffer);" << std::endl;
+		/* Currently no good way of getting memory usage.
+		file << "\t\tMemory::PrintMemoryString(buffer, ARRAY_LENGTH(buffer), \"Memory usage: \", " << _component_data._Name.c_str() << "::Instance->NumberOfInstances() * sizeof(" << _component_data._InstanceDataName.c_str() << "));" << std::endl;
+		file << "\t\tImGui::Text(buffer);" << std::endl;
+		*/
+		file << "\t\tImGui::Separator();" << std::endl;
+		file << "\t}" << std::endl;
+	}
+
+	file << std::endl;
+	file << "\treturn true;" << std::endl;
+
+	file << "}" << std::endl;
+	file << "#endif" << std::endl;
 	file << std::endl;
 
 	//Add the parallel updates container.
@@ -1189,6 +1251,31 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "\t" << component_data[i]._Name.c_str() << "::Instance->PostInitialize();" << std::endl;
 		}
 	}
+
+	file << std::endl;
+
+	file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+	file << "\tDebugSystem::Instance->RegisterCheckboxDebugCommand" << std::endl;
+	file << "\t(" << std::endl;
+	file << "\t\t\"Statistics\\\\Components\"," << std::endl;
+	file << "\t\t[](DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)" << std::endl;
+	file << "\t\t{" << std::endl;
+	file << "\t\t\tif (debug_command->_State._CheckboxState._IsChecked && !COMPONENT_STATISTICS_WINDOW_OPEN)" << std::endl;
+	file << "\t\t\t{" << std::endl;
+	file << "\t\t\t\tImGuiSystem::Instance->RegisterGameWindow" << std::endl;
+	file << "\t\t\t\t(" << std::endl;
+	file << "\t\t\t\t\tImGuiSystem::GameWindow::LEFT," << std::endl;
+	file << "\t\t\t\t\t[](const Vector2<float32> minimum, const Vector2<float32> maximum)" << std::endl;
+	file << "\t\t\t\t\t{" << std::endl;
+	file << "\t\t\t\t\t\treturn StatisticsWindowCallback(minimum, maximum);" << std::endl;
+	file << "\t\t\t\t\t}" << std::endl;
+	file << "\t\t\t\t);" << std::endl;
+	file << "\t\t\t}" << std::endl;
+	file << "\t\t\tCOMPONENT_STATISTICS_WINDOW_OPEN = debug_command->_State._CheckboxState._IsChecked;" << std::endl;
+	file << "\t\t}," << std::endl;
+	file << "\t\tnullptr" << std::endl;
+	file << "\t);" << std::endl;
+	file << "#endif" << std::endl;
 
 	file << "}" << std::endl;
 	file << std::endl;

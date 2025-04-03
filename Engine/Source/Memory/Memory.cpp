@@ -6,7 +6,40 @@
 
 //STL.
 #include <cstring>
+#include <stdio.h>
 #include <stdlib.h>
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Prints a memory string into the given buffer.
+*/
+void Memory::PrintMemoryString(char *buffer, const uint64 buffer_size, const char *const RESTRICT prefix, const uint64 input_bytes) NOEXCEPT
+{
+	if (input_bytes > 1'000)
+	{
+		if (input_bytes > 1'000'000)
+		{
+			const float64 memory{ static_cast<float64>(input_bytes) / 1'000'000.0 };
+
+			sprintf_s(buffer, buffer_size, "%s: %.2f MB", prefix, memory);
+		}
+
+		else
+		{
+			const float64 memory{ static_cast<float64>(input_bytes) / 1'000.0 };
+
+			sprintf_s(buffer, buffer_size, "%s: %.2f KB", prefix, memory);
+		}
+	}
+
+	else
+	{
+		const float64 memory{ static_cast<float64>(input_bytes) };
+
+		sprintf_s(buffer, buffer_size, "%s: %.2f B", prefix, memory);
+	}
+}
+#endif
 
 /*
 *	Allocates a chunk of memory internally.
