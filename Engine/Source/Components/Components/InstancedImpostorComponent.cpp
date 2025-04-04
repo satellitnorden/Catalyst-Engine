@@ -153,3 +153,18 @@ void InstancedImpostorComponent::DestroyInstance(Entity *const RESTRICT entity) 
 	//Remove the instance.
 	RemoveInstance(entity);
 }
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Gathers statistics.
+*/
+void InstancedImpostorComponent::Statistics(ComponentStatistics *const RESTRICT statistics) NOEXCEPT
+{
+	statistics->_CPUMemoryUsage = sizeof(InstancedImpostorInstanceData) * NumberOfInstances();
+
+	for (const InstancedImpostorInstanceData &instance_data : _InstanceData)
+	{
+		statistics->_GPUMemoryUsage += sizeof(Vector3<float32>) * instance_data._NumberOfTransformations;
+	}
+}
+#endif

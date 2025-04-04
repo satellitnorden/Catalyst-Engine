@@ -200,3 +200,18 @@ void ScriptComponent::Event(Entity *const RESTRICT entity, const HashString even
 	//Send the event!
 	Script::Event(instance_data._ScriptIdentifier, event, script_context);
 }
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Gathers statistics.
+*/
+void ScriptComponent::Statistics(ComponentStatistics *const RESTRICT statistics) NOEXCEPT
+{
+	for (const ScriptInstanceData &instance_data : _InstanceData)
+	{
+		statistics->_CPUMemoryUsage += sizeof(instance_data._ScriptIdentifier);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._Data);
+		statistics->_CPUMemoryUsage += Script::RequiredDataSize(instance_data._ScriptIdentifier);
+	}
+}
+#endif

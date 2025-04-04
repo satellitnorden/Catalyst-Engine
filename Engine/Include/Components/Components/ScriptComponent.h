@@ -42,6 +42,7 @@ class ScriptComponent final : public Component
 		COMPONENT_INITIALIZE()
 		COMPONENT_POST_CREATE_INSTANCE()
 		COMPONENT_SERIAL_UPDATE(UpdatePhase::GAMEPLAY, After(FirstPersonPlayerComponent))
+		COMPONENT_STATISTICS()
 	);
 
 public:

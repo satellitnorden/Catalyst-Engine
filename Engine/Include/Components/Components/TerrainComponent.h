@@ -38,6 +38,9 @@ public:
 		//The buffer.
 		BufferHandle _Buffer;
 
+		//The vertex count.
+		uint32 _VertexCount;
+
 		//The index offset.
 		uint32 _IndexOffset;
 
@@ -50,6 +53,9 @@ public:
 		//The Height map texture index.
 		uint32 _HeightMapTextureIndex;
 
+		//The converted normal map texture.
+		Texture2D<Vector4<uint8>> _ConvertedNormalMapTexture;
+
 		//The normal map texture.
 		Texture2DHandle _NormalMapTexture;
 
@@ -61,6 +67,9 @@ public:
 
 		//The index map texture index.
 		uint32 _IndexMapTextureIndex;
+
+		//The converted blend map texture.
+		Texture2D<Vector4<uint8>> _ConvertedBlendMapTexture;
 
 		//The blend map texture.
 		Texture2DHandle _BlendMapTexture;
@@ -120,13 +129,13 @@ public:
 	Texture2D<float32> _HeightMap;
 
 	//The normal map.
-	Texture2D<Vector3<float32>> _NormalMap;
+	Texture2D<Vector4<uint8>> _NormalMap;
 
 	//The index map.
 	Texture2D<Vector4<uint8>> _IndexMap;
 
 	//The blend map.
-	Texture2D<Vector4<float32>> _BlendMap;
+	Texture2D<Vector4<uint8>> _BlendMap;
 
 	//The base resolution.
 	uint32 _BaseResolution;
@@ -136,6 +145,9 @@ public:
 
 	//The buffer.
 	BufferHandle _Buffer;
+
+	//The vertex count.
+	uint32 _VertexCount;
 
 	//The index offset.
 	uint32 _IndexOffset;
@@ -188,5 +200,6 @@ class TerrainComponent final : public Component
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 1)
 		COMPONENT_PRE_PROCESS(TerrainInitializationData)
 		COMPONENT_GATHER_PATH_TRACING_TRIANGLES()
+		COMPONENT_STATISTICS()
 	);
 };

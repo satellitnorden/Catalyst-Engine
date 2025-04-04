@@ -79,6 +79,9 @@ public:
 	//Denotes whether or not this component wants a "GatherPathTracingTriangles()" call.
 	bool _GatherPathTracingTriangles;
 
+	//Denotes whether or not this component wants a "Statistics()" call.
+	bool _Statistics;
+
 };
 
 /*
@@ -285,6 +288,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 	component_entry["Selectable"] = false;
 	component_entry["StartGame"] = false;
 	component_entry["GatherPathTracingTriangles"] = false;
+	component_entry["Statistics"] = false;
 
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
@@ -724,6 +728,18 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 				continue;
 			}
 		}
+
+		//Check if this component wants a "Statistics()" call.
+		{
+			const size_t position{ current_line.find("COMPONENT_STATISTICS(") };
+
+			if (position != std::string::npos)
+			{
+				component_entry["Statistics"] = true;
+
+				continue;
+			}
+		}
 	}
 }
 
@@ -840,6 +856,9 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this component wants a "GatherPathTracingTriangles()" call.
 				new_component_data._GatherPathTracingTriangles = component_entry["GatherPathTracingTriangles"];
+
+				//Set whether or not this component wants a "Statistics()" call.
+				new_component_data._Statistics = component_entry["Statistics"];
 
 				//Check if this component wants any serial updates.
 				if (component_entry.contains("SerialUpdates"))
@@ -1080,10 +1099,18 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		file << "\t\tImGui::Text(\"" << _component_data._Name.c_str() << "\");" << std::endl;
 		file << "\t\tsprintf_s(buffer, \"Number of instances: %llu\", " << _component_data._Name.c_str() << "::Instance->NumberOfInstances());" << std::endl;
 		file << "\t\tImGui::Text(buffer);" << std::endl;
-		/* Currently no good way of getting memory usage.
-		file << "\t\tMemory::PrintMemoryString(buffer, ARRAY_LENGTH(buffer), \"Memory usage: \", " << _component_data._Name.c_str() << "::Instance->NumberOfInstances() * sizeof(" << _component_data._InstanceDataName.c_str() << "));" << std::endl;
-		file << "\t\tImGui::Text(buffer);" << std::endl;
-		*/
+		
+		if (_component_data._Statistics)
+		{
+			file << "\t\tComponentStatistics statistics;" << std::endl;
+			file << "\t\tMemory::Set(&statistics, 0, sizeof(ComponentStatistics));" << std::endl;
+			file << "\t\t" << _component_data._Name.c_str() << "::Instance->Statistics(&statistics);" << std::endl;
+			file << "\t\tMemory::PrintMemoryString(buffer, ARRAY_LENGTH(buffer), \"CPU Memory Usage\", statistics._CPUMemoryUsage);" << std::endl;
+			file << "\t\tImGui::Text(buffer);" << std::endl;
+			file << "\t\tMemory::PrintMemoryString(buffer, ARRAY_LENGTH(buffer), \"GPU Memory Usage\", statistics._GPUMemoryUsage);" << std::endl;
+			file << "\t\tImGui::Text(buffer);" << std::endl;
+		}
+
 		file << "\t\tImGui::Separator();" << std::endl;
 		file << "\t}" << std::endl;
 	}

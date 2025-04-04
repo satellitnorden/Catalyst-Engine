@@ -579,6 +579,7 @@ void TerrainComponent::PreProcess(TerrainInitializationData *const RESTRICT init
 	RenderingSystem::Instance->CreateBuffer(buffer_data_sizes[0] + buffer_data_sizes[1], BufferUsage::IndexBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &initialization_data->_PreprocessedData._Buffer);
 	RenderingSystem::Instance->UploadDataToBuffer(buffer_data.Data(), buffer_data_sizes.Data(), 2, &initialization_data->_PreprocessedData._Buffer);
 
+	initialization_data->_PreprocessedData._VertexCount = static_cast<uint32>(vertices.Size());
 	initialization_data->_PreprocessedData._IndexOffset = static_cast<uint32>(buffer_data_sizes[0]);
 	initialization_data->_PreprocessedData._IndexCount = static_cast<uint32>(indices.Size());
 
@@ -590,22 +591,22 @@ void TerrainComponent::PreProcess(TerrainInitializationData *const RESTRICT init
 
 	//Create the normal map texture.
 	{
-		Texture2D<Vector4<uint8>> converted_normal_map_texture{ initialization_data->_NormalMap.GetResolution() };
+		initialization_data->_PreprocessedData._ConvertedNormalMapTexture.Initialize(initialization_data->_NormalMap.GetResolution());
 
-		for (uint32 Y{ 0 }; Y < converted_normal_map_texture.GetResolution(); ++Y)
+		for (uint32 Y{ 0 }; Y < initialization_data->_PreprocessedData._ConvertedNormalMapTexture.GetResolution(); ++Y)
 		{
-			for (uint32 X{ 0 }; X < converted_normal_map_texture.GetResolution(); ++X)
+			for (uint32 X{ 0 }; X < initialization_data->_PreprocessedData._ConvertedNormalMapTexture.GetResolution(); ++X)
 			{
 				const Vector3<float32> &actual_normal{ initialization_data->_NormalMap.At(X, Y) };
 
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
-					converted_normal_map_texture.At(X, Y)[i] = static_cast<uint8>((actual_normal[i] * 0.5f + 0.5f) * static_cast<float32>(UINT8_MAXIMUM));
+					initialization_data->_PreprocessedData._ConvertedNormalMapTexture.At(X, Y)[i] = static_cast<uint8>((actual_normal[i] * 0.5f + 0.5f) * static_cast<float32>(UINT8_MAXIMUM));
 				}
 			}
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_normal_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &initialization_data->_PreprocessedData._NormalMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(initialization_data->_PreprocessedData._ConvertedNormalMapTexture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &initialization_data->_PreprocessedData._NormalMapTexture);
 		initialization_data->_PreprocessedData._NormalMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(initialization_data->_PreprocessedData._NormalMapTexture);
 	}
 
@@ -615,20 +616,20 @@ void TerrainComponent::PreProcess(TerrainInitializationData *const RESTRICT init
 
 	//Create the blend map texture.
 	{
-		Texture2D<Vector4<uint8>> converted_blend_map_texture{ initialization_data->_BlendMap.GetResolution() };
+		initialization_data->_PreprocessedData._ConvertedBlendMapTexture.Initialize(initialization_data->_BlendMap.GetResolution());
 
-		for (uint32 Y{ 0 }; Y < converted_blend_map_texture.GetResolution(); ++Y)
+		for (uint32 Y{ 0 }; Y < initialization_data->_PreprocessedData._ConvertedBlendMapTexture.GetResolution(); ++Y)
 		{
-			for (uint32 X{ 0 }; X < converted_blend_map_texture.GetResolution(); ++X)
+			for (uint32 X{ 0 }; X < initialization_data->_PreprocessedData._ConvertedBlendMapTexture.GetResolution(); ++X)
 			{
 				for (uint8 i{ 0 }; i < 4; ++i)
 				{
-					converted_blend_map_texture.At(X, Y)[i] = static_cast<uint8>(initialization_data->_BlendMap.At(X, Y)[i] * static_cast<float32>(UINT8_MAXIMUM));
+					initialization_data->_PreprocessedData._ConvertedBlendMapTexture.At(X, Y)[i] = static_cast<uint8>(initialization_data->_BlendMap.At(X, Y)[i] * static_cast<float32>(UINT8_MAXIMUM));
 				}
 			}
 		}
 
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(converted_blend_map_texture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &initialization_data->_PreprocessedData._BlendMapTexture);
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(initialization_data->_PreprocessedData._ConvertedBlendMapTexture), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &initialization_data->_PreprocessedData._BlendMapTexture);
 		initialization_data->_PreprocessedData._BlendMapTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(initialization_data->_PreprocessedData._BlendMapTexture);
 	}
 
@@ -656,13 +657,14 @@ void TerrainComponent::CreateInstance(Entity *const RESTRICT entity, TerrainInit
 	instance_data->_WorldSpaceAxisAlignedBoundingBox = initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
 	instance_data->_PatchSize = initialization_data->_PatchSize;
 	instance_data->_HeightMap = std::move(initialization_data->_HeightMap);
-	instance_data->_NormalMap = std::move(initialization_data->_NormalMap);
+	instance_data->_NormalMap = std::move(initialization_data->_PreprocessedData._ConvertedNormalMapTexture);
 	instance_data->_IndexMap = std::move(initialization_data->_IndexMap);
-	instance_data->_BlendMap = std::move(initialization_data->_BlendMap);
+	instance_data->_BlendMap = std::move(initialization_data->_PreprocessedData._ConvertedBlendMapTexture);
 	instance_data->_BaseResolution = initialization_data->_BaseResolution;
 	instance_data->_MaximumSubdivisionSteps = initialization_data->_MaximumSubdivisionSteps;
 
 	instance_data->_Buffer = initialization_data->_PreprocessedData._Buffer;
+	instance_data->_VertexCount = initialization_data->_PreprocessedData._VertexCount;
 	instance_data->_IndexOffset = initialization_data->_PreprocessedData._IndexOffset;
 	instance_data->_IndexCount = initialization_data->_PreprocessedData._IndexCount;
 	instance_data->_HeightMapTexture = initialization_data->_PreprocessedData._HeightMapTexture;
@@ -823,14 +825,31 @@ FORCE_INLINE void TerrainPathTracingShadingFunction(const PathTracingShadingCont
 		const Vector4<uint8> index_map_sample{ instance_data._IndexMap.At(sample_coordinates[sample_index]._X, sample_coordinates[sample_index]._Y)};
 
 		//Sample the blend map.
-		const Vector4<float32> blend_map_sample{ instance_data._BlendMap.At(sample_coordinates[sample_index]._X, sample_coordinates[sample_index]._Y) };
+		Vector4<float32> blend_map_sample;
+
+		{
+			const Vector4<uint8> &sample{ instance_data._BlendMap.At(sample_coordinates[sample_index]._X, sample_coordinates[sample_index]._Y) };
+
+			blend_map_sample[0] = static_cast<float32>(sample[0]) / static_cast<float32>(UINT8_MAXIMUM);
+			blend_map_sample[1] = static_cast<float32>(sample[1]) / static_cast<float32>(UINT8_MAXIMUM);
+			blend_map_sample[2] = static_cast<float32>(sample[2]) / static_cast<float32>(UINT8_MAXIMUM);
+			blend_map_sample[3] = static_cast<float32>(sample[3]) / static_cast<float32>(UINT8_MAXIMUM);
+		}
 
 		//Calculate the material texture coordinate.
 		Vector2<float32> material_texture_coordinate;
 
 		{
 			//Do triplanar mapping.
-			const Vector3<float32> sample_normal{ instance_data._NormalMap.At(sample_coordinates[sample_index]._X, sample_coordinates[sample_index]._Y) };
+			Vector3<float32> sample_normal;
+
+			{
+				const Vector4<uint8> &sample{ instance_data._NormalMap.At(sample_coordinates[sample_index]._X, sample_coordinates[sample_index]._Y) };
+
+				sample_normal[0] = (static_cast<float32>(sample[0]) / static_cast<float32>(UINT8_MAXIMUM)) * 2.0f - 1.0f;
+				sample_normal[1] = (static_cast<float32>(sample[1]) / static_cast<float32>(UINT8_MAXIMUM)) * 2.0f - 1.0f;
+				sample_normal[2] = (static_cast<float32>(sample[2]) / static_cast<float32>(UINT8_MAXIMUM)) * 2.0f - 1.0f;
+			}
 
 			const float32 x_weight{ BaseMath::Absolute(Vector3<float32>::DotProduct(sample_normal, Vector3<float32>(1.0f, 0.0f, 0.0f))) };
 			const float32 y_weight{ BaseMath::Absolute(Vector3<float32>::DotProduct(sample_normal, Vector3<float32>(0.0f, 1.0f, 0.0f))) };
@@ -1087,7 +1106,14 @@ void TerrainComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *const RE
 				vertex._Position._X += BaseMath::LinearlyInterpolate(static_cast<float32>(instance_data._PatchSize) * -0.5f, static_cast<float32>(instance_data._PatchSize) * 0.5f, normalized_coordinate._X);
 				vertex._Position._Y += instance_data._HeightMap.At(X, Y);
 				vertex._Position._Z += BaseMath::LinearlyInterpolate(static_cast<float32>(instance_data._PatchSize) * -0.5f, static_cast<float32>(instance_data._PatchSize) * 0.5f, normalized_coordinate._Y);
-				vertex._Normal = instance_data._NormalMap.At(X, Y);
+
+				{
+					const Vector4<uint8> &sample{ instance_data._NormalMap.At(X, Y) };
+
+					vertex._Normal[0] = (static_cast<float32>(sample[0]) / static_cast<float32>(UINT8_MAXIMUM)) * 2.0f - 1.0f;
+					vertex._Normal[1] = (static_cast<float32>(sample[1]) / static_cast<float32>(UINT8_MAXIMUM)) * 2.0f - 1.0f;
+					vertex._Normal[2] = (static_cast<float32>(sample[2]) / static_cast<float32>(UINT8_MAXIMUM)) * 2.0f - 1.0f;
+				}
 
 				{
 					const float32 height_to_right{ instance_data._HeightMap.At(BaseMath::Minimum<uint32>(X + 1, instance_data._HeightMap.GetWidth() - 1), Y) };
@@ -1138,3 +1164,77 @@ void TerrainComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *const RE
 		}
 	}
 }
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Gathers  memory usage for the given terrain quad tree node.
+*/
+FORCE_INLINE NO_DISCARD uint64 TerrainQuadTreeNodeMemoryUsage(const TerrainQuadTreeNode &node) NOEXCEPT
+{
+	uint64 memory_usage{ 0 };
+
+	memory_usage += sizeof(node._Depth);
+	memory_usage += sizeof(node._Borders);
+	memory_usage += sizeof(node._ChildNodes);
+	memory_usage += sizeof(node._Minimum);
+	memory_usage += sizeof(node._Maximum);
+	memory_usage += sizeof(node._AxisAlignedBoundingBox);
+	memory_usage += sizeof(node._Visible);
+	memory_usage += sizeof(node._Position);
+	memory_usage += sizeof(node._MinimumHeightMapCoordinate);
+	memory_usage += sizeof(node._MaximumHeightMapCoordinate);
+	memory_usage += sizeof(node._PatchSize);
+
+	for (const TerrainQuadTreeNode &child : node._ChildNodes)
+	{
+		memory_usage += TerrainQuadTreeNodeMemoryUsage(child);
+	}
+
+	return memory_usage;
+}
+
+/*
+*	Gathers statistics.
+*/
+void TerrainComponent::Statistics(ComponentStatistics *const RESTRICT statistics) NOEXCEPT
+{
+	//Gather from all instances.
+	for (const TerrainInstanceData &instance_data : _InstanceData)
+	{
+		statistics->_CPUMemoryUsage += sizeof(instance_data._WorldPosition);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._WorldSpaceAxisAlignedBoundingBox);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._PatchSize);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._HeightMap);
+		statistics->_CPUMemoryUsage += sizeof(float32) * instance_data._HeightMap.GetWidth() * instance_data._HeightMap.GetHeight();
+		statistics->_CPUMemoryUsage += sizeof(instance_data._NormalMap);
+		statistics->_CPUMemoryUsage += sizeof(Vector4<uint8>) * instance_data._NormalMap.GetWidth() * instance_data._NormalMap.GetHeight();
+		statistics->_CPUMemoryUsage += sizeof(instance_data._IndexMap);
+		statistics->_CPUMemoryUsage += sizeof(Vector4<uint8>) * instance_data._IndexMap.GetWidth() * instance_data._IndexMap.GetHeight();
+		statistics->_CPUMemoryUsage += sizeof(instance_data._BlendMap);
+		statistics->_CPUMemoryUsage += sizeof(Vector4<uint8>) * instance_data._BlendMap.GetWidth() * instance_data._BlendMap.GetHeight();
+		statistics->_CPUMemoryUsage += sizeof(instance_data._BaseResolution);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._MaximumSubdivisionSteps);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._Buffer);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._IndexOffset);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._IndexCount);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._HeightMapTexture);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._HeightMapTextureIndex);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._NormalMapTexture);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._NormalMapTextureIndex);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._IndexMapTexture);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._IndexMapTextureIndex);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._BlendMapTexture);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._BlendMapTextureIndex);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._Visibility);
+		statistics->_CPUMemoryUsage += TerrainQuadTreeNodeMemoryUsage(instance_data._QuadTree._RootNode);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._PhysicsActorHandle);
+
+		statistics->_GPUMemoryUsage += sizeof(float32) * instance_data._HeightMap.GetWidth() * instance_data._HeightMap.GetHeight();
+		statistics->_GPUMemoryUsage += sizeof(Vector4<uint8>) * instance_data._NormalMap.GetWidth() * instance_data._NormalMap.GetHeight();
+		statistics->_GPUMemoryUsage += sizeof(Vector4<uint8>) * instance_data._IndexMap.GetWidth() * instance_data._IndexMap.GetHeight();
+		statistics->_GPUMemoryUsage += sizeof(Vector4<uint8>) * instance_data._BlendMap.GetWidth() * instance_data._BlendMap.GetHeight();
+		statistics->_GPUMemoryUsage += sizeof(TerrainVertex) * instance_data._VertexCount;
+		statistics->_GPUMemoryUsage += sizeof(uint32) * instance_data._IndexCount;
+	}
+}
+#endif

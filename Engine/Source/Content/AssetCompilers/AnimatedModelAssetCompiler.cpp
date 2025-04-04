@@ -334,6 +334,28 @@ FORCE_INLINE void ReadBone(Bone *const RESTRICT bone, StreamArchive *const RESTR
 	}
 }
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Calculates the memory usage for the given bone.
+*/
+FORCE_INLINE NO_DISCARD uint64 CalculateBoneMemoryUsage(const Bone &bone) NOEXCEPT
+{
+	uint64 memory_usage{ 0 };
+
+	memory_usage += sizeof(Bone::_Name);
+	memory_usage += sizeof(Bone::_Index);
+	memory_usage += sizeof(Bone::_BindTransform);
+	memory_usage += sizeof(Bone::_InverseBindTransform);
+
+	for (const Bone &child : bone._Children)
+	{
+		memory_usage += CalculateBoneMemoryUsage(child);
+	}
+
+	return memory_usage;
+}
+#endif
+
 /*
 *	Loads internally.
 */
@@ -402,4 +424,26 @@ void AnimatedModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data
 
 	//Read the total number of bones.
 	load_data->_StreamArchive->Read(&load_data->_Asset->_Skeleton._TotalNumberOfBones, sizeof(uint32), &stream_archive_position);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Update the total CPU/GPU memory.
+	{
+		uint64 cpu_memory{ 0 };
+		uint64 gpu_memory{ 0 };
+
+		cpu_memory += sizeof(AnimatedModelAsset::_ModelSpaceAxisAlignedBoundingBox);
+		cpu_memory += sizeof(AnimatedModelAsset::_VertexBuffer);
+		cpu_memory += sizeof(AnimatedModelAsset::_IndexBuffer);
+		cpu_memory += sizeof(AnimatedModelAsset::_IndexCount);
+		cpu_memory += sizeof(AnimatedModelAsset::_IndexCount);
+		cpu_memory += CalculateBoneMemoryUsage(load_data->_Asset->_Skeleton._RootBone);
+		cpu_memory += sizeof(AnimatedModelAsset::_Skeleton._TotalNumberOfBones);
+
+		gpu_memory += sizeof(AnimatedVertex) * vertices[0].Size();
+		gpu_memory += sizeof(uint32) * indices[0].Size();
+
+		_TotalCPUMemory.FetchAdd(cpu_memory);
+		_TotalGPUMemory.FetchAdd(gpu_memory);
+	}
+#endif
 }

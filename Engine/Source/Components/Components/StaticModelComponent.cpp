@@ -815,3 +815,13 @@ void StaticModelComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *cons
 		}
 	}
 }
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Gathers statistics.
+*/
+void StaticModelComponent::Statistics(ComponentStatistics *const RESTRICT statistics) NOEXCEPT
+{
+	statistics->_CPUMemoryUsage = sizeof(StaticModelInstanceData) * NumberOfInstances();
+}
+#endif
