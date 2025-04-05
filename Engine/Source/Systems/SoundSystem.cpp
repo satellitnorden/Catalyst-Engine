@@ -8,7 +8,7 @@
 #include <Profiling/Profiling.h>
 
 //Sound.
-#include <Sound/SoundResourcePlayer.h>
+#include <Sound/SoundAssetPlayer.h>
 #include <Sound/SoundSubSystemASIO.h>
 #include <Sound/SoundSubSystemWASAPI.h>
 
@@ -23,8 +23,8 @@ class QueuedPlaySoundRequest final
 
 public:
 
-	//The sound resource.
-	ResourcePointer<SoundResource> _SoundResource;
+	//The sound asset.
+	AssetPointer<SoundAsset> _SoundAsset;
 
 	//The gain.
 	float32 _Gain;
@@ -88,8 +88,8 @@ class PlayingSound final
 
 public:
 
-	//The sound resource players.
-	SoundResourcePlayer _SoundResourcePlayer;
+	//The sound asset players.
+	SoundAssetPlayer _SoundAssetPlayer;
 
 	//The sound instance handle.
 	SoundInstanceHandle _SoundInstanceHandle;
@@ -501,7 +501,7 @@ void SoundSystem::PlaySound(const PlaySoundRequest &request) NOEXCEPT
 	//Queue the play sound request.
 	QueuedPlaySoundRequest queued_play_sound_request;
 
-	queued_play_sound_request._SoundResource = request._SoundResource;
+	queued_play_sound_request._SoundAsset = request._SoundAsset;
 	queued_play_sound_request._Gain = request._Gain;
 	queued_play_sound_request._Pan = request._Pan;
 	queued_play_sound_request._StartTime = request._StartTime;
@@ -597,24 +597,24 @@ NO_DISCARD bool SoundSystem::IsCurrentlyRecording() const NOEXCEPT
 *	Starts recording.
 *	Can report the expected length, in seconds, to give the sound system a heads up about how much memory needs to be allocated.
 */
-void SoundSystem::StartRecording(SoundResource *const RESTRICT recording_sound_resource, const float32 expected_length) NOEXCEPT
+void SoundSystem::StartRecording(SoundAsset *const RESTRICT recording_sound_resource, const float32 expected_length) NOEXCEPT
 {
-	//Set the recording sound resource.
-	_RecordingSoundResource = recording_sound_resource;
+	//Set the recording sound asset.
+	_RecordingSoundAsset = recording_sound_resource;
 
-	//Reset the recording sound resource.
-	_RecordingSoundResource->_Samples.Clear();
+	//Reset the recording sound asset.
+	_RecordingSoundAsset->_Samples.Clear();
 
-	//Set up the recording sound resource.
-	_RecordingSoundResource->_SampleRate = GetSampleRate();
-	_RecordingSoundResource->_NumberOfChannels = GetNumberOfChannels();
-	_RecordingSoundResource->_Samples.Upsize<true>(2);
+	//Set up the recording sound asset.
+	_RecordingSoundAsset->_SampleRate = GetSampleRate();
+	_RecordingSoundAsset->_NumberOfChannels = GetNumberOfChannels();
+	_RecordingSoundAsset->_Samples.Upsize<true>(2);
 
 	//Allocate the required amount of data, if the expected length is reported.
 	if (expected_length > 0.0f)
 	{
-		_RecordingSoundResource->_Samples[0].Reserve(BaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
-		_RecordingSoundResource->_Samples[1].Reserve(BaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
+		_RecordingSoundAsset->_Samples[0].Reserve(BaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
+		_RecordingSoundAsset->_Samples[1].Reserve(BaseMath::Ceiling<uint64>(expected_length * GetSampleRate()));
 	}
 
 	//Set the flag.
@@ -789,26 +789,26 @@ void SoundSystem::Mix() NOEXCEPT
 			{
 				PlayingSound new_playing_sound;
 
-				new_playing_sound._SoundResourcePlayer.SetSoundResource(queued_play_sound_request.Get()._SoundResource);
-				new_playing_sound._SoundResourcePlayer.SetGain(queued_play_sound_request.Get()._Gain);
-				new_playing_sound._SoundResourcePlayer.SetPan(queued_play_sound_request.Get()._Pan);
-				new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(queued_play_sound_request.Get()._SoundResource->_SampleRate / GetSampleRate() * queued_play_sound_request.Get()._PlaybackRate);
-				new_playing_sound._SoundResourcePlayer.SetIsLooping(queued_play_sound_request.Get()._IsLooping);
+				new_playing_sound._SoundAssetPlayer.SetSoundAsset(queued_play_sound_request.Get()._SoundAsset);
+				new_playing_sound._SoundAssetPlayer.SetGain(queued_play_sound_request.Get()._Gain);
+				new_playing_sound._SoundAssetPlayer.SetPan(queued_play_sound_request.Get()._Pan);
+				new_playing_sound._SoundAssetPlayer.SetPlaybackSpeed(queued_play_sound_request.Get()._SoundAsset->_SampleRate / GetSampleRate() * queued_play_sound_request.Get()._PlaybackRate);
+				new_playing_sound._SoundAssetPlayer.SetIsLooping(queued_play_sound_request.Get()._IsLooping);
 
 				for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 				{
-					new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).SetSampleRate(GetSampleRate());
-					new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).SetStageValues
+					new_playing_sound._SoundAssetPlayer.GetADSREnvelope(channel_index).SetSampleRate(GetSampleRate());
+					new_playing_sound._SoundAssetPlayer.GetADSREnvelope(channel_index).SetStageValues
 					(
 						queued_play_sound_request.Get()._AttackTime,
 						queued_play_sound_request.Get()._DecayTime,
 						queued_play_sound_request.Get()._SustainGain,
 						queued_play_sound_request.Get()._ReleaseTime
 					);
-					new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).EnterAttackStage();
+					new_playing_sound._SoundAssetPlayer.GetADSREnvelope(channel_index).EnterAttackStage();
 				}
 
-				new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request.Get()._StartTime * queued_play_sound_request.Get()._SoundResource->_SampleRate));
+				new_playing_sound._SoundAssetPlayer.SetCurrentSample(static_cast<int64>(queued_play_sound_request.Get()._StartTime * queued_play_sound_request.Get()._SoundAsset->_SampleRate));
 				new_playing_sound._SoundInstanceHandle = queued_play_sound_request.Get()._SoundInstanceHandle;
 				new_playing_sound._SoundStoppedCallback = queued_play_sound_request.Get()._SoundStoppedCallback;
 				new_playing_sound._AudioTimeTracker = queued_play_sound_request.Get()._AudioTimeTracker;
@@ -841,7 +841,7 @@ void SoundSystem::Mix() NOEXCEPT
 				{
 					if (SoundSystemData::_PlayingSounds[i]._SoundInstanceHandle == queued_stop_sound_request.Get()._SoundInstanceHandle)
 					{
-						SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.Stop();
+						SoundSystemData::_PlayingSounds[i]._SoundAssetPlayer.Stop();
 
 						break;
 					}
@@ -864,14 +864,14 @@ void SoundSystem::Mix() NOEXCEPT
 				{
 					for (uint32 sample_index{ 0 }; sample_index < _NumberOfSamplesPerMixingBuffer; ++sample_index)
 					{
-						_IntermediateMixingBuffer[sample_index * number_of_channels + channel_index] += playing_sound._SoundResourcePlayer.NextSample(channel_index);
-						playing_sound._SoundResourcePlayer.Advance(channel_index);
+						_IntermediateMixingBuffer[sample_index * number_of_channels + channel_index] += playing_sound._SoundAssetPlayer.NextSample(channel_index);
+						playing_sound._SoundAssetPlayer.Advance(channel_index);
 					}
 
 					//Update the audio time tracker, if it exists.
 					if (playing_sound._AudioTimeTracker)
 					{
-						playing_sound._AudioTimeTracker->Store(playing_sound._SoundResourcePlayer.GetCurrentAudioTime());
+						playing_sound._AudioTimeTracker->Store(playing_sound._SoundAssetPlayer.GetCurrentAudioTime());
 					}
 				}
 			}
@@ -973,7 +973,7 @@ void SoundSystem::Mix() NOEXCEPT
 				{
 					for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 					{
-						//Write the current value into the recording sound resource.
+						//Write the current value into the recording sound asset.
 						switch (sound_format)
 						{
 							case SoundFormat::SIGNED_INTEGER_8_BIT:
@@ -985,7 +985,7 @@ void SoundSystem::Mix() NOEXCEPT
 
 							case SoundFormat::SIGNED_INTEGER_16_BIT:
 							{
-								_RecordingSoundResource->_Samples[channel_index].Emplace(static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++]);
+								_RecordingSoundAsset->_Samples[channel_index].Emplace(static_cast<int16 *const RESTRICT>(_MixingBuffers[_CurrentMixingBufferWriteIndex])[current_sample_index++]);
 
 								break;
 							}
@@ -1030,7 +1030,7 @@ void SoundSystem::Mix() NOEXCEPT
 		//Remove any inactive sounds.
 		for (uint64 i{ 0 }; i < SoundSystemData::_PlayingSounds.Size();)
 		{
-			if (!SoundSystemData::_PlayingSounds[i]._SoundResourcePlayer.IsActive())
+			if (!SoundSystemData::_PlayingSounds[i]._SoundAssetPlayer.IsActive())
 			{
 				if (SoundSystemData::_PlayingSounds[i]._SoundStoppedCallback)
 				{

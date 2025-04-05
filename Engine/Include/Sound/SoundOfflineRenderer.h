@@ -4,13 +4,10 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/DynamicString.h>
 
-//Resources.
-#include <Resources/Core/SoundResource.h>
-
 //Sound.
 #include <Sound/PlaySoundRequest.h>
+#include <Sound/SoundAssetPlayer.h>
 #include <Sound/SoundMixComponent.h>
-#include <Sound/SoundResourcePlayer.h>
 
 class SoundOfflineRenderer final
 {
@@ -56,8 +53,8 @@ public:
 
 	public:
 
-		//The sound resource players.
-		SoundResourcePlayer _SoundResourcePlayer;
+		//The sound asset players.
+		SoundAssetPlayer _SoundAssetPlayer;
 
 		//The sound instance handle.
 		SoundInstanceHandle _SoundInstanceHandle;
@@ -123,7 +120,7 @@ private:
 	//The playing sounds.
 	DynamicArray<PlayingSound> _PlayingSounds;
 
-	//The sound resource.
-	SoundResource _SoundResource;
+	//The sound asset.
+	SoundAsset _SoundAsset;
 
 };

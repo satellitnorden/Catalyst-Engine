@@ -4,13 +4,16 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
-//Resources.
-#include <Resources/Core/Resource.h>
+//Content.
+#include <Content/Core/Asset.h>
 
-class SoundResource final : public Resource
+class SoundAsset final : public Asset
 {
 
 public:
+
+	//The type identifier.
+	static HashString TYPE_IDENTIFIER;
 
 	//The sample rate.
 	float32 _SampleRate;

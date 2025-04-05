@@ -122,17 +122,6 @@ void ResourceCreationSystem::CreateShader(ShaderData *const RESTRICT data, Shade
 }
 
 /*
-*	Creates a sound.
-*/
-void ResourceCreationSystem::CreateSound(SoundData *const RESTRICT data, SoundResource *const RESTRICT resource) NOEXCEPT
-{
-	//Just copy over all data.
-	resource->_SampleRate = data->_SampleRate;
-	resource->_NumberOfChannels = data->_NumberOfChannels;
-	resource->_Samples = std::move(data->_Samples);
-}
-
-/*
 *	Creates a texture 3D.
 */
 void ResourceCreationSystem::CreateTexture3D(Texture3DData *const RESTRICT data, Texture3DResource *const RESTRICT resource) NOEXCEPT

@@ -34,6 +34,7 @@
 
 //Resources
 #include <Resources/Core/ResourcesCore.h>
+#include <Resources/Core/ResourceHeader.h>
 
 //Systems.
 #include <Systems/LogSystem.h>
@@ -1048,89 +1049,6 @@ void ResourceBuildingSystem::BuildShader(const ShaderBuildParameters &parameters
 	//Delete the compiled file.
 	File::Delete(compiled_file_path.Data());
 #endif
-}
-
-/*
-*	Builds a sound.
-*/
-void ResourceBuildingSystem::BuildSound(const SoundBuildParameters &parameters) NOEXCEPT
-{
-	//Read the file.
-	SoundResource resource;
-
-	if (WAVReader::Read(parameters._File, &resource))
-	{
-		//Resample the sound resource to the desired sample rate.
-		if (resource._SampleRate != parameters._DesiredSampleRate)
-		{
-			const float32 playback_rate{ resource._SampleRate / parameters._DesiredSampleRate };
-
-			DynamicArray<DynamicArray<int16>> temporary_samples{ resource._Samples };
-
-			for (uint64 i{ 0 }, size{ temporary_samples.Size() }; i < size; ++i)
-			{
-				resource._Samples[i].Clear();
-
-				DynamicArray<int16>& channel{ temporary_samples[i] };
-
-				uint64 current_sample{ 0 };
-				float32 current_sample_fraction{ 0.0f };
-
-				while (current_sample < channel.Size())
-				{
-					const int16 first_sample{ channel[current_sample] };
-					const int16 second_sample{ channel[current_sample < channel.Size() - 1 ? current_sample + 1 : current_sample] };
-
-					const int16 interpolated_sample{ BaseMath::Round<int16>(BaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), current_sample_fraction)) };
-				
-					resource._Samples[i].Emplace(interpolated_sample);
-
-					current_sample_fraction += playback_rate;
-
-					while (current_sample_fraction >= 1.0f)
-					{
-						++current_sample;
-						current_sample_fraction -= 1.0f;
-					}
-				}
-			}
-		}
-
-		//What should the resource be called?
-		DynamicString file_name{ parameters._Output };
-		file_name += ".cr";
-
-		//Open the file to be written to.
-		BinaryOutputFile file{ file_name.Data() };
-
-		//Write the resource header to the file.
-		const ResourceHeader header{ ResourceConstants::SOUND_TYPE_IDENTIFIER, HashString(parameters._ID), parameters._ID };
-		file.Write(&header, sizeof(ResourceHeader));
-
-		//Write the sample rate to the file.
-		file.Write(&parameters._DesiredSampleRate, sizeof(float32));
-
-		//Write the number of channels to the file.
-		file.Write(&resource._NumberOfChannels, sizeof(uint8));
-
-		//Write the number of samples.
-		const uint64 number_of_samples{ resource._Samples[0].Size() }; //Assume all channels have the same size.
-		file.Write(&number_of_samples, sizeof(uint64));
-
-		//Write the samples.
-		for (const DynamicArray<int16>& channel : resource._Samples)
-		{
-			file.Write(channel.Data(), sizeof(int16) * number_of_samples);
-		}
-
-		//Close the file.
-		file.Close();
-	}
-
-	else
-	{
-		ASSERT(false, "Couldn't build sound with output; %s, ID; %s, file path; %s", parameters._Output, parameters._ID, parameters._File);
-	}
 }
 
 /*

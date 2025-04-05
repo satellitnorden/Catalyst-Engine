@@ -17,6 +17,7 @@
 #include <Content/AssetCompilers/MaterialAssetCompiler.h>
 #include <Content/AssetCompilers/ModelAssetCompiler.h>
 #include <Content/AssetCompilers/SettingsAssetCompiler.h>
+#include <Content/AssetCompilers/SoundAssetCompiler.h>
 #include <Content/AssetCompilers/Texture2DAssetCompiler.h>
 #include <Content/AssetCompilers/TextureCubeAssetCompiler.h>
 
@@ -69,6 +70,7 @@ void ContentSystem::Initialize() NOEXCEPT
 	RegisterAssetCompiler(MaterialAssetCompiler::Instance);
 	RegisterAssetCompiler(ModelAssetCompiler::Instance);
 	RegisterAssetCompiler(SettingsAssetCompiler::Instance);
+	RegisterAssetCompiler(SoundAssetCompiler::Instance);
 	RegisterAssetCompiler(Texture2DAssetCompiler::Instance);
 	RegisterAssetCompiler(TextureCubeAssetCompiler::Instance);
 

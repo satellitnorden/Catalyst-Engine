@@ -6,7 +6,6 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
-#include <Systems/ResourceSystem.h>
 
 /*
 *	Default constructor.

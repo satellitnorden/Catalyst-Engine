@@ -2,7 +2,6 @@
 #include <UserInterface/UserInterfaceText.h>
 
 //Systems.
-#include <Systems/ResourceSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.

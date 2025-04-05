@@ -10,7 +10,6 @@
 #include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/ShaderResource.h>
-#include <Resources/Core/SoundResource.h>
 #include <Resources/Core/Texture3DResource.h>
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	#include <Resources/Building/ResourceBuildingSystem.h>
@@ -128,24 +127,6 @@ public:
 	}
 
 	/*
-	*	Returns the sound resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<SoundResource> GetSoundResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the sound resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<SoundResource> FindOrCreateSoundResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all sound resources.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, SoundResource *RESTRICT> &GetAllSoundResources() const NOEXCEPT
-	{
-		return _SoundResources;
-	}
-
-	/*
 	*	Returns the texture 3D resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT;
@@ -192,9 +173,6 @@ private:
 
 	//Container for all shader resources.
 	HashTable<HashString, ShaderResource *RESTRICT> _ShaderResources;
-
-	//Container for all sound resources.
-	HashTable<HashString, SoundResource *RESTRICT> _SoundResources;
 
 	//Container for all texture 3D resources.
 	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;

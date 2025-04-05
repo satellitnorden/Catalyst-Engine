@@ -20,7 +20,7 @@ class WAVReader final
 public:
 
 	/*
-	*	Reads the sound resource at the given file path. Returns if the read was succesful.
+	*	Reads the asset resource at the given file path. Returns if the read was succesful.
 	*/
 	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, Sound *const RESTRICT resource) NOEXCEPT
 	{
@@ -193,11 +193,11 @@ private:
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Content.
+#include <Content/Assets/SoundAsset.h>
+
 //File.
 #include <File/Core/BinaryInputFile.h>
-
-//Resources.
-#include <Resources/Core/SoundResource.h>
 
 //Third party.
 #include <ThirdParty/AudioFile/AudioFile.h>
@@ -208,32 +208,32 @@ class WAVReader final
 public:
 
 	/*
-	*	Reads the sound resource at the given file path. Returns if the read was succesful.
+	*	Reads the sound asset at the given file path. Returns if the read was succesful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, SoundResource *const RESTRICT resource) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, SoundAsset *const RESTRICT asset) NOEXCEPT
 	{
 		AudioFile<float32> audio_file;
 
 		if (audio_file.load(file))
 		{
-			resource->_SampleRate = static_cast<float32>(audio_file.getSampleRate());
-			resource->_NumberOfChannels = static_cast<uint8>(audio_file.getNumChannels());
+			asset->_SampleRate = static_cast<float32>(audio_file.getSampleRate());
+			asset->_NumberOfChannels = static_cast<uint8>(audio_file.getNumChannels());
 
-			resource->_Samples.Upsize<true>(resource->_NumberOfChannels);
+			asset->_Samples.Upsize<true>(asset->_NumberOfChannels);
 
-			for (uint64 i{ 0 }, size{ resource->_Samples.Size() }; i < size; ++i)
+			for (uint64 i{ 0 }, size{ asset->_Samples.Size() }; i < size; ++i)
 			{
-				resource->_Samples[i].Reserve(audio_file.samples[i].size());
+				asset->_Samples[i].Reserve(audio_file.samples[i].size());
 
 				for (const float32 sample : audio_file.samples[i])
 				{
-					resource->_Samples[i].Emplace(static_cast<int16>(sample * static_cast<float32>(INT16_MAXIMUM)));
+					asset->_Samples[i].Emplace(static_cast<int16>(sample * static_cast<float32>(INT16_MAXIMUM)));
 				}
 			}
 
 			return true;
 		}
-		
+
 		else
 		{
 			return false;

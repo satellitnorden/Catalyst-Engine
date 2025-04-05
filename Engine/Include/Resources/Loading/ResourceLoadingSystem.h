@@ -9,11 +9,7 @@
 #include <Resources/Loading/RawDataData.h>
 #include <Resources/Loading/RenderPipelineData.h>
 #include <Resources/Loading/ShaderData.h>
-#include <Resources/Loading/SoundData.h>
 #include <Resources/Loading/Texture3DData.h>
-
-//Sound.
-#include <Sound/SoundCore.h>
 
 //Forward declarations.
 class BinaryInputFile;
@@ -37,11 +33,6 @@ public:
 	*	Given a file, load shader data.
 	*/
 	void LoadShader(BinaryInputFile *const RESTRICT file, ShaderData *const RESTRICT data) NOEXCEPT;
-
-	/*
-	*	Given a file, load sound data.
-	*/
-	void LoadSound(BinaryInputFile *const RESTRICT file, SoundData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load texture 3D data.

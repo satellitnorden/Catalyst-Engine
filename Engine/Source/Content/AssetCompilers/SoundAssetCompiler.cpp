@@ -1,19 +1,16 @@
 //Header file.
-#include <Content/AssetCompilers/AnimationAssetCompiler.h>
+#include <Content/AssetCompilers/SoundAssetCompiler.h>
 
 //File.
 #include <File/Core/File.h>
 #include <File/Core/BinaryOutputFile.h>
-#include <File/Readers/FBXReader.h>
+#include <File/Readers/WAVReader.h>
 #include <File/Utilities/TextParsingUtilities.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
 
 //Systems.
-#include <Systems/LogSystem.h>
-#include <Systems/PhysicsSystem.h>
-#include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 
 //STL.
@@ -21,9 +18,9 @@
 #include <string>
 
 /*
-*	Animation parameters class definition.
+*	Sound parameters class definition.
 */
-class AnimationParameters final
+class SoundParameters final
 {
 
 public:
@@ -36,7 +33,7 @@ public:
 /*
 *	Default constructor.
 */
-AnimationAssetCompiler::AnimationAssetCompiler() NOEXCEPT
+SoundAssetCompiler::SoundAssetCompiler() NOEXCEPT
 {
 	//Set the flags.
 	_Flags = Flags::ALWAYS_COMPILE;
@@ -45,15 +42,15 @@ AnimationAssetCompiler::AnimationAssetCompiler() NOEXCEPT
 /*
 *	Returns the asset type identifier.
 */
-NO_DISCARD HashString AnimationAssetCompiler::AssetTypeIdentifier() const NOEXCEPT
+NO_DISCARD HashString SoundAssetCompiler::AssetTypeIdentifier() const NOEXCEPT
 {
-	return AnimationAsset::TYPE_IDENTIFIER;
+	return SoundAsset::TYPE_IDENTIFIER;
 }
 
 /*
 *	Returns the current version.
 */
-NO_DISCARD uint64 AnimationAssetCompiler::CurrentVersion() const NOEXCEPT
+NO_DISCARD uint64 SoundAssetCompiler::CurrentVersion() const NOEXCEPT
 {
 	return 1;
 }
@@ -61,7 +58,7 @@ NO_DISCARD uint64 AnimationAssetCompiler::CurrentVersion() const NOEXCEPT
 /*
 *	Compiles a single asset with the given compile context.
 */
-void AnimationAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
+void SoundAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 {
 	//Set up the compile data.
 	CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
@@ -83,7 +80,7 @@ void AnimationAssetCompiler::Compile(const CompileContext &compile_context) NOEX
 
 	task->_Function = [](void *const RESTRICT arguments)
 	{
-		AnimationAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
+		SoundAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = compile_data;
 	task->_ExecutableOnSameThread = false;
@@ -98,10 +95,10 @@ void AnimationAssetCompiler::Compile(const CompileContext &compile_context) NOEX
 /*
 *	Loads a single asset with the given load context.
 */
-NO_DISCARD Asset *const RESTRICT AnimationAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
+NO_DISCARD Asset *const RESTRICT SoundAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
 {
 	//Allocate the asset.
-	AnimationAsset *const RESTRICT new_asset{ new (_AssetAllocator.Allocate()) AnimationAsset() };
+	SoundAsset *const RESTRICT new_asset{ new (_AssetAllocator.Allocate()) SoundAsset() };
 
 	//Set up the load data.
 	LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
@@ -115,7 +112,7 @@ NO_DISCARD Asset *const RESTRICT AnimationAssetCompiler::Load(const LoadContext 
 
 	task->_Function = [](void *const RESTRICT arguments)
 	{
-		AnimationAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
+		SoundAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = load_data;
 	task->_ExecutableOnSameThread = false;
@@ -133,12 +130,12 @@ NO_DISCARD Asset *const RESTRICT AnimationAssetCompiler::Load(const LoadContext 
 /*
 *	Compiles internally.
 */
-void AnimationAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
+void SoundAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
 {
-	PROFILING_SCOPE("AnimationAssetCompiler::CompileInternal");
+	PROFILING_SCOPE("SoundAssetCompiler::CompileInternal");
 
 	//Set up the parameters.
-	AnimationParameters parameters;
+	SoundParameters parameters;
 
 	//Open the input file.
 	std::ifstream input_file{ compile_data->_FilePath.Data() };
@@ -182,12 +179,13 @@ void AnimationAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	//Close the input file.
 	input_file.close();
 
-	//Read the animation file.
-	AnimationFile animation_file;
-	
-	const bool read_successful{ FBXReader::Read(parameters._File.Data(), &animation_file) };
+	//Read the sound file.
+	SoundAsset sound_asset;
 
-	ASSERT(read_successful, "Couldn't read animation file!");
+	if (!WAVReader::Read(parameters._File.Data(), &sound_asset))
+	{
+		ASSERT(false, "Couldn't load sound file!");
+	}
 
 	//Determine the collection directory.
 	char collection_directory_path[MAXIMUM_FILE_PATH_LENGTH];
@@ -207,7 +205,7 @@ void AnimationAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 
 	//Determine the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "%s\\Animations", collection_directory_path);
+	sprintf_s(directory_path, "%s\\Sounds", collection_directory_path);
 
 	//Create the compiled directory, if it doesn't exist.
 	File::CreateDirectory(directory_path);
@@ -223,32 +221,18 @@ void AnimationAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
-	//Write the duration.
-	output_file.Write(&animation_file._Duration, sizeof(float32));
+	//Write the sample rate.
+	output_file.Write(&sound_asset._SampleRate, sizeof(float32));
 
 	//Write the number of channels.
-	const uint64 number_of_channels{ animation_file._Channels.Size() };
-	output_file.Write(&number_of_channels, sizeof(uint64));
+	output_file.Write(&sound_asset._NumberOfChannels, sizeof(uint8));
 
-	//Write the channels.
-	for (const AnimationChannel &channel : animation_file._Channels)
+	//Write the channel data.
+	for (const DynamicArray<int16> &channel : sound_asset._Samples)
 	{
-		//Write the bone identifier.
-		output_file.Write(&channel._BoneIdentifier, sizeof(HashString));
-
-		//Write the number of keyframes.
-		const uint64 number_of_keyframes{ channel._Keyframes.Size() };
-		output_file.Write(&number_of_keyframes, sizeof(uint64));
-
-		//Write the keyframes.
-		for (const AnimationKeyframe &keyframe : channel._Keyframes)
-		{
-			//Write the timestamp.
-			output_file.Write(&keyframe._Timestamp, sizeof(float32));
-
-			//Write the bone transform.
-			output_file.Write(&keyframe._BoneTransform, sizeof(BoneTransform));
-		}
+		const uint64 number_of_samples{ channel.Size() };
+		output_file.Write(&number_of_samples, sizeof(uint64));
+		output_file.Write(channel.Data(), sizeof(int16) * number_of_samples);
 	}
 
 	//Close the output file.
@@ -258,44 +242,27 @@ void AnimationAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 /*
 *	Loads internally.
 */
-void AnimationAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT
+void SoundAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT
 {
-	PROFILING_SCOPE("AnimationAssetCompiler::LoadInternal");
+	PROFILING_SCOPE("SoundAssetCompiler::LoadInternal");
 
 	//Read the data.
 	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
 
-	//Read the duration.
-	load_data->_StreamArchive->Read(&load_data->_Asset->_Duration, sizeof(float32), &stream_archive_position);
+	//Read the sample rate.
+	load_data->_StreamArchive->Read(&load_data->_Asset->_SampleRate, sizeof(float32), &stream_archive_position);
 
 	//Read the number of channels.
-	uint64 number_of_channels;
-	load_data->_StreamArchive->Read(&number_of_channels, sizeof(uint64), &stream_archive_position);
+	load_data->_StreamArchive->Read(&load_data->_Asset->_NumberOfChannels, sizeof(uint8), &stream_archive_position);
 
-	//Resize the channels.
-	load_data->_Asset->_Channels.Upsize<true>(number_of_channels);
+	//Read the channel data.
+	load_data->_Asset->_Samples.Upsize<true>(load_data->_Asset->_NumberOfChannels);
 
-	//Read the channels.
-	for (AnimationChannel &channel : load_data->_Asset->_Channels)
+	for (DynamicArray<int16> &channel : load_data->_Asset->_Samples)
 	{
-		//Read the bone identifier.
-		load_data->_StreamArchive->Read(&channel._BoneIdentifier, sizeof(HashString), &stream_archive_position);
-
-		//Read the number of keyframes.
-		uint64 number_of_keyframes;
-		load_data->_StreamArchive->Read(&number_of_keyframes, sizeof(uint64), &stream_archive_position);
-
-		//Resize the keyframes.
-		channel._Keyframes.Upsize<false>(number_of_keyframes);
-
-		//Read the keyframes.
-		for (AnimationKeyframe &keyframe : channel._Keyframes)
-		{
-			//Read the timestamp.
-			load_data->_StreamArchive->Read(&keyframe._Timestamp, sizeof(float32), &stream_archive_position);
-
-			//Read the bone transform..
-			load_data->_StreamArchive->Read(&keyframe._BoneTransform, sizeof(BoneTransform), &stream_archive_position);
-		}
+		uint64 number_of_samples;
+		load_data->_StreamArchive->Read(&number_of_samples, sizeof(uint64), &stream_archive_position);
+		channel.Upsize<false>(number_of_samples);
+		load_data->_StreamArchive->Read(channel.Data(), sizeof(int16) * number_of_samples, &stream_archive_position);
 	}
 }

@@ -17,7 +17,7 @@ MaterialSystem::MaterialSystem() NOEXCEPT
 		_MaterialSlots[i] = false;
 	}
 
-	//Reset all material resources.
+	//Reset all material assets.
 	for (uint32 i{ 0 }; i < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS; ++i)
 	{
 		_Materials[i] = nullptr;

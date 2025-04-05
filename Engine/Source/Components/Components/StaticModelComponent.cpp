@@ -26,7 +26,6 @@
 #include <Systems/DebugSystem.h>
 #endif
 #include <Systems/PhysicsSystem.h>
-#include <Systems/ResourceSystem.h>
 #include <Systems/WorldSystem.h>
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)

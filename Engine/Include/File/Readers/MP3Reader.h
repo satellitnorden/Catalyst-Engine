@@ -3,11 +3,11 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Content.
+#include <Content/Assets/SoundAsset.h>
+
 //File.
 #include <File/Core/BinaryInputFile.h>
-
-//Resources.
-#include <Resources/Core/SoundResource.h>
 
 //Third party.
 #include <ThirdParty/OpenMP3/openmp3.h>
@@ -18,9 +18,9 @@ class MP3Reader final
 public:
 
 	/*
-	*	Reads the sound resource at the given file path. Returns if the read was succesful.
+	*	Reads the sound asset at the given file path. Returns if the read was succesful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, SoundResource *const RESTRICT resource) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, SoundAsset *const RESTRICT asset) NOEXCEPT
 	{
 		//Read the file.
 		BinaryInputFile file{ file_path };
@@ -39,10 +39,10 @@ public:
 		OpenMP3::Decoder decoder{ library };
 
 		//Set the number of channels.
-		resource->_NumberOfChannels = static_cast<uint8>(2);
+		asset->_NumberOfChannels = static_cast<uint8>(2);
 
 		//Allocate the sample buffers.
-		resource->_Samples.Upsize<true>(resource->_NumberOfChannels);
+		asset->_Samples.Upsize<true>(asset->_NumberOfChannels);
 
 		//Process all frames.
 		{
@@ -57,13 +57,13 @@ public:
 
 					if (processed_samples > 0)
 					{
-						resource->_SampleRate = static_cast<float32>(frame.GetSampleRate());
+						asset->_SampleRate = static_cast<float32>(frame.GetSampleRate());
 
 						for (uint8 channel_index{ 0 }; channel_index < 2; ++channel_index)
 						{
 							for (OpenMP3::UInt sample_index{ 0 }; sample_index < processed_samples; ++sample_index)
 							{
-								resource->_Samples[channel_index].Emplace(static_cast<int16>(BaseMath::Clamp(output[channel_index][sample_index], -1.0f, 1.0f) * static_cast<float32>(INT16_MAXIMUM)));
+								asset->_Samples[channel_index].Emplace(static_cast<int16>(BaseMath::Clamp(output[channel_index][sample_index], -1.0f, 1.0f) * static_cast<float32>(INT16_MAXIMUM)));
 							}
 						}
 					}

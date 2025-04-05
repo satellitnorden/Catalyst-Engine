@@ -165,7 +165,7 @@ public:
 	*	Starts recording.
 	*	Can report the expected length, in seconds, to give the sound system a heads up about how much memory needs to be allocated.
 	*/
-	void StartRecording(SoundResource *const RESTRICT recording_sound_resource, const float32 expected_length = 0.0f) NOEXCEPT;
+	void StartRecording(SoundAsset *const RESTRICT recording_sound_asset, const float32 expected_length = 0.0f) NOEXCEPT;
 
 	/*
 	*	Stops recording. Saves the recording to a .WAV file to the specified file path.
@@ -287,8 +287,8 @@ private:
 	//Denotes whether or not the sound system is currently recording.
 	AtomicFlag _IsRecording;
 
-	//The recording sound resource.
-	SoundResource *RESTRICT _RecordingSoundResource;
+	//The recording sound asset.
+	SoundAsset *RESTRICT _RecordingSoundAsset;
 
 	//Denotes whether or not the sound system should continue while the engine is paused.
 	bool _ContinueWhileEnginePaused{ false };

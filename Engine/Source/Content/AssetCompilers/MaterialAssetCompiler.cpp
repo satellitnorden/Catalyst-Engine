@@ -155,7 +155,7 @@ void MaterialAssetCompiler::Compile(const CompileContext &compile_context) NOEXC
 		MaterialAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = compile_data;
-	task->_ExecutableOnSameThread = true;
+	task->_ExecutableOnSameThread = false;
 
 	//Execute the task!
 	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
@@ -187,7 +187,7 @@ NO_DISCARD Asset *const RESTRICT MaterialAssetCompiler::Load(const LoadContext &
 		MaterialAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = load_data;
-	task->_ExecutableOnSameThread = true;
+	task->_ExecutableOnSameThread = false;
 
 	//Execute the task!
 	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
