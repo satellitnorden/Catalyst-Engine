@@ -45,12 +45,21 @@ FORCE_INLINE NO_DISCARD Matrix4x4 ConvertAssimpMatrix(const aiMatrix4x4 &matrix)
 	aiVector3D scale;
 	matrix.Decompose(scale, rotation, translation);
 
+#if 0
 	return Matrix4x4
 	(
 		Vector3<float32>(translation.x, translation.z, translation.y),
 		Quaternion(rotation.x, rotation.z, rotation.y, rotation.w),
 		Vector3<float32>(scale.x, scale.z, scale.y)
 	);
+#else
+	return Matrix4x4
+	(
+		Vector3<float32>(translation.x, translation.y, translation.z),
+		Quaternion(rotation.x, rotation.y, rotation.z, rotation.w),
+		Vector3<float32>(scale.x, scale.y, scale.z)
+	);
+#endif
 }
 
 /*
@@ -414,6 +423,8 @@ FORCE_INLINE void BuildSkeleton(const aiNode *const RESTRICT node, const Dynamic
 
 	else
 	{
+		animated_model_file->_ParentTransform = node->mParent ? ConvertAssimpMatrix(node->mParent->mTransformation) : MatrixConstants::IDENTITY;
+		//animated_model_file->_ParentTransform.Inverse();
 		animated_model_file->_Skeleton._RootBone = bone;
 	}
 }

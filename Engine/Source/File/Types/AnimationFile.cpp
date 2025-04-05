@@ -25,9 +25,9 @@ void AnimationFile::PostProcess() NOEXCEPT
 			{
 				for (AnimationKeyframe &keyframe : channel._Keyframes)
 				{
-					BlenderUtilities::Transform(&keyframe._BoneTransform._Translation);
-					BlenderUtilities::Transform(&keyframe._BoneTransform._Rotation);
-					BlenderUtilities::Transform(&keyframe._BoneTransform._Scale);
+					//BlenderUtilities::Transform(&keyframe._BoneTransform._Translation);
+					//BlenderUtilities::Transform(&keyframe._BoneTransform._Rotation);
+					//BlenderUtilities::Transform(&keyframe._BoneTransform._Scale);
 				}
 			}
 

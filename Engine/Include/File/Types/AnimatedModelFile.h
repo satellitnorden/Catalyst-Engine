@@ -50,6 +50,9 @@ public:
 	//The meshes.
 	DynamicArray<Mesh> _Meshes;
 
+	//The parent transform.
+	Matrix4x4 _ParentTransform;
+
 	//The skeleton.
 	Skeleton _Skeleton;
 

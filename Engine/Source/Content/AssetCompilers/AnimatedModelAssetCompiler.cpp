@@ -292,6 +292,9 @@ void AnimatedModelAssetCompiler::CompileInternal(CompileData *const RESTRICT com
 		output_file.Write(animated_model_file._Meshes[mesh_index]._Indices.Data(), sizeof(uint32) * number_of_indices);
 	}
 
+	//Write the parent transform.
+	output_file.Write(&animated_model_file._ParentTransform, sizeof(Matrix4x4));
+
 	//Write the root bone.
 	uint32 total_number_of_bones{ 0 };
 	WriteBone(animated_model_file._Skeleton._RootBone, &output_file, &total_number_of_bones);
@@ -418,6 +421,9 @@ void AnimatedModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data
 
 	//Write the index count.
 	load_data->_Asset->_IndexCount = static_cast<uint32>(indices[0].Size());
+
+	//Read the parent transform.
+	load_data->_StreamArchive->Read(&load_data->_Asset->_ParentTransform, sizeof(Matrix4x4), &stream_archive_position);
 
 	//Read the bones.
 	ReadBone(&load_data->_Asset->_Skeleton._RootBone, load_data->_StreamArchive, &stream_archive_position);

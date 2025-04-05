@@ -169,7 +169,7 @@ void AnimatedModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase,
 		if (instance_data._CurrentAnimation)
 		{
 			//Skin the root bone.
-			Skin(instance_data._Model->_Skeleton._RootBone, MatrixConstants::IDENTITY, &instance_data);
+			Skin(instance_data._Model->_Skeleton._RootBone, instance_data._Model->_ParentTransform, &instance_data);
 
 			//Update the current animation time.
 			instance_data._CurrentAnimationTime += CatalystEngineSystem::Instance->GetDeltaTime();
@@ -263,7 +263,7 @@ void AnimatedModelComponent::Skin(const Bone &bone, const Matrix4x4 &parent_tran
 	const Matrix4x4 global_transform{ parent_transform * local_transform };
 
 	//Add the final bone transform.
-	instance_data->_FinalBoneTransforms[bone._Index] = global_transform * bone._BindTransform;
+	instance_data->_FinalBoneTransforms[bone._Index] =  global_transform * bone._BindTransform;
 
 	//Update all children.
 	for (const Bone &child : bone._Children)
