@@ -871,14 +871,11 @@ FORCE_INLINE void TerrainPathTracingShadingFunction(const PathTracingShadingCont
 			}
 
 			//Calculate the material tile.
-			Vector2<uint32> material_tile;
-
+			const Vector2<uint32> material_tile
 			{
-				const Vector2<uint32> coordinate_offset{ sample_coordinates[sample_index]._X - base_coordinate._X , sample_coordinates[sample_index]._Y - base_coordinate._Y };
-				const Vector2<float32> world_offset{ static_cast<float32>(coordinate_offset._X) * MATERIAL_TEXTURE_SCALE, static_cast<float32>(coordinate_offset._Y) * MATERIAL_TEXTURE_SCALE };
-				const Vector2<float32> world_material_coordinate{ material_texture_coordinate + world_offset };
-				material_tile = Vector2<uint32>(static_cast<uint32>(world_material_coordinate._X), static_cast<uint32>(world_material_coordinate._Y));
-			}
+				static_cast<uint32>(static_cast<float32>(sample_coordinates[sample_index]._X) * MATERIAL_TEXTURE_SCALE),
+				static_cast<uint32>(static_cast<float32>(sample_coordinates[sample_index]._Y) * MATERIAL_TEXTURE_SCALE)
+			};
 
 			//Rotate it based on the coordinate.
 			material_texture_coordinate.Rotate(ROTATION_FOR_TILE(material_tile));
