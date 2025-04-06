@@ -646,15 +646,19 @@ void main()
         weights[2] = biased_weights[2] = (horizontal_weight) * (1.0f - vertical_weight);
         weights[3] = biased_weights[3] = (horizontal_weight) * (vertical_weight);
         float weights_sum = 0.0f;
+        float biased_weights_sum = 0.0f;
         for (uint weight_index = 0; weight_index < 4; ++weight_index)
         {
             biased_weights[weight_index] = max(pow(biased_weights[weight_index] * terrain_materials[weight_index]._Displacement, TERRAIN_DISPLACEMENT_POWER), TERRAIN_MINIMUM_DISPLACEMENT_WEIGHT);
-            weights_sum += biased_weights[weight_index];
+            weights_sum += weights[weight_index];
+            biased_weights_sum += biased_weights[weight_index];
         }
         float weights_sum_reciprocal = 1.0f / weights_sum;
+        float biased_weights_sum_reciprocal = 1.0f / biased_weights_sum;
         for (uint weight_index = 0; weight_index < 4; ++weight_index)
         {
-            biased_weights[weight_index] *= weights_sum_reciprocal;
+            weights[weight_index] *= weights_sum_reciprocal;
+            biased_weights[weight_index] *= biased_weights_sum_reciprocal;
         }
     }
     TerrainMaterial final_terrain_material = terrain_materials[0];
