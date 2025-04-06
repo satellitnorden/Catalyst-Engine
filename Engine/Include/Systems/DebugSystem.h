@@ -182,7 +182,7 @@ private:
 	/*
 	*	Draws a debug category.
 	*/
-	void DrawDebugCategory(DebugCategory &debug_category, const bool is_root) NOEXCEPT;
+	void DrawDebugCategory(DebugCategory &debug_category, const bool is_root, const uint8 depth) NOEXCEPT;
 
 };
 #endif

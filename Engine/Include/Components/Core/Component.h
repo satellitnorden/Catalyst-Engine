@@ -8,6 +8,9 @@
 
 //Components.
 #include <Components/Core/ComponentEditableField.h>
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	#include <Components/Core/ComponentStatistics.h>
+#endif
 
 //Concurrency.
 #include <Concurrency/Spinlock.h>
@@ -186,7 +189,27 @@ protected:
 	) NOEXCEPT;
 
 	/*
-	*	Adds an editable asset resource field.
+	*	Adds an editable animated model asset field.
+	*/
+	void AddEditableAnimatedModelAssetField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
+	*	Adds an editable animation asset field.
+	*/
+	void AddEditableAnimationAssetField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
+	*	Adds an editable material asset field.
 	*/
 	void AddEditableMaterialAssetField
 	(
@@ -499,6 +522,15 @@ public:							\
 #define COMPONENT_GATHER_PATH_TRACING_TRIANGLES()																														\
 public:																																									\
 	void GatherPathTracingTriangles(DynamicArray<class Vertex> *const RESTRICT vertices, DynamicArray<class PathTracingTriangle> *const RESTRICT triangles) NOEXCEPT;
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Put this in your component declaration and implement it to receive an "Statistics()" call.
+*/
+#define COMPONENT_STATISTICS()													\
+public:																			\
+	void Statistics(ComponentStatistics *const RESTRICT statistics) NOEXCEPT;
+#endif
 
 /*
 *	Declares a Catalyst component.

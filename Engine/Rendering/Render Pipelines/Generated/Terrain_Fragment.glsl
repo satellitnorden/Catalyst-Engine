@@ -565,11 +565,16 @@ layout (location = 3) out vec4 SceneFeatures4;
 void main()
 {
 #if 1
+    vec2 base_coordinate = vec2
+    (
+        float(uint(InHeightMapTextureCoordinate.x * MAP_RESOLUTION)) + 0.5f,
+        float(uint(InHeightMapTextureCoordinate.y * MAP_RESOLUTION)) + 0.5f
+    ) * MAP_RESOLUTION_RECIPROCAL;
     vec2 sample_coordinates[4];
-    sample_coordinates[0] = InHeightMapTextureCoordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
-    sample_coordinates[1] = InHeightMapTextureCoordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
-    sample_coordinates[2] = InHeightMapTextureCoordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
-    sample_coordinates[3] = InHeightMapTextureCoordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_coordinates[0] = base_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_coordinates[1] = base_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_coordinates[2] = base_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+    sample_coordinates[3] = base_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
     TerrainMaterial terrain_materials[4];
     for (uint sample_index = 0; sample_index < 4; ++sample_index)
     {
@@ -581,13 +586,7 @@ void main()
         materials[1] = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
         materials[2] = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
         materials[3] = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
-        vec2 material_texture_coordinate;
-        {
-            vec2 map_space_offset = (floor(sample_coordinates[sample_index] * MAP_RESOLUTION) - floor(InHeightMapTextureCoordinate * MAP_RESOLUTION));
-            vec2 world_space_offset = map_space_offset; //It is assumed here that 1 unit in map space -> 1 meter in world space.
-            vec2 offset_world_position = floor(world_space_offset) * TERRAIN_MATERIAL_SCALE;
-            material_texture_coordinate = CalculateTerrainMaterialCoordinate(InWorldPosition, terrain_normal, offset_world_position);
-        }
+        vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(InWorldPosition, terrain_normal, sample_coordinates[sample_index] * MAP_RESOLUTION * TERRAIN_MATERIAL_SCALE);
         vec4 normal_map_displacements[4];
         EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[0], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[0]);
         EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[1], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[1]);

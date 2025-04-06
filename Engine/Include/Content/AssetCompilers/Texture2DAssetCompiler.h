@@ -12,6 +12,9 @@
 //Systems.
 #include <Systems/System.h>
 
+//Constants.
+#define ENABLE_STREAMING (0)
+
 class Texture2DAssetCompiler final : public AssetCompiler
 {
 

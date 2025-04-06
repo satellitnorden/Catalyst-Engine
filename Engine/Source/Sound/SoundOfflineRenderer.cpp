@@ -26,14 +26,14 @@ void SoundOfflineRenderer::Initialize(const Parameters &parameters) NOEXCEPT
 	//Set the sound mix components.
 	_SoundMixComponents = parameters._SoundMixComponents;
 
-	//Set up the sound resource.
-	_SoundResource._SampleRate = _SampleRate;
-	_SoundResource._NumberOfChannels = _NumberOfChannels;
-	_SoundResource._Samples.Upsize<true>(_NumberOfChannels);
+	//Set up the sound asset.
+	_SoundAsset._SampleRate = _SampleRate;
+	_SoundAsset._NumberOfChannels = _NumberOfChannels;
+	_SoundAsset._Samples.Upsize<true>(_NumberOfChannels);
 
-	for (DynamicArray<int16> &samples : _SoundResource._Samples)
+	for (DynamicArray<int16> &samples : _SoundAsset._Samples)
 	{
-		samples.Reserve(static_cast<uint64>(_SoundResource._SampleRate * parameters._RequestedLength));
+		samples.Reserve(static_cast<uint64>(_SoundAsset._SampleRate * parameters._RequestedLength));
 	}
 }
 
@@ -54,8 +54,8 @@ NO_DISCARD float32 SoundOfflineRenderer::Update() NOEXCEPT
 		//Add all playing sounds to the current sample.
 		for (PlayingSound &playing_sound : _PlayingSounds)
 		{
-			current_sample += playing_sound._SoundResourcePlayer.NextSample(channel_index);
-			playing_sound._SoundResourcePlayer.Advance(channel_index);
+			current_sample += playing_sound._SoundAssetPlayer.NextSample(channel_index);
+			playing_sound._SoundAssetPlayer.Advance(channel_index);
 		}
 
 		for (SoundMixComponent &component : _SoundMixComponents)
@@ -64,13 +64,13 @@ NO_DISCARD float32 SoundOfflineRenderer::Update() NOEXCEPT
 		}
 
 		//Write the current value.
-		_SoundResource._Samples[channel_index].Emplace(static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)));
+		_SoundAsset._Samples[channel_index].Emplace(static_cast<int16>(current_sample * static_cast<float32>(INT16_MAXIMUM)));
 	}
 
 	//Remove any inactive sounds.
 	for (uint64 i{ 0 }; i < _PlayingSounds.Size();)
 	{
-		if (!_PlayingSounds[i]._SoundResourcePlayer.IsActive())
+		if (!_PlayingSounds[i]._SoundAssetPlayer.IsActive())
 		{
 			if (_PlayingSounds[i]._SoundStoppedCallback)
 			{
@@ -87,7 +87,7 @@ NO_DISCARD float32 SoundOfflineRenderer::Update() NOEXCEPT
 	}
 
 	//Return the current progress.
-	return static_cast<float32>(_SoundResource._Samples[0].Size()) / static_cast<float32>(_SoundResource._Samples[0].Capacity());
+	return static_cast<float32>(_SoundAsset._Samples[0].Size()) / static_cast<float32>(_SoundAsset._Samples[0].Capacity());
 }
 
 /*
@@ -101,14 +101,14 @@ void SoundOfflineRenderer::Terminate() NOEXCEPT
 
 		case File::Extension::OGG:
 		{
-			OGGWriter::Write(_OutputFilePath.Data(), _SoundResource);
+			OGGWriter::Write(_OutputFilePath.Data(), _SoundAsset);
 
 			break;
 		}
 
 		case File::Extension::WAV:
 		{
-			WAVWriter::Write(_OutputFilePath.Data(), _SoundResource);
+			WAVWriter::Write(_OutputFilePath.Data(), _SoundAsset);
 
 			break;
 		}
@@ -133,23 +133,23 @@ void SoundOfflineRenderer::PlaySound(const PlaySoundRequest &request) NOEXCEPT
 	//Add the new playing sound.
 	PlayingSound new_playing_sound;
 
-	new_playing_sound._SoundResourcePlayer.SetSoundResource(request._SoundResource);
-	new_playing_sound._SoundResourcePlayer.SetGain(request._Gain);
-	new_playing_sound._SoundResourcePlayer.SetPan(request._Pan);
-	new_playing_sound._SoundResourcePlayer.SetPlaybackSpeed(request._SoundResource->_SampleRate / _SampleRate * request._PlaybackRate);
-	new_playing_sound._SoundResourcePlayer.SetIsLooping(request._IsLooping);
+	new_playing_sound._SoundAssetPlayer.SetSoundAsset(request._SoundAsset);
+	new_playing_sound._SoundAssetPlayer.SetGain(request._Gain);
+	new_playing_sound._SoundAssetPlayer.SetPan(request._Pan);
+	new_playing_sound._SoundAssetPlayer.SetPlaybackSpeed(request._SoundAsset->_SampleRate / _SampleRate * request._PlaybackRate);
+	new_playing_sound._SoundAssetPlayer.SetIsLooping(request._IsLooping);
 
 	for (uint8 channel_index{ 0 }; channel_index < _NumberOfChannels; ++channel_index)
 	{
-		new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).SetSampleRate(_SampleRate);
-		new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).SetStageValues(	request._AttackTime,
+		new_playing_sound._SoundAssetPlayer.GetADSREnvelope(channel_index).SetSampleRate(_SampleRate);
+		new_playing_sound._SoundAssetPlayer.GetADSREnvelope(channel_index).SetStageValues(	request._AttackTime,
 																								request._DecayTime,
 																								request._SustainGain,
 																								request._ReleaseTime);
-		new_playing_sound._SoundResourcePlayer.GetADSREnvelope(channel_index).EnterAttackStage();
+		new_playing_sound._SoundAssetPlayer.GetADSREnvelope(channel_index).EnterAttackStage();
 	}
 	
-	new_playing_sound._SoundResourcePlayer.SetCurrentSample(static_cast<int64>(request._StartTime * request._SoundResource->_SampleRate));
+	new_playing_sound._SoundAssetPlayer.SetCurrentSample(static_cast<int64>(request._StartTime * request._SoundAsset->_SampleRate));
 	new_playing_sound._SoundInstanceHandle = sound_instance_handle;
 	new_playing_sound._SoundStoppedCallback = request._SoundStoppedCallback;
 
@@ -171,7 +171,7 @@ void SoundOfflineRenderer::StopSound(const SoundInstanceHandle handle) NOEXCEPT
 	{
 		if (_PlayingSounds[i]._SoundInstanceHandle == handle)
 		{
-			_PlayingSounds[i]._SoundResourcePlayer.Stop();
+			_PlayingSounds[i]._SoundAssetPlayer.Stop();
 
 			break;
 		}

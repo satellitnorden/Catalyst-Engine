@@ -9,7 +9,6 @@
 #include <Resources/Building/RenderPipelineBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
 #include <Resources/Building/ShaderBuildParameters.h>
-#include <Resources/Building/SoundBuildParameters.h>
 #include <Resources/Building/Texture3DBuildParameters.h>
 
 class ResourceBuildingSystem final
@@ -36,11 +35,6 @@ public:
 	*	Builds a shader.
 	*/
 	void BuildShader(const ShaderBuildParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Builds a sound.
-	*/
-	void BuildSound(const SoundBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a texture 3D.

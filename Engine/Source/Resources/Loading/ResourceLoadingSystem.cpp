@@ -276,33 +276,6 @@ void ResourceLoadingSystem::LoadShader(BinaryInputFile *const RESTRICT file, Sha
 }
 
 /*
-*	Given a file, load sound data.
-*/
-void ResourceLoadingSystem::LoadSound(BinaryInputFile *const RESTRICT file, SoundData *const RESTRICT data) NOEXCEPT
-{
-	//Read the sample rate.
-	file->Read(&data->_SampleRate, sizeof(float32));
-
-	//Read the number of channels.
-	file->Read(&data->_NumberOfChannels, sizeof(uint8));
-
-	//Reserve the appropriate size for the channels.
-	data->_Samples.Upsize<true>(data->_NumberOfChannels);
-
-	//Read the number of samples.
-	uint64 number_of_samples;
-	file->Read(&number_of_samples, sizeof(uint64));
-
-	//Read the samples.
-	for (DynamicArray<int16> &channel : data->_Samples)
-	{
-		channel.Upsize<false>(number_of_samples);
-
-		file->Read(channel.Data(), sizeof(int16) * number_of_samples);
-	}
-}
-
-/*
 *	Given a file, load texture 3D data.
 */
 void ResourceLoadingSystem::LoadTexture3D(BinaryInputFile *const RESTRICT file, Texture3DData *const RESTRICT data) NOEXCEPT

@@ -155,6 +155,7 @@ namespace PathTracingSystemConstants
 {
 	constexpr uint8 MAXIMUM_RADIANCE_DEPTH{ 3 };
 	constexpr float32 SELF_INTERSECTION_OFFSET{ FLOAT32_EPSILON * 1'024.0f };
+	constexpr float32 AMBIENT_OCCLUSION_DISTANCE{ 4.0f };
 }
 
 /*
@@ -526,6 +527,30 @@ NO_DISCARD Vector3<float32> PathTracingSystem::CastRadianceRay(const Ray &ray, c
 		//Calculate the offset hit position.
 		const Vector3<float32> offset_hit_position{ hit_position + shading_context._GeometryNormal * PathTracingSystemConstants::SELF_INTERSECTION_OFFSET };
 
+		//Cast an ambient occlusion ray.
+		float32 ambient_occlusion{ 1.0f };
+
+		{
+			Vector3<float32> ambient_occlusion_ray_direction{ CatalystRandomMath::RandomPointInSphere() };
+
+			if (Vector3<float32>::DotProduct(shading_context._GeometryNormal, ambient_occlusion_ray_direction) < 0.0f)
+			{
+				ambient_occlusion_ray_direction *= -1.0f;
+			}
+
+			Ray ambient_occlusion_ray;
+
+			ambient_occlusion_ray.SetOrigin(offset_hit_position);
+			ambient_occlusion_ray.SetDirection(ambient_occlusion_ray_direction);
+
+			float32 intersection_distance{ PathTracingSystemConstants::AMBIENT_OCCLUSION_DISTANCE };
+			
+			if (_AccelerationStructure->TraceSurface(ambient_occlusion_ray, &intersection_distance) != nullptr)
+			{
+				ambient_occlusion = BaseMath::LinearlyInterpolate(0.0f, 1.0f, intersection_distance / PathTracingSystemConstants::AMBIENT_OCCLUSION_DISTANCE);
+			}
+		}
+
 		//Calculate the final radiance.
 		Vector3<float32> final_radiance{ 0.0f, 0.0f, 0.0f };
 
@@ -567,7 +592,7 @@ NO_DISCARD Vector3<float32> PathTracingSystem::CastRadianceRay(const Ray &ray, c
 				shading_result._Metallic,
 				shading_result._Thickness,
 				-irradiance_ray._Direction
-			) * shading_result._AmbientOcclusion / irradiance_ray_probability;
+			) * ambient_occlusion * shading_result._AmbientOcclusion / irradiance_ray_probability;
 		}
 
 		//Add direct lighting.
@@ -672,7 +697,7 @@ NO_DISCARD Vector3<float32> PathTracingSystem::CastRadianceRay(const Ray &ray, c
 				shading_result._Metallic,
 				shading_result._Thickness,
 				-direction_to_light
-			);
+			) * ambient_occlusion * shading_result._AmbientOcclusion;
 		}
 
 		//Return the final radiance.

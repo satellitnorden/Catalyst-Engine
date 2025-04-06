@@ -6,9 +6,9 @@
 //Concurrency.
 #include <Concurrency/Atomic.h>
 
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/SoundResource.h>
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/SoundAsset.h>
 
 //Sound.
 #include <Sound/SoundCore.h>
@@ -19,9 +19,9 @@ class PlaySoundRequest final
 public:
 
 	/*
-	*	The sound resource.
+	*	The sound asset.
 	*/
-	ResourcePointer<SoundResource> _SoundResource;
+	AssetPointer<SoundAsset> _SoundAsset;
 
 	/*
 	*	The gain.

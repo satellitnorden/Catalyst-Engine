@@ -40,5 +40,6 @@ class WorldTransformComponent final : public Component
 		WorldTransform,
 		COMPONENT_INITIALIZE()
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE, 512)
+		COMPONENT_STATISTICS()
 	);
 };

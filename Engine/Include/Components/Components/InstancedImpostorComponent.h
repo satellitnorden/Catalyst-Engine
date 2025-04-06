@@ -90,5 +90,6 @@ class InstancedImpostorComponent final : public Component
 	(
 		InstancedImpostor,
 		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 128)
+		COMPONENT_STATISTICS()
 	);
 };

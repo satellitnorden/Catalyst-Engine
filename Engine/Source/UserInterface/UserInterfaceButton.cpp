@@ -2,7 +2,6 @@
 #include <UserInterface/UserInterfaceButton.h>
 
 //Systems.
-#include <Systems/ResourceSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.

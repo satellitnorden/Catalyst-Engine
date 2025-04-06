@@ -63,3 +63,13 @@ void WorldTransformComponent::DestroyInstance(Entity *const RESTRICT entity) NOE
 	//Remove the instance.
 	RemoveInstance(entity);
 }
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Gathers statistics.
+*/
+void WorldTransformComponent::Statistics(ComponentStatistics *const RESTRICT statistics) NOEXCEPT
+{
+	statistics->_CPUMemoryUsage = sizeof(WorldTransformInstanceData) * NumberOfInstances();
+}
+#endif

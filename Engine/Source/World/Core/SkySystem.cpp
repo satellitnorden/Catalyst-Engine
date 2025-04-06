@@ -3,7 +3,6 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
-#include <Systems/ResourceSystem.h>
 #include <Systems/WorldSystem.h>
 
 /*

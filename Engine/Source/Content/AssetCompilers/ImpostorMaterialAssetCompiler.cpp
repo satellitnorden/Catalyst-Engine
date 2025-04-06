@@ -118,7 +118,7 @@ void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_contex
 		ImpostorMaterialAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = compile_data;
-	task->_ExecutableOnSameThread = true;
+	task->_ExecutableOnSameThread = false;
 
 	//Execute the task!
 	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);

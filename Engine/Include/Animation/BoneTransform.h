@@ -12,19 +12,19 @@ class BoneTransform final
 
 public:
 
+	//The translation.
+	Vector3<float32> _Translation;
+
 	//The rotation.
 	Quaternion _Rotation;
 
-	//The position.
-	Vector3<float> _Position;
+	//The scale.
+	Vector3<float32> _Scale{ 1.0f, 1.0f, 1.0f };
 
 	/*
-	*	Constructor taking all values as arguments.
+	*	Default constructor.
 	*/
-	FORCE_INLINE BoneTransform(const Quaternion &initial_rotation, const Vector3<float> &initial_position) NOEXCEPT
-		:
-		_Rotation(initial_rotation),
-		_Position(initial_position)
+	FORCE_INLINE BoneTransform() NOEXCEPT
 	{
 
 	}

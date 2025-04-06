@@ -48,6 +48,20 @@ public:
 	*/
 	NO_DISCARD Asset *const RESTRICT Load(const LoadContext &load_context) NOEXCEPT override;
 
+#if !defined (CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Statistics. Returns if the retrieval succeeded.
+	*/
+	FORCE_INLINE NO_DISCARD bool GetStatistics(Statistics *const RESTRICT statistics) NOEXCEPT
+	{
+		statistics->_AssetTypeName = "Animated Model";
+		statistics->_TotalCPUMemory = _TotalCPUMemory.Load();
+		statistics->_TotalGPUMemory = _TotalGPUMemory.Load();
+
+		return true;
+	}
+#endif
+
 private:
 
 	/*
@@ -99,6 +113,14 @@ private:
 
 	//The asset allocator.
 	PoolAllocator<sizeof(AnimatedModelAsset)> _AssetAllocator;
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//The total CPU memory.
+	Atomic<uint64> _TotalCPUMemory{ 0 };
+
+	//The total GPU memory.
+	Atomic<uint64> _TotalGPUMemory{ 0 };
+#endif
 
 	/*
 	*	Compiles internally.

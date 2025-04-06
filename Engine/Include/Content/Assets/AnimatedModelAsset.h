@@ -35,6 +35,9 @@ public:
 	//The index count.
 	uint32 _IndexCount;
 
+	//The parent transform.
+	Matrix4x4 _ParentTransform;
+
 	//The skeleton.
 	Skeleton _Skeleton;
 

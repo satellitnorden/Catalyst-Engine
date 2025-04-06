@@ -79,7 +79,7 @@ void LevelAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 		LevelAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = compile_data;
-	task->_ExecutableOnSameThread = true;
+	task->_ExecutableOnSameThread = false;
 
 	//Execute the task!
 	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
@@ -111,7 +111,7 @@ NO_DISCARD Asset *const RESTRICT LevelAssetCompiler::Load(const LoadContext &loa
 		LevelAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
 	};
 	task->_Arguments = load_data;
-	task->_ExecutableOnSameThread = true;
+	task->_ExecutableOnSameThread = false;
 
 	//Execute the task!
 	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);

@@ -3,7 +3,6 @@
 
 //Systems
 #include <Systems/InputSystem.h>
-#include <Systems/ResourceSystem.h>
 #include <Systems/UserInterfaceSystem.h>
 
 //User interface.

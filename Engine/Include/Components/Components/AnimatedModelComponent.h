@@ -6,25 +6,24 @@
 //Components.
 #include <Components/Core/Component.h>
 
-//Rendering.
-#include <Rendering/Native/RenderingCore.h>
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/AnimatedModelAsset.h>
+#include <Content/Assets/AnimationAsset.h>
 
-//World.
-#include <World/Core/WorldSpaceAxisAlignedBoundingBox3D.h>
+//Forward declarations.
+class RenderInputStream;
 
 class AnimatedModelInitializationData final : public ComponentInitializationData
 {
 
 public:
 
-	//The animated model resource.
-	//ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
+	//The model.
+	AssetPointer<AnimatedModelAsset> _Model;
 
-	//The material resource.
-	//ResourcePointer<MaterialResource> _MaterialResource;
-
-	//The initial animation resource.
-	//ResourcePointer<AnimationResource> _InitialAnimationResource;
+	//The initial animation.
+	AssetPointer<AnimationAsset> _InitialAnimation;
 
 };
 
@@ -33,26 +32,20 @@ class AnimatedModelInstanceData final
 
 public:
 
-	//The animated model resource.
-	//ResourcePointer<AnimatedModelResource> _AnimatedModelResource;
+	//The model.
+	AssetPointer<AnimatedModelAsset> _Model;
 
-	//The material resource.
-	//ResourcePointer<MaterialResource> _MaterialResource;
-
-	//The world space axis aligned bounding box.
-	WorldSpaceAxisAlignedBoundingBox3D _WorldSpaceAxisAlignedBoundingBox;
-
-	//The current animated model resource.
-	//ResourcePointer<AnimationResource> _CurrentAnimationResource;
+	//The current animation.
+	AssetPointer<AnimationAsset> _CurrentAnimation;
 
 	//The current animation time.
-	float32 _CurrentAnimationTime{ 0.0f };
+	float32 _CurrentAnimationTime;
 
-	//The animation data buffer.
-	DynamicArray<BufferHandle> _AnimationDataBuffers;
+	//The final bone transforms.
+	DynamicArray<Matrix4x4> _FinalBoneTransforms;
 
-	//The animation data render data table.
-	DynamicArray<RenderDataTableHandle> _AnimationDataRenderDataTables;
+	//The start bone transform.
+	uint32 _StartBoneTransform;
 
 };
 
@@ -63,7 +56,26 @@ class AnimatedModelComponent final : public Component
 	CATALYST_COMPONENT
 	(
 		AnimatedModel,
+		COMPONENT_INITIALIZE()
+		COMPONENT_POST_INITIALIZE()
 		COMPONENT_POST_CREATE_INSTANCE()
+		COMPONENT_PARALLEL_BATCH_UPDATE(UpdatePhase::PRE_RENDER, 64)
+		COMPONENT_POST_UPDATE(UpdatePhase::PRE_RENDER)
 	);
+
+private:
+
+	//The final bone transforms.
+	DynamicArray<Matrix4x4> _FinalBoneTransforms;
+
+	/*
+	*	Skins.
+	*/
+	void Skin(const Bone &bone, const Matrix4x4 &parent_transform, AnimatedModelInstanceData *const RESTRICT instance_data) NOEXCEPT;
+
+	/*
+	*	Gathers the animated model input stream.
+	*/
+	void GatherAnimatedModelInputStream(RenderInputStream *const RESTRICT input_stream) NOEXCEPT;
 
 };

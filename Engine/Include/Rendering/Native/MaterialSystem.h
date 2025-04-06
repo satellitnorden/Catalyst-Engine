@@ -58,7 +58,7 @@ private:
 	//Container for all material slots.
 	StaticArray<bool, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _MaterialSlots;
 
-	//Container for all material resources
+	//Container for all material assets
 	StaticArray<const MaterialAsset *RESTRICT, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _Materials;
 
 	//Container for all shader materials.

@@ -106,7 +106,7 @@ public:
 	*	If an intersection is detected, it returns true
 	*	If no interseaction was found, it returns false.
 	*/
-	FORCE_INLINE NO_DISCARD bool TraceShadow(const Ray& ray, const float32 maximum_distance) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool TraceShadow(const Ray &ray, const float32 maximum_distance) const NOEXCEPT
 	{
 		return TraceShadow(ray, maximum_distance, _Root);
 	}

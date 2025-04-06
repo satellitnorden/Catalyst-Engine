@@ -1,0 +1,4 @@
+StorageBuffer(AnimationBoneTransforms)
+{
+	mat4[] ANIMATION_BONE_TRANSFORMS;
+};

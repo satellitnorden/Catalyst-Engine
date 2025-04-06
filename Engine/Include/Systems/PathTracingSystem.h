@@ -44,7 +44,7 @@ public:
 	/*
 	*	Stops path tracing.
 	*/
-	void Stop(const char *const RESTRICT file_path) NOEXCEPT;
+	void Stop(const char *const RESTRICT file_path = nullptr) NOEXCEPT;
 
 	/*
 	*	Returns if path tracing is in progress.

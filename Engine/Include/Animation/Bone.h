@@ -24,4 +24,7 @@ public:
 	//The inverse bind transform.
 	Matrix4x4 _InverseBindTransform;
 
+	//The children.
+	DynamicArray<Bone> _Children;
+
 };

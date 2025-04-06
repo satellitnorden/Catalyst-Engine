@@ -6,9 +6,6 @@
 #include <Concurrency/Spinlock.h>
 #include <Concurrency/Thread.h>
 
-//Sound.
-#include <Sound/SoundResourcePlayer.h>
-
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/LogSystem.h>

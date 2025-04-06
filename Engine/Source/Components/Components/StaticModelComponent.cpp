@@ -26,10 +26,7 @@
 #include <Systems/DebugSystem.h>
 #endif
 #include <Systems/PhysicsSystem.h>
-#include <Systems/ResourceSystem.h>
-#if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Systems/WorldSystem.h>
-#endif
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Denotes whether or not static model wireframe is enabled.
@@ -817,3 +814,13 @@ void StaticModelComponent::GatherPathTracingTriangles(DynamicArray<Vertex> *cons
 		}
 	}
 }
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Gathers statistics.
+*/
+void StaticModelComponent::Statistics(ComponentStatistics *const RESTRICT statistics) NOEXCEPT
+{
+	statistics->_CPUMemoryUsage = sizeof(StaticModelInstanceData) * NumberOfInstances();
+}
+#endif

@@ -12,7 +12,10 @@ class Skeleton final
 
 public:
 
-	//The bones.
-	DynamicArray<Bone> _Bones;
+	//The root bone.
+	Bone _RootBone;
+
+	//The total number of bones.
+	uint32 _TotalNumberOfBones;
 
 };

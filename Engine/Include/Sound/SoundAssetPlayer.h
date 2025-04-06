@@ -3,14 +3,14 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/SoundResource.h>
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/SoundAsset.h>
 
 //Sound.
 #include <Sound/ADSREnvelope.h>
 
-class SoundResourcePlayer final
+class SoundAssetPlayer final
 {
 
 public:
@@ -18,7 +18,7 @@ public:
     /*
     *   Default constructor.
     */
-    FORCE_INLINE SoundResourcePlayer() NOEXCEPT
+    FORCE_INLINE SoundAssetPlayer() NOEXCEPT
     {
         //Set up the current samples.
         for (int64 &current_sample : _CurrentSamples)
@@ -34,11 +34,11 @@ public:
     }
 
     /*
-    *   Sets the sound resource.
+    *   Sets the sound asset.
     */
-    FORCE_INLINE void SetSoundResource(const ResourcePointer<SoundResource> sound_resource) NOEXCEPT
+    FORCE_INLINE void SetSoundAsset(const AssetPointer<SoundAsset> sound_asset) NOEXCEPT
     {
-        _SoundResource = sound_resource;
+        _SoundAsset = sound_asset;
     }
 
     /*
@@ -124,7 +124,7 @@ public:
             _CurrentSampleFractions[channel_index] -= 1.0f;
         }
 
-        if (_IsLooping && _CurrentSamples[channel_index] >= static_cast<int64>(_SoundResource->_Samples[0].Size()))
+        if (_IsLooping && _CurrentSamples[channel_index] >= static_cast<int64>(_SoundAsset->_Samples[0].Size()))
         {
             _CurrentSamples[channel_index] = 0;
         }
@@ -137,18 +137,18 @@ public:
     */
     FORCE_INLINE float32 NextSample(const uint8 channel_index) NOEXCEPT
     {
-        //If the playback position is before the beginning of the sound resource, just return.
+        //If the playback position is before the beginning of the sound asset, just return.
         if (_CurrentSamples[channel_index] < 0)
         {
             return 0.0f;
         }
 
-        const uint8 actual_channel_index{ static_cast<uint8>(channel_index < _SoundResource->_Samples.Size() ? channel_index : 0) };
+        const uint8 actual_channel_index{ static_cast<uint8>(channel_index < _SoundAsset->_Samples.Size() ? channel_index : 0) };
 
-        if (_CurrentSamples[channel_index] < static_cast<int64>(_SoundResource->_Samples[actual_channel_index].Size()))
+        if (_CurrentSamples[channel_index] < static_cast<int64>(_SoundAsset->_Samples[actual_channel_index].Size()))
         {
-            const int16 first_sample{ _SoundResource->_Samples[actual_channel_index][_CurrentSamples[channel_index]] };
-            const int16 second_sample{ _SoundResource->_Samples[actual_channel_index][_CurrentSamples[channel_index] < static_cast<int64>(_SoundResource->_Samples[actual_channel_index].Size() - 1) ? _CurrentSamples[channel_index] + 1 : _CurrentSamples[channel_index]] };
+            const int16 first_sample{ _SoundAsset->_Samples[actual_channel_index][_CurrentSamples[channel_index]] };
+            const int16 second_sample{ _SoundAsset->_Samples[actual_channel_index][_CurrentSamples[channel_index] < static_cast<int64>(_SoundAsset->_Samples[actual_channel_index].Size() - 1) ? _CurrentSamples[channel_index] + 1 : _CurrentSamples[channel_index]] };
 
             float32 interpolated_sample{ BaseMath::LinearlyInterpolate(static_cast<float32>(first_sample), static_cast<float32>(second_sample), _CurrentSampleFractions[channel_index]) / static_cast<float32>(INT16_MAXIMUM) };
 
@@ -167,7 +167,7 @@ public:
     }
 
     /*
-    *   Sets whether or not the sound resource is looping.
+    *   Sets whether or not the sound asset is looping.
     */
     FORCE_INLINE void SetIsLooping(const bool is_looping) NOEXCEPT
     {
@@ -175,7 +175,7 @@ public:
     }
 
     /*
-    *   Stops the sound resource player.
+    *   Stops the sound asset player.
     */
     FORCE_INLINE void Stop() NOEXCEPT
     {
@@ -186,7 +186,7 @@ public:
     }
 
     /*
-    *   Returns if this sound resource player is active.
+    *   Returns if this sound asset player is active.
     */
     FORCE_INLINE NO_DISCARD bool IsActive() const NOEXCEPT
     {
@@ -198,13 +198,13 @@ public:
     */
     FORCE_INLINE NO_DISCARD float64 GetCurrentAudioTime() const NOEXCEPT
     {
-        return (static_cast<float64>(_CurrentSamples[0]) + static_cast<float64>(_CurrentSampleFractions[0])) / static_cast<float64>(_SoundResource->_SampleRate);
+        return (static_cast<float64>(_CurrentSamples[0]) + static_cast<float64>(_CurrentSampleFractions[0])) / static_cast<float64>(_SoundAsset->_SampleRate);
     }
 
 private:
 
-    //The sound resource.
-    ResourcePointer<SoundResource> _SoundResource;
+    //The sound asset.
+    AssetPointer<SoundAsset> _SoundAsset;
 
     //The gain.
     float32 _Gain{ 1.0f };
@@ -224,10 +224,10 @@ private:
     //The current sample fractions.
     StaticArray<float32, 2> _CurrentSampleFractions;
 
-    //Denotes if the sound resource is looping.
+    //Denotes if the sound asset is looping.
     bool _IsLooping{ false };
 
-    //Denotes if this sound resource player is active.
+    //Denotes if this sound asset player is active.
     bool _IsActive{ true };
 
     //The ADSR envelopes.

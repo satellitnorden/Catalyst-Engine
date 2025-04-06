@@ -58,6 +58,13 @@ public:
 		return CompareInternal(first, second, size);
 	}
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Prints a memory string into the given buffer.
+	*/
+	static void PrintMemoryString(char *buffer, const uint64 buffer_size, const char *const RESTRICT prefix, const uint64 input_bytes) NOEXCEPT;
+#endif
+
 private:
 
 	/*

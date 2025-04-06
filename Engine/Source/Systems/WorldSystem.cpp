@@ -11,7 +11,6 @@
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
-#include <Systems/ResourceSystem.h>
 
 /*
 *	Initializes the world system.

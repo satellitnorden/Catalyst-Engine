@@ -88,6 +88,7 @@ class StaticModelComponent final : public Component
 		COMPONENT_SELECT()
 		COMPONENT_START_GAME()
 		COMPONENT_GATHER_PATH_TRACING_TRIANGLES()
+		COMPONENT_STATISTICS()
 	);
 
 public:
