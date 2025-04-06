@@ -520,67 +520,91 @@ void main()
 	    float final_height = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
         world_position.y = final_height;
     }
+    vec3 normals[4];
     vec3 normal;
     {
-        vec3 normal_1 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_2 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_3 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 normal_4 = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
-        vec3 blend_1 = mix(normal_1, normal_2, fract(height_map_coordinate.y * MAP_RESOLUTION));
-	    vec3 blend_2 = mix(normal_3, normal_4, fract(height_map_coordinate.y * MAP_RESOLUTION));
+        normals[0] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[1] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[2] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        normals[3] = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), height_map_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).xyz;
+        vec3 blend_1 = mix(normals[0], normals[1], fract(height_map_coordinate.y * MAP_RESOLUTION));
+	    vec3 blend_2 = mix(normals[2], normals[3], fract(height_map_coordinate.y * MAP_RESOLUTION));
 	    normal = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
         normal = normal * 2.0f - 1.0f;
         normal = normalize(normal);
     }
-    vec2 material_texture_coordinate = world_position.xz * 0.5f;
-#if 0
+    float displacement_multiplier = 1.0f - min(length(world_position - CAMERA_WORLD_POSITION) / 64.0f, 1.0f);
+    if (displacement_multiplier > 0.0f)
     {
+        vec2 base_coordinate = vec2
+        (
+            float(uint(height_map_coordinate.x * MAP_RESOLUTION)) + 0.5f,
+            float(uint(height_map_coordinate.y * MAP_RESOLUTION)) + 0.5f
+        ) * MAP_RESOLUTION_RECIPROCAL;
+        vec2 sample_coordinates[4];
+        sample_coordinates[0] = base_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_coordinates[1] = base_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_coordinates[2] = base_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_coordinates[3] = base_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
         float displacements[4];
-        vec2 sample_offsets[4];
-        sample_offsets[0] = vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
-        sample_offsets[1] = vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
-        sample_offsets[2] = vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
-        sample_offsets[3] = vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
-        for (uint i = 0; i < 4; ++i)
+        for (uint sample_index = 0; sample_index < 4; ++sample_index)
         {
-            vec2 height_map_texture_coordinate = height_map_coordinate + sample_offsets[i];
-            vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
-            Material material_1 = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
-            Material material_2 = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
-            Material material_3 = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
-            Material material_4 = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
-            vec4 normal_map_displacement_1;
-            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_1, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_1);
-            vec4 normal_map_displacement_2;
-            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_2, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_2);
-            vec4 normal_map_displacement_3;
-            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_3, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_3);
-            vec4 normal_map_displacement_4;
-            EVALUATE_NORMAL_MAP_DISPLACEMENT(material_4, material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacement_4);
-            normal_map_displacement_1.w = max(normal_map_displacement_1.w, TERRAIN_MINIMUM_DISPLACEMENT);
-            normal_map_displacement_2.w = max(normal_map_displacement_2.w, TERRAIN_MINIMUM_DISPLACEMENT);
-            normal_map_displacement_3.w = max(normal_map_displacement_3.w, TERRAIN_MINIMUM_DISPLACEMENT);
-            normal_map_displacement_4.w = max(normal_map_displacement_4.w, TERRAIN_MINIMUM_DISPLACEMENT);
-            vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
-            blend_map[0] *= BIAS_DISPLACEMENT(normal_map_displacement_1.w);
-            blend_map[1] *= BIAS_DISPLACEMENT(normal_map_displacement_2.w);
-            blend_map[2] *= BIAS_DISPLACEMENT(normal_map_displacement_3.w);
-            blend_map[3] *= BIAS_DISPLACEMENT(normal_map_displacement_4.w);
-            float inverse_sum = 1.0f / (blend_map[0] + blend_map[1] + blend_map[2] + blend_map[3]);
-            blend_map[0] *= inverse_sum;
-            blend_map[1] *= inverse_sum;
-            blend_map[2] *= inverse_sum;
-            blend_map[3] *= inverse_sum;
-            displacements[i] =  normal_map_displacement_1.w * blend_map[0]
-                                + normal_map_displacement_2.w * blend_map[1]
-                                + normal_map_displacement_3.w * blend_map[2]
-                                + normal_map_displacement_4.w * blend_map[3];
+            vec3 terrain_normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), sample_coordinates[sample_index]).xyz * 2.0f - 1.0f;
+            vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), sample_coordinates[sample_index]);
+            vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), sample_coordinates[sample_index]);
+            Material materials[4];
+            materials[0] = MATERIALS[uint(index_map[0] * float(UINT8_MAXIMUM))];
+            materials[1] = MATERIALS[uint(index_map[1] * float(UINT8_MAXIMUM))];
+            materials[2] = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
+            materials[3] = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
+            vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(world_position, terrain_normal, sample_coordinates[sample_index] * MAP_RESOLUTION * TERRAIN_MATERIAL_SCALE);
+            vec4 normal_map_displacements[4];
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[0], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[0]);
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[1], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[1]);
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[2], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[2]);
+            EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[3], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[3]);
+            float weights[4];
+            float weights_sum = 0.0f;
+            for (uint weight_index = 0; weight_index < 4; ++weight_index)
+            {
+                weights[weight_index] = max(pow(blend_map[weight_index] * normal_map_displacements[weight_index].w, TERRAIN_DISPLACEMENT_POWER), TERRAIN_MINIMUM_DISPLACEMENT_WEIGHT);
+                weights_sum += weights[weight_index];
+            }
+            float weights_sum_reciprocal = 1.0f / weights_sum;
+            for (uint weight_index = 0; weight_index < 4; ++weight_index)
+            {
+                weights[weight_index] *= weights_sum_reciprocal;
+            }
+            displacements[sample_index] =   normal_map_displacements[0].w * weights[0]
+                                            + normal_map_displacements[1].w * weights[1]
+                                            + normal_map_displacements[2].w * weights[2]
+                                            + normal_map_displacements[3].w * weights[3];
         }
-        float blend_1 = mix(displacements[0], displacements[1], fract(height_map_coordinate.y * MAP_RESOLUTION));
-	    float blend_2 = mix(displacements[2], displacements[3], fract(height_map_coordinate.y * MAP_RESOLUTION));
-	    float final_displacement = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
-        world_position += normal * mix(-0.125f, 0.25f, final_displacement); //Slight bias for upward displacement.
+        float horizontal_weight = fract(height_map_coordinate.x * MAP_RESOLUTION);
+        float vertical_weight = fract(height_map_coordinate.y * MAP_RESOLUTION);
+        float weights[4];
+        {
+            weights[0] = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
+            weights[1] = (1.0f - horizontal_weight) * (vertical_weight);
+            weights[2] = (horizontal_weight) * (1.0f - vertical_weight);
+            weights[3] = (horizontal_weight) * (vertical_weight);
+            float weights_sum = 0.0f;
+            for (uint weight_index = 0; weight_index < 4; ++weight_index)
+            {
+                weights[weight_index] = max(pow(weights[weight_index] * displacements[weight_index], TERRAIN_DISPLACEMENT_POWER), TERRAIN_MINIMUM_DISPLACEMENT_WEIGHT);
+                weights_sum += weights[weight_index];
+            }
+            float weights_sum_reciprocal = 1.0f / weights_sum;
+            for (uint weight_index = 0; weight_index < 4; ++weight_index)
+            {
+                weights[weight_index] *= weights_sum_reciprocal;
+            }
+        }
+	    float final_displacement =  displacements[0] * weights[0]
+                                    + displacements[1] * weights[1]
+                                    + displacements[2] * weights[2]
+                                    + displacements[3] * weights[3];
+        world_position += normal * mix(-0.125f, 0.1875f, final_displacement) * displacement_multiplier; //Slight bias for upward displacement.
     }
-#endif
 	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(world_position,1.0f);
 }

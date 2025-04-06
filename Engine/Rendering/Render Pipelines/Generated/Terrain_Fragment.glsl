@@ -564,7 +564,6 @@ layout (location = 3) out vec4 SceneFeatures4;
 
 void main()
 {
-#if 1
     vec2 base_coordinate = vec2
     (
         float(uint(InHeightMapTextureCoordinate.x * MAP_RESOLUTION)) + 0.5f,
@@ -697,33 +696,4 @@ void main()
 	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
 	SceneFeatures3 = final_terrain_material._MaterialProperties;
 	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
-#else
-    vec4 blends;
-    float fractions[2];
-    fractions[0] = fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION);
-    fractions[1] = fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION);
-    blends[0] = (1.0f - fractions[0]) * (1.0f - fractions[1]);
-    blends[1] = (1.0f - fractions[0]) * (fractions[1]);
-    blends[2] = (fractions[0]) * (1.0f - fractions[1]);
-    blends[3] = (fractions[0]) * (fractions[1]);
-    uint highest_index = HighestIndex
-    (
-        terrain_materials[0].normal_map_displacement.w * blends[0],
-        terrain_materials[1].normal_map_displacement.w * blends[1],
-        terrain_materials[2].normal_map_displacement.w * blends[2],
-        terrain_materials[3].normal_map_displacement.w * blends[3]
-    );
-    TerrainMaterial final_material;
-    final_material.albedo = terrain_materials[highest_index].albedo;
-    final_material.normal_map_displacement = terrain_materials[highest_index].normal_map_displacement;
-    final_material.material_properties = terrain_materials[highest_index].material_properties;
-    final_material.normal_map_displacement.xyz = final_material.normal_map_displacement.xyz * 2.0f - 1.0f;
-	final_material.normal_map_displacement.xyz = normalize(final_material.normal_map_displacement.xyz);
-	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map_displacement.xyz);
-    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
-	SceneFeatures1 = vec4(final_material.albedo,1.0f);
-	SceneFeatures2 = vec4(shading_normal,gl_FragCoord.z);
-	SceneFeatures3 = final_material.material_properties;
-	SceneFeatures4 = vec4(velocity,0.0f,0.0f);
-#endif
 }

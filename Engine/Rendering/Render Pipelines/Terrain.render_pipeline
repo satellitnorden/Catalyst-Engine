@@ -156,32 +156,37 @@ Vertex
     //Calculate the displacement multiplier.
     float displacement_multiplier = 1.0f - min(length(OutWorldPosition - CAMERA_WORLD_POSITION) / 64.0f, 1.0f);
 
-#if 0
     //Apply displacement.
     if (displacement_multiplier > 0.0f)
     {
+        //Calculate the base coordinate.
+        vec2 base_coordinate = vec2
+        (
+            float(uint(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION)) + 0.5f,
+            float(uint(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION)) + 0.5f
+        ) * MAP_RESOLUTION_RECIPROCAL;
+
+        //Set up the sample coordinates.
+        vec2 sample_coordinates[4];
+    
+        sample_coordinates[0] = base_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_coordinates[1] = base_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_coordinates[2] = base_coordinate + vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
+        sample_coordinates[3] = base_coordinate + vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
+
         //Sample the displacements.
         float displacements[4];
-        vec2 sample_offsets[4];
-    
-        sample_offsets[0] = vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
-        sample_offsets[1] = vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
-        sample_offsets[2] = vec2(1.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL;
-        sample_offsets[3] = vec2(1.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL;
 
-        for (uint i = 0; i < 4; ++i)
+        for (uint sample_index = 0; sample_index < 4; ++sample_index)
         {
-            //Calculate the material texture coordinate.
-            vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(OutWorldPosition, normals[i], (floor(OutHeightMapTextureCoordinate * MAP_RESOLUTION) + sample_offsets[i] * MAP_RESOLUTION));
-
-            //Cache the height map texture coordinate.
-            vec2 height_map_texture_coordinate = OutHeightMapTextureCoordinate + sample_offsets[i];
+            //Sample the terrain normal.
+            vec3 terrain_normal = texture(sampler2D(TEXTURES[NORMAL_MAP_TEXTURE_INDEX], NORMAL_MAP_SAMPLER), sample_coordinates[sample_index]).xyz * 2.0f - 1.0f;
 
             //Sample the index map.
-            vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
+            vec4 index_map = texture(sampler2D(TEXTURES[INDEX_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), sample_coordinates[sample_index]);
 
             //Sample the blend map.
-            vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), height_map_texture_coordinate);
+            vec4 blend_map = texture(sampler2D(TEXTURES[BLEND_MAP_TEXTURE_INDEX], INDEX_BLEND_MAP_SAMPLER), sample_coordinates[sample_index]);
 
             //Retrieve the materials.
             Material materials[4];
@@ -190,50 +195,83 @@ Vertex
             materials[2] = MATERIALS[uint(index_map[2] * float(UINT8_MAXIMUM))];
             materials[3] = MATERIALS[uint(index_map[3] * float(UINT8_MAXIMUM))];
 
-            //Evaluate the normal map/displacement of the materials.
+            //Calculate the material texture coordinate.
+            vec2 material_texture_coordinate = CalculateTerrainMaterialCoordinate(OutWorldPosition, terrain_normal, sample_coordinates[sample_index] * MAP_RESOLUTION * TERRAIN_MATERIAL_SCALE);
+
+            //Sample the normal map/displacements.
             vec4 normal_map_displacements[4];
+
             EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[0], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[0]);
             EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[1], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[1]);
             EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[2], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[2]);
             EVALUATE_NORMAL_MAP_DISPLACEMENT(materials[3], material_texture_coordinate, MATERIAL_SAMPLER, normal_map_displacements[3]);
 
-            //Find the highest index.
-            uint highest_index = HighestIndex
-            (
-                normal_map_displacements[0].w * blend_map[0],
-                normal_map_displacements[1].w * blend_map[1],
-                normal_map_displacements[2].w * blend_map[2],
-                normal_map_displacements[3].w * blend_map[3]
-            );
+            //Calculate the weights.
+            float weights[4];
+            float weights_sum = 0.0f;
 
-            //Blend the material.
-            displacements[i] =  normal_map_displacements[highest_index].w;
+            for (uint weight_index = 0; weight_index < 4; ++weight_index)
+            {
+                weights[weight_index] = max(pow(blend_map[weight_index] * normal_map_displacements[weight_index].w, TERRAIN_DISPLACEMENT_POWER), TERRAIN_MINIMUM_DISPLACEMENT_WEIGHT);
+                weights_sum += weights[weight_index];
+            }
+
+            //Calculate the weights sum reciprocal.
+            float weights_sum_reciprocal = 1.0f / weights_sum;
+
+            //Normalize all weights.
+            for (uint weight_index = 0; weight_index < 4; ++weight_index)
+            {
+                weights[weight_index] *= weights_sum_reciprocal;
+            }
+
+            //Calculate the displacement.
+            displacements[sample_index] =   normal_map_displacements[0].w * weights[0]
+                                            + normal_map_displacements[1].w * weights[1]
+                                            + normal_map_displacements[2].w * weights[2]
+                                            + normal_map_displacements[3].w * weights[3];
         }
 
-        //Calculate the blends.
-        vec4 blends;
-        
-        blends[0] = (1.0f - fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (1.0f - fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
-        blends[1] = (1.0f - fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
-        blends[2] = (fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (1.0f - fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
-        blends[3] = (fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION)) * (fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION));
+        //Calculate the horizontal/vertical weight.
+        float horizontal_weight = fract(OutHeightMapTextureCoordinate.x * MAP_RESOLUTION);
+        float vertical_weight = fract(OutHeightMapTextureCoordinate.y * MAP_RESOLUTION);
 
-        //Find the highest index.
-        uint highest_index = HighestIndex
-        (
-            displacements[0] * blends[0],
-            displacements[1] * blends[1],
-            displacements[2] * blends[2],
-            displacements[3] * blends[3]
-        );
+        //Calculate the weights.
+        float weights[4];
+
+        {
+            weights[0] = (1.0f - horizontal_weight) * (1.0f - vertical_weight);
+            weights[1] = (1.0f - horizontal_weight) * (vertical_weight);
+            weights[2] = (horizontal_weight) * (1.0f - vertical_weight);
+            weights[3] = (horizontal_weight) * (vertical_weight);
+
+            float weights_sum = 0.0f;
+
+            for (uint weight_index = 0; weight_index < 4; ++weight_index)
+            {
+                weights[weight_index] = max(pow(weights[weight_index] * displacements[weight_index], TERRAIN_DISPLACEMENT_POWER), TERRAIN_MINIMUM_DISPLACEMENT_WEIGHT);
+                weights_sum += weights[weight_index];
+            }
+
+            //Calculate the weights sum reciprocal.
+            float weights_sum_reciprocal = 1.0f / weights_sum;
+
+            //Normalize all weights.
+            for (uint weight_index = 0; weight_index < 4; ++weight_index)
+            {
+                weights[weight_index] *= weights_sum_reciprocal;
+            }
+        }
 
         //Calculate the final displacement!
-	    float final_displacement = displacements[highest_index];
+	    float final_displacement =  displacements[0] * weights[0]
+                                    + displacements[1] * weights[1]
+                                    + displacements[2] * weights[2]
+                                    + displacements[3] * weights[3];
 
         //Apply the displacement!
         OutWorldPosition += normal * mix(-0.125f, 0.1875f, final_displacement) * displacement_multiplier; //Slight bias for upward displacement.
     }
-#endif
 
     //Output the position.
     OutputVertexPosition(WORLD_TO_CLIP_MATRIX * vec4(OutWorldPosition, 1.0f));
@@ -246,7 +284,6 @@ Fragment
     InputParameter(vec3, InWorldPosition);
     InputParameter(vec2, InHeightMapTextureCoordinate);
     
-#if 1
     //Calculate the base coordinate.
     vec2 base_coordinate = vec2
     (
@@ -437,49 +474,4 @@ Fragment
     OutputFragment(SceneFeatures2, vec4(shading_normal, gl_FragCoord.z));
     OutputFragment(SceneFeatures3, final_terrain_material._MaterialProperties);
     OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
-#else
-    //Calculate the blends.
-    vec4 blends;
-        
-    float fractions[2];
-    
-    fractions[0] = fract(InHeightMapTextureCoordinate.x * MAP_RESOLUTION);
-    fractions[1] = fract(InHeightMapTextureCoordinate.y * MAP_RESOLUTION);
-
-    blends[0] = (1.0f - fractions[0]) * (1.0f - fractions[1]);
-    blends[1] = (1.0f - fractions[0]) * (fractions[1]);
-    blends[2] = (fractions[0]) * (1.0f - fractions[1]);
-    blends[3] = (fractions[0]) * (fractions[1]);
-
-    //Find the highest index.
-    uint highest_index = HighestIndex
-    (
-        terrain_materials[0].normal_map_displacement.w * blends[0],
-        terrain_materials[1].normal_map_displacement.w * blends[1],
-        terrain_materials[2].normal_map_displacement.w * blends[2],
-        terrain_materials[3].normal_map_displacement.w * blends[3]
-    );
-
-    //Calculate the final material!
-    TerrainMaterial final_material;
-
-    final_material.albedo = terrain_materials[highest_index].albedo;
-    final_material.normal_map_displacement = terrain_materials[highest_index].normal_map_displacement;
-    final_material.material_properties = terrain_materials[highest_index].material_properties;
-
-    final_material.normal_map_displacement.xyz = final_material.normal_map_displacement.xyz * 2.0f - 1.0f;
-	final_material.normal_map_displacement.xyz = normalize(final_material.normal_map_displacement.xyz);
-
-    //Calculate the shading normal.
-	vec3 shading_normal = normalize(tangent_space_matrix * final_material.normal_map_displacement.xyz);
-
-    //Calculate the velocity.
-    vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
-
-    //Output the fragments.
-    OutputFragment(SceneFeatures1, vec4(final_material.albedo, 1.0f));
-    OutputFragment(SceneFeatures2, vec4(shading_normal, gl_FragCoord.z));
-    OutputFragment(SceneFeatures3, final_material.material_properties);
-    OutputFragment(SceneFeatures4, vec4(velocity, 0.0f, 0.0f));
-#endif
 }
