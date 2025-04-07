@@ -14,7 +14,8 @@
 #include <Sound/InputMIDIDevice.h>
 #include <Sound/MIDIMessage.h>
 #include <Sound/OutputMIDIDevice.h>
-#include <Sound/PlaySoundRequest.h>
+#include <Sound/PlaySound2DRequest.h>
+#include <Sound/PlaySound3DRequest.h>
 #include <Sound/SoundCore.h>
 #include <Sound/SoundMixComponent.h>
 #include <Sound/SoundSubSystem.h>
@@ -119,7 +120,7 @@ public:
 	/*
 	*	Plays a sound.
 	*/
-	void PlaySound(const PlaySoundRequest &request) NOEXCEPT;
+	void PlaySound(const PlaySound2DRequest &request) NOEXCEPT;
 
 	/*
 	*	Stops a sound.

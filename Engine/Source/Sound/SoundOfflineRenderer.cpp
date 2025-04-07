@@ -125,7 +125,7 @@ void SoundOfflineRenderer::Terminate() NOEXCEPT
 /*
 *	Plays a sound.
 */
-void SoundOfflineRenderer::PlaySound(const PlaySoundRequest &request) NOEXCEPT
+void SoundOfflineRenderer::PlaySound(const PlaySound2DRequest &request) NOEXCEPT
 {
 	//Calculate the sound instance handle.
 	SoundInstanceHandle sound_instance_handle{ _SoundInstanceCounter++ };

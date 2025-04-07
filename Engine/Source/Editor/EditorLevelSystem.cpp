@@ -16,6 +16,7 @@
 #include <Content/Assets/LevelAsset.h>
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
+#include <Content/Assets/SoundAsset.h>
 
 //Entities.
 #include <Entities/Core/EntitySerialization.h>
@@ -402,6 +403,46 @@ FORCE_INLINE NO_DISCARD bool ModelAssetWidget
 
 				component->PreEditableFieldChange(entity, *editable_field);
 				(*model_asset) = AssetPointer<ModelAsset>((ModelAsset *const RESTRICT)asset);
+				component->PostEditableFieldChange(entity, *editable_field);
+			}
+		);
+	}
+
+	//Eh.
+	return false;
+}
+
+/*
+*	Creates a custom sound asset widget. Returns if there was a change.
+*/
+FORCE_INLINE NO_DISCARD bool SoundAssetWidget
+(
+	const char *const RESTRICT label,
+	Component *const RESTRICT component,
+	Entity *const RESTRICT entity,
+	const ComponentEditableField &editable_field,
+	AssetPointer<SoundAsset> *const RESTRICT sound_asset
+) NOEXCEPT
+{
+	char buffer[256];
+	sprintf_s(buffer, "%s: %s", label, (*sound_asset) ? (*sound_asset)->_Header._AssetName.Data() : "None");
+
+	if (ImGui::Selectable(buffer))
+	{
+		CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
+		(
+			"Select Sound",
+			SoundAsset::TYPE_IDENTIFIER,
+			component,
+			entity,
+			&editable_field,
+			sound_asset,
+			[](Component *const RESTRICT component, Entity *const RESTRICT entity, const ComponentEditableField *const RESTRICT editable_field, Asset *const RESTRICT asset, void *const RESTRICT user_data)
+			{
+				AssetPointer<SoundAsset> *const RESTRICT model_asset{ static_cast<AssetPointer<SoundAsset> *const RESTRICT>(user_data) };
+
+				component->PreEditableFieldChange(entity, *editable_field);
+				(*model_asset) = AssetPointer<SoundAsset>((SoundAsset *const RESTRICT)asset);
 				component->PostEditableFieldChange(entity, *editable_field);
 			}
 		);
@@ -1890,6 +1931,22 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 								AssetPointer<ModelAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<ModelAsset>>(selected_entity, editable_field) };
 
 								ModelAssetWidget
+								(
+									editable_field._Name,
+									component,
+									selected_entity,
+									editable_field,
+									asset
+								);
+
+								break;
+							}
+
+							case ComponentEditableField::Type::SOUND_ASSET:
+							{
+								AssetPointer<SoundAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<SoundAsset>>(selected_entity, editable_field) };
+
+								SoundAssetWidget
 								(
 									editable_field._Name,
 									component,

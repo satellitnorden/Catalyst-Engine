@@ -496,7 +496,7 @@ void SoundSystem::RemoveMasterChannelSoundMixComponent(const uint64 identifier) 
 /*
 *	Plays a sound.
 */
-void SoundSystem::PlaySound(const PlaySoundRequest &request) NOEXCEPT
+void SoundSystem::PlaySound(const PlaySound2DRequest &request) NOEXCEPT
 {
 	//Queue the play sound request.
 	QueuedPlaySoundRequest queued_play_sound_request;

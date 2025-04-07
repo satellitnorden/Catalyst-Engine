@@ -13,6 +13,7 @@
 #include <Content/Assets/AnimationAsset.h>
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
+#include <Content/Assets/SoundAsset.h>
 
 //Math.
 #include <Math/General/EulerAngles.h>
@@ -163,6 +164,15 @@ namespace EntitySerialization
 					case ComponentEditableField::Type::MODEL_ASSET:
 					{
 						const AssetPointer<ModelAsset> *const RESTRICT data{ component->EditableFieldData<AssetPointer<ModelAsset>>(entity, editable_field) };
+
+						component_entry[editable_field._Name] = (*data)->_Header._AssetName.Data();
+
+						break;
+					}
+
+					case ComponentEditableField::Type::SOUND_ASSET:
+					{
+						const AssetPointer<SoundAsset> *const RESTRICT data{ component->EditableFieldData<AssetPointer<SoundAsset>>(entity, editable_field) };
 
 						component_entry[editable_field._Name] = (*data)->_Header._AssetName.Data();
 
@@ -430,6 +440,15 @@ namespace EntitySerialization
 							}
 
 							case ComponentEditableField::Type::MODEL_ASSET:
+							{
+								const HashString asset_identifier{ editable_field_entry.get<std::string>().c_str() };
+
+								stream_archive->Write(&asset_identifier, sizeof(HashString));
+
+								break;
+							}
+
+							case ComponentEditableField::Type::SOUND_ASSET:
 							{
 								const HashString asset_identifier{ editable_field_entry.get<std::string>().c_str() };
 
@@ -732,6 +751,16 @@ namespace EntitySerialization
 						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
 
 						*reinterpret_cast<AssetPointer<ModelAsset> *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset)) = ContentSystem::Instance->GetAsset<ModelAsset>(data);
+
+						break;
+					}
+
+					case ComponentEditableField::Type::SOUND_ASSET:
+					{
+						HashString data;
+						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
+
+						*reinterpret_cast<AssetPointer<SoundAsset> *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset)) = ContentSystem::Instance->GetAsset<SoundAsset>(data);
 
 						break;
 					}

@@ -13,7 +13,7 @@
 //Sound.
 #include <Sound/SoundCore.h>
 
-class PlaySoundRequest final
+class PlaySound2DRequest final
 {
 
 public:
@@ -27,13 +27,13 @@ public:
 	*	The gain.
 	*	Acts as a simple multiplier to the output sound.
 	*/
-	float32 _Gain;
+	float32 _Gain{ 1.0f };
 
 	/*
 	*	The pan. 
 	*	This is defined as -1.0f being full left, 1.0f being full right and 0.0f being full center.
 	*/
-	float32 _Pan;
+	float32 _Pan{ 0.0f };
 
 	/*
 	*	The start time.
@@ -41,12 +41,12 @@ public:
 	*	or positive to skip a segment of the sound
 	*	or simply zero to start playing the sound at the start of the sound.
 	*/
-	float32 _StartTime;
+	float32 _StartTime{ 0.0f };
 
 	/*
 	*	Denotes the playback rate.
 	*/
-	float32 _PlaybackRate;
+	float32 _PlaybackRate{ 1.0f };
 
 	/*
 	*	Denotes whether or not the sound is looping.
@@ -54,21 +54,21 @@ public:
 	*	For non-looping sound, they can be played and forgotten about,
 	*	and the sound system will automatically clean up it's references to it once it's done.
 	*/
-	bool _IsLooping;
+	bool _IsLooping{ false };
 
 	/*
 	*	Parameters for the ADSR envelope accompanied with every playing sound.
 	*/
-	float32 _AttackTime;
-	float32 _DecayTime;
-	float32 _SustainGain;
-	float32 _ReleaseTime;
+	float32 _AttackTime{ 0.001f };
+	float32 _DecayTime{ 0.001f };
+	float32 _SustainGain{ 1.0f };
+	float32 _ReleaseTime{ 0.01f };
 
 	/*
 	*	The sound instance handle.
 	*	This can be nullptr if the requestee does not need to do anything with the sound instance afterwards.
 	*/
-	SoundInstanceHandle* RESTRICT _SoundInstance;
+	SoundInstanceHandle *RESTRICT _SoundInstance{ nullptr };
 
 	/*
 	*	The sound started callback.

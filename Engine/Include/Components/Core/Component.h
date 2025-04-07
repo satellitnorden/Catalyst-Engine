@@ -229,6 +229,16 @@ protected:
 	) NOEXCEPT;
 
 	/*
+	*	Adds an editable sound asset field.
+	*/
+	void AddEditableSoundAssetField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
 	*	Adds an editable uint32 field.
 	*/
 	void AddEditableUint32Field
