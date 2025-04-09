@@ -487,6 +487,19 @@ public:
 
 	}
 
+	/*
+	*	Processes output MIDI messages with the given function and clears it afterwards.
+	*/
+	FORCE_INLINE void ProcessOutputMIDIMessages(void(*process_function)(const MIDIMessage &output_midi_message, void *const RESTRICT user_data), void *const RESTRICT user_data) NOEXCEPT
+	{
+		for (const MIDIMessage &output_midi_message : _OutputMIDIMessages)
+		{
+			process_function(output_midi_message, user_data);
+		}
+
+		_OutputMIDIMessages.Clear();
+	}
+
 protected:
 
 	//The initialize parameters.
@@ -506,6 +519,9 @@ protected:
 
 	//The beats per minute.
 	float32 _BeatsPerMinute{ 120.0f };
+
+	//The output MIDI messages. These can be set anytime and the host will pick it up.
+	DynamicArray<MIDIMessage> _OutputMIDIMessages;
 
 	/*
 	*	Callback for when the sample rate changed.
