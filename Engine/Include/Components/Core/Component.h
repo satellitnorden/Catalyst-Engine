@@ -8,9 +8,7 @@
 
 //Components.
 #include <Components/Core/ComponentEditableField.h>
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	#include <Components/Core/ComponentStatistics.h>
-#endif
+#include <Components/Core/ComponentStatistics.h>
 
 //Concurrency.
 #include <Concurrency/Spinlock.h>
@@ -533,14 +531,12 @@ public:							\
 public:																																									\
 	void GatherPathTracingTriangles(DynamicArray<class Vertex> *const RESTRICT vertices, DynamicArray<class PathTracingTriangle> *const RESTRICT triangles) NOEXCEPT;
 
-#if !defined(CATALYST_CONFIGURATION_FINAL)
 /*
 *	Put this in your component declaration and implement it to receive an "Statistics()" call.
 */
 #define COMPONENT_STATISTICS()													\
 public:																			\
 	void Statistics(ComponentStatistics *const RESTRICT statistics) NOEXCEPT;
-#endif
 
 /*
 *	Declares a Catalyst component.

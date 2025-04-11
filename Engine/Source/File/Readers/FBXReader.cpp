@@ -685,6 +685,16 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimatedMo
 }
 
 /*
+*	Reads the animated model file at the given file path. Returns if the read was succesful.
+*/
+NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimationFile *const RESTRICT animation_file) NOEXCEPT
+{
+	ASSERT(false, "This should not be called in final builds!");
+
+	return false;
+}
+
+/*
 *	Reads the model file at the given file path. Returns if the read was succesful.
 */
 NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile *const RESTRICT model_file) NOEXCEPT
