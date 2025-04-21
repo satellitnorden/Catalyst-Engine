@@ -14,7 +14,7 @@ namespace AssetPointerData
 
 /*
 *	Wrapper around a pointer to an Asset, or any derived classes from it.
-*	Implements reference-counting to determine when to load/unload resources,
+*	Implements reference-counting to determine when to load/unload assets,
 *	so copies should ONLY be made when the reference count should be incremented.
 */
 template <typename TYPE>

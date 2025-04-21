@@ -148,8 +148,6 @@ void LogSystem::Initialize() NOEXCEPT
 	//Create the log file.
 	std::ofstream log_file{ "Catalyst Engine Log.txt" };
 
-	log_file << "Catalyst Engine Log Start" << std::endl;
-
 	log_file.close();
 
 	//Set up the flush tasks.
