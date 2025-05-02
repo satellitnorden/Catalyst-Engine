@@ -288,6 +288,14 @@ public:
 	}
 
 	/*
+	*   Calculates the luminance of a color.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float32 Luminance(const Vector3<float32> &color)
+	{
+		return color._R * 0.2126f + color._G * 0.7152f + color._B * 0.0722f;
+	}
+
+	/*
 	*	Packs a color into an unsigned integer.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD uint32 PackColor(const Vector4<float> &color, const bool apply_gamma_correction) NOEXCEPT

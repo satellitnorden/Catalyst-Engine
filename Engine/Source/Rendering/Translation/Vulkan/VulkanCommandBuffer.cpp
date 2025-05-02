@@ -370,6 +370,113 @@ void CommandBuffer::ClearColorImage(const OpaqueHandle image) NOEXCEPT
 			&barrier
 		);
 	}
+
+	//If this is a render target, check if the resolve image needs to be cleared as well.
+	if (_image->GetType() == VulkanImage::Type::VULKAN_RENDER_TARGET)
+	{
+		VulkanRenderTarget *const RESTRICT _render_target{ static_cast<VulkanRenderTarget *const RESTRICT>(image) };
+
+		if (_render_target->GetSampleCount() > VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT)
+		{
+			//Transition to VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL.
+			{
+				VkImageMemoryBarrier barrier{ };
+
+				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				barrier.pNext = nullptr;
+				barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+				barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+				barrier.oldLayout = VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
+				barrier.newLayout = VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+				barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				barrier.image = _render_target->GetResolveImage();
+
+				barrier.subresourceRange.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+				barrier.subresourceRange.baseMipLevel = 0;
+				barrier.subresourceRange.levelCount = 1;
+				barrier.subresourceRange.baseArrayLayer = 0;
+				barrier.subresourceRange.layerCount = 1;
+
+				//Record the pipeline barrier command.
+				vkCmdPipelineBarrier
+				(
+					command_buffer,
+					VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+					VK_PIPELINE_STAGE_TRANSFER_BIT,
+					0,
+					0,
+					nullptr,
+					0,
+					nullptr,
+					1,
+					&barrier
+				);
+			}
+
+			//Actually clear the image.
+			{
+				VkClearColorValue clear_value;
+				memset(&clear_value, 0, sizeof(VkClearColorValue));
+
+				VkImageSubresourceRange range;
+
+				range.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+				range.baseMipLevel = 0;
+				range.levelCount = 1;
+				range.baseArrayLayer = 0;
+				range.layerCount = 1;
+
+				vkCmdClearColorImage
+				(
+					command_buffer,
+					_render_target->GetResolveImage(),
+					VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+					&clear_value,
+					1,
+					&range
+				);
+			}
+
+			//Transition back to the original image layout.
+			{
+				VkImageMemoryBarrier barrier{ };
+
+				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				barrier.pNext = nullptr;
+				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+				barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+
+				barrier.oldLayout = VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+				barrier.newLayout = VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
+				barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				barrier.image = _render_target->GetResolveImage();
+
+				barrier.subresourceRange.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+				barrier.subresourceRange.baseMipLevel = 0;
+				barrier.subresourceRange.levelCount = 1;
+				barrier.subresourceRange.baseArrayLayer = 0;
+				barrier.subresourceRange.layerCount = 1;
+
+				//Record the pipeline barrier command.
+				vkCmdPipelineBarrier
+				(
+					command_buffer,
+					VK_PIPELINE_STAGE_TRANSFER_BIT,
+					VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+					0,
+					0,
+					nullptr,
+					0,
+					nullptr,
+					1,
+					&barrier
+				);
+			}
+		}
+	}
 }
 
 /*

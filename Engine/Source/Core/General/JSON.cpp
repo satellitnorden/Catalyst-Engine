@@ -217,7 +217,7 @@ void JSON::Read(const char *const RESTRICT file_path) NOEXCEPT
 */
 void JSON::Write(const char *const RESTRICT file_path) NOEXCEPT
 {
-	//OPen the file.
+	//Open the file.
 	std::ofstream file{ file_path };
 
 	//Write the JSON to the file.
@@ -243,6 +243,19 @@ JSON JSON::Emplace() NOEXCEPT
 	JSON sub_object;
 
 	sub_object._Implementation.Get<Implementation>()->_JSON = &(*IMPLEMENTATION->_JSON).emplace_back();
+	sub_object._Implementation.Get<Implementation>()->_IsSubObject = true;
+
+	return sub_object;
+}
+
+/*
+*	Emplaces a new object under this JSON object.
+*/
+JSON JSON::Emplace(const char *const RESTRICT name) NOEXCEPT
+{
+	JSON sub_object;
+
+	sub_object._Implementation.Get<Implementation>()->_JSON = &(*IMPLEMENTATION->_JSON).emplace_back(name);
 	sub_object._Implementation.Get<Implementation>()->_IsSubObject = true;
 
 	return sub_object;
