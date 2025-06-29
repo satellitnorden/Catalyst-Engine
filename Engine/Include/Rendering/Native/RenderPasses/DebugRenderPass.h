@@ -20,6 +20,7 @@ public:
 	enum class VisualizationMode : uint8
 	{
 		NONE,
+		ONLY_LIGHTING,
 		ALBEDO,
 		THICKNESS,
 		NORMAL,
@@ -43,6 +44,14 @@ public:
 	*	Default constructor.
 	*/
 	DebugRenderPass() NOEXCEPT;
+
+	/*
+	*	Returns the visualization mode.
+	*/
+	FORCE_INLINE NO_DISCARD VisualizationMode GetVisualizationMode() const NOEXCEPT
+	{
+		return _RequestedVisualizationMode;
+	}
 
 	/*
 	*	Sets the visualization mode.

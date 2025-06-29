@@ -19,6 +19,7 @@
 #include <Profiling/Profiling.h>
 
 //Rendering.
+#include <Rendering/Native/RenderPasses/DebugRenderPass.h>
 #include <Rendering/Native/GrassCore.h>
 
 //Systems.
@@ -682,6 +683,44 @@ void RenderInputManager::Initialize() NOEXCEPT
 		},
 		RenderInputStream::Mode::DRAW,
 		this
+	);
+#endif
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Register the "OnlyLighting" input stream.
+	RegisterInputStream
+	(
+		HashString("OnlyLighting"),
+		DynamicArray<VertexInputAttributeDescription>(),
+		DynamicArray<VertexInputBindingDescription>(),
+		0,
+		[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+		{
+			if (DebugRenderPass::Instance->GetVisualizationMode() == DebugRenderPass::VisualizationMode::ONLY_LIGHTING)
+			{
+				if (input_stream->_Entries.Empty())
+				{
+					input_stream->_Entries.Emplace();
+					RenderInputStreamEntry &new_entry{ input_stream->_Entries.Back() };
+
+					new_entry._PushConstantDataOffset = 0;
+					new_entry._VertexBuffer = EMPTY_HANDLE;
+					new_entry._IndexBuffer = EMPTY_HANDLE;
+					new_entry._IndexBufferOffset = 0;
+					new_entry._InstanceBuffer = EMPTY_HANDLE;
+					new_entry._VertexCount = 3;
+					new_entry._IndexCount = 0;
+					new_entry._InstanceCount = 0;
+				}
+			}
+
+			else
+			{
+				input_stream->_Entries.Clear();
+			}
+		},
+		RenderInputStream::Mode::DRAW,
+		nullptr
 	);
 #endif
 }

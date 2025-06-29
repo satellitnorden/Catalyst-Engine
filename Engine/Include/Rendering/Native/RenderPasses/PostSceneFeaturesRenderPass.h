@@ -29,6 +29,11 @@ public:
 
 private:
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//The only lighting pipeline.
+	GraphicsRenderPipeline _OnlyLightingPipeline{ HashString("OnlyLighting_RenderPipeline") };
+#endif
+
 	//The scene features downsample graphics pipeline.
 	GraphicsRenderPipeline _SceneFeaturesDownsampleGraphicsPipeline{ HashString("SceneFeaturesDownsample_RenderPipeline") };
 

@@ -306,6 +306,14 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::NONE);
 		},
 		nullptr
+	); DebugSystem::Instance->RegisterButtonDebugCommand
+	(
+		"Rendering\\Visualization Modes\\Only Lighting",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			DebugRenderPass::Instance->SetVisualizationMode(DebugRenderPass::VisualizationMode::ONLY_LIGHTING);
+		},
+		nullptr
 	);
 	DebugSystem::Instance->RegisterButtonDebugCommand
 	(

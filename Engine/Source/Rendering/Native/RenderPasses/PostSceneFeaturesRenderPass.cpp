@@ -43,10 +43,16 @@ void PostSceneFeaturesRenderPass::Initialize() NOEXCEPT
 	ResetRenderPass();
 
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	AddPipeline(&_OnlyLightingPipeline);
+#endif
 	AddPipeline(&_SceneFeaturesDownsampleGraphicsPipeline);
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	_OnlyLightingPipeline.Initialize();
+#endif
 	_SceneFeaturesDownsampleGraphicsPipeline.Initialize();
 }
 
@@ -56,6 +62,9 @@ void PostSceneFeaturesRenderPass::Initialize() NOEXCEPT
 void PostSceneFeaturesRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	_OnlyLightingPipeline.Execute();
+#endif
 	_SceneFeaturesDownsampleGraphicsPipeline.Execute();
 }
 
@@ -65,5 +74,8 @@ void PostSceneFeaturesRenderPass::Execute() NOEXCEPT
 void PostSceneFeaturesRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	_OnlyLightingPipeline.Terminate();
+#endif
 	_SceneFeaturesDownsampleGraphicsPipeline.Terminate();
 }

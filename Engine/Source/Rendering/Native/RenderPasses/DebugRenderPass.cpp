@@ -117,6 +117,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 		switch (_RequestedVisualizationMode)
 		{
 			case VisualizationMode::NONE:
+			case VisualizationMode::ONLY_LIGHTING:
 			{
 				_DebugVisualizationPipeline.Terminate();
 
@@ -125,7 +126,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 
 			case VisualizationMode::ALBEDO:
 			{
-				if (_CurrentVisualizationMode != VisualizationMode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 				{
 					_DebugVisualizationPipeline.Terminate();
 				}
@@ -143,7 +144,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 
 			case VisualizationMode::THICKNESS:
 			{
-				if (_CurrentVisualizationMode != VisualizationMode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 				{
 					_DebugVisualizationPipeline.Terminate();
 				}
@@ -161,7 +162,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 
 			case VisualizationMode::NORMAL:
 			{
-				if (_CurrentVisualizationMode != VisualizationMode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 				{
 					_DebugVisualizationPipeline.Terminate();
 				}
@@ -179,7 +180,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 
 			case VisualizationMode::DEPTH:
 			{
-				if (_CurrentVisualizationMode != VisualizationMode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 				{
 					_DebugVisualizationPipeline.Terminate();
 				}
@@ -197,7 +198,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 
 			case VisualizationMode::ROUGHNESS:
 			{
-				if (_CurrentVisualizationMode != VisualizationMode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 				{
 					_DebugVisualizationPipeline.Terminate();
 				}
@@ -215,7 +216,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 
 			case VisualizationMode::METALLIC:
 			{
-				if (_CurrentVisualizationMode != VisualizationMode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 				{
 					_DebugVisualizationPipeline.Terminate();
 				}
@@ -233,7 +234,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 
 			case VisualizationMode::AMBIENT_OCCLUSION:
 			{
-				if (_CurrentVisualizationMode != VisualizationMode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 				{
 					_DebugVisualizationPipeline.Terminate();
 				}
@@ -251,7 +252,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 
 			case VisualizationMode::EMISSIVE:
 			{
-				if (_CurrentVisualizationMode != VisualizationMode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 				{
 					_DebugVisualizationPipeline.Terminate();
 				}
@@ -269,7 +270,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 
 			case VisualizationMode::DIFFUSE_IRRADIANCE:
 			{
-				if (_CurrentVisualizationMode != VisualizationMode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 				{
 					_DebugVisualizationPipeline.Terminate();
 				}
@@ -287,7 +288,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 
 			case VisualizationMode::SPECULAR_IRRADIANCE:
 			{
-				if (_CurrentVisualizationMode != VisualizationMode::NONE)
+				if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 				{
 					_DebugVisualizationPipeline.Terminate();
 				}
@@ -315,7 +316,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 	}
 
 	//Set execution depending on the current mode.
-	if (_CurrentVisualizationMode != VisualizationMode::NONE)
+	if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 	{
 		_DebugVisualizationPipeline.SetIncludeInRender(true);
 
@@ -350,7 +351,7 @@ void DebugRenderPass::Execute() NOEXCEPT
 void DebugRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	if (_CurrentVisualizationMode != VisualizationMode::NONE)
+	if (_CurrentVisualizationMode != VisualizationMode::NONE && _CurrentVisualizationMode != VisualizationMode::ONLY_LIGHTING)
 	{
 		_DebugVisualizationPipeline.Terminate();
 	}

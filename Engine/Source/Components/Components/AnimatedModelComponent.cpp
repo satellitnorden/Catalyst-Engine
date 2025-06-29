@@ -166,7 +166,7 @@ void AnimatedModelComponent::ParallelBatchUpdate(const UpdatePhase update_phase,
 		instance_data._FinalBoneTransforms.Resize<false>(instance_data._Model->_Skeleton._TotalNumberOfBones);
 
 		//If there is a current animation - Animate. Otherwise, just set to identity.
-		if (instance_data._CurrentAnimation)
+		if (instance_data._CurrentAnimation && false)
 		{
 			//Skin the root bone.
 			Skin(instance_data._Model->_Skeleton._RootBone, instance_data._Model->_ParentTransform, &instance_data);

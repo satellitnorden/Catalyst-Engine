@@ -1,0 +1,45 @@
+//Declare output render targets.
+OutputRenderTarget(SceneFeatures1);
+OutputRenderTarget(SceneFeatures3);
+OutputRenderTarget(Scene);
+
+//Declare output depth buffer.
+OutputDepthBuffer(SceneDepthBuffer);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorStoreOperator(STORE);
+DepthStencilLoadOperator(LOAD);
+DepthStencilStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Set depth/stencil properties.
+StencilTestEnable();
+StencilFailOperator(KEEP);
+StencilPassOperator(KEEP);
+StencilDepthFailOperator(KEEP);
+StencilCompareOperator(EQUAL);
+StencilCompareMask(1);
+StencilReferenceMask(1);
+
+//Subscribe to input streams.
+SubscribeToInputStream(OnlyLighting);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InScreenCoordinate);
+
+    //Output the fragments.
+    OutputFragment(SceneFeatures1, vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    OutputFragment(SceneFeatures3, vec4(1.0f, 0.0f, 1.0f, 0.0f));
+    OutputFragment(Scene, vec4(0.0f, 0.0f, 0.0f, 1.0f));
+}

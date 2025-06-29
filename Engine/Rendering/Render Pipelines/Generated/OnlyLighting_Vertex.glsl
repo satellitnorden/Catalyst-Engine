@@ -274,93 +274,13 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) uint MODE;
-};
-
-layout (set = 1, binding = 0) uniform sampler2D InputRenderTarget;
-
-layout (location = 0) in vec2 InScreenCoordinate;
-
-layout (location = 0) out vec4 SceneLowDynamicRange1;
+layout (location = 0) out vec2 OutScreenCoordinate;
 
 void main()
 {
-    #define MODE_NONE (0)
-    #define MODE_ALBEDO (2)
-    #define MODE_THICKNESS (3)
-    #define MODE_NORMAL (4)
-    #define MODE_DEPTH (5)
-    #define MODE_ROUGHNESS (6)
-    #define MODE_METALLIC (7)
-    #define MODE_AMBIENT_OCCLUSION (8)
-    #define MODE_EMISSIVE (9)
-    #define MODE_DIFFUSE_IRRADIANCE (10)
-    #define MODE_SPECULAR_IRRADIANCE (12)
-    vec3 color;
-    switch (MODE)
-    {
-        case MODE_NONE:
-		{
-			color = vec3(1.0f, 0.0f, 0.0f);
-			break;
-		}
-		case MODE_ALBEDO:
-		{
-			color = texture(InputRenderTarget, InScreenCoordinate).rgb;
-			break;
-		}
-		case MODE_THICKNESS:
-		{
-			color = vec3(texture(InputRenderTarget, InScreenCoordinate).a);
-			break;
-		}
-		case MODE_NORMAL:
-		{
-			color = texture(InputRenderTarget, InScreenCoordinate).rgb * 0.5f + 0.5f;
-			break;
-		}
-		case MODE_DEPTH:
-		{
-			color = vec3(texture(InputRenderTarget, InScreenCoordinate).a);
-			break;
-		}
-		case MODE_ROUGHNESS:
-		{
-			color = vec3(texture(InputRenderTarget, InScreenCoordinate).r);
-			break;
-		}
-		case MODE_METALLIC:
-		{
-			color = vec3(texture(InputRenderTarget, InScreenCoordinate).g);
-			break;
-		}
-		case MODE_AMBIENT_OCCLUSION:
-		{
-			color = vec3(texture(InputRenderTarget, InScreenCoordinate).b);
-			break;
-		}
-		case MODE_EMISSIVE:
-		{
-			color = vec3(texture(InputRenderTarget, InScreenCoordinate).a);
-			break;
-		}
-		case MODE_DIFFUSE_IRRADIANCE:
-		{
-			color = vec3(texture(InputRenderTarget, InScreenCoordinate).rgb);
-			break;
-		}
-		case MODE_SPECULAR_IRRADIANCE:
-		{
-			color = vec3(texture(InputRenderTarget, InScreenCoordinate).rgb);
-			break;
-		}
-		default:
-		{
-			color = vec3(1.0f, 0.0f, 0.0f);
-			break;
-		}
-    }
-	SceneLowDynamicRange1 = vec4(color,1.0f);
+	float x = -1.0f + float((gl_VertexIndex & 2) << 1);
+    float y = -1.0f + float((gl_VertexIndex & 1) << 2);
+    OutScreenCoordinate.x = (x + 1.0f) * 0.5f;
+    OutScreenCoordinate.y = (y + 1.0f) * 0.5f;
+	gl_Position = vec4(x,y,0.0f,1.0f);
 }
