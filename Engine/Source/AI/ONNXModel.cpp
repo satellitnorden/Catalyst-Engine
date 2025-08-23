@@ -51,7 +51,7 @@ public:
 	*/
 	FORCE_INLINE ~ONNXData() NOEXCEPT
 	{
-
+		
 	}
 
 	/*
@@ -132,6 +132,8 @@ ONNXModel::~ONNXModel() NOEXCEPT
 	if (_Data)
 	{
 		static_cast<ONNXData *const RESTRICT>(_Data)->~ONNXData();
+		Memory::Free(_Data);
+		_Data = nullptr;
 	}
 }
 

@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Math.
+#include <Math/Core/BaseMath.h>
+
 //Sound.
 #include <Sound/SoundCore.h>
 
@@ -308,6 +311,18 @@ namespace SoundUtilities
 		const float32 _D{ _B + one_minus_alpha };
 		*A = _C * _C;
 		*B = _D * _D;
+	}
+
+	/*
+	*	Calculates a first order low pass alpha.
+	*	To be used with lerping between the current and previous sample.
+	*/
+	FORCE_INLINE NO_DISCARD float32 CalculateFirstOrderLowPassAlpha(const float32 frequency, const float32 sample_rate) NOEXCEPT
+	{
+		const float32 RC{ 1.0f / (2.0f * BaseMathConstants::PI * frequency) };
+		const float32 T{ 1.0f / sample_rate };
+
+		return RC / (RC + T);
 	}
 
 }
