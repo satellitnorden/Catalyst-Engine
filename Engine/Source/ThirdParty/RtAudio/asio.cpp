@@ -9,7 +9,7 @@
 */ 
 	
 #include <string.h>
-#include <ThirdParty/RtAudio/asiosys.h>
+#include <ThirdParty/RtAudio/asiosys.h>		// platform definition
 #include <ThirdParty/RtAudio/asio.h>
 
 #if MAC

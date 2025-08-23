@@ -48,7 +48,7 @@ This version of the "libsoundwave" library was downloaded 2024-12-01 from https:
 RT AUDIO
 
 This software uses the "RtAudio" library for ASIO sound output.
-This version of the "RtAudio" library was downloaded 2023-10-16 from https://github.com/thestk/rtaudio with the following license:
+This version of the "RtAudio" library was downloaded 2025-08-23 from https://github.com/thestk/rtaudio with the following license:
 
 	RtAudio: a set of realtime audio i/o C++ classes
 	Copyright (c) 2001-2023 Gary P. Scavone
