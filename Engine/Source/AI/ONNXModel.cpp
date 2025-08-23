@@ -6,6 +6,11 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Utilities/StringUtilities.h>
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+//Systems.
+#include <Systems/LogSystem.h>
+#endif
+
 //Third party.
 #include <ThirdParty/onnxruntime/onnxruntime_cxx_api.h>
 
@@ -22,12 +27,16 @@ public:
 	*/
 	FORCE_INLINE ONNXData(const char *const RESTRICT model_file_path, const uint32 input_size, const uint32 output_size) NOEXCEPT
 		:
-		_Environment(ORT_LOGGING_LEVEL_INFO, "ONNX Environment"),
-		_Session(_Environment, GetModelFilePath(model_file_path), Ort::SessionOptions()),
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+		_Environment(OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING, "ONNX Environment", LoggingFunction, nullptr),
+#else
+		_Environment(OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL, "ONNX Environment"),
+#endif
+		_Session(_Environment, GetModelFilePath(model_file_path), GetSessionOptions()),
 		_InputTensor(nullptr),
 		_OutputTensor(nullptr)
 	{
-		//Upsize the input &output buffers.
+		//Upsize the input & output buffers.
 		_InputBuffer.Upsize<false>(input_size);
 		_OutputBuffer.Upsize<false>(output_size);
 
@@ -121,6 +130,74 @@ private:
 
 		return _ModelFilePathBuffer;
 	}
+
+	/*
+	*	Returns the session options.
+	*/
+	FORCE_INLINE NO_DISCARD Ort::SessionOptions GetSessionOptions() NOEXCEPT
+	{
+		Ort::SessionOptions session_options;
+
+		session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+
+		return session_options;
+	}
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	The logging function.
+	*/
+	FORCE_INLINE static void LoggingFunction
+	(
+		void *parameter,
+		OrtLoggingLevel logging_level,
+		const char *category,
+		const char *log_id,
+		const char *code_location,
+		const char *message
+	) NOEXCEPT
+	{
+		switch (logging_level)
+		{
+			case OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE:
+			case OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO:
+			{
+				LOG_INFORMATION("%s - Category: %s - Message: %s", log_id, category, message);
+
+				break;
+			}
+
+			case OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING:
+			{
+				LOG_INFORMATION("%s - Category: %s - Message: %s", log_id, category, message);
+
+				break;
+			}
+
+			case OrtLoggingLevel::ORT_LOGGING_LEVEL_ERROR:
+			{
+				LOG_INFORMATION("%s - Category: %s - Message: %s", log_id, category, message);
+
+				break;
+			}
+
+			case OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL:
+			{
+				LOG_INFORMATION("%s - Category: %s - Message: %s", log_id, category, message);
+
+				break;
+			}
+
+			default:
+			{
+				LOG_INFORMATION("%s - Category: %s - Message: %s", log_id, category, message);
+
+				break;
+			}
+		}
+	}
+#endif
+
 };
 
 /*
