@@ -85,6 +85,11 @@ public:
 	void operator=(const float64 value) NOEXCEPT;
 
 	/*
+	*	Assignment operator taking an uint32.
+	*/
+	void operator=(const uint32 value) NOEXCEPT;
+
+	/*
 	*	Assignment operator taking an int32.
 	*/
 	void operator=(const int32 value) NOEXCEPT;

@@ -126,6 +126,14 @@ void JSON::operator=(const float64 value) NOEXCEPT
 }
 
 /*
+*	Assignment operator taking an uint32.
+*/
+void JSON::operator=(const uint32 value) NOEXCEPT
+{
+	(*IMPLEMENTATION->_JSON) = value;
+}
+
+/*
 *	Assignment operator taking an int32.
 */
 void JSON::operator=(const int32 value) NOEXCEPT
