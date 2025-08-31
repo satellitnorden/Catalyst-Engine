@@ -140,6 +140,11 @@ private:
 
 		session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
 
+#if 0
+		session_options.SetIntraOpNumThreads(12);
+		session_options.SetInterOpNumThreads(12);
+#endif
+
 		return session_options;
 	}
 
