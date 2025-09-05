@@ -7,13 +7,16 @@
 #include <Core/Containers/StreamArchive.h>
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
+#include <Core/General/Time.h>
 
 //Math.
+#include <Math/Core/CatalystRandomMath.h>
 #include <Math/Geometry/AxisAlignedBoundingBox2D.h>
 
 //Sound.
 #include <Sound/AudioProcessContext.h>
 #include <Sound/MIDIMessage.h>
+#include <Sound/SoundUtilities.h>
 
 //User interface.
 #include <UserInterface/UserInterfaceCore.h>
@@ -558,4 +561,108 @@ protected:
 		return nullptr;
 	}
 
+	///////////////
+	// PROFILING //
+	///////////////
+
+	/*
+	*	Profiling pass class definition.
+	*/
+	class ProfilingPass final
+	{
+
+	public:
+
+		//The name.
+		const char *RESTRICT _Name{ "" };
+
+		//The start function.
+		void (*_StartFunction)(){ nullptr };
+
+		//Denotes if this pass should be used as a reference.
+		bool _IsReference{ false };
+
+	};
+
+	/*
+	*	Profiles this audio plugin by feeding it white noise for some time and gathering the execution time.
+	*	Can have multiple profing passes, so that certain sections of the plugin's processing can be turned off to find out what is taking the most time.
+	*/
+	FORCE_INLINE void Profile(const ArrayProxy<ProfilingPass> &passes) NOEXCEPT
+	{
+		//Define constants.
+		constexpr float32 NUMBER_OF_SECONDS{ 60.0f };
+
+		//Set up the inputs buffer.
+		DynamicArray<DynamicArray<float32>> input_buffer;
+		input_buffer.Upsize<true>(1);
+		input_buffer[0].Upsize<false>(static_cast<uint64>(_SampleRate * NUMBER_OF_SECONDS));
+
+		for (float32 &sample : input_buffer[0])
+		{
+			sample = CatalystRandomMath::RandomFloatInRange(-1.0f, 1.0f);
+		}
+
+		//Set up the output buffer.
+		DynamicArray<DynamicArray<float32>> output_buffer;
+		output_buffer.Upsize<true>(1);
+		output_buffer[0].Upsize<false>(static_cast<uint64>(_SampleRate * NUMBER_OF_SECONDS));
+		Memory::Set(output_buffer[0].Data(), 0, sizeof(float32) * output_buffer[0].Size());
+
+		//Run the profiling passes!
+		float32 reference_seconds_elapsed{ FLOAT32_MAXIMUM };
+		float32 reference_realtime_factor{ FLOAT32_MAXIMUM };
+
+		for (const ProfilingPass &pass : passes)
+		{
+			if (pass._StartFunction)
+			{
+				pass._StartFunction();
+			}
+
+			TimePoint start_time;
+		
+			Process(AudioProcessContext(), input_buffer, &output_buffer, static_cast<uint32>(_SampleRate * NUMBER_OF_SECONDS), 1);
+
+			const float32 seconds_elapsed{ static_cast<float32>(start_time.GetSecondsSince()) };
+			const float32 realtime_factor{ seconds_elapsed / NUMBER_OF_SECONDS };
+
+			char buffer[128];
+
+			sprintf_s(buffer, "Profiling pass \"%s\" concluded;\n", pass._Name);
+			PRINT_TO_OUTPUT(buffer);
+
+			sprintf_s(buffer, "\tSeconds elapsed: %f\n", seconds_elapsed);
+			PRINT_TO_OUTPUT(buffer);
+
+			if (pass._IsReference)
+			{
+				reference_seconds_elapsed = seconds_elapsed;
+			}
+
+			else if (reference_seconds_elapsed != FLOAT32_MAXIMUM)
+			{
+				const float32 seconds_elapsed_difference{ seconds_elapsed - reference_seconds_elapsed };
+				sprintf_s(buffer, "\t%s%f seconds compared to reference.\n", seconds_elapsed_difference > 0.0f ? "+" : "", seconds_elapsed_difference);
+				PRINT_TO_OUTPUT(buffer);
+			}
+
+			sprintf_s(buffer, "\tRealtime factor: %f%%\n", realtime_factor * 100.0f);
+			PRINT_TO_OUTPUT(buffer);
+
+			if (pass._IsReference)
+			{
+				reference_realtime_factor = realtime_factor;
+			}
+
+			else if (reference_realtime_factor != FLOAT32_MAXIMUM)
+			{
+				const float32 realtime_factor_difference{ realtime_factor - reference_realtime_factor };
+				sprintf_s(buffer, "\t%s%f%% realtime factor compared to reference.\n", realtime_factor_difference > 0.0f ? "+" : "", realtime_factor_difference * 100.0f);
+				PRINT_TO_OUTPUT(buffer);
+			}
+		}
+
+		BREAKPOINT();
+	}
 };
