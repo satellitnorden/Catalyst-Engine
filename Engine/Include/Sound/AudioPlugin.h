@@ -229,7 +229,8 @@ public:
 			KNOB,
 			CHECKBOX,
 			SELECTOR,
-			SWITCH
+			SWITCH,
+			OVERLAY_KNOB
 		};
 
 		//The bounding box.
