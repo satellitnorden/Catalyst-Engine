@@ -29,7 +29,7 @@ public:
 		_VoiceSamplesReciprocal = 1.0f / static_cast<float32>(_VoiceSamples);
 
 		//Calculate the buffer size.
-		const uint64 buffer_size{ static_cast<uint64>(_VoiceSamples) * 2  };
+		const uint64 buffer_size{ static_cast<uint64>(static_cast<float32>(_VoiceSamples) * playback_rate)  };
 
 		//Initialize the buffer.
 		_Buffer.Upsize<false>(buffer_size);
@@ -40,7 +40,7 @@ public:
 
 		//Initialize the voice positions.
 		_Voice1Position = 0.0f;
-		_Voice2Position = static_cast<float32>(_VoiceSamples) * 0.5f;
+		_Voice2Position = 0.0f;
 
 		//Initialize the voice phases.
 		_Voice1Phase = 0;
@@ -70,8 +70,8 @@ public:
 		_Buffer[_CurrentIndex] = input_sample;
 
 		//Sample the voices.
-		const float32 voice_1{ SampleVoice(_Voice1Position, _Voice1Phase, 0.0f, 0) };
-		const float32 voice_2{ SampleVoice(_Voice2Position, _Voice2Phase, static_cast<float32>(_VoiceSamples) * 0.5f, _VoiceSamples / 2) };
+		const float32 voice_1{ SampleVoice(_Voice1Position, _Voice1Phase) };
+		const float32 voice_2{ SampleVoice(_Voice2Position, _Voice2Phase) };
 
 		//Update the current index.
 		++_CurrentIndex;
@@ -109,7 +109,7 @@ private:
 	/*
 	*	Samples a voice.
 	*/
-	FORCE_INLINE NO_DISCARD float32 SampleVoice(float32 &voice_position, uint32 &voice_phase, const float32 reset_position, const uint32 reset_phase) NOEXCEPT
+	FORCE_INLINE NO_DISCARD float32 SampleVoice(float32 &voice_position, uint32 &voice_phase) NOEXCEPT
 	{
 		//Calculate the phase scalar.
 		const float32 phase_scalar{ static_cast<float32>(voice_phase) * _VoiceSamplesReciprocal };
@@ -117,13 +117,10 @@ private:
 		//Calculate the window.
 		const float32 window{ 0.5f * (1.0f - std::cos(2.0f * BaseMathConstants::PI * phase_scalar)) };
 
-		//Calculate the read index.
-		int32 read_index{ static_cast<int32>(_CurrentIndex) - static_cast<int32>(voice_position) };
-		read_index += static_cast<int32>(_Buffer.Size()) * static_cast<int32>(read_index < 0);
-
 		//Calculate the sample.
-		const uint32 index_0{ static_cast<uint32>(read_index) };
-		uint32 index_1{ static_cast<uint32>(read_index - 1 + static_cast<int32>(_Buffer.Size())) };
+		uint32 index_0{ static_cast<uint32>(voice_position) };
+		index_0 -= static_cast<uint32>(_Buffer.Size()) * static_cast<uint32>(index_0 >= _Buffer.Size());
+		uint32 index_1{ index_0 + 1 };
 		index_1 -= static_cast<uint32>(_Buffer.Size()) * static_cast<uint32>(index_1 >= _Buffer.Size());
 		const float32 alpha{ BaseMath::Fractional(voice_position) };
 
@@ -133,10 +130,10 @@ private:
 		voice_position += _PlaybackRate;
 		++voice_phase;
 
-		if (voice_phase >= (_VoiceSamples + reset_phase))
+		if (voice_phase >= _VoiceSamples)
 		{
-			voice_position = reset_position;
-			voice_phase = reset_phase;
+			voice_position = static_cast<float32>(_CurrentIndex + 2);
+			voice_phase = 0;
 		}
 
 		//Return the sample!
