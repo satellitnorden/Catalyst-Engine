@@ -9,12 +9,15 @@
 #include <Core/General/HashString.h>
 #include <Core/General/Time.h>
 
+//Audio.
+#include <Audio/Core/AudioProcessContext.h>
+#include <Audio/AudioCore.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 #include <Math/Geometry/AxisAlignedBoundingBox2D.h>
 
 //Sound.
-#include <Sound/AudioProcessContext.h>
 #include <Sound/MIDIMessage.h>
 #include <Sound/SoundUtilities.h>
 
@@ -269,7 +272,7 @@ public:
 			const char *RESTRICT _Text;
 
 			//The drop down items.
-			ArrayProxy<const char *> _DropDownItems;
+			ArrayProxy<const char*> _DropDownItems;
 
 			//The callback.
 			void(*_Callback)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control, const uint32 chosen_item_index) { nullptr };
@@ -342,7 +345,7 @@ public:
 
 			//The tooltip.
 			const char *RESTRICT _Tooltip{ "" };
-		
+
 		};
 
 		//The key information.
@@ -463,8 +466,8 @@ public:
 		const AudioProcessContext &context,
 		const DynamicArray<DynamicArray<float32>> &inputs,
 		DynamicArray<DynamicArray<float32>> *const RESTRICT outputs,
-		const uint32 number_of_samples,
-		const uint8 number_of_channels
+		const uint8 number_of_channels,
+		const uint32 number_of_samples
 	) NOEXCEPT
 	{
 		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
@@ -520,10 +523,10 @@ protected:
 	ControlLayout _ControlLayout;
 
 	//The sample rate.
-	float32 _SampleRate{ 48'000.0f };
+	float32 _SampleRate{ Audio::DEFAULT_SAMPLE_RATE };
 
 	//The beats per minute.
-	float32 _BeatsPerMinute{ 120.0f };
+	float32 _BeatsPerMinute{ Audio::DEFAULT_BEATS_PER_MINUTE };
 
 	//The output MIDI messages. These can be set anytime and the host will pick it up.
 	DynamicArray<MIDIMessage> _OutputMIDIMessages;
@@ -547,7 +550,7 @@ protected:
 	/*
 	*	Returns the preset with the given name.
 	*/
-	FORCE_INLINE NO_DISCARD Preset *const RESTRICT FindPreset(const char *const RESTRICT name) NOEXCEPT
+	FORCE_INLINE NO_DISCARD Preset *const RESTRICT FindPreset(const char* const RESTRICT name) NOEXCEPT
 	{
 		for (Preset &preset : _Presets)
 		{
@@ -575,10 +578,10 @@ protected:
 	public:
 
 		//The name.
-		const char *RESTRICT _Name{ "" };
+		const char* RESTRICT _Name{ "" };
 
 		//The start function.
-		void (*_StartFunction)(){ nullptr };
+		void (*_StartFunction)() { nullptr };
 
 		//Denotes if this pass should be used as a reference.
 		bool _IsReference{ false };
@@ -622,8 +625,8 @@ protected:
 			}
 
 			TimePoint start_time;
-		
-			Process(AudioProcessContext(), input_buffer, &output_buffer, static_cast<uint32>(_SampleRate * NUMBER_OF_SECONDS), 1);
+
+			Process(AudioProcessContext(), input_buffer, &output_buffer, 1, static_cast<uint32>(_SampleRate * NUMBER_OF_SECONDS));
 
 			const float32 seconds_elapsed{ static_cast<float32>(start_time.GetSecondsSince()) };
 			const float32 realtime_factor{ seconds_elapsed / NUMBER_OF_SECONDS };
