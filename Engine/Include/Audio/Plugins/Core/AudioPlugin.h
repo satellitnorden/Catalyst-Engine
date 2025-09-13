@@ -225,6 +225,7 @@ public:
 		//Enumeration covering all types.
 		enum class Type : uint8
 		{
+			BITMAP,
 			BUTTON,
 			DROP_DOWN,
 			FADER,
@@ -253,6 +254,12 @@ public:
 
 		//The user data.
 		void *RESTRICT _UserData;
+
+		struct
+		{
+			//The file path.
+			const char *RESTRICT _FilePath;
+		} _BitmapData;
 
 		struct
 		{
@@ -321,6 +328,9 @@ public:
 
 		//The tabs.
 		DynamicArray<ControlTab> _Tabs;
+
+		//Denotes whether or not the control layout needs a rebuild.
+		bool _NeedsRebuild{ false };
 
 	};
 
@@ -506,6 +516,14 @@ public:
 		}
 
 		_OutputMIDIMessages.Clear();
+	}
+
+	/*
+	*	Rebuilds the control layout.
+	*/
+	FORCE_INLINE virtual void RebuildControlLayout() NOEXCEPT
+	{
+
 	}
 
 protected:
