@@ -52,14 +52,14 @@ public:
 	/*
 	*	Callback for this audio effect to process the given buffer.
 	*/
-	FORCE_INLINE virtual void Process
+	FORCE_INLINE void Process
 	(
 		const AudioProcessContext &context,
 		const DynamicArray<DynamicArray<float32>> &inputs,
 		DynamicArray<DynamicArray<float32>> *const RESTRICT outputs,
 		const uint8 number_of_channels,
 		const uint32 number_of_samples
-	) NOEXCEPT
+	) NOEXCEPT override
 	{
 		//Reset if the frequency/gain/quality has changed
 		if (_PreviousFrequency != _Frequency

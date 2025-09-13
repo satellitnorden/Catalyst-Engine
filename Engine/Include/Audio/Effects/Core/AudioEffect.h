@@ -5,8 +5,8 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Audio.
+#include <Audio/Core/Audio.h>
 #include <Audio/Core/AudioProcessContext.h>
-#include <Audio/AudioCore.h>
 
 /*
 *	An audio effects encapsulates one piece of audio processing, and can be used as modular building blocks to create more complex plugins.

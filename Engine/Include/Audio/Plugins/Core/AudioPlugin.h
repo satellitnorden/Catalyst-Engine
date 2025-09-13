@@ -10,8 +10,8 @@
 #include <Core/General/Time.h>
 
 //Audio.
+#include <Audio/Core/Audio.h>
 #include <Audio/Core/AudioProcessContext.h>
-#include <Audio/AudioCore.h>
 
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
@@ -268,6 +268,18 @@ public:
 
 			//The text.
 			const char *RESTRICT _Text;
+
+			//The tooltip.
+			const char *RESTRICT _Tooltip{ nullptr };
+
+			//The idle bitmap file path.
+			const char *RESTRICT _IdleBitmapFilePath{ nullptr };
+
+			//The hovered bitmap file path.
+			const char *RESTRICT _HoveredBitmapFilePath{ nullptr };
+
+			//The pressed bitmap file path.
+			const char *RESTRICT _PressedBitmapFilePath{ nullptr };
 
 			//The callback.
 			void(*_Callback)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control) { nullptr };

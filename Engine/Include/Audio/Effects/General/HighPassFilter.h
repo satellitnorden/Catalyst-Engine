@@ -67,14 +67,14 @@ public:
 	/*
 	*	Callback for this audio effect to process the given buffer.
 	*/
-	FORCE_INLINE virtual void Process
+	FORCE_INLINE void Process
 	(
 		const AudioProcessContext &context,
 		const DynamicArray<DynamicArray<float32>> &inputs,
 		DynamicArray<DynamicArray<float32>> *const RESTRICT outputs,
 		const uint8 number_of_channels,
 		const uint32 number_of_samples
-	) NOEXCEPT
+	) NOEXCEPT override
 	{
 		//Copy inputs into outputs as all subsequent steps works inplace.
 		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
