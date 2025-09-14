@@ -13,6 +13,9 @@
 #include <Audio/Core/Audio.h>
 #include <Audio/Core/AudioProcessContext.h>
 
+//Concurrency.
+#include <Concurrency/Atomic.h>
+
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 #include <Math/Geometry/AxisAlignedBoundingBox2D.h>
@@ -243,8 +246,39 @@ public:
 		//The type.
 		Type _Type;
 
-		//The parameter.
-		HashString _Parameter;
+		/*
+		*	The parameter.
+		*	Can either set an identifier if the control uses a parameter built into the plugin,
+		*	or a pointer to a parameter class if you want to supply the metadata for the control another way.
+		*	NOTE: If a pointer is passed in, the '_Data' member of the parameter is expected to point to an 'Atomic<T>' variable.
+		*/
+		struct
+		{
+			//The identifier.
+			HashString _Identifier;
+
+			//The pointer.
+			Parameter *RESTRICT _Pointer{ nullptr };
+
+			/*
+			*	Assignment operator taking the identifier.
+			*/
+			FORCE_INLINE void operator=(const HashString identifier) NOEXCEPT
+			{
+				_Identifier = identifier;
+			}
+
+			/*
+			*	Assignment operator taking the pointer.
+			*/
+			FORCE_INLINE void operator=(Parameter *const RESTRICT pointer) NOEXCEPT
+			{
+				_Pointer = pointer;
+
+				//Ensure the parameter index is set to UINT64_MAXIMUM, as that signals to controls that the parameter is not a built in parameter.
+				_Pointer->_Index = UINT64_MAXIMUM;
+			}
+		} _Parameter;
 
 		//The update function.
 		void(*_UpdateFunction)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control) { nullptr };
@@ -254,6 +288,12 @@ public:
 
 		//The user data.
 		void *RESTRICT _UserData;
+
+		/*
+		*	The tooltip.
+		*	Usually controls will prefer to get the tooltip from the parameter, but if you're working with parameter-less controls, this is used instead.
+		*/
+		const char *RESTRICT _Tooltip{ nullptr };
 
 		struct
 		{
@@ -296,6 +336,33 @@ public:
 			//The callback.
 			void(*_Callback)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control, const uint32 chosen_item_index) { nullptr };
 		} _DropDownData;
+
+		struct
+		{
+			/*
+			*	The value.
+			*	The switch doesn't need to be hooked up to a parameter if this is set, in that case it will operate on this value instead.
+			*/
+			Atomic<bool> *RESTRICT _Value{ nullptr };
+
+			//The off idle bitmap file path.
+			const char *RESTRICT _OffIdleBitmapFilePath{ nullptr };
+
+			//The off hovered bitmap file path.
+			const char *RESTRICT _OffHoveredBitmapFilePath{ nullptr };
+
+			//The off pressed bitmap file path.
+			const char *RESTRICT _OffPressedBitmapFilePath{ nullptr };
+
+			//The on idle bitmap file path.
+			const char *RESTRICT _OnIdleBitmapFilePath{ nullptr };
+
+			//The on hovered bitmap file path.
+			const char *RESTRICT _OnHoveredBitmapFilePath{ nullptr };
+
+			//The on pressed bitmap file path.
+			const char *RESTRICT _OnPressedBitmapFilePath{ nullptr };
+		} _SwitchData;
 
 		struct
 		{
