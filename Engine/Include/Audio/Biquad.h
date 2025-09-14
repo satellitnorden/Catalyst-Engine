@@ -59,6 +59,38 @@ public:
 	}
 
 	/*
+	*	Calculates the coefficients of this biquad for a low shelf filter.
+	*	Note that 'gain' is expected to be linear gain.
+	*/
+	FORCE_INLINE void InitializeLowShelf(const float32 frequency, const float32 gain, const float32 sample_rate) NOEXCEPT
+	{
+		//This formula expects a different dB -> linear gain mapping, so calculate that.
+		const float32 _gain{ std::pow(10.0f, SoundUtilities::GainToDecibels(gain) / 40.0f) };
+
+		const float32 W0{ 2.0f * 3.1415926535897932384626433832795028841971f * (frequency / sample_rate) };
+		const float32 cosine{ std::cos(W0) };
+		const float32 sine{ std::sin(W0) };
+		const float32 AL{ sine / 2.0f * std::sqrt((_gain + 1.0f / _gain) * (1.0f / 1.0f - 1.0f) + 2.0f) };
+		const float32 square_root{ 2.0f * std::sqrt(_gain) * AL };
+
+		const float32 A0{ (_gain + 1.0f) + (_gain - 1.0f) * cosine + square_root };
+		const float32 A1{ -2.0f * ((_gain - 1.0f) + (_gain + 1.0f) * cosine) };
+		const float32 A2{ (_gain + 1.0f) + (_gain - 1.0f) * cosine - square_root };
+		const float32 B0{ _gain * ((_gain + 1.0f) - (_gain - 1.0f) * cosine + square_root) };
+		const float32 B1{ 2.0f * _gain * ((_gain - 1.0f) - (_gain + 1.0f) * cosine) };
+		const float32 B2{ _gain * ((_gain + 1.0f) - (_gain - 1.0f) * cosine - square_root) };
+
+		const float32 A0_reciprocal{ 1.0f / A0 };
+
+		_A0 = A0;
+		_A1 = A1 * A0_reciprocal;
+		_A2 = A2 * A0_reciprocal;
+		_B0 = B0 * A0_reciprocal;
+		_B1 = B1 * A0_reciprocal;
+		_B2 = B2 * A0_reciprocal;
+	}
+
+	/*
 	*	Calculates the coefficients of this biquad for a peak filter.
 	*	Note that 'gain' is expected to be linear gain.
 	*/
@@ -79,6 +111,38 @@ public:
 		const float32 B0{ 1.0f + AL * _gain };
 		const float32 B1{ -2.0f * cosine };
 		const float32 B2{ 1.0f - AL * _gain };
+
+		const float32 A0_reciprocal{ 1.0f / A0 };
+
+		_A0 = A0;
+		_A1 = A1 * A0_reciprocal;
+		_A2 = A2 * A0_reciprocal;
+		_B0 = B0 * A0_reciprocal;
+		_B1 = B1 * A0_reciprocal;
+		_B2 = B2 * A0_reciprocal;
+	}
+
+	/*
+	*	Calculates the coefficients of this biquad for a high shelf filter.
+	*	Note that 'gain' is expected to be linear gain.
+	*/
+	FORCE_INLINE void InitializeHighShelf(const float32 frequency, const float32 gain, const float32 sample_rate) NOEXCEPT
+	{
+		//This formula expects a different dB -> linear gain mapping, so calculate that.
+		const float32 _gain{ std::pow(10.0f, SoundUtilities::GainToDecibels(gain) / 40.0f) };
+
+		const float32 W0{ 2.0f * 3.1415926535897932384626433832795028841971f * (frequency / sample_rate) };
+		const float32 cosine{ std::cos(W0) };
+		const float32 sine{ std::sin(W0) };
+		const float32 AL{ sine / 2.0f * std::sqrt((_gain + 1.0f / _gain) * (1.0f / 1.0f - 1.0f) + 2.0f) };
+		const float32 square_root{ 2.0f * std::sqrt(_gain) * AL };
+
+		const float32 A0{ (_gain + 1.0f) - (_gain - 1.0f) * cosine + square_root };
+		const float32 A1{ 2.0f * ((_gain - 1.0f) - (_gain + 1.0f) * cosine) };
+		const float32 A2{ (_gain + 1.0f) - (_gain - 1.0f) * cosine - square_root };
+		const float32 B0{ _gain * ((_gain + 1.0f) + (_gain - 1.0f) * cosine + square_root) };
+		const float32 B1{ -2.0f * _gain * ((_gain - 1.0f) + (_gain + 1.0f) * cosine) };
+		const float32 B2{ _gain * ((_gain + 1.0f) + (_gain - 1.0f) * cosine - square_root) };
 
 		const float32 A0_reciprocal{ 1.0f / A0 };
 
