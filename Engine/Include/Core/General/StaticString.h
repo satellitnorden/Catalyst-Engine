@@ -22,7 +22,7 @@ public:
 	/*
 	*	Constructor taking a C style string.
 	*/
-	FORCE_INLINE constexpr StaticString(const char* const RESTRICT string) NOEXCEPT
+	FORCE_INLINE constexpr StaticString(const char *const RESTRICT string) NOEXCEPT
 	{
 		const uint64 string_length{ StringUtilities::StringLength(string) };
 

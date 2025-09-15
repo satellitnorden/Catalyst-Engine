@@ -32,4 +32,12 @@ namespace Audio
 		return std::pow(10.0f, decibels * 0.05f);
 	}
 
+	/*
+	*	Converts time (in seconds) to samples.
+	*/
+	FORCE_INLINE NO_DISCARD uint32 TimeToSamples(const float32 time, const float32 sample_rate) NOEXCEPT
+	{
+		return BaseMath::Round<uint32>(time * sample_rate);
+	}
+
 }

@@ -18,7 +18,7 @@
 *	This an effect modelling an overdrive pedal, similar to the Boss SD-1.
 *	It has an asymmetric distortion circuit, level, drive and tone controls.
 */
-class OverdrivePedal final : public AudioEffect
+class OverdrivePedal1 final : public AudioEffect
 {
 
 public:
@@ -35,7 +35,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE OverdrivePedal() NOEXCEPT
+	FORCE_INLINE OverdrivePedal1() NOEXCEPT
 	{
 		//Set up the level curve.
 		_LevelCurve.SetValue(0, SoundUtilities::DecibelsToGain(-48.0f));

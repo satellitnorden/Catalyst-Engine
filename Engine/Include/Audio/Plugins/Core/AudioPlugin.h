@@ -232,6 +232,7 @@ public:
 			BUTTON,
 			DROP_DOWN,
 			FADER,
+			INPUT_LISTENER,
 			TEXT,
 			KNOB,
 			CHECKBOX,
@@ -336,6 +337,18 @@ public:
 			//The callback.
 			void(*_Callback)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control, const uint32 chosen_item_index) { nullptr };
 		} _DropDownData;
+
+		struct
+		{
+			//The callback.
+			void(*_OnMouseScrollCallback)(AudioPlugin *RESTRICT plugin, Control *RESTRICT control, const float32 delta) { nullptr };
+		} _InputListenerData;
+
+		struct
+		{
+			//The knob bounds.
+			AxisAlignedBoundingBox2D _KnobBoundingBox;
+		} _OverlayKnobData;
 
 		struct
 		{
