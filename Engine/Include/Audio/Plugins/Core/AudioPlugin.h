@@ -537,6 +537,14 @@ public:
 	}
 
 	/*
+	*	Returns the initialize parameters.
+	*/
+	FORCE_INLINE NO_DISCARD const InitializeParameters *const RESTRICT GetInitializeParameters() const NOEXCEPT
+	{
+		return &_InitializeParameters;
+	}
+
+	/*
 	*	Sets the sample rate.
 	*/
 	FORCE_INLINE void SetSampleRate(const float32 value) NOEXCEPT

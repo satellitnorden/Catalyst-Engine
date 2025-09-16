@@ -214,6 +214,33 @@ private:
 				impulse_response_data->_Samples.Pop();
 			}
 		}
+
+		//Normalize it's peak to 0dB.
+		{
+			float32 highest_peak{ 0.0f };
+
+			for (const float32 sample : impulse_response_data->_Samples)
+			{
+				highest_peak = BaseMath::Maximum<float32>(highest_peak, BaseMath::Absolute<float32>(sample));
+			}
+
+			const float32 highest_peak_reciprocal{ highest_peak > 0.0f ? 1.0f / highest_peak : 1.0f };
+
+			for (float32 &sample : impulse_response_data->_Samples)
+			{
+				sample *= highest_peak_reciprocal;
+			}
+		}
+
+		//Normalize to -18dB.
+		{
+			const float32 gain{ Audio::DecibelsToGain(-18.0f) };
+
+			for (float32 &sample : impulse_response_data->_Samples)
+			{
+				sample *= gain;
+			}
+		}
 	}
 
 	/*
