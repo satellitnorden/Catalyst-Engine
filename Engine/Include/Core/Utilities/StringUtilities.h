@@ -57,10 +57,10 @@ public:
 	/*
 	*	Returns if the two provided strings are equal.
 	*/
-	FORCE_INLINE static constexpr NO_DISCARD bool IsEqual(const char *const RESTRICT first, const char *const RESTRICT second) NOEXCEPT
+	FORCE_INLINE static constexpr NO_DISCARD bool IsEqual(const char *const RESTRICT first, const char *const RESTRICT second, const uint64 length = UINT64_MAXIMUM) NOEXCEPT
 	{
-		const uint64 first_length{ StringLength(first) };
-		const uint64 second_length{ StringLength(second) };
+		const uint64 first_length{ length != UINT64_MAXIMUM ? length : StringLength(first) };
+		const uint64 second_length{ length != UINT64_MAXIMUM ? length : StringLength(second) };
 
 		if (first_length != second_length)
 		{
@@ -68,22 +68,6 @@ public:
 		}
 
 		for (uint64 i{ 0 }; i < first_length; ++i)
-		{
-			if (first[i] != second[i])
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/*
-	*	Returns if the two provided strings are equal. Will only compare the first 'length' characters.
-	*/
-	FORCE_INLINE static constexpr NO_DISCARD bool IsEqual(const char *const RESTRICT first, const char *const RESTRICT second, const uint64 length) NOEXCEPT
-	{
-		for (uint64 i{ 0 }; i < length; ++i)
 		{
 			if (first[i] != second[i])
 			{

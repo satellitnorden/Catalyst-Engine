@@ -205,16 +205,6 @@ private:
 			}
 		}
 
-		//Next, remove any samples beneath some threshold as they don't contribute to the final sound.
-		{
-			const float32 threshold{ Audio::DecibelsToGain(-70.0f) };
-
-			while (impulse_response_data->_Samples.Back() < threshold)
-			{
-				impulse_response_data->_Samples.Pop();
-			}
-		}
-
 		//Normalize it's peak to 0dB.
 		{
 			float32 highest_peak{ 0.0f };
@@ -229,6 +219,16 @@ private:
 			for (float32 &sample : impulse_response_data->_Samples)
 			{
 				sample *= highest_peak_reciprocal;
+			}
+		}
+
+		//Remove any samples beneath some threshold as they don't contribute to the final sound.
+		{
+			const float32 threshold{ Audio::DecibelsToGain(-80.0f) };
+
+			while (BaseMath::Absolute<float32>(impulse_response_data->_Samples.Back()) < threshold)
+			{
+				impulse_response_data->_Samples.Pop();
 			}
 		}
 

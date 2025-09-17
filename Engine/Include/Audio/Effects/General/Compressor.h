@@ -38,6 +38,16 @@ public:
 	float32 _Makeup{ DEFAULT_MAKEUP };
 
 	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE Compressor(const bool instantaneous = false) NOEXCEPT
+		:
+		_Instantaneous(instantaneous)
+	{
+
+	}
+
+	/*
 	*	Callback for this audio effect to process the given buffer.
 	*/
 	FORCE_INLINE void Process
@@ -84,6 +94,12 @@ public:
 				//Calculate gain.
 				float32 gain{ 0.0f };
 
+				if (_Instantaneous)
+				{
+					gain = Audio::GainToDecibels(input_sample);
+				}
+
+				else
 				{
 					_RMSStates[channel_index] = _RMSCoefficient * _RMSStates[channel_index] + (1.0f - _RMSCoefficient) * (input_sample * input_sample);
 					gain = Audio::GainToDecibels(std::sqrt(_RMSStates[channel_index]));
@@ -136,6 +152,9 @@ public:
 	}
 
 private:
+
+	//Denotes whether or not this compressor is instantaneous.
+	bool _Instantaneous{ false };
 
 	//The previous threshold.
 	float32 _PreviousThreshold{ DEFAULT_THRESHOLD };
