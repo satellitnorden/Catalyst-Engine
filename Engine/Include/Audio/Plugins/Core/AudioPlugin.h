@@ -300,6 +300,9 @@ public:
 		{
 			//The file path.
 			const char *RESTRICT _FilePath;
+
+			//The opacity.
+			float32 _Opacity{ 1.0f };
 		} _BitmapData;
 
 		struct
