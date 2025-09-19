@@ -42,11 +42,31 @@ public:
 			//The "WAVE" string. Should always equal "WAVE".
 			char _WaveString[4];
 
-			//The format string string. Should always equal "fmt ".
-			char _FormatString[4];
+		};
 
-			//The format data length.
-			uint32 _FormatDataLength;
+		/*
+		*	Chunk class definition.
+		*/
+		class Chunk final
+		{
+
+		public:
+
+			//The identifierr.
+			char _Identifier[4];
+
+			//The data size.
+			uint32 _DataSize;
+
+		};
+
+		/*
+		*	Format chunk class definition.
+		*/
+		class FormatChunk final
+		{
+
+		public:
 
 			//The format type.
 			uint16 _FormatType;
@@ -66,12 +86,6 @@ public:
 			//The bits per sample.
 			uint16 _BitsPerSample;
 
-			//The format string string. Should always equal "data".
-			char _DataString[4];
-
-			//The data size.
-			uint32 _DataSize;
-
 		};
 
 		//Open the file.
@@ -81,46 +95,89 @@ public:
 		WAVFileHeader header;
 		file.Read(&header, sizeof(WAVFileHeader));
 
-		//TODO: Validate the header. (:
-
-		//We only care about the "data" chunk, so skip until we find it.
-		while (!file.HasReachedEndOfFile() && !StringUtilities::IsEqual(header._DataString, "data", 4))
+		//Validate the header.
+		if (!Memory::Compare(header._RiffString, "RIFF", 4))
 		{
-			//Skip this cunk.
-			file.Skip(header._DataSize);
-
-			file.Read(header._DataString, 4);
-			file.Read(&header._DataSize, 4);
-		}
-
-		//If we couldn't find the "data" chunk, the read failed.
-		if (!StringUtilities::IsEqual(header._DataString, "data", 4))
-		{
-			file.Close();
+			ASSERT(false, "Invalid .wav file!");
 
 			return false;
 		}
 
-		//Read the data into a temporary buffer.
-		DynamicArray<byte> buffer;
-		buffer.Upsize<false>(header._DataSize);
-		file.Read(buffer.Data(), header._DataSize);
+		if (header._FileSize == 0)
+		{
+			ASSERT(false, "Invalid .wav file!");
+
+			return false;
+		}
+
+		if (!Memory::Compare(header._WaveString, "WAVE", 4))
+		{
+			ASSERT(false, "Invalid .wav file!");
+
+			return false;
+		}
+
+		//Find the "fmt " and "data" chunks and retrieve the data.
+		bool found_format_chunk{ false };
+		bool found_data_chunk{ false };
+
+		FormatChunk format_chunk;
+		DynamicArray<byte> data;
+
+		while (!file.HasReachedEndOfFile() && (!found_format_chunk || !found_data_chunk))
+		{
+			//Read in the chunk.
+			Chunk chunk;
+			file.Read(&chunk, sizeof(Chunk));
+
+			if (Memory::Compare(chunk._Identifier, "fmt ", 4))
+			{
+				file.Read(&format_chunk, sizeof(FormatChunk));
+
+				if (chunk._DataSize > sizeof(FormatChunk))
+				{
+					file.Skip(chunk._DataSize - sizeof(FormatChunk));
+				}
+
+				found_format_chunk = true;
+			}
+
+			else if (Memory::Compare(chunk._Identifier, "data", 4))
+			{
+				data.Upsize<false>(chunk._DataSize);
+				file.Read(data.Data(), chunk._DataSize);
+
+				found_data_chunk = true;
+			}
+
+			else
+			{
+				file.Skip(chunk._DataSize);
+			}
+		}
+
+		if (!found_format_chunk || !found_data_chunk)
+		{
+			ASSERT(false, "Invalid .wav file!");
+
+			return false;
+		}
 
 		//Close the file.
 		file.Close();
 
 		//Set the sample rate.
-		audio_stream->SetSampleRate(header._SampleRate);
+		audio_stream->SetSampleRate(format_chunk._SampleRate);
 
 		//Set the number of channels.
-		audio_stream->SetNumberOfChannels(static_cast<uint8>(header._NumberOfChannels));
+		audio_stream->SetNumberOfChannels(static_cast<uint8>(format_chunk._NumberOfChannels));
 
 		//Set the format.
-		switch (header._FormatType)
+		switch (format_chunk._FormatType)
 		{
 			case 1:
 			{
-				switch (header._BitsPerSample)
+				switch (format_chunk._BitsPerSample)
 				{
 					case 8:
 					{
@@ -163,7 +220,7 @@ public:
 
 			case 3:
 			{
-				switch (header._BitsPerSample)
+				switch (format_chunk._BitsPerSample)
 				{
 					case 32:
 					{
@@ -199,10 +256,10 @@ public:
 		}
 
 		//Set the number of samples.
-		audio_stream->SetNumberOfSamples(static_cast<uint32>(buffer.Size() / static_cast<uint64>(header._NumberOfChannels) / (Audio::BitsPerSample(audio_stream->GetFormat()) / 8)));
+		audio_stream->SetNumberOfSamples(static_cast<uint32>(data.Size() / static_cast<uint64>(format_chunk._NumberOfChannels) / (Audio::BitsPerSample(audio_stream->GetFormat()) / 8)));
 
 		//Set the data.
-		audio_stream->SetDataInternal(buffer.Data());
+		audio_stream->SetDataInternal(data.Data());
 
 		//The read was successful. (:
 		return true;
