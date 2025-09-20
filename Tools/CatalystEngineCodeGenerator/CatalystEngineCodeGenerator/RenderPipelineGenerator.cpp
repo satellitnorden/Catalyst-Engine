@@ -323,6 +323,31 @@ void RenderPipelineGenerator::ParseRenderPipeline(std::ifstream &file, nlohmann:
 			}
 		}
 
+		//Check if this is a polygon mode declaration.
+		{
+			const size_t position{ current_line.find("PolygonMode(") };
+
+			if (position != std::string::npos)
+			{
+				//Parse the function arguments.
+				std::array<std::string, 1> arguments;
+
+				const uint64 number_of_arguments
+				{
+					TextParsing::ParseFunctionArguments
+					(
+						current_line.c_str(),
+						current_line.length(),
+						arguments.data()
+					)
+				};
+
+				JSON["PolygonMode"] = arguments[0].c_str();
+
+				continue;
+			}
+		}
+
 		//Check if this is a cull mode declaration.
 		{
 			const size_t position{ current_line.find("CullMode(") };
@@ -611,6 +636,16 @@ void RenderPipelineGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		else
 		{
 			file << "\t\t\tinformation->_DepthStencilStoreOperator = AttachmentStoreOperator::DONT_CARE;" << std::endl;
+		}
+
+		if (entry.contains("PolygonMode"))
+		{
+			file << "\t\t\tinformation->_PolygonMode = PolygonMode::" << entry["PolygonMode"].get<std::string>().c_str() << ";" << std::endl;
+		}
+
+		else
+		{
+			file << "\t\t\tinformation->_PolygonMode = PolygonMode::FILL;" << std::endl;
 		}
 
 		if (entry.contains("CullMode"))

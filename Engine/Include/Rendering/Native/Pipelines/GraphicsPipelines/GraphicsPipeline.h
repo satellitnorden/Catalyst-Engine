@@ -117,6 +117,11 @@ public:
 	FORCE_INLINE NO_DISCARD BlendOperator GetAlphaBlendOperator() const NOEXCEPT { return _AlphaBlendOperator; }
 
 	/*
+	*	Returns the polygon mode.
+	*/
+	PolygonMode GetPolygonMode() const NOEXCEPT { return _PolygonMode; }
+
+	/*
 	*	Returns the cull mode.
 	*/
 	CullMode GetCullMode() const NOEXCEPT { return _CullMode; }
@@ -364,6 +369,11 @@ protected:
 	FORCE_INLINE void SetAlphaBlendOperator(const BlendOperator value) { _AlphaBlendOperator = value; }
 
 	/*
+	*	Sets the polygon mode.
+	*/
+	void SetPolygonMode(const PolygonMode value) NOEXCEPT { _PolygonMode = value; }
+
+	/*
 	*	Sets the cull mode.
 	*/
 	void SetCullMode(const CullMode newCullMode) NOEXCEPT { _CullMode = newCullMode; }
@@ -508,6 +518,9 @@ private:
 
 	//The alpha blend operator.
 	BlendOperator _AlphaBlendOperator{ BlendOperator::ADD };
+
+	//The polygon mode.
+	PolygonMode _PolygonMode{ PolygonMode::FILL };
 
 	//The cull mode.
 	CullMode _CullMode;

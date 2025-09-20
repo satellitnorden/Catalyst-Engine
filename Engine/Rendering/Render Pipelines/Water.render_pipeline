@@ -51,7 +51,7 @@ StencilReferenceMask(1);
 Topology(TRIANGLE_LIST);
 
 //Declare push constant data.
-PushConstantData(vec2, WORLD_POSITION);
+PushConstantData(vec3, WORLD_POSITION);
 PushConstantData(uint, BORDERS);
 PushConstantData(float, PATCH_RESOLUTION_RECIPROCAL);
 PushConstantData(float, PATCH_SIZE);
@@ -106,8 +106,8 @@ Vertex
 
     //Calculate the world position.
     OutWorldPosition.x = WORLD_POSITION.x + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.x);
-    OutWorldPosition.y = 0.0f;
-    OutWorldPosition.z = WORLD_POSITION.y + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
+    OutWorldPosition.y = WORLD_POSITION.y;
+    OutWorldPosition.z = WORLD_POSITION.z + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
 
     //Calculate the height.
     OutWorldPosition.y += WaterHeightAtPosition(OutWorldPosition, TEXTURE_INDEX);

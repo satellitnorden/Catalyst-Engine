@@ -33,6 +33,9 @@ public:
 	//The depth/stencil store operator.
 	AttachmentStoreOperator _DepthStencilStoreOperator;
 
+	//The polygon mode.
+	PolygonMode _PolygonMode;
+
 	//The cull mode.
 	CullMode _CullMode;
 

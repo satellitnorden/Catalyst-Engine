@@ -74,7 +74,8 @@ struct InstancedImpostorPushConstantData
 
 struct TerrainPushConstantData
 {
-	Vector2<float32> _WorldPosition;
+	Vector3<float32> _WorldPosition;
+	Padding<4> _Padding;
 	Vector2<float32> _MinimumHeightMapCoordinate;
 	Vector2<float32> _MaximumHeightMapCoordinate;
 	uint32 _Borders;
@@ -90,7 +91,8 @@ struct TerrainPushConstantData
 
 struct WaterPushConstantData
 {
-	Vector2<float32> _WorldPosition;
+	Vector3<float32> _WorldPosition;
+	Padding<4> _Padding;
 	uint32 _Borders;
 	float32 _PatchResolutionReciprocal;
 	float32 _PatchSize;
@@ -1163,7 +1165,7 @@ FORCE_INLINE void GatherTerrainQuadTreeNode
 		TerrainPushConstantData push_constant_data;
 
 		const Vector3<float32> component_world_position{ instance_data._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
-		push_constant_data._WorldPosition = Vector2<float32>(component_world_position._X, component_world_position._Z) + node._Position;
+		push_constant_data._WorldPosition = component_world_position + Vector3<float32>(node._Position._X, 0.0f, node._Position._Y);
 		push_constant_data._MinimumHeightMapCoordinate = node._MinimumHeightMapCoordinate;
 		push_constant_data._MaximumHeightMapCoordinate = node._MaximumHeightMapCoordinate;
 		push_constant_data._Borders = node._Borders;
@@ -1256,7 +1258,7 @@ FORCE_INLINE void GatherWaterQuadTreeNode
 		WaterPushConstantData push_constant_data;
 
 		const Vector3<float32> component_world_position{ instance_data._WorldPosition.GetRelativePosition(WorldSystem::Instance->GetCurrentWorldGridCell()) };
-		push_constant_data._WorldPosition = Vector2<float32>(component_world_position._X, component_world_position._Z) + node._Position;
+		push_constant_data._WorldPosition = component_world_position + Vector3<float32>(node._Position._X, 0.0f, node._Position._Y);
 		push_constant_data._Borders = node._Borders;
 		push_constant_data._PatchResolutionReciprocal = 1.0f / static_cast<float32>(instance_data._BaseResolution);
 		push_constant_data._PatchSize = node._PatchSize;

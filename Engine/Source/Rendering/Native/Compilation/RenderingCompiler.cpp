@@ -3279,6 +3279,7 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const bool is
 						|| current_line.find("ColorStoreOperator(") != std::string::npos
 						|| current_line.find("DepthStencilLoadOperator(") != std::string::npos
 						|| current_line.find("DepthStencilStoreOperator(") != std::string::npos
+						|| current_line.find("PolygonMode(") != std::string::npos
 						|| current_line.find("CullMode(") != std::string::npos
 						|| current_line.find("BlendEnable(") != std::string::npos
 						|| current_line.find("BlendColorSourceFactor(") != std::string::npos

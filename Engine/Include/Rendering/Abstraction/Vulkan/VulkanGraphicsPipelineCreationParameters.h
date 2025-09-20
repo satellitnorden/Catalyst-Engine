@@ -38,6 +38,9 @@ public:
 	//The number of color attachments.
 	uint32 _ColorAttachmentCount;
 
+	//The polygon mode.
+	VkPolygonMode _PolygonMode;
+
 	//The cull mode.
 	VkCullModeFlagBits _CullMode;
 

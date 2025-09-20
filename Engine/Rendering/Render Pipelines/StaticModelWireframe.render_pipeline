@@ -16,6 +16,9 @@ ColorStoreOperator(STORE);
 DepthStencilLoadOperator(LOAD);
 DepthStencilStoreOperator(STORE);
 
+//Set the polygon mode.
+PolygonMode(LINE);
+
 //Set the cull mode.
 CullMode(NONE);
 
@@ -24,7 +27,7 @@ DepthCompareOperator(GREATER_OR_EQUAL);
 DepthTestEnable();
 
 //Set the topology.
-Topology(LINE_STRIP);
+Topology(TRIANGLE_STRIP);
 
 //Set blend properties.
 BlendEnable();

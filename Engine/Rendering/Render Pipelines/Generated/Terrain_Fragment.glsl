@@ -540,18 +540,18 @@ vec2 CalculateTerrainMaterialCoordinate(vec3 world_position, vec3 normal, vec2 t
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec2 WORLD_POSITION;
-	layout (offset = 8) vec2 MINIMUM_HEIGHT_MAP_COORDINATE;
-	layout (offset = 16) vec2 MAXIMUM_HEIGHT_MAP_COORDINATE;
-	layout (offset = 24) uint BORDERS;
-	layout (offset = 28) float PATCH_RESOLUTION_RECIPROCAL;
-	layout (offset = 32) float PATCH_SIZE;
-	layout (offset = 36) uint HEIGHT_MAP_TEXTURE_INDEX;
-	layout (offset = 40) uint NORMAL_MAP_TEXTURE_INDEX;
-	layout (offset = 44) uint INDEX_MAP_TEXTURE_INDEX;
-	layout (offset = 48) uint BLEND_MAP_TEXTURE_INDEX;
-	layout (offset = 52) float MAP_RESOLUTION;
-	layout (offset = 56) float MAP_RESOLUTION_RECIPROCAL;
+	layout (offset = 0) vec3 WORLD_POSITION;
+	layout (offset = 16) vec2 MINIMUM_HEIGHT_MAP_COORDINATE;
+	layout (offset = 24) vec2 MAXIMUM_HEIGHT_MAP_COORDINATE;
+	layout (offset = 32) uint BORDERS;
+	layout (offset = 36) float PATCH_RESOLUTION_RECIPROCAL;
+	layout (offset = 40) float PATCH_SIZE;
+	layout (offset = 44) uint HEIGHT_MAP_TEXTURE_INDEX;
+	layout (offset = 48) uint NORMAL_MAP_TEXTURE_INDEX;
+	layout (offset = 52) uint INDEX_MAP_TEXTURE_INDEX;
+	layout (offset = 56) uint BLEND_MAP_TEXTURE_INDEX;
+	layout (offset = 60) float MAP_RESOLUTION;
+	layout (offset = 64) float MAP_RESOLUTION_RECIPROCAL;
 };
 
 layout (location = 0) in vec3 InWorldPosition;

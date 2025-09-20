@@ -212,6 +212,37 @@ public:
 	}
 
 	/*
+	*	Given a polygon mode, return the corresponding Vulkan polygon mode.
+	*/
+	static VkPolygonMode GetVulkanPolygonMode(const PolygonMode polygon_mode) NOEXCEPT
+	{
+		switch (polygon_mode)
+		{
+			case PolygonMode::FILL:
+			{
+				return VkPolygonMode::VK_POLYGON_MODE_FILL;
+			}
+
+			case PolygonMode::LINE:
+			{
+				return VkPolygonMode::VK_POLYGON_MODE_LINE;
+			}
+
+			case PolygonMode::POINT:
+			{
+				return VkPolygonMode::VK_POLYGON_MODE_POINT;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return VkPolygonMode::VK_POLYGON_MODE_FILL;
+			}
+		}
+	}
+
+	/*
 	*	Given a cull mode, return the corresponding Vulkan cull mode.
 	*/
 	static VkCullModeFlagBits GetVulkanCullMode(const CullMode cullMode) NOEXCEPT

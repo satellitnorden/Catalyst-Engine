@@ -72,6 +72,7 @@ public:
 	(
 		const WorldPosition &world_position,
 		const Texture2D<float32> &height_field,
+		const float32 scale,
 		const bool add_to_world,
 		ActorHandle *const RESTRICT actor_handle
 	) NOEXCEPT;
@@ -170,6 +171,7 @@ private:
 	(
 		const WorldPosition &world_position,
 		const Texture2D<float32> &height_field,
+		const float32 scale,
 		const bool add_to_world,
 		ActorHandle *const RESTRICT actor_handle
 	) NOEXCEPT;

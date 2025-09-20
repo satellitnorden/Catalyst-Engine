@@ -316,6 +316,7 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 	SetBlendFactorSourceAlpha(graphics_render_pipeline_information._BlendAlphaSourceFactor);
 	SetBlendFactorDestinationAlpha(graphics_render_pipeline_information._BlendAlphaDestinationFactor);
 	SetAlphaBlendOperator(graphics_render_pipeline_information._BlendAlphaOperator);
+	SetPolygonMode(graphics_render_pipeline_information._PolygonMode);
 	SetCullMode(graphics_render_pipeline_information._CullMode);
 	SetDepthTestEnabled(parameters._DepthTestEnabled.Valid() ? parameters._DepthTestEnabled.Get() : _RenderPipelineResource->_DepthTestEnabled);
 	SetDepthWriteEnabled(_RenderPipelineResource->_DepthWriteEnabled);

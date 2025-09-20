@@ -417,6 +417,7 @@ namespace VulkanSubRenderingSystemLogic
 			parameters._BlendFactorDestinationAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(pipeline->GetBlendFactorDestinationAlpha());
 			parameters._AlphaBlendOperator = VulkanTranslationUtilities::GetVulkanBlendOperator(pipeline->GetAlphaBlendOperator());
 			parameters._ColorAttachmentCount = static_cast<uint32>(pipeline->GetOutputRenderTargets().Size()) + static_cast<uint32>(pipeline->IsRenderingDirectlyToScreen());
+			parameters._PolygonMode = VulkanTranslationUtilities::GetVulkanPolygonMode(pipeline->GetPolygonMode());
 			parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(pipeline->GetCullMode());
 			
 			{

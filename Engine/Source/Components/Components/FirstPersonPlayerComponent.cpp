@@ -391,5 +391,14 @@ void FirstPersonPlayerComponent::DestroyInstance(Entity *const RESTRICT entity) 
 */
 void FirstPersonPlayerComponent::SetEnabled(Entity *const RESTRICT entity, const bool enabled) NOEXCEPT
 {
-	InstanceData(entity)._Enabled = enabled;
+	FirstPersonPlayerInstanceData &instance_data{ InstanceData(entity) };
+
+	const bool was_enabled{ instance_data._Enabled };
+
+	instance_data._Enabled = enabled;
+
+	if (!was_enabled && enabled)
+	{
+		instance_data._CharacterController->SetLinearVelocity(Vector3<float32>(0.0f, 0.0f, 0.0f));
+	}
 }

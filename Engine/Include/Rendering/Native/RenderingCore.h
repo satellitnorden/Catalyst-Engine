@@ -249,6 +249,14 @@ enum class CompareOperator : uint8
 	NotEqual
 };
 
+//Enumeration covering all polygon modes.
+enum class PolygonMode : uint8
+{
+	FILL,
+	LINE,
+	POINT
+};
+
 //Enumeration covering all cull modes.
 enum class CullMode : uint8
 {

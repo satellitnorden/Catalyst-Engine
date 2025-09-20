@@ -538,18 +538,18 @@ vec2 CalculateTerrainMaterialCoordinate(vec3 world_position, vec3 normal, vec2 t
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec2 WORLD_POSITION;
-	layout (offset = 8) vec2 MINIMUM_HEIGHT_MAP_COORDINATE;
-	layout (offset = 16) vec2 MAXIMUM_HEIGHT_MAP_COORDINATE;
-	layout (offset = 24) uint BORDERS;
-	layout (offset = 28) float PATCH_RESOLUTION_RECIPROCAL;
-	layout (offset = 32) float PATCH_SIZE;
-	layout (offset = 36) uint HEIGHT_MAP_TEXTURE_INDEX;
-	layout (offset = 40) uint NORMAL_MAP_TEXTURE_INDEX;
-	layout (offset = 44) uint INDEX_MAP_TEXTURE_INDEX;
-	layout (offset = 48) uint BLEND_MAP_TEXTURE_INDEX;
-	layout (offset = 52) float MAP_RESOLUTION;
-	layout (offset = 56) float MAP_RESOLUTION_RECIPROCAL;
+	layout (offset = 0) vec3 WORLD_POSITION;
+	layout (offset = 16) vec2 MINIMUM_HEIGHT_MAP_COORDINATE;
+	layout (offset = 24) vec2 MAXIMUM_HEIGHT_MAP_COORDINATE;
+	layout (offset = 32) uint BORDERS;
+	layout (offset = 36) float PATCH_RESOLUTION_RECIPROCAL;
+	layout (offset = 40) float PATCH_SIZE;
+	layout (offset = 44) uint HEIGHT_MAP_TEXTURE_INDEX;
+	layout (offset = 48) uint NORMAL_MAP_TEXTURE_INDEX;
+	layout (offset = 52) uint INDEX_MAP_TEXTURE_INDEX;
+	layout (offset = 56) uint BLEND_MAP_TEXTURE_INDEX;
+	layout (offset = 60) float MAP_RESOLUTION;
+	layout (offset = 64) float MAP_RESOLUTION_RECIPROCAL;
 };
 
 layout (location = 0) in vec2 InPosition;
@@ -583,8 +583,8 @@ void main()
     }
     vec2 height_map_coordinate = vec2(mix(MINIMUM_HEIGHT_MAP_COORDINATE.x, MAXIMUM_HEIGHT_MAP_COORDINATE.x, stitched_position.x), mix(MINIMUM_HEIGHT_MAP_COORDINATE.y, MAXIMUM_HEIGHT_MAP_COORDINATE.y, stitched_position.y));
     OutWorldPosition.x = WORLD_POSITION.x + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.x);
-    OutWorldPosition.y = 0.0f;
-    OutWorldPosition.z = WORLD_POSITION.y + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
+    OutWorldPosition.y = WORLD_POSITION.y;
+    OutWorldPosition.z = WORLD_POSITION.z + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
     {
         float height_1 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).x;
         float height_2 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 1.0f) * MAP_RESOLUTION_RECIPROCAL).x;
@@ -593,7 +593,7 @@ void main()
         float blend_1 = mix(height_1, height_2, fract(height_map_coordinate.y * MAP_RESOLUTION));
 	    float blend_2 = mix(height_3, height_4, fract(height_map_coordinate.y * MAP_RESOLUTION));
 	    float final_height = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
-        OutWorldPosition.y = final_height;
+        OutWorldPosition.y += final_height;
     }
     vec3 normals[4];
     vec3 normal;

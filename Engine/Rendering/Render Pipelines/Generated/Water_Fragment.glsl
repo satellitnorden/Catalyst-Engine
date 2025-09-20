@@ -493,11 +493,11 @@ vec3 WaterNormalAtPosition(vec3 world_position, uint texture_index)
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec2 WORLD_POSITION;
-	layout (offset = 8) uint BORDERS;
-	layout (offset = 12) float PATCH_RESOLUTION_RECIPROCAL;
-	layout (offset = 16) float PATCH_SIZE;
-	layout (offset = 20) uint TEXTURE_INDEX;
+	layout (offset = 0) vec3 WORLD_POSITION;
+	layout (offset = 16) uint BORDERS;
+	layout (offset = 20) float PATCH_RESOLUTION_RECIPROCAL;
+	layout (offset = 24) float PATCH_SIZE;
+	layout (offset = 28) uint TEXTURE_INDEX;
 };
 
 layout (set = 1, binding = 6) uniform sampler2D SceneFeatures2;

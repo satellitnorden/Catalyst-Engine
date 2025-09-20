@@ -638,6 +638,7 @@ void TerrainComponent::PreProcess(TerrainInitializationData *const RESTRICT init
 	(
 		initialization_data->_WorldPosition,
 		initialization_data->_HeightMap,
+		static_cast<float32>(initialization_data->_PatchSize) / static_cast<float32>(initialization_data->_HeightMap.GetResolution()),
 		false,
 		&initialization_data->_PreprocessedData._PhysicsActorHandle
 	);

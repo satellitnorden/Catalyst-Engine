@@ -45,7 +45,7 @@ StencilReferenceMask(1);
 Topology(TRIANGLE_LIST);
 
 //Declare push constant data.
-PushConstantData(vec2, WORLD_POSITION);
+PushConstantData(vec3, WORLD_POSITION);
 PushConstantData(vec2, MINIMUM_HEIGHT_MAP_COORDINATE);
 PushConstantData(vec2, MAXIMUM_HEIGHT_MAP_COORDINATE);
 PushConstantData(uint, BORDERS);
@@ -114,9 +114,9 @@ Vertex
 
     //Calculate the world position.
     OutWorldPosition.x = WORLD_POSITION.x + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.x);
-    OutWorldPosition.y = 0.0f;
-    OutWorldPosition.z = WORLD_POSITION.y + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
-
+    OutWorldPosition.y = WORLD_POSITION.y;
+    OutWorldPosition.z = WORLD_POSITION.z + mix(-(PATCH_SIZE * 0.5f), (PATCH_SIZE * 0.5f), stitched_position.y);
+    
     //Sample the heightmap.
     {
         float height_1 = texture(sampler2D(TEXTURES[HEIGHT_MAP_TEXTURE_INDEX], HEIGHT_MAP_SAMPLER), height_map_coordinate + vec2(0.0f, 0.0f) * MAP_RESOLUTION_RECIPROCAL).x;
@@ -129,7 +129,7 @@ Vertex
 
 	    float final_height = mix(blend_1, blend_2, fract(height_map_coordinate.x * MAP_RESOLUTION));
 
-        OutWorldPosition.y = final_height;
+        OutWorldPosition.y += final_height;
     }
     
     //Sample the normal map.

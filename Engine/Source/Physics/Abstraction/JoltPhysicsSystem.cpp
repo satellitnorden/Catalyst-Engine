@@ -514,6 +514,7 @@ void PhysicsSystem::SubCreateHeightFieldActor
 (
 	const WorldPosition &world_position,
 	const Texture2D<float32> &height_field,
+	const float32 scale,
 	const bool add_to_world,
 	ActorHandle *const RESTRICT actor_handle
 ) NOEXCEPT
@@ -524,10 +525,10 @@ void PhysicsSystem::SubCreateHeightFieldActor
 	const Vector3<float32> absolute_world_position{ world_position.GetAbsolutePosition() };
 
 	//Calculate the offset.
-	const float32 offset{ static_cast<float32>(height_field.GetResolution()) * 0.5f };
+	const float32 offset{ static_cast<float32>(height_field.GetResolution()) * 0.5f * scale };
 
 	//Calculate the scale.
-	const float32 scale{ 1.0f + (1.0f / static_cast<float32>(height_field.GetResolution())) };
+	const float32 _scale{ (1.0f + (1.0f / static_cast<float32>(height_field.GetResolution()))) * scale };
 
 	//Retrieve the body interface.
 	JPH::BodyInterface &body_interface = JoltPhysicsSystemData::_System.GetBodyInterface();
@@ -537,7 +538,7 @@ void PhysicsSystem::SubCreateHeightFieldActor
 	{
 		height_field.Data(),
 		JPH::Vec3(absolute_world_position._X - offset, absolute_world_position._Y, absolute_world_position._Z - offset),
-		JPH::Vec3(scale, scale, scale),
+		JPH::Vec3(_scale, 1.0f, _scale),
 		height_field.GetResolution()
 	};
 

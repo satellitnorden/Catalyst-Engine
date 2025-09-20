@@ -15,6 +15,9 @@ OutputRenderTarget(SceneLowDynamicRange1);
 //Declare render resolution.
 RenderResolution(MAIN_FULL);
 
+//Set the polygon mode.
+PolygonMode(LINE);
+
 //Set the cull mode.
 CullMode(NONE);
 
@@ -29,7 +32,7 @@ DepthCompareOperator(GREATER_OR_EQUAL);
 DepthTestEnable();
 
 //Set the topology.
-Topology(LINE_STRIP);
+Topology(TRIANGLE_LIST);
 
 //Set blend properties.
 BlendEnable();
