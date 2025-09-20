@@ -157,6 +157,12 @@ void FirstPersonPlayerComponent::SerialUpdate(const UpdatePhase update_phase) NO
 				FirstPersonPlayerInstanceData &instance_data{ _InstanceData[instance_index] };
 				WorldTransformInstanceData &world_transform_instance_data{ WorldTransformComponent::Instance->InstanceData(entity) };
 
+				//Disregard if this is disabled.
+				if (!instance_data._Enabled)
+				{
+					continue;
+				}
+
 				//Accumulate the movement.
 				Vector3<float32> movement;
 
@@ -378,4 +384,12 @@ void FirstPersonPlayerComponent::DestroyInstance(Entity *const RESTRICT entity) 
 {
 	//Remove the instance.
 	RemoveInstance(entity);
+}
+
+/*
+*	Sets whether or not the given entity is enabled.
+*/
+void FirstPersonPlayerComponent::SetEnabled(Entity *const RESTRICT entity, const bool enabled) NOEXCEPT
+{
+	InstanceData(entity)._Enabled = enabled;
 }

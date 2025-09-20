@@ -52,6 +52,9 @@ class FirstPersonPlayerInstanceData final
 
 public:
 
+	//Denotes if this is enabled.
+	bool _Enabled{ true };
+
 	//The character controller.
 	CharacterController *RESTRICT _CharacterController{ nullptr };
 
@@ -94,5 +97,12 @@ class FirstPersonPlayerComponent final : public Component
 		COMPONENT_POST_CREATE_INSTANCE()
 		COMPONENT_SERIAL_UPDATE(UpdatePhase::GAMEPLAY)
 	);
+
+public:
+
+	/*
+	*	Sets whether or not the given entity is enabled.
+	*/
+	void SetEnabled(Entity *const RESTRICT entity, const bool enabled) NOEXCEPT;
 
 };
