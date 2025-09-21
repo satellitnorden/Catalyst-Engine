@@ -32,6 +32,12 @@ namespace SIMD
 	*/
 	FORCE_INLINE void InitializeBackend() NOEXCEPT
 	{
+		//Return if already initialized.
+		if (BACKEND != Backend::UNKNOWN)
+		{
+			return;
+		}
+
 		//Check check support for the AVX modes.
 		bool AVX2_supported{ false };
 		//bool AVX512_supported{ false };

@@ -150,6 +150,7 @@ public:
 				if (particle._Sediment > sediment_capacity || delta_height > 0.0f)
 				{
 					const float32 deposit_amount{ delta_height > 0.0f ? BaseMath::Minimum<float32>(delta_height, particle._Sediment) : BaseMath::Minimum<float32>(particle._Sediment - sediment_capacity, -delta_height) * parameters._Deposition };
+					ASSERT(deposit_amount >= 0.0f, "Deposit amount is negative!");
 					Deposit(height_map, original_position, deposit_amount);
 					particle._Sediment -= deposit_amount;
 				}
@@ -158,12 +159,14 @@ public:
 				else
 				{
 					const float32 erode_amount{ BaseMath::Minimum<float32>((sediment_capacity - particle._Sediment) * parameters._Erosion, -delta_height) };
+					ASSERT(erode_amount >= 0.0f, "Erode amount is negative!");
 					Erode(height_map, original_position, erode_amount);
 					particle._Sediment += erode_amount;
 				}
 
 				//Update the particle's velocity.
-				particle._Velocity = std::sqrt(particle._Velocity * particle._Velocity + delta_height * parameters._Gravity);
+				particle._Velocity = std::sqrt(BaseMath::Maximum<float32>(particle._Velocity * particle._Velocity - delta_height * parameters._Gravity, 0.0f));
+				ASSERT(!BaseMath::IsNaN(particle._Velocity), "NaN detected!");
 
 				//Evaporate.
 				particle._Water *= (1.0f - parameters._Evaporation);

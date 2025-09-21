@@ -27,7 +27,7 @@ DepthCompareOperator(GREATER_OR_EQUAL);
 DepthTestEnable();
 
 //Set the topology.
-Topology(TRIANGLE_STRIP);
+Topology(TRIANGLE_LIST);
 
 //Set blend properties.
 BlendEnable();
