@@ -26,6 +26,27 @@ namespace Audio
 		UNKNOWN
 	};
 
+	//Enumeration covering all note durations.
+	enum class NoteDuration : uint8
+	{
+		WHOLE,
+		HALF,
+		QUARTER,
+		EIGHTH,
+		SIXTEENTH,
+		THIRTYSECOND,
+		SIXTYFOURTH,
+		HUNDREDTWENTYEIGHTH
+	};
+
+	//Enumeration covering all note modifiers.
+	enum class NoteModifier : uint8
+	{
+		NONE,
+		DOTTED,
+		TRIPLET
+	};
+
 	//The default sample rate - Certain code assumes this value and initialize using it, until told otherwise.
 	constexpr float32 DEFAULT_SAMPLE_RATE{ 48'000.0f };
 
@@ -154,6 +175,124 @@ namespace Audio
 	FORCE_INLINE NO_DISCARD float32 DecibelsToGain(const float32 decibels) NOEXCEPT
 	{
 		return std::pow(10.0f, decibels * 0.05f);
+	}
+
+	/*
+	*	Calculates the note time in seconds in regards to the beats per minute.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE static NO_DISCARD TYPE CalculateNoteTime(const TYPE beats_per_minute, const NoteDuration duration, const NoteModifier modifier = NoteModifier::NONE) NOEXCEPT
+	{
+		//Define constants.
+		constexpr TYPE DOTTED_MULTIPLIER{ static_cast<TYPE>(1.5) };
+		constexpr TYPE TRIPLET_MULTIPLIER{ static_cast<TYPE>(2.0 / 3.0) };
+
+		//Calculate the time.
+		TYPE calculated_time;
+
+		//Apply the duration.
+		switch (duration)
+		{
+			case NoteDuration::WHOLE:
+			{
+				calculated_time = (static_cast<TYPE>(60) / beats_per_minute) * static_cast<TYPE>(4);
+
+				break;
+			}
+
+			case NoteDuration::HALF:
+			{
+				calculated_time = (static_cast<TYPE>(60) / beats_per_minute) * static_cast<TYPE>(2);
+
+				break;
+			}
+
+			case NoteDuration::QUARTER:
+			{
+				calculated_time = (static_cast<TYPE>(60) / beats_per_minute);
+
+				break;
+			}
+
+			case NoteDuration::EIGHTH:
+			{
+				calculated_time = (static_cast<TYPE>(60) / beats_per_minute) * static_cast<TYPE>(0.5);
+
+				break;
+			}
+
+			case NoteDuration::SIXTEENTH:
+			{
+				calculated_time = (static_cast<TYPE>(60) / beats_per_minute) * static_cast<TYPE>(0.25);
+
+				break;
+			}
+
+			case NoteDuration::THIRTYSECOND:
+			{
+				calculated_time = (static_cast<TYPE>(60) / beats_per_minute) * static_cast<TYPE>(0.125);
+
+				break;
+			}
+
+			case NoteDuration::SIXTYFOURTH:
+			{
+				calculated_time = (static_cast<TYPE>(60) / beats_per_minute) * static_cast<TYPE>(0.0625);
+
+				break;
+			}
+
+			case NoteDuration::HUNDREDTWENTYEIGHTH:
+			{
+				calculated_time = (static_cast<TYPE>(60) / beats_per_minute) * static_cast<TYPE>(0.03125);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				calculated_time = (static_cast<TYPE>(60) / beats_per_minute);
+
+				break;
+			}
+		}
+
+		//Apply the modifier.
+		switch (modifier)
+		{
+			case NoteModifier::NONE:
+			{
+				//Nothing to do here.
+
+				break;
+			}
+
+			case NoteModifier::DOTTED:
+			{
+				calculated_time *= DOTTED_MULTIPLIER;
+
+				break;
+			}
+
+			case NoteModifier::TRIPLET:
+			{
+				calculated_time *= TRIPLET_MULTIPLIER;
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+
+		//Return the calculated time.
+		return calculated_time;
 	}
 
 	/*

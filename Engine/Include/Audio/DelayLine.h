@@ -30,6 +30,24 @@ public:
 	}
 
 	/*
+	*	Updates this delay line with a new delay time.
+	*/
+	FORCE_INLINE void Update(const float32 delay_time, const float32 sample_rate) NOEXCEPT
+	{
+		//Set the delay time.
+		_DelayTime = delay_time;
+
+		//Calculate the buffer size.
+		const uint64 buffer_size{ static_cast<uint64>(_DelayTime * sample_rate) + 1 };
+
+		//Resize the buffer.
+		_Buffer.Resize<true>(buffer_size);
+
+		//Update the current index.
+		_CurrentIndex = _CurrentIndex % _Buffer.Size();
+	}
+
+	/*
 	*	Returns the delay time.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetDelayTime() const NOEXCEPT
@@ -65,6 +83,14 @@ public:
 
 		//Return the output.
 		return output;
+	}
+
+	/*
+	*	Returns the current sample.
+	*/
+	FORCE_INLINE NO_DISCARD float32 CurrentSample() const NOEXCEPT
+	{
+		return _Buffer[_CurrentIndex];
 	}
 
 private:
