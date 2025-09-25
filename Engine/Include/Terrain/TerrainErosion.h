@@ -53,16 +53,13 @@ public:
 		uint64 _MaximumParticleLifetime{ 32 };
 
 		//The inertia.
-		float32 _Inertia{ 0.5f };
+		float32 _Inertia{ 0.05f };
 
 		//The capacity.
-		float32 _Capacity{ 10.0f };
+		float32 _Capacity{ 12.0f };
 
 		//The gravity.
 		float32 _Gravity{ 4.0f };
-
-		//The minimum slope.
-		float32 _MinimumSlope{ 0.0001f };
 
 		//The deposition.
 		float32 _Deposition{ 0.5f };
@@ -71,7 +68,7 @@ public:
 		float32 _Erosion{ 0.5f };
 
 		//The evaporation.
-		float32 _Evaporation{ 0.1f };
+		float32 _Evaporation{ 0.05f };
 
 	};
 
@@ -113,8 +110,6 @@ public:
 				float32 old_gradient_height;
 				CalculateGradient(height_map, particle._Position, &old_gradient_direction, &old_gradient_height);
 
-				old_gradient_direction.Normalize();
-
 				//Update the direction of the particle.
 				particle._Direction = particle._Direction * parameters._Inertia + old_gradient_direction * (1.0f - parameters._Inertia);
 				particle._Direction.Normalize();
@@ -144,12 +139,12 @@ public:
 				const float32 delta_height{ new_gradient_height - old_gradient_height };
 
 				//Calculate the sediment capacity.
-				const float32 sediment_capacity{ BaseMath::Maximum<float32>(-delta_height, parameters._MinimumSlope) * particle._Velocity * particle._Water * parameters._Capacity };
-
+				const float32 sediment_capacity{ -delta_height * particle._Velocity * particle._Water * parameters._Capacity };
+				
 				//Should this particle deposit?
 				if (particle._Sediment > sediment_capacity || delta_height > 0.0f)
 				{
-					const float32 deposit_amount{ delta_height > 0.0f ? BaseMath::Minimum<float32>(delta_height, particle._Sediment) : BaseMath::Minimum<float32>(particle._Sediment - sediment_capacity, -delta_height) * parameters._Deposition };
+					const float32 deposit_amount{ delta_height > 0.0f ? BaseMath::Minimum<float32>(delta_height, particle._Sediment) : BaseMath::Minimum<float32>((particle._Sediment - sediment_capacity) * parameters._Deposition, -delta_height) };
 					ASSERT(deposit_amount >= 0.0f, "Deposit amount is negative!");
 					Deposit(height_map, original_position, deposit_amount);
 					particle._Sediment -= deposit_amount;
@@ -236,18 +231,57 @@ private:
 	*/
 	FORCE_INLINE static void Erode(Texture2D<float32> *const RESTRICT height_map, const Vector2<float32> position, const float32 amount) NOEXCEPT
 	{
-		const Vector2<uint32> lower_left_coordinate{ BaseMath::Minimum<uint32>(static_cast<uint32>(position._X), height_map->GetWidth() - 1), BaseMath::Minimum<uint32>(static_cast<uint32>(position._Y), height_map->GetHeight() - 1) };
-		const Vector2<uint32> upper_left_coordinate{ BaseMath::Minimum<uint32>(static_cast<uint32>(position._X), height_map->GetWidth() - 1), BaseMath::Minimum<uint32>(static_cast<uint32>(position._Y) + 1, height_map->GetHeight() - 1) };
-		const Vector2<uint32> lower_right_coordinate{ BaseMath::Minimum<uint32>(static_cast<uint32>(position._X) + 1, height_map->GetWidth() - 1), BaseMath::Minimum<uint32>(static_cast<uint32>(position._Y), height_map->GetHeight() - 1) };
-		const Vector2<uint32> upper_right_coordinate{ BaseMath::Minimum<uint32>(static_cast<uint32>(position._X) + 1, height_map->GetWidth() - 1), BaseMath::Minimum<uint32>(static_cast<uint32>(position._Y) + 1, height_map->GetHeight() - 1) };
+		constexpr int32 RADIUS{ 2 };
 
-		const float32 horizontal_alpha{ BaseMath::Fractional(position._X) };
-		const float32 vertical_alpha{ BaseMath::Fractional(position._Y) };
+		struct ErosionPosition
+		{
+			Vector2<uint32> _Coordinate;
+			float32 _Weight;
+		};
 
-		height_map->At(lower_left_coordinate._X, lower_left_coordinate._Y) -= (amount * (1.0f - horizontal_alpha) * (1.0f - vertical_alpha));
-		height_map->At(upper_left_coordinate._X, upper_left_coordinate._Y) -= (amount * (1.0f - horizontal_alpha) * vertical_alpha);
-		height_map->At(lower_right_coordinate._X, lower_right_coordinate._Y) -= (amount * horizontal_alpha * (1.0f - vertical_alpha));
-		height_map->At(upper_right_coordinate._X, upper_right_coordinate._Y) -= (amount * horizontal_alpha * vertical_alpha);
+		const Vector2<float32> center{ static_cast<float32>(static_cast<uint32>(position._X)) + 0.5f, static_cast<float32>(static_cast<uint32>(position._Y)) + 0.5f };
+
+		StaticArray<ErosionPosition, (1 + (RADIUS * 2)) * (1 + (RADIUS * 2))> erosion_positions;
+		uint32 number_of_erosion_positions{ 0 };
+
+		float32 weight_sum{ 0.0f };
+
+		for (int32 Y{ -RADIUS }; Y <= RADIUS; ++Y)
+		{
+			for (int32 X{ -RADIUS }; X <= RADIUS; ++X)
+			{
+				const Vector2<float32> sample_position{ position._X + static_cast<float32>(X), position._Y + static_cast<float32>(Y) };
+
+				if (sample_position._X < 0.0f || sample_position._X >= static_cast<float32>(height_map->GetWidth()) || sample_position._Y < 0 || sample_position._Y >= static_cast<float32>(height_map->GetHeight()))
+				{
+					continue;
+				}
+
+				const float32 distance{ Vector2<float32>::Length(sample_position - center) };
+				const float32 weight{ 1.0f - BaseMath::Minimum<float32>(distance / static_cast<float32>(RADIUS), 1.0f) };
+
+				if (weight > 0.0f)
+				{
+					erosion_positions[number_of_erosion_positions]._Coordinate = Vector2<uint32>(static_cast<uint32>(sample_position._X), static_cast<uint32>(sample_position._Y));
+					erosion_positions[number_of_erosion_positions]._Weight = weight;
+
+					++number_of_erosion_positions;
+
+					weight_sum += weight;
+				}
+			}
+		}
+
+		const float32 weight_multiplier{ 1.0f / weight_sum };
+
+		for (uint32 erosion_position_index{ 0 }; erosion_position_index < number_of_erosion_positions; ++erosion_position_index)
+		{
+			ErosionPosition &erosion_position{ erosion_positions[erosion_position_index] };
+
+			erosion_position._Weight *= weight_multiplier;
+
+			height_map->At(erosion_position._Coordinate._X, erosion_position._Coordinate._Y) -= amount * erosion_position._Weight;
+		}
 	}
 
 	/*
