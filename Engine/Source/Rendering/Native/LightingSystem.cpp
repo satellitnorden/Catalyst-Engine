@@ -48,7 +48,7 @@ void LightingSystem::PostInitialize() NOEXCEPT
 	(
 		HashString("Lighting"),
 		sizeof(LightHeaderData) + sizeof(ShaderLightComponent) * 64,
-		[](DynamicArray<byte> *const RESTRICT data, void* const RESTRICT arguments)
+		[](DynamicArray<byte> *const RESTRICT data, void *const RESTRICT arguments)
 		{
 			data->Clear();
 			LightingSystem *const RESTRICT lighting_system{ static_cast<LightingSystem *const RESTRICT>(arguments) };

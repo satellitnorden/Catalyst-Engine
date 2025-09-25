@@ -576,6 +576,8 @@ void SoundSubSystemASIO::StartStream() NOEXCEPT
 
 	//Initialize the mixing buffers.
 	_SoundSystem->InitializeMixingBuffers(stream_options.numberOfBuffers + 2 /* 2 extra to avoid stutters. (: */, buffer_frames);
+
+	LOG_INFORMATION("SoundSubSystemASIO - Started stream...");
 }
 
 /*
@@ -604,6 +606,8 @@ void SoundSubSystemASIO::StopStream() NOEXCEPT
 
 		//The stream is no longer open.
 		_OpenedStreamInformation._IsOpen = false;
+
+		LOG_INFORMATION("SoundSubSystemASIO - Stopped stream...");
 	}
 }
 
