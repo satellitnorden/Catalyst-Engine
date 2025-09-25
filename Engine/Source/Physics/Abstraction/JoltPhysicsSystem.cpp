@@ -40,6 +40,15 @@ enum class PhysicsLayer : uint8
 	NUMBER_OF_PHYSICS_LAYERS
 };
 
+//Jolt physics system constants.
+namespace JoltPhysicsSystemConstants
+{
+	constexpr JPH::uint MAXIMUM_BODIES{ 8'192 * 2 };
+	constexpr JPH::uint MAXIMUM_BODY_PAIRS{ 1'024 };
+	constexpr JPH::uint MAXIMUM_CONTACT_CONSTRAINTS{ 1'024 };
+	constexpr float32 DEFAULT_FRICTION{ 1.0f };
+}
+
 /*
 *	Broadphase layer interface class definition.
 */
@@ -341,15 +350,6 @@ public:
 	}
 
 };
-
-//Jolt physics system constants.
-namespace JoltPhysicsSystemConstants
-{
-	constexpr JPH::uint MAXIMUM_BODIES{ 8'192 };
-	constexpr JPH::uint MAXIMUM_BODY_PAIRS{ 1'024 };
-	constexpr JPH::uint MAXIMUM_CONTACT_CONSTRAINTS{ 1'024 };
-	constexpr float32 DEFAULT_FRICTION{ 1.0f };
-}
 
 //Jolt physics system data.
 namespace JoltPhysicsSystemData
