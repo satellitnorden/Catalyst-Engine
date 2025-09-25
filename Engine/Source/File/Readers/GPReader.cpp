@@ -1,9 +1,117 @@
 //Header file.
 #include <File/Readers/GPReader.h>
 
+//Core.
+#include <Core/Containers/StaticArray.h>
+
+//Systems.
+#include <Systems/LogSystem.h>
+
 //Third party.
 #include <ThirdParty/Minizip/minizip/unzip.h>
 #include <ThirdParty/pugixml/pugixml.hpp>
+
+/*
+*	Bend properties class definition.
+*/
+class BendProperties final
+{
+
+public:
+
+	//Enumeration covering all offset types.
+	enum class OffsetType : uint8
+	{
+		ORIGIN,
+		MIDDLE_OFFSET_1,
+		MIDDLE_OFFSET_2,
+		DESTINATION,
+
+		NUMBER_OF_OFFSET_TYPES
+	};
+
+	//Enumeration covering all value types.
+	enum class ValueType : uint8
+	{
+		ORIGIN,
+		MIDDLE,
+		DESTINATION,
+
+		NUMBER_OF_VALUE_TYPES
+	};
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE BendProperties() NOEXCEPT
+	{
+		//Set all offsets and values to invalid values.
+		for (float32 &offset : _Offsets)
+		{
+			offset = FLOAT32_MAXIMUM;
+		}
+
+		for (float32 &value : _Values)
+		{
+			value = FLOAT32_MAXIMUM;
+		}
+	}
+
+	/*
+	*	Adds an offset of the given type.
+	*/
+	FORCE_INLINE void AddOffset(const OffsetType type, const float32 value) NOEXCEPT
+	{
+		_Offsets[UNDERLYING(type)] = value;
+	}
+
+	/*
+	*	Adds a value of the given type.
+	*/
+	FORCE_INLINE void AddValue(const ValueType type, const float32 value) NOEXCEPT
+	{
+		_Values[UNDERLYING(type)] = value;
+	}
+
+	/*
+	*	Constructs the offsets/values.
+	*/
+	FORCE_INLINE void Construct(DynamicArray<float32> *const RESTRICT offsets, DynamicArray<float32> *const RESTRICT values) NOEXCEPT
+	{
+		if (_Offsets[UNDERLYING(OffsetType::ORIGIN)] != FLOAT32_MAXIMUM && _Values[UNDERLYING(ValueType::ORIGIN)] != FLOAT32_MAXIMUM)
+		{
+			offsets->Emplace(_Offsets[UNDERLYING(OffsetType::ORIGIN)]);
+			values->Emplace(_Values[UNDERLYING(ValueType::ORIGIN)]);
+		}
+
+		if (_Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_1)] != FLOAT32_MAXIMUM && _Values[UNDERLYING(ValueType::MIDDLE)] != FLOAT32_MAXIMUM)
+		{
+			offsets->Emplace(_Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_1)]);
+			values->Emplace(_Values[UNDERLYING(ValueType::MIDDLE)]);
+		}
+
+		if (_Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_2)] != FLOAT32_MAXIMUM && _Values[UNDERLYING(ValueType::MIDDLE)] != FLOAT32_MAXIMUM && _Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_1)] != _Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_2)])
+		{
+			offsets->Emplace(_Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_2)]);
+			values->Emplace(_Values[UNDERLYING(ValueType::MIDDLE)]);
+		}
+
+		if (_Offsets[UNDERLYING(OffsetType::DESTINATION)] != FLOAT32_MAXIMUM && _Values[UNDERLYING(ValueType::DESTINATION)] != FLOAT32_MAXIMUM)
+		{
+			offsets->Emplace(_Offsets[UNDERLYING(OffsetType::DESTINATION)]);
+			values->Emplace(_Values[UNDERLYING(ValueType::DESTINATION)]);
+		}
+	}
+
+private:
+
+	//The offsets.
+	StaticArray<float32, UNDERLYING(OffsetType::NUMBER_OF_OFFSET_TYPES)> _Offsets;
+
+	//The values.
+	StaticArray<float32, UNDERLYING(OffsetType::NUMBER_OF_OFFSET_TYPES)> _Values;
+
+};
 
 /*
 *	Reads the tablature at the given file path. Returns if the read was succesful.
@@ -487,6 +595,8 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 			}
 
 			//Fill in the properties.
+			BendProperties bend_properties;
+
 			const pugi::xml_node properties_node{ note_node.child("Properties") };
 
 			for (const pugi::xml_node property_node : properties_node)
@@ -552,22 +662,60 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 					}
 				}
 
-				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "BendDestinationOffset")
-					|| StringUtilities::IsEqual(property_node.attribute("name").value(), "BendMiddleOffset1"))
+				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "BendOriginOffset"))
 				{
 					const pugi::xml_node float_node{ property_node.child("Float") };
 					const float32 value{ std::stof(float_node.child_value()) };
 
-					new_note._BendOffsets.Emplace(value / 100.0f);
+					bend_properties.AddOffset(BendProperties::OffsetType::ORIGIN, value / 100.0f);
 				}
 
-				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "BendDestinationValue")
-					|| StringUtilities::IsEqual(property_node.attribute("name").value(), "BendMiddleValue"))
+				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "BendOriginValue"))
 				{
 					const pugi::xml_node float_node{ property_node.child("Float") };
 					const float32 value{ std::stof(float_node.child_value()) };
 
-					new_note._BendValues.Emplace(value / 100.0f * 4.0f);
+					bend_properties.AddValue(BendProperties::ValueType::ORIGIN, value / 100.0f * 2.0f);
+				}
+
+				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "BendMiddleOffset1"))
+				{
+					const pugi::xml_node float_node{ property_node.child("Float") };
+					const float32 value{ std::stof(float_node.child_value()) };
+
+					bend_properties.AddOffset(BendProperties::OffsetType::MIDDLE_OFFSET_1, value / 100.0f);
+				}
+
+				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "BendMiddleOffset2"))
+				{
+					const pugi::xml_node float_node{ property_node.child("Float") };
+					const float32 value{ std::stof(float_node.child_value()) };
+
+					bend_properties.AddOffset(BendProperties::OffsetType::MIDDLE_OFFSET_2, value / 100.0f);
+				}
+
+				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "BendMiddleValue"))
+				{
+					const pugi::xml_node float_node{ property_node.child("Float") };
+					const float32 value{ std::stof(float_node.child_value()) };
+
+					bend_properties.AddValue(BendProperties::ValueType::MIDDLE, value / 100.0f * 2.0f);
+				}
+
+				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "BendDestinationOffset"))
+				{
+					const pugi::xml_node float_node{ property_node.child("Float") };
+					const float32 value{ std::stof(float_node.child_value()) };
+
+					bend_properties.AddOffset(BendProperties::OffsetType::DESTINATION, value / 100.0f);
+				}
+
+				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "BendDestinationValue"))
+				{
+					const pugi::xml_node float_node{ property_node.child("Float") };
+					const float32 value{ std::stof(float_node.child_value()) };
+
+					bend_properties.AddValue(BendProperties::ValueType::DESTINATION, value / 100.0f * 2.0f);
 				}
 
 				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "Tapped"))
@@ -575,26 +723,14 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 					//Add the flag.
 					new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::TAPPED));
 				}
-			}
 
-			ASSERT(new_note._BendOffsets.Size() == new_note._BendValues.Size(), "Bend offset/value mismatch!");
-
-			//Sort the bend offsets/values.
-			if (!new_note._BendOffsets.Empty())
-			{
-				for (uint64 iterator{ 1 }; iterator != new_note._BendOffsets.Size(); ++iterator)
+				else
 				{
-					uint64 reverse_iterator{ iterator };
-
-					while (reverse_iterator != 0 && new_note._BendOffsets[reverse_iterator] < new_note._BendOffsets[reverse_iterator - 1])
-					{
-						Swap(&new_note._BendOffsets[reverse_iterator], &new_note._BendOffsets[reverse_iterator - 1]);
-						Swap(&new_note._BendValues[reverse_iterator], &new_note._BendValues[reverse_iterator - 1]);
-
-						--reverse_iterator;
-					}
+					LOG_INFORMATION("Unhandled note property: %s", property_node.attribute("name").value());
 				}
 			}
+
+			bend_properties.Construct(&new_note._BendOffsets, &new_note._BendValues);
 		}
 	}
 
@@ -727,10 +863,16 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 							Tablature::Track::TrackBar &tie_origin_track_bar{ track._TrackBars[last_played_note._BarIndex] };
 							Tablature::Track::TrackBar::Event &tie_origin_event{ tie_origin_track_bar._Events[last_played_note._EventIndex] };
 
+							//Cache the tie origin duration.
+							const float64 tie_origin_duration{ tie_origin_event._Duration };
+
+							//Calculate the duration of the tie destination event.
+							const float64 tie_destination_duration{ SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0) };
+
 							//If the tie origin event was from the same bar, the duration is simply the current offset minus the offset of the tie origin event.
 							if (last_played_note._BarIndex == bar_index)
 							{
-								tie_origin_event._Duration = (current_offset + SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0)) - tie_origin_event._Offset;
+								tie_origin_event._Duration = current_offset + tie_destination_duration - tie_origin_event._Offset;
 							}
 
 							//Otherwise, add up the duration!
@@ -750,7 +892,34 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 								}
 
 								//Finally, add the current offset, again taking into consideration tempo changes.
-								tie_origin_event._Duration += (current_offset + SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0)) * (bar._Tempo / tie_origin_track_bar._Bar->_Tempo);
+								tie_origin_event._Duration += (current_offset + tie_destination_duration) * (bar._Tempo / tie_origin_track_bar._Bar->_Tempo);
+							}
+
+							//Also add the bend properties to the tie origin note.
+							{
+								//First calculate the ratio of the tie origin note's duration and scale back the bend offsets by that much.
+								{
+									const float64 ratio{ tie_origin_duration / (tie_origin_duration + tie_destination_duration) };
+
+									for (uint64 bend_property_index{ 0 }; bend_property_index < tie_origin_event._BendOffsets.Size(); ++bend_property_index)
+									{
+										tie_origin_event._BendOffsets[bend_property_index] *= ratio;
+									}
+								}
+								
+								//Next, add the tie destination note's bend properties.
+								{
+									const float64 ratio{ 1.0 - (tie_destination_duration / (tie_origin_duration + tie_destination_duration)) };
+
+									for (uint64 bend_property_index{ 0 }; bend_property_index < note._BendOffsets.Size(); ++bend_property_index)
+									{
+										const float64 bend_offset{ BaseMath::Scale<float32>(note._BendOffsets[bend_property_index], 0.0, 1.0, ratio, 1.0) };
+										const float64 bend_value{ note._BendValues[bend_property_index] };
+
+										tie_origin_event._BendOffsets.Emplace(bend_offset);
+										tie_origin_event._BendValues.Emplace(bend_value);
+									}
+								}
 							}
 						}
 
