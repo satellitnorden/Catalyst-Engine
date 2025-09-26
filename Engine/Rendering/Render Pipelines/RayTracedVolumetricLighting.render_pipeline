@@ -13,6 +13,7 @@ IncludeShaderFunctionLibrary(Lighting);
 IncludeShaderFunctionLibrary(Noise);
 IncludeShaderFunctionLibrary(RenderingConfiguration);
 IncludeShaderFunctionLibrary(VolumetricLighting);
+IncludeShaderFunctionLibrary(World);
 
 //Declare compute render targets.
 ComputeRenderTarget(SceneFeatures2Half, RGBA_FLOAT32);
@@ -31,10 +32,8 @@ RayGeneration
     Payload(0, float, VISIBILITY);
 
     //Constants.
-    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
-    #define NUMBER_OF_SAMPLES (8)
+    #define NUMBER_OF_SAMPLES (16)
     #define SAMPLE_RECIPROCAL (1.0f / NUMBER_OF_SAMPLES)
-    #define HALF_SAMPLE_RECIPROCAL (SAMPLE_RECIPROCAL / 2)
 
     //Calculate the start position.
     vec3 start_position = CAMERA_WORLD_POSITION;
@@ -55,66 +54,97 @@ RayGeneration
     float hit_distance = length(world_position - start_position);
 	float hit_distance_reciprocal = 1.0f / hit_distance;
 
+    //Modify the hit distance based on expected distance where we would reach below some threshold of transmittance.
+    {
+        #define TRANSMITTANCE_THRESHOLD (0.01f)
+
+        float density_at_position = GetDensityAtPosition(start_position);
+
+        if (density_at_position > FLOAT32_EPSILON)
+        {
+            float cutoff_distance = -log(TRANSMITTANCE_THRESHOLD) / density_at_position;
+            hit_distance = min(hit_distance, cutoff_distance);
+        }
+
+        hit_distance = min(hit_distance, VOLUMETRIC_LIGHTING_HEIGHT);
+    }
+
     //Generate the ray direction.
 	vec3 ray_direction = (world_position - start_position) * hit_distance_reciprocal;
 
     //Set up the offsets.
     float offsets[NUMBER_OF_SAMPLES];
 
-    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    for (uint offset_index = 0; offset_index < NUMBER_OF_SAMPLES; offset_index += 4)
     {
-        offsets[i] = HALF_SAMPLE_RECIPROCAL + SAMPLE_RECIPROCAL * float(i);
-    }
-
-    //Jitter the offsets a bit.
-    for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
-    {
-        vec4 blue_noise_texture_sample = (SampleBlueNoiseTexture(uvec2(RAY_TRACING_ID.xy), i / 4) - 0.5f) * (SAMPLE_RECIPROCAL - FLOAT32_EPSILON);
+        vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(RAY_TRACING_ID.xy), offset_index / 4);
         
-        offsets[i * 4 + 0] += blue_noise_texture_sample.x;
-        offsets[i * 4 + 1] += blue_noise_texture_sample.y;
-        offsets[i * 4 + 2] += blue_noise_texture_sample.z;
-        offsets[i * 4 + 3] += blue_noise_texture_sample.w;
+        offsets[offset_index + 0] = Square(blue_noise_texture_sample.x);
+        offsets[offset_index + 1] = Square(blue_noise_texture_sample.y);
+        offsets[offset_index + 2] = Square(blue_noise_texture_sample.z);
+        offsets[offset_index + 3] = Square(blue_noise_texture_sample.w);
     }
 
-    //Bias the offsets a bit to to be closet to the camera.
-    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    //Normalize the offsets.
+    float offsets_sum = 0.0f;
+
+    for (uint offset_index = 0; offset_index < NUMBER_OF_SAMPLES; ++offset_index)
     {
-        offsets[i] *= offsets[i];
+        offsets_sum += offsets[offset_index];
+    }
+
+    float offsets_normalizer = (1.0f - FLOAT32_EPSILON) / offsets_sum;
+
+    for (uint offset_index = 0; offset_index < NUMBER_OF_SAMPLES; ++offset_index)
+    {
+        offsets[offset_index] *= offsets_normalizer;
     }
 
     //Calculate the volumetric lighting.
+    float current_offset = 0.0f;
+    
 	vec3 volumetric_lighting = vec3(0.0f);
     float transmittance = 1.0f;
 
     for (uint sample_index = 0; sample_index < NUMBER_OF_SAMPLES; ++sample_index)
     {
-        //Calculate the current sample position and hit distance.
-        float previous_offset = sample_index > 0 ? offsets[sample_index - 1] : 0.0f;
-        float current_offset = offsets[sample_index];
-        vec3 sample_position = mix(start_position, world_position, current_offset);
-        float sample_hit_distance = (hit_distance * current_offset) - (hit_distance * previous_offset);
+        //Retrieve the sample offset.
+        float sample_offset = offsets[sample_index];
 
-        //Cache the extinction.
-        float extinction = GetExtinctionAtPosition(sample_position);
+        //Cache the previous offset.
+        float previous_offset = current_offset;
+
+        //Update the current offset.
+        current_offset += sample_offset;
+
+        //Calculate the previous position.
+        vec3 previous_position = mix(start_position, world_position, previous_offset);
+
+        //Calculate the sample position.
+        vec3 sample_position = mix(start_position, world_position, current_offset);
+
+        //Calculate the sample distance.
+        float sample_distance = hit_distance * sample_offset;
+
+        //Calculate the density at this the previous position.
+        float density_at_previous_position = GetDensityAtPosition(previous_position);
 
         //Calculate the attenuation factor.
-        float attenuation_factor = exp(-extinction * sample_hit_distance);
+        float attenuation_factor = exp(-(density_at_previous_position * sample_distance));
+
+        //Calculate the volumetric lighting at the position.
+        vec3 volumetric_lighting_at_position = vec3(0.0f);
 
         //Add ambient lighting.
         {
-            //Go with an average of the sky color.
-            float ambient_attenuation = mix(CalculateAttenuationInDirection(sample_position, vec3(0.0f, 1.0f, 0.0f), FAR_PLANE), CalculateAttenuationInDirection(sample_position, vec3(0.0f, -1.0f, 0.0f), FAR_PLANE), 0.5f);
-            vec3 scattering = mix(UPPER_SKY_COLOR, LOWER_SKY_COLOR, 0.5f) * SCATTERING * (1.0f / (4.0f * 3.14f)) * ambient_attenuation;
-            vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
-            volumetric_lighting += transmittance * scattering_integral;
+            volumetric_lighting_at_position += UPPER_SKY_COLOR * VOLUMETRIC_LIGHTING_SCATTERING;
         }
 
-        //Iterate over all lights.
-        for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
+        //Add direct lighting.
+        for (uint light_index = 0; light_index < LIGHTING_HEADER._NumberOfLights; ++light_index)
         {
             //Unpack the light.
-		    Light light = UnpackLight(i);
+		    Light light = UnpackLight(light_index);
 
             //Only care if this light is volumetric.
             if (TEST_BIT(light._LightProperties, LIGHT_PROPERTY_VOLUMETRIC_BIT))
@@ -122,46 +152,37 @@ RayGeneration
                 //Calculate the light radiance.
                 vec3 light_radiance = light._Color * light._Intensity;
 
-                switch (light._LightType)
+                vec3 scattering = light_radiance * VOLUMETRIC_LIGHTING_SCATTERING;
+
                 {
-                    case LIGHT_TYPE_DIRECTIONAL:
-                    {
-                        //float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, FAR_PLANE * 2.0f);
-                        float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, hit_distance);
-                        vec3 scattering = light_radiance * SCATTERING * HenyeyGreensteinPhaseFunction(ray_direction, light._TransformData1) * light_attenuation;
-                        
-                        {
-                            //Reset the visibility.
-                            VISIBILITY = 0.0f;
+                    //Reset the visibility.
+                    VISIBILITY = 0.0f;
 
-                            //Set up the ray tracing flags.
-                            uint ray_tracing_flags =    RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT
-                                                        | RAY_TRACING_FLAG_SKIP_CLOSEST_HIT;
+                    //Set up the ray tracing flags.
+                    uint ray_tracing_flags =    RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT
+                                                | RAY_TRACING_FLAG_SKIP_CLOSEST_HIT;
 
-                            //Calculate the direction.
-                            vec3 direction = -light._TransformData1;
+                    //Calculate the direction.
+                    vec3 direction = -light._TransformData1;
 
-                            //Trace the ray!
-                            TraceRay(ray_tracing_flags, 0, sample_position, direction, FLOAT32_MAXIMUM, 0);
-                        }
-
-                        scattering *= mix(0.125f, 1.0f, VISIBILITY); //Still let a little light through.
-                        
-                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
-                        volumetric_lighting += transmittance * scattering_integral;
-                
-                        break;
-                    }
+                    //Trace the ray!
+                    TraceRay(ray_tracing_flags, 0, sample_position, direction, FLOAT32_MAXIMUM, 0);
                 }
+
+                scattering *= VISIBILITY;
+                volumetric_lighting_at_position += scattering;
             }
         }
 
+        //Accumulate the volumetric lighting.
+        volumetric_lighting += volumetric_lighting_at_position * attenuation_factor;
+        
         //Update the transmittance.
         transmittance *= attenuation_factor;
     }
 
     //Store the volumetric lighting.
-    ImageStore(VolumetricLighting, ivec2(RAY_TRACING_ID.xy), vec4(volumetric_lighting, 1.0f));
+    ImageStore(VolumetricLighting, ivec2(RAY_TRACING_ID.xy), vec4(volumetric_lighting, 1.0f - transmittance));
 }
 
 //The ray miss shader.

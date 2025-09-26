@@ -9,6 +9,9 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <Systems/DebugSystem.h>
+#endif
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -42,6 +45,21 @@ void WorldSystem::PostInitialize() NOEXCEPT
 {
 	//Post-initialize the sky system.
 	_SkySystem.PostInitialize();
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	DebugSystem::Instance->RegisterSliderDebugCommand
+	(
+		"World\\Environment\\Volumetric Lighting\\Density",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Density = debug_command->_State._SliderState._Value;
+		},
+		nullptr,
+		0.0f,
+		1.0f,
+		_EnvironmentSystem.GetVolumetricLightingProperties()->_Density
+	);
+#endif
 }
 
 /*
@@ -63,6 +81,9 @@ void WorldSystem::RenderUpdate() NOEXCEPT
 	_WorldUniformData._LowerSkyColor = _SkySystem.GetSkyGradient()._LowerSkyColor;
 	_WorldUniformData._SkyMode = static_cast<uint32>(_SkySystem.GetSkyMode());
 	_WorldUniformData._MaximumSkyTextureMipLevel = _SkySystem.GetSkyTexture() ? static_cast<float32>(_SkySystem.GetSkyTexture()->_MipLevels) : 0.0f;
+
+	_WorldUniformData._VolumetricLightingDensity = BaseMath::Square(_EnvironmentSystem.GetVolumetricLightingProperties()->_Density) * 0.1f;
+	_WorldUniformData._VolumetricLightingHeight = _EnvironmentSystem.GetVolumetricLightingProperties()->_Height;
 
 	//Update the water system.
 	_WaterSystem.RenderUpdate();

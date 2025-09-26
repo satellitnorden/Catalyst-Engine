@@ -450,58 +450,6 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
 }
 
-/*
-*	Returns the extinction at the given position.
-*/
-float GetExtinctionAtPosition(vec3 position)
-{
-	#define BASE_EXTINCTION (0.00125f)
-
-	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.125f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
-
-	#undef BASE_EXTINCTION
-}
-
-/*
-*	Calculates the attenuation in the given direction.
-*/
-float CalculateAttenuationInDirection(vec3 position, vec3 direction, float distance)
-{
-	#define NUMBER_OF_SAMPLES (4)
-
-	float attenuation = 1.0f;
-	float step_size = distance / float(NUMBER_OF_SAMPLES);
-
-	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
-	{
-		vec3 sample_position = position + direction * float(i) * step_size;
-		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * step_size);
-	}
-
-	return attenuation;
-	
-	#undef NUMBER_OF_SAMPLES
-}
-
-/*
-*	The Henyey-Greenstein phase function.
-*/
-float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
-{
-	float G = 0.25f;
-	float dot_product = dot(outgoing_direction, -incoming_direction);
-
-	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
-}
-
-/*
-*	Calculates the scattering with the given properties.
-*/
-vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
-{
-	return vec3(0.0f, 0.0f, 0.0f);
-}
-
 layout (set = 1, binding = 2) uniform sampler2D VolumetricLighting;
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2;
 layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2Half;
@@ -515,16 +463,16 @@ void main()
     vec4 scene_features_2 = texture(SceneFeatures2, InScreenCoordinate);
     float depth = scene_features_2.w;
     float linearized_depth = LinearizeDepth(depth);
-    vec3 volumetric_lighting;
+    vec4 volumetric_lighting;
     {
         vec2 sample_coordinate_1 = InScreenCoordinate;
         vec2 sample_coordinate_2 = InScreenCoordinate + vec2(0.0f, 1.0f) * INVERSE_HALF_MAIN_RESOLUTION;
         vec2 sample_coordinate_3 = InScreenCoordinate + vec2(1.0f, 0.0f) * INVERSE_HALF_MAIN_RESOLUTION;
         vec2 sample_coordinate_4 = InScreenCoordinate + vec2(1.0f, 1.0f) * INVERSE_HALF_MAIN_RESOLUTION;
-        vec3 volumetric_lighting_1 = texture(VolumetricLighting, sample_coordinate_1).rgb;
-        vec3 volumetric_lighting_2 = texture(VolumetricLighting, sample_coordinate_2).rgb;
-        vec3 volumetric_lighting_3 = texture(VolumetricLighting, sample_coordinate_3).rgb;
-        vec3 volumetric_lighting_4 = texture(VolumetricLighting, sample_coordinate_4).rgb;
+        vec4 volumetric_lighting_1 = texture(VolumetricLighting, sample_coordinate_1);
+        vec4 volumetric_lighting_2 = texture(VolumetricLighting, sample_coordinate_2);
+        vec4 volumetric_lighting_3 = texture(VolumetricLighting, sample_coordinate_3);
+        vec4 volumetric_lighting_4 = texture(VolumetricLighting, sample_coordinate_4);
         float linearized_depth_1 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_1).w);
         float linearized_depth_2 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_2).w);
         float linearized_depth_3 = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate_3).w);
@@ -549,16 +497,6 @@ void main()
                                 + volumetric_lighting_3 * weight_3
                                 + volumetric_lighting_4 * weight_4;
     }
-    volumetric_lighting *= mix(0.875f, 1.25f, InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME));
-    vec3 world_position = CalculateWorldPosition(InScreenCoordinate, depth);
-    float hit_distance = length(world_position - CAMERA_WORLD_POSITION);
-    float transmittance = 1.0f;
-    for (uint i = 0; i < 4; ++i)
-    {
-        vec3 sample_position = mix(CAMERA_WORLD_POSITION, world_position, float(i) / 4);
-        float extinction = GetExtinctionAtPosition(sample_position);
-        float attenuation_factor = exp(-extinction * hit_distance * 0.25f);
-        transmittance *= attenuation_factor;
-    }
-	Scene = vec4(volumetric_lighting,1.0f);
+    volumetric_lighting.rgb *= mix(0.875f, 1.25f, InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME));
+	Scene = vec4(volumetric_lighting.rgb,volumetric_lighting.a);
 }

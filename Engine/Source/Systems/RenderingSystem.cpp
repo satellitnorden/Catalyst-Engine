@@ -1924,9 +1924,9 @@ void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_in
 	_DynamicUniformData._SkyIntensity = WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
 	_DynamicUniformData._StarIntensity = WorldSystem::Instance->GetSkySystem()->GetStarIntensity();
 
-	_DynamicUniformData._VolumetricLightingDistance = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance;
+	//_DynamicUniformData._VolumetricLightingDistance = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance;
 	_DynamicUniformData._VolumetricLightingHeight = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height;
-	_DynamicUniformData._VolumetricLightingThickness = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness;
+	//_DynamicUniformData._VolumetricLightingThickness = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness;
 
 	_DynamicUniformData._WorldGridSize = WorldSystem::Instance->GetWorldGridSize();
 

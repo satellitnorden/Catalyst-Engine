@@ -299,12 +299,14 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 36) float VIEW_DISTANCE;
 };
 
-layout (std140, set = 1, binding = 2) uniform Wind
+layout (std140, set = 1, binding = 2) uniform World
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
 	layout (offset = 32) uint SKY_MODE;
 	layout (offset = 36) float MAXIMUM_SKY_TEXTURE_MIP_LEVEL;
+	layout (offset = 40) float VOLUMETRIC_LIGHTING_DENSITY;
+	layout (offset = 44) float VOLUMETRIC_LIGHTING_HEIGHT;
 };
 
 //Lighting header struct definition.
@@ -561,6 +563,17 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 #define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
 #define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
 
+//Constants.
+#define VOLUMETRIC_LIGHTING_SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.1f)
+
+/*
+*	Returns the density at the given position.
+*/
+float GetDensityAtPosition(vec3 position)
+{
+	return mix(VOLUMETRIC_LIGHTING_DENSITY, 0.0f, Square(clamp(position.y / VOLUMETRIC_LIGHTING_HEIGHT, 0.0f, 1.0f)));
+}
+
 /*
 *	Returns the extinction at the given position.
 */
@@ -613,6 +626,49 @@ vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
 	return vec3(0.0f, 0.0f, 0.0f);
 }
 
+//Constants.
+#define SKY_MODE_ATMOSPHERIC_SCATTERING (0)
+#define SKY_MODE_GRADIENT (1)
+#define SKY_MODE_TEXTURE (2)
+
+/*
+*	Samples the sky.
+*	Requires the "World" uniform buffer to be bound.
+*/
+vec3 SampleSky(vec3 direction, float mip_level)
+{
+	//Here because ray tracing sometines passes in invalid stuff...
+	if (isnan(direction.x) || isnan(direction.y) || isnan(direction.z))
+	{
+		return vec3(100.0f, 0.0f, 0.0f);
+	}
+
+	switch (SKY_MODE)
+	{
+		case SKY_MODE_ATMOSPHERIC_SCATTERING:
+		{
+			//Oh no!
+			return vec3(0.0f);
+		}
+
+		case SKY_MODE_GRADIENT:
+		{
+			return mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f);
+		}
+
+		case SKY_MODE_TEXTURE:
+		{
+			return textureLod(SKY_TEXTURE, direction, mip_level).rgb;
+		}
+	
+		default:
+		{
+			//Oh no!
+			return vec3(0.0f);
+		}
+	}
+}
+
 layout (set = 2, binding = 0) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;
 layout (set = 2, binding = 1) buffer OpaqueModels_VERTEX_DATA_BUFFER { vec4 OpaqueModels_VERTEX_DATA[]; } OpaqueModels_VERTEX_BUFFERS[];
 layout (set = 2, binding = 2) buffer OpaqueModels_INDEX_DATA_BUFFER { uint OpaqueModels_INDEX_DATA[]; } OpaqueModels_INDEX_BUFFERS[];
@@ -624,10 +680,8 @@ layout (location = 0) rayPayloadNV float VISIBILITY;
 
 void main()
 {
-    #define SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f * 0.125f)
-    #define NUMBER_OF_SAMPLES (8)
+    #define NUMBER_OF_SAMPLES (16)
     #define SAMPLE_RECIPROCAL (1.0f / NUMBER_OF_SAMPLES)
-    #define HALF_SAMPLE_RECIPROCAL (SAMPLE_RECIPROCAL / 2)
     vec3 start_position = CAMERA_WORLD_POSITION;
     vec2 screen_coordinate = (vec2(gl_LaunchIDNV.xy) + vec2(0.5f)) / vec2(gl_LaunchSizeNV.xy);
     vec4 scene_features_2 = imageLoad(SceneFeatures2Half, ivec2(gl_LaunchIDNV.xy));
@@ -635,57 +689,65 @@ void main()
     vec3 world_position = CalculateWorldPosition(screen_coordinate, depth);
     float hit_distance = length(world_position - start_position);
 	float hit_distance_reciprocal = 1.0f / hit_distance;
+    {
+        #define TRANSMITTANCE_THRESHOLD (0.01f)
+        float density_at_position = GetDensityAtPosition(start_position);
+        if (density_at_position > FLOAT32_EPSILON)
+        {
+            float cutoff_distance = -log(TRANSMITTANCE_THRESHOLD) / density_at_position;
+            hit_distance = min(hit_distance, cutoff_distance);
+        }
+        hit_distance = min(hit_distance, VOLUMETRIC_LIGHTING_HEIGHT);
+    }
 	vec3 ray_direction = (world_position - start_position) * hit_distance_reciprocal;
     float offsets[NUMBER_OF_SAMPLES];
-    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    for (uint offset_index = 0; offset_index < NUMBER_OF_SAMPLES; offset_index += 4)
     {
-        offsets[i] = HALF_SAMPLE_RECIPROCAL + SAMPLE_RECIPROCAL * float(i);
+        vec4 blue_noise_texture_sample = SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), offset_index / 4);
+        offsets[offset_index + 0] = Square(blue_noise_texture_sample.x);
+        offsets[offset_index + 1] = Square(blue_noise_texture_sample.y);
+        offsets[offset_index + 2] = Square(blue_noise_texture_sample.z);
+        offsets[offset_index + 3] = Square(blue_noise_texture_sample.w);
     }
-    for (uint i = 0; i < NUMBER_OF_SAMPLES; i += 4)
+    float offsets_sum = 0.0f;
+    for (uint offset_index = 0; offset_index < NUMBER_OF_SAMPLES; ++offset_index)
     {
-        vec4 blue_noise_texture_sample = (SampleBlueNoiseTexture(uvec2(gl_LaunchIDNV.xy), i / 4) - 0.5f) * (SAMPLE_RECIPROCAL - FLOAT32_EPSILON);
-        offsets[i * 4 + 0] += blue_noise_texture_sample.x;
-        offsets[i * 4 + 1] += blue_noise_texture_sample.y;
-        offsets[i * 4 + 2] += blue_noise_texture_sample.z;
-        offsets[i * 4 + 3] += blue_noise_texture_sample.w;
+        offsets_sum += offsets[offset_index];
     }
-    for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    float offsets_normalizer = (1.0f - FLOAT32_EPSILON) / offsets_sum;
+    for (uint offset_index = 0; offset_index < NUMBER_OF_SAMPLES; ++offset_index)
     {
-        offsets[i] *= offsets[i];
+        offsets[offset_index] *= offsets_normalizer;
     }
+    float current_offset = 0.0f;
 	vec3 volumetric_lighting = vec3(0.0f);
     float transmittance = 1.0f;
     for (uint sample_index = 0; sample_index < NUMBER_OF_SAMPLES; ++sample_index)
     {
-        float previous_offset = sample_index > 0 ? offsets[sample_index - 1] : 0.0f;
-        float current_offset = offsets[sample_index];
+        float sample_offset = offsets[sample_index];
+        float previous_offset = current_offset;
+        current_offset += sample_offset;
+        vec3 previous_position = mix(start_position, world_position, previous_offset);
         vec3 sample_position = mix(start_position, world_position, current_offset);
-        float sample_hit_distance = (hit_distance * current_offset) - (hit_distance * previous_offset);
-        float extinction = GetExtinctionAtPosition(sample_position);
-        float attenuation_factor = exp(-extinction * sample_hit_distance);
+        float sample_distance = hit_distance * sample_offset;
+        float density_at_previous_position = GetDensityAtPosition(previous_position);
+        float attenuation_factor = exp(-(density_at_previous_position * sample_distance));
+        vec3 volumetric_lighting_at_position = vec3(0.0f);
         {
-            float ambient_attenuation = mix(CalculateAttenuationInDirection(sample_position, vec3(0.0f, 1.0f, 0.0f), FAR_PLANE), CalculateAttenuationInDirection(sample_position, vec3(0.0f, -1.0f, 0.0f), FAR_PLANE), 0.5f);
-            vec3 scattering = mix(UPPER_SKY_COLOR, LOWER_SKY_COLOR, 0.5f) * SCATTERING * (1.0f / (4.0f * 3.14f)) * ambient_attenuation;
-            vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
-            volumetric_lighting += transmittance * scattering_integral;
+            volumetric_lighting_at_position += UPPER_SKY_COLOR * VOLUMETRIC_LIGHTING_SCATTERING;
         }
-        for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)
+        for (uint light_index = 0; light_index < LIGHTING_HEADER._NumberOfLights; ++light_index)
         {
-		    Light light = UnpackLight(i);
+		    Light light = UnpackLight(light_index);
             if (TEST_BIT(light._LightProperties, LIGHT_PROPERTY_VOLUMETRIC_BIT))
             {
                 vec3 light_radiance = light._Color * light._Intensity;
-                switch (light._LightType)
+                vec3 scattering = light_radiance * VOLUMETRIC_LIGHTING_SCATTERING;
                 {
-                    case LIGHT_TYPE_DIRECTIONAL:
-                    {
-                        float light_attenuation = CalculateAttenuationInDirection(sample_position, -light._TransformData1, hit_distance);
-                        vec3 scattering = light_radiance * SCATTERING * HenyeyGreensteinPhaseFunction(ray_direction, light._TransformData1) * light_attenuation;
-                        {
-                            VISIBILITY = 0.0f;
-                            uint ray_tracing_flags =    gl_RayFlagsTerminateOnFirstHitNV
-                                                        | gl_RayFlagsSkipClosestHitShaderNV;
-                            vec3 direction = -light._TransformData1;
+                    VISIBILITY = 0.0f;
+                    uint ray_tracing_flags =    gl_RayFlagsTerminateOnFirstHitNV
+                                                | gl_RayFlagsSkipClosestHitShaderNV;
+                    vec3 direction = -light._TransformData1;
 traceNV
 (
 	TOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/
@@ -700,16 +762,13 @@ traceNV
 	FLOAT32_MAXIMUM, /*Tmax*/
 	0 /*payload*/
 );
-                        }
-                        scattering *= mix(0.125f, 1.0f, VISIBILITY); //Still let a little light through.
-                        vec3 scattering_integral = (scattering - scattering * attenuation_factor) / max(extinction, FLOAT32_EPSILON);
-                        volumetric_lighting += transmittance * scattering_integral;
-                        break;
-                    }
                 }
+                scattering *= VISIBILITY;
+                volumetric_lighting_at_position += scattering;
             }
         }
+        volumetric_lighting += volumetric_lighting_at_position * attenuation_factor;
         transmittance *= attenuation_factor;
     }
-    imageStore(VolumetricLighting, ivec2(gl_LaunchIDNV.xy), vec4(volumetric_lighting, 1.0f));
+    imageStore(VolumetricLighting, ivec2(gl_LaunchIDNV.xy), vec4(volumetric_lighting, 1.0f - transmittance));
 }

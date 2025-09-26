@@ -299,12 +299,14 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 36) float VIEW_DISTANCE;
 };
 
-layout (std140, set = 1, binding = 2) uniform Wind
+layout (std140, set = 1, binding = 2) uniform World
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
 	layout (offset = 32) uint SKY_MODE;
 	layout (offset = 36) float MAXIMUM_SKY_TEXTURE_MIP_LEVEL;
+	layout (offset = 40) float VOLUMETRIC_LIGHTING_DENSITY;
+	layout (offset = 44) float VOLUMETRIC_LIGHTING_HEIGHT;
 };
 
 //Lighting header struct definition.
@@ -561,6 +563,17 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 #define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
 #define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
 
+//Constants.
+#define VOLUMETRIC_LIGHTING_SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.1f)
+
+/*
+*	Returns the density at the given position.
+*/
+float GetDensityAtPosition(vec3 position)
+{
+	return mix(VOLUMETRIC_LIGHTING_DENSITY, 0.0f, Square(clamp(position.y / VOLUMETRIC_LIGHTING_HEIGHT, 0.0f, 1.0f)));
+}
+
 /*
 *	Returns the extinction at the given position.
 */
@@ -611,6 +624,49 @@ float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direc
 vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
 {
 	return vec3(0.0f, 0.0f, 0.0f);
+}
+
+//Constants.
+#define SKY_MODE_ATMOSPHERIC_SCATTERING (0)
+#define SKY_MODE_GRADIENT (1)
+#define SKY_MODE_TEXTURE (2)
+
+/*
+*	Samples the sky.
+*	Requires the "World" uniform buffer to be bound.
+*/
+vec3 SampleSky(vec3 direction, float mip_level)
+{
+	//Here because ray tracing sometines passes in invalid stuff...
+	if (isnan(direction.x) || isnan(direction.y) || isnan(direction.z))
+	{
+		return vec3(100.0f, 0.0f, 0.0f);
+	}
+
+	switch (SKY_MODE)
+	{
+		case SKY_MODE_ATMOSPHERIC_SCATTERING:
+		{
+			//Oh no!
+			return vec3(0.0f);
+		}
+
+		case SKY_MODE_GRADIENT:
+		{
+			return mix(LOWER_SKY_COLOR, UPPER_SKY_COLOR, dot(direction, vec3(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f);
+		}
+
+		case SKY_MODE_TEXTURE:
+		{
+			return textureLod(SKY_TEXTURE, direction, mip_level).rgb;
+		}
+	
+		default:
+		{
+			//Oh no!
+			return vec3(0.0f);
+		}
+	}
 }
 
 layout (set = 2, binding = 0) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;

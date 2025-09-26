@@ -562,6 +562,17 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 #define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
 #define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
 
+//Constants.
+#define VOLUMETRIC_LIGHTING_SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.125f)
+
+/*
+*	Returns the density at the given position.
+*/
+float GetDensityAtPosition(vec3 position)
+{
+	return mix(0.01f, 0.0f, Square(clamp(position.y / 128.0f, 0.0f, 1.0f)));
+}
+
 /*
 *	Returns the extinction at the given position.
 */

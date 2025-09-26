@@ -1,8 +1,11 @@
-UniformBuffer(Wind)
+UniformBuffer(World)
 {
     vec3 UPPER_SKY_COLOR;
     vec3 LOWER_SKY_COLOR;
 
     uint SKY_MODE;
     float MAXIMUM_SKY_TEXTURE_MIP_LEVEL;
+
+    float VOLUMETRIC_LIGHTING_DENSITY;
+    float VOLUMETRIC_LIGHTING_HEIGHT;
 };

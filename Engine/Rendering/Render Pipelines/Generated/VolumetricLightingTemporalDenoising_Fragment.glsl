@@ -419,6 +419,7 @@ void main()
 	vec2 closest_velocity = vec2(0.0f);
 	vec3 minimum = vec3(FLOAT32_MAXIMUM);
 	vec3 center = vec3(0.0f);
+	float center_opacity = 0.0f;
 	vec3 maximum = vec3(0.0f);
 	for (int Y = -3; Y <= 3; ++Y)
 	{
@@ -428,6 +429,7 @@ void main()
 			vec4 neighborhood_sample = texture(VolumetricLighting, sample_coordinate);
 			minimum = min(minimum, neighborhood_sample.rgb);
 			center += neighborhood_sample.rgb * float(X == 0 && Y == 0);
+			center_opacity += neighborhood_sample.a * float(X == 0 && Y == 0);
 			maximum = max(maximum, neighborhood_sample.rgb);
 			float neighborhood_depth = texture(SceneFeatures2Half, sample_coordinate).w;
 			if (closest_depth < neighborhood_depth)
@@ -448,6 +450,6 @@ void main()
 	float previous_frame_weight = 1.0f;
 	previous_frame_weight *= float(ValidScreenCoordinate(previous_screen_coordinate));
 	vec3 blended_frame = mix(center, previous_frame, previous_frame_weight * FEEDBACK_FACTOR);
-	CurrentTemporalBuffer = vec4(blended_frame,1.0f);
-	CurrentVolumetricLighting = vec4(blended_frame,1.0f);
+	CurrentTemporalBuffer = vec4(blended_frame,center_opacity);
+	CurrentVolumetricLighting = vec4(blended_frame,center_opacity);
 }

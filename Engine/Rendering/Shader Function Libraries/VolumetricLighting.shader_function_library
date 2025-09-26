@@ -1,3 +1,14 @@
+//Constants.
+#define VOLUMETRIC_LIGHTING_SCATTERING (vec3(0.8f, 0.9f, 1.0f) * 0.1f)
+
+/*
+*	Returns the density at the given position.
+*/
+float GetDensityAtPosition(vec3 position)
+{
+	return mix(VOLUMETRIC_LIGHTING_DENSITY, 0.0f, Square(clamp(position.y / VOLUMETRIC_LIGHTING_HEIGHT, 0.0f, 1.0f)));
+}
+
 /*
 *	Returns the extinction at the given position.
 */

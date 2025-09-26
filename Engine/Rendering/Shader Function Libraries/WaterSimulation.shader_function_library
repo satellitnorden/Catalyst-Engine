@@ -22,10 +22,10 @@ float WaterHeightAtPosition(vec3 world_position, uint texture_index)
 */
 vec3 WaterNormalAtPosition(vec3 world_position, uint texture_index)
 {
-	float left = WaterHeightAtPosition(world_position + vec3(-0.25f, 0.0f, 0.0f), texture_index);
-	float right = WaterHeightAtPosition(world_position + vec3(0.25f, 0.0f, 0.0f), texture_index);
-	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -0.25f), texture_index);
-	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 0.25f), texture_index);
+	float left = WaterHeightAtPosition(world_position + vec3(-0.1f, 0.0f, 0.0f), texture_index);
+	float right = WaterHeightAtPosition(world_position + vec3(0.1f, 0.0f, 0.0f), texture_index);
+	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -0.1f), texture_index);
+	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 0.1f), texture_index);
 
 	return normalize(vec3(left - right, 0.5f, down - up));
 }

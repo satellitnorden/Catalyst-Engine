@@ -154,6 +154,12 @@ private:
 		//The maximum sky texture mip level.
 		float32 _MaximumSkyTextureMipLevel;
 
+		//The volumetric lighting density.
+		float32 _VolumetricLightingDensity;
+
+		//The volumetric lighting height.
+		float32 _VolumetricLightingHeight;
+
 	};
 
 	//The world grid size.

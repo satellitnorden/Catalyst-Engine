@@ -382,6 +382,7 @@ layout (location = 0) out vec4 OutputVolumetricLighting;
 void main()
 {
     float linearized_depth = LinearizeDepth(texture(SceneFeatures2Half, InScreenCoordinate).w);
+	float center_opacity = 0.0f;
 	vec3 denoised_volumetric_lighting = vec3(0.0f);
 	float weight_sum = 0.0f;
 	for (int Y = -1; Y <= 1; ++Y)
@@ -389,8 +390,11 @@ void main()
 		for (int X = -1; X <= 1; ++X)
 		{
 			vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_HALF_MAIN_RESOLUTION;
-			vec3 sample_volumetric_lighting = texture(InputVolumetricLighting, sample_coordinate).rgb;
-			float sample_linearized_depth = LinearizeDepth(texture(SceneFeatures2Half, sample_coordinate).w);
+			vec4 volumetric_lighting_sample = texture(InputVolumetricLighting, sample_coordinate);
+			vec3 sample_volumetric_lighting = volumetric_lighting_sample.rgb;
+			vec4 scene_features_2_sample = texture(SceneFeatures2Half, sample_coordinate);
+			float sample_depth = scene_features_2_sample.w;
+			float sample_linearized_depth = LinearizeDepth(sample_depth);
 			/*
 			*	Calculate the sample weight based on certain criteria;
 			*	
@@ -399,11 +403,12 @@ void main()
 			*/
 			float sample_weight = 1.0f;
 			sample_weight *= float(ValidScreenCoordinate(sample_coordinate));
-			sample_weight *= exp(-abs(linearized_depth - sample_linearized_depth));
+			sample_weight *= mix(exp(-abs(linearized_depth - sample_linearized_depth)), 1.0f, float(sample_depth <= FLOAT32_EPSILON));
+			center_opacity += volumetric_lighting_sample.a * float(X == 0 && Y == 0);
 			denoised_volumetric_lighting += sample_volumetric_lighting * sample_weight;
 			weight_sum += sample_weight;
 		}
 	}
 	denoised_volumetric_lighting = denoised_volumetric_lighting / weight_sum;
-	OutputVolumetricLighting = vec4(denoised_volumetric_lighting,1.0f);
+	OutputVolumetricLighting = vec4(denoised_volumetric_lighting,center_opacity);
 }

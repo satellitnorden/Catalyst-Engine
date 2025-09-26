@@ -303,12 +303,14 @@ layout (std140, set = 1, binding = 2) uniform Water
 	layout (offset = 0) vec2 WATER_OFFSETS[4];
 };
 
-layout (std140, set = 1, binding = 3) uniform Wind
+layout (std140, set = 1, binding = 3) uniform World
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
 	layout (offset = 32) uint SKY_MODE;
 	layout (offset = 36) float MAXIMUM_SKY_TEXTURE_MIP_LEVEL;
+	layout (offset = 40) float VOLUMETRIC_LIGHTING_DENSITY;
+	layout (offset = 44) float VOLUMETRIC_LIGHTING_HEIGHT;
 };
 
 //Lighting header struct definition.
@@ -481,10 +483,10 @@ float WaterHeightAtPosition(vec3 world_position, uint texture_index)
 */
 vec3 WaterNormalAtPosition(vec3 world_position, uint texture_index)
 {
-	float left = WaterHeightAtPosition(world_position + vec3(-0.25f, 0.0f, 0.0f), texture_index);
-	float right = WaterHeightAtPosition(world_position + vec3(0.25f, 0.0f, 0.0f), texture_index);
-	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -0.25f), texture_index);
-	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 0.25f), texture_index);
+	float left = WaterHeightAtPosition(world_position + vec3(-0.1f, 0.0f, 0.0f), texture_index);
+	float right = WaterHeightAtPosition(world_position + vec3(0.1f, 0.0f, 0.0f), texture_index);
+	float down = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, -0.1f), texture_index);
+	float up = WaterHeightAtPosition(world_position + vec3(0.0f, 0.0f, 0.1f), texture_index);
 
 	return normalize(vec3(left - right, 0.5f, down - up));
 }

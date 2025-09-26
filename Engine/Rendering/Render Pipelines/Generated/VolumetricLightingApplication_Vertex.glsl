@@ -450,58 +450,6 @@ float InterleavedGradientNoise(uvec2 coordinate, uint frame)
 	return mod(52.9829189f * mod(0.06711056f * x + 0.00583715f * y, 1.0f), 1.0f);
 }
 
-/*
-*	Returns the extinction at the given position.
-*/
-float GetExtinctionAtPosition(vec3 position)
-{
-	#define BASE_EXTINCTION (0.00125f)
-
-	return mix(BASE_EXTINCTION, BASE_EXTINCTION * 0.125f, Square(clamp(position.y / 512.0f, 0.0f, 1.0f)));
-
-	#undef BASE_EXTINCTION
-}
-
-/*
-*	Calculates the attenuation in the given direction.
-*/
-float CalculateAttenuationInDirection(vec3 position, vec3 direction, float distance)
-{
-	#define NUMBER_OF_SAMPLES (4)
-
-	float attenuation = 1.0f;
-	float step_size = distance / float(NUMBER_OF_SAMPLES);
-
-	for (uint i = 0; i < NUMBER_OF_SAMPLES; ++i)
-	{
-		vec3 sample_position = position + direction * float(i) * step_size;
-		attenuation *= exp(-GetExtinctionAtPosition(sample_position) * step_size);
-	}
-
-	return attenuation;
-	
-	#undef NUMBER_OF_SAMPLES
-}
-
-/*
-*	The Henyey-Greenstein phase function.
-*/
-float HenyeyGreensteinPhaseFunction(vec3 outgoing_direction, vec3 incoming_direction)
-{
-	float G = 0.25f;
-	float dot_product = dot(outgoing_direction, -incoming_direction);
-
-	return (1.0f - G * G) / (4.0f * PI * pow(1.0 + G * G - 2.0f * G * dot_product, 3.0f / 2.0f));
-}
-
-/*
-*	Calculates the scattering with the given properties.
-*/
-vec3 CalculateScattering(vec3 ray_origin, vec3 ray_direction)
-{
-	return vec3(0.0f, 0.0f, 0.0f);
-}
-
 layout (set = 1, binding = 2) uniform sampler2D VolumetricLighting;
 layout (set = 1, binding = 3) uniform sampler2D SceneFeatures2;
 layout (set = 1, binding = 4) uniform sampler2D SceneFeatures2Half;
