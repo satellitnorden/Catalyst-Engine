@@ -21,6 +21,9 @@ public:
 	//The name.
 	std::string _Name;
 
+	//Denotes whether or not this systems wants an 'Initialize()' call.
+	bool _Initialize;
+
 	//The not defined requirements.
 	std::vector<std::string> _NotDefinedRequirements;
 
@@ -41,14 +44,14 @@ void SystemGenerator::Run()
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
-//#if defined(NDEBUG)
+#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\SystemCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\SystemCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
-//#endif
+#endif
 
 	//Gather systems!
 	bool new_files_parsed{ false };
@@ -217,6 +220,9 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 	//Set the name.
 	system_entry["Name"] = name.c_str();
 
+	//Set to initial state.
+	system_entry["Initialize"] = false;
+
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
 
@@ -232,9 +238,21 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 			break;
 		}
 
+		//Check if this system wants an 'Initialize()' call.
+		{
+			const size_t position{ current_line.find("SYSTEM_INITIALIZE()") };
+
+			if (position != std::string::npos)
+			{
+				system_entry["Initialize"] = true;
+
+				continue;
+			}
+		}
+
 		//Check if this system has a not defined requirement.
 		{
-			const size_t position{ current_line.find("NOT_DEFINED_REQUIREMENT(") };
+			const size_t position{ current_line.find("SYSTEM_NOT_DEFINED_REQUIREMENT(") };
 
 			if (position != std::string::npos)
 			{
@@ -258,7 +276,7 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 
 		//Check if this system has a defined requirement.
 		{
-			const size_t position{ current_line.find("DEFINED_REQUIREMENT(") };
+			const size_t position{ current_line.find("SYSTEM_DEFINED_REQUIREMENT(") };
 
 			if (position != std::string::npos)
 			{
@@ -336,6 +354,9 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set the name.
 				new_system_data._Name = system_iterator.key().c_str();
+
+				//Set whether or not this systems wants an 'Initialize()' call.
+				new_system_data._Initialize = system_entry["Initialize"].get<bool>();
 
 				//Add the not defined requiremnets.
 				if (system_entry.contains("NotDefinedRequirements"))
@@ -431,12 +452,12 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	file << std::endl;
 
-	//Add the "SystemsManager" class.
-	file << "class SystemsManager final" << std::endl;
+	//Add the "SystemsAllocator" class.
+	file << "class SystemsAllocator final" << std::endl;
 	file << "{" << std::endl;
 	file << "public:" << std::endl;
 
-	file << "\tFORCE_INLINE SystemsManager() NOEXCEPT" << std::endl;
+	file << "\tFORCE_INLINE SystemsAllocator() NOEXCEPT" << std::endl;
 	file << "\t{" << std::endl;
 
 	file << "\t\t_Memory = Memory::Allocate(SYSTEMS_SIZE);" << std::endl;
@@ -465,7 +486,7 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	file << "\t}" << std::endl;
 
-	file << "\tFORCE_INLINE ~SystemsManager() NOEXCEPT" << std::endl;
+	file << "\tFORCE_INLINE ~SystemsAllocator() NOEXCEPT" << std::endl;
 	file << "\t{" << std::endl;
 
 	for (const SystemData &_system_data : system_data)
@@ -501,307 +522,40 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	file << std::endl;
 
-	file << "SystemsManager SYSTEMS_MANAGER;";
+	file << "SystemsAllocator SYSTEMS_ALLOCATOR;" << std::endl;
 
-	/*
-	//Try to satisfy befores/afters for all updates.
-	const auto BEFORE_AFTER_SORT
+	file << std::endl;
+
+	//Add the "Systems()" class functions.
 	{
-		[](std::map<std::string, std::vector<ComponentUpdate>> &updates)
+		file << "void Systems::Initialize() NOEXCEPT" << std::endl;
+		file << "{" << std::endl;
+
+		for (const SystemData &_system_data : system_data)
 		{
-			for (std::pair<const std::string, std::vector<ComponentUpdate>> &update : updates)
+			if (_system_data._Initialize)
 			{
-				for (ComponentUpdate &_update : update.second)
+				for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
 				{
-					//Try to satisfy any befores.
-					for (const std::string &before : _update._Befores)
-					{
-						for (ComponentUpdate &sub_update : update.second)
-						{
-							if (before == sub_update._ComponentName)
-							{
-								if (_update._SortValue >= sub_update._SortValue)
-								{
-									_update._SortValue = sub_update._SortValue - 1;
-								}
-
-								break;
-							}
-						}
-					}
-
-					//Try to satisfy any afters.
-					for (const std::string &after : _update._Afters)
-					{
-						for (ComponentUpdate &sub_update : update.second)
-						{
-							if (after == sub_update._ComponentName)
-							{
-								if (_update._SortValue <= sub_update._SortValue)
-								{
-									_update._SortValue = sub_update._SortValue + 1;
-								}
-
-								break;
-							}
-						}
-					}
+					file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
 				}
 
-				//Sort the list now based on the sort value.
-				std::sort
-				(
-					update.second.begin(),
-					update.second.end(),
-					[](const ComponentUpdate &A, const ComponentUpdate &B)
-					{
-						return A._SortValue < B._SortValue;
-					}
-				);
+				for (const std::string &defined_requirement : _system_data._DefinedRequirements)
+				{
+					file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				file << "\t" << _system_data._Name.c_str() << "::Instance->Initialize();" << std::endl;
+
+				for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
+				{
+					file << "#endif" << std::endl;
+				}
 			}
 		}
-	};
 
-	BEFORE_AFTER_SORT(serial_updates);
-	BEFORE_AFTER_SORT(parallel_batch_updates);
-	BEFORE_AFTER_SORT(parallel_sub_instance_updates);
-	BEFORE_AFTER_SORT(post_updates);
-
-	//Set up the "Components::Size" function.
-	file << "NO_DISCARD uint64 Components::Size() NOEXCEPT" << std::endl;
-	file << "{" << std::endl;
-	file << "\treturn " << component_data.size() << ";" << std::endl;
-	file << "}" << std::endl;
-	file << std::endl;
-
-	//Set up the "Components::At()" function.
-	file << "NO_DISCARD Component *const RESTRICT Components::At(const uint64 index) NOEXCEPT" << std::endl;
-	file << "{" << std::endl;
-	file << "\tswitch (index)" << std::endl;
-	file << "\t{" << std::endl;
-
-	for (uint64 i{ 0 }; i < component_data.size(); ++i)
-	{
-		file << "\t\tcase " << i << ":" << std::endl;
-		file << "\t\t{" << std::endl;
-		file << "\t\t\treturn " << component_data[i]._Name.c_str() << "::Instance.Get();" << std::endl;
-		file << "\t\t}" << std::endl;
+		file << "}";
 	}
-
-	file << "\t\tdefault:" << std::endl;
-	file << "\t\t{" << std::endl;
-	file << "\t\t\tASSERT(false, \"Invalid case!\");" << std::endl;
-	file << "\t\t\treturn nullptr;" << std::endl;
-	file << "\t\t}" << std::endl;
-
-	file << "\t}" << std::endl;
-
-	file << "}" << std::endl;
-	file << std::endl;
-
-	//Set up the "Components::Initialize()" function.
-	file << "void Components::Initialize() NOEXCEPT" << std::endl;
-	file << "{" << std::endl;
-
-	for (uint64 i{ 0 }; i < component_data.size(); ++i)
-	{
-		if (component_data[i]._Initialize)
-		{
-			file << "\t" << component_data[i]._Name.c_str() << "::Instance->Initialize();" << std::endl;
-		}
-	}
-
-	file << "}" << std::endl;
-	file << std::endl;
-
-	//Set up the "Components::PostInitialize()" function.
-	file << "void Components::PostInitialize() NOEXCEPT" << std::endl;
-	file << "{" << std::endl;
-
-	for (uint64 i{ 0 }; i < component_data.size(); ++i)
-	{
-		if (component_data[i]._PostInitialize)
-		{
-			file << "\t" << component_data[i]._Name.c_str() << "::Instance->PostInitialize();" << std::endl;
-		}
-	}
-
-	file << "}" << std::endl;
-	file << std::endl;
-
-	//Set up the "Components::Update()" function.
-	file << "void Components::Update(const UpdatePhase update_phase) NOEXCEPT" << std::endl;
-	file << "{" << std::endl;
-
-	//Clear the parallel updates.
-	file << "\t//Clear the parallel updates." << std::endl;
-	file << "\tPARALLEL_UPDATES.Clear();" << std::endl;
-	file << std::endl;
-
-	//Fill up parallel batch updates.
-	file << "\t//Fill up parallel batch updates." << std::endl;
-	file << "\tswitch (update_phase)" << std::endl;
-	file << "\t{" << std::endl;
-
-	for (const std::pair<std::string, std::vector<ComponentUpdate>> &parallel_batch_update : parallel_batch_updates)
-	{
-		file << "\t\tcase " << parallel_batch_update.first.c_str() << ":" << std::endl;
-		file << "\t\t{" << std::endl;
-
-		for (const ComponentUpdate &update : parallel_batch_update.second)
-		{
-			file << "\t\t\t{" << std::endl;
-			file << "\t\t\t\tconst uint64 number_of_instances{ " << update._ComponentName.c_str() << "::Instance->NumberOfInstances() };" << std::endl;
-			file << "\t\t\t\tfor (uint64 batch_start_index{ 0 }; batch_start_index < number_of_instances; batch_start_index += " << update._BatchSize << ")" << std::endl;
-			file << "\t\t\t\t{" << std::endl;
-			file << "\t\t\t\t\tPARALLEL_UPDATES.Emplace();" << std::endl;
-			file << "\t\t\t\t\tParallelUpdate &parallel_batch_update{ PARALLEL_UPDATES.Back() };" << std::endl;
-			file << "\t\t\t\t\tparallel_batch_update._Task._Function = [](void *const RESTRICT arguments)" << std::endl;
-			file << "\t\t\t\t\t{" << std::endl;
-			file << "\t\t\t\t\t\tParallelUpdate *const RESTRICT parallel_batch_update{ static_cast<ParallelUpdate *const RESTRICT>(arguments) };" << std::endl;
-			file << "\t\t\t\t\t\t" << update._ComponentName.c_str() << "::Instance->ParallelBatchUpdate(" << parallel_batch_update.first.c_str() << ", parallel_batch_update->_StartInstanceIndex, parallel_batch_update->_EndInstanceIndex);" << std::endl;
-			file << "\t\t\t\t\t};" << std::endl;
-			file << "\t\t\t\t\tparallel_batch_update._Task._Arguments = nullptr;" << std::endl;
-			file << "\t\t\t\t\tparallel_batch_update._Task._ExecutableOnSameThread = false;" << std::endl;
-			file << "\t\t\t\t\tparallel_batch_update._StartInstanceIndex = batch_start_index;" << std::endl;
-			file << "\t\t\t\t\tparallel_batch_update._EndInstanceIndex = batch_start_index + BaseMath::Minimum<uint64>(" << update._BatchSize << ", number_of_instances - batch_start_index);" << std::endl;
-			file << "\t\t\t\t}" << std::endl;
-			file << "\t\t\t}" << std::endl;
-		}
-
-		file << "\t\t\tbreak;" << std::endl;
-		file << "\t\t}" << std::endl;
-	}
-
-	file << "\t}" << std::endl;
-	file << std::endl;
-
-	//Fill up parallel sub instance updates.
-	file << "\t//Fill up parallel sub instance updates." << std::endl;
-	file << "\tswitch (update_phase)" << std::endl;
-	file << "\t{" << std::endl;
-
-	for (const std::pair<std::string, std::vector<ComponentUpdate>> &parallel_sub_instance_update : parallel_sub_instance_updates)
-	{
-		file << "\t\tcase " << parallel_sub_instance_update.first.c_str() << ":" << std::endl;
-		file << "\t\t{" << std::endl;
-
-		for (const ComponentUpdate &update : parallel_sub_instance_update.second)
-		{
-			file << "\t\t\t{" << std::endl;
-			file << "\t\t\t\tconst uint64 number_of_instances{ " << update._ComponentName.c_str() << "::Instance->NumberOfInstances() };" << std::endl;
-			file << "\t\t\t\tfor (uint64 instance_index{ 0 }; instance_index < number_of_instances; ++instance_index)" << std::endl;
-			file << "\t\t\t\t{" << std::endl;
-			file << "\t\t\t\t\tconst uint64 number_of_sub_instances{ " << update._ComponentName.c_str() << "::Instance->NumberOfSubInstances(instance_index) };" << std::endl;
-			file << "\t\t\t\t\tfor (uint64 sub_instance_index{ 0 }; sub_instance_index < number_of_sub_instances; ++sub_instance_index)" << std::endl;
-			file << "\t\t\t\t\t{" << std::endl;
-			file << "\t\t\t\t\t\tPARALLEL_UPDATES.Emplace();" << std::endl;
-			file << "\t\t\t\t\t\tParallelUpdate &parallel_sub_instance_update{ PARALLEL_UPDATES.Back() };" << std::endl;
-			file << "\t\t\t\t\t\tparallel_sub_instance_update._Task._Function = [](void *const RESTRICT arguments)" << std::endl;
-			file << "\t\t\t\t\t\t{" << std::endl;
-			file << "\t\t\t\t\t\t\tParallelUpdate *const RESTRICT parallel_sub_instance_update{ static_cast<ParallelUpdate *const RESTRICT>(arguments) };" << std::endl;
-			file << "\t\t\t\t\t\t\t" << update._ComponentName.c_str() << "::Instance->ParallelSubInstanceUpdate(" << parallel_sub_instance_update.first.c_str() << ", parallel_sub_instance_update->_InstanceIndex, parallel_sub_instance_update->_SubInstanceIndex);" << std::endl;
-			file << "\t\t\t\t\t\t};" << std::endl;
-			file << "\t\t\t\t\t\tparallel_sub_instance_update._Task._Arguments = nullptr;" << std::endl;
-			file << "\t\t\t\t\t\tparallel_sub_instance_update._Task._ExecutableOnSameThread = false;" << std::endl;
-			file << "\t\t\t\t\t\tparallel_sub_instance_update._InstanceIndex = instance_index;" << std::endl;
-			file << "\t\t\t\t\t\tparallel_sub_instance_update._SubInstanceIndex = sub_instance_index;" << std::endl;
-			file << "\t\t\t\t\t}" << std::endl;
-			file << "\t\t\t\t}" << std::endl;
-			file << "\t\t\t}" << std::endl;
-		}
-
-		file << "\t\t\tbreak;" << std::endl;
-		file << "\t\t}" << std::endl;
-	}
-
-	file << "\t}" << std::endl;
-	file << std::endl;
-
-	//Execute all parallel updates.
-	file << "\t//Execute all parallel updates." << std::endl;
-	file << "\tfor (ParallelUpdate &parallel_update : PARALLEL_UPDATES)" << std::endl;
-	file << "\t{" << std::endl;
-	file << "\t\tparallel_update._Task._Arguments = &parallel_update;" << std::endl;
-	file << "\t\tTaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &parallel_update._Task);" << std::endl;
-	file << "\t}" << std::endl;
-	file << std::endl;
-
-	//Do serial updates.
-	file << "\t//Do serial updates." << std::endl;
-	file << "\tswitch (update_phase)" << std::endl;
-	file << "\t{" << std::endl;
-
-	for (const std::pair<std::string, std::vector<ComponentUpdate>> &serial_update : serial_updates)
-	{
-		file << "\t\tcase " << serial_update.first.c_str() << ":" << std::endl;
-		file << "\t\t{" << std::endl;
-
-		for (const ComponentUpdate &update : serial_update.second)
-		{
-			file << "\t\t\t" << update._ComponentName.c_str() << "::Instance->SerialUpdate(update_phase);" << std::endl;
-		}
-
-		file << "\t\t\tbreak;" << std::endl;
-		file << "\t\t}" << std::endl;
-	}
-
-	file << "\t}" << std::endl;
-	file << std::endl;
-
-	//Wait for parallel batch updates to finish.
-	file << "\t//Wait for parallel updates to finish." << std::endl;
-	file << "\tbool all_done{ PARALLEL_UPDATES.Empty() };" << std::endl;
-	file << "\twhile (!all_done)" << std::endl;
-	file << "\t{" << std::endl;
-	file << "\t\tTaskSystem::Instance->DoWork(Task::Priority::HIGH);" << std::endl;
-	file << "\t\tall_done = true;" << std::endl;
-	file << "\t\tfor (ParallelUpdate &parallel_update : PARALLEL_UPDATES)" << std::endl;
-	file << "\t\t{" << std::endl;
-	file << "\t\t\tall_done &= parallel_update._Task.IsExecuted();" << std::endl;
-	file << "\t\t}" << std::endl;
-	file << "\t}" << std::endl;
-	file << std::endl;
-
-	//Post-update components.
-	file << "\t//Post-update components." << std::endl;
-
-	file << "\tswitch (update_phase)" << std::endl;
-	file << "\t{" << std::endl;
-
-	for (const std::pair<std::string, std::vector<ComponentUpdate>> &post_update : post_updates)
-	{
-		file << "\t\tcase " << post_update.first.c_str() << ":" << std::endl;
-		file << "\t\t{" << std::endl;
-
-		for (const ComponentUpdate &update : post_update.second)
-		{
-			file << "\t\t\t" << update._ComponentName.c_str() << "::Instance->PostUpdate(update_phase);" << std::endl;
-		}
-
-		file << "\t\t\tbreak;" << std::endl;
-		file << "\t\t}" << std::endl;
-	}
-
-	file << "\t}" << std::endl;
-
-	file << "}" << std::endl;
-	file << std::endl;
-
-	//Set up the "Components::Terminate()" function.
-	file << "void Components::Terminate() NOEXCEPT" << std::endl;
-	file << "{" << std::endl;
-
-	for (uint64 i{ 0 }; i < component_data.size(); ++i)
-	{
-		if (component_data[i]._Terminate)
-		{
-			file << "\t" << component_data[i]._Name.c_str() << "::Instance->Terminate();" << std::endl;
-		}
-	}
-
-	file << "}";
-	*/
 
 	//Close the file.
 	file.close();
