@@ -32,6 +32,7 @@ layout (early_fragment_tests) in;
 #define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
 
 #define PI (3.141592f)
+#define TAU (6.283184f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
 #define saturate(X) clamp(X, 0.0f, 1.0f)
@@ -300,12 +301,14 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 36) float VIEW_DISTANCE;
 };
 
-layout (std140, set = 1, binding = 2) uniform Wind
+layout (std140, set = 1, binding = 2) uniform World
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
 	layout (offset = 32) uint SKY_MODE;
 	layout (offset = 36) float MAXIMUM_SKY_TEXTURE_MIP_LEVEL;
+	layout (offset = 40) float VOLUMETRIC_LIGHTING_DENSITY;
+	layout (offset = 44) float VOLUMETRIC_LIGHTING_HEIGHT;
 };
 
 /*

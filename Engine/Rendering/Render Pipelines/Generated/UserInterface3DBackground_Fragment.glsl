@@ -32,6 +32,7 @@ layout (early_fragment_tests) in;
 #define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
 
 #define PI (3.141592f)
+#define TAU (6.283184f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
 #define saturate(X) clamp(X, 0.0f, 1.0f)

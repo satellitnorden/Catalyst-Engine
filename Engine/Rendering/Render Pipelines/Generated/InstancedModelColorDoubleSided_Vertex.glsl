@@ -30,6 +30,7 @@
 #define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
 
 #define PI (3.141592f)
+#define TAU (6.283184f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
 #define saturate(X) clamp(X, 0.0f, 1.0f)
@@ -372,6 +373,32 @@ vec3 CalculateScreenPosition(vec3 world_position)
     return view_space_position.xyz;
 }
 
+/*
+*	Rotates the given vector around the yaw.
+*/
+vec3 RotateYaw(vec3 X, float angle)
+{
+	float sine = sin(angle);
+    float cosine = cos(angle);
+
+    float temp = X.x * cosine + X.z * sine;
+    X.z = -X.x * sine + X.z * cosine;
+    X.x = temp;
+
+    return X;
+}
+
+/*
+*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
+*/
+mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
+{
+    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
+    vec3 random_bitangent = cross(normal, random_tangent);
+
+    return mat3(random_tangent, random_bitangent, normal);
+}
+
 //Constants.
 #define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_1 	(1 << 0)
 #define MODEL_FLAG_INCLUDE_IN_SHADOW_CASCADE_2 	(1 << 1)
@@ -385,6 +412,8 @@ vec3 CalculateScreenPosition(vec3 world_position)
 */
 vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 normal, vec4 wind_direction_speed, float wind_time)
 {
+	#define NUMBER_OF_OCTAVES (4)
+
 	//Calculate the wind influence at this point.
 	float wind_influence = 0.0f;
 
@@ -393,9 +422,14 @@ vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 n
 		float frequency = 1.0f;
 		float vertex_influence = 0.0f;
 
-		for (uint i = 0; i < 4; ++i)
+		for (uint i = 0; i < NUMBER_OF_OCTAVES; ++i)
 		{
-			wind_influence += (sin((world_position.x + world_position.y + world_position.z + ((vertex_position.x + vertex_position.y + vertex_position.z) * vertex_influence) + wind_time) * wind_direction_speed.w * frequency) * 0.5f + 0.5f) * amplitude;
+			vec3 direction = RotateYaw(wind_direction_speed.xyz, float(i) / float(NUMBER_OF_OCTAVES) * TAU);
+
+			float world_dot = dot(world_position, direction);
+			float vertex_dot = dot(vertex_position, direction);
+
+			wind_influence += (sin((world_dot + (vertex_dot * vertex_influence) + wind_time) * wind_direction_speed.w * frequency) * 0.5f + 0.5f) * amplitude;
 
 			amplitude *= 0.5f;
 			frequency *= 2.0f;

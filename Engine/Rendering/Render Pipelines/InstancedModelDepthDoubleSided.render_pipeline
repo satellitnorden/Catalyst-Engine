@@ -4,6 +4,7 @@ IncludeUniformBuffer(General);
 IncludeUniformBuffer(Wind);
 
 //Declare shader function library includes.
+IncludeShaderFunctionLibrary(Math);
 IncludeShaderFunctionLibrary(Model);
 IncludeShaderFunctionLibrary(Noise);
 IncludeShaderFunctionLibrary(Wind);
