@@ -39,7 +39,7 @@ public:
 AnimatedModelAssetCompiler::AnimatedModelAssetCompiler() NOEXCEPT
 {
 	//Set the flags.
-	_Flags = Flags::ALWAYS_COMPILE;
+	_Flags = Flags::NONE;
 }
 
 /*

@@ -25,14 +25,14 @@ void EventGenerator::Run()
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
-#if defined(NDEBUG)
+//#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\EventCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\EventCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
-#endif
+//#endif
 
 	//Gather components!
 	bool new_files_parsed{ false };

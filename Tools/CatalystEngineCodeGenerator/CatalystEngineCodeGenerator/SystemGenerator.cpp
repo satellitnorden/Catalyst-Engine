@@ -372,6 +372,10 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "#include <Systems/System.h>" << std::endl;
 	file << std::endl;
 
+	file << "//Profiling." << std::endl;
+	file << "#include <Profiling/Profiling.h>" << std::endl;
+	file << std::endl;
+
 	//Gather all systems data - Add includes as we go.
 	file << "//Systems." << std::endl;
 
@@ -588,6 +592,99 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		file << "void Systems::Initialize() NOEXCEPT" << std::endl;
 		file << "{" << std::endl;
 
+		file << "\tPROFILING_SCOPE(\"Systems::Initialize()\");" << std::endl;
+		file << std::endl;
+
+#if 0
+		file << "\tconstexpr uint64 NUMBER_OF_TASKS" << std::endl;
+		file << "\t{" << std::endl;
+
+		for (size_t system_data_index{ 0 }; system_data_index < system_data.size(); ++system_data_index)
+		{
+			const SystemData &_system_data{ system_data[system_data_index] };
+
+			if (_system_data._Initialize)
+			{
+				for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
+				{
+					file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				for (const std::string &defined_requirement : _system_data._DefinedRequirements)
+				{
+					file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				file << "\t\t+ 1 //" << _system_data._Name.c_str() << std::endl;
+
+				for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
+				{
+					file << "#endif" << std::endl;
+				}
+			}
+		}
+
+		file << "\t};" << std::endl;
+
+		file << std::endl;
+
+		file << "\tStaticArray<Task, NUMBER_OF_TASKS> tasks;" << std::endl;
+		file << "\tuint64 task_index{ 0 };" << std::endl;
+
+		file << std::endl;
+
+		for (const SystemData &_system_data : system_data)
+		{
+			if (_system_data._Initialize)
+			{
+				for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
+				{
+					file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				for (const std::string &defined_requirement : _system_data._DefinedRequirements)
+				{
+					file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				file << "\ttasks[task_index]._Function = [](void *const RESTRICT /*arguments*/)" << std::endl;
+				file << "\t{" << std::endl;
+				file << "\t\t" << _system_data._Name.c_str() << "::Instance->Initialize();" << std::endl;
+				file << "\t};" << std::endl;
+				file << "\ttasks[task_index]._Arguments = nullptr;" << std::endl;
+				file << "\ttasks[task_index]._ExecutableOnSameThread = false;" << std::endl;
+				file << std::endl;
+				file << "\tTaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &tasks[task_index]);" << std::endl;
+				file << std::endl;
+				file << "\t++task_index;" << std::endl;
+				file << std::endl;
+
+				for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
+				{
+					file << "#endif" << std::endl;
+				}
+			}
+		}
+
+		file << "\tbool all_tasks_finished{ false };" << std::endl;
+		file << std::endl;
+
+		file << "\twhile (!all_tasks_finished)" << std::endl;
+		file << "\t{" << std::endl;
+
+		file << "\t\tTaskSystem::Instance->DoWork(Task::Priority::HIGH);" << std::endl;
+		file << std::endl;
+
+		file << "\t\tall_tasks_finished = true;" << std::endl;
+		file << std::endl;
+
+		file << "\t\tfor (uint64 task_index{ 0 }; task_index < NUMBER_OF_TASKS; ++task_index)" << std::endl;
+		file << "\t\t{" << std::endl;
+		file << "\t\t\tall_tasks_finished &= tasks[task_index].IsExecuted();" << std::endl;
+		file << "\t\t}" << std::endl;
+
+		file << "\t}" << std::endl;
+#else
 		for (const SystemData &_system_data : system_data)
 		{
 			if (_system_data._Initialize)
@@ -610,6 +707,7 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 				}
 			}
 		}
+#endif
 
 		file << "}" << std::endl;
 
@@ -620,6 +718,9 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	{
 		file << "void Systems::PostInitialize() NOEXCEPT" << std::endl;
 		file << "{" << std::endl;
+
+		file << "\tPROFILING_SCOPE(\"Systems::PostInitialize()\");" << std::endl;
+		file << std::endl;
 
 		for (const SystemData &_system_data : system_data)
 		{
@@ -654,6 +755,9 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		file << "void Systems::Terminate() NOEXCEPT" << std::endl;
 		file << "{" << std::endl;
 
+		file << "\tPROFILING_SCOPE(\"Systems::Terminate()\");" << std::endl;
+		file << std::endl;
+
 		for (const SystemData &_system_data : system_data)
 		{
 			if (_system_data._Terminate)
@@ -686,6 +790,9 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	{
 		file << "void Systems::PostTerminate() NOEXCEPT" << std::endl;
 		file << "{" << std::endl;
+
+		file << "\tPROFILING_SCOPE(\"Systems::PostTerminate()\");" << std::endl;
+		file << std::endl;
 
 		for (const SystemData &_system_data : system_data)
 		{

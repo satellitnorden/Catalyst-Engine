@@ -23,8 +23,7 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		TaskSystem,
-		SYSTEM_INITIALIZE()
+		TaskSystem
 	);
 
 	/*
@@ -34,6 +33,11 @@ public:
 	{
 
 	}
+
+	/*
+	*	Initializes the task system.
+	*/
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Terminates the task system.

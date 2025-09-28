@@ -45,7 +45,7 @@ namespace CatalystEngineSystemData
 void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initial_project_configuration) NOEXCEPT
 {
 	PROFILING_FRAME();
-	PROFILING_SCOPE("CatalystEngineSystem_Initialize");
+	PROFILING_SCOPE("CatalystEngineSystem::Initialize()");
 
 	//Initialize the current thread's index.
 	Concurrency::CurrentThread::InitializeIndex();
@@ -68,6 +68,12 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	{
 		PROFILING_SCOPE("CatalystPlatform::Initialize();");
 		CatalystPlatform::Initialize();
+	}
+
+	//Initialize the task system here, as subsequent steps might use that.
+	{
+		PROFILING_SCOPE("TaskSystem::Instance->Initialize()");
+		TaskSystem::Instance->Initialize();
 	}
 
 	//Initialize all systems.
@@ -137,7 +143,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 bool CatalystEngineSystem::Update() NOEXCEPT
 {
 	PROFILING_FRAME();
-	PROFILING_SCOPE("CatalystEngineSystem_Update");
+	PROFILING_SCOPE("CatalystEngineSystem::Update()");
 
 	//Define constants.
 	constexpr float32 MAXIMUM_DELTA_TIME{ 0.1f };

@@ -723,8 +723,6 @@ void SoundSystem::Mix() NOEXCEPT
 	//Return if the game is shutting down.
 	while (!CatalystEngineSystem::Instance->ShouldTerminate())
 	{
-		PROFILING_SCOPE("SoundSystem_Mix");
-
 		//Need the platform to have been initialized before the mixing buffers has been initialized. And no mixing is done when paused.
 		if (!_ShouldMix.IsSet() || !_SubSystem->IsInitialized() || !_MixingBuffersInitialized || IsCurrentlyPaused() || (_ContinueWhileEnginePaused ? false : CatalystEngineSystem::Instance->IsEnginePaused()))
 		{
