@@ -39,7 +39,8 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		EntitySystem
+		EntitySystem,
+		SYSTEM_INITIALIZE()
 	);
 
 	/*
@@ -49,11 +50,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the entity system.
-	*/
-	void Initialize() NOEXCEPT;
 
 	/*
 	*	Creates an entity.

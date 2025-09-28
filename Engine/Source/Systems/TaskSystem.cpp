@@ -7,12 +7,18 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
+//Systems.
+#include <Systems/CatalystEngineSystem.h>
+
 /*
 *	Initializes the task system.
 */
-void TaskSystem::Initialize(const CatalystProjectConcurrencyConfiguration &configuration) NOEXCEPT
+void TaskSystem::Initialize() NOEXCEPT
 {
 	ASSERT(!_IsInitialized, "Calling TaskSystem::Initialize when task system is already initialized!");
+
+	//Cache the configuration.
+	const CatalystProjectConcurrencyConfiguration &configuration{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_ConcurrencyConfiguration };
 
 	//Calculate the number of task executors.
 	uint32 number_of_task_executors;

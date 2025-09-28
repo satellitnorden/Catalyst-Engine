@@ -58,7 +58,10 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		RenderingSystem
+		RenderingSystem,
+		SYSTEM_INITIALIZE()
+		SYSTEM_POST_INITIALIZE()
+		SYSTEM_TERMINATE()
 	);
 
 	/*
@@ -70,24 +73,9 @@ public:
 	}
 
 	/*
-	*	Initializes the rendering system.
-	*/
-	void Initialize(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT;
-
-	/*
-	*	Post initializes the rendering system.
-	*/
-	void PostInitialize() NOEXCEPT;
-
-	/*
 	*	Updates the rendering system during the render update phase.
 	*/
 	void RenderUpdate() NOEXCEPT;
-
-	/*
-	*	Terminates the rendering system.
-	*/
-	void Terminate() NOEXCEPT;
 
 	/*
 	*	Notifies the rendering system that a rendering platform event has occured.

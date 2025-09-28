@@ -52,12 +52,7 @@
 */
 void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfiguration &configuration) NOEXCEPT
 {
-	//Initialize the task system as it will be used to build resources.
-	CatalystProjectConcurrencyConfiguration concurrency_configuration;
-
-	concurrency_configuration._NumberOfTaskExecutors = Concurrency::NumberOfHardwareThreads();
-
-	TaskSystem::Instance->Initialize(concurrency_configuration);
+	TaskSystem::Instance->Initialize();
 
 	//Run the rendering compiler.
 	const bool new_rendering_data_was_compiled{ RenderingCompiler::Instance->Run() };

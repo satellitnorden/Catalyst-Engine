@@ -14,8 +14,11 @@
 /*
 *	Initializes the input system.
 */
-void InputSystem::Initialize(const CatalystProjectInputConfiguration &configuration) NOEXCEPT
+void InputSystem::Initialize() NOEXCEPT
 {
+	//Cache the configuration.
+	const CatalystProjectInputConfiguration &configuration{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_InputConfiguration };
+
 	//Set the number of supported gamepads.
 	_NumberOfSupportedGamepads = configuration._NumberOfSupportedGamepads;
 

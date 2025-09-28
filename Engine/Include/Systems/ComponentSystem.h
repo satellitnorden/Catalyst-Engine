@@ -21,7 +21,10 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		ComponentSystem
+		ComponentSystem,
+		SYSTEM_INITIALIZE()
+		SYSTEM_POST_INITIALIZE()
+		SYSTEM_TERMINATE()
 	);
 
 	/*
@@ -31,20 +34,5 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the component system.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
-	*	Post-initializes the component system.
-	*/
-	void PostInitialize() NOEXCEPT;
-
-	/*
-	*	Terminates the component system.
-	*/
-	void Terminate() NOEXCEPT;
 
 };

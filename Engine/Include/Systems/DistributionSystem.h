@@ -17,7 +17,9 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		DistributionSystem
+		DistributionSystem,
+		SYSTEM_INITIALIZE()
+		SYSTEM_TERMINATE()
 	);
 
 	/*
@@ -27,16 +29,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the distribution system.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
-	*	Terminates the distribution system.
-	*/
-	void Terminate() NOEXCEPT;
 
 	/*
 	*	Returns the current user name.

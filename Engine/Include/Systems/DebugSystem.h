@@ -94,6 +94,7 @@ public:
 	(
 		DebugSystem,
 		SYSTEM_NOT_DEFINED_REQUIREMENT(CATALYST_CONFIGURATION_FINAL)
+		SYSTEM_INITIALIZE()
 	);
 
 	/*
@@ -103,11 +104,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the debug system.
-	*/
-	void Initialize() NOEXCEPT;
 
 	/*
 	*	Registers a button debug command.

@@ -144,10 +144,10 @@ namespace SoundSystemData
 /*
 *	Initializes the sound system.
 */
-void SoundSystem::Initialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT
+void SoundSystem::Initialize() NOEXCEPT
 {
 	//Copy the configuration.
-	_Configuration = configuration;
+	_Configuration = CatalystEngineSystem::Instance->GetProjectConfiguration()->_SoundConfiguration;
 
 	//Reserve the appropriate memory to (hopefully) avoid memory allocations in mixing thread.
 	SoundSystemData::_PlayingSounds.Reserve(SoundSystemConstants::MAXIMUM_NUMBER_OF_PLAYING_SOUNDS);

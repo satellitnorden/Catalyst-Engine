@@ -26,7 +26,9 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		UserInterfaceSystem
+		UserInterfaceSystem,
+		SYSTEM_INITIALIZE()
+		SYSTEM_TERMINATE()
 	);
 
 	/*
@@ -36,16 +38,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the user interface system.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
-	*	Terminates the user interface system.
-	*/
-	void Terminate() NOEXCEPT;
 
 	/*
 	*	Creates a user interface primitive.

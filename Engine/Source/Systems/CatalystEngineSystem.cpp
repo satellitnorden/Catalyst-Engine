@@ -19,32 +19,16 @@
 #endif
 
 //Systems.
-#include <Systems/AnimationSystem.h>
 #if defined(CATALYST_EDITOR)
 #include <Systems/CatalystEditorSystem.h>
 #endif
-#include <Systems/ComponentSystem.h>
 #include <Systems/ContentSystem.h>
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-#include <Systems/DebugSystem.h>
-#endif
-#include <Systems/DistributionSystem.h>
-#include <Systems/EntitySystem.h>
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-#include <Systems/ImGuiSystem.h>
-#endif
-#include <Systems/InputSystem.h>
 #include <Systems/LogSystem.h>
 #include <Systems/MemorySystem.h>
-#include <Systems/NetworkSystem.h>
-#include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 #include <Systems/SaveSystem.h>
-#include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
-#include <Systems/UserInterfaceSystem.h>
-#include <Systems/WorldSystem.h>
 
 //Catalyst engine system data.
 namespace CatalystEngineSystemData
@@ -87,34 +71,8 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	}
 
 	//Initialize all systems.
-#if defined(CATALYST_EDITOR)
-	CatalystEditorSystem::Instance->Initialize();
-#endif
-	ComponentSystem::Instance->Initialize();
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	DebugSystem::Instance->Initialize();
-#endif
-	DistributionSystem::Instance->Initialize();
-	EntitySystem::Instance->Initialize();
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	ImGuiSystem::Instance->Initialize();
-#endif
-	InputSystem::Instance->Initialize(_ProjectConfiguration._InputConfiguration);
-	LogSystem::Instance->Initialize();
-	MemorySystem::Instance->Initialize();
-	NetworkSystem::Instance->Initialize();
-	PhysicsSystem::Instance->Initialize();
+	Systems::Initialize();
 	SaveSystem::Instance->Initialize();
-
-	{
-		PROFILING_SCOPE("RenderingSystem::Instance->Initialize();");
-		RenderingSystem::Instance->Initialize(_ProjectConfiguration._RenderingConfiguration);
-	}
-	
-	SoundSystem::Instance->Initialize(_ProjectConfiguration._SoundConfiguration);
-	TaskSystem::Instance->Initialize(_ProjectConfiguration._ConcurrencyConfiguration);
-	UserInterfaceSystem::Instance->Initialize();
-	WorldSystem::Instance->Initialize(_ProjectConfiguration._WorldConfiguration);
 
 	//Initialize the game system.
 	{
@@ -127,9 +85,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 	}
 	
-	//Initialize the content system.
-	ContentSystem::Instance->Initialize();
-
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Compile both for engine and game.
 	ContentSystem::Instance->CompileEngine();
@@ -150,13 +105,7 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #endif
 
 	//Post-initialize all systems.
-	AnimationSystem::Instance->PostInitialize();
-	ComponentSystem::Instance->PostInitialize();
-	RenderingSystem::Instance->PostInitialize();
-	WorldSystem::Instance->PostInitialize();
-#if defined(CATALYST_EDITOR)
-	CatalystEditorSystem::Instance->PostInitialize();
-#endif
+	Systems::PostInitialize();
 
 	//Post-initialize the game system.
 	_ProjectConfiguration._GeneralConfiguration._CommonPostInitializeFunction();
@@ -353,14 +302,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	TaskSystem::Instance->Terminate();
 
 	//Terminate all systems.
-	ComponentSystem::Instance->Terminate();
-	ContentSystem::Instance->Terminate();
-	DistributionSystem::Instance->Terminate();
-	PhysicsSystem::Instance->Terminate();
-	RenderingSystem::Instance->Terminate();
-	ResourceSystem::Instance->Terminate();
-	SoundSystem::Instance->Terminate();
-	WorldSystem::Instance->Terminate();
+	Systems::Terminate();
 
 	//Terminate the save system here, since other system's terminations might have queued up saves.
 	SaveSystem::Instance->Terminate();
@@ -369,9 +311,7 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	CatalystPlatform::Terminate();
 
 	//Post-terminate all systems.
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	ImGuiSystem::Instance->PostTerminate();
-#endif
+	Systems::PostTerminate();
 
 	//Flush the logs after termination.
 	LogSystem::Instance->Flush();

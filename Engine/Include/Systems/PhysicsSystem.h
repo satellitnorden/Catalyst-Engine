@@ -39,7 +39,9 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		PhysicsSystem
+		PhysicsSystem,
+		SYSTEM_INITIALIZE()
+		SYSTEM_TERMINATE()
 	);
 
 	/*
@@ -49,16 +51,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the physics system.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
-	*	Terminates the physics system.
-	*/
-	void Terminate() NOEXCEPT;
 
 	/*
 	*	Creates a collision model.

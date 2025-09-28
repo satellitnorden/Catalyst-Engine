@@ -22,7 +22,8 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		LogSystem
+		LogSystem,
+		SYSTEM_INITIALIZE()
 	);
 
 	//Enumeration covering all log levels.
@@ -42,11 +43,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the log system.
-	*/
-	void Initialize() NOEXCEPT;
 
 	/*
 	*	Logs.

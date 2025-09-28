@@ -24,6 +24,15 @@ public:
 	//Denotes whether or not this systems wants an 'Initialize()' call.
 	bool _Initialize;
 
+	//Denotes whether or not this systems wants a 'PostInitialize()' call.
+	bool _PostInitialize;
+
+	//Denotes whether or not this systems wants a 'Terminate()' call.
+	bool _Terminate;
+
+	//Denotes whether or not this systems wants a 'PostTerminate()' call.
+	bool _PostTerminate;
+
 	//The not defined requirements.
 	std::vector<std::string> _NotDefinedRequirements;
 
@@ -222,6 +231,9 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 
 	//Set to initial state.
 	system_entry["Initialize"] = false;
+	system_entry["PostInitialize"] = false;
+	system_entry["Terminate"] = false;
+	system_entry["PostTerminate"] = false;
 
 	//Set up the arguments.
 	std::array<std::string, 8> arguments;
@@ -236,18 +248,6 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 		if (current_line == ");")
 		{
 			break;
-		}
-
-		//Check if this system wants an 'Initialize()' call.
-		{
-			const size_t position{ current_line.find("SYSTEM_INITIALIZE()") };
-
-			if (position != std::string::npos)
-			{
-				system_entry["Initialize"] = true;
-
-				continue;
-			}
 		}
 
 		//Check if this system has a not defined requirement.
@@ -293,6 +293,54 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 				};
 
 				system_entry["DefinedRequirements"].emplace_back() = arguments[0].c_str();
+
+				continue;
+			}
+		}
+
+		//Check if this system wants an 'Initialize()' call.
+		{
+			const size_t position{ current_line.find("SYSTEM_INITIALIZE()") };
+
+			if (position != std::string::npos)
+			{
+				system_entry["Initialize"] = true;
+
+				continue;
+			}
+		}
+
+		//Check if this system wants a 'PostInitialize()' call.
+		{
+			const size_t position{ current_line.find("SYSTEM_POST_INITIALIZE()") };
+
+			if (position != std::string::npos)
+			{
+				system_entry["PostInitialize"] = true;
+
+				continue;
+			}
+		}
+
+		//Check if this system wants a 'Terminate()' call.
+		{
+			const size_t position{ current_line.find("SYSTEM_TERMINATE()") };
+
+			if (position != std::string::npos)
+			{
+				system_entry["Terminate"] = true;
+
+				continue;
+			}
+		}
+
+		//Check if this system wants a 'PostTerminate()' call.
+		{
+			const size_t position{ current_line.find("SYSTEM_POST_TERMINATE()") };
+
+			if (position != std::string::npos)
+			{
+				system_entry["PostTerminate"] = true;
 
 				continue;
 			}
@@ -356,7 +404,16 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 				new_system_data._Name = system_iterator.key().c_str();
 
 				//Set whether or not this systems wants an 'Initialize()' call.
-				new_system_data._Initialize = system_entry["Initialize"].get<bool>();
+				new_system_data._Initialize = system_entry.contains("Initialize") && system_entry["Initialize"].get<bool>();
+
+				//Set whether or not this systems wants a 'PostInitialize()' call.
+				new_system_data._PostInitialize = system_entry.contains("PostInitialize") && system_entry["PostInitialize"].get<bool>();
+
+				//Set whether or not this systems wants a 'Terminate()' call.
+				new_system_data._Terminate = system_entry.contains("Terminate") && system_entry["Terminate"].get<bool>();
+
+				//Set whether or not this systems wants a 'PostTerminate()' call.
+				new_system_data._PostTerminate = system_entry.contains("PostTerminate") && system_entry["PostTerminate"].get<bool>();
 
 				//Add the not defined requiremnets.
 				if (system_entry.contains("NotDefinedRequirements"))
@@ -526,7 +583,7 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	file << std::endl;
 
-	//Add the "Systems()" class functions.
+	//Add the "Systems::Initialize()" function.
 	{
 		file << "void Systems::Initialize() NOEXCEPT" << std::endl;
 		file << "{" << std::endl;
@@ -546,6 +603,105 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 				}
 
 				file << "\t" << _system_data._Name.c_str() << "::Instance->Initialize();" << std::endl;
+
+				for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
+				{
+					file << "#endif" << std::endl;
+				}
+			}
+		}
+
+		file << "}" << std::endl;
+
+		file << std::endl;
+	}
+
+	//Add the "Systems::PostInitialize()" function.
+	{
+		file << "void Systems::PostInitialize() NOEXCEPT" << std::endl;
+		file << "{" << std::endl;
+
+		for (const SystemData &_system_data : system_data)
+		{
+			if (_system_data._PostInitialize)
+			{
+				for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
+				{
+					file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				for (const std::string &defined_requirement : _system_data._DefinedRequirements)
+				{
+					file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				file << "\t" << _system_data._Name.c_str() << "::Instance->PostInitialize();" << std::endl;
+
+				for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
+				{
+					file << "#endif" << std::endl;
+				}
+			}
+		}
+
+		file << "}" << std::endl;
+
+		file << std::endl;
+	}
+
+	//Add the "Systems::Terminate()" function.
+	{
+		file << "void Systems::Terminate() NOEXCEPT" << std::endl;
+		file << "{" << std::endl;
+
+		for (const SystemData &_system_data : system_data)
+		{
+			if (_system_data._Terminate)
+			{
+				for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
+				{
+					file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				for (const std::string &defined_requirement : _system_data._DefinedRequirements)
+				{
+					file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				file << "\t" << _system_data._Name.c_str() << "::Instance->Terminate();" << std::endl;
+
+				for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
+				{
+					file << "#endif" << std::endl;
+				}
+			}
+		}
+
+		file << "}" << std::endl;
+
+		file << std::endl;
+	}
+
+	//Add the "Systems::PostTerminate()" function.
+	{
+		file << "void Systems::PostTerminate() NOEXCEPT" << std::endl;
+		file << "{" << std::endl;
+
+		for (const SystemData &_system_data : system_data)
+		{
+			if (_system_data._PostTerminate)
+			{
+				for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
+				{
+					file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				for (const std::string &defined_requirement : _system_data._DefinedRequirements)
+				{
+					file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				file << "\t" << _system_data._Name.c_str() << "::Instance->PostTerminate();" << std::endl;
 
 				for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
 				{

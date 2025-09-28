@@ -23,7 +23,8 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		TaskSystem
+		TaskSystem,
+		SYSTEM_INITIALIZE()
 	);
 
 	/*
@@ -31,12 +32,8 @@ public:
 	*/
 	TaskSystem() NOEXCEPT
 	{
-	}
 
-	/*
-	*	Initializes the task system.
-	*/
-	void Initialize(const CatalystProjectConcurrencyConfiguration &configuration) NOEXCEPT;
+	}
 
 	/*
 	*	Terminates the task system.

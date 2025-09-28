@@ -79,6 +79,8 @@ public:
 	(
 		ImGuiSystem,
 		SYSTEM_NOT_DEFINED_REQUIREMENT(CATALYST_CONFIGURATION_FINAL)
+		SYSTEM_INITIALIZE()
+		SYSTEM_POST_TERMINATE()
 	);
 
 	/*
@@ -88,16 +90,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the ImGui system.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
-	*	Post-terminates the ImGui system.
-	*/
-	void PostTerminate() NOEXCEPT;
 
 	/*
 	*	Callback for when input is available.

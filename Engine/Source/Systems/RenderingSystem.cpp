@@ -56,10 +56,10 @@
 /*
 *	Initializes the rendering system.
 */
-void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT
+void RenderingSystem::Initialize() NOEXCEPT
 {
 	//Set the configuration.
-	_Configuration = configuration;
+	_Configuration = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration;
 
 	//Create the sub rendering system.
 	switch (_Configuration._SubRenderingSystem)
@@ -137,9 +137,9 @@ void RenderingSystem::Initialize(const CatalystProjectRenderingConfiguration &co
 	_SubRenderingSystem->PreInitialize();
 
 	//Call the pre-render initialize function.
-	if (configuration._PreRenderInitializeFunction)
+	if (_Configuration._PreRenderInitializeFunction)
 	{
-		configuration._PreRenderInitializeFunction();
+		_Configuration._PreRenderInitializeFunction();
 	}
 
 	//Initialize the render input manager.

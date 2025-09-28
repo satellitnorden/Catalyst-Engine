@@ -9,7 +9,9 @@
     </RemoteDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>-script_generator_game_include ClairvoyantScripting/ClairvoyantScriptNodes.h</LocalDebuggerCommandArguments>
-    <RemoteDebuggerCommandArguments>-script_generator_game_include ClairvoyantScripting/ClairvoyantScriptNodes.h</RemoteDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
+    <RemoteDebuggerCommandArguments>
+    </RemoteDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

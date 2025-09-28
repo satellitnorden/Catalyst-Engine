@@ -18,10 +18,10 @@
 /*
 *	Initializes the world system.
 */
-void WorldSystem::Initialize(const CatalystProjectWorldConfiguration &configuration) NOEXCEPT
+void WorldSystem::Initialize() NOEXCEPT
 {
 	//Set the world grid size.
-	_WorldGridSize = configuration._WorldGridSize;
+	_WorldGridSize = CatalystEngineSystem::Instance->GetProjectConfiguration()->_WorldConfiguration._WorldGridSize;
 
 	//Initialize the water system.
 	_WaterSystem.Initialize();

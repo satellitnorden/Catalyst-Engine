@@ -21,6 +21,27 @@ public:							\
 	void Initialize() NOEXCEPT;
 
 /*
+*	Put this in your system declaration and implement it to receive an "PostInitialize()" call.
+*/
+#define SYSTEM_POST_INITIALIZE()	\
+public:								\
+	void PostInitialize() NOEXCEPT;
+
+/*
+*	Put this in your system declaration and implement it to receive an "Terminate()" call.
+*/
+#define SYSTEM_TERMINATE()		\
+public:							\
+	void Terminate() NOEXCEPT;
+
+/*
+*	Put this in your system declaration and implement it to receive an "PostTerminate()" call.
+*/
+#define SYSTEM_POST_TERMINATE()		\
+public:								\
+	void PostTerminate() NOEXCEPT;
+
+/*
 *	Declares a Catalyst system.
 *	Put this within the class.
 *	This will define an "Instance" static variable within the class that is automatically allocated by the engine.
@@ -45,8 +66,23 @@ class Systems final
 public:
 
 	/*
-	*	Initializes components.
+	*	Initializes all systems.
 	*/
 	static void Initialize() NOEXCEPT;
+
+	/*
+	*	Post-initializes all systems.
+	*/
+	static void PostInitialize() NOEXCEPT;
+
+	/*
+	*	Terminates all systems.
+	*/
+	static void Terminate() NOEXCEPT;
+
+	/*
+	*	Post-terminates all systems.
+	*/
+	static void PostTerminate() NOEXCEPT;
 
 };

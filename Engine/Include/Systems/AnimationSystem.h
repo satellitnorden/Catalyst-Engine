@@ -22,7 +22,8 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		AnimationSystem
+		AnimationSystem,
+		SYSTEM_POST_INITIALIZE()
 	);
 
 	/*
@@ -32,11 +33,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Post initializes the animation system.
-	*/
-	void PostInitialize() NOEXCEPT;
 
 	/*
 	*	Updates the animation system during the render update phase.

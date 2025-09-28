@@ -14,7 +14,8 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		NetworkSystem
+		NetworkSystem,
+		SYSTEM_INITIALIZE()
 	);
 
 	/*
@@ -24,11 +25,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the network system.
-	*/
-	void Initialize() NOEXCEPT;
 
 private:
 

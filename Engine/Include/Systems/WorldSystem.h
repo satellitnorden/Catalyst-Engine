@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/CatalystProjectConfiguration.h>
 #include <Core/General/Padding.h>
 
 //Systems.
@@ -26,7 +25,10 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		WorldSystem
+		WorldSystem,
+		SYSTEM_INITIALIZE()
+		SYSTEM_POST_INITIALIZE()
+		SYSTEM_TERMINATE()
 	);
 
 	/*
@@ -36,21 +38,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the world system.
-	*/
-	void Initialize(const CatalystProjectWorldConfiguration& configuration) NOEXCEPT;
-
-	/*
-	*	Post-initializes the world system.
-	*/
-	void PostInitialize() NOEXCEPT;
-
-	/*
-	*	Terminates the world system.
-	*/
-	void Terminate() NOEXCEPT;
 
 	/*
 	*	Updates the world system during render.
@@ -68,7 +55,7 @@ public:
 	/*
 	*	Returns the current world grid cell.
 	*/
-	NO_DISCARD const Vector3<int32>& GetCurrentWorldGridCell() const NOEXCEPT;
+	NO_DISCARD const Vector3<int32> &GetCurrentWorldGridCell() const NOEXCEPT;
 
 	/*
 	*	Returns the environment system.

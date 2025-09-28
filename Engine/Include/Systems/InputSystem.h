@@ -24,7 +24,8 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		InputSystem
+		InputSystem,
+		SYSTEM_INITIALIZE()
 	);
 
 	/*
@@ -34,11 +35,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the input system.
-	*/
-	void Initialize(const CatalystProjectInputConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Locks an input layer.

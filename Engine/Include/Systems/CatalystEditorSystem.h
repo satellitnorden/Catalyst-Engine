@@ -30,6 +30,8 @@ public:
 	(
 		CatalystEditorSystem,
 		SYSTEM_DEFINED_REQUIREMENT(CATALYST_EDITOR)
+		SYSTEM_INITIALIZE()
+		SYSTEM_POST_INITIALIZE()
 	);
 
 	/*
@@ -39,16 +41,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the Catalyst editor system.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
-	*	Post initializes the Catalyst editor system.
-	*/
-	void PostInitialize() NOEXCEPT;
 
 	/*
 	*	Returns if the editor is in a game.

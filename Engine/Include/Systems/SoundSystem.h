@@ -37,7 +37,9 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		SoundSystem
+		SoundSystem,
+		SYSTEM_INITIALIZE()
+		SYSTEM_TERMINATE()
 	);
 
 	/*
@@ -47,16 +49,6 @@ public:
 	{
 	
 	}
-
-	/*
-	*	Initializes the sound system.
-	*/
-	void Initialize(const CatalystProjectSoundConfiguration &configuration) NOEXCEPT;
-
-	/*
-	*	Terminates the sound system.
-	*/
-	void Terminate() NOEXCEPT;
 
 	/*
 	*	Sets the sound sub system type.

@@ -33,7 +33,9 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		ContentSystem
+		ContentSystem,
+		SYSTEM_INITIALIZE()
+		SYSTEM_TERMINATE()
 	);
 
 	/*
@@ -43,16 +45,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the content system.
-	*/
-	void Initialize() NOEXCEPT;
-
-	/*
-	*	Terminates the content system.
-	*/
-	void Terminate() NOEXCEPT;
 
 	/*
 	*	Registers an asset compiler.

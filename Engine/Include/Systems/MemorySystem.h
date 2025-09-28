@@ -22,7 +22,8 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		MemorySystem
+		MemorySystem,
+		SYSTEM_INITIALIZE()
 	);
 
 	/*
@@ -32,11 +33,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Initializes the memory system.
-	*/
-	void Initialize() NOEXCEPT;
 
 	/*
 	*	Allocates from a heap specific to the current frame.

@@ -31,7 +31,8 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		ResourceSystem
+		ResourceSystem,
+		SYSTEM_TERMINATE()
 	);
 
 	/*
@@ -41,11 +42,6 @@ public:
 	{
 
 	}
-
-	/*
-	*	Terminates the resource system.
-	*/
-	void Terminate() NOEXCEPT;
 
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	/*
