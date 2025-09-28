@@ -25,7 +25,8 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		PathTracingSystem
+		PathTracingSystem,
+		SYSTEM_UPDATE(RANGE(PRE, USER_INTERFACE))
 	);
 
 	/*
@@ -85,14 +86,6 @@ private:
 
 	//The total number of pixels.
 	uint64 _TotalNumberOfPixels;
-
-	//The update identifier.
-	uint64 _UpdateIdentifier;
-
-	/*
-	*	Updates the path tracing system.
-	*/
-	void Update() NOEXCEPT;
 
 	/*
 	*	Executes the tasks.

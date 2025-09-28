@@ -23,7 +23,7 @@ public:
 	CATALYST_SYSTEM
 	(
 		MemorySystem,
-		SYSTEM_INITIALIZE()
+		SYSTEM_UPDATE(RANGE(PRE, ENTITY))
 	);
 
 	/*
@@ -64,11 +64,6 @@ private:
 
 	//The frame allocator lock.
 	Spinlock _FrameAllocatorLock;
-
-	/*
-	*	Updates the memory system before the frame begins.
-	*/
-	void PreUpdate() NOEXCEPT;
 
 	/*
 	*	Returns the  pool allocator specific to the given type.

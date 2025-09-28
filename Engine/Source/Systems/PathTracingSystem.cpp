@@ -159,6 +159,55 @@ namespace PathTracingSystemConstants
 }
 
 /*
+*	Updates the path tracing system.
+*/
+void PathTracingSystem::Update(const UpdatePhase phase) NOEXCEPT
+{
+	//Return if not in progress.
+	if (!_IsInProgress)
+	{
+		return;
+	}
+
+	//Update the progress.
+	USER_INTERFACE_SCENE.SetProgress(static_cast<float32>(_CurrentNumberOfPixels.Load()) / static_cast<float32>(_TotalNumberOfPixels));
+
+	//Are all tasks done?
+	if (AllTasksDone())
+	{
+		//Create a new final texture handle.
+		Texture2DHandle new_final_texture_handle;
+		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_FinalTexture), TextureFormat::RGBA_FLOAT32, TextureUsage::NONE, false), &new_final_texture_handle);
+
+		//Add the new final texture to the global render data.
+		const uint32 new_final_texture_index{ RenderingSystem::Instance->AddTextureToGlobalRenderData(new_final_texture_handle) };
+
+		//Tell the user interface scene the new texture index.
+		USER_INTERFACE_SCENE.SetTextureIndex(new_final_texture_index);
+
+		//Tell the user interface scene the of samples.
+		USER_INTERFACE_SCENE.SetSamples(_CurrentNumberOfSamples);
+
+		//Remove the old final texture, if there is one.
+		if (_FinalTextureHandle)
+		{
+			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_FinalTextureIndex);
+			RenderingSystem::Instance->DestroyTexture2D(&_FinalTextureHandle);
+		}
+
+		//Update the final texture handle/index.
+		_FinalTextureHandle = new_final_texture_handle;
+		_FinalTextureIndex = new_final_texture_index;
+
+		//Increment the current number of samples.
+		++_CurrentNumberOfSamples;
+
+		//Execute the tasks again!
+		ExecuteTasks();
+	}
+}
+
+/*
 *	Starts path tracing.
 */
 void PathTracingSystem::Start() NOEXCEPT
@@ -227,20 +276,6 @@ void PathTracingSystem::Start() NOEXCEPT
 	//Activate the user interface scene.
 	UserInterfaceSystem::Instance->ActivateScene(&USER_INTERFACE_SCENE);
 
-	//Register the update.
-	_UpdateIdentifier = CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT)
-		{
-			PathTracingSystem::Instance->Update();
-		},
-		nullptr,
-		UpdatePhase::PRE,
-		UpdatePhase::USER_INTERFACE,
-		false,
-		false
-	);
-
 	//Path tracing is now in progress!
 	_IsInProgress = true;
 }
@@ -279,9 +314,6 @@ void PathTracingSystem::Stop(const char* const RESTRICT file_path) NOEXCEPT
 	//Deactivate the rendering reference user interface scene.
 	UserInterfaceSystem::Instance->DeactivateScene(&USER_INTERFACE_SCENE);
 
-	//De-register the update.
-	CatalystEngineSystem::Instance->DeregisterUpdate(_UpdateIdentifier);
-
 	//Resume the Catalyst engine system.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(1.0f);
 
@@ -295,49 +327,6 @@ void PathTracingSystem::Stop(const char* const RESTRICT file_path) NOEXCEPT
 NO_DISCARD bool PathTracingSystem::IsInProgress() const NOEXCEPT
 {
 	return _IsInProgress;
-}
-
-/*
-*	Updates the path tracing system.
-*/
-void PathTracingSystem::Update() NOEXCEPT
-{
-	//Update the progress.
-	USER_INTERFACE_SCENE.SetProgress(static_cast<float32>(_CurrentNumberOfPixels.Load()) / static_cast<float32>(_TotalNumberOfPixels));
-
-	//Are all tasks done?
-	if (AllTasksDone())
-	{
-		//Create a new final texture handle.
-		Texture2DHandle new_final_texture_handle;
-		RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(_FinalTexture), TextureFormat::RGBA_FLOAT32, TextureUsage::NONE, false), &new_final_texture_handle);
-
-		//Add the new final texture to the global render data.
-		const uint32 new_final_texture_index{ RenderingSystem::Instance->AddTextureToGlobalRenderData(new_final_texture_handle) };
-
-		//Tell the user interface scene the new texture index.
-		USER_INTERFACE_SCENE.SetTextureIndex(new_final_texture_index);
-
-		//Tell the user interface scene the of samples.
-		USER_INTERFACE_SCENE.SetSamples(_CurrentNumberOfSamples);
-
-		//Remove the old final texture, if there is one.
-		if (_FinalTextureHandle)
-		{
-			RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_FinalTextureIndex);
-			RenderingSystem::Instance->DestroyTexture2D(&_FinalTextureHandle);
-		}
-
-		//Update the final texture handle/index.
-		_FinalTextureHandle = new_final_texture_handle;
-		_FinalTextureIndex = new_final_texture_index;
-
-		//Increment the current number of samples.
-		++_CurrentNumberOfSamples;
-
-		//Execute the tasks again!
-		ExecuteTasks();
-	}
 }
 
 /*

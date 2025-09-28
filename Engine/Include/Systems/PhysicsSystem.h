@@ -41,6 +41,7 @@ public:
 	(
 		PhysicsSystem,
 		SYSTEM_INITIALIZE()
+		SYSTEM_UPDATE(RANGE(PHYSICS, RENDER))
 		SYSTEM_TERMINATE()
 	);
 
@@ -130,11 +131,6 @@ private:
 
 	//Denotes if the physics system is initialized.
 	bool _Initialized{ false };
-
-	/*
-	*	Updates the physics system during the physics update phase.
-	*/
-	void PhysicsUpdate() NOEXCEPT;
 
 	/*
 	*	Initializes the physics sub-system.

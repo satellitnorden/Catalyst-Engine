@@ -4,9 +4,6 @@
 //Math.
 #include <Math/Core/CatalystGeometryMath.h>
 
-//Systems.
-#include <Systems/CatalystEngineSystem.h>
-
 //Terrain.
 #include <Terrain/TerrainGeneralUtilities.h>
 
@@ -30,22 +27,20 @@ void PhysicsSystem::Initialize() NOEXCEPT
 	//Initialize the sub system.
 	SubInitialize();
 
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void *const RESTRICT arguments)
-	{
-		static_cast<PhysicsSystem *const RESTRICT>(arguments)->PhysicsUpdate();
-	},
-	this,
-	UpdatePhase::PHYSICS,
-	UpdatePhase::RENDER,
-	false,
-	false);
-
 	//The physics system is now initialized!
 	_Initialized = true;
 
 	//Other threads are now free to try to initialize the physics system. (:
 	_InitializationLock.Unlock();
+}
+
+/*
+*	Updates the physics system.
+*/
+void PhysicsSystem::Update(const UpdatePhase phase) NOEXCEPT
+{
+	//Update the physics sub-system during the physics update phase.
+	SubPhysicsUpdate();
 }
 
 /*
@@ -179,15 +174,6 @@ void PhysicsSystem::BuildCollisionModel(const ModelFile &model_file, CollisionMo
 {
 	//Build the collision model on the sub-system.
 	SubBuildCollisionModel(model_file, collision_model_data);
-}
-
-/*
-*	Updates the physics system during the physics update phase.
-*/
-void PhysicsSystem::PhysicsUpdate() NOEXCEPT
-{
-	//Update the physics sub-system during the physics update phase.
-	SubPhysicsUpdate();
 }
 
 /*
