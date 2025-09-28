@@ -3,7 +3,6 @@
 #include <Systems/DebugSystem.h>
 
 //Systems.
-#include <Systems/CatalystEngineSystem.h>
 #include <Systems/ImGuiSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -15,23 +14,40 @@
 #include <string>
 
 /*
-*	Initializes the debug system.
+*	Updates the debug system.
 */
-void DebugSystem::Initialize() NOEXCEPT
+void DebugSystem::Update(const UpdatePhase phase) NOEXCEPT
 {
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
+	if (RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::CUSTOM)
+	{
+		return;
+	}
+
+	//Update if the debug window should be displayed.
+	if (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::Insert) == ButtonState::PRESSED)
+	{
+		_DisplayDebugWindow = !_DisplayDebugWindow;
+
+		if (_DisplayDebugWindow)
 		{
-			static_cast<DebugSystem *const RESTRICT>(arguments)->Update();
-		},
-		this,
-		UpdatePhase::USER_INTERFACE,
-		UpdatePhase::PHYSICS,
-		false,
-		false
-	);
+			InputSystem::Instance->LockInputLayer(InputLayer::GAME);
+			InputSystem::Instance->ShowCursor(InputLayer::DEBUG);
+
+			ImGuiSystem::Instance->RegisterGameWindow
+			(
+				ImGuiSystem::GameWindow::RIGHT,
+				[](const Vector2<float32> minimum, const Vector2<float32> maximum)
+				{
+					return DebugSystem::Instance->DrawDebugWindow(minimum, maximum);
+				}
+			);
+		}
+
+		else
+		{
+			InputSystem::Instance->UnlockInputLayer(InputLayer::GAME);
+		}
+	}
 }
 
 /*
@@ -234,43 +250,6 @@ void DebugSystem::RegisterSliderDebugCommand
 			new_debug_command._State._SliderState._Value = initial_value;
 
 			break;
-		}
-	}
-}
-
-/*
-*	Updates the debug system.
-*/
-void DebugSystem::Update() NOEXCEPT
-{
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::CUSTOM)
-	{
-		return;
-	}
-
-	//Update if the debug window should be displayed.
-	if (InputSystem::Instance->GetKeyboardState(InputLayer::DEBUG)->GetButtonState(KeyboardButton::Insert) == ButtonState::PRESSED)
-	{
-		_DisplayDebugWindow = !_DisplayDebugWindow;
-
-		if (_DisplayDebugWindow)
-		{
-			InputSystem::Instance->LockInputLayer(InputLayer::GAME);
-			InputSystem::Instance->ShowCursor(InputLayer::DEBUG);
-
-			ImGuiSystem::Instance->RegisterGameWindow
-			(
-				ImGuiSystem::GameWindow::RIGHT,
-				[](const Vector2<float32> minimum, const Vector2<float32> maximum)
-				{
-					return DebugSystem::Instance->DrawDebugWindow(minimum, maximum);
-				}
-			);
-		}
-
-		else
-		{
-			InputSystem::Instance->UnlockInputLayer(InputLayer::GAME);
 		}
 	}
 }

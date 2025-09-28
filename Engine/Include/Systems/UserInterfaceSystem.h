@@ -28,6 +28,7 @@ public:
 	(
 		UserInterfaceSystem,
 		SYSTEM_INITIALIZE()
+		SYSTEM_UPDATE(RANGE(USER_INTERFACE, PRE_RENDER))
 		SYSTEM_TERMINATE()
 	);
 
@@ -160,11 +161,6 @@ private:
 
 	//The render informations for the 3D user interface scenes.
 	DynamicArray<UserInterfaceRenderInformation> _3DRenderInformations;
-
-	/*
-	*	Updates the user interface system during the user interface update phase.
-	*/
-	void UserInterfaceUpdate() NOEXCEPT;
 
 	/*
 	*	The storage buffer update.

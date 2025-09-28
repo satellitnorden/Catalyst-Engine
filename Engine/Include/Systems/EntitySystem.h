@@ -40,7 +40,7 @@ public:
 	CATALYST_SYSTEM
 	(
 		EntitySystem,
-		SYSTEM_INITIALIZE()
+		SYSTEM_UPDATE(RANGE(ENTITY, GAMEPLAY))
 	);
 
 	/*
@@ -175,11 +175,6 @@ private:
 	*	Generates a new entity identifier.
 	*/
 	NO_DISCARD EntityIdentifier GenerateEntityIdentifier() NOEXCEPT;
-
-	/*
-	*	Updates the entity system during the ENTITY update phase.
-	*/
-	void EntityUpdate() NOEXCEPT;
 
 	/*
 	*	Processes the creation queue.

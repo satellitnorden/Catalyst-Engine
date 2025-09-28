@@ -30,54 +30,22 @@ void InputSystem::Initialize() NOEXCEPT
 #else
 	_LastUpdatedInputDeviceType = InputDeviceType::UNKNOWN;
 #endif
-
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
-	{
-		static_cast<InputSystem *const RESTRICT>(arguments)->InputUpdate();
-	},
-	this,
-	UpdatePhase::INPUT,
-	UpdatePhase::GAMEPLAY,
-	false,
-	false);
 }
 
-/*
-*	Hides the cursor.
-*/
-void InputSystem::HideCursor(const InputLayer input_layer) const NOEXCEPT
-{
-	if (!IsInputLayerBlocked(input_layer))
-	{
-		CatalystPlatform::HideCursor();
-	}
-}
 
 /*
-*	Shows the cursor.
+*	Updates the input system.
 */
-void InputSystem::ShowCursor(const InputLayer input_layer) const NOEXCEPT
+void InputSystem::Update(const UpdatePhase phase) NOEXCEPT
 {
-	if (!IsInputLayerBlocked(input_layer))
-	{
-		CatalystPlatform::ShowCursor();
-	}
-}
-
-/*
-*	Updates the input system during the input update phase.
-*/
-void InputSystem::InputUpdate() NOEXCEPT
-{
-	PROFILING_SCOPE("InputSystem_InputUpdate");
+	PROFILING_SCOPE("InputSystem::Update()");
 
 	//Remember the old input state.
 	const InputState old_input_state{ _InputState };
 
 	//Update the gamepad states.
 	{
-		PROFILING_SCOPE("InputSystem_InputUpdate_UpdateGamepadStates");
+		PROFILING_SCOPE("InputSystem::Update - UpdateGamepadStates");
 
 		for (uint8 i{ 0 }; i < BaseMath::Minimum<uint8>(_NumberOfSupportedGamepads, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS); ++i)
 		{
@@ -87,28 +55,28 @@ void InputSystem::InputUpdate() NOEXCEPT
 
 	//Update the keyboard state.
 	{
-		PROFILING_SCOPE("InputSystem_InputUpdate_UpdateKeyboardState");
+		PROFILING_SCOPE("InputSystem::Update - UpdateKeyboardState");
 
 		UpdateKeyboardState();
 	}
 
 	//Update the mouse state.
 	{
-		PROFILING_SCOPE("InputSystem_InputUpdate_UpdateMouseState");
+		PROFILING_SCOPE("InputSystem::Update - UpdateMouseState");
 
 		UpdateMouseState();
 	}
 
 	//Update the touch state.
 	{
-		PROFILING_SCOPE("InputSystem_InputUpdate_UpdateTouchState");
+		PROFILING_SCOPE("InputSystem::Update - UpdateTouchState");
 
 		UpdateTouchState();
 	}
 
 	//Determine the last updated input device type.
 	{
-		PROFILING_SCOPE("InputSystem_InputUpdate_DetermineLastUpdatedInputDeviceType");
+		PROFILING_SCOPE("InputSystem::Update - DetermineLastUpdatedInputDeviceType");
 
 		//Did the gamepad state change?
 		if (!Memory::Compare(&old_input_state._GamepadStates, &_InputState._GamepadStates, sizeof(_InputState._GamepadStates)))
@@ -142,4 +110,26 @@ void InputSystem::InputUpdate() NOEXCEPT
 		ImGuiSystem::Instance->OnInputAvailable();
 	}
 #endif
+}
+
+/*
+*	Hides the cursor.
+*/
+void InputSystem::HideCursor(const InputLayer input_layer) const NOEXCEPT
+{
+	if (!IsInputLayerBlocked(input_layer))
+	{
+		CatalystPlatform::HideCursor();
+	}
+}
+
+/*
+*	Shows the cursor.
+*/
+void InputSystem::ShowCursor(const InputLayer input_layer) const NOEXCEPT
+{
+	if (!IsInputLayerBlocked(input_layer))
+	{
+		CatalystPlatform::ShowCursor();
+	}
 }

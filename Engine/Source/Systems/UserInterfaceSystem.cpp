@@ -6,7 +6,6 @@
 #include <Components/Components/WorldTransformComponent.h>
 
 //Systems.
-#include <Systems/CatalystEngineSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/MemorySystem.h>
 #include <Systems/WorldSystem.h>
@@ -94,17 +93,85 @@ void UserInterfaceSystem::Initialize() NOEXCEPT
 		RenderInputStream::Mode::DRAW_INSTANCED,
 		this
 	);
+}
 
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
+/*
+*	Updates the user interface system.
+*/
+void UserInterfaceSystem::Update(const UpdatePhase phase) NOEXCEPT
+{
+	//Process the destruction queue.
 	{
-		static_cast<UserInterfaceSystem *const RESTRICT>(arguments)->UserInterfaceUpdate();
-	},
-	this,
-	UpdatePhase::USER_INTERFACE,
-	UpdatePhase::PHYSICS,
-	false,
-	false);
+		Optional<UserInterfaceScene *RESTRICT> scene{ _DestructionQueue.Pop() };
+
+		while (scene.Valid())
+		{
+			//Deactivate this scene if is active.
+			if (scene.Get()->GetIsActive())
+			{
+				scene.Get()->OnDeactivated();
+
+				_ActiveUserInterfaceScenes.Erase<false>(scene.Get());
+
+				scene.Get()->SetIsActive(false);
+			}
+
+			scene = _DestructionQueue.Pop();
+		}
+	}
+
+	//Process the deactivation queue.
+	{
+		Optional<UserInterfaceScene *RESTRICT> scene{ _DeactivationQueue.Pop() };
+
+		while (scene.Valid())
+		{
+			if (scene.Get()->GetIsActive())
+			{
+				scene.Get()->OnDeactivated();
+
+				_ActiveUserInterfaceScenes.Erase<false>(scene.Get());
+
+				scene.Get()->SetIsActive(false);
+			}
+
+			scene = _DeactivationQueue.Pop();
+		}
+	}
+
+	//Process the activation queue.
+	{
+		Optional<UserInterfaceScene *RESTRICT> scene{ _ActivationQueue.Pop() };
+
+		while (scene.Valid())
+		{
+			if (!scene.Get()->GetIsActive())
+			{
+				_ActiveUserInterfaceScenes.Emplace(scene.Get());
+
+				scene.Get()->OnActivated();
+
+				scene.Get()->SetIsActive(true);
+			}
+
+			scene = _ActivationQueue.Pop();
+		}
+	}
+
+	//Update all the current scenes.
+	for (UserInterfaceScene *const RESTRICT scene : _ActiveUserInterfaceScenes)
+	{
+		scene->Update();
+	}
+
+	//Update all scenes for user interface components as well.
+	for (UserInterfaceInstanceData &instance_data : UserInterfaceComponent::Instance->InstanceData())
+	{
+		if (instance_data._Scene)
+		{
+			instance_data._Scene->Update();
+		}
+	}
 }
 
 /*
@@ -197,85 +264,6 @@ void UserInterfaceSystem::DestroyUserInterfacePrimitive(UserInterfacePrimitive *
 			ASSERT(false, "Invalid case!");
 
 			break;
-		}
-	}
-}
-
-/*
-*	Updates the user interface system during the user interface update phase.
-*/
-void UserInterfaceSystem::UserInterfaceUpdate() NOEXCEPT
-{
-	//Process the destruction queue.
-	{
-		Optional<UserInterfaceScene *RESTRICT> scene{ _DestructionQueue.Pop() };
-
-		while (scene.Valid())
-		{
-			//Deactivate this scene if is active.
-			if (scene.Get()->GetIsActive())
-			{
-				scene.Get()->OnDeactivated();
-
-				_ActiveUserInterfaceScenes.Erase<false>(scene.Get());
-
-				scene.Get()->SetIsActive(false);
-			}
-
-			scene = _DestructionQueue.Pop();
-		}
-	}
-
-	//Process the deactivation queue.
-	{
-		Optional<UserInterfaceScene *RESTRICT> scene{ _DeactivationQueue.Pop() };
-
-		while (scene.Valid())
-		{
-			if (scene.Get()->GetIsActive())
-			{
-				scene.Get()->OnDeactivated();
-
-				_ActiveUserInterfaceScenes.Erase<false>(scene.Get());
-
-				scene.Get()->SetIsActive(false);
-			}
-
-			scene = _DeactivationQueue.Pop();
-		}
-	}
-
-	//Process the activation queue.
-	{
-		Optional<UserInterfaceScene *RESTRICT> scene{ _ActivationQueue.Pop() };
-
-		while (scene.Valid())
-		{
-			if (!scene.Get()->GetIsActive())
-			{
-				_ActiveUserInterfaceScenes.Emplace(scene.Get());
-
-				scene.Get()->OnActivated();
-
-				scene.Get()->SetIsActive(true);
-			}
-
-			scene = _ActivationQueue.Pop();
-		}
-	}
-
-	//Update all the current scenes.
-	for (UserInterfaceScene *const RESTRICT scene : _ActiveUserInterfaceScenes)
-	{
-		scene->Update();
-	}
-
-	//Update all scenes for user interface components as well.
-	for (UserInterfaceInstanceData &instance_data : UserInterfaceComponent::Instance->InstanceData())
-	{
-		if (instance_data._Scene)
-		{
-			instance_data._Scene->Update();
 		}
 	}
 }

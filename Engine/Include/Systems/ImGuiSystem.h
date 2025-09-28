@@ -80,6 +80,7 @@ public:
 		ImGuiSystem,
 		SYSTEM_NOT_DEFINED_REQUIREMENT(CATALYST_CONFIGURATION_FINAL)
 		SYSTEM_INITIALIZE()
+		SYSTEM_UPDATE(RANGE(USER_INTERFACE, PRE_RENDER))
 		SYSTEM_POST_TERMINATE()
 	);
 
@@ -138,11 +139,6 @@ private:
 
 	//The game window data.
 	StaticArray<WindowData, UNDERLYING(GameWindow::NUMBER_OF_GAME_WINDOWS)> _GameWindowData;
-
-	/*
-	*	Updates during the USER_INTERFACE update phase.
-	*/
-	void UserInterfaceUpdate() NOEXCEPT;
 
 };
 #endif

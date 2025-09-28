@@ -26,6 +26,7 @@ public:
 	(
 		InputSystem,
 		SYSTEM_INITIALIZE()
+		SYSTEM_UPDATE(RANGE(INPUT, GAMEPLAY))
 	);
 
 	/*
@@ -157,11 +158,6 @@ private:
 
 	//Denotes the last updated input device type.
 	InputDeviceType _LastUpdatedInputDeviceType;
-
-	/*
-	*	Updates the input system during the input update phase.
-	*/
-	void InputUpdate() NOEXCEPT;
 
 	/*
 	*	Updates the gamepad state at the given index.

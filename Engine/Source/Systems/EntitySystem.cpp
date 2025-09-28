@@ -17,7 +17,6 @@
 #include <Profiling/Profiling.h>
 
 //Systems.
-#include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
 
 //Entity system constants.
@@ -36,20 +35,18 @@ namespace EntitySystemConstants
 }
 
 /*
-*	Initializes the entity system.
+*	Updates the entity system.
 */
-void EntitySystem::Initialize() NOEXCEPT
+void EntitySystem::Update(const UpdatePhase phase) NOEXCEPT
 {
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
-	{
-		static_cast<EntitySystem *const RESTRICT>(arguments)->EntityUpdate();
-	},
-	this,
-	UpdatePhase::ENTITY,
-	UpdatePhase::INPUT,
-	false,
-	false);
+	//Process the creation queue.
+	ProcessCreationQueue();
+
+	//Process the destruction queue.
+	ProcessDestructionQueue();
+
+	//Update the entity links.
+	_EntityLinks.Update();
 }
 
 /*
@@ -189,23 +186,6 @@ NO_DISCARD EntityIdentifier EntitySystem::GenerateEntityIdentifier() NOEXCEPT
 	{
 		return _EntityIdentifierCounter++;
 	}
-}
-
-/*
-*	Updates the entity system during the ENTITY update phase.
-*/
-void EntitySystem::EntityUpdate() NOEXCEPT
-{
-	PROFILING_SCOPE("EntitySystem::EntityUpdate");
-
-	//Process the creation queue.
-	ProcessCreationQueue();
-
-	//Process the destruction queue.
-	ProcessDestructionQueue();
-
-	//Update the entity links.
-	_EntityLinks.Update();
 }
 
 /*

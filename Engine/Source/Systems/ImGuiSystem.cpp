@@ -95,20 +95,6 @@ void ImGuiSystem::Initialize() NOEXCEPT
 	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._Maximum = Vector2<float32>(1.0f, 1.0f);
 	_GameWindowData[UNDERLYING(GameWindow::RIGHT)]._WindowCallback = nullptr;
 
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			static_cast<ImGuiSystem *const RESTRICT>(arguments)->UserInterfaceUpdate();
-		},
-		this,
-		UpdatePhase::USER_INTERFACE,
-		UpdatePhase::PHYSICS,
-		true,
-		false
-	);
-
 #if defined(CATALYST_EDITOR)
 	//Set up ImGuizmo.
 	ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -140,6 +126,47 @@ void ImGuiSystem::PostTerminate() NOEXCEPT
 {
 	//Shut down ImGui.
 	ImGui::DestroyContext();
+}
+
+/*
+*	Updates the ImGui system.
+*/
+void ImGuiSystem::Update(const UpdatePhase phase) NOEXCEPT
+{
+	//Update window data.
+#if defined(CATALYST_EDITOR)
+	if (!CatalystEditorSystem::Instance->IsInGame())
+	{
+		for (uint32 window_data_index{ 0 }; window_data_index < static_cast<uint32>(_EditorWindowData.Size()); ++window_data_index)
+		{
+			WindowData &window_data{ _EditorWindowData[window_data_index] };
+
+			if (window_data._WindowCallback)
+			{
+				if (!window_data._WindowCallback(window_data._Minimum, window_data._Maximum))
+				{
+					window_data._WindowCallback = nullptr;
+				}
+			}
+		}
+	}
+
+	else
+#endif
+	{
+		for (uint32 window_data_index{ 0 }; window_data_index < static_cast<uint32>(_GameWindowData.Size()); ++window_data_index)
+		{
+			WindowData &window_data{ _GameWindowData[window_data_index] };
+
+			if (window_data._WindowCallback)
+			{
+				if (!window_data._WindowCallback(window_data._Minimum, window_data._Maximum))
+				{
+					window_data._WindowCallback = nullptr;
+				}
+			}
+		}
+	}
 }
 
 /*
@@ -307,47 +334,6 @@ bool ImGuiSystem::BeginWindow(const BeginWindowParameters &parameters) NOEXCEPT
 	else
 	{
 		return true;
-	}
-}
-
-/*
-*	Updates during the USER_INTERFACE update phase.
-*/
-void ImGuiSystem::UserInterfaceUpdate() NOEXCEPT
-{
-	//Update window data.
-#if defined(CATALYST_EDITOR)
-	if (!CatalystEditorSystem::Instance->IsInGame())
-	{
-		for (uint32 window_data_index{ 0 }; window_data_index < static_cast<uint32>(_EditorWindowData.Size()); ++window_data_index)
-		{
-			WindowData &window_data{ _EditorWindowData[window_data_index] };
-
-			if (window_data._WindowCallback)
-			{
-				if (!window_data._WindowCallback(window_data._Minimum, window_data._Maximum))
-				{
-					window_data._WindowCallback = nullptr;
-				}
-			}
-		}
-	}
-
-	else
-#endif
-	{
-		for (uint32 window_data_index{ 0 }; window_data_index < static_cast<uint32>(_GameWindowData.Size()); ++window_data_index)
-		{
-			WindowData &window_data{ _GameWindowData[window_data_index] };
-
-			if (window_data._WindowCallback)
-			{
-				if (!window_data._WindowCallback(window_data._Minimum, window_data._Maximum))
-				{
-					window_data._WindowCallback = nullptr;
-				}
-			}
-		}
 	}
 }
 #endif

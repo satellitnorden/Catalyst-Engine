@@ -192,6 +192,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Pre update phase.
 	*/
+	Systems::Update(UpdatePhase::PRE);
 	{
 		PROFILING_SCOPE("UpdatePhase_Pre");
 
@@ -201,6 +202,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Entity update phase.
 	*/
+	Systems::Update(UpdatePhase::ENTITY);
 	{
 		PROFILING_SCOPE("UpdatePhase_Entity");
 
@@ -210,6 +212,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Input update phase.
 	*/
+	Systems::Update(UpdatePhase::INPUT);
 	{
 		PROFILING_SCOPE("UpdatePhase_Input");
 
@@ -219,6 +222,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Gameplay update phase.
 	*/
+	Systems::Update(UpdatePhase::GAMEPLAY);
 	{
 		PROFILING_SCOPE("UpdatePhase_Gameplay");
 
@@ -228,6 +232,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	User interface update phase.
 	*/
+	Systems::Update(UpdatePhase::USER_INTERFACE);
 	{
 		PROFILING_SCOPE("UpdatePhase_UserInterface");
 
@@ -237,6 +242,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Physics update phase.
 	*/
+	Systems::Update(UpdatePhase::PHYSICS);
 	{
 		PROFILING_SCOPE("UpdatePhase_Physics");
 
@@ -246,6 +252,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Pre-render update phase.
 	*/
+	Systems::Update(UpdatePhase::PRE_RENDER);
 	{
 		PROFILING_SCOPE("UpdatePhase_PreRender");
 
@@ -255,6 +262,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Render update phase.
 	*/
+	Systems::Update(UpdatePhase::RENDER);
 	{
 		PROFILING_SCOPE("UpdatePhase_Render");
 
@@ -266,6 +274,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	/*
 	*	Post update phase.
 	*/
+	Systems::Update(UpdatePhase::POST);
 	{
 		PROFILING_SCOPE("UpdatePhase_Post");
 

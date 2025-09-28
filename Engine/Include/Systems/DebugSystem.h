@@ -94,7 +94,7 @@ public:
 	(
 		DebugSystem,
 		SYSTEM_NOT_DEFINED_REQUIREMENT(CATALYST_CONFIGURATION_FINAL)
-		SYSTEM_INITIALIZE()
+		SYSTEM_UPDATE(RANGE(USER_INTERFACE, PHYSICS))
 	);
 
 	/*
@@ -164,11 +164,6 @@ private:
 
 	//The root debug category.
 	DebugCategory _RootDebugCategory;
-
-	/*
-	*	Updates the debug system.
-	*/
-	void Update() NOEXCEPT;
 
 	/*
 	*	Draws the debug window.

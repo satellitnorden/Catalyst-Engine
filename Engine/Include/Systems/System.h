@@ -28,6 +28,19 @@ public:								\
 	void PostInitialize() NOEXCEPT;
 
 /*
+*	Put this in your system declaration and implement it to receive an "Update()" call.
+*	You should specify 'RANGE' as an argument to this call, with the start update phase and the end update phase.
+*	System updates are parallelized within these ranges.
+*	The start update phase is when the update starts.
+*	The end update phase is when the update must be finished by before starting that updated phase.
+*	Example: SYSTEM_UPDATE(RANGE(GAMEPLAY, PHYSICS))
+*	A system can have multiple ranges.
+*/
+#define SYSTEM_UPDATE(RANGES)						\
+public:												\
+	void Update(const UpdatePhase phase) NOEXCEPT;
+
+/*
 *	Put this in your system declaration and implement it to receive an "Terminate()" call.
 */
 #define SYSTEM_TERMINATE()		\
@@ -74,6 +87,11 @@ public:
 	*	Post-initializes all systems.
 	*/
 	static void PostInitialize() NOEXCEPT;
+
+	/*
+	*	Updates all systems during the given update phase.
+	*/
+	static void Update(const UpdatePhase phase) NOEXCEPT;
 
 	/*
 	*	Terminates all systems.
