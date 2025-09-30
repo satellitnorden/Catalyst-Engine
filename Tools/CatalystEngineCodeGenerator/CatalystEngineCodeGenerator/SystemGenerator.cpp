@@ -18,6 +18,28 @@ class SystemData final
 
 public:
 
+	/*
+	*	Update range class definition.
+	*/
+	class UpdateRange final
+	{
+
+	public:
+
+		//The start phase.
+		std::string _StartPhase;
+
+		//The end phase.
+		std::string _EndPhase;
+
+		//Denotes whether or not to run on the main thread.
+		bool _RunOnMainThread;
+
+		//Denotes whether or not to run only in game.
+		bool _RunOnlyInGame;
+
+	};
+
 	//The name.
 	std::string _Name;
 
@@ -34,7 +56,7 @@ public:
 	bool _PostInitialize;
 
 	//The update ranges.
-	std::vector<std::pair<std::string, std::string>> _UpdateRanges;
+	std::vector<UpdateRange> _UpdateRanges;
 
 	//Denotes whether or not this systems wants a 'Terminate()' call.
 	bool _Terminate;
@@ -47,9 +69,9 @@ public:
 /*
 *	Returns the update task name for the given system and it's update range.
 */
-std::string GetUpdateTaskName(const SystemData &system_data, const std::pair<std::string, std::string> &update_range)
+std::string GetUpdateTaskName(const SystemData &system_data, const SystemData::UpdateRange &update_range)
 {
-	return system_data._Name + update_range.first + std::string("To") + update_range.second + std::string("Task");
+	return system_data._Name + update_range._StartPhase + std::string("To") + update_range._EndPhase + std::string("Task");
 }
 
 /*
@@ -345,30 +367,56 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 
 				while (position != std::string::npos)
 				{
-					_current_line = _current_line.substr(position + strlen("RANGE("));
+					_current_line = _current_line.substr(position);
 
-					const size_t first_phase_start_index{ 0 };
-					const size_t first_phase_end_index{ _current_line.find_first_of(",") };
-					const std::string start_phase{ _current_line.substr(first_phase_start_index, first_phase_end_index) };
+					std::array<std::string, 4> arguments;
 
-					size_t second_phase_start_index{ first_phase_end_index + 1 };
-
-					while (_current_line[second_phase_start_index] == ' ')
+					const uint64 number_of_arguments
 					{
-						++second_phase_start_index;
-					}
+						TextParsing::ParseFunctionArguments
+						(
+							_current_line.c_str(),
+							_current_line.length(),
+							arguments.data()
+						)
+					};
 
-					const size_t second_phase_end_index{ _current_line.find_first_of(")") };
-
-					const std::string end_phase{ _current_line.substr(second_phase_start_index, second_phase_end_index - second_phase_start_index) };
+					ASSERT(number_of_arguments >= 2, "RANGE() in SYSTEM_UPDATE() declaration needs at least two arguments!");
 
 					nlohmann::json update_range_entry;
 
-					update_range_entry["StartPhase"] = start_phase;
-					update_range_entry["EndPhase"] = end_phase;
+					for (size_t argument_index{ 0 }; argument_index < number_of_arguments; ++argument_index)
+					{
+						if (arguments[argument_index] == "RUN_ON_MAIN_THREAD")
+						{
+							update_range_entry["RunOnMainThread"] = true;
+						}
+
+						else if (arguments[argument_index] == "RUN_ONLY_IN_GAME")
+						{
+							update_range_entry["RunOnlyInGame"] = true;
+						}
+
+						else if(!update_range_entry.contains("StartPhase"))
+						{
+							update_range_entry["StartPhase"] = arguments[argument_index].c_str();
+						}
+
+						else if (!update_range_entry.contains("EndPhase"))
+						{
+							update_range_entry["EndPhase"] = arguments[argument_index].c_str();
+						}
+
+						else
+						{
+							
+							ASSERT(false, "Unknown argument!");
+						}
+					}
 
 					system_entry["UpdateRanges"].emplace_back(update_range_entry);
 
+					_current_line = _current_line.substr(_current_line.find_first_of(")"));
 					position = _current_line.find("RANGE(");
 				}
 
@@ -472,7 +520,14 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 				{
 					for (const nlohmann::json &update_range_entry : system_entry["UpdateRanges"])
 					{
-						new_system_data._UpdateRanges.emplace_back(update_range_entry["StartPhase"].get<std::string>(), update_range_entry["EndPhase"].get<std::string>());
+						SystemData::UpdateRange update_range;
+
+						update_range._StartPhase = update_range_entry["StartPhase"].get<std::string>();
+						update_range._EndPhase = update_range_entry.contains("EndPhase") ? update_range_entry["EndPhase"].get<std::string>() : "";
+						update_range._RunOnMainThread = update_range_entry.contains("RunOnMainThread") && update_range_entry["RunOnMainThread"].get<bool>();
+						update_range._RunOnlyInGame = update_range_entry.contains("RunOnlyInGame") && update_range_entry["RunOnlyInGame"].get<bool>();
+
+						new_system_data._UpdateRanges.emplace_back(update_range);
 					}
 				}
 
@@ -511,16 +566,16 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	for (const SystemData &_system_data : system_data)
 	{
-		for (const std::pair<std::string, std::string> &update_range : _system_data._UpdateRanges)
+		for (const SystemData::UpdateRange &update_range : _system_data._UpdateRanges)
 		{
-			if (std::find(unique_start_update_phases.begin(), unique_start_update_phases.end(), update_range.first) == unique_start_update_phases.end())
+			if (update_range._StartPhase != "" && std::find(unique_start_update_phases.begin(), unique_start_update_phases.end(), update_range._StartPhase) == unique_start_update_phases.end())
 			{
-				unique_start_update_phases.emplace_back(update_range.first);
+				unique_start_update_phases.emplace_back(update_range._StartPhase);
 			}
 
-			if (std::find(unique_end_update_phases.begin(), unique_end_update_phases.end(), update_range.second) == unique_end_update_phases.end())
+			if (update_range._EndPhase != "" && std::find(unique_end_update_phases.begin(), unique_end_update_phases.end(), update_range._EndPhase) == unique_end_update_phases.end())
 			{
-				unique_end_update_phases.emplace_back(update_range.second);
+				unique_end_update_phases.emplace_back(update_range._EndPhase);
 			}
 		}
 	}
@@ -599,8 +654,13 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	//Add all of the update tasks for all systems.
 	for (const SystemData &_system_data : system_data)
 	{
-		for (const std::pair<std::string, std::string> &update_range : _system_data._UpdateRanges)
+		for (const SystemData::UpdateRange &update_range : _system_data._UpdateRanges)
 		{
+			if (update_range._RunOnMainThread)
+			{
+				continue;
+			}
+
 			file << "Task " << GetUpdateTaskName(_system_data, update_range).c_str() << ";" << std::endl;
 		}
 	}
@@ -660,13 +720,18 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 		for (const SystemData &_system_data : system_data)
 		{
-			for (const std::pair<std::string, std::string>& update_range : _system_data._UpdateRanges)
+			for (const SystemData::UpdateRange &update_range : _system_data._UpdateRanges)
 			{
+				if (update_range._RunOnMainThread)
+				{
+					continue;
+				}
+
 				const std::string update_string{ GetUpdateTaskName(_system_data, update_range) };
 
 				file << "\t\t" << update_string.c_str() << "._Function = [](void *const RESTRICT /*arguments*/)" << std::endl;
 				file << "\t\t{" << std::endl;
-				file << "\t\t\t" << _system_data._Name.c_str() << "::Instance->Update(UpdatePhase::" << update_range.first.c_str() << ");" << std::endl;
+				file << "\t\t\t" << _system_data._Name.c_str() << "::Instance->Update(UpdatePhase::" << update_range._StartPhase.c_str() << ");" << std::endl;
 				file << "\t\t};" << std::endl;
 				file << "\t\t" << update_string.c_str() << "._Arguments = nullptr;" << std::endl;
 				file << "\t\t" << update_string.c_str() << "._ExecutableOnSameThread = false;" << std::endl;
@@ -907,16 +972,16 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 			for (const SystemData &_system_data : system_data)
 			{
-				for (const std::pair<std::string, std::string> &update_range : _system_data._UpdateRanges)
+				for (const SystemData::UpdateRange &update_range : _system_data._UpdateRanges)
 				{
-					if (update_range.second == unique_end_update_phase)
+					if (update_range._EndPhase == unique_end_update_phase && !update_range._RunOnMainThread)
 					{
-						for (const std::string& not_defined_requirement : _system_data._NotDefinedRequirements)
+						for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
 						{
 							file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
 						}
 
-						for (const std::string& defined_requirement : _system_data._DefinedRequirements)
+						for (const std::string &defined_requirement : _system_data._DefinedRequirements)
 						{
 							file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
 						}
@@ -954,9 +1019,9 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 			for (const SystemData &_system_data : system_data)
 			{
-				for (const std::pair<std::string, std::string>& update_range : _system_data._UpdateRanges)
+				for (const SystemData::UpdateRange &update_range : _system_data._UpdateRanges)
 				{
-					if (update_range.first == unique_start_update_phase)
+					if (update_range._StartPhase == unique_start_update_phase && !update_range._RunOnMainThread)
 					{
 						for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
 						{
@@ -969,6 +1034,49 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 						}
 
 						file << "\t\t\tTaskSystem::Instance->ExecuteTask(Task::Priority::HIGH, &" << GetUpdateTaskName(_system_data, update_range).c_str() << ");" << std::endl;
+
+						for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
+						{
+							file << "#endif" << std::endl;
+						}
+					}
+				}
+			}
+
+			file << std::endl;
+
+			file << "\t\t\tbreak;" << std::endl;
+			file << "\t\t}" << std::endl;
+		}
+
+		file << "\t}" << std::endl;
+		file << std::endl;
+
+		file << "\tswitch (phase)" << std::endl;
+		file << "\t{" << std::endl;
+
+		for (const std::string unique_start_update_phase : unique_start_update_phases)
+		{
+			file << "\t\tcase UpdatePhase::" << unique_start_update_phase.c_str() << ":" << std::endl;
+			file << "\t\t{" << std::endl;
+
+			for (const SystemData &_system_data : system_data)
+			{
+				for (const SystemData::UpdateRange &update_range : _system_data._UpdateRanges)
+				{
+					if (update_range._StartPhase == unique_start_update_phase && update_range._RunOnMainThread)
+					{
+						for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
+						{
+							file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
+						}
+
+						for (const std::string &defined_requirement : _system_data._DefinedRequirements)
+						{
+							file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
+						}
+
+						file << "\t\t\t" << _system_data._Name.c_str() << "::Instance->Update(UpdatePhase::" << update_range._StartPhase.c_str() << ");" << std::endl;
 
 						for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
 						{

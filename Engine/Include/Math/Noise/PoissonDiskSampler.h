@@ -170,14 +170,14 @@ private:
 
 		for (int32 Y{ static_cast<int32>(coordinate._Y) - 1 }; Y <= (static_cast<int32>(coordinate._Y) + 1); ++Y)
 		{
-			if (Y < 0 || Y >= _NumberOfCells)
+			if (Y < 0 || Y >= static_cast<int32>(_NumberOfCells))
 			{
 				continue;
 			}
 
 			for (int32 X{ static_cast<int32>(coordinate._X) - 1 }; X <= (static_cast<int32>(coordinate._X) + 1); ++X)
 			{
-				if (X < 0 || X >= _NumberOfCells)
+				if (X < 0 || X >= static_cast<int32>(_NumberOfCells))
 				{
 					continue;
 				}

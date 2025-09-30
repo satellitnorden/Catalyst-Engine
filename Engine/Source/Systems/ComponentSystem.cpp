@@ -15,111 +15,6 @@ void ComponentSystem::Initialize() NOEXCEPT
 {
 	//Initialize components.
 	Components::Initialize();
-
-	//Register all updates.
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			Components::Update(UpdatePhase::PRE);
-		},
-		this,
-		UpdatePhase::PRE,
-		UpdatePhase::ENTITY,
-		true,
-		false
-	);
-
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			Components::Update(UpdatePhase::INPUT);
-		},
-		this,
-		UpdatePhase::INPUT,
-		UpdatePhase::GAMEPLAY,
-		true,
-		false
-	);
-
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			Components::Update(UpdatePhase::GAMEPLAY);
-		},
-		this,
-		UpdatePhase::GAMEPLAY,
-		UpdatePhase::USER_INTERFACE,
-		true,
-		false
-	);
-
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			Components::Update(UpdatePhase::USER_INTERFACE);
-		},
-		this,
-		UpdatePhase::USER_INTERFACE,
-		UpdatePhase::PHYSICS,
-		true,
-		false
-	);
-
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			Components::Update(UpdatePhase::PHYSICS);
-		},
-		this,
-		UpdatePhase::PHYSICS,
-		UpdatePhase::PRE_RENDER,
-		true,
-		false
-	);
-
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			Components::Update(UpdatePhase::PRE_RENDER);
-		},
-		this,
-		UpdatePhase::PRE_RENDER,
-		UpdatePhase::RENDER,
-		true,
-		false
-	);
-
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			Components::Update(UpdatePhase::RENDER);
-		},
-		this,
-		UpdatePhase::RENDER,
-		UpdatePhase::POST,
-		true,
-		false
-	);
-
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			Components::Update(UpdatePhase::POST);
-		},
-		this,
-		UpdatePhase::POST,
-		UpdatePhase::PRE,
-		true,
-		false
-	);
 }
 
 /*
@@ -129,6 +24,14 @@ void ComponentSystem::PostInitialize() NOEXCEPT
 {
 	//Post-initialize components.
 	Components::PostInitialize();
+}
+
+/*
+*	Updates the component system.
+*/
+void ComponentSystem::Update(const UpdatePhase phase) NOEXCEPT
+{
+	Components::Update(phase);
 }
 
 /*

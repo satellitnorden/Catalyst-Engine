@@ -24,6 +24,44 @@
 #include <Systems/WorldSystem.h>
 
 /*
+*	Updates the time of day system.
+*/
+void TimeOfDaySystem::Update() NOEXCEPT
+{
+	if (!_Enabled)
+	{
+		return;
+	}
+
+	//Cache the delta time.
+#if defined(CATALYST_EDITOR)
+	const float32 delta_time{ CatalystEditorSystem::Instance->IsInGame() ? CatalystEngineSystem::Instance->GetDeltaTime() : 0.0f };
+#else
+	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
+#endif
+
+	//Update the current time of day.
+	_CurrentTimeOfDay += delta_time / 60.0f / 60.0f * _TimeOfDayParameters._TimeMultiplier;
+
+	//Wrap around.
+	while (_CurrentTimeOfDay < 0.0f)
+	{
+		_CurrentTimeOfDay += 24.0f;
+	}
+
+	while (_CurrentTimeOfDay >= 24.0f)
+	{
+		_CurrentTimeOfDay -= 24.0f;
+	}
+
+	//Update the sky light.
+	UpdateSkyLight();
+
+	//Update the sky.
+	UpdateSky();
+}
+
+/*
 *	Terminates the time of day system.
 */
 void TimeOfDaySystem::Terminate() NOEXCEPT
@@ -45,7 +83,7 @@ void TimeOfDaySystem::Terminate() NOEXCEPT
 /*
 *	Enables the time of day system.
 */
-void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) NOEXCEPT
+void TimeOfDaySystem::Enable(const TimeOfDayParameters &time_of_day_parameters) NOEXCEPT
 {
 	ASSERT(!_Enabled, "Enabling the time of day system twice!");
 
@@ -97,17 +135,6 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters& time_of_day_parameters) 
 
 	//Initialize the sky gradient curve.
 	InitializeSkyGradientCurve();
-
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT arguments)
-	{
-		static_cast<TimeOfDaySystem *const RESTRICT>(arguments)->PreUpdate();
-	},
-	this,
-	UpdatePhase::PRE,
-	UpdatePhase::RENDER,
-	false,
-	false);
 
 	//The time of day system is now enabled!
 	_Enabled = true;
@@ -173,41 +200,6 @@ void TimeOfDaySystem::InitializeSkyGradientCurve() NOEXCEPT
 	ADD_CURVE_POINT(75, 125, 250, 250, 100, 100, 1.0f, 1.0f);
 	
 	#undef ADD_CURVE_POINT
-}
-
-/*
-*	Updates the time of day system during the pre update phase.
-*/
-void TimeOfDaySystem::PreUpdate() NOEXCEPT
-{
-	ASSERT(_Enabled, "The time of day system should not be updated if it's not enabled");
-
-	//Cache the delta time.
-#if defined(CATALYST_EDITOR)
-	const float32 delta_time{ CatalystEditorSystem::Instance->IsInGame() ? CatalystEngineSystem::Instance->GetDeltaTime() : 0.0f };
-#else
-	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
-#endif
-
-	//Update the current time of day.
-	_CurrentTimeOfDay += delta_time / 60.0f / 60.0f * _TimeOfDayParameters._TimeMultiplier;
-
-	//Wrap around.
-	while (_CurrentTimeOfDay < 0.0f)
-	{
-		_CurrentTimeOfDay += 24.0f;
-	}
-
-	while (_CurrentTimeOfDay >= 24.0f)
-	{
-		_CurrentTimeOfDay -= 24.0f;
-	}
-
-	//Update the sky light.
-	UpdateSkyLight();
-
-	//Update the sky.
-	UpdateSky();
 }
 
 /*

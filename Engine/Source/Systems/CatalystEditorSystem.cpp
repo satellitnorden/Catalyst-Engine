@@ -23,20 +23,6 @@ void CatalystEditorSystem::Initialize() NOEXCEPT
 
 	//Initialize the editor content system.
 	_EditorContentSystem.Initialize();
-
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate
-	(
-		[](void *const RESTRICT arguments)
-		{
-			static_cast<CatalystEditorSystem *const RESTRICT>(arguments)->GameplayUpdate();
-		},
-		this,
-		UpdatePhase::GAMEPLAY,
-		UpdatePhase::USER_INTERFACE,
-		true,
-		false
-	);
 }
 
 /*
@@ -83,9 +69,9 @@ void CatalystEditorSystem::PostInitialize() NOEXCEPT
 }
 
 /*
-*	Updates the Catalyst editor system during the GAMEPLAY update phase.
+*	Updates the Catalyst editor system.
 */
-void CatalystEditorSystem::GameplayUpdate() NOEXCEPT
+void CatalystEditorSystem::Update(const UpdatePhase phase) NOEXCEPT
 {
 	if (_IsInGame)
 	{

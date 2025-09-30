@@ -212,9 +212,14 @@ namespace TextParsing
 			{
 				--parantheses_depth;
 
-				if (end_position && parantheses_depth == 0)
+				if (parantheses_depth == 0)
 				{
-					*end_position = i;
+					if (end_position)
+					{
+						*end_position = i;
+					}
+
+					return current_argument_index;
 				}
 			}
 

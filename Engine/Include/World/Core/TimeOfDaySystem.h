@@ -19,6 +19,11 @@ class TimeOfDaySystem final
 public:
 
 	/*
+	*	Updates the time of day system.
+	*/
+	void Update() NOEXCEPT;
+
+	/*
 	*	Terminates the time of day system.
 	*/
 	void Terminate() NOEXCEPT;
@@ -73,11 +78,6 @@ private:
 	*	Initializes the sky gradient curve.
 	*/
 	void InitializeSkyGradientCurve() NOEXCEPT;
-
-	/*
-	*	Updates the time of day system during the pre update phase.
-	*/
-	void PreUpdate() NOEXCEPT;
 
 	/*
 	*	Updates the sky light.

@@ -63,6 +63,15 @@ void WorldSystem::PostInitialize() NOEXCEPT
 }
 
 /*
+*	Updates the world system.
+*/
+void WorldSystem::Update(const UpdatePhase phase) NOEXCEPT
+{
+	//Update the time of day system.
+	_TimeOfDaySystem.Update();
+}
+
+/*
 *	Terminates the world system.
 */
 void WorldSystem::Terminate() NOEXCEPT

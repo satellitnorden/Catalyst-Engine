@@ -113,6 +113,11 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Post-initialize all systems.
 	Systems::PostInitialize();
 
+#if defined(CATALYST_EDITOR)
+	//Post-initialize the editor system. It depends on stuff being set up in 'RenderingSystem::PostInitialize()', so call it manually here...
+	CatalystEditorSystem::Instance->PostInitialize();
+#endif
+
 	//Post-initialize the game system.
 	_ProjectConfiguration._GeneralConfiguration._CommonPostInitializeFunction();
 #if defined(CATALYST_EDITOR)
@@ -289,6 +294,9 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 
 		UpdateSequentially();
 	}
+
+	//Post-update the platform.
+	CatalystPlatform::PlatformPostUpdate();
 
 	//Post-update the frame pacer.
 	_FramePacer.PostUpdate(preferred_refresh_rate);

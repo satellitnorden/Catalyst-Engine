@@ -23,6 +23,11 @@ public:
 	static void PlatformPreUpdate() NOEXCEPT;
 
 	/*
+	*	Updates the platform after everything else.
+	*/
+	static void PlatformPostUpdate() NOEXCEPT;
+
+	/*
 	*	Terminates the platform.
 	*/
 	static void Terminate() NOEXCEPT;

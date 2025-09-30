@@ -300,17 +300,6 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	CatalystPlatformWindows::_KeyDownEvents.Reserve(32);
 	CatalystPlatformWindows::_KeyUpEvents.Reserve(32);
 	CatalystPlatformWindows::_InputCharacters.Reserve(32);
-
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void* const RESTRICT)
-	{
-		CatalystWindowsLogic::PostUpdate();
-	},
-	nullptr,
-	UpdatePhase::POST,
-	UpdatePhase::PRE,
-	true,
-	false);
 }
 
 /*
@@ -319,6 +308,14 @@ void CatalystPlatform::Initialize() NOEXCEPT
 void CatalystPlatform::PlatformPreUpdate() NOEXCEPT
 {
 
+}
+
+/*
+*	Updates the platform after everything else.
+*/
+void CatalystPlatform::PlatformPostUpdate() NOEXCEPT
+{
+	CatalystWindowsLogic::PostUpdate();
 }
 
 /*
