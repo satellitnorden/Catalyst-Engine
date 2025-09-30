@@ -82,6 +82,11 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
+	*	Updates the debug rendering system.
+	*/
+	void Update() NOEXCEPT;
+
+	/*
 	*	Debug renders a circle.
 	*/
 	void DebugRenderCircle
@@ -127,11 +132,6 @@ private:
 	*	Gathers the debug render rectangle render input stream.
 	*/
 	void GatherDebugRenderRectangleInputStream(class RenderInputStream *const RESTRICT input_stream) NOEXCEPT;
-
-	/*
-	*	Updates the debug rendering system during the post update phase.
-	*/
-	void PostUpdate() NOEXCEPT;
 	
 };
 #endif

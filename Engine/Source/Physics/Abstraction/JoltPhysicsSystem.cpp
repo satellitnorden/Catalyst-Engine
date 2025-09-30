@@ -47,6 +47,7 @@ namespace JoltPhysicsSystemConstants
 	constexpr JPH::uint MAXIMUM_BODY_PAIRS{ 1'024 };
 	constexpr JPH::uint MAXIMUM_CONTACT_CONSTRAINTS{ 1'024 };
 	constexpr float32 DEFAULT_FRICTION{ 1.0f };
+	constexpr float32 UPDATE_FREQUENCY{ 1.0f / 60.0f };
 }
 
 /*
@@ -381,6 +382,9 @@ namespace JoltPhysicsSystemData
 	//Container for all characters.
 	DynamicArray<JPH::Character *RESTRICT> _Characters;
 
+	//The accumulated delta time.
+	float32 _AccumulatedDeltaTime{ 0.0f };
+
 }
 
 /*
@@ -457,16 +461,31 @@ void PhysicsSystem::SubPhysicsUpdate() NOEXCEPT
 	//Retrieve the delta time.
 	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
 
+	//Accumulate the delta time.
+	JoltPhysicsSystemData::_AccumulatedDeltaTime += delta_time;
+
 	//Calculate the number of collision steps.
-	const int32 number_of_collision_steps{ 1 }; //TODO!
+	int32 number_of_collision_steps{ 0 };
 
-	//Update the physics system!
-	JoltPhysicsSystemData::_System.Update(delta_time, number_of_collision_steps, JoltPhysicsSystemData::_TemporaryAllocator, JoltPhysicsSystemData::_JobSystemThreadPool);
-
-	//Post-update all characters.
-	for (JPH::Character *const RESTRICT character : JoltPhysicsSystemData::_Characters)
+	while (JoltPhysicsSystemData::_AccumulatedDeltaTime >= JoltPhysicsSystemConstants::UPDATE_FREQUENCY)
 	{
-		character->PostSimulation(0.05f);
+		++number_of_collision_steps;
+		JoltPhysicsSystemData::_AccumulatedDeltaTime -= JoltPhysicsSystemConstants::UPDATE_FREQUENCY;
+	}
+
+	if (number_of_collision_steps > 0)
+	{
+		//Update the physics system!
+		JoltPhysicsSystemData::_System.Update(JoltPhysicsSystemConstants::UPDATE_FREQUENCY, number_of_collision_steps, JoltPhysicsSystemData::_TemporaryAllocator, JoltPhysicsSystemData::_JobSystemThreadPool);
+
+		//Post-update all characters.
+		for (int32 collision_step_index{ 0 }; collision_step_index < number_of_collision_steps; ++collision_step_index)
+		{
+			for (JPH::Character *const RESTRICT character : JoltPhysicsSystemData::_Characters)
+			{
+				character->PostSimulation(0.05f);
+			}
+		}
 	}
 }
 

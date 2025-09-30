@@ -56,6 +56,14 @@ public:
 		return _WindSpeed;
 	}
 
+	/*
+	*	Sets the wind speed.
+	*/
+	FORCE_INLINE void SetWindSpeed(const float32 value) NOEXCEPT
+	{
+		_WindSpeed = value;
+	}
+
 private:
 
 	/*

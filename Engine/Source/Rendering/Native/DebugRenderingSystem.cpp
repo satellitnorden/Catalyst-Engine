@@ -74,17 +74,55 @@ void DebugRenderingSystem::Initialize() NOEXCEPT
 		RenderInputStream::Mode::DRAW,
 		nullptr
 	);
+}
 
-	//Register the update.
-	CatalystEngineSystem::Instance->RegisterUpdate([](void *const RESTRICT arguments)
+/*
+*	Updates the debug rendering system.
+*/
+void DebugRenderingSystem::Update() NOEXCEPT
+{
+	//Cache the delta time.
+	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
+
+	//Update all debug circle renders.
 	{
-		static_cast<DebugRenderingSystem *const RESTRICT>(arguments)->PostUpdate();
-	},
-	this,
-	UpdatePhase::POST,
-	UpdatePhase::PRE,
-	false,
-	false);
+		SCOPED_LOCK(_DebugCircleRendersLock);
+
+		for (uint64 i{ 0 }; i < _DebugCircleRenders.Size();)
+		{
+			_DebugCircleRenders[i]._DebugRender._CurrentLifetime += delta_time;
+
+			if (_DebugCircleRenders[i]._DebugRender._CurrentLifetime >= _DebugCircleRenders[i]._DebugRender._MaximumLifetime)
+			{
+				_DebugCircleRenders.EraseAt<false>(i);
+			}
+
+			else
+			{
+				++i;
+			}
+		}
+	}
+
+	//Update all debug rectangle renders.
+	{
+		SCOPED_LOCK(_DebugRectangleRendersLock);
+
+		for (uint64 i{ 0 }; i < _DebugRectangleRenders.Size();)
+		{
+			_DebugRectangleRenders[i]._DebugRender._CurrentLifetime += delta_time;
+
+			if (_DebugRectangleRenders[i]._DebugRender._CurrentLifetime >= _DebugRectangleRenders[i]._DebugRender._MaximumLifetime)
+			{
+				_DebugRectangleRenders.EraseAt<false>(i);
+			}
+
+			else
+			{
+				++i;
+			}
+		}
+	}
 }
 
 /*
@@ -228,55 +266,6 @@ void DebugRenderingSystem::GatherDebugRenderRectangleInputStream(RenderInputStre
 			for (uint64 i{ 0 }; i < sizeof(DebugRenderRectanglePushConstantData); ++i)
 			{
 				input_stream->_PushConstantDataMemory.Emplace(((const byte *const RESTRICT)&push_constant_data)[i]);
-			}
-		}
-	}
-}
-
-/*
-*	Updates the debug rendering system during the post update phase.
-*/
-void DebugRenderingSystem::PostUpdate() NOEXCEPT
-{
-	//Cache the delta time.
-	const float32 delta_time{ CatalystEngineSystem::Instance->GetDeltaTime() };
-
-	//Update all debug circle renders.
-	{
-		SCOPED_LOCK(_DebugCircleRendersLock);
-
-		for (uint64 i{ 0 }; i < _DebugCircleRenders.Size();)
-		{
-			_DebugCircleRenders[i]._DebugRender._CurrentLifetime += delta_time;
-
-			if (_DebugCircleRenders[i]._DebugRender._CurrentLifetime >= _DebugCircleRenders[i]._DebugRender._MaximumLifetime)
-			{
-				_DebugCircleRenders.EraseAt<false>(i);
-			}
-
-			else
-			{
-				++i;
-			}
-		}
-	}
-	
-	//Update all debug rectangle renders.
-	{
-		SCOPED_LOCK(_DebugRectangleRendersLock);
-
-		for (uint64 i{ 0 }; i < _DebugRectangleRenders.Size();)
-		{
-			_DebugRectangleRenders[i]._DebugRender._CurrentLifetime += delta_time;
-
-			if (_DebugRectangleRenders[i]._DebugRender._CurrentLifetime >= _DebugRectangleRenders[i]._DebugRender._MaximumLifetime)
-			{
-				_DebugRectangleRenders.EraseAt<false>(i);
-			}
-
-			else
-			{
-				++i;
 			}
 		}
 	}

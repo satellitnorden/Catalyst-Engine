@@ -59,6 +59,19 @@ void WorldSystem::PostInitialize() NOEXCEPT
 		1.0f,
 		_EnvironmentSystem.GetVolumetricLightingProperties()->_Density
 	);
+
+	DebugSystem::Instance->RegisterSliderDebugCommand
+	(
+		"World\\Wind\\Speed",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			WorldSystem::Instance->GetWindSystem()->SetWindSpeed(debug_command->_State._SliderState._Value);
+		},
+		nullptr,
+		0.0f,
+		4.0f,
+		WorldSystem::Instance->GetWindSystem()->GetWindSpeed()
+	);
 #endif
 }
 

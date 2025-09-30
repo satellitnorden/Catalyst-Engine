@@ -70,7 +70,7 @@ void WindSystem::RenderUpdate() NOEXCEPT
 	//Upload the data to the buffer.
 	BufferHandle &current_uniform_buffer{ _UniformBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
-	const void* const RESTRICT data_chunks[]{ &_CurrentWindRenderingData };
+	const void *const RESTRICT data_chunks[]{ &_CurrentWindRenderingData };
 	const uint64 data_sizes[]{ sizeof(_CurrentWindRenderingData) };
 
 	RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &current_uniform_buffer);

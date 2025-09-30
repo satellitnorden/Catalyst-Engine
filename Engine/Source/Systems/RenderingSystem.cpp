@@ -716,6 +716,11 @@ void RenderingSystem::RenderUpdate() NOEXCEPT
 
 		_SubRenderingSystem->EndFrame(frame_command_buffer);
 	}
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Update the debug rendering system.
+	_DebugRenderingSystem.Update();
+#endif
 }
 
 /*
