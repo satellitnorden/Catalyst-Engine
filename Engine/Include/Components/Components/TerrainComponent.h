@@ -128,6 +128,9 @@ public:
 	//The height map.
 	Texture2D<float32> _HeightMap;
 
+	//The height map resolution.
+	uint32 _HeightMapResolution;
+
 	//The normal map.
 	Texture2D<Vector4<uint8>> _NormalMap;
 

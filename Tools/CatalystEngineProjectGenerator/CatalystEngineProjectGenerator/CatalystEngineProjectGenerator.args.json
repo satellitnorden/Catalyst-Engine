@@ -1,0 +1,24 @@
+{
+  "FileVersion": 2,
+  "Id": "08c73dc0-7a74-4daf-a97b-9972adf46a38",
+  "Items": [
+    {
+      "Id": "d10dcde2-22a7-4ef9-9527-0980613c4086",
+      "Command": "Debug|x64",
+      "ProjectConfig": "Debug",
+      "ProjectPlatform": "x64",
+      "Items": [
+        {
+          "Id": "084043f7-50fe-454e-a332-d055aafdc398",
+          "Command": "WindowsLocalDebugger",
+          "Items": [
+            {
+              "Id": "a7e73bd1-37b8-4258-b06a-64e718cead21",
+              "Command": "World Unknown"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

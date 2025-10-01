@@ -269,7 +269,7 @@ void CheckSubdivision(TerrainInstanceData &instance_data, const Vector3<float32>
 				child_node._MinimumHeightMapCoordinate = (child_node._Minimum + heightmap_coordinate_offset) / static_cast<float32>(instance_data._PatchSize);
 				child_node._MaximumHeightMapCoordinate = (child_node._Maximum + heightmap_coordinate_offset) / static_cast<float32>(instance_data._PatchSize);
 
-				const float32 heightmap_coordinate_padding{ 1.0f / static_cast<float32>(instance_data._PatchSize) };
+				const float32 heightmap_coordinate_padding{ 1.0f / static_cast<float32>(instance_data._HeightMapResolution) };
 
 				child_node._MinimumHeightMapCoordinate *= 1.0f - heightmap_coordinate_padding;
 				child_node._MaximumHeightMapCoordinate *= 1.0f - heightmap_coordinate_padding;
@@ -657,6 +657,7 @@ void TerrainComponent::CreateInstance(Entity *const RESTRICT entity, TerrainInit
 	instance_data->_WorldPosition = initialization_data->_WorldPosition;
 	instance_data->_WorldSpaceAxisAlignedBoundingBox = initialization_data->_PreprocessedData._WorldSpaceAxisAlignedBoundingBox;
 	instance_data->_PatchSize = initialization_data->_PatchSize;
+	instance_data->_HeightMapResolution = initialization_data->_HeightMap.GetResolution();
 	instance_data->_HeightMap = std::move(initialization_data->_HeightMap);
 	instance_data->_NormalMap = std::move(initialization_data->_PreprocessedData._ConvertedNormalMapTexture);
 	instance_data->_IndexMap = std::move(initialization_data->_IndexMap);
@@ -1203,6 +1204,7 @@ void TerrainComponent::Statistics(ComponentStatistics *const RESTRICT statistics
 		statistics->_CPUMemoryUsage += sizeof(instance_data._WorldSpaceAxisAlignedBoundingBox);
 		statistics->_CPUMemoryUsage += sizeof(instance_data._PatchSize);
 		statistics->_CPUMemoryUsage += sizeof(instance_data._HeightMap);
+		statistics->_CPUMemoryUsage += sizeof(instance_data._HeightMapResolution);
 		statistics->_CPUMemoryUsage += sizeof(float32) * instance_data._HeightMap.GetWidth() * instance_data._HeightMap.GetHeight();
 		statistics->_CPUMemoryUsage += sizeof(instance_data._NormalMap);
 		statistics->_CPUMemoryUsage += sizeof(Vector4<uint8>) * instance_data._NormalMap.GetWidth() * instance_data._NormalMap.GetHeight();

@@ -79,17 +79,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	//Initialize all systems.
 	Systems::Initialize();
 	SaveSystem::Instance->Initialize();
-
-	//Initialize the game system.
-	{
-		PROFILING_SCOPE("Initialize Game");
-		_ProjectConfiguration._GeneralConfiguration._CommonInitializeFunction();
-#if defined(CATALYST_EDITOR)
-		_ProjectConfiguration._GeneralConfiguration._EditorInitializeFunction();
-#else
-		_ProjectConfiguration._GeneralConfiguration._GameInitializeFunction();
-#endif
-	}
 	
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Compile both for engine and game.
@@ -116,14 +105,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #if defined(CATALYST_EDITOR)
 	//Post-initialize the editor system. It depends on stuff being set up in 'RenderingSystem::PostInitialize()', so call it manually here...
 	CatalystEditorSystem::Instance->PostInitialize();
-#endif
-
-	//Post-initialize the game system.
-	_ProjectConfiguration._GeneralConfiguration._CommonPostInitializeFunction();
-#if defined(CATALYST_EDITOR)
-	_ProjectConfiguration._GeneralConfiguration._EditorPostInitializeFunction();
-#else
-	_ProjectConfiguration._GeneralConfiguration._GamePostInitializeFunction();
 #endif
 
 #if !defined(CATALYST_EDITOR)

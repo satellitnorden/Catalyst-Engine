@@ -105,6 +105,26 @@ int main(int argument_count, char *arguments[])
 	{
 		std::filesystem::create_directory("Code");
 
+		//Create the "Code/CodeGeneration" directory.
+		{
+			std::filesystem::create_directory("Code\\CodeGeneration");
+
+			//Create the ".gitignore" file.
+			{
+				std::ofstream file{ "Code\\CodeGeneration\\.gitignore" };
+
+				file << "#Ignore everything in this directory." << std::endl;
+				file << "*" << std::endl;
+
+				file << std::endl;
+
+				file << "#Except this file!" << std::endl;
+				file << "!.gitignore";
+
+				file.close();
+			}
+		}
+
 		//Create the "Code/Include" directory.
 		{
 			std::filesystem::create_directory("Code\\Include");
@@ -146,7 +166,11 @@ int main(int argument_count, char *arguments[])
 					file << "\t//System declaration." << std::endl;
 					file << "\tCATALYST_SYSTEM" << std::endl;
 					file << "\t(" << std::endl;
-					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem" << std::endl;
+					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem," << std::endl;
+					file << "\t\tSYSTEM_INITIALIZE()" << std::endl;
+					file << "\t\tSYSTEM_POST_INITIALIZE()" << std::endl;
+					file << "\t\tSYSTEM_UPDATE(RANGE(GAMEPLAY, PHYSICS))" << std::endl;
+					file << "\t\tSYSTEM_TERMINATE()" << std::endl;
 					file << "\t);" << std::endl;
 
 					file << std::endl;
@@ -159,64 +183,16 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "\t/*" << std::endl;
-					file << "\t*\tInitializes the " << parameters._ProjectName.c_str() << " game system commonly." << std::endl;
-					file << "\t*/" << std::endl;
-					file << "\tvoid CommonInitialize() NOEXCEPT;" << std::endl;
-
-					file << std::endl;
-
-					file << "\t/*" << std::endl;
-					file << "\t*\tInitializes the " << parameters._ProjectName.c_str() << " game system for the editor." << std::endl;
-					file << "\t*/" << std::endl;
-					file << "\tvoid EditorInitialize() NOEXCEPT;" << std::endl;
-
-					file << std::endl;
-
-					file << "\t/*" << std::endl;
-					file << "\t*\tInitializes the " << parameters._ProjectName.c_str() << " game system for the game." << std::endl;
-					file << "\t*/" << std::endl;
-					file << "\tvoid GameInitialize() NOEXCEPT;" << std::endl;
-
-					file << std::endl;
-
-					file << "\t/*" << std::endl;
-					file << "\t*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system commonly." << std::endl;
-					file << "\t*/" << std::endl;
-					file << "\tvoid CommonPostInitialize() NOEXCEPT;" << std::endl;
-
-					file << std::endl;
-
-					file << "\t/*" << std::endl;
-					file << "\t*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system for the editor." << std::endl;
-					file << "\t*/" << std::endl;
-					file << "\tvoid EditorPostInitialize() NOEXCEPT;" << std::endl;
-
-					file << std::endl;
-
-					file << "\t/*" << std::endl;
-					file << "\t*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system for the game." << std::endl;
-					file << "\t*/" << std::endl;
-					file << "\tvoid GamePostInitialize() NOEXCEPT;" << std::endl;
-
-					file << std::endl;
-
-					file << "\t/*" << std::endl;
 					file << "\t*\tStarts the " << parameters._ProjectName.c_str() << " game." << std::endl;
 					file << "\t*/" << std::endl;
 					file << "\tvoid StartGame() NOEXCEPT;" << std::endl;
 
 					file << std::endl;
+
 					file << "\t/*" << std::endl;
 					file << "\t*\tEnds the " << parameters._ProjectName.c_str() << " game." << std::endl;
 					file << "\t*/" << std::endl;
 					file << "\tvoid EndGame() NOEXCEPT;" << std::endl;
-
-					file << std::endl;
-
-					file << "\t/*" << std::endl;
-					file << "\t*\tTerminates the " << parameters._ProjectName.c_str() << " game system." << std::endl;
-					file << "\t*/" << std::endl;
-					file << "\tvoid Terminate() NOEXCEPT;" << std::endl;
 
 					file << std::endl;
 
@@ -258,9 +234,9 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "/*" << std::endl;
-					file << "*\tInitializes the " << parameters._ProjectName.c_str() << " game system commonly." << std::endl;
+					file << "*\tInitializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "*/" << std::endl;
-					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::CommonInitialize() NOEXCEPT" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Initialize() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -268,9 +244,9 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "/*" << std::endl;
-					file << "*\tInitializes the " << parameters._ProjectName.c_str() << " game system for the editor." << std::endl;
+					file << "*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "*/" << std::endl;
-					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::EditorInitialize() NOEXCEPT" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::PostInitialize() NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -278,39 +254,9 @@ int main(int argument_count, char *arguments[])
 					file << std::endl;
 
 					file << "/*" << std::endl;
-					file << "*\tInitializes the " << parameters._ProjectName.c_str() << " game system for the game." << std::endl;
+					file << "*\tUpdates the " << parameters._ProjectName.c_str() << " game system." << std::endl;
 					file << "*/" << std::endl;
-					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::GameInitialize() NOEXCEPT" << std::endl;
-					file << "{" << std::endl;
-					file << std::endl;
-					file << "}" << std::endl;
-
-					file << std::endl;
-
-					file << "/*" << std::endl;
-					file << "*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system commonly." << std::endl;
-					file << "*/" << std::endl;
-					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::CommonPostInitialize() NOEXCEPT" << std::endl;
-					file << "{" << std::endl;
-					file << std::endl;
-					file << "}" << std::endl;
-
-					file << std::endl;
-
-					file << "/*" << std::endl;
-					file << "*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system for the editor." << std::endl;
-					file << "*/" << std::endl;
-					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::EditorPostInitialize() NOEXCEPT" << std::endl;
-					file << "{" << std::endl;
-					file << std::endl;
-					file << "}" << std::endl;
-
-					file << std::endl;
-
-					file << "/*" << std::endl;
-					file << "*\tPost-initializes the " << parameters._ProjectName.c_str() << " game system for the game." << std::endl;
-					file << "*/" << std::endl;
-					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::GamePostInitialize() NOEXCEPT" << std::endl;
+					file << "void " << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Update(const UpdatePhase phase) NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}" << std::endl;
@@ -379,36 +325,6 @@ int main(int argument_count, char *arguments[])
 					file << "{" << std::endl;
 					file << "\tconfiguration->_GeneralConfiguration._ProjectName = \"" << parameters._ProjectName.c_str() << "\";" << std::endl;
 
-					file << "\tconfiguration->_GeneralConfiguration._CommonInitializeFunction = []()" << std::endl;
-					file << "\t{" << std::endl;
-					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->CommonInitialize();" << std::endl;
-					file << "\t};" << std::endl;
-
-					file << "\tconfiguration->_GeneralConfiguration._EditorInitializeFunction = []()" << std::endl;
-					file << "\t{" << std::endl;
-					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->EditorInitialize();" << std::endl;
-					file << "\t};" << std::endl;
-
-					file << "\tconfiguration->_GeneralConfiguration._GameInitializeFunction = []()" << std::endl;
-					file << "\t{" << std::endl;
-					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->GameInitialize();" << std::endl;
-					file << "\t};" << std::endl;
-
-					file << "\tconfiguration->_GeneralConfiguration._CommonPostInitializeFunction = []()" << std::endl;
-					file << "\t{" << std::endl;
-					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->CommonPostInitialize();" << std::endl;
-					file << "\t};" << std::endl;
-
-					file << "\tconfiguration->_GeneralConfiguration._EditorPostInitializeFunction = []()" << std::endl;
-					file << "\t{" << std::endl;
-					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->EditorPostInitialize();" << std::endl;
-					file << "\t};" << std::endl;
-
-					file << "\tconfiguration->_GeneralConfiguration._GamePostInitializeFunction = []()" << std::endl;
-					file << "\t{" << std::endl;
-					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->GamePostInitialize();" << std::endl;
-					file << "\t};" << std::endl;
-
 					file << "\tconfiguration->_GeneralConfiguration._StartGameFunction = []()" << std::endl;
 					file << "\t{" << std::endl;
 					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->StartGame();" << std::endl;
@@ -417,11 +333,6 @@ int main(int argument_count, char *arguments[])
 					file << "\tconfiguration->_GeneralConfiguration._EndGameFunction = []()" << std::endl;
 					file << "\t{" << std::endl;
 					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->EndGame();" << std::endl;
-					file << "\t};" << std::endl;
-
-					file << "\tconfiguration->_GeneralConfiguration._TerminateFunction = []()" << std::endl;
-					file << "\t{" << std::endl;
-					file << "\t\t" << parameters._ProjectNameNoSpaces.c_str() << "GameSystem::Instance->Terminate();" << std::endl;
 					file << "\t};" << std::endl;
 
 					file << "}" << std::endl;

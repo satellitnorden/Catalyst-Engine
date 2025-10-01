@@ -28,36 +28,6 @@ public:
 	DynamicString _ProjectName;
 
 	/*
-	*	The common initialize function.
-	*/
-	void(*_CommonInitializeFunction)();
-
-	/*
-	*	The editor initialize function.
-	*/
-	void(*_EditorInitializeFunction)();
-
-	/*
-	*	The game initialize function.
-	*/
-	void(*_GameInitializeFunction)();
-
-	/*
-	*	The common post initialize function.
-	*/
-	void(*_CommonPostInitializeFunction)();
-
-	/*
-	*	The editor post initialize function.
-	*/
-	void(*_EditorPostInitializeFunction)();
-
-	/*
-	*	The game post initialize function.
-	*/
-	void(*_GamePostInitializeFunction)();
-
-	/*
 	*	The start game function.
 	*/
 	void(*_StartGameFunction)();

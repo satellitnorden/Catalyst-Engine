@@ -3,6 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerCommandArguments>World Unknown</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\Github\Procedural-Asset-Generator</LocalDebuggerWorkingDirectory>
+    <RemoteDebuggerCommandArguments>World Unknown</RemoteDebuggerCommandArguments>
   </PropertyGroup>
 </Project>
