@@ -1,6 +1,9 @@
 //Header file.
 #include <Content/Procedural/ProceduralModelGenerator.h>
 
+//STD.
+#include <cmath>
+
 /*
 *	Generates.
 */
@@ -87,6 +90,32 @@ void ProceduralModelGenerator::CalculateNormalsTangents(Output *const RESTRICT o
 	{
 		output->_Vertices[vertex_index]._Normal /= static_cast<float32>(vertex_references[vertex_index]);
 		output->_Vertices[vertex_index]._Tangent /= static_cast<float32>(vertex_references[vertex_index]);
+	}
+}
+
+/*
+*	Converts a texture.
+*/
+void ProceduralModelGenerator::ConvertTexture(const Texture2D<Vector4<float32>> &input, Texture2D<Vector4<uint8>> *const RESTRICT output, const bool apply_gamma_correction) NOEXCEPT
+{
+	output->Initialize(input.GetResolution());
+
+	for (uint32 Y{ 0 }; Y < output->GetResolution(); ++Y)
+	{
+		for (uint32 X{ 0 }; X < output->GetResolution(); ++X)
+		{
+			for (uint8 element_index{ 0 }; element_index < 4; ++element_index)
+			{
+				float32 element{ input.At(X, Y)[element_index] };
+
+				if (apply_gamma_correction)
+				{
+					element = std::pow(element, 2.2f);
+				}
+
+				output->At(X, Y)[element_index] = static_cast<uint8>(element * static_cast<float32>(UINT8_MAXIMUM));
+			}
+		}
 	}
 }
 
@@ -179,4 +208,47 @@ void ProceduralModelGenerator::GenerateFern(const Input &input, Output *const RE
 
 	//Calculate the normals & tangents.
 	CalculateNormalsTangents(output);
+
+	//Generate the textures.
+	{
+		Texture2D<Vector4<float32>> albedo_thickness_texture{ input._TextureResolution };
+
+		for (uint32 Y{ 0 }; Y < input._TextureResolution; ++Y)
+		{
+			for (uint32 X{ 0 }; X < input._TextureResolution; ++X)
+			{
+				albedo_thickness_texture.At(X, Y) = Vector4<float32>(56.0f / 255.0f, 118.0f / 255.0f, 29.0f / 255.0f, 1.0f);
+			}
+		}
+
+		ConvertTexture(albedo_thickness_texture, &output->_AlbedoThicknessTexture, true);
+	}
+
+	{
+		Texture2D<Vector4<float32>> normal_map_displacement_texture{ input._TextureResolution };
+
+		for (uint32 Y{ 0 }; Y < input._TextureResolution; ++Y)
+		{
+			for (uint32 X{ 0 }; X < input._TextureResolution; ++X)
+			{
+				normal_map_displacement_texture.At(X, Y) = Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f);
+			}
+		}
+
+		ConvertTexture(normal_map_displacement_texture, &output->_NormalMapDisplacementTexture, false);
+	}
+
+	{
+		Texture2D<Vector4<float32>> material_properties_texture{ input._TextureResolution };
+
+		for (uint32 Y{ 0 }; Y < input._TextureResolution; ++Y)
+		{
+			for (uint32 X{ 0 }; X < input._TextureResolution; ++X)
+			{
+				material_properties_texture.At(X, Y) = Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f);
+			}
+		}
+
+		ConvertTexture(material_properties_texture, &output->_MaterialPropertiesTexture, false);
+	}
 }

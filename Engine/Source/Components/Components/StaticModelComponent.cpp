@@ -622,7 +622,7 @@ void StaticModelComponent::SetupDefaultMaterials(Entity *const RESTRICT entity, 
 	for (uint64 mesh_index{ 0 }; mesh_index < instance_data->_Model->_Meshes.Size(); ++mesh_index)
 	{
 		//Here we only "override" if the material is the default one - Assumption here being that the default material should never be a default material.
-		if ((force || instance_data->_Materials[mesh_index] == ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default"))) && instance_data->_Model->_DefaultMaterials[mesh_index])
+		if ((force || instance_data->_Materials[mesh_index].Get() == ContentSystem::Instance->GetAsset<MaterialAsset>(HashString("Default")).Get()) && instance_data->_Model->_DefaultMaterials[mesh_index])
 		{
 			instance_data->_Materials[mesh_index] = instance_data->_Model->_DefaultMaterials[mesh_index];
 		}
