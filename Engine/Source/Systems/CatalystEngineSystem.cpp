@@ -299,9 +299,6 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 	//Signal to other systems that the game should terminate.
 	_ShouldTerminate = true;
 
-	//Terminate the game system.
-	_ProjectConfiguration._GeneralConfiguration._TerminateFunction();
-
 	//Terminate the task system first so that all asynchronous tasks are finished before releasing anything else.
 	TaskSystem::Instance->Terminate();
 

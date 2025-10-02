@@ -667,6 +667,7 @@ void main()
                                                     + terrain_materials[1]._TerrainNormal * weights[1]
                                                     + terrain_materials[2]._TerrainNormal * weights[2]
                                                     + terrain_materials[3]._TerrainNormal * weights[3];
+    final_terrain_material._TerrainNormal =         normalize(final_terrain_material._TerrainNormal);
     final_terrain_material._TerrainHeight =         terrain_materials[0]._TerrainHeight * weights[0]
                                                     + terrain_materials[1]._TerrainHeight * weights[1]
                                                     + terrain_materials[2]._TerrainHeight * weights[2]
@@ -683,6 +684,7 @@ void main()
                                                     + terrain_materials[1]._NormalMap * biased_weights[1]
                                                     + terrain_materials[2]._NormalMap * biased_weights[2]
                                                     + terrain_materials[3]._NormalMap * biased_weights[3];
+    final_terrain_material._NormalMap =             normalize(final_terrain_material._NormalMap * 2.0f - 1.0f);
     final_terrain_material._Displacement =          terrain_materials[0]._Displacement * biased_weights[0]
                                                     + terrain_materials[1]._Displacement * biased_weights[1]
                                                     + terrain_materials[2]._Displacement * biased_weights[2]
@@ -694,7 +696,7 @@ void main()
     vec3 shading_normal;
     {
         mat3 tangent_space_matrix = CalculateGramSchmidtRotationMatrix(final_terrain_material._TerrainNormal, vec3(0.0f, 0.0f, 1.0f));
-        shading_normal = normalize(tangent_space_matrix * normalize(final_terrain_material._NormalMap * 2.0f - 1.0f));
+        shading_normal = normalize(tangent_space_matrix * normalize(final_terrain_material._NormalMap));
     }
     vec2 velocity = CalculateCurrentScreenCoordinate(InWorldPosition) - CalculatePreviousScreenCoordinate(InWorldPosition) - CURRENT_FRAME_JITTER;
 	SceneFeatures1 = vec4(final_terrain_material._Albedo,final_terrain_material._Thickness);

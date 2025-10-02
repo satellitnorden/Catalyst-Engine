@@ -38,11 +38,6 @@ public:
 	void(*_EndGameFunction)();
 
 	/*
-	*	The terminate function.
-	*/
-	void(*_TerminateFunction)();
-
-	/*
 	*	Default constructor.
 	*/
 	CatalystProjectGeneralConfiguration() NOEXCEPT

@@ -525,7 +525,7 @@ vec3 CalculateWindDisplacement(vec3 world_position, vec3 vertex_position, vec3 n
 
 			amplitude *= 0.5f;
 			frequency *= 2.0f;
-			vertex_influence += 0.25f;
+			vertex_influence += 1.0f / float(NUMBER_OF_OCTAVES - 1);
 		}
 	}
 
