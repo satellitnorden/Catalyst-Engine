@@ -133,7 +133,7 @@ void ProceduralModelGenerator::GenerateFern(const Input &input, Output *const RE
 		//Calculate the grid size.
 		const Vector2<uint32> grid_size
 		{
-			1,
+			1 + input._Fern._HorizontalSubDivisions,
 			1 + input._Fern._VerticalSubDivisions
 		};
 
@@ -211,44 +211,109 @@ void ProceduralModelGenerator::GenerateFern(const Input &input, Output *const RE
 
 	//Generate the textures.
 	{
+		//Set up the textures.
 		Texture2D<Vector4<float32>> albedo_thickness_texture{ input._TextureResolution };
+		Texture2D<Vector4<float32>> normal_map_displacement_texture{ input._TextureResolution };
+		Texture2D<Vector4<float32>> material_properties_texture{ input._TextureResolution };
+		Texture2D<Vector4<float32>> opacity_texture{ input._TextureResolution };
 
+		//Set default values.
 		for (uint32 Y{ 0 }; Y < input._TextureResolution; ++Y)
 		{
 			for (uint32 X{ 0 }; X < input._TextureResolution; ++X)
 			{
-				albedo_thickness_texture.At(X, Y) = Vector4<float32>(56.0f / 255.0f, 118.0f / 255.0f, 29.0f / 255.0f, 1.0f);
+				albedo_thickness_texture.At(X, Y) = Vector4<float32>(input._Fern._LeafAlbedo, 0.0f);
+				normal_map_displacement_texture.At(X, Y) = Vector4<float32>(0.5f, 0.5f, 1.0f, 0.0f);
+				material_properties_texture.At(X, Y) = Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f);
+				opacity_texture.At(X, Y) = Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+			}
+		}
+
+		//Draw in the stalk.
+		{
+			//Calculate the stalk width.
+			const uint32 stalk_width{ BaseMath::Round<uint32>(static_cast<float32>(input._TextureResolution) * input._Fern._StalkThickness) };
+			const uint32 half_stalk_width{ stalk_width / 2 };
+
+			const uint32 texture_center{ input._TextureResolution / 2 };
+
+			const uint32 stalk_start{ texture_center - half_stalk_width };
+			const uint32 stalk_end{ texture_center + half_stalk_width };
+
+			for (uint32 Y{ 0 }; Y < input._TextureResolution; ++Y)
+			{
+				for (uint32 X{ stalk_start }; X <= stalk_end; ++X)
+				{
+					const float32 normalized_distance_to_center{ BaseMath::SmoothStep<1>(BaseMath::Absolute(static_cast<float32>(X) - static_cast<float32>(texture_center)) / static_cast<float32>(half_stalk_width)) };
+					ASSERT(normalized_distance_to_center >= 0.0f && normalized_distance_to_center <= 1.0f, "This shouldn't happen!");
+
+					albedo_thickness_texture.At(X, Y) = Vector4<float32>(input._Fern._StalkAlbedo, BaseMath::LinearlyInterpolate(1.0f, 0.5f, normalized_distance_to_center));
+					normal_map_displacement_texture.At(X, Y)._W = 1.0f - normalized_distance_to_center;
+					material_properties_texture.At(X, Y) = Vector4<float32>(input._Fern._StalkRoughness, 0.0f, 1.0f, 0.0f);
+					opacity_texture.At(X, Y) = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
+				}
+			}
+		}
+
+		//Draw in the leaves.
+		{
+			const uint32 leaf_height{ BaseMath::Floor<uint32>(static_cast<float32>(input._TextureResolution) / static_cast<float32>(input._Fern._Leaves)) };
+
+			for (uint32 leaf_index{ 0 }; leaf_index < input._Fern._Leaves; ++leaf_index)
+			{
+				for (uint8 side_index{ 0 }; side_index < 2; ++side_index)
+				{
+					const uint32 start_x{ side_index == 0 ? 0 : input._TextureResolution / 2 };
+					const uint32 end_x{ side_index == 0 ? input._TextureResolution / 2 : input._TextureResolution };
+					const uint32 start_y{ leaf_index * leaf_height };
+					const uint32 end_y{ (leaf_index + 1) * leaf_height };
+					const uint32 middle_y{ start_y + ((end_y - start_y) / 2) };
+
+					for (uint32 Y{ start_y }; Y <= end_y; ++Y)
+					{
+						const float32 normalized_distance_to_middle{ BaseMath::Absolute(static_cast<float32>(Y) - middle_y) / static_cast<float32>((end_y - start_y) / 2) };
+
+						for (uint32 X{ start_x }; X <= end_x; ++X)
+						{
+							const float32 x_scalar{ static_cast<float32>(X - start_x) / static_cast<float32>(end_x - start_x) };
+							const float32 thickness{ 2.0f * (1.0f - x_scalar) * x_scalar };
+
+							if (normalized_distance_to_middle <= thickness)
+							{
+								albedo_thickness_texture.At(X, Y) = Vector4<float32>(input._Fern._LeafAlbedo, 0.5f);
+								normal_map_displacement_texture.At(X, Y)._W = BaseMath::SmoothStep<1>(1.0f - normalized_distance_to_middle);
+								material_properties_texture.At(X, Y) = Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f);
+								opacity_texture.At(X, Y) = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		//Calculate the normal from the displacement.
+		for (uint32 Y{ 0 }; Y < input._TextureResolution; ++Y)
+		{
+			for (uint32 X{ 0 }; X < input._TextureResolution; ++X)
+			{
+				constexpr float32 MULTIPLIER{ 4.0f };
+
+				const float32 left	{ normal_map_displacement_texture.At(X > 0 ? X - 1 : X, Y)._W * MULTIPLIER };
+				const float32 right	{ normal_map_displacement_texture.At(X < (input._TextureResolution - 1) ? X + 1 : X, Y)._W * MULTIPLIER };
+				const float32 down	{ normal_map_displacement_texture.At(X, Y > 0 ? Y - 1 : Y)._W * MULTIPLIER };
+				const float32 up	{ normal_map_displacement_texture.At(X, Y < (input._TextureResolution - 1) ? Y + 1 : Y)._W * MULTIPLIER };
+
+				const Vector3<float32> normal{ Vector3<float32>::Normalize(Vector3<float32>(left - right, down - up, 2.0f)) };
+
+				normal_map_displacement_texture.At(X, Y)._X = normal._X * 0.5f + 0.5f;
+				normal_map_displacement_texture.At(X, Y)._Y = normal._Y * 0.5f + 0.5f;
+				normal_map_displacement_texture.At(X, Y)._Z = normal._Z * 0.5f + 0.5f;
 			}
 		}
 
 		ConvertTexture(albedo_thickness_texture, &output->_AlbedoThicknessTexture, true);
-	}
-
-	{
-		Texture2D<Vector4<float32>> normal_map_displacement_texture{ input._TextureResolution };
-
-		for (uint32 Y{ 0 }; Y < input._TextureResolution; ++Y)
-		{
-			for (uint32 X{ 0 }; X < input._TextureResolution; ++X)
-			{
-				normal_map_displacement_texture.At(X, Y) = Vector4<float32>(0.5f, 0.5f, 1.0f, 0.5f);
-			}
-		}
-
 		ConvertTexture(normal_map_displacement_texture, &output->_NormalMapDisplacementTexture, false);
-	}
-
-	{
-		Texture2D<Vector4<float32>> material_properties_texture{ input._TextureResolution };
-
-		for (uint32 Y{ 0 }; Y < input._TextureResolution; ++Y)
-		{
-			for (uint32 X{ 0 }; X < input._TextureResolution; ++X)
-			{
-				material_properties_texture.At(X, Y) = Vector4<float32>(1.0f, 0.0f, 1.0f, 0.0f);
-			}
-		}
-
 		ConvertTexture(material_properties_texture, &output->_MaterialPropertiesTexture, false);
+		ConvertTexture(opacity_texture, &output->_OpacityTexture, false);
 	}
 }

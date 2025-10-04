@@ -36,7 +36,7 @@ public:
 		Type _Type{ Type::NONE };
 
 		//The texture resolution.
-		uint32 _TextureResolution{ 1'024 };
+		uint32 _TextureResolution{ 512 };
 
 		//Fern input.
 		struct
@@ -60,7 +60,25 @@ public:
 			float32 _Tilt{ BaseMath::DegreesToRadians(12.0f) };
 
 			//The number of vertical subdivisions per branch.
-			uint32 _VerticalSubDivisions{ 4 };
+			uint32 _VerticalSubDivisions{ 8 };
+
+			//The number of horizontal subdivisions per branch.
+			uint32 _HorizontalSubDivisions{ 8 };
+
+			//The stalk albedo.
+			Vector3<float32> _StalkAlbedo{ 92.0f / 255.0f, 64.0f / 255.0f, 51.0f / 255.0f };
+
+			//The stalk thickness.
+			float32 _StalkThickness{ 0.1f };
+
+			//The stalk roughness.
+			float32 _StalkRoughness{ 0.5f };
+
+			//The number of leaves.
+			uint32 _Leaves{ 8 };
+
+			//The leaf albedo.
+			Vector3<float32> _LeafAlbedo{ 56.0f / 255.0f, 118.0f / 255.0f, 29.0f / 255.0f };
 		} _Fern;
 
 	};
@@ -87,6 +105,9 @@ public:
 
 		//The material properties texture.
 		Texture2D<Vector4<uint8>> _MaterialPropertiesTexture;
+
+		//The opacity texture.
+		Texture2D<Vector4<uint8>> _OpacityTexture;
 
 	};
 
