@@ -108,7 +108,7 @@ void ProceduralModelGenerator::ConvertTexture(const Texture2D<Vector4<float32>> 
 			{
 				float32 element{ input.At(X, Y)[element_index] };
 
-				if (apply_gamma_correction)
+				if (apply_gamma_correction && element_index < 3)
 				{
 					element = std::pow(element, 2.2f);
 				}

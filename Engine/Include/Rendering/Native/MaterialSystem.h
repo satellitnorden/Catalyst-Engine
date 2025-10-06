@@ -41,6 +41,11 @@ public:
 	NO_DISCARD uint32 RegisterMaterial(const MaterialAsset *const RESTRICT material) NOEXCEPT;
 
 	/*
+	*	De-registers the material at the given index.
+	*/
+	void DeregisterMaterial(const uint32 index) NOEXCEPT;
+
+	/*
 	*	Returns the material asset at the given index.
 	*/
 	NO_DISCARD const MaterialAsset *const RESTRICT GetMaterial(const uint32 index) NOEXCEPT;

@@ -103,6 +103,15 @@ NO_DISCARD uint32 MaterialSystem::RegisterMaterial(const MaterialAsset *const RE
 }
 
 /*
+*	De-registers the material at the given index.
+*/
+void MaterialSystem::DeregisterMaterial(const uint32 index) NOEXCEPT
+{
+	_MaterialSlots[index] = false;
+	_Materials[index] = nullptr;
+}
+
+/*
 *	Returns the material asset at the given index.
 */
 NO_DISCARD const MaterialAsset *const RESTRICT MaterialSystem::GetMaterial(const uint32 index) NOEXCEPT
