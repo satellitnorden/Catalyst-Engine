@@ -123,20 +123,24 @@ void ProceduralMaterialGenerator::Generate(const Input &input, Output *const RES
 	}
 
 	//Calculate the normal from the displacement.
-	for (uint32 Y{ 0 }; Y < input._Resolution; ++Y)
 	{
-		for (uint32 X{ 0 }; X < input._Resolution; ++X)
+		const float32 texel_distance{ 1.0f / static_cast<float32>(input._Resolution) };
+
+		for (uint32 Y{ 0 }; Y < input._Resolution; ++Y)
 		{
-			const float32 left{ normal_map_displacement_texture.At(X > 0 ? X - 1 : X, Y)._W * input._DisplacementScale };
-			const float32 right{ normal_map_displacement_texture.At(X < (input._Resolution - 1) ? X + 1 : X, Y)._W * input._DisplacementScale };
-			const float32 down{ normal_map_displacement_texture.At(X, Y > 0 ? Y - 1 : Y)._W * input._DisplacementScale };
-			const float32 up{ normal_map_displacement_texture.At(X, Y < (input._Resolution - 1) ? Y + 1 : Y)._W * input._DisplacementScale };
+			for (uint32 X{ 0 }; X < input._Resolution; ++X)
+			{
+				const float32 left{ normal_map_displacement_texture.At(X > 0 ? X - 1 : X, Y)._W * input._DisplacementScale };
+				const float32 right{ normal_map_displacement_texture.At(X < (input._Resolution - 1) ? X + 1 : X, Y)._W * input._DisplacementScale };
+				const float32 down{ normal_map_displacement_texture.At(X, Y > 0 ? Y - 1 : Y)._W * input._DisplacementScale };
+				const float32 up{ normal_map_displacement_texture.At(X, Y < (input._Resolution - 1) ? Y + 1 : Y)._W * input._DisplacementScale };
 
-			const Vector3<float32> normal{ Vector3<float32>::Normalize(Vector3<float32>(left - right, down - up, 2.0f)) };
+				const Vector3<float32> normal{ Vector3<float32>::Normalize(Vector3<float32>(left - right, down - up, texel_distance * 2.0f)) };
 
-			normal_map_displacement_texture.At(X, Y)._X = normal._X * 0.5f + 0.5f;
-			normal_map_displacement_texture.At(X, Y)._Y = normal._Y * 0.5f + 0.5f;
-			normal_map_displacement_texture.At(X, Y)._Z = normal._Z * 0.5f + 0.5f;
+				normal_map_displacement_texture.At(X, Y)._X = normal._X * 0.5f + 0.5f;
+				normal_map_displacement_texture.At(X, Y)._Y = normal._Y * 0.5f + 0.5f;
+				normal_map_displacement_texture.At(X, Y)._Z = normal._Z * 0.5f + 0.5f;
+			}
 		}
 	}
 

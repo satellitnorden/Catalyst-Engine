@@ -767,13 +767,13 @@ vec3 CalculateIndirectLighting
 	*	Calculate the outgoing angle.
 	*	Normal maps can make the normals point away from the camera sometimes, so we account for that here. (:
 	*/
-	float outgoing_angle = dot(normal, outgoing_direction) * 0.5f + 0.5f;
+	float outgoing_angle = max(dot(normal, outgoing_direction), 0.0f);
 
 	//Calculate the geometry.
 	float geometry = GeometryIndirect(roughness, outgoing_angle);
 
 	//Calculate the fresnel.
-	vec3 fresnel = FresnelIndirect(surface_color, max(outgoing_angle * 2.0f - 1.0f, 0.0f));
+	vec3 fresnel = FresnelIndirect(surface_color, outgoing_angle);
 
 	//Calculate the diffuse component.
 	vec3 diffuse_component;

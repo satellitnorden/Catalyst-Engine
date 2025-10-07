@@ -5,6 +5,9 @@
 //Platform.
 #include <Platform/Windows/CatalystPlatformWindows.h>
 
+//STD.
+#include <filesystem>
+
 /*
 *	File namespace, containing common code relating to files.
 */
@@ -246,6 +249,18 @@ namespace File
 		CloseHandle(file_handle);
 
 		return static_cast<uint64>(file_size.QuadPart);
+	}
+
+	/*
+	*	Returns the last changed time for the given directory/file path.
+	*	Expressed in seconds since epoch.
+	*/
+	NO_DISCARD uint64 LastChangedTime(const char *const RESTRICT directory_or_file_path) NOEXCEPT
+	{
+		const std::filesystem::file_time_type last_write_time{ std::filesystem::last_write_time(std::string(directory_or_file_path)) };
+		const std::chrono::system_clock::duration time_since_epoch{ last_write_time.time_since_epoch() };
+
+		return std::chrono::duration_cast<std::chrono::seconds>(time_since_epoch).count();
 	}
 
 }

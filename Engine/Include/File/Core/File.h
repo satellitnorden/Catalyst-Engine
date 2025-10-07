@@ -183,4 +183,10 @@ namespace File
 	*/
 	NO_DISCARD uint64 GetSize(const char *const RESTRICT file_path) NOEXCEPT;
 
+	/*
+	*	Returns the last changed time for the given directory/file path.
+	*	Expressed in seconds since epoch.
+	*/
+	NO_DISCARD uint64 LastChangedTime(const char *const RESTRICT directory_or_file_path) NOEXCEPT;
+
 }
