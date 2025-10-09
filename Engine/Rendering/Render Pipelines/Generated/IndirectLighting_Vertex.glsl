@@ -303,7 +303,8 @@ layout (std140, set = 1, binding = 2) uniform RenderingConfiguration
 {
 	layout (offset = 0) uint DIFFUSE_IRRADIANCE_MODE;
 	layout (offset = 4) uint SPECULAR_IRRADIANCE_MODE;
-	layout (offset = 8) uint VOLUMETRIC_SHADOWS_MODE;
+	layout (offset = 8) uint SURFACE_SHADOWS_MODE;
+	layout (offset = 12) uint VOLUMETRIC_SHADOWS_MODE;
 };
 
 layout (std140, set = 1, binding = 3) uniform World
@@ -758,6 +759,10 @@ vec3 CalculateIndirectLighting
 #define SPECULAR_IRRADIANCE_MODE_NONE (0)
 #define SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE (1)
 #define SPECULAR_IRRADIANCE_MODE_RAY_TRACED (2)
+
+#define SURFACE_SHADOWS_MODE_NONE (0)
+#define SURFACE_SHADOWS_MODE_SCREEN_RASTERIZED (1)
+#define SURFACE_SHADOWS_MODE_RAY_TRACED (2)
 
 #define VOLUMETRIC_SHADOWS_MODE_NONE (0)
 #define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)

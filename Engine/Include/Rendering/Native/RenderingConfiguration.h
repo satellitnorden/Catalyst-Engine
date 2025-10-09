@@ -256,6 +256,9 @@ private:
 		//The specular irradiance mode.
 		uint32 _SpecularIrradianceMode;
 
+		//The surface shadows mode.
+		uint32 _SurfaceShadowsMode;
+
 		//The volumetric shadows mode.
 		uint32 _VolumetricShadowsMode;
 

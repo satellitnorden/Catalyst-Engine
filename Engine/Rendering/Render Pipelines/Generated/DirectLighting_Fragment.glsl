@@ -301,7 +301,15 @@ layout (std140, set = 1, binding = 1) uniform General
 	layout (offset = 36) float VIEW_DISTANCE;
 };
 
-layout (std140, set = 1, binding = 2) uniform World
+layout (std140, set = 1, binding = 2) uniform RenderingConfiguration
+{
+	layout (offset = 0) uint DIFFUSE_IRRADIANCE_MODE;
+	layout (offset = 4) uint SPECULAR_IRRADIANCE_MODE;
+	layout (offset = 8) uint SURFACE_SHADOWS_MODE;
+	layout (offset = 12) uint VOLUMETRIC_SHADOWS_MODE;
+};
+
+layout (std140, set = 1, binding = 3) uniform World
 {
 	layout (offset = 0) vec3 UPPER_SKY_COLOR;
 	layout (offset = 16) vec3 LOWER_SKY_COLOR;
@@ -317,7 +325,7 @@ struct LightingHeader
 	uint _NumberOfLights;
 	uint _MaximumNumberOfShadowCastingLights;	
 };
-layout (std430, set = 1, binding = 3) buffer Lighting
+layout (std430, set = 1, binding = 4) buffer Lighting
 {
 	layout (offset = 0) LightingHeader LIGHTING_HEADER;
 	layout (offset = 16) vec4[] LIGHT_DATA;
@@ -816,11 +824,27 @@ vec3 CalculateIndirectLighting
 	return (diffuse_component * diffuse_irradiance * ambient_occlusion) + (specular_component * specular_irradiance * ambient_occlusion);
 }
 
-layout (set = 1, binding = 4) uniform sampler2D SceneFeatures1;
-layout (set = 1, binding = 5) uniform sampler2D SceneFeatures2;
-layout (set = 1, binding = 6) uniform sampler2D SceneFeatures3;
-layout (set = 1, binding = 7) uniform sampler2D SceneFeatures2Half;
-layout (set = 1, binding = 8) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_HALF_1;
+//Constants.
+#define DIFFUSE_IRRADIANCE_MODE_NONE (0)
+#define DIFFUSE_IRRADIANCE_MODE_RAY_TRACED (1)
+
+#define SPECULAR_IRRADIANCE_MODE_NONE (0)
+#define SPECULAR_IRRADIANCE_MODE_SCREEN_SPACE (1)
+#define SPECULAR_IRRADIANCE_MODE_RAY_TRACED (2)
+
+#define SURFACE_SHADOWS_MODE_NONE (0)
+#define SURFACE_SHADOWS_MODE_SCREEN_RASTERIZED (1)
+#define SURFACE_SHADOWS_MODE_RAY_TRACED (2)
+
+#define VOLUMETRIC_SHADOWS_MODE_NONE (0)
+#define VOLUMETRIC_SHADOWS_MODE_SCREEN_SPACE (1)
+#define VOLUMETRIC_SHADOWS_MODE_RAY_TRACED (2)
+
+layout (set = 1, binding = 5) uniform sampler2D SceneFeatures1;
+layout (set = 1, binding = 6) uniform sampler2D SceneFeatures2;
+layout (set = 1, binding = 7) uniform sampler2D SceneFeatures3;
+layout (set = 1, binding = 8) uniform sampler2D SceneFeatures2Half;
+layout (set = 1, binding = 9) uniform sampler2D INTERMEDIATE_RGBA_FLOAT32_HALF_1;
 
 layout (location = 0) in vec2 InScreenCoordinate;
 
@@ -843,6 +867,7 @@ void main()
     vec3 view_direction = normalize(CAMERA_WORLD_POSITION - world_position);
     float linearized_depth = LinearizeDepth(depth);
     vec4 shadows;
+    if (SURFACE_SHADOWS_MODE != SURFACE_SHADOWS_MODE_NONE)
     {
 #if 0
         shadows = texture(INTERMEDIATE_RGBA_FLOAT32_HALF_1, InScreenCoordinate);
@@ -886,6 +911,10 @@ void main()
             shadows[i] = mix(shadows[i], InterleavedGradientNoise(uvec2(gl_FragCoord.xy), FRAME), noise_weight);
         }
         */
+    }
+    else
+    {
+        shadows = vec4(1.0f, 1.0f, 1.0f, 1.0f);
     }
     vec3 lighting = vec3(0.0f);
     for (uint i = 0; i < LIGHTING_HEADER._NumberOfLights; ++i)

@@ -24,6 +24,22 @@ public:
 	void RenderUpdate() NOEXCEPT;
 
 	/*
+	*	Returns whether or not bloom is enabled.
+	*/
+	FORCE_INLINE NO_DISCARD bool GetBloomEnabled() const NOEXCEPT
+	{
+		return _BloomEnabled;
+	}
+
+	/*
+	*	Sets whether or not bloom is enabled.
+	*/
+	FORCE_INLINE void SetBloomEnabled(const bool value) NOEXCEPT
+	{
+		_BloomEnabled = value;
+	}
+
+	/*
 	*	Returns the bloom intensity.
 	*/
 	FORCE_INLINE NO_DISCARD float32 GetBloomIntensity() const NOEXCEPT
@@ -272,6 +288,9 @@ private:
 		float32 _Saturation;
 
 	};
+
+	//Denotes whether or not bloom is enabled.
+	bool _BloomEnabled{ true };
 
 	//The bloom intensity.
 	float32 _BloomIntensity{ 0.05f };

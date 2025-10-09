@@ -218,7 +218,7 @@ void BloomRenderPass::Initialize() NOEXCEPT
 void BloomRenderPass::Execute() NOEXCEPT
 {
 	//No need to perform bloom if it's turned off.
-	if (RenderingSystem::Instance->GetPostProcessingSystem()->GetBloomIntensity() <= 0.0f)
+	if (!RenderingSystem::Instance->GetPostProcessingSystem()->GetBloomEnabled() || RenderingSystem::Instance->GetPostProcessingSystem()->GetBloomIntensity() <= 0.0f)
 	{
 		SetEnabled(false);
 

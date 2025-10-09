@@ -2,5 +2,6 @@ UniformBuffer(RenderingConfiguration)
 {
     uint DIFFUSE_IRRADIANCE_MODE;
     uint SPECULAR_IRRADIANCE_MODE;
+    uint SURFACE_SHADOWS_MODE;
     uint VOLUMETRIC_SHADOWS_MODE;
 };

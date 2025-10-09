@@ -35,5 +35,6 @@ void RenderingConfiguration::Update() NOEXCEPT
 	}
 
 	_RenderingConfigurationUniformData._SpecularIrradianceMode = static_cast<uint32>(_SpecularIrradianceMode);
+	_RenderingConfigurationUniformData._SurfaceShadowsMode = static_cast<uint32>(_SurfaceShadowsMode);
 	_RenderingConfigurationUniformData._VolumetricShadowsMode = static_cast<uint32>(_VolumetricShadowsMode);
 }
