@@ -49,6 +49,22 @@ public:
 		};
 
 		/*
+		*	Text event class definition.
+		*/
+		class TextEvent final
+		{
+
+		public:
+
+			//The time.
+			float64 _Time;
+
+			//The text.
+			DynamicString _Text;
+
+		};
+
+		/*
 		*	Track class definition.
 		*/
 		class Track final
@@ -111,9 +127,6 @@ public:
 					//Denotes whether or not this event slides out.
 					bool _SlideOut;
 
-					//The text (if any) associated with this event.
-					DynamicString _Text;
-
 				};
 
 				//Pointer to the bar.
@@ -132,6 +145,9 @@ public:
 
 			//The track bars.
 			DynamicArray<TrackBar> _TrackBars;
+
+			//The text events.
+			DynamicArray<TextEvent> _TextEvents;
 
 		};
 

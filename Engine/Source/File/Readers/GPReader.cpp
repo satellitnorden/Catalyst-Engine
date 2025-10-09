@@ -4,6 +4,9 @@
 //Core.
 #include <Core/Containers/StaticArray.h>
 
+//Audio.
+#include <Audio/Core/Audio.h>
+
 //Systems.
 #include <Systems/LogSystem.h>
 
@@ -183,7 +186,7 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 #if 1
 	//Write out a "debug" version of the xml document.
 	{
-		constexpr const char* const RESTRICT FILE_POSTFIX{ "_debug.xml" };
+		constexpr const char *const RESTRICT FILE_POSTFIX{ "_debug.xml" };
 		constexpr uint64 FILE_POSTFIX_LENGTH{ StringUtilities::StringLength(FILE_POSTFIX) };
 
 		const uint64 file_path_length{ StringUtilities::StringLength(file_path) };
@@ -806,6 +809,8 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 	}
 
 	//Alright, time to piece together all the data.
+	float64 current_time{ 0.0 };
+
 	for (uint64 bar_index{ 0 }; bar_index < tablature->_Bars.Size(); ++bar_index)
 	{
 		const Tablature::Bar &bar{ tablature->_Bars[bar_index] };
@@ -989,9 +994,6 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 							//Set whether or not this event slides out.
 							new_event._SlideOut = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::SLIDE_OUT));
 
-							//Set the text.
-							new_event._Text = beat._Text;
-
 							//Update the last played note.
 							last_played_note._FretIndex = note._FretIndex;
 							last_played_note._WasTieOrigin = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::TIE_ORIGIN));
@@ -1001,11 +1003,24 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 						}
 					}
 
+					//If this beat has any text, add a text event.
+					if (beat._Text)
+					{
+						track._TextEvents.Emplace();
+						Tablature::TextEvent &new_text_event{ track._TextEvents.Back() };
+
+						new_text_event._Time = current_time + current_offset * Audio::CalculateNoteTime(bar._Tempo, Audio::NoteDuration::QUARTER);
+						new_text_event._Text = beat._Text;
+					}
+
 					//Update the current offset.
 					current_offset += SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0);
 				}
 			}
 		}
+
+		//Update the current time.
+		current_time += CalculateDurationOfBar(bar) * Audio::CalculateNoteTime(bar._Tempo, Audio::NoteDuration::QUARTER);
 	}
 
 	//Apply the repeat regions.
