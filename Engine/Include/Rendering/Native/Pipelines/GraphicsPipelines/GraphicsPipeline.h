@@ -9,10 +9,6 @@
 #include <Rendering/Native/Resolution.h>
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/ShaderResource.h>
-
 class GraphicsPipeline : public Pipeline
 {
 

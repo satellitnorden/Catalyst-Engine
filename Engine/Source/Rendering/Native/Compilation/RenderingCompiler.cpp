@@ -326,6 +326,9 @@ public:
 	//The samplers.
 	DynamicArray<Pair<DynamicString, SamplerProperties>> _Samplers;
 
+	//The external textures.
+	DynamicArray<DynamicString> _ExternalTextures;
+
 	//The input stream subscriptions.
 	DynamicArray<HashString> _InputStreamSubscriptions;
 
@@ -619,6 +622,17 @@ FORCE_INLINE void InsertRenderPipelineInformationToGLSL(const RenderPipelineInfo
 		for (const Pair<DynamicString, SamplerProperties> &sampler : render_pipeline_information._Samplers)
 		{
 			glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler " << sampler._First.Data() << ";" << std::endl;
+		}
+
+		glsl_file << std::endl;
+	}
+
+	//Insert any external textures.
+	if (!render_pipeline_information._ExternalTextures.Empty())
+	{
+		for (const DynamicString &external_texture : render_pipeline_information._ExternalTextures)
+		{
+			glsl_file << "layout (set = 1, binding = " << resource_binding_index++ << ") uniform sampler2D " << external_texture.Data() << ";" << std::endl;
 		}
 
 		glsl_file << std::endl;
@@ -3134,6 +3148,30 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const bool is
 				}
 			}
 
+			//Is this an external texture declaration?
+			{
+				const size_t position{ current_line.find("ExternalTexture") };
+
+				if (position != std::string::npos)
+				{
+					StaticArray<DynamicString, 1> strings;
+
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.data(),
+						current_line.length(),
+						strings.Data()
+					);
+
+					render_pipeline_information._ExternalTextures.Emplace();
+					DynamicString& new_external_texture{ render_pipeline_information._ExternalTextures.Back() };
+
+					new_external_texture = std::move(strings[0]);
+
+					continue;
+				}
+			}
+
 			//Is this an input stream subscription declaration?
 			{
 				const size_t position{ current_line.find("SubscribeToInputStream") };
@@ -3368,6 +3406,9 @@ NO_DISCARD bool RenderingCompiler::ParseRenderPipelinesInDirectory(const bool is
 
 		//Copy the topology.
 		parameters._Topology = render_pipeline_information._Topology;
+
+		//Set the number of external textures.
+		parameters._NumberOfExternalTextures = static_cast<uint32>(render_pipeline_information._ExternalTextures.Size());
 
 		//Fill in the sampler properties.
 		for (const Pair<DynamicString, SamplerProperties> &sampler : render_pipeline_information._Samplers)

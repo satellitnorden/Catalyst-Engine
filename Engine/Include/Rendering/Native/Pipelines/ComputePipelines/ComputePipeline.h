@@ -8,7 +8,6 @@
 
 //Resources.
 #include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/ShaderResource.h>
 
 class ComputePipeline : public Pipeline
 {

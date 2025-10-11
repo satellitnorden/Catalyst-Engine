@@ -49,12 +49,53 @@ void ImGuiRenderPass::Initialize() NOEXCEPT
 	//Reset this render pass.
 	ResetRenderPass();
 
+	//Register the input stream(s).
+	{
+		struct ImGuiPushConstantData final
+		{
+			//The scale.
+			Vector2<float32> _Scale;
+
+			//The translation.
+			Vector2<float32> _Translation;
+		};
+
+		DynamicArray<VertexInputAttributeDescription> vertex_input_attribute_descriptions;
+
+		vertex_input_attribute_descriptions.Emplace(0, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, 0);
+		vertex_input_attribute_descriptions.Emplace(1, 0, VertexInputAttributeDescription::Format::X32Y32SignedFloat, sizeof(Vector2<float32>));
+		vertex_input_attribute_descriptions.Emplace(2, 0, VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat, sizeof(Vector2<float32>) + sizeof(Vector2<float32>));
+
+		DynamicArray<VertexInputBindingDescription> vertex_input_binding_descriptions;
+
+		vertex_input_binding_descriptions.Emplace(0, sizeof(Vector2<float32>) + sizeof(Vector2<float32>) + sizeof(Vector4<float32>), VertexInputBindingDescription::InputRate::Vertex);
+
+
+		RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
+		(
+			HashString("ImGui"),
+			vertex_input_attribute_descriptions,
+			vertex_input_binding_descriptions,
+			sizeof(ImGuiPushConstantData),
+			[](void *const RESTRICT user_data, RenderInputStream *const RESTRICT input_stream)
+			{
+				//Clear the entries.
+				input_stream->_Entries.Clear();
+
+				//Clear the push constant data memory.
+				input_stream->_PushConstantDataMemory.Clear();
+			},
+			RenderInputStream::Mode::DRAW,
+			nullptr
+		);
+	}
+
 	//Add the pipelines.
 	SetNumberOfPipelines(1);
-	AddPipeline(&_ImGuiGraphicsPipeline);
+	AddPipeline(&_ImGuiPipeline);
 
 	//Initialize all pipelines.
-	_ImGuiGraphicsPipeline.Initialize();
+	_ImGuiPipeline.Initialize();
 }
 
 /*
@@ -70,6 +111,18 @@ void ImGuiRenderPass::PreRecord(CommandBuffer *const RESTRICT frame_command_buff
 		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::EDITOR_VIEWPORT)
 	);
 #endif
+
+	//Bind the pipeline.
+	frame_command_buffer->BindPipeline(&_ImGuiPipeline);
+
+	//Bind the render data table.
+	frame_command_buffer->BindRenderDataTable(&_ImGuiPipeline, 0, RenderingSystem::Instance->GetGlobalRenderDataTable2());
+
+	//Draw ImGui.
+	frame_command_buffer->DrawImGui(&_ImGuiPipeline);
+
+	//Don't include the pipeline in the render since it's manually included here.
+	_ImGuiPipeline.SetIncludeInRender(false);
 }
 
 /*
@@ -77,8 +130,7 @@ void ImGuiRenderPass::PreRecord(CommandBuffer *const RESTRICT frame_command_buff
 */
 void ImGuiRenderPass::Execute() NOEXCEPT
 {
-	//Execute all pipelines.
-	_ImGuiGraphicsPipeline.Execute();
+
 }
 
 /*
@@ -87,6 +139,6 @@ void ImGuiRenderPass::Execute() NOEXCEPT
 void ImGuiRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
-	_ImGuiGraphicsPipeline.Terminate();
+	_ImGuiPipeline.Terminate();
 }
 #endif

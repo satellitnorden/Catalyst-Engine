@@ -5,7 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Rendering.
-#include <Rendering/Native/Pipelines/GraphicsPipelines/ImGuiGraphicsPipeline.h>
+#include <Rendering/Native/Pipelines/Core/GraphicsRenderPipeline.h>
 #include <Rendering/Native/RenderPasses/RenderPass.h>
 
 //Systems.
@@ -29,17 +29,17 @@ public:
 	ImGuiRenderPass() NOEXCEPT;
 
 	/*
-	*	Returns the editor user interface graphics pipeline.
+	*	Returns the pipeline.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD ImGuiGraphicsPipeline *const RESTRICT GetImGuiGraphicsPipeline() NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD GraphicsRenderPipeline *const RESTRICT GetPipeline() NOEXCEPT
 	{
-		return &_ImGuiGraphicsPipeline;
+		return &_ImGuiPipeline;
 	}
 
 private:
 
-	//The ImGui graphics pipeline.
-	ImGuiGraphicsPipeline _ImGuiGraphicsPipeline;
+	//The ImGui pipeline.
+	GraphicsRenderPipeline _ImGuiPipeline{ HashString("ImGui_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

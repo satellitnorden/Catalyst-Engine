@@ -896,7 +896,7 @@ void VulkanSubRenderingSystem::PostInitialize() NOEXCEPT
 			imgui_init_info.QueueFamily = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::MAIN);
 			imgui_init_info.Queue = VulkanInterface::Instance->GetMainQueue()->Get();
 			imgui_init_info.DescriptorPool = VulkanInterface::Instance->GetDescriptorPool().Get();
-			imgui_init_info.RenderPass = static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(ImGuiRenderPass::Instance->GetImGuiGraphicsPipeline()->GetData())->_RenderPass->Get();
+			imgui_init_info.RenderPass = static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(ImGuiRenderPass::Instance->GetPipeline()->GetData())->_RenderPass->Get();
 			imgui_init_info.MinImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages();
 			imgui_init_info.ImageCount = VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages();
 			imgui_init_info.MSAASamples = VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;

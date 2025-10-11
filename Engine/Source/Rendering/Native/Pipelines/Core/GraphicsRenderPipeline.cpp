@@ -29,13 +29,16 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 	ResetGraphicsPipeline();
 
 	//Set if this render pipeline needs a render data table.
-	_UsesRenderDataTable =	!_RenderPipelineResource->_IncludedUniformBuffers.Empty()
-							|| !_RenderPipelineResource->_IncludedStorageBuffers.Empty()
-							|| !_RenderPipelineResource->_SamplerProperties.Empty()
-							|| !_RenderPipelineResource->_InputRenderTargets.Empty();
+	_UsesInternalRenderDataTable =	!_RenderPipelineResource->_IncludedUniformBuffers.Empty()
+									|| !_RenderPipelineResource->_IncludedStorageBuffers.Empty()
+									|| !_RenderPipelineResource->_SamplerProperties.Empty()
+									|| !_RenderPipelineResource->_InputRenderTargets.Empty();
+	_UsesExternalRenderDataTable = _RenderPipelineResource->_NumberOfExternalTextures > 0;
+
+	ASSERT((!_UsesInternalRenderDataTable && !_UsesExternalRenderDataTable) || _UsesInternalRenderDataTable != _UsesExternalRenderDataTable, "Can't use both internal and external render data tables!");
 
 	//If this render pipeline has input render targets, create a render data table (and its layout).
-	if (_UsesRenderDataTable)
+	if (_UsesInternalRenderDataTable || _UsesExternalRenderDataTable)
 	{
 		//Create the render data table layout.
 		{
@@ -165,6 +168,25 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 		}
 	}
 
+	if (_UsesExternalRenderDataTable)
+	{
+		constexpr uint64 MAX_BINDINGS{ 16 };
+
+		StaticArray<RenderDataTableLayoutBinding, MAX_BINDINGS> bindings;
+		uint32 current_binding_index{ 0 };
+
+		for (uint32 texture_index{ 0 }; texture_index < _RenderPipelineResource->_NumberOfExternalTextures; ++texture_index)
+		{
+			bindings[current_binding_index] = RenderDataTableLayoutBinding(current_binding_index, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT);
+
+			++current_binding_index;
+
+			ASSERT(current_binding_index <= MAX_BINDINGS, "Probably need to increase MAX_BINDINGS");
+		}
+
+		RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), current_binding_index, &_RenderDataTableLayout);
+	}
+
 	//Set the shaders.
 	SetVertexShader(_RenderPipelineResource->_VertexShaderHandle);
 	SetFragmentShader(_RenderPipelineResource->_FragmentShaderHandle);
@@ -227,10 +249,10 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 	}
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(_UsesRenderDataTable ? 2 : 1);
+	SetNumberOfRenderDataTableLayouts((_UsesInternalRenderDataTable || _UsesExternalRenderDataTable) ? 2 : 1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL_2));
 
-	if (_UsesRenderDataTable)
+	if (_UsesInternalRenderDataTable || _UsesExternalRenderDataTable)
 	{
 		AddRenderDataTableLayout(_RenderDataTableLayout);
 	}
@@ -379,7 +401,7 @@ void GraphicsRenderPipeline::Execute(const GraphicsRenderPipelineExecuteParamete
 	//Bind the render data table.
 	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable2());
 
-	if (_UsesRenderDataTable)
+	if (_UsesInternalRenderDataTable)
 	{
 		RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
 
@@ -418,14 +440,17 @@ void GraphicsRenderPipeline::Execute(const GraphicsRenderPipelineExecuteParamete
 */
 void GraphicsRenderPipeline::Terminate() NOEXCEPT
 {
-	if (_UsesRenderDataTable)
+	if (_UsesInternalRenderDataTable)
 	{
 		//Destroy the render data table.
 		for (RenderDataTableHandle &render_data_table : _RenderDataTables)
 		{
 			RenderingSystem::Instance->DestroyRenderDataTable(&render_data_table);
 		}
+	}
 
+	if (_UsesInternalRenderDataTable || _UsesExternalRenderDataTable)
+	{
 		//Destroy the render data table layout.
 		RenderingSystem::Instance->DestroyRenderDataTableLayout(&_RenderDataTableLayout);
 	}

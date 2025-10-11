@@ -9,6 +9,7 @@
 #include <Rendering/Native/Pipelines/GraphicsPipelines/GraphicsPipeline.h>
 
 //Resources.
+#include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/RenderPipelineResource.h>
 
 class GraphicsRenderPipelineInitializeParameters final
@@ -88,7 +89,10 @@ private:
 	ResourcePointer<RenderPipelineResource> _RenderPipelineResource;
 
 	//Denotes if this render pipeline uses it's own render data table.
-	bool _UsesRenderDataTable;
+	bool _UsesInternalRenderDataTable;
+
+	//Denotes if this render pipeline uses an external render data table.
+	bool _UsesExternalRenderDataTable;
 
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;

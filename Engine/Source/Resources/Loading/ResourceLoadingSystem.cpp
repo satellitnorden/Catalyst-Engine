@@ -243,6 +243,9 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryInputFile *const RESTRICT f
 		}
 	}
 
+	//Read the number of external textures.
+	file->Read(&data->_NumberOfExternalTextures, sizeof(uint32));
+
 	//Read the input stream subscriptions.
 	{
 		uint64 number_of_input_stream_subscriptions{ 0 };

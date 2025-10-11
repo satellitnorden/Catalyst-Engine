@@ -21,6 +21,7 @@
 #define UINT8_MAXIMUM (0xff)
 #define UINT16_MAXIMUM (0xffff)
 #define UINT16_RECIPROCAL (1.525902189669642e-5f)
+#define UINT32_MAXIMUM (0xffffffff)
 #define FLOAT32_EPSILON (1.192092896e-07F)
 #define MAXIMUM_8_BIT_FLOAT (255.0f)
 #define MAXIMUM_8_BIT_UINT (255)
@@ -29,6 +30,7 @@
 #define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
 
 #define PI (3.141592f)
+#define TAU (6.283184f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
 #define saturate(X) clamp(X, 0.0f, 1.0f)
@@ -60,6 +62,22 @@
 }
 
 /*
+*	Evaluates the average albedo/thickness of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_AVERAGE_ALBEDO_THICKNESS(MATERIAL, COORDINATE, SAMPLER, ALBEDO_THICKNESS)					\
+{																											\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_ALBEDO_THICKNESS_TEXTURE))							\
+	{																										\
+		ALBEDO_THICKNESS = TEXTURE_AVERAGE_VALUES[MATERIAL._AlbedoThickness];								\
+	}																										\
+																											\
+	else																									\
+	{																										\
+		ALBEDO_THICKNESS = UnpackColor(MATERIAL._AlbedoThickness);											\
+	}																										\
+}
+
+/*
 *	Evaluates the normal map/displacement of the given material at the given coordinate with the given sampler.
 */
 #define EVALUATE_NORMAL_MAP_DISPLACEMENT(MATERIAL, COORDINATE, SAMPLER, NORMAL_MAP_DISPLACEMENT)						\
@@ -67,6 +85,22 @@
 	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))								\
 	{																													\
 		NORMAL_MAP_DISPLACEMENT = texture(sampler2D(TEXTURES[MATERIAL._NormalMapDisplacement], SAMPLER), COORDINATE);	\
+	}																													\
+																														\
+	else																												\
+	{																													\
+		NORMAL_MAP_DISPLACEMENT = UnpackColor(MATERIAL._NormalMapDisplacement);											\
+	}																													\
+}
+
+/*
+*	Evaluates the average normal map/displacement of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_AVERAGE_NORMAL_MAP_DISPLACEMENT(MATERIAL, COORDINATE, SAMPLER, NORMAL_MAP_DISPLACEMENT)				\
+{																														\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_NORMAL_MAP_DISPLACEMENT_TEXTURE))								\
+	{																													\
+		NORMAL_MAP_DISPLACEMENT = TEXTURE_AVERAGE_VALUES[MATERIAL._NormalMapDisplacement];								\
 	}																													\
 																														\
 	else																												\
@@ -92,6 +126,22 @@
 }
 
 /*
+*	Evaluates the average material properties of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_AVERAGE_MATERIAL_PROPERTIES(MATERIAL, COORDINATE, SAMPLER, MATERIAL_PROPERTIES)					\
+{																													\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_MATERIAL_PROPERTIES_TEXTURE))								\
+	{																												\
+		MATERIAL_PROPERTIES = TEXTURE_AVERAGE_VALUES[MATERIAL._MaterialProperties];									\
+	}																												\
+																													\
+	else																											\
+	{																												\
+		MATERIAL_PROPERTIES = UnpackColor(MATERIAL._MaterialProperties);											\
+	}																												\
+}
+
+/*
 *	Evaluates the opacity of the given material at the given coordinate with the given sampler.
 */
 #define EVALUATE_OPACITY(MATERIAL, COORDINATE, SAMPLER, OPACITY)							\
@@ -99,6 +149,22 @@
 	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_OPACITY_TEXTURE))					\
 	{																						\
 		OPACITY = texture(sampler2D(TEXTURES[MATERIAL._Opacity], SAMPLER), COORDINATE).x;	\
+	}																						\
+																							\
+	else																					\
+	{																						\
+		OPACITY = UnpackColor(MATERIAL._Opacity).x;											\
+	}																						\
+}
+
+/*
+*	Evaluates the average opacity of the given material at the given coordinate with the given sampler.
+*/
+#define EVALUATE_AVERAGE_OPACITY(MATERIAL, COORDINATE, SAMPLER, OPACITY)					\
+{																							\
+	if (TEST_BIT(MATERIAL._Properties, MATERIAL_PROPERTY_OPACITY_TEXTURE))					\
+	{																						\
+		OPACITY = TEXTURE_AVERAGE_VALUES[MATERIAL._Opacity];								\
 	}																						\
 																							\
 	else																					\
@@ -125,17 +191,23 @@ struct Material
 //The textures.
 layout (set = 0, binding = 0) uniform texture2D TEXTURES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
 
+//The texture average values.
+layout (std140, set = 0, binding = 1) uniform GlobalTextureAverageValues
+{
+    layout (offset = 0) vec4 TEXTURE_AVERAGE_VALUES[MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES];
+};
+
 //Materials.
-layout (std140, set = 0, binding = 1) uniform GlobalMaterials
+layout (std140, set = 0, binding = 2) uniform GlobalMaterials
 {
     layout (offset = 0) Material MATERIALS[MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS];
 };
 
 //The blue noise textures.
-layout (set = 0, binding = 2) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
+layout (set = 0, binding = 3) uniform sampler2D BLUE_NOISE_TEXTURES[NUMBER_OF_BLUE_NOISE_TEXTURES];
 
 //The sky texture.
-layout (set = 0, binding = 3) uniform samplerCube SKY_TEXTURE;
+layout (set = 0, binding = 4) uniform samplerCube SKY_TEXTURE;
 
 /*
 *	Returns the square of the given number.
@@ -170,6 +242,14 @@ float Luminance(vec3 color)
 }
 
 /*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
 *   Unpacks a color into a vec4.
 */
 vec4 UnpackColor(uint color)
@@ -195,138 +275,20 @@ bool ValidScreenCoordinate(vec2 X)
             && X.y < 1.0f;
 }
 
-layout (std140, set = 1, binding = 0) uniform Camera
-{
-	layout (offset = 0) mat4 WORLD_TO_CLIP_MATRIX;
-	layout (offset = 64) mat4 WORLD_TO_CAMERA_MATRIX;
-	layout (offset = 128) mat4 PREVIOUS_WORLD_TO_CLIP_MATRIX;
-	layout (offset = 192) mat4 INVERSE_WORLD_TO_CAMERA_MATRIX;
-	layout (offset = 256) mat4 INVERSE_CAMERA_TO_CLIP_MATRIX;
-	layout (offset = 320) vec3 CAMERA_WORLD_POSITION;
-	layout (offset = 336) vec3 CAMERA_FORWARD_VECTOR;
-	layout (offset = 352) vec2 CURRENT_FRAME_JITTER;
-	layout (offset = 360) float NEAR_PLANE;
-	layout (offset = 364) float FAR_PLANE;
-};
-
-/*
-*   Linearizes a depth value.
-*/
-float LinearizeDepth(float depth)
-{
-    return ((FAR_PLANE * NEAR_PLANE) / (depth * (FAR_PLANE - NEAR_PLANE) + NEAR_PLANE));
-}
-
-/*
-*   Calculates the view space position.
-*/
-vec3 CalculateViewSpacePosition(vec2 texture_coordinate, float depth)
-{
-    vec2 near_plane_coordinate = texture_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
-    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
-    view_space_position.xyz *= inverse_view_space_position_denominator;
-
-    return view_space_position.xyz;
-}
-
-/*
-*   Calculates the world position.
-*/
-vec3 CalculateWorldPosition(vec2 screen_coordinate, float depth)
-{
-    vec2 near_plane_coordinate = screen_coordinate * 2.0f - 1.0f;
-    vec4 view_space_position = INVERSE_CAMERA_TO_CLIP_MATRIX * vec4(vec3(near_plane_coordinate, depth), 1.0f);
-    float inverse_view_space_position_denominator = 1.0f / view_space_position.w;
-    view_space_position *= inverse_view_space_position_denominator;
-    vec4 world_space_position = INVERSE_WORLD_TO_CAMERA_MATRIX * view_space_position;
-
-    return world_space_position.xyz;
-}
-
-/*
-*   Returns the current screen coordinate with the given view matrix and world position.
-*/
-vec2 CalculateCurrentScreenCoordinate(vec3 world_position)
-{
-  vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
-  float denominator = 1.0f / view_space_position.w;
-  view_space_position.xy *= denominator;
-
-  return view_space_position.xy * 0.5f + 0.5f;
-}
-
-/*
-*   Returns the previous screen coordinate with the given view matrix and world position.
-*/
-vec2 CalculatePreviousScreenCoordinate(vec3 world_position)
-{
-  vec4 view_space_position = PREVIOUS_WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
-  float denominator = 1.0f / view_space_position.w;
-  view_space_position.xy *= denominator;
-
-  return view_space_position.xy * 0.5f + 0.5f;
-}
-
-/*
-*   Calculates a screen position, including the (linearized) depth from the given world position.
-*/
-vec3 CalculateScreenPosition(vec3 world_position)
-{
-    vec4 view_space_position = WORLD_TO_CLIP_MATRIX * vec4(world_position, 1.0f);
-    float view_space_position_coefficient_reciprocal = 1.0f / view_space_position.w;
-    view_space_position.xyz *= view_space_position_coefficient_reciprocal;
-
-    view_space_position.xy = view_space_position.xy * 0.5f + 0.5f;
-    view_space_position.z = LinearizeDepth(view_space_position.z);
-    
-    return view_space_position.xyz;
-}
-
-/*
-*	Rotates the given vector around the yaw.
-*/
-vec3 RotateYaw(vec3 X, float angle)
-{
-	float sine = sin(angle);
-    float cosine = cos(angle);
-
-    float temp = X.x * cosine + X.z * sine;
-    X.z = -X.x * sine + X.z * cosine;
-    X.x = temp;
-
-    return X;
-}
-
-/*
-*   Calculates a Gram-Schmidt rotation matrix based on a normal and a random tilt.
-*/
-mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
-{
-    vec3 random_tangent = normalize(random_tilt - normal * dot(random_tilt, normal));
-    vec3 random_bitangent = cross(normal, random_tangent);
-
-    return mat3(random_tangent, random_bitangent, normal);
-}
-
-/*
-*   Returns a smoothed number in the range 0.0f-1.0f.
-*/
-float SmoothStep(float number)
-{
-    return number * number * (3.0f - 2.0f * number);
-}
+layout (set = 1, binding = 0) uniform sampler2D TEXTURE;
 
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec4 POSITION_RADIUS;
+	layout (offset = 0) vec2 SCALE;
+	layout (offset = 8) vec2 TRANSLATION;
 };
 
-layout (location = 0) out vec3 OutWorldPosition;
+layout (location = 0) in vec4 InColor;
+layout (location = 1) in vec2 InTextureCoordinate;
+
+layout (location = 0) out vec4 SceneLowDynamicRange1;
 
 void main()
 {
-    vec3 offset = 
-    OutWorldPosition = POSITION_RADIUS.xyz + (RotateYaw(vec3(1.0f, 0.0f, 0.0f), float(gl_VertexIndex - 1) / 64.0f * PI * 2.0f) * POSITION_RADIUS.w * float(gl_VertexIndex > 0));
-	gl_Position = WORLD_TO_CLIP_MATRIX*vec4(OutWorldPosition,1.0f);
+	SceneLowDynamicRange1 = InColor*texture(TEXTURE,InTextureCoordinate);
 }

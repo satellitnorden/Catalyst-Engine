@@ -122,6 +122,9 @@ public:
 	//The sampler properties.
 	DynamicArray<SamplerProperties> _SamplerProperties;
 
+	//The number of external textures.
+	uint32 _NumberOfExternalTextures;
+
 	//The input stream subscriptions.
 	DynamicArray<HashString> _InputStreamSubscriptions;
 

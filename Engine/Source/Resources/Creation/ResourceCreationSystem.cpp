@@ -108,6 +108,9 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 	//Copy the sampler properties.
 	resource->_SamplerProperties = std::move(data->_SamplerProperties);
 
+	//Copy the number of external textures.
+	resource->_NumberOfExternalTextures = data->_NumberOfExternalTextures;
+
 	//Copy the input stream subscriptions.
 	resource->_InputStreamSubscriptions = std::move(data->_InputStreamSubscriptions);
 }
