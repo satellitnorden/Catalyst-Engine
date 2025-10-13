@@ -180,7 +180,7 @@ void UserInterfaceSystem::Update(const UpdatePhase phase) NOEXCEPT
 void UserInterfaceSystem::Terminate() NOEXCEPT
 {
 	//Deactivate all active user interface scenes.
-	for (UserInterfaceScene* const RESTRICT scene : _ActiveUserInterfaceScenes)
+	for (UserInterfaceScene *const RESTRICT scene : _ActiveUserInterfaceScenes)
 	{
 		scene->OnDeactivated();
 	}

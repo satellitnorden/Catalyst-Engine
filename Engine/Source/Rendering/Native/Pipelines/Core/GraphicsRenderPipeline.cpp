@@ -215,7 +215,7 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 	}
 
 	//Add the output render targets.
-	if (_RenderPipelineResource->_OutputRenderTargets.Size() == 1 && _RenderPipelineResource->_OutputRenderTargets[0] == HashString("Screen"))
+	if ((parameters._RenderDirectlyToScreen.Valid() && parameters._RenderDirectlyToScreen.Get()) || (_RenderPipelineResource->_OutputRenderTargets.Size() == 1 && _RenderPipelineResource->_OutputRenderTargets[0] == HashString("Screen")))
 	{
 		SetIsRenderingDirectlyToScreen(true);
 	}

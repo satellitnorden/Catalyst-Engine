@@ -35,6 +35,9 @@ public:
 	//Denotes whether or not to enable depth test.
 	Optional<bool> _DepthTestEnabled;
 
+	//Denotes whether or not this pipeline renders directly to the screen.
+	Optional<bool> _RenderDirectlyToScreen;
+
 };
 
 class GraphicsRenderPipelineExecuteParameters final
