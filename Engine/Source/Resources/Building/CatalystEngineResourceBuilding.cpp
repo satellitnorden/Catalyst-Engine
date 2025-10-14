@@ -40,7 +40,6 @@
 #define BUILD_ENGINE_BASE (0)
 #define BUILD_ENGINE_CLOUD_TEXTURE (0)
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES (0)
-#define BUILD_ENGINE_SHADERS (0)
 #define BUILD_ENGINE_DEFAULT_TEXTURE_3D (0)
 #define BUILD_ENGINE_MATERIALS (0)
 #define BUILD_ENGINE_MISCELLANEOUS (0)
@@ -880,19 +879,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	}
 #endif
 
-#if BUILD_ENGINE_ALL || BUILD_ENGINE_SHADERS
-	{
-		ShaderBuildParameters parameters;
-
-		parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\ViewportVertexShader";
-		parameters._ID = "ViewportVertexShader";
-		parameters._FilePath = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Shaders\\ViewportVertexShader.vert";
-		parameters._Stage = ShaderStage::VERTEX;
-
-		ResourceSystem::Instance->GetResourceBuildingSystem()->BuildShader(parameters);
-	}
-#endif
-
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_MATERIALS
 	{
 		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
@@ -989,7 +975,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	if (BUILD_ENGINE_ALL
 		|| BUILD_ENGINE_BASE
 		|| BUILD_ENGINE_BLUE_NOISE_TEXTURES
-		|| BUILD_ENGINE_SHADERS
 		|| BUILD_ENGINE_DEFAULT_TEXTURE_3D
 		|| BUILD_ENGINE_MATERIALS 
 		|| BUILD_ENGINE_RESOURCE_COLLECTIONS

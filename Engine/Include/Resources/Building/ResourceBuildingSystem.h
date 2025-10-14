@@ -8,7 +8,6 @@
 #include <Resources/Building/RawDataBuildParameters.h>
 #include <Resources/Building/RenderPipelineBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
-#include <Resources/Building/ShaderBuildParameters.h>
 #include <Resources/Building/Texture3DBuildParameters.h>
 
 class ResourceBuildingSystem final
@@ -30,11 +29,6 @@ public:
 	*	Builds a render pipeline.
 	*/
 	void BuildRenderPipeline(const RenderPipelineBuildParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Builds a shader.
-	*/
-	void BuildShader(const ShaderBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a texture 3D.

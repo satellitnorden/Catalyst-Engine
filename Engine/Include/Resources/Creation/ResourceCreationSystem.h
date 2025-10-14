@@ -9,11 +9,9 @@
 //Resources.
 #include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/RenderPipelineResource.h>
-#include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/Texture3DResource.h>
 #include <Resources/Loading/RawDataData.h>
 #include <Resources/Loading/RenderPipelineData.h>
-#include <Resources/Loading/ShaderData.h>
 #include <Resources/Loading/Texture3DData.h>
 
 class ResourceCreationSystem final
@@ -30,11 +28,6 @@ public:
 	*	Creates a render pipeline.
 	*/
 	void CreateRenderPipeline(RenderPipelineData *const RESTRICT data, RenderPipelineResource *const RESTRICT resource) NOEXCEPT;
-
-	/*
-	*	Creates a shader.
-	*/
-	void CreateShader(ShaderData *const RESTRICT data, ShaderResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a texture 3D.

@@ -174,44 +174,6 @@ NO_DISCARD ResourcePointer<RenderPipelineResource> ResourceSystem::FindOrCreateR
 }
 
 /*
-*	Returns the shader resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<ShaderResource> ResourceSystem::GetShaderResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	ShaderResource *const RESTRICT *const RESTRICT resource{ _ShaderResources.Find(identifier) };
-
-	ASSERT(resource, "Couldn't find resource!");
-
-	return resource ? ResourcePointer<ShaderResource>(*resource) : ResourcePointer<ShaderResource>();
-}
-
-/*
-*	Returns or creates the shader resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<ShaderResource> ResourceSystem::FindOrCreateShaderResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	ShaderResource *const RESTRICT *const RESTRICT resource{ _ShaderResources.Find(identifier) };
-
-	if (!resource)
-	{
-		//If the resource couldn't be found, create it.
-		ShaderResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<ShaderResource>()) ShaderResource() };
-		new_resource->_Header._ResourceIdentifier = identifier;
-		_ShaderResources.Add(identifier, new_resource);
-		_AllResources.Emplace(new_resource);
-
-		return ResourcePointer<ShaderResource>(new_resource);
-	}
-
-	else
-	{
-		return ResourcePointer<ShaderResource>(*resource);
-	}
-}
-
-/*
 *	Returns the texture 3D resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<Texture3DResource> ResourceSystem::GetTexture3DResource(const HashString identifier) NOEXCEPT
@@ -341,44 +303,6 @@ void ResourceSystem::LoadResource(BinaryInputFile *const RESTRICT file) NOEXCEPT
 
 		//Create the resource.
 		_ResourceCreationSystem.CreateRenderPipeline(&data, new_resource);
-
-		//Register that the resource is now loaded.
-		new_resource->_LoadState = ResourceLoadState::LOADED;
-	}
-
-	else if (header._TypeIdentifier == ResourceConstants::SHADER_TYPE_IDENTIFIER)
-	{
-		/*
-		*	Find or allocate the new resource.
-		*	The resource might have been created already by other dependant resources, but not loaded yet.
-		*/
-		ShaderResource* RESTRICT new_resource;
-
-		if (ShaderResource* const RESTRICT* const RESTRICT found_resource{ _ShaderResources.Find(header._ResourceIdentifier) })
-		{
-			new_resource = *found_resource;
-		}
-
-		else
-		{
-			new_resource = new (MemorySystem::Instance->TypeAllocate<ShaderResource>()) ShaderResource();
-			_ShaderResources.Add(header._ResourceIdentifier, new_resource);
-			_AllResources.Emplace(new_resource);
-		}
-
-		//Set the resource header.
-		new_resource->_Header = header;
-
-		//Set the file path and file offset.
-		new_resource->_FilePath = file->GetFilePath();
-		new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
-
-		//Load the resource.
-		ShaderData data;
-		_ResourceLoadingSystem.LoadShader(file, &data);
-
-		//Create the resource.
-		_ResourceCreationSystem.CreateShader(&data, new_resource);
 
 		//Register that the resource is now loaded.
 		new_resource->_LoadState = ResourceLoadState::LOADED;

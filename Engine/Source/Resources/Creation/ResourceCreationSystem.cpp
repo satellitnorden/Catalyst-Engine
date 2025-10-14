@@ -116,15 +116,6 @@ void ResourceCreationSystem::CreateRenderPipeline(RenderPipelineData *const REST
 }
 
 /*
-*	Creates a shader.
-*/
-void ResourceCreationSystem::CreateShader(ShaderData *const RESTRICT data, ShaderResource *const RESTRICT resource) NOEXCEPT
-{
-	//Create the shader.
-	RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(data->_Data), data->_Stage, &resource->_Handle);
-}
-
-/*
 *	Creates a texture 3D.
 */
 void ResourceCreationSystem::CreateTexture3D(Texture3DData *const RESTRICT data, Texture3DResource *const RESTRICT resource) NOEXCEPT

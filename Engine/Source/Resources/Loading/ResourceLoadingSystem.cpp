@@ -260,25 +260,6 @@ void ResourceLoadingSystem::LoadRenderPipeline(BinaryInputFile *const RESTRICT f
 }
 
 /*
-*	Given a file, load shader data.
-*/
-void ResourceLoadingSystem::LoadShader(BinaryInputFile *const RESTRICT file, ShaderData *const RESTRICT data) NOEXCEPT
-{
-	//Read the stage.
-	file->Read(&data->_Stage, sizeof(ShaderStage));
-
-	//Read the data size.
-	uint64 data_size{ 0 };
-	file->Read(&data_size, sizeof(uint64));
-
-	//Reserve the appropriate amount of memory for the data.
-	data->_Data.Upsize<false>(data_size);
-
-	//Read the data.
-	file->Read(data->_Data.Data(), data_size);
-}
-
-/*
 *	Given a file, load texture 3D data.
 */
 void ResourceLoadingSystem::LoadTexture3D(BinaryInputFile *const RESTRICT file, Texture3DData *const RESTRICT data) NOEXCEPT

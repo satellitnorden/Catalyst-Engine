@@ -9,7 +9,6 @@
 #include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ResourcePointer.h>
-#include <Resources/Core/ShaderResource.h>
 #include <Resources/Core/Texture3DResource.h>
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
 	#include <Resources/Building/ResourceBuildingSystem.h>
@@ -105,24 +104,6 @@ public:
 	NO_DISCARD ResourcePointer<RenderPipelineResource> FindOrCreateRenderPipelineResource(const HashString identifier) NOEXCEPT;
 
 	/*
-	*	Returns the shader resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<ShaderResource> GetShaderResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the shader resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<ShaderResource> FindOrCreateShaderResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns all shader resources.
-	*/
-	FORCE_INLINE NO_DISCARD const HashTable<HashString, ShaderResource *RESTRICT> &GetAllShaderResources() const NOEXCEPT
-	{
-		return _ShaderResources;
-	}
-
-	/*
 	*	Returns the texture 3D resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT;
@@ -166,9 +147,6 @@ private:
 
 	//Container for all render pipeline resources.
 	HashTable<HashString, RenderPipelineResource *RESTRICT> _RenderPipelineResources;
-
-	//Container for all shader resources.
-	HashTable<HashString, ShaderResource *RESTRICT> _ShaderResources;
 
 	//Container for all texture 3D resources.
 	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;
