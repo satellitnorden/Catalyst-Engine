@@ -582,6 +582,7 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 			temporary_data._Notes.Emplace();
 			TemporaryData::Note &new_note{ temporary_data._Notes.Back() };
 
+			new_note._FretIndex = UINT8_MAXIMUM;
 			new_note._Flags = TemporaryData::Note::Flags::NONE;
 
 			if (const pugi::xml_node tie_node{ note_node.child("Tie") })
@@ -650,18 +651,36 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 				{
 					constexpr uint32 LEGATO_SLIDE_BIT{ BIT(1) };
 					constexpr uint32 SLIDE_OUT_BIT{ BIT(2) };
+					constexpr uint32 SLIDE_UP_BIT{ BIT(3) };
 
 					const uint32 flags{ std::stoul(property_node.child("Flags").child_value()) };
 
 					//Add the flag.
-					if (TEST_BIT(flags, LEGATO_SLIDE_BIT)) //Legato slide.
+					if (TEST_BIT(flags, LEGATO_SLIDE_BIT))
 					{
 						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::LEGATO_SLIDE));
 					}
 
-					if (TEST_BIT(flags, SLIDE_OUT_BIT)) //Slide out.
+					if (TEST_BIT(flags, SLIDE_OUT_BIT))
 					{
-						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::SLIDE_OUT));
+						ASSERT(new_note._FretIndex != UINT8_MAXIMUM, "Fret index needs to be known before this!");
+
+						new_note._SlideOffsets.Emplace(0.0f);
+						new_note._SlideValues.Emplace(0.0f);
+
+						new_note._SlideOffsets.Emplace(1.0f);
+						new_note._SlideValues.Emplace(BaseMath::Maximum<float32>(-static_cast<float32>(new_note._FretIndex), -4.0f));
+					}
+
+					if (TEST_BIT(flags, SLIDE_UP_BIT))
+					{
+						ASSERT(new_note._FretIndex != UINT8_MAXIMUM, "Fret index needs to be known before this!");
+
+						new_note._SlideOffsets.Emplace(0.0f);
+						new_note._SlideValues.Emplace(0.0f);
+
+						new_note._SlideOffsets.Emplace(1.0f);
+						new_note._SlideValues.Emplace(BaseMath::Minimum<float32>(24.0f - static_cast<float32>(new_note._FretIndex), 4.0f));
 					}
 				}
 
@@ -926,6 +945,33 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 									}
 								}
 							}
+
+							//Also add the slide properties to the tie origin note.
+							{
+								//First calculate the ratio of the tie origin note's duration and scale back the slide offsets by that much.
+								{
+									const float64 ratio{ tie_origin_duration / (tie_origin_duration + tie_destination_duration) };
+
+									for (uint64 slide_property_index{ 0 }; slide_property_index < tie_origin_event._SlideOffsets.Size(); ++slide_property_index)
+									{
+										tie_origin_event._SlideOffsets[slide_property_index] *= ratio;
+									}
+								}
+
+								//Next, add the tie destination note's bend properties.
+								{
+									const float64 ratio{ 1.0 - (tie_destination_duration / (tie_origin_duration + tie_destination_duration)) };
+
+									for (uint64 slide_property_index{ 0 }; slide_property_index < note._SlideOffsets.Size(); ++slide_property_index)
+									{
+										const float64 slide_offset{ BaseMath::Scale<float32>(note._SlideOffsets[slide_property_index], 0.0, 1.0, ratio, 1.0) };
+										const float64 slide_value{ note._SlideValues[slide_property_index] };
+
+										tie_origin_event._SlideOffsets.Emplace(slide_offset);
+										tie_origin_event._SlideValues.Emplace(slide_value);
+									}
+								}
+							}
 						}
 
 						//Otherwise, add a new event!
@@ -988,11 +1034,12 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 							new_event._BendOffsets = note._BendOffsets;
 							new_event._BendValues = note._BendValues;
 
+							//Set the slide offsets/values.
+							new_event._SlideOffsets = note._SlideOffsets;
+							new_event._SlideValues = note._SlideValues;
+
 							//Set whether or not this is a slide event.
 							new_event._IsSlideEvent = last_played_note._WasLegatoSlideOrigin;
-
-							//Set whether or not this event slides out.
-							new_event._SlideOut = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::SLIDE_OUT));
 
 							//Update the last played note.
 							last_played_note._FretIndex = note._FretIndex;

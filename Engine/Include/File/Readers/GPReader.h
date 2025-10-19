@@ -121,11 +121,14 @@ public:
 					//The bend values.
 					DynamicArray<float32> _BendValues;
 
+					//The slide offsets.
+					DynamicArray<float32> _SlideOffsets;
+
+					//The slide values.
+					DynamicArray<float32> _SlideValues;
+
 					//Denotes if this is a slide event.
 					bool _IsSlideEvent;
-
-					//Denotes whether or not this event slides out.
-					bool _SlideOut;
 
 				};
 
@@ -238,10 +241,9 @@ private:
 				NATURAL_HARMONIC = BIT(2),
 				PALM_MUTED = BIT(3),
 				LEGATO_SLIDE = BIT(4),
-				SLIDE_OUT = BIT(5),
-				TAPPED = BIT(6),
-				TIE_ORIGIN = BIT(7),
-				TIE_DESTINATION = BIT(8)
+				TAPPED = BIT(5),
+				TIE_ORIGIN = BIT(6),
+				TIE_DESTINATION = BIT(7)
 			};
 
 			//The string index.
@@ -258,6 +260,12 @@ private:
 
 			//The bend values.
 			DynamicArray<float32> _BendValues;
+
+			//The slide offsets.
+			DynamicArray<float32> _SlideOffsets;
+
+			//The slide values.
+			DynamicArray<float32> _SlideValues;
 
 		};
 
