@@ -29,7 +29,6 @@ public:
 		UserInterfaceSystem,
 		SYSTEM_INITIALIZE()
 		SYSTEM_UPDATE(RANGE(USER_INTERFACE, PRE_RENDER))
-		SYSTEM_TERMINATE()
 	);
 
 	/*
