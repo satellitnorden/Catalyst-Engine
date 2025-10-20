@@ -87,13 +87,30 @@ public:
 			values->Emplace(_Values[UNDERLYING(ValueType::ORIGIN)]);
 		}
 
-		if (_Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_1)] != FLOAT32_MAXIMUM && _Values[UNDERLYING(ValueType::MIDDLE)] != FLOAT32_MAXIMUM)
+		bool should_add_middle_offset_1{ true };
+
+		should_add_middle_offset_1 &= _Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_1)] != FLOAT32_MAXIMUM;
+		should_add_middle_offset_1 &= _Values[UNDERLYING(ValueType::MIDDLE)] != FLOAT32_MAXIMUM;
+
+		//For some unknown reason, destination offset can sometimes be smaller than the middle offset. If so, just skip it here.
+		should_add_middle_offset_1 &= _Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_1)] < _Offsets[UNDERLYING(OffsetType::DESTINATION)];
+
+		if (should_add_middle_offset_1)
 		{
 			offsets->Emplace(_Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_1)]);
 			values->Emplace(_Values[UNDERLYING(ValueType::MIDDLE)]);
 		}
 
-		if (_Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_2)] != FLOAT32_MAXIMUM && _Values[UNDERLYING(ValueType::MIDDLE)] != FLOAT32_MAXIMUM && _Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_1)] != _Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_2)])
+		bool should_add_middle_offset_2{ true };
+
+		should_add_middle_offset_2 &= _Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_2)] != FLOAT32_MAXIMUM;
+		should_add_middle_offset_2 &= _Values[UNDERLYING(ValueType::MIDDLE)] != FLOAT32_MAXIMUM;
+		should_add_middle_offset_2 &= _Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_1)] != _Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_2)];
+
+		//For some unknown reason, destination offset can sometimes be smaller than the middle offset. If so, just skip it here.
+		should_add_middle_offset_2 &= _Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_2)] < _Offsets[UNDERLYING(OffsetType::DESTINATION)];
+
+		if (should_add_middle_offset_2)
 		{
 			offsets->Emplace(_Offsets[UNDERLYING(OffsetType::MIDDLE_OFFSET_2)]);
 			values->Emplace(_Values[UNDERLYING(ValueType::MIDDLE)]);
