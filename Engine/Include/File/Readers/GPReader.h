@@ -222,6 +222,9 @@ private:
 			//The text.
 			DynamicString _Text;
 
+			//Denotes whether or not this is a grace note.
+			bool _IsGraceNote;
+
 		};
 
 		/*

@@ -586,6 +586,22 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 					new_beat._Text = free_text_string;
 				}
 			}
+
+			//Set whether or not this is a grace note.
+			{
+				const pugi::xml_node grace_notes_node{ beat_node.child("GraceNotes") };
+
+				if (grace_notes_node)
+				{
+					//Technically this should query if the grace note is on the beat of before the beat, but we currently only support on the beat.
+					new_beat._IsGraceNote = true;
+				}
+
+				else
+				{
+					new_beat._IsGraceNote = false;
+				}
+			}
 		}
 	}
 
@@ -844,6 +860,17 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 		}
 	}
 
+	//Set up the per-track last beat data.
+	struct LastBeat final
+	{
+		float64 _Duration;
+		bool _WasGraceNote;
+	};
+
+	DynamicArray<LastBeat> last_beats;
+	last_beats.Upsize<false>(tablature->_Tracks.Size());
+	Memory::Set(last_beats.Data(), 0, sizeof(LastBeat) * last_beats.Size());
+
 	//Alright, time to piece together all the data.
 	float64 current_time{ 0.0 };
 
@@ -853,7 +880,9 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 
 		for (uint64 track_index{ 0 }; track_index < tablature->_Tracks.Size(); ++track_index)
 		{
+			//Cache data.
 			Tablature::Track &track{ tablature->_Tracks[track_index] };
+			LastBeat &last_beat{ last_beats[track_index] };
 
 			track._TrackBars.Emplace();
 			Tablature::Track::TrackBar &track_bar{ track._TrackBars.Back() };
@@ -884,6 +913,15 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 					const TemporaryData::Beat &beat{ temporary_data._Beats[voice_to_beat_mapping] };
 					const TemporaryData::Rhythm &rhythm{ temporary_data._Rhythms[beat._RhythmIndex] };
 
+					//Calculate the beat duration.
+					float64 beat_duration{ SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0) };
+
+					//If the last beat was a grace note, subtract that beat's duration from this.
+					if (last_beat._WasGraceNote)
+					{
+						beat_duration -= last_beat._Duration;
+					}
+
 					for (const uint32 note_index : beat._NoteIndices)
 					{
 						const TemporaryData::Note &note{ temporary_data._Notes[note_index] };
@@ -908,7 +946,7 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 							const float64 tie_origin_duration{ tie_origin_event._Duration };
 
 							//Calculate the duration of the tie destination event.
-							const float64 tie_destination_duration{ SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0) };
+							const float64 tie_destination_duration{ beat_duration };
 
 							//If the tie origin event was from the same bar, the duration is simply the current offset minus the offset of the tie origin event.
 							if (last_played_note._BarIndex == bar_index)
@@ -1002,7 +1040,7 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 							new_event._Offset = current_offset;
 
 							//Calculate the duration.
-							new_event._Duration = SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0);
+							new_event._Duration = beat_duration;
 
 							//Set the string index.
 							new_event._StringIndex = note._StringIndex;
@@ -1078,7 +1116,11 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 					}
 
 					//Update the current offset.
-					current_offset += SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0);
+					current_offset += beat_duration;
+
+					//Update the last beat.
+					last_beat._Duration = beat_duration;
+					last_beat._WasGraceNote = beat._IsGraceNote;
 				}
 			}
 		}
