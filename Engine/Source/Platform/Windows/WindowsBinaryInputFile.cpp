@@ -98,7 +98,7 @@ NO_DISCARD uint64 BinaryInputFile::Size() const NOEXCEPT
 /*
 *	Reads from this binary file.
 */
-void BinaryInputFile::Read(void* const RESTRICT output, const uint64 size) NOEXCEPT
+void BinaryInputFile::Read(void *const RESTRICT output, const uint64 size, const File::Endian endian) NOEXCEPT
 {
 	//Cache the implementation.
 	WindowsBinaryInputFileImplementation *const RESTRICT implementation{ _Implementation.Get<WindowsBinaryInputFileImplementation>() };
@@ -106,6 +106,11 @@ void BinaryInputFile::Read(void* const RESTRICT output, const uint64 size) NOEXC
 	//Read.
 	Memory::Copy(output, &implementation->_Data[implementation->_CurrentPosition], size);
 	implementation->_CurrentPosition += size;
+
+	if (endian == File::Endian::BIG)
+	{
+		FlipEndian(output, size);
+	}
 }
 
 /*

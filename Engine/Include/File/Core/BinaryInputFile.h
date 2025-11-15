@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/Any.h>
 
+//File.
+#include <File/Core/File.h>
+
 class BinaryInputFile final
 {
 	
@@ -39,7 +42,7 @@ public:
 	/*
 	*	Reads from this binary file.
 	*/
-	void Read(void *const RESTRICT output, const uint64 size) NOEXCEPT;
+	void Read(void *const RESTRICT output, const uint64 size, const File::Endian endian = File::Endian::LITTLE) NOEXCEPT;
 
 	/*
 	*	Returns the current position, in bytes.

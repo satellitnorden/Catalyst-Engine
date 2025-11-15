@@ -10,6 +10,13 @@
 namespace File
 {
 
+	//Enumeration covering all endians.
+	enum class Endian : uint8
+	{
+		LITTLE,
+		BIG
+	};
+
 	//Enumeration covering all extensions.
 	enum class Extension : uint8
 	{
