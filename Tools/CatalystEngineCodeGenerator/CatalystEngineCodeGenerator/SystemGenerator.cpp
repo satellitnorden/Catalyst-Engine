@@ -661,7 +661,22 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 				continue;
 			}
 
+			for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
+			{
+				file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
+			}
+
+			for (const std::string &defined_requirement : _system_data._DefinedRequirements)
+			{
+				file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
+			}
+
 			file << "Task " << GetUpdateTaskName(_system_data, update_range).c_str() << ";" << std::endl;
+
+			for (size_t j{ 0 }; j < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++j)
+			{
+				file << "#endif" << std::endl;
+			}
 		}
 	}
 
@@ -718,24 +733,21 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
 		}
 
-		for (const SystemData &_system_data : system_data)
+		for (const SystemData::UpdateRange &update_range : _system_data._UpdateRanges)
 		{
-			for (const SystemData::UpdateRange &update_range : _system_data._UpdateRanges)
+			if (update_range._RunOnMainThread)
 			{
-				if (update_range._RunOnMainThread)
-				{
-					continue;
-				}
-
-				const std::string update_string{ GetUpdateTaskName(_system_data, update_range) };
-
-				file << "\t\t" << update_string.c_str() << "._Function = [](void *const RESTRICT /*arguments*/)" << std::endl;
-				file << "\t\t{" << std::endl;
-				file << "\t\t\t" << _system_data._Name.c_str() << "::Instance->Update(UpdatePhase::" << update_range._StartPhase.c_str() << ");" << std::endl;
-				file << "\t\t};" << std::endl;
-				file << "\t\t" << update_string.c_str() << "._Arguments = nullptr;" << std::endl;
-				file << "\t\t" << update_string.c_str() << "._ExecutableOnSameThread = false;" << std::endl;
+				continue;
 			}
+
+			const std::string update_string{ GetUpdateTaskName(_system_data, update_range) };
+
+			file << "\t\t" << update_string.c_str() << "._Function = [](void *const RESTRICT /*arguments*/)" << std::endl;
+			file << "\t\t{" << std::endl;
+			file << "\t\t\t" << _system_data._Name.c_str() << "::Instance->Update(UpdatePhase::" << update_range._StartPhase.c_str() << ");" << std::endl;
+			file << "\t\t};" << std::endl;
+			file << "\t\t" << update_string.c_str() << "._Arguments = nullptr;" << std::endl;
+			file << "\t\t" << update_string.c_str() << "._ExecutableOnSameThread = false;" << std::endl;
 		}
 
 		for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
