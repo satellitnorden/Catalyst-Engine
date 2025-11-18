@@ -88,16 +88,39 @@ public:
 	}
 
 	/*
+	*	Returns the data.
+	*/
+	FORCE_INLINE NO_DISCARD const byte *const RESTRICT GetData() const NOEXCEPT
+	{
+		ASSERT((!_Data._Internal.Empty() && !_Data._External) || (_Data._Internal.Empty() && _Data._External), "Either not data is set or it is set both internally or externally.");
+
+		return _Data._Internal.Empty() ? _Data._External : _Data._Internal.Data();
+	}
+
+	/*
+	*	Returns the data size.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 GetDataSize() const NOEXCEPT
+	{
+		ASSERT(_NumberOfChannels > 0, "Need to set number of channels first!");
+		ASSERT(_NumberOfSamples > 0, "Need to set number of samples first!");
+		ASSERT(_Format != Audio::Format::UNKNOWN, "Need to set format first!");
+
+		return _NumberOfChannels * _NumberOfSamples * (Audio::BitsPerSample(_Format) >> 3);
+	}
+
+	/*
 	*	Sets the data (internally).
 	*/
 	FORCE_INLINE void SetDataInternal(const byte *const RESTRICT data) NOEXCEPT
 	{
 		ASSERT(_NumberOfChannels > 0, "Need to set number of channels first!");
 		ASSERT(_NumberOfSamples > 0, "Need to set number of samples first!");
+		ASSERT(_Format != Audio::Format::UNKNOWN, "Need to set format first!");
 		ASSERT(_Data._Internal.Empty(), "Internal data already set!");
 		ASSERT(!_Data._External, "External data already set!");
 
-		const uint64 data_size{ _NumberOfChannels * _NumberOfSamples * (Audio::BitsPerSample(_Format) / 8) };
+		const uint64 data_size{ GetDataSize() };
 
 		_Data._Internal.Upsize<false>(data_size);
 		Memory::Copy(_Data._Internal.Data(), data, data_size);
@@ -110,6 +133,7 @@ public:
 	{
 		ASSERT(_NumberOfChannels > 0, "Need to set number of channels first!");
 		ASSERT(_NumberOfSamples > 0, "Need to set number of samples first!");
+		ASSERT(_Format != Audio::Format::UNKNOWN, "Need to set format first!");
 		ASSERT(_Data._Internal.Empty(), "Internal data already set!");
 		ASSERT(!_Data._External, "External data already set!");
 
@@ -119,7 +143,7 @@ public:
 	/*
 	*	Samples this audio stream.
 	*/
-	FORCE_INLINE NO_DISCARD float32 Sample(const uint8 channel_index, const uint32 sample_index) NOEXCEPT
+	FORCE_INLINE NO_DISCARD float32 Sample(const uint8 channel_index, const uint32 sample_index) const NOEXCEPT
 	{
 		const uint64 data_index{ sample_index * _NumberOfChannels * (Audio::BitsPerSample(_Format) / 8) + channel_index * (Audio::BitsPerSample(_Format) / 8) };
 
@@ -155,15 +179,5 @@ private:
 		//The external data.
 		const byte *RESTRICT _External{ nullptr };
 	} _Data;
-
-	/*
-	*	Returns the data.
-	*/
-	FORCE_INLINE NO_DISCARD const byte *const RESTRICT GetData() const NOEXCEPT
-	{
-		ASSERT((!_Data._Internal.Empty() && !_Data._External) || (_Data._Internal.Empty() && _Data._External), "Either not data is set or it is set both internally or externally.");
-
-		return _Data._Internal.Empty() ? _Data._External : _Data._Internal.Data();
-	}
 
 };

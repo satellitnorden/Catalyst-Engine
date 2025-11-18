@@ -13,6 +13,14 @@
 namespace Audio
 {
 
+	//Enumeration covering all backends.
+	enum class Backend : uint8
+	{
+		NONE,
+
+		WASAPI
+	};
+
 	//Enumeration covering all formats.
 	enum class Format : uint8
 	{
@@ -157,6 +165,70 @@ namespace Audio
 				ASSERT(false, "Invalid case!");
 
 				return 0.0f;
+			}
+		}
+	}
+
+	/*
+	*	Converts a float32 to a sample with the given format.
+	*/
+	FORCE_INLINE void ConvertToSample(const Format format, const float32 input_sample, void *const RESTRICT output_sample) NOEXCEPT
+	{
+		switch (format)
+		{
+			case Format::INTEGER_8_BIT:
+			{
+				(*static_cast<int8 *const RESTRICT>(output_sample)) = static_cast<int8>(input_sample * static_cast<float32>(INT16_MAXIMUM));
+
+				break;
+			}
+
+			case Format::INTEGER_16_BIT:
+			{
+				(*static_cast<int16 *const RESTRICT>(output_sample)) = static_cast<int32>(input_sample * static_cast<float32>(INT16_MAXIMUM));
+
+				break;
+			}
+
+			case Format::INTEGER_24_BIT:
+			{
+				const int32 source{ static_cast<int32>(input_sample * static_cast<float32>(INT24_MAXIMUM)) };
+
+				uint8 *const RESTRICT destination{ static_cast<uint8 *const RESTRICT>(output_sample) };
+
+				destination[0] = static_cast<uint8>(source & 0xFF);
+				destination[1] = static_cast<uint8>((source >> 8) & 0xFF);
+				destination[2] = static_cast<uint8>((source >> 16) & 0xFF);
+
+				break;
+			}
+
+			case Format::INTEGER_32_BIT:
+			{
+				(*static_cast<int32 *const RESTRICT>(output_sample)) = static_cast<int32>(input_sample * static_cast<float32>(INT32_MAXIMUM));
+
+				break;
+			}
+
+			case Format::FLOAT_32_BIT:
+			{
+				(*static_cast<float32 *const RESTRICT>(output_sample)) = input_sample;
+
+				break;
+			}
+
+			case Format::FLOAT_64_BIT:
+			{
+				(*static_cast<float64 *const RESTRICT>(output_sample)) = static_cast<float64>(input_sample);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
 			}
 		}
 	}

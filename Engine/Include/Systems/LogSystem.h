@@ -8,11 +8,11 @@
 #include <Systems/System.h>
 
 //Macros.
-#define LOG_DEBUG(MESSAGE, ...) LogSystem::Instance->Log(LogSystem::LogLevel::DEBUG, StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
-#define LOG_INFORMATION(MESSAGE, ...) LogSystem::Instance->Log(LogSystem::LogLevel::INFORMATION, StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
-#define LOG_WARNING(MESSAGE, ...) LogSystem::Instance->Log(LogSystem::LogLevel::WARNING, StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
-#define LOG_ERROR(MESSAGE, ...) LogSystem::Instance->Log(LogSystem::LogLevel::ERROR, StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
-#define LOG_FATAL(MESSAGE, ...) LogSystem::Instance->Log(LogSystem::LogLevel::FATAL, StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
+#define LOG_DEBUG(MESSAGE, ...)			LogSystem::Instance->Log(LogSystem::LogLevel::DEBUG,		StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
+#define LOG_INFORMATION(MESSAGE, ...)	LogSystem::Instance->Log(LogSystem::LogLevel::INFORMATION,	StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
+#define LOG_WARNING(MESSAGE, ...)		LogSystem::Instance->Log(LogSystem::LogLevel::WARNING,		StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
+#define LOG_ERROR(MESSAGE, ...)			LogSystem::Instance->Log(LogSystem::LogLevel::ERROR,		StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
+#define LOG_FATAL(MESSAGE, ...)			LogSystem::Instance->Log(LogSystem::LogLevel::FATAL,		StringUtilities::GetFileNameFromFilePath(__FILE__), __func__, __LINE__, MESSAGE, __VA_ARGS__)
 
 class LogSystem final
 {
