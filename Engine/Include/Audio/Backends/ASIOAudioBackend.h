@@ -10,7 +10,7 @@
 #include <ThirdParty/RtAudio/RtAudio.h>
 #include <Platform/Windows/WindowsUndefines.h>
 
-class WASAPIAudioBackend final : public AudioBackend
+class ASIOAudioBackend final : public AudioBackend
 {
 
 public:
@@ -18,12 +18,12 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	WASAPIAudioBackend(const Parameters &parameters) NOEXCEPT;
+	ASIOAudioBackend(const Parameters &parameters) NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~WASAPIAudioBackend() NOEXCEPT;
+	~ASIOAudioBackend() NOEXCEPT;
 
 private:
 

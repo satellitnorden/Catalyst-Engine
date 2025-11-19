@@ -3,8 +3,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Content.
-#include <Content/Assets/SoundAsset.h>
+//Audio.
+#include <Audio/AudioStream.h>
 
 //Third party.
 #include <ThirdParty/minivorbis.h>
@@ -17,7 +17,7 @@ public:
 	/*
 	*	Reads the sound asset at the given file path. Returns if the read was succesful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, SoundAsset *const RESTRICT asset) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, AudioStream *const RESTRICT audio_stream) NOEXCEPT
 	{
 		//Read the file.
 		FILE *const RESTRICT sound_file{ fopen(file, "rb") };
@@ -39,13 +39,13 @@ public:
 		vorbis_info *const RESTRICT info{ ov_info(&vorbis, -1) };
 
 		//Set the sample rate.
-		asset->_SampleRate = static_cast<float32>(info->rate);
+		audio_stream->SetSampleRate(static_cast<uint32>(info->rate));
 
 		//Set the number of channels.
-		asset->_NumberOfChannels = static_cast<uint8>(info->channels);
+		audio_stream->SetNumberOfChannels(static_cast<uint8>(info->channels));
 
-		//Set up the channels.
-		asset->_Samples.Upsize<true>(asset->_NumberOfChannels);
+		//Set up the samples.
+		DynamicArray<float32> samples;
 
 		//Read the data.
 		float **buffer;
@@ -62,11 +62,11 @@ public:
 
 			else
 			{
-				for (uint8 channel_index{ 0 }; channel_index < asset->_NumberOfChannels; ++channel_index)
+				for (long sample_index{ 0 }; sample_index < number_of_samples_read; ++sample_index)
 				{
-					for (long sample_index{ 0 }; sample_index < number_of_samples_read; ++sample_index)
+					for (int channel_index{ 0 }; channel_index < info->channels; ++channel_index)
 					{
-						asset->_Samples[channel_index].Emplace(static_cast<int16>(BaseMath::Clamp(buffer[channel_index][sample_index], -1.0f, 1.0f) * static_cast<float32>(INT16_MAXIMUM)));
+						samples.Emplace(buffer[channel_index][sample_index]);
 					}
 				}
 			}
@@ -74,6 +74,15 @@ public:
 
 		//Close the file.
 		fclose(sound_file);
+
+		//Set the format.
+		audio_stream->SetFormat(Audio::Format::FLOAT_32_BIT);
+
+		//Set the number of samples.
+		audio_stream->SetNumberOfSamples(samples.Size() / info->channels);
+
+		//Set the data.
+		audio_stream->SetDataInternal(reinterpret_cast<const byte *const RESTRICT>(samples.Data()));
 
 		//Return that the read was successful.
 		return true;

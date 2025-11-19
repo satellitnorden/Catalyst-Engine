@@ -18,7 +18,8 @@ namespace Audio
 	{
 		NONE,
 
-		WASAPI
+		WASAPI,
+		ASIO
 	};
 
 	//Enumeration covering all formats.
@@ -60,6 +61,9 @@ namespace Audio
 
 	//The default beats per minute - Certain code assumes this value and initialize using it, until told otherwise.
 	constexpr float32 DEFAULT_BEATS_PER_MINUTE{ 120.0f };
+
+	//Type aliases.
+	using Identifier = uint64;
 
 	/*
 	*	Returns the bits per sample for the given format.

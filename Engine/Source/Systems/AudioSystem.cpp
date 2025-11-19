@@ -3,6 +3,7 @@
 #include <Systems/AudioSystem.h>
 
 //Audio.
+#include <Audio/Backends/ASIOAudioBackend.h>
 #include <Audio/Backends/WASAPIAudioBackend.h>
 
 //Systems.
@@ -13,6 +14,15 @@
 */
 void AudioSystem::Initialize() NOEXCEPT
 {
+	//Add the master audio track.
+	_AudioTracks.Emplace();
+	AudioTrack &master_audio_track{ _AudioTracks.Back() };
+
+	master_audio_track._Information._Name = "Master";
+	master_audio_track._Information._StartChannelIndex = UINT32_MAXIMUM;
+	master_audio_track._Information._NumberOfInputChannels = UINT32_MAXIMUM;
+	master_audio_track._Identifier = _AudioTrackIdentifierGenerator++;
+
 	//Initialize the backend.
 	InitializeBackend(Audio::Backend::WASAPI);
 
@@ -36,20 +46,75 @@ void AudioSystem::Terminate() NOEXCEPT
 }
 
 /*
-*	Plays the given audio (in 2D).
+*	Updates the audio system.
 */
-void AudioSystem::PlayAudio2D
-(
-	const AssetPointer<AudioAsset> asset,
-	const float32 gain
-) NOEXCEPT
+void AudioSystem::Update(const UpdatePhase phase) NOEXCEPT
+{
+
+}
+
+/*
+*	Adds a master audio effect.
+*/
+void AudioSystem::AddMasterAudioEffect(AudioEffect *const RESTRICT effect) NOEXCEPT
 {
 	//Add the request.
 	Request request;
 
-	request._Type = Request::Type::PLAY_AUDIO_2D;
-	request._PlayAudio2DData._Asset = asset;
-	request._PlayAudio2DData._Gain = gain;
+	request._Type = Request::Type::ADD_AUDIO_EFFECT_TO_TRACK;
+	request._AddAudioEffectToTrackData._Identifier = 0;
+	request._AddAudioEffectToTrackData._Effect = effect;
+
+	_Requests.Push(request);
+}
+
+/*
+*	Plays the given audio (in 2D).
+*/
+Audio::Identifier AudioSystem::PlayAudio2D(const PlayAudio2DRequest &request) NOEXCEPT
+{
+	//Add the request.
+	Request _request;
+
+	_request._Type = Request::Type::PLAY_AUDIO_2D;
+	_request._PlayAudio2DData._Identifier = _IdentifierGenerator++;
+	_request._PlayAudio2DData._Request = request;
+
+	_Requests.Push(_request);
+
+	return _request._PlayAudio2DData._Identifier;
+}
+
+/*
+*	Stops the audio 2D with the given identifier.
+*/
+void AudioSystem::StopAudio2D(const Audio::Identifier identifier) NOEXCEPT
+{
+	//Add the request.
+	Request _request;
+
+	_request._Type = Request::Type::STOP_AUDIO_2D;
+	_request._StopAudio2DData._Identifier = identifier;
+
+	_Requests.Push(_request);
+}
+
+/*
+*	Retrieves the audio time for the given identifier.
+*	Please note that this is an asynchronous call - It will send a request to the audio thread and set 'ready' when it has written the value.
+*/
+void AudioSystem::GetAudioTime(const Audio::Identifier identifier, float64 *const RESTRICT value, AtomicFlag *const RESTRICT ready) NOEXCEPT
+{
+	//Clear the ready flag.
+	ready->Clear();
+
+	//Add the request.
+	Request request;
+
+	request._Type = Request::Type::GET_AUDIO_TIME;
+	request._GetAudioTimeData._Identifier = identifier;
+	request._GetAudioTimeData._Value = value;
+	request._GetAudioTimeData._Ready = ready;
 
 	_Requests.Push(request);
 }
@@ -74,6 +139,13 @@ void AudioSystem::InitializeBackend(const Audio::Backend backend) NOEXCEPT
 		case Audio::Backend::WASAPI:
 		{
 			_Backend = new WASAPIAudioBackend(CreateBackendParameters());
+
+			break;
+		}
+
+		case Audio::Backend::ASIO:
+		{
+			_Backend = new ASIOAudioBackend(CreateBackendParameters());
 
 			break;
 		}
@@ -158,9 +230,9 @@ NO_DISCARD bool AudioSystem::ProcessRequests() NOEXCEPT
 				break;
 			}
 
-			case Request::Type::MIX_BUFFER:
+			case Request::Type::ADD_AUDIO_EFFECT_TO_TRACK:
 			{
-				ProcessMixBufferRequest(_request);
+				ProcessAddAudioEffectToTrackRequest(_request);
 
 				break;
 			}
@@ -168,6 +240,27 @@ NO_DISCARD bool AudioSystem::ProcessRequests() NOEXCEPT
 			case Request::Type::PLAY_AUDIO_2D:
 			{
 				ProcessPlayAudio2DRequest(_request);
+
+				break;
+			}
+
+			case Request::Type::STOP_AUDIO_2D:
+			{
+				ProcessStopAudio2DRequest(_request);
+
+				break;
+			}
+
+			case Request::Type::MIX_BUFFER:
+			{
+				ProcessMixBufferRequest(_request);
+
+				break;
+			}
+
+			case Request::Type::GET_AUDIO_TIME:
+			{
+				ProcessGetAudioTimeRequest(_request);
 
 				break;
 			}
@@ -186,6 +279,53 @@ NO_DISCARD bool AudioSystem::ProcessRequests() NOEXCEPT
 	}
 
 	return processed_any_request;
+}
+
+/*
+*	Processes an add audio effect to track request.
+*/
+void AudioSystem::ProcessAddAudioEffectToTrackRequest(const Request &request) NOEXCEPT
+{
+	for (AudioTrack &audio_track : _AudioTracks)
+	{
+		if (audio_track._Identifier == request._AddAudioEffectToTrackData._Identifier)
+		{
+			audio_track._Effects.Emplace(request._AddAudioEffectToTrackData._Effect);
+
+			break;
+		}
+	}
+}
+
+/*
+*	Processes a play audio 2D request.
+*/
+void AudioSystem::ProcessPlayAudio2DRequest(const Request &request) NOEXCEPT
+{
+	//Add the new playing audio.
+	_PlayingAudio2D.Emplace();
+	PlayingAudio2D &new_playing_audio{ _PlayingAudio2D.Back() };
+
+	new_playing_audio._Identifier = request._PlayAudio2DData._Identifier;
+	new_playing_audio._Player.SetAudioStream(&request._PlayAudio2DData._Request._Asset->_AudioStream);
+	new_playing_audio._Player.SetGain(request._PlayAudio2DData._Request._Gain);
+	new_playing_audio._Player.SetPlaybackRate(static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate()) / _Backend->_SampleRate);
+	new_playing_audio._Player.SetCurrentSample(static_cast<int64>(request._PlayAudio2DData._Request._StartTime * static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate())));
+}
+
+/*
+*	Processes a stop audio 2D request.
+*/
+void AudioSystem::ProcessStopAudio2DRequest(const Request &request) NOEXCEPT
+{
+	for (uint64 i{ 0 }; i < _PlayingAudio2D.Size(); ++i)
+	{
+		if (_PlayingAudio2D[i]._Identifier == request._StopAudio2DData._Identifier)
+		{
+			_PlayingAudio2D.EraseAt<false>(i);
+			break;
+		}
+	}
 }
 
 /*
@@ -210,20 +350,44 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 			//Calculate the sample.
 			float32 sample{ 0.0f };
 
-			//Iterate through all 2D players.
-			for (const AudioStreamPlayer &player : _2DPlayers)
+			//Iterate through all playing audio.
+			for (const PlayingAudio2D &playing_audio : _PlayingAudio2D)
 			{
-				sample += player.Sample(channel_index);
+				sample += playing_audio._Player.Sample(channel_index);
 			}
+
+			//Constrain the sample.
+			sample = BaseMath::Clamp<float32>(sample, -1.0f, 1.0f);
 
 			//Write the sample!
 			mix_buffer._Outputs[channel_index][sample_index] = sample;
 		}
 
-		//Advance all 2D players.
-		for (AudioStreamPlayer &player : _2DPlayers)
+		//Advance all playing audio.
+		for (PlayingAudio2D &playing_audio : _PlayingAudio2D)
 		{
-			player.Advance();
+			playing_audio._Player.Advance();
+		}
+	}
+
+	//Process the master effects, if there are any.
+	if (!_AudioTracks[0]._Effects.Empty())
+	{
+		AudioProcessContext context;
+
+		context._WasTimelineRunning = true;
+		context._IsTimelineRunning = true;
+
+		for (AudioEffect *const RESTRICT master_effect : _AudioTracks[0]._Effects)
+		{
+			master_effect->Process
+			(
+				context,
+				mix_buffer._Outputs,
+				&mix_buffer._Outputs,
+				number_of_channels,
+				number_of_samples
+			);
 		}
 	}
 
@@ -232,17 +396,22 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 }
 
 /*
-*	Processes a play audio 2D request.
+*	Processes a get audio time request.
 */
-void AudioSystem::ProcessPlayAudio2DRequest(const Request &request) NOEXCEPT
+void AudioSystem::ProcessGetAudioTimeRequest(const Request &request) NOEXCEPT
 {
-	//Add the new player.
-	_2DPlayers.Emplace();
-	AudioStreamPlayer &new_player{ _2DPlayers.Back() };
+	for (const PlayingAudio2D &playing_audio : _PlayingAudio2D)
+	{
+		if (playing_audio._Identifier == request._GetAudioTimeData._Identifier)
+		{
+			(*request._GetAudioTimeData._Value) = static_cast<float64>(playing_audio._Player.GetCurrentSample()) / static_cast<float64>(playing_audio._Player.GetAudioStream()->GetSampleRate());
 
-	new_player.SetAudioStream(&request._PlayAudio2DData._Asset->_AudioStream);
-	new_player.SetGain(request._PlayAudio2DData._Gain);
-	new_player.SetPlaybackRate(static_cast<float32>(request._PlayAudio2DData._Asset->_AudioStream.GetSampleRate()) / _Backend->_SampleRate);
+			break;
+		}
+	}
+
+	//Whether or not we actually found the value, trust that the caller set a reasonable default value for it. (:
+	request._GetAudioTimeData._Ready->Set();
 }
 
 /*
@@ -307,7 +476,8 @@ void AudioSystem::Process(const DynamicArray<DynamicArray<float32>> &inputs, Dyn
 
 	_Requests.Push(request);
 
-	//Flip the current mix buffer index.
-	_CurrentMixBufferIndex = (_CurrentMixBufferIndex + 1) & 1;
+	//Advance the current mix buffer index.
+	++_CurrentMixBufferIndex;
+	_CurrentMixBufferIndex *= static_cast<uint8>(_CurrentMixBufferIndex < NUMBER_OF_MIX_BUFFERS);
 }
 #endif

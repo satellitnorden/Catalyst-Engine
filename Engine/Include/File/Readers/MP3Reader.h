@@ -3,8 +3,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Content.
-#include <Content/Assets/SoundAsset.h>
+//Audio.
+#include <Audio/AudioStream.h>
 
 //File.
 #include <File/Core/BinaryInputFile.h>
@@ -20,7 +20,7 @@ public:
 	/*
 	*	Reads the sound asset at the given file path. Returns if the read was succesful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, SoundAsset *const RESTRICT asset) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, AudioStream *const RESTRICT audio_stream) NOEXCEPT
 	{
 		//Read the file.
 		BinaryInputFile file{ file_path };
@@ -39,10 +39,10 @@ public:
 		OpenMP3::Decoder decoder{ library };
 
 		//Set the number of channels.
-		asset->_NumberOfChannels = static_cast<uint8>(2);
+		audio_stream->SetNumberOfChannels(2);
 
 		//Allocate the sample buffers.
-		asset->_Samples.Upsize<true>(asset->_NumberOfChannels);
+		DynamicArray<float32> samples;
 
 		//Process all frames.
 		{
@@ -57,13 +57,13 @@ public:
 
 					if (processed_samples > 0)
 					{
-						asset->_SampleRate = static_cast<float32>(frame.GetSampleRate());
+						audio_stream->SetSampleRate(frame.GetSampleRate());
 
-						for (uint8 channel_index{ 0 }; channel_index < 2; ++channel_index)
+						for (OpenMP3::UInt sample_index{ 0 }; sample_index < processed_samples; ++sample_index)
 						{
-							for (OpenMP3::UInt sample_index{ 0 }; sample_index < processed_samples; ++sample_index)
+							for (uint8 channel_index{ 0 }; channel_index < 2; ++channel_index)
 							{
-								asset->_Samples[channel_index].Emplace(static_cast<int16>(BaseMath::Clamp(output[channel_index][sample_index], -1.0f, 1.0f) * static_cast<float32>(INT16_MAXIMUM)));
+								samples.Emplace(output[channel_index][sample_index]);
 							}
 						}
 					}
@@ -81,6 +81,15 @@ public:
 
 		//Free the raw data.
 		Memory::Free(raw_data);
+
+		//Set the format.
+		audio_stream->SetFormat(Audio::Format::FLOAT_32_BIT);
+
+		//Set the number of samples.
+		audio_stream->SetNumberOfSamples(samples.Size() / 2);
+
+		//Set the data.
+		audio_stream->SetDataInternal(reinterpret_cast<const byte *const RESTRICT>(samples.Data()));
 
 		//Return that the read was successful.
 		return true;

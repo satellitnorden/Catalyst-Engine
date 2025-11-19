@@ -1,5 +1,5 @@
 //Header file.
-#include <Audio/Backends/WASAPIAudioBackend.h>
+#include <Audio/Backends/ASIOAudioBackend.h>
 
 //Core.
 #include <Core/General/Pair.h>
@@ -7,8 +7,8 @@
 //Systems.
 #include <Systems/LogSystem.h>
 
-//WASAPI audio backend constants.
-namespace WASAPAudioBackendConstants
+//ASIO audio backend constants.
+namespace ASIOAudioBackendConstants
 {
 	constexpr Pair<Audio::Format, RtAudioFormat> FORMAT_LOOKUP[]
 	{
@@ -80,15 +80,15 @@ static void ErrorCallback(RtAudioErrorType type, const std::string& error_text) 
 /*
 *	Default constructor.
 */
-WASAPIAudioBackend::WASAPIAudioBackend(const Parameters &parameters) NOEXCEPT
+ASIOAudioBackend::ASIOAudioBackend(const Parameters &parameters) NOEXCEPT
 	:
 	AudioBackend(parameters)
 {
 	//Set the backend.
-	_Backend = Audio::Backend::WASAPI;
+	_Backend = Audio::Backend::ASIO;
 
 	//Create the RT Audio object.
-	_RtAudio = new RtAudio(RtAudio::Api::WINDOWS_WASAPI, ErrorCallback);
+	_RtAudio = new RtAudio(RtAudio::Api::WINDOWS_ASIO, ErrorCallback);
 
 	//Cache the default device index.
 	const uint32 default_device_index{ _RtAudio->getDefaultOutputDevice() };
@@ -106,30 +106,30 @@ WASAPIAudioBackend::WASAPIAudioBackend(const Parameters &parameters) NOEXCEPT
 	//Figure out the format.
 	RtAudioFormat format = 0;
 
-	for (uint64 i{ 0 }; i < ARRAY_LENGTH(WASAPAudioBackendConstants::PREFERRED_FORMATS); ++i)
+	for (uint64 i{ 0 }; i < ARRAY_LENGTH(ASIOAudioBackendConstants::PREFERRED_FORMATS); ++i)
 	{
-		if (TEST_BIT(default_device_info.nativeFormats, WASAPAudioBackendConstants::PREFERRED_FORMATS[i]))
+		if (TEST_BIT(default_device_info.nativeFormats, ASIOAudioBackendConstants::PREFERRED_FORMATS[i]))
 		{
-			format = WASAPAudioBackendConstants::PREFERRED_FORMATS[i];
+			format = ASIOAudioBackendConstants::PREFERRED_FORMATS[i];
 
 			break;
 		}
 	}
 
-	ASSERT(format != 0, "Couldn't find a format for WASAPI stream!");
+	ASSERT(format != 0, "Couldn't find a format for ASIO stream!");
 
 	//Figure out the sample rate.
 	const uint32 sample_rate{ default_device_info.preferredSampleRate };
 
 	//Set up the buffer frames for a decent default.
-	uint32 buffer_frames{ 128 };
+	uint32 buffer_frames{ 64 };
 
 	//Set up the audio callback.
 	constexpr auto AUDIO_CALLBACK
 	{
 		[](void *output_buffer, void *input_buffer, unsigned int number_of_samples, double stream_time, RtAudioStreamStatus status, void *user_data)
 		{
-			static_cast<WASAPIAudioBackend *const RESTRICT>(user_data)->AudioCallback(output_buffer, input_buffer, number_of_samples, stream_time, status);
+			static_cast<ASIOAudioBackend *const RESTRICT>(user_data)->AudioCallback(output_buffer, input_buffer, number_of_samples, stream_time, status);
 
 			return 0;
 		}
@@ -140,7 +140,7 @@ WASAPIAudioBackend::WASAPIAudioBackend(const Parameters &parameters) NOEXCEPT
 
 	stream_options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_SCHEDULE_REALTIME;
 	stream_options.numberOfBuffers = 0;
-	stream_options.streamName = "Catalyst Engine WASAPI Audio Stream";
+	stream_options.streamName = "Catalyst Engine ASIO Audio Stream";
 	stream_options.priority = 0;
 
 	//Open the stream!
@@ -160,7 +160,7 @@ WASAPIAudioBackend::WASAPIAudioBackend(const Parameters &parameters) NOEXCEPT
 	_RtAudio->startStream();
 
 	//Set the format.
-	for (const Pair<Audio::Format, RtAudioFormat> &format_lookup : WASAPAudioBackendConstants::FORMAT_LOOKUP)
+	for (const Pair<Audio::Format, RtAudioFormat> &format_lookup : ASIOAudioBackendConstants::FORMAT_LOOKUP)
 	{
 		if (format_lookup._Second == format)
 		{
@@ -188,7 +188,7 @@ WASAPIAudioBackend::WASAPIAudioBackend(const Parameters &parameters) NOEXCEPT
 /*
 *	Default destructor.
 */
-WASAPIAudioBackend::~WASAPIAudioBackend() NOEXCEPT
+ASIOAudioBackend::~ASIOAudioBackend() NOEXCEPT
 {
 	//Stop the stream.
 	_RtAudio->stopStream();
@@ -203,7 +203,7 @@ WASAPIAudioBackend::~WASAPIAudioBackend() NOEXCEPT
 /*
 *	The audio callback.
 */
-void WASAPIAudioBackend::AudioCallback(void *output_buffer, void *input_buffer, unsigned int number_of_samples, double stream_time, RtAudioStreamStatus status)
+void ASIOAudioBackend::AudioCallback(void *output_buffer, void *input_buffer, unsigned int number_of_samples, double stream_time, RtAudioStreamStatus status)
 {
 	//Cache the bytes per sample.
 	const uint8 bytes_per_sample{ static_cast<uint8>(Audio::BitsPerSample(_Format) >> 3) };
