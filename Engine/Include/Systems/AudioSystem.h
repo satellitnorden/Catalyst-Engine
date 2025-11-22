@@ -117,6 +117,11 @@ public:
 	Audio::Identifier AddAudioTrack(const AudioTrackInformation &information) NOEXCEPT;
 
 	/*
+	*	Adds an effect to the track with the given identifier.
+	*/
+	void AddEffectToAudioTrack(const Audio::Identifier identifier, AudioEffect *const RESTRICT effect) NOEXCEPT;
+
+	/*
 	*	Plays the given audio (in 2D). Returns an identifier for the played audio.
 	*/
 	Audio::Identifier PlayAudio2D(const PlayAudio2DRequest &request) NOEXCEPT;

@@ -136,6 +136,21 @@ Audio::Identifier AudioSystem::AddAudioTrack(const AudioTrackInformation &inform
 }
 
 /*
+*	Adds an effect to the track with the given identifier.
+*/
+void AudioSystem::AddEffectToAudioTrack(const Audio::Identifier identifier, AudioEffect *const RESTRICT effect) NOEXCEPT
+{
+	//Add the request.
+	Request request;
+
+	request._Type = Request::Type::ADD_AUDIO_EFFECT_TO_TRACK;
+	request._AddAudioEffectToTrackData._Identifier = identifier;
+	request._AddAudioEffectToTrackData._Effect = effect;
+
+	_Requests.Push(request);
+}
+
+/*
 *	Plays the given audio (in 2D).
 */
 Audio::Identifier AudioSystem::PlayAudio2D(const PlayAudio2DRequest &request) NOEXCEPT
