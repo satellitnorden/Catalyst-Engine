@@ -118,9 +118,6 @@ public:
 		_CalibrationCurve.SetValue(62, 0.335102f); //-9.496457dB at 96.88% gain
 		_CalibrationCurve.SetValue(63, 0.334658f); //-9.507972dB at 98.44% gain
 		_CalibrationCurve.SetValue(64, 0.334509f); //-9.511841dB at 100.00% gain
-
-		//Initialize the SIMD backend.
-		SIMD::InitializeBackend();
 	}
 
 	/*

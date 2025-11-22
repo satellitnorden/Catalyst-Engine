@@ -94,9 +94,6 @@ public:
 				_ShimmerPitchShifters[channel_index][delay_line_index].Initialize(60.0f / 1'000.0f, _SampleRate, 2.0f);
 			}
 		}
-
-		//Initialize the SIMD backend.
-		SIMD::InitializeBackend();
 	}
 
 	/*

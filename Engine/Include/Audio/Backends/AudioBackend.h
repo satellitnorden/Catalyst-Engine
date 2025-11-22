@@ -6,6 +6,7 @@
 
 //Audio.
 #include <Audio/Core/Audio.h>
+#include <Audio/AudioDeviceInformation.h>
 
 class AudioBackend
 {
@@ -72,6 +73,11 @@ public:
 	{
 
 	}
+
+	/*
+	*	Queries audio devices.
+	*/
+	FORCE_INLINE virtual void QueryAudioDevices(DynamicArray<AudioDeviceInformation> *const RESTRICT audio_devices) NOEXCEPT = 0;
 
 protected:
 

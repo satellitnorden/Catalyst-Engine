@@ -49,6 +49,9 @@ public:
 	//The defined requirements.
 	std::vector<std::string> _DefinedRequirements;
 
+	//Denotes whether or not this systems wants a 'PreInitialize()' call.
+	bool _PreInitialize;
+
 	//Denotes whether or not this systems wants an 'Initialize()' call.
 	bool _Initialize;
 
@@ -263,6 +266,7 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 	system_entry["Name"] = name.c_str();
 
 	//Set to initial state.
+	system_entry["PreInitialize"] = false;
 	system_entry["Initialize"] = false;
 	system_entry["PostInitialize"] = false;
 	system_entry["Terminate"] = false;
@@ -326,6 +330,18 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 				};
 
 				system_entry["DefinedRequirements"].emplace_back() = arguments[0].c_str();
+
+				continue;
+			}
+		}
+
+		//Check if this system wants a 'PreInitialize()' call.
+		{
+			const size_t position{ current_line.find("SYSTEM_PRE_INITIALIZE()") };
+
+			if (position != std::string::npos)
+			{
+				system_entry["PreInitialize"] = true;
 
 				continue;
 			}
@@ -508,6 +524,9 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set the name.
 				new_system_data._Name = system_iterator.key().c_str();
+
+				//Set whether or not this systems wants a 'PreInitialize()' call.
+				new_system_data._PreInitialize = system_entry.contains("PreInitialize") && system_entry["PreInitialize"].get<bool>();
 
 				//Set whether or not this systems wants an 'Initialize()' call.
 				new_system_data._Initialize = system_entry.contains("Initialize") && system_entry["Initialize"].get<bool>();
@@ -797,6 +816,42 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "SystemsInitializer SYSTEMS_INITIALIZER;" << std::endl;
 
 	file << std::endl;
+
+	//Add the "Systems::PreInitialize()" function.
+	{
+		file << "void Systems::PreInitialize() NOEXCEPT" << std::endl;
+		file << "{" << std::endl;
+
+		file << "\tPROFILING_SCOPE(\"Systems::PreInitialize()\");" << std::endl;
+		file << std::endl;
+
+		for (const SystemData &_system_data : system_data)
+		{
+			if (_system_data._PreInitialize)
+			{
+				for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
+				{
+					file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				for (const std::string &defined_requirement : _system_data._DefinedRequirements)
+				{
+					file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				file << "\t" << _system_data._Name.c_str() << "::Instance->PreInitialize();" << std::endl;
+
+				for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
+				{
+					file << "#endif" << std::endl;
+				}
+			}
+		}
+
+		file << "}" << std::endl;
+
+		file << std::endl;
+	}
 
 	//Add the "Systems::Initialize()" function.
 	{

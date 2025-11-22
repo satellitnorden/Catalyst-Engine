@@ -4,13 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Audio.
-#include <Audio/Backends/AudioBackend.h>
+#include <Audio/Backends/RtAudioAudioBackend.h>
 
-//Third party.
-#include <ThirdParty/RtAudio/RtAudio.h>
-#include <Platform/Windows/WindowsUndefines.h>
-
-class WASAPIAudioBackend final : public AudioBackend
+class WASAPIAudioBackend final : public RtAudioAudioBackend
 {
 
 public:
@@ -18,27 +14,17 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	WASAPIAudioBackend(const Parameters &parameters) NOEXCEPT;
+	FORCE_INLINE WASAPIAudioBackend(const Parameters &parameters) NOEXCEPT
+		:
+		RtAudioAudioBackend
+		(
+			parameters,
+			Audio::Backend::WASAPI,
+			RtAudio::Api::WINDOWS_WASAPI,
+			128
+		)
+	{
 
-	/*
-	*	Default destructor.
-	*/
-	~WASAPIAudioBackend() NOEXCEPT;
-
-private:
-
-	//The RT Audio object.
-	RtAudio *RESTRICT _RtAudio{ nullptr };
-
-	//The inputs.
-	DynamicArray<DynamicArray<float32>> _Inputs;
-
-	//The outputs.
-	DynamicArray<DynamicArray<float32>> _Outputs;
-
-	/*
-	*	The audio callback.
-	*/
-	void AudioCallback(void *output_buffer, void *input_buffer, unsigned int number_of_samples, double stream_time, RtAudioStreamStatus status);
+	}
 
 };

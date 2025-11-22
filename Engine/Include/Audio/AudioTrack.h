@@ -20,13 +20,10 @@ public:
 	//The identifier.
 	Audio::Identifier _Identifier;
 
-	//The inputs.
-	DynamicArray<DynamicArray<float32>> _Inputs;
+	//The samples.
+	DynamicArray<DynamicArray<float32>> _Samples;
 
 	//The effects.
 	DynamicArray<AudioEffect *RESTRICT> _Effects;
-
-	//The outputs.
-	DynamicArray<DynamicArray<float32>> _Outputs;
 
 };

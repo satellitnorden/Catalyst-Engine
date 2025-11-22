@@ -14,6 +14,13 @@
 #define SYSTEM_NOT_DEFINED_REQUIREMENT(X)
 
 /*
+*	Put this in your system declaration and implement it to receive a "PreInitialize()" call.
+*/
+#define SYSTEM_PRE_INITIALIZE()		\
+public:								\
+	void PreInitialize() NOEXCEPT;
+
+/*
 *	Put this in your system declaration and implement it to receive an "Initialize()" call.
 */
 #define SYSTEM_INITIALIZE()		\
@@ -77,6 +84,11 @@ class Systems final
 {
 
 public:
+
+	/*
+	*	Pre-initializes all systems.
+	*/
+	static void PreInitialize() NOEXCEPT;
 
 	/*
 	*	Initializes all systems.

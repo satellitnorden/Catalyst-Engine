@@ -24,23 +24,13 @@ namespace SIMD
 		AVX2
 	};
 
-	//The backend.
-	static Backend BACKEND{ Backend::UNKNOWN };
-
 	/*
-	*	Initializes the backend.
+	*	Returns the backend.
 	*/
-	FORCE_INLINE void InitializeBackend() NOEXCEPT
+	FORCE_INLINE NO_DISCARD Backend _GetBackend() NOEXCEPT
 	{
-		//Return if already initialized.
-		if (BACKEND != Backend::UNKNOWN)
-		{
-			return;
-		}
-
 		//Check check support for the AVX modes.
 		bool AVX2_supported{ false };
-		//bool AVX512_supported{ false };
 
 		{
 			int32 cpu_info[4];
@@ -51,12 +41,93 @@ namespace SIMD
 				__cpuidex(cpu_info, 7, 0);
 
 				AVX2_supported = (cpu_info[1] & (1 << 5)) != 0;
-				//AVX512_supported = (cpu_info[1] & (1 << 16)) != 0;
 			}
 		}
 
 		//If AVX2 is supported, choose that, otherwise fall back to SSE2.
-		BACKEND = AVX2_supported ? Backend::AVX2 : Backend::SSE2;
+		return AVX2_supported ? Backend::AVX2 : Backend::SSE2;
+	}
+
+	/*
+	*	Returns the backend.
+	*/
+	FORCE_INLINE const Backend GetBackend() NOEXCEPT
+	{
+		static Backend BACKEND{ _GetBackend() };
+		return BACKEND;
+	}
+
+	/*
+	*	Adds Y into X.
+	*/
+	FORCE_INLINE void Add(float32 *const RESTRICT X, const float32 *const RESTRICT Y, const uint64 length) NOEXCEPT
+	{
+		switch (GetBackend())
+		{
+			case Backend::UNKNOWN:
+			{
+				ASSERT(false, "SIMD backend is somehow not initialized!");
+
+				break;
+			}
+
+			case Backend::NONE:
+			{
+				for (uint64 i{ 0 }; i < length; ++i)
+				{
+					X[i] += Y[i];
+				}
+
+				break;
+			}
+
+			case Backend::SSE2:
+			{
+				uint64 i{ 0 };
+
+				for (; (i + 4) <= length; i += 4)
+				{
+					__m128 _X{ _mm_loadu_ps(&X[i]) };
+					__m128 _Y{ _mm_loadu_ps(&Y[i]) };
+					_X = _mm_add_ps(_X, _Y);
+					_mm_storeu_ps(&X[i], _X);
+				}
+
+				for (; i < length; ++i)
+				{
+					X[i] += Y[i];
+				}
+
+				break;
+			}
+
+			case Backend::AVX2:
+			{
+				uint64 i{ 0 };
+
+				for (; (i + 8) <= length; i += 8)
+				{
+					__m256 _X{ _mm256_loadu_ps(&X[i]) };
+					__m256 _Y{ _mm256_loadu_ps(&Y[i]) };
+					_X = _mm256_add_ps(_X, _Y);
+					_mm256_storeu_ps(&X[i], _X);
+				}
+
+				for (; i < length; ++i)
+				{
+					X[i] += Y[i];
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
 	}
 
 	/*
@@ -64,11 +135,11 @@ namespace SIMD
 	*/
 	FORCE_INLINE NO_DISCARD float32 DotProduct(const float32 *const RESTRICT X, const float32 *const RESTRICT Y, const uint64 length) NOEXCEPT
 	{
-		switch (BACKEND)
+		switch (GetBackend())
 		{
 			case Backend::UNKNOWN:
 			{
-				ASSERT(false, "Need to call 'SIMD::InitializeBackend()' before!");
+				ASSERT(false, "SIMD backend is somehow not initialized!");
 
 				return 0.0f;
 			}
@@ -162,11 +233,11 @@ namespace SIMD
 	*/
 	FORCE_INLINE void MultiplyByScalar(float32 *const RESTRICT X, const uint64 length, const float32 scalar) NOEXCEPT
 	{
-		switch (BACKEND)
+		switch (GetBackend())
 		{
 			case Backend::UNKNOWN:
 			{
-				ASSERT(false, "Need to call 'SIMD::InitializeBackend()' before!");
+				ASSERT(false, "SIMD backend is somehow not initialized!");
 
 				break;
 			}

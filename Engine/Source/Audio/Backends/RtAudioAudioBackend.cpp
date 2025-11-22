@@ -1,5 +1,5 @@
 //Header file.
-#include <Audio/Backends/ASIOAudioBackend.h>
+#include <Audio/Backends/RtAudioAudioBackend.h>
 
 //Core.
 #include <Core/General/Pair.h>
@@ -7,8 +7,8 @@
 //Systems.
 #include <Systems/LogSystem.h>
 
-//ASIO audio backend constants.
-namespace ASIOAudioBackendConstants
+//RT Audio audio backend constants.
+namespace RtAudioAudioBackendConstants
 {
 	constexpr Pair<Audio::Format, RtAudioFormat> FORMAT_LOOKUP[]
 	{
@@ -80,15 +80,42 @@ static void ErrorCallback(RtAudioErrorType type, const std::string& error_text) 
 /*
 *	Default constructor.
 */
-ASIOAudioBackend::ASIOAudioBackend(const Parameters &parameters) NOEXCEPT
+RtAudioAudioBackend::RtAudioAudioBackend
+(
+	const Parameters &parameters,
+	const Audio::Backend backend,
+	const RtAudio::Api api,
+	const uint32 wanted_buffer_size
+) NOEXCEPT
 	:
 	AudioBackend(parameters)
 {
 	//Set the backend.
-	_Backend = Audio::Backend::ASIO;
+	_Backend = backend;
 
 	//Create the RT Audio object.
-	_RtAudio = new RtAudio(RtAudio::Api::WINDOWS_ASIO, ErrorCallback);
+	_RtAudio = new RtAudio(api, ErrorCallback);
+
+	//Cache the audio device informations - It seems RtAudio doesn't quite like doing it while a stream is open, so better to do it here. (:
+	{
+		const uint32 device_count{ _RtAudio->getDeviceCount() };
+		const std::vector<uint32> device_ids{ _RtAudio->getDeviceIds()};
+
+		_AudioDeviceInformations.Reserve(device_count);
+
+		for (uint32 device_index{ 0 }; device_index < device_count; ++device_index)
+		{
+			_AudioDeviceInformations.Emplace();
+			AudioDeviceInformation &audio_device_information{ _AudioDeviceInformations.Back() };
+
+			const uint32 device_id{ device_ids[device_index] };
+			const RtAudio::DeviceInfo &device_info{ _RtAudio->getDeviceInfo(device_id) };
+
+			audio_device_information._Name = device_info.name.c_str();
+			audio_device_information._Identifier = device_id;
+			audio_device_information._IsDefault = device_info.isDefaultOutput;
+		}
+	}
 
 	//Cache the default device index.
 	const uint32 default_device_index{ _RtAudio->getDefaultOutputDevice() };
@@ -103,33 +130,40 @@ ASIOAudioBackend::ASIOAudioBackend(const Parameters &parameters) NOEXCEPT
 	output_stream_parameters.nChannels = _Parameters._NumberOfOutputChannels;
 	output_stream_parameters.firstChannel = _Parameters._StartOutputChannelIndex;
 
+	//Set up the input stream parameters.
+	RtAudio::StreamParameters input_stream_parameters;
+
+	input_stream_parameters.deviceId = default_device_index;
+	input_stream_parameters.nChannels = _Parameters._NumberOfInputChannels;
+	input_stream_parameters.firstChannel = _Parameters._StartInputChannelIndex;
+
 	//Figure out the format.
 	RtAudioFormat format = 0;
 
-	for (uint64 i{ 0 }; i < ARRAY_LENGTH(ASIOAudioBackendConstants::PREFERRED_FORMATS); ++i)
+	for (uint64 i{ 0 }; i < ARRAY_LENGTH(RtAudioAudioBackendConstants::PREFERRED_FORMATS); ++i)
 	{
-		if (TEST_BIT(default_device_info.nativeFormats, ASIOAudioBackendConstants::PREFERRED_FORMATS[i]))
+		if (TEST_BIT(default_device_info.nativeFormats, RtAudioAudioBackendConstants::PREFERRED_FORMATS[i]))
 		{
-			format = ASIOAudioBackendConstants::PREFERRED_FORMATS[i];
+			format = RtAudioAudioBackendConstants::PREFERRED_FORMATS[i];
 
 			break;
 		}
 	}
 
-	ASSERT(format != 0, "Couldn't find a format for ASIO stream!");
+	ASSERT(format != 0, "Couldn't find a format for WASAPI stream!");
 
 	//Figure out the sample rate.
 	const uint32 sample_rate{ default_device_info.preferredSampleRate };
 
 	//Set up the buffer frames for a decent default.
-	uint32 buffer_frames{ 64 };
+	uint32 buffer_frames{ wanted_buffer_size };
 
 	//Set up the audio callback.
 	constexpr auto AUDIO_CALLBACK
 	{
 		[](void *output_buffer, void *input_buffer, unsigned int number_of_samples, double stream_time, RtAudioStreamStatus status, void *user_data)
 		{
-			static_cast<ASIOAudioBackend *const RESTRICT>(user_data)->AudioCallback(output_buffer, input_buffer, number_of_samples, stream_time, status);
+			static_cast<RtAudioAudioBackend *const RESTRICT>(user_data)->AudioCallback(output_buffer, input_buffer, number_of_samples, stream_time, status);
 
 			return 0;
 		}
@@ -140,14 +174,14 @@ ASIOAudioBackend::ASIOAudioBackend(const Parameters &parameters) NOEXCEPT
 
 	stream_options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_SCHEDULE_REALTIME;
 	stream_options.numberOfBuffers = 0;
-	stream_options.streamName = "Catalyst Engine ASIO Audio Stream";
+	stream_options.streamName = "Catalyst Engine Audio Backend Stream";
 	stream_options.priority = 0;
 
 	//Open the stream!
 	_RtAudio->openStream
 	(
 		&output_stream_parameters,
-		nullptr,
+		input_stream_parameters .nChannels > 0 ? &input_stream_parameters : nullptr,
 		format,
 		sample_rate,
 		&buffer_frames,
@@ -160,7 +194,7 @@ ASIOAudioBackend::ASIOAudioBackend(const Parameters &parameters) NOEXCEPT
 	_RtAudio->startStream();
 
 	//Set the format.
-	for (const Pair<Audio::Format, RtAudioFormat> &format_lookup : ASIOAudioBackendConstants::FORMAT_LOOKUP)
+	for (const Pair<Audio::Format, RtAudioFormat> &format_lookup : RtAudioAudioBackendConstants::FORMAT_LOOKUP)
 	{
 		if (format_lookup._Second == format)
 		{
@@ -179,16 +213,16 @@ ASIOAudioBackend::ASIOAudioBackend(const Parameters &parameters) NOEXCEPT
 	_BufferSize = buffer_frames;
 
 	//Set the number of input channels.
-	_NumberOfInputChannels = 0;
+	_NumberOfInputChannels = _Parameters._NumberOfInputChannels;
 
 	//Set the number of output channels.
-	_NumberOfOutputChannels = 2;
+	_NumberOfOutputChannels = _Parameters._NumberOfOutputChannels;
 }
 
 /*
 *	Default destructor.
 */
-ASIOAudioBackend::~ASIOAudioBackend() NOEXCEPT
+RtAudioAudioBackend::~RtAudioAudioBackend() NOEXCEPT
 {
 	//Stop the stream.
 	_RtAudio->stopStream();
@@ -203,7 +237,7 @@ ASIOAudioBackend::~ASIOAudioBackend() NOEXCEPT
 /*
 *	The audio callback.
 */
-void ASIOAudioBackend::AudioCallback(void *output_buffer, void *input_buffer, unsigned int number_of_samples, double stream_time, RtAudioStreamStatus status)
+void RtAudioAudioBackend::AudioCallback(void *output_buffer, void *input_buffer, unsigned int number_of_samples, double stream_time, RtAudioStreamStatus status)
 {
 	//Cache the bytes per sample.
 	const uint8 bytes_per_sample{ static_cast<uint8>(Audio::BitsPerSample(_Format) >> 3) };
@@ -213,11 +247,16 @@ void ASIOAudioBackend::AudioCallback(void *output_buffer, void *input_buffer, un
 	{
 		_Inputs.Resize<true>(_NumberOfInputChannels);
 
-		for (DynamicArray<float32> &input_channel : _Inputs)
+		for (uint8 channel_index{ 0 }; channel_index < _NumberOfInputChannels; ++channel_index)
 		{
+			DynamicArray<float32> &input_channel{ _Inputs[channel_index] };
 			input_channel.Resize<false>(number_of_samples);
 			
-			ASSERT(false, "Implement the rest of this!");
+			for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+			{
+				const uint32 input_buffer_index{ (sample_index * _NumberOfInputChannels) + channel_index };
+				input_channel[sample_index] = Audio::ConvertToFloat32(_Format, AdvancePointer(input_buffer, bytes_per_sample * input_buffer_index));
+			}
 		}
 	}
 

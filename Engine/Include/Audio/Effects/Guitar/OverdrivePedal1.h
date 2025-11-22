@@ -108,9 +108,6 @@ public:
 		_CalibrationCurve.SetValue(62, 0.117615f); //-18.590778dB at 96.88% drive
 		_CalibrationCurve.SetValue(63, 0.117578f); //-18.593496dB at 98.44% drive
 		_CalibrationCurve.SetValue(64, 0.117566f); //-18.594400dB at 100.00% drive
-
-		//Initialize the SIMD backend.
-		SIMD::InitializeBackend();
 	}
 
 	/*

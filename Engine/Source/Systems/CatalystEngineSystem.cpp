@@ -76,6 +76,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 		TaskSystem::Instance->Initialize();
 	}
 
+	//Pre-initialize all systems.
+	Systems::PreInitialize();
+
 	//Initialize all systems.
 	Systems::Initialize();
 	SaveSystem::Instance->Initialize();

@@ -271,9 +271,6 @@ private:
 		{
 			history_index = 0;
 		}
-
-		//Initialize the SIMD backend.
-		SIMD::InitializeBackend();
 	}
 
 };

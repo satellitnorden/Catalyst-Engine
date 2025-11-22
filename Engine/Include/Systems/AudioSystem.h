@@ -37,7 +37,6 @@ public:
 		SYSTEM_DEFINED_REQUIREMENT(USE_NEW_AUDIO_SYSTEM)
 		SYSTEM_INITIALIZE()
 		SYSTEM_TERMINATE()
-		SYSTEM_UPDATE(RANGE(POST, RUN_ON_MAIN_THREAD))
 	);
 
 	/*
@@ -46,6 +45,45 @@ public:
 	FORCE_INLINE AudioSystem() NOEXCEPT
 	{
 
+	}
+
+	/*
+	*	Returns the backend.
+	*/
+	FORCE_INLINE NO_DISCARD Audio::Backend GetBackend() const NOEXCEPT
+	{
+		return _RequestedBackend;
+	}
+
+	/*
+	*	Sets the backend.
+	*/
+	FORCE_INLINE void SetBackend(const Audio::Backend value) NOEXCEPT
+	{
+		_RequestedBackend = value;
+		InitializeBackend(_RequestedBackend);
+	}
+
+	/*
+	*	Returns the default audio device.
+	*/
+	NO_DISCARD AudioDeviceInformation GetDefaultAudioDevice() const NOEXCEPT;
+
+	/*
+	*	Queries audio devices.
+	*/
+	FORCE_INLINE void QueryAudioDevices(DynamicArray<AudioDeviceInformation> *const RESTRICT audio_devices) const NOEXCEPT
+	{
+		_Backend->QueryAudioDevices(audio_devices);
+	}
+
+	/*
+	*	Sets the audio device.
+	*/
+	FORCE_INLINE void SetAudioDevice(const AudioDeviceInformation &audio_device) NOEXCEPT
+	{
+		_RequestedAudioDeviceIdentifier = audio_device._Identifier;
+		InitializeBackend(_RequestedBackend);
 	}
 
 	/*
@@ -72,6 +110,11 @@ public:
 	*	Adds a master audio effect.
 	*/
 	void AddMasterAudioEffect(AudioEffect *const RESTRICT effect) NOEXCEPT;
+
+	/*
+	*	Adds an audio track with the given information. Returns it's identifier.
+	*/
+	Audio::Identifier AddAudioTrack(const AudioTrackInformation &information) NOEXCEPT;
 
 	/*
 	*	Plays the given audio (in 2D). Returns an identifier for the played audio.
@@ -125,7 +168,8 @@ private:
 		enum class Type : uint8
 		{
 			NONE,
-			
+
+			ADD_AUDIO_TRACK,
 			ADD_AUDIO_EFFECT_TO_TRACK,
 			PLAY_AUDIO_2D,
 			STOP_AUDIO_2D,
@@ -136,6 +180,16 @@ private:
 
 		//The type.
 		Type _Type;
+
+		//The add audio track data.
+		struct
+		{
+			//The information.
+			AudioTrackInformation _Information;
+
+			//The identifier.
+			Audio::Identifier _Identifier;
+		} _AddAudioTrackData;
 
 		//The add audio effect to track data.
 		struct
@@ -218,6 +272,12 @@ private:
 
 	};
 
+	//The requested backend.
+	Audio::Backend _RequestedBackend{ Audio::Backend::WASAPI };
+
+	//The requested audio device.
+	uint32 _RequestedAudioDeviceIdentifier{ UINT32_MAXIMUM };
+
 	//The backend.
 	AudioBackend *RESTRICT _Backend{ nullptr };
 
@@ -226,6 +286,9 @@ private:
 
 	//The current mix buffer index.
 	uint8 _CurrentMixBufferIndex{ 0 };
+
+	//Denotes whether or not the mix thread should mix.
+	AtomicFlag _ShouldMix;
 
 	//The mix thread.
 	Thread _MixThread;
@@ -239,8 +302,11 @@ private:
 	//The identifier generator.
 	Audio::Identifier _IdentifierGenerator{ 0 };
 
-	//The audio tracks.
-	DynamicArray<AudioTrack> _AudioTracks;
+	//The main thread audio tracks.
+	DynamicArray<AudioTrack> _MainThreadAudioTracks;
+
+	//The mix thread audio tracks.
+	DynamicArray<AudioTrack> _MixThreadAudioTracks;
 
 	//The playing audio 2D.
 	DynamicArray<PlayingAudio2D> _PlayingAudio2D;
@@ -272,6 +338,11 @@ private:
 	*	Processes requests. Returns if any requests were processed.
 	*/
 	NO_DISCARD bool ProcessRequests() NOEXCEPT;
+
+	/*
+	*	Processes an add audio track request.
+	*/
+	void ProcessAddAudioTrackRequest(const Request &request) NOEXCEPT;
 
 	/*
 	*	Processes an add audio effect to track request.

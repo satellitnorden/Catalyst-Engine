@@ -146,6 +146,7 @@ namespace SoundSystemData
 */
 void SoundSystem::Initialize() NOEXCEPT
 {
+#if !USE_NEW_AUDIO_SYSTEM
 	//Copy the configuration.
 	_Configuration = CatalystEngineSystem::Instance->GetProjectConfiguration()->_SoundConfiguration;
 
@@ -223,6 +224,7 @@ void SoundSystem::Initialize() NOEXCEPT
 
 	//Initialize the platform.
 	PlatformInitialize(_Configuration);
+#endif
 }
 
 /*
@@ -230,6 +232,7 @@ void SoundSystem::Initialize() NOEXCEPT
 */
 void SoundSystem::Terminate() NOEXCEPT
 {
+#if !USE_NEW_AUDIO_SYSTEM
 	//Wait for the mixing thread to finish.
 	_MixingThread.Join();
 
@@ -241,6 +244,7 @@ void SoundSystem::Terminate() NOEXCEPT
 
 	//Terminate the platform.
 	PlatformTerminate();
+#endif
 }
 
 /*

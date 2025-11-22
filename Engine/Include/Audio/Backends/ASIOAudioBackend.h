@@ -4,13 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Audio.
-#include <Audio/Backends/AudioBackend.h>
+#include <Audio/Backends/RtAudioAudioBackend.h>
 
-//Third party.
-#include <ThirdParty/RtAudio/RtAudio.h>
-#include <Platform/Windows/WindowsUndefines.h>
-
-class ASIOAudioBackend final : public AudioBackend
+class ASIOAudioBackend final : public RtAudioAudioBackend
 {
 
 public:
@@ -18,27 +14,21 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	ASIOAudioBackend(const Parameters &parameters) NOEXCEPT;
+	FORCE_INLINE ASIOAudioBackend(const Parameters &parameters) NOEXCEPT
+		:
+		RtAudioAudioBackend
+		(
+			parameters,
+			Audio::Backend::ASIO,
+			RtAudio::Api::WINDOWS_ASIO,
+			/*
+			*	RtAudio documentation is wrong, settings this to 0 will not use the minimum size, but actually the preferred buffer size...
+			*	For ASIO users, it's probably expected that we will use whatever buffer size the user sets on their own.
+			*/
+			0 
+		)
+	{
 
-	/*
-	*	Default destructor.
-	*/
-	~ASIOAudioBackend() NOEXCEPT;
-
-private:
-
-	//The RT Audio object.
-	RtAudio *RESTRICT _RtAudio{ nullptr };
-
-	//The inputs.
-	DynamicArray<DynamicArray<float32>> _Inputs;
-
-	//The outputs.
-	DynamicArray<DynamicArray<float32>> _Outputs;
-
-	/*
-	*	The audio callback.
-	*/
-	void AudioCallback(void *output_buffer, void *input_buffer, unsigned int number_of_samples, double stream_time, RtAudioStreamStatus status);
+	}
 
 };

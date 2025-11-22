@@ -25,8 +25,7 @@ public:
 		:
 		_Gain(gain)
 	{
-		//Make sure the SIMD backend is initialized.
-		SIMD::InitializeBackend();
+
 	}
 
 	/*

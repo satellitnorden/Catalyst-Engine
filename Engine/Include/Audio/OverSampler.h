@@ -33,9 +33,6 @@ public:
 
 		//Design the filters.
 		DesignFilters();
-
-		//Initialize the SIMD backend.
-		SIMD::InitializeBackend();
 	}
 
 	/*

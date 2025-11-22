@@ -2,6 +2,9 @@
 //Header file.
 #include <Systems/AudioSystem.h>
 
+//Core.
+#include <Core/General/SIMD.h>
+
 //Audio.
 #include <Audio/Backends/ASIOAudioBackend.h>
 #include <Audio/Backends/WASAPIAudioBackend.h>
@@ -15,16 +18,24 @@
 void AudioSystem::Initialize() NOEXCEPT
 {
 	//Add the master audio track.
-	_AudioTracks.Emplace();
-	AudioTrack &master_audio_track{ _AudioTracks.Back() };
+	{
+		AudioTrackInformation master_audio_track_information;
 
-	master_audio_track._Information._Name = "Master";
-	master_audio_track._Information._StartChannelIndex = UINT32_MAXIMUM;
-	master_audio_track._Information._NumberOfInputChannels = UINT32_MAXIMUM;
-	master_audio_track._Identifier = _AudioTrackIdentifierGenerator++;
+		master_audio_track_information._Name = "Master";
+		master_audio_track_information._StartChannelIndex = UINT32_MAXIMUM;
+		master_audio_track_information._NumberOfInputChannels = UINT32_MAXIMUM;
+
+		AddAudioTrack(master_audio_track_information);
+	}
 
 	//Initialize the backend.
-	InitializeBackend(Audio::Backend::WASAPI);
+	if (!_Backend)
+	{
+		InitializeBackend(_RequestedBackend);
+	}
+
+	//The mix thread should start mixing right away.
+	_ShouldMix.Set();
 
 	//Launch the mix thread.
 	_MixThread.SetFunction([]() { AudioSystem::Instance->Mix(); });
@@ -41,16 +52,35 @@ void AudioSystem::Initialize() NOEXCEPT
 */
 void AudioSystem::Terminate() NOEXCEPT
 {
+	//Terminate the backend.
+	TerminateBackend();
+
+	//Tell the mix thread to shop mixing.
+	_ShouldMix.Clear();
+
 	//Join the mix thread.
 	_MixThread.Join();
 }
 
 /*
-*	Updates the audio system.
+*	Returns the default audio device.
 */
-void AudioSystem::Update(const UpdatePhase phase) NOEXCEPT
+NO_DISCARD AudioDeviceInformation AudioSystem::GetDefaultAudioDevice() const NOEXCEPT
 {
+	DynamicArray<AudioDeviceInformation> audio_devices;
+	QueryAudioDevices(&audio_devices);
 
+	for (const AudioDeviceInformation &audio_device : audio_devices)
+	{
+		if (audio_device._IsDefault)
+		{
+			return audio_device;
+		}
+	}
+
+	ASSERT(false, "Couldn't find default audio device!");
+
+	return AudioDeviceInformation();
 }
 
 /*
@@ -66,6 +96,43 @@ void AudioSystem::AddMasterAudioEffect(AudioEffect *const RESTRICT effect) NOEXC
 	request._AddAudioEffectToTrackData._Effect = effect;
 
 	_Requests.Push(request);
+}
+
+/*
+*	Adds an audio track with the given information. Returns it's identifier.
+*/
+Audio::Identifier AudioSystem::AddAudioTrack(const AudioTrackInformation &information) NOEXCEPT
+{
+	//Terminate the backend if this track has input channels.
+	if (information._NumberOfInputChannels > 0)
+	{
+		TerminateBackend();
+	}
+
+	//Add the main thread audio track immediately.
+	_MainThreadAudioTracks.Emplace();
+	AudioTrack &main_thread_audio_track{ _MainThreadAudioTracks.Back() };
+
+	main_thread_audio_track._Information = information;
+	main_thread_audio_track._Identifier = _AudioTrackIdentifierGenerator++;
+
+	//Add the request.
+	Request request;
+
+	request._Type = Request::Type::ADD_AUDIO_TRACK;
+	request._AddAudioTrackData._Information = information;
+	request._AddAudioTrackData._Identifier = main_thread_audio_track._Identifier;
+
+	_Requests.Push(request);
+
+	//If the audio track has any input channels, (probably) has to reconstruct the backend.
+	if (information._NumberOfInputChannels > 0)
+	{
+		InitializeBackend(_RequestedBackend);
+	}
+
+	//Return the identifier.
+	return main_thread_audio_track._Identifier;
 }
 
 /*
@@ -168,8 +235,36 @@ NO_DISCARD AudioBackend::Parameters AudioSystem::CreateBackendParameters() NOEXC
 
 	parameters._StartInputChannelIndex = 0;
 	parameters._NumberOfInputChannels = 0;
+
+	{
+		uint32 minimum_input_channel_index{ UINT32_MAXIMUM };
+		uint32 maximum_input_channel_index{ 0 };
+
+		for (const AudioTrack &main_thread_audio_track : _MainThreadAudioTracks)
+		{
+			if (main_thread_audio_track._Information._StartChannelIndex != UINT32_MAXIMUM && main_thread_audio_track._Information._NumberOfInputChannels != UINT32_MAXIMUM)
+			{
+				minimum_input_channel_index = BaseMath::Minimum<uint32>(minimum_input_channel_index, main_thread_audio_track._Information._StartChannelIndex);
+				maximum_input_channel_index = BaseMath::Maximum<uint32>(maximum_input_channel_index, main_thread_audio_track._Information._StartChannelIndex + main_thread_audio_track._Information._NumberOfInputChannels);
+			}
+		}
+
+		if (minimum_input_channel_index != UINT32_MAXIMUM && maximum_input_channel_index != 0)
+		{
+			parameters._StartInputChannelIndex = minimum_input_channel_index;
+			parameters._NumberOfInputChannels = maximum_input_channel_index - minimum_input_channel_index;
+		}
+		
+		else
+		{
+			parameters._StartInputChannelIndex = 0;
+			parameters._NumberOfInputChannels = 0;
+		}
+	}
+
 	parameters._StartOutputChannelIndex = 0;
 	parameters._NumberOfOutputChannels = 2;
+
 	parameters._ProcessCallback = [](const DynamicArray<DynamicArray<float32>> &inputs, DynamicArray<DynamicArray<float32>> *const RESTRICT outputs)
 	{
 		AudioSystem::Instance->Process(inputs, outputs);
@@ -195,7 +290,7 @@ void AudioSystem::TerminateBackend() NOEXCEPT
 */
 void AudioSystem::Mix() NOEXCEPT
 {
-	while (!CatalystEngineSystem::Instance->ShouldTerminate())
+	while (_ShouldMix.IsSet())
 	{
 		//Process requests.
 		const bool processed_any_request{ ProcessRequests() };
@@ -226,6 +321,13 @@ NO_DISCARD bool AudioSystem::ProcessRequests() NOEXCEPT
 			case Request::Type::NONE:
 			{
 				ASSERT(false, "Invalid request!");
+
+				break;
+			}
+
+			case Request::Type::ADD_AUDIO_TRACK:
+			{
+				ProcessAddAudioTrackRequest(_request);
 
 				break;
 			}
@@ -282,11 +384,24 @@ NO_DISCARD bool AudioSystem::ProcessRequests() NOEXCEPT
 }
 
 /*
+*	Processes an add audio track request.
+*/
+void AudioSystem::ProcessAddAudioTrackRequest(const Request &request) NOEXCEPT
+{
+	//Add the audio track.
+	_MixThreadAudioTracks.Emplace();
+	AudioTrack &mix_thread_audio_track{ _MixThreadAudioTracks.Back() };
+
+	mix_thread_audio_track._Information = request._AddAudioTrackData._Information;
+	mix_thread_audio_track._Identifier = request._AddAudioTrackData._Identifier;
+}
+
+/*
 *	Processes an add audio effect to track request.
 */
 void AudioSystem::ProcessAddAudioEffectToTrackRequest(const Request &request) NOEXCEPT
 {
-	for (AudioTrack &audio_track : _AudioTracks)
+	for (AudioTrack &audio_track : _MixThreadAudioTracks)
 	{
 		if (audio_track._Identifier == request._AddAudioEffectToTrackData._Identifier)
 		{
@@ -333,6 +448,17 @@ void AudioSystem::ProcessStopAudio2DRequest(const Request &request) NOEXCEPT
 */
 void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 {
+	//Calculate the start input channel index.
+	uint32 start_input_channel_index{ UINT32_MAXIMUM };
+
+	for (const AudioTrack &audio_track : _MixThreadAudioTracks)
+	{
+		if (audio_track._Information._NumberOfInputChannels > 0)
+		{
+			start_input_channel_index = BaseMath::Minimum<uint32>(start_input_channel_index, audio_track._Information._StartChannelIndex);
+		}
+	}
+
 	//Cache the mix buffer.
 	MixBuffer &mix_buffer{ _MixBuffers[request._MixBufferData._BufferIndex] };
 
@@ -342,7 +468,69 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 	//Cache the number of samples.
 	const uint32 number_of_samples{ static_cast<uint32>(mix_buffer._Outputs[0].Size()) };
 
-	//Process all samples!
+	//Start with all outputs at zero.
+	for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+	{
+		Memory::Set(mix_buffer._Outputs[channel_index].Data(), 0, sizeof(float32) * number_of_samples);
+	}
+
+	//Set up the audio process context.
+	AudioProcessContext audio_process_context;
+
+	audio_process_context._WasTimelineRunning = true;
+	audio_process_context._IsTimelineRunning = true;
+
+	//Mix all tracks into the output.
+	for (uint64 track_index{ 1 }; track_index < _MixThreadAudioTracks.Size(); ++track_index)
+	{
+		//Cache the track.
+		AudioTrack &track{ _MixThreadAudioTracks[track_index] };
+
+		//Fill in the inputs.
+		ASSERT(track._Information._StartChannelIndex != UINT32_MAXIMUM && track._Information._NumberOfInputChannels != UINT32_MAXIMUM, "Currently there's no reason for an audio track to exist without any input channels!");
+	
+		track._Samples.Resize<true>(mix_buffer._Outputs.Size());
+
+		for (uint64 input_channel_index{ 0 }; input_channel_index < track._Samples.Size(); ++input_channel_index)
+		{
+			track._Samples[input_channel_index].Resize<false>(number_of_samples);
+
+			uint32 _input_channel_index{ track._Information._StartChannelIndex + static_cast<uint32>(input_channel_index) };
+			_input_channel_index = track._Information._StartChannelIndex + (_input_channel_index - track._Information._StartChannelIndex) % track._Information._NumberOfInputChannels;
+			_input_channel_index -= start_input_channel_index;
+
+			if (_input_channel_index < mix_buffer._Inputs.Size())
+			{
+				Memory::Copy(track._Samples[input_channel_index].Data(), mix_buffer._Inputs[_input_channel_index].Data(), sizeof(float32) * number_of_samples);
+			}
+
+			else
+			{
+				Memory::Set(track._Samples[input_channel_index].Data(), 0, sizeof(float32) * number_of_samples);
+			}
+		}
+
+		//Apply the audio effects.
+		for (AudioEffect *const RESTRICT effect : track._Effects)
+		{
+			effect->Process
+			(
+				audio_process_context,
+				track._Samples,
+				&track._Samples,
+				number_of_channels,
+				number_of_samples
+			);
+		}
+
+		//Add to the output.
+		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+		{
+			SIMD::Add(mix_buffer._Outputs[channel_index].Data(), track._Samples[channel_index].Data(), number_of_samples);
+		}
+	}
+
+	//Add all playing audio 2D to the output.
 	for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 	{
 		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
@@ -360,7 +548,7 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 			sample = BaseMath::Clamp<float32>(sample, -1.0f, 1.0f);
 
 			//Write the sample!
-			mix_buffer._Outputs[channel_index][sample_index] = sample;
+			mix_buffer._Outputs[channel_index][sample_index] += sample;
 		}
 
 		//Advance all playing audio.
@@ -370,19 +558,14 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 		}
 	}
 
-	//Process the master effects, if there are any.
-	if (!_AudioTracks[0]._Effects.Empty())
+	//Process the master track effects, if there are any.
+	if (!_MixThreadAudioTracks[0]._Effects.Empty())
 	{
-		AudioProcessContext context;
-
-		context._WasTimelineRunning = true;
-		context._IsTimelineRunning = true;
-
-		for (AudioEffect *const RESTRICT master_effect : _AudioTracks[0]._Effects)
+		for (AudioEffect *const RESTRICT master_effect : _MixThreadAudioTracks[0]._Effects)
 		{
 			master_effect->Process
 			(
-				context,
+				audio_process_context,
 				mix_buffer._Outputs,
 				&mix_buffer._Outputs,
 				number_of_channels,
