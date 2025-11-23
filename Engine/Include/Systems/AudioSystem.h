@@ -82,8 +82,27 @@ public:
 	*/
 	FORCE_INLINE void SetAudioDevice(const AudioDeviceInformation &audio_device) NOEXCEPT
 	{
-		_RequestedAudioDeviceIdentifier = audio_device._Identifier;
+		_RequestedAudioDevice = audio_device;
 		InitializeBackend(_RequestedBackend);
+	}
+
+	/*
+	*	Sets the audio device.
+	*/
+	FORCE_INLINE void SetAudioDevice(const DynamicString &audio_device_name) NOEXCEPT
+	{
+		DynamicArray<AudioDeviceInformation> audio_devices;
+		QueryAudioDevices(&audio_devices);
+
+		for (const AudioDeviceInformation &audio_device : audio_devices)
+		{
+			if (audio_device._Name == audio_device_name)
+			{
+				SetAudioDevice(audio_device);
+
+				return;
+			}
+		}
 	}
 
 	/*
@@ -115,6 +134,11 @@ public:
 	*	Adds an audio track with the given information. Returns it's identifier.
 	*/
 	Audio::Identifier AddAudioTrack(const AudioTrackInformation &information) NOEXCEPT;
+
+	/*
+	*	Removes the audio track with the given identifier.
+	*/
+	void RemoveAudioTrack(const Audio::Identifier identifier) NOEXCEPT;
 
 	/*
 	*	Adds an effect to the track with the given identifier.
@@ -175,6 +199,7 @@ private:
 			NONE,
 
 			ADD_AUDIO_TRACK,
+			REMOVE_AUDIO_TRACK,
 			ADD_AUDIO_EFFECT_TO_TRACK,
 			PLAY_AUDIO_2D,
 			STOP_AUDIO_2D,
@@ -195,6 +220,13 @@ private:
 			//The identifier.
 			Audio::Identifier _Identifier;
 		} _AddAudioTrackData;
+
+		//The remove audio track data.
+		struct
+		{
+			//The identifier.
+			Audio::Identifier _Identifier;
+		} _RemoveAudioTrackData;
 
 		//The add audio effect to track data.
 		struct
@@ -281,7 +313,7 @@ private:
 	Audio::Backend _RequestedBackend{ Audio::Backend::WASAPI };
 
 	//The requested audio device.
-	uint32 _RequestedAudioDeviceIdentifier{ UINT32_MAXIMUM };
+	AudioDeviceInformation _RequestedAudioDevice;
 
 	//The backend.
 	AudioBackend *RESTRICT _Backend{ nullptr };
@@ -348,6 +380,11 @@ private:
 	*	Processes an add audio track request.
 	*/
 	void ProcessAddAudioTrackRequest(const Request &request) NOEXCEPT;
+
+	/*
+	*	Processes a remove audio track request.
+	*/
+	void ProcessRemoveAudioTrackRequest(const Request &request) NOEXCEPT;
 
 	/*
 	*	Processes an add audio effect to track request.

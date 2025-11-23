@@ -111,29 +111,40 @@ RtAudioAudioBackend::RtAudioAudioBackend
 			const uint32 device_id{ device_ids[device_index] };
 			const RtAudio::DeviceInfo &device_info{ _RtAudio->getDeviceInfo(device_id) };
 
+			audio_device_information._Backend = backend;
 			audio_device_information._Name = device_info.name.c_str();
 			audio_device_information._Identifier = device_id;
 			audio_device_information._IsDefault = device_info.isDefaultOutput;
 		}
 	}
 
-	//Cache the default device index.
-	const uint32 default_device_index{ _RtAudio->getDefaultOutputDevice() };
+	//Figure out the device identifier.
+	uint32 device_identifier;
 
-	//Cache the default device info.
-	const RtAudio::DeviceInfo default_device_info{ _RtAudio->getDeviceInfo(default_device_index) };
+	if (parameters._RequestedDeviceIdentifier != UINT32_MAXIMUM)
+	{
+		device_identifier = parameters._RequestedDeviceIdentifier;
+	}
+
+	else
+	{
+		device_identifier = _RtAudio->getDefaultOutputDevice();
+	}
+
+	//Cache the device info.
+	const RtAudio::DeviceInfo device_info{ _RtAudio->getDeviceInfo(device_identifier) };
 
 	//Set up the output stream parameters.
 	RtAudio::StreamParameters output_stream_parameters;
 
-	output_stream_parameters.deviceId = default_device_index;
+	output_stream_parameters.deviceId = device_identifier;
 	output_stream_parameters.nChannels = _Parameters._NumberOfOutputChannels;
 	output_stream_parameters.firstChannel = _Parameters._StartOutputChannelIndex;
 
 	//Set up the input stream parameters.
 	RtAudio::StreamParameters input_stream_parameters;
 
-	input_stream_parameters.deviceId = default_device_index;
+	input_stream_parameters.deviceId = device_identifier;
 	input_stream_parameters.nChannels = _Parameters._NumberOfInputChannels;
 	input_stream_parameters.firstChannel = _Parameters._StartInputChannelIndex;
 
@@ -142,7 +153,7 @@ RtAudioAudioBackend::RtAudioAudioBackend
 
 	for (uint64 i{ 0 }; i < ARRAY_LENGTH(RtAudioAudioBackendConstants::PREFERRED_FORMATS); ++i)
 	{
-		if (TEST_BIT(default_device_info.nativeFormats, RtAudioAudioBackendConstants::PREFERRED_FORMATS[i]))
+		if (TEST_BIT(device_info.nativeFormats, RtAudioAudioBackendConstants::PREFERRED_FORMATS[i]))
 		{
 			format = RtAudioAudioBackendConstants::PREFERRED_FORMATS[i];
 
@@ -153,7 +164,7 @@ RtAudioAudioBackend::RtAudioAudioBackend
 	ASSERT(format != 0, "Couldn't find a format for WASAPI stream!");
 
 	//Figure out the sample rate.
-	const uint32 sample_rate{ default_device_info.preferredSampleRate };
+	const uint32 sample_rate{ device_info.preferredSampleRate };
 
 	//Set up the buffer frames for a decent default.
 	uint32 buffer_frames{ wanted_buffer_size };

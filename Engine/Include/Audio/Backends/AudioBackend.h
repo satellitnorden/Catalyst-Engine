@@ -21,6 +21,9 @@ public:
 
 	public:
 
+		//The requested device identifier, if one is requested. Otherwise UINT32_MAXIMUM.
+		uint32 _RequestedDeviceIdentifier;
+
 		//The start input channel index.
 		uint32 _StartInputChannelIndex;
 

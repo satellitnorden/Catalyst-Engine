@@ -64,7 +64,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD float32 Sample(const uint8 channel_index) const NOEXCEPT
 	{
-		if (_CurrentSample < 0)
+		if (_CurrentSample < 0 || !IsActive())
 		{
 			return 0.0f;
 		}

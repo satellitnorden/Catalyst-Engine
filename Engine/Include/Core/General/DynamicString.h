@@ -295,7 +295,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	FORCE_INLINE NO_DISCARD char operator[](const uint64 index) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const char &operator[](const uint64 index) const NOEXCEPT
 	{
 		return _String[index];
 	}
@@ -303,7 +303,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	FORCE_INLINE NO_DISCARD char& operator[](const uint64 index) NOEXCEPT
+	FORCE_INLINE NO_DISCARD char &operator[](const uint64 index) NOEXCEPT
 	{
 		return _String[index];
 	}

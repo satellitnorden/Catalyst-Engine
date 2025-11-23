@@ -136,6 +136,41 @@ Audio::Identifier AudioSystem::AddAudioTrack(const AudioTrackInformation &inform
 }
 
 /*
+*	Removes the audio track with the given identifier.
+*/
+void AudioSystem::RemoveAudioTrack(const Audio::Identifier identifier) NOEXCEPT
+{
+	//Remove the main thread audio track. Remember if it had inputs.
+	bool removed_track_had_inputs{ false };
+
+	for (uint64 i{ 0 }; i < _MainThreadAudioTracks.Size(); ++i)
+	{
+		if (_MainThreadAudioTracks[i]._Identifier == identifier)
+		{
+			removed_track_had_inputs = _MainThreadAudioTracks[i]._Information._NumberOfInputChannels > 0;
+
+			_MainThreadAudioTracks.EraseAt<false>(i);
+
+			break;
+		}
+	}
+
+	//If the track had inputs, reconstruct the backend.
+	if (removed_track_had_inputs)
+	{
+		InitializeBackend(_RequestedBackend);
+	}
+
+	//Add the request.
+	Request request;
+
+	request._Type = Request::Type::REMOVE_AUDIO_TRACK;
+	request._RemoveAudioTrackData._Identifier = identifier;
+
+	_Requests.Push(request);
+}
+
+/*
 *	Adds an effect to the track with the given identifier.
 */
 void AudioSystem::AddEffectToAudioTrack(const Audio::Identifier identifier, AudioEffect *const RESTRICT effect) NOEXCEPT
@@ -248,6 +283,16 @@ NO_DISCARD AudioBackend::Parameters AudioSystem::CreateBackendParameters() NOEXC
 {
 	AudioBackend::Parameters parameters;
 
+	if (_RequestedAudioDevice._Backend != Audio::Backend::NONE && _RequestedAudioDevice._Backend == _RequestedBackend)
+	{
+		parameters._RequestedDeviceIdentifier = _RequestedAudioDevice._Identifier;
+	}
+
+	else
+	{
+		parameters._RequestedDeviceIdentifier = UINT32_MAXIMUM;
+	}
+
 	parameters._StartInputChannelIndex = 0;
 	parameters._NumberOfInputChannels = 0;
 
@@ -347,6 +392,13 @@ NO_DISCARD bool AudioSystem::ProcessRequests() NOEXCEPT
 				break;
 			}
 
+			case Request::Type::REMOVE_AUDIO_TRACK:
+			{
+				ProcessRemoveAudioTrackRequest(_request);
+
+				break;
+			}
+
 			case Request::Type::ADD_AUDIO_EFFECT_TO_TRACK:
 			{
 				ProcessAddAudioEffectToTrackRequest(_request);
@@ -409,6 +461,23 @@ void AudioSystem::ProcessAddAudioTrackRequest(const Request &request) NOEXCEPT
 
 	mix_thread_audio_track._Information = request._AddAudioTrackData._Information;
 	mix_thread_audio_track._Identifier = request._AddAudioTrackData._Identifier;
+}
+
+/*
+*	Processes a remove audio track request.
+*/
+void AudioSystem::ProcessRemoveAudioTrackRequest(const Request &request) NOEXCEPT
+{
+	//Remove the audio track.
+	for (uint64 i{ 0 }; i < _MixThreadAudioTracks.Size(); ++i)
+	{
+		if (_MixThreadAudioTracks[i]._Identifier == request._RemoveAudioTrackData._Identifier)
+		{
+			_MixThreadAudioTracks.EraseAt<false>(i);
+
+			break;
+		}
+	}
 }
 
 /*
@@ -570,6 +639,20 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 		for (PlayingAudio2D &playing_audio : _PlayingAudio2D)
 		{
 			playing_audio._Player.Advance();
+		}
+	}
+
+	//Remove all non-active playing audio.
+	for (uint64 i{ 0 }; i < _PlayingAudio2D.Size();)
+	{
+		if (_PlayingAudio2D[i]._Player.IsActive())
+		{
+			++i;
+		}
+
+		else
+		{
+			_PlayingAudio2D.EraseAt<false>(i);
 		}
 	}
 
