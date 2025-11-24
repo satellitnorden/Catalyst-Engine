@@ -94,7 +94,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool IsActive() const NOEXCEPT
 	{
-		return static_cast<uint32>(_CurrentSample) < _AudioStream->GetNumberOfSamples();
+		return _CurrentSample < _AudioStream->GetNumberOfSamples();
 	}
 
 private:
