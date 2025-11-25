@@ -7,6 +7,13 @@
 //Systems.
 #include <Systems/LogSystem.h>
 
+#define PROFILE_AUDIO (0)
+
+#if PROFILE_AUDIO
+	#include <Core/General/Time.h>
+	#include <Systems/LogSystem.h>
+#endif
+
 //RT Audio audio backend constants.
 namespace RtAudioAudioBackendConstants
 {
@@ -145,8 +152,8 @@ RtAudioAudioBackend::RtAudioAudioBackend
 	RtAudio::StreamParameters input_stream_parameters;
 
 	input_stream_parameters.deviceId = device_identifier;
-	input_stream_parameters.nChannels = _Parameters._NumberOfInputChannels;
-	input_stream_parameters.firstChannel = _Parameters._StartInputChannelIndex;
+	input_stream_parameters.nChannels = BaseMath::Minimum<uint32>(_Parameters._NumberOfInputChannels, BaseMath::Maximum<int32>(device_info.inputChannels - _Parameters._StartInputChannelIndex, 0));
+	input_stream_parameters.firstChannel = BaseMath::Minimum<uint32>(_Parameters._StartInputChannelIndex, BaseMath::Maximum<int32>(device_info.inputChannels - 1, 0));
 
 	//Figure out the format.
 	RtAudioFormat format = 0;
@@ -183,7 +190,7 @@ RtAudioAudioBackend::RtAudioAudioBackend
 	//Set up the stream options.
 	RtAudio::StreamOptions stream_options;
 
-	stream_options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_SCHEDULE_REALTIME;
+	stream_options.flags = RTAUDIO_NONINTERLEAVED | RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_SCHEDULE_REALTIME;
 	stream_options.numberOfBuffers = 0;
 	stream_options.streamName = "Catalyst Engine Audio Backend Stream";
 	stream_options.priority = 0;
@@ -192,7 +199,7 @@ RtAudioAudioBackend::RtAudioAudioBackend
 	_RtAudio->openStream
 	(
 		&output_stream_parameters,
-		input_stream_parameters .nChannels > 0 ? &input_stream_parameters : nullptr,
+		input_stream_parameters.nChannels > 0 ? &input_stream_parameters : nullptr,
 		format,
 		sample_rate,
 		&buffer_frames,
@@ -224,10 +231,10 @@ RtAudioAudioBackend::RtAudioAudioBackend
 	_BufferSize = buffer_frames;
 
 	//Set the number of input channels.
-	_NumberOfInputChannels = _Parameters._NumberOfInputChannels;
+	_NumberOfInputChannels = input_stream_parameters.nChannels;
 
 	//Set the number of output channels.
-	_NumberOfOutputChannels = _Parameters._NumberOfOutputChannels;
+	_NumberOfOutputChannels = output_stream_parameters.nChannels;
 }
 
 /*
@@ -250,6 +257,10 @@ RtAudioAudioBackend::~RtAudioAudioBackend() NOEXCEPT
 */
 void RtAudioAudioBackend::AudioCallback(void *output_buffer, void *input_buffer, unsigned int number_of_samples, double stream_time, RtAudioStreamStatus status)
 {
+#if PROFILE_AUDIO
+	TimePoint time_point;
+#endif
+
 	//Cache the bytes per sample.
 	const uint8 bytes_per_sample{ static_cast<uint8>(Audio::BitsPerSample(_Format) >> 3) };
 
@@ -262,12 +273,7 @@ void RtAudioAudioBackend::AudioCallback(void *output_buffer, void *input_buffer,
 		{
 			DynamicArray<float32> &input_channel{ _Inputs[channel_index] };
 			input_channel.Resize<false>(number_of_samples);
-			
-			for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
-			{
-				const uint32 input_buffer_index{ (sample_index * _NumberOfInputChannels) + channel_index };
-				input_channel[sample_index] = Audio::ConvertToFloat32(_Format, AdvancePointer(input_buffer, bytes_per_sample * input_buffer_index));
-			}
+			Audio::ConvertToFloat32(_Format, AdvancePointer(input_buffer, bytes_per_sample * number_of_samples * channel_index), input_channel.Data(), number_of_samples);
 		}
 	}
 
@@ -297,15 +303,37 @@ void RtAudioAudioBackend::AudioCallback(void *output_buffer, void *input_buffer,
 	_Parameters._ProcessCallback(_Inputs, &_Outputs);
 
 	//Now write the outputs.
+	for (uint8 channel_index{ 0 }; channel_index < _NumberOfOutputChannels; ++channel_index)
 	{
-		uint32 output_sample_index{ 0 };
+		DynamicArray<float32> &output_channel{ _Outputs[channel_index] };
+		Audio::ConvertToSample(_Format, output_channel.Data(), AdvancePointer(output_buffer, bytes_per_sample * number_of_samples * channel_index), number_of_samples);
+	}
 
-		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+#if PROFILE_AUDIO
+	{
+		static StaticArray<float64, 4'096> sample_durations;
+		static uint64 number_of_sample_durations{ 0 };
+
+		sample_durations[number_of_sample_durations % sample_durations.Size()] = time_point.GetSecondsSince();
+		++number_of_sample_durations;
+
+		if (number_of_sample_durations % sample_durations.Size() == 0)
 		{
-			for (uint32 channel_index{ 0 }; channel_index < _NumberOfOutputChannels; ++channel_index)
+			float64 maximum_duration{ 0.0 };
+			float64 accumulated_duration{ 0.0 };
+
+			for (const float64 sample_duration : sample_durations)
 			{
-				Audio::ConvertToSample(_Format, _Outputs[channel_index][sample_index], AdvancePointer<void>(output_buffer, bytes_per_sample * (output_sample_index++)));
+				maximum_duration = BaseMath::Maximum<float64>(maximum_duration, sample_duration);
+				accumulated_duration += sample_duration;
 			}
+
+			accumulated_duration /= static_cast<float64>(sample_durations.Size());
+
+			const float64 deadline_duration{ static_cast<float64>(number_of_samples) / static_cast<float64>(_SampleRate) };
+
+			LOG_INFORMATION("Rt Audio profiling: Max: %f ms - Average: %f ms / Deadline: %f ms", maximum_duration * 1'000.0, accumulated_duration * 1'000.0, deadline_duration * 1'000.0);
 		}
 	}
+#endif
 }

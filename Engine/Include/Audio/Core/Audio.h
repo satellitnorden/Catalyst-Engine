@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/SIMD.h>
 
 //Math.
 #include <Math/Core/BaseMath.h>
@@ -174,6 +175,49 @@ namespace Audio
 	}
 
 	/*
+	*	Converts multiple samples with the given format to a float32.
+	*/
+	FORCE_INLINE void ConvertToFloat32(const Format format, void *const RESTRICT inputs, float32 *const RESTRICT outputs, const uint32 number_of_samples) NOEXCEPT
+	{
+		//Cache the bytes per sample.
+		const uint8 bytes_per_sample{ static_cast<uint8>(Audio::BitsPerSample(format) >> 3) };
+
+		//Convert depending on the format.
+		switch (format)
+		{
+			default:
+			{
+				for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+				{
+					outputs[sample_index] = ConvertToFloat32(format, AdvancePointer(inputs, bytes_per_sample * sample_index));
+				}
+
+				break;
+			}
+
+			case Format::INTEGER_32_BIT:
+			{
+				//First convert the to float32's.
+				SIMD::ConvertInt32ToFloat32(static_cast<const int32 *const RESTRICT>(inputs), outputs, number_of_samples);
+
+				//Next normalize to the [-1.0f, 1.0f] range.
+				SIMD::MultiplyByScalar(outputs, number_of_samples, 1.0f / static_cast<float32>(INT32_MAXIMUM));
+
+				break;
+			}
+
+			case Format::FLOAT_32_BIT:
+			{
+				Memory::Copy(outputs, inputs, sizeof(float32) * number_of_samples);
+
+				break;
+			}
+
+			//TODO: Implement SIMD-ified versions of the other formats.
+		}
+	}
+
+	/*
 	*	Converts a float32 to a sample with the given format.
 	*/
 	FORCE_INLINE void ConvertToSample(const Format format, const float32 input_sample, void *const RESTRICT output_sample) NOEXCEPT
@@ -234,6 +278,50 @@ namespace Audio
 
 				break;
 			}
+		}
+	}
+
+	/*
+	*	Converts multiple float32's to samples with the given format.
+	*	Note: 'inputs' here are non-const, as the conversion may need some working memory, so don't rely on it being the same after this conversion.
+	*/
+	FORCE_INLINE void ConvertToSample(const Format format, float32 *const RESTRICT inputs, void *const RESTRICT outputs, const uint32 number_of_samples) NOEXCEPT
+	{
+		//Cache the bytes per sample.
+		const uint8 bytes_per_sample{ static_cast<uint8>(Audio::BitsPerSample(format) >> 3) };
+
+		//Convert depending on the format.
+		switch (format)
+		{
+			default:
+			{
+				for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+				{
+					ConvertToSample(format, inputs[sample_index], AdvancePointer(outputs, bytes_per_sample * sample_index));
+				}
+
+				break;
+			}
+
+			case Format::INTEGER_32_BIT:
+			{
+				//First bring it up into the range of [-INT32_MAXIMUM, INT32_MAXIMUM].
+				SIMD::MultiplyByScalar(inputs, number_of_samples, static_cast<float32>(INT32_MAXIMUM));
+
+				//Next convert the to int32's.
+				SIMD::ConvertFloat32ToInt32(inputs, static_cast<int32 *const RESTRICT>(outputs), number_of_samples);
+
+				break;
+			}
+
+			case Format::FLOAT_32_BIT:
+			{
+				Memory::Copy(outputs, inputs, sizeof(float32) * number_of_samples);
+
+				break;
+			}
+
+			//TODO: Implement SIMD-ified versions of the other formats.
 		}
 	}
 

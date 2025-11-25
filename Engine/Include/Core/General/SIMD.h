@@ -131,6 +131,148 @@ namespace SIMD
 	}
 
 	/*
+	*	Converts float32's to int32's.
+	*/
+	FORCE_INLINE void ConvertFloat32ToInt32(const float32 *const RESTRICT X, int32 *const RESTRICT Y, const uint64 length) NOEXCEPT
+	{
+		switch (GetBackend())
+		{
+			case Backend::UNKNOWN:
+			{
+				ASSERT(false, "SIMD backend is somehow not initialized!");
+
+				break;
+			}
+
+			case Backend::NONE:
+			{
+				for (uint64 i{ 0 }; i < length; ++i)
+				{
+					Y[i] = static_cast<int32>(X[i]);
+				}
+
+				break;
+			}
+
+			case Backend::SSE2:
+			{
+				uint64 i{ 0 };
+
+				for (; (i + 4) <= length; i += 4)
+				{
+					const __m128 _X{ _mm_loadu_ps(&X[i]) };
+					const __m128i _Y{ _mm_cvtps_epi32(_X) };
+					_mm_storeu_si128(reinterpret_cast<__m128i*>(&Y[i]), _Y);
+				}
+
+				for (; i < length; ++i)
+				{
+					Y[i] = static_cast<int32>(X[i]);
+				}
+
+				break;
+			}
+
+			case Backend::AVX2:
+			{
+				uint64 i{ 0 };
+
+				for (; (i + 8) <= length; i += 8)
+				{
+					const __m256 _X{ _mm256_loadu_ps(&X[i]) };
+					const __m256i _Y{ _mm256_cvtps_epi32(_X) };
+					_mm256_storeu_si256(reinterpret_cast<__m256i*>(&Y[i]), _Y);
+				}
+
+				for (; i < length; ++i)
+				{
+					Y[i] = static_cast<int32>(X[i]);
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
+
+	/*
+	*	Converts int32's to float32's.
+	*/
+	FORCE_INLINE void ConvertInt32ToFloat32(const int32 *const RESTRICT X, float32 *const RESTRICT Y, const uint64 length) NOEXCEPT
+	{
+		switch (GetBackend())
+		{
+			case Backend::UNKNOWN:
+			{
+				ASSERT(false, "SIMD backend is somehow not initialized!");
+
+				break;
+			}
+
+			case Backend::NONE:
+			{
+				for (uint64 i{ 0 }; i < length; ++i)
+				{
+					Y[i] = static_cast<float32>(X[i]);
+				}
+
+				break;
+			}
+
+			case Backend::SSE2:
+			{
+				uint64 i{ 0 };
+
+				for (; (i + 4) <= length; i += 4)
+				{
+					const __m128i _X{ _mm_loadu_si128(reinterpret_cast<const __m128i*>(&X[i])) };
+					const __m128 _result{ _mm_cvtepi32_ps(_X) };
+					_mm_storeu_ps(&Y[i], _result);
+				}
+
+				for (; i < length; ++i)
+				{
+					Y[i] = static_cast<float32>(X[i]);
+				}
+
+				break;
+			}
+
+			case Backend::AVX2:
+			{
+				uint64 i{ 0 };
+
+				for (; (i + 8) <= length; i += 8)
+				{
+					const __m256i _X{ _mm256_loadu_si256(reinterpret_cast<const __m256i*>(&X[i])) };
+					const __m256 _result{ _mm256_cvtepi32_ps(_X) };
+					_mm256_storeu_ps(&Y[i], _result);
+				}
+
+				for (; i < length; ++i)
+				{
+					Y[i] = static_cast<float32>(X[i]);
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+	}
+
+	/*
 	*	Computes the dot product between X and Y and returns the result.
 	*/
 	FORCE_INLINE NO_DISCARD float32 DotProduct(const float32 *const RESTRICT X, const float32 *const RESTRICT Y, const uint64 length) NOEXCEPT

@@ -11,6 +11,7 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/LogSystem.h>
 
 /*
 *	Initializes the audio system.
@@ -536,6 +537,12 @@ void AudioSystem::ProcessStopAudio2DRequest(const Request &request) NOEXCEPT
 */
 void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 {
+#define PROFILE_MIX_BUFFER (0)
+
+#if PROFILE_MIX_BUFFER
+	TimePoint time_point;
+#endif
+
 	//Calculate the start input channel index.
 	uint32 start_input_channel_index{ UINT32_MAXIMUM };
 
@@ -678,6 +685,36 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 
 	//The mix buffer is now mixed!
 	mix_buffer._IsMixed.Set();
+
+#if PROFILE_MIX_BUFFER
+	{
+		static StaticArray<float64, 4'096> sample_durations;
+		static uint64 number_of_sample_durations{ 0 };
+
+		sample_durations[number_of_sample_durations % sample_durations.Size()] = time_point.GetSecondsSince();
+		++number_of_sample_durations;
+
+		if (number_of_sample_durations % sample_durations.Size() == 0)
+		{
+			float64 maximum_duration{ 0.0 };
+			float64 accumulated_duration{ 0.0 };
+
+			for (const float64 sample_duration : sample_durations)
+			{
+				maximum_duration = BaseMath::Maximum<float64>(maximum_duration, sample_duration);
+				accumulated_duration += sample_duration;
+			}
+
+			accumulated_duration /= static_cast<float64>(sample_durations.Size());
+
+			const float64 deadline_duration{ static_cast<float64>(number_of_samples) / static_cast<float64>(_Backend->_SampleRate) };
+
+			LOG_INFORMATION("Mix buffer profiling: Max: %f ms - Average: %f ms / Deadline: %f ms", maximum_duration * 1'000.0, accumulated_duration * 1'000.0, deadline_duration * 1'000.0);
+		}
+	}
+#endif
+
+#undef PROFILE_MIX_BUFFER
 }
 
 /*
