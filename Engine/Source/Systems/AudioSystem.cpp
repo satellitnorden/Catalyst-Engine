@@ -275,6 +275,9 @@ void AudioSystem::InitializeBackend(const Audio::Backend backend) NOEXCEPT
 			break;
 		}
 	}
+
+	//Set the sample rate.
+	_SampleRate.Store(static_cast<float32>(_Backend->_SampleRate));
 }
 
 /*
@@ -513,7 +516,7 @@ void AudioSystem::ProcessPlayAudio2DRequest(const Request &request) NOEXCEPT
 	new_playing_audio._Identifier = request._PlayAudio2DData._Identifier;
 	new_playing_audio._Player.SetAudioStream(&request._PlayAudio2DData._Request._Asset->_AudioStream);
 	new_playing_audio._Player.SetGain(request._PlayAudio2DData._Request._Gain);
-	new_playing_audio._Player.SetPlaybackRate(static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate()) / _Backend->_SampleRate);
+	new_playing_audio._Player.SetPlaybackRate(static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate()) / _SampleRate.Load());
 	new_playing_audio._Player.SetCurrentSample(static_cast<int64>(request._PlayAudio2DData._Request._StartTime * static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate())));
 }
 
@@ -542,6 +545,21 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 #if PROFILE_MIX_BUFFER
 	TimePoint time_point;
 #endif
+
+	//Set the sample rate/beats per minute on all active effects.
+	{
+		const float32 sample_rate{ _SampleRate.Load() };
+		const float32 beats_per_minute{ _BeatsPerMinute.Load() };
+
+		for (AudioTrack &audio_track : _MixThreadAudioTracks)
+		{
+			for (AudioEffect *const RESTRICT effect : audio_track._Effects)
+			{
+				effect->SetSampleRate(sample_rate);
+				effect->SetBeatsPerMinute(beats_per_minute);
+			}
+		}
+	}
 
 	//Calculate the start input channel index.
 	uint32 start_input_channel_index{ UINT32_MAXIMUM };
@@ -707,7 +725,7 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 
 			accumulated_duration /= static_cast<float64>(sample_durations.Size());
 
-			const float64 deadline_duration{ static_cast<float64>(number_of_samples) / static_cast<float64>(_Backend->_SampleRate) };
+			const float64 deadline_duration{ static_cast<float64>(number_of_samples) / static_cast<float64>(_SampleRate.Load()) };
 
 			LOG_INFORMATION("Mix buffer profiling: Max: %f ms - Average: %f ms / Deadline: %f ms", maximum_duration * 1'000.0, accumulated_duration * 1'000.0, deadline_duration * 1'000.0);
 		}

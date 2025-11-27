@@ -106,6 +106,14 @@ public:
 	}
 
 	/*
+	*	Sets the beat per minute.
+	*/
+	FORCE_INLINE void SetBeatsPerMinute(const float32 value) NOEXCEPT
+	{
+		_BeatsPerMinute.Store(value);
+	}
+
+	/*
 	*	Creates an audio effect.
 	*/
 	template <typename TYPE, class... Arguments>
@@ -317,6 +325,12 @@ private:
 
 	//The backend.
 	AudioBackend *RESTRICT _Backend{ nullptr };
+
+	//The sample rate.
+	Atomic<float32> _SampleRate{ 48'000.0f };
+
+	//The beats per minute.
+	Atomic<float32> _BeatsPerMinute{ 120.0f };
 
 	//The mix buffers.
 	StaticArray<MixBuffer, NUMBER_OF_MIX_BUFFERS> _MixBuffers;
