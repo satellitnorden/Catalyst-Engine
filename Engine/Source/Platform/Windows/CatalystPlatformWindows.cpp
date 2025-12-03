@@ -15,6 +15,10 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#include <Systems/LogSystem.h>
+
+//Third party.
+#include <ThirdParty/b_stacktrace/b_stacktrace.h>
 
 //Windows.
 #include <Lmcons.h>
@@ -518,4 +522,22 @@ void CatalystPlatform::PrintToOutput(const char *const RESTRICT format, ...) NOE
 	OutputDebugString(buffer);
 }
 #endif
+
+/*
+*	The crash handler.
+*/
+LONG WINAPI CatalystPlatformWindows::CrashHandler(EXCEPTION_POINTERS *exception_info) NOEXCEPT
+{
+	LOG_FATAL("Crash detected!");
+
+	LOG_INFORMATION("Callstack:");
+
+	char *callstack{ b_stacktrace_get_string() };
+	LOG_INFORMATION(callstack);
+	free(callstack);
+
+	LogSystem::Instance->Flush();
+
+	return EXCEPTION_EXECUTE_HANDLER;
+}
 #endif

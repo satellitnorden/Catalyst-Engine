@@ -48,6 +48,11 @@ public:
 	//The input characters.
 	static DynamicArray<char> _InputCharacters;
 
+	/*
+	*	The crash handler.
+	*/
+	static LONG WINAPI CrashHandler(EXCEPTION_POINTERS *exception_info) NOEXCEPT;
+
 };
 
 /*
@@ -58,6 +63,8 @@ public:
 															_In_opt_ LPSTR lpCmdLine,		\
 															_In_ int32 nCmdShow)			\
 {																							\
+	SetUnhandledExceptionFilter(CatalystPlatformWindows::CrashHandler);						\
+																							\
 	CatalystPlatformWindows::_Instance = hInstance;											\
 	CatalystPlatformWindows::_ShowCommand = nCmdShow;										\
 																							\
