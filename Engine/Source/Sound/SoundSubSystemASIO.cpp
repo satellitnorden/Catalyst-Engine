@@ -575,7 +575,7 @@ void SoundSubSystemASIO::StartStream() NOEXCEPT
 	_Initialized.Store(true);
 
 	//Initialize the mixing buffers.
-	_SoundSystem->InitializeMixingBuffers(stream_options.numberOfBuffers + 2 /* 2 extra to avoid stutters. (: */, buffer_frames);
+	//_SoundSystem->InitializeMixingBuffers(stream_options.numberOfBuffers + 2 /* 2 extra to avoid stutters. (: */, buffer_frames);
 
 	LOG_INFORMATION("SoundSubSystemASIO - Started stream...");
 }
@@ -621,6 +621,7 @@ void SoundSubSystemASIO::AudioCallback
 	const uint32 number_of_samples
 ) NOEXCEPT
 {
+	/*
 	//Call the sound system.
 	_SoundSystem->SoundCallback
 	(
@@ -630,6 +631,7 @@ void SoundSubSystemASIO::AudioCallback
 		number_of_samples,
 		output_buffer
 	);
+	*/
 
 #if 0
 	//For debugging purposes, copy the input to the output.

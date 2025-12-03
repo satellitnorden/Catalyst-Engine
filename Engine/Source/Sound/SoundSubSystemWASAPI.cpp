@@ -321,6 +321,7 @@ void SoundSubSystemWASAPI::Initialize(const InitializationParameters &initializa
 	{
 		const SoundSubSystemWASAPI *const RESTRICT sub_system{ static_cast<const SoundSubSystemWASAPI *const RESTRICT>(userData) };
 
+		/*
 		sub_system->_SoundSystem->SoundCallback
 		(
 			sub_system->_SampleRate,
@@ -329,6 +330,7 @@ void SoundSubSystemWASAPI::Initialize(const InitializationParameters &initializa
 			nFrames,
 			outputBuffer
 		);
+		*/
 
 		return 0;
 	} };
@@ -377,7 +379,7 @@ void SoundSubSystemWASAPI::Initialize(const InitializationParameters &initializa
 	_Initialized.Store(true);
 
 	//Initialize the mixing buffers.
-	_SoundSystem->InitializeMixingBuffers(SoundSystem::DEFAULT_NUMBER_OF_MIXING_BUFFERS, SoundSystem::DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER);
+	//_SoundSystem->InitializeMixingBuffers(SoundSystem::DEFAULT_NUMBER_OF_MIXING_BUFFERS, SoundSystem::DEFAULT_NUMBER_OF_SAMPLES_PER_MIXING_BUFFER);
 }
 
 /*

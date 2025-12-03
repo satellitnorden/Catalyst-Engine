@@ -37,9 +37,7 @@ public:
 	//System declaration.
 	CATALYST_SYSTEM
 	(
-		SoundSystem,
-		SYSTEM_INITIALIZE()
-		SYSTEM_TERMINATE()
+		SoundSystem
 	);
 
 	/*
@@ -51,119 +49,12 @@ public:
 	}
 
 	/*
-	*	Sets the sound sub system type.
-	*/
-	void SetSoundSubSystemType(const SoundSubSystemType sound_sub_system_type) NOEXCEPT;
-
-	/*
-	*	Queries for audio devices.
-	*/
-	void QueryAudioDevices(DynamicArray<AudioDevice> *const RESTRICT audio_devices) NOEXCEPT;
-
-	/*
-	*	Opens the given audio device.
-	*/
-	void OpenAudioDevice(AudioDevice *const RESTRICT audio_device) NOEXCEPT;
-
-	/*
-	*	Returns the number of channels for the chosen audio output device.
-	*/
-	uint8 GetNumberOfChannels() const NOEXCEPT;
-
-	/*
-	*	Returns the sample rate for the chosen audio output device.
-	*/
-	float32 GetSampleRate() const NOEXCEPT;
-
-	/*
-	*	Returns the sound format.
-	*/
-	SoundFormat GetSoundFormat() const NOEXCEPT;
-
-	/*
 	*	Returns the audio latency.
 	*	That is, the time between a sound is requested to be played until it is heard.
 	*	This gives an estimate, and might be a bit unreliable on certain platforms.
 	*	The returned value is in milliseconds.
 	*/
 	uint32 GetAudioLatency() const NOEXCEPT;
-
-	/*
-	*	Opens an input stream on the given audio device, with the given parameters.
-	*/
-	void OpenInputStream
-	(
-		const uint32 start_channel_index,
-		const uint32 number_of_channels,
-		InputStreamCallback input_stream_callback,
-		void *const RESTRICT user_data
-	) NOEXCEPT;
-
-	/*
-	*	Adds a mix component to the master mix channel. Returns the unique identifier for that sound mix component.
-	*/
-	uint64 AddMasterChannelSoundMixComponent(const SoundMixComponent &component) NOEXCEPT;
-
-	/*
-	*	Removes a sound mix component from the master mix channel.
-	*/
-	void RemoveMasterChannelSoundMixComponent(const uint64 identifier) NOEXCEPT;
-
-	/*
-	*	Plays a sound.
-	*/
-	void PlaySound(const PlaySound2DRequest &request) NOEXCEPT;
-
-	/*
-	*	Stops a sound.
-	*/
-	void StopSound(const SoundInstanceHandle handle) NOEXCEPT;
-
-	/*
-	*	Returns whether or not the sound system is currently muted.
-	*/
-	NO_DISCARD bool IsCurrentlyMuted() const NOEXCEPT;
-
-	/*
-	*	Mutes the sound system.
-	*/
-	void Mute() NOEXCEPT;
-
-	/*
-	*	Un-mutes the sound system.
-	*/
-	void UnMute() NOEXCEPT;
-
-	/*
-	*	Returns whether or not the sound system is currently paused.
-	*/
-	NO_DISCARD bool IsCurrentlyPaused() const NOEXCEPT;
-
-	/*
-	*	Pauses the sound system.
-	*/
-	void Pause() NOEXCEPT;
-
-	/*
-	*	Un-pauses the sound system.
-	*/
-	void UnPause() NOEXCEPT;
-
-	/*
-	*	Returns if the sound system is currently recording.
-	*/
-	NO_DISCARD bool IsCurrentlyRecording() const NOEXCEPT;
-
-	/*
-	*	Starts recording.
-	*	Can report the expected length, in seconds, to give the sound system a heads up about how much memory needs to be allocated.
-	*/
-	void StartRecording(SoundAsset *const RESTRICT recording_sound_asset, const float32 expected_length = 0.0f) NOEXCEPT;
-
-	/*
-	*	Stops recording. Saves the recording to a .WAV file to the specified file path.
-	*/
-	void StopRecording() NOEXCEPT;
 
 	/*
 	*	Queries for input MIDI devices.
@@ -204,22 +95,6 @@ public:
 	*	Closes an output MIDI device.
 	*/
 	void CloseMIDIDevice(OutputMIDIDevice *const RESTRICT midi_device) NOEXCEPT;
-
-	/*
-	*	Returns whether or not the sound system should continue while the engine is paused.
-	*/
-	FORCE_INLINE NO_DISCARD bool GetContinueWhileEnginePaused() const NOEXCEPT
-	{
-		return _ContinueWhileEnginePaused;
-	}
-
-	/*
-	*	Returns whether or not the sound system should continue while the engine is paused.
-	*/
-	FORCE_INLINE void SetContinueWhileEnginePaused(const bool value) NOEXCEPT
-	{
-		_ContinueWhileEnginePaused = value;
-	}
 
 private:
 
@@ -298,30 +173,6 @@ private:
 	*	Terminates the platform.
 	*/
 	void PlatformTerminate() NOEXCEPT;
-
-	/*
-	*	Initializes the mixing buffers.
-	*/
-	void InitializeMixingBuffers(const uint8 number_of_mixing_buffers, const uint32 number_of_samples_per_mixing_buffer) NOEXCEPT;
-
-	/*
-	*	Terminates the mixing buffers.
-	*/
-	void TerminateMixingBuffers() NOEXCEPT;
-
-	/*
-	*	Performs mixing.
-	*/
-	void Mix() NOEXCEPT;
-
-	/*
-	*	The sound callback.
-	*/
-	void SoundCallback(	const float32 sample_rate,
-						const SoundFormat sound_format,
-						const uint8 number_of_channels,
-						const uint32 number_of_samples,
-						void *const RESTRICT buffer_data) NOEXCEPT;
 
 	//Friend declarations.
 #if defined(CATALYST_PLATFORM_WINDOWS)
