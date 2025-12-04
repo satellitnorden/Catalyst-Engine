@@ -252,7 +252,7 @@ This version of the "Minizip" library was downloaded 2024-04-20 https://github.c
 AUDIOFILE
 
 This software uses the "AudioFile" library for loading audio files.
-This version of the "Minizip" library was downloaded 2024-02-03 https://github.com/adamstark/AudioFile with the following license:
+This version of the "AudioFile" library was downloaded 2024-02-03 https://github.com/adamstark/AudioFile with the following license:
 
 	MIT License
 
@@ -267,7 +267,7 @@ This version of the "Minizip" library was downloaded 2024-02-03 https://github.c
 STB_TRUETYPE
 
 This software uses the "stb_truetype" library for loading font files.
-This version of the "Minizip" library was downloaded 2024-02-03 https://github.com/nothings/stb with the following license:
+This version of the "stb_truetype" library was downloaded 2024-02-03 https://github.com/nothings/stb with the following license:
 
 	This software is available under 2 licenses -- choose whichever you prefer.
 	------------------------------------------------------------------------------
@@ -596,6 +596,8 @@ This version of the "bc7enc" library was downloaded 2024-05-01 from https://gith
 		 3. This notice may not be removed or altered from any source
 		 distribution.
 		 
+ONNX RUNTIME
+
 This software uses the "ONNX Runtime" library for machine learning.
 This version of the "ONNX Runtime" library was downloaded 2024-12-02 from https://github.com/microsoft/onnxruntime with the following license:
 
@@ -621,38 +623,7 @@ This version of the "ONNX Runtime" library was downloaded 2024-12-02 from https:
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 
-This software uses the "RTNeural" library for run-time inference of neural networks.
-This version of the "RTNeural" library was downloaded 2025-03-02 from https://github.com/jatinchowdhury18/RTNeural with the following license:
-
-	BSD 3-Clause License
-
-	Copyright (c) 2020, jatinchowdhury18
-	All rights reserved.
-
-	Redistribution and use in source and binary forms, with or without
-	modification, are permitted provided that the following conditions are met:
-
-	1. Redistributions of source code must retain the above copyright notice, this
-	   list of conditions and the following disclaimer.
-
-	2. Redistributions in binary form must reproduce the above copyright notice,
-	   this list of conditions and the following disclaimer in the documentation
-	   and/or other materials provided with the distribution.
-
-	3. Neither the name of the copyright holder nor the names of its
-	   contributors may be used to endorse or promote products derived from
-	   this software without specific prior written permission.
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-	DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-	FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-	DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-	SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-	CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+JOLT
 
 This software uses the "Jolt" library for physics.
 This version of the "Jolt" library was downloaded 2025-03-14 from https://github.com/jrouwe/JoltPhysics with the following license:
@@ -664,6 +635,8 @@ This version of the "Jolt" library was downloaded 2025-03-14 from https://github
 	The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+CNPY
 
 This software uses the "cnpy" library to export Python NumPy data files.
 This version of the "cnpy" library was downloaded 2025-08-15 from https://github.com/rogersce/cnpy with the following license:
@@ -690,6 +663,8 @@ This version of the "cnpy" library was downloaded 2025-08-15 from https://github
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 	THE SOFTWARE.
 
+SIGNALSMITH STRETCH
+
 This software uses the "Signalsmith Stretch" library to implement pitch shift audio effects.
 This version of the "Signalsmith Stretch" library was downloaded 2024-12-03 from https://github.com/Signalsmith-Audio/signalsmith-stretch with the following license:
 
@@ -715,12 +690,41 @@ This version of the "Signalsmith Stretch" library was downloaded 2024-12-03 from
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 
+B_STACKTRACE
+
 This software uses the "b_stacktrace" library to implement call stack logging.
 This version of the "b_stacktrace" library was downloaded 2024-12-03 from https://github.com/iboB/b_stacktrace with the following license:
 
 	MIT License
 
 	Copyright (c) 2020-2025 Borislav Stanimirov
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
+CLAP
+
+This software uses the "CLAP" library to implement loading and interfacing with .clap audio plugins.
+This version of the "Assimp" library was downloaded 2025-12-03 from https://github.com/free-audio/clap with the following license:
+
+	MIT License
+
+	Copyright (c) 2021 Alexandre BIQUE
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal

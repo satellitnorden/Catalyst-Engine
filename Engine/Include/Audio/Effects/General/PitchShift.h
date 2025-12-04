@@ -29,10 +29,18 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE PitchShift() NOEXCEPT
+	FORCE_INLINE PitchShift(const bool low_latency = false) NOEXCEPT
 	{
 		//Configure the stretch.
-		_Stretch.presetDefault(2, _SampleRate);
+		if (low_latency)
+		{
+			_Stretch.configure(2, _SampleRate * 0.1f, _SampleRate * 0.02f, false);
+		}
+		
+		else
+		{
+			_Stretch.presetDefault(2, _SampleRate);
+		}
 	}
 
 	/*

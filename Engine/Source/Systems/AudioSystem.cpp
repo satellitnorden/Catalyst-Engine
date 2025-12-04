@@ -1,4 +1,3 @@
-#if defined(USE_NEW_AUDIO_SYSTEM)
 //Header file.
 #include <Systems/AudioSystem.h>
 
@@ -820,4 +819,3 @@ void AudioSystem::Process(const DynamicArray<DynamicArray<float32>> &inputs, Dyn
 	++_CurrentMixBufferIndex;
 	_CurrentMixBufferIndex *= static_cast<uint8>(_CurrentMixBufferIndex < NUMBER_OF_MIX_BUFFERS);
 }
-#endif

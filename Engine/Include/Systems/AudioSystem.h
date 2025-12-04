@@ -1,4 +1,3 @@
-#if defined(USE_NEW_AUDIO_SYSTEM)
 #pragma once
 
 //Core.
@@ -34,7 +33,6 @@ public:
 	CATALYST_SYSTEM
 	(
 		AudioSystem,
-		SYSTEM_DEFINED_REQUIREMENT(USE_NEW_AUDIO_SYSTEM)
 		SYSTEM_INITIALIZE()
 		SYSTEM_TERMINATE()
 	);
@@ -431,4 +429,3 @@ private:
 	void Process(const DynamicArray<DynamicArray<float32>> &inputs, DynamicArray<DynamicArray<float32>> *const RESTRICT outputs) NOEXCEPT;
 
 };
-#endif
