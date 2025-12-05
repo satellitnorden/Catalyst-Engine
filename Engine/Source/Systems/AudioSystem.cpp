@@ -63,6 +63,18 @@ void AudioSystem::Terminate() NOEXCEPT
 }
 
 /*
+*	Updates the audio system.
+*/
+void AudioSystem::Update(const UpdatePhase phase) NOEXCEPT
+{
+	//Update all effects on the main thread.
+	for (AudioEffect *const RESTRICT effect : _MainThreadUpdateEffects)
+	{
+		effect->MainThreadUpdate();
+	}
+}
+
+/*
 *	Returns the default audio device.
 */
 NO_DISCARD AudioDeviceInformation AudioSystem::GetDefaultAudioDevice() const NOEXCEPT
@@ -353,6 +365,9 @@ void AudioSystem::TerminateBackend() NOEXCEPT
 */
 void AudioSystem::Mix() NOEXCEPT
 {
+	//Initialize the thread index.
+	Concurrency::CurrentThread::InitializeIndex();
+
 	//Disable float denormals.
 	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);

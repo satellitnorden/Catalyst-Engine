@@ -9,6 +9,9 @@
 //Audio.
 #include <Audio/Effects/Core/AudioEffect.h>
 
+//Concurrency.
+#include <Concurrency/AtomicQueue.h>
+
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
 
@@ -19,6 +22,64 @@ class CLAPPlugin final : public AudioEffect
 {
 
 public:
+
+	/*
+	*	Main thread request class definition.
+	*/
+	class MainThreadRequest final
+	{
+
+	public:
+
+		//Enumeration covering all types.
+		enum class Type : uint8
+		{
+			NONE,
+
+			UPDATE_PLUGIN,
+			ADD_TIMER,
+			REMOVE_TIMER,
+			SHOW_GUI,
+			HIDE_GUI
+		};
+
+		//The type.
+		Type _Type{ Type::NONE };
+
+		union
+		{
+			struct
+			{
+				clap_id _Identifier;
+			} _AddTimerData;
+
+			struct
+			{
+				clap_id _Identifier;
+			} _RemoveTimerData;
+		};
+	};
+
+	/*
+	*	Audio thread request class definition.
+	*/
+	class AudioThreadRequest final
+	{
+
+	public:
+
+		//Enumeration covering all types.
+		enum class Type : uint8
+		{
+			NONE,
+
+			START_PROCESSING
+		};
+
+		//The type.
+		Type _Type{ Type::NONE };
+
+	};
 
 	/*
 	*	Default constructor.
@@ -41,6 +102,19 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Returns if this audio effect wants updates on the main thread.
+	*/
+	FORCE_INLINE NO_DISCARD bool WantsMainThreadUpdate() NOEXCEPT override
+	{
+		return true;
+	}
+
+	/*
+	*	Updates this audio effect on the main thread.
+	*/
+	void MainThreadUpdate() NOEXCEPT override;
+
+	/*
 	*	Callback for this audio effect to process the given buffer.
 	*/
 	void Process
@@ -51,6 +125,16 @@ public:
 		const uint8 number_of_channels,
 		const uint32 number_of_samples
 	) NOEXCEPT override;
+
+	/*
+	*	Adds a main thread request.
+	*/
+	void AddMainThreadRequest(const MainThreadRequest request) NOEXCEPT;
+
+	/*
+	*	Adds an audio thread request.
+	*/
+	void AddAudioThreadRequest(const AudioThreadRequest request) NOEXCEPT;
 
 	/*
 	*	Sets a parameter with the given identifier to the given value.
@@ -121,11 +205,20 @@ private:
 	//The parameters.
 	DynamicArray<Parameter> _Parameters;
 
+	//The main thread requests.
+	AtomicQueue<MainThreadRequest, 1'024, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _MainThreadRequests;
+
+	//The audio thread requests.
+	AtomicQueue<AudioThreadRequest, 1'024, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _AudioThreadRequests;
+
 	//The input buffer.
 	DynamicArray<DynamicArray<float32>> _InputBuffer;
 
 	//The input events.
 	DynamicArray<Event> _InputEvents;
+
+	//The output events.
+	DynamicArray<const clap_event_header_t *RESTRICT> _OutputEvents;
 
 	//The process struct.
 	clap_process_t _Process;

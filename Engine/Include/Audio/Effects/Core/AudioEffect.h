@@ -50,6 +50,22 @@ public:
 	}
 
 	/*
+	*	Returns if this audio effect wants updates on the main thread.
+	*/
+	FORCE_INLINE virtual NO_DISCARD bool WantsMainThreadUpdate() NOEXCEPT
+	{
+		return false;
+	}
+
+	/*
+	*	Updates this audio effect on the main thread.
+	*/
+	FORCE_INLINE virtual void MainThreadUpdate() NOEXCEPT
+	{
+
+	}
+
+	/*
 	*	Callback for this audio effect to process the given buffer.
 	*/
 	FORCE_INLINE virtual void Process

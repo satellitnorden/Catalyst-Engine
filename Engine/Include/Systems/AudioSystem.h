@@ -35,6 +35,7 @@ public:
 		AudioSystem,
 		SYSTEM_INITIALIZE()
 		SYSTEM_TERMINATE()
+		SYSTEM_UPDATE(RANGE(POST, RUN_ON_MAIN_THREAD))
 	);
 
 	/*
@@ -119,6 +120,12 @@ public:
 	{
 		TYPE *const RESTRICT new_effect{ new TYPE(std::forward<Arguments>(arguments)...) };
 		_AllEffects.Emplace(new_effect);
+
+		if (new_effect->WantsMainThreadUpdate())
+		{
+			_MainThreadUpdateEffects.Emplace(new_effect);
+		}
+
 		return new_effect;
 	}
 
@@ -127,6 +134,11 @@ public:
 	*/
 	FORCE_INLINE void DestroyAudioEffect(AudioEffect *const RESTRICT effect) NOEXCEPT
 	{
+		if (effect->WantsMainThreadUpdate())
+		{
+			_MainThreadUpdateEffects.Erase<false>(effect);
+		}
+
 		_AllEffects.Erase<false>(effect);
 		delete effect;
 	}
@@ -362,6 +374,9 @@ private:
 
 	//Container for all effects.
 	DynamicArray<AudioEffect *RESTRICT> _AllEffects;
+
+	//Container for all effects that want main thread updates.
+	DynamicArray<AudioEffect *RESTRICT> _MainThreadUpdateEffects;
 
 	/*
 	*	Initializes the backend.
