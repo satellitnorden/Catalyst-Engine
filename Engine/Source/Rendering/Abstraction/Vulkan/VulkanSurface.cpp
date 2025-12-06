@@ -38,7 +38,7 @@ void VulkanSurface::Initialize() NOEXCEPT
 	surfaceCreateInfo.pNext = nullptr;
 	surfaceCreateInfo.flags = 0;
 	surfaceCreateInfo.hinstance = CatalystPlatformWindows::_Instance;
-	surfaceCreateInfo.hwnd = CatalystPlatformWindows::_Window;
+	surfaceCreateInfo.hwnd = CatalystPlatformWindows::_MainWindow;
 
 	VULKAN_ERROR_CHECK(vkCreateWin32SurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
 #endif

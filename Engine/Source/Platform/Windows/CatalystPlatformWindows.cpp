@@ -30,7 +30,8 @@
 //Static variable definitions.
 HINSTANCE CatalystPlatformWindows::_Instance;
 int32 CatalystPlatformWindows::_ShowCommand;
-HWND CatalystPlatformWindows::_Window;
+WNDCLASSEX CatalystPlatformWindows::_WindowInfo;
+HWND CatalystPlatformWindows::_MainWindow;
 DynamicArray<uint64> CatalystPlatformWindows::_KeyDownEvents;
 DynamicArray<uint64> CatalystPlatformWindows::_KeyUpEvents;
 DynamicArray<char> CatalystPlatformWindows::_InputCharacters;
@@ -60,69 +61,77 @@ namespace CatalystWindowsLogic
 {
 
 	/*
-	*	Updates during the post update phase.
+	*	Updates the given platform window.
 	*/
-	void PostUpdate() NOEXCEPT
+	void UpdatePlatformWindow(void *const RESTRICT window) NOEXCEPT
 	{
-		//Determine if the window is in focus.
-		CatalystWindowsData::_IsWindowInFocus = GetFocus() == CatalystPlatformWindows::_Window;
+		HWND _window{ static_cast<HWND>(window) };
 
-		//Clear the keyboard events.
-		CatalystPlatformWindows::_KeyDownEvents.Clear();
-		CatalystPlatformWindows::_KeyUpEvents.Clear();
-		CatalystPlatformWindows::_InputCharacters.Clear();
+		if (_window == CatalystPlatformWindows::_MainWindow)
+		{
+			//Determine if the window is in focus.
+			CatalystWindowsData::_IsWindowInFocus = GetFocus() == _window;
+
+			//Clear the keyboard events.
+			CatalystPlatformWindows::_KeyDownEvents.Clear();
+			CatalystPlatformWindows::_KeyUpEvents.Clear();
+			CatalystPlatformWindows::_InputCharacters.Clear();
+		}
 
 		//Process messages.
 		MSG message;
 
-		while (PeekMessage(&message, CatalystPlatformWindows::_Window, 0, 0, PM_REMOVE) > 0)
+		while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE) > 0)
 		{
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
 
-		//Update the cursor.
-		if (CatalystWindowsData::_CursorCurrentVisibility != CatalystWindowsData::_CursorRequestedVisibility)
+		if (_window == CatalystPlatformWindows::_MainWindow)
 		{
-			//If the cursor is being hidden, remember the cursor position for when it is shown again.
-			if (CatalystWindowsData::_CursorCurrentVisibility)
+			//Update the cursor.
+			if (CatalystWindowsData::_CursorCurrentVisibility != CatalystWindowsData::_CursorRequestedVisibility)
 			{
-				POINT cursor_position;
-
-				if (GetCursorPos(&cursor_position))
+				//If the cursor is being hidden, remember the cursor position for when it is shown again.
+				if (CatalystWindowsData::_CursorCurrentVisibility)
 				{
-					CatalystWindowsData::_CachedCursorPosition = cursor_position;
+					POINT cursor_position;
 
-					RECT rectangle;
-
-					if (GetClientRect(CatalystPlatformWindows::_Window, &rectangle))
+					if (GetCursorPos(&cursor_position))
 					{
-						POINT minimum{ rectangle.left, rectangle.bottom };
-						POINT maximum{ rectangle.right, rectangle.top };
+						CatalystWindowsData::_CachedCursorPosition = cursor_position;
 
-						if (ClientToScreen(CatalystPlatformWindows::_Window, &minimum) && ClientToScreen(CatalystPlatformWindows::_Window, &maximum))
+						RECT rectangle;
+
+						if (GetClientRect(_window, &rectangle))
 						{
-							SetCursorPos(minimum.x + ((maximum.x - minimum.x) / 2), minimum.y + ((maximum.y - minimum.y) / 2));
+							POINT minimum{ rectangle.left, rectangle.bottom };
+							POINT maximum{ rectangle.right, rectangle.top };
+
+							if (ClientToScreen(_window, &minimum) && ClientToScreen(_window, &maximum))
+							{
+								SetCursorPos(minimum.x + ((maximum.x - minimum.x) / 2), minimum.y + ((maximum.y - minimum.y) / 2));
+							}
 						}
 					}
 				}
-			}
 
-			else
-			{
-				SetCursorPos(CatalystWindowsData::_CachedCursorPosition.x, CatalystWindowsData::_CachedCursorPosition.y);
-			}
+				else
+				{
+					SetCursorPos(CatalystWindowsData::_CachedCursorPosition.x, CatalystWindowsData::_CachedCursorPosition.y);
+				}
 
-			CatalystWindowsData::_CursorCurrentVisibility = CatalystWindowsData::_CursorRequestedVisibility;
+				CatalystWindowsData::_CursorCurrentVisibility = CatalystWindowsData::_CursorRequestedVisibility;
 
-			if (CatalystWindowsData::_CursorRequestedVisibility)
-			{
-				while (ShowCursor(true) < 0);
-			}
+				if (CatalystWindowsData::_CursorRequestedVisibility)
+				{
+					while (ShowCursor(true) < 0);
+				}
 
-			else
-			{
-				while (ShowCursor(false) >= 0);
+				else
+				{
+					while (ShowCursor(false) >= 0);
+				}
 			}
 		}
 	}
@@ -137,6 +146,11 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 									_In_ WPARAM wParam,
 									_In_ LPARAM lParam) NOEXCEPT
 {
+	if (window != CatalystPlatformWindows::_MainWindow)
+	{
+		return DefWindowProc(window, message, wParam, lParam);
+	}
+
 	switch (message)
 	{
 		case WM_DESTROY:
@@ -193,69 +207,47 @@ FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
 void CatalystPlatform::Initialize() NOEXCEPT
 {
 	//Create the window info.
-	WNDCLASSEX windowInfo;
-
-	windowInfo.cbSize = sizeof(WNDCLASSEX);
-	windowInfo.style = 0;
-	windowInfo.lpfnWndProc = WindowProcedure;
-	windowInfo.cbClsExtra = 0;
-	windowInfo.cbWndExtra = 0;
-	windowInfo.hInstance = CatalystPlatformWindows::_Instance;
-	windowInfo.hIcon = LoadIcon(CatalystPlatformWindows::_Instance, IDI_APPLICATION);
-	windowInfo.hCursor = LoadCursor(NULL, IDC_ARROW);
-	windowInfo.hbrBackground = 0;
-	windowInfo.lpszMenuName = NULL;
-	windowInfo.lpszClassName = _T("Catalyst Engine");
-	windowInfo.hIconSm = LoadIcon(windowInfo.hInstance, IDI_APPLICATION);
+	CatalystPlatformWindows::_WindowInfo.cbSize = sizeof(WNDCLASSEX);
+	CatalystPlatformWindows::_WindowInfo.style = 0;
+	CatalystPlatformWindows::_WindowInfo.lpfnWndProc = WindowProcedure;
+	CatalystPlatformWindows::_WindowInfo.cbClsExtra = 0;
+	CatalystPlatformWindows::_WindowInfo.cbWndExtra = 0;
+	CatalystPlatformWindows::_WindowInfo.hInstance = CatalystPlatformWindows::_Instance;
+	CatalystPlatformWindows::_WindowInfo.hIcon = LoadIcon(CatalystPlatformWindows::_Instance, IDI_APPLICATION);
+	CatalystPlatformWindows::_WindowInfo.hCursor = LoadCursor(NULL, IDC_ARROW);
+	CatalystPlatformWindows::_WindowInfo.hbrBackground = 0;
+	CatalystPlatformWindows::_WindowInfo.lpszMenuName = NULL;
+	CatalystPlatformWindows::_WindowInfo.lpszClassName = _T("Catalyst Engine");
+	CatalystPlatformWindows::_WindowInfo.hIconSm = LoadIcon(CatalystPlatformWindows::_WindowInfo.hInstance, IDI_APPLICATION);
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	if (!RegisterClassEx(&windowInfo))
+	if (!RegisterClassEx(&CatalystPlatformWindows::_WindowInfo))
 	{
 		BREAKPOINT();
 	}
 #else
-	RegisterClassEx(&windowInfo);
+	RegisterClassEx(&CatalystPlatformWindows::_WindowInfo);
 #endif
 
-	if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._InitialFullScreen)
+	//Create the window.
 	{
-		Resolution resolution;
+		const bool fullscreen{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._InitialFullScreen };
 
-		if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution.Valid())
-		{
-			resolution = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution.Get();
-		}
-
-		else
-		{
-			CatalystPlatform::GetDefaultResolution(&resolution._Width, &resolution._Height);
-		}
-
-		CatalystPlatformWindows::_Window = CreateWindow
-		(
-			windowInfo.lpszClassName,
-			_T(CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data()),
-			WS_POPUP | WS_VISIBLE,
-			CW_USEDEFAULT,
-			CW_USEDEFAULT,
-			resolution._Width,
-			resolution._Height,
-			nullptr,
-			nullptr,
-			CatalystPlatformWindows::_Instance,
-			nullptr
-		);
-	}
-
-	else
-	{
 		char window_name_buffer[256];
 
+		if (fullscreen)
+		{
+			sprintf_s(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+		}
+
+		else
+		{
 #if defined(CATALYST_EDITOR)
-		sprintf_s(window_name_buffer, "Catalyst Editor - %s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+			sprintf_s(window_name_buffer, "Catalyst Editor - %s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
 #else
-		sprintf_s(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+			sprintf_s(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
 #endif
+		}
 
 		Resolution resolution;
 
@@ -269,36 +261,17 @@ void CatalystPlatform::Initialize() NOEXCEPT
 			CatalystPlatform::GetDefaultResolution(&resolution._Width, &resolution._Height);
 		}
 
-		CatalystPlatformWindows::_Window = CreateWindow
-		(
-			windowInfo.lpszClassName,
-			_T(window_name_buffer),
-			WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
-			CW_USEDEFAULT,
-			CW_USEDEFAULT,
-			resolution._Width,
-			resolution._Height,
-			nullptr,
-			nullptr,
-			CatalystPlatformWindows::_Instance,
-			nullptr
-		);
+		CatalystPlatformWindows::_MainWindow = static_cast<HWND>(CreatePlatformWindow(window_name_buffer, resolution._Width, resolution._Height, fullscreen));
 	}
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	if (!CatalystPlatformWindows::_Window)
+	if (!CatalystPlatformWindows::_MainWindow)
 	{
 		const DWORD result{ GetLastError() };
 
 		BREAKPOINT();
 	}
 #endif
-
-	//Show the window.
-	ShowWindow(CatalystPlatformWindows::_Window, CatalystPlatformWindows::_ShowCommand);
-
-	//Update the window.
-	UpdateWindow(CatalystPlatformWindows::_Window);
 
 	//Allocate an appropriate amount of memory for keyboard events.
 	CatalystPlatformWindows::_KeyDownEvents.Reserve(32);
@@ -319,7 +292,7 @@ void CatalystPlatform::PlatformPreUpdate() NOEXCEPT
 */
 void CatalystPlatform::PlatformPostUpdate() NOEXCEPT
 {
-	CatalystWindowsLogic::PostUpdate();
+	CatalystWindowsLogic::UpdatePlatformWindow(CatalystPlatformWindows::_MainWindow);
 }
 
 /*
@@ -328,6 +301,61 @@ void CatalystPlatform::PlatformPostUpdate() NOEXCEPT
 void CatalystPlatform::Terminate() NOEXCEPT
 {
 
+}
+
+/*
+*	Creates a platform window with the given parameters.
+*/
+void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const bool fullscreen) NOEXCEPT
+{
+	HWND window{ nullptr };
+
+	if (fullscreen)
+	{
+		window = CreateWindow
+		(
+			CatalystPlatformWindows::_WindowInfo.lpszClassName,
+			_T(name),
+			WS_POPUP | WS_VISIBLE,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			width,
+			height,
+			nullptr,
+			nullptr,
+			CatalystPlatformWindows::_Instance,
+			nullptr
+		);
+	}
+
+	else
+	{
+		window = CreateWindow
+		(
+			CatalystPlatformWindows::_WindowInfo.lpszClassName,
+			_T(name),
+			WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			width,
+			height,
+			nullptr,
+			nullptr,
+			CatalystPlatformWindows::_Instance,
+			nullptr
+		);
+	}
+
+	if (window)
+	{
+		//Show the window.
+		ShowWindow(window, CatalystPlatformWindows::_ShowCommand);
+
+		//Update the window.
+		UpdateWindow(window);
+	}
+
+	return window;
 }
 
 /*

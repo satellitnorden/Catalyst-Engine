@@ -434,11 +434,11 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 
 	if (GetCursorPos(&point))
 	{
-		if (ScreenToClient(CatalystPlatformWindows::_Window, &point))
+		if (ScreenToClient(CatalystPlatformWindows::_MainWindow, &point))
 		{
 			RECT rectangle;
 
-			if (GetClientRect(CatalystPlatformWindows::_Window, &rectangle))
+			if (GetClientRect(CatalystPlatformWindows::_MainWindow, &rectangle))
 			{
 				state->_CurrentX = BaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f);
 				state->_CurrentY = BaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f);
@@ -514,11 +514,11 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 
 		if (GetCursorPos(&point))
 		{
-			if (ScreenToClient(CatalystPlatformWindows::_Window, &point))
+			if (ScreenToClient(CatalystPlatformWindows::_MainWindow, &point))
 			{
 				RECT rectangle;
 
-				if (GetClientRect(CatalystPlatformWindows::_Window, &rectangle))
+				if (GetClientRect(CatalystPlatformWindows::_MainWindow, &rectangle))
 				{
 					//Calculate the center and always place the cursor at the center of the screen.
 					POINT center;
@@ -527,7 +527,7 @@ void InputSystem::UpdateMouseState() NOEXCEPT
 					center.x = adjusted_center.x = rectangle.left + ((rectangle.right - rectangle.left) / 2);
 					center.y = adjusted_center.y = rectangle.top + ((rectangle.bottom - rectangle.top) / 2);
 
-					if (ClientToScreen(CatalystPlatformWindows::_Window, &adjusted_center))
+					if (ClientToScreen(CatalystPlatformWindows::_MainWindow, &adjusted_center))
 					{
 						SetCursorPos(adjusted_center.x, adjusted_center.y);
 

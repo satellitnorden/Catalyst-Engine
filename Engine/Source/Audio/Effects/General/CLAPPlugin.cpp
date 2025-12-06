@@ -7,7 +7,6 @@
 //Third party.
 #include <ThirdParty/CLAP/ext/draft/resource-directory.h>
 
-#define ENABLE_GUI (0)
 
 /*
 *	The 'get_extension' function.
@@ -265,16 +264,15 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 
 	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_GUI))
 	{
-#if ENABLE_GUI
 		static clap_host_gui GUI_EXTENSION;
 
 		GUI_EXTENSION.resize_hints_changed = [](const clap_host_t *host) -> void
 		{
-			//Do nothing. (:
+			ASSERT(false, "Figure out what to do here!");
 		};
 		GUI_EXTENSION.request_resize = [](const clap_host_t *host, uint32_t width, uint32_t height) -> bool
 		{
-			ASSERT(false, "This should not be called if the window is floating, right?");
+			ASSERT(false, "Figure out what to do here!");
 			return false;
 		};
 		GUI_EXTENSION.request_show = [](const clap_host_t *host) -> bool
@@ -303,14 +301,10 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 		};
 		GUI_EXTENSION.closed = [](const clap_host_t *host, bool was_destroyed) -> void
 		{
-			//Do nothing. (:
+			ASSERT(false, "Figure out what to do here!");
 		};
 
 		return &GUI_EXTENSION;
-#else
-		//Don't support GUI's for now. (:
-		return nullptr;
-#endif
 	}
 
 	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_PARAMS))
@@ -327,7 +321,7 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 		};
 		PARAMS_EXTENSION.request_flush = [](const clap_host_t *host)
 		{
-			ASSERT(false, "Figure out what to do here!");
+			//The plugin will receive 'process()' calls either way, so this request will be satisfied automatically. (:
 		};
 
 		return &PARAMS_EXTENSION;
@@ -636,39 +630,38 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 		return false;
 	}
 
-#if ENABLE_GUI
 	{
-		const clap_plugin_gui_t *const RESTRICT plugin_gui{ static_cast<const clap_plugin_gui_t *const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_GUI)) };
+		_GUI._Extension = static_cast<const clap_plugin_gui_t *const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_GUI));
 
-		if (plugin_gui)
+		if (_GUI._Extension)
 		{
-			if (plugin_gui->is_api_supported(_Plugin, CLAP_WINDOW_API_WIN32, false))
+			if (_GUI._Extension->is_api_supported(_Plugin, CLAP_WINDOW_API_WIN32, false))
 			{
-				if (plugin_gui->create(_Plugin, CLAP_WINDOW_API_WIN32, false))
+				if (_GUI._Extension->create(_Plugin, CLAP_WINDOW_API_WIN32, false))
 				{
 					uint32_t width;
 					uint32_t height;
 
-					if (!plugin_gui->get_size(_Plugin, &width, &height))
+					if (!_GUI._Extension->get_size(_Plugin, &width, &height))
 					{
 						ASSERT(false, "Couldn't get size!");
 					}
+
+					_GUI._Window = static_cast<HWND>(CatalystPlatform::CreatePlatformWindow("Catalyst Engine CLAP Window", width, height, false));
 
 					{
 						clap_window_t clap_window;
 
 						clap_window.api = CLAP_WINDOW_API_WIN32;
-						clap_window.win32 = CatalystPlatformWindows::_Window;
+						clap_window.win32 = _GUI._Window;
 
-						if (!plugin_gui->set_parent(_Plugin, &clap_window))
+						if (!_GUI._Extension->set_parent(_Plugin, &clap_window))
 						{
 							ASSERT(false, "Couldn't set parent!");
 						}
 					}
 
-					plugin_gui->suggest_title(_Plugin, "Catalyst Engine CLAP Window");
-
-					if (!plugin_gui->show(_Plugin))
+					if (!_GUI._Extension->show(_Plugin))
 					{
 						ASSERT(false, "Couldn't show!");
 					}
@@ -676,7 +669,6 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 			}
 		}
 	}
-#endif
 
 	//Activate the plugin.
 	if (!_Plugin->activate(_Plugin, static_cast<float64>(_SampleRate), 1, 4096))
@@ -743,13 +735,9 @@ void CLAPPlugin::Terminate() NOEXCEPT
 		//Deactivate the plugin.
 		_Plugin->deactivate(_Plugin);
 
+		if (_GUI._Extension)
 		{
-			const clap_plugin_gui_t *const RESTRICT plugin_gui{ static_cast<const clap_plugin_gui_t *const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_GUI)) };
-
-			if (plugin_gui)
-			{
-				plugin_gui->destroy(_Plugin);
-			}
+			_GUI._Extension->destroy(_Plugin);
 		}
 
 		//Destroy the plugin.
@@ -801,11 +789,9 @@ void CLAPPlugin::MainThreadUpdate() NOEXCEPT
 
 				case MainThreadRequest::Type::SHOW_GUI:
 				{
-					const clap_plugin_gui_t *const RESTRICT plugin_gui{ static_cast<const clap_plugin_gui_t *const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_GUI)) };
-
-					if (plugin_gui)
+					if (_GUI._Extension)
 					{
-						plugin_gui->show(_Plugin);
+						_GUI._Extension->show(_Plugin);
 					}
 
 					break;
@@ -959,8 +945,37 @@ void CLAPPlugin::Process
 	output_events.ctx = &_OutputEvents;
 	output_events.try_push = [](const struct clap_output_events *list, const clap_event_header_t *event) -> bool
 	{
-		DynamicArray<const clap_event_header_t *RESTRICT> *const RESTRICT events{ static_cast<DynamicArray<const clap_event_header_t *RESTRICT> *const RESTRICT>(list->ctx) };
-		events->Emplace(event);
+		DynamicArray<Event> *const RESTRICT events{ static_cast<DynamicArray<Event> *const RESTRICT>(list->ctx) };
+		events->Emplace();
+		Event &_event{ events->Back() };
+
+		_event.type = event->type;
+
+		switch (_event.type)
+		{
+			case CLAP_EVENT_PARAM_VALUE:
+			{
+				_event._ParameterValue = *reinterpret_cast<const clap_event_param_value_t *RESTRICT>(event);
+
+				break;
+			}
+
+			case CLAP_EVENT_PARAM_GESTURE_BEGIN:
+			case CLAP_EVENT_PARAM_GESTURE_END:
+			{
+				_event._GestureValue = *reinterpret_cast<const clap_event_param_gesture_t *RESTRICT>(event);
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+
 		return true;
 	};
 
@@ -970,9 +985,32 @@ void CLAPPlugin::Process
 	const clap_process_status status{ _Plugin->process(_Plugin, &_Process) };
 
 	//Process the output events.
-	for (const clap_event_header_t *const RESTRICT output_event : _OutputEvents)
+	for (const Event &output_event : _OutputEvents)
 	{
-		ASSERT(false, "Figure out what to do here!");
+		switch (output_event.type)
+		{
+			case CLAP_EVENT_PARAM_VALUE:
+			{
+				//Ignore for now. (:
+
+				break;
+			}
+
+			case CLAP_EVENT_PARAM_GESTURE_BEGIN:
+			case CLAP_EVENT_PARAM_GESTURE_END:
+			{
+				//Ignore for now. (:
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
 	}
 
 	_OutputEvents.Clear();

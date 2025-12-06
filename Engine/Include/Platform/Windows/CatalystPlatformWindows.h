@@ -36,8 +36,11 @@ public:
 	//The command to show the window.
 	static int32 _ShowCommand;
 
-	//Handle to the window.
-	static HWND _Window;
+	//The window info.
+	static WNDCLASSEX _WindowInfo;
+
+	//Handle to the main window.
+	static HWND _MainWindow;
 
 	//The key down events.
 	static DynamicArray<uint64> _KeyDownEvents;
@@ -52,6 +55,8 @@ public:
 	*	The crash handler.
 	*/
 	static LONG WINAPI CrashHandler(EXCEPTION_POINTERS *exception_info) NOEXCEPT;
+
+private:
 
 };
 

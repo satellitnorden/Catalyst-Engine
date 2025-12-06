@@ -153,7 +153,11 @@ private:
 		union
 		{
 			clap_event_param_value_t _ParameterValue;
+			clap_event_param_gesture_t _GestureValue;
 		};
+
+		//The type.
+		uint16_t type;
 
 	};
 
@@ -188,6 +192,22 @@ private:
 
 	};
 
+	/*
+	*	GUI class definition.
+	*/
+	class GUI final
+	{
+
+	public:
+
+		//The extension.
+		const clap_plugin_gui_t *RESTRICT _Extension{ nullptr };
+
+		//The window.
+		void *RESTRICT _Window{ nullptr };
+
+	};
+
 	//The dynamic library.
 	DynamicLibrary _DynamicLibrary;
 
@@ -216,10 +236,13 @@ private:
 	DynamicArray<Event> _InputEvents;
 
 	//The output events.
-	DynamicArray<const clap_event_header_t *RESTRICT> _OutputEvents;
+	DynamicArray<Event> _OutputEvents;
 
 	//The process struct.
 	clap_process_t _Process;
+
+	//The GUI.
+	GUI _GUI;
 
 
 };
